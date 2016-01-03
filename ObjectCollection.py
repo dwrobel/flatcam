@@ -150,6 +150,7 @@ class ObjectCollection(QtCore.QAbstractListModel):
         self.endInsertRows()
 
         # Let the world know
+        log.debug("Emiting new_object_available (ObjectCollection.append())")
         self.new_object_available.emit(obj)
 
     def get_names(self):

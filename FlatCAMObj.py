@@ -197,10 +197,13 @@ class FlatCAMObj(QtCore.QObject):
         except KeyError:
             self.app.log.warning("Failed to read option from field: %s" % option)
 
-    def plot(self):
+    def plot(self, axes):
         """
         Plot this object (Extend this method to implement the actual plotting).
+
+        OBSOLETE:
         Axes get created, appended to canvas and cleared before plotting.
+
         Call this in descendants before doing the plotting.
 
         :return: Whether to continue plotting or not depending on the "plot" option.
@@ -208,9 +211,11 @@ class FlatCAMObj(QtCore.QObject):
         """
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMObj.plot()")
 
+        self.axes = axes
+
         # Axes must exist and be attached to canvas.
-        if self.axes is None or self.axes not in self.app.plotcanvas.figure.axes:
-            self.axes = self.app.plotcanvas.new_axes(self.options['name'])
+        # if self.axes is None or self.axes not in self.app.plotcanvas.figure.axes:
+        #     self.axes = self.app.plotcanvas.new_axes(self.options['name'])
 
         if not self.options["plot"]:
             self.axes.cla()
@@ -544,13 +549,13 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.options['noncoppermargin'] *= factor
         self.options['bboxmargin'] *= factor
 
-    def plot(self):
+    def plot(self, axes):
 
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMGerber.plot()")
 
         # Does all the required setup and returns False
         # if the 'ptint' option is set to False.
-        if not FlatCAMObj.plot(self):
+        if not FlatCAMObj.plot(self, axes):
             return
 
         geometry = self.solid_geometry
@@ -830,11 +835,11 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.options['travelz'] *= factor
         self.options['feedrate'] *= factor
 
-    def plot(self):
+    def plot(self, axes):
 
         # Does all the required setup and returns False
         # if the 'ptint' option is set to False.
-        if not FlatCAMObj.plot(self):
+        if not FlatCAMObj.plot(self, axes):
             return
 
         try:
@@ -952,11 +957,11 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.read_form_item('plot')
         self.plot()
 
-    def plot(self):
+    def plot(self, axes):
 
         # Does all the required setup and returns False
         # if the 'ptint' option is set to False.
-        if not FlatCAMObj.plot(self):
+        if not FlatCAMObj.plot(self, axes):
             return
 
         self.plot2(self.axes, tooldia=self.options["tooldia"])
@@ -1298,7 +1303,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
             FlatCAMApp.App.log.warning("Did not plot:" + str(type(element)))
 
-    def plot(self):
+    def plot(self, axes):
         """
         Plots the object into its axes. If None, of if the axes
         are not part of the app's figure, it fetches new ones.
@@ -1308,7 +1313,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         # Does all the required setup and returns False
         # if the 'ptint' option is set to False.
-        if not FlatCAMObj.plot(self):
+        if not FlatCAMObj.plot(self, axes):
             return
 
         # Make sure solid_geometry is iterable.

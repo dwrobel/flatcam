@@ -537,6 +537,11 @@ class App(QtCore.QObject):
         if post_gui is not None:
             post_gui(self)
 
+        ### Other threads
+        # Starts other threads here to make sure everythong is
+        # available to them.
+        self.plotcanvas.start_cache()
+
         App.log.debug("END of constructor. Releasing control.")
 
     def defaults_read_form(self):
@@ -1321,8 +1326,12 @@ class App(QtCore.QObject):
         # The collection is emitting this now. Don't do it here any more.
         # self.new_object_available.emit(obj)
 
-        obj.plot()
+        # obj.plot()
+        # Now the plotting is done by the CanvasCache when it
+        # receives the signal from the collection.
+
         self.on_zoom_fit(None)
+
         t1 = time.time()  # DEBUG
         self.log.debug("%f seconds adding object and plotting." % (t1 - t0))
 

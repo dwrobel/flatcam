@@ -17,8 +17,16 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 import FlatCAMApp
 import logging
+import numpy as np
 
 log = logging.getLogger('base')
+
+
+class Render(QtCore.QObject):
+
+    def __init__(self, bitmap, extents):
+        self.bitmap = bitmap
+        self.extents = extents
 
 
 class CanvasCache(QtCore.QObject):
@@ -40,7 +48,7 @@ class CanvasCache(QtCore.QObject):
 
     # Signals:
     # A bitmap is ready to be displayed.
-    new_screen = QtCore.pyqtSignal()
+    new_render = QtCore.pyqtSignal()
 
     def __init__(self, plotcanvas, app, dpi=50):
 
@@ -52,14 +60,23 @@ class CanvasCache(QtCore.QObject):
 
         self.figure = Figure(figsize=(10, 10), dpi=dpi)
 
-        self.axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0], alpha=1.0)
-        self.axes.set_frame_on(False)
-        self.axes.set_xticks([])
-        self.axes.set_yticks([])
+        self.obj_axes = {}
+
+        # self.axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0], alpha=1.0)
+        # self.axes.set_frame_on(False)
+        # self.axes.set_xticks([])
+        # self.axes.set_yticks([])
 
         self.canvas = FigureCanvasAgg(self.figure)
 
         self.cache = None
+
+    def new_axes(self):
+        axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0], alpha=1.0)
+        axes.set_frame_on(False)
+        axes.set_xticks([])
+        axes.set_yticks([])
+        return axes
 
     def run(self):
 
@@ -88,13 +105,52 @@ class CanvasCache(QtCore.QObject):
         # Move the requested screen portion to the main thread
         # and inform about the update:
 
-        self.new_screen.emit()
+        self.new_render.emit()
 
         # Continue to update the cache.
 
-    def on_new_object_available(self):
+    def on_new_object_available(self, obj):
 
         log.debug("A new object is available. Should plot it!")
+
+        # Size of the visible plot area in pixels
+        size_px = self.plotcanvas.get_axes_pixelsize()
+
+        # Size of the visible plot area in inches (image size)
+        size_in = self.plotcanvas.figure.bbox_inches
+
+        # Size of the object in user units
+        obj_size = obj.bounds()
+        # xmin, ymin, xmax, ymax = obj_size
+
+        if len(self.app.collection.get_list()) == 0:
+            self.figure.set_size_inches(*size_in)
+            self.obj_axes[obj.id] = self.new_axes()
+            self.obj.plot(self.obj_axes[obj.id])
+            self.set_lims(*obj_size)
+            self.canvas.draw()
+            buf = self.canvas.tostring_rgb()
+            ncols, nrows = self.canvas.get_width_height()
+            img = np.fromstring(buf, dtype=np.uint8).reshape(nrows, ncols, 3)
+            self.new_render.emit(Render(img, obj_size))
+
+    def set_lims(self, xmin, ymin, xmax, ymax):
+        for key, axes in self.obj_axes.iteritems():
+            axes.set_xlim(xmin, xmax)
+            axes.set_ylim(ymin, ymax)
+
+    # def new_canvas(self, figsize, dpi=50):
+    #     figure = Figure(figsize=figsize, dpi=dpi)
+    #
+    #     axes = figure.add_axes([0.0, 0.0, 1.0, 1.0], alpha=1.0)
+    #     axes.set_frame_on(False)
+    #     axes.set_xticks([])
+    #     axes.set_yticks([])
+    #
+    #     canvas = FigureCanvasAgg(figure)
+    #
+    #     return canvas, figure, axes
+
 
 
 class PlotCanvas(QtCore.QObject):
@@ -161,8 +217,8 @@ class PlotCanvas(QtCore.QObject):
         self.cache.moveToThread(self.cache_thread)
         super(PlotCanvas, self).connect(self.cache_thread, QtCore.SIGNAL("started()"), self.cache.run)
         # self.connect()
-        self.cache_thread.start()
-        self.cache.new_screen.connect(self.on_new_screen)
+
+        self.cache.new_render.connect(self.on_new_screen)
 
         # Events
         self.canvas.mpl_connect('button_press_event', self.on_mouse_press)
@@ -182,6 +238,9 @@ class PlotCanvas(QtCore.QObject):
 
         self.pan_axes = []
         self.panning = False
+
+    def start_cache(self):
+        self.cache_thread.start()
 
     def on_new_screen(self):
 
