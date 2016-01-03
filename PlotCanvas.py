@@ -47,11 +47,10 @@ class CanvasCache(QtCore.QObject):
         super(CanvasCache, self).__init__()
 
         self.app = app
-
         self.plotcanvas = plotcanvas
         self.dpi = dpi
 
-        self.figure = Figure(dpi=dpi)
+        self.figure = Figure(figsize=(10, 10), dpi=dpi)
 
         self.axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0], alpha=1.0)
         self.axes.set_frame_on(False)
@@ -68,7 +67,7 @@ class CanvasCache(QtCore.QObject):
 
         self.plotcanvas.update_screen_request.connect(self.on_update_req)
 
-        self.app.new_object_available.connect(self.on_new_object_available)
+        self.app.collection.new_object_available.connect(self.on_new_object_available)
 
     def on_update_req(self, extents):
         """

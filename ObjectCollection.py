@@ -22,6 +22,9 @@ class ObjectCollection(QtCore.QAbstractListModel):
     Object storage and management.
     """
 
+    # Signals
+    new_object_available = QtCore.pyqtSignal(QtCore.QObject)
+
     classdict = {
         "gerber": FlatCAMGerber,
         "excellon": FlatCAMExcellon,
@@ -145,6 +148,9 @@ class ObjectCollection(QtCore.QAbstractListModel):
 
         # Required after appending (Qt MVC)
         self.endInsertRows()
+
+        # Let the world know
+        self.new_object_available.emit(obj)
 
     def get_names(self):
         """

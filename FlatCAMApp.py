@@ -101,7 +101,7 @@ class App(QtCore.QObject):
 
     # Emitted when a new object has been added to the collection
     # and is ready to be used.
-    new_object_available = QtCore.pyqtSignal(object)
+    # new_object_available = QtCore.pyqtSignal(object)
 
     message = QtCore.pyqtSignal(str, str, str)
 
@@ -482,6 +482,7 @@ class App(QtCore.QObject):
         self.ui.shell_btn.triggered.connect(lambda: self.shell.show())
         # Object list
         self.collection.view.activated.connect(self.on_row_activated)
+        # self.collection.new_object_available.connect(...)
         # Options
         self.ui.options_combo.activated.connect(self.on_options_combo_change)
         self.options_form.units_radio.group_toggle_fn = self.on_toggle_units
@@ -1311,11 +1312,15 @@ class App(QtCore.QObject):
         t0 = time.time()  # DEBUG
         self.log.debug("on_object_created()")
 
-        # The Collection might change the name if there is a collision
+        # The Collection might change the name if there is a collision.
+        # It will emit new_object_available signal.
         self.collection.append(obj)
 
         self.inform.emit("Object (%s) created: %s" % (obj.kind, obj.options['name']))
-        self.new_object_available.emit(obj)
+
+        # The collection is emitting this now. Don't do it here any more.
+        # self.new_object_available.emit(obj)
+
         obj.plot()
         self.on_zoom_fit(None)
         t1 = time.time()  # DEBUG
@@ -2438,13 +2443,15 @@ class App(QtCore.QObject):
 
                 def write_gcode_on_object(new_object):
                     self.log.debug("write_gcode_on_object(): Disconnecting %s" % write_gcode_on_object)
-                    self.new_object_available.disconnect(write_gcode_on_object)
+                    # self.new_object_available.disconnect(write_gcode_on_object)
+                    self.collection.new_object_available.disconnect(write_gcode_on_object)
                     write_gcode(obj_name, filename, preamble, postamble)
 
                 # Try again when a new object becomes available.
                 self.log.debug("write_gcode(): Collection has promises. Queued for %s." % obj_name)
                 self.log.debug("write_gcode(): Queued function: %s" % write_gcode_on_object)
-                self.new_object_available.connect(write_gcode_on_object)
+                # self.new_object_available.connect(write_gcode_on_object)
+                self.collection.new_object_available.connect(write_gcode_on_object)
 
                 return
 
