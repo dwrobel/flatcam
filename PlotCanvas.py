@@ -6,6 +6,7 @@
 # MIT Licence                                              #
 ############################################################
 
+from __future__ import division
 from PyQt4 import QtGui, QtCore
 
 # Prevent conflict with Qt5 and above.
@@ -24,9 +25,19 @@ log = logging.getLogger('base')
 
 class Render(QtCore.QObject):
 
-    def __init__(self, bitmap, extents):
+    def __init__(self, bitmap, extent):
+        super(Render, self).__init__()
         self.bitmap = bitmap
-        self.extents = extents
+        self.extent = extent
+
+    def resolution(self):
+        """
+        Pixels per user units in both x and y axes.
+        """
+        wpx, hpx, _ = self.bitmap.shape
+        w = self.extent[2] - self.extent[0]
+        h = self.extent[3] - self.extent[1]
+        return wpx / w, hpx / h
 
 
 class CanvasCache(QtCore.QObject):
@@ -48,7 +59,7 @@ class CanvasCache(QtCore.QObject):
 
     # Signals:
     # A bitmap is ready to be displayed.
-    new_render = QtCore.pyqtSignal()
+    new_render = QtCore.pyqtSignal(object)
 
     def __init__(self, plotcanvas, app, dpi=50):
 
@@ -58,18 +69,13 @@ class CanvasCache(QtCore.QObject):
         self.plotcanvas = plotcanvas
         self.dpi = dpi
 
-        self.figure = Figure(figsize=(10, 10), dpi=dpi)
+        self.figure = Figure(figsize=(10, 10), dpi=dpi, facecolor='white')
 
+        # Each object has its own axes, indexed by the
+        # object's id.
         self.obj_axes = {}
 
-        # self.axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0], alpha=1.0)
-        # self.axes.set_frame_on(False)
-        # self.axes.set_xticks([])
-        # self.axes.set_yticks([])
-
         self.canvas = FigureCanvasAgg(self.figure)
-
-        self.cache = None
 
     def new_axes(self):
         axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0], alpha=1.0)
@@ -105,7 +111,8 @@ class CanvasCache(QtCore.QObject):
         # Move the requested screen portion to the main thread
         # and inform about the update:
 
-        self.new_render.emit()
+        # self.new_render.emit()
+        log.debug("Should emit new_render, but not implemented here.")
 
         # Continue to update the cache.
 
@@ -117,22 +124,35 @@ class CanvasCache(QtCore.QObject):
         size_px = self.plotcanvas.get_axes_pixelsize()
 
         # Size of the visible plot area in inches (image size)
-        size_in = self.plotcanvas.figure.bbox_inches
+        size_in = self.plotcanvas.figure.bbox_inches.size
 
         # Size of the object in user units
-        obj_size = obj.bounds()
+        obj_bounds = obj.bounds()
+        width = obj_bounds[2] - obj_bounds[0]
+        height = obj_bounds[3] - obj_bounds[1]
+        new_bounds = [
+            obj_bounds[0] - 0.1 * width,
+            obj_bounds[1] - 0.1 * height,
+            obj_bounds[2] + 0.1 * width,
+            obj_bounds[3] + 0.1 * height
+        ]
         # xmin, ymin, xmax, ymax = obj_size
 
-        if len(self.app.collection.get_list()) == 0:
+        if len(self.app.collection.get_list()) == 1:
             self.figure.set_size_inches(*size_in)
-            self.obj_axes[obj.id] = self.new_axes()
-            self.obj.plot(self.obj_axes[obj.id])
-            self.set_lims(*obj_size)
+            self.obj_axes[id(obj)] = self.new_axes()
+            obj.plot(self.obj_axes[id(obj)])
+            self.set_lims(*new_bounds)
             self.canvas.draw()
             buf = self.canvas.tostring_rgb()
             ncols, nrows = self.canvas.get_width_height()
             img = np.fromstring(buf, dtype=np.uint8).reshape(nrows, ncols, 3)
-            self.new_render.emit(Render(img, obj_size))
+
+            log.debug("Canvas rendered. Emiting signal.")
+
+            render = Render(img, new_bounds)
+            render.moveToThread(QtGui.QApplication.instance().thread())
+            self.new_render.emit(render)
 
     def set_lims(self, xmin, ymin, xmax, ymax):
         for key, axes in self.obj_axes.iteritems():
@@ -150,7 +170,6 @@ class CanvasCache(QtCore.QObject):
     #     canvas = FigureCanvasAgg(figure)
     #
     #     return canvas, figure, axes
-
 
 
 class PlotCanvas(QtCore.QObject):
@@ -218,7 +237,7 @@ class PlotCanvas(QtCore.QObject):
         super(PlotCanvas, self).connect(self.cache_thread, QtCore.SIGNAL("started()"), self.cache.run)
         # self.connect()
 
-        self.cache.new_render.connect(self.on_new_screen)
+        self.cache.new_render.connect(self.on_new_render)
 
         # Events
         self.canvas.mpl_connect('button_press_event', self.on_mouse_press)
@@ -242,8 +261,14 @@ class PlotCanvas(QtCore.QObject):
     def start_cache(self):
         self.cache_thread.start()
 
-    def on_new_screen(self):
-
+    def on_new_render(self, render):
+        extent = (render.extent[0], render.extent[2],
+                  render.extent[1], render.extent[3])
+        self.axes.imshow(render.bitmap, extent=extent)
+        self.axes.set_xlim(render.extent[0], render.extent[2])
+        self.axes.set_ylim(render.extent[1], render.extent[3])
+        self.canvas.draw_idle()
+        print render.extent
         log.debug("Cache updated the screen!")
 
     def on_key_down(self, event):
