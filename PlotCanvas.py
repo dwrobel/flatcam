@@ -23,7 +23,43 @@ import numpy as np
 log = logging.getLogger('base')
 
 
+class RenderCache:
+    """
+    Contains a series of bitmaps, each for a different
+    zoom level, but all centered around the same coordinates.
+    """
+
+    def __init__(self, min_zoom_cache=3, max_zoom_cache=6):
+
+        # Minimum number of zoom levels to store in cache
+        # in each direction.
+        self.min_zoom_cache = min_zoom_cache
+
+        # Maximum number of zoom levels to store in cache in
+        # any direction. If exceeded, the farthest zoom level
+        # cache in the opposite direction is deleted.
+        self.max_zoom_cache = max_zoom_cache
+
+        # Minimum length in either axis that has to remain in
+        # cache outside the visible plot before regenerating
+        # the cache. Units is fraction of the visible area.
+        self.cache_margin = 1.0
+
+        self.current_pane = None
+        self.panes = []
+
+    def on_zoom(self, factor, center):
+        pass
+
+    def on_pan(self, factor, center):
+        pass
+
+
 class Render(QtCore.QObject):
+    """
+    Contains one bitmap and the extent of the image
+    in user units.
+    """
 
     def __init__(self, bitmap, extent):
         super(Render, self).__init__()
@@ -40,7 +76,7 @@ class Render(QtCore.QObject):
         return wpx / w, hpx / h
 
 
-class CanvasCache(QtCore.QObject):
+class Renderer(QtCore.QObject):
     """
 
     Case story #1:
@@ -63,13 +99,16 @@ class CanvasCache(QtCore.QObject):
 
     def __init__(self, plotcanvas, app, dpi=50):
 
-        super(CanvasCache, self).__init__()
+        super(Renderer, self).__init__()
 
         self.app = app
         self.plotcanvas = plotcanvas
         self.dpi = dpi
 
-        self.figure = Figure(figsize=(10, 10), dpi=dpi, facecolor='white')
+        self.figure = Figure(figsize=(10, 10),
+                             dpi=dpi,
+                             facecolor='white',
+                             frameon=False)
 
         # Each object has its own axes, indexed by the
         # object's id.
@@ -78,10 +117,23 @@ class CanvasCache(QtCore.QObject):
         self.canvas = FigureCanvasAgg(self.figure)
 
     def new_axes(self):
-        axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0], alpha=1.0)
-        axes.set_frame_on(False)
-        axes.set_xticks([])
-        axes.set_yticks([])
+        axes = self.figure.add_axes([0.0, 0.0, 1.0, 1.0],
+                                    # alpha=1.0,
+                                    # frameon=False,
+                                    # visible=False,
+                                    # axis_bgcolor='white',
+                                    # frame_on=False,
+                                    # xticks=[],
+                                    # yticks=[],
+                                    # axisbelow=True
+                                    )
+        # axes.set_aspect(1)
+        # axes.patch.set_visible(False)
+        # axes.set_frame_on(False)
+        # axes.set_xticks([])
+        # axes.set_yticks([])
+        axes.axis('off')
+
         return axes
 
     def run(self):
@@ -128,6 +180,8 @@ class CanvasCache(QtCore.QObject):
 
         # Size of the object in user units
         obj_bounds = obj.bounds()
+
+        # Add 10% margin
         width = obj_bounds[2] - obj_bounds[0]
         height = obj_bounds[3] - obj_bounds[1]
         new_bounds = [
@@ -136,14 +190,17 @@ class CanvasCache(QtCore.QObject):
             obj_bounds[2] + 0.1 * width,
             obj_bounds[3] + 0.1 * height
         ]
-        # xmin, ymin, xmax, ymax = obj_size
 
         if len(self.app.collection.get_list()) == 1:
+
+            # Plot
             self.figure.set_size_inches(*size_in)
             self.obj_axes[id(obj)] = self.new_axes()
             obj.plot(self.obj_axes[id(obj)])
             self.set_lims(*new_bounds)
             self.canvas.draw()
+
+            # Rasterize
             buf = self.canvas.tostring_rgb()
             ncols, nrows = self.canvas.get_width_height()
             img = np.fromstring(buf, dtype=np.uint8).reshape(nrows, ncols, 3)
@@ -181,6 +238,9 @@ class PlotCanvas(QtCore.QObject):
     # Request for new bitmap to display. The parameter
     # is a list with [xmin, xmax, ymin, ymax, zoom(optional)]
     update_screen_request = QtCore.pyqtSignal(list)
+
+    zoom_change = QtCore.pyqtSignal(float, float)
+    pan_change = QtCore.pyqtSignal(float, float, float, float)
 
     def __init__(self, container, app):
         """
@@ -230,14 +290,19 @@ class PlotCanvas(QtCore.QObject):
         # Update every time the canvas is re-drawn.
         self.background = self.canvas.copy_from_bbox(self.axes.bbox)
 
-        ### Bitmap Cache
-        self.cache = CanvasCache(self, self.app)
-        self.cache_thread = QtCore.QThread()
-        self.cache.moveToThread(self.cache_thread)
-        super(PlotCanvas, self).connect(self.cache_thread, QtCore.SIGNAL("started()"), self.cache.run)
+        ### Renderer
+        self.renderer = Renderer(self, self.app)
+        self.renderer_thread = QtCore.QThread()
+        self.renderer.moveToThread(self.renderer_thread)
+        super(PlotCanvas, self).connect(self.renderer_thread, QtCore.SIGNAL("started()"), self.renderer.run)
         # self.connect()
 
-        self.cache.new_render.connect(self.on_new_render)
+        self.renderer.new_render.connect(self.on_new_render)
+
+        ### Cache
+        self.cache = RenderCache()
+        self.zoom_change.connect(self.cache.on_zoom)
+        self.pan_change.connect(self.pan_change)
 
         # Events
         self.canvas.mpl_connect('button_press_event', self.on_mouse_press)
@@ -259,7 +324,7 @@ class PlotCanvas(QtCore.QObject):
         self.panning = False
 
     def start_cache(self):
-        self.cache_thread.start()
+        self.renderer_thread.start()
 
     def on_new_render(self, render):
         extent = (render.extent[0], render.extent[2],
@@ -400,9 +465,6 @@ class PlotCanvas(QtCore.QObject):
         # Sync re-draw to proper paint on form resize
         self.canvas.draw()
 
-        ##### Temporary place-holder for cached update #####
-        self.update_screen_request.emit([0, 0, 0, 0, 0])
-
     def auto_adjust_axes(self, *args):
         """
         Calls ``adjust_axes()`` using the extents of the base axes.
@@ -455,8 +517,9 @@ class PlotCanvas(QtCore.QObject):
         # Async re-draw
         self.canvas.draw_idle()
 
-        ##### Temporary place-holder for cached update #####
-        self.update_screen_request.emit([0, 0, 0, 0, 0])
+        # Signal that the zoom level has changed.
+        # Cache should signal when the new zoom level image is ready.
+        self.zoom_change.emit(factor, center)
 
     def pan(self, x, y):
         xmin, xmax = self.axes.get_xlim()
@@ -464,16 +527,23 @@ class PlotCanvas(QtCore.QObject):
         width = xmax - xmin
         height = ymax - ymin
 
+        # New extents
+        xmin = xmin + x * width
+        xmax = xmax + x * width
+        ymin = ymin + y * height
+        ymax = ymax + y * height
+
         # Adjust axes
         for ax in self.figure.get_axes():
-            ax.set_xlim((xmin + x * width, xmax + x * width))
-            ax.set_ylim((ymin + y * height, ymax + y * height))
+            ax.set_xlim((xmin, xmax))
+            ax.set_ylim((ymin, ymax))
 
         # Re-draw
         self.canvas.draw_idle()
 
-        ##### Temporary place-holder for cached update #####
-        self.update_screen_request.emit([0, 0, 0, 0, 0])
+        # Signal that the extents have changed
+        # Cache should signal if a new bitmap has been computed.
+        self.pan_change.emit(xmin, ymin, xmax, ymax)
 
     def new_axes(self, name):
         """
