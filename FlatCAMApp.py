@@ -540,7 +540,7 @@ class App(QtCore.QObject):
         ### Other threads
         # Starts other threads here to make sure everythong is
         # available to them.
-        self.plotcanvas.start_cache()
+        self.plotcanvas.start()
 
         App.log.debug("END of constructor. Releasing control.")
 
