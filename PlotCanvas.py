@@ -26,13 +26,18 @@ from ObjectCollection import ObjectCollection
 log = logging.getLogger('base')
 
 
-class RenderCache:
+class RenderCache(QtCore.QObject):
     """
     Contains a series of bitmaps, each for a different
     zoom level, but all centered around the same coordinates.
     """
 
+    render_ready = QtCore.pyqtSignal(object)
+
     def __init__(self, plotcanvas, min_zoom_cache=3, max_zoom_cache=6):
+
+        # super(RenderCache, self).__init__()
+        QtCore.QObject.__init__(self)
 
         self.plotcanvas = plotcanvas
 
@@ -58,13 +63,20 @@ class RenderCache:
 
         self.plotcanvas.renderer.new_render.connect(self.insert)
 
+    def reset(self):
+        self.panes = []
+        self.current_pane_index = None
+
+    # def start(self):
+    #     log.debug("RenderCache.start()")
+
     def check(self):
 
         log.debug("RenderCache.check()")
-        log.debug("len(self.panes)=%d"%len(self.panes))
+        log.debug("len(self.panes)=%d" % len(self.panes))
 
         if len(self.panes) == 0:
-            self.plotcanvas.replot_request()
+            self.plotcanvas.replot_request.emit()
 
         else:
             above = len(self.panes) - 1 - self.current_pane_index
@@ -85,8 +97,19 @@ class RenderCache:
             else:
                 log.debug("RenderCache: Cache complete.")
 
-    def on_zoom(self, factor, center):
-        pass
+    def on_zoom(self, direction):
+        if not direction and len(self.panes) > self.current_pane_index + 1:
+            log.debug("RenderCache.on_zoom(true): Render available immediately.")
+            self.current_pane_index += 1
+            self.render_ready.emit(self.panes[self.current_pane_index])
+        elif direction and self.current_pane_index > 0:
+            log.debug("RenderCache.on_zoom(true): Render available immediately.")
+            self.current_pane_index -= 1
+            self.render_ready.emit(self.panes[self.current_pane_index])
+        else:
+            log.debug("RenderCache.on_zoom(): Render available.")
+
+        self.check()
 
     def on_pan(self, factor, center):
         pass
@@ -102,11 +125,20 @@ class RenderCache:
 
         assert isinstance(render, Render)
 
+        log.debug(self)
+
+        log.debug("RenderCache.insert(): Received render " + str(render))
+
         log.debug("RenderCache: Inserting zoom level %d" % render.scale_index)
 
         if len(self.panes) == 0:
             self.panes = [render]
             self.current_pane_index = 0
+
+            # The app is waiting for the render.
+
+            self.render_ready.emit(render)
+            log.debug("RenderCache.insert(): Emitting render_ready(render)")
         else:
             if render.resolution() < self.panes[0].resolution():
                 self.panes.append(render)
@@ -124,7 +156,8 @@ class Render(QtCore.QObject):
     """
 
     def __init__(self, bitmap, extent, scale_index):
-        super(Render, self).__init__()
+        # super(Render, self).__init__()
+        QtCore.QObject.__init__(self)
         self.bitmap = bitmap
         self.extent = extent
         self.scale_index = scale_index
@@ -133,7 +166,7 @@ class Render(QtCore.QObject):
         """
         Pixels per user units in both x and y axes.
         """
-        wpx, hpx, _ = self.bitmap.shape
+        hpx, wpx, _ = self.bitmap.shape
         w = self.extent[2] - self.extent[0]
         h = self.extent[3] - self.extent[1]
         return wpx / w, hpx / h
@@ -162,7 +195,9 @@ class Renderer(QtCore.QObject):
 
     def __init__(self, plotcanvas, app, dpi=50, zoom_ratio=1.5):
 
-        super(Renderer, self).__init__()
+        # super(Renderer, self).__init__()
+        QtCore.QObject.__init__(self)
+
         assert isinstance(plotcanvas, PlotCanvas)
         assert isinstance(app, FlatCAMApp.App)
 
@@ -260,21 +295,27 @@ class Renderer(QtCore.QObject):
             axes.set_ylim(ymin, ymax)
 
     def on_replot_request(self, collection):
-        log.debug("Renderer: on_replot_request()")
+        log.debug("Renderer.on_replot_request()")
 
         assert isinstance(collection, ObjectCollection)
 
         w_px, h_px = self.plotcanvas.get_axes_pixelsize()
+        log.debug("Renderer.on_replot_request(): Visible Canvas size = %.1f %.1f [px]" % (w_px, h_px))
+        log.debug("Renderer.on_replot_request(): Visible Canvas W/H = %.3f " % (w_px / h_px))
+
+        self.figure.clear()  # Alias of clf()
 
         # Canvas width in pixels:
         # Wpx = self.render_size * w_px = self.dpi * Winches
         # Winches = self.render_size * w_px / self.dpi
-        self.figure.set_size_inches(
-            self.render_size * w_px / self.dpi,
-            self.render_size * h_px / self.dpi
-        )
+        w_rfig = self.render_size * w_px / self.dpi
+        h_rfig = self.render_size * h_px / self.dpi
 
-        self.figure.clear()
+        self.figure.set_size_inches(
+            w_rfig,
+            h_rfig
+        )
+        log.debug("Renderer.on_replot_request(): Resizing renderer figure to %.3f %.3f inches" % (w_rfig, h_rfig))
 
         # Plot all objects
         for obj in collection.get_list():
@@ -289,41 +330,60 @@ class Renderer(QtCore.QObject):
 
     def render(self, scale_index=0):
 
-        log.debug("Renderer: Rendering level %d" % scale_index)
+        log.debug("Renderer.render(): Rendering level %d" % scale_index)
 
         # Set limits
-        obj_bounds = self.app.collection.get_bounds()
+        collection_bounds = self.app.collection.get_bounds()
+        log.debug("Renderer.render(): Collection bounds = %.3f %.3f %.3f %.3f [user units]" % tuple(collection_bounds))
 
-        width = (obj_bounds[2] - obj_bounds[0])
-        height = (obj_bounds[3] - obj_bounds[1])
+        collection_width = (collection_bounds[2] - collection_bounds[0])
+        collection_height = (collection_bounds[3] - collection_bounds[1])
+        log.debug("Renderer.render(): Collection size = %.3f %.3f [user units]" % (collection_width, collection_height))
 
-        center_x = obj_bounds[0] + width / 2
-        center_y = obj_bounds[1] + height / 2
+        center_x = collection_bounds[0] + collection_width / 2
+        center_y = collection_bounds[1] + collection_height / 2
 
-        plt_w = (width * 1.1) * self.zoom_ratio ** scale_index
-        plt_h = (height * 1.1) * self.zoom_ratio ** scale_index
-
-        new_bounds = [
-            center_x - plt_w / 2,
-            center_y - plt_h / 2,
-            center_x + plt_w / 2,
-            center_y + plt_h / 2
+        visual_bounds = [
+            center_x - 1.1 * collection_width / 2,
+            center_y - 1.1 * collection_height / 2,
+            center_x + 1.1 * collection_width / 2,
+            center_y + 1.1 * collection_height / 2
         ]
 
-        self.set_lims(*new_bounds)
+        render_bounds = self.plotcanvas.axes_limits_for_box(visual_bounds)
+        render_width = render_bounds[2] - render_bounds[0]
+        render_height = render_bounds[3] - render_bounds[1]
+
+        render_bounds = [
+            center_x - render_width / 2 * self.render_size * self.zoom_ratio ** scale_index,
+            center_y - render_height / 2 * self.render_size * self.zoom_ratio ** scale_index,
+            center_x + render_width / 2 * self.render_size * self.zoom_ratio ** scale_index,
+            center_y + render_height / 2 * self.render_size * self.zoom_ratio ** scale_index
+        ]
+        render_width = render_bounds[2] - render_bounds[0]
+        render_height = render_bounds[3] - render_bounds[1]
+
+        log.debug("Renderer.render(): Render size = %.3f %.3f [user units]" % (render_width, render_height))
+
+        self.set_lims(*render_bounds)
 
         # Draw
         self.canvas.draw()
 
         # Rasterize
-        buf = self.canvas.tostring_rgb()
+        # buf = self.canvas.tostring_rgb()
+        buf = self.canvas.buffer_rgba()
         ncols, nrows = self.canvas.get_width_height()
-        img = np.fromstring(buf, dtype=np.uint8).reshape(nrows, ncols, 3)
+        img = np.fromstring(buf, dtype=np.uint8).reshape(nrows, ncols, 4)
 
-        log.debug("Canvas rendered. Emiting signal.")
+        render = Render(img, render_bounds, scale_index)
 
-        render = Render(img, new_bounds, scale_index)
+        log.debug("Renderer.render(): Render Shape [px] = " + str(img.shape))
+        log.debug("Renderer.render(): Resolution = %.3f %.3f" % render.resolution())
+
         render.moveToThread(QtGui.QApplication.instance().thread())
+
+        log.debug("Renderer.render(): Canvas rendered. Emiting signal. Renderer.new_render(render)")
         self.new_render.emit(render)
 
 
@@ -335,8 +395,8 @@ class PlotCanvas(QtCore.QObject):
     # Signals:
     render_request = QtCore.pyqtSignal(int)
     replot_request = QtCore.pyqtSignal(object)
-    zoom_change = QtCore.pyqtSignal(float, list)
-    pan_change = QtCore.pyqtSignal(float, float, float, float)
+    zoom_change = QtCore.pyqtSignal(bool)
+    # pan_change = QtCore.pyqtSignal(float, float, float, float)
 
     def __init__(self, container, app):
         """
@@ -350,7 +410,8 @@ class PlotCanvas(QtCore.QObject):
 
         # assert isinstance(app, FlatCAMApp.App)
 
-        super(PlotCanvas, self).__init__()
+        # super(PlotCanvas, self).__init__()
+        QtCore.QObject.__init__(self)
 
         self.app = app
 
@@ -367,7 +428,9 @@ class PlotCanvas(QtCore.QObject):
 
         # These axes show the ticks and grid. No plotting done here.
         # New axes must have a label, otherwise mpl returns an existing one.
-        self.axes = self.figure.add_axes([0.05, 0.05, 0.9, 0.9], label="base", alpha=0.0)
+        self.figure.set_snap(True)  # Snap vertices to the nearest pixel center.
+        self.axes = self.figure.add_axes([0.05, 0.05, 0.9, 0.9],
+                                         label="base", alpha=0.0)
         self.axes.set_aspect(1)
         self.axes.grid(True)
 
@@ -399,8 +462,10 @@ class PlotCanvas(QtCore.QObject):
 
         ### Cache
         self.cache = RenderCache(self)
+        log.debug("PlotCanvas.__init__(): [1] self.cache is " + str(self.cache))
+        log.debug(self)
         self.zoom_change.connect(self.cache.on_zoom)
-        self.pan_change.connect(self.cache.on_pan)
+        # self.pan_change.connect(self.cache.on_pan)
 
         # Events
         self.canvas.mpl_connect('button_press_event', self.on_mouse_press)
@@ -421,12 +486,27 @@ class PlotCanvas(QtCore.QObject):
         self.pan_axes = []
         self.panning = False
 
+        # self.cache.start()
+        log.debug("PlotCanvas: Connecting self.cache.render_ready to self.on_new_render()")
+        self.cache.render_ready.connect(self.on_new_render)
+        log.debug("PlotCanvas.__init__(): [1] self.cache is " + str(self.cache))
+        log.debug(self)
+
     def on_new_object(self, obj):
         log.debug("PlotCanvas: on_new_object(), resetting cache.")
         # self.replot_request.emit(self.app.collection)
+        self.auto_adjust_axes()
+
         self.reset_cache()
 
+        log.debug("PlotCanvas.one_new_object(): [3] self.cache is " + str(self.cache))
+        log.debug(self)
+
     def start(self):
+        log.debug("PlotCanvas.start()")
+        log.debug("PlotCanvas.start(): [2] self.cache is " + str(self.cache))
+        log.debug(self)
+
         self.app.collection.new_object_available.connect(self.on_new_object)
         self.renderer_thread.start()
 
@@ -437,26 +517,29 @@ class PlotCanvas(QtCore.QObject):
         w = render.extent[2] - render.extent[0]
         h = render.extent[3] - render.extent[1]
 
-        log.debug("on_new_render(): extent = " + str(extent))
+        s = self.renderer.render_size
 
-        if len(self.cache.panes) == 0:
-            self.axes.imshow(render.bitmap, extent=extent)
-            self.axes.set_xlim(
-                render.extent[0] + w * (self.renderer.render_size - 1) / 2,
-                render.extent[2] - w * (self.renderer.render_size - 1) / 2
-            )
-            self.axes.set_ylim(
-                render.extent[1] + h * (self.renderer.render_size - 1) / 2,
-                render.extent[3] - h * (self.renderer.render_size - 1) / 2
-            )
-            self.canvas.draw_idle()
-            print render.extent
-            log.debug("First render!")
-        else:
-            log.debug("There is a pane present already. NOT IMPLEMENTED")
+        log.debug("PlotCanvas.on_new_render(): extent = %.3f %.3f %.3f %.3f" % extent)
+        log.debug("PlotCanvas.on_new_render(): scale_index = %.3f" % render.scale_index)
+        log.debug("PlotCanvas.on_new_render(): shape = " + str(render.bitmap.shape))
+        log.debug("PlotCanvas.on_new_render(): resolution = %.3f %.3f" % render.resolution())
+        log.debug("PlotCanvas.on_new_render(): Screen resolution = %.3f %.3f" % self.get_resolution())
+
+        # self.axes.cla()
+        self.axes.imshow(render.bitmap, extent=extent, interpolation="nearest")
+
+        # self.axes.set_xlim(
+        #     render.extent[0] + w * (s - 1) / 2,
+        #     render.extent[2] - w * (s - 1) / 2
+        # )
+        # self.axes.set_ylim(
+        #     render.extent[1] + h * (s - 1) / 2,
+        #     render.extent[3] - h * (s - 1) / 2
+        # )
+        self.canvas.draw_idle()
 
     def reset_cache(self):
-        self.cache = RenderCache(self)
+        self.cache.reset()
         self.replot_request.emit(self.app.collection)
 
     def on_key_down(self, event):
@@ -530,6 +613,26 @@ class PlotCanvas(QtCore.QObject):
 
         # Re-draw
         self.canvas.draw_idle()
+
+    def axes_limits_for_box(self, box):
+
+        x0, y0, x1, y1 = box
+        w = x1 - x0
+        h = y1 - y0
+        r = w / h
+        xcenter = (x0 + x1) / 2
+        ycenter = (y0 + y1) / 2
+
+        ax0, ax1 = self.axes.get_xlim()
+        ay0, ay1 = self.axes.get_ylim()
+        aw = ax1 - ax0
+        ah = ay1 - ay0
+        ar = aw / ah
+
+        if r > ar:
+            return x0, ycenter - ah / 2, x1, ycenter + ah / 2
+        else:
+            return xcenter - aw / 2, y0, xcenter + aw / 2, y1
 
     def adjust_axes(self, xmin, ymin, xmax, ymax):
         """
@@ -632,17 +735,20 @@ class PlotCanvas(QtCore.QObject):
         ymin = center[1] - new_height * (1 - rely)
         ymax = center[1] + new_height * rely
 
+        self.axes.cla()
+        self.axes.grid()
+
         # Adjust axes
         for ax in self.figure.get_axes():
             ax.set_xlim((xmin, xmax))
             ax.set_ylim((ymin, ymax))
 
         # Async re-draw
-        self.canvas.draw_idle()
+        # self.canvas.draw_idle()
 
         # Signal that the zoom level has changed.
         # Cache should signal when the new zoom level image is ready.
-        self.zoom_change.emit(factor, center)
+        self.zoom_change.emit(factor > 1)
 
     def pan(self, x, y):
         xmin, xmax = self.axes.get_xlim()
@@ -779,10 +885,9 @@ class PlotCanvas(QtCore.QObject):
         height *= self.figure.dpi
         return width, height
 
-    def get_density(self):
+    def get_resolution(self):
         """
-        Returns unit length per pixel on horizontal
-        and vertical axes.
+        Returns pixels per unit length.
 
         :return: X and Y density
         :rtype: tuple
@@ -794,4 +899,4 @@ class PlotCanvas(QtCore.QObject):
         width = xmax - xmin
         height = ymax - ymin
 
-        return width / xpx, height / ypx
+        return xpx / width, ypx / height
