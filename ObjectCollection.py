@@ -25,6 +25,8 @@ class ObjectCollection(QtCore.QAbstractListModel):
     # Signals
     new_object_available = QtCore.pyqtSignal(QtCore.QObject)
 
+    object_deleted = QtCore.pyqtSignal(object)
+
     classdict = {
         "gerber": FlatCAMGerber,
         "excellon": FlatCAMExcellon,
@@ -209,6 +211,11 @@ class ObjectCollection(QtCore.QAbstractListModel):
         return None
 
     def delete_active(self):
+        """
+        Deletes the selected object. Emits `object_deleted`.
+
+        :return: None
+        """
         selections = self.view.selectedIndexes()
         if len(selections) == 0:
             return
@@ -216,9 +223,12 @@ class ObjectCollection(QtCore.QAbstractListModel):
 
         self.beginRemoveRows(QtCore.QModelIndex(), row, row)
 
-        self.object_list.pop(row)
+        # Remove from list, get reference just for signal.
+        obj = self.object_list.pop(row)
 
         self.endRemoveRows()
+
+        self.object_deleted.emit(obj)
 
     def get_active(self):
         """
@@ -283,4 +293,7 @@ class ObjectCollection(QtCore.QAbstractListModel):
 
     def get_list(self):
         return self.object_list
+
+    def count(self):
+        return len(self.object_list)
 

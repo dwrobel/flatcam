@@ -71,12 +71,19 @@ class RenderCache(QtCore.QObject):
     #     log.debug("RenderCache.start()")
 
     def check(self):
+        """
+        Check cache contents for margin.
+        """
 
         log.debug("RenderCache.check()")
         log.debug("len(self.panes)=%d" % len(self.panes))
 
+        if self.plotcanvas.app.collection.count() == 0:  # TODO: Ugly referencing.
+            log.debug("RenderCache.check(): Collection is empty. Quitting.")
+            return
+
         if len(self.panes) == 0:
-            self.plotcanvas.replot_request.emit()
+            self.plotcanvas.replot_request.emit(0)
 
         else:
             above = len(self.panes) - 1 - self.current_pane_index
@@ -98,6 +105,10 @@ class RenderCache(QtCore.QObject):
                 log.debug("RenderCache: Cache complete.")
 
     def on_zoom(self, direction):
+        """
+        Callback for zoom event from PlotCanvas.
+        """
+
         if not direction and len(self.panes) > self.current_pane_index + 1:
             log.debug("RenderCache.on_zoom(true): Render available immediately.")
             self.current_pane_index += 1
@@ -192,6 +203,8 @@ class Renderer(QtCore.QObject):
     # Signals:
     # A bitmap is ready to be displayed.
     new_render = QtCore.pyqtSignal(object)
+
+    renderer_cleared = QtCore.pyqtSignal()
 
     def __init__(self, plotcanvas, app, dpi=50, zoom_ratio=1.5):
 
@@ -386,6 +399,20 @@ class Renderer(QtCore.QObject):
         log.debug("Renderer.render(): Canvas rendered. Emiting signal. Renderer.new_render(render)")
         self.new_render.emit(render)
 
+    def on_object_deleted(self, obj):
+        try:
+            a = self.obj_axes[id(obj)]
+            self.figure.delaxes(a)
+            del a
+        except IndexError:
+            log.debug("ERROR: Axes not present in Renderer.")
+
+    def clear(self):
+        self.figure.clear()
+        self.obj_axes = []
+        self.canvas.draw()
+        self.renderer_cleared.emit()
+
 
 class PlotCanvas(QtCore.QObject):
     """
@@ -480,17 +507,16 @@ class PlotCanvas(QtCore.QObject):
         self.canvas.mpl_connect('key_release_event', self.on_key_up)
         self.canvas.mpl_connect('draw_event', self.on_draw)
 
+        self.cache.render_ready.connect(self.on_new_render)
+
         self.mouse = [0, 0]
         self.key = None
 
         self.pan_axes = []
         self.panning = False
 
-        # self.cache.start()
-        log.debug("PlotCanvas: Connecting self.cache.render_ready to self.on_new_render()")
-        self.cache.render_ready.connect(self.on_new_render)
-        log.debug("PlotCanvas.__init__(): [1] self.cache is " + str(self.cache))
-        log.debug(self)
+    def on_object_deleted(self):
+        self.reset_cache()  # TODO: This will request a re-plot (unnecessary)
 
     def on_new_object(self, obj):
         log.debug("PlotCanvas: on_new_object(), resetting cache.")
@@ -508,6 +534,7 @@ class PlotCanvas(QtCore.QObject):
         log.debug(self)
 
         self.app.collection.new_object_available.connect(self.on_new_object)
+        self.app.collection.object_deleted.connect(self.on_object_deleted)
         self.renderer_thread.start()
 
     def on_new_render(self, render):
@@ -539,7 +566,10 @@ class PlotCanvas(QtCore.QObject):
         self.canvas.draw_idle()
 
     def reset_cache(self):
+        log.debug("PlotCanvas.reset_cache(): Resetting cache and clearing.")
         self.cache.reset()
+        self.clear()
+        self.auto_adjust_axes()
         self.replot_request.emit(self.app.collection)
 
     def on_key_down(self, event):

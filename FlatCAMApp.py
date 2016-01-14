@@ -1252,9 +1252,8 @@ class App(QtCore.QObject):
         self.log.debug("on_delete()")
         self.report_usage("on_delete")
 
-        while (self.collection.get_active()):
+        while self.collection.get_active():
             self.delete_first_selected()
- 
 
     def delete_first_selected(self):
         # Keep this for later
@@ -1265,8 +1264,8 @@ class App(QtCore.QObject):
             return
 
         # Remove plot
-        self.plotcanvas.figure.delaxes(self.collection.get_active().axes)
-        self.plotcanvas.auto_adjust_axes()
+        # self.plotcanvas.figure.delaxes(self.collection.get_active().axes)
+        # self.plotcanvas.auto_adjust_axes()
 
         # Clear form
         self.setup_component_editor()
