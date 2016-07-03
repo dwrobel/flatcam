@@ -789,28 +789,31 @@ class App(QtCore.QObject):
 
     def exec_command_test(self, text, reraise=True):
         """
+        Same as exec_command(...) with additional control over  exceptions.
         Handles input from the shell. See FlatCAMApp.setup_shell for shell commands.
 
         :param text: Input command
-        :param reraise: raise exception and not hide it, used mainly in unittests
-        :return: output if there was any
+        :param reraise: Re-raise TclError exceptions in Python (mostly for unitttests).
+        :return: Output from the command
         """
 
         text = str(text)
 
         try:
-            self.shell.open_proccessing()
+            self.shell.open_proccessing()  # Disables input box.
             result = self.tcl.eval(str(text))
             if result != 'None':
                 self.shell.append_output(result + '\n')
+
         except Tkinter.TclError, e:
-            #this will display more precise answer if something in  TCL shell fail
+            # This will display more precise answer if something in TCL shell fails
             result = self.tcl.eval("set errorInfo")
             self.log.error("Exec command Exception: %s" % (result + '\n'))
             self.shell.append_error('ERROR: ' + result + '\n')
-            #show error in console and just return or in test raise exception
+            # Show error in console and just return or in test raise exception
             if reraise:
                 raise e
+
         finally:
             self.shell.close_proccessing()
             pass

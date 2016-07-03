@@ -25,6 +25,7 @@ class FlatCAMObj(QtCore.QObject):
 
     def __init__(self, name):
         """
+        Constructor.
 
         :param name: Name of the object given by the user.
         :return: FlatCAMObj
@@ -57,6 +58,9 @@ class FlatCAMObj(QtCore.QObject):
         ``self.options`` is only updated, not overwritten. This ensures that
         options set by the app do not vanish when reading the objects
         from a project file.
+
+        :param d: Dictionary with attributes to set.
+        :return: None
         """
 
         for attr in self.ser_attrs:
