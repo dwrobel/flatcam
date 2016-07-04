@@ -63,8 +63,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     ## Version
-    version = 8.4
-    version_date = "2015/10"
+    version = 8.5
+    version_date = "2016/7"
 
     ## URL for update checks and statistics
     version_url = "http://flatcam.org/version"
@@ -129,6 +129,7 @@ class App(QtCore.QObject):
         ### OS-specific ###
         ###################
 
+        # Folder for user settings.
         if sys.platform == 'win32':
             from win32com.shell import shell, shellcon
             App.log.debug("Win32!")
@@ -168,8 +169,11 @@ class App(QtCore.QObject):
 
         # Application directory. Chdir to it. Otherwise, trying to load
         # GUI icons will fail as thir path is relative.
-        # This will fail under cx_freeze ...
-        self.app_home = os.path.dirname(os.path.realpath(__file__))
+        if hasattr(sys, "frozen"):
+            # For cx_freeze and sililar.
+            self.app_home = os.path.dirname(sys.executable)
+        else:
+            self.app_home = os.path.dirname(os.path.realpath(__file__))
         App.log.debug("Application path is " + self.app_home)
         App.log.debug("Started in " + os.getcwd())
         os.chdir(self.app_home)
