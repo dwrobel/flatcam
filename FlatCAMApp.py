@@ -1,4 +1,5 @@
-import sys, traceback
+import sys
+import traceback
 import urllib
 import getopt
 import random
@@ -16,6 +17,7 @@ from contextlib import contextmanager
 ########################################
 ##      Imports part of FlatCAM       ##
 ########################################
+import FlatCAMVersion
 from FlatCAMWorker import Worker
 from ObjectCollection import *
 from FlatCAMObj import *
@@ -64,7 +66,9 @@ class App(QtCore.QObject):
 
     ## Version
     version = 8.5
-    version_date = "2016/7"
+    #version_date_str = "2016/7"
+    version_date = (0, 0, 0)
+    version_name = None
 
     ## URL for update checks and statistics
     version_url = "http://flatcam.org/version"
@@ -115,6 +119,13 @@ class App(QtCore.QObject):
     # in the worker task.
     thread_exception = QtCore.pyqtSignal(object)
 
+    @property
+    def version_date_str(self):
+        return "{:4d}/{:02d}".format(
+            self.version_date[0],
+            self.version_date[1]
+        )
+
     def __init__(self, user_defaults=True, post_gui=None):
         """
         Starts the application.
@@ -122,6 +133,8 @@ class App(QtCore.QObject):
         :return: app
         :rtype: App
         """
+
+        FlatCAMVersion.setup(self)
 
         App.log.info("FlatCAM Starting...")
 
@@ -184,7 +197,7 @@ class App(QtCore.QObject):
 
         QtCore.QObject.__init__(self)
 
-        self.ui = FlatCAMGUI(self.version)
+        self.ui = FlatCAMGUI(self.version, name=self.version_name)
         self.connect(self.ui,
                      QtCore.SIGNAL("geomUpdate(int, int, int, int)"),
                      self.save_geometry)
@@ -549,7 +562,11 @@ class App(QtCore.QObject):
         self.shell.setWindowIcon(self.ui.app_icon)
         self.shell.setWindowTitle("FlatCAM Shell")
         self.shell.resize(*self.defaults["shell_shape"])
-        self.shell.append_output("FlatCAM %s\n(c) 2014-2015 Juan Pablo Caram\n\n" % self.version)
+        self.shell.append_output("FlatCAM {}".format(self.version))
+        if self.version_name:
+            self.shell.append_output(" - {}".format(self.version_name))
+        self.shell.append_output("\n(c) 2014-{} Juan Pablo Caram\n\n".format(
+            self.version_date[0]))
         self.shell.append_output("Type help to get started.\n\n")
 
         self.init_tcl()
@@ -583,7 +600,7 @@ class App(QtCore.QObject):
         App.log.debug("END of constructor. Releasing control.")
 
     def init_tcl(self):
-        if hasattr(self,'tcl'):
+        if hasattr(self, 'tcl'):
             # self.tcl = None
             # TODO  we need  to clean  non default variables and procedures here
             # new object cannot be used here as it  will not remember values created for next passes,
@@ -1063,7 +1080,8 @@ class App(QtCore.QObject):
         self.report_usage("on_about")
 
         version = self.version
-        version_date = self.version_date
+        version_date_str = self.version_date_str
+        version_year = self.version_date[0]
 
         class AboutDialog(QtGui.QDialog):
             def __init__(self, parent=None):
@@ -1085,12 +1103,16 @@ class App(QtCore.QObject):
 
                 title = QtGui.QLabel(
                     "<font size=8><B>FlatCAM</B></font><BR>"
-                    "Version %s (%s)<BR>"
+                    "Version {} ({})<BR>"
                     "<BR>"
                     "2D Computer-Aided Printed Circuit Board<BR>"
                     "Manufacturing.<BR>"
                     "<BR>"
-                    "(c) 2014-2015 Juan Pablo Caram" % (version, version_date)
+                    "(c) 2014-{} Juan Pablo Caram".format(
+                        version,
+                        version_date_str,
+                        version_year
+                    )
                 )
                 layout2.addWidget(title, stretch=1)
 
