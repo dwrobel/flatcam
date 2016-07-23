@@ -43,6 +43,7 @@ class TclShellTest(unittest.TestCase):
 
         cls.setup = True
         cls.app = QtGui.QApplication(sys.argv)
+
         # Create App, keep app defaults (do not load
         # user-defined defaults).
         cls.fc = App(user_defaults=False)
@@ -54,6 +55,7 @@ class TclShellTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+
         cls.fc.tcl = None
         cls.app.closeAllWindows()
         del cls.fc
@@ -61,46 +63,106 @@ class TclShellTest(unittest.TestCase):
         pass
 
     def test_set_get_units(self):
+        """
+        Tests setting and getting units via the ``set_sys`` command,
+        and persistance after ``new`` command.
 
+        :return: None
+        """
+
+        # MM
         self.fc.exec_command_test('set_sys units MM')
         self.fc.exec_command_test('new')
 
+        # IN
         self.fc.exec_command_test('set_sys units IN')
         self.fc.exec_command_test('new')
-        units=self.fc.exec_command_test('get_sys units')
+
+        #----------------------------------------
+        # Units must be IN
+        #----------------------------------------
+        units = self.fc.exec_command_test('get_sys units')
         self.assertEquals(units, "IN")
 
+        # MM
         self.fc.exec_command_test('set_sys units MM')
         self.fc.exec_command_test('new')
-        units=self.fc.exec_command_test('get_sys units')
+
+        #----------------------------------------
+        # Units must be MM
+        #----------------------------------------
+        units = self.fc.exec_command_test('get_sys units')
         self.assertEquals(units, "MM")
 
     def test_gerber_flow(self):
+        """
+        Typical workflow from Gerber to GCode.
 
-        # open  gerber files top, bottom and cutout
+        :return: None
+        """
 
-        self.fc.exec_command_test('open_gerber %s/%s -outname %s' % (self.gerber_files, self.copper_top_filename, self.gerber_top_name))
+        gbr_cmd = 'open_gerber {path}/{filename} -outname {outname}'
+
+        #-----------------------------------------
+        # Open top layer and check for object type
+        #-----------------------------------------
+        cmd = gbr_cmd.format(
+            path=self.gerber_files,
+            filename=self.copper_top_filename,
+            outname=self.gerber_top_name)
+        self.fc.exec_command_test(cmd)
         gerber_top_obj = self.fc.collection.get_by_name(self.gerber_top_name)
         self.assertTrue(isinstance(gerber_top_obj, FlatCAMGerber),
                         "Expected FlatCAMGerber, instead, %s is %s" %
                         (self.gerber_top_name, type(gerber_top_obj)))
 
-        self.fc.exec_command_test('open_gerber %s/%s -outname %s' % (self.gerber_files, self.copper_bottom_filename, self.gerber_bottom_name))
+        #--------------------------------------------
+        # Open bottom layer and check for object type
+        #--------------------------------------------
+        cmd = gbr_cmd.format(
+            path=self.gerber_files,
+            filename=self.copper_bottom_filename,
+            outname=self.gerber_bottom_name)
+        self.fc.exec_command_test(cmd)
         gerber_bottom_obj = self.fc.collection.get_by_name(self.gerber_bottom_name)
         self.assertTrue(isinstance(gerber_bottom_obj, FlatCAMGerber),
                         "Expected FlatCAMGerber, instead, %s is %s" %
                         (self.gerber_bottom_name, type(gerber_bottom_obj)))
 
-        self.fc.exec_command_test('open_gerber %s/%s -outname %s' % (self.gerber_files, self.cutout_filename, self.gerber_cutout_name))
+        #--------------------------------------------
+        # Open cutout layer and check for object type
+        #--------------------------------------------
+        cmd = gbr_cmd.format(
+            path=self.gerber_files,
+            filename=self.cutout_filename,
+            outname=self.gerber_cutout_name
+        )
+        self.fc.exec_command_test(cmd)
         gerber_cutout_obj = self.fc.collection.get_by_name(self.gerber_cutout_name)
         self.assertTrue(isinstance(gerber_cutout_obj, FlatCAMGerber),
                         "Expected FlatCAMGerber, instead, %s is %s" %
                         (self.gerber_cutout_name, type(gerber_cutout_obj)))
 
         # exteriors delete and join geometries for top layer
-        self.fc.exec_command_test('isolate %s -dia %f' % (self.gerber_cutout_name, self.engraver_diameter))
-        self.fc.exec_command_test('exteriors %s -outname %s' % (self.gerber_cutout_name + '_iso', self.gerber_cutout_name + '_iso_exterior'))
-        self.fc.exec_command_test('delete %s' % (self.gerber_cutout_name + '_iso'))
+        cmd = 'isolate {objname} -dia {dia}'.format(
+            objname=self.gerber_cutout_name,
+            dia=self.engraver_diameter)
+        self.fc.exec_command_test(cmd)
+
+        cmd = 'exteriors {objname} -outname {outname}'.format(
+            objname=self.gerber_cutout_name + '_iso',
+            outname=self.gerber_cutout_name + '_iso_exterior')
+        self.fc.exec_command_test(cmd)
+
+        cmd = 'delete {objname}'.format(
+            objname=self.gerber_cutout_name + '_iso')
+        self.fc.exec_command_test(cmd)
+
+        # TODO: Check deleteb object is gone.
+
+        #--------------------------------------------
+        # Exteriors of cutout layer, check type
+        #--------------------------------------------
         obj = self.fc.collection.get_by_name(self.gerber_cutout_name + '_iso_exterior')
         self.assertTrue(isinstance(obj, FlatCAMGeometry),
                         "Expected FlatCAMGeometry, instead, %s is %s" %

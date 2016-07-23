@@ -1,4 +1,5 @@
-import sys, traceback
+import sys
+import traceback
 import urllib
 import getopt
 import random
@@ -16,6 +17,7 @@ from contextlib import contextmanager
 ########################################
 ##      Imports part of FlatCAM       ##
 ########################################
+import FlatCAMVersion
 from FlatCAMWorker import Worker
 from ObjectCollection import *
 from FlatCAMObj import *
@@ -63,8 +65,10 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     ## Version
-    version = 8.4
-    version_date = "2015/10"
+    version = 8.5
+    #version_date_str = "2016/7"
+    version_date = (0, 0, 0)
+    version_name = None
 
     ## URL for update checks and statistics
     version_url = "http://flatcam.org/version"
@@ -115,6 +119,13 @@ class App(QtCore.QObject):
     # in the worker task.
     thread_exception = QtCore.pyqtSignal(object)
 
+    @property
+    def version_date_str(self):
+        return "{:4d}/{:02d}".format(
+            self.version_date[0],
+            self.version_date[1]
+        )
+
     def __init__(self, user_defaults=True, post_gui=None):
         """
         Starts the application.
@@ -123,12 +134,15 @@ class App(QtCore.QObject):
         :rtype: App
         """
 
+        FlatCAMVersion.setup(self)
+
         App.log.info("FlatCAM Starting...")
 
         ###################
         ### OS-specific ###
         ###################
 
+        # Folder for user settings.
         if sys.platform == 'win32':
             from win32com.shell import shell, shellcon
             App.log.debug("Win32!")
@@ -168,8 +182,11 @@ class App(QtCore.QObject):
 
         # Application directory. Chdir to it. Otherwise, trying to load
         # GUI icons will fail as thir path is relative.
-        # This will fail under cx_freeze ...
-        self.app_home = os.path.dirname(os.path.realpath(__file__))
+        if hasattr(sys, "frozen"):
+            # For cx_freeze and sililar.
+            self.app_home = os.path.dirname(sys.executable)
+        else:
+            self.app_home = os.path.dirname(os.path.realpath(__file__))
         App.log.debug("Application path is " + self.app_home)
         App.log.debug("Started in " + os.getcwd())
         os.chdir(self.app_home)
@@ -180,7 +197,7 @@ class App(QtCore.QObject):
 
         QtCore.QObject.__init__(self)
 
-        self.ui = FlatCAMGUI(self.version)
+        self.ui = FlatCAMGUI(self.version, name=self.version_name)
         self.connect(self.ui,
                      QtCore.SIGNAL("geomUpdate(int, int, int, int)"),
                      self.save_geometry)
@@ -545,7 +562,11 @@ class App(QtCore.QObject):
         self.shell.setWindowIcon(self.ui.app_icon)
         self.shell.setWindowTitle("FlatCAM Shell")
         self.shell.resize(*self.defaults["shell_shape"])
-        self.shell.append_output("FlatCAM %s\n(c) 2014-2015 Juan Pablo Caram\n\n" % self.version)
+        self.shell.append_output("FlatCAM {}".format(self.version))
+        if self.version_name:
+            self.shell.append_output(" - {}".format(self.version_name))
+        self.shell.append_output("\n(c) 2014-{} Juan Pablo Caram\n\n".format(
+            self.version_date[0]))
         self.shell.append_output("Type help to get started.\n\n")
 
         self.init_tcl()
@@ -579,7 +600,7 @@ class App(QtCore.QObject):
         App.log.debug("END of constructor. Releasing control.")
 
     def init_tcl(self):
-        if hasattr(self,'tcl'):
+        if hasattr(self, 'tcl'):
             # self.tcl = None
             # TODO  we need  to clean  non default variables and procedures here
             # new object cannot be used here as it  will not remember values created for next passes,
@@ -789,28 +810,31 @@ class App(QtCore.QObject):
 
     def exec_command_test(self, text, reraise=True):
         """
+        Same as exec_command(...) with additional control over  exceptions.
         Handles input from the shell. See FlatCAMApp.setup_shell for shell commands.
 
         :param text: Input command
-        :param reraise: raise exception and not hide it, used mainly in unittests
-        :return: output if there was any
+        :param reraise: Re-raise TclError exceptions in Python (mostly for unitttests).
+        :return: Output from the command
         """
 
         text = str(text)
 
         try:
-            self.shell.open_proccessing()
+            self.shell.open_proccessing()  # Disables input box.
             result = self.tcl.eval(str(text))
             if result != 'None':
                 self.shell.append_output(result + '\n')
+
         except Tkinter.TclError, e:
-            #this will display more precise answer if something in  TCL shell fail
+            # This will display more precise answer if something in TCL shell fails
             result = self.tcl.eval("set errorInfo")
             self.log.error("Exec command Exception: %s" % (result + '\n'))
             self.shell.append_error('ERROR: ' + result + '\n')
-            #show error in console and just return or in test raise exception
+            # Show error in console and just return or in test raise exception
             if reraise:
                 raise e
+
         finally:
             self.shell.close_proccessing()
             pass
@@ -1056,7 +1080,8 @@ class App(QtCore.QObject):
         self.report_usage("on_about")
 
         version = self.version
-        version_date = self.version_date
+        version_date_str = self.version_date_str
+        version_year = self.version_date[0]
 
         class AboutDialog(QtGui.QDialog):
             def __init__(self, parent=None):
@@ -1078,12 +1103,16 @@ class App(QtCore.QObject):
 
                 title = QtGui.QLabel(
                     "<font size=8><B>FlatCAM</B></font><BR>"
-                    "Version %s (%s)<BR>"
+                    "Version {} ({})<BR>"
                     "<BR>"
                     "2D Computer-Aided Printed Circuit Board<BR>"
                     "Manufacturing.<BR>"
                     "<BR>"
-                    "(c) 2014-2015 Juan Pablo Caram" % (version, version_date)
+                    "(c) 2014-{} Juan Pablo Caram".format(
+                        version,
+                        version_date_str,
+                        version_year
+                    )
                 )
                 layout2.addWidget(title, stretch=1)
 

@@ -7,7 +7,7 @@ class FlatCAMGUI(QtGui.QMainWindow):
     # Emitted when persistent window geometry needs to be retained
     geom_update = QtCore.pyqtSignal(int, int, int, int, name='geomUpdate')
 
-    def __init__(self, version):
+    def __init__(self, version, name=None):
         super(FlatCAMGUI, self).__init__()
 
         # Divine icon pack by Ipapun @ finicons.com
@@ -248,7 +248,10 @@ class FlatCAMGUI(QtGui.QMainWindow):
         self.setWindowIcon(self.app_icon)
 
         self.setGeometry(100, 100, 1024, 650)
-        self.setWindowTitle('FlatCAM %s - Development Version' % version)
+        title = 'FlatCAM {}'.format(version)
+        if name is not None:
+            title += ' - {}'.format(name)
+        self.setWindowTitle(title)
         self.show()
 
     def closeEvent(self, event):
