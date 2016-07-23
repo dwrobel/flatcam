@@ -98,10 +98,10 @@ class FlatCAMGUI(QtGui.QMainWindow):
 
         ### View ###
         self.menuview = self.menu.addMenu('&View')
+        self.menuviewenable = self.menuview.addAction(QtGui.QIcon('share/replot16.png'), 'Enable all plots')
         self.menuviewdisableall = self.menuview.addAction(QtGui.QIcon('share/clear_plot16.png'), 'Disable all plots')
         self.menuviewdisableother = self.menuview.addAction(QtGui.QIcon('share/clear_plot16.png'),
-                                                            'Disable all plots but this one')
-        self.menuviewenable = self.menuview.addAction(QtGui.QIcon('share/replot16.png'), 'Enable all plots')
+                                                            'Disable non-selected')
 
         ### Tool ###
         #self.menutool = self.menu.addMenu('&Tool')

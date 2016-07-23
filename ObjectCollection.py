@@ -214,7 +214,9 @@ class ObjectCollection(QtCore.QAbstractListModel):
 
         self.beginRemoveRows(QtCore.QModelIndex(), row, row)
 
-        self.object_list.pop(row)
+        obj = self.object_list.pop(row)
+        obj.clear(update=True)
+        obj.delete()
 
         self.endRemoveRows()
 
@@ -237,6 +239,19 @@ class ObjectCollection(QtCore.QAbstractListModel):
         :return: List of objects
         """
         return [self.object_list[sel.row()] for sel in self.view.selectedIndexes()]
+
+    def get_non_selected(self):
+        """
+        Returns list of non-selected objects
+
+        :return: List of objects
+        """
+        unsel = []
+        for obj in self.get_list():
+            if obj not in self.get_selected():
+                unsel.append(obj)
+
+        return unsel
 
     def set_active(self, name):
         """
@@ -294,6 +309,10 @@ class ObjectCollection(QtCore.QAbstractListModel):
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.delete_all()")
 
         self.beginResetModel()
+
+        for obj in self.object_list:
+            obj.clear(update=obj == self.object_list[-1])
+            obj.delete()
 
         self.object_list = []
         self.checked_indexes = []

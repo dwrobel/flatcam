@@ -9,6 +9,10 @@ from FlatCAMCommon import LoudDict
 from FlatCAMDraw import FlatCAMDraw
 
 
+# Interrupts plotting process if FlatCAMObj has been deleted
+class ObjectDeleted(Exception):
+    pass
+
 ########################################
 ##            FlatCAMObj              ##
 ########################################
@@ -39,15 +43,25 @@ class FlatCAMObj(QtCore.QObject):
 
         self.form_fields = {}
 
-        self.axes = None  # Matplotlib axes
         self.kind = None  # Override with proper name
 
+        # self.shapes = ShapeCollection(parent=self.app.plotcanvas.vispy_canvas.view.scene)
+        self.shapes = self.app.plotcanvas.new_shape_group()
+
+        self.item = None  # Link with project view item
+
         self.muted_ui = False
+        self.deleted = False
+
+        self._drawing_tolerance = 0.01
 
         # assert isinstance(self.ui, ObjectUI)
         # self.ui.name_entry.returnPressed.connect(self.on_name_activate)
         # self.ui.offset_button.clicked.connect(self.on_offset_button_click)
         # self.ui.scale_button.clicked.connect(self.on_scale_button_click)
+
+    def __del__(self):
+        pass
 
     def from_dict(self, d):
         """
@@ -102,38 +116,6 @@ class FlatCAMObj(QtCore.QObject):
         factor = self.ui.scale_entry.get_value()
         self.scale(factor)
         self.plot()
-
-    def setup_axes(self, figure):
-        """
-        1) Creates axes if they don't exist. 2) Clears axes. 3) Attaches
-        them to figure if not part of the figure. 4) Sets transparent
-        background. 5) Sets 1:1 scale aspect ratio.
-
-        :param figure: A Matplotlib.Figure on which to add/configure axes.
-        :type figure: matplotlib.figure.Figure
-        :return: None
-        :rtype: None
-        """
-
-        if self.axes is None:
-            FlatCAMApp.App.log.debug("setup_axes(): New axes")
-            self.axes = figure.add_axes([0.05, 0.05, 0.9, 0.9],
-                                        label=self.options["name"])
-        elif self.axes not in figure.axes:
-            FlatCAMApp.App.log.debug("setup_axes(): Clearing and attaching axes")
-            self.axes.cla()
-            figure.add_axes(self.axes)
-        else:
-            FlatCAMApp.App.log.debug("setup_axes(): Clearing Axes")
-            self.axes.cla()
-
-        # Remove all decoration. The app's axes will have
-        # the ticks and grid.
-        self.axes.set_frame_on(False)  # No frame
-        self.axes.set_xticks([])  # No tick
-        self.axes.set_yticks([])  # No ticks
-        self.axes.patch.set_visible(False)  # No background
-        self.axes.set_aspect(1)
 
     def to_form(self):
         """
@@ -190,7 +172,6 @@ class FlatCAMObj(QtCore.QObject):
         except:
             self.app.log.debug("Nothing to remove")
         self.app.ui.selected_scroll_area.setWidget(self.ui)
-        self.to_form()
 
         self.muted_ui = False
 
@@ -236,7 +217,6 @@ class FlatCAMObj(QtCore.QObject):
     def plot(self):
         """
         Plot this object (Extend this method to implement the actual plotting).
-        Axes get created, appended to canvas and cleared before plotting.
         Call this in descendants before doing the plotting.
 
         :return: Whether to continue plotting or not depending on the "plot" option.
@@ -244,17 +224,11 @@ class FlatCAMObj(QtCore.QObject):
         """
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMObj.plot()")
 
-        # Axes must exist and be attached to canvas.
-        if self.axes is None or self.axes not in self.app.plotcanvas.figure.axes:
-            self.axes = self.app.plotcanvas.new_axes(self.options['name'])
-
-        if not self.options["plot"]:
-            self.axes.cla()
-            self.app.plotcanvas.auto_adjust_axes()
+        if self.deleted:
             return False
 
-        # Clear axes or we will plot on top of them.
-        self.axes.cla()  # TODO: Thread safe?
+        self.clear()
+
         return True
 
     def serialize(self):
@@ -276,6 +250,51 @@ class FlatCAMObj(QtCore.QObject):
         :return: None
         """
         return
+
+    def add_shape(self, **kwargs):
+        if self.deleted:
+            raise ObjectDeleted()
+        else:
+            self.shapes.add(tolerance=self.drawing_tolerance, **kwargs)
+
+    @property
+    def visible(self):
+        return self.shapes.visible
+
+    @visible.setter
+    def visible(self, value):
+        self.shapes.visible = value
+
+        # Not all object types has annotations
+        try:
+            self.annotation.visible = value
+        except:
+            pass
+
+    @property
+    def drawing_tolerance(self):
+        return self._drawing_tolerance if self.units == 'MM' or not self.units else self._drawing_tolerance / 25.4
+
+    @drawing_tolerance.setter
+    def drawing_tolerance(self, value):
+        self._drawing_tolerance = value if self.units == 'MM' or not self.units else value / 25.4
+
+    def clear(self, update=False):
+        self.shapes.clear(update)
+
+        # Not all object types has annotations
+        try:
+            self.annotation.clear(update)
+        except:
+            pass
+
+    def delete(self):
+        # Free resources
+        del self.ui
+        del self.options
+
+        # Set flag
+        self.deleted = True
 
 
 class FlatCAMGerber(FlatCAMObj, Gerber):
@@ -355,6 +374,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             "bboxmargin": self.ui.bbmargin_entry,
             "bboxrounded": self.ui.bbrounded_cb
         })
+
+        # Fill form fields only on object create
+        self.to_form()
 
         assert isinstance(self.ui, GerberObjectUI)
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
@@ -547,7 +569,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if self.muted_ui:
             return
         self.read_form_item('plot')
-        self.plot()
+        self.visible = self.options['plot']
 
     def on_solid_cb_click(self, *args):
         if self.muted_ui:
@@ -597,33 +619,23 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         except TypeError:
             geometry = [geometry]
 
-        if self.options["multicolored"]:
-            linespec = '-'
-        else:
-            linespec = 'k-'
+        def random_color():
+            color = np.random.rand(4)
+            color[3] = 1
+            return color
 
-        if self.options["solid"]:
-            for poly in geometry:
-                # TODO: Too many things hardcoded.
-                try:
-                    patch = PolygonPatch(poly,
-                                         facecolor="#BBF268",
-                                         edgecolor="#006E20",
-                                         alpha=0.75,
-                                         zorder=2)
-                    self.axes.add_patch(patch)
-                except AssertionError:
-                    FlatCAMApp.App.log.warning("A geometry component was not a polygon:")
-                    FlatCAMApp.App.log.warning(str(poly))
-        else:
-            for poly in geometry:
-                x, y = poly.exterior.xy
-                self.axes.plot(x, y, linespec)
-                for ints in poly.interiors:
-                    x, y = ints.coords.xy
-                    self.axes.plot(x, y, linespec)
-
-        self.app.plotcanvas.auto_adjust_axes()
+        try:
+            if self.options["solid"]:
+                for poly in geometry:
+                    self.add_shape(shape=poly, color='#006E20BF', face_color=random_color()
+                                   if self.options['multicolored'] else '#BBF268BF', visible=self.options['plot'])
+            else:
+                for poly in geometry:
+                    self.add_shape(shape=poly, color=random_color() if self.options['multicolored'] else 'black',
+                                   visible=self.options['plot'])
+            self.shapes.redraw()
+        except ObjectDeleted:
+            self.shapes.clear(update=True)
 
     def serialize(self):
         return {
@@ -791,6 +803,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             "spindlespeed": self.ui.spindlespeed_entry
         })
 
+        # Fill form fields
+        self.to_form()
+
         assert isinstance(self.ui, ExcellonObjectUI), \
             "Expected a ExcellonObjectUI, got %s" % type(self.ui)
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
@@ -927,7 +942,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         if self.muted_ui:
             return
         self.read_form_item('plot')
-        self.plot()
+        self.visible = self.options['plot']
+        # self.plot()
 
     def on_solid_cb_click(self, *args):
         if self.muted_ui:
@@ -954,25 +970,21 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         except TypeError:
             self.solid_geometry = [self.solid_geometry]
 
-        # Plot excellon (All polygons?)
-        if self.options["solid"]:
-            for geo in self.solid_geometry:
-                patch = PolygonPatch(geo,
-                                     facecolor="#C40000",
-                                     edgecolor="#750000",
-                                     alpha=0.75,
-                                     zorder=3)
-                self.axes.add_patch(patch)
-        else:
-            for geo in self.solid_geometry:
-                x, y = geo.exterior.coords.xy
-                self.axes.plot(x, y, 'r-')
-                for ints in geo.interiors:
-                    x, y = ints.coords.xy
-                    self.axes.plot(x, y, 'g-')
+        try:
+            # Plot excellon (All polygons?)
+            if self.options["solid"]:
+                for geo in self.solid_geometry:
+                    self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF', visible=self.options['plot'],
+                                   layer=2)
+            else:
+                for geo in self.solid_geometry:
+                    self.add_shape(shape=geo.exterior, color='red', visible=self.options['plot'])
+                    for ints in geo.interiors:
+                        self.add_shape(shape=ints, color='green', visible=self.options['plot'])
 
-        self.app.plotcanvas.auto_adjust_axes()
-
+            self.shapes.redraw()
+        except ObjectDeleted:
+            self.shapes.clear(udpate=True)
 
 class FlatCAMCNCjob(FlatCAMObj, CNCjob):
     """
@@ -1009,6 +1021,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # from predecessors.
         self.ser_attrs += ['options', 'kind']
 
+        self.annotation = self.app.plotcanvas.new_text_group()
+
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
 
@@ -1025,6 +1039,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             "dwell": self.ui.dwell_cb,
             "dwelltime": self.ui.dwelltime_entry
         })
+
+        # Fill form fields only on object create
+        self.to_form()
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
@@ -1121,7 +1138,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         if self.muted_ui:
             return
         self.read_form_item('plot')
-        self.plot()
+        self.visible = self.options['plot']
 
     def plot(self):
 
@@ -1130,9 +1147,12 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         if not FlatCAMObj.plot(self):
             return
 
-        self.plot2(self.axes, tooldia=self.options["tooldia"])
-
-        self.app.plotcanvas.auto_adjust_axes()
+        try:
+            self.plot2(tooldia=self.options["tooldia"], obj=self, visible=self.options['plot'])
+            self.shapes.redraw()
+        except ObjectDeleted:
+            self.shapes.clear(update=True)
+            self.annotation.clear()
 
     def convert_units(self, units):
         factor = CNCjob.convert_units(self, units)
@@ -1233,6 +1253,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "depthperpass": self.ui.maxdepth_entry
         })
 
+        # Fill form fields only on object create
+        self.to_form()
+
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.generate_paint_button.clicked.connect(self.on_paint_button_click)
@@ -1245,17 +1268,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         tooldia = self.options["painttooldia"]
         overlap = self.options["paintoverlap"]
 
-        # Connection ID for the click event
-        subscription = None
-
         # To be called after clicking on the plot.
         def doit(event):
             self.app.info("Painting polygon...")
-            self.app.plotcanvas.mpl_disconnect(subscription)
-            point = [event.xdata, event.ydata]
-            self.paint_poly(point, tooldia, overlap)
+            self.app.plotcanvas.vis_disconnect('mouse_release', doit)
+            pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+            self.paint_poly([pos[0], pos[1]], tooldia, overlap)
 
-        subscription = self.app.plotcanvas.mpl_connect('button_press_event', doit)
+        self.app.plotcanvas.vis_connect('mouse_release', doit)
 
     def paint_poly(self, inside_pt, tooldia, overlap):
 
@@ -1402,7 +1422,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         if self.muted_ui:
             return
         self.read_form_item('plot')
-        self.plot()
+        self.visible = self.options['plot']
 
     def scale(self, factor):
         """
@@ -1462,26 +1482,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 self.plot_element(sub_el)
 
         except TypeError:  # Element is not iterable...
-
-            if type(element) == Polygon:
-                x, y = element.exterior.coords.xy
-                self.axes.plot(x, y, 'r-')
-                for ints in element.interiors:
-                    x, y = ints.coords.xy
-                    self.axes.plot(x, y, 'r-')
-                return
-
-            if type(element) == LineString or type(element) == LinearRing:
-                x, y = element.coords.xy
-                self.axes.plot(x, y, 'r-')
-                return
-
-            FlatCAMApp.App.log.warning("Did not plot:" + str(type(element)))
+            self.add_shape(shape=element, color='red', visible=self.options['plot'], layer=0)
 
     def plot(self):
         """
-        Plots the object into its axes. If None, of if the axes
-        are not part of the app's figure, it fetches new ones.
+        Adds the object into collection.
 
         :return: None
         """
@@ -1491,42 +1496,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         if not FlatCAMObj.plot(self):
             return
 
-        # Make sure solid_geometry is iterable.
-        # TODO: This method should not modify the object !!!
-        # try:
-        #     _ = iter(self.solid_geometry)
-        # except TypeError:
-        #     if self.solid_geometry is None:
-        #         self.solid_geometry = []
-        #     else:
-        #         self.solid_geometry = [self.solid_geometry]
-        #
-        # for geo in self.solid_geometry:
-        #
-        #     if type(geo) == Polygon:
-        #         x, y = geo.exterior.coords.xy
-        #         self.axes.plot(x, y, 'r-')
-        #         for ints in geo.interiors:
-        #             x, y = ints.coords.xy
-        #             self.axes.plot(x, y, 'r-')
-        #         continue
-        #
-        #     if type(geo) == LineString or type(geo) == LinearRing:
-        #         x, y = geo.coords.xy
-        #         self.axes.plot(x, y, 'r-')
-        #         continue
-        #
-        #     if type(geo) == MultiPolygon:
-        #         for poly in geo:
-        #             x, y = poly.exterior.coords.xy
-        #             self.axes.plot(x, y, 'r-')
-        #             for ints in poly.interiors:
-        #                 x, y = ints.coords.xy
-        #                 self.axes.plot(x, y, 'r-')
-        #         continue
-        #
-        #     FlatCAMApp.App.log.warning("Did not plot:", str(type(geo)))
-
-        self.plot_element(self.solid_geometry)
-
-        self.app.plotcanvas.auto_adjust_axes()
+        try:
+            self.plot_element(self.solid_geometry)
+            self.shapes.redraw()
+        except ObjectDeleted:
+            self.shapes.clear(update=True)

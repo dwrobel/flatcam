@@ -25,8 +25,11 @@ from FlatCAMCommon import LoudDict
 from FlatCAMShell import FCShell
 from FlatCAMDraw import FlatCAMDraw
 from FlatCAMProcess import *
+from FlatCAMWorkerStack import WorkerStack
 from MeasurementTool import Measurement
 from DblSidedTool import DblSidedTool
+from multiprocessing import Pool
+import gc
 import tclCommands
 
 
@@ -42,7 +45,7 @@ class App(QtCore.QObject):
     cmd_line_shellfile = ''
     cmd_line_help = "FlatCam.py --shellfile=<cmd_line_shellfile>"
     try:
-        cmd_line_options, args = getopt.getopt(sys.argv[1:], "h:", "shellfile=")
+        cmd_line_options, args = getopt.getopt(sys.argv[1:], "h:", ["shellfile=", "multiprocessing-fork="])
     except getopt.GetoptError:
         print cmd_line_help
         sys.exit(2)
@@ -100,7 +103,8 @@ class App(QtCore.QObject):
     # Emitted by new_object() and passes the new object as argument.
     # on_object_created() adds the object to the collection,
     # and emits new_object_available.
-    object_created = QtCore.pyqtSignal(object)
+    object_created = QtCore.pyqtSignal(object, bool)
+    object_plotted = QtCore.pyqtSignal(object)
 
     # Emitted when a new object has been added to the collection
     # and is ready to be used.
@@ -110,6 +114,9 @@ class App(QtCore.QObject):
 
     # Emmited when shell command is finished(one command only)
     shell_command_finished = QtCore.pyqtSignal(object)
+
+    # Emitted when multiprocess pool has been recreated
+    pool_recreated = QtCore.pyqtSignal(object)
 
     # Emitted when an unhandled exception happens
     # in the worker task.
@@ -172,7 +179,15 @@ class App(QtCore.QObject):
         self.app_home = os.path.dirname(os.path.realpath(__file__))
         App.log.debug("Application path is " + self.app_home)
         App.log.debug("Started in " + os.getcwd())
+
+        # cx_freeze workaround
+        if os.path.isfile(self.app_home):
+            self.app_home = os.path.dirname(self.app_home)
+
         os.chdir(self.app_home)
+
+        # Create multiprocessing pool
+        self.pool = Pool()
 
         ####################
         ## Initialize GUI ##
@@ -186,11 +201,10 @@ class App(QtCore.QObject):
                      self.save_geometry)
 
         #### Plot Area ####
-        # self.plotcanvas = PlotCanvas(self.ui.splitter)
         self.plotcanvas = PlotCanvas(self.ui.right_layout, self)
-        self.plotcanvas.mpl_connect('button_press_event', self.on_click_over_plot)
-        self.plotcanvas.mpl_connect('motion_notify_event', self.on_mouse_move_over_plot)
-        self.plotcanvas.mpl_connect('key_press_event', self.on_key_over_plot)
+        self.plotcanvas.vis_connect('mouse_move', self.on_mouse_move_over_plot)
+        self.plotcanvas.vis_connect('mouse_release', self.on_click_over_plot)
+        self.plotcanvas.vis_connect('key_press', self.on_key_over_plot)
 
         self.ui.splitter.setStretchFactor(1, 2)
 
@@ -437,27 +451,13 @@ class App(QtCore.QObject):
         self.ui.project_tab_layout.addWidget(self.collection.view)
         #### End of Data ####
 
-        #### Worker ####
-        App.log.info("Starting Worker...")
-        self.worker = Worker(self)
-        self.thr1 = QtCore.QThread()
-        self.worker.moveToThread(self.thr1)
-        self.connect(self.thr1, QtCore.SIGNAL("started()"), self.worker.run)
-        self.thr1.start()
+
+        # Create workers stack
+        self.workers = WorkerStack()
+        self.worker_task.connect(self.workers.add_task)
 
         #### Check for updates ####
-        # Separate thread (Not worker)
-        App.log.info("Checking for updates in backgroud (this is version %s)." % str(self.version))
-
-        self.worker2 = Worker(self, name="worker2")
-        self.thr2 = QtCore.QThread()
-        self.worker2.moveToThread(self.thr2)
-        self.connect(self.thr2, QtCore.SIGNAL("started()"), self.worker2.run)
-        self.connect(self.thr2, QtCore.SIGNAL("started()"),
-                     lambda: self.worker_task.emit({'fcn': self.version_check,
-                                                    'params': [],
-                                                    'worker_name': "worker2"}))
-        self.thr2.start()
+        # self.worker_task.emit({'fcn': self.version_check, 'params': []})
 
         ### Signal handling ###
         ## Custom signals
@@ -465,6 +465,7 @@ class App(QtCore.QObject):
         self.message.connect(self.message_dialog)
         self.progress.connect(self.set_progress_bar)
         self.object_created.connect(self.on_object_created)
+        self.object_plotted.connect(self.on_object_plotted)
         self.plots_updated.connect(self.on_plots_updated)
         self.file_opened.connect(self.register_recent)
         self.file_opened.connect(lambda kind, filename: self.register_folder(filename))
@@ -492,19 +493,19 @@ class App(QtCore.QObject):
         self.ui.menuoptions_transfer_p2a.triggered.connect(self.on_options_project2app)
         self.ui.menuoptions_transfer_o2p.triggered.connect(self.on_options_object2project)
         self.ui.menuoptions_transfer_p2o.triggered.connect(self.on_options_project2object)
-        self.ui.menuviewdisableall.triggered.connect(self.disable_plots)
-        self.ui.menuviewdisableother.triggered.connect(lambda: self.disable_plots(except_current=True))
-        self.ui.menuviewenable.triggered.connect(self.enable_all_plots)
+        self.ui.menuviewdisableall.triggered.connect(lambda: self.disable_plots(self.collection.get_list()))
+        self.ui.menuviewdisableother.triggered.connect(lambda: self.disable_plots(self.collection.get_non_selected()))
+        self.ui.menuviewenable.triggered.connect(lambda: self.enable_plots(self.collection.get_list()))
         self.ui.menutoolshell.triggered.connect(self.on_toggle_shell)
         self.ui.menuhelp_about.triggered.connect(self.on_about)
         self.ui.menuhelp_home.triggered.connect(lambda: webbrowser.open(self.app_url))
         self.ui.menuhelp_manual.triggered.connect(lambda: webbrowser.open(self.manual_url))
         # Toolbar
         self.ui.zoom_fit_btn.triggered.connect(self.on_zoom_fit)
-        self.ui.zoom_in_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
-        self.ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
-        self.ui.clear_plot_btn.triggered.connect(self.plotcanvas.clear)
-        self.ui.replot_btn.triggered.connect(self.on_toolbar_replot)
+        self.ui.zoom_in_btn.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
+        self.ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
+        self.ui.clear_plot_btn.triggered.connect(self.clear_plots)
+        self.ui.replot_btn.triggered.connect(self.plot_all)
         self.ui.newgeo_btn.triggered.connect(lambda: self.new_object('geometry', 'New Geometry', lambda x, y: None))
         self.ui.editgeo_btn.triggered.connect(self.edit_geometry)
         self.ui.updategeo_btn.triggered.connect(self.editor2geometry)
@@ -611,28 +612,27 @@ class App(QtCore.QObject):
             # TODO: Rethink this?
             pass
 
-    def disable_plots(self, except_current=False):
-        """
-        Disables all plots with exception of the current object if specified.
-
-        :param except_current: Wether to skip the current object.
-        :rtype except_current: boolean
-        :return: None
-        """
+    def disable_plots(self, objects):
         # TODO: This method is very similar to replot_all. Try to merge.
+        """
+        Disables plots
+        :param objects: list
+            Objects to be disabled
+        :return:
+        """
         self.progress.emit(10)
 
         def worker_task(app_obj):
             percentage = 0.1
             try:
-                delta = 0.9 / len(self.collection.get_list())
+                delta = 0.9 / len(objects)
             except ZeroDivisionError:
                 self.progress.emit(0)
                 return
-            for obj in self.collection.get_list():
-                if obj != self.collection.get_active() or not except_current:
-                    obj.options['plot'] = False
-                    obj.plot()
+
+            for obj in objects:
+                obj.options['plot'] = False
+                obj.set_form_item('plot')
                 percentage += delta
                 self.progress.emit(int(percentage*100))
 
@@ -641,6 +641,24 @@ class App(QtCore.QObject):
 
         # Send to worker
         self.worker_task.emit({'fcn': worker_task, 'params': [self]})
+
+    def clear_pool(self):
+        self.pool.close()
+        self.pool = Pool()
+
+        self.pool_recreated.emit(self.pool)
+
+        gc.collect()
+
+    def clear_plots(self):
+
+        objects = self.collection.get_list()
+
+        for obj in objects:
+            obj.clear(obj == objects[-1])
+
+        # Clear pool to free memory
+        self.clear_pool()
 
     def edit_geometry(self):
         """
@@ -1027,7 +1045,7 @@ class App(QtCore.QObject):
 
         # Move the object to the main thread and let the app know that it is available.
         obj.moveToThread(QtGui.QApplication.instance().thread())
-        self.object_created.emit(obj)
+        self.object_created.emit(obj, plot)
 
         return obj
 
@@ -1439,10 +1457,6 @@ class App(QtCore.QObject):
             self.log.debug("Nothing selected for deletion")
             return
 
-        # Remove plot
-        self.plotcanvas.figure.delaxes(self.collection.get_active().axes)
-        self.plotcanvas.auto_adjust_axes()
-
         # Clear form
         self.setup_component_editor()
 
@@ -1458,7 +1472,8 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.plotcanvas.auto_adjust_axes()
+        # self.plotcanvas.auto_adjust_axes()
+        self.plotcanvas.vispy_canvas.update()           # TODO: Need update canvas?
         self.on_zoom_fit(None)
 
     def on_toolbar_replot(self):
@@ -1482,11 +1497,13 @@ class App(QtCore.QObject):
     def on_row_activated(self, index):
         self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
 
-    def on_object_created(self, obj):
+    def on_object_created(self, obj, plot):
         """
         Event callback for object creation.
-
-        :param obj: The newly created FlatCAM object.
+        :param obj: object
+            The newly created FlatCAM object.
+        :param plot: bool
+            Set to plot object after appending to collection
         :return: None
         """
         t0 = time.time()  # DEBUG
@@ -1496,11 +1513,19 @@ class App(QtCore.QObject):
         self.collection.append(obj)
 
         self.inform.emit("Object (%s) created: %s" % (obj.kind, obj.options['name']))
-        self.new_object_available.emit(obj)
-        obj.plot()
+
+        def worker_task(obj):
+            with self.proc_container.new("Plotting"):
+                obj.plot()
+                t1 = time.time()  # DEBUG
+                self.log.debug("%f seconds adding object and plotting." % (t1 - t0))
+                self.object_plotted.emit(obj)
+
+        if plot:
+            self.worker_task.emit({'fcn': worker_task, 'params': [obj]})
+
+    def on_object_plotted(self, obj):
         self.on_zoom_fit(None)
-        t1 = time.time()  # DEBUG
-        self.log.debug("%f seconds adding object and plotting." % (t1 - t0))
 
     def on_zoom_fit(self, event):
         """
@@ -1511,15 +1536,7 @@ class App(QtCore.QObject):
         :param event: Ignored.
         :return: None
         """
-
-        xmin, ymin, xmax, ymax = self.collection.get_bounds()
-        width = xmax - xmin
-        height = ymax - ymin
-        xmin -= 0.05 * width
-        xmax += 0.05 * width
-        ymin -= 0.05 * height
-        ymax += 0.05 * height
-        self.plotcanvas.adjust_axes(xmin, ymin, xmax, ymax)
+        self.plotcanvas.fit_view()
 
     def on_key_over_plot(self, event):
         """
@@ -1560,27 +1577,26 @@ class App(QtCore.QObject):
 
     def on_click_over_plot(self, event):
         """
-        Callback for the mouse click event over the plot. This event is generated
-        by the Matplotlib backend and has been registered in ``self.__init__()``.
-        For details, see: http://matplotlib.org/users/event_handling.html
-
+        Callback for the mouse click event over the plot.
         Default actions are:
 
         * Copy coordinates to clipboard. Ex.: (65.5473, -13.2679)
 
         :param event: Contains information about the event, like which button
-            was clicked, the pixel coordinates and the axes coordinates.
+            was clicked, the pixel coordinates.
         :return: None
         """
 
         # So it can receive key presses
-        self.plotcanvas.canvas.setFocus()
+        self.plotcanvas.vispy_canvas.native.setFocus()
+
+        pos = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
 
         try:
             App.log.debug('button=%d, x=%d, y=%d, xdata=%f, ydata=%f' % (
-                event.button, event.x, event.y, event.xdata, event.ydata))
+                event.button, event.pos[0], event.pos[1], pos[0], pos[1]))
 
-            self.clipboard.setText(self.defaults["point_clipboard_format"] % (event.xdata, event.ydata))
+            self.clipboard.setText(self.defaults["point_clipboard_format"] % (pos[0], pos[1]))
 
         except Exception, e:
             App.log.debug("Outside plot?")
@@ -1596,10 +1612,12 @@ class App(QtCore.QObject):
         :return: None
         """
 
+        pos = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
+
         try:  # May fail in case mouse not within axes
             self.ui.position_label.setText("X: %.4f   Y: %.4f" % (
-                event.xdata, event.ydata))
-            self.mouse = [event.xdata, event.ydata]
+                pos[0], pos[1]))
+            self.mouse = [pos[0], pos[1]]
 
         except:
             self.ui.position_label.setText("")
@@ -1618,8 +1636,6 @@ class App(QtCore.QObject):
         # Remove everything from memory
         App.log.debug("on_file_new()")
 
-        self.plotcanvas.clear()
-
         # tcl needs to be reinitialized, otherwise  old shell variables etc  remains
         self.init_tcl()
 
@@ -1632,6 +1648,9 @@ class App(QtCore.QObject):
 
         # Re-fresh project options
         self.on_options_app2project()
+
+        # Clear pool
+        self.clear_pool()
 
     def on_fileopengerber(self):
         """
@@ -2197,9 +2216,8 @@ class App(QtCore.QObject):
             def obj_init(obj_inst, app_inst):
                 obj_inst.from_dict(obj)
             App.log.debug(obj['kind'] + ":  " + obj['options']['name'])
-            self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=False)
+            self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=True)
 
-        self.plot_all()
         self.inform.emit("Project loaded from: " + filename)
         App.log.debug("Project loaded")
 
@@ -2253,27 +2271,14 @@ class App(QtCore.QObject):
         """
         self.log.debug("plot_all()")
 
-        self.plotcanvas.clear()
-        self.progress.emit(10)
+        for obj in self.collection.get_list():
+            def worker_task(obj):
+                with self.proc_container.new("Plotting"):
+                    obj.plot()
+                    self.object_plotted.emit(obj)
 
-        def worker_task(app_obj):
-            percentage = 0.1
-            try:
-                delta = 0.9 / len(self.collection.get_list())
-            except ZeroDivisionError:
-                self.progress.emit(0)
-                return
-            for obj in self.collection.get_list():
-                obj.plot()
-                percentage += delta
-                self.progress.emit(int(percentage*100))
-
-            self.progress.emit(0)
-            self.plots_updated.emit()
-
-        # Send to worker
-        #self.worker.add_task(worker_task, [self])
-        self.worker_task.emit({'fcn': worker_task, 'params': [self]})
+            # Send to worker
+            self.worker_task.emit({'fcn': worker_task, 'params': [obj]})
 
     def register_folder(self, filename):
         self.defaults["last_folder"] = os.path.split(str(filename))[0]
@@ -4125,19 +4130,17 @@ class App(QtCore.QObject):
             "info"
         )
 
-    def enable_all_plots(self, *args):
-        self.plotcanvas.clear()
-
+    def enable_plots(self, objects):
         def worker_task(app_obj):
             percentage = 0.1
             try:
-                delta = 0.9 / len(self.collection.get_list())
+                delta = 0.9 / len(objects)
             except ZeroDivisionError:
                 self.progress.emit(0)
                 return
-            for obj in self.collection.get_list():
+            for obj in objects:
                 obj.options['plot'] = True
-                obj.plot()
+                obj.set_form_item('plot')
                 percentage += delta
                 self.progress.emit(int(percentage*100))
 
@@ -4145,7 +4148,6 @@ class App(QtCore.QObject):
             self.plots_updated.emit()
 
         # Send to worker
-        # self.worker.add_task(worker_task, [self])
         self.worker_task.emit({'fcn': worker_task, 'params': [self]})
 
     def save_project(self, filename):
