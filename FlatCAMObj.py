@@ -634,7 +634,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     self.add_shape(shape=poly, color=random_color() if self.options['multicolored'] else 'black',
                                    visible=self.options['plot'])
             self.shapes.redraw()
-        except ObjectDeleted:
+        except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
 
     def serialize(self):
@@ -983,8 +983,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                         self.add_shape(shape=ints, color='green', visible=self.options['plot'])
 
             self.shapes.redraw()
-        except ObjectDeleted:
-            self.shapes.clear(udpate=True)
+        except (ObjectDeleted, AttributeError):
+            self.shapes.clear(update=True)
 
 class FlatCAMCNCjob(FlatCAMObj, CNCjob):
     """
@@ -1150,9 +1150,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         try:
             self.plot2(tooldia=self.options["tooldia"], obj=self, visible=self.options['plot'])
             self.shapes.redraw()
-        except ObjectDeleted:
+        except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
-            self.annotation.clear()
+            self.annotation.clear(update=True)
 
     def convert_units(self, units):
         factor = CNCjob.convert_units(self, units)
@@ -1499,5 +1499,5 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         try:
             self.plot_element(self.solid_geometry)
             self.shapes.redraw()
-        except ObjectDeleted:
+        except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
