@@ -8,7 +8,7 @@ version = {
     "number": 8.5,
     "date": (2016, 7, 1),  # Year, Month, Day
     "name": None,
-    "release": True,
+    "release": False,
 }
 
 
