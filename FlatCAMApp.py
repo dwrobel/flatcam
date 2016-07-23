@@ -457,7 +457,7 @@ class App(QtCore.QObject):
         self.worker_task.connect(self.workers.add_task)
 
         #### Check for updates ####
-        # self.workers.started.connect(lambda: self.worker_task.emit({'fcn': self.version_check, 'params': []}))
+        self.workers.started.connect(lambda: self.worker_task.emit({'fcn': self.version_check, 'params': []}))
 
         ### Signal handling ###
         ## Custom signals
