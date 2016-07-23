@@ -11,8 +11,9 @@ class Worker(QtCore.QObject):
     pydevd_failed = False
     task_completed = QtCore.pyqtSignal(str)
 
-    def __init__(self, app, name=None):
+    def __init__(self, app, stack=None, name=None):
         super(Worker, self).__init__()
+        self.stack = stack
         self.app = app
         self.name = name
 
@@ -32,16 +33,19 @@ class Worker(QtCore.QObject):
 
     def run(self):
 
-        # self.app.log.debug("Worker Started!")
+        self.app.log.debug("Worker Started!")
 
         self.allow_debug()
 
         # Tasks are queued in the event listener.
-        self.app.worker_task.connect(self.do_worker_task)
+        if self.stack:
+            self.stack.worker_task.connect(self.do_worker_task)
+        else:
+            self.app.worker_task.connect(self.do_worker_task)
 
     def do_worker_task(self, task):
 
-        # self.app.log.debug("Running task: %s" % str(task))
+        self.app.log.debug("Running task: %s" % str(task))
 
         self.allow_debug()
 
@@ -56,4 +60,4 @@ class Worker(QtCore.QObject):
             finally:
                 self.task_completed.emit(self.name)
 
-        # self.app.log.debug("Task ignored.")
+        self.app.log.debug("Task ignored.")

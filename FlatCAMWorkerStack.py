@@ -1,24 +1,28 @@
 from PyQt4 import QtCore
 from FlatCAMWorker import Worker
-import multiprocessing
 
 
 class WorkerStack(QtCore.QObject):
 
     worker_task = QtCore.pyqtSignal(dict)               # 'worker_name', 'func', 'params'
-    thread_exception = QtCore.pyqtSignal(object)
+    started = QtCore.pyqtSignal()
 
-    def __init__(self):
+    threads_count = 2
+
+    def __init__(self, app):
         super(WorkerStack, self).__init__()
 
+        self.app = app
         self.workers = []
         self.threads = []
+        self.threads_started = 0
         self.load = {}                                  # {'worker_name': tasks_count}
 
         # Create workers crew
-        for i in range(0, 2):
-            worker = Worker(self, 'Slogger-' + str(i))
+        for i in range(0, self.threads_count):
+            worker = Worker(self.app, self, 'Slogger-' + str(i))
             thread = QtCore.QThread()
+            self.connect(thread, QtCore.SIGNAL("started()"), self.on_thread_started)
 
             worker.moveToThread(thread)
             worker.connect(thread, QtCore.SIGNAL("started()"), worker.run)
@@ -33,6 +37,11 @@ class WorkerStack(QtCore.QObject):
     def __del__(self):
         for thread in self.threads:
             thread.terminate()
+
+    def on_thread_started(self):
+        self.threads_started += 1
+        if self.threads_started == self.threads_count:
+            self.started.emit()
 
     def add_task(self, task):
         worker_name = min(self.load, key=self.load.get)
