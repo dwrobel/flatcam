@@ -6,6 +6,9 @@ import time
 
 
 class VisPyCanvas(scene.SceneCanvas):
+    """
+    Top level GUI element.
+    """
 
     def __init__(self, config=None):
 
@@ -17,17 +20,18 @@ class VisPyCanvas(scene.SceneCanvas):
         self.central_widget.bgcolor = back_color
         self.central_widget.border_color = back_color
 
+        # Layout element
         grid = self.central_widget.add_grid(margin=10)
         grid.spacing = 0
 
         top_padding = grid.add_widget(row=0, col=0, col_span=2)
         top_padding.height_max = 24
 
-        yaxis = scene.AxisWidget(orientation='left', axis_color='black', text_color='black', font_size=12)
+        yaxis = scene.AxisWidget(orientation='left', axis_color=(0, 0, 0, 0.2), text_color='black', font_size=10)
         yaxis.width_max = 60
         grid.add_widget(yaxis, row=1, col=0)
 
-        xaxis = scene.AxisWidget(orientation='bottom', axis_color='black', text_color='black', font_size=12)
+        xaxis = scene.AxisWidget(orientation='bottom', axis_color=(0, 0, 0, 0.2), text_color='black', font_size=10)
         xaxis.height_max = 40
         grid.add_widget(xaxis, row=2, col=1)
 
