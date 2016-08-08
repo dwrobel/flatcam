@@ -722,8 +722,11 @@ class Geometry(object):
     @staticmethod
     def path_connect(storage, origin=(0, 0)):
         """
+        Simplifies paths in the FlatCAMRTreeStorage storage by
+        connecting paths that touch on their enpoints.
 
-        :return: None
+        :return: Simplified storage.
+        :rtype: FlatCAMRTreeStorage
         """
 
         log.debug("path_connect()")
@@ -3921,6 +3924,12 @@ def distance(pt1, pt2):
 
 
 class FlatCAMRTree(object):
+    """
+    Indexes geometry (Any object with "cooords" property containing
+    a list of tuples with x, y values). Objects are indexed by
+    all their points by default. To index by arbitrary points,
+    override self.points2obj.
+    """
 
     def __init__(self):
         # Python RTree Index
@@ -3978,6 +3987,11 @@ class FlatCAMRTree(object):
 
 
 class FlatCAMRTreeStorage(FlatCAMRTree):
+    """
+    Just like FlatCAMRTree it indexes geometry, but also serves
+    as storage for the geometry.
+    """
+
     def __init__(self):
         super(FlatCAMRTreeStorage, self).__init__()
 
