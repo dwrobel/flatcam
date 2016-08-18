@@ -16,6 +16,7 @@ from contextlib import contextmanager
 ########################################
 ##      Imports part of FlatCAM       ##
 ########################################
+import FlatCAMVersion
 from FlatCAMWorker import Worker
 from ObjectCollection import *
 from FlatCAMObj import *
@@ -126,6 +127,13 @@ class App(QtCore.QObject):
     # in the worker task.
     thread_exception = QtCore.pyqtSignal(object)
 
+    @property
+    def version_date_str(self):
+        return "{:4d}/{:02d}".format(
+            self.version_date[0],
+            self.version_date[1]
+        )
+
     def __init__(self, user_defaults=True, post_gui=None):
         """
         Starts the application.
@@ -134,12 +142,15 @@ class App(QtCore.QObject):
         :rtype: App
         """
 
+        FlatCAMVersion.setup(self)
+
         App.log.info("FlatCAM Starting...")
 
         ###################
         ### OS-specific ###
         ###################
 
+        # Folder for user settings.
         if sys.platform == 'win32':
             from win32com.shell import shell, shellcon
             App.log.debug("Win32!")
@@ -199,7 +210,7 @@ class App(QtCore.QObject):
 
         QtCore.QObject.__init__(self)
 
-        self.ui = FlatCAMGUI(self.version)
+        self.ui = FlatCAMGUI(self.version, name=self.version_name)
         self.connect(self.ui,
                      QtCore.SIGNAL("geomUpdate(int, int, int, int)"),
                      self.save_geometry)
@@ -550,7 +561,11 @@ class App(QtCore.QObject):
         self.shell.setWindowIcon(self.ui.app_icon)
         self.shell.setWindowTitle("FlatCAM Shell")
         self.shell.resize(*self.defaults["shell_shape"])
-        self.shell.append_output("FlatCAM %s\n(c) 2014-2015 Juan Pablo Caram\n\n" % self.version)
+        self.shell.append_output("FlatCAM {}".format(self.version))
+        if self.version_name:
+            self.shell.append_output(" - {}".format(self.version_name))
+        self.shell.append_output("\n(c) 2014-{} Juan Pablo Caram\n\n".format(
+            self.version_date[0]))
         self.shell.append_output("Type help to get started.\n\n")
 
         self.init_tcl()
@@ -810,6 +825,7 @@ class App(QtCore.QObject):
 
     def exec_command_test(self, text, reraise=True):
         """
+        Same as exec_command(...) with additional control over  exceptions.
         Handles input from the shell. See FlatCAMApp.setup_shell for shell commands.
 
         :param text: Input command
@@ -824,6 +840,7 @@ class App(QtCore.QObject):
             result = self.tcl.eval(str(text))
             if result != 'None':
                 self.shell.append_output(result + '\n')
+
         except Tkinter.TclError, e:
             #this will display more precise answer if something in  TCL shell fail
             result = self.tcl.eval("set errorInfo")
@@ -832,6 +849,7 @@ class App(QtCore.QObject):
             #show error in console and just return or in test raise exception
             if reraise:
                 raise e
+
         finally:
             self.shell.close_proccessing()
             pass
@@ -1077,7 +1095,8 @@ class App(QtCore.QObject):
         self.report_usage("on_about")
 
         version = self.version
-        version_date = self.version_date
+        version_date_str = self.version_date_str
+        version_year = self.version_date[0]
 
         class AboutDialog(QtGui.QDialog):
             def __init__(self, parent=None):
@@ -1099,12 +1118,16 @@ class App(QtCore.QObject):
 
                 title = QtGui.QLabel(
                     "<font size=8><B>FlatCAM</B></font><BR>"
-                    "Version %s (%s)<BR>"
+                    "Version {} ({})<BR>"
                     "<BR>"
                     "2D Computer-Aided Printed Circuit Board<BR>"
                     "Manufacturing.<BR>"
                     "<BR>"
-                    "(c) 2014-2015 Juan Pablo Caram" % (version, version_date)
+                    "(c) 2014-{} Juan Pablo Caram".format(
+                        version,
+                        version_date_str,
+                        version_year
+                    )
                 )
                 layout2.addWidget(title, stretch=1)
 
