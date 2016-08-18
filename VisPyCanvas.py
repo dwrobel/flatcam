@@ -81,11 +81,28 @@ class Camera(scene.PanZoomCamera):
         The SubScene received a mouse event; update transform
         accordingly.
 
+        SceneMouseEvent:
+            blocked
+            button
+            buttons
+            delta {ndarray}
+            handled
+            last_event
+            mouse_event {MouseEvent}
+            native
+            pos {ndarray}
+            press_event
+            source
+            sources {list}
+            type {str}
+            visual
+
         Parameters
         ----------
         event : instance of Event
             The event.
         """
+
         if event.handled or not self.interactive:
             return
 
@@ -106,26 +123,47 @@ class Camera(scene.PanZoomCamera):
         # Scrolling
         BaseCamera.viewbox_mouse_event(self, event)
 
+        modifiers = event.mouse_event.modifiers
+
         if event.type == 'mouse_wheel':
-            center = self._scene_transform.imap(event.pos)
-            scale = (1 + self.zoom_factor) ** (-event.delta[1] * 30)
-            self.limited_zoom(scale, center)
+
+            if 'Control' in modifiers:
+                # Horizontal Scroll
+                size = self.viewbox.size / self.transform.scale[:2]
+                offset = [-size[0] * self.zoom_factor * 30 * event.delta[1], 0, 0, 0]
+                self.pan(offset)
+
+            elif 'Alt' in modifiers:
+                # Vertical scroll
+                size = self.viewbox.size / self.transform.scale[:2]
+                offset = [0, -size[1] * self.zoom_factor * 30 * event.delta[1], 0, 0]
+                self.pan(offset)
+
+            else:
+                # Zoom
+                center = self._scene_transform.imap(event.pos)
+                scale = (1 + self.zoom_factor) ** (-event.delta[1] * 30)
+                self.limited_zoom(scale, center)
+
             event.handled = True
 
         elif event.type == 'mouse_move':
+
             if event.press_event is None:
                 return
 
-            modifiers = event.mouse_event.modifiers
+            #modifiers = event.mouse_event.modifiers
+            p1 = np.array(last_event.pos)[:2]
+            p2 = np.array(event.pos)[:2]
+            p1s = self._transform.imap(p1)
+            p2s = self._transform.imap(p2)
+            offset = p1s - p2s
 
             if event.button in [2, 3] and not modifiers:
                 # Translate
-                p1 = np.array(last_event.pos)[:2]
-                p2 = np.array(event.pos)[:2]
-                p1s = self._transform.imap(p1)
-                p2s = self._transform.imap(p2)
-                self.pan(p1s-p2s)
+                self.pan(offset)
                 event.handled = True
+
             elif event.button in [2, 3] and 'Shift' in modifiers:
                 # Zoom
                 p1c = np.array(last_event.pos)[:2]
