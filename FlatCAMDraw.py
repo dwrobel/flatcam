@@ -986,6 +986,14 @@ class FlatCAMDraw(QtCore.QObject):
         x, y = self.snap(x, y)
 
         ### Utility geometry (animated)
+        def add_recursive(g):
+            try:
+                for gi in list(g):
+                    add_recursive(gi)
+            except TypeError:
+                self.tool_shape.add(shape=g, color='#FF000080',
+                                    update=False, layer=0, tolerance=None)
+
         geo = self.active_tool.utility_geometry(data=(x, y))
 
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
@@ -993,11 +1001,8 @@ class FlatCAMDraw(QtCore.QObject):
             self.tool_shape.clear(update=True)
 
             # Add the new utility shape
-            try:
-                for el in list(geo.geo):
-                    self.tool_shape.add(shape=el, color='#FF000080', update=False, layer=0, tolerance=None)
-            except TypeError:
-                self.tool_shape.add(shape=geo.geo, color='#FF000080', update=False, layer=0, tolerance=None)
+            add_recursive(geo.geo)
+
             self.tool_shape.redraw()
 
         # Update cursor
