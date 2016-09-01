@@ -8,21 +8,14 @@ import logging
 
 
 class VisPyPlotCase(unittest.TestCase):
-    """
-    This is a top-level test covering the Gerber-to-GCode
-    generation workflow.
 
-    THIS IS A REQUIRED TEST FOR ANY UPDATES.
-
-    """
-
+    # Project files should be in tests/project_files folder
     filenames = ['test', 'test1', 'test2', 'test3', 'test4']
 
     def setUp(self):
         self.app = QtGui.QApplication(sys.argv)
         apply_patches()
-        # Create App, keep app defaults (do not load
-        # user-defined defaults).
+
         self.fc = App()
         self.fc.log.setLevel(logging.ERROR)
 
