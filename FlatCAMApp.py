@@ -651,8 +651,6 @@ class App(QtCore.QObject):
 
         self.pool_recreated.emit(self.pool)
 
-        gc.collect()
-
     def clear_plots(self):
 
         objects = self.collection.get_list()
