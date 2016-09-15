@@ -658,6 +658,7 @@ class FlatCAMDraw(QtCore.QObject):
 
         ### Event handlers ###
         # Connection ids for Matplotlib
+        # Todo: Obsolete ?
         self.cid_canvas_click = None
         self.cid_canvas_move = None
         self.cid_canvas_key = None
@@ -701,6 +702,7 @@ class FlatCAMDraw(QtCore.QObject):
 
         # VisPy visuals
         self.shapes = self.app.plotcanvas.new_shape_collection(layers=1)
+        # Todo: Change name...
         self.tool_shape = self.app.plotcanvas.new_shape_collection(layers=1)
         self.cursor = self.app.plotcanvas.new_cursor()
         self.app.pool_recreated.connect(self.pool_recreated)

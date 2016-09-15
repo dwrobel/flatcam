@@ -246,6 +246,7 @@ class ShapeCollectionVisual(CompoundVisual):
         try:
             self.results[key] = self.pool.map_async(_update_shape_buffers, [self.data[key]])
         except:
+            # Todo: Except without type!!!
             self.data[key] = _update_shape_buffers(self.data[key])
 
         if update:
@@ -309,6 +310,7 @@ class ShapeCollectionVisual(CompoundVisual):
                     mesh_colors[data['layer']] += data['mesh_colors']
                 except Exception as e:
                     print "Data error", e
+                    raise
 
         # Updating meshes
         for i, mesh in enumerate(self._meshes):
@@ -321,7 +323,7 @@ class ShapeCollectionVisual(CompoundVisual):
 
             mesh._bounds_changed()
 
-        # Updating lines
+        # Updating lines {LineVisual}
         for i, line in enumerate(self._lines):
             if len(line_pts[i]) > 0:
                 line.set_data(np.asarray(line_pts[i]), np.asarray(line_colors[i]), self._line_width, 'segments')

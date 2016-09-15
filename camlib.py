@@ -707,8 +707,11 @@ class Geometry(object):
     @staticmethod
     def path_connect(storage, origin=(0, 0)):
         """
+        Simplifies paths in the FlatCAMRTreeStorage storage by
+        connecting paths that touch on their enpoints.
 
-        :return: None
+        :return: Simplified storage.
+        :rtype: FlatCAMRTreeStorage
         """
 
         log.debug("path_connect()")
@@ -3230,7 +3233,8 @@ class CNCjob(Geometry):
         
     def plot2(self, tooldia=None, dpi=75, margin=0.1,
               color={"T": ["#F0E24D4C", "#B5AB3A4C"], "C": ["#5E6CFFFF", "#4650BDFF"]},
-              alpha={"T": 0.3, "C": 1.0}, tool_tolerance=0.0005, obj=None, visible=False):
+              alpha={"T": 0.3, "C": 1.0}, tool_tolerance=0.0005,
+              obj=None, visible=False):
         """
         Plots the G-code job onto the given axes.
 
@@ -3249,7 +3253,9 @@ class CNCjob(Geometry):
         
         if tooldia == 0:
             for geo in self.gcode_parsed:
-                obj.add_shape(shape=geo['geom'], color=color[geo['kind'][0]][1], visible=visible)
+                obj.add_shape(shape=geo['geom'],
+                              color=color[geo['kind'][0]][1],
+                              visible=visible)
         else:
             text = []
             pos = []
@@ -3903,6 +3909,12 @@ def distance(pt1, pt2):
 
 
 class FlatCAMRTree(object):
+    """
+    Indexes geometry (Any object with "cooords" property containing
+    a list of tuples with x, y values). Objects are indexed by
+    all their points by default. To index by arbitrary points,
+    override self.points2obj.
+    """
 
     def __init__(self):
         # Python RTree Index
@@ -3960,6 +3972,11 @@ class FlatCAMRTree(object):
 
 
 class FlatCAMRTreeStorage(FlatCAMRTree):
+    """
+    Just like FlatCAMRTree it indexes geometry, but also serves
+    as storage for the geometry.
+    """
+
     def __init__(self):
         super(FlatCAMRTreeStorage, self).__init__()
 

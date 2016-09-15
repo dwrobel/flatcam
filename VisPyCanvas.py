@@ -3,6 +3,8 @@ from PyQt4.QtGui import QPalette
 import vispy.scene as scene
 from vispy.scene.cameras.base_camera import BaseCamera
 import time
+from VisPyVisuals import ShapeGroup, ShapeCollection, TextCollection, TextGroup, Cursor
+from shapely.geometry import Polygon, LineString, Point, LinearRing
 
 
 class VisPyCanvas(scene.SceneCanvas):
@@ -27,17 +29,24 @@ class VisPyCanvas(scene.SceneCanvas):
         top_padding = grid.add_widget(row=0, col=0, col_span=2)
         top_padding.height_max = 24
 
-        yaxis = scene.AxisWidget(orientation='left', axis_color=(0, 0, 0, 0.2), text_color='black', font_size=10)
+        yaxis = scene.AxisWidget(orientation='left',
+                                 axis_color=(0, 0, 0, 0.2),
+                                 text_color='black',
+                                 font_size=10)
         yaxis.width_max = 60
         grid.add_widget(yaxis, row=1, col=0)
 
-        xaxis = scene.AxisWidget(orientation='bottom', axis_color=(0, 0, 0, 0.2), text_color='black', font_size=10)
+        xaxis = scene.AxisWidget(orientation='bottom',
+                                 axis_color=(0, 0, 0, 0.2),
+                                 text_color='black',
+                                 font_size=10)
         xaxis.height_max = 40
         grid.add_widget(xaxis, row=2, col=1)
 
         right_padding = grid.add_widget(row=0, col=2, row_span=2)
         right_padding.width_max = 24
 
+        # View and Camera
         view = grid.add_view(row=1, col=1, border_color='black', bgcolor='white')
         view.camera = Camera(aspect=1)
 
@@ -52,9 +61,50 @@ class VisPyCanvas(scene.SceneCanvas):
 
         self.grid = grid1
         self.view = view
+
+        self.events.mouse_press.connect(self.on_mouse_press)
+        self.events.mouse_release.connect(self.on_mouse_release)
+        self.events.mouse_move.connect(self.on_mouse_move)
+
+        self.down_pos = None
+        self.up_pos = None
+
+        self.shapes = ShapeCollection(parent=self.view, layers=1)
+
+        # Todo: Document what this is doing.
         self.freeze()
 
         self.measure_fps()
+
+    def on_mouse_press(self, event):
+        if event.button == 1:
+            self.down_pos = event.pos
+
+    def on_mouse_release(self, event):
+        if event.button == 1:
+            self.up_pos = event.pos
+            if self.down_pos is not None:
+                print "Selection: ", self.down_pos, self.up_pos
+                self.down_pos = None
+
+    def on_mouse_move(self, event):
+        # Note: There is a movement handler in the
+        # camera. Try to merge for performance issues
+        if self.down_pos is None:
+            return
+
+        self.shapes.clear()
+        down_pos = self.translate_coords(self.down_pos)[0:2]
+        pos = self.translate_coords(event.pos)[0:2]
+        rect = LinearRing([down_pos,
+                           (pos[0], down_pos[1]),
+                           pos,
+                           (down_pos[0], pos[1])])
+        self.shapes.add(rect, color='#FF000080',
+                                    update=False, layer=0, tolerance=None)
+        self.shapes.redraw()
+        print ".",
+        #event.handled = True
 
     def translate_coords(self, pos):
         tr = self.grid.get_transform('canvas', 'visual')
@@ -78,6 +128,8 @@ class Camera(scene.PanZoomCamera):
 
     def viewbox_mouse_event(self, event):
         """
+        Overrides scene.PanZoomCamera.viewbox_mouse_event().
+
         The SubScene received a mouse event; update transform
         accordingly.
 
@@ -169,12 +221,13 @@ class Camera(scene.PanZoomCamera):
                 p1c = np.array(last_event.pos)[:2]
                 p2c = np.array(event.pos)[:2]
                 scale = ((1 + self.zoom_factor) **
-                         ((p1c-p2c) * np.array([1, -1])))
+                         ((p1c - p2c) * np.array([1, -1])))
                 center = self._transform.imap(event.press_event.pos[:2])
                 self.limited_zoom(scale, center)
                 event.handled = True
             else:
                 event.handled = False
+
         elif event.type == 'mouse_press':
             # accept the event if it is button 1 or 2.
             # This is required in order to receive future events
