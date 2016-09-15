@@ -66,10 +66,13 @@ class VisPyCanvas(scene.SceneCanvas):
         self.events.mouse_release.connect(self.on_mouse_release)
         self.events.mouse_move.connect(self.on_mouse_move)
 
+        # Mouse press and release coordinates.
         self.down_pos = None
         self.up_pos = None
 
-        self.shapes = ShapeCollection(parent=self.view, layers=1)
+        #self.collection = ShapeCollection(parent=self.view, layers=1)
+        #self.shapes = ShapeGroup(self.collection)
+        self.shapes = ShapeCollection(parent=self.view.scene, layers=1)
 
         # Todo: Document what this is doing.
         self.freeze()
@@ -78,13 +81,15 @@ class VisPyCanvas(scene.SceneCanvas):
 
     def on_mouse_press(self, event):
         if event.button == 1:
-            self.down_pos = event.pos
+            self.down_pos = self.translate_coords(event.pos)[0:2]
 
     def on_mouse_release(self, event):
         if event.button == 1:
-            self.up_pos = event.pos
+            self.up_pos = self.translate_coords(event.pos)[0:2]
             if self.down_pos is not None:
+
                 print "Selection: ", self.down_pos, self.up_pos
+                self.update_selection_box(self.up_pos)
                 self.down_pos = None
 
     def on_mouse_move(self, event):
@@ -93,22 +98,31 @@ class VisPyCanvas(scene.SceneCanvas):
         if self.down_pos is None:
             return
 
-        self.shapes.clear()
-        down_pos = self.translate_coords(self.down_pos)[0:2]
         pos = self.translate_coords(event.pos)[0:2]
-        rect = LinearRing([down_pos,
-                           (pos[0], down_pos[1]),
-                           pos,
-                           (down_pos[0], pos[1])])
-        self.shapes.add(rect, color='#FF000080',
-                                    update=False, layer=0, tolerance=None)
-        self.shapes.redraw()
+        self.update_selection_box(pos)
+
         print ".",
-        #event.handled = True
 
     def translate_coords(self, pos):
         tr = self.grid.get_transform('canvas', 'visual')
         return tr.map(pos)
+
+    def update_selection_box(self, pos):
+        """
+        Re-draws the selection rectangle from self.down_pos
+        to pos.
+
+        :param pos: [x, y]
+        :return: None
+        """
+        rect = LinearRing([self.down_pos,
+                           (pos[0], self.down_pos[1]),
+                           pos,
+                           (self.down_pos[0], pos[1])])
+
+        self.shapes.clear()
+        self.shapes.add(rect, color='#000000FF',
+                        update=True, layer=0, tolerance=None)
 
 
 class Camera(scene.PanZoomCamera):
