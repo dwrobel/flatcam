@@ -271,6 +271,7 @@ class App(QtCore.QObject):
             "geometry_spindlespeed": self.defaults_form.geometry_group.cncspindlespeed_entry,
             "geometry_paintoverlap": self.defaults_form.geometry_group.paintoverlap_entry,
             "geometry_paintmargin": self.defaults_form.geometry_group.paintmargin_entry,
+            "geometry_selectmethod": self.defaults_form.geometry_group.selectmethod_combo,
             "cncjob_plot": self.defaults_form.cncjob_group.plot_cb,
             "cncjob_tooldia": self.defaults_form.cncjob_group.tooldia_entry,
             "cncjob_prepend": self.defaults_form.cncjob_group.prepend_text,
@@ -316,6 +317,7 @@ class App(QtCore.QObject):
             "geometry_painttooldia": 0.07,
             "geometry_paintoverlap": 0.15,
             "geometry_paintmargin": 0.0,
+            "geometry_selectmethod": "single",
             "cncjob_plot": True,
             "cncjob_tooldia": 0.016,
             "cncjob_prepend": "",
@@ -409,6 +411,7 @@ class App(QtCore.QObject):
             "geometry_painttooldia": self.options_form.geometry_group.painttooldia_entry,
             "geometry_paintoverlap": self.options_form.geometry_group.paintoverlap_entry,
             "geometry_paintmargin": self.options_form.geometry_group.paintmargin_entry,
+            "geometry_selectmethod": self.options_form.geometry_group.selectmethod_combo,
             "cncjob_plot": self.options_form.cncjob_group.plot_cb,
             "cncjob_tooldia": self.options_form.cncjob_group.tooldia_entry,
             "cncjob_prepend": self.options_form.cncjob_group.prepend_text,
@@ -451,12 +454,15 @@ class App(QtCore.QObject):
             "geometry_painttooldia": 0.07,
             "geometry_paintoverlap": 0.15,
             "geometry_paintmargin": 0.0,
+            "geometry_selectmethod": "single",
             "cncjob_plot": True,
             "cncjob_tooldia": 0.016,
             "cncjob_prepend": "",
             "cncjob_append": "",
-            "background_timeout": 300000, #default value is 5 minutes
-            "verbose_error_level": 0, # shell verbosity 0 = default(python trace only for unknown errors), 1 = show trace(show trace allways), 2 = (For the future).
+            "background_timeout": 300000,  # Default value is 5 minutes
+            "verbose_error_level": 0,  # Shell verbosity:
+                                       # 0 = default(python trace only for unknown errors),
+                                       # 1 = show trace(show trace allways), 2 = (For the future).
         })
         self.options.update(self.defaults)  # Copy app defaults to project options
         #self.options_write_form()
@@ -465,7 +471,6 @@ class App(QtCore.QObject):
         self.collection = ObjectCollection()
         self.ui.project_tab_layout.addWidget(self.collection.view)
         #### End of Data ####
-
 
         # Create workers stack
         self.workers = WorkerStack(self)
@@ -892,13 +897,13 @@ class App(QtCore.QObject):
             #self.shell.append_error("?\n")
             self.shell.append_error(str(e) + "\n")
 
-    def info(self, msg):
+    def info(self, msg, toshell=True):
         """
         Informs the user. Normally on the status bar, optionally
         also on the shell.
 
         :param msg: Text to write.
-        :param toshell: Forward the
+        :param toshell: Forward the meesage to the shell.
         :return: None
         """
 
@@ -909,12 +914,15 @@ class App(QtCore.QObject):
             msg_ = match.group(2)
             self.ui.fcinfo.set_status(QtCore.QString(msg_), level=level)
 
-            error = level == "error" or level == "warning"
-            self.shell_message(msg, error=error, show=True)
+            if toshell:
+                error = level == "error" or level == "warning"
+                self.shell_message(msg, error=error, show=True)
 
         else:
             self.ui.fcinfo.set_status(QtCore.QString(msg), level="info")
-            self.shell_message(msg)
+
+            if toshell:
+                self.shell_message(msg)
 
     def load_defaults(self):
         """
@@ -996,6 +1004,11 @@ class App(QtCore.QObject):
         this is, updates the GUI accordingly, any other records and plots it.
         This method is thread-safe.
 
+        Notes:
+            * If the name is in use, the self.collection will modify it
+              when appending it to the collection. There is no need to handle
+              name conflicts here.
+
         :param kind: The kind of object to create. One of 'gerber',
          'excellon', 'cncjob' and 'geometry'.
         :type kind: str
@@ -1012,19 +1025,6 @@ class App(QtCore.QObject):
         App.log.debug("new_object()")
 
         t0 = time.time()  # Debug
-
-        ### Check for existing name
-        # while name in self.collection.get_names():
-        #     ## Create a new name
-        #     # Ends with number?
-        #     App.log.debug("new_object(): Object name (%s) exists, changing." % name)
-        #     match = re.search(r'(.*[^\d])?(\d+)$', name)
-        #     if match:  # Yes: Increment the number!
-        #         base = match.group(1) or ''
-        #         num = int(match.group(2))
-        #         name = base + str(num + 1)
-        #     else:  # No: add a number!
-        #         name += "_1"
 
         ## Create object
         classdict = {
@@ -1526,6 +1526,7 @@ class App(QtCore.QObject):
     def on_object_created(self, obj, plot):
         """
         Event callback for object creation.
+
         :param obj: object
             The newly created FlatCAM object.
         :param plot: bool
@@ -1541,12 +1542,12 @@ class App(QtCore.QObject):
         self.inform.emit("Object (%s) created: %s" % (obj.kind, obj.options['name']))
         self.new_object_available.emit(obj)
 
-        def worker_task(obj):
+        def worker_task(obj_):
             with self.proc_container.new("Plotting"):
-                obj.plot()
+                obj_.plot()
                 t1 = time.time()  # DEBUG
                 self.log.debug("%f seconds adding object and plotting." % (t1 - t0))
-                self.object_plotted.emit(obj)
+                self.object_plotted.emit(obj_)
 
         if plot:
             self.worker_task.emit({'fcn': worker_task, 'params': [obj]})

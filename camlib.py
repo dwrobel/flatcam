@@ -77,6 +77,16 @@ class Geometry(object):
         # Flattened geometry (list of paths only)
         self.flat_geometry = []
 
+        # Index
+        self.index = None
+
+    def make_index(self):
+        self.flatten()
+        self.index = FlatCAMRTree()
+
+        for i, g in enumerate(self.flat_geometry):
+            self.index.insert(i, g)
+
     def add_circle(self, origin, radius):
         """
         Adds a circle to the object.
@@ -155,7 +165,9 @@ class Geometry(object):
 
     def subtract_polygon(self, points):
         """
-        Subtract polygon from the given object. This only operates on the paths in the original geometry, i.e. it converts polygons into paths.
+        Subtract polygon from the given object. This only operates
+        on the paths in the original geometry, i.e. it converts
+        polygons into paths.
 
         :param points: The vertices of the polygon.
         :return: none

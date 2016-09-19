@@ -746,7 +746,21 @@ class GeometryOptionsGroupUI(OptionsGroupUI):
         )
         grid2.addWidget(marginlabel, 2, 0)
         self.paintmargin_entry = LengthEntry()
-        grid2.addWidget(self.paintmargin_entry)
+        grid2.addWidget(self.paintmargin_entry, 2, 1)
+
+        # Polygon selection
+        selectlabel = QtGui.QLabel('Selection:')
+        selectlabel.setToolTip(
+            "How to select the polygons to paint."
+        )
+        grid2.addWidget(selectlabel, 3, 0)
+        # grid3 = QtGui.QGridLayout()
+        self.selectmethod_combo = RadioSet([
+            {"label": "Single", "value": "single"},
+            {"label": "All", "value": "all"},
+            # {"label": "Rectangle", "value": "rectangle"}
+        ])
+        grid2.addWidget(self.selectmethod_combo, 3, 1)
 
 
 class CNCJobOptionsGroupUI(OptionsGroupUI):

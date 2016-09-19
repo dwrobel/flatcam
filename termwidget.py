@@ -20,7 +20,7 @@ class _ExpandableTextEdit(QTextEdit):
 
     def __init__(self, termwidget, *args):
         QTextEdit.__init__(self, *args)
-        self.setStyleSheet("font: 9pt \"Courier\";")
+        self.setStyleSheet("font: 10pt \"Courier\";")
         self._fittedHeight = 1
         self.textChanged.connect(self._fit_to_document)
         self._fit_to_document()
@@ -94,7 +94,7 @@ class TermWidget(QWidget):
         QWidget.__init__(self, *args)
 
         self._browser = QTextEdit(self)
-        self._browser.setStyleSheet("font: 9pt \"Courier\";")
+        self._browser.setStyleSheet("font: 10pt \"Courier\";")
         self._browser.setReadOnly(True)
         self._browser.document().setDefaultStyleSheet(
             self._browser.document().defaultStyleSheet() +

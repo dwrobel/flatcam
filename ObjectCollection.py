@@ -116,6 +116,17 @@ class ObjectCollection(QtCore.QAbstractListModel):
             print obj
 
     def append(self, obj, active=False):
+        """
+        Appends a FlatCAM object to the list of objects
+        available to the user.
+
+        Notes:
+            * Called by event handler "FlatCAMApp.on_object_created(...)".
+
+        :param obj: FlatCAM object to add to add.
+        :param active:
+        :return: None
+        """
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> OC.append()")
 
         name = obj.options["name"]

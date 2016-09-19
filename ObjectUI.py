@@ -397,6 +397,20 @@ class GeometryObjectUI(ObjectUI):
         ])
         grid2.addWidget(self.paintmethod_combo, 3, 1)
 
+        # Polygon selection
+        selectlabel = QtGui.QLabel('Selection:')
+        selectlabel.setToolTip(
+            "How to select the polygons to paint."
+        )
+        grid2.addWidget(selectlabel, 4, 0)
+        #grid3 = QtGui.QGridLayout()
+        self.selectmethod_combo = RadioSet([
+            {"label": "Single", "value": "single"},
+            {"label": "All", "value": "all"},
+            #{"label": "Rectangle", "value": "rectangle"}
+        ])
+        grid2.addWidget(self.selectmethod_combo, 4, 1)
+
         # GO Button
         self.generate_paint_button = QtGui.QPushButton('Generate')
         self.generate_paint_button.setToolTip(
