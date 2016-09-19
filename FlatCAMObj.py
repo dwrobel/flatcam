@@ -1287,7 +1287,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
             self.app.plotcanvas.vis_connect('mouse_release', doit)
 
-    def paint_poly_single_click(self, inside_pt, tooldia, overlap):
+    def paint_poly_single_click(self, inside_pt, tooldia, overlap, outname=None):
         """
         Paints a polygon selected by clicking on its interior.
 
@@ -1312,7 +1312,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         proc = self.app.proc_container.new("Painting polygon.")
 
-        name = self.options["name"] + "_paint"
+        name = outname or self.options["name"] + "_paint"
 
         # Initializes the new geometry object
         def gen_paintarea(geo_obj, app_obj):
@@ -1354,11 +1354,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # Background
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
-    def paint_poly_all(self, tooldia, overlap):
+    def paint_poly_all(self, tooldia, overlap, outname=None):
 
         proc = self.app.proc_container.new("Painting polygon.")
 
-        name = self.options["name"] + "_paint"
+        name = outname or self.options["name"] + "_paint"
 
         def recurse(geo):
             try:

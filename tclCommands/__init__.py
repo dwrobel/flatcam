@@ -13,6 +13,7 @@ import tclCommands.TclCommandInteriors
 import tclCommands.TclCommandIsolate
 import tclCommands.TclCommandNew
 import tclCommands.TclCommandOpenGerber
+import tclCommands.TclCommandPaint
 
 
 __all__ = []
