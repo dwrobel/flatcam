@@ -1203,7 +1203,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "paintmargin": 0.01,
             "paintmethod": "standard",
             "multidepth": False,
-            "depthperpass": 0.002
+            "depthperpass": 0.002,
+            "selectmethod": "single"
         })
 
         # Attributes to be included in serialization
@@ -1234,7 +1235,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "paintmargin": self.ui.paintmargin_entry,
             "paintmethod": self.ui.paintmethod_combo,
             "multidepth": self.ui.mpass_cb,
-            "depthperpass": self.ui.maxdepth_entry
+            "depthperpass": self.ui.maxdepth_entry,
+            "selectmethod": self.ui.selectmethod_combo
         })
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
@@ -1244,24 +1246,38 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
     def on_paint_button_click(self, *args):
         self.app.report_usage("geometry_on_paint_button")
 
-        self.app.info("Click inside the desired polygon.")
         self.read_form()
         tooldia = self.options["painttooldia"]
         overlap = self.options["paintoverlap"]
 
-        # Connection ID for the click event
-        subscription = None
+        if self.options["selectmethod"] == "all":
+            self.paint_poly_all(tooldia, overlap)
+            return
 
-        # To be called after clicking on the plot.
-        def doit(event):
-            self.app.info("Painting polygon...")
-            self.app.plotcanvas.mpl_disconnect(subscription)
-            point = [event.xdata, event.ydata]
-            self.paint_poly(point, tooldia, overlap)
+        if self.options["selectmethod"] == "single":
+            self.app.info("Click inside the desired polygon.")
 
-        subscription = self.app.plotcanvas.mpl_connect('button_press_event', doit)
+            # To be called after clicking on the plot.
+            def doit(event):
+                self.app.info("Painting polygon...")
+                self.app.plotcanvas.mpl_disconnect(subscription)
+                point = [event.xdata, event.ydata]
+                self.paint_poly_single_click(point, tooldia, overlap)
 
-    def paint_poly(self, inside_pt, tooldia, overlap):
+            subscription = self.app.plotcanvas.mpl_connect('button_press_event', doit)
+
+    def paint_poly_single_click(self, inside_pt, tooldia, overlap, outname=None):
+        """
+        Paints a polygon selected by clicking on its interior.
+
+        Note:
+            * The margin is taken directly from the form.
+
+        :param inside_pt: [x, y]
+        :param tooldia: Diameter of the painting tool
+        :param overlap: Overlap of the tool between passes.
+        :return: None
+        """
 
         # Which polygon.
         #poly = find_polygon(self.solid_geometry, inside_pt)
@@ -1275,7 +1291,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         proc = self.app.proc_container.new("Painting polygon.")
 
-        name = self.options["name"] + "_paint"
+        name = outname or self.options["name"] + "_paint"
 
         # Initializes the new geometry object
         def gen_paintarea(geo_obj, app_obj):
@@ -1293,6 +1309,73 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
             geo_obj.solid_geometry = list(cp.get_objects())
             geo_obj.options["cnctooldia"] = tooldia
+
+            # Experimental...
+            print "Indexing...",
+            geo_obj.make_index()
+            print "Done"
+
+            self.app.inform.emit("Done.")
+
+        def job_thread(app_obj):
+            try:
+                app_obj.new_object("geometry", name, gen_paintarea)
+            except Exception as e:
+                proc.done()
+                raise e
+            proc.done()
+
+        self.app.inform.emit("Polygon Paint started ...")
+
+        # Promise object with the new name
+        self.app.collection.promise(name)
+
+        # Background
+        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+
+    def paint_poly_all(self, tooldia, overlap, outname=None):
+
+        proc = self.app.proc_container.new("Painting polygon.")
+
+        name = outname or self.options["name"] + "_paint"
+
+        def recurse(geo):
+            try:
+                for subg in geo:
+                    for subsubg in recurse(subg):
+                        yield subsubg
+            except TypeError:
+                if isinstance(geo, Polygon):
+                    yield geo
+
+            raise StopIteration
+
+        # Initializes the new geometry object
+        def gen_paintarea(geo_obj, app_obj):
+            assert isinstance(geo_obj, FlatCAMGeometry), \
+                "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+
+            geo_obj.solid_geometry = []
+
+            for poly in recurse(self.solid_geometry):
+
+                if self.options["paintmethod"] == "seed":
+                    cp = self.clear_polygon2(poly.buffer(-self.options["paintmargin"]),
+                                             tooldia, overlap=overlap)
+
+                else:
+                    cp = self.clear_polygon(poly.buffer(-self.options["paintmargin"]),
+                                            tooldia, overlap=overlap)
+
+                geo_obj.solid_geometry += list(cp.get_objects())
+
+            geo_obj.options["cnctooldia"] = tooldia
+
+            # Experimental...
+            print "Indexing...",
+            geo_obj.make_index()
+            print "Done"
+
             self.app.inform.emit("Done.")
 
         def job_thread(app_obj):

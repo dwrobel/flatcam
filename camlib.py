@@ -92,6 +92,16 @@ class Geometry(object):
         # Flattened geometry (list of paths only)
         self.flat_geometry = []
 
+        # Index
+        self.index = None
+
+    def make_index(self):
+        self.flatten()
+        self.index = FlatCAMRTree()
+
+        for i, g in enumerate(self.flat_geometry):
+            self.index.insert(i, g)
+
     def add_circle(self, origin, radius):
         """
         Adds a circle to the object.
