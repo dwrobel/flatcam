@@ -210,10 +210,16 @@ class Geometry(object):
     def find_polygon(self, point, geoset=None):
         """
         Find an object that object.contains(Point(point)) in
-        poly, which can can be iterable, contain iterable of, or
+        geoset, which can can be iterable, contain iterables of, or
         be itself an implementer of .contains().
 
-        :param poly: See description
+        Note:
+        * Shapely Polygons will work as expected here. Linearrings
+          will only yield true if the point is in the perimeter.
+
+        :param point: See description
+        :param geoset: Set to search. If none, the defaults to
+                       self.solid_geometry.
         :return: Polygon containing point or None.
         """
 
@@ -403,6 +409,8 @@ class Geometry(object):
 
         :param filename: Path to the SVG file.
         :type filename: str
+        :param flip: Flip the vertically.
+        :type flip: bool
         :return: None
         """
 
@@ -411,8 +419,6 @@ class Geometry(object):
         svg_root = svg_tree.getroot()
 
         # Change origin to bottom left
-        # h = float(svg_root.get('height'))
-        # w = float(svg_root.get('width'))
         h = svgparselength(svg_root.get('height'))[0]  # TODO: No units support yet
         geos = getsvggeo(svg_root)
 
@@ -424,12 +430,15 @@ class Geometry(object):
             self.solid_geometry = []
 
         if type(self.solid_geometry) is list:
-            self.solid_geometry.append(cascaded_union(geos))
+            # self.solid_geometry.append(cascaded_union(geos))
+            if type(geos) is list:
+                self.solid_geometry += geos
+            else:
+                self.solid_geometry.append(geos)
         else:  # It's shapely geometry
-            self.solid_geometry = cascaded_union([self.solid_geometry,
-                                                  cascaded_union(geos)])
-
-        return
+            # self.solid_geometry = cascaded_union([self.solid_geometry,
+            #                                       cascaded_union(geos)])
+            self.solid_geometry = [self.solid_geometry, geos]
 
     def size(self):
         """
