@@ -23,7 +23,7 @@ import xml.etree.ElementTree as ET
 import re
 import itertools
 from svg.path import Path, Line, Arc, CubicBezier, QuadraticBezier, parse_path
-from shapely.geometry import LinearRing, LineString, Point
+from shapely.geometry import LinearRing, LineString, Point, Polygon
 from shapely.affinity import translate, rotate, scale, skew, affine_transform
 import numpy as np
 import logging
@@ -109,7 +109,8 @@ def path2shapely(path, res=1.0):
         continue
 
     if path.closed:
-        return LinearRing(points)
+        return Polygon(points).buffer(0)
+        # return LinearRing(points)
     else:
         return LineString(points)
 
@@ -178,7 +179,8 @@ def svgrect2shapely(rect, n_points=32):
             [(x, y + h - ry), (x, y + ry)] + \
             lower_left
 
-    return LinearRing(pts)
+    return Polygon(pts).buffer(0)
+    # return LinearRing(pts)
 
 
 def svgcircle2shapely(circle):
@@ -223,7 +225,8 @@ def svgellipse2shapely(ellipse, n_points=64):
     y = cy + ry * np.sin(2 * np.pi * t)
     pts = [(x[i], y[i]) for i in range(n_points)]
 
-    return LinearRing(pts)
+    return Polygon(pts).buffer(0)
+    # return LinearRing(pts)
 
 
 def svgline2shapely(line):
@@ -256,7 +259,8 @@ def svgpolygon2shapely(polygon):
     ptliststr = polygon.get('points')
     points = parse_svg_point_list(ptliststr)
 
-    return LinearRing(points)
+    return Polygon(points).buffer(0)
+    # return LinearRing(points)
 
 
 def getsvggeo(node):

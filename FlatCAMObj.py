@@ -1276,11 +1276,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :param inside_pt: [x, y]
         :param tooldia: Diameter of the painting tool
         :param overlap: Overlap of the tool between passes.
+        :param outname: Name of the resulting Geometry Object.
         :return: None
         """
 
         # Which polygon.
-        #poly = find_polygon(self.solid_geometry, inside_pt)
         poly = self.find_polygon(inside_pt)
 
         # No polygon?
