@@ -1,3 +1,18 @@
+############################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# http://flatcam.org                                       #
+# Author: Juan Pablo Caram (c)                             #
+# Date: 2/5/2014                                           #
+# MIT Licence                                              #
+#                                                          #
+# Creates a portlable copy of FlatCAM, including Python    #
+# itself and all dependencies.                             #
+#                                                          #
+# This is not an aid to install FlatCAM from source on     #
+# Windows platforms. It is only useful when FlatCAM is up  #
+# and running and ready to be packaged.                    #
+############################################################
+
 # Files not needed: Qt, tk.dll, tcl.dll, tk/, tcl/, vtk/,
 #   scipy.lib.lapack.flapack.pyd, scipy.lib.blas.fblas.pyd,
 #   numpy.core._dotblas.pyd, scipy.sparse.sparsetools._bsr.pyd,
@@ -42,7 +57,7 @@ execfile('clean.py')
 setup(
     name="FlatCAM",
     author="Juan Pablo Caram",
-    version="8.4",
+    version="8.5",
     description="FlatCAM: 2D Computer Aided PCB Manufacturing",
     options=dict(build_exe=buildOptions),
     executables=[Executable("FlatCAM.py", base=base)]
