@@ -1308,14 +1308,18 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             #assert isinstance(app_obj, App)
 
             if self.options["paintmethod"] == "seed":
+                # Type(cp) == FlatCAMRTreeStorage | None
                 cp = self.clear_polygon2(poly.buffer(-self.options["paintmargin"]),
                                          tooldia, overlap=overlap)
 
             else:
+                # Type(cp) == FlatCAMRTreeStorage | None
                 cp = self.clear_polygon(poly.buffer(-self.options["paintmargin"]),
                                         tooldia, overlap=overlap)
 
-            geo_obj.solid_geometry = list(cp.get_objects())
+            if cp is not None:
+                geo_obj.solid_geometry = list(cp.get_objects())
+
             geo_obj.options["cnctooldia"] = tooldia
 
             # Experimental...
@@ -1347,6 +1351,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         name = outname or self.options["name"] + "_paint"
 
+        # This is a recursive generator of individual Polygons.
+        # Note: Double check correct implementation. Might exit
+        #       early if it finds something that is not a Polygon?
         def recurse(geo):
             try:
                 for subg in geo:
@@ -1368,14 +1375,17 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             for poly in recurse(self.solid_geometry):
 
                 if self.options["paintmethod"] == "seed":
+                    # Type(cp) == FlatCAMRTreeStorage | None
                     cp = self.clear_polygon2(poly.buffer(-self.options["paintmargin"]),
                                              tooldia, overlap=overlap)
 
                 else:
+                    # Type(cp) == FlatCAMRTreeStorage | None
                     cp = self.clear_polygon(poly.buffer(-self.options["paintmargin"]),
                                             tooldia, overlap=overlap)
 
-                geo_obj.solid_geometry += list(cp.get_objects())
+                if cp is not None:
+                    geo_obj.solid_geometry += list(cp.get_objects())
 
             geo_obj.options["cnctooldia"] = tooldia
 
@@ -1391,6 +1401,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 app_obj.new_object("geometry", name, gen_paintarea)
             except Exception as e:
                 proc.done()
+                traceback.print_stack()
                 raise e
             proc.done()
 

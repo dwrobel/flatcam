@@ -501,7 +501,12 @@ class Geometry(object):
         geoms.get_points = get_pts
 
         # Can only result in a Polygon or MultiPolygon
+        # NOTE: The resulting polygon can be "empty".
         current = polygon.buffer(-tooldia / 2.0)
+        if current.area == 0:
+            # Otherwise, trying to to insert current.exterior == None
+            # into the FlatCAMStorage will fail.
+            return None
 
         # current can be a MultiPolygon
         try:
@@ -559,6 +564,7 @@ class Geometry(object):
         :param seedpoint: Shapely.geometry.Point or None
         :param overlap: Tool fraction overlap bewteen passes
         :return: List of toolpaths covering polygon.
+        :rtype: FlatCAMRTreeStorage | None
         """
 
         log.debug("camlib.clear_polygon2()")
@@ -652,6 +658,8 @@ class Geometry(object):
         :type storage: FlatCAMRTreeStorage
         :param boundary: Polygon defining the limits of the paintable area.
         :type boundary: Polygon
+        :param tooldia: Tool diameter.
+        :rtype tooldia: float
         :param max_walk: Maximum allowable distance without lifting tool.
         :type max_walk: float or None
         :return: Optimized geometry.
@@ -744,6 +752,8 @@ class Geometry(object):
         Simplifies paths in the FlatCAMRTreeStorage storage by
         connecting paths that touch on their enpoints.
 
+        :param storage: Storage containing the initial paths.
+        :rtype storage: FlatCAMRTreeStorage
         :return: Simplified storage.
         :rtype: FlatCAMRTreeStorage
         """
