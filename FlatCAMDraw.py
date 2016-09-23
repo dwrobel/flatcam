@@ -10,7 +10,7 @@ from PyQt4 import QtGui, QtCore, Qt
 import FlatCAMApp
 from camlib import *
 from FlatCAMTool import FlatCAMTool
-from ObjectUI import LengthEntry
+from ObjectUI import LengthEntry, RadioSet
 
 from shapely.geometry import Polygon, LineString, Point, LinearRing
 from shapely.geometry import MultiPoint, MultiPolygon
@@ -68,6 +68,94 @@ class BufferSelectionTool(FlatCAMTool):
     def on_buffer(self):
         buffer_distance = self.buffer_distance_entry.get_value()
         self.fcdraw.buffer(buffer_distance)
+
+
+class PaintOptionsTool(FlatCAMTool):
+    """
+    Inputs to specify how to paint the selected polygons.
+    """
+
+    toolName = "Paint Options"
+
+    def __init__(self, app, fcdraw):
+        FlatCAMTool.__init__(self, app)
+
+        self.app = app
+        self.fcdraw = fcdraw
+
+        ## Title
+        title_label = QtGui.QLabel("<font size=4><b>%s</b></font>" % self.toolName)
+        self.layout.addWidget(title_label)
+
+        ## Form Layout
+        form_layout = QtGui.QFormLayout()
+        self.layout.addLayout(form_layout)
+
+        # Tool dia
+        ptdlabel = QtGui.QLabel('Tool dia:')
+        ptdlabel.setToolTip(
+            "Diameter of the tool to\n"
+            "be used in the operation."
+        )
+
+        self.painttooldia_entry = LengthEntry()
+        form_layout.addRow(ptdlabel, self.painttooldia_entry)
+
+        # Overlap
+        ovlabel = QtGui.QLabel('Overlap:')
+        ovlabel.setToolTip(
+            "How much (fraction) of the tool\n"
+            "width to overlap each tool pass."
+        )
+
+        self.paintoverlap_entry = LengthEntry()
+        form_layout.addRow(ovlabel, self.paintoverlap_entry)
+
+        # Margin
+        marginlabel = QtGui.QLabel('Margin:')
+        marginlabel.setToolTip(
+            "Distance by which to avoid\n"
+            "the edges of the polygon to\n"
+            "be painted."
+        )
+
+        self.paintmargin_entry = LengthEntry()
+        form_layout.addRow(marginlabel, self.paintmargin_entry)
+
+        # Method
+        methodlabel = QtGui.QLabel('Method:')
+        methodlabel.setToolTip(
+            "Algorithm to paint the polygon:<BR>"
+            "<B>Standard</B>: Fixed step inwards.<BR>"
+            "<B>Seed-based</B>: Outwards from seed."
+        )
+
+        self.paintmethod_combo = RadioSet([
+            {"label": "Standard", "value": "standard"},
+            {"label": "Seed-based", "value": "seed"}
+        ])
+        form_layout.addRow(methodlabel, self.paintmethod_combo)
+
+        ## Buttons
+        hlay = QtGui.QHBoxLayout()
+        self.layout.addLayout(hlay)
+        hlay.addStretch()
+        self.paint_button = QtGui.QPushButton("Paint")
+        hlay.addWidget(self.paint_button)
+
+        self.layout.addStretch()
+
+        ## Signals
+        self.paint_button.clicked.connect(self.on_paint)
+
+    def on_paint(self):
+
+        tooldia = self.painttooldia_entry.get_value()
+        overlap = self.paintoverlap_entry.get_value()
+        margin = self.paintoverlap_entry.get_value()
+        method = self.paintmethod_combo.get_value()
+
+        self.fcdraw.paint(tooldia, overlap, margin, method)
 
 
 class DrawToolShape(object):
@@ -657,8 +745,10 @@ class FlatCAMDraw(QtCore.QObject):
         # self.copy_menuitem = self.menu.addAction(QtGui.QIcon('share/copy16.png'), "Copy Objects 'c'")
         self.delete_menuitem = self.menu.addAction(QtGui.QIcon('share/deleteshape16.png'), "Delete Shape '-'")
         self.buffer_menuitem = self.menu.addAction(QtGui.QIcon('share/buffer16.png'), "Buffer selection 'b'")
+        self.paint_menuitem = self.menu.addAction(QtGui.QIcon('share/paint16.png'), "Paint selection")
         self.menu.addSeparator()
 
+        self.paint_menuitem.triggered.connect(self.on_paint_tool)
         self.buffer_menuitem.triggered.connect(self.on_buffer_tool)
         self.delete_menuitem.triggered.connect(self.on_delete_btn)
         self.union_menuitem.triggered.connect(self.union)
@@ -871,6 +961,10 @@ class FlatCAMDraw(QtCore.QObject):
     def on_buffer_tool(self):
         buff_tool = BufferSelectionTool(self.app, self)
         buff_tool.run()
+
+    def on_paint_tool(self):
+        paint_tool = PaintOptionsTool(self.app, self)
+        paint_tool.run()
 
     def on_tool_select(self, tool):
         """
@@ -1367,6 +1461,61 @@ class FlatCAMDraw(QtCore.QObject):
         pre_buffer = cascaded_union([t.geo for t in selected])
         results = pre_buffer.buffer(buf_distance)
         self.add_shape(DrawToolShape(results))
+
+        self.replot()
+
+    def paint(self, tooldia, overlap, margin, method):
+        selected = self.get_selected()
+
+        if len(selected) == 0:
+            self.app.inform.emit("[warning] Nothing selected for painting.")
+            return
+
+        for param in [tooldia, overlap, margin]:
+            if not isinstance(param, float):
+                param_name = [k for k, v in locals().iteritems() if v is param][0]
+                self.app.inform.emit("[warning] Invalid value for {}".format())
+
+        # Todo: Check for valid method.
+
+        # Todo: This is the 3rd implementation on painting polys... try to consolidate
+
+        results = []
+
+        def recurse(geo):
+            try:
+                for subg in geo:
+                    for subsubg in recurse(subg):
+                        yield subsubg
+            except TypeError:
+                if isinstance(geo, Polygon):
+                    yield geo
+
+            raise StopIteration
+
+        for geo in selected:
+
+            local_results = []
+            for poly in recurse(geo.geo):
+
+                if method == "seed":
+                    # Type(cp) == FlatCAMRTreeStorage | None
+                    cp = Geometry.clear_polygon2(poly.buffer(-margin),
+                                             tooldia, overlap=overlap)
+
+                else:
+                    # Type(cp) == FlatCAMRTreeStorage | None
+                    cp = Geometry.clear_polygon(poly.buffer(-margin),
+                                            tooldia, overlap=overlap)
+
+                if cp is not None:
+                    local_results += list(cp.get_objects())
+
+                results.append(cascaded_union(local_results))
+
+        # This is a dirty patch:
+        for r in results:
+            self.add_shape(DrawToolShape(r))
 
         self.replot()
 
