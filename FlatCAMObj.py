@@ -1346,6 +1346,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
     def paint_poly_all(self, tooldia, overlap, outname=None):
+        """
+        Paints all polygons in this object.
+
+        :param tooldia:
+        :param overlap:
+        :param outname:
+        :return:
+        """
 
         proc = self.app.proc_container.new("Painting polygon.")
 
