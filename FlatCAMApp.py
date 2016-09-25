@@ -1,4 +1,13 @@
-import sys, traceback
+############################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# http://flatcam.org                                       #
+# Author: Juan Pablo Caram (c)                             #
+# Date: 2/5/2014                                           #
+# MIT Licence                                              #
+############################################################
+
+import sys
+import traceback
 import urllib
 import getopt
 import random
@@ -68,8 +77,10 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     ## Version
-    version = 8.4
-    version_date = "2015/10"
+    version = 8.5
+    #version_date_str = "2016/7"
+    version_date = (0, 0, 0)
+    version_name = None
 
     ## URL for update checks and statistics
     version_url = "http://flatcam.org/version"
@@ -96,7 +107,10 @@ class App(QtCore.QObject):
     # Handled by:
     #  * register_folder()
     #  * register_recent()
-    file_opened = QtCore.pyqtSignal(str, str)  # File type and filename
+    # Note: Setting the parameters to unicode does not seem
+    #       to have an effect. Then are received as Qstring
+    #       anyway.
+    file_opened = QtCore.pyqtSignal(unicode, unicode)  # File type and filename
 
     progress = QtCore.pyqtSignal(int)  # Percentage of progress
 
@@ -604,7 +618,7 @@ class App(QtCore.QObject):
         App.log.debug("END of constructor. Releasing control.")
 
     def init_tcl(self):
-        if hasattr(self,'tcl'):
+        if hasattr(self, 'tcl'):
             # self.tcl = None
             # TODO  we need  to clean  non default variables and procedures here
             # new object cannot be used here as it  will not remember values created for next passes,
@@ -834,24 +848,24 @@ class App(QtCore.QObject):
         Handles input from the shell. See FlatCAMApp.setup_shell for shell commands.
 
         :param text: Input command
-        :param reraise: raise exception and not hide it, used mainly in unittests
-        :return: output if there was any
+        :param reraise: Re-raise TclError exceptions in Python (mostly for unitttests).
+        :return: Output from the command
         """
 
         text = str(text)
 
         try:
-            self.shell.open_proccessing()
+            self.shell.open_proccessing()  # Disables input box.
             result = self.tcl.eval(str(text))
             if result != 'None':
                 self.shell.append_output(result + '\n')
 
         except Tkinter.TclError, e:
-            #this will display more precise answer if something in  TCL shell fail
+            # This will display more precise answer if something in TCL shell fails
             result = self.tcl.eval("set errorInfo")
             self.log.error("Exec command Exception: %s" % (result + '\n'))
             self.shell.append_error('ERROR: ' + result + '\n')
-            #show error in console and just return or in test raise exception
+            # Show error in console and just return or in test raise exception
             if reraise:
                 raise e
 
@@ -970,7 +984,7 @@ class App(QtCore.QObject):
         self.log.debug("   %s" % kind)
         self.log.debug("   %s" % filename)
 
-        record = {'kind': str(kind), 'filename': str(filename)}
+        record = {'kind': unicode(kind), 'filename': unicode(filename)}
         if record in self.recent:
             return
 
@@ -1699,9 +1713,9 @@ class App(QtCore.QObject):
         # The Qt methods above will return a QString which can cause problems later.
         # So far json.dump() will fail to serialize it.
         # TODO: Improve the serialization methods and remove this fix.
-        filename = str(filename)
+        filename = unicode(filename)
 
-        if str(filename) == "":
+        if filename == "":
             self.inform.emit("Open cancelled.")
         else:
             self.worker_task.emit({'fcn': self.open_gerber,
@@ -1726,9 +1740,9 @@ class App(QtCore.QObject):
         # The Qt methods above will return a QString which can cause problems later.
         # So far json.dump() will fail to serialize it.
         # TODO: Improve the serialization methods and remove this fix.
-        filename = str(filename)
+        filename = unicode(filename)
 
-        if str(filename) == "":
+        if filename == "":
             self.inform.emit("Open cancelled.")
         else:
             self.worker_task.emit({'fcn': self.open_excellon,
@@ -1753,9 +1767,9 @@ class App(QtCore.QObject):
         # The Qt methods above will return a QString which can cause problems later.
         # So far json.dump() will fail to serialize it.
         # TODO: Improve the serialization methods and remove this fix.
-        filename = str(filename)
+        filename = unicode(filename)
 
-        if str(filename) == "":
+        if filename == "":
             self.inform.emit("Open cancelled.")
         else:
             self.worker_task.emit({'fcn': self.open_gcode,
@@ -1780,9 +1794,9 @@ class App(QtCore.QObject):
         # The Qt methods above will return a QString which can cause problems later.
         # So far json.dump() will fail to serialize it.
         # TODO: Improve the serialization methods and remove this fix.
-        filename = str(filename)
+        filename = unicode(filename)
 
-        if str(filename) == "":
+        if filename == "":
             self.inform.emit("Open cancelled.")
         else:
             # self.worker_task.emit({'fcn': self.open_project,
@@ -1830,9 +1844,9 @@ class App(QtCore.QObject):
         except TypeError:
             filename = QtGui.QFileDialog.getSaveFileName(caption="Export SVG")
 
-        filename = str(filename)
+        filename = unicode(filename)
 
-        if str(filename) == "":
+        if filename == "":
             self.inform.emit("Export SVG cancelled.")
             return
         else:
@@ -1853,9 +1867,9 @@ class App(QtCore.QObject):
         except TypeError:
             filename = QtGui.QFileDialog.getOpenFileName(caption="Import SVG")
 
-        filename = str(filename)
+        filename = unicode(filename)
 
-        if str(filename) == "":
+        if filename == "":
             self.inform.emit("Open cancelled.")
         else:
             self.worker_task.emit({'fcn': self.import_svg,
@@ -1895,6 +1909,8 @@ class App(QtCore.QObject):
                                                          directory=self.get_last_folder())
         except TypeError:
             filename = QtGui.QFileDialog.getSaveFileName(caption="Save Project As ...")
+
+        filename = unicode(filename)
 
         try:
             f = open(filename, 'r')

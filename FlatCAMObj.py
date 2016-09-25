@@ -1,11 +1,20 @@
-import inspect  # TODO: For debugging only.
+############################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# http://flatcam.org                                       #
+# Author: Juan Pablo Caram (c)                             #
+# Date: 2/5/2014                                           #
+# MIT Licence                                              #
+############################################################
+
+from cStringIO import StringIO
+from PyQt4 import QtCore
 from copy import copy
 
 import FlatCAMApp
 from FlatCAMCommon import LoudDict
 from ObjectUI import *
 from camlib import *
-
+import inspect  # TODO: For debugging only.
 
 # Interrupts plotting process if FlatCAMObj has been deleted
 class ObjectDeleted(Exception):
@@ -28,6 +37,7 @@ class FlatCAMObj(QtCore.QObject):
 
     def __init__(self, name):
         """
+        Constructor.
 
         :param name: Name of the object given by the user.
         :return: FlatCAMObj
@@ -70,6 +80,9 @@ class FlatCAMObj(QtCore.QObject):
         ``self.options`` is only updated, not overwritten. This ensures that
         options set by the app do not vanish when reading the objects
         from a project file.
+
+        :param d: Dictionary with attributes to set.
+        :return: None
         """
 
         for attr in self.ser_attrs:
@@ -80,6 +93,8 @@ class FlatCAMObj(QtCore.QObject):
                 setattr(self, attr, d[attr])
 
     def on_options_change(self, key):
+        # Note: Compare with master.
+
         # Update form on programmatically options change
         self.set_form_item(key)
 
@@ -178,6 +193,8 @@ class FlatCAMObj(QtCore.QObject):
         except:
             self.app.log.debug("Nothing to remove")
         self.app.ui.selected_scroll_area.setWidget(self.ui)
+
+        # Note: Compare to master. Has self.to_form() here.
 
         self.muted_ui = False
 
@@ -1297,11 +1314,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :param inside_pt: [x, y]
         :param tooldia: Diameter of the painting tool
         :param overlap: Overlap of the tool between passes.
+        :param outname: Name of the resulting Geometry Object.
         :return: None
         """
 
         # Which polygon.
-        #poly = find_polygon(self.solid_geometry, inside_pt)
         poly = self.find_polygon(inside_pt)
 
         # No polygon?
@@ -1321,14 +1338,18 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             #assert isinstance(app_obj, App)
 
             if self.options["paintmethod"] == "seed":
+                # Type(cp) == FlatCAMRTreeStorage | None
                 cp = self.clear_polygon2(poly.buffer(-self.options["paintmargin"]),
                                          tooldia, overlap=overlap)
 
             else:
+                # Type(cp) == FlatCAMRTreeStorage | None
                 cp = self.clear_polygon(poly.buffer(-self.options["paintmargin"]),
                                         tooldia, overlap=overlap)
 
-            geo_obj.solid_geometry = list(cp.get_objects())
+            if cp is not None:
+                geo_obj.solid_geometry = list(cp.get_objects())
+
             geo_obj.options["cnctooldia"] = tooldia
 
             # Experimental...
@@ -1355,11 +1376,22 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
     def paint_poly_all(self, tooldia, overlap, outname=None):
+        """
+        Paints all polygons in this object.
+
+        :param tooldia:
+        :param overlap:
+        :param outname:
+        :return:
+        """
 
         proc = self.app.proc_container.new("Painting polygon.")
 
         name = outname or self.options["name"] + "_paint"
 
+        # This is a recursive generator of individual Polygons.
+        # Note: Double check correct implementation. Might exit
+        #       early if it finds something that is not a Polygon?
         def recurse(geo):
             try:
                 for subg in geo:
@@ -1381,14 +1413,17 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             for poly in recurse(self.solid_geometry):
 
                 if self.options["paintmethod"] == "seed":
+                    # Type(cp) == FlatCAMRTreeStorage | None
                     cp = self.clear_polygon2(poly.buffer(-self.options["paintmargin"]),
                                              tooldia, overlap=overlap)
 
                 else:
+                    # Type(cp) == FlatCAMRTreeStorage | None
                     cp = self.clear_polygon(poly.buffer(-self.options["paintmargin"]),
                                             tooldia, overlap=overlap)
 
-                geo_obj.solid_geometry += list(cp.get_objects())
+                if cp is not None:
+                    geo_obj.solid_geometry += list(cp.get_objects())
 
             geo_obj.options["cnctooldia"] = tooldia
 
@@ -1404,6 +1439,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 app_obj.new_object("geometry", name, gen_paintarea)
             except Exception as e:
                 proc.done()
+                traceback.print_stack()
                 raise e
             proc.done()
 
