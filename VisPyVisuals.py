@@ -16,11 +16,11 @@ def _update_shape_buffers(data, triangulation='glu'):
     :param triangulation: str
         Triangulation engine
     """
-    mesh_vertices = []                                              # Vertices for mesh
-    mesh_tris = []                                                  # Faces for mesh
-    mesh_colors = []                                                # Face colors
-    line_pts = []                                                   # Vertices for line
-    line_colors = []                                                # Line color
+    mesh_vertices = []       # Vertices for mesh
+    mesh_tris = []           # Faces for mesh
+    mesh_colors = []         # Face colors
+    line_pts = []            # Vertices for line
+    line_colors = []         # Line color
 
     geo, color, face_color, tolerance = data['geometry'], data['color'], data['face_color'], data['tolerance']
 
@@ -78,14 +78,16 @@ def _update_shape_buffers(data, triangulation='glu'):
 
 
 def _linearring_to_segments(arr):
-    # Close linear ring
     """
     Translates linear ring to line segments
+
     :param arr: numpy.array
         Array of linear ring vertices
     :return: numpy.array
         Line segments
     """
+
+    # Close linear ring
     if arr[0] != arr[-1]:
         arr.append(arr[0])
 
@@ -95,6 +97,7 @@ def _linearring_to_segments(arr):
 def _linestring_to_segments(arr):
     """
     Translates line strip to segments
+
     :param arr: numpy.array
         Array of line strip vertices
     :return: numpy.array
@@ -107,6 +110,10 @@ class ShapeGroup(object):
     def __init__(self, collection):
         """
         Represents group of shapes in collection
+
+        Known Usage:
+          * PlotCanvas.new_shape_group().
+
         :param collection: ShapeCollection
             Collection to work with
         """
@@ -168,6 +175,10 @@ class ShapeCollectionVisual(CompoundVisual):
     def __init__(self, line_width=1, triangulation='gpc', layers=3, pool=None, **kwargs):
         """
         Represents collection of shapes to draw on VisPy scene
+
+        Known usages:
+          * ShapeCollection = create_fast_node(Shape...)
+
         :param line_width: float
             Width of lines/edges
         :param triangulation: str
@@ -339,6 +350,7 @@ class ShapeCollectionVisual(CompoundVisual):
     def redraw(self, indexes=None):
         """
         Redraws collection
+
         :param indexes: list
             Shape indexes to get from process pool
         """
@@ -404,6 +416,7 @@ class TextGroup(object):
     def visible(self):
         """
         Visibility of group
+
         :return: bool
         """
         return self._visible
@@ -412,6 +425,7 @@ class TextGroup(object):
     def visible(self, value):
         """
         Visibility of group
+
         :param value: bool
         """
         self._visible = value
@@ -439,6 +453,7 @@ class TextCollectionVisual(TextVisual):
     def add(self, text, pos, visible=True, update=True):
         """
         Adds array of text to collection
+
         :param text: list
             Array of strings ['str1', 'str2', ... ]
         :param pos: list
@@ -465,6 +480,7 @@ class TextCollectionVisual(TextVisual):
     def remove(self, key, update=False):
         """
         Removes shape from collection
+
         :param key: int
             Shape index to remove
         :param update:
@@ -478,6 +494,7 @@ class TextCollectionVisual(TextVisual):
     def clear(self, update=False):
         """
         Removes all shapes from colleciton
+
         :param update: bool
             Set True to redraw collection
         """
@@ -576,6 +593,36 @@ def create_fast_node(subclass):
 
     return cls
 
+# Usages:
+#   * PlotCanvas.new_shape_collection(): ... return ...
+#   * VisPyCanvas.__init__(): ... self.shapes = ...
 ShapeCollection = create_fast_node(ShapeCollectionVisual)
+
 TextCollection = create_fast_node(TextCollectionVisual)
+
 Cursor = create_fast_node(MarkersVisual)
+
+
+# class FastNode(VisualNode):
+#
+#     def __init__(self, *args, **kwargs):
+#         self.__parent = kwargs.pop('parent', None)
+#         self.name = kwargs.pop('name', None)
+#         self._enabled = False
+#         self.parent = None
+#         super(FastNode, self).__init__(parent=self.__parent, name=self.name)
+#
+#     def get_enabled(self):
+#         return self._enabled
+#
+#     def set_enabled(self, enabled):
+#         if enabled:
+#             self.parent = self.__parent  # Restore parent
+#         else:
+#             if self.parent:  # Store parent
+#                 self.__parent = self.parent
+#             self.parent = None
+#
+#
+# class ShapeCollection(FastNode, ShapeCollectionVisual):
+#     pass
