@@ -18,12 +18,12 @@ from vispy.geometry import Rect
 log = logging.getLogger('base')
 
 
-class PlotCanvas(QtCore.QObject):
+class PlotCanvas(QtCore.QObject, VisPyCanvas):
     """
     Class handling the plotting area in the application.
     """
 
-    def __init__(self, container, app):
+    def __init__(self, container, fcapp):
         """
         The constructor configures the Matplotlib figure that
         will contain all plots, creates the base axes and connects
@@ -35,37 +35,46 @@ class PlotCanvas(QtCore.QObject):
 
         super(PlotCanvas, self).__init__()
 
-        self.app = app
+        VisPyCanvas.__init__(self)
 
-        # Parent container
+        # VisPyCanvas does not allow new attributes. Override.
+        self.unfreeze()
+
+        # self.app collides with VispyCanvas.app
+        # Renamed to fcapp.
+        self.fcapp = fcapp
+
+        # Parent container <QtCore.QObject>
         self.container = container
 
-        # Attach to parent
-        self.vispy_canvas = VisPyCanvas()
-        self.vispy_canvas.create_native()
-        self.vispy_canvas.native.setParent(self.app.ui)
-        self.container.addWidget(self.vispy_canvas.native)
+        # <VisPyCanvas>
+        self.create_native()
+        self.native.setParent(self.fcapp.ui)
+
+        self.container.addWidget(self.native)
 
         self.vline = InfiniteLine(pos=0, color=(0.0, 0.0, 0.0, 1.0), vertical=True,
-                                  parent=self.vispy_canvas.view.scene)
+                                  parent=self.view.scene)
 
-        self.hline = InfiniteLine(pos=0, color=(0.0, 0.0, 0.0, 1.0), vertical=False,
-                                  parent=self.vispy_canvas.view.scene)
-
-        # self.shape_collections = []
+        self.vline = InfiniteLine(pos=0, color=(0.0, 0.0, 0.0, 1.0), vertical=True,
+                                  parent=self.view.scene)
 
         self.shape_collection = self.new_shape_collection()
-        self.app.pool_recreated.connect(self.on_pool_recreated)
+        self.fcapp.pool_recreated.connect(self.on_pool_recreated)
         self.text_collection = self.new_text_collection()
 
         # TODO: Should be setting to show/hide CNC job annotations (global or per object)
         self.text_collection.enabled = False
 
+        # Keep VisPy canvas happy by letting it be "frozen" again.
+        # Why the heck is this needed???
+        self.freeze()
+
     def vis_connect(self, event_name, callback):
-        return getattr(self.vispy_canvas.events, event_name).connect(callback)
+        return getattr(self.events, event_name).connect(callback)
 
     def vis_disconnect(self, event_name, callback):
-        getattr(self.vispy_canvas.events, event_name).disconnect(callback)
+        getattr(self.events, event_name).disconnect(callback)
 
     def zoom(self, factor, center=None):
         """
@@ -78,19 +87,24 @@ class PlotCanvas(QtCore.QObject):
         :type center: list
         :return: None
         """
-        self.vispy_canvas.view.camera.zoom(factor, center)
+        self.view.camera.zoom(factor, center)
 
     def new_shape_group(self):
         return ShapeGroup(self.shape_collection)
 
     def new_shape_collection(self, **kwargs):
-        # sc = ShapeCollection(parent=self.vispy_canvas.view.scene, pool=self.app.pool, **kwargs)
-        # self.shape_collections.append(sc)
-        # return sc
-        return ShapeCollection(parent=self.vispy_canvas.view.scene, pool=self.app.pool, **kwargs)
+        """
+        Creates a ShapeCollection with parent and pool of this PlotCanvas.
+
+        :param kwargs:
+        :return:
+        """
+
+        return ShapeCollection(parent=self.view.scene, pool=self.fcapp.pool, **kwargs)
 
     def new_cursor(self):
-        c = Cursor(pos=np.empty((0, 2)), parent=self.vispy_canvas.view.scene)
+        # c = Cursor(pos=np.empty((0, 2)), parent=self.vispy_canvas.view.scene)
+        c = Cursor(pos=np.empty((0, 2)), parent=self.view.scene)
         c.antialias = 0
         return c
 
@@ -98,7 +112,7 @@ class PlotCanvas(QtCore.QObject):
         return TextGroup(self.text_collection)
 
     def new_text_collection(self, **kwargs):
-        return TextCollection(parent=self.vispy_canvas.view.scene, **kwargs)
+        return TextCollection(parent=self.view.scene, **kwargs)
 
     def fit_view(self, rect=None):
 
@@ -113,7 +127,7 @@ class PlotCanvas(QtCore.QObject):
             except TypeError:
                 pass
 
-        self.vispy_canvas.view.camera.rect = rect
+        self.view.camera.rect = rect
 
         self.shape_collection.unlock_updates()
 

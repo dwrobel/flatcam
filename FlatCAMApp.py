@@ -1512,8 +1512,8 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        # self.plotcanvas.auto_adjust_axes()
-        self.plotcanvas.vispy_canvas.update()           # TODO: Need update canvas?
+
+        self.plotcanvas.update()           # TODO: Need update canvas?
         self.on_zoom_fit(None)
 
     def on_toolbar_replot(self):
@@ -1630,9 +1630,9 @@ class App(QtCore.QObject):
         """
 
         # So it can receive key presses
-        self.plotcanvas.vispy_canvas.native.setFocus()
+        self.plotcanvas.native.setFocus()
 
-        pos = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
+        pos = self.plotcanvas.translate_coords(event.pos)
 
         try:
             App.log.debug('button=%d, x=%d, y=%d, xdata=%f, ydata=%f' % (
@@ -1654,7 +1654,7 @@ class App(QtCore.QObject):
         :return: None
         """
 
-        pos = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
+        pos = self.plotcanvas.translate_coords(event.pos)
 
         try:  # May fail in case mouse not within axes
             self.ui.position_label.setText("X: %.4f   Y: %.4f" % (
