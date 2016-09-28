@@ -1037,7 +1037,7 @@ class FlatCAMDraw(QtCore.QObject):
         :return: None
         """
 
-        pos = self.canvas.vispy_canvas.translate_coords(event.pos)
+        pos = self.canvas.translate_coords(event.pos)
 
         # Selection with left mouse button
         if self.active_tool is not None and event.button is 1:
@@ -1066,7 +1066,7 @@ class FlatCAMDraw(QtCore.QObject):
         :return: None
         """
 
-        pos = self.canvas.vispy_canvas.translate_coords(event.pos)
+        pos = self.canvas.translate_coords(event.pos)
         event.xdata, event.ydata = pos[0], pos[1]
 
         # Store mouse pos to use in key_press event

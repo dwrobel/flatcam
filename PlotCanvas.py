@@ -51,12 +51,13 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.create_native()
         self.native.setParent(self.fcapp.ui)
 
+        # <QtCore.QObject>
         self.container.addWidget(self.native)
 
         self.vline = InfiniteLine(pos=0, color=(0.0, 0.0, 0.0, 1.0), vertical=True,
                                   parent=self.view.scene)
 
-        self.vline = InfiniteLine(pos=0, color=(0.0, 0.0, 0.0, 1.0), vertical=True,
+        self.hline = InfiniteLine(pos=0, color=(0.0, 0.0, 0.0, 1.0), vertical=False,
                                   parent=self.view.scene)
 
         self.shape_collection = self.new_shape_collection()
@@ -90,11 +91,19 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         self.view.camera.zoom(factor, center)
 
     def new_shape_group(self):
+        """
+        Used by every FlatCAMObject to create their own shape
+        group attached to this Canvas.
+
+        :return:
+        """
         return ShapeGroup(self.shape_collection)
 
     def new_shape_collection(self, **kwargs):
         """
         Creates a ShapeCollection with parent and pool of this PlotCanvas.
+
+        Used in the constructor and in FlatCAMDraw.__init__().
 
         :param kwargs:
         :return:
@@ -103,7 +112,13 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         return ShapeCollection(parent=self.view.scene, pool=self.fcapp.pool, **kwargs)
 
     def new_cursor(self):
-        # c = Cursor(pos=np.empty((0, 2)), parent=self.vispy_canvas.view.scene)
+        """
+        Know usage:
+          * FlatCAMDraw.__init__()
+
+        :return: A Cursor attached to this Canvas.
+        """
+
         c = Cursor(pos=np.empty((0, 2)), parent=self.view.scene)
         c.antialias = 0
         return c
@@ -135,6 +150,11 @@ class PlotCanvas(QtCore.QObject, VisPyCanvas):
         pass
 
     def redraw(self):
+        """
+        Call all collections' redraw() method.
+
+        :return: None
+        """
         self.shape_collection.redraw([])
         self.text_collection.redraw()
 
