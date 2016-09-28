@@ -38,7 +38,7 @@ class Measurement(FlatCAMTool):
         self.toggle()
 
     def on_click(self, event):
-        pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+        pos = self.app.plotcanvas.translate_coords(event.pos)
         if self.point1 is None:
             self.point1 = pos
         else:
@@ -65,7 +65,7 @@ class Measurement(FlatCAMTool):
             self.label.setText("Click on a reference point...")
         else:
             try:
-                pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+                pos = self.app.plotcanvas.translate_coords(event.pos)
                 dx = pos[0] - self.point1[0]
                 dy = pos[1] - self.point1[1]
                 d = sqrt(dx**2 + dy**2)
