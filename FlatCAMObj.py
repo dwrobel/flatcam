@@ -447,7 +447,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         name = self.options["name"] + "_cutout"
 
         def geo_init(geo_obj, app_obj):
-            margin = self.options["cutoutmargin"] + self.options["cutouttooldia"]/2
+            margin = self.options["cutoutmargin"] + self.options["cutouttooldia"] / 2
             gap_size = self.options["cutoutgapsize"] + self.options["cutouttooldia"]
             minx, miny, maxx, maxy = self.bounds()
             minx -= margin
@@ -715,10 +715,10 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         """
 
         if type(exc_list) is not list:
-            exc_list_real= list()
+            exc_list_real = list()
             exc_list_real.append(exc_list)
         else:
-            exc_list_real=exc_list
+            exc_list_real = exc_list
 
         for exc in exc_list_real:
             # Expand lists
@@ -738,33 +738,33 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                         try:
                             exc_final.options[option] = exc.options[option]
                         except:
-                            exc.app.log.warning("Failed to copy option.",option)
+                            exc.app.log.warning("Failed to copy option.", option)
 
                 #deep copy of all drills,to avoid any references
                 for drill in exc.drills:
-                    point = Point(drill['point'].x,drill['point'].y)
+                    point = Point(drill['point'].x, drill['point'].y)
                     exc_final.drills.append({"point": point, "tool": drill['tool']})
-                toolsrework=dict()
-                max_numeric_tool=0
+                toolsrework = dict()
+                max_numeric_tool = 0
                 for toolname in exc.tools.iterkeys():
-                    numeric_tool=int(toolname)
-                    if numeric_tool>max_numeric_tool:
-                        max_numeric_tool=numeric_tool
-                    toolsrework[exc.tools[toolname]['C']]=toolname
+                    numeric_tool = int(toolname)
+                    if numeric_tool > max_numeric_tool:
+                        max_numeric_tool = numeric_tool
+                    toolsrework[exc.tools[toolname]['C']] = toolname
 
                 #exc_final as last because names from final tools will be used
                 for toolname in exc_final.tools.iterkeys():
-                    numeric_tool=int(toolname)
-                    if numeric_tool>max_numeric_tool:
-                        max_numeric_tool=numeric_tool
-                    toolsrework[exc_final.tools[toolname]['C']]=toolname
+                    numeric_tool = int(toolname)
+                    if numeric_tool > max_numeric_tool:
+                        max_numeric_tool = numeric_tool
+                    toolsrework[exc_final.tools[toolname]['C']] = toolname
 
                 for toolvalues in toolsrework.iterkeys():
                     if toolsrework[toolvalues] in exc_final.tools:
-                        if exc_final.tools[toolsrework[toolvalues]]!={"C": toolvalues}:
-                            exc_final.tools[str(max_numeric_tool+1)]={"C": toolvalues}
+                        if exc_final.tools[toolsrework[toolvalues]] != {"C": toolvalues}:
+                            exc_final.tools[str(max_numeric_tool + 1)] = {"C": toolvalues}
                     else:
-                        exc_final.tools[toolsrework[toolvalues]]={"C": toolvalues}
+                        exc_final.tools[toolsrework[toolvalues]] = {"C": toolvalues}
                 #this value  was not co
                 exc_final.zeros=exc.zeros
                 exc_final.create_geometry()
@@ -780,9 +780,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.ui.tools_table.setSortingEnabled(False)
         i = 0
         for tool in self.tools:
-            id = QtGui.QTableWidgetItem(tool)
-            id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.tools_table.setItem(i, 0, id)  # Tool name/id
+            toolid = QtGui.QTableWidgetItem(tool)
+            toolid.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.tools_table.setItem(i, 0, toolid)  # Tool name/id
             dia = QtGui.QTableWidgetItem(str(self.tools[tool]['C']))
             dia.setFlags(QtCore.Qt.ItemIsEnabled)
             self.ui.tools_table.setItem(i, 1, dia)  # Diameter
@@ -1004,6 +1004,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
+
 
 class FlatCAMCNCjob(FlatCAMObj, CNCjob):
     """
@@ -1577,14 +1578,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         def translate_recursion(geom):
             if type(geom) == list:
-                geoms=list()
+                geoms = list()
                 for local_geom in geom:
                     geoms.append(translate_recursion(local_geom))
                 return geoms
             else:
-                return  affinity.translate(geom, xoff=dx, yoff=dy)
+                return affinity.translate(geom, xoff=dx, yoff=dy)
 
-        self.solid_geometry=translate_recursion(self.solid_geometry)
+        self.solid_geometry = translate_recursion(self.solid_geometry)
 
     def convert_units(self, units):
         factor = Geometry.convert_units(self, units)
