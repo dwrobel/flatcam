@@ -3519,8 +3519,8 @@ class App(QtCore.QObject):
                         else:
                             self.new_object("geometry", local_outname, initialize_local)
 
-                        currentx = currentx+lenghtx
-                    currenty = currenty+lenghty
+                        currentx += lenghtx
+                    currenty += lenghty
 
                 if isinstance(obj, FlatCAMExcellon):
                     self.new_object("excellon", outname, initialize_excellon)
@@ -3542,9 +3542,9 @@ class App(QtCore.QObject):
             output = ''
             import collections
             od = collections.OrderedDict(sorted(commands.items()))
-            for cmd, val in od.iteritems():
+            for cmd_, val in od.iteritems():
                 #print cmd, '\n', ''.join(['~']*len(cmd))
-                output += cmd + ' \n' + ''.join(['~'] * len(cmd)) + '\n'
+                output += cmd_ + ' \n' + ''.join(['~'] * len(cmd_)) + '\n'
 
                 t = val['help']
                 usage_i = t.find('>')
@@ -3568,7 +3568,6 @@ class App(QtCore.QObject):
                 else:
                     extras = t[usage_i+end_usage_i+1:]
                     parts = [s.strip() for s in extras.split('\n')]
-
 
                     #print '    ' + t[usage_i:usage_i+end_usage_i]
                     output += '    ' + t[usage_i:usage_i+end_usage_i] + '\n'
@@ -3660,22 +3659,22 @@ class App(QtCore.QObject):
         '''
 
         commands = {
-            'mytest': {
-                'fcn': mytest,
-                'help': "Test function. Only for testing."
-            },
-            'mytest2': {
-                'fcn': mytest2,
-                'help': "Test function. Only for testing."
-            },
-            'mytest3': {
-                'fcn': mytest3,
-                'help': "Test function. Only for testing."
-            },
-            'mytest4': {
-                'fcn': mytest4,
-                'help': "Test function. Only for testing."
-            },
+            # 'mytest': {
+            #     'fcn': mytest,
+            #     'help': "Test function. Only for testing."
+            # },
+            # 'mytest2': {
+            #     'fcn': mytest2,
+            #     'help': "Test function. Only for testing."
+            # },
+            # 'mytest3': {
+            #     'fcn': mytest3,
+            #     'help': "Test function. Only for testing."
+            # },
+            # 'mytest4': {
+            #     'fcn': mytest4,
+            #     'help': "Test function. Only for testing."
+            # },
             'help': {
                 'fcn': shelp,
                 'help': "Shows list of commands."
