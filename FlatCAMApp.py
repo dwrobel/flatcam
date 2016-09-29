@@ -3461,13 +3461,13 @@ class App(QtCore.QObject):
                 return "Object not found: %s" % name
 
             if 'box' in kwa:
-                boxname=kwa['box']
+                boxname = kwa['box']
                 try:
                     box = self.collection.get_by_name(boxname)
                 except:
                     return "Could not retrieve object: %s" % name
             else:
-                box=obj
+                box = obj
 
             if 'columns' not in kwa or 'rows' not in kwa:
                 return "ERROR: Specify -columns and -rows"
@@ -3515,12 +3515,12 @@ class App(QtCore.QObject):
                     for col in range(kwa['columns']):
                         local_outname = outname + ".tmp." + str(col) + "." + str(row)
                         if isinstance(obj, FlatCAMExcellon):
-                            new_obj = self.new_object("excellon", local_outname, initialize_local_excellon)
+                            self.new_object("excellon", local_outname, initialize_local_excellon)
                         else:
-                            new_obj = self.new_object("geometry", local_outname, initialize_local)
-                        objs.append(new_obj)
-                        currentx=currentx+lenghtx
-                    currenty=currenty+lenghty
+                            self.new_object("geometry", local_outname, initialize_local)
+
+                        currentx = currentx+lenghtx
+                    currenty = currenty+lenghty
 
                 if isinstance(obj, FlatCAMExcellon):
                     self.new_object("excellon", outname, initialize_excellon)
