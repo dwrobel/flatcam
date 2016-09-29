@@ -11,6 +11,7 @@ from VisPyTesselators import GLUTess
 def _update_shape_buffers(data, triangulation='glu'):
     """
     Translates Shapely geometry to internal buffers for speedup redraws
+
     :param data: dict
         Input shape data
     :param triangulation: str
@@ -172,7 +173,7 @@ class ShapeGroup(object):
 
 class ShapeCollectionVisual(CompoundVisual):
 
-    def __init__(self, line_width=1, triangulation='gpc', layers=3, pool=None, **kwargs):
+    def __init__(self, line_width=1, triangulation='vispy', layers=3, pool=None, **kwargs):
         """
         Represents collection of shapes to draw on VisPy scene
 

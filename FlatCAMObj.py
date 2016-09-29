@@ -54,7 +54,6 @@ class FlatCAMObj(QtCore.QObject):
 
         self.kind = None  # Override with proper name
 
-        # self.shapes = ShapeCollection(parent=self.app.plotcanvas.vispy_canvas.view.scene)
         self.shapes = self.app.plotcanvas.new_shape_group()
 
         self.item = None  # Link with project view item
@@ -1299,7 +1298,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             def doit(event):
                 self.app.info("Painting polygon...")
                 self.app.plotcanvas.vis_disconnect('mouse_release', doit)
-                pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+                pos = self.app.plotcanvas.translate_coords(event.pos)
                 self.paint_poly_single_click([pos[0], pos[1]], tooldia, overlap)
 
             self.app.plotcanvas.vis_connect('mouse_release', doit)
