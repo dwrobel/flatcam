@@ -516,6 +516,7 @@ class App(QtCore.QObject):
         self.ui.menufilesaveprojectas.triggered.connect(self.on_file_saveprojectas)
         self.ui.menufilesaveprojectcopy.triggered.connect(lambda: self.on_file_saveprojectas(make_copy=True))
         self.ui.menufilesavedefaults.triggered.connect(self.on_file_savedefaults)
+        self.ui.exit_action.triggered.connect(self.on_file_exit)
         self.ui.menueditnew.triggered.connect(lambda: self.new_object('geometry', 'New Geometry', lambda x, y: None))
         self.ui.menueditedit.triggered.connect(self.edit_geometry)
         self.ui.menueditok.triggered.connect(self.editor2geometry)
@@ -1165,6 +1166,9 @@ class App(QtCore.QObject):
 
         self.save_defaults()
 
+    def on_file_exit(self):
+        QtGui.qApp.quit()
+
     def save_defaults(self, silent=False):
         """
         Saves application default options
@@ -1474,7 +1478,6 @@ class App(QtCore.QObject):
 
         # self.options2form()
 
-
     def on_delete(self):
         """
         Delete the currently selected FlatCAMObjs.
@@ -1487,7 +1490,6 @@ class App(QtCore.QObject):
 
         while (self.collection.get_active()):
             self.delete_first_selected()
- 
 
     def delete_first_selected(self):
         # Keep this for later
@@ -2018,6 +2020,8 @@ class App(QtCore.QObject):
         Opens a Gerber file, parses it and creates a new object for
         it in the program. Thread-safe.
 
+        :param outname: Name of the resulting object. None causes the
+            name to be that of the file.
         :param filename: Gerber file filename
         :type filename: str
         :param follow: If true, the parser will not create polygons, just lines
@@ -2088,6 +2092,8 @@ class App(QtCore.QObject):
         Opens an Excellon file, parses it and creates a new object for
         it in the program. Thread-safe.
 
+        :param outname: Name of the resulting object. None causes the
+            name to be that of the file.
         :param filename: Excellon file filename
         :type filename: str
         :return: None
@@ -2149,6 +2155,8 @@ class App(QtCore.QObject):
         Opens a G-gcode file, parses it and creates a new object for
         it in the program. Thread-safe.
 
+        :param outname: Name of the resulting object. None causes the
+            name to be that of the file.
         :param filename: G-code file filename
         :type filename: str
         :return: None
@@ -2444,71 +2452,71 @@ class App(QtCore.QObject):
         #     if status['timed_out']:
         #         raise Exception('Timed out!')
 
-        def mytest(*args):
-            to = int(args[0])
-
-            try:
-                for rec in self.recent:
-                    if rec['kind'] == 'gerber':
-                        self.open_gerber(str(rec['filename']))
-                        break
-
-                basename = self.collection.get_names()[0]
-                isolate(basename, '-passes', '10', '-combine', '1')
-                iso = self.collection.get_by_name(basename + "_iso")
-
-                with wait_signal(self.new_object_available, to):
-                    iso.generatecncjob()
-                # iso.generatecncjob()
-                # wait_signal2(self.new_object_available, to)
-
-                return str(self.collection.get_names())
-
-            except Exception as e:
-                return str(e)
-
-        def mytest2(*args):
-            to = int(args[0])
-
-            for rec in self.recent:
-                if rec['kind'] == 'gerber':
-                    self.open_gerber(str(rec['filename']))
-                    break
-
-            basename = self.collection.get_names()[0]
-            isolate(basename, '-passes', '10', '-combine', '1')
-            iso = self.collection.get_by_name(basename + "_iso")
-
-            with wait_signal(self.new_object_available, to):
-                1/0  # Force exception
-                iso.generatecncjob()
-
-            return str(self.collection.get_names())
-
-        def mytest3(*args):
-            to = int(args[0])
-
-            def sometask(*args):
-                time.sleep(2)
-                self.inform.emit("mytest3")
-
-            with wait_signal(self.inform, to):
-                self.worker_task.emit({'fcn': sometask, 'params': []})
-
-            return "mytest3 done"
-
-        def mytest4(*args):
-            to = int(args[0])
-
-            def sometask(*args):
-                time.sleep(2)
-                1/0  # Force exception
-                self.inform.emit("mytest4")
-
-            with wait_signal(self.inform, to):
-                self.worker_task.emit({'fcn': sometask, 'params': []})
-
-            return "mytest3 done"
+        # def mytest(*args):
+        #     to = int(args[0])
+        #
+        #     try:
+        #         for rec in self.recent:
+        #             if rec['kind'] == 'gerber':
+        #                 self.open_gerber(str(rec['filename']))
+        #                 break
+        #
+        #         basename = self.collection.get_names()[0]
+        #         isolate(basename, '-passes', '10', '-combine', '1')
+        #         iso = self.collection.get_by_name(basename + "_iso")
+        #
+        #         with wait_signal(self.new_object_available, to):
+        #             iso.generatecncjob()
+        #         # iso.generatecncjob()
+        #         # wait_signal2(self.new_object_available, to)
+        #
+        #         return str(self.collection.get_names())
+        #
+        #     except Exception as e:
+        #         return str(e)
+        #
+        # def mytest2(*args):
+        #     to = int(args[0])
+        #
+        #     for rec in self.recent:
+        #         if rec['kind'] == 'gerber':
+        #             self.open_gerber(str(rec['filename']))
+        #             break
+        #
+        #     basename = self.collection.get_names()[0]
+        #     isolate(basename, '-passes', '10', '-combine', '1')
+        #     iso = self.collection.get_by_name(basename + "_iso")
+        #
+        #     with wait_signal(self.new_object_available, to):
+        #         1/0  # Force exception
+        #         iso.generatecncjob()
+        #
+        #     return str(self.collection.get_names())
+        #
+        # def mytest3(*args):
+        #     to = int(args[0])
+        #
+        #     def sometask(*args):
+        #         time.sleep(2)
+        #         self.inform.emit("mytest3")
+        #
+        #     with wait_signal(self.inform, to):
+        #         self.worker_task.emit({'fcn': sometask, 'params': []})
+        #
+        #     return "mytest3 done"
+        #
+        # def mytest4(*args):
+        #     to = int(args[0])
+        #
+        #     def sometask(*args):
+        #         time.sleep(2)
+        #         1/0  # Force exception
+        #         self.inform.emit("mytest4")
+        #
+        #     with wait_signal(self.inform, to):
+        #         self.worker_task.emit({'fcn': sometask, 'params': []})
+        #
+        #     return "mytest3 done"
 
         def export_svg(name, filename, *args):
             a, kwa = h(*args)
@@ -2681,15 +2689,15 @@ class App(QtCore.QObject):
                                        xmax + gapsize,
                                        py + gapsize + lenghty / 4)
                     subtract_rectangle(name,
-                                       xmin-gapsize,
+                                       xmin - gapsize,
                                        py - gapsize - lenghty / 4,
                                        xmax + gapsize,
                                        py + gapsize - lenghty / 4)
 
-                if kwa['gaps'] == '8' or kwa['gaps']=='2tb':
+                if kwa['gaps'] == '8' or kwa['gaps'] == '2tb':
                     subtract_rectangle(name,
                                        px - gapsize + lenghtx / 4,
-                                       ymin-gapsize,
+                                       ymin - gapsize,
                                        px + gapsize + lenghtx / 4,
                                        ymax + gapsize)
                     subtract_rectangle(name,
@@ -2698,14 +2706,14 @@ class App(QtCore.QObject):
                                        px + gapsize - lenghtx / 4,
                                        ymax + gapsize)
 
-                if kwa['gaps'] == '4' or kwa['gaps']=='lr':
+                if kwa['gaps'] == '4' or kwa['gaps'] == 'lr':
                     subtract_rectangle(name,
                                        xmin - gapsize,
                                        py - gapsize,
                                        xmax + gapsize,
                                        py + gapsize)
 
-                if kwa['gaps'] == '4' or kwa['gaps']=='tb':
+                if kwa['gaps'] == '4' or kwa['gaps'] == 'tb':
                     subtract_rectangle(name,
                                        px - gapsize,
                                        ymin - gapsize,
@@ -2808,24 +2816,24 @@ class App(QtCore.QObject):
                 return "ERROR: Specify -dia"
 
             if 'gridoffsetx' not in kwa:
-                gridoffsetx=0
+                gridoffsetx = 0
             else:
-                gridoffsetx=kwa['gridoffsetx']
+                gridoffsetx = kwa['gridoffsetx']
 
             if 'gridoffsety' not in kwa:
-                gridoffsety=0
+                gridoffsety = 0
             else:
-                gridoffsety=kwa['gridoffsety']
+                gridoffsety = kwa['gridoffsety']
 
             # Tools
             tools = {"1": {"C": kwa['dia']}}
 
             def aligndrillgrid_init_me(init_obj, app_obj):
                 drills = []
-                currenty=0
+                currenty = 0
                 
                 for row in range(kwa['rows']):
-                    currentx=0
+                    currentx = 0
                     
                     for col in range(kwa['columns']):
                         point = Point(currentx + gridoffsetx, currenty + gridoffsety)
@@ -2838,7 +2846,7 @@ class App(QtCore.QObject):
                 init_obj.drills = drills
                 init_obj.create_geometry()
 
-            self.new_object("excellon", outname , aligndrillgrid_init_me)
+            self.new_object("excellon", outname, aligndrillgrid_init_me)
 
         def aligndrill(name, *args):
             a, kwa = h(*args)
@@ -2899,13 +2907,13 @@ class App(QtCore.QObject):
                         drills.append({"point": point, "tool": "1"})
                         drills.append({"point": point_mirror, "tool": "1"})
                 else:
-                    if not 'box' in kwa:
+                    if 'box' not in kwa:
                         return "ERROR: -grid can be used only for -box"
 
                     if 'axisoffset' in kwa:
-                        axisoffset=kwa['axisoffset']
+                        axisoffset = kwa['axisoffset']
                     else:
-                        axisoffset=0
+                        axisoffset = 0
 
                     # This will align hole to given aligngridoffset and minimal offset from pcb, based on selected axis
                     if axis == "X":
@@ -2919,7 +2927,7 @@ class App(QtCore.QObject):
                         while (xmax + kwa['minoffset']) > lastpoint:
                             lastpoint = lastpoint + kwa['grid']
                         
-                        localHoles = (firstpoint, axisoffset), (lastpoint, axisoffset)
+                        localholes = (firstpoint, axisoffset), (lastpoint, axisoffset)
                     
                     else:
                         firstpoint = kwa['gridoffset']
@@ -2930,11 +2938,11 @@ class App(QtCore.QObject):
                         lastpoint = kwa['gridoffset']
                         
                         while (ymax + kwa['minoffset']) > lastpoint:
-                            lastpoint=lastpoint+kwa['grid']
+                            lastpoint = lastpoint + kwa['grid']
                         
-                        localHoles = (axisoffset, firstpoint), (axisoffset, lastpoint)
+                        localholes = (axisoffset, firstpoint), (axisoffset, lastpoint)
 
-                    for hole in localHoles:
+                    for hole in localholes:
                         point = Point(hole)
                         point_mirror = affinity.scale(point, xscale, yscale, origin=(px, py))
                         drills.append({"point": point, "tool": "1"})
@@ -2982,12 +2990,13 @@ class App(QtCore.QObject):
             return 'Ok'
 
         def drillcncjob(name=None, *args):
-            '''
+            """
             TCL shell command - see help section
+
             :param name: name of object
             :param args: array of arguments
             :return: "Ok" if completed without errors
-            '''
+            """
 
             try:
                 a, kwa = h(*args)
@@ -3046,12 +3055,12 @@ class App(QtCore.QObject):
                 self.raise_tcl_unknown_error(unknown)
 
         def millholes(name=None, *args):
-            '''
+            """
             TCL shell command - see help section
             :param name: name of object
             :param args: array of arguments
             :return: "Ok" if completed without errors
-            '''
+            """
 
             try:
                 a, kwa = h(*args)
@@ -3102,12 +3111,12 @@ class App(QtCore.QObject):
                 self.raise_tcl_unknown_error(unknown)
 
         def exteriors(name=None, *args):
-            '''
+            """
             TCL shell command - see help section
             :param name: name of object
             :param args: array of arguments
             :return: "Ok" if completed without errors
-            '''
+            """
 
             try:
                 a, kwa = h(*args)
@@ -3204,12 +3213,13 @@ class App(QtCore.QObject):
                 self.raise_tcl_unknown_error(unknown)
 
         def isolate(name=None, *args):
-            '''
+            """
             TCL shell command - see help section
             :param name: name of object
             :param args: array of arguments
             :return: "Ok" if completed without errors
-            '''
+            """
+
             a, kwa = h(*args)
             types = {'dia': float,
                      'passes': int,
@@ -3343,7 +3353,7 @@ class App(QtCore.QObject):
             if len(args) % 2 != 0:
                 return "Incomplete coordinate."
 
-            points = [[float(args[2*i]), float(args[2*i+1])] for i in range(len(args)/2)]
+            points = [[float(args[2 * i]), float(args[2 * i +1])] for i in range(len(args)/2)]
 
             try:
                 obj = self.collection.get_by_name(str(obj_name))
@@ -3463,25 +3473,26 @@ class App(QtCore.QObject):
                 return "ERROR: Specify -columns and -rows"
 
             if 'outname' in kwa:
-                outname=kwa['outname']
+                outname = kwa['outname']
             else:
-                outname=name+'_panelized'
+                outname = name + '_panelized'
 
             if 'spacing_columns' in kwa:
-                spacing_columns=kwa['spacing_columns']
+                spacing_columns = kwa['spacing_columns']
             else:
-                spacing_columns=5
+                spacing_columns = 5
 
             if 'spacing_rows' in kwa:
-                spacing_rows=kwa['spacing_rows']
+                spacing_rows = kwa['spacing_rows']
             else:
-                spacing_rows=5
+                spacing_rows = 5
 
             xmin, ymin, xmax, ymax = box.bounds()
-            lenghtx = xmax-xmin+spacing_columns
-            lenghty = ymax-ymin+spacing_rows
+            lenghtx = xmax - xmin + spacing_columns
+            lenghty = ymax - ymin + spacing_rows
 
-            currenty=0
+            currenty = 0
+
             def initialize_local(obj_init, app):
                 obj_init.solid_geometry = obj.solid_geometry
                 obj_init.offset([float(currentx), float(currenty)]),
@@ -3496,17 +3507,17 @@ class App(QtCore.QObject):
             def initialize_excellon(obj_init, app):
                 FlatCAMExcellon.merge(objs, obj_init)
 
-            objs=[]
+            objs = []
             if obj is not None:
 
                 for row in range(kwa['rows']):
-                    currentx=0
+                    currentx = 0
                     for col in range(kwa['columns']):
-                        local_outname=outname+".tmp."+str(col)+"."+str(row)
+                        local_outname = outname + ".tmp." + str(col) + "." + str(row)
                         if isinstance(obj, FlatCAMExcellon):
-                            new_obj=self.new_object("excellon", local_outname, initialize_local_excellon)
+                            new_obj = self.new_object("excellon", local_outname, initialize_local_excellon)
                         else:
-                            new_obj=self.new_object("geometry", local_outname, initialize_local)
+                            new_obj = self.new_object("geometry", local_outname, initialize_local)
                         objs.append(new_obj)
                         currentx=currentx+lenghtx
                     currenty=currenty+lenghty
