@@ -213,14 +213,6 @@ class ShapeCollectionVisual(CompoundVisual):
 
         CompoundVisual.__init__(self, visuals_, **kwargs)
 
-        for m in self._meshes:
-            pass
-            m.set_gl_state(polygon_offset_fill=True, polygon_offset=(1, 1), cull_face=False)
-
-        for l in self._lines:
-            pass
-            l.set_gl_state(blend=True)
-
         self.freeze()
 
     def add(self, shape=None, color=None, face_color=None, visible=True, update=False, layer=1, tolerance=0.01):
