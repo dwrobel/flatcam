@@ -16,6 +16,7 @@ from ObjectUI import *
 from camlib import *
 import inspect  # TODO: For debugging only.
 
+
 # Interrupts plotting process if FlatCAMObj has been deleted
 class ObjectDeleted(Exception):
     pass

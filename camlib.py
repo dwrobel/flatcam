@@ -3142,6 +3142,9 @@ class CNCjob(Geometry):
         G-Code parser (from self.gcode). Generates dictionary with
         single-segment LineString's and "kind" indicating cut or travel,
         fast or feedrate speed.
+
+        :returns: List of dictionaries with 'kind'<str>, and 'geom'<shapely geometry>.
+        :rtype: list
         """
 
         kind = ["C", "F"]  # T=travel, C=cut, F=fast, S=slow
@@ -3264,11 +3267,18 @@ class CNCjob(Geometry):
         
     def plot2(self, tooldia=None, dpi=75, margin=0.1,
               color={"T": ["#F0E24D4C", "#B5AB3A4C"], "C": ["#5E6CFFFF", "#4650BDFF"]},
-              alpha={"T": 0.3, "C": 1.0}, tool_tolerance=0.0005,
-              obj=None, visible=False):
+              alpha={"T": 0.3, "C": 1.0},
+              tool_tolerance=0.0005,
+              obj=None,
+              visible=False):
         """
         Plots the G-code job onto the given axes.
 
+        NOTE: This is only calleb by the FlatCAMCNCJob object extending this class. The obj
+              parameter is a reference to it. Todo: Move this method to the child class.
+
+        :param visible: If it should be plotted. The child object gives it its options['plot'].
+        :param obj: FlatCAMCNCJob object that extended this class.
         :param tooldia: Tool diameter.
         :param dpi: Not used!
         :param margin: Not used!
@@ -3283,7 +3293,11 @@ class CNCjob(Geometry):
             tooldia = self.tooldia
         
         if tooldia == 0:
+            # self.gcode_parsed is a list of dictionaries. See gcode_parse().
             for geo in self.gcode_parsed:
+                # NOTE: obj is the child FlatCAMCNCjob object.
+                # add_shapes() calls obj.shapes.add() and obj.shapes
+                # is a shape_group (VisPy)
                 obj.add_shape(shape=geo['geom'],
                               color=color[geo['kind'][0]][1],
                               visible=visible)
@@ -3296,10 +3310,14 @@ class CNCjob(Geometry):
                 text.append(str(path_num))
                 pos.append(geo['geom'].coords[0])
 
+                # Shapely
                 poly = geo['geom'].buffer(tooldia / 2.0).simplify(tool_tolerance)
+
+                # VisPy
                 obj.add_shape(shape=poly, color=color[geo['kind'][0]][1], face_color=color[geo['kind'][0]][0],
                               visible=visible, layer=1 if geo['kind'][0] == 'C' else 2)
 
+            # VisPy
             obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'])
 
     def create_geometry(self):
