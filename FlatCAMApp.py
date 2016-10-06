@@ -2529,28 +2529,30 @@ class App(QtCore.QObject):
 
             self.export_svg(str(name), str(filename), **kwa)
 
-        def import_svg(filename, *args):
-            a, kwa = h(*args)
-            types = {'outname': str}
+        # --- Migrated to new architecture ---
+        # def import_svg(filename, *args):
+        #     a, kwa = h(*args)
+        #     types = {'outname': str}
+        #
+        #     for key in kwa:
+        #         if key not in types:
+        #             return 'Unknown parameter: %s' % key
+        #         kwa[key] = types[key](kwa[key])
+        #
+        #     self.import_svg(str(filename), **kwa)
 
-            for key in kwa:
-                if key not in types:
-                    return 'Unknown parameter: %s' % key
-                kwa[key] = types[key](kwa[key])
-
-            self.import_svg(str(filename), **kwa)
-
-        def open_gerber(filename, *args):
-            a, kwa = h(*args)
-            types = {'follow': bool,
-                     'outname': str}
-
-            for key in kwa:
-                if key not in types:
-                    return 'Unknown parameter: %s' % key
-                kwa[key] = types[key](kwa[key])
-
-            self.open_gerber(str(filename), **kwa)
+        # --- Migrated to new architecture
+        # def open_gerber(filename, *args):
+        #     a, kwa = h(*args)
+        #     types = {'follow': bool,
+        #              'outname': str}
+        #
+        #     for key in kwa:
+        #         if key not in types:
+        #             return 'Unknown parameter: %s' % key
+        #         kwa[key] = types[key](kwa[key])
+        #
+        #     self.open_gerber(str(filename), **kwa)
 
         def open_excellon(filename, *args):
             a, kwa = h(*args)
@@ -3110,150 +3112,153 @@ class App(QtCore.QObject):
             except Exception as unknown:
                 self.raise_tcl_unknown_error(unknown)
 
-        def exteriors(name=None, *args):
-            """
-            TCL shell command - see help section
-            :param name: name of object
-            :param args: array of arguments
-            :return: "Ok" if completed without errors
-            """
+        # --- Migrated to new architecture ---
+        # def exteriors(name=None, *args):
+        #     """
+        #     TCL shell command - see help section
+        #     :param name: name of object
+        #     :param args: array of arguments
+        #     :return: "Ok" if completed without errors
+        #     """
+        #
+        #     try:
+        #         a, kwa = h(*args)
+        #         types = {'outname': str}
+        #
+        #         if name is None:
+        #             self.raise_tcl_error('Argument name is missing.')
+        #
+        #         for key in kwa:
+        #             if key not in types:
+        #                 self.raise_tcl_error('Unknown parameter: %s' % key)
+        #             try:
+        #                 kwa[key] = types[key](kwa[key])
+        #             except Exception, e:
+        #                 self.raise_tcl_error("Cannot cast argument '%s' to type %s." % (key, types[key]))
+        #
+        #         try:
+        #             obj = self.collection.get_by_name(str(name))
+        #         except:
+        #             self.raise_tcl_error("Could not retrieve object: %s" % name)
+        #
+        #         if obj is None:
+        #             self.raise_tcl_error("Object not found: %s" % name)
+        #
+        #         if not isinstance(obj, Geometry):
+        #             self.raise_tcl_error('Expected Geometry, got %s %s.' % (name, type(obj)))
+        #
+        #         def geo_init(geo_obj, app_obj):
+        #             geo_obj.solid_geometry = obj_exteriors
+        #
+        #         if 'outname' in kwa:
+        #             outname = kwa['outname']
+        #         else:
+        #             outname = name + ".exteriors"
+        #
+        #         try:
+        #             obj_exteriors = obj.get_exteriors()
+        #             self.new_object('geometry', outname, geo_init)
+        #         except Exception as e:
+        #             self.raise_tcl_error("Failed: %s" % str(e))
+        #
+        #     except Exception as unknown:
+        #         self.raise_tcl_unknown_error(unknown)
 
-            try:
-                a, kwa = h(*args)
-                types = {'outname': str}
+        # --- Migrated to new architecture ---
+        # def interiors(name=None, *args):
+        #     '''
+        #     TCL shell command - see help section
+        #     :param name: name of object
+        #     :param args: array of arguments
+        #     :return: "Ok" if completed without errors
+        #     '''
+        #
+        #     try:
+        #         a, kwa = h(*args)
+        #         types = {'outname': str}
+        #
+        #         for key in kwa:
+        #             if key not in types:
+        #                 self.raise_tcl_error('Unknown parameter: %s' % key)
+        #             try:
+        #                 kwa[key] = types[key](kwa[key])
+        #             except Exception, e:
+        #                 self.raise_tcl_error("Cannot cast argument '%s' to type %s." % (key, types[key]))
+        #
+        #         if name is None:
+        #             self.raise_tcl_error('Argument name is missing.')
+        #
+        #         try:
+        #             obj = self.collection.get_by_name(str(name))
+        #         except:
+        #             self.raise_tcl_error("Could not retrieve object: %s" % name)
+        #
+        #         if obj is None:
+        #             self.raise_tcl_error("Object not found: %s" % name)
+        #
+        #         if not isinstance(obj, Geometry):
+        #             self.raise_tcl_error('Expected Geometry, got %s %s.' % (name, type(obj)))
+        #
+        #         def geo_init(geo_obj, app_obj):
+        #             geo_obj.solid_geometry = obj_interiors
+        #
+        #         if 'outname' in kwa:
+        #             outname = kwa['outname']
+        #         else:
+        #             outname = name + ".interiors"
+        #
+        #         try:
+        #             obj_interiors = obj.get_interiors()
+        #             self.new_object('geometry', outname, geo_init)
+        #         except Exception as e:
+        #             self.raise_tcl_error("Failed: %s" % str(e))
+        #
+        #     except Exception as unknown:
+        #         self.raise_tcl_unknown_error(unknown)
 
-                if name is None:
-                    self.raise_tcl_error('Argument name is missing.')
-
-                for key in kwa:
-                    if key not in types:
-                        self.raise_tcl_error('Unknown parameter: %s' % key)
-                    try:
-                        kwa[key] = types[key](kwa[key])
-                    except Exception, e:
-                        self.raise_tcl_error("Cannot cast argument '%s' to type %s." % (key, types[key]))
-
-                try:
-                    obj = self.collection.get_by_name(str(name))
-                except:
-                    self.raise_tcl_error("Could not retrieve object: %s" % name)
-
-                if obj is None:
-                    self.raise_tcl_error("Object not found: %s" % name)
-
-                if not isinstance(obj, Geometry):
-                    self.raise_tcl_error('Expected Geometry, got %s %s.' % (name, type(obj)))
-
-                def geo_init(geo_obj, app_obj):
-                    geo_obj.solid_geometry = obj_exteriors
-
-                if 'outname' in kwa:
-                    outname = kwa['outname']
-                else:
-                    outname = name + ".exteriors"
-
-                try:
-                    obj_exteriors = obj.get_exteriors()
-                    self.new_object('geometry', outname, geo_init)
-                except Exception as e:
-                    self.raise_tcl_error("Failed: %s" % str(e))
-
-            except Exception as unknown:
-                self.raise_tcl_unknown_error(unknown)
-
-        def interiors(name=None, *args):
-            '''
-            TCL shell command - see help section
-            :param name: name of object
-            :param args: array of arguments
-            :return: "Ok" if completed without errors
-            '''
-
-            try:
-                a, kwa = h(*args)
-                types = {'outname': str}
-
-                for key in kwa:
-                    if key not in types:
-                        self.raise_tcl_error('Unknown parameter: %s' % key)
-                    try:
-                        kwa[key] = types[key](kwa[key])
-                    except Exception, e:
-                        self.raise_tcl_error("Cannot cast argument '%s' to type %s." % (key, types[key]))
-
-                if name is None:
-                    self.raise_tcl_error('Argument name is missing.')
-
-                try:
-                    obj = self.collection.get_by_name(str(name))
-                except:
-                    self.raise_tcl_error("Could not retrieve object: %s" % name)
-
-                if obj is None:
-                    self.raise_tcl_error("Object not found: %s" % name)
-
-                if not isinstance(obj, Geometry):
-                    self.raise_tcl_error('Expected Geometry, got %s %s.' % (name, type(obj)))
-
-                def geo_init(geo_obj, app_obj):
-                    geo_obj.solid_geometry = obj_interiors
-
-                if 'outname' in kwa:
-                    outname = kwa['outname']
-                else:
-                    outname = name + ".interiors"
-
-                try:
-                    obj_interiors = obj.get_interiors()
-                    self.new_object('geometry', outname, geo_init)
-                except Exception as e:
-                    self.raise_tcl_error("Failed: %s" % str(e))
-
-            except Exception as unknown:
-                self.raise_tcl_unknown_error(unknown)
-
-        def isolate(name=None, *args):
-            """
-            TCL shell command - see help section
-            :param name: name of object
-            :param args: array of arguments
-            :return: "Ok" if completed without errors
-            """
-
-            a, kwa = h(*args)
-            types = {'dia': float,
-                     'passes': int,
-                     'overlap': float,
-                     'outname': str,
-                     'combine': int}
-
-            for key in kwa:
-                if key not in types:
-                    self.raise_tcl_error('Unknown parameter: %s' % key)
-                try:
-                    kwa[key] = types[key](kwa[key])
-                except Exception, e:
-                    self.raise_tcl_error("Cannot cast argument '%s' to type %s." % (key, types[key]))
-            try:
-                obj = self.collection.get_by_name(str(name))
-            except:
-                self.raise_tcl_error("Could not retrieve object: %s" % name)
-
-            if obj is None:
-                self.raise_tcl_error("Object not found: %s" % name)
-
-            assert isinstance(obj, FlatCAMGerber), \
-                "Expected a FlatCAMGerber, got %s" % type(obj)
-
-            if not isinstance(obj, FlatCAMGerber):
-                self.raise_tcl_error('Expected FlatCAMGerber, got %s %s.' % (name, type(obj)))
-
-            try:
-                obj.isolate(**kwa)
-            except Exception, e:
-                self.raise_tcl_error("Operation failed: %s" % str(e))
-
-            return 'Ok'
+        # --- Migrated to new architecture ---
+        # def isolate(name=None, *args):
+        #     """
+        #     TCL shell command - see help section
+        #     :param name: name of object
+        #     :param args: array of arguments
+        #     :return: "Ok" if completed without errors
+        #     """
+        #
+        #     a, kwa = h(*args)
+        #     types = {'dia': float,
+        #              'passes': int,
+        #              'overlap': float,
+        #              'outname': str,
+        #              'combine': int}
+        #
+        #     for key in kwa:
+        #         if key not in types:
+        #             self.raise_tcl_error('Unknown parameter: %s' % key)
+        #         try:
+        #             kwa[key] = types[key](kwa[key])
+        #         except Exception, e:
+        #             self.raise_tcl_error("Cannot cast argument '%s' to type %s." % (key, types[key]))
+        #     try:
+        #         obj = self.collection.get_by_name(str(name))
+        #     except:
+        #         self.raise_tcl_error("Could not retrieve object: %s" % name)
+        #
+        #     if obj is None:
+        #         self.raise_tcl_error("Object not found: %s" % name)
+        #
+        #     assert isinstance(obj, FlatCAMGerber), \
+        #         "Expected a FlatCAMGerber, got %s" % type(obj)
+        #
+        #     if not isinstance(obj, FlatCAMGerber):
+        #         self.raise_tcl_error('Expected FlatCAMGerber, got %s %s.' % (name, type(obj)))
+        #
+        #     try:
+        #         obj.isolate(**kwa)
+        #     except Exception, e:
+        #         self.raise_tcl_error("Operation failed: %s" % str(e))
+        #
+        #     return 'Ok'
 
         def cncjob(obj_name, *args):
             a, kwa = h(*args)
@@ -3679,12 +3684,13 @@ class App(QtCore.QObject):
                 'fcn': shelp,
                 'help': "Shows list of commands."
             },
-            'import_svg': {
-                'fcn': import_svg,
-                'help': "Import an SVG file as a Geometry Object.\n" +
-                        "> import_svg <filename>" +
-                        "   filename: Path to the file to import."
-            },
+            # --- Migrated to new architecture ---
+            # 'import_svg': {
+            #     'fcn': import_svg,
+            #     'help': "Import an SVG file as a Geometry Object.\n" +
+            #             "> import_svg <filename>" +
+            #             "   filename: Path to the file to import."
+            # },
             'export_svg': {
                 'fcn': export_svg,
                 'help': "Export a Geometry Object as a SVG File\n" +
@@ -3693,14 +3699,15 @@ class App(QtCore.QObject):
                         "   filename: Path to the file to export.\n" +
                         "   scale_factor: Multiplication factor used for scaling line widths during export."
             },
-            'open_gerber': {
-                'fcn': open_gerber,
-                'help': "Opens a Gerber file.\n"
-                        "> open_gerber <filename> [-follow <0|1>] [-outname <o>]\n"
-                        "   filename: Path to file to open.\n" +
-                        "   follow: If 1, does not create polygons, just follows the gerber path.\n" +
-                        "   outname: Name of the created gerber object."
-            },
+            # --- Migrated to new architecture ---
+            # 'open_gerber': {
+            #     'fcn': open_gerber,
+            #     'help': "Opens a Gerber file.\n"
+            #             "> open_gerber <filename> [-follow <0|1>] [-outname <o>]\n"
+            #             "   filename: Path to file to open.\n" +
+            #             "   follow: If 1, does not create polygons, just follows the gerber path.\n" +
+            #             "   outname: Name of the created gerber object."
+            # },
             'open_excellon': {
                 'fcn': open_excellon,
                 'help': "Opens an Excellon file.\n" +
@@ -3738,27 +3745,30 @@ class App(QtCore.QObject):
                 'help': "Lists the names of objects in the project.\n" +
                         "> get_names"
             },
-            'new': {
-                'fcn': self.on_file_new,
-                'help': "Starts a new project. Clears objects from memory.\n" +
-                        "> new"
-            },
+            # --- Migrated to new architecture ---
+            # 'new': {
+            #     'fcn': self.on_file_new,
+            #     'help': "Starts a new project. Clears objects from memory.\n" +
+            #             "> new"
+            # },
+            # },
             'options': {
                 'fcn': options,
                 'help': "Shows the settings for an object.\n" +
                         "> options <name>\n" +
                         "   name: Object name."
             },
-            'isolate': {
-                'fcn': isolate,
-                'help': "Creates isolation routing geometry for the given Gerber.\n" +
-                        "> isolate <name> [-dia <d>] [-passes <p>] [-overlap <o>] [-combine 0|1]\n" +
-                        "   name: Name of the object.\n"
-                        "   dia: Tool diameter\n   passes: # of tool width.\n" +
-                        "   overlap: Fraction of tool diameter to overlap passes." +
-                        "   combine: combine all passes into one geometry." +
-                        "   outname: Name of the resulting Geometry object."
-            },
+            # --- Migrated to new architecture ---
+            # 'isolate': {
+            #     'fcn': isolate,
+            #     'help': "Creates isolation routing geometry for the given Gerber.\n" +
+            #             "> isolate <name> [-dia <d>] [-passes <p>] [-overlap <o>] [-combine 0|1]\n" +
+            #             "   name: Name of the object.\n"
+            #             "   dia: Tool diameter\n   passes: # of tool width.\n" +
+            #             "   overlap: Fraction of tool diameter to overlap passes." +
+            #             "   combine: combine all passes into one geometry." +
+            #             "   outname: Name of the resulting Geometry object."
+            # },
             'cutout': {
                 'fcn': cutout,
                 'help': "Creates board cutout.\n" +
@@ -3829,35 +3839,38 @@ class App(QtCore.QObject):
                         "   axis: Mirror axis parallel to the X or Y axis.\n" +
                         "   dist: Distance of the mirror axis to the X or Y axis."
             },
-            'exteriors': {
-                'fcn': exteriors,
-                'help': "Get exteriors of polygons.\n" +
-                        "> exteriors <name> [-outname <outname>]\n" +
-                        "   name: Name of the source Geometry object.\n" +
-                        "   outname: Name of the resulting Geometry object."
-            },
-            'interiors': {
-                'fcn': interiors,
-                'help': "Get interiors of polygons.\n" +
-                        "> interiors <name> [-outname <outname>]\n" +
-                        "   name: Name of the source Geometry object.\n" +
-                        "   outname: Name of the resulting Geometry object."
-            },
-            'drillcncjob': {
-                'fcn': drillcncjob,
-                'help': "Drill CNC job.\n" +
-                        "> drillcncjob <name> -tools <str> -drillz <float> " +
-                        "-travelz <float> -feedrate <float> -outname <str> " +
-                        "[-spindlespeed (int)] [-toolchange (int)] \n" +
-                        "   name: Name of the object\n" +
-                        "   tools: Comma separated indexes of tools (example: 1,3 or 2)\n" +
-                        "   drillz: Drill depth into material (example: -2.0)\n" +
-                        "   travelz: Travel distance above material (example: 2.0)\n" +
-                        "   feedrate: Drilling feed rate\n" +
-                        "   outname: Name of object to create\n" +
-                        "   spindlespeed: Speed of the spindle in rpm (example: 4000)\n" +
-                        "   toolchange: Enable tool changes (example: 1)\n"
-            },
+            # --- Migrated to new architecture ---
+            # 'exteriors': {
+            #     'fcn': exteriors,
+            #     'help': "Get exteriors of polygons.\n" +
+            #             "> exteriors <name> [-outname <outname>]\n" +
+            #             "   name: Name of the source Geometry object.\n" +
+            #             "   outname: Name of the resulting Geometry object."
+            # },
+            # --- Migrated to new architecture ---
+            # 'interiors': {
+            #     'fcn': interiors,
+            #     'help': "Get interiors of polygons.\n" +
+            #             "> interiors <name> [-outname <outname>]\n" +
+            #             "   name: Name of the source Geometry object.\n" +
+            #             "   outname: Name of the resulting Geometry object."
+            # },
+            # --- Migrated to new architecture ---
+            # 'drillcncjob': {
+            #     'fcn': drillcncjob,
+            #     'help': "Drill CNC job.\n" +
+            #             "> drillcncjob <name> -tools <str> -drillz <float> " +
+            #             "-travelz <float> -feedrate <float> -outname <str> " +
+            #             "[-spindlespeed (int)] [-toolchange (int)] \n" +
+            #             "   name: Name of the object\n" +
+            #             "   tools: Comma separated indexes of tools (example: 1,3 or 2)\n" +
+            #             "   drillz: Drill depth into material (example: -2.0)\n" +
+            #             "   travelz: Travel distance above material (example: 2.0)\n" +
+            #             "   feedrate: Drilling feed rate\n" +
+            #             "   outname: Name of object to create\n" +
+            #             "   spindlespeed: Speed of the spindle in rpm (example: 4000)\n" +
+            #             "   toolchange: Enable tool changes (example: 1)\n"
+            # },
             'millholes': {
                 'fcn': millholes,
                 'help': "Create Geometry Object for milling holes from Excellon.\n" +
@@ -3867,38 +3880,42 @@ class App(QtCore.QObject):
                         "   tooldia: Diameter of the milling tool (example: 0.1)\n" +
                         "   outname: Name of object to create\n"
             },
-            'scale': {
-                'fcn': lambda name, factor: self.collection.get_by_name(str(name)).scale(float(factor)),
-                'help': "Resizes the object by a factor.\n" +
-                        "> scale <name> <factor>\n" +
-                        "   name: Name of the object\n   factor: Fraction by which to scale"
-            },
-            'offset': {
-                'fcn': lambda name, x, y: self.collection.get_by_name(str(name)).offset([float(x), float(y)]),
-                'help': "Changes the position of the object.\n" +
-                        "> offset <name> <x> <y>\n" +
-                        "   name: Name of the object\n" +
-                        "   x: X-axis distance\n" +
-                        "   y: Y-axis distance"
-            },
-            'plot': {
-                'fcn': self.plot_all,
-                'help': 'Updates the plot on the user interface'
-            },
-            'cncjob': {
-                'fcn': cncjob,
-                'help': 'Generates a CNC Job from a Geometry Object.\n' +
-                        '> cncjob <name> [-z_cut <c>] [-z_move <float>] [-feedrate <float>] [-tooldia <float>] [-spindlespeed <int>] [-multidepth <bool>] [-depthperpass <float>] [-outname <str>]\n' +
-                        '   name: Name of the source object\n' +
-                        '   z_cut: Z-axis cutting position\n' +
-                        '   z_move: Z-axis moving position\n' +
-                        '   feedrate: Moving speed when cutting\n' +
-                        '   tooldia: Tool diameter to show on screen\n' +
-                        '   spindlespeed: Speed of the spindle in rpm (example: 4000)\n' +
-                        '   multidepth: Use or not multidepth cnccut\n'+
-                        '   depthperpass: Height of one layer for multidepth\n'+
-                        '   outname: Name of the output object'
-            },
+            # --- Migrated to the new architecture ---
+            # 'scale': {
+            #     'fcn': lambda name, factor: self.collection.get_by_name(str(name)).scale(float(factor)),
+            #     'help': "Resizes the object by a factor.\n" +
+            #             "> scale <name> <factor>\n" +
+            #             "   name: Name of the object\n   factor: Fraction by which to scale"
+            # },
+            # --- Migrated to the new architecture ---
+            # 'offset': {
+            #     'fcn': lambda name, x, y: self.collection.get_by_name(str(name)).offset([float(x), float(y)]),
+            #     'help': "Changes the position of the object.\n" +
+            #             "> offset <name> <x> <y>\n" +
+            #             "   name: Name of the object\n" +
+            #             "   x: X-axis distance\n" +
+            #             "   y: Y-axis distance"
+            # },
+            # --- Migrated to new architecture ---
+            # 'plot': {
+            #     'fcn': self.plot_all,
+            #     'help': 'Updates the plot on the user interface'
+            # },
+            # --- Migrated to new architecture ---
+            # 'cncjob': {
+            #     'fcn': cncjob,
+            #     'help': 'Generates a CNC Job from a Geometry Object.\n' +
+            #             '> cncjob <name> [-z_cut <c>] [-z_move <float>] [-feedrate <float>] [-tooldia <float>] [-spindlespeed <int>] [-multidepth <bool>] [-depthperpass <float>] [-outname <str>]\n' +
+            #             '   name: Name of the source object\n' +
+            #             '   z_cut: Z-axis cutting position\n' +
+            #             '   z_move: Z-axis moving position\n' +
+            #             '   feedrate: Moving speed when cutting\n' +
+            #             '   tooldia: Tool diameter to show on screen\n' +
+            #             '   spindlespeed: Speed of the spindle in rpm (example: 4000)\n' +
+            #             '   multidepth: Use or not multidepth cnccut\n'+
+            #             '   depthperpass: Height of one layer for multidepth\n'+
+            #             '   outname: Name of the output object'
+            # },
             'write_gcode': {
                 'fcn': write_gcode,
                 'help': 'Saves G-code of a CNC Job object to file.\n' +

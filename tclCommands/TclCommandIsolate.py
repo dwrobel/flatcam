@@ -24,11 +24,11 @@ class TclCommandIsolate(TclCommand.TclCommandSignaled):
 
     # dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
     option_types = collections.OrderedDict([
-        ('dia',float),
-        ('passes',int),
-        ('overlap',float),
-        ('combine',int),
-        ('outname',str)
+        ('dia', float),
+        ('passes', int),
+        ('overlap', float),
+        ('combine', int),
+        ('outname', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}

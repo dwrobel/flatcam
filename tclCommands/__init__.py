@@ -12,8 +12,11 @@ import tclCommands.TclCommandImportSvg
 import tclCommands.TclCommandInteriors
 import tclCommands.TclCommandIsolate
 import tclCommands.TclCommandNew
+import tclCommands.TclCommandOffset
 import tclCommands.TclCommandOpenGerber
 import tclCommands.TclCommandPaint
+import tclCommands.TclCommandPlot
+import tclCommands.TclCommandScale
 
 
 __all__ = []
