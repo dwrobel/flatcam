@@ -2,25 +2,38 @@ import pkgutil
 import sys
 
 # allowed command modules (please append them alphabetically ordered)
+import tclCommands.TclCommandAddCircle
 import tclCommands.TclCommandAddPolygon
 import tclCommands.TclCommandAddPolyline
+import tclCommands.TclCommandAlignDrill
+import tclCommands.TclCommandAlignDrillGrid
 import tclCommands.TclCommandCncjob
+import tclCommands.TclCommandCutout
+import tclCommands.TclCommandDelete
 import tclCommands.TclCommandDrillcncjob
 import tclCommands.TclCommandExportGcode
 import tclCommands.TclCommandExportSVG
 import tclCommands.TclCommandExteriors
+import tclCommands.TclCommandGeoCutout  # NOT IMPLEMENTED.
+import tclCommands.TclCommandGeoUnion
 import tclCommands.TclCommandImportSvg
 import tclCommands.TclCommandInteriors
 import tclCommands.TclCommandIsolate
+import tclCommands.TclCommandJoinExcellon
+import tclCommands.TclCommandJoinGeometry
 import tclCommands.TclCommandMillHoles
+import tclCommands.TclCommandMirror
 import tclCommands.TclCommandNew
 import tclCommands.TclCommandOffset
 import tclCommands.TclCommandOpenExcellon
 import tclCommands.TclCommandOpenGCode
 import tclCommands.TclCommandOpenGerber
 import tclCommands.TclCommandPaint
+import tclCommands.TclCommandPanelize
 import tclCommands.TclCommandPlot
-import tclCommands.TclCommandExportSVG
+import tclCommands.TclCommandScale
+import tclCommands.TclCommandSetActive
+import tclCommands.TclCommandWriteGCode
 
 
 __all__ = []

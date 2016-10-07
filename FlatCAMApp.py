@@ -2579,485 +2579,490 @@ class App(QtCore.QObject):
         #
         #     self.open_gcode(str(filename), **kwa)
 
-        def cutout(name, *args):
-            a, kwa = h(*args)
-            types = {'dia': float,
-                     'margin': float,
-                     'gapsize': float,
-                     'gaps': str}
-
-            for key in kwa:
-                if key not in types:
-                    return 'Unknown parameter: %s' % key
-                kwa[key] = types[key](kwa[key])
-
-            try:
-                obj = self.collection.get_by_name(str(name))
-            except:
-                return "Could not retrieve object: %s" % name
-
-            def geo_init_me(geo_obj, app_obj):
-                margin = kwa['margin'] + kwa['dia'] / 2
-                gap_size = kwa['dia'] + kwa['gapsize']
-                minx, miny, maxx, maxy = obj.bounds()
-                minx -= margin
-                maxx += margin
-                miny -= margin
-                maxy += margin
-                midx = 0.5 * (minx + maxx)
-                midy = 0.5 * (miny + maxy)
-                hgap = 0.5 * gap_size
-                pts = [[midx - hgap, maxy],
-                       [minx, maxy],
-                       [minx, midy + hgap],
-                       [minx, midy - hgap],
-                       [minx, miny],
-                       [midx - hgap, miny],
-                       [midx + hgap, miny],
-                       [maxx, miny],
-                       [maxx, midy - hgap],
-                       [maxx, midy + hgap],
-                       [maxx, maxy],
-                       [midx + hgap, maxy]]
-                cases = {"tb": [[pts[0], pts[1], pts[4], pts[5]],
-                                [pts[6], pts[7], pts[10], pts[11]]],
-                         "lr": [[pts[9], pts[10], pts[1], pts[2]],
-                                [pts[3], pts[4], pts[7], pts[8]]],
-                         "4": [[pts[0], pts[1], pts[2]],
-                               [pts[3], pts[4], pts[5]],
-                               [pts[6], pts[7], pts[8]],
-                               [pts[9], pts[10], pts[11]]]}
-                cuts = cases[kwa['gaps']]
-                geo_obj.solid_geometry = cascaded_union([LineString(segment) for segment in cuts])
-
-            try:
-                obj.app.new_object("geometry", name + "_cutout", geo_init_me)
-            except Exception, e:
-                return "Operation failed: %s" % str(e)
-
-            return 'Ok'
-
-        def geocutout(name=None, *args):
-            """
-            TCL shell command - see help section
-
-            Subtract gaps from geometry, this will not create new object
-
-            :param name: name of object
-            :param args: array of arguments
-            :return: "Ok" if completed without errors
-            """
-
-            try:
-                a, kwa = h(*args)
-                types = {'dia': float,
-                         'gapsize': float,
-                         'gaps': str}
-
-                # How gaps wil be rendered:
-                # lr    - left + right
-                # tb    - top + bottom
-                # 4     - left + right +top + bottom
-                # 2lr   - 2*left + 2*right
-                # 2tb   - 2*top + 2*bottom
-                # 8     - 2*left + 2*right +2*top + 2*bottom
-
-                if name is None:
-                    self.raise_tcl_error('Argument name is missing.')
-
-                for key in kwa:
-                    if key not in types:
-                        self.raise_tcl_error('Unknown parameter: %s' % key)
-                    try:
-                        kwa[key] = types[key](kwa[key])
-                    except Exception, e:
-                        self.raise_tcl_error("Cannot cast argument '%s' to type %s." % (key, str(types[key])))
-
-                try:
-                    obj = self.collection.get_by_name(str(name))
-                except:
-                    self.raise_tcl_error("Could not retrieve object: %s" % name)
-
-                # Get min and max data for each object as we just cut rectangles across X or Y
-                xmin, ymin, xmax, ymax = obj.bounds()
-                px = 0.5 * (xmin + xmax)
-                py = 0.5 * (ymin + ymax)
-                lenghtx = (xmax - xmin)
-                lenghty = (ymax - ymin)
-                gapsize = kwa['gapsize'] + kwa['dia'] / 2
-
-                if kwa['gaps'] == '8' or kwa['gaps'] == '2lr':
-
-                    subtract_rectangle(name,
-                                       xmin - gapsize,
-                                       py - gapsize + lenghty / 4,
-                                       xmax + gapsize,
-                                       py + gapsize + lenghty / 4)
-                    subtract_rectangle(name,
-                                       xmin - gapsize,
-                                       py - gapsize - lenghty / 4,
-                                       xmax + gapsize,
-                                       py + gapsize - lenghty / 4)
-
-                if kwa['gaps'] == '8' or kwa['gaps'] == '2tb':
-                    subtract_rectangle(name,
-                                       px - gapsize + lenghtx / 4,
-                                       ymin - gapsize,
-                                       px + gapsize + lenghtx / 4,
-                                       ymax + gapsize)
-                    subtract_rectangle(name,
-                                       px - gapsize - lenghtx / 4,
-                                       ymin - gapsize,
-                                       px + gapsize - lenghtx / 4,
-                                       ymax + gapsize)
-
-                if kwa['gaps'] == '4' or kwa['gaps'] == 'lr':
-                    subtract_rectangle(name,
-                                       xmin - gapsize,
-                                       py - gapsize,
-                                       xmax + gapsize,
-                                       py + gapsize)
-
-                if kwa['gaps'] == '4' or kwa['gaps'] == 'tb':
-                    subtract_rectangle(name,
-                                       px - gapsize,
-                                       ymin - gapsize,
-                                       px + gapsize,
-                                       ymax + gapsize)
-
-            except Exception as unknown:
-                self.raise_tcl_unknown_error(unknown)
-
-        def mirror(name, *args):
-            a, kwa = h(*args)
-            types = {'box': str,
-                     'axis': str,
-                     'dist': float}
-
-            for key in kwa:
-                if key not in types:
-                    return 'Unknown parameter: %s' % key
-                kwa[key] = types[key](kwa[key])
-
-            # Get source object.
-            try:
-                obj = self.collection.get_by_name(str(name))
-            except:
-                return "Could not retrieve object: %s" % name
-
-            if obj is None:
-                return "Object not found: %s" % name
-
-            if not isinstance(obj, FlatCAMGerber) and \
-                    not isinstance(obj, FlatCAMExcellon) and \
-                    not isinstance(obj, FlatCAMGeometry):
-                return "ERROR: Only Gerber, Excellon and Geometry objects can be mirrored."
-
-            # Axis
-            try:
-                axis = kwa['axis'].upper()
-            except KeyError:
-                return "ERROR: Specify -axis X or -axis Y"
-
-            # Box
-            if 'box' in kwa:
-                try:
-                    box = self.collection.get_by_name(kwa['box'])
-                except:
-                    return "Could not retrieve object box: %s" % kwa['box']
-
-                if box is None:
-                    return "Object box not found: %s" % kwa['box']
-
-                try:
-                    xmin, ymin, xmax, ymax = box.bounds()
-                    px = 0.5 * (xmin + xmax)
-                    py = 0.5 * (ymin + ymax)
-
-                    obj.mirror(axis, [px, py])
-                    obj.plot()
-
-                except Exception, e:
-                    return "Operation failed: %s" % str(e)
-
-            else:
-                try:
-                    dist = float(kwa['dist'])
-                except KeyError:
-                    dist = 0.0
-                except ValueError:
-                    return "Invalid distance: %s" % kwa['dist']
-
-                try:
-                    obj.mirror(axis, [dist, dist])
-                    obj.plot()
-                except Exception, e:
-                    return "Operation failed: %s" % str(e)
-
-            return 'Ok'
-
-        def aligndrillgrid(outname, *args):
-            a, kwa = h(*args)
-            types = {'gridx': float,
-                     'gridy': float,
-                     'gridoffsetx': float,
-                     'gridoffsety': float,
-                     'columns':int,
-                     'rows':int,
-                     'dia': float
-                     }
-            for key in kwa:
-                if key not in types:
-                    return 'Unknown parameter: %s' % key
-                kwa[key] = types[key](kwa[key])
-
-            if 'columns' not in kwa or 'rows' not in kwa:
-                return "ERROR: Specify -columns and -rows"
-
-            if 'gridx' not in kwa or 'gridy' not in kwa:
-                return "ERROR: Specify -gridx and -gridy"
-
-            if 'dia' not in kwa:
-                return "ERROR: Specify -dia"
-
-            if 'gridoffsetx' not in kwa:
-                gridoffsetx = 0
-            else:
-                gridoffsetx = kwa['gridoffsetx']
-
-            if 'gridoffsety' not in kwa:
-                gridoffsety = 0
-            else:
-                gridoffsety = kwa['gridoffsety']
-
-            # Tools
-            tools = {"1": {"C": kwa['dia']}}
-
-            def aligndrillgrid_init_me(init_obj, app_obj):
-                drills = []
-                currenty = 0
-                
-                for row in range(kwa['rows']):
-                    currentx = 0
-                    
-                    for col in range(kwa['columns']):
-                        point = Point(currentx + gridoffsetx, currenty + gridoffsety)
-                        drills.append({"point": point, "tool": "1"})
-                        currentx = currentx + kwa['gridx']
-                    
-                    currenty = currenty + kwa['gridy']
-                
-                init_obj.tools = tools
-                init_obj.drills = drills
-                init_obj.create_geometry()
-
-            self.new_object("excellon", outname, aligndrillgrid_init_me)
-
-        def aligndrill(name, *args):
-            a, kwa = h(*args)
-            types = {'box': str,
-                     'axis': str,
-                     'holes': str,
-                     'grid': float,
-                     'minoffset': float,
-                     'gridoffset': float,
-                     'axisoffset': float,
-                     'dia': float,
-                     'dist': float}
-
-            for key in kwa:
-                if key not in types:
-                    return 'Unknown parameter: %s' % key
-                kwa[key] = types[key](kwa[key])
-
-            # Get source object.
-            try:
-                obj = self.collection.get_by_name(str(name))
-            except:
-                return "Could not retrieve object: %s" % name
-
-            if obj is None:
-                return "Object not found: %s" % name
-
-            if not isinstance(obj, FlatCAMGeometry) and not isinstance(obj, FlatCAMGerber) and not isinstance(obj, FlatCAMExcellon):
-                return "ERROR: Only Gerber, Geometry and Excellon objects can be used."
-
-            # Axis
-            try:
-                axis = kwa['axis'].upper()
-            except KeyError:
-                return "ERROR: Specify -axis X or -axis Y"
-
-            if not ('holes' in kwa or ('grid' in kwa and 'gridoffset' in kwa)):
-                    return "ERROR: Specify -holes or -grid with -gridoffset "
-
-            if 'holes' in kwa:
-                try:
-                    holes = eval("[" + kwa['holes'] + "]")
-                except KeyError:
-                    return "ERROR: Wrong -holes format (X1,Y1),(X2,Y2)"
-
-            xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
-
-            # Tools
-            tools = {"1": {"C": kwa['dia']}}
-
-            def alligndrill_init_me(init_obj, app_obj):
-
-                drills = []
-                if 'holes' in kwa:
-                    for hole in holes:
-                        point = Point(hole)
-                        point_mirror = affinity.scale(point, xscale, yscale, origin=(px, py))
-                        drills.append({"point": point, "tool": "1"})
-                        drills.append({"point": point_mirror, "tool": "1"})
-                else:
-                    if 'box' not in kwa:
-                        return "ERROR: -grid can be used only for -box"
-
-                    if 'axisoffset' in kwa:
-                        axisoffset = kwa['axisoffset']
-                    else:
-                        axisoffset = 0
-
-                    # This will align hole to given aligngridoffset and minimal offset from pcb, based on selected axis
-                    if axis == "X":
-                        firstpoint = kwa['gridoffset']
-                        
-                        while (xmin - kwa['minoffset']) < firstpoint:
-                            firstpoint = firstpoint - kwa['grid']
-                        
-                        lastpoint = kwa['gridoffset']
-                        
-                        while (xmax + kwa['minoffset']) > lastpoint:
-                            lastpoint = lastpoint + kwa['grid']
-                        
-                        localholes = (firstpoint, axisoffset), (lastpoint, axisoffset)
-                    
-                    else:
-                        firstpoint = kwa['gridoffset']
-                        
-                        while (ymin - kwa['minoffset']) < firstpoint:
-                            firstpoint = firstpoint - kwa['grid']
-                        
-                        lastpoint = kwa['gridoffset']
-                        
-                        while (ymax + kwa['minoffset']) > lastpoint:
-                            lastpoint = lastpoint + kwa['grid']
-                        
-                        localholes = (axisoffset, firstpoint), (axisoffset, lastpoint)
-
-                    for hole in localholes:
-                        point = Point(hole)
-                        point_mirror = affinity.scale(point, xscale, yscale, origin=(px, py))
-                        drills.append({"point": point, "tool": "1"})
-                        drills.append({"point": point_mirror, "tool": "1"})
-
-                init_obj.tools = tools
-                init_obj.drills = drills
-                init_obj.create_geometry()
-
-            # Box
-            if 'box' in kwa:
-                try:
-                    box = self.collection.get_by_name(kwa['box'])
-                except:
-                    return "Could not retrieve object box: %s" % kwa['box']
-
-                if box is None:
-                    return "Object box not found: %s" % kwa['box']
-
-                try:
-                    xmin, ymin, xmax, ymax = box.bounds()
-                    px = 0.5 * (xmin + xmax)
-                    py = 0.5 * (ymin + ymax)
-
-                    obj.app.new_object("excellon", name + "_aligndrill", alligndrill_init_me)
-
-                except Exception, e:
-                    return "Operation failed: %s" % str(e)
-
-            else:
-                try:
-                    dist = float(kwa['dist'])
-                except KeyError:
-                    dist = 0.0
-                except ValueError:
-                    return "Invalid distance: %s" % kwa['dist']
-
-                try:
-                    px=dist
-                    py=dist
-                    obj.app.new_object("excellon", name + "_alligndrill", alligndrill_init_me)
-                except Exception, e:
-                    return "Operation failed: %s" % str(e)
-
-            return 'Ok'
-
-        def drillcncjob(name=None, *args):
-            """
-            TCL shell command - see help section
-
-            :param name: name of object
-            :param args: array of arguments
-            :return: "Ok" if completed without errors
-            """
-
-            try:
-                a, kwa = h(*args)
-                types = {'tools': str,
-                         'outname': str,
-                         'drillz': float,
-                         'travelz': float,
-                         'feedrate': float,
-                         'spindlespeed': int,
-                         'toolchange': int
-                         }
-
-                if name is None:
-                    self.raise_tcl_error('Argument name is missing.')
-
-                for key in kwa:
-                    if key not in types:
-                        self.raise_tcl_error('Unknown parameter: %s' % key)
-                    try:
-                        kwa[key] = types[key](kwa[key])
-                    except Exception, e:
-                        self.raise_tcl_error("Cannot cast argument '%s' to type %s." % (key, str(types[key])))
-
-                try:
-                    obj = self.collection.get_by_name(str(name))
-                except:
-                    self.raise_tcl_error("Could not retrieve object: %s" % name)
-
-                if obj is None:
-                    self.raise_tcl_error('Object not found: %s' % name)
-
-                if not isinstance(obj, FlatCAMExcellon):
-                    self.raise_tcl_error('Only Excellon objects can be drilled, got %s %s.' % (name, type(obj)))
-
-                try:
-                    # Get the tools from the list
-                    job_name = kwa["outname"]
-
-                    # Object initialization function for app.new_object()
-                    def job_init(job_obj, app_obj):
-                        job_obj.z_cut = kwa["drillz"]
-                        job_obj.z_move = kwa["travelz"]
-                        job_obj.feedrate = kwa["feedrate"]
-                        job_obj.spindlespeed = kwa["spindlespeed"] if "spindlespeed" in kwa else None
-                        toolchange = True if "toolchange" in kwa and kwa["toolchange"] == 1 else False
-                        job_obj.generate_from_excellon_by_tool(obj, kwa["tools"], toolchange)
-                        job_obj.gcode_parse()
-                        job_obj.create_geometry()
-
-                    obj.app.new_object("cncjob", job_name, job_init)
-
-                except Exception, e:
-                    self.raise_tcl_error("Operation failed: %s" % str(e))
-
-            except Exception as unknown:
-                self.raise_tcl_unknown_error(unknown)
+        # def cutout(name, *args):
+        #     a, kwa = h(*args)
+        #     types = {'dia': float,
+        #              'margin': float,
+        #              'gapsize': float,
+        #              'gaps': str}
+        #
+        #     for key in kwa:
+        #         if key not in types:
+        #             return 'Unknown parameter: %s' % key
+        #         kwa[key] = types[key](kwa[key])
+        #
+        #     try:
+        #         obj = self.collection.get_by_name(str(name))
+        #     except:
+        #         return "Could not retrieve object: %s" % name
+        #
+        #     def geo_init_me(geo_obj, app_obj):
+        #         margin = kwa['margin'] + kwa['dia'] / 2
+        #         gap_size = kwa['dia'] + kwa['gapsize']
+        #         minx, miny, maxx, maxy = obj.bounds()
+        #         minx -= margin
+        #         maxx += margin
+        #         miny -= margin
+        #         maxy += margin
+        #         midx = 0.5 * (minx + maxx)
+        #         midy = 0.5 * (miny + maxy)
+        #         hgap = 0.5 * gap_size
+        #         pts = [[midx - hgap, maxy],
+        #                [minx, maxy],
+        #                [minx, midy + hgap],
+        #                [minx, midy - hgap],
+        #                [minx, miny],
+        #                [midx - hgap, miny],
+        #                [midx + hgap, miny],
+        #                [maxx, miny],
+        #                [maxx, midy - hgap],
+        #                [maxx, midy + hgap],
+        #                [maxx, maxy],
+        #                [midx + hgap, maxy]]
+        #         cases = {"tb": [[pts[0], pts[1], pts[4], pts[5]],
+        #                         [pts[6], pts[7], pts[10], pts[11]]],
+        #                  "lr": [[pts[9], pts[10], pts[1], pts[2]],
+        #                         [pts[3], pts[4], pts[7], pts[8]]],
+        #                  "4": [[pts[0], pts[1], pts[2]],
+        #                        [pts[3], pts[4], pts[5]],
+        #                        [pts[6], pts[7], pts[8]],
+        #                        [pts[9], pts[10], pts[11]]]}
+        #         cuts = cases[kwa['gaps']]
+        #         geo_obj.solid_geometry = cascaded_union([LineString(segment) for segment in cuts])
+        #
+        #     try:
+        #         obj.app.new_object("geometry", name + "_cutout", geo_init_me)
+        #     except Exception, e:
+        #         return "Operation failed: %s" % str(e)
+        #
+        #     return 'Ok'
+
+        # --- Migrated to new architecture ---
+        # def geocutout(name=None, *args):
+        #     """
+        #     TCL shell command - see help section
+        #
+        #     Subtract gaps from geometry, this will not create new object
+        #
+        #     :param name: name of object
+        #     :param args: array of arguments
+        #     :return: "Ok" if completed without errors
+        #     """
+        #
+        #     try:
+        #         a, kwa = h(*args)
+        #         types = {'dia': float,
+        #                  'gapsize': float,
+        #                  'gaps': str}
+        #
+        #         # How gaps wil be rendered:
+        #         # lr    - left + right
+        #         # tb    - top + bottom
+        #         # 4     - left + right +top + bottom
+        #         # 2lr   - 2*left + 2*right
+        #         # 2tb   - 2*top + 2*bottom
+        #         # 8     - 2*left + 2*right +2*top + 2*bottom
+        #
+        #         if name is None:
+        #             self.raise_tcl_error('Argument name is missing.')
+        #
+        #         for key in kwa:
+        #             if key not in types:
+        #                 self.raise_tcl_error('Unknown parameter: %s' % key)
+        #             try:
+        #                 kwa[key] = types[key](kwa[key])
+        #             except Exception, e:
+        #                 self.raise_tcl_error("Cannot cast argument '%s' to type %s." % (key, str(types[key])))
+        #
+        #         try:
+        #             obj = self.collection.get_by_name(str(name))
+        #         except:
+        #             self.raise_tcl_error("Could not retrieve object: %s" % name)
+        #
+        #         # Get min and max data for each object as we just cut rectangles across X or Y
+        #         xmin, ymin, xmax, ymax = obj.bounds()
+        #         px = 0.5 * (xmin + xmax)
+        #         py = 0.5 * (ymin + ymax)
+        #         lenghtx = (xmax - xmin)
+        #         lenghty = (ymax - ymin)
+        #         gapsize = kwa['gapsize'] + kwa['dia'] / 2
+        #
+        #         if kwa['gaps'] == '8' or kwa['gaps'] == '2lr':
+        #
+        #             subtract_rectangle(name,
+        #                                xmin - gapsize,
+        #                                py - gapsize + lenghty / 4,
+        #                                xmax + gapsize,
+        #                                py + gapsize + lenghty / 4)
+        #             subtract_rectangle(name,
+        #                                xmin - gapsize,
+        #                                py - gapsize - lenghty / 4,
+        #                                xmax + gapsize,
+        #                                py + gapsize - lenghty / 4)
+        #
+        #         if kwa['gaps'] == '8' or kwa['gaps'] == '2tb':
+        #             subtract_rectangle(name,
+        #                                px - gapsize + lenghtx / 4,
+        #                                ymin - gapsize,
+        #                                px + gapsize + lenghtx / 4,
+        #                                ymax + gapsize)
+        #             subtract_rectangle(name,
+        #                                px - gapsize - lenghtx / 4,
+        #                                ymin - gapsize,
+        #                                px + gapsize - lenghtx / 4,
+        #                                ymax + gapsize)
+        #
+        #         if kwa['gaps'] == '4' or kwa['gaps'] == 'lr':
+        #             subtract_rectangle(name,
+        #                                xmin - gapsize,
+        #                                py - gapsize,
+        #                                xmax + gapsize,
+        #                                py + gapsize)
+        #
+        #         if kwa['gaps'] == '4' or kwa['gaps'] == 'tb':
+        #             subtract_rectangle(name,
+        #                                px - gapsize,
+        #                                ymin - gapsize,
+        #                                px + gapsize,
+        #                                ymax + gapsize)
+        #
+        #     except Exception as unknown:
+        #         self.raise_tcl_unknown_error(unknown)
+
+        # --- Migrated to new architecture ---
+        # def mirror(name, *args):
+        #     a, kwa = h(*args)
+        #     types = {'box': str,
+        #              'axis': str,
+        #              'dist': float}
+        #
+        #     for key in kwa:
+        #         if key not in types:
+        #             return 'Unknown parameter: %s' % key
+        #         kwa[key] = types[key](kwa[key])
+        #
+        #     # Get source object.
+        #     try:
+        #         obj = self.collection.get_by_name(str(name))
+        #     except:
+        #         return "Could not retrieve object: %s" % name
+        #
+        #     if obj is None:
+        #         return "Object not found: %s" % name
+        #
+        #     if not isinstance(obj, FlatCAMGerber) and \
+        #             not isinstance(obj, FlatCAMExcellon) and \
+        #             not isinstance(obj, FlatCAMGeometry):
+        #         return "ERROR: Only Gerber, Excellon and Geometry objects can be mirrored."
+        #
+        #     # Axis
+        #     try:
+        #         axis = kwa['axis'].upper()
+        #     except KeyError:
+        #         return "ERROR: Specify -axis X or -axis Y"
+        #
+        #     # Box
+        #     if 'box' in kwa:
+        #         try:
+        #             box = self.collection.get_by_name(kwa['box'])
+        #         except:
+        #             return "Could not retrieve object box: %s" % kwa['box']
+        #
+        #         if box is None:
+        #             return "Object box not found: %s" % kwa['box']
+        #
+        #         try:
+        #             xmin, ymin, xmax, ymax = box.bounds()
+        #             px = 0.5 * (xmin + xmax)
+        #             py = 0.5 * (ymin + ymax)
+        #
+        #             obj.mirror(axis, [px, py])
+        #             obj.plot()
+        #
+        #         except Exception, e:
+        #             return "Operation failed: %s" % str(e)
+        #
+        #     else:
+        #         try:
+        #             dist = float(kwa['dist'])
+        #         except KeyError:
+        #             dist = 0.0
+        #         except ValueError:
+        #             return "Invalid distance: %s" % kwa['dist']
+        #
+        #         try:
+        #             obj.mirror(axis, [dist, dist])
+        #             obj.plot()
+        #         except Exception, e:
+        #             return "Operation failed: %s" % str(e)
+        #
+        #     return 'Ok'
+
+        # --- Migrated to new architecture ---
+        # def aligndrillgrid(outname, *args):
+        #     a, kwa = h(*args)
+        #     types = {'gridx': float,
+        #              'gridy': float,
+        #              'gridoffsetx': float,
+        #              'gridoffsety': float,
+        #              'columns':int,
+        #              'rows':int,
+        #              'dia': float
+        #              }
+        #     for key in kwa:
+        #         if key not in types:
+        #             return 'Unknown parameter: %s' % key
+        #         kwa[key] = types[key](kwa[key])
+        #
+        #     if 'columns' not in kwa or 'rows' not in kwa:
+        #         return "ERROR: Specify -columns and -rows"
+        #
+        #     if 'gridx' not in kwa or 'gridy' not in kwa:
+        #         return "ERROR: Specify -gridx and -gridy"
+        #
+        #     if 'dia' not in kwa:
+        #         return "ERROR: Specify -dia"
+        #
+        #     if 'gridoffsetx' not in kwa:
+        #         gridoffsetx = 0
+        #     else:
+        #         gridoffsetx = kwa['gridoffsetx']
+        #
+        #     if 'gridoffsety' not in kwa:
+        #         gridoffsety = 0
+        #     else:
+        #         gridoffsety = kwa['gridoffsety']
+        #
+        #     # Tools
+        #     tools = {"1": {"C": kwa['dia']}}
+        #
+        #     def aligndrillgrid_init_me(init_obj, app_obj):
+        #         drills = []
+        #         currenty = 0
+        #
+        #         for row in range(kwa['rows']):
+        #             currentx = 0
+        #
+        #             for col in range(kwa['columns']):
+        #                 point = Point(currentx + gridoffsetx, currenty + gridoffsety)
+        #                 drills.append({"point": point, "tool": "1"})
+        #                 currentx = currentx + kwa['gridx']
+        #
+        #             currenty = currenty + kwa['gridy']
+        #
+        #         init_obj.tools = tools
+        #         init_obj.drills = drills
+        #         init_obj.create_geometry()
+        #
+        #     self.new_object("excellon", outname, aligndrillgrid_init_me)
+
+        # --- Migrated to new architecture ---
+        # def aligndrill(name, *args):
+        #     a, kwa = h(*args)
+        #     types = {'box': str,
+        #              'axis': str,
+        #              'holes': str,
+        #              'grid': float,
+        #              'minoffset': float,
+        #              'gridoffset': float,
+        #              'axisoffset': float,
+        #              'dia': float,
+        #              'dist': float}
+        #
+        #     for key in kwa:
+        #         if key not in types:
+        #             return 'Unknown parameter: %s' % key
+        #         kwa[key] = types[key](kwa[key])
+        #
+        #     # Get source object.
+        #     try:
+        #         obj = self.collection.get_by_name(str(name))
+        #     except:
+        #         return "Could not retrieve object: %s" % name
+        #
+        #     if obj is None:
+        #         return "Object not found: %s" % name
+        #
+        #     if not isinstance(obj, FlatCAMGeometry) and not isinstance(obj, FlatCAMGerber) and not isinstance(obj, FlatCAMExcellon):
+        #         return "ERROR: Only Gerber, Geometry and Excellon objects can be used."
+        #
+        #     # Axis
+        #     try:
+        #         axis = kwa['axis'].upper()
+        #     except KeyError:
+        #         return "ERROR: Specify -axis X or -axis Y"
+        #
+        #     if not ('holes' in kwa or ('grid' in kwa and 'gridoffset' in kwa)):
+        #             return "ERROR: Specify -holes or -grid with -gridoffset "
+        #
+        #     if 'holes' in kwa:
+        #         try:
+        #             holes = eval("[" + kwa['holes'] + "]")
+        #         except KeyError:
+        #             return "ERROR: Wrong -holes format (X1,Y1),(X2,Y2)"
+        #
+        #     xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
+        #
+        #     # Tools
+        #     tools = {"1": {"C": kwa['dia']}}
+        #
+        #     def alligndrill_init_me(init_obj, app_obj):
+        #
+        #         drills = []
+        #         if 'holes' in kwa:
+        #             for hole in holes:
+        #                 point = Point(hole)
+        #                 point_mirror = affinity.scale(point, xscale, yscale, origin=(px, py))
+        #                 drills.append({"point": point, "tool": "1"})
+        #                 drills.append({"point": point_mirror, "tool": "1"})
+        #         else:
+        #             if 'box' not in kwa:
+        #                 return "ERROR: -grid can be used only for -box"
+        #
+        #             if 'axisoffset' in kwa:
+        #                 axisoffset = kwa['axisoffset']
+        #             else:
+        #                 axisoffset = 0
+        #
+        #             # This will align hole to given aligngridoffset and minimal offset from pcb, based on selected axis
+        #             if axis == "X":
+        #                 firstpoint = kwa['gridoffset']
+        #
+        #                 while (xmin - kwa['minoffset']) < firstpoint:
+        #                     firstpoint = firstpoint - kwa['grid']
+        #
+        #                 lastpoint = kwa['gridoffset']
+        #
+        #                 while (xmax + kwa['minoffset']) > lastpoint:
+        #                     lastpoint = lastpoint + kwa['grid']
+        #
+        #                 localholes = (firstpoint, axisoffset), (lastpoint, axisoffset)
+        #
+        #             else:
+        #                 firstpoint = kwa['gridoffset']
+        #
+        #                 while (ymin - kwa['minoffset']) < firstpoint:
+        #                     firstpoint = firstpoint - kwa['grid']
+        #
+        #                 lastpoint = kwa['gridoffset']
+        #
+        #                 while (ymax + kwa['minoffset']) > lastpoint:
+        #                     lastpoint = lastpoint + kwa['grid']
+        #
+        #                 localholes = (axisoffset, firstpoint), (axisoffset, lastpoint)
+        #
+        #             for hole in localholes:
+        #                 point = Point(hole)
+        #                 point_mirror = affinity.scale(point, xscale, yscale, origin=(px, py))
+        #                 drills.append({"point": point, "tool": "1"})
+        #                 drills.append({"point": point_mirror, "tool": "1"})
+        #
+        #         init_obj.tools = tools
+        #         init_obj.drills = drills
+        #         init_obj.create_geometry()
+        #
+        #     # Box
+        #     if 'box' in kwa:
+        #         try:
+        #             box = self.collection.get_by_name(kwa['box'])
+        #         except:
+        #             return "Could not retrieve object box: %s" % kwa['box']
+        #
+        #         if box is None:
+        #             return "Object box not found: %s" % kwa['box']
+        #
+        #         try:
+        #             xmin, ymin, xmax, ymax = box.bounds()
+        #             px = 0.5 * (xmin + xmax)
+        #             py = 0.5 * (ymin + ymax)
+        #
+        #             obj.app.new_object("excellon", name + "_aligndrill", alligndrill_init_me)
+        #
+        #         except Exception, e:
+        #             return "Operation failed: %s" % str(e)
+        #
+        #     else:
+        #         try:
+        #             dist = float(kwa['dist'])
+        #         except KeyError:
+        #             dist = 0.0
+        #         except ValueError:
+        #             return "Invalid distance: %s" % kwa['dist']
+        #
+        #         try:
+        #             px=dist
+        #             py=dist
+        #             obj.app.new_object("excellon", name + "_alligndrill", alligndrill_init_me)
+        #         except Exception, e:
+        #             return "Operation failed: %s" % str(e)
+        #
+        #     return 'Ok'
+
+        # Migrated but still used?
+        # def drillcncjob(name=None, *args):
+        #     """
+        #     TCL shell command - see help section
+        #
+        #     :param name: name of object
+        #     :param args: array of arguments
+        #     :return: "Ok" if completed without errors
+        #     """
+        #
+        #     try:
+        #         a, kwa = h(*args)
+        #         types = {'tools': str,
+        #                  'outname': str,
+        #                  'drillz': float,
+        #                  'travelz': float,
+        #                  'feedrate': float,
+        #                  'spindlespeed': int,
+        #                  'toolchange': int
+        #                  }
+        #
+        #         if name is None:
+        #             self.raise_tcl_error('Argument name is missing.')
+        #
+        #         for key in kwa:
+        #             if key not in types:
+        #                 self.raise_tcl_error('Unknown parameter: %s' % key)
+        #             try:
+        #                 kwa[key] = types[key](kwa[key])
+        #             except Exception as e:
+        #                 self.raise_tcl_error("Cannot cast argument '%s' to type %s." % (key, str(types[key])))
+        #
+        #         try:
+        #             obj = self.collection.get_by_name(str(name))
+        #         except:
+        #             self.raise_tcl_error("Could not retrieve object: %s" % name)
+        #
+        #         if obj is None:
+        #             self.raise_tcl_error('Object not found: %s' % name)
+        #
+        #         if not isinstance(obj, FlatCAMExcellon):
+        #             self.raise_tcl_error('Only Excellon objects can be drilled, got %s %s.' % (name, type(obj)))
+        #
+        #         try:
+        #             # Get the tools from the list
+        #             job_name = kwa["outname"]
+        #
+        #             # Object initialization function for app.new_object()
+        #             def job_init(job_obj, app_obj):
+        #                 job_obj.z_cut = kwa["drillz"]
+        #                 job_obj.z_move = kwa["travelz"]
+        #                 job_obj.feedrate = kwa["feedrate"]
+        #                 job_obj.spindlespeed = kwa["spindlespeed"] if "spindlespeed" in kwa else None
+        #                 toolchange = True if "toolchange" in kwa and kwa["toolchange"] == 1 else False
+        #                 job_obj.generate_from_excellon_by_tool(obj, kwa["tools"], toolchange)
+        #                 job_obj.gcode_parse()
+        #                 job_obj.create_geometry()
+        #
+        #             obj.app.new_object("cncjob", job_name, job_init)
+        #
+        #         except Exception, e:
+        #             self.raise_tcl_error("Operation failed: %s" % str(e))
+        #
+        #     except Exception as unknown:
+        #         self.raise_tcl_unknown_error(unknown)
 
         # --- Migrated to new architecture ---
         # def millholes(name=None, *args):
@@ -3264,82 +3269,93 @@ class App(QtCore.QObject):
         #
         #     return 'Ok'
 
-        def cncjob(obj_name, *args):
-            a, kwa = h(*args)
+        # --- Migrated to new architecture ---
+        # def cncjob(obj_name, *args):
+        #     a, kwa = h(*args)
+        #
+        #     types = {'z_cut': float,
+        #              'z_move': float,
+        #              'feedrate': float,
+        #              'tooldia': float,
+        #              'outname': str,
+        #              'spindlespeed': int,
+        #              'multidepth' : bool,
+        #              'depthperpass' : float
+        #              }
+        #
+        #     for key in kwa:
+        #         if key not in types:
+        #             return 'Unknown parameter: %s' % key
+        #         kwa[key] = types[key](kwa[key])
+        #
+        #     try:
+        #         obj = self.collection.get_by_name(str(obj_name))
+        #     except:
+        #         return "Could not retrieve object: %s" % obj_name
+        #     if obj is None:
+        #         return "Object not found: %s" % obj_name
+        #
+        #     try:
+        #         obj.generatecncjob(**kwa)
+        #     except Exception, e:
+        #         return "Operation failed: %s" % str(e)
+        #
+        #     return 'Ok'
 
-            types = {'z_cut': float,
-                     'z_move': float,
-                     'feedrate': float,
-                     'tooldia': float,
-                     'outname': str,
-                     'spindlespeed': int,
-                     'multidepth' : bool,
-                     'depthperpass' : float
-                     }
+        # --- Migrated to new architecture ---
+        # def write_gcode(obj_name, filename, preamble='', postamble=''):
+        #     """
+        #     Requires obj_name to be available. It might still be in the
+        #     making at the time this function is called, so check for
+        #     promises and send to background if there are promises.
+        #     """
+        #
+        #     # If there are promised objects, wait until all promises have been fulfilled.
+        #     if self.collection.has_promises():
+        #
+        #         def write_gcode_on_object(new_object):
+        #             self.log.debug("write_gcode_on_object(): Disconnecting %s" % write_gcode_on_object)
+        #             self.new_object_available.disconnect(write_gcode_on_object)
+        #             write_gcode(obj_name, filename, preamble, postamble)
+        #
+        #         # Try again when a new object becomes available.
+        #         self.log.debug("write_gcode(): Collection has promises. Queued for %s." % obj_name)
+        #         self.log.debug("write_gcode(): Queued function: %s" % write_gcode_on_object)
+        #         self.new_object_available.connect(write_gcode_on_object)
+        #
+        #         return
+        #
+        #     self.log.debug("write_gcode(): No promises. Continuing for %s." % obj_name)
+        #
+        #     try:
+        #         obj = self.collection.get_by_name(str(obj_name))
+        #     except:
+        #         return "Could not retrieve object: %s" % obj_name
+        #
+        #     try:
+        #         obj.export_gcode(str(filename), str(preamble), str(postamble))
+        #     except Exception, e:
+        #         return "Operation failed: %s" % str(e)
 
-            for key in kwa:
-                if key not in types:
-                    return 'Unknown parameter: %s' % key
-                kwa[key] = types[key](kwa[key])
+        # --- Migrated to new architecture ---
+        # def paint_poly(obj_name, inside_pt_x, inside_pt_y, tooldia, overlap):
+        #     try:
+        #         obj = self.collection.get_by_name(str(obj_name))
+        #     except:
+        #         return "Could not retrieve object: %s" % obj_name
+        #     if obj is None:
+        #         return "Object not found: %s" % obj_name
+        #     obj.paint_poly([float(inside_pt_x), float(inside_pt_y)], float(tooldia), float(overlap))
 
-            try:
-                obj = self.collection.get_by_name(str(obj_name))
-            except:
-                return "Could not retrieve object: %s" % obj_name
-            if obj is None:
-                return "Object not found: %s" % obj_name
-
-            try:
-                obj.generatecncjob(**kwa)
-            except Exception, e:
-                return "Operation failed: %s" % str(e)
-
-            return 'Ok'
-
-        def write_gcode(obj_name, filename, preamble='', postamble=''):
-            """
-            Requires obj_name to be available. It might still be in the
-            making at the time this function is called, so check for
-            promises and send to background if there are promises.
-            """
-
-            # If there are promised objects, wait until all promises have been fulfilled.
-            if self.collection.has_promises():
-
-                def write_gcode_on_object(new_object):
-                    self.log.debug("write_gcode_on_object(): Disconnecting %s" % write_gcode_on_object)
-                    self.new_object_available.disconnect(write_gcode_on_object)
-                    write_gcode(obj_name, filename, preamble, postamble)
-
-                # Try again when a new object becomes available.
-                self.log.debug("write_gcode(): Collection has promises. Queued for %s." % obj_name)
-                self.log.debug("write_gcode(): Queued function: %s" % write_gcode_on_object)
-                self.new_object_available.connect(write_gcode_on_object)
-
-                return
-
-            self.log.debug("write_gcode(): No promises. Continuing for %s." % obj_name)
-
-            try:
-                obj = self.collection.get_by_name(str(obj_name))
-            except:
-                return "Could not retrieve object: %s" % obj_name
-
-            try:
-                obj.export_gcode(str(filename), str(preamble), str(postamble))
-            except Exception, e:
-                return "Operation failed: %s" % str(e)
-
-        def paint_poly(obj_name, inside_pt_x, inside_pt_y, tooldia, overlap):
-            try:
-                obj = self.collection.get_by_name(str(obj_name))
-            except:
-                return "Could not retrieve object: %s" % obj_name
-            if obj is None:
-                return "Object not found: %s" % obj_name
-            obj.paint_poly([float(inside_pt_x), float(inside_pt_y)], float(tooldia), float(overlap))
-
+        # --- New version in new geometry exists, but required here temporarily. ---
         def add_poly(obj_name, *args):
+            """
+            Required by: add_rectangle()
+
+            :param obj_name:
+            :param args:
+            :return:
+            """
             if len(args) % 2 != 0:
                 return "Incomplete coordinate."
 
@@ -3359,6 +3375,13 @@ class App(QtCore.QObject):
                             topright_x, topright_y, topright_x, botleft_y)
 
         def subtract_poly(obj_name, *args):
+            """
+            Required by: subtract_rectangle()
+
+            :param obj_name:
+            :param args:
+            :return:
+            """
             if len(args) % 2 != 0:
                 return "Incomplete coordinate."
 
@@ -3380,172 +3403,179 @@ class App(QtCore.QObject):
             return subtract_poly(obj_name, botleft_x, botleft_y, botleft_x, topright_y,
                             topright_x, topright_y, topright_x, botleft_y)
 
-        def add_circle(obj_name, center_x, center_y, radius):
-            try:
-                obj = self.collection.get_by_name(str(obj_name))
-            except:
-                return "Could not retrieve object: %s" % obj_name
-            if obj is None:
-                return "Object not found: %s" % obj_name
+        # --- Migrated to new architecture ---
+        # def add_circle(obj_name, center_x, center_y, radius):
+        #     try:
+        #         obj = self.collection.get_by_name(str(obj_name))
+        #     except:
+        #         return "Could not retrieve object: %s" % obj_name
+        #     if obj is None:
+        #         return "Object not found: %s" % obj_name
+        #
+        #     obj.add_circle([float(center_x), float(center_y)], float(radius))
 
-            obj.add_circle([float(center_x), float(center_y)], float(radius))
+        # --- Migrated to new architecture ---
+        # def set_active(obj_name):
+        #     try:
+        #         self.collection.set_active(str(obj_name))
+        #     except Exception, e:
+        #         return "Command failed: %s" % str(e)
 
-        def set_active(obj_name):
-            try:
-                self.collection.set_active(str(obj_name))
-            except Exception, e:
-                return "Command failed: %s" % str(e)
+        # --- Migrated to new architecture ---
+        # def delete(obj_name):
+        #     try:
+        #         #deselect all  to avoid  delete selected object when run  delete  from  shell
+        #         self.collection.set_all_inactive()
+        #         self.collection.set_active(str(obj_name))
+        #         self.on_delete()
+        #     except Exception, e:
+        #         return "Command failed: %s" % str(e)
 
-        def delete(obj_name):
-            try:
-                #deselect all  to avoid  delete selected object when run  delete  from  shell
-                self.collection.set_all_inactive()
-                self.collection.set_active(str(obj_name))
-                self.on_delete()
-            except Exception, e:
-                return "Command failed: %s" % str(e)
+        # --- Migrated to new architecture ---
+        # def geo_union(obj_name):
+        #
+        #     try:
+        #         obj = self.collection.get_by_name(str(obj_name))
+        #     except:
+        #         return "Could not retrieve object: %s" % obj_name
+        #     if obj is None:
+        #         return "Object not found: %s" % obj_name
+        #
+        #     obj.union()
 
-        def geo_union(obj_name):
+        # --- Migrated to new architecture ---
+        # def join_geometries(obj_name, *obj_names):
+        #     objs = []
+        #     for obj_n in obj_names:
+        #         obj = self.collection.get_by_name(str(obj_n))
+        #         if obj is None:
+        #             return "Object not found: %s" % obj_n
+        #         else:
+        #             objs.append(obj)
+        #
+        #     def initialize(obj, app):
+        #         FlatCAMGeometry.merge(objs, obj)
+        #
+        #     if objs is not None:
+        #         self.new_object("geometry", obj_name, initialize)
 
-            try:
-                obj = self.collection.get_by_name(str(obj_name))
-            except:
-                return "Could not retrieve object: %s" % obj_name
-            if obj is None:
-                return "Object not found: %s" % obj_name
+        # --- Migrated to new architecture ---
+        # def join_excellons(obj_name, *obj_names):
+        #     objs = []
+        #     for obj_n in obj_names:
+        #         obj = self.collection.get_by_name(str(obj_n))
+        #         if obj is None:
+        #             return "Object not found: %s" % obj_n
+        #         else:
+        #             objs.append(obj)
+        #
+        #     def initialize(obj, app):
+        #         FlatCAMExcellon.merge(objs, obj)
+        #
+        #     if objs is not None:
+        #         self.new_object("excellon", obj_name, initialize)
 
-            obj.union()
-
-        def join_geometries(obj_name, *obj_names):
-            objs = []
-            for obj_n in obj_names:
-                obj = self.collection.get_by_name(str(obj_n))
-                if obj is None:
-                    return "Object not found: %s" % obj_n
-                else:
-                    objs.append(obj)
-
-            def initialize(obj, app):
-                FlatCAMGeometry.merge(objs, obj)
-
-            if objs is not None:
-                self.new_object("geometry", obj_name, initialize)
-
-        def join_excellons(obj_name, *obj_names):
-            objs = []
-            for obj_n in obj_names:
-                obj = self.collection.get_by_name(str(obj_n))
-                if obj is None:
-                    return "Object not found: %s" % obj_n
-                else:
-                    objs.append(obj)
-
-            def initialize(obj, app):
-                FlatCAMExcellon.merge(objs, obj)
-
-            if objs is not None:
-                self.new_object("excellon", obj_name, initialize)
-
-        def panelize(name, *args):
-            a, kwa = h(*args)
-            types = {'box': str,
-                     'spacing_columns': float,
-                     'spacing_rows': float,
-                     'columns': int,
-                     'rows': int,
-                     'outname': str}
-
-            for key in kwa:
-                if key not in types:
-                    return 'Unknown parameter: %s' % key
-                kwa[key] = types[key](kwa[key])
-
-            # Get source object.
-            try:
-                obj = self.collection.get_by_name(str(name))
-            except:
-                return "Could not retrieve object: %s" % name
-
-            if obj is None:
-                return "Object not found: %s" % name
-
-            if 'box' in kwa:
-                boxname = kwa['box']
-                try:
-                    box = self.collection.get_by_name(boxname)
-                except:
-                    return "Could not retrieve object: %s" % name
-            else:
-                box = obj
-
-            if 'columns' not in kwa or 'rows' not in kwa:
-                return "ERROR: Specify -columns and -rows"
-
-            if 'outname' in kwa:
-                outname = kwa['outname']
-            else:
-                outname = name + '_panelized'
-
-            if 'spacing_columns' in kwa:
-                spacing_columns = kwa['spacing_columns']
-            else:
-                spacing_columns = 5
-
-            if 'spacing_rows' in kwa:
-                spacing_rows = kwa['spacing_rows']
-            else:
-                spacing_rows = 5
-
-            xmin, ymin, xmax, ymax = box.bounds()
-            lenghtx = xmax - xmin + spacing_columns
-            lenghty = ymax - ymin + spacing_rows
-
-            currenty = 0
-
-            def initialize_local(obj_init, app):
-                obj_init.solid_geometry = obj.solid_geometry
-                obj_init.offset([float(currentx), float(currenty)]),
-
-            def initialize_local_excellon(obj_init, app):
-                FlatCAMExcellon.merge(obj, obj_init)
-                obj_init.offset([float(currentx), float(currenty)]),
-
-            def initialize_geometry(obj_init, app):
-                FlatCAMGeometry.merge(objs, obj_init)
-
-            def initialize_excellon(obj_init, app):
-                FlatCAMExcellon.merge(objs, obj_init)
-
-            objs = []
-            if obj is not None:
-
-                for row in range(kwa['rows']):
-                    currentx = 0
-                    for col in range(kwa['columns']):
-                        local_outname = outname + ".tmp." + str(col) + "." + str(row)
-                        if isinstance(obj, FlatCAMExcellon):
-                            self.new_object("excellon", local_outname, initialize_local_excellon)
-                        else:
-                            self.new_object("geometry", local_outname, initialize_local)
-
-                        currentx += lenghtx
-                    currenty += lenghty
-
-                if isinstance(obj, FlatCAMExcellon):
-                    self.new_object("excellon", outname, initialize_excellon)
-                else:
-                    self.new_object("geometry", outname, initialize_geometry)
-
-                #deselect all  to avoid  delete selected object when run  delete  from  shell
-                self.collection.set_all_inactive()
-                for delobj in objs:
-                    self.collection.set_active(delobj.options['name'])
-                    self.on_delete()
-
-            else:
-                return "ERROR: obj is None"
-
-            return "Ok"
+        # --- Migrated to new architecture ---
+        # def panelize(name, *args):
+        #     a, kwa = h(*args)
+        #     types = {'box': str,
+        #              'spacing_columns': float,
+        #              'spacing_rows': float,
+        #              'columns': int,
+        #              'rows': int,
+        #              'outname': str}
+        #
+        #     for key in kwa:
+        #         if key not in types:
+        #             return 'Unknown parameter: %s' % key
+        #         kwa[key] = types[key](kwa[key])
+        #
+        #     # Get source object.
+        #     try:
+        #         obj = self.collection.get_by_name(str(name))
+        #     except:
+        #         return "Could not retrieve object: %s" % name
+        #
+        #     if obj is None:
+        #         return "Object not found: %s" % name
+        #
+        #     if 'box' in kwa:
+        #         boxname = kwa['box']
+        #         try:
+        #             box = self.collection.get_by_name(boxname)
+        #         except:
+        #             return "Could not retrieve object: %s" % name
+        #     else:
+        #         box = obj
+        #
+        #     if 'columns' not in kwa or 'rows' not in kwa:
+        #         return "ERROR: Specify -columns and -rows"
+        #
+        #     if 'outname' in kwa:
+        #         outname = kwa['outname']
+        #     else:
+        #         outname = name + '_panelized'
+        #
+        #     if 'spacing_columns' in kwa:
+        #         spacing_columns = kwa['spacing_columns']
+        #     else:
+        #         spacing_columns = 5
+        #
+        #     if 'spacing_rows' in kwa:
+        #         spacing_rows = kwa['spacing_rows']
+        #     else:
+        #         spacing_rows = 5
+        #
+        #     xmin, ymin, xmax, ymax = box.bounds()
+        #     lenghtx = xmax - xmin + spacing_columns
+        #     lenghty = ymax - ymin + spacing_rows
+        #
+        #     currenty = 0
+        #
+        #     def initialize_local(obj_init, app):
+        #         obj_init.solid_geometry = obj.solid_geometry
+        #         obj_init.offset([float(currentx), float(currenty)]),
+        #
+        #     def initialize_local_excellon(obj_init, app):
+        #         FlatCAMExcellon.merge(obj, obj_init)
+        #         obj_init.offset([float(currentx), float(currenty)]),
+        #
+        #     def initialize_geometry(obj_init, app):
+        #         FlatCAMGeometry.merge(objs, obj_init)
+        #
+        #     def initialize_excellon(obj_init, app):
+        #         FlatCAMExcellon.merge(objs, obj_init)
+        #
+        #     objs = []
+        #     if obj is not None:
+        #
+        #         for row in range(kwa['rows']):
+        #             currentx = 0
+        #             for col in range(kwa['columns']):
+        #                 local_outname = outname + ".tmp." + str(col) + "." + str(row)
+        #                 if isinstance(obj, FlatCAMExcellon):
+        #                     self.new_object("excellon", local_outname, initialize_local_excellon)
+        #                 else:
+        #                     self.new_object("geometry", local_outname, initialize_local)
+        #
+        #                 currentx += lenghtx
+        #             currenty += lenghty
+        #
+        #         if isinstance(obj, FlatCAMExcellon):
+        #             self.new_object("excellon", outname, initialize_excellon)
+        #         else:
+        #             self.new_object("geometry", outname, initialize_geometry)
+        #
+        #         #deselect all  to avoid  delete selected object when run  delete  from  shell
+        #         self.collection.set_all_inactive()
+        #         for delobj in objs:
+        #             self.collection.set_active(delobj.options['name'])
+        #             self.on_delete()
+        #
+        #     else:
+        #         return "ERROR: obj is None"
+        #
+        #     return "Ok"
 
         def make_docs():
             output = ''
@@ -3713,20 +3743,22 @@ class App(QtCore.QObject):
             #             "   follow: If 1, does not create polygons, just follows the gerber path.\n" +
             #             "   outname: Name of the created gerber object."
             # },
-            'open_excellon': {
-                'fcn': open_excellon,
-                'help': "Opens an Excellon file.\n" +
-                        "> open_excellon <filename> [-outname <o>]\n" +
-                        "   filename: Path to file to open.\n" +
-                        "   outname: Name of the created excellon object."
-            },
-            'open_gcode': {
-                'fcn': open_gcode,
-                'help': "Opens an G-Code file.\n" +
-                        "> open_gcode <filename> [-outname <o>]\n" +
-                        "   filename: Path to file to open.\n" +
-                        "   outname: Name of the created CNC Job object."
-            },
+            # --- Migrated to new architecture ---
+            # 'open_excellon': {
+            #     'fcn': open_excellon,
+            #     'help': "Opens an Excellon file.\n" +
+            #             "> open_excellon <filename> [-outname <o>]\n" +
+            #             "   filename: Path to file to open.\n" +
+            #             "   outname: Name of the created excellon object."
+            # },
+            # --- Migrated to new architecture ---
+            # 'open_gcode': {
+            #     'fcn': open_gcode,
+            #     'help': "Opens an G-Code file.\n" +
+            #             "> open_gcode <filename> [-outname <o>]\n" +
+            #             "   filename: Path to file to open.\n" +
+            #             "   outname: Name of the created CNC Job object."
+            # },
             'open_project': {
                 'fcn': self.open_project,
                 "help": "Opens a FlatCAM project.\n" +
@@ -3774,76 +3806,80 @@ class App(QtCore.QObject):
             #             "   combine: combine all passes into one geometry." +
             #             "   outname: Name of the resulting Geometry object."
             # },
-            'cutout': {
-                'fcn': cutout,
-                'help': "Creates board cutout.\n" +
-                        "> cutout <name> [-dia <3.0 (float)>] [-margin <0.0 (float)>] [-gapsize <0.5 (float)>] [-gaps <lr (4|tb|lr)>]\n" +
-                        "   name: Name of the object\n" +
-                        "   dia: Tool diameter\n" +
-                        "   margin: Margin over bounds\n" +
-                        "   gapsize: size of gap\n" +
-                        "   gaps: type of gaps"
-            },
-            'geocutout': {
-                'fcn': geocutout,
-                'help': "Cut holding gaps from geometry.\n" +
-                        "> geocutout <name> [-dia <3.0 (float)>] [-margin <0.0 (float)>] [-gapsize <0.5 (float)>] [-gaps <lr (8|4|tb|lr|2tb|2lr)>]\n" +
-                        "   name: Name of the geometry object\n" +
-                        "   dia: Tool diameter\n" +
-                        "   margin: Margin over bounds\n" +
-                        "   gapsize: size of gap\n" +
-                        "   gaps: type of gaps\n" +
-                        "\n" +
-                        "   example:\n" +
-                        "\n" +
-                        "      #isolate margin for example from fritzing arduino shield or any svg etc\n" +
-                        "      isolate BCu_margin -dia 3 -overlap 1\n" +
-                        "\n" +
-                        "      #create exteriors from isolated object\n" +
-                        "      exteriors BCu_margin_iso -outname BCu_margin_iso_exterior\n" +
-                        "\n" +
-                        "      #delete isolated object if you dond need id anymore\n" +
-                        "      delete BCu_margin_iso\n" +
-                        "\n" +
-                        "      #finally cut holding gaps\n" +
-                        "      geocutout BCu_margin_iso_exterior -dia 3 -gapsize 0.6 -gaps 4\n"
-            },
-            'mirror': {
-                'fcn': mirror,
-                'help': "Mirror a layer.\n" +
-                        "> mirror <name> -axis <X|Y> [-box <nameOfBox> | -dist <number>]\n" +
-                        "   name: Name of the object (Gerber or Excellon) to mirror.\n" +
-                        "   box: Name of object which act as box (cutout for example.)\n" +
-                        "   axis: Mirror axis parallel to the X or Y axis.\n" +
-                        "   dist: Distance of the mirror axis to the X or Y axis."
-            },
-            'aligndrillgrid': {
-                'fcn': aligndrillgrid,
-                'help': "Create excellon with drills for aligment grid.\n" +
-                        "> aligndrillgrid <outname> [-dia <3.0 (float)>] -gridx <float> [-gridoffsetx <0 (float)>] -gridy <float> [-gridoffsety <0 (float)>] -columns <int> -rows <int>\n" +
-                        "   outname: Name of the object to create.\n" +
-                        "   dia: Tool diameter\n" +
-                        "   gridx: grid size in X axis\n" +
-                        "   gridoffsetx: move grid  from origin\n" +
-                        "   gridy: grid size in Y axis\n" +
-                        "   gridoffsety: move grid  from origin\n" +
-                        "   colums: grid holes on X axis\n" +
-                        "   rows: grid holes on Y axis\n"
-            },
-            'aligndrill': {
-                'fcn': aligndrill,
-                'help': "Create excellon with drills for aligment.\n" +
-                        "> aligndrill <name> [-dia <3.0 (float)>] -axis <X|Y> [-box <nameOfBox> -minoffset <float> [-grid <10 (float)> -gridoffset <5 (float)> [-axisoffset <0 (float)>]] | -dist <number>]\n" +
-                        "   name: Name of the object (Gerber or Excellon) to mirror.\n" +
-                        "   dia: Tool diameter\n" +
-                        "   box: Name of object which act as box (cutout for example.)\n" +
-                        "   grid: aligning  to grid, for thouse, who have aligning pins inside table in grid (-5,0),(5,0),(15,0)..." +
-                        "   gridoffset: offset of grid from 0 position" +
-                        "   minoffset: min and max distance between align hole and pcb" +
-                        "   axisoffset: offset on second axis before aligment holes" +
-                        "   axis: Mirror axis parallel to the X or Y axis.\n" +
-                        "   dist: Distance of the mirror axis to the X or Y axis."
-            },
+            # 'cutout': {
+            #     'fcn': cutout,
+            #     'help': "Creates board cutout.\n" +
+            #             "> cutout <name> [-dia <3.0 (float)>] [-margin <0.0 (float)>] [-gapsize <0.5 (float)>] [-gaps <lr (4|tb|lr)>]\n" +
+            #             "   name: Name of the object\n" +
+            #             "   dia: Tool diameter\n" +
+            #             "   margin: Margin over bounds\n" +
+            #             "   gapsize: size of gap\n" +
+            #             "   gaps: type of gaps"
+            # },
+            # --- Migrated to new architecture ---
+            # 'geocutout': {
+            #     'fcn': geocutout,
+            #     'help': "Cut holding gaps from geometry.\n" +
+            #             "> geocutout <name> [-dia <3.0 (float)>] [-margin <0.0 (float)>] [-gapsize <0.5 (float)>] [-gaps <lr (8|4|tb|lr|2tb|2lr)>]\n" +
+            #             "   name: Name of the geometry object\n" +
+            #             "   dia: Tool diameter\n" +
+            #             "   margin: Margin over bounds\n" +
+            #             "   gapsize: size of gap\n" +
+            #             "   gaps: type of gaps\n" +
+            #             "\n" +
+            #             "   example:\n" +
+            #             "\n" +
+            #             "      #isolate margin for example from fritzing arduino shield or any svg etc\n" +
+            #             "      isolate BCu_margin -dia 3 -overlap 1\n" +
+            #             "\n" +
+            #             "      #create exteriors from isolated object\n" +
+            #             "      exteriors BCu_margin_iso -outname BCu_margin_iso_exterior\n" +
+            #             "\n" +
+            #             "      #delete isolated object if you dond need id anymore\n" +
+            #             "      delete BCu_margin_iso\n" +
+            #             "\n" +
+            #             "      #finally cut holding gaps\n" +
+            #             "      geocutout BCu_margin_iso_exterior -dia 3 -gapsize 0.6 -gaps 4\n"
+            # },
+            # --- Migrated to new architecture ---
+            # 'mirror': {
+            #     'fcn': mirror,
+            #     'help': "Mirror a layer.\n" +
+            #             "> mirror <name> -axis <X|Y> [-box <nameOfBox> | -dist <number>]\n" +
+            #             "   name: Name of the object (Gerber or Excellon) to mirror.\n" +
+            #             "   box: Name of object which act as box (cutout for example.)\n" +
+            #             "   axis: Mirror axis parallel to the X or Y axis.\n" +
+            #             "   dist: Distance of the mirror axis to the X or Y axis."
+            #},
+            # --- Migrated to new architecture ---
+            # 'aligndrillgrid': {
+            #     'fcn': aligndrillgrid,
+            #     'help': "Create excellon with drills for aligment grid.\n" +
+            #             "> aligndrillgrid <outname> [-dia <3.0 (float)>] -gridx <float> [-gridoffsetx <0 (float)>] -gridy <float> [-gridoffsety <0 (float)>] -columns <int> -rows <int>\n" +
+            #             "   outname: Name of the object to create.\n" +
+            #             "   dia: Tool diameter\n" +
+            #             "   gridx: grid size in X axis\n" +
+            #             "   gridoffsetx: move grid  from origin\n" +
+            #             "   gridy: grid size in Y axis\n" +
+            #             "   gridoffsety: move grid  from origin\n" +
+            #             "   colums: grid holes on X axis\n" +
+            #             "   rows: grid holes on Y axis\n"
+            # },
+            # --- Migrated to new architecture ---
+            # 'aligndrill': {
+            #     'fcn': aligndrill,
+            #     'help': "Create excellon with drills for aligment.\n" +
+            #             "> aligndrill <name> [-dia <3.0 (float)>] -axis <X|Y> [-box <nameOfBox> -minoffset <float> [-grid <10 (float)> -gridoffset <5 (float)> [-axisoffset <0 (float)>]] | -dist <number>]\n" +
+            #             "   name: Name of the object (Gerber or Excellon) to mirror.\n" +
+            #             "   dia: Tool diameter\n" +
+            #             "   box: Name of object which act as box (cutout for example.)\n" +
+            #             "   grid: aligning  to grid, for thouse, who have aligning pins inside table in grid (-5,0),(5,0),(15,0)..." +
+            #             "   gridoffset: offset of grid from 0 position" +
+            #             "   minoffset: min and max distance between align hole and pcb" +
+            #             "   axisoffset: offset on second axis before aligment holes" +
+            #             "   axis: Mirror axis parallel to the X or Y axis.\n" +
+            #             "   dist: Distance of the mirror axis to the X or Y axis."
+            # },
             # --- Migrated to new architecture ---
             # 'exteriors': {
             #     'fcn': exteriors,
@@ -3921,22 +3957,24 @@ class App(QtCore.QObject):
             #             '   depthperpass: Height of one layer for multidepth\n'+
             #             '   outname: Name of the output object'
             # },
-            'write_gcode': {
-                'fcn': write_gcode,
-                'help': 'Saves G-code of a CNC Job object to file.\n' +
-                        '> write_gcode <name> <filename>\n' +
-                        '   name: Source CNC Job object\n' +
-                        '   filename: Output filename'
-            },
-            'paint_poly': {
-                'fcn': paint_poly,
-                'help': 'Creates a geometry object with toolpath to cover the inside of a polygon.\n' +
-                        '> paint_poly <name> <inside_pt_x> <inside_pt_y> <tooldia> <overlap>\n' +
-                        '   name: Name of the sourge geometry object.\n' +
-                        '   inside_pt_x, inside_pt_y: Coordinates of a point inside the polygon.\n' +
-                        '   tooldia: Diameter of the tool to be used.\n' +
-                        '   overlap: Fraction of the tool diameter to overlap cuts.'
-            },
+            # --- Migrated to new architecture ---
+            # 'write_gcode': {
+            #     'fcn': write_gcode,
+            #     'help': 'Saves G-code of a CNC Job object to file.\n' +
+            #             '> write_gcode <name> <filename>\n' +
+            #             '   name: Source CNC Job object\n' +
+            #             '   filename: Output filename'
+            # },
+            # --- Migrated to new architecture ---
+            # 'paint_poly': {
+            #     'fcn': paint_poly,
+            #     'help': 'Creates a geometry object with toolpath to cover the inside of a polygon.\n' +
+            #             '> paint_poly <name> <inside_pt_x> <inside_pt_y> <tooldia> <overlap>\n' +
+            #             '   name: Name of the sourge geometry object.\n' +
+            #             '   inside_pt_x, inside_pt_y: Coordinates of a point inside the polygon.\n' +
+            #             '   tooldia: Diameter of the tool to be used.\n' +
+            #             '   overlap: Fraction of the tool diameter to overlap cuts.'
+            # },
             'new_geometry': {
                 'fcn': lambda name: self.new_object('geometry', str(name), lambda x, y: None),
                 'help': 'Creates a new empty geometry object.\n' +
@@ -3957,49 +3995,54 @@ class App(QtCore.QObject):
                         '   name: Name of the geometry object, which will be  sutracted.\n' +
                         '   xi, yi: Coordinates of points in the polygon.'
             },
-            'delete': {
-                'fcn': delete,
-                'help': 'Deletes the give object.\n' +
-                        '> delete <name>\n' +
-                        '   name: Name of the object to delete.'
-            },
-            'geo_union': {
-                'fcn': geo_union,
-                'help': 'Runs a union operation (addition) on the components ' +
-                        'of the geometry object. For example, if it contains ' +
-                        '2 intersecting polygons, this opperation adds them into' +
-                        'a single larger polygon.\n' +
-                        '> geo_union <name>\n' +
-                        '   name: Name of the geometry object.'
-            },
-            'join_geometries': {
-                'fcn': join_geometries,
-                'help': 'Runs a merge operation (join) on the geometry ' +
-                        'objects.' +
-                        '> join_geometries <out_name> <obj_name_0>....\n' +
-                        '   out_name: Name of the new geometry object.' +
-                        '   obj_name_0... names of the objects to join'
-            },
-            'join_excellons': {
-                'fcn': join_excellons,
-                'help': 'Runs a merge operation (join) on the excellon ' +
-                        'objects.' +
-                        '> join_excellons <out_name> <obj_name_0>....\n' +
-                        '   out_name: Name of the new excellon object.' +
-                        '   obj_name_0... names of the objects to join'
-            },
-            'panelize': {
-                'fcn': panelize,
-                'help': "Simple panelize geometries.\n" +
-                        "> panelize <name> [-box <nameOfBox>]  [-spacing_columns <5 (float)>] [-spacing_rows <5 (float)>] -columns <int> -rows <int>  [-outname <n>]\n" +
-                        "   name: Name of the object to panelize.\n" +
-                        "   box: Name of object which act as box (cutout for example.) for cutout boundary. Object from name is used if not specified.\n" +
-                        "   spacing_columns: spacing between columns\n"+
-                        "   spacing_rows: spacing between rows\n"+
-                        "   columns: number of columns\n"+
-                        "   rows: number of rows\n"+
-                        "   outname: Name of the new geometry object."
-            },
+            # --- Migrated to new architecture ---
+            # 'delete': {
+            #     'fcn': delete,
+            #     'help': 'Deletes the give object.\n' +
+            #             '> delete <name>\n' +
+            #             '   name: Name of the object to delete.'
+            # },
+            # --- Migrated to new architecture ---
+            # 'geo_union': {
+            #     'fcn': geo_union,
+            #     'help': 'Runs a union operation (addition) on the components ' +
+            #             'of the geometry object. For example, if it contains ' +
+            #             '2 intersecting polygons, this opperation adds them into' +
+            #             'a single larger polygon.\n' +
+            #             '> geo_union <name>\n' +
+            #             '   name: Name of the geometry object.'
+            # },
+            # --- Migrated to new architecture ---
+            # 'join_geometries': {
+            #     'fcn': join_geometries,
+            #     'help': 'Runs a merge operation (join) on the geometry ' +
+            #             'objects.' +
+            #             '> join_geometries <out_name> <obj_name_0>....\n' +
+            #             '   out_name: Name of the new geometry object.' +
+            #             '   obj_name_0... names of the objects to join'
+            # },
+            # --- Migrated to new architecture ---
+            # 'join_excellons': {
+            #     'fcn': join_excellons,
+            #     'help': 'Runs a merge operation (join) on the excellon ' +
+            #             'objects.' +
+            #             '> join_excellons <out_name> <obj_name_0>....\n' +
+            #             '   out_name: Name of the new excellon object.' +
+            #             '   obj_name_0... names of the objects to join'
+            # },
+            # --- Migrated to new architecture ---
+            # 'panelize': {
+            #     'fcn': panelize,
+            #     'help': "Simple panelize geometries.\n" +
+            #             "> panelize <name> [-box <nameOfBox>]  [-spacing_columns <5 (float)>] [-spacing_rows <5 (float)>] -columns <int> -rows <int>  [-outname <n>]\n" +
+            #             "   name: Name of the object to panelize.\n" +
+            #             "   box: Name of object which act as box (cutout for example.) for cutout boundary. Object from name is used if not specified.\n" +
+            #             "   spacing_columns: spacing between columns\n"+
+            #             "   spacing_rows: spacing between rows\n"+
+            #             "   columns: number of columns\n"+
+            #             "   rows: number of rows\n"+
+            #             "   outname: Name of the new geometry object."
+            # },
             'subtract_rect': {
                 'fcn': subtract_rectangle,
                 'help': 'Subtract rectange from the given Geometry object.\n' +
@@ -4016,14 +4059,15 @@ class App(QtCore.QObject):
                         '   botleft_x, botleft_y: Coordinates of the bottom left corner.\n' +
                         '   topright_x, topright_y Coordinates of the top right corner.'
             },
-            'add_circle': {
-                'fcn': add_circle,
-                'help': 'Creates a circle in the given Geometry object.\n' +
-                        '> add_circle <name> <center_x> <center_y> <radius>\n' +
-                        '   name: Name of the geometry object to which to append the circle.\n' +
-                        '   center_x, center_y: Coordinates of the center of the circle.\n' +
-                        '   radius: Radius of the circle.'
-            },
+            # --- Migrated to new architecture ---
+            # 'add_circle': {
+            #     'fcn': add_circle,
+            #     'help': 'Creates a circle in the given Geometry object.\n' +
+            #             '> add_circle <name> <center_x> <center_y> <radius>\n' +
+            #             '   name: Name of the geometry object to which to append the circle.\n' +
+            #             '   center_x, center_y: Coordinates of the center of the circle.\n' +
+            #             '   radius: Radius of the circle.'
+            # },
             'make_docs': {
                 'fcn': make_docs,
                 'help': 'Prints command rererence in reStructuredText format.'
