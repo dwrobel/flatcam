@@ -3759,24 +3759,27 @@ class App(QtCore.QObject):
             #             "   filename: Path to file to open.\n" +
             #             "   outname: Name of the created CNC Job object."
             # },
-            'open_project': {
-                'fcn': self.open_project,
-                "help": "Opens a FlatCAM project.\n" +
-                        "> open_project <filename>\n" +
-                        "   filename: Path to file to open."
-            },
-            'save_project': {
-                'fcn': self.save_project,
-                'help': "Saves the FlatCAM project to file.\n" +
-                        "> save_project <filename>\n" +
-                        "   filename: Path to file to save."
-            },
-            'set_active': {
-                'fcn': set_active,
-                'help': "Sets a FlatCAM object as active.\n" +
-                        "> set_active <name>\n" +
-                        "   name: Name of the object."
-            },
+            # --- Migrated to new architecture ---
+            # 'open_project': {
+            #     'fcn': self.open_project,
+            #     "help": "Opens a FlatCAM project.\n" +
+            #             "> open_project <filename>\n" +
+            #             "   filename: Path to file to open."
+            # },
+            # --- Migrated to new architecture ---
+            # 'save_project': {
+            #     'fcn': self.save_project,
+            #     'help': "Saves the FlatCAM project to file.\n" +
+            #             "> save_project <filename>\n" +
+            #             "   filename: Path to file to save."
+            # },
+            # --- Migrated to new architecture ---
+            # 'set_active': {
+            #     'fcn': set_active,
+            #     'help': "Sets a FlatCAM object as active.\n" +
+            #             "> set_active <name>\n" +
+            #             "   name: Name of the object."
+            # },
             'get_names': {
                 'fcn': lambda: '\n'.join(self.collection.get_names()),
                 'help': "Lists the names of objects in the project.\n" +

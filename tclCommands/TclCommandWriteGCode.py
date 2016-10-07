@@ -2,7 +2,7 @@ from ObjectCollection import *
 import TclCommand
 
 
-class TclCommandOpenWriteGCode(TclCommand.TclCommandSignaled):
+class TclCommandWriteGCode(TclCommand.TclCommandSignaled):
     """
     Tcl shell command to save the G-code of a CNC Job object to file.
     """

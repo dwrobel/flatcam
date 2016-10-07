@@ -16,6 +16,7 @@ import tclCommands.TclCommandExportSVG
 import tclCommands.TclCommandExteriors
 import tclCommands.TclCommandGeoCutout  # NOT IMPLEMENTED.
 import tclCommands.TclCommandGeoUnion
+import tclCommands.TclCommandGetNames
 import tclCommands.TclCommandImportSvg
 import tclCommands.TclCommandInteriors
 import tclCommands.TclCommandIsolate
@@ -28,9 +29,11 @@ import tclCommands.TclCommandOffset
 import tclCommands.TclCommandOpenExcellon
 import tclCommands.TclCommandOpenGCode
 import tclCommands.TclCommandOpenGerber
+import tclCommands.TclCommandOpenProject
 import tclCommands.TclCommandPaint
 import tclCommands.TclCommandPanelize
 import tclCommands.TclCommandPlot
+import tclCommands.TclCommandSaveProject
 import tclCommands.TclCommandScale
 import tclCommands.TclCommandSetActive
 import tclCommands.TclCommandWriteGCode
@@ -45,7 +48,7 @@ for loader, name, is_pkg in pkgutil.walk_packages(__path__):
 
 def register_all_commands(app, commands):
     """
-    Static method which register all known commands.
+    Static method which registers all known commands.
 
     Command should  be for now in directory tclCommands and module should start with TCLCommand
     Class  have to follow same  name as module.

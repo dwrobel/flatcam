@@ -116,7 +116,7 @@ class TclCommand(object):
                     return "\t[" + option_symbol + help_key + " <" + type_name + ">: " + help_text + "]"
 
         def get_decorated_example(example_item):
-            return "> "+example_item
+            return "> " + example_item
 
         help_string = [self.help['main']]
         for alias in self.aliases:
@@ -214,7 +214,6 @@ class TclCommand(object):
 
         return named_args, unnamed_args
 
-
     def raise_tcl_unknown_error(self, unknownException):
         """
         raise Exception if is different type  than TclErrorException
@@ -253,11 +252,11 @@ class TclCommand(object):
 
         try:
             self.log.debug("TCL command '%s' executed." % str(self.__class__))
-            self.original_args=args
+            self.original_args = args
             args, unnamed_args = self.check_args(args)
             return self.execute(args, unnamed_args)
         except Exception as unknown:
-            error_info=sys.exc_info()
+            error_info = sys.exc_info()
             self.log.error("TCL command '%s' failed." % str(self))
             self.app.display_tcl_error(unknown, error_info)
             self.raise_tcl_unknown_error(unknown)
@@ -298,12 +297,12 @@ class TclCommandSignaled(TclCommand):
 
         try:
             self.output = None
-            self.error=None
-            self.error_info=None
+            self.error = None
+            self.error_info = None
             self.output = self.execute(args, unnamed_args)
         except Exception as unknown:
             self.error_info = sys.exc_info()
-            self.error=unknown
+            self.error = unknown
         finally:
             self.app.shell_command_finished.emit(self)
 
@@ -358,17 +357,19 @@ class TclCommandSignaled(TclCommand):
                 raise ex[0]
 
             if status['timed_out']:
-                self.app.raise_tcl_unknown_error("Operation timed outed! Consider increasing option '-timeout <miliseconds>' for command or 'set_sys background_timeout <miliseconds>'.")
+                self.app.raise_tcl_unknown_error("Operation timed outed! Consider increasing option "
+                                                 "'-timeout <miliseconds>' for command or "
+                                                 "'set_sys background_timeout <miliseconds>'.")
 
         try:
             self.log.debug("TCL command '%s' executed." % str(self.__class__))
-            self.original_args=args
+            self.original_args = args
             args, unnamed_args = self.check_args(args)
             if 'timeout' in args:
-                passed_timeout=args['timeout']
+                passed_timeout = args['timeout']
                 del args['timeout']
             else:
-                passed_timeout= self.app.defaults['background_timeout']
+                passed_timeout = self.app.defaults['background_timeout']
 
             # set detail for processing, it will be there until next open or close
             self.app.shell.open_proccessing(self.get_current_command())
@@ -393,7 +394,7 @@ class TclCommandSignaled(TclCommand):
             if self.error_info is not None:
                 error_info = self.error_info
             else:
-                error_info=sys.exc_info()
+                error_info = sys.exc_info()
             self.log.error("TCL command '%s' failed." % str(self))
             self.app.display_tcl_error(unknown, error_info)
             self.raise_tcl_unknown_error(unknown)

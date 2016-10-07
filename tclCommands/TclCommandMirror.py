@@ -2,7 +2,7 @@ from ObjectCollection import *
 import TclCommand
 
 
-class TclCommandOpenExcellon(TclCommand.TclCommandSignaled):
+class TclCommandMirror(TclCommand.TclCommandSignaled):
     """
     Tcl shell command to mirror an object.
     """
