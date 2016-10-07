@@ -276,6 +276,7 @@ class TclCommand(object):
 
         raise NotImplementedError("Please Implement this method")
 
+
 class TclCommandSignaled(TclCommand):
     """
         !!! I left it here only  for demonstration !!!

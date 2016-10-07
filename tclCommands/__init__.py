@@ -7,16 +7,20 @@ import tclCommands.TclCommandAddPolyline
 import tclCommands.TclCommandCncjob
 import tclCommands.TclCommandDrillcncjob
 import tclCommands.TclCommandExportGcode
+import tclCommands.TclCommandExportSVG
 import tclCommands.TclCommandExteriors
 import tclCommands.TclCommandImportSvg
 import tclCommands.TclCommandInteriors
 import tclCommands.TclCommandIsolate
+import tclCommands.TclCommandMillHoles
 import tclCommands.TclCommandNew
 import tclCommands.TclCommandOffset
+import tclCommands.TclCommandOpenExcellon
+import tclCommands.TclCommandOpenGCode
 import tclCommands.TclCommandOpenGerber
 import tclCommands.TclCommandPaint
 import tclCommands.TclCommandPlot
-import tclCommands.TclCommandScale
+import tclCommands.TclCommandExportSVG
 
 
 __all__ = []

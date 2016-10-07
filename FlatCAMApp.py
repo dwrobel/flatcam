@@ -2518,16 +2518,17 @@ class App(QtCore.QObject):
         #
         #     return "mytest3 done"
 
-        def export_svg(name, filename, *args):
-            a, kwa = h(*args)
-            types = {'scale_factor': float}
-
-            for key in kwa:
-                if key not in types:
-                    return 'Unknown parameter: %s' % key
-                kwa[key] = types[key](kwa[key])
-
-            self.export_svg(str(name), str(filename), **kwa)
+        # --- Migrated to new architecture ---
+        # def export_svg(name, filename, *args):
+        #     a, kwa = h(*args)
+        #     types = {'scale_factor': float}
+        #
+        #     for key in kwa:
+        #         if key not in types:
+        #             return 'Unknown parameter: %s' % key
+        #         kwa[key] = types[key](kwa[key])
+        #
+        #     self.export_svg(str(name), str(filename), **kwa)
 
         # --- Migrated to new architecture ---
         # def import_svg(filename, *args):
@@ -2554,27 +2555,29 @@ class App(QtCore.QObject):
         #
         #     self.open_gerber(str(filename), **kwa)
 
-        def open_excellon(filename, *args):
-            a, kwa = h(*args)
-            types = {'outname': str}
+        # --- Migrated to new architecture ---
+        # def open_excellon(filename, *args):
+        #     a, kwa = h(*args)
+        #     types = {'outname': str}
+        #
+        #     for key in kwa:
+        #         if key not in types:
+        #             return 'Unknown parameter: %s' % key
+        #         kwa[key] = types[key](kwa[key])
+        #
+        #     self.open_excellon(str(filename), **kwa)
 
-            for key in kwa:
-                if key not in types:
-                    return 'Unknown parameter: %s' % key
-                kwa[key] = types[key](kwa[key])
-
-            self.open_excellon(str(filename), **kwa)
-
-        def open_gcode(filename, *args):
-            a, kwa = h(*args)
-            types = {'outname': str}
-
-            for key in kwa:
-                if key not in types:
-                    return 'Unknown parameter: %s' % key
-                kwa[key] = types[key](kwa[key])
-
-            self.open_gcode(str(filename), **kwa)
+        # --- Migrated to new architecture ---
+        # def open_gcode(filename, *args):
+        #     a, kwa = h(*args)
+        #     types = {'outname': str}
+        #
+        #     for key in kwa:
+        #         if key not in types:
+        #             return 'Unknown parameter: %s' % key
+        #         kwa[key] = types[key](kwa[key])
+        #
+        #     self.open_gcode(str(filename), **kwa)
 
         def cutout(name, *args):
             a, kwa = h(*args)
@@ -3056,61 +3059,62 @@ class App(QtCore.QObject):
             except Exception as unknown:
                 self.raise_tcl_unknown_error(unknown)
 
-        def millholes(name=None, *args):
-            """
-            TCL shell command - see help section
-            :param name: name of object
-            :param args: array of arguments
-            :return: "Ok" if completed without errors
-            """
-
-            try:
-                a, kwa = h(*args)
-                types = {'tooldia': float,
-                         'tools': str,
-                         'outname': str}
-
-                if name is None:
-                    self.raise_tcl_error('Argument name is missing.')
-
-                for key in kwa:
-                    if key not in types:
-                        self.raise_tcl_error('Unknown parameter: %s' % key)
-                    try:
-                        kwa[key] = types[key](kwa[key])
-                    except Exception, e:
-                        self.raise_tcl_error("Cannot cast argument '%s' to type %s." % (key, types[key]))
-
-                try:
-                    if 'tools' in kwa:
-                        kwa['tools'] = [x.strip() for x in kwa['tools'].split(",")]
-                except Exception as e:
-                    self.raise_tcl_error("Bad tools: %s" % str(e))
-
-                try:
-                    obj = self.collection.get_by_name(str(name))
-                except:
-                    self.raise_tcl_error("Could not retrieve object: %s" % name)
-
-                if obj is None:
-                    self.raise_tcl_error("Object not found: %s" % name)
-
-                if not isinstance(obj, FlatCAMExcellon):
-                    self.raise_tcl_error('Only Excellon objects can be mill-drilled, got %s %s.' % (name, type(obj)))
-
-                try:
-                    # This runs in the background: Block until done.
-                    with wait_signal(self.new_object_available):
-                        success, msg = obj.generate_milling(**kwa)
-
-                except Exception as e:
-                    self.raise_tcl_error("Operation failed: %s" % str(e))
-
-                if not success:
-                    self.raise_tcl_error(msg)
-
-            except Exception as unknown:
-                self.raise_tcl_unknown_error(unknown)
+        # --- Migrated to new architecture ---
+        # def millholes(name=None, *args):
+        #     """
+        #     TCL shell command - see help section
+        #     :param name: name of object
+        #     :param args: array of arguments
+        #     :return: "Ok" if completed without errors
+        #     """
+        #
+        #     try:
+        #         a, kwa = h(*args)
+        #         types = {'tooldia': float,
+        #                  'tools': str,
+        #                  'outname': str}
+        #
+        #         if name is None:
+        #             self.raise_tcl_error('Argument name is missing.')
+        #
+        #         for key in kwa:
+        #             if key not in types:
+        #                 self.raise_tcl_error('Unknown parameter: %s' % key)
+        #             try:
+        #                 kwa[key] = types[key](kwa[key])
+        #             except Exception, e:
+        #                 self.raise_tcl_error("Cannot cast argument '%s' to type %s." % (key, types[key]))
+        #
+        #         try:
+        #             if 'tools' in kwa:
+        #                 kwa['tools'] = [x.strip() for x in kwa['tools'].split(",")]
+        #         except Exception as e:
+        #             self.raise_tcl_error("Bad tools: %s" % str(e))
+        #
+        #         try:
+        #             obj = self.collection.get_by_name(str(name))
+        #         except:
+        #             self.raise_tcl_error("Could not retrieve object: %s" % name)
+        #
+        #         if obj is None:
+        #             self.raise_tcl_error("Object not found: %s" % name)
+        #
+        #         if not isinstance(obj, FlatCAMExcellon):
+        #             self.raise_tcl_error('Only Excellon objects can be mill-drilled, got %s %s.' % (name, type(obj)))
+        #
+        #         try:
+        #             # This runs in the background: Block until done.
+        #             with wait_signal(self.new_object_available):
+        #                 success, msg = obj.generate_milling(**kwa)
+        #
+        #         except Exception as e:
+        #             self.raise_tcl_error("Operation failed: %s" % str(e))
+        #
+        #         if not success:
+        #             self.raise_tcl_error(msg)
+        #
+        #     except Exception as unknown:
+        #         self.raise_tcl_unknown_error(unknown)
 
         # --- Migrated to new architecture ---
         # def exteriors(name=None, *args):
@@ -3691,14 +3695,15 @@ class App(QtCore.QObject):
             #             "> import_svg <filename>" +
             #             "   filename: Path to the file to import."
             # },
-            'export_svg': {
-                'fcn': export_svg,
-                'help': "Export a Geometry Object as a SVG File\n" +
-                        "> export_svg <name> <filename> [-scale_factor <0.0 (float)>]\n" +
-                        "   name: Name of the geometry object to export.\n" +
-                        "   filename: Path to the file to export.\n" +
-                        "   scale_factor: Multiplication factor used for scaling line widths during export."
-            },
+            # --- Migrated to new architecture ---
+            # 'export_svg': {
+            #     'fcn': export_svg,
+            #     'help': "Export a Geometry Object as a SVG File\n" +
+            #             "> export_svg <name> <filename> [-scale_factor <0.0 (float)>]\n" +
+            #             "   name: Name of the geometry object to export.\n" +
+            #             "   filename: Path to the file to export.\n" +
+            #             "   scale_factor: Multiplication factor used for scaling line widths during export."
+            # },
             # --- Migrated to new architecture ---
             # 'open_gerber': {
             #     'fcn': open_gerber,
@@ -3871,15 +3876,15 @@ class App(QtCore.QObject):
             #             "   spindlespeed: Speed of the spindle in rpm (example: 4000)\n" +
             #             "   toolchange: Enable tool changes (example: 1)\n"
             # },
-            'millholes': {
-                'fcn': millholes,
-                'help': "Create Geometry Object for milling holes from Excellon.\n" +
-                        "> millholes <name> -tools <str> -tooldia <float> -outname <str> \n" +
-                        "   name: Name of the Excellon Object\n" +
-                        "   tools: Comma separated indexes of tools (example: 1,3 or 2)\n" +
-                        "   tooldia: Diameter of the milling tool (example: 0.1)\n" +
-                        "   outname: Name of object to create\n"
-            },
+            # 'millholes': {
+            #     'fcn': millholes,
+            #     'help': "Create Geometry Object for milling holes from Excellon.\n" +
+            #             "> millholes <name> -tools <str> -tooldia <float> -outname <str> \n" +
+            #             "   name: Name of the Excellon Object\n" +
+            #             "   tools: Comma separated indexes of tools (example: 1,3 or 2)\n" +
+            #             "   tooldia: Diameter of the milling tool (example: 0.1)\n" +
+            #             "   outname: Name of object to create\n"
+            # },
             # --- Migrated to the new architecture ---
             # 'scale': {
             #     'fcn': lambda name, factor: self.collection.get_by_name(str(name)).scale(float(factor)),
