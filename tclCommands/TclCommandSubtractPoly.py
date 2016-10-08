@@ -2,18 +2,18 @@ from ObjectCollection import *
 import TclCommand
 
 
-class TclCommandSaveProject(TclCommand.TclCommandSignaled):
+class TclCommandSubtractPoly(TclCommand.TclCommandSignaled):
     """
-    Tcl shell command to save the FlatCAM project to file.
+    Tcl shell command to create a new empty Geometry object.
     """
 
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
-    aliases = ['open_project']
+    aliases = ['subtract_poly']
 
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
-        ('filename', str)
+        ('name', str)
     ])
 
     # Dictionary of types from Tcl command, needs to be ordered.
@@ -23,13 +23,14 @@ class TclCommandSaveProject(TclCommand.TclCommandSignaled):
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
-    required = ['filename']
+    required = ['name']
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Saves the FlatCAM project to file.",
+        'main': "Subtract polygon from the given Geometry object.",
         'args': collections.OrderedDict([
-            ('filename', 'Path to file.'),
+            ('name', 'Name of the Geometry object from which to subtract.'),
+            ('x0 y0 x1 y1 x2 y2 ...', 'Points defining the polygon.')
         ]),
         'examples': []
     }
@@ -44,4 +45,18 @@ class TclCommandSaveProject(TclCommand.TclCommandSignaled):
         :return: None or exception
         """
 
-        self.app.save_project(args['filename'])
+        obj_name = args['name']
+
+        if len(unnamed_args) % 2 != 0:
+            return "Incomplete coordinate."
+
+        points = [[float(unnamed_args[2 * i]), float(unnamed_args[2 * i + 1])] for i in range(len(unnamed_args) / 2)]
+
+        try:
+            obj = self.app.collection.get_by_name(str(obj_name))
+        except:
+            return "Could not retrieve object: %s" % obj_name
+        if obj is None:
+            return "Object not found: %s" % obj_name
+
+        obj.subtract_polygon(points)

@@ -2,18 +2,18 @@ from ObjectCollection import *
 import TclCommand
 
 
-class TclCommandSaveProject(TclCommand.TclCommandSignaled):
+class TclCommandNewGeometry(TclCommand.TclCommandSignaled):
     """
-    Tcl shell command to save the FlatCAM project to file.
+    Tcl shell command to subtract polygon from the given Geometry object.
     """
 
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
-    aliases = ['open_project']
+    aliases = ['new_geometry']
 
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
     arg_names = collections.OrderedDict([
-        ('filename', str)
+        ('name', str)
     ])
 
     # Dictionary of types from Tcl command, needs to be ordered.
@@ -23,13 +23,13 @@ class TclCommandSaveProject(TclCommand.TclCommandSignaled):
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
-    required = ['filename']
+    required = ['name']
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Saves the FlatCAM project to file.",
+        'main': "Creates a new empty geometry object.",
         'args': collections.OrderedDict([
-            ('filename', 'Path to file.'),
+            ('name', 'New object name.'),
         ]),
         'examples': []
     }
@@ -44,4 +44,6 @@ class TclCommandSaveProject(TclCommand.TclCommandSignaled):
         :return: None or exception
         """
 
-        self.app.save_project(args['filename'])
+        name = args['name']
+
+        self.app.new_object('geometry', str(name), lambda x, y: None)

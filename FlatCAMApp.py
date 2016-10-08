@@ -2358,9 +2358,10 @@ class App(QtCore.QObject):
 
             return commands[p]["help"]
 
-        def options(name):
-            ops = self.collection.get_by_name(str(name)).options
-            return '\n'.join(["%s: %s" % (o, ops[o]) for o in ops])
+        # --- Migrated to new architecture ---
+        # def options(name):
+        #     ops = self.collection.get_by_name(str(name)).options
+        #     return '\n'.join(["%s: %s" % (o, ops[o]) for o in ops])
 
         def h(*args):
             """
@@ -3348,60 +3349,63 @@ class App(QtCore.QObject):
         #     obj.paint_poly([float(inside_pt_x), float(inside_pt_y)], float(tooldia), float(overlap))
 
         # --- New version in new geometry exists, but required here temporarily. ---
-        def add_poly(obj_name, *args):
-            """
-            Required by: add_rectangle()
+        # def add_poly(obj_name, *args):
+        #     """
+        #     Required by: add_rectangle()
+        #
+        #     :param obj_name:
+        #     :param args:
+        #     :return:
+        #     """
+        #     if len(args) % 2 != 0:
+        #         return "Incomplete coordinate."
+        #
+        #     points = [[float(args[2*i]), float(args[2*i+1])] for i in range(len(args)/2)]
+        #
+        #     try:
+        #         obj = self.collection.get_by_name(str(obj_name))
+        #     except:
+        #         return "Could not retrieve object: %s" % obj_name
+        #     if obj is None:
+        #         return "Object not found: %s" % obj_name
+        #
+        #     obj.add_polygon(points)
 
-            :param obj_name:
-            :param args:
-            :return:
-            """
-            if len(args) % 2 != 0:
-                return "Incomplete coordinate."
+        # --- Migrated to new architecture ---
+        # def add_rectangle(obj_name, botleft_x, botleft_y, topright_x, topright_y):
+        #     return add_poly(obj_name, botleft_x, botleft_y, botleft_x, topright_y,
+        #                     topright_x, topright_y, topright_x, botleft_y)
 
-            points = [[float(args[2*i]), float(args[2*i+1])] for i in range(len(args)/2)]
+        # --- Migrated to new architecture ---
+        # def subtract_poly(obj_name, *args):
+        #     """
+        #     Required by: subtract_rectangle()
+        #
+        #     :param obj_name:
+        #     :param args:
+        #     :return:
+        #     """
+        #     if len(args) % 2 != 0:
+        #         return "Incomplete coordinate."
+        #
+        #     points = [[float(args[2 * i]), float(args[2 * i +1])] for i in range(len(args)/2)]
+        #
+        #     try:
+        #         obj = self.collection.get_by_name(str(obj_name))
+        #     except:
+        #         return "Could not retrieve object: %s" % obj_name
+        #     if obj is None:
+        #         return "Object not found: %s" % obj_name
+        #
+        #     obj.subtract_polygon(points)
+        #     obj.plot()
+        #
+        #     return "OK."
 
-            try:
-                obj = self.collection.get_by_name(str(obj_name))
-            except:
-                return "Could not retrieve object: %s" % obj_name
-            if obj is None:
-                return "Object not found: %s" % obj_name
-
-            obj.add_polygon(points)
-
-        def add_rectangle(obj_name, botleft_x, botleft_y, topright_x, topright_y):
-            return add_poly(obj_name, botleft_x, botleft_y, botleft_x, topright_y,
-                            topright_x, topright_y, topright_x, botleft_y)
-
-        def subtract_poly(obj_name, *args):
-            """
-            Required by: subtract_rectangle()
-
-            :param obj_name:
-            :param args:
-            :return:
-            """
-            if len(args) % 2 != 0:
-                return "Incomplete coordinate."
-
-            points = [[float(args[2 * i]), float(args[2 * i +1])] for i in range(len(args)/2)]
-
-            try:
-                obj = self.collection.get_by_name(str(obj_name))
-            except:
-                return "Could not retrieve object: %s" % obj_name
-            if obj is None:
-                return "Object not found: %s" % obj_name
-
-            obj.subtract_polygon(points)
-            obj.plot()
-
-            return "OK."
-
-        def subtract_rectangle(obj_name, botleft_x, botleft_y, topright_x, topright_y):
-            return subtract_poly(obj_name, botleft_x, botleft_y, botleft_x, topright_y,
-                            topright_x, topright_y, topright_x, botleft_y)
+        # --- Migrated to new architecture ---
+        # def subtract_rectangle(obj_name, botleft_x, botleft_y, topright_x, topright_y):
+        #     return subtract_poly(obj_name, botleft_x, botleft_y, botleft_x, topright_y,
+        #                     topright_x, topright_y, topright_x, botleft_y)
 
         # --- Migrated to new architecture ---
         # def add_circle(obj_name, center_x, center_y, radius):
@@ -3780,24 +3784,25 @@ class App(QtCore.QObject):
             #             "> set_active <name>\n" +
             #             "   name: Name of the object."
             # },
-            'get_names': {
-                'fcn': lambda: '\n'.join(self.collection.get_names()),
-                'help': "Lists the names of objects in the project.\n" +
-                        "> get_names"
-            },
+            # --- Migrated to new architecture ---
+            # 'get_names': {
+            #     'fcn': lambda: '\n'.join(self.collection.get_names()),
+            #     'help': "Lists the names of objects in the project.\n" +
+            #             "> get_names"
+            # },
             # --- Migrated to new architecture ---
             # 'new': {
             #     'fcn': self.on_file_new,
             #     'help': "Starts a new project. Clears objects from memory.\n" +
             #             "> new"
             # },
+            # --- Migrated to new architecture ---
+            # 'options': {
+            #     'fcn': options,
+            #     'help': "Shows the settings for an object.\n" +
+            #             "> options <name>\n" +
+            #             "   name: Object name."
             # },
-            'options': {
-                'fcn': options,
-                'help': "Shows the settings for an object.\n" +
-                        "> options <name>\n" +
-                        "   name: Object name."
-            },
             # --- Migrated to new architecture ---
             # 'isolate': {
             #     'fcn': isolate,
@@ -3978,26 +3983,29 @@ class App(QtCore.QObject):
             #             '   tooldia: Diameter of the tool to be used.\n' +
             #             '   overlap: Fraction of the tool diameter to overlap cuts.'
             # },
-            'new_geometry': {
-                'fcn': lambda name: self.new_object('geometry', str(name), lambda x, y: None),
-                'help': 'Creates a new empty geometry object.\n' +
-                        '> new_geometry <name>\n' +
-                        '   name: New object name'
-            },
-            'add_poly': {
-                'fcn': add_poly,
-                'help': 'Creates a polygon in the given Geometry object.\n' +
-                        '> create_poly <name> <x0> <y0> <x1> <y1> <x2> <y2> [x3 y3 [...]]\n' +
-                        '   name: Name of the geometry object to which to append the polygon.\n' +
-                        '   xi, yi: Coordinates of points in the polygon.'
-            },
-            'subtract_poly': {
-                'fcn': subtract_poly,
-                'help': 'Subtract polygon from the given Geometry object.\n' +
-                        '> subtract_poly <name> <x0> <y0> <x1> <y1> <x2> <y2> [x3 y3 [...]]\n' +
-                        '   name: Name of the geometry object, which will be  sutracted.\n' +
-                        '   xi, yi: Coordinates of points in the polygon.'
-            },
+            # --- Migrated to new architecture ---
+            # 'new_geometry': {
+            #     'fcn': lambda name: self.new_object('geometry', str(name), lambda x, y: None),
+            #     'help': 'Creates a new empty geometry object.\n' +
+            #             '> new_geometry <name>\n' +
+            #             '   name: New object name'
+            # },
+            # --- Migrated to new architecture ---
+            # 'add_poly': {
+            #     'fcn': add_poly,
+            #     'help': 'Creates a polygon in the given Geometry object.\n' +
+            #             '> create_poly <name> <x0> <y0> <x1> <y1> <x2> <y2> [x3 y3 [...]]\n' +
+            #             '   name: Name of the geometry object to which to append the polygon.\n' +
+            #             '   xi, yi: Coordinates of points in the polygon.'
+            # },
+            # --- Migrated to new architecture ---
+            # 'subtract_poly': {
+            #     'fcn': subtract_poly,
+            #     'help': 'Subtract polygon from the given Geometry object.\n' +
+            #             '> subtract_poly <name> <x0> <y0> <x1> <y1> <x2> <y2> [x3 y3 [...]]\n' +
+            #             '   name: Name of the geometry object, which will be  sutracted.\n' +
+            #             '   xi, yi: Coordinates of points in the polygon.'
+            # },
             # --- Migrated to new architecture ---
             # 'delete': {
             #     'fcn': delete,
@@ -4046,22 +4054,23 @@ class App(QtCore.QObject):
             #             "   rows: number of rows\n"+
             #             "   outname: Name of the new geometry object."
             # },
-            'subtract_rect': {
-                'fcn': subtract_rectangle,
-                'help': 'Subtract rectange from the given Geometry object.\n' +
-                        '> subtract_rect <name> <botleft_x> <botleft_y> <topright_x> <topright_y>\n' +
-                        '   name: Name of the geometry object, which will be subtracted.\n' +
-                        '   botleft_x, botleft_y: Coordinates of the bottom left corner.\n' +
-                        '   topright_x, topright_y Coordinates of the top right corner.'
-            },
-            'add_rect': {
-                'fcn': add_rectangle,
-                'help': 'Creates a rectange in the given Geometry object.\n' +
-                        '> add_rect <name> <botleft_x> <botleft_y> <topright_x> <topright_y>\n' +
-                        '   name: Name of the geometry object to which to append the rectangle.\n' +
-                        '   botleft_x, botleft_y: Coordinates of the bottom left corner.\n' +
-                        '   topright_x, topright_y Coordinates of the top right corner.'
-            },
+            # 'subtract_rect': {
+            #     'fcn': subtract_rectangle,
+            #     'help': 'Subtract rectange from the given Geometry object.\n' +
+            #             '> subtract_rect <name> <botleft_x> <botleft_y> <topright_x> <topright_y>\n' +
+            #             '   name: Name of the geometry object, which will be subtracted.\n' +
+            #             '   botleft_x, botleft_y: Coordinates of the bottom left corner.\n' +
+            #             '   topright_x, topright_y Coordinates of the top right corner.'
+            # },
+            # --- Migrated to new architecture ---
+            # 'add_rect': {
+            #     'fcn': add_rectangle,
+            #     'help': 'Creates a rectange in the given Geometry object.\n' +
+            #             '> add_rect <name> <botleft_x> <botleft_y> <topright_x> <topright_y>\n' +
+            #             '   name: Name of the geometry object to which to append the rectangle.\n' +
+            #             '   botleft_x, botleft_y: Coordinates of the bottom left corner.\n' +
+            #             '   topright_x, topright_y Coordinates of the top right corner.'
+            # },
             # --- Migrated to new architecture ---
             # 'add_circle': {
             #     'fcn': add_circle,

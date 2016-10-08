@@ -1,10 +1,12 @@
 import pkgutil
 import sys
 
+# Todo: I think these imports are not needed.
 # allowed command modules (please append them alphabetically ordered)
 import tclCommands.TclCommandAddCircle
 import tclCommands.TclCommandAddPolygon
 import tclCommands.TclCommandAddPolyline
+import tclCommands.TclCommandAddRectangle
 import tclCommands.TclCommandAlignDrill
 import tclCommands.TclCommandAlignDrillGrid
 import tclCommands.TclCommandCncjob
@@ -14,7 +16,7 @@ import tclCommands.TclCommandDrillcncjob
 import tclCommands.TclCommandExportGcode
 import tclCommands.TclCommandExportSVG
 import tclCommands.TclCommandExteriors
-import tclCommands.TclCommandGeoCutout  # NOT IMPLEMENTED.
+import tclCommands.TclCommandGeoCutout
 import tclCommands.TclCommandGeoUnion
 import tclCommands.TclCommandGetNames
 import tclCommands.TclCommandImportSvg
@@ -25,17 +27,21 @@ import tclCommands.TclCommandJoinGeometry
 import tclCommands.TclCommandMillHoles
 import tclCommands.TclCommandMirror
 import tclCommands.TclCommandNew
+import tclCommands.TclCommandNewGeometry
 import tclCommands.TclCommandOffset
 import tclCommands.TclCommandOpenExcellon
 import tclCommands.TclCommandOpenGCode
 import tclCommands.TclCommandOpenGerber
 import tclCommands.TclCommandOpenProject
+import tclCommands.TclCommandOptions
 import tclCommands.TclCommandPaint
 import tclCommands.TclCommandPanelize
 import tclCommands.TclCommandPlot
 import tclCommands.TclCommandSaveProject
 import tclCommands.TclCommandScale
 import tclCommands.TclCommandSetActive
+import tclCommands.TclCommandSubtractPoly
+import tclCommands.TclCommandSubtractRectangle
 import tclCommands.TclCommandWriteGCode
 
 

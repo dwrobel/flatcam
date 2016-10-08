@@ -59,60 +59,60 @@ class TclCommandGeoCutout(TclCommand.TclCommandSignaled):
         # 2tb   - 2*top + 2*bottom
         # 8     - 2*left + 2*right +2*top + 2*bottom
 
-        self.raise_tcl_error("Not implemented.")
-
-        def subtract_rectangle(*args):
-            pass
-
         name = args['name']
+        obj = None
+
+        def subtract_rectangle(obj_, x0, y0, x1, y1):
+            pts = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+            obj_.subtract_polygon(pts)
 
         try:
             obj = self.app.collection.get_by_name(str(name))
         except:
             self.raise_tcl_error("Could not retrieve object: %s" % name)
 
-            # Get min and max data for each object as we just cut rectangles across X or Y
-            xmin, ymin, xmax, ymax = obj.bounds()
-            px = 0.5 * (xmin + xmax)
-            py = 0.5 * (ymin + ymax)
-            lenghtx = (xmax - xmin)
-            lenghty = (ymax - ymin)
-            gapsize = args['gapsize'] + args['dia'] / 2
+        # Get min and max data for each object as we just cut rectangles across X or Y
+        xmin, ymin, xmax, ymax = obj.bounds()
+        px = 0.5 * (xmin + xmax)
+        py = 0.5 * (ymin + ymax)
+        lenghtx = (xmax - xmin)
+        lenghty = (ymax - ymin)
+        gapsize = args['gapsize'] + args['dia'] / 2
 
-            if args['gaps'] == '8' or args['gaps'] == '2lr':
-                subtract_rectangle(name,
-                                   xmin - gapsize,
-                                   py - gapsize + lenghty / 4,
-                                   xmax + gapsize,
-                                   py + gapsize + lenghty / 4)
-                subtract_rectangle(name,
-                                   xmin - gapsize,
-                                   py - gapsize - lenghty / 4,
-                                   xmax + gapsize,
-                                   py + gapsize - lenghty / 4)
+        if args['gaps'] == '8' or args['gaps'] == '2lr':
+            subtract_rectangle(obj,
+                               xmin - gapsize,  # botleft_x
+                               py - gapsize + lenghty / 4,  # botleft_y
+                               xmax + gapsize,  # topright_x
+                               py + gapsize + lenghty / 4)  # topright_y
+            subtract_rectangle(obj,
+                               xmin - gapsize,
+                               py - gapsize - lenghty / 4,
+                               xmax + gapsize,
+                               py + gapsize - lenghty / 4)
 
-            if args['gaps'] == '8' or args['gaps'] == '2tb':
-                subtract_rectangle(name,
-                                   px - gapsize + lenghtx / 4,
-                                   ymin - gapsize,
-                                   px + gapsize + lenghtx / 4,
-                                   ymax + gapsize)
-                subtract_rectangle(name,
-                                   px - gapsize - lenghtx / 4,
-                                   ymin - gapsize,
-                                   px + gapsize - lenghtx / 4,
-                                   ymax + gapsize)
+        if args['gaps'] == '8' or args['gaps'] == '2tb':
+            subtract_rectangle(obj,
+                               px - gapsize + lenghtx / 4,
+                               ymin - gapsize,
+                               px + gapsize + lenghtx / 4,
+                               ymax + gapsize)
+            subtract_rectangle(obj,
+                               px - gapsize - lenghtx / 4,
+                               ymin - gapsize,
+                               px + gapsize - lenghtx / 4,
+                               ymax + gapsize)
 
-            if args['gaps'] == '4' or args['gaps'] == 'lr':
-                subtract_rectangle(name,
-                                   xmin - gapsize,
-                                   py - gapsize,
-                                   xmax + gapsize,
-                                   py + gapsize)
+        if args['gaps'] == '4' or args['gaps'] == 'lr':
+            subtract_rectangle(obj,
+                               xmin - gapsize,
+                               py - gapsize,
+                               xmax + gapsize,
+                               py + gapsize)
 
-            if args['gaps'] == '4' or args['gaps'] == 'tb':
-                subtract_rectangle(name,
-                                   px - gapsize,
-                                   ymin - gapsize,
-                                   px + gapsize,
-                                   ymax + gapsize)
+        if args['gaps'] == '4' or args['gaps'] == 'tb':
+            subtract_rectangle(obj,
+                               px - gapsize,
+                               ymin - gapsize,
+                               px + gapsize,
+                               ymax + gapsize)

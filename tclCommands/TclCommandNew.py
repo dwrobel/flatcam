@@ -1,5 +1,4 @@
 from ObjectCollection import *
-from PyQt4 import QtCore
 import TclCommand
 
 
@@ -23,7 +22,7 @@ class TclCommandNew(TclCommand.TclCommand):
     # structured help for current command, args needs to be ordered
     help = {
         'main': "Starts a new project. Clears objects from memory.",
-        'args':  collections.OrderedDict(),
+        'args': collections.OrderedDict(),
         'examples': []
     }
 
