@@ -2,27 +2,35 @@ from ObjectCollection import *
 import TclCommand
 
 
-class TclCommandNew(TclCommand.TclCommand):
+class TclCommandSaveProject(TclCommand.TclCommandSignaled):
     """
-    Tcl shell command to starts a new project. Clears objects from memory
+    Tcl shell command to save the FlatCAM project to file.
     """
 
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
-    aliases = ['new']
+    aliases = ['open_project']
 
-    # dictionary of types from Tcl command, needs to be ordered
-    arg_names = collections.OrderedDict()
+    # Dictionary of types from Tcl command, needs to be ordered.
+    # For positional arguments
+    arg_names = collections.OrderedDict([
+        ('filename', str)
+    ])
 
-    # dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
-    option_types = collections.OrderedDict()
+    # Dictionary of types from Tcl command, needs to be ordered.
+    # For options like -optionname value
+    option_types = collections.OrderedDict([
+
+    ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
-    required = []
+    required = ['filename']
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Starts a new project. Clears objects from memory.",
-        'args': collections.OrderedDict(),
+        'main': "Saves the FlatCAM project to file.",
+        'args': collections.OrderedDict([
+            ('filename', 'Path to file.'),
+        ]),
         'examples': []
     }
 
@@ -36,4 +44,4 @@ class TclCommandNew(TclCommand.TclCommand):
         :return: None or exception
         """
 
-        self.app.on_file_new()
+        self.app.save_project(args['filename'])

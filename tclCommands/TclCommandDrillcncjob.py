@@ -17,13 +17,13 @@ class TclCommandDrillcncjob(TclCommand.TclCommandSignaled):
 
     # dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
     option_types = collections.OrderedDict([
-        ('tools',str),
-        ('drillz',float),
-        ('travelz',float),
-        ('feedrate',float),
-        ('spindlespeed',int),
-        ('toolchange',bool),
-        ('outname',str)
+        ('tools', str),
+        ('drillz', float),
+        ('travelz', float),
+        ('feedrate', float),
+        ('spindlespeed', int),
+        ('toolchange', bool),
+        ('outname', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}

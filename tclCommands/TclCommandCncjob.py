@@ -24,14 +24,14 @@ class TclCommandCncjob(TclCommand.TclCommandSignaled):
 
     # dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
     option_types = collections.OrderedDict([
-        ('z_cut',float),
-        ('z_move',float),
-        ('feedrate',float),
-        ('tooldia',float),
-        ('spindlespeed',int),
-        ('multidepth',bool),
-        ('depthperpass',float),
-        ('outname',str)
+        ('z_cut', float),
+        ('z_move', float),
+        ('feedrate', float),
+        ('tooldia', float),
+        ('spindlespeed', int),
+        ('multidepth', bool),
+        ('depthperpass', float),
+        ('outname', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -77,4 +77,4 @@ class TclCommandCncjob(TclCommand.TclCommandSignaled):
             self.raise_tcl_error('Expected FlatCAMGeometry, got %s %s.' % (name, type(obj)))
 
         del args['name']
-        obj.generatecncjob(use_thread = False, **args)
+        obj.generatecncjob(use_thread=False, **args)

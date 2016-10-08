@@ -27,10 +27,10 @@ class TclCommandOpenGerber(TclCommand.TclCommandSignaled):
     # structured help for current command, args needs to be ordered
     help = {
         'main': "Opens a Gerber file.",
-        'args':  collections.OrderedDict([
+        'args': collections.OrderedDict([
             ('filename', 'Path to file to open.'),
             ('follow', 'N If 1, does not create polygons, just follows the gerber path.'),
-            ('outname', 'Name of the resulting Geometry object.')
+            ('outname', 'Name of the resulting Gerber object.')
         ]),
         'examples': []
     }
