@@ -46,7 +46,7 @@ class TclCommandJoinGeometry(TclCommand.TclCommand):
         :return:
         """
 
-        outname = args['name']
+        outname = args['outname']
         obj_names = unnamed_args
 
         objs = []

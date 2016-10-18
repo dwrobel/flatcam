@@ -3636,36 +3636,36 @@ class App(QtCore.QObject):
             except Exception, e:
                 return "ERROR: %s" % str(e)
 
-        def get_sys(param):
-            if param in self.defaults:
-                return self.defaults[param]
+        # def get_sys(param):
+        #     if param in self.defaults:
+        #         return self.defaults[param]
+        #
+        #     return "ERROR: No such system parameter."
 
-            return "ERROR: No such system parameter."
-
-        def set_sys(param, value):
-            # tcl string to python keywords:
-            tcl2py = {
-                "None": None,
-                "none": None,
-                "false": False,
-                "False": False,
-                "true": True,
-                "True": True
-            }
-
-            if param in self.defaults:
-
-                try:
-                    value = tcl2py[value]
-                except KeyError:
-                    pass
-
-                self.defaults[param] = value
-
-                self.propagate_defaults()
-                return "Ok"
-
-            return "ERROR: No such system parameter."
+        # def set_sys(param, value):
+        #     # tcl string to python keywords:
+        #     tcl2py = {
+        #         "None": None,
+        #         "none": None,
+        #         "false": False,
+        #         "False": False,
+        #         "true": True,
+        #         "True": True
+        #     }
+        #
+        #     if param in self.defaults:
+        #
+        #         try:
+        #             value = tcl2py[value]
+        #         except KeyError:
+        #             pass
+        #
+        #         self.defaults[param] = value
+        #
+        #         self.propagate_defaults()
+        #         return "Ok"
+        #
+        #     return "ERROR: No such system parameter."
 
         '''
             Howto implement TCL shell commands:
@@ -4085,22 +4085,25 @@ class App(QtCore.QObject):
                         '   name: Name of the gerber object.\n' +
                         '   outname: Name of the output geometry object.'
             },
-            'get_sys': {
-                'fcn': get_sys,
-                'help': 'Get the value of a system parameter (FlatCAM constant)\n' +
-                        '> get_sys <sysparam>\n' +
-                        '   sysparam: Name of the parameter.'
-            },
-            'set_sys': {
-                'fcn': set_sys,
-                'help': 'Set the value of a system parameter (FlatCAM constant)\n' +
-                        '> set_sys <sysparam> <paramvalue>\n' +
-                        '   sysparam: Name of the parameter.\n' +
-                        '   paramvalue: Value to set.'
-            }
+
+            # 'get_sys': {
+            #     'fcn': get_sys,
+            #     'help': 'Get the value of a system parameter (FlatCAM constant)\n' +
+            #             '> get_sys <sysparam>\n' +
+            #             '   sysparam: Name of the parameter.'
+            # },
+            # --- Migrated to new architecture ---
+            # 'set_sys': {
+            #     'fcn': set_sys,
+            #     'help': 'Set the value of a system parameter (FlatCAM constant)\n' +
+            #             '> set_sys <sysparam> <paramvalue>\n' +
+            #             '   sysparam: Name of the parameter.\n' +
+            #             '   paramvalue: Value to set.'
+            # }
         }
 
-        #import/overwrite tcl commands as objects of TclCommand descendants
+        # Import/overwrite tcl commands as objects of TclCommand descendants
+        # This modifies the variable 'commands'.
         tclCommands.register_all_commands(self, commands)
 
         # Add commands to the tcl interpreter

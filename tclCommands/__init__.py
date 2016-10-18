@@ -19,6 +19,7 @@ import tclCommands.TclCommandExteriors
 import tclCommands.TclCommandGeoCutout
 import tclCommands.TclCommandGeoUnion
 import tclCommands.TclCommandGetNames
+import tclCommands.TclCommandGetSys
 import tclCommands.TclCommandImportSvg
 import tclCommands.TclCommandInteriors
 import tclCommands.TclCommandIsolate
@@ -40,8 +41,10 @@ import tclCommands.TclCommandPlot
 import tclCommands.TclCommandSaveProject
 import tclCommands.TclCommandScale
 import tclCommands.TclCommandSetActive
+import tclCommands.TclCommandSetSys
 import tclCommands.TclCommandSubtractPoly
 import tclCommands.TclCommandSubtractRectangle
+import tclCommands.TclCommandVersion
 import tclCommands.TclCommandWriteGCode
 
 
@@ -65,7 +68,7 @@ def register_all_commands(app, commands):
     I have no enough knowledge about python's anatomy. Would be nice to include all classes which are descendant etc.
 
     :param app: FlatCAMApp
-    :param commands: array of commands  which should be modified
+    :param commands: List of commands being updated
     :return: None
     """
 

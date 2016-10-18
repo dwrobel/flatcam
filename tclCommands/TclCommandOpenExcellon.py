@@ -8,7 +8,7 @@ class TclCommandOpenExcellon(TclCommand.TclCommandSignaled):
     """
 
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
-    aliases = ['open_gerber']
+    aliases = ['open_excellon']
 
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
@@ -45,4 +45,6 @@ class TclCommandOpenExcellon(TclCommand.TclCommandSignaled):
         :return: None or exception
         """
 
-        self.app.open_excellon(args['filename'], **args)
+        filename = args.pop('filename')
+
+        self.app.open_excellon(filename, **args)

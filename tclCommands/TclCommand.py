@@ -12,26 +12,28 @@ class TclCommand(object):
     # FlatCAMApp
     app = None
 
-    # logger
+    # Logger
     log = None
 
-    # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
+    # List of all command aliases, to be able use  old names
+    # for backward compatibility (add_poly, add_polygon)
     aliases = []
 
-    # dictionary of types from Tcl command, needs to be ordered
+    # Dictionary of types from Tcl command, needs to be ordered
     # OrderedDict should be like collections.OrderedDict([(key,value),(key2,value2)])
     arg_names = collections.OrderedDict([
         ('name', str)
     ])
 
-    # dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
+    # dictionary of types from Tcl command, needs to be ordered.
+    # This  is  for options  like -optionname value.
     # OrderedDict should be like collections.OrderedDict([(key,value),(key2,value2)])
     option_types = collections.OrderedDict()
 
-    # array of mandatory options for current Tcl command: required = {'name','outname'}
+    # List of mandatory options for current Tcl command: required = {'name','outname'}
     required = ['name']
 
-    # structured help for current command, args needs to be ordered
+    # Structured help for current command, args needs to be ordered
     # OrderedDict should be like collections.OrderedDict([(key,value),(key2,value2)])
     help = {
         'main': "undefined help.",
@@ -42,21 +44,27 @@ class TclCommand(object):
         'examples': []
     }
 
-    # original incoming arguments into command
+    # Original incoming arguments into command
     original_args = None
 
     def __init__(self, app):
         self.app = app
+
         if self.app is None:
             raise TypeError('Expected app to be FlatCAMApp instance.')
+
         if not isinstance(self.app, FlatCAMApp.App):
             raise TypeError('Expected FlatCAMApp, got %s.' % type(app))
+
         self.log = self.app.log
 
     def raise_tcl_error(self, text):
         """
-        this method  pass exception from python into TCL as error, so we get stacktrace and reason
-        this is  only redirect to self.app.raise_tcl_error
+        This method pass exception from python into TCL as error
+        so we get stacktrace and reason.
+
+        This is only redirect to self.app.raise_tcl_error
+
         :param text: text of error
         :return: none
         """
@@ -65,14 +73,17 @@ class TclCommand(object):
 
     def get_current_command(self):
         """
-        get current command, we are not able to get it from TCL we have to reconstruct it
+        Get current command, we are not able to get it from TCL we have to reconstruct it.
+
         :return: current command
         """
-        command_string = []
-        command_string.append(self.aliases[0])
+
+        command_string = [self.aliases[0]]
+
         if self.original_args is not None:
             for arg in self.original_args:
                 command_string.append(arg)
+
         return " ".join(command_string)
 
     def get_decorated_help(self):
@@ -83,22 +94,36 @@ class TclCommand(object):
         """
 
         def get_decorated_command(alias_name):
+
             command_string = []
+
             for arg_key, arg_type in self.help['args'].items():
                 command_string.append(get_decorated_argument(arg_key, arg_type, True))
+
             return "> " + alias_name + " " + " ".join(command_string)
 
         def get_decorated_argument(help_key, help_text, in_command=False):
+            """
+
+            :param help_key: Name of the argument.
+            :param help_text:
+            :param in_command:
+            :return:
+            """
             option_symbol = ''
+
             if help_key in self.arg_names:
                 arg_type = self.arg_names[help_key]
                 type_name = str(arg_type.__name__)
-                in_command_name = "<" + type_name + ">"
+                #in_command_name = help_key + "<" + type_name + ">"
+                in_command_name = help_key
+
             elif help_key in self.option_types:
                 option_symbol = '-'
                 arg_type = self.option_types[help_key]
                 type_name = str(arg_type.__name__)
                 in_command_name = option_symbol + help_key + " <" + type_name + ">"
+
             else:
                 option_symbol = ''
                 type_name = '?'
@@ -168,7 +193,7 @@ class TclCommand(object):
 
     def check_args(self, args):
         """
-        Check arguments and  options for right types
+        Check arguments and options for right types
 
         :param args: arguments from tcl to check
         :return: named_args, unnamed_args
@@ -214,29 +239,16 @@ class TclCommand(object):
 
         return named_args, unnamed_args
 
-    def raise_tcl_unknown_error(self, unknownException):
+    def raise_tcl_unknown_error(self, unknown_exception):
         """
         raise Exception if is different type  than TclErrorException
         this is here mainly to show unknown errors inside TCL shell console
-        :param unknownException:
+
+        :param unknown_exception:
         :return:
         """
 
-        #if not isinstance(unknownException, self.TclErrorException):
-        #    self.raise_tcl_error("Unknown error: %s" % str(unknownException))
-        #else:
-        raise unknownException
-
-    def raise_tcl_error(self, text):
-        """
-        this method  pass exception from python into TCL as error, so we get stacktrace and reason
-        :param text: text of error
-        :return: raise exception
-        """
-
-        # becouse of signaling we cannot call error to TCL from here but when task is finished
-        # also nonsiglaned arwe handled here to better exception handling and  diplay after   command is finished
-        raise self.app.TclErrorException(text)
+        raise unknown_exception
 
     def execute_wrapper(self, *args):
         """
@@ -290,6 +302,10 @@ class TclCommandSignaled(TclCommand):
         This class is  child of  TclCommand and is used for commands  which create  new objects
         it handles  all neccessary stuff about blocking and passing exeptions
     """
+
+    @abc.abstractmethod
+    def execute(self, args, unnamed_args):
+        raise NotImplementedError("Please Implement this method")
 
     output = None
 
