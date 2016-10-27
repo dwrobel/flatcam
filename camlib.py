@@ -31,7 +31,7 @@ from rtree import index as rtindex
 from shapely.geometry import Polygon, LineString, Point, LinearRing
 from shapely.geometry import MultiPoint, MultiPolygon
 from shapely.geometry import box as shply_box
-from shapely.ops import cascaded_union
+from shapely.ops import cascaded_union, unary_union
 import shapely.affinity as affinity
 from shapely.wkt import loads as sloads
 from shapely.wkt import dumps as sdumps
@@ -627,6 +627,72 @@ class Geometry(object):
 
         return geoms
 
+    @staticmethod
+    def clear_polygon3(polygon, tooldia, overlap=0.15, connect=True):
+        """
+        Creates geometry inside a polygon for a tool to cover
+        the whole area.
+
+        This algorithm draws horizontal lines inside the polygon.
+
+        :param polygon: The polygon being painted.
+        :type polygon: shapely.geometry.Polygon
+        :param tooldia: Tool diameter.
+        :param overlap: Tool path overlap percentage.
+        :param connect: Connect lines to avoid tool lifts.
+        :return:
+        """
+
+        log.debug("camlib.clear_polygon3()")
+
+        ## The toolpaths
+        # Index first and last points in paths
+        def get_pts(o):
+            return [o.coords[0], o.coords[-1]]
+
+        geoms = FlatCAMRTreeStorage()
+        geoms.get_points = get_pts
+
+        lines = []
+
+        # Bounding box
+        left, bot, right, top = polygon.bounds
+
+        # First line
+        y = top - tooldia / 2
+        while y > bot + tooldia / 2:
+            line = LineString([(left, y), (right, y)])
+            lines.append(line)
+            y -= tooldia * (1 - overlap)
+
+        # Last line
+        y = bot + tooldia / 2
+        line = LineString([(left, y), (right, y)])
+        lines.append(line)
+
+        # Combine
+        linesgeo = unary_union(lines)
+
+        # Trim to the polygon
+        margin_poly = polygon.buffer(-tooldia / 2)
+        lines_trimmed = linesgeo.intersection(margin_poly)
+
+        # Add lines to storage
+        for line in lines_trimmed:
+            geoms.insert(line)
+
+        # Add margin to storage
+        # geoms.insert(margin_poly.exterior)
+        # for ints in margin_poly.interiors:
+        #     geoms.insert(ints)
+
+        # Optimization: Reduce lifts
+        if connect:
+            log.debug("Reducing tool lifts...")
+            geoms = Geometry.paint_connect(geoms, polygon, tooldia)
+
+        return geoms
+
     def scale(self, factor):
         """
         Scales all of the object's geometry by a given factor. Override
@@ -967,9 +1033,10 @@ class Geometry(object):
                     new_obj.append(mirror_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj,xscale,yscale,origin=(px,py))
+                return affinity.scale(obj, xscale, yscale, origin=(px,py))
 
         self.solid_geometry = mirror_geom(self.solid_geometry)
+
 
 class ApertureMacro:
     """

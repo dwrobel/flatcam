@@ -393,7 +393,8 @@ class GeometryObjectUI(ObjectUI):
         grid2.addWidget(methodlabel, 3, 0)
         self.paintmethod_combo = RadioSet([
             {"label": "Standard", "value": "standard"},
-            {"label": "Seed-based", "value": "seed"}
+            {"label": "Seed-based", "value": "seed"},
+            {"label": "Straight lines", "value": "lines"}
         ])
         grid2.addWidget(self.paintmethod_combo, 3, 1)
 

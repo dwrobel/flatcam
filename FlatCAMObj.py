@@ -1312,6 +1312,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 cp = self.clear_polygon2(poly.buffer(-self.options["paintmargin"]),
                                          tooldia, overlap=overlap)
 
+            elif self.options["paintmethod"] == "lines":
+                # Type(cp) == FlatCAMRTreeStorage | None
+                cp = self.clear_polygon3(poly.buffer(-self.options["paintmargin"]),
+                                         tooldia, overlap=overlap)
             else:
                 # Type(cp) == FlatCAMRTreeStorage | None
                 cp = self.clear_polygon(poly.buffer(-self.options["paintmargin"]),
@@ -1385,6 +1389,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 if self.options["paintmethod"] == "seed":
                     # Type(cp) == FlatCAMRTreeStorage | None
                     cp = self.clear_polygon2(poly.buffer(-self.options["paintmargin"]),
+                                             tooldia, overlap=overlap)
+
+                elif self.options["paintmethod"] == "lines":
+                    # Type(cp) == FlatCAMRTreeStorage | None
+                    cp = self.clear_polygon3(poly.buffer(-self.options["paintmargin"]),
                                              tooldia, overlap=overlap)
 
                 else:
