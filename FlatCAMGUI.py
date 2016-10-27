@@ -651,7 +651,9 @@ class GeometryOptionsGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.plot_cb)
 
+        # ------------------------------
         ## Create CNC Job
+        # ------------------------------
         self.cncjob_label = QtGui.QLabel('<b>Create CNC Job:</b>')
         self.cncjob_label.setToolTip(
             "Create a CNC Job object\n"
@@ -711,7 +713,9 @@ class GeometryOptionsGroupUI(OptionsGroupUI):
         self.cncspindlespeed_entry = IntEntry(allow_empty=True)
         grid1.addWidget(self.cncspindlespeed_entry, 4, 1)
 
+        # ------------------------------
         ## Paint area
+        # ------------------------------
         self.paint_label = QtGui.QLabel('<b>Paint Area:</b>')
         self.paint_label.setToolTip(
             "Creates tool paths to cover the\n"
@@ -756,19 +760,44 @@ class GeometryOptionsGroupUI(OptionsGroupUI):
         self.paintmargin_entry = LengthEntry()
         grid2.addWidget(self.paintmargin_entry, 2, 1)
 
+        # Method
+        methodlabel = QtGui.QLabel('Method:')
+        methodlabel.setToolTip(
+            "Algorithm to paint the polygon:<BR>"
+            "<B>Standard</B>: Fixed step inwards.<BR>"
+            "<B>Seed-based</B>: Outwards from seed."
+        )
+        grid2.addWidget(methodlabel, 3, 0)
+        self.paintmethod_combo = RadioSet([
+            {"label": "Standard", "value": "standard"},
+            {"label": "Seed-based", "value": "seed"},
+            {"label": "Straight lines", "value": "lines"}
+        ], orientation='vertical')
+        grid2.addWidget(self.paintmethod_combo, 3, 1)
+
+        # Connect lines
+        pathconnectlabel = QtGui.QLabel("Connect:")
+        pathconnectlabel.setToolTip(
+            "Draw lines between resulting\n"
+            "segments to minimize tool lifts."
+        )
+        grid2.addWidget(pathconnectlabel, 4, 0)
+        self.pathconnect_cb = FCCheckBox()
+        grid2.addWidget(self.pathconnect_cb, 4, 1)
+
         # Polygon selection
         selectlabel = QtGui.QLabel('Selection:')
         selectlabel.setToolTip(
             "How to select the polygons to paint."
         )
-        grid2.addWidget(selectlabel, 3, 0)
+        grid2.addWidget(selectlabel, 5, 0)
         # grid3 = QtGui.QGridLayout()
         self.selectmethod_combo = RadioSet([
             {"label": "Single", "value": "single"},
             {"label": "All", "value": "all"},
             # {"label": "Rectangle", "value": "rectangle"}
         ])
-        grid2.addWidget(self.selectmethod_combo, 3, 1)
+        grid2.addWidget(self.selectmethod_combo, 5, 1)
 
 
 class CNCJobOptionsGroupUI(OptionsGroupUI):

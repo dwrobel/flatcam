@@ -16,6 +16,8 @@ class RadioSet(QtGui.QWidget):
         * 'value': The value returned is selected
 
         :param choices: List of choices. See description.
+        :param orientation: 'horizontal' (default) of 'vertical'.
+        :param parent: Qt parent widget.
         :type choices: list
         """
         super(RadioSet, self).__init__(parent)

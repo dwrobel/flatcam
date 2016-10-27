@@ -385,6 +385,7 @@ class GeometryObjectUI(ObjectUI):
 
         # Method
         methodlabel = QtGui.QLabel('Method:')
+        methodlabel.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         methodlabel.setToolTip(
             "Algorithm to paint the polygon:<BR>"
             "<B>Standard</B>: Fixed step inwards.<BR>"
@@ -395,22 +396,32 @@ class GeometryObjectUI(ObjectUI):
             {"label": "Standard", "value": "standard"},
             {"label": "Seed-based", "value": "seed"},
             {"label": "Straight lines", "value": "lines"}
-        ])
+        ], orientation='vertical')
         grid2.addWidget(self.paintmethod_combo, 3, 1)
+
+        # Connect lines
+        pathconnectlabel = QtGui.QLabel("Connect:")
+        pathconnectlabel.setToolTip(
+            "Draw lines between resulting\n"
+            "segments to minimize tool lifts."
+        )
+        grid2.addWidget(pathconnectlabel, 4, 0)
+        self.pathconnect_cb = FCCheckBox()
+        grid2.addWidget(self.pathconnect_cb, 4, 1)
 
         # Polygon selection
         selectlabel = QtGui.QLabel('Selection:')
         selectlabel.setToolTip(
             "How to select the polygons to paint."
         )
-        grid2.addWidget(selectlabel, 4, 0)
+        grid2.addWidget(selectlabel, 5, 0)
         #grid3 = QtGui.QGridLayout()
         self.selectmethod_combo = RadioSet([
             {"label": "Single", "value": "single"},
             {"label": "All", "value": "all"},
             #{"label": "Rectangle", "value": "rectangle"}
         ])
-        grid2.addWidget(self.selectmethod_combo, 4, 1)
+        grid2.addWidget(self.selectmethod_combo, 5, 1)
 
         # GO Button
         self.generate_paint_button = QtGui.QPushButton('Generate')

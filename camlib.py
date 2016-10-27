@@ -475,7 +475,7 @@ class Geometry(object):
         return boundary.difference(self.solid_geometry)
         
     @staticmethod
-    def clear_polygon(polygon, tooldia, overlap=0.15):
+    def clear_polygon(polygon, tooldia, overlap=0.15, connect=True):
         """
         Creates geometry inside a polygon for a tool to cover
         the whole area.
@@ -543,13 +543,14 @@ class Geometry(object):
                 break
 
         # Optimization: Reduce lifts
-        log.debug("Reducing tool lifts...")
-        geoms = Geometry.paint_connect(geoms, polygon, tooldia)
+        if connect:
+            log.debug("Reducing tool lifts...")
+            geoms = Geometry.paint_connect(geoms, polygon, tooldia)
 
         return geoms
 
     @staticmethod
-    def clear_polygon2(polygon, tooldia, seedpoint=None, overlap=0.15):
+    def clear_polygon2(polygon, tooldia, seedpoint=None, overlap=0.15, connect=True):
         """
         Creates geometry inside a polygon for a tool to cover
         the whole area.
@@ -622,8 +623,9 @@ class Geometry(object):
         # geoms = Geometry.path_connect(geoms)
 
         # Optimization: Reduce lifts
-        log.debug("Reducing tool lifts...")
-        geoms = Geometry.paint_connect(geoms, polygon, tooldia)
+        if connect:
+            log.debug("Reducing tool lifts...")
+            geoms = Geometry.paint_connect(geoms, polygon, tooldia)
 
         return geoms
 

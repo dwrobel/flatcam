@@ -1210,6 +1210,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "paintoverlap": 0.15,
             "paintmargin": 0.01,
             "paintmethod": "standard",
+            "pathconnect": True,
             "multidepth": False,
             "depthperpass": 0.002,
             "selectmethod": "single"
@@ -1242,6 +1243,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "paintoverlap": self.ui.paintoverlap_entry,
             "paintmargin": self.ui.paintmargin_entry,
             "paintmethod": self.ui.paintmethod_combo,
+            "pathconnect": self.ui.pathconnect_cb,
             "multidepth": self.ui.mpass_cb,
             "depthperpass": self.ui.maxdepth_entry,
             "selectmethod": self.ui.selectmethod_combo
@@ -1259,7 +1261,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         overlap = self.options["paintoverlap"]
 
         if self.options["selectmethod"] == "all":
-            self.paint_poly_all(tooldia, overlap)
+            self.paint_poly_all(tooldia, overlap,
+                                connect=self.option["pathconnect"])
             return
 
         if self.options["selectmethod"] == "single":
@@ -1270,11 +1273,13 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 self.app.info("Painting polygon...")
                 self.app.plotcanvas.mpl_disconnect(subscription)
                 point = [event.xdata, event.ydata]
-                self.paint_poly_single_click(point, tooldia, overlap)
+                self.paint_poly_single_click(point, tooldia, overlap,
+                                             connect=self.options["pathconnect"])
 
             subscription = self.app.plotcanvas.mpl_connect('button_press_event', doit)
 
-    def paint_poly_single_click(self, inside_pt, tooldia, overlap, outname=None):
+    def paint_poly_single_click(self, inside_pt, tooldia, overlap,
+                                outname=None, connect=True):
         """
         Paints a polygon selected by clicking on its interior.
 
@@ -1310,16 +1315,16 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             if self.options["paintmethod"] == "seed":
                 # Type(cp) == FlatCAMRTreeStorage | None
                 cp = self.clear_polygon2(poly.buffer(-self.options["paintmargin"]),
-                                         tooldia, overlap=overlap)
+                                         tooldia, overlap=overlap, connect=connect)
 
             elif self.options["paintmethod"] == "lines":
                 # Type(cp) == FlatCAMRTreeStorage | None
                 cp = self.clear_polygon3(poly.buffer(-self.options["paintmargin"]),
-                                         tooldia, overlap=overlap)
+                                         tooldia, overlap=overlap, connect=connect)
             else:
                 # Type(cp) == FlatCAMRTreeStorage | None
                 cp = self.clear_polygon(poly.buffer(-self.options["paintmargin"]),
-                                        tooldia, overlap=overlap)
+                                        tooldia, overlap=overlap, connect=connect)
 
             if cp is not None:
                 geo_obj.solid_geometry = list(cp.get_objects())
