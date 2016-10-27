@@ -960,11 +960,16 @@ class Geometry(object):
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
-        ## solid_geometry ???
-        #  It's a cascaded union of objects.
-        self.solid_geometry = affinity.scale(self.solid_geometry,
-                                             xscale, yscale, origin=(px, py))
+        def mirror_geom(obj):
+            if type(obj) is list:
+                new_obj = []
+                for g in obj:
+                    new_obj.append(mirror_geom(g))
+                return new_obj
+            else:
+                return affinity.scale(obj,xscale,yscale,origin=(px,py))
 
+        self.solid_geometry = mirror_geom(self.solid_geometry)
 
 class ApertureMacro:
     """
