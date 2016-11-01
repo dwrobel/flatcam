@@ -375,7 +375,7 @@ class TextGroup(object):
     def __init__(self, collection):
         self._collection = collection
         self._index = None
-        self._visible = None
+        self._visible = True
 
     def set(self, **kwargs):
         """
@@ -384,6 +384,7 @@ class TextGroup(object):
             Arguments for TextCollection.add function
         """
         self._index = self._collection.add(**kwargs)
+        self._collection.data[self._index]['visible'] = self._visible
 
     def clear(self, update=False):
         """
@@ -422,9 +423,10 @@ class TextGroup(object):
         :param value: bool
         """
         self._visible = value
-        self._collection.data[self._index]['visible'] = value
 
-        self._collection.redraw()
+        if self._index is not None:
+            self._collection.data[self._index]['visible'] = value
+            self._collection.redraw()
 
 
 class TextCollectionVisual(TextVisual):
