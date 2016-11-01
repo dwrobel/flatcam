@@ -475,7 +475,8 @@ class Geometry(object):
         return boundary.difference(self.solid_geometry)
         
     @staticmethod
-    def clear_polygon(polygon, tooldia, overlap=0.15, connect=True):
+    def clear_polygon(polygon, tooldia, overlap=0.15, connect=True,
+                      contour=True):
         """
         Creates geometry inside a polygon for a tool to cover
         the whole area.
@@ -486,6 +487,10 @@ class Geometry(object):
         :param polygon: Polygon to clear.
         :param tooldia: Diameter of the tool.
         :param overlap: Overlap of toolpasses.
+        :param connect: Draw lines between disjoint segments to
+                        minimize tool lifts.
+        :param contour: Paint around the edges. Inconsequential in
+                        this painting method.
         :return:
         """
 
@@ -550,7 +555,8 @@ class Geometry(object):
         return geoms
 
     @staticmethod
-    def clear_polygon2(polygon, tooldia, seedpoint=None, overlap=0.15, connect=True):
+    def clear_polygon2(polygon, tooldia, seedpoint=None, overlap=0.15,
+                       connect=True, contour=True):
         """
         Creates geometry inside a polygon for a tool to cover
         the whole area.
@@ -564,6 +570,8 @@ class Geometry(object):
         :param tooldia: Diameter of the tool
         :param seedpoint: Shapely.geometry.Point or None
         :param overlap: Tool fraction overlap bewteen passes
+        :param connect: Connect disjoint segment to minumize tool lifts
+        :param contour: Cut countour inside the polygon.
         :return: List of toolpaths covering polygon.
         :rtype: FlatCAMRTreeStorage | None
         """
@@ -608,15 +616,16 @@ class Geometry(object):
 
             radius += tooldia * (1 - overlap)
 
-        # Clean inside edges of the original polygon
-        outer_edges = [x.exterior for x in autolist(polygon.buffer(-tooldia / 2))]
-        inner_edges = []
-        for x in autolist(polygon.buffer(-tooldia / 2)):  # Over resulting polygons
-            for y in x.interiors:  # Over interiors of each polygon
-                inner_edges.append(y)
-        #geoms += outer_edges + inner_edges
-        for g in outer_edges + inner_edges:
-            geoms.insert(g)
+        # Clean inside edges (contours) of the original polygon
+        if contour:
+            outer_edges = [x.exterior for x in autolist(polygon.buffer(-tooldia / 2))]
+            inner_edges = []
+            for x in autolist(polygon.buffer(-tooldia / 2)):  # Over resulting polygons
+                for y in x.interiors:  # Over interiors of each polygon
+                    inner_edges.append(y)
+            #geoms += outer_edges + inner_edges
+            for g in outer_edges + inner_edges:
+                geoms.insert(g)
 
         # Optimization connect touching paths
         # log.debug("Connecting paths...")
@@ -630,7 +639,8 @@ class Geometry(object):
         return geoms
 
     @staticmethod
-    def clear_polygon3(polygon, tooldia, overlap=0.15, connect=True):
+    def clear_polygon3(polygon, tooldia, overlap=0.15, connect=True,
+                       contour=True):
         """
         Creates geometry inside a polygon for a tool to cover
         the whole area.
@@ -642,6 +652,7 @@ class Geometry(object):
         :param tooldia: Tool diameter.
         :param overlap: Tool path overlap percentage.
         :param connect: Connect lines to avoid tool lifts.
+        :param contour: Paint around the edges.
         :return:
         """
 
@@ -683,10 +694,11 @@ class Geometry(object):
         for line in lines_trimmed:
             geoms.insert(line)
 
-        # Add margin to storage
-        # geoms.insert(margin_poly.exterior)
-        # for ints in margin_poly.interiors:
-        #     geoms.insert(ints)
+        # Add margin (contour) to storage
+        if contour:
+            geoms.insert(margin_poly.exterior)
+            for ints in margin_poly.interiors:
+                geoms.insert(ints)
 
         # Optimization: Reduce lifts
         if connect:

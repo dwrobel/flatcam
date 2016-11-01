@@ -409,19 +409,28 @@ class GeometryObjectUI(ObjectUI):
         self.pathconnect_cb = FCCheckBox()
         grid2.addWidget(self.pathconnect_cb, 4, 1)
 
+        contourlabel = QtGui.QLabel("Contour:")
+        contourlabel.setToolTip(
+            "Cut around the perimeter of the polygon\n"
+            "to trim rough edges."
+        )
+        grid2.addWidget(contourlabel, 5, 0)
+        self.paintcontour_cb = FCCheckBox()
+        grid2.addWidget(self.paintcontour_cb, 5, 1)
+
         # Polygon selection
         selectlabel = QtGui.QLabel('Selection:')
         selectlabel.setToolTip(
             "How to select the polygons to paint."
         )
-        grid2.addWidget(selectlabel, 5, 0)
+        grid2.addWidget(selectlabel, 6, 0)
         #grid3 = QtGui.QGridLayout()
         self.selectmethod_combo = RadioSet([
             {"label": "Single", "value": "single"},
             {"label": "All", "value": "all"},
             #{"label": "Rectangle", "value": "rectangle"}
         ])
-        grid2.addWidget(self.selectmethod_combo, 5, 1)
+        grid2.addWidget(self.selectmethod_combo, 6, 1)
 
         # GO Button
         self.generate_paint_button = QtGui.QPushButton('Generate')

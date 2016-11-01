@@ -1211,6 +1211,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "paintmargin": 0.01,
             "paintmethod": "standard",
             "pathconnect": True,
+            "paintcontour": True,
             "multidepth": False,
             "depthperpass": 0.002,
             "selectmethod": "single"
@@ -1244,6 +1245,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "paintmargin": self.ui.paintmargin_entry,
             "paintmethod": self.ui.paintmethod_combo,
             "pathconnect": self.ui.pathconnect_cb,
+            "paintcontour": self.ui.paintcontour_cb,
             "multidepth": self.ui.mpass_cb,
             "depthperpass": self.ui.maxdepth_entry,
             "selectmethod": self.ui.selectmethod_combo
@@ -1262,7 +1264,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         if self.options["selectmethod"] == "all":
             self.paint_poly_all(tooldia, overlap,
-                                connect=self.option["pathconnect"])
+                                connect=self.options["pathconnect"],
+                                contour=self.options["paintcontour"])
             return
 
         if self.options["selectmethod"] == "single":
@@ -1274,12 +1277,13 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 self.app.plotcanvas.mpl_disconnect(subscription)
                 point = [event.xdata, event.ydata]
                 self.paint_poly_single_click(point, tooldia, overlap,
-                                             connect=self.options["pathconnect"])
+                                             connect=self.options["pathconnect"],
+                                             contour=self.options["paintcontour"])
 
             subscription = self.app.plotcanvas.mpl_connect('button_press_event', doit)
 
     def paint_poly_single_click(self, inside_pt, tooldia, overlap,
-                                outname=None, connect=True):
+                                outname=None, connect=True, contour=True):
         """
         Paints a polygon selected by clicking on its interior.
 
@@ -1290,6 +1294,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :param tooldia: Diameter of the painting tool
         :param overlap: Overlap of the tool between passes.
         :param outname: Name of the resulting Geometry Object.
+        :param connect: Connect lines to avoid tool lifts.
+        :param contour: Paint around the edges.
         :return: None
         """
 
@@ -1315,16 +1321,19 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             if self.options["paintmethod"] == "seed":
                 # Type(cp) == FlatCAMRTreeStorage | None
                 cp = self.clear_polygon2(poly.buffer(-self.options["paintmargin"]),
-                                         tooldia, overlap=overlap, connect=connect)
+                                         tooldia, overlap=overlap, connect=connect,
+                                         contour=contour)
 
             elif self.options["paintmethod"] == "lines":
                 # Type(cp) == FlatCAMRTreeStorage | None
                 cp = self.clear_polygon3(poly.buffer(-self.options["paintmargin"]),
-                                         tooldia, overlap=overlap, connect=connect)
+                                         tooldia, overlap=overlap, connect=connect,
+                                         contour=contour)
             else:
                 # Type(cp) == FlatCAMRTreeStorage | None
                 cp = self.clear_polygon(poly.buffer(-self.options["paintmargin"]),
-                                        tooldia, overlap=overlap, connect=connect)
+                                        tooldia, overlap=overlap, connect=connect,
+                                        contour=contour)
 
             if cp is not None:
                 geo_obj.solid_geometry = list(cp.get_objects())
@@ -1354,13 +1363,16 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # Background
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
-    def paint_poly_all(self, tooldia, overlap, outname=None):
+    def paint_poly_all(self, tooldia, overlap, outname=None,
+                       connect=True, contour=True):
         """
         Paints all polygons in this object.
 
         :param tooldia:
         :param overlap:
         :param outname:
+        :param connect: Connect lines to avoid tool lifts.
+        :param contour: Paint around the edges.
         :return:
         """
 
@@ -1394,17 +1406,20 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 if self.options["paintmethod"] == "seed":
                     # Type(cp) == FlatCAMRTreeStorage | None
                     cp = self.clear_polygon2(poly.buffer(-self.options["paintmargin"]),
-                                             tooldia, overlap=overlap)
+                                             tooldia, overlap=overlap, contour=contour,
+                                             connect=connect)
 
                 elif self.options["paintmethod"] == "lines":
                     # Type(cp) == FlatCAMRTreeStorage | None
                     cp = self.clear_polygon3(poly.buffer(-self.options["paintmargin"]),
-                                             tooldia, overlap=overlap)
+                                             tooldia, overlap=overlap, contour=contour,
+                                             connect=connect)
 
                 else:
                     # Type(cp) == FlatCAMRTreeStorage | None
                     cp = self.clear_polygon(poly.buffer(-self.options["paintmargin"]),
-                                            tooldia, overlap=overlap)
+                                            tooldia, overlap=overlap, contour=contour,
+                                            connect=connect)
 
                 if cp is not None:
                     geo_obj.solid_geometry += list(cp.get_objects())
