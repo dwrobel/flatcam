@@ -871,6 +871,13 @@ class FlatCAMDraw(QtCore.QObject):
         self.cursor.enabled = True
 
     def connect_canvas_event_handlers(self):
+        """
+        Connects local event handlers to the canvas.
+
+        Called from self.edit_fcgeometry()
+
+        :return: None
+        """
         ## Canvas events
         self.canvas.vis_connect('mouse_release', self.on_canvas_click)
         self.canvas.vis_connect('mouse_move', self.on_canvas_move)
