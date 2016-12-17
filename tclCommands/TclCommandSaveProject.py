@@ -8,7 +8,7 @@ class TclCommandSaveProject(TclCommand.TclCommandSignaled):
     """
 
     # array of all command aliases, to be able use  old names for backward compatibility (add_poly, add_polygon)
-    aliases = ['open_project']
+    aliases = ['save_project']
 
     # Dictionary of types from Tcl command, needs to be ordered.
     # For positional arguments
