@@ -39,6 +39,22 @@ from MeasurementTool import Measurement
 from DblSidedTool import DblSidedTool
 import tclCommands
 
+# For the translation by Daniel Sallin Debut
+# Use translate_("txt") for translate the "txt" string
+# Using gettext for translate 
+# Using os for def a locale path
+# Using unidecode for accents compatibility
+# coding: utf8
+import gettext
+import os
+import sys
+from unidecode import unidecode
+pathname = os.path.dirname(sys.argv[0])
+localdir = os.path.abspath(pathname) + "/locale"
+gettext.install("messages", localdir)
+def translate_(txt):
+    return unicode(_(txt),'utf-8')
+# For the translation by Daniel Sallin fin
 
 ########################################
 ##                App                 ##
@@ -531,6 +547,8 @@ class App(QtCore.QObject):
         self.ui.menuoptions_transfer_p2a.triggered.connect(self.on_options_project2app)
         self.ui.menuoptions_transfer_o2p.triggered.connect(self.on_options_object2project)
         self.ui.menuoptions_transfer_p2o.triggered.connect(self.on_options_project2object)
+        self.ui.menuoptions_language_en.triggered.connect(self.on_options_languageenglish)
+        self.ui.menuoptions_language_fr.triggered.connect(self.on_options_languagefrench)
         self.ui.menuviewdisableall.triggered.connect(self.disable_plots)
         self.ui.menuviewdisableother.triggered.connect(lambda: self.disable_plots(except_current=True))
         self.ui.menuviewenable.triggered.connect(self.enable_all_plots)
@@ -587,9 +605,9 @@ class App(QtCore.QObject):
         self.shell.append_output("FlatCAM {}".format(self.version))
         if self.version_name:
             self.shell.append_output(" - {}".format(self.version_name))
-        self.shell.append_output("\n(c) 2014-{} Juan Pablo Caram\n\n".format(
+        self.shell.append_output(translate_("\n(c) 2014-{} Juan Pablo Caram\n\n").format(
             self.version_date[0]))
-        self.shell.append_output("Type help to get started.\n\n")
+        self.shell.append_output(translate_("Type help to get started.\n\n"))
 
         self.init_tcl()
 
@@ -1340,6 +1358,36 @@ class App(QtCore.QObject):
                 oname = option[len(obj.kind)+1:]
                 obj.options[oname] = self.defaults[option]
         obj.to_form()  # Update UI
+
+    def on_options_languageenglish(self):
+        """
+        Callback for Options->Language->English.
+        Change interface to English.
+
+        :return: None
+        """
+
+        self.report_usage("on_options_languageenglish")
+        pathname = os.path.dirname(sys.argv[0])
+        localdir = os.path.abspath(pathname) + "/locale"
+        gettext.translation('messages', localdir, languages=['en'])
+        gettext.install("messages", localdir)
+        print "on_options_languageenglish"
+        
+    def on_options_languagefrench(self):
+        """
+        Callback for Options->Language->French.
+        Change interface to French.
+
+        :return: None
+        """
+
+        self.report_usage("on_options_languagefrench")
+        pathname = os.path.dirname(sys.argv[0])
+        localdir = os.path.abspath(pathname) + "/locale"
+        gettext.translation('messages', localdir, languages=['fr'])
+        gettext.install("messages", localdir)
+        print "on_options_languagefrench"
 
     def on_options_dict_change(self, field):
         self.options_write_form_field(field)
@@ -4233,14 +4281,14 @@ class App(QtCore.QObject):
         except:
             # App.log.warning("Failed checking for latest version. Could not connect.")
             self.log.warning("Failed checking for latest version. Could not connect.")
-            self.inform.emit("[warning] Failed checking for latest version. Could not connect.")
+            self.inform.emit(translate_("[warning] Failed checking for latest version. Could not connect."))
             return
 
         try:
             data = json.load(f)
         except Exception, e:
             App.log.error("Could not parse information about latest version.")
-            self.inform.emit("[error] Could not parse information about latest version.")
+            self.inform.emit(translate_("[error] Could not parse information about latest version."))
             App.log.debug("json.load(): %s" % str(e))
             f.close()
             return
@@ -4250,16 +4298,16 @@ class App(QtCore.QObject):
         ### Latest version?
         if self.version >= data["version"]:
             App.log.debug("FlatCAM is up to date!")
-            self.inform.emit("[success] FlatCAM is up to date!")
+            self.inform.emit(translate_("[success] FlatCAM is up to date!"))
             return
 
         App.log.debug("Newer version available.")
         self.message.emit(
-            "Newer Version Available",
-            QtCore.QString("There is a newer version of FlatCAM " +
+            translate_("Newer Version Available"),
+            QtCore.QString(translate_("There is a newer version of FlatCAM " +
                            "available for download:<br><br>" +
                            "<B>" + data["name"] + "</b><br>" +
-                           data["message"].replace("\n", "<br>")),
+                           data["message"].replace("\n", "<br>"))),
             "info"
         )
 

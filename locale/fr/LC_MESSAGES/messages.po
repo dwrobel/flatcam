@@ -1,0 +1,1427 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: FlatCam\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-09-04 10:28+0200\n"
+"PO-Revision-Date: 2016-09-04 10:29+0200\n"
+"Last-Translator: Daniel Sallin <info@daniel-stp.fr>\n"
+"Language-Team: Daniel-STP <info@daniel-stp.fr>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.8\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../..\n"
+"X-Poedit-KeywordsList: translate_\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: DblSidedTool.py:28
+msgid "Double-Sided PCB Tool"
+msgstr "Outil de PCB recto-verso"
+
+#: DblSidedTool.py:44
+msgid "Bottom Layer:"
+msgstr "Couche du bas:"
+
+#: DblSidedTool.py:54
+msgid "Mirror Axis:"
+msgstr "Axe du mirroir"
+
+#: DblSidedTool.py:56
+msgid "Mirror vertically (X) or horizontally (Y)."
+msgstr "Miroir vertical (X) ou horizontalement (Y)."
+
+#: FlatCAMApp.py:584
+msgid ""
+"\n"
+"(c) 2014-{} Juan Pablo Caram\n"
+"\n"
+msgstr ""
+"\n"
+"(c) 2014-{} Juan Pablo Caram\n"
+"Translation Daniel Sallin\n"
+"\n"
+
+#: FlatCAMApp.py:586
+msgid ""
+"Type help to get started.\n"
+"\n"
+msgstr ""
+"Voir l'aide pour démarrer.\n"
+"\n"
+
+#: FlatCAMApp.py:4143
+msgid "[warning] Failed checking for latest version. Could not connect."
+msgstr ""
+"[Avertissement] Échec de vérification de dernière version. N'a pas pu se "
+"connecter."
+
+#: FlatCAMApp.py:4150
+msgid "[error] Could not parse information about latest version."
+msgstr ""
+"[Error] Impossible d'analyser des informations sur la version la plus "
+"récente."
+
+#: FlatCAMApp.py:4160
+msgid "[success] FlatCAM is up to date!"
+msgstr "[Succès] FlatCAM est à jour!"
+
+#: FlatCAMApp.py:4165
+msgid "Newer Version Available"
+msgstr "Version plus récente disponible"
+
+#: FlatCAMApp.py:4166
+msgid "There is a newer version of FlatCAM available for download:<br><br><B>"
+msgstr ""
+"Il existe une version plus récente de FlatCAM disponible pour le "
+"téléchargement: <br><br><B>"
+
+#: FlatCAMDraw.py:157
+msgid "Click on 1st point..."
+msgstr "Cliquez sur le premier point ..."
+
+#: FlatCAMDraw.py:192 FlatCAMDraw.py:226
+msgid "Click on CENTER ..."
+msgstr "Cliquez sur un CENTRE ..."
+
+#: FlatCAMDraw.py:198
+msgid "Click on perimeter to complete ..."
+msgstr "Cliquez sur un périmètre pour finir ..."
+
+#: FlatCAMDraw.py:202 FlatCAMDraw.py:252 FlatCAMDraw.py:421 FlatCAMDraw.py:549
+#: FlatCAMDraw.py:1031
+msgid "Done."
+msgstr "Annuler."
+
+#: FlatCAMDraw.py:231
+msgid "cw"
+msgstr "SAM"
+
+#: FlatCAMDraw.py:245 FlatCAMDraw.py:448
+msgid "Click on 1st point ..."
+msgstr "Cliquez sur le premier point ..."
+
+#: FlatCAMDraw.py:248
+msgid "Click on 2nd point to complete ..."
+msgstr "Cliquer sur un second point pour finir ..."
+
+#: FlatCAMDraw.py:259
+msgid "Direction: "
+msgstr "Direction:"
+
+#: FlatCAMDraw.py:411
+msgid "Click on 1st corner ..."
+msgstr "Cliquez sur un premier coin ..."
+
+#: FlatCAMDraw.py:417
+msgid "Click on opposite corner to complete ..."
+msgstr "Cliquez sur un coin oposé pour finir ..."
+
+#: FlatCAMDraw.py:454
+msgid "Click on next point or hit SPACE to complete ..."
+msgstr "Cliquer sur le point suivant ou touche ESPACE pour finir ..."
+
+#: FlatCAMDraw.py:511
+msgid "Click on geometry to select"
+msgstr "Cliquez sur une géométrie pour sélection"
+
+#: FlatCAMDraw.py:534
+msgid "Click on reference point."
+msgstr "Cliquez sur le point de référence..."
+
+#: FlatCAMDraw.py:541
+msgid "Nothing to move."
+msgstr "Rien à bouger."
+
+#: FlatCAMDraw.py:545
+msgid "Click on final location."
+msgstr "Cliquez sur la fin ..."
+
+#: FlatCAMDraw.py:616
+msgid "Select 'Esc'"
+msgstr "Sélection 'Esc'"
+
+#: FlatCAMDraw.py:617
+msgid "Add Circle"
+msgstr "Ajouter un cercle"
+
+#: FlatCAMDraw.py:618
+msgid "Add Arc"
+msgstr "Ajouter un Arc"
+
+#: FlatCAMDraw.py:619
+msgid "Add Rectangle"
+msgstr "Ajouter un rectangle"
+
+#: FlatCAMDraw.py:620
+msgid "Add Polygon"
+msgstr "Ajouter un polygone"
+
+#: FlatCAMDraw.py:621
+msgid "Add Path"
+msgstr "Ajouter un chemin"
+
+#: FlatCAMDraw.py:622 FlatCAMDraw.py:660
+msgid "Polygon Union"
+msgstr "Union de polygone"
+
+#: FlatCAMDraw.py:623 FlatCAMDraw.py:661
+msgid "Polygon Intersection"
+msgstr "Intersection de polygone"
+
+#: FlatCAMDraw.py:624
+msgid "Polygon Subtraction"
+msgstr "Soustraction de polygone"
+
+#: FlatCAMDraw.py:625 FlatCAMDraw.py:663
+msgid "Cut Path"
+msgstr "Couper un chemin"
+
+#: FlatCAMDraw.py:626
+msgid "Move Objects 'm'"
+msgstr "Déplacer des objet 'm'"
+
+#: FlatCAMDraw.py:627
+msgid "Copy Objects 'c'"
+msgstr "Copier des objets 'c'"
+
+#: FlatCAMDraw.py:628 FlatCAMDraw.py:666
+msgid "Delete Shape '-'"
+msgstr "Suprimer une forme '-'"
+
+#: FlatCAMDraw.py:632
+msgid "Snap to grid"
+msgstr "Lâcher la grille"
+
+#: FlatCAMDraw.py:635
+msgid "Grid X distance"
+msgstr "Distance de grille X"
+
+#: FlatCAMDraw.py:639
+msgid "Grid Y distante"
+msgstr "Distance de grille Y"
+
+#: FlatCAMDraw.py:642
+msgid "Snap to corner"
+msgstr "Lâcher le coin"
+
+#: FlatCAMDraw.py:645
+msgid "Max. magnet distance"
+msgstr "Distance magnétique maxi"
+
+#: FlatCAMDraw.py:652
+msgid "Drawing"
+msgstr "Dessin"
+
+#: FlatCAMDraw.py:667
+msgid "Buffer selection 'b'"
+msgstr "Sélection de tampon 'b'"
+
+#: FlatCAMDraw.py:799
+#, python-format
+msgid "Expected a DrawToolShape, got %s"
+msgstr "Attendus un outil de dessin en forme, obtenu %s"
+
+#: FlatCAMDraw.py:802
+msgid "Shape object has empty geometry (None)"
+msgstr "Objet de géométrie vide (Aucun)"
+
+#: FlatCAMDraw.py:806
+msgid "Shape objects has empty geometry ([])"
+msgstr "Objet de géométrie vide ([])"
+
+#: FlatCAMDraw.py:840
+msgid "Not implemented."
+msgstr "Non implémenter"
+
+#: FlatCAMDraw.py:863
+#, python-format
+msgid "Expected a Geometry, got %s"
+msgstr "Exeption d'objet de géométrie, obtenu %s"
+
+#: FlatCAMDraw.py:930
+msgid "No active tool to respond to click!"
+msgstr "Pas d'outil actif pour réponde au clic"
+
+#: FlatCAMDraw.py:1038
+msgid "Cancelled."
+msgstr "Annuler"
+
+#: FlatCAMDraw.py:1058 FlatCAMDraw.py:1065
+msgid "Click on target point."
+msgstr "Cliquez sur la cible ..."
+
+#: FlatCAMDraw.py:1368
+msgid "[warning] Nothing selected for buffering."
+msgstr "[Attention] Rien n'est sélectionné pour le tampon."
+
+#: FlatCAMDraw.py:1372
+msgid "[warning] Invalid distance for buffering."
+msgstr "[Attention] Distance invalide pour le tampon."
+
+#: FlatCAMGUI.py:37
+msgid "&File"
+msgstr "&Fichier"
+
+#: FlatCAMGUI.py:40
+msgid "&New"
+msgstr "&Nouveau"
+
+#: FlatCAMGUI.py:45
+msgid "Open recent ..."
+msgstr "Ouvrir récent ..."
+
+#: FlatCAMGUI.py:48
+msgid "Open &Gerber ..."
+msgstr "Ouvrir &Gerber ..."
+
+#: FlatCAMGUI.py:52
+msgid "Open &Excellon ..."
+msgstr "Ouvrir &Excellon ..."
+
+#: FlatCAMGUI.py:56
+msgid "Open G-&Code ..."
+msgstr "Ouvrir G-&Code ..."
+
+#: FlatCAMGUI.py:60
+msgid "Open &Project ..."
+msgstr "Ouvrir &Projet ..."
+
+#: FlatCAMGUI.py:64
+msgid "Import &SVG ..."
+msgstr "Importer &SVG"
+
+#: FlatCAMGUI.py:68
+msgid "Export &SVG ..."
+msgstr "Exporter &SVG"
+
+#: FlatCAMGUI.py:72
+msgid "&Save Project"
+msgstr "&Sauver projet"
+
+#: FlatCAMGUI.py:76
+msgid "Save Project &As ..."
+msgstr "Sauver projet sous ..."
+
+#: FlatCAMGUI.py:80
+msgid "Save Project C&opy ..."
+msgstr "Sauver projet C&opie ..."
+
+#: FlatCAMGUI.py:84
+msgid "Save &Defaults"
+msgstr "Sauver &Défauts"
+
+#: FlatCAMGUI.py:88
+msgid "&Exit"
+msgstr "&Quitter"
+
+#: FlatCAMGUI.py:96
+msgid "&Edit"
+msgstr "&Edition"
+
+#: FlatCAMGUI.py:97
+msgid "New Geometry"
+msgstr "Nouvelle Géométrie"
+
+#: FlatCAMGUI.py:98 FlatCAMGUI.py:146
+msgid "Edit Geometry"
+msgstr "Edition de géométrie"
+
+#: FlatCAMGUI.py:99 FlatCAMGUI.py:147
+msgid "Update Geometry"
+msgstr "Mise a jour géométrie"
+
+#: FlatCAMGUI.py:102
+msgid "Join Geometry"
+msgstr "Joindre géometrie"
+
+#: FlatCAMGUI.py:103
+msgid "Delete"
+msgstr "Supprimer"
+
+#: FlatCAMGUI.py:106
+msgid "&Options"
+msgstr "&Options"
+
+#: FlatCAMGUI.py:107
+msgid "Transfer options"
+msgstr "Option de transfert"
+
+#: FlatCAMGUI.py:108
+msgid "Application to Project"
+msgstr "Application vers projet"
+
+#: FlatCAMGUI.py:109
+msgid "Project to Application"
+msgstr "Projet vers Application"
+
+#: FlatCAMGUI.py:110
+msgid "Project to Object"
+msgstr "Projet vers objet"
+
+#: FlatCAMGUI.py:111
+msgid "Object to Project"
+msgstr "Objet vers projet"
+
+#: FlatCAMGUI.py:112
+msgid "Application to Object"
+msgstr "Application vers Objet"
+
+#: FlatCAMGUI.py:113
+msgid "Object to Application"
+msgstr "Objet vers Application"
+
+#: FlatCAMGUI.py:116
+msgid "&View"
+msgstr "&Vue"
+
+#: FlatCAMGUI.py:117
+msgid "Disable all plots"
+msgstr "Désactiver tout les traces"
+
+#: FlatCAMGUI.py:119
+msgid "Disable all plots but this one"
+msgstr "Désactiver tout les autres traces"
+
+#: FlatCAMGUI.py:120
+msgid "Enable all plots"
+msgstr "Active tous les traces"
+
+#: FlatCAMGUI.py:124
+msgid "&Tool"
+msgstr "&Outil"
+
+#: FlatCAMGUI.py:126 FlatCAMGUI.py:151
+msgid "&Command Line"
+msgstr "Ligne de &Commande"
+
+#: FlatCAMGUI.py:129
+msgid "&Help"
+msgstr "&Aide"
+
+#: FlatCAMGUI.py:130
+msgid "About FlatCAM"
+msgstr "A propos de FlatCAM"
+
+#: FlatCAMGUI.py:131
+msgid "Home"
+msgstr "Maison"
+
+#: FlatCAMGUI.py:132
+msgid "Manual"
+msgstr "Manuel"
+
+#: FlatCAMGUI.py:140
+msgid "&Zoom Fit"
+msgstr "Adapter le &Zoom"
+
+#: FlatCAMGUI.py:141
+msgid "&Zoom Out"
+msgstr "&Zoom dehors"
+
+#: FlatCAMGUI.py:142
+msgid "&Zoom In"
+msgstr "&Zoom dans"
+
+#: FlatCAMGUI.py:143
+msgid "&Clear Plot"
+msgstr "&Effacer les traces"
+
+#: FlatCAMGUI.py:144
+msgid "&Replot"
+msgstr "&Retrace"
+
+#: FlatCAMGUI.py:145
+msgid "New Blank Geometry"
+msgstr "Nouvelle géométrie vide"
+
+#: FlatCAMGUI.py:150
+msgid "&Delete"
+msgstr "&Supprimer"
+
+#: FlatCAMGUI.py:178
+msgid "Selected"
+msgstr "Sélectionner"
+
+#: FlatCAMGUI.py:194
+msgid "APPLICATION DEFAULTS"
+msgstr "DEFAUT DE L’APPLICATION"
+
+#: FlatCAMGUI.py:195
+msgid "PROJECT OPTIONS"
+msgstr "OPTION DE PROJET"
+
+#: FlatCAMGUI.py:202
+msgid "Options"
+msgstr "Options"
+
+#: FlatCAMGUI.py:208
+msgid "Tool"
+msgstr "outil"
+
+#: FlatCAMGUI.py:298 FlatCAMGUI.py:304
+msgid "Idle."
+msgstr "Au repos."
+
+#: FlatCAMGUI.py:328 FlatCAMGUI.py:329
+msgid "Hello!"
+msgstr "Bonjour!"
+
+#: FlatCAMGUI.py:372
+msgid "Gerber Options"
+msgstr "Options Gerber"
+
+#: FlatCAMGUI.py:375 FlatCAMGUI.py:557 FlatCAMGUI.py:651 FlatCAMGUI.py:772
+#: ObjectUI.py:151 ObjectUI.py:253 ObjectUI.py:439 ObjectUI.py:588
+msgid "<b>Plot Options:</b>"
+msgstr "<b>Options de trace:</b>"
+
+#: FlatCAMGUI.py:381 FlatCAMGUI.py:562 FlatCAMGUI.py:655 FlatCAMGUI.py:780
+#: ObjectUI.py:159 ObjectUI.py:257 ObjectUI.py:444 ObjectUI.py:594
+msgid "Plot"
+msgstr "Tracé"
+
+#: FlatCAMGUI.py:383 FlatCAMGUI.py:564 FlatCAMGUI.py:657 FlatCAMGUI.py:782
+#: ObjectUI.py:161 ObjectUI.py:259 ObjectUI.py:446 ObjectUI.py:596
+msgid "Plot (show) this object."
+msgstr "Tracé (visible) de l'objet."
+
+#: FlatCAMGUI.py:388 FlatCAMGUI.py:567 ObjectUI.py:449 ObjectUI.py:601
+msgid "Solid"
+msgstr "Continu"
+
+#: FlatCAMGUI.py:390 ObjectUI.py:603
+msgid "Solid color polygons."
+msgstr "Polygone solid de couleur"
+
+#: FlatCAMGUI.py:395 ObjectUI.py:608
+msgid "Multicolored"
+msgstr "Multicolore"
+
+#: FlatCAMGUI.py:397 ObjectUI.py:610
+msgid "Draw polygons in different colors."
+msgstr "Afficher les polygone de différentes couleur"
+
+#: FlatCAMGUI.py:402 ObjectUI.py:615
+msgid "<b>Isolation Routing:</b>"
+msgstr "<b>Isolation Routage:</b>"
+
+#: FlatCAMGUI.py:404 ObjectUI.py:617
+msgid ""
+"Create a Geometry object with\n"
+"toolpaths to cut outside polygons."
+msgstr ""
+"Créer un objet de géométrie avec\n"
+"des parcours à couper les polygones extérieurs."
+
+#: FlatCAMGUI.py:411 FlatCAMGUI.py:454 FlatCAMGUI.py:637 FlatCAMGUI.py:703
+#: FlatCAMGUI.py:735 FlatCAMGUI.py:787 ObjectUI.py:166 ObjectUI.py:307
+#: ObjectUI.py:371 ObjectUI.py:557 ObjectUI.py:624 ObjectUI.py:676
+msgid "Tool dia:"
+msgstr "Diamètre outil:"
+
+#: FlatCAMGUI.py:413 FlatCAMGUI.py:456 FlatCAMGUI.py:639 ObjectUI.py:559
+#: ObjectUI.py:626 ObjectUI.py:678
+msgid "Diameter of the cutting tool."
+msgstr "Diamètre de l'outil de coupe"
+
+#: FlatCAMGUI.py:419 ObjectUI.py:632
+msgid "Width (# passes):"
+msgstr "Largeur (# passe):"
+
+#: FlatCAMGUI.py:421 ObjectUI.py:634
+msgid ""
+"Width of the isolation gap in\n"
+"number (integer) of tool widths."
+msgstr ""
+"Largeur de l'écart d'isolement dans\n"
+"Nombre (entier) de la largeurs d'outil."
+
+#: FlatCAMGUI.py:428 ObjectUI.py:641
+msgid "Pass overlap:"
+msgstr "Passer chevauchement:"
+
+#: FlatCAMGUI.py:430 ObjectUI.py:643
+msgid ""
+"How much (fraction of tool width)\n"
+"to overlap each pass."
+msgstr ""
+"Combien (fraction d'outil)\n"
+"pour chevaucher chaque passage."
+
+#: FlatCAMGUI.py:437 ObjectUI.py:651
+msgid "Combine Passes"
+msgstr "Combinez Passes"
+
+#: FlatCAMGUI.py:439 ObjectUI.py:653
+msgid "Combine all passes into one object"
+msgstr "Mélanger toutes les passes en un seul objet"
+
+#: FlatCAMGUI.py:444 ObjectUI.py:666
+msgid "<b>Board cutout:</b>"
+msgstr "<b>Planche découpé:</b>"
+
+#: FlatCAMGUI.py:446 ObjectUI.py:668
+msgid ""
+"Create toolpaths to cut around\n"
+"the PCB and separate it from\n"
+"the original board."
+msgstr ""
+"Créer des parcours pour couper autour\n"
+"du PCB et le séparer de\n"
+"la planche d'origine."
+
+#: FlatCAMGUI.py:462 FlatCAMGUI.py:756 ObjectUI.py:392 ObjectUI.py:684
+msgid "Margin:"
+msgstr "Marge:"
+
+#: FlatCAMGUI.py:464 ObjectUI.py:686
+msgid ""
+"Distance from objects at which\n"
+"to draw the cutout."
+msgstr ""
+"Distance à partir d'objets à laquelle\n"
+"pour dessiner la découpe."
+
+#: FlatCAMGUI.py:471 ObjectUI.py:693
+msgid "Gap size:"
+msgstr "Taille des écarts"
+
+#: FlatCAMGUI.py:473 ObjectUI.py:695
+msgid ""
+"Size of the gaps in the toolpath\n"
+"that will remain to hold the\n"
+"board in place."
+msgstr ""
+"Taille des écarts dans la trajectoire de l'outil\n"
+"qui restera à tenir le\n"
+"planche en place."
+
+#: FlatCAMGUI.py:481 ObjectUI.py:703
+msgid "Gaps:"
+msgstr "Ecarts:"
+
+#: FlatCAMGUI.py:483 ObjectUI.py:705
+msgid ""
+"Where to place the gaps, Top/Bottom\n"
+"Left/Rigt, or on all 4 sides."
+msgstr ""
+"Où placer les marges, Haut/Bas \n"
+"Gauche/Droite, ou sur les 4 côtés."
+
+#: FlatCAMGUI.py:487 ObjectUI.py:709
+msgid "2 (T/B)"
+msgstr "2 (H/B)"
+
+#: FlatCAMGUI.py:488 ObjectUI.py:710
+msgid "2 (L/R)"
+msgstr "2 (G/D)"
+
+#: FlatCAMGUI.py:493 ObjectUI.py:722
+msgid "<b>Non-copper regions:</b>"
+msgstr "<b>Les régions non-cuivree:</b>"
+
+#: FlatCAMGUI.py:495 ObjectUI.py:724
+msgid ""
+"Create polygons covering the\n"
+"areas without copper on the PCB.\n"
+"Equivalent to the inverse of this\n"
+"object. Can be used to remove all\n"
+"copper from a specified region."
+msgstr ""
+"Créer des polygones couvrant la\n"
+"zones sans cuivre sur le PCB.\n"
+"Equivalent à l'inverse de cet\n"
+"objet. Peut être utilisé pour enlever tous les\n"
+"cuivre d'une région déterminée."
+
+#: FlatCAMGUI.py:507 FlatCAMGUI.py:533 ObjectUI.py:736 ObjectUI.py:765
+msgid "Boundary Margin:"
+msgstr "Marge limites:"
+
+#: FlatCAMGUI.py:509 ObjectUI.py:738
+msgid ""
+"Specify the edge of the PCB\n"
+"by drawing a box around all\n"
+"objects with this minimum\n"
+"distance."
+msgstr ""
+"Indiquez le bord du PCB\n"
+"en dessinant une boîte autour de tous les\n"
+"les objets avec ce minimum\n"
+"distance."
+
+#: FlatCAMGUI.py:519 FlatCAMGUI.py:542 ObjectUI.py:748 ObjectUI.py:774
+msgid "Rounded corners"
+msgstr "Coins arrondis"
+
+#: FlatCAMGUI.py:521 ObjectUI.py:750
+msgid ""
+"Creates a Geometry objects with polygons\n"
+"covering the copper-free areas of the PCB."
+msgstr ""
+"Crée un des objets géométriques avec des polygones\n"
+"recouvrir les zones du circuit imprimé sans cuivre."
+
+#: FlatCAMGUI.py:527 ObjectUI.py:759
+msgid "<b>Bounding Box:</b>"
+msgstr "<b>Boite frontière:</b>"
+
+#: FlatCAMGUI.py:535 ObjectUI.py:767
+msgid ""
+"Distance of the edges of the box\n"
+"to the nearest polygon."
+msgstr ""
+"Distance des bords de la boîte\n"
+"au polygone le plus proche."
+
+#: FlatCAMGUI.py:544 ObjectUI.py:776
+msgid ""
+"If the bounding box is \n"
+"to have rounded corners\n"
+"their radius is equal to\n"
+"the margin."
+msgstr ""
+"Si la zone de délimitation est\n"
+"d'avoir des coins arrondis\n"
+"leur rayon est égal à\n"
+"la marge."
+
+#: FlatCAMGUI.py:554
+msgid "Excellon Options"
+msgstr "Options d'Excellon"
+
+#: FlatCAMGUI.py:569 ObjectUI.py:451
+msgid "Solid circles."
+msgstr "Cercles pleins."
+
+#: FlatCAMGUI.py:574 ObjectUI.py:468
+msgid "<b>Create CNC Job</b>"
+msgstr "<b>Créer job CNC</b>"
+
+#: FlatCAMGUI.py:576 ObjectUI.py:470
+msgid ""
+"Create a CNC Job object\n"
+"for this drill object."
+msgstr ""
+"Créer un CNC Job objet\n"
+"pour cet objet de foret."
+
+#: FlatCAMGUI.py:584 FlatCAMGUI.py:673 ObjectUI.py:277 ObjectUI.py:478
+msgid "Cut Z:"
+msgstr "Couper Z:"
+
+#: FlatCAMGUI.py:586 ObjectUI.py:480
+msgid ""
+"Drill depth (negative)\n"
+"below the copper surface."
+msgstr ""
+"Profondeur de percage (négatif) \\ n\n"
+"au-dessous de la surface de cuivre."
+
+#: FlatCAMGUI.py:593 FlatCAMGUI.py:683 ObjectUI.py:287 ObjectUI.py:487
+msgid "Travel Z:"
+msgstr "Voyage Z:"
+
+#: FlatCAMGUI.py:595 ObjectUI.py:489
+msgid ""
+"Tool height when travelling\n"
+"across the XY plane."
+msgstr ""
+"Hauteur de l'outil lorsque vous voyagez\n"
+"dans le plan XY."
+
+#: FlatCAMGUI.py:602 ObjectUI.py:496
+msgid "Feed rate:"
+msgstr "Vitesse d'avance:"
+
+#: FlatCAMGUI.py:604 ObjectUI.py:498
+msgid ""
+"Tool speed while drilling\n"
+"(in units per minute)."
+msgstr ""
+"La vitesse de l'outil en cours de perçage\n"
+"(En unités par minute)."
+
+#: FlatCAMGUI.py:611
+msgid "Toolchange Z:"
+msgstr "changement d'outil Z"
+
+#: FlatCAMGUI.py:613
+msgid "Tool Z where user can change drill bit\n"
+msgstr "Outil Z où l'utilisateur peut changer foret\n"
+
+#: FlatCAMGUI.py:619 FlatCAMGUI.py:712 ObjectUI.py:317 ObjectUI.py:527
+msgid "Spindle speed:"
+msgstr "Vitesse de broche:"
+
+#: FlatCAMGUI.py:621 FlatCAMGUI.py:714 ObjectUI.py:319 ObjectUI.py:529
+msgid ""
+"Speed of the spindle\n"
+"in RPM (optional)"
+msgstr ""
+"La vitesse de la broche\n"
+"en rotation par minutes (en option)"
+
+#: FlatCAMGUI.py:629 ObjectUI.py:549
+msgid "<b>Mill Holes</b>"
+msgstr "<b>Trous de fraisage</b>"
+
+#: FlatCAMGUI.py:631 ObjectUI.py:551
+msgid "Create Geometry for milling holes."
+msgstr "Créer la géométrie pour les trous de fraisage."
+
+#: FlatCAMGUI.py:648
+msgid "Geometry Options"
+msgstr "Options Géométrie"
+
+#: FlatCAMGUI.py:662 ObjectUI.py:266
+msgid "<b>Create CNC Job:</b>"
+msgstr "<b>Créer un job CNC</b>"
+
+#: FlatCAMGUI.py:664 ObjectUI.py:268
+msgid ""
+"Create a CNC Job object\n"
+"tracing the contours of this\n"
+"Geometry object."
+msgstr ""
+"Créer un job d'objet CNC\n"
+"traçant les contours de cette\n"
+"Geometrie."
+
+#: FlatCAMGUI.py:675 ObjectUI.py:279
+msgid ""
+"Cutting depth (negative)\n"
+"below the copper surface."
+msgstr ""
+"Profondeur de coupe (négative)\n"
+"au-dessous de la surface de cuivre."
+
+#: FlatCAMGUI.py:685 ObjectUI.py:289
+msgid ""
+"Height of the tool when\n"
+"moving without cutting."
+msgstr ""
+"Hauteur de l'outil quand\n"
+"se déplaçant sans couper."
+
+#: FlatCAMGUI.py:693 ObjectUI.py:297
+msgid "Feed Rate:"
+msgstr "Vitesse d'alimentation:"
+
+#: FlatCAMGUI.py:695 ObjectUI.py:299
+msgid ""
+"Cutting speed in the XY\n"
+"plane in units per minute"
+msgstr ""
+"Vitesse de coupe dans le plan XY\n"
+" en unités par minute"
+
+#: FlatCAMGUI.py:705 ObjectUI.py:309
+msgid ""
+"The diameter of the cutting\n"
+"tool (just for display)."
+msgstr ""
+"Le diamètre de l'outil de découpe\n"
+"(juste pour l'affichage)."
+
+#: FlatCAMGUI.py:722 ObjectUI.py:358
+msgid "<b>Paint Area:</b>"
+msgstr "<b>Peinture région</b>"
+
+#: FlatCAMGUI.py:724 ObjectUI.py:360
+msgid ""
+"Creates tool paths to cover the\n"
+"whole area of a polygon (remove\n"
+"all copper). You will be asked\n"
+"to click on the desired polygon."
+msgstr ""
+"Crée des trajectoires d'outils pour couvrir le\n"
+"toute la zone d'un polygone (supprimer\n"
+"tout le cuivre). Il vous sera demandé\n"
+"cliquer sur le polygone désiré."
+
+#: FlatCAMGUI.py:737 ObjectUI.py:373
+msgid ""
+"Diameter of the tool to\n"
+"be used in the operation."
+msgstr ""
+"Diamètre de l'outil qui peux\n"
+"être utilisé dans l'opération."
+
+#: FlatCAMGUI.py:746 ObjectUI.py:382
+msgid "Overlap:"
+msgstr "Chevauchement:"
+
+#: FlatCAMGUI.py:748 ObjectUI.py:384
+msgid ""
+"How much (fraction) of the tool\n"
+"width to overlap each tool pass."
+msgstr ""
+"Combien (fraction) de l'outil\n"
+"largeur pour chevaucher chaque passage de l'outil."
+
+#: FlatCAMGUI.py:758 ObjectUI.py:394
+msgid ""
+"Distance by which to avoid\n"
+"the edges of the polygon to\n"
+"be painted."
+msgstr ""
+"Distance pour éviter\n"
+"les bords du polygone à\n"
+"être peint."
+
+#: FlatCAMGUI.py:769
+msgid "CNC Job Options"
+msgstr "CNC Options de travail"
+
+#: FlatCAMGUI.py:789 ObjectUI.py:168
+msgid ""
+"Diameter of the tool to be\n"
+"rendered in the plot."
+msgstr ""
+"Diametre de l'outil à\n"
+"rendu dans le trace."
+
+#: FlatCAMGUI.py:797 ObjectUI.py:185
+msgid "<b>Export G-Code:</b>"
+msgstr "<b>Exporter le G-Code:</b>"
+
+#: FlatCAMGUI.py:799 ObjectUI.py:187
+msgid ""
+"Export and save G-Code to\n"
+"make this object to a file."
+msgstr ""
+"Exporter et enregistrer G-Code à\n"
+"faire dans un fichier."
+
+#: FlatCAMGUI.py:805 ObjectUI.py:193
+msgid "Prepend to G-Code:"
+msgstr "Avant le G-Code"
+
+#: FlatCAMGUI.py:807
+msgid ""
+"Type here any G-Code commands you would\n"
+"like to add at the beginning of the G-Code file."
+msgstr ""
+"Tapez ici toutes commande G-Code\n"
+"à ajouter au début du fichier G-Code."
+
+#: FlatCAMGUI.py:816 ObjectUI.py:204
+msgid "Append to G-Code:"
+msgstr "Ajouter au G-Code"
+
+#: FlatCAMGUI.py:818 ObjectUI.py:206
+msgid ""
+"Type here any G-Code commands you would\n"
+"like to append to the generated file.\n"
+"I.e.: M2 (End of program)"
+msgstr ""
+"Tapez ici tout G-Code commande\n"
+"a ajouter au fichier généré.\n"
+"I.e .: M2 (Fin du programme)"
+
+#: FlatCAMGUI.py:831 ObjectUI.py:219
+msgid "Dwell:"
+msgstr "Lancement:"
+
+#: FlatCAMGUI.py:833 ObjectUI.py:221
+msgid ""
+"Pause to allow the spindle to reach its\n"
+"speed before cutting."
+msgstr ""
+"Pause pour permettre à la broche d'atteindre sa\n"
+"vitesse avant de couper."
+
+#: FlatCAMGUI.py:836 ObjectUI.py:224
+msgid "Duration [sec.]:"
+msgstr "Durée [sec.]:"
+
+#: FlatCAMGUI.py:838 ObjectUI.py:226
+msgid "Number of second to dwell."
+msgstr "Nombre de secondes pour lancement."
+
+#: FlatCAMGUI.py:860
+msgid "Units:"
+msgstr "Unites:"
+
+#: FlatCAMGUI.py:862
+msgid "inch"
+msgstr "inch"
+
+#: FlatCAMGUI.py:863
+msgid "mm"
+msgstr "mm"
+
+#: MeasurementTool.py:25
+msgid "Measurement Tool"
+msgstr "Outil de mesure"
+
+#: MeasurementTool.py:38
+msgid "Click on a reference point ..."
+msgstr "Cliquez sur un point de référence ..."
+
+#: MeasurementTool.py:80
+msgid "Click on a reference point..."
+msgstr "Cliquez sur un point de référence..."
+
+#: ObjectUI.py:30
+msgid "FlatCAM Object"
+msgstr "Objet FlatCAM"
+
+#: ObjectUI.py:54
+msgid "Name:"
+msgstr "Nom:"
+
+#: ObjectUI.py:69
+msgid "<b>Scale:</b>"
+msgstr "<b>Echelle:</b>"
+
+#: ObjectUI.py:71
+msgid "Change the size of the object."
+msgstr "Change la taille de l'objet."
+
+#: ObjectUI.py:79
+msgid "Factor:"
+msgstr "Facteur:"
+
+#: ObjectUI.py:81
+msgid ""
+"Factor by which to multiply\n"
+"geometric features of this object."
+msgstr ""
+"Facteur par lequel multiplier\n"
+"les caractéristiques géométriques de cet objet."
+
+#: ObjectUI.py:90
+msgid "Scale"
+msgstr "Echelle"
+
+#: ObjectUI.py:92
+msgid "Perform scaling operation."
+msgstr "Réalise une opération d'ecalage"
+
+#: ObjectUI.py:97
+msgid "<b>Offset:</b>"
+msgstr "<b>Offset:</b>"
+
+#: ObjectUI.py:99
+msgid "Change the position of this object."
+msgstr "Change la position de l'objet"
+
+#: ObjectUI.py:106
+msgid "Vector:"
+msgstr "Vecteur:"
+
+#: ObjectUI.py:108
+msgid ""
+"Amount by which to move the object\n"
+"in the x and y axes in (x, y) format."
+msgstr ""
+"Montant par lequel de déplacer l'objet\n"
+"dans les axes x et y au format (x, y)."
+
+#: ObjectUI.py:116
+msgid "Offset"
+msgstr "Offset"
+
+#: ObjectUI.py:118
+msgid "Perform the offset operation."
+msgstr "Réalise une opération de mise a l'echelle"
+
+#: ObjectUI.py:136
+msgid "CNC Job Object"
+msgstr "Objet de Job CNC"
+
+#: ObjectUI.py:176
+msgid "Update Plot"
+msgstr "Mise à jour du trace"
+
+#: ObjectUI.py:178
+msgid "Update the plot."
+msgstr "Mise à jour du trace"
+
+#: ObjectUI.py:195
+msgid ""
+"Type here any G-Code commands you would\n"
+"like to add to the beginning of the generated file."
+msgstr ""
+"Tapez ici toute commande G-Code G\n"
+"à ajouter au début du fichier généré."
+
+#: ObjectUI.py:236
+msgid "Export G-Code"
+msgstr "Exporter G-Code"
+
+#: ObjectUI.py:238
+msgid ""
+"Opens dialog to save G-Code\n"
+"file."
+msgstr ""
+"Ouvrir la boite de dialogue enregistrer\n"
+"le fichier G-code"
+
+#: ObjectUI.py:250
+msgid "Geometry Object"
+msgstr "Objet de geometrie"
+
+#: ObjectUI.py:327
+msgid "Multi-Depth:"
+msgstr "Multi-Profondeur:"
+
+#: ObjectUI.py:329
+msgid ""
+"Use multiple passes to limit\n"
+"the cut depth in each pass. Will\n"
+"cut multiple times until Cut Z is\n"
+"reached."
+msgstr ""
+"Utilisez plusieurs passes pour limiter\n"
+"la profondeur de coupe à chaque passage. Sera\n"
+"couper plusieurs fois jusqu'à ce que Cut Z soit\n"
+"atteint."
+
+#: ObjectUI.py:338
+msgid "Depth/pass:"
+msgstr "Dephasage/passe:"
+
+#: ObjectUI.py:340
+msgid "Depth of each pass (positive)."
+msgstr "Dephasage de recherche de passe (positive)"
+
+#: ObjectUI.py:349 ObjectUI.py:417 ObjectUI.py:542
+msgid "Generate"
+msgstr "Generer"
+
+#: ObjectUI.py:351
+msgid "Generate the CNC Job object."
+msgstr "Genere un jot d'objet CNC."
+
+#: ObjectUI.py:403
+msgid "Method:"
+msgstr "Méthode:"
+
+#: ObjectUI.py:405
+msgid ""
+"Algorithm to paint the polygon:<BR><B>Standard</B>: Fixed step inwards."
+"<BR><B>Seed-based</B>: Outwards from seed."
+msgstr ""
+"Algorithme pour peindre le polygone: <br><b>Standard</b>: Étape fixe vers "
+"l'intérieur à <br><b>base de semences.<b>: Vers l'extérieur à partir de "
+"graines."
+
+#: ObjectUI.py:411
+msgid "Standard"
+msgstr "Standard"
+
+#: ObjectUI.py:412
+msgid "Seed-based"
+msgstr "Base de semences"
+
+#: ObjectUI.py:419
+msgid ""
+"After clicking here, click inside\n"
+"the polygon you wish to be painted.\n"
+"A new Geometry object with the tool\n"
+"paths will be created."
+msgstr ""
+"Après avoir cliqué ici, cliquez à l'intérieur\n"
+"le polygone que vous souhaitez peindre.\n"
+"Un nouvel objet de la géométrie avec l'outil\n"
+"chemins seront créés."
+
+#: ObjectUI.py:433
+msgid "Excellon Object"
+msgstr "Objet Excellon"
+
+#: ObjectUI.py:457
+msgid "<b>Tools</b>"
+msgstr "<b>Outil</b>"
+
+#: ObjectUI.py:459
+msgid "Tools in this Excellon object."
+msgstr "Outil dans les objet Excellon."
+
+#: ObjectUI.py:506
+msgid "Tool change:"
+msgstr "Change d'outil:"
+
+#: ObjectUI.py:508
+msgid ""
+"Include tool-change sequence\n"
+"in G-Code (Pause for tool change)."
+msgstr ""
+"Inclure changement de séquence d'outil\n"
+"en G-Code (Pause pour le changement d'outil)."
+
+#: ObjectUI.py:516
+msgid "Tool change Z:"
+msgstr "Change d'outil Z:"
+
+#: ObjectUI.py:518
+msgid ""
+"Z-axis position (height) for\n"
+"tool change."
+msgstr ""
+"Position de l'axe Z (haut) pour\n"
+"changement d'outil."
+
+#: ObjectUI.py:537 ObjectUI.py:566
+msgid ""
+"Select from the tools section above\n"
+"the tools you want to include."
+msgstr ""
+"Sélectionnez dans la section des outils ci-dessus\n"
+"les outils que vous voulez inclure."
+
+#: ObjectUI.py:544
+msgid "Generate the CNC Job."
+msgstr "Générer un job CNC."
+
+#: ObjectUI.py:571 ObjectUI.py:658 ObjectUI.py:714 ObjectUI.py:755
+#: ObjectUI.py:783
+msgid "Generate Geometry"
+msgstr "Générer une geometrie"
+
+#: ObjectUI.py:573
+msgid ""
+"Create the Geometry Object\n"
+"for milling toolpaths."
+msgstr ""
+"Cree une géométrie d'objet\n"
+"pour l'outil de fraisage."
+
+#: ObjectUI.py:585
+msgid "Gerber Object"
+msgstr "Objet Gerber"
+
+#: ObjectUI.py:660
+msgid ""
+"Create the Geometry Object\n"
+"for isolation routing."
+msgstr ""
+"Créez la géométrie de l'objet\n"
+"pour l'isolement de routage."
+
+#: ObjectUI.py:716
+msgid ""
+"Generate the geometry for\n"
+"the board cutout."
+msgstr ""
+"Générer la géométrie pour\n"
+"la planche découpée."
+
+#: ObjectUI.py:785
+msgid "Genrate the Geometry object."
+msgstr "Génère une géométrie d'objet"
+
+#~ msgid "/locale"
+#~ msgstr "/traduction"
+
+#~ msgid "messages"
+#~ msgstr "messages"
+
+#~ msgid "Layer to be mirrorer."
+#~ msgstr "Couche à passer en mirroir"
+
+#~ msgid "label"
+#~ msgstr "étiquette"
+
+#~ msgid "X"
+#~ msgstr ""
+#~ "Spécifiez le point (x, y) e travers lequel l'axe de symétrie passe ou "
+#~ "l'objet de la géométrie contenant un rectangle que les coupes d'axe dans "
+#~ "la moitié du miroir ."
+
+#~ msgid "value"
+#~ msgstr "valeur"
+
+#~ msgid "Point"
+#~ msgstr "Point"
+
+#~ msgid "point"
+#~ msgstr "point"
+
+#~ msgid "Box"
+#~ msgstr "Zone"
+
+#~ msgid "box"
+#~ msgstr "zone"
+
+#~ msgid "Axis Location:"
+#~ msgstr "Emplacement de l'axe"
+
+#~ msgid ""
+#~ "The axis should pass through a <b>point</b> or cut a specified <b>box</b> "
+#~ "(in a Geometry object) in the middle."
+#~ msgstr ""
+#~ "L'axe doit passer par un <b> point </b> ou couper une <b>zone</b> "
+#~ "spécifiée (dans un objet de géométrie) au milieu."
+
+#~ msgid "Point/Box:"
+#~ msgstr "Point/Zone:"
+
+#~ msgid ""
+#~ "Specify the point (x, y) through which the mirror axis passes or the "
+#~ "Geometry object containing a rectangle that the mirror axis cuts in half."
+#~ msgstr ""
+#~ "Spécifiez le point (x, y) e travers lequel l'axe de symétrie passe ou "
+#~ "l'objet de la géométrie contenant un rectangle que les coupes d'axe dans "
+#~ "la moitie du miroir ."
+
+#~ msgid "Alignment Holes:"
+#~ msgstr "Trous d'alignement:"
+
+#~ msgid ""
+#~ "Alignment holes (x1, y1), (x2, y2), ... on one side of the mirror axis."
+#~ msgstr ""
+#~ "Les trous d'alignement (x1, y1), (x2, y2), ... d'un côte de l'axe de "
+#~ "symétrie."
+
+#~ msgid "Drill diam.:"
+#~ msgstr "Diamètre du foret"
+
+#~ msgid "Diameter of the drill for the alignment holes."
+#~ msgstr "Diamètre du foret pour les trous d'alignement."
+
+#~ msgid "Create Alignment Drill"
+#~ msgstr "Créer Alignement foret"
+
+#~ msgid ""
+#~ "Creates an Excellon Object containing the specified alignment holes and "
+#~ "their mirror images."
+#~ msgstr ""
+#~ "Excellon crée un objet contenant des trous d'alignement spécifiés et "
+#~ "leurs images spéculaires."
+
+#~ msgid "Mirror Object"
+#~ msgstr "Objet mirroir"
+
+#~ msgid ""
+#~ "Mirrors (flips) the specified object around the specified axis. Does not "
+#~ "create a new object, but modifies it."
+#~ msgstr ""
+#~ "Miroirs (flips) de l'objet spécifié autour de l'axe spécifié. Ne pas "
+#~ "créer un nouvel objet, mais le modifie."
+
+#~ msgid "tool"
+#~ msgstr "outil"
+
+#~ msgid "excellon"
+#~ msgstr "excellon"
+
+#~ msgid "Alignment Drills"
+#~ msgstr "Alignent du foret"
+
+#~ msgid "ERROR: Only Gerber, Excellon and Geometry objects can be mirrored."
+#~ msgstr ""
+#~ "ERREUR: Seulement Gerber, Excellon et objets géométriques peuvent être "
+#~ "inverses."
+
+#~ msgid "FlatCAM Starting..."
+#~ msgstr "FlatCAM Démarre..."
+
+#~ msgid "Checking for updates in backgroud (this is version %s)."
+#~ msgstr "Controle la mise a jour en background (Cette version est %s)(."
+
+#~ msgid "geometry"
+#~ msgstr "géometrie"
+
+#~ msgid "FlatCAM TCL Shell"
+#~ msgstr "Shell TCL FlatCAM"
+
+#~ msgid "ERROR: "
+#~ msgstr "ERREUR:"
+
+#~ msgid "plot"
+#~ msgstr "Tracé"
+
+#~ msgid "Select a Geometry Object to edit."
+#~ msgstr "Sélectionner un objet géométrique e modifier."
+
+#~ msgid "Select a Geometry Object to update."
+#~ msgstr "Sélectionnez un objet de Géométrie pour le mettre e jour."
+
+#~ msgid "Buffer Selection"
+#~ msgstr "Sélection du buffer"
+
+#~ msgid "Buffer distance:"
+#~ msgstr "Distance du buffer"
+
+#~ msgid "Buffer"
+#~ msgstr "Buffer"
+
+#~ msgid "ccw"
+#~ msgstr "SIAM"
+
+#~ msgid "Mode: "
+#~ msgstr "Mode:"
+
+#~ msgid "backspace"
+#~ msgstr "Retour de chariot"
+
+#~ msgid "control"
+#~ msgstr "contrôle"
+
+#~ msgid "Selected shape containing: "
+#~ msgstr "Sélectionner une forme contenue:"
+
+#~ msgid "Expected the app to be a FlatCAMApp.App, got %s"
+#~ msgstr "Exception de l'application FlatCAM, obtenu %s"
+
+#~ msgid "draw"
+#~ msgstr "dessin"
+
+#~ msgid "select"
+#~ msgstr "Sélection"
+
+#~ msgid "button"
+#~ msgstr "bouton"
+
+#~ msgid "constructor"
+#~ msgstr "constructeur"
+
+#~ msgid "circle"
+#~ msgstr "cercle"
+
+#~ msgid "arc"
+#~ msgstr "arc"
+
+#~ msgid "rectangle"
+#~ msgstr "rectangle"
+
+#~ msgid "polygon"
+#~ msgstr "polygone"
+
+#~ msgid "path"
+#~ msgstr "chemin"
+
+#~ msgid "move"
+#~ msgstr "bouger"
+
+#~ msgid "copy"
+#~ msgstr "copier"
+
+#~ msgid "%s is checked."
+#~ msgstr "%s est verifier"
+
+#~ msgid "%s is NOT checked."
+#~ msgstr "%s n'est pas verifier"
+
+#~ msgid "Replotting after click."
+#~ msgstr "Retrace apres clic"
+
+#~ msgid "Project"
+#~ msgstr "Projet"
+
+#~ msgid "success"
+#~ msgstr "Réussi"
+
+#~ msgid "FlatCAM Generic Tool"
+#~ msgstr "Outil générique FlatCAM"

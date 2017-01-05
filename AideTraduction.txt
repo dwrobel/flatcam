@@ -1,0 +1,50 @@
+Dans terminal
+
+cd /Users/Daniel-STP/Dropbox/Traduction/FlatCamFR
+
+/usr/local/Cellar/gettext/0.19.8.1/bin/xgettext -a *.py --output=/Users/Daniel-STP/Dropbox/Traduction/FlatCamFR/locale/fr/LC_MESSAGES/messages.po 
+
+Mise a jour du .po
+/usr/local/Cellar/gettext/0.19.8.1/bin/xgettext -ktranslate_ *.py --output=/Users/Daniel-STP/Git/FlatCAM/locale/fr/LC_MESSAGES/messagesNew.po
+
+
+
+# For the translation by Daniel Sallin Debut
+# Use translate_("txt") for translate the "txt" string
+# Using gettext for translate 
+# Using os for def a locale path
+# Using unidecode for accents compatibility
+# coding: utf8
+import gettext
+import os
+import sys
+from unidecode import unidecode
+pathname = os.path.dirname(sys.argv[0])
+localdir = os.path.abspath(pathname) + "/locale"
+gettext.install("messages", localdir)
+def translate_(txt):
+    return unicode(_(txt),'utf-8')
+# For the translation by Daniel Sallin fin
+
+
+
+REMPLACER "TexteEN" PAR translate_("TexteEN")
+
+
+unicode(_('Generate Geometry'),'utf-8')
+
+
+ self.gaps_radio = RadioSet([{'label': translate_('2 (T/B)','utf-8')), 'value': 'tb'},
+ 
+ 
+
+box			zone
+Drill		Foret
+plot		tracé
+blanc		vide
+solid		continu
+gaps		Ecarts
+Boundary	frontière
+
+unicode(_ 	par 	translate_
+),'utf-8')	par 	)

@@ -6,10 +6,26 @@ from FlatCAMObj import *
 from shapely.geometry import Point
 from shapely import affinity
 
+# For the translation by Daniel Sallin Debut
+# Use translate_("txt") for translate the "txt" string
+# Using gettext for translate 
+# Using os for def a locale path
+# Using unidecode for accents compatibility
+# coding: utf8
+import gettext
+import os
+import sys
+from unidecode import unidecode
+pathname = os.path.dirname(sys.argv[0])
+localdir = os.path.abspath(pathname) + "/locale"
+gettext.install("messages", localdir)
+def translate_(txt):
+    return unicode(_(txt),'utf-8')
+# For the translation by Daniel Sallin fin
 
 class DblSidedTool(FlatCAMTool):
 
-    toolName = "Double-Sided PCB Tool"
+    toolName = translate_("Double-Sided PCB Tool")
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -25,7 +41,7 @@ class DblSidedTool(FlatCAMTool):
         ## Layer to mirror
         self.object_combo = QtGui.QComboBox()
         self.object_combo.setModel(self.app.collection)
-        self.botlay_label = QtGui.QLabel("Bottom Layer:")
+        self.botlay_label = QtGui.QLabel(translate_("Bottom Layer:"))
         self.botlay_label.setToolTip(
             "Layer to be mirrorer."
         )
@@ -35,9 +51,9 @@ class DblSidedTool(FlatCAMTool):
         ## Axis
         self.mirror_axis = RadioSet([{'label': 'X', 'value': 'X'},
                                      {'label': 'Y', 'value': 'Y'}])
-        self.mirax_label = QtGui.QLabel("Mirror Axis:")
+        self.mirax_label = QtGui.QLabel(translate_("Mirror Axis:"))
         self.mirax_label.setToolTip(
-            "Mirror vertically (X) or horizontally (Y)."
+            translate_("Mirror vertically (X) or horizontally (Y).")
         )
         # form_layout.addRow("Mirror Axis:", self.mirror_axis)
         form_layout.addRow(self.mirax_label, self.mirror_axis)
