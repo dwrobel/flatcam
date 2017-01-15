@@ -163,7 +163,7 @@ class App(QtCore.QObject):
 
         FlatCAMVersion.setup(self)
 
-        App.log.info("FlatCAM Starting...")
+        App.log.info(translate_("FlatCAM Starting..."))
 
         ###################
         ### OS-specific ###
@@ -549,6 +549,7 @@ class App(QtCore.QObject):
         self.ui.menuoptions_transfer_p2o.triggered.connect(self.on_options_project2object)
         self.ui.menuoptions_language_en.triggered.connect(self.on_options_languageenglish)
         self.ui.menuoptions_language_fr.triggered.connect(self.on_options_languagefrench)
+        self.ui.menuoptions_language_ru.triggered.connect(self.on_options_languagerussian)
         self.ui.menuviewdisableall.triggered.connect(self.disable_plots)
         self.ui.menuviewdisableother.triggered.connect(lambda: self.disable_plots(except_current=True))
         self.ui.menuviewenable.triggered.connect(self.enable_all_plots)
@@ -710,7 +711,7 @@ class App(QtCore.QObject):
         :return: None
         """
         if not isinstance(self.collection.get_active(), FlatCAMGeometry):
-            self.info("Select a Geometry Object to edit.")
+            self.info(translate_("Select a Geometry Object to edit."))
             return
 
         self.ui.updategeo_btn.setEnabled(True)
@@ -725,7 +726,7 @@ class App(QtCore.QObject):
         """
         geo = self.collection.get_active()
         if not isinstance(geo, FlatCAMGeometry):
-            self.info("Select a Geometry Object to update.")
+            self.info(translate_("Select a Geometry Object to update."))
             return
 
         self.draw.update_fcgeometry(geo)
@@ -889,7 +890,7 @@ class App(QtCore.QObject):
         self.log.debug(parts)
         try:
             if parts[0] not in commands:
-                self.shell.append_error("Unknown command\n")
+                self.shell.append_error(translate_("Unknown command\n"))
                 return
 
             #import inspect
@@ -1136,25 +1137,25 @@ class App(QtCore.QObject):
                 logo.setPixmap(QtGui.QPixmap('share/flatcam_icon256.png'))
                 layout2.addWidget(logo, stretch=0)
 
-                title = QtGui.QLabel(
+                title = QtGui.QLabel(translate_((
                     "<font size=8><B>FlatCAM</B></font><BR>"
                     "Version {} ({})<BR>"
                     "<BR>"
                     "2D Computer-Aided Printed Circuit Board<BR>"
                     "Manufacturing.<BR>"
                     "<BR>"
-                    "(c) 2014-{} Juan Pablo Caram".format(
+                    "(c) 2014-{} Juan Pablo Caram").format(
                         version,
                         version_date_str,
                         version_year
                     )
-                )
+                ))
                 layout2.addWidget(title, stretch=1)
 
                 layout3 = QtGui.QHBoxLayout()
                 layout1.addLayout(layout3)
                 layout3.addStretch()
-                okbtn = QtGui.QPushButton("Close")
+                okbtn = QtGui.QPushButton(translate_("Close"))
                 layout3.addWidget(okbtn)
 
                 okbtn.clicked.connect(self.accept)
@@ -1191,18 +1192,18 @@ class App(QtCore.QObject):
             f.close()
         except:
             e = sys.exc_info()[0]
-            App.log.error("Could not load defaults file.")
+            App.log.error(translate_("Could not load defaults file."))
             App.log.error(str(e))
-            self.inform.emit("[error] Could not load defaults file.")
+            self.inform.emit(translate_("[error] Could not load defaults file."))
             return
 
         try:
             defaults = json.loads(options)
         except:
             e = sys.exc_info()[0]
-            App.log.error("Failed to parse defaults file.")
+            App.log.error(translate_("Failed to parse defaults file."))
             App.log.error(str(e))
-            self.inform.emit("[error] Failed to parse defaults file.")
+            self.inform.emit(translate_("[error] Failed to parse defaults file."))
             return
 
         # Update options
@@ -1215,11 +1216,11 @@ class App(QtCore.QObject):
             json.dump(defaults, f)
             f.close()
         except:
-            self.inform.emit("[error] Failed to write defaults to file.")
+            self.inform.emit(translate_("[error] Failed to write defaults to file."))
             return
 
         if not silent:
-            self.inform.emit("Defaults saved.")
+            self.inform.emit(translate_("Defaults saved."))
 
     def on_toggle_shell(self):
         """
@@ -1389,6 +1390,20 @@ class App(QtCore.QObject):
         gettext.install("messages", localdir)
         print "on_options_languagefrench"
 
+    def on_options_languagerussian(self):
+        """
+        Callback for Options->Language->Russian.
+        Change interface to Russian.
+
+        :return: None
+        """
+        self.report_usage("on_options_languagerussian")
+        pathname = os.path.dirname(sys.argv[0])
+        localdir = os.path.abspath(pathname) + "/locale"
+        gettext.translation('messages', localdir, languages=['ru'])
+        gettext.install("messages", localdir)
+        print "on_options_languagerussian"
+
     def on_options_dict_change(self, field):
         self.options_write_form_field(field)
 
@@ -1440,9 +1455,9 @@ class App(QtCore.QObject):
 
         # Changing project units. Warn user.
         msgbox = QtGui.QMessageBox()
-        msgbox.setText("<B>Change project units ...</B>")
-        msgbox.setInformativeText("Changing the units of the project causes all geometrical "
-                                  "properties of all objects to be scaled accordingly. Continue?")
+        msgbox.setText(translate_("<B>Change project units ...</B>"))
+        msgbox.setInformativeText(translate_("Changing the units of the project causes all geometrical "
+                                  "properties of all objects to be scaled accordingly. Continue?"))
         msgbox.setStandardButtons(QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok)
         msgbox.setDefaultButton(QtGui.QMessageBox.Ok)
 
@@ -1590,7 +1605,7 @@ class App(QtCore.QObject):
         # The Collection might change the name if there is a collision
         self.collection.append(obj)
 
-        self.inform.emit("Object (%s) created: %s" % (obj.kind, obj.options['name']))
+        self.inform.emit(translate_("Object (%s) created: %s") % (obj.kind, obj.options['name']))
         self.new_object_available.emit(obj)
         obj.plot()
         self.on_zoom_fit(None)
@@ -1851,7 +1866,7 @@ class App(QtCore.QObject):
         obj = self.collection.get_active()
         if obj is None:
             self.inform.emit("WARNING: No object selected.")
-            msg = "Please Select a Geometry object to export"
+            msg = translate_("Please Select a Geometry object to export")
             msgbox = QtGui.QMessageBox()
             msgbox.setInformativeText(msg)
             msgbox.setStandardButtons(QtGui.QMessageBox.Ok)
@@ -1953,7 +1968,7 @@ class App(QtCore.QObject):
         except IOError:
             exists = False
 
-        msg = "File exists. Overwrite?"
+        msg = translate_("File exists. Overwrite?")
         if exists:
             msgbox = QtGui.QMessageBox()
             msgbox.setInformativeText(msg)
@@ -2045,7 +2060,7 @@ class App(QtCore.QObject):
             self.file_opened.emit("svg", filename)
 
             # GUI feedback
-            self.inform.emit("Opened: " + filename)
+            self.inform.emit(translate_("Opened: ") + filename)
 
     def open_gerber(self, filename, follow=False, outname=None):
         """
@@ -2074,24 +2089,24 @@ class App(QtCore.QObject):
                 gerber_obj.parse_file(filename, follow=follow)
 
             except IOError:
-                app_obj.inform.emit("[error] Failed to open file: " + filename)
+                app_obj.inform.emit(translate_("[error] Failed to open file: ") + filename)
                 app_obj.progress.emit(0)
                 raise IOError('Failed to open file: ' + filename)
 
             except ParseError, e:
-                app_obj.inform.emit("[error] Failed to parse file: " + filename + ". " + e[0])
+                app_obj.inform.emit(translate_("[error] Failed to parse file: ") + filename + ". " + e[0])
                 app_obj.progress.emit(0)
                 self.log.error(str(e))
                 raise
 
             except:
-                msg = "[error] An internal error has ocurred. See shell.\n"
+                msg = translate_("[error] An internal error has ocurred. See shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
                 raise
 
             if gerber_obj.is_empty():
-                app_obj.inform.emit("[error] No geometry found in file: " + filename)
+                app_obj.inform.emit(translate_("[error] No geometry found in file: ") + filename)
                 self.collection.set_active(gerber_obj.options["name"])
                 self.collection.delete_active()
 
@@ -2117,7 +2132,7 @@ class App(QtCore.QObject):
             #proc.done()
 
             # GUI feedback
-            self.inform.emit("Opened: " + filename)
+            self.inform.emit(translate_("Opened: ") + filename)
 
     def open_excellon(self, filename, outname=None):
         """
@@ -2143,12 +2158,12 @@ class App(QtCore.QObject):
                 excellon_obj.parse_file(filename)
 
             except IOError:
-                app_obj.inform.emit("[error] Cannot open file: " + filename)
+                app_obj.inform.emit(translate_("[error] Cannot open file: ") + filename)
                 self.progress.emit(0)  # TODO: self and app_bjj mixed
                 raise IOError("Cannot open file: " + filename)
 
             except:
-                msg = "[error] An internal error has ocurred. See shell.\n"
+                msg = translate_("[error] An internal error has ocurred. See shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
                 raise
@@ -2157,13 +2172,13 @@ class App(QtCore.QObject):
                 excellon_obj.create_geometry()
 
             except:
-                msg = "[error] An internal error has ocurred. See shell.\n"
+                msg = translate_("[error] An internal error has ocurred. See shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
                 raise
 
             if excellon_obj.is_empty():
-                app_obj.inform.emit("[error] No geometry found in file: " + filename)
+                app_obj.inform.emit(translate_("[error] No geometry found in file: ") + filename)
                 self.collection.set_active(excellon_obj.options["name"])
                 self.collection.delete_active()
             #self.progress.emit(70)
@@ -2179,7 +2194,7 @@ class App(QtCore.QObject):
             self.file_opened.emit("excellon", filename)
 
             # GUI feedback
-            self.inform.emit("Opened: " + filename)
+            self.inform.emit(translate_("Opened: ") + filename)
             #self.progress.emit(100)
 
     def open_gcode(self, filename, outname=None):
@@ -2211,7 +2226,7 @@ class App(QtCore.QObject):
                 gcode = f.read()
                 f.close()
             except IOError:
-                app_obj_.inform.emit("[error] Failed to open " + filename)
+                app_obj_.inform.emit(translate_("[error] Failed to open ") + filename)
                 self.progress.emit(0)
                 raise IOError("Failed to open " + filename)
 
@@ -2234,9 +2249,9 @@ class App(QtCore.QObject):
             except Exception as e:
                 # e = sys.exc_info()
                 App.log.error(str(e))
-                self.message_dialog("Failed to create CNCJob Object",
-                                    "Attempting to create a FlatCAM CNCJob Object from " +
-                                    "G-Code file failed during processing:\n" +
+                self.message_dialog(translate_("Failed to create CNCJob Object"),
+                                    translate_("Attempting to create a FlatCAM CNCJob Object from ") +
+                                    translate_("G-Code file failed during processing:\n") +
                                     str(e[0]) + " " + str(e[1]), kind="error")
                 self.progress.emit(0)
                 self.collection.delete_active()
@@ -2246,7 +2261,7 @@ class App(QtCore.QObject):
             self.file_opened.emit("cncjob", filename)
 
             # GUI feedback
-            self.inform.emit("Opened: " + filename)
+            self.inform.emit(translate_("Opened: ") + filename)
             self.progress.emit(100)
 
     def open_project(self, filename):
@@ -2271,14 +2286,14 @@ class App(QtCore.QObject):
             f = open(filename, 'r')
         except IOError:
             App.log.error("Failed to open project file: %s" % filename)
-            self.inform.emit("[error] Failed to open project file: %s" % filename)
+            self.inform.emit(translate_("[error] Failed to open project file: %s") % filename)
             return
 
         try:
             d = json.load(f, object_hook=dict2obj)
         except:
             App.log.error("Failed to parse project file: %s" % filename)
-            self.inform.emit("[error] Failed to parse project file: %s" % filename)
+            self.inform.emit(translate_("[error] Failed to parse project file: %s") % filename)
             f.close()
             return
 
@@ -2303,7 +2318,7 @@ class App(QtCore.QObject):
             self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=False)
 
         self.plot_all()
-        self.inform.emit("Project loaded from: " + filename)
+        self.inform.emit(translate_("Project loaded from: ") + filename)
         App.log.debug("Project loaded")
 
     def propagate_defaults(self):
@@ -2395,12 +2410,12 @@ class App(QtCore.QObject):
 
         def shelp(p=None):
             if not p:
-                return "Available commands:\n" + \
+                return translate_("Available commands:\n") + \
                        '\n'.join(['  ' + cmd for cmd in sorted(commands)]) + \
-                       "\n\nType help <command_name> for usage.\n Example: help open_gerber"
+                       translate_("\n\nType help <command_name> for usage.\n Example: help open_gerber")
 
             if p not in commands:
-                return "Unknown command: %s" % p
+                return translate_("Unknown command: %s") % p
 
             return commands[p]["help"]
 
@@ -4199,14 +4214,14 @@ class App(QtCore.QObject):
             f = open(self.data_path + '/recent.json')
         except IOError:
             App.log.error("Failed to load recent item list.")
-            self.inform.emit("[error] Failed to load recent item list.")
+            self.inform.emit(translate_("[error] Failed to load recent item list."))
             return
 
         try:
             self.recent = json.load(f)
         except json.scanner.JSONDecodeError:
             App.log.error("Failed to parse recent item list.")
-            self.inform.emit("[error] Failed to parse recent item list.")
+            self.inform.emit(translate_("[error] Failed to parse recent item list."))
             f.close()
             return
         f.close()
@@ -4243,7 +4258,7 @@ class App(QtCore.QObject):
         # self.ui.recent.show()
 
     def setup_component_editor(self):
-        label = QtGui.QLabel("Choose an item from Project")
+        label = QtGui.QLabel(translate_("Choose an item from Project"))
         label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
         self.ui.selected_scroll_area.setWidget(label)
 
@@ -4349,7 +4364,7 @@ class App(QtCore.QObject):
         try:
             self.collection.get_active().read_form()
         except:
-            self.log.debug("[warning] There was no active object")
+            self.log.debug(translate_("[warning] There was no active object"))
             pass
         # Project options
         self.options_read_form()
@@ -4363,7 +4378,7 @@ class App(QtCore.QObject):
         try:
             f = open(filename, 'w')
         except IOError:
-            App.log.error("[error] Failed to open file for saving: %s", filename)
+            App.log.error(translate_("[error] Failed to open file for saving: %s"), filename)
             return
 
         # Write
@@ -4378,7 +4393,7 @@ class App(QtCore.QObject):
 
         f.close()
 
-        self.inform.emit("Project saved to: %s" % filename)
+        self.inform.emit(translate_("Project saved to: %s") % filename)
 
 # def main():
 #

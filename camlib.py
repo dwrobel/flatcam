@@ -2779,7 +2779,7 @@ class Excellon(Geometry):
                     (10 ** (len(match.group(1)) + len(match.group(2)) - 2))
             else:
                 return float(number_str) / \
-                    (10 ** (len(match.group(1)) + len(match.group(2)) - 3))
+                    (10 ** (len(match.group(1)) + len(match.group(2)) - 4)) # Correction from open imported excellon in MM
 
         else:  # Trailing
             # You must show all zeros to the right of the number and can omit

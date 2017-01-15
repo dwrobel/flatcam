@@ -57,7 +57,7 @@ class TclCommandOpenGerber(TclCommand.TclCommandSignaled):
                 gerber_obj.parse_file(filename, follow=follow)
 
             except IOError:
-                app_obj.inform.emit("[error] Failed to open file: %s " % filename)
+                app_obj.inform.emit(translate_("[error] Failed to open file: %s ") % filename)
                 app_obj.progress.emit(0)
                 self.raise_tcl_error('Failed to open file: %s' % filename)
 
@@ -92,4 +92,4 @@ class TclCommandOpenGerber(TclCommand.TclCommandSignaled):
             self.app.progress.emit(100)
 
             # GUI feedback
-            self.app.inform.emit("Opened: " + filename)
+            self.app.inform.emit(translate_("Opened: ") + filename)

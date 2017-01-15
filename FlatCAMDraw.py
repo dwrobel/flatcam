@@ -38,6 +38,8 @@ import gettext
 import os
 import sys
 from unidecode import unidecode
+import gettext_windows
+gettext_windows.setup_env()
 pathname = os.path.dirname(sys.argv[0])
 localdir = os.path.abspath(pathname) + "/locale"
 gettext.install("messages", localdir)
@@ -50,7 +52,7 @@ class BufferSelectionTool(FlatCAMTool):
     Simple input for buffer distance.
     """
 
-    toolName = "Buffer Selection"
+    toolName = translate_("Buffer Selection")
 
     def __init__(self, app, fcdraw):
         FlatCAMTool.__init__(self, app)
@@ -67,13 +69,13 @@ class BufferSelectionTool(FlatCAMTool):
 
         ## Buffer distance
         self.buffer_distance_entry = LengthEntry()
-        form_layout.addRow("Buffer distance:", self.buffer_distance_entry)
+        form_layout.addRow(translate_("Buffer distance:"), self.buffer_distance_entry)
 
         ## Buttons
         hlay = QtGui.QHBoxLayout()
         self.layout.addLayout(hlay)
         hlay.addStretch()
-        self.buffer_button = QtGui.QPushButton("Buffer")
+        self.buffer_button = QtGui.QPushButton(translate_("Buffer"))
         hlay.addWidget(self.buffer_button)
 
         self.layout.addStretch()
@@ -91,7 +93,7 @@ class PaintOptionsTool(FlatCAMTool):
     Inputs to specify how to paint the selected polygons.
     """
 
-    toolName = "Paint Options"
+    toolName = (translate_("Paint Options"))
 
     def __init__(self, app, fcdraw):
         FlatCAMTool.__init__(self, app)
@@ -108,47 +110,47 @@ class PaintOptionsTool(FlatCAMTool):
         self.layout.addLayout(form_layout)
 
         # Tool dia
-        ptdlabel = QtGui.QLabel('Tool dia:')
-        ptdlabel.setToolTip(
+        ptdlabel = QtGui.QLabel(translate_('Tool dia:'))
+        ptdlabel.setToolTip(translate_(
             "Diameter of the tool to\n"
             "be used in the operation."
-        )
+        ))
 
         self.painttooldia_entry = LengthEntry()
         form_layout.addRow(ptdlabel, self.painttooldia_entry)
 
         # Overlap
-        ovlabel = QtGui.QLabel('Overlap:')
-        ovlabel.setToolTip(
+        ovlabel = QtGui.QLabel(translate_('Overlap:'))
+        ovlabel.setToolTip(translate_(
             "How much (fraction) of the tool\n"
             "width to overlap each tool pass."
-        )
+        ))
 
         self.paintoverlap_entry = LengthEntry()
         form_layout.addRow(ovlabel, self.paintoverlap_entry)
 
         # Margin
-        marginlabel = QtGui.QLabel('Margin:')
-        marginlabel.setToolTip(
+        marginlabel = QtGui.QLabel(translate_('Margin:'))
+        marginlabel.setToolTip(translate_(
             "Distance by which to avoid\n"
             "the edges of the polygon to\n"
             "be painted."
-        )
+        ))
 
         self.paintmargin_entry = LengthEntry()
         form_layout.addRow(marginlabel, self.paintmargin_entry)
 
         # Method
-        methodlabel = QtGui.QLabel('Method:')
-        methodlabel.setToolTip(
+        methodlabel = QtGui.QLabel(translate_('Method:'))
+        methodlabel.setToolTip(translate_(
             "Algorithm to paint the polygon:<BR>"
             "<B>Standard</B>: Fixed step inwards.<BR>"
             "<B>Seed-based</B>: Outwards from seed."
-        )
+        ))
 
         self.paintmethod_combo = RadioSet([
-            {"label": "Standard", "value": "standard"},
-            {"label": "Seed-based", "value": "seed"}
+            {"label": translate_("Standard"), "value": "standard"},
+            {"label": translate_("Seed-based"), "value": "seed"}
         ])
         form_layout.addRow(methodlabel, self.paintmethod_combo)
 
@@ -156,7 +158,7 @@ class PaintOptionsTool(FlatCAMTool):
         hlay = QtGui.QHBoxLayout()
         self.layout.addLayout(hlay)
         hlay.addStretch()
-        self.paint_button = QtGui.QPushButton("Paint")
+        self.paint_button = QtGui.QPushButton(translate_("Paint"))
         hlay.addWidget(self.paint_button)
 
         self.layout.addStretch()
@@ -1484,7 +1486,7 @@ class FlatCAMDraw(QtCore.QObject):
         selected = self.get_selected()
 
         if len(selected) == 0:
-            self.app.inform.emit("[warning] Nothing selected for painting.")
+            self.app.inform.emit(translate_("[warning] Nothing selected for painting."))
             return
 
         for param in [tooldia, overlap, margin]:
