@@ -16,6 +16,8 @@ import gettext
 import os
 import sys
 from unidecode import unidecode
+import gettext_windows
+gettext_windows.setup_env()
 pathname = os.path.dirname(sys.argv[0])
 localdir = os.path.abspath(pathname) + "/locale"
 gettext.install("messages", localdir)
@@ -42,9 +44,9 @@ class DblSidedTool(FlatCAMTool):
         self.object_combo = QtGui.QComboBox()
         self.object_combo.setModel(self.app.collection)
         self.botlay_label = QtGui.QLabel(translate_("Bottom Layer:"))
-        self.botlay_label.setToolTip(
+        self.botlay_label.setToolTip(translate_(
             "Layer to be mirrorer."
-        )
+        ))
         # form_layout.addRow("Bottom Layer:", self.object_combo)
         form_layout.addRow(self.botlay_label, self.object_combo)
 
@@ -61,23 +63,23 @@ class DblSidedTool(FlatCAMTool):
         ## Axis Location
         self.axis_location = RadioSet([{'label': 'Point', 'value': 'point'},
                                        {'label': 'Box', 'value': 'box'}])
-        self.axloc_label = QtGui.QLabel("Axis Location:")
-        self.axloc_label.setToolTip(
+        self.axloc_label = QtGui.QLabel(translate_("Axis Location:"))
+        self.axloc_label.setToolTip(translate_(
             "The axis should pass through a <b>point</b> or cut "
             "a specified <b>box</b> (in a Geometry object) in "
             "the middle."
-        )
+        ))
         # form_layout.addRow("Axis Location:", self.axis_location)
         form_layout.addRow(self.axloc_label, self.axis_location)
 
         ## Point/Box
         self.point_box_container = QtGui.QVBoxLayout()
-        self.pb_label = QtGui.QLabel("Point/Box:")
-        self.pb_label.setToolTip(
+        self.pb_label = QtGui.QLabel(translate_("Point/Box:"))
+        self.pb_label.setToolTip(translate_(
             "Specify the point (x, y) through which the mirror axis "
             "passes or the Geometry object containing a rectangle "
             "that the mirror axis cuts in half."
-        )
+        ))
         # form_layout.addRow("Point/Box:", self.point_box_container)
         form_layout.addRow(self.pb_label, self.point_box_container)
 
@@ -90,38 +92,38 @@ class DblSidedTool(FlatCAMTool):
 
         ## Alignment holes
         self.alignment_holes = EvalEntry()
-        self.ah_label = QtGui.QLabel("Alignment Holes:")
-        self.ah_label.setToolTip(
+        self.ah_label = QtGui.QLabel(translate_("Alignment Holes:"))
+        self.ah_label.setToolTip(translate_(
             "Alignment holes (x1, y1), (x2, y2), ... "
             "on one side of the mirror axis."
-        )
+        ))
         form_layout.addRow(self.ah_label, self.alignment_holes)
 
         ## Drill diameter for alignment holes
         self.drill_dia = LengthEntry()
-        self.dd_label = QtGui.QLabel("Drill diam.:")
-        self.dd_label.setToolTip(
+        self.dd_label = QtGui.QLabel(translate_("Drill diam.:"))
+        self.dd_label.setToolTip(translate_(
             "Diameter of the drill for the "
             "alignment holes."
-        )
+        ))
         form_layout.addRow(self.dd_label, self.drill_dia)
 
         ## Buttons
         hlay = QtGui.QHBoxLayout()
         self.layout.addLayout(hlay)
         hlay.addStretch()
-        self.create_alignment_hole_button = QtGui.QPushButton("Create Alignment Drill")
-        self.create_alignment_hole_button.setToolTip(
+        self.create_alignment_hole_button = QtGui.QPushButton(translate_("Create Alignment Drill"))
+        self.create_alignment_hole_button.setToolTip(translate_(
             "Creates an Excellon Object containing the "
             "specified alignment holes and their mirror "
             "images."
-        )
-        self.mirror_object_button = QtGui.QPushButton("Mirror Object")
-        self.mirror_object_button.setToolTip(
+        ))
+        self.mirror_object_button = QtGui.QPushButton(translate_("Mirror Object"))
+        self.mirror_object_button.setToolTip(translate_(
             "Mirrors (flips) the specified object around "
             "the specified axis. Does not create a new "
             "object, but modifies it."
-        )
+        ))
         hlay.addWidget(self.create_alignment_hole_button)
         hlay.addWidget(self.mirror_object_button)
 

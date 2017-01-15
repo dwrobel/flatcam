@@ -1,0 +1,1655 @@
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: FlatCam\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-01-15 01:45+0400\n"
+"PO-Revision-Date: 2017-01-15 02:19+0400\n"
+"Last-Translator: Андрей Культяпов <camellan@yandex.ru>\n"
+"Language-Team: BERLOGA <dadchi@yandex.ru>\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.11\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ../../..\n"
+"X-Poedit-KeywordsList: translate_;_\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: bugs\n"
+"X-Poedit-SearchPathExcluded-1: doc\n"
+"X-Poedit-SearchPathExcluded-2: locale\n"
+
+#: DblSidedTool.py:30
+msgid "Double-Sided PCB Tool"
+msgstr "Инструмент для двухсторонних плат"
+
+#: DblSidedTool.py:46
+msgid "Bottom Layer:"
+msgstr "Нижний слой:"
+
+#: DblSidedTool.py:48
+msgid "Layer to be mirrorer."
+msgstr ""
+
+#: DblSidedTool.py:56
+msgid "Mirror Axis:"
+msgstr "Зеркальное отражение:"
+
+#: DblSidedTool.py:58
+msgid "Mirror vertically (X) or horizontally (Y)."
+msgstr "Отразить по вертикали (X) или горизонтали (Y)."
+
+#: DblSidedTool.py:66
+msgid "Axis Location:"
+msgstr ""
+
+#: DblSidedTool.py:68
+msgid ""
+"The axis should pass through a <b>point</b> or cut a specified <b>box</b> "
+"(in a Geometry object) in the middle."
+msgstr ""
+"Ось должна проходить через <b>точку</b> или вырезать указанное <b>поле</b> "
+"(в Geometry объект) в середине."
+
+#: DblSidedTool.py:77
+msgid "Point/Box:"
+msgstr "<b>Ограничительная рамка:</b>"
+
+#: DblSidedTool.py:79
+msgid ""
+"Specify the point (x, y) through which the mirror axis passes or the "
+"Geometry object containing a rectangle that the mirror axis cuts in half."
+msgstr ""
+"Укажите точку (x, y) через который проходит оси или объект Geometry, "
+"содержащий прямоугольник, оси сокращения в два раза."
+
+#: DblSidedTool.py:95
+msgid "Alignment Holes:"
+msgstr "Выравнивание отверстий:"
+
+#: DblSidedTool.py:97
+msgid "Alignment holes (x1, y1), (x2, y2), ... on one side of the mirror axis."
+msgstr "Выравнивание отверстий (x1, y1), (x 2, y2), на одной стороне оси."
+
+#: DblSidedTool.py:104
+msgid "Drill diam.:"
+msgstr ""
+
+#: DblSidedTool.py:106
+msgid "Diameter of the drill for the alignment holes."
+msgstr ""
+
+#: DblSidedTool.py:115
+msgid "Create Alignment Drill"
+msgstr ""
+
+#: DblSidedTool.py:117
+msgid ""
+"Creates an Excellon Object containing the specified alignment holes and "
+"their mirror images."
+msgstr ""
+"Создает объект Excellon, содержащий указанное выравнивание отверстий и их "
+"зеркальные изображения."
+
+#: DblSidedTool.py:121
+msgid "Mirror Object"
+msgstr "Зеркальное отражение:"
+
+#: DblSidedTool.py:123
+msgid ""
+"Mirrors (flips) the specified object around the specified axis. Does not "
+"create a new object, but modifies it."
+msgstr ""
+
+#: FlatCAMApp.py:166
+msgid "FlatCAM Starting..."
+msgstr "Запуск FlatCAM..."
+
+#: FlatCAMApp.py:609
+msgid ""
+"\n"
+"(c) 2014-{} Juan Pablo Caram\n"
+"\n"
+msgstr ""
+"\n"
+"(c) 2014-{} Juan Pablo Caram\n"
+"\n"
+
+#: FlatCAMApp.py:611
+msgid ""
+"Type help to get started.\n"
+"\n"
+msgstr ""
+"Введите help для начала работы.\n"
+"\n"
+
+#: FlatCAMApp.py:714
+msgid "Select a Geometry Object to edit."
+msgstr "Выберите объект геометрии для редактирования."
+
+#: FlatCAMApp.py:729
+msgid "Select a Geometry Object to update."
+msgstr "Выберите объект геометрии для обновления."
+
+#: FlatCAMApp.py:893
+msgid "Unknown command\n"
+msgstr "Неизвестная команда\n"
+
+#: FlatCAMApp.py:1158
+msgid "Close"
+msgstr "Закрыть"
+
+#: FlatCAMApp.py:1195
+msgid "Could not load defaults file."
+msgstr "Не удаётся загрузить файл настроек по умолчанию."
+
+#: FlatCAMApp.py:1197
+msgid "[error] Could not load defaults file."
+msgstr "[error] Не удаётся загрузить файл настроек по умолчанию."
+
+#: FlatCAMApp.py:1204
+msgid "Failed to parse defaults file."
+msgstr "Не удаётся прочитать файл настроек по умолчанию."
+
+#: FlatCAMApp.py:1206
+msgid "[error] Failed to parse defaults file."
+msgstr "[error] Не удаётся прочитать файл настроек по умолчанию."
+
+#: FlatCAMApp.py:1219
+msgid "[error] Failed to write defaults to file."
+msgstr "[error] Не удаётся создать файл настроек по умолчанию."
+
+#: FlatCAMApp.py:1223
+msgid "Defaults saved."
+msgstr "Настройки сохранены."
+
+#: FlatCAMApp.py:1458
+msgid "<B>Change project units ...</B>"
+msgstr "<B>Изменение единиц проекта ...</B>"
+
+#: FlatCAMApp.py:1459
+msgid ""
+"Changing the units of the project causes all geometrical properties of all "
+"objects to be scaled accordingly. Continue?"
+msgstr ""
+"Изменение единиц проекта изменит все геометрические свойства всех объектов . "
+"Продолжить?"
+
+#: FlatCAMApp.py:1608
+#, python-format
+msgid "Object (%s) created: %s"
+msgstr "Объект (%s) создан: %s"
+
+#: FlatCAMApp.py:1869
+msgid "Please Select a Geometry object to export"
+msgstr "Выберите объект геометрии для экспорта."
+
+#: FlatCAMApp.py:1971
+msgid "File exists. Overwrite?"
+msgstr "Файл существует. Заменить?"
+
+#: FlatCAMApp.py:2063 FlatCAMApp.py:2135 FlatCAMApp.py:2197 FlatCAMApp.py:2264
+#: tclCommands/TclCommandImportSvg.py:80 tclCommands/TclCommandOpenGerber.py:95
+msgid "Opened: "
+msgstr "Открыт: "
+
+#: FlatCAMApp.py:2092
+msgid "[error] Failed to open file: "
+msgstr "[error] Не удаётся открыть файл: "
+
+#: FlatCAMApp.py:2097
+msgid "[error] Failed to parse file: "
+msgstr "[error] Не удаётся прочитать файл: "
+
+#: FlatCAMApp.py:2103 FlatCAMApp.py:2166 FlatCAMApp.py:2175
+msgid "[error] An internal error has ocurred. See shell.\n"
+msgstr "[error] Произошла внутренняя ошибка. Посмотрите в командную строку.\n"
+
+#: FlatCAMApp.py:2109 FlatCAMApp.py:2181
+msgid "[error] No geometry found in file: "
+msgstr "[error] Не найдено геометрии в файле:"
+
+#: FlatCAMApp.py:2161
+msgid "[error] Cannot open file: "
+msgstr "[error] Ошибка открытия файла: "
+
+#: FlatCAMApp.py:2229
+msgid "[error] Failed to open "
+msgstr "[error] Ошибка открытия "
+
+#: FlatCAMApp.py:2252
+msgid "Failed to create CNCJob Object"
+msgstr "Не удалось создать объект CNCJob"
+
+#: FlatCAMApp.py:2253
+msgid "Attempting to create a FlatCAM CNCJob Object from "
+msgstr "Попытка создать объект CNCJob FlatCAM"
+
+#: FlatCAMApp.py:2254
+msgid "G-Code file failed during processing:\n"
+msgstr "Не удалось создать файл G-Code  :\n"
+
+#: FlatCAMApp.py:2289
+#, python-format
+msgid "[error] Failed to open project file: %s"
+msgstr "[error] Failed to open project file: %s"
+
+#: FlatCAMApp.py:2296
+#, python-format
+msgid "[error] Failed to parse project file: %s"
+msgstr "[error] Не удалось прочитать файл проекта: %s"
+
+#: FlatCAMApp.py:2321
+msgid "Project loaded from: "
+msgstr "Проект загружается из:"
+
+#: FlatCAMApp.py:2413
+msgid "Available commands:\n"
+msgstr "Available commands:\n"
+
+#: FlatCAMApp.py:2415
+msgid ""
+"\n"
+"\n"
+"Type help <command_name> for usage.\n"
+" Example: help open_gerber"
+msgstr ""
+"\n"
+"\n"
+"Type help <command_name> for usage.\n"
+" Example: help open_gerber"
+
+#: FlatCAMApp.py:2418
+#, python-format
+msgid "Unknown command: %s"
+msgstr "Неизвестная команда: %s"
+
+#: FlatCAMApp.py:4217
+msgid "[error] Failed to load recent item list."
+msgstr "[error] Не удалось загрузить список недавних файлов ."
+
+#: FlatCAMApp.py:4224
+msgid "[error] Failed to parse recent item list."
+msgstr "[error] Не удалось прочитать список недавних файлов."
+
+#: FlatCAMApp.py:4261
+msgid "Choose an item from Project"
+msgstr "Выберите объект из проекта"
+
+#: FlatCAMApp.py:4299
+msgid "[warning] Failed checking for latest version. Could not connect."
+msgstr ""
+"[warning] Не удалось проверить обновление программы. Отсутствует интернет "
+"подключение ."
+
+#: FlatCAMApp.py:4306
+msgid "[error] Could not parse information about latest version."
+msgstr "[error] Не удалось прочитать информацию о последней версии."
+
+#: FlatCAMApp.py:4316
+msgid "[success] FlatCAM is up to date!"
+msgstr "[success] FlatCAM в актуальном состоянии!"
+
+#: FlatCAMApp.py:4321
+msgid "Newer Version Available"
+msgstr "Доступна новая версия"
+
+#: FlatCAMApp.py:4322
+msgid "There is a newer version of FlatCAM available for download:<br><br><B>"
+msgstr "Новая версия FlatCAM доступна для загрузки:<br><br><B>"
+
+#: FlatCAMApp.py:4367
+msgid "[warning] There was no active object"
+msgstr "[warning] Там нет никакого активного объекта"
+
+#: FlatCAMApp.py:4381
+#, python-format
+msgid "[error] Failed to open file for saving: %s"
+msgstr "[error] Не удалось открыть файл для сохранения: %s"
+
+#: FlatCAMApp.py:4396
+#, python-format
+msgid "Project saved to: %s"
+msgstr "Проект сохранён в: %s"
+
+#: FlatCAMDraw.py:55
+msgid "Buffer Selection"
+msgstr "Выбор буфера"
+
+#: FlatCAMDraw.py:72
+msgid "Buffer distance:"
+msgstr "Буферное расстояние:"
+
+#: FlatCAMDraw.py:78
+msgid "Buffer"
+msgstr "Буффер"
+
+#: FlatCAMDraw.py:96
+msgid "Paint Options"
+msgstr "Параметры рисования"
+
+#: FlatCAMDraw.py:113 FlatCAMGUI.py:423 FlatCAMGUI.py:466 FlatCAMGUI.py:649
+#: FlatCAMGUI.py:717 FlatCAMGUI.py:751 FlatCAMGUI.py:852 ObjectUI.py:166
+#: ObjectUI.py:307 ObjectUI.py:371 ObjectUI.py:592 ObjectUI.py:659
+#: ObjectUI.py:711
+msgid "Tool dia:"
+msgstr "Диаметр инструмента:"
+
+#: FlatCAMDraw.py:115 FlatCAMGUI.py:753 ObjectUI.py:373
+msgid ""
+"Diameter of the tool to\n"
+"be used in the operation."
+msgstr ""
+"Диаметр инструмента\n"
+"используемого в этой операции."
+
+#: FlatCAMDraw.py:123 FlatCAMGUI.py:762 ObjectUI.py:382
+msgid "Overlap:"
+msgstr "Перекрытие:"
+
+#: FlatCAMDraw.py:125 FlatCAMGUI.py:764 ObjectUI.py:384
+msgid ""
+"How much (fraction) of the tool\n"
+"width to overlap each tool pass."
+msgstr ""
+"Размер части ширины инструмента \n"
+"который будет перекрываться за каждый проход."
+
+#: FlatCAMDraw.py:133 FlatCAMGUI.py:474 FlatCAMGUI.py:772 ObjectUI.py:392
+#: ObjectUI.py:719
+msgid "Margin:"
+msgstr "Отступ:"
+
+#: FlatCAMDraw.py:135 FlatCAMGUI.py:774 ObjectUI.py:394
+msgid ""
+"Distance by which to avoid\n"
+"the edges of the polygon to\n"
+"be painted."
+msgstr "Расстояние, которое не закрашивать до края полигона."
+
+#: FlatCAMDraw.py:144 FlatCAMGUI.py:783 ObjectUI.py:403
+msgid "Method:"
+msgstr "Метод:"
+
+#: FlatCAMDraw.py:146 FlatCAMGUI.py:785 ObjectUI.py:406
+msgid ""
+"Algorithm to paint the polygon:<BR><B>Standard</B>: Fixed step inwards."
+"<BR><B>Seed-based</B>: Outwards from seed."
+msgstr ""
+"Алгоритм отрисовки полигона:<BR><B>Стандартный</B>: Фиксированный шаг внутрь."
+"<BR><B>По кругу</B>:  От центра наружу."
+
+#: FlatCAMDraw.py:152 FlatCAMGUI.py:791 ObjectUI.py:412
+msgid "Standard"
+msgstr "Стандартный"
+
+#: FlatCAMDraw.py:153 FlatCAMGUI.py:792 ObjectUI.py:413
+msgid "Seed-based"
+msgstr "От центра по кругу"
+
+#: FlatCAMDraw.py:161
+msgid "Paint"
+msgstr "Нарисовать"
+
+#: FlatCAMDraw.py:255
+msgid "Click on 1st point..."
+msgstr "Нажмите на 1-й точке..."
+
+#: FlatCAMDraw.py:290 FlatCAMDraw.py:324
+msgid "Click on CENTER ..."
+msgstr "Нажмите на  центр ..."
+
+#: FlatCAMDraw.py:296
+msgid "Click on perimeter to complete ..."
+msgstr "Для завершения щелкните по периметру ..."
+
+#: FlatCAMDraw.py:300 FlatCAMDraw.py:350 FlatCAMDraw.py:519 FlatCAMDraw.py:647
+#: FlatCAMDraw.py:1135
+msgid "Done."
+msgstr "Готово."
+
+#: FlatCAMDraw.py:329
+msgid "cw"
+msgstr "cw"
+
+#: FlatCAMDraw.py:343 FlatCAMDraw.py:546
+msgid "Click on 1st point ..."
+msgstr "Нажмите на 1-й точке ..."
+
+#: FlatCAMDraw.py:346
+msgid "Click on 2nd point to complete ..."
+msgstr "Нажмите на 2-ю точку для завершения ..."
+
+#: FlatCAMDraw.py:357
+msgid "Direction: "
+msgstr "Направление:"
+
+#: FlatCAMDraw.py:509
+msgid "Click on 1st corner ..."
+msgstr "Нажмите на 1-ый угол ..."
+
+#: FlatCAMDraw.py:515
+msgid "Click on opposite corner to complete ..."
+msgstr "Нажмите на противоположном углу для завершения ..."
+
+#: FlatCAMDraw.py:552
+msgid "Click on next point or hit SPACE to complete ..."
+msgstr "Нажмите на следующую точку, или нажмите пробел для завершения..."
+
+#: FlatCAMDraw.py:609
+msgid "Click on geometry to select"
+msgstr "Выберите геометрию"
+
+#: FlatCAMDraw.py:632
+msgid "Click on reference point."
+msgstr "Нажмите на исходную точку."
+
+#: FlatCAMDraw.py:639
+msgid "Nothing to move."
+msgstr "Нечего перемещать."
+
+#: FlatCAMDraw.py:643
+msgid "Click on final location."
+msgstr "Щелкните конечное расположение."
+
+#: FlatCAMDraw.py:714
+msgid "Select 'Esc'"
+msgstr "Выберите 'Esc'"
+
+#: FlatCAMDraw.py:715
+msgid "Add Circle"
+msgstr "Добавить круг"
+
+#: FlatCAMDraw.py:716
+msgid "Add Arc"
+msgstr "Добавить дугу"
+
+#: FlatCAMDraw.py:717
+msgid "Add Rectangle"
+msgstr "Добавить прямоугольник"
+
+#: FlatCAMDraw.py:718
+msgid "Add Polygon"
+msgstr "Добавить полигон"
+
+#: FlatCAMDraw.py:719
+msgid "Add Path"
+msgstr "Добавить дорожку"
+
+#: FlatCAMDraw.py:720 FlatCAMDraw.py:758
+msgid "Polygon Union"
+msgstr "Сращение полигонов"
+
+#: FlatCAMDraw.py:721 FlatCAMDraw.py:759
+msgid "Polygon Intersection"
+msgstr "Пересечение полигонов"
+
+#: FlatCAMDraw.py:722
+msgid "Polygon Subtraction"
+msgstr "Вычитание полигонов"
+
+#: FlatCAMDraw.py:723 FlatCAMDraw.py:761
+msgid "Cut Path"
+msgstr "Вырезать путь"
+
+#: FlatCAMDraw.py:724
+msgid "Move Objects 'm'"
+msgstr "Переместить объект 'm'"
+
+#: FlatCAMDraw.py:725
+msgid "Copy Objects 'c'"
+msgstr "Копировать объект 'c'"
+
+#: FlatCAMDraw.py:726 FlatCAMDraw.py:764
+msgid "Delete Shape '-'"
+msgstr "Удалить фигуру '-'"
+
+#: FlatCAMDraw.py:730
+msgid "Snap to grid"
+msgstr "Привязка к сетке"
+
+#: FlatCAMDraw.py:733
+msgid "Grid X distance"
+msgstr "Размер сетки по X"
+
+#: FlatCAMDraw.py:737
+msgid "Grid Y distante"
+msgstr "Размер сетки по Y"
+
+#: FlatCAMDraw.py:740
+msgid "Snap to corner"
+msgstr "Привязка к углу"
+
+#: FlatCAMDraw.py:743
+msgid "Max. magnet distance"
+msgstr "Макс. магнит расстояние"
+
+#: FlatCAMDraw.py:750
+msgid "Drawing"
+msgstr "Графика"
+
+#: FlatCAMDraw.py:765
+msgid "Buffer selection 'b'"
+msgstr "Выбор буфера 'b'"
+
+#: FlatCAMDraw.py:766
+msgid "Paint selection"
+msgstr "Рисование выбранного"
+
+#: FlatCAMDraw.py:899
+#, python-format
+msgid "Expected a DrawToolShape, got %s"
+msgstr "Ожидается DrawToolShape, получил %s"
+
+#: FlatCAMDraw.py:902
+msgid "Shape object has empty geometry (None)"
+msgstr "Объект Shape имеет пустую геометрию (None)"
+
+#: FlatCAMDraw.py:906
+msgid "Shape objects has empty geometry ([])"
+msgstr "Объекты Shape имеет пустую геометрию ([])"
+
+#: FlatCAMDraw.py:940
+msgid "Not implemented."
+msgstr "Не реализовано."
+
+#: FlatCAMDraw.py:963
+#, python-format
+msgid "Expected a Geometry, got %s"
+msgstr "Ожидали Геометрию, получили% s"
+
+#: FlatCAMDraw.py:1034
+msgid "No active tool to respond to click!"
+msgstr "Нет активного инструмента, чтобы ответить на щелчок!"
+
+#: FlatCAMDraw.py:1142
+msgid "Cancelled."
+msgstr "Отменено."
+
+#: FlatCAMDraw.py:1162 FlatCAMDraw.py:1169
+msgid "Click on target point."
+msgstr "Нажмите на целевой точке."
+
+#: FlatCAMDraw.py:1472
+msgid "[warning] Nothing selected for buffering."
+msgstr "[warning] Ничего не выбрано для буферизации."
+
+#: FlatCAMDraw.py:1476
+msgid "[warning] Invalid distance for buffering."
+msgstr "[внимание]Недопустимое расстояние для буферизации."
+
+#: FlatCAMDraw.py:1489
+msgid "[warning] Nothing selected for painting."
+msgstr "[warning] Ничего не выбрано для рисования."
+
+#: FlatCAMGUI.py:45
+msgid "&File"
+msgstr "&Файл"
+
+#: FlatCAMGUI.py:48
+msgid "&New"
+msgstr "&Новый"
+
+#: FlatCAMGUI.py:53
+msgid "Open recent ..."
+msgstr "Открыть недавние..."
+
+#: FlatCAMGUI.py:56
+msgid "Open &Gerber ..."
+msgstr "Открыть &Gerber ..."
+
+#: FlatCAMGUI.py:60
+msgid "Open &Excellon ..."
+msgstr "Открыть &Excellon ..."
+
+#: FlatCAMGUI.py:64
+msgid "Open G-&Code ..."
+msgstr "Открыть G-&Code ..."
+
+#: FlatCAMGUI.py:68
+msgid "Open &Project ..."
+msgstr "Открыть &проект..."
+
+#: FlatCAMGUI.py:72
+msgid "Import &SVG ..."
+msgstr "Импорт &SVG ..."
+
+#: FlatCAMGUI.py:76
+msgid "Export &SVG ..."
+msgstr "Экспорт &SVG ..."
+
+#: FlatCAMGUI.py:80
+msgid "&Save Project"
+msgstr "&Сохранить проект"
+
+#: FlatCAMGUI.py:84
+msgid "Save Project &As ..."
+msgstr "Сохранить проект &как..."
+
+#: FlatCAMGUI.py:88
+msgid "Save Project C&opy ..."
+msgstr "Сохранить к&опию проекта..."
+
+#: FlatCAMGUI.py:92
+msgid "Save &Defaults"
+msgstr "Сохранить &умолчания"
+
+#: FlatCAMGUI.py:96
+msgid "&Exit"
+msgstr "&Выход"
+
+#: FlatCAMGUI.py:104
+msgid "&Edit"
+msgstr "&Правка"
+
+#: FlatCAMGUI.py:105
+msgid "New Geometry"
+msgstr "Новая геометрия"
+
+#: FlatCAMGUI.py:106 FlatCAMGUI.py:158
+msgid "Edit Geometry"
+msgstr "Редактировать геометрию"
+
+#: FlatCAMGUI.py:107 FlatCAMGUI.py:159
+msgid "Update Geometry"
+msgstr "Применить изменения"
+
+#: FlatCAMGUI.py:110
+msgid "Join Geometry"
+msgstr "Присоеденить геометрию"
+
+#: FlatCAMGUI.py:111
+msgid "Delete"
+msgstr "Удалить"
+
+#: FlatCAMGUI.py:114
+msgid "&Options"
+msgstr "&Опции"
+
+#: FlatCAMGUI.py:115
+msgid "Transfer options"
+msgstr "Параметры передачи"
+
+#: FlatCAMGUI.py:116
+msgid "Application to Project"
+msgstr "Application to Project"
+
+#: FlatCAMGUI.py:117
+msgid "Project to Application"
+msgstr "Project to Application"
+
+#: FlatCAMGUI.py:118
+msgid "Project to Object"
+msgstr "Project to Object"
+
+#: FlatCAMGUI.py:119
+msgid "Object to Project"
+msgstr "Object to Project"
+
+#: FlatCAMGUI.py:120
+msgid "Application to Object"
+msgstr "Application to Object"
+
+#: FlatCAMGUI.py:121
+msgid "Object to Application"
+msgstr "Object to Application"
+
+#: FlatCAMGUI.py:122
+msgid "Language"
+msgstr "Язык"
+
+#: FlatCAMGUI.py:123
+msgid "English"
+msgstr "Английский"
+
+#: FlatCAMGUI.py:124
+msgid "Francais"
+msgstr "Французский"
+
+#: FlatCAMGUI.py:125
+msgid "Russian"
+msgstr "Русский"
+
+#: FlatCAMGUI.py:128
+msgid "&View"
+msgstr "&Вид"
+
+#: FlatCAMGUI.py:129
+msgid "Disable all plots"
+msgstr "Отключить все участки"
+
+#: FlatCAMGUI.py:131
+msgid "Disable all plots but this one"
+msgstr "Отключить все участки кроме выбранного"
+
+#: FlatCAMGUI.py:132
+msgid "Enable all plots"
+msgstr "Включить все участки"
+
+#: FlatCAMGUI.py:136
+msgid "&Tool"
+msgstr "&Инструменты"
+
+#: FlatCAMGUI.py:138 FlatCAMGUI.py:163
+msgid "&Command Line"
+msgstr "&Командная строка"
+
+#: FlatCAMGUI.py:141
+msgid "&Help"
+msgstr "&Помощь"
+
+#: FlatCAMGUI.py:142
+msgid "About FlatCAM"
+msgstr "О программе FlatCAM"
+
+#: FlatCAMGUI.py:143
+msgid "Home"
+msgstr "Сайт программы"
+
+#: FlatCAMGUI.py:144
+msgid "Manual"
+msgstr "Справка"
+
+#: FlatCAMGUI.py:152
+msgid "&Zoom Fit"
+msgstr "&Подогнать размер"
+
+#: FlatCAMGUI.py:153
+msgid "&Zoom Out"
+msgstr "&Увеличить"
+
+#: FlatCAMGUI.py:154
+msgid "&Zoom In"
+msgstr "&Уменьшить"
+
+#: FlatCAMGUI.py:155
+msgid "&Clear Plot"
+msgstr "&Отключить все участки"
+
+#: FlatCAMGUI.py:156
+msgid "&Replot"
+msgstr "&Перерисовать объект"
+
+#: FlatCAMGUI.py:157
+msgid "New Blank Geometry"
+msgstr "Новая чистая геометрия"
+
+#: FlatCAMGUI.py:162
+msgid "&Delete"
+msgstr "&Удалить"
+
+#: FlatCAMGUI.py:182
+msgid "Project"
+msgstr "Проект"
+
+#: FlatCAMGUI.py:190
+msgid "Selected"
+msgstr "Выбранное"
+
+#: FlatCAMGUI.py:206
+msgid "APPLICATION DEFAULTS"
+msgstr "УМОЛЧАНИЯ ДЛЯ ПРИЛОЖЕНИЯ"
+
+#: FlatCAMGUI.py:207
+msgid "PROJECT OPTIONS"
+msgstr "УМОЛЧАНИЯ ДЛЯ ПРОЕКТА"
+
+#: FlatCAMGUI.py:214
+msgid "Options"
+msgstr "Опции"
+
+#: FlatCAMGUI.py:220
+msgid "Tool"
+msgstr "Инструменты"
+
+#: FlatCAMGUI.py:310 FlatCAMGUI.py:316
+msgid "Idle."
+msgstr "Нет заданий."
+
+#: FlatCAMGUI.py:340 FlatCAMGUI.py:341
+msgid "Hello!"
+msgstr "Привет!"
+
+#: FlatCAMGUI.py:384
+msgid "Gerber Options"
+msgstr "Параметры Gerber"
+
+#: FlatCAMGUI.py:387 FlatCAMGUI.py:569 FlatCAMGUI.py:663 FlatCAMGUI.py:837
+#: ObjectUI.py:151 ObjectUI.py:253 ObjectUI.py:474 ObjectUI.py:623
+msgid "<b>Plot Options:</b>"
+msgstr "<b>Параметры контура:</b>"
+
+#: FlatCAMGUI.py:393 FlatCAMGUI.py:574 FlatCAMGUI.py:667 FlatCAMGUI.py:845
+#: ObjectUI.py:159 ObjectUI.py:257 ObjectUI.py:479 ObjectUI.py:629
+msgid "Plot"
+msgstr "Контур"
+
+#: FlatCAMGUI.py:395 FlatCAMGUI.py:576 FlatCAMGUI.py:669 FlatCAMGUI.py:847
+#: ObjectUI.py:161 ObjectUI.py:259 ObjectUI.py:481 ObjectUI.py:631
+msgid "Plot (show) this object."
+msgstr "Контур (отображать) этот объект."
+
+#: FlatCAMGUI.py:400 FlatCAMGUI.py:579 ObjectUI.py:484 ObjectUI.py:636
+msgid "Solid"
+msgstr "Заливка"
+
+#: FlatCAMGUI.py:402 ObjectUI.py:638
+msgid "Solid color polygons."
+msgstr "Сплошной цвет полигонов."
+
+#: FlatCAMGUI.py:407 ObjectUI.py:643
+msgid "Multicolored"
+msgstr "Многоцветный"
+
+#: FlatCAMGUI.py:409 ObjectUI.py:645
+msgid "Draw polygons in different colors."
+msgstr "Окрашивать полигоны  разными цветами."
+
+#: FlatCAMGUI.py:414 ObjectUI.py:650
+msgid "<b>Isolation Routing:</b>"
+msgstr "<b>Изоляция разводки:</b>"
+
+#: FlatCAMGUI.py:416 ObjectUI.py:652
+msgid ""
+"Create a Geometry object with\n"
+"toolpaths to cut outside polygons."
+msgstr ""
+"Создание объекта геометрии\n"
+"с траекториям обрезки за\n"
+"пределами полигонов."
+
+#: FlatCAMGUI.py:425 FlatCAMGUI.py:468 FlatCAMGUI.py:651 ObjectUI.py:594
+#: ObjectUI.py:661 ObjectUI.py:713
+msgid "Diameter of the cutting tool."
+msgstr "Диаметр режущего инструмента."
+
+#: FlatCAMGUI.py:431 ObjectUI.py:667
+msgid "Width (# passes):"
+msgstr "Количество проходов:"
+
+#: FlatCAMGUI.py:433 ObjectUI.py:669
+msgid ""
+"Width of the isolation gap in\n"
+"number (integer) of tool widths."
+msgstr ""
+"Ширина промежутка изоляции в \n"
+"числах (целое число) ширины инструмента."
+
+#: FlatCAMGUI.py:440 ObjectUI.py:676
+msgid "Pass overlap:"
+msgstr "Перекрытие за проход:"
+
+#: FlatCAMGUI.py:442 ObjectUI.py:678
+msgid ""
+"How much (fraction of tool width)\n"
+"to overlap each pass."
+msgstr ""
+"Сколько (часть ширины инструмента)\n"
+"перекрывать за каждый проход."
+
+#: FlatCAMGUI.py:449 ObjectUI.py:686
+msgid "Combine Passes"
+msgstr "Объединить проходы"
+
+#: FlatCAMGUI.py:451 ObjectUI.py:688
+msgid "Combine all passes into one object"
+msgstr "Объединить все проходы в один объект"
+
+#: FlatCAMGUI.py:456 ObjectUI.py:701
+msgid "<b>Board cutout:</b>"
+msgstr "<b>Обрезка контура платы:</b>"
+
+#: FlatCAMGUI.py:458 ObjectUI.py:703
+msgid ""
+"Create toolpaths to cut around\n"
+"the PCB and separate it from\n"
+"the original board."
+msgstr ""
+"Создание траектории обрезки печатной платы и отделения её от\n"
+"заготовки."
+
+#: FlatCAMGUI.py:476 ObjectUI.py:721
+msgid ""
+"Distance from objects at which\n"
+"to draw the cutout."
+msgstr ""
+"Расстояние от объектов вокруг которых\n"
+"будет нарисовано очертание."
+
+#: FlatCAMGUI.py:483 ObjectUI.py:728
+msgid "Gap size:"
+msgstr "Размер перемычки:"
+
+#: FlatCAMGUI.py:485 ObjectUI.py:730
+msgid ""
+"Size of the gaps in the toolpath\n"
+"that will remain to hold the\n"
+"board in place."
+msgstr ""
+"Размер перемычек для удержания\n"
+"печатной платы в заготовке."
+
+#: FlatCAMGUI.py:493 ObjectUI.py:738
+msgid "Gaps:"
+msgstr "Тип перемычек:"
+
+#: FlatCAMGUI.py:495 ObjectUI.py:740
+msgid ""
+"Where to place the gaps, Top/Bottom\n"
+"Left/Rigt, or on all 4 sides."
+msgstr ""
+"Как будут размещены перемычки: сверху/снизу,\n"
+"слева/справа или со всех 4-х сторон."
+
+#: FlatCAMGUI.py:499 ObjectUI.py:744
+msgid "2 (T/B)"
+msgstr "2 (В/Н)"
+
+#: FlatCAMGUI.py:500 ObjectUI.py:745
+msgid "2 (L/R)"
+msgstr "2 (Л/П)"
+
+#: FlatCAMGUI.py:505 ObjectUI.py:757
+msgid "<b>Non-copper regions:</b>"
+msgstr "<b>Безмедные полигоны:</b>"
+
+#: FlatCAMGUI.py:507 ObjectUI.py:759
+msgid ""
+"Create polygons covering the\n"
+"areas without copper on the PCB.\n"
+"Equivalent to the inverse of this\n"
+"object. Can be used to remove all\n"
+"copper from a specified region."
+msgstr ""
+"Создание полигонов, охватывающих\n"
+"участки без меди на печатной плате.\n"
+"Обратный эквивалент этого\n"
+"объекта может использоваться для удаления всей\n"
+"меди из указанного региона."
+
+#: FlatCAMGUI.py:519 FlatCAMGUI.py:545 ObjectUI.py:771 ObjectUI.py:800
+msgid "Boundary Margin:"
+msgstr "Предельный отступ:"
+
+#: FlatCAMGUI.py:521 ObjectUI.py:773
+msgid ""
+"Specify the edge of the PCB\n"
+"by drawing a box around all\n"
+"objects with this minimum\n"
+"distance."
+msgstr ""
+"Обозначает край печатной платы \n"
+"рисованием прямоугольника вокруг всех \n"
+"объектов с этим минимальным \n"
+"расстоянием."
+
+#: FlatCAMGUI.py:531 FlatCAMGUI.py:554 ObjectUI.py:783 ObjectUI.py:809
+msgid "Rounded corners"
+msgstr "Закруглять углы"
+
+#: FlatCAMGUI.py:533 ObjectUI.py:785
+msgid ""
+"Creates a Geometry objects with polygons\n"
+"covering the copper-free areas of the PCB."
+msgstr ""
+"Создает объект геометрии с полигонами\n"
+"охватывающими неомедненные области печатной платы."
+
+#: FlatCAMGUI.py:539 ObjectUI.py:794
+msgid "<b>Bounding Box:</b>"
+msgstr "<b>Ограничительная рамка:</b>"
+
+#: FlatCAMGUI.py:547 ObjectUI.py:802
+msgid ""
+"Distance of the edges of the box\n"
+"to the nearest polygon."
+msgstr ""
+"Расстояние от края поля\n"
+"до ближайшего полигона."
+
+#: FlatCAMGUI.py:556 ObjectUI.py:811
+msgid ""
+"If the bounding box is \n"
+"to have rounded corners\n"
+"their radius is equal to\n"
+"the margin."
+msgstr ""
+"Если  ограничительная рамка \n"
+"имеет закругленные углы\n"
+"их радиус будет равен\n"
+"отступу."
+
+#: FlatCAMGUI.py:566
+msgid "Excellon Options"
+msgstr "Параметры сверловки отверстий"
+
+#: FlatCAMGUI.py:581 ObjectUI.py:486
+msgid "Solid circles."
+msgstr "Закрашенные круги."
+
+#: FlatCAMGUI.py:586 ObjectUI.py:503
+msgid "<b>Create CNC Job</b>"
+msgstr "<b>Создание программы для ЧПУ</b>"
+
+#: FlatCAMGUI.py:588 ObjectUI.py:505
+msgid ""
+"Create a CNC Job object\n"
+"for this drill object."
+msgstr "Создание G-Code для объекта сверловки."
+
+#: FlatCAMGUI.py:596 FlatCAMGUI.py:687 ObjectUI.py:277 ObjectUI.py:513
+msgid "Cut Z:"
+msgstr "Глубина резания:"
+
+#: FlatCAMGUI.py:598 ObjectUI.py:515
+msgid ""
+"Drill depth (negative)\n"
+"below the copper surface."
+msgstr ""
+"Глубина сверления (отрицательная) \n"
+"ниже слоя меди."
+
+#: FlatCAMGUI.py:605 FlatCAMGUI.py:697 ObjectUI.py:287 ObjectUI.py:522
+msgid "Travel Z:"
+msgstr "Отвод по Z:"
+
+#: FlatCAMGUI.py:607 ObjectUI.py:524
+msgid ""
+"Tool height when travelling\n"
+"across the XY plane."
+msgstr ""
+"Отвод инструмента при холостом ходе\n"
+"по плоскости XY."
+
+#: FlatCAMGUI.py:614 ObjectUI.py:531
+msgid "Feed rate:"
+msgstr "Скорость подачи:"
+
+#: FlatCAMGUI.py:616 ObjectUI.py:533
+msgid ""
+"Tool speed while drilling\n"
+"(in units per minute)."
+msgstr ""
+"Настройка скорости подачи при сверлении \n"
+"(в единицах в минуту)."
+
+#: FlatCAMGUI.py:623
+msgid "Toolchange Z:"
+msgstr "Смена инструмента Z :"
+
+#: FlatCAMGUI.py:625
+msgid "Tool Z where user can change drill bit\n"
+msgstr "Высота отвода по Z для смены инструмента\n"
+
+#: FlatCAMGUI.py:631 FlatCAMGUI.py:726 ObjectUI.py:317 ObjectUI.py:562
+msgid "Spindle speed:"
+msgstr "Скорость вращения шпинделя:"
+
+#: FlatCAMGUI.py:633 FlatCAMGUI.py:728 ObjectUI.py:319 ObjectUI.py:564
+msgid ""
+"Speed of the spindle\n"
+"in RPM (optional)"
+msgstr ""
+"Скорость шпинделя\n"
+"в оборотах в минуту(опционально) ."
+
+#: FlatCAMGUI.py:641 ObjectUI.py:584
+msgid "<b>Mill Holes</b>"
+msgstr "<b>Фрезеровка отверстий</b>"
+
+#: FlatCAMGUI.py:643 ObjectUI.py:586
+msgid "Create Geometry for milling holes."
+msgstr "Создание объекта геометрии для фрезерования отверстий."
+
+#: FlatCAMGUI.py:660
+msgid "Geometry Options"
+msgstr "Параметры геометрии"
+
+#: FlatCAMGUI.py:676 ObjectUI.py:266
+msgid "<b>Create CNC Job:</b>"
+msgstr "<b>Создание программы для ЧПУ:</b>"
+
+#: FlatCAMGUI.py:678 ObjectUI.py:268
+msgid ""
+"Create a CNC Job object\n"
+"tracing the contours of this\n"
+"Geometry object."
+msgstr ""
+"Создание объекта трассировки\n"
+"контуров данного объекта геометрии\n"
+"для программы ЧПУ."
+
+#: FlatCAMGUI.py:689 ObjectUI.py:279
+msgid ""
+"Cutting depth (negative)\n"
+"below the copper surface."
+msgstr ""
+"Глубина резания (отрицательная)\n"
+"ниже слоя меди."
+
+#: FlatCAMGUI.py:699 ObjectUI.py:289
+msgid ""
+"Height of the tool when\n"
+"moving without cutting."
+msgstr "Высота отвода инструмента при холостом ходе."
+
+#: FlatCAMGUI.py:707 ObjectUI.py:297
+msgid "Feed Rate:"
+msgstr "Скорость подачи:"
+
+#: FlatCAMGUI.py:709 ObjectUI.py:299
+msgid ""
+"Cutting speed in the XY\n"
+"plane in units per minute"
+msgstr ""
+"Скорость резания в плоскости XY\n"
+"в единицах в минуту."
+
+#: FlatCAMGUI.py:719 ObjectUI.py:309
+msgid ""
+"The diameter of the cutting\n"
+"tool (just for display)."
+msgstr ""
+"Диаметр режущего инструмента\n"
+"(только для отображения)."
+
+#: FlatCAMGUI.py:738 ObjectUI.py:358
+msgid "<b>Paint Area:</b>"
+msgstr "<b>Создание безмедного полигона:</b>"
+
+#: FlatCAMGUI.py:740 ObjectUI.py:360
+msgid ""
+"Creates tool paths to cover the\n"
+"whole area of a polygon (remove\n"
+"all copper). You will be asked\n"
+"to click on the desired polygon."
+msgstr ""
+"Создание пути инструмента для покрытия\n"
+"всей площади полигона(удаляется вся медь).\n"
+"Будет предложено нажать на нужный полигон."
+
+#: FlatCAMGUI.py:793
+msgid "Straight lines"
+msgstr "Прямая линия"
+
+#: FlatCAMGUI.py:798
+msgid "Connect:"
+msgstr "Подключение:"
+
+#: FlatCAMGUI.py:800
+msgid ""
+"Draw lines between resulting\n"
+"segments to minimize tool lifts."
+msgstr ""
+"Рисовать линии между результирующей сегментами\n"
+" для минимизации подъёма инструмента."
+
+#: FlatCAMGUI.py:808
+msgid "Contour:"
+msgstr "Контур:"
+
+#: FlatCAMGUI.py:810
+msgid ""
+"Cut around the perimeter of the polygon\n"
+"to trim rough edges."
+msgstr ""
+"Обрезка по периметру полигона\n"
+"обрезать неровные края."
+
+#: FlatCAMGUI.py:818
+msgid "Selection:"
+msgstr "Выбор:"
+
+#: FlatCAMGUI.py:820
+msgid "How to select the polygons to paint."
+msgstr "Как выбирать полигоны для рисования."
+
+#: FlatCAMGUI.py:825
+msgid "Single"
+msgstr "Один"
+
+#: FlatCAMGUI.py:826
+msgid "All"
+msgstr "Все"
+
+#: FlatCAMGUI.py:834
+msgid "CNC Job Options"
+msgstr "Параметры программы для ЧПУ"
+
+#: FlatCAMGUI.py:854 ObjectUI.py:168
+msgid ""
+"Diameter of the tool to be\n"
+"rendered in the plot."
+msgstr ""
+"Диаметр инструмента\n"
+" для отрисовки участков."
+
+#: FlatCAMGUI.py:862 ObjectUI.py:185
+msgid "<b>Export G-Code:</b>"
+msgstr "<b>Экспорт G-Code:</b>"
+
+#: FlatCAMGUI.py:864 ObjectUI.py:187
+msgid ""
+"Export and save G-Code to\n"
+"make this object to a file."
+msgstr ""
+"Экспорт  G-Code,\n"
+"для сохранения\n"
+"этого объекта в файл."
+
+#: FlatCAMGUI.py:870 ObjectUI.py:193
+msgid "Prepend to G-Code:"
+msgstr "Коды предобработки для G-Code:"
+
+#: FlatCAMGUI.py:872
+msgid ""
+"Type here any G-Code commands you would\n"
+"like to add at the beginning of the G-Code file."
+msgstr ""
+"Введите здесь любые команды G-Code, которые вам\n"
+"хотелось бы добавить в начале файла G-Code."
+
+#: FlatCAMGUI.py:881 ObjectUI.py:204
+msgid "Append to G-Code:"
+msgstr "Коды постобработки для G-Code:"
+
+#: FlatCAMGUI.py:883 ObjectUI.py:206
+msgid ""
+"Type here any G-Code commands you would\n"
+"like to append to the generated file.\n"
+"I.e.: M2 (End of program)"
+msgstr ""
+"Введите здесь любые G-Code команды, которые вам\n"
+"хотелось бы добавить к созданному файлу.\n"
+"например: M2 (конец программы)"
+
+#: FlatCAMGUI.py:896 ObjectUI.py:219
+msgid "Dwell:"
+msgstr "Задержка:"
+
+#: FlatCAMGUI.py:898 ObjectUI.py:221
+msgid ""
+"Pause to allow the spindle to reach its\n"
+"speed before cutting."
+msgstr ""
+"Задержка для набора оборотов шпинделя\n"
+"перед началом обработки."
+
+#: FlatCAMGUI.py:901 ObjectUI.py:224
+msgid "Duration [sec.]:"
+msgstr "Продолжительность [сек.]:"
+
+#: FlatCAMGUI.py:903 ObjectUI.py:226
+msgid "Number of second to dwell."
+msgstr "Продолжительность задержки в секундах."
+
+#: FlatCAMGUI.py:925
+msgid "Units:"
+msgstr "Единицы:"
+
+#: FlatCAMGUI.py:927
+msgid "inch"
+msgstr "дюймы"
+
+#: FlatCAMGUI.py:928
+msgid "mm"
+msgstr "мм"
+
+#: FlatCAMObj.py:473
+#, python-format
+msgid "Follow geometry created: %s"
+msgstr "Выберите  созданную геометрию: %s"
+
+#: FlatCAMObj.py:534 FlatCAMObj.py:553
+#, python-format
+msgid "Isolation geometry created: %s"
+msgstr "Создан объект геометрии для изоляции контура дорожек: %s"
+
+#: FlatCAMObj.py:757
+msgid "Diameter"
+msgstr "Диаметр"
+
+#: FlatCAMObj.py:846 FlatCAMObj.py:894
+msgid "Please select one or more tools from the list and try again."
+msgstr ""
+"Пожалуйста, выберите один или несколько инструментов из списка и попробуйте "
+"еще раз."
+
+#: FlatCAMObj.py:851
+msgid "[warning] Milling tool is larger than hole size. Cancelled."
+msgstr "[warning] Диаметр инструмента больше, чем размер отверстия. Отменено."
+
+#: FlatCAMObj.py:1126
+msgid "Saved to: "
+msgstr "Сохранено в:"
+
+#: FlatCAMObj.py:1308
+msgid "[warning] No polygon found."
+msgstr "[warning] Полигон не найден."
+
+#: FlatCAMObj.py:1311
+msgid "Painting polygon."
+msgstr "Отрисовка безмедного полигона."
+
+#: FlatCAMObj.py:1358 FlatCAMObj.py:1445
+msgid "Polygon Paint started ..."
+msgstr "Запущена отрисовка полигона ..."
+
+#: FlatCAMObj.py:1531
+msgid "Generating CNC Job."
+msgstr "Будет создан объект геометрии для создание программы для ЧПУ."
+
+#: FlatCAMObj.py:1533
+#, python-format
+msgid "CNCjob created: %s"
+msgstr "Создана программа для ЧПУ: %s"
+
+#: FlatCAMProcess.py:156
+#, python-format
+msgid "%d processes running."
+msgstr "%d процесса(ов) запущено."
+
+#: MeasurementTool.py:25
+msgid "Measurement Tool"
+msgstr "Инструмент измерения"
+
+#: MeasurementTool.py:38
+msgid "Click on a reference point ..."
+msgstr "Нажмите на точку отсчета..."
+
+#: MeasurementTool.py:80
+msgid "Click on a reference point..."
+msgstr "Нажмите на точку отсчета..."
+
+#: ObjectUI.py:30
+msgid "FlatCAM Object"
+msgstr "Объект  FlatCAM"
+
+#: ObjectUI.py:54
+msgid "Name:"
+msgstr "Имя:"
+
+#: ObjectUI.py:69
+msgid "<b>Scale:</b>"
+msgstr "<b>Масштаб:</b>"
+
+#: ObjectUI.py:71
+msgid "Change the size of the object."
+msgstr "Изменение размера объекта."
+
+#: ObjectUI.py:79
+msgid "Factor:"
+msgstr "Множитель:"
+
+#: ObjectUI.py:81
+msgid ""
+"Factor by which to multiply\n"
+"geometric features of this object."
+msgstr ""
+"Коэффециент увеличения\n"
+"масштаба объекта."
+
+#: ObjectUI.py:90
+msgid "Scale"
+msgstr "Масштабировать"
+
+#: ObjectUI.py:92
+msgid "Perform scaling operation."
+msgstr "Будет выполнена операция масштабирования."
+
+#: ObjectUI.py:97
+msgid "<b>Offset:</b>"
+msgstr "<b>Смещение:</b>"
+
+#: ObjectUI.py:99
+msgid "Change the position of this object."
+msgstr "Смена положения этого объекта."
+
+#: ObjectUI.py:106
+msgid "Vector:"
+msgstr "Вектор:"
+
+#: ObjectUI.py:108
+msgid ""
+"Amount by which to move the object\n"
+"in the x and y axes in (x, y) format."
+msgstr ""
+"Расстояние на которое можно переместить объект\n"
+"по осям X и Y в формате (x, y)."
+
+#: ObjectUI.py:116
+msgid "Offset"
+msgstr "Сместить"
+
+#: ObjectUI.py:118
+msgid "Perform the offset operation."
+msgstr "Будет произведено смещение на заданное расстояние."
+
+#: ObjectUI.py:136
+msgid "CNC Job Object"
+msgstr "Объект программы для ЧПУ"
+
+#: ObjectUI.py:176
+msgid "Update Plot"
+msgstr "Обновить контур"
+
+#: ObjectUI.py:178
+msgid "Update the plot."
+msgstr "Обновление контура."
+
+#: ObjectUI.py:195
+msgid ""
+"Type here any G-Code commands you would\n"
+"like to add to the beginning of the generated file."
+msgstr ""
+"Введите здесь любые G-Code команды, которые вы\n"
+"хотели бы добавить в начале генерируемого файла."
+
+#: ObjectUI.py:236
+msgid "Export G-Code"
+msgstr "Экспорт G-Code"
+
+#: ObjectUI.py:238
+msgid ""
+"Opens dialog to save G-Code\n"
+"file."
+msgstr ""
+"Открывает диалоговое окно для сохранения\n"
+"файла G-Code."
+
+#: ObjectUI.py:250
+msgid "Geometry Object"
+msgstr "Объект  геометрия"
+
+#: ObjectUI.py:327
+msgid "Multi-Depth:"
+msgstr "Мультипроход:"
+
+#: ObjectUI.py:329
+msgid ""
+"Use multiple passes to limit\n"
+"the cut depth in each pass. Will\n"
+"cut multiple times until Cut Z is\n"
+"reached."
+msgstr ""
+"Использовать несколько проходов, чтобы ограничить\n"
+"глубину выреза в каждом проходе.\n"
+"Будет вырезаться несколько раз, \n"
+"пока глубина резания не будет достигнута."
+
+#: ObjectUI.py:338
+msgid "Depth/pass:"
+msgstr "Шаг за проход:"
+
+#: ObjectUI.py:340
+msgid "Depth of each pass (positive)."
+msgstr "Глубина каждого прохода (положительный)."
+
+#: ObjectUI.py:349 ObjectUI.py:452 ObjectUI.py:577
+msgid "Generate"
+msgstr "Создать объект"
+
+#: ObjectUI.py:351
+msgid "Generate the CNC Job object."
+msgstr "Будет создан объект геометрии для генерации программы для ЧПУ."
+
+#: ObjectUI.py:454
+msgid ""
+"After clicking here, click inside\n"
+"the polygon you wish to be painted.\n"
+"A new Geometry object with the tool\n"
+"paths will be created."
+msgstr ""
+"После нажатия этой кнопки кликните внутри полигона, который вы хотите "
+"окрасить.\n"
+"Будет создан новый объект геометрии с траекторией движения инструмента."
+
+#: ObjectUI.py:468
+msgid "Excellon Object"
+msgstr "Объект  Excellon"
+
+#: ObjectUI.py:492
+msgid "<b>Tools</b>"
+msgstr "<b>Инструменты</b>"
+
+#: ObjectUI.py:494
+msgid "Tools in this Excellon object."
+msgstr "Инструменты в этом Excellon объекте ."
+
+#: ObjectUI.py:541
+msgid "Tool change:"
+msgstr "Смена инструмента:"
+
+#: ObjectUI.py:543
+msgid ""
+"Include tool-change sequence\n"
+"in G-Code (Pause for tool change)."
+msgstr ""
+"Включает последовательность смены инструмента\n"
+"в G-Code (Пауза для смены инструмента)."
+
+#: ObjectUI.py:551
+msgid "Tool change Z:"
+msgstr "Смена инструмента Z:"
+
+#: ObjectUI.py:553
+msgid ""
+"Z-axis position (height) for\n"
+"tool change."
+msgstr "Отвод по оси Z  для смены инструмента."
+
+#: ObjectUI.py:572 ObjectUI.py:601
+msgid ""
+"Select from the tools section above\n"
+"the tools you want to include."
+msgstr ""
+"Выберите выше в секции <b>Инструменты</b>,\n"
+" инструменты, которые вы хотите использовать."
+
+#: ObjectUI.py:579
+msgid "Generate the CNC Job."
+msgstr "Создание программы для ЧПУ."
+
+#: ObjectUI.py:606 ObjectUI.py:693 ObjectUI.py:749 ObjectUI.py:790
+#: ObjectUI.py:818
+msgid "Generate Geometry"
+msgstr "Создать объект"
+
+#: ObjectUI.py:608
+msgid ""
+"Create the Geometry Object\n"
+"for milling toolpaths."
+msgstr ""
+"Будет создан объект геометрии\n"
+"для траектории фрезерования отверстий."
+
+#: ObjectUI.py:620
+msgid "Gerber Object"
+msgstr "Объект Gerber"
+
+#: ObjectUI.py:695
+msgid ""
+"Create the Geometry Object\n"
+"for isolation routing."
+msgstr ""
+"Будет создан объект геометрии \n"
+"для изоляции контура дорожек."
+
+#: ObjectUI.py:751
+msgid ""
+"Generate the geometry for\n"
+"the board cutout."
+msgstr ""
+"Будет создан объект геометрии\n"
+"для обрезки контура."
+
+#: ObjectUI.py:820
+msgid "Genrate the Geometry object."
+msgstr "Будет создан объект геометрии для ограничительной рамки."
+
+#: tclCommands/TclCommandOpenGerber.py:60
+#, python-format
+msgid "[error] Failed to open file: %s "
+msgstr "[error] Не удаётся открыть файл: %s"
+
+#~ msgid "<font size=4><b>%s</b></font>"
+#~ msgstr "<font size=4><b>%s</b></font>"
+
+#~ msgid "Object"
+#~ msgstr "Объект  "
+
+#~ msgid "created: %s"
+#~ msgstr "создан %s"
+
+#~ msgid ""
+#~ "<font size=8><B>FlatCAM</B></font><BR>Version {} ({})<BR><BR>2D Computer-"
+#~ "Aided Printed Circuit Board<BR>Manufacturing.<BR><BR>(c) 2014-{} Juan "
+#~ "Pablo Caram<BR><BR>Translation into Russian:<BR>Kultyapov Andrey (aka "
+#~ "Camellan)"
+#~ msgstr ""
+#~ "<font size=8><B>FlatCAM</B></font><BR>Версия {} ({})<BR><BR>2D Computer-"
+#~ "Aided Printed Circuit Board<BR>Manufacturing.<BR><BR>(c) 2014-{} Juan "
+#~ "Pablo Caram<BR><BR>Автор русского перевода:<BR>Культяпов Андрей "
+#~ "( Camellan)"
+
+#~ msgid "FlatCAM is up to date!"
+#~ msgstr "FlatCAM в актуальном состоянии!"
+
+#~ msgid "available for download:<br><br>"
+#~ msgstr "доступна для загрузки:<br><br>"
+
+#~ msgid "[warning] Invalid distance for buffering"
+#~ msgstr "[warning] Неверное расстояние для буферизации"
+
+#~ msgid "Click inside the desired polygon."
+#~ msgstr "Щелкните на нужном полигоне."
+
+#~ msgid "Painting polygon..."
+#~ msgstr "Отрисовка полигона..."
+
+#~ msgid "error"
+#~ msgstr "ошибка"
+
+#~ msgid "warning"
+#~ msgstr "предупреждение"
+
+#~ msgid "info"
+#~ msgstr "информация"
+
+#~ msgid "success"
+#~ msgstr "успешно"
+
+#~ msgid "warning! No polygon found."
+#~ msgstr "предупреждение! Полигон не найден."
+
+#~ msgid "{warning} No polygon found."
+#~ msgstr "предупреждение Полигон не найден."
+
+#~ msgid "warning No polygon found."
+#~ msgstr "внимание Полигон не найден."

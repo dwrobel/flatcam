@@ -98,7 +98,7 @@ class LengthEntry(QtGui.QLineEdit):
             value = raw
             return float(eval(value))
         except KeyError:
-            value = raw
+            value = raw			
             return float(eval(value))
         except:
             log.warning("Could not parse value in entry: %s" % str(raw))
