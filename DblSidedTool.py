@@ -16,8 +16,9 @@ import gettext
 import os
 import sys
 from unidecode import unidecode
-import gettext_windows
-gettext_windows.setup_env()
+if sys.platform == 'win32':
+       import gettext_windows
+       gettext_windows.setup_env()
 pathname = os.path.dirname(sys.argv[0])
 localdir = os.path.abspath(pathname) + "/locale"
 gettext.install("messages", localdir)
@@ -31,6 +32,7 @@ class DblSidedTool(FlatCAMTool):
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
+		
 
         ## Title
         title_label = QtGui.QLabel("<font size=4><b>%s</b></font>" % self.toolName)
@@ -51,18 +53,18 @@ class DblSidedTool(FlatCAMTool):
         form_layout.addRow(self.botlay_label, self.object_combo)
 
         ## Axis
-        self.mirror_axis = RadioSet([{'label': 'X', 'value': 'X'},
-                                     {'label': 'Y', 'value': 'Y'}])
         self.mirax_label = QtGui.QLabel(translate_("Mirror Axis:"))
         self.mirax_label.setToolTip(
             translate_("Mirror vertically (X) or horizontally (Y).")
         )
+        self.mirror_axis = RadioSet([{'label': 'X', 'value': 'X'},
+                                     {'label': 'Y', 'value': 'Y'}])		
         # form_layout.addRow("Mirror Axis:", self.mirror_axis)
         form_layout.addRow(self.mirax_label, self.mirror_axis)
 
         ## Axis Location
-        self.axis_location = RadioSet([{'label': 'Point', 'value': 'point'},
-                                       {'label': 'Box', 'value': 'box'}])
+        self.axis_location = RadioSet([{'label': translate_('Point'), 'value': 'point'},
+                                       {'label': translate_('Box'), 'value': 'box'}])
         self.axloc_label = QtGui.QLabel(translate_("Axis Location:"))
         self.axloc_label.setToolTip(translate_(
             "The axis should pass through a <b>point</b> or cut "

@@ -49,6 +49,9 @@ import gettext
 import os
 import sys
 from unidecode import unidecode
+if sys.platform == 'win32':
+       import gettext_windows
+       gettext_windows.setup_env()
 pathname = os.path.dirname(sys.argv[0])
 localdir = os.path.abspath(pathname) + "/locale"
 gettext.install("messages", localdir)
@@ -958,7 +961,7 @@ class App(QtCore.QObject):
             f.close()
         except IOError:
             self.log.error("Could not load defaults file.")
-            self.inform.emit("ERROR: Could not load defaults file.")
+            self.inform.emit(translate_("ERROR: Could not load defaults file."))
             return
 
         try:
@@ -966,7 +969,7 @@ class App(QtCore.QObject):
         except:
             e = sys.exc_info()[0]
             App.log.error(str(e))
-            self.inform.emit("ERROR: Failed to parse defaults file.")
+            self.inform.emit(translate_("ERROR: Failed to parse defaults file."))
             return
         self.defaults.update(defaults)
 
@@ -1004,7 +1007,7 @@ class App(QtCore.QObject):
             f = open(self.data_path + '/recent.json', 'w')
         except IOError:
             App.log.error("Failed to open recent items file for writing.")
-            self.inform.emit('Failed to open recent files file for writing.')
+            self.inform.emit(translate_('Failed to open recent files file for writing.'))
             return
 
         #try:
@@ -1078,7 +1081,7 @@ class App(QtCore.QObject):
         # Check units and convert if necessary
         # This condition CAN be true because initialize() can change obj.units
         if self.options["units"].upper() != obj.units.upper():
-            self.inform.emit("Converting units to " + self.options["units"] + ".")
+            self.inform.emit(translate_("Converting units to ") + self.options["units"] + ".")
             obj.convert_units(self.options["units"])
             t3 = time.time()
             self.log.debug("%f seconds converting units." % (t3 - t2))
@@ -1484,7 +1487,7 @@ class App(QtCore.QObject):
             self.toggle_units_ignore = False
 
         self.options_read_form()
-        self.inform.emit("Converted units to %s" % self.options["units"])
+        self.inform.emit(translate_("Converted units to %s") % self.options["units"])
         #self.ui.units_label.setText("[" + self.options["units"] + "]")
         self.set_screen_units(self.options["units"])
 
@@ -1559,7 +1562,7 @@ class App(QtCore.QObject):
         # Remove from dictionary
         self.collection.delete_active()
 
-        self.inform.emit("Object deleted: %s" % name)
+        self.inform.emit(translate_("Object deleted: %s") % name)
 
     def on_plots_updated(self):
         """
@@ -1765,7 +1768,7 @@ class App(QtCore.QObject):
         filename = unicode(filename)
 
         if filename == "":
-            self.inform.emit("Open cancelled.")
+            self.inform.emit(translate_("Open cancelled."))
         else:
             self.worker_task.emit({'fcn': self.open_gerber,
                                    'params': [filename]})
@@ -1792,7 +1795,7 @@ class App(QtCore.QObject):
         filename = unicode(filename)
 
         if filename == "":
-            self.inform.emit("Open cancelled.")
+            self.inform.emit(translate_("Open cancelled."))
         else:
             self.worker_task.emit({'fcn': self.open_excellon,
                                    'params': [filename]})
@@ -1819,7 +1822,7 @@ class App(QtCore.QObject):
         filename = unicode(filename)
 
         if filename == "":
-            self.inform.emit("Open cancelled.")
+            self.inform.emit(translate_("Open cancelled."))
         else:
             self.worker_task.emit({'fcn': self.open_gcode,
                                    'params': [filename]})
@@ -1846,7 +1849,7 @@ class App(QtCore.QObject):
         filename = unicode(filename)
 
         if filename == "":
-            self.inform.emit("Open cancelled.")
+            self.inform.emit(translate_("Open cancelled."))
         else:
             # self.worker_task.emit({'fcn': self.open_project,
             #                        'params': [filename]})
@@ -1865,7 +1868,7 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit("WARNING: No object selected.")
+            self.inform.emit(translate_("WARNING: No object selected."))
             msg = translate_("Please Select a Geometry object to export")
             msgbox = QtGui.QMessageBox()
             msgbox.setInformativeText(msg)
@@ -1896,7 +1899,7 @@ class App(QtCore.QObject):
         filename = unicode(filename)
 
         if filename == "":
-            self.inform.emit("Export SVG cancelled.")
+            self.inform.emit(translate_("Export SVG cancelled."))
             return
         else:
             self.export_svg(name, filename)
@@ -1919,7 +1922,7 @@ class App(QtCore.QObject):
         filename = unicode(filename)
 
         if filename == "":
-            self.inform.emit("Open cancelled.")
+            self.inform.emit(translate_("Open cancelled."))
         else:
             self.worker_task.emit({'fcn': self.import_svg,
                                    'params': [filename]})
@@ -1940,7 +1943,7 @@ class App(QtCore.QObject):
         else:
             self.save_project(self.project_filename)
             self.file_opened.emit("project", self.project_filename)
-            self.inform.emit("Project saved to: " + self.project_filename)
+            self.inform.emit(translate_("Project saved to: ") + self.project_filename)
 
     def on_file_saveprojectas(self, make_copy=False):
         """
@@ -1954,10 +1957,10 @@ class App(QtCore.QObject):
         self.report_usage("on_file_saveprojectas")
 
         try:
-            filename = QtGui.QFileDialog.getSaveFileName(caption="Save Project As ...",
+            filename = QtGui.QFileDialog.getSaveFileName(caption=translate_("Save Project As ..."),
                                                          directory=self.get_last_folder())
         except TypeError:
-            filename = QtGui.QFileDialog.getSaveFileName(caption="Save Project As ...")
+            filename = QtGui.QFileDialog.getSaveFileName(caption=translate_("Save Project As ..."))
 
         filename = unicode(filename)
 
@@ -1983,9 +1986,9 @@ class App(QtCore.QObject):
 
         if not make_copy:
             self.project_filename = filename
-            self.inform.emit("Project saved to: " + self.project_filename)
+            self.inform.emit(translate_("Project saved to: ") + self.project_filename)
         else:
-            self.inform.emit("Project copy saved to: " + self.project_filename)
+            self.inform.emit(translate_("Project copy saved to: ") + self.project_filename)
 
     def export_svg(self, obj_name, filename, scale_factor=0.00):
         """
