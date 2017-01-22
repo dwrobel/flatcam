@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FlatCam\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-15 01:45+0400\n"
-"PO-Revision-Date: 2017-01-15 02:19+0400\n"
+"POT-Creation-Date: 2017-01-15 20:35+0400\n"
+"PO-Revision-Date: 2017-01-15 21:00+0400\n"
 "Last-Translator: Андрей Культяпов <camellan@yandex.ru>\n"
 "Language-Team: BERLOGA <dadchi@yandex.ru>\n"
 "Language: ru\n"
@@ -35,19 +35,27 @@ msgstr "Нижний слой:"
 
 #: DblSidedTool.py:48
 msgid "Layer to be mirrorer."
-msgstr ""
+msgstr "Слой который будет зеркалироваться."
 
-#: DblSidedTool.py:56
+#: DblSidedTool.py:54
 msgid "Mirror Axis:"
 msgstr "Зеркальное отражение:"
 
-#: DblSidedTool.py:58
+#: DblSidedTool.py:56
 msgid "Mirror vertically (X) or horizontally (Y)."
 msgstr "Отразить по вертикали (X) или горизонтали (Y)."
 
+#: DblSidedTool.py:64
+msgid "Point"
+msgstr "Точка"
+
+#: DblSidedTool.py:65
+msgid "Box"
+msgstr "Поле"
+
 #: DblSidedTool.py:66
 msgid "Axis Location:"
-msgstr ""
+msgstr "Расположение оси:"
 
 #: DblSidedTool.py:68
 msgid ""
@@ -79,39 +87,41 @@ msgstr "Выравнивание отверстий (x1, y1), (x 2, y2), на о
 
 #: DblSidedTool.py:104
 msgid "Drill diam.:"
-msgstr ""
+msgstr "Диам. сверла.:"
 
 #: DblSidedTool.py:106
 msgid "Diameter of the drill for the alignment holes."
-msgstr ""
+msgstr "Диаметр сверла для контрольных отверстий."
 
 #: DblSidedTool.py:115
 msgid "Create Alignment Drill"
-msgstr ""
+msgstr "Создать контрольные отверстия"
 
 #: DblSidedTool.py:117
 msgid ""
 "Creates an Excellon Object containing the specified alignment holes and "
 "their mirror images."
 msgstr ""
-"Создает объект Excellon, содержащий указанное выравнивание отверстий и их "
-"зеркальные изображения."
+"Создаёт объект Excellon, содержащий контрольные отверстия и их зеркальные "
+"изображения."
 
 #: DblSidedTool.py:121
 msgid "Mirror Object"
-msgstr "Зеркальное отражение:"
+msgstr "Зеркалировать"
 
 #: DblSidedTool.py:123
 msgid ""
 "Mirrors (flips) the specified object around the specified axis. Does not "
 "create a new object, but modifies it."
 msgstr ""
+"Зеркалирует (переворачивает) указанный объект вокруг заданной оси. Не "
+"создаёт новый объект, но изменяет его."
 
-#: FlatCAMApp.py:166
+#: FlatCAMApp.py:168
 msgid "FlatCAM Starting..."
 msgstr "Запуск FlatCAM..."
 
-#: FlatCAMApp.py:609
+#: FlatCAMApp.py:611
 msgid ""
 "\n"
 "(c) 2014-{} Juan Pablo Caram\n"
@@ -121,7 +131,7 @@ msgstr ""
 "(c) 2014-{} Juan Pablo Caram\n"
 "\n"
 
-#: FlatCAMApp.py:611
+#: FlatCAMApp.py:613
 msgid ""
 "Type help to get started.\n"
 "\n"
@@ -129,51 +139,67 @@ msgstr ""
 "Введите help для начала работы.\n"
 "\n"
 
-#: FlatCAMApp.py:714
+#: FlatCAMApp.py:716
 msgid "Select a Geometry Object to edit."
 msgstr "Выберите объект геометрии для редактирования."
 
-#: FlatCAMApp.py:729
+#: FlatCAMApp.py:731
 msgid "Select a Geometry Object to update."
 msgstr "Выберите объект геометрии для обновления."
 
-#: FlatCAMApp.py:893
+#: FlatCAMApp.py:895
 msgid "Unknown command\n"
 msgstr "Неизвестная команда\n"
 
-#: FlatCAMApp.py:1158
+#: FlatCAMApp.py:963
+msgid "ERROR: Could not load defaults file."
+msgstr "ОШИБКА: Не удаётся загрузить файл настроек по умолчанию."
+
+#: FlatCAMApp.py:971
+msgid "ERROR: Failed to parse defaults file."
+msgstr "ОШИБКА: Не удаётся прочитать файл настроек по умолчанию."
+
+#: FlatCAMApp.py:1009
+msgid "Failed to open recent files file for writing."
+msgstr "Не удалось открыть файл истории файлов для записи."
+
+#: FlatCAMApp.py:1083
+msgid "Converting units to "
+msgstr "Конвертирование единиц в "
+
+#: FlatCAMApp.py:1160
 msgid "Close"
 msgstr "Закрыть"
 
-#: FlatCAMApp.py:1195
+#: FlatCAMApp.py:1197
 msgid "Could not load defaults file."
 msgstr "Не удаётся загрузить файл настроек по умолчанию."
 
-#: FlatCAMApp.py:1197
+#: FlatCAMApp.py:1199
 msgid "[error] Could not load defaults file."
 msgstr "[error] Не удаётся загрузить файл настроек по умолчанию."
 
-#: FlatCAMApp.py:1204
+#: FlatCAMApp.py:1206
 msgid "Failed to parse defaults file."
 msgstr "Не удаётся прочитать файл настроек по умолчанию."
 
-#: FlatCAMApp.py:1206
+#: FlatCAMApp.py:1208
 msgid "[error] Failed to parse defaults file."
 msgstr "[error] Не удаётся прочитать файл настроек по умолчанию."
 
-#: FlatCAMApp.py:1219
+#: FlatCAMApp.py:1221
 msgid "[error] Failed to write defaults to file."
 msgstr "[error] Не удаётся создать файл настроек по умолчанию."
 
-#: FlatCAMApp.py:1223
+#: FlatCAMApp.py:1225
 msgid "Defaults saved."
 msgstr "Настройки сохранены."
 
-#: FlatCAMApp.py:1458
+#: FlatCAMApp.py:1460
 msgid "<B>Change project units ...</B>"
 msgstr "<B>Изменение единиц проекта ...</B>"
 
-#: FlatCAMApp.py:1459
+#: FlatCAMApp.py:1461
 msgid ""
 "Changing the units of the project causes all geometrical properties of all "
 "objects to be scaled accordingly. Continue?"
@@ -181,79 +207,114 @@ msgstr ""
 "Изменение единиц проекта изменит все геометрические свойства всех объектов . "
 "Продолжить?"
 
-#: FlatCAMApp.py:1608
+#: FlatCAMApp.py:1489
+#, python-format
+msgid "Converted units to %s"
+msgstr "Конвертирование единиц в %s"
+
+#: FlatCAMApp.py:1564
+#, python-format
+msgid "Object deleted: %s"
+msgstr "Объект удалён: %s"
+
+#: FlatCAMApp.py:1610
 #, python-format
 msgid "Object (%s) created: %s"
 msgstr "Объект (%s) создан: %s"
 
-#: FlatCAMApp.py:1869
+#: FlatCAMApp.py:1770 FlatCAMApp.py:1797 FlatCAMApp.py:1824 FlatCAMApp.py:1851
+#: FlatCAMApp.py:1924
+msgid "Open cancelled."
+msgstr "Открытие завершено."
+
+#: FlatCAMApp.py:1870
+msgid "WARNING: No object selected."
+msgstr "Внимание: Нет выбранных объектов."
+
+#: FlatCAMApp.py:1871
 msgid "Please Select a Geometry object to export"
 msgstr "Выберите объект геометрии для экспорта."
 
-#: FlatCAMApp.py:1971
+#: FlatCAMApp.py:1901
+msgid "Export SVG cancelled."
+msgstr "Экспорт SVG завершён."
+
+#: FlatCAMApp.py:1945 FlatCAMApp.py:1988
+msgid "Project saved to: "
+msgstr "Проект сохранён в: "
+
+#: FlatCAMApp.py:1959 FlatCAMApp.py:1962
+msgid "Save Project As ..."
+msgstr "Сохранить проект как ..."
+
+#: FlatCAMApp.py:1973
 msgid "File exists. Overwrite?"
 msgstr "Файл существует. Заменить?"
 
-#: FlatCAMApp.py:2063 FlatCAMApp.py:2135 FlatCAMApp.py:2197 FlatCAMApp.py:2264
+#: FlatCAMApp.py:1990
+msgid "Project copy saved to: "
+msgstr "Копия проекта сохранёна в: "
+
+#: FlatCAMApp.py:2065 FlatCAMApp.py:2137 FlatCAMApp.py:2199 FlatCAMApp.py:2266
 #: tclCommands/TclCommandImportSvg.py:80 tclCommands/TclCommandOpenGerber.py:95
 msgid "Opened: "
 msgstr "Открыт: "
 
-#: FlatCAMApp.py:2092
+#: FlatCAMApp.py:2094
 msgid "[error] Failed to open file: "
 msgstr "[error] Не удаётся открыть файл: "
 
-#: FlatCAMApp.py:2097
+#: FlatCAMApp.py:2099
 msgid "[error] Failed to parse file: "
 msgstr "[error] Не удаётся прочитать файл: "
 
-#: FlatCAMApp.py:2103 FlatCAMApp.py:2166 FlatCAMApp.py:2175
+#: FlatCAMApp.py:2105 FlatCAMApp.py:2168 FlatCAMApp.py:2177
 msgid "[error] An internal error has ocurred. See shell.\n"
 msgstr "[error] Произошла внутренняя ошибка. Посмотрите в командную строку.\n"
 
-#: FlatCAMApp.py:2109 FlatCAMApp.py:2181
+#: FlatCAMApp.py:2111 FlatCAMApp.py:2183
 msgid "[error] No geometry found in file: "
 msgstr "[error] Не найдено геометрии в файле:"
 
-#: FlatCAMApp.py:2161
+#: FlatCAMApp.py:2163
 msgid "[error] Cannot open file: "
 msgstr "[error] Ошибка открытия файла: "
 
-#: FlatCAMApp.py:2229
+#: FlatCAMApp.py:2231
 msgid "[error] Failed to open "
 msgstr "[error] Ошибка открытия "
 
-#: FlatCAMApp.py:2252
+#: FlatCAMApp.py:2254
 msgid "Failed to create CNCJob Object"
 msgstr "Не удалось создать объект CNCJob"
 
-#: FlatCAMApp.py:2253
+#: FlatCAMApp.py:2255
 msgid "Attempting to create a FlatCAM CNCJob Object from "
 msgstr "Попытка создать объект CNCJob FlatCAM"
 
-#: FlatCAMApp.py:2254
+#: FlatCAMApp.py:2256
 msgid "G-Code file failed during processing:\n"
 msgstr "Не удалось создать файл G-Code  :\n"
 
-#: FlatCAMApp.py:2289
+#: FlatCAMApp.py:2291
 #, python-format
 msgid "[error] Failed to open project file: %s"
 msgstr "[error] Failed to open project file: %s"
 
-#: FlatCAMApp.py:2296
+#: FlatCAMApp.py:2298
 #, python-format
 msgid "[error] Failed to parse project file: %s"
 msgstr "[error] Не удалось прочитать файл проекта: %s"
 
-#: FlatCAMApp.py:2321
+#: FlatCAMApp.py:2323
 msgid "Project loaded from: "
 msgstr "Проект загружается из:"
 
-#: FlatCAMApp.py:2413
+#: FlatCAMApp.py:2415
 msgid "Available commands:\n"
 msgstr "Available commands:\n"
 
-#: FlatCAMApp.py:2415
+#: FlatCAMApp.py:2417
 msgid ""
 "\n"
 "\n"
@@ -265,55 +326,55 @@ msgstr ""
 "Type help <command_name> for usage.\n"
 " Example: help open_gerber"
 
-#: FlatCAMApp.py:2418
+#: FlatCAMApp.py:2420
 #, python-format
 msgid "Unknown command: %s"
 msgstr "Неизвестная команда: %s"
 
-#: FlatCAMApp.py:4217
+#: FlatCAMApp.py:4219
 msgid "[error] Failed to load recent item list."
 msgstr "[error] Не удалось загрузить список недавних файлов ."
 
-#: FlatCAMApp.py:4224
+#: FlatCAMApp.py:4226
 msgid "[error] Failed to parse recent item list."
 msgstr "[error] Не удалось прочитать список недавних файлов."
 
-#: FlatCAMApp.py:4261
+#: FlatCAMApp.py:4263
 msgid "Choose an item from Project"
 msgstr "Выберите объект из проекта"
 
-#: FlatCAMApp.py:4299
+#: FlatCAMApp.py:4301
 msgid "[warning] Failed checking for latest version. Could not connect."
 msgstr ""
 "[warning] Не удалось проверить обновление программы. Отсутствует интернет "
 "подключение ."
 
-#: FlatCAMApp.py:4306
+#: FlatCAMApp.py:4308
 msgid "[error] Could not parse information about latest version."
 msgstr "[error] Не удалось прочитать информацию о последней версии."
 
-#: FlatCAMApp.py:4316
+#: FlatCAMApp.py:4318
 msgid "[success] FlatCAM is up to date!"
 msgstr "[success] FlatCAM в актуальном состоянии!"
 
-#: FlatCAMApp.py:4321
+#: FlatCAMApp.py:4323
 msgid "Newer Version Available"
 msgstr "Доступна новая версия"
 
-#: FlatCAMApp.py:4322
+#: FlatCAMApp.py:4324
 msgid "There is a newer version of FlatCAM available for download:<br><br><B>"
 msgstr "Новая версия FlatCAM доступна для загрузки:<br><br><B>"
 
-#: FlatCAMApp.py:4367
+#: FlatCAMApp.py:4369
 msgid "[warning] There was no active object"
 msgstr "[warning] Там нет никакого активного объекта"
 
-#: FlatCAMApp.py:4381
+#: FlatCAMApp.py:4383
 #, python-format
 msgid "[error] Failed to open file for saving: %s"
 msgstr "[error] Не удалось открыть файл для сохранения: %s"
 
-#: FlatCAMApp.py:4396
+#: FlatCAMApp.py:4398
 #, python-format
 msgid "Project saved to: %s"
 msgstr "Проект сохранён в: %s"
