@@ -34,12 +34,13 @@ from rtree import index as rtindex
 # Using os for def a locale path
 # Using unidecode for accents compatibility
 # coding: utf8
-import gettext
 import os
 import sys
+import gettext
 from unidecode import unidecode
-import gettext_windows
-gettext_windows.setup_env()
+if sys.platform == 'win32':
+       import gettext_windows
+       gettext_windows.setup_env()	   
 pathname = os.path.dirname(sys.argv[0])
 localdir = os.path.abspath(pathname) + "/locale"
 gettext.install("messages", localdir)
