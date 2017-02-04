@@ -50,4 +50,4 @@ class TclCommandOffset(TclCommand.TclCommand):
         name = args['name']
         x, y = args['x'], args['y']
 
-        self.app.collection.get_by_name(name).offset(x, y)
+        self.app.collection.get_by_name(name).offset((x, y))
