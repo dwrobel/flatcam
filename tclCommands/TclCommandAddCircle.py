@@ -11,7 +11,7 @@ class TclCommandAddCircle(TclCommand.TclCommand):
     """
 
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
-    aliases = ['export_svg']
+    aliases = ['add_circle']
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -49,17 +49,17 @@ class TclCommandAddCircle(TclCommand.TclCommand):
         :return:
         """
 
-        name = args['name']
+        obj_name = args['name']
         center_x = args['center_x']
         center_y = args['center_y']
         radius = args['radius']
 
         try:
-            obj = self.collection.get_by_name(name)
+            obj = self.app.collection.get_by_name(str(obj_name))
         except:
-            return "Could not retrieve object: %s" % name
+            return "Could not retrieve object: %s" % obj_name
         if obj is None:
-            return "Object not found: %s" % name
+            return "Object not found: %s" % obj_name
 
         obj.add_circle([float(center_x), float(center_y)], float(radius))
 
