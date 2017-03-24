@@ -1056,10 +1056,10 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.read_form()
 
         try:
-            filename = QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ...",
-                                                         directory=self.app.defaults["last_folder"])
+            filename = unicode(QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ...",
+                                                         directory=self.app.defaults["last_folder"]))
         except TypeError:
-            filename = QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ...")
+            filename = unicode(QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ..."))
 
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
