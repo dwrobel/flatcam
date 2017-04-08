@@ -32,6 +32,7 @@ from FlatCAMObj import *
 from PlotCanvas import *
 from FlatCAMGUI import *
 from FlatCAMCommon import LoudDict
+from FlatCAMPostProc import load_postprocessors
 from FlatCAMShell import FCShell
 from FlatCAMDraw import FlatCAMDraw
 from FlatCAMProcess import *
@@ -172,6 +173,14 @@ class App(QtCore.QObject):
         if not os.path.exists(self.data_path):
             os.makedirs(self.data_path)
             App.log.debug('Created data folder: ' + self.data_path)
+            os.makedirs(os.path.join(self.data_path, 'postprocessors'))
+            App.log.debug('Created data postprocessors folder: ' + os.path.join(self.data_path, 'postprocessors'))
+
+        self.postprocessorpaths = os.path.join(self.data_path,'postprocessors')
+        if not os.path.exists(self.postprocessorpaths):
+            os.makedirs(self.postprocessorpaths)
+            App.log.debug('Created postprocessors folder: ' + self.postprocessorpaths)
+
 
         try:
             f = open(self.data_path + '/defaults.json')
@@ -273,6 +282,7 @@ class App(QtCore.QObject):
             "geometry_selectmethod": self.defaults_form.geometry_group.selectmethod_combo,
             "geometry_pathconnect": self.defaults_form.geometry_group.pathconnect_cb,
             "geometry_paintcontour": self.defaults_form.geometry_group.contour_cb,
+            "cncjob_postprocessor_name": self.defaults_form.cncjob_group.postprocessor_name_entry,
             "cncjob_plot": self.defaults_form.cncjob_group.plot_cb,
             "cncjob_tooldia": self.defaults_form.cncjob_group.tooldia_entry,
             "cncjob_prepend": self.defaults_form.cncjob_group.prepend_text,
@@ -280,6 +290,11 @@ class App(QtCore.QObject):
             "cncjob_dwell": self.defaults_form.cncjob_group.dwell_cb,
             "cncjob_dwelltime": self.defaults_form.cncjob_group.dwelltime_cb
         }
+        # loads postprocessors
+        self.postprocessors = load_postprocessors(self)
+        for name in self.postprocessors.keys():
+            self.defaults_form.cncjob_group.postprocessor_name_entry.addItem(name)
+
 
         self.defaults = LoudDict()
         self.defaults.set_change_callback(self.on_defaults_dict_change)  # When the dictionary changes.
@@ -354,7 +369,8 @@ class App(QtCore.QObject):
             "zdownrate": None,
             "excellon_zeros": "L",
             "gerber_use_buffer_for_union": True,
-            "cncjob_coordinate_format": "X%.4fY%.4f"
+            "cncjob_coordinate_format": "X%.4fY%.4f",
+            "cncjob_postprocessor_name":'default'
         })
 
         ###############################
@@ -418,7 +434,8 @@ class App(QtCore.QObject):
             "cncjob_plot": self.options_form.cncjob_group.plot_cb,
             "cncjob_tooldia": self.options_form.cncjob_group.tooldia_entry,
             "cncjob_prepend": self.options_form.cncjob_group.prepend_text,
-            "cncjob_append": self.options_form.cncjob_group.append_text
+            "cncjob_append": self.options_form.cncjob_group.append_text,
+            "cncjob_postprocessor_name": self.options_form.cncjob_group.postprocessor_name_entry,
         }
 
         self.options = LoudDict()
@@ -462,6 +479,7 @@ class App(QtCore.QObject):
             "cncjob_tooldia": 0.016,
             "cncjob_prepend": "",
             "cncjob_append": "",
+            "cncjob_postprocessor_name": 'default',
             "background_timeout": 300000,  # Default value is 5 minutes
             "verbose_error_level": 0,  # Shell verbosity:
                                        # 0 = default(python trace only for unknown errors),
@@ -2274,7 +2292,8 @@ class App(QtCore.QObject):
             "zdownrate": CNCjob,
             "excellon_zeros": Excellon,
             "gerber_use_buffer_for_union": Gerber,
-            "cncjob_coordinate_format": CNCjob
+            "cncjob_coordinate_format": CNCjob,
+            "postprocessor_name": CNCjob
             # "spindlespeed": CNCjob
         }
 
