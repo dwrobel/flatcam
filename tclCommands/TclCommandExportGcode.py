@@ -11,8 +11,8 @@ class TclCommandExportGcode(TclCommand.TclCommandSignaled):
     promises and send to background if there are promises.
 
 
-    this  export   may be  catched   by tcl and past as preable  to another  export_gcode or write_gcode
-    this can be used to join GCODES
+    This export may be captured and passed as preable
+    to another "export_gcode" or "write_gcode" call to join G-Code.
 
     example:
         set_sys units MM

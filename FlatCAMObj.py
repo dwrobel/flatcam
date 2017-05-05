@@ -824,7 +824,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         """
         Note: This method is a good template for generic operations as
         it takes it's options from parameters or otherwise from the
-        object's options and returns a success, msg tuple as feedback
+        object's options and returns a (success, msg) tuple as feedback
         for shell operations.
 
         :return: Success/failure condition tuple (bool, str).
@@ -841,6 +841,13 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         if tooldia is None:
             tooldia = self.options["tooldia"]
+
+        # Sort tools by diameter. items() -> [('name', diameter), ...]
+        sorted_tools = sorted(self.tools.items(), key=lambda tl: tl[1])
+
+        if tools == "all":
+            tools = [i[0] for i in sorted_tools]  # List if ordered tool names.
+            log.debug("Tools 'all' and sorted are: %s" % str(tools))
 
         if len(tools) == 0:
             self.app.inform.emit("Please select one or more tools from the list and try again.")

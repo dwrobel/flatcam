@@ -2508,7 +2508,8 @@ class Excellon(Geometry):
         """
 
         Geometry.__init__(self)
-        
+
+        # self.tools[name] = {"C": diameter<float>}
         self.tools = {}
         
         self.drills = []
@@ -2958,6 +2959,10 @@ class CNCjob(Geometry):
         :type exobj: Excellon
         :param tools: Comma separated tool names
         :type: tools: str
+        :param toolchange: Use tool change sequence between tools.
+        :type toolchange: bool
+        :param toolchangez: Height at which to perform the tool change.
+        :type toolchangez: float
         :return: None
         :rtype: None
         """
@@ -2966,15 +2971,15 @@ class CNCjob(Geometry):
 
         # Tools
         
-        # sort the tools list by the second item in tuple (here we have a dict with diameter of the tool)
-        # so we actually are sorting the tools by diameter
-        sorted_tools = sorted(exobj.tools.items(), key = lambda x: x[1])
+        # Sort tools by diameter. items() -> [('name', diameter), ...]
+        sorted_tools = sorted(exobj.tools.items(), key=lambda tl: tl[1])
+
         if tools == "all":
-            tools = [i[0] for i in sorted_tools]   # we get a array of ordered tools
+            tools = [i[0] for i in sorted_tools]   # List if ordered tool names.
             log.debug("Tools 'all' and sorted are: %s" % str(tools))
         else:
-            selected_tools = [x.strip() for x in tools.split(",")]  # we strip spaces and also separate the tools by ','
-            selected_tools = filter(lambda i: i in selected_tools, selected_tools)
+            selected_tools = [x.strip() for x in tools.split(",")]
+            selected_tools = filter(lambda tl: tl in selected_tools, selected_tools)
 
             # Create a sorted list of selected tools from the sorted_tools list
             tools = [i for i, j in sorted_tools for k in selected_tools if i == k]
