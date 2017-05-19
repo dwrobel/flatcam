@@ -1,4 +1,6 @@
 from ObjectCollection import *
+from copy import copy,deepcopy
+
 import TclCommand
 
 
@@ -102,19 +104,26 @@ class TclCommandPanelize(TclCommand.TclCommand):
         def initialize_local(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
             obj_init.offset([float(currentx), float(currenty)]),
+            objs.append(obj_init)
 
         def initialize_local_excellon(obj_init, app):
-            FlatCAMExcellon.merge(obj, obj_init)
-            obj_init.offset([float(currentx), float(currenty)]),
+            obj_init.tools = obj.tools
+            # drills are offset, so they need to be deep copied
+            obj_init.drills = deepcopy(obj.drills) 
+            obj_init.offset([float(currentx), float(currenty)])
+            obj_init.create_geometry()
+            objs.append(obj_init)
 
         def initialize_geometry(obj_init, app):
             FlatCAMGeometry.merge(objs, obj_init)
 
         def initialize_excellon(obj_init, app):
+            # merge expects tools to exist in the target object
+            obj_init.tools = obj.tools.copy()
             FlatCAMExcellon.merge(objs, obj_init)
 
         objs = []
-        if obj is not None:
+        if obj is not None:           
 
             for row in range(args['rows']):
                 currentx = 0
