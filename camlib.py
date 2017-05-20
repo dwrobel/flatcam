@@ -191,15 +191,15 @@ class Geometry(object):
         #pathonly should be allways True, otherwise polygons are not subtracted
         flat_geometry = self.flatten(pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
-        polygon=Polygon(points)
-        toolgeo=cascaded_union(polygon)
-        diffs=[]
+        polygon = Polygon(points)
+        toolgeo = cascaded_union(polygon)
+        diffs = []
         for target in flat_geometry:
             if type(target) == LineString or type(target) == LinearRing:
                 diffs.append(target.difference(toolgeo))
             else:
                 log.warning("Not implemented.")
-        self.solid_geometry=cascaded_union(diffs)
+        self.solid_geometry = cascaded_union(diffs)
 
     def bounds(self):
         """
@@ -1666,7 +1666,7 @@ class Gerber (Geometry):
     #     self.solid_geometry = affinity.scale(self.solid_geometry,
     #                                          xscale, yscale, origin=(px, py))
 
-    def aperture_parse(self, apertureId, apertureType, apParameters):
+    def aperture_parse(self, aperture_id, aperture_type, ap_parameters):
         """
         Parse gerber aperture definition into dictionary of apertures.
         The following kinds and their attributes are supported:
@@ -1677,60 +1677,60 @@ class Gerber (Geometry):
         * *Polygon (P)*: diameter(float), vertices(int), [rotation(float)]
         * *Aperture Macro (AM)*: macro (ApertureMacro), modifiers (list)
 
-        :param apertureId: Id of the aperture being defined.
-        :param apertureType: Type of the aperture.
-        :param apParameters: Parameters of the aperture.
-        :type apertureId: str
-        :type apertureType: str
-        :type apParameters: str
+        :param aperture_id: Id of the aperture being defined.
+        :param aperture_type: Type of the aperture.
+        :param ap_parameters: Parameters of the aperture.
+        :type aperture_id: str
+        :type aperture_type: str
+        :type ap_parameters: str
         :return: Identifier of the aperture.
         :rtype: str
         """
 
         # Found some Gerber with a leading zero in the aperture id and the
         # referenced it without the zero, so this is a hack to handle that.
-        apid = str(int(apertureId))
+        apid = str(int(aperture_id))
 
         try:  # Could be empty for aperture macros
-            paramList = apParameters.split('X')
+            param_list = ap_parameters.split('X')
         except:
-            paramList = None
+            param_list = None
 
-        if apertureType == "C":  # Circle, example: %ADD11C,0.1*%
+        if aperture_type == "C":  # Circle, example: %ADD11C,0.1*%
             self.apertures[apid] = {"type": "C",
-                                    "size": float(paramList[0])}
+                                    "size": float(param_list[0])}
             return apid
         
-        if apertureType == "R":  # Rectangle, example: %ADD15R,0.05X0.12*%
+        if aperture_type == "R":  # Rectangle, example: %ADD15R,0.05X0.12*%
             self.apertures[apid] = {"type": "R",
-                                    "width": float(paramList[0]),
-                                    "height": float(paramList[1]),
-                                    "size": sqrt(float(paramList[0])**2 + float(paramList[1])**2)}  # Hack
+                                    "width": float(param_list[0]),
+                                    "height": float(param_list[1]),
+                                    "size": sqrt(float(param_list[0])**2 + float(param_list[1])**2)}  # Hack
             return apid
 
-        if apertureType == "O":  # Obround
+        if aperture_type == "O":  # Obround
             self.apertures[apid] = {"type": "O",
-                                    "width": float(paramList[0]),
-                                    "height": float(paramList[1]),
-                                    "size": sqrt(float(paramList[0])**2 + float(paramList[1])**2)}  # Hack
+                                    "width": float(param_list[0]),
+                                    "height": float(param_list[1]),
+                                    "size": sqrt(float(param_list[0])**2 + float(param_list[1])**2)}  # Hack
             return apid
         
-        if apertureType == "P":  # Polygon (regular)
+        if aperture_type == "P":  # Polygon (regular)
             self.apertures[apid] = {"type": "P",
-                                    "diam": float(paramList[0]),
-                                    "nVertices": int(paramList[1]),
-                                    "size": float(paramList[0])}  # Hack
-            if len(paramList) >= 3:
-                self.apertures[apid]["rotation"] = float(paramList[2])
+                                    "diam": float(param_list[0]),
+                                    "nVertices": int(param_list[1]),
+                                    "size": float(param_list[0])}  # Hack
+            if len(param_list) >= 3:
+                self.apertures[apid]["rotation"] = float(param_list[2])
             return apid
 
-        if apertureType in self.aperture_macros:
+        if aperture_type in self.aperture_macros:
             self.apertures[apid] = {"type": "AM",
-                                    "macro": self.aperture_macros[apertureType],
-                                    "modifiers": paramList}
+                                    "macro": self.aperture_macros[aperture_type],
+                                    "modifiers": param_list}
             return apid
 
-        log.warning("Aperture not implemented: %s" % str(apertureType))
+        log.warning("Aperture not implemented: %s" % str(aperture_type))
         return None
         
     def parse_file(self, filename, follow=False):
@@ -1921,7 +1921,8 @@ class Gerber (Geometry):
                                 if last_path_aperture is None:
                                     log.warning("No aperture defined for curent path. (%d)" % line_num)
                                 width = self.apertures[last_path_aperture]["size"]  # TODO: WARNING this should fail!
-                                #log.debug("Line %d: Setting aperture to %s before buffering." % (line_num, last_path_aperture))
+                                # log.debug("Line %d: Setting aperture to %s before buffering." %
+                                # (line_num, last_path_aperture))
                                 if follow:
                                     geo = LineString(path)
                                 else:
@@ -2906,6 +2907,14 @@ class CNCjob(Geometry):
                  spindlespeed=None):
 
         Geometry.__init__(self)
+
+        # Obsect from which this CNC Job was constructed.
+        # I.e. a Geometry. Make a copy here.
+        # And settings used to generate CNC Job
+        self.base = None
+        self.gen_settings = None
+        self.gen_func = None
+
         self.kind = kind
         self.units = units
         self.z_cut = z_cut
@@ -3075,10 +3084,18 @@ class CNCjob(Geometry):
 
         log.debug("generate_from_geometry_2()")
 
+        saved_args = locals()
+
         ## Flatten the geometry
         # Only linear elements (no polygons) remain.
         flat_geometry = geometry.flatten(pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
+
+        # Store the geometry in case we need to regenerate the
+        # G-Code with new settings or something else.
+        self.base = flat_geometry
+        self.gen_settings = saved_args
+        self.gen_func = "generate_from_geometry_2"
 
         ## Index first and last points in paths
         # What points to index.
@@ -3571,6 +3588,11 @@ class CNCjob(Geometry):
             svg_elem += cutsgeom.svg(scale_factor=scale_factor, stroke_color="#5E6CFF")
 
         return svg_elem
+
+    def regenerate(self):
+        fcn = getattr(self, self.gen_func)
+        del self.gen_settings["geometry"]
+        fcn(self, **self.gen_settings)
 
 # def get_bounds(geometry_set):
 #     xmin = Inf
