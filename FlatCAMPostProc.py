@@ -65,11 +65,13 @@ from postprocessors import default
 
 
 def load_postprocessors(app):
-    postprocessors_path_search = os.path.join(app.data_path,'postprocessors','*.py')
+    postprocessors_path_search = [os.path.join(app.data_path,'postprocessors','*.py'),
+                                  os.path.join('postprocessors', '*.py')]
     import glob
-    for file in glob.glob(postprocessors_path_search):
-        try:
-            imp.load_source('FlatCAMPostProcessor',file)
-        except Exception,e:
-            app.log.error(str(e))
+    for path_search in postprocessors_path_search:
+        for file in glob.glob(path_search):
+            try:
+                imp.load_source('FlatCAMPostProcessor',file)
+            except Exception,e:
+                app.log.error(str(e))
     return postprocessors
