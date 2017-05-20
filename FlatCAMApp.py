@@ -2293,7 +2293,7 @@ class App(QtCore.QObject):
             "excellon_zeros": Excellon,
             "gerber_use_buffer_for_union": Gerber,
             "cncjob_coordinate_format": CNCjob,
-            "postprocessor_name": CNCjob
+            "cncjob_postprocessor_name": CNCjob
             # "spindlespeed": CNCjob
         }
 
