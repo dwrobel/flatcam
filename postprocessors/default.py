@@ -3,7 +3,7 @@ from FlatCAMPostProc import FlatCAMPostProc
 
 class default(FlatCAMPostProc):
     def start_code(self, p):
-        gcode = ('G20' if p.units else 'G21') + "\n"
+        gcode = ('G20' if p.units.upper()=='IN' else 'G21') + "\n"
         gcode += 'G90\n'
         gcode += 'G94'
         return gcode
