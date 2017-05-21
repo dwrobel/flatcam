@@ -3,12 +3,16 @@ import os
 from abc import ABCMeta, abstractmethod
 
 #module-root dictionary of postprocessors
+import FlatCAMApp
+
 postprocessors = {}
 class ABCPostProcRegister(ABCMeta):
     #handles postprocessors registration on instantation
     def __new__(cls, clsname, bases, attrs):
         newclass = super(ABCPostProcRegister, cls).__new__(cls, clsname, bases, attrs)
         if object not in bases:
+            if newclass.__name__ in postprocessors:
+                FlatCAMApp.App.log.warning('Postprocessor %s has been overriden'%(newclass.__name__))
             postprocessors[newclass.__name__] = newclass()  # here is your register function
         return newclass
 
