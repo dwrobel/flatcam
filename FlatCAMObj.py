@@ -1083,7 +1083,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         postprocessor = self.app.postprocessors[postprocessor_name]
 
 
-        self.export_gcode(filename, preamble=preamble, postamble=postamble, postprocessor=postprocessor)
+        self.export_gcode(filename, preamble=preamble, postamble=postamble)
 
     def dwell_generator(self, lines):
         """
