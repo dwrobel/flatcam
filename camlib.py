@@ -2967,8 +2967,10 @@ class CNCjob(Geometry):
         attributes = AttrDict()
         attributes.update(self.postdata)
         attributes.update(kwargs)
-
-        returnvalue = fun(attributes)
+        try:
+            returnvalue = fun(attributes)
+        except Exception,e:
+            self.app.log.error(str(e))
         return returnvalue
 
     def generate_from_excellon_by_tool(self, exobj, tools="all",
