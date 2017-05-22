@@ -1010,7 +1010,6 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         CNCjob.__init__(self, units=units, kind=kind, z_move=z_move,
                         feedrate=feedrate, z_cut=z_cut, tooldia=tooldia,
-                        postprocessor_name=postprocessor_name,
                         spindlespeed=spindlespeed)
 
         FlatCAMObj.__init__(self, name)
@@ -1040,19 +1039,14 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         assert isinstance(self.ui, CNCObjectUI), \
             "Expected a CNCObjectUI, got %s" % type(self.ui)
 
-        for name in self.app.postprocessors.keys():
-            self.ui.postprocessor_name_entry.addItem(name)
-
         self.form_fields.update({
             "plot": self.ui.plot_cb,
             "tooldia": self.ui.tooldia_entry,
             "append": self.ui.append_text,
             "prepend": self.ui.prepend_text,
-            "postprocessor_name": self.ui.postprocessor_name_entry,
             "dwell": self.ui.dwell_cb,
             "dwelltime": self.ui.dwelltime_entry
         })
-        self.read_form_item('postprocessor_name')
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
@@ -1079,9 +1073,6 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
-        postprocessor_name = self.ui.postprocessor_name_entry.get_value()
-        postprocessor = self.app.postprocessors[postprocessor_name]
-
 
         self.export_gcode(filename, preamble=preamble, postamble=postamble)
 

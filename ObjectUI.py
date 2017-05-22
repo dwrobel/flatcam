@@ -173,16 +173,6 @@ class CNCObjectUI(ObjectUI):
         )
         self.custom_box.addWidget(self.export_gcode_label)
 
-        # postprocessor selection
-        self.postprocessor_label = QtGui.QLabel("Postprocessor")
-        self.postprocessor_label.setToolTip(
-            "The json file that dictates\n"
-            "gcode output.")
-        self.custom_box.addWidget(self.postprocessor_label)
-        self.postprocessor_name_entry = FCComboBox()
-        self.custom_box.addWidget(self.postprocessor_name_entry)
-
-
         # Prepend text to Gerber
         prependlabel = QtGui.QLabel('Prepend to G-Code:')
         prependlabel.setToolTip(
