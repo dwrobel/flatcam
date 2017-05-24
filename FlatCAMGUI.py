@@ -713,6 +713,16 @@ class GeometryOptionsGroupUI(OptionsGroupUI):
         self.cncspindlespeed_entry = IntEntry(allow_empty=True)
         grid1.addWidget(self.cncspindlespeed_entry, 4, 1)
 
+        # postprocessor selection
+        postprocessor_label = QtGui.QLabel("Postprocessor")
+        postprocessor_label.setToolTip(
+            "The postprocessor file that dictates\n"
+            "gcode output."
+        )
+        grid1.addWidget(postprocessor_label)
+        self.postprocessor_name_entry = FCComboBox()
+        grid1.addWidget(self.postprocessor_name_entry)
+
         # ------------------------------
         ## Paint area
         # ------------------------------
@@ -869,7 +879,6 @@ class CNCJobOptionsGroupUI(OptionsGroupUI):
 
         self.append_text = FCTextArea()
         self.layout.addWidget(self.append_text)
-
 
         # Dwell
         grid1 = QtGui.QGridLayout()

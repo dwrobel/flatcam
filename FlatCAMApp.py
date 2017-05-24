@@ -282,6 +282,7 @@ class App(QtCore.QObject):
             "geometry_selectmethod": self.defaults_form.geometry_group.selectmethod_combo,
             "geometry_pathconnect": self.defaults_form.geometry_group.pathconnect_cb,
             "geometry_paintcontour": self.defaults_form.geometry_group.contour_cb,
+            "geometry_postprocessor_name": self.defaults_form.geometry_group.postprocessor_name_entry,
             "cncjob_plot": self.defaults_form.cncjob_group.plot_cb,
             "cncjob_tooldia": self.defaults_form.cncjob_group.tooldia_entry,
             "cncjob_prepend": self.defaults_form.cncjob_group.prepend_text,
@@ -291,6 +292,9 @@ class App(QtCore.QObject):
         }
         # loads postprocessors
         self.postprocessors = load_postprocessors(self)
+
+        for name in self.postprocessors.keys():
+            self.defaults_form.geometry_group.postprocessor_name_entry.addItem(name)
 
 
         self.defaults = LoudDict()
@@ -333,6 +337,7 @@ class App(QtCore.QObject):
             "geometry_selectmethod": "single",
             "geometry_pathconnect": True,
             "geometry_paintcontour": True,
+            "geometry_postprocessor_name": 'default',
             "cncjob_plot": True,
             "cncjob_tooldia": 0.016,
             "cncjob_prepend": "",
@@ -426,11 +431,14 @@ class App(QtCore.QObject):
             "geometry_paintoverlap": self.options_form.geometry_group.paintoverlap_entry,
             "geometry_paintmargin": self.options_form.geometry_group.paintmargin_entry,
             "geometry_selectmethod": self.options_form.geometry_group.selectmethod_combo,
+            'geometry_postprocessor_name': self.options_form.geometry_group.postprocessor_name_entry,
             "cncjob_plot": self.options_form.cncjob_group.plot_cb,
             "cncjob_tooldia": self.options_form.cncjob_group.tooldia_entry,
             "cncjob_prepend": self.options_form.cncjob_group.prepend_text,
             "cncjob_append": self.options_form.cncjob_group.append_text,
         }
+        for name in self.postprocessors.keys():
+            self.options_form.geometry_group.postprocessor_name_entry.addItem(name)
 
         self.options = LoudDict()
         self.options.set_change_callback(self.on_options_dict_change)
@@ -469,6 +477,7 @@ class App(QtCore.QObject):
             "geometry_paintoverlap": 0.15,
             "geometry_paintmargin": 0.0,
             "geometry_selectmethod": "single",
+            'geometry_postprocessor_name':'default',
             "cncjob_plot": True,
             "cncjob_tooldia": 0.016,
             "cncjob_prepend": "",
@@ -2284,9 +2293,7 @@ class App(QtCore.QObject):
         routes = {
             "zdownrate": CNCjob,
             "excellon_zeros": Excellon,
-            "gerber_use_buffer_for_union": Gerber,
-            "cncjob_coordinate_format": CNCjob,
-            "cncjob_postprocessor_name": CNCjob
+            "gerber_use_buffer_for_union": Gerber
             # "spindlespeed": CNCjob
         }
 
