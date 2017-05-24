@@ -63,11 +63,6 @@ class FlatCAMPostProc(object):
     def spindle_stop_code(self,p):
         pass
 
-
-
-from postprocessors import default
-
-
 def load_postprocessors(app):
     postprocessors_path_search = [os.path.join(app.data_path,'postprocessors','*.py'),
                                   os.path.join('postprocessors', '*.py')]
