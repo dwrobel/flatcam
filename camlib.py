@@ -2969,9 +2969,11 @@ class CNCjob(Geometry):
         attributes.update(kwargs)
         try:
             returnvalue = fun(attributes)
+            return returnvalue
         except Exception,e:
-            self.app.log.error(str(e))
-        return returnvalue
+            self.app.log.error('Exception ocurred inside a postprocessor: '+traceback.format_exc())
+            return ''
+
 
     def generate_from_excellon_by_tool(self, exobj, tools="all",
                                        toolchange=False, toolchangez=0.1, ):
