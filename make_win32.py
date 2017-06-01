@@ -43,7 +43,7 @@ if sys.platform == "win32":
 buildOptions = dict(
     compressed=False,
     include_files=include_files,
-    icon='share/flatcam_icon48.ico',
+    icon='share:flatcam_icon48.ico',
     # excludes=['PyQt4', 'tk', 'tcl']
     excludes=['scipy.lib.lapack.flapack.pyd',
               'scipy.lib.blas.fblas.pyd',

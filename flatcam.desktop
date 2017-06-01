@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=FlatCAM
+Comment=2D Computer-Aided PCB Manufacturing
+Exec=flatcam
+Icon=flatcam
+Keywords=cam;pcb;gerber
+Terminal=false
+Type=Application
