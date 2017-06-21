@@ -1020,7 +1020,10 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             "append": "",
             "prepend": "",
             "dwell": False,
-            "dwelltime": 1
+            "dwelltime": 1,
+            "tolerance": 0.004,
+            "multidepth": False,
+            "depthpercut": 0.2 / 25.4
         })
 
         # Attributes to be included in serialization
@@ -1042,16 +1045,25 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             "append": self.ui.append_text,
             "prepend": self.ui.prepend_text,
             "dwell": self.ui.dwell_cb,
-            "dwelltime": self.ui.dwelltime_entry
+            "dwelltime": self.ui.dwelltime_entry,
+            "tolerance": self.ui.tolerance_entry,
+            "multidepth": self.ui.multidepth_entry,
+            "depthpercut": self.ui.depthpercut_entry
         })
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)
+        self.ui.regenerate_gcode_button.clicked.connect(self.on_regenerate_button_click)
+
+    def on_regenerate_button_click(self, *args):
+        self.regenerate()
+        self.read_form()
+        self.plot()
 
     def on_updateplot_button_click(self, *args):
         """
-        Callback for the "Updata Plot" button. Reads the form for updates
+        Callback for the "Update Plot" button. Reads the form for updates
         and plots the object.
         """
         self.read_form()

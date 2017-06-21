@@ -224,6 +224,53 @@ class CNCObjectUI(ObjectUI):
         )
         self.custom_box.addWidget(self.export_gcode_button)
 
+        ##################
+        ## Regenerate
+        ##################
+        self.regenerate_gcode_label = QtGui.QLabel("<b>Regenerate G-Code:</b>")
+        self.regenerate_gcode_label.setToolTip(
+            "An experiment"
+        )
+        self.custom_box.addWidget(self.regenerate_gcode_label)
+
+        grid2 = QtGui.QGridLayout()
+        self.custom_box.addLayout(grid2)
+
+        # Tolerance
+        tollabel = QtGui.QLabel('Tolerance:')
+        tdlabel.setToolTip(
+            "Maximum allowed error."
+        )
+        grid2.addWidget(tollabel, 1, 0)
+        self.tolerance_entry = LengthEntry()
+        grid2.addWidget(self.tolerance_entry, 1, 1)
+
+        mdlabel = QtGui.QLabel('Multidepth:')
+        mdlabel.setToolTip(
+            "Enable multi-depth cut."
+        )
+        grid2.addWidget(mdlabel, 2, 0)
+        self.multidepth_entry = FCCheckBox()
+        grid2.addWidget(self.multidepth_entry, 2, 1)
+
+        dpclabel = QtGui.QLabel("Depth per cut:")
+        dpclabel.setToolTip(
+            "Maximum cutting depth for\n"
+            "multi-depth cut."
+        )
+        grid2.addWidget(dpclabel)
+        self.depthpercut_entry = LengthEntry()
+        grid2.addWidget(self.depthpercut_entry)
+
+        self.ois_dpc = OptionalInputSection(self.multidepth_entry,
+                                            [self.depthpercut_entry])
+
+
+        # GO Button
+        self.regenerate_gcode_button = QtGui.QPushButton('Regenerate')
+        self.regenerate_gcode_button.setToolTip("Nothing")
+        self.custom_box.addWidget(self.regenerate_gcode_button)
+
 
 class GeometryObjectUI(ObjectUI):
     """

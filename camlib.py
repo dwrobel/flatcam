@@ -3079,6 +3079,7 @@ class CNCjob(Geometry):
         :param depthpercut: Maximum depth in each pass.
         :return: None
         """
+
         assert isinstance(geometry, Geometry), \
             "Expected a Geometry, got %s" % type(geometry)
 
@@ -3093,8 +3094,16 @@ class CNCjob(Geometry):
 
         # Store the geometry in case we need to regenerate the
         # G-Code with new settings or something else.
-        self.base = flat_geometry
-        self.gen_settings = saved_args
+
+        self.base = Geometry()
+        self.base.solid_geometry = flat_geometry
+        self.gen_settings = {
+            "append": append,
+            "tooldia": tooldia,
+            "tolerance": tolerance,
+            "multidepth": multidepth,
+            "depthpercut": depthpercut
+        }
         self.gen_func = "generate_from_geometry_2"
 
         ## Index first and last points in paths
@@ -3591,8 +3600,7 @@ class CNCjob(Geometry):
 
     def regenerate(self):
         fcn = getattr(self, self.gen_func)
-        del self.gen_settings["geometry"]
-        fcn(self, **self.gen_settings)
+        fcn(self.base, **self.gen_settings)
 
 # def get_bounds(geometry_set):
 #     xmin = Inf
