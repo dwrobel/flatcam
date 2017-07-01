@@ -28,32 +28,13 @@ from numpy.linalg import solve
 
 from rtree import index as rtindex
 
-# For the translation by Daniel Sallin Debut
-# Use translate_("txt") for translate the "txt" string
-# Using gettext for translate 
-# Using os for def a locale path
-# Using unidecode for accents compatibility
-# coding: utf8
-import os
-import sys
-import gettext
-from unidecode import unidecode
-if sys.platform == 'win32':
-       import gettext_windows
-       gettext_windows.setup_env()	   
-pathname = os.path.dirname(sys.argv[0])
-localdir = os.path.abspath(pathname) + "/locale"
-gettext.install("messages", localdir)
-def translate_(txt):
-    return unicode(_(txt),'utf-8')
-# For the translation by Daniel Sallin fin
 
 class BufferSelectionTool(FlatCAMTool):
     """
     Simple input for buffer distance.
     """
 
-    toolName = translate_("Buffer Selection")
+    toolName = "Buffer Selection"
 
     def __init__(self, app, fcdraw):
         FlatCAMTool.__init__(self, app)
@@ -70,13 +51,13 @@ class BufferSelectionTool(FlatCAMTool):
 
         ## Buffer distance
         self.buffer_distance_entry = LengthEntry()
-        form_layout.addRow(translate_("Buffer distance:"), self.buffer_distance_entry)
+        form_layout.addRow("Buffer distance:", self.buffer_distance_entry)
 
         ## Buttons
         hlay = QtGui.QHBoxLayout()
         self.layout.addLayout(hlay)
         hlay.addStretch()
-        self.buffer_button = QtGui.QPushButton(translate_("Buffer"))
+        self.buffer_button = QtGui.QPushButton("Buffer")
         hlay.addWidget(self.buffer_button)
 
         self.layout.addStretch()
@@ -94,7 +75,7 @@ class PaintOptionsTool(FlatCAMTool):
     Inputs to specify how to paint the selected polygons.
     """
 
-    toolName = (translate_("Paint Options"))
+    toolName = "Paint Options"
 
     def __init__(self, app, fcdraw):
         FlatCAMTool.__init__(self, app)
@@ -111,47 +92,47 @@ class PaintOptionsTool(FlatCAMTool):
         self.layout.addLayout(form_layout)
 
         # Tool dia
-        ptdlabel = QtGui.QLabel(translate_('Tool dia:'))
-        ptdlabel.setToolTip(translate_(
+        ptdlabel = QtGui.QLabel('Tool dia:')
+        ptdlabel.setToolTip(
             "Diameter of the tool to\n"
             "be used in the operation."
-        ))
+        )
 
         self.painttooldia_entry = LengthEntry()
         form_layout.addRow(ptdlabel, self.painttooldia_entry)
 
         # Overlap
-        ovlabel = QtGui.QLabel(translate_('Overlap:'))
-        ovlabel.setToolTip(translate_(
+        ovlabel = QtGui.QLabel('Overlap:')
+        ovlabel.setToolTip(
             "How much (fraction) of the tool\n"
             "width to overlap each tool pass."
-        ))
+        )
 
         self.paintoverlap_entry = LengthEntry()
         form_layout.addRow(ovlabel, self.paintoverlap_entry)
 
         # Margin
-        marginlabel = QtGui.QLabel(translate_('Margin:'))
-        marginlabel.setToolTip(translate_(
+        marginlabel = QtGui.QLabel('Margin:')
+        marginlabel.setToolTip(
             "Distance by which to avoid\n"
             "the edges of the polygon to\n"
             "be painted."
-        ))
+        )
 
         self.paintmargin_entry = LengthEntry()
         form_layout.addRow(marginlabel, self.paintmargin_entry)
 
         # Method
-        methodlabel = QtGui.QLabel(translate_('Method:'))
-        methodlabel.setToolTip(translate_(
+        methodlabel = QtGui.QLabel('Method:')
+        methodlabel.setToolTip(
             "Algorithm to paint the polygon:<BR>"
             "<B>Standard</B>: Fixed step inwards.<BR>"
             "<B>Seed-based</B>: Outwards from seed."
-        ))
+        )
 
         self.paintmethod_combo = RadioSet([
-            {"label": translate_("Standard"), "value": "standard"},
-            {"label": translate_("Seed-based"), "value": "seed"}
+            {"label": "Standard", "value": "standard"},
+            {"label": "Seed-based", "value": "seed"}
         ])
         form_layout.addRow(methodlabel, self.paintmethod_combo)
 
@@ -159,7 +140,7 @@ class PaintOptionsTool(FlatCAMTool):
         hlay = QtGui.QHBoxLayout()
         self.layout.addLayout(hlay)
         hlay.addStretch()
-        self.paint_button = QtGui.QPushButton(translate_("Paint"))
+        self.paint_button = QtGui.QPushButton("Paint")
         hlay.addWidget(self.paint_button)
 
         self.layout.addStretch()
@@ -253,7 +234,7 @@ class DrawTool(object):
     def __init__(self, draw_app):
         self.draw_app = draw_app
         self.complete = False
-        self.start_msg = translate_("Click on 1st point...")
+        self.start_msg = "Click on 1st point..."
         self.points = []
         self.geometry = None  # DrawToolShape or None
 
@@ -288,17 +269,17 @@ class FCCircle(FCShapeTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
-        self.start_msg = translate_("Click on CENTER ...")
+        self.start_msg = "Click on CENTER ..."
 
     def click(self, point):
         self.points.append(point)
 
         if len(self.points) == 1:
-            return translate_("Click on perimeter to complete ...")
+            return "Click on perimeter to complete ..."
 
         if len(self.points) == 2:
             self.make()
-            return translate_("Done.")
+            return "Done."
 
         return ""
 
@@ -322,12 +303,12 @@ class FCCircle(FCShapeTool):
 class FCArc(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
-        self.start_msg = translate_("Click on CENTER ...")
+        self.start_msg = "Click on CENTER ..."
 
         # Direction of rotation between point 1 and 2.
         # 'cw' or 'ccw'. Switch direction by hitting the
         # 'o' key.
-        self.direction = translate_("cw")
+        self.direction = "cw"
 
         # Mode
         # C12 = Center, p1, p2
@@ -341,21 +322,21 @@ class FCArc(FCShapeTool):
         self.points.append(point)
 
         if len(self.points) == 1:
-            return translate_("Click on 1st point ...")
+            return "Click on 1st point ..."
 
         if len(self.points) == 2:
-            return translate_("Click on 2nd point to complete ...")
+            return "Click on 2nd point to complete ..."
 
         if len(self.points) == 3:
             self.make()
-            return translate_("Done.")
+            return "Done."
 
         return ""
 
     def on_key(self, key):
         if key == 'o':
             self.direction = 'cw' if self.direction == 'ccw' else 'ccw'
-            return translate_('Direction: ') + self.direction.upper()
+            return 'Direction: ' + self.direction.upper()
 
         if key == 'p':
             if self.mode == 'c12':
@@ -507,17 +488,17 @@ class FCRectangle(FCShapeTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
-        self.start_msg = translate_("Click on 1st corner ...")
+        self.start_msg = "Click on 1st corner ..."
 
     def click(self, point):
         self.points.append(point)
 
         if len(self.points) == 1:
-            return translate_("Click on opposite corner to complete ...")
+            return "Click on opposite corner to complete ..."
 
         if len(self.points) == 2:
             self.make()
-            return translate_("Done.")
+            return "Done."
 
         return ""
 
@@ -544,13 +525,13 @@ class FCPolygon(FCShapeTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
-        self.start_msg = translate_("Click on 1st point ...")
+        self.start_msg = "Click on 1st point ..."
 
     def click(self, point):
         self.points.append(point)
 
         if len(self.points) > 0:
-            return translate_("Click on next point or hit SPACE to complete ...")
+            return "Click on next point or hit SPACE to complete ..."
 
         return ""
 
@@ -607,7 +588,7 @@ class FCSelect(DrawTool):
         self.storage = self.draw_app.storage
         #self.shape_buffer = self.draw_app.shape_buffer
         self.selected = self.draw_app.selected
-        self.start_msg = translate_("Click on geometry to select")
+        self.start_msg = "Click on geometry to select"
 
     def click(self, point):
         try:
@@ -630,22 +611,22 @@ class FCMove(FCShapeTool):
         #self.shape_buffer = self.draw_app.shape_buffer
         self.origin = None
         self.destination = None
-        self.start_msg = translate_("Click on reference point.")
+        self.start_msg = "Click on reference point."
 
     def set_origin(self, origin):
         self.origin = origin
 
     def click(self, point):
         if len(self.draw_app.get_selected()) == 0:
-            return translate_("Nothing to move.")
+            return "Nothing to move."
 
         if self.origin is None:
             self.set_origin(point)
-            return translate_("Click on final location.")
+            return "Click on final location."
         else:
             self.destination = point
             self.make()
-            return translate_("Done.")
+            return "Done."
 
     def make(self):
         # Create new geometry
@@ -712,43 +693,43 @@ class FlatCAMDraw(QtCore.QObject):
         self.drawing_toolbar = QtGui.QToolBar()
         self.drawing_toolbar.setDisabled(disabled)
         self.app.ui.addToolBar(self.drawing_toolbar)
-        self.select_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), translate_("Select 'Esc'"))
-        self.add_circle_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/circle32.png'), translate_('Add Circle'))
-        self.add_arc_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/arc32.png'), translate_('Add Arc'))
-        self.add_rectangle_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/rectangle32.png'), translate_('Add Rectangle'))
-        self.add_polygon_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), translate_('Add Polygon'))
-        self.add_path_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/path32.png'), translate_('Add Path'))
-        self.union_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/union32.png'), translate_('Polygon Union'))
-        self.intersection_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/intersection32.png'), translate_('Polygon Intersection'))
-        self.subtract_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/subtract32.png'), translate_('Polygon Subtraction'))
-        self.cutpath_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/cutpath32.png'), translate_('Cut Path'))
-        self.move_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/move32.png'), translate_("Move Objects 'm'"))
-        self.copy_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/copy32.png'), translate_("Copy Objects 'c'"))
-        self.delete_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'), translate_("Delete Shape '-'"))
+        self.select_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select 'Esc'")
+        self.add_circle_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/circle32.png'), 'Add Circle')
+        self.add_arc_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/arc32.png'), 'Add Arc')
+        self.add_rectangle_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/rectangle32.png'), 'Add Rectangle')
+        self.add_polygon_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), 'Add Polygon')
+        self.add_path_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/path32.png'), 'Add Path')
+        self.union_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/union32.png'), 'Polygon Union')
+        self.intersection_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/intersection32.png'), 'Polygon Intersection')
+        self.subtract_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/subtract32.png'), 'Polygon Subtraction')
+        self.cutpath_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/cutpath32.png'), 'Cut Path')
+        self.move_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Objects 'm'")
+        self.copy_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/copy32.png'), "Copy Objects 'c'")
+        self.delete_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'), "Delete Shape '-'")
 
         ### Snap Toolbar ###
         self.snap_toolbar = QtGui.QToolBar()
-        self.grid_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share/grid32.png'), translate_('Snap to grid'))
+        self.grid_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share/grid32.png'), 'Snap to grid')
         self.grid_gap_x_entry = QtGui.QLineEdit()
         self.grid_gap_x_entry.setMaximumWidth(70)
-        self.grid_gap_x_entry.setToolTip(translate_("Grid X distance"))
+        self.grid_gap_x_entry.setToolTip("Grid X distance")
         self.snap_toolbar.addWidget(self.grid_gap_x_entry)
         self.grid_gap_y_entry = QtGui.QLineEdit()
         self.grid_gap_y_entry.setMaximumWidth(70)
-        self.grid_gap_y_entry.setToolTip(translate_("Grid Y distante"))
+        self.grid_gap_y_entry.setToolTip("Grid Y distante")
         self.snap_toolbar.addWidget(self.grid_gap_y_entry)
 
-        self.corner_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share/corner32.png'), translate_('Snap to corner'))
+        self.corner_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share/corner32.png'), 'Snap to corner')
         self.snap_max_dist_entry = QtGui.QLineEdit()
         self.snap_max_dist_entry.setMaximumWidth(70)
-        self.snap_max_dist_entry.setToolTip(translate_("Max. magnet distance"))
+        self.snap_max_dist_entry.setToolTip("Max. magnet distance")
         self.snap_toolbar.addWidget(self.snap_max_dist_entry)
 
         self.snap_toolbar.setDisabled(disabled)
         self.app.ui.addToolBar(self.snap_toolbar)
 
         ### Application menu ###
-        self.menu = QtGui.QMenu(translate_("Drawing"))
+        self.menu = QtGui.QMenu("Drawing")
         self.app.ui.menu.insertMenu(self.app.ui.menutoolaction, self.menu)
         # self.select_menuitem = self.menu.addAction(QtGui.QIcon('share/pointer16.png'), "Select 'Esc'")
         # self.add_circle_menuitem = self.menu.addAction(QtGui.QIcon('share/circle16.png'), 'Add Circle')
@@ -756,15 +737,15 @@ class FlatCAMDraw(QtCore.QObject):
         # self.add_rectangle_menuitem = self.menu.addAction(QtGui.QIcon('share/rectangle16.png'), 'Add Rectangle')
         # self.add_polygon_menuitem = self.menu.addAction(QtGui.QIcon('share/polygon16.png'), 'Add Polygon')
         # self.add_path_menuitem = self.menu.addAction(QtGui.QIcon('share/path16.png'), 'Add Path')
-        self.union_menuitem = self.menu.addAction(QtGui.QIcon('share/union16.png'), translate_('Polygon Union'))
-        self.intersection_menuitem = self.menu.addAction(QtGui.QIcon('share/intersection16.png'), translate_('Polygon Intersection'))
+        self.union_menuitem = self.menu.addAction(QtGui.QIcon('share/union16.png'), 'Polygon Union')
+        self.intersection_menuitem = self.menu.addAction(QtGui.QIcon('share/intersection16.png'), 'Polygon Intersection')
         # self.subtract_menuitem = self.menu.addAction(QtGui.QIcon('share/subtract16.png'), 'Polygon Subtraction')
-        self.cutpath_menuitem = self.menu.addAction(QtGui.QIcon('share/cutpath16.png'), translate_('Cut Path'))
+        self.cutpath_menuitem = self.menu.addAction(QtGui.QIcon('share/cutpath16.png'), 'Cut Path')
         # self.move_menuitem = self.menu.addAction(QtGui.QIcon('share/move16.png'), "Move Objects 'm'")
         # self.copy_menuitem = self.menu.addAction(QtGui.QIcon('share/copy16.png'), "Copy Objects 'c'")
-        self.delete_menuitem = self.menu.addAction(QtGui.QIcon('share/deleteshape16.png'), translate_("Delete Shape '-'"))
-        self.buffer_menuitem = self.menu.addAction(QtGui.QIcon('share/buffer16.png'), translate_("Buffer selection 'b'"))
-        self.paint_menuitem = self.menu.addAction(QtGui.QIcon('share/paint16.png'), translate_("Paint selection"))
+        self.delete_menuitem = self.menu.addAction(QtGui.QIcon('share/deleteshape16.png'), "Delete Shape '-'")
+        self.buffer_menuitem = self.menu.addAction(QtGui.QIcon('share/buffer16.png'), "Buffer selection 'b'")
+        self.paint_menuitem = self.menu.addAction(QtGui.QIcon('share/paint16.png'), "Paint selection")
         self.menu.addSeparator()
 
         self.paint_menuitem.triggered.connect(self.on_paint_tool)
@@ -897,14 +878,14 @@ class FlatCAMDraw(QtCore.QObject):
             return
 
         assert isinstance(shape, DrawToolShape), \
-            translate_("Expected a DrawToolShape, got %s") % type(shape)
+            "Expected a DrawToolShape, got %s" % type(shape)
 
         assert shape.geo is not None, \
-            translate_("Shape object has empty geometry (None)")
+            "Shape object has empty geometry (None)"
 
         assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or \
                not isinstance(shape.geo, list), \
-            translate_("Shape objects has empty geometry ([])")
+            "Shape objects has empty geometry ([])"
 
         if isinstance(shape, DrawToolUtilityShape):
             self.utility.append(shape)
@@ -938,7 +919,7 @@ class FlatCAMDraw(QtCore.QObject):
             self.add_shape(DrawToolShape(target.geo.difference(toolgeo)))
             self.delete_shape(target)
         else:
-            self.app.log.warning(translate_("Not implemented."))
+            self.app.log.warning("Not implemented.")
 
         self.replot()
 
@@ -961,7 +942,7 @@ class FlatCAMDraw(QtCore.QObject):
         :return: None
         """
         assert isinstance(fcgeometry, Geometry), \
-            translate_("Expected a Geometry, got %s") % type(fcgeometry)
+            "Expected a Geometry, got %s" % type(fcgeometry)
 
         self.deactivate()
 
@@ -1032,7 +1013,7 @@ class FlatCAMDraw(QtCore.QObject):
                 self.app.log.debug("Replotting after click.")
                 self.replot()
         else:
-            self.app.log.debug(translate_("No active tool to respond to click!"))
+            self.app.log.debug("No active tool to respond to click!")
 
     def on_canvas_move(self, event):
         """
@@ -1133,14 +1114,14 @@ class FlatCAMDraw(QtCore.QObject):
                 self.active_tool.make()
                 if self.active_tool.complete:
                     self.on_shape_complete()
-                    self.app.info(translate_("Done."))
+                    self.app.info("Done.")
             return
 
         ### Abort the current action
         if event.key == 'escape':
             # TODO: ...?
             #self.on_tool_select("select")
-            self.app.info(translate_("Cancelled."))
+            self.app.info("Cancelled.")
 
             self.delete_utility_geometry()
 
@@ -1160,14 +1141,14 @@ class FlatCAMDraw(QtCore.QObject):
             self.move_btn.setChecked(True)
             self.on_tool_select('move')
             self.active_tool.set_origin(self.snap(event.xdata, event.ydata))
-            self.app.info(translate_("Click on target point."))
+            self.app.info("Click on target point.")
 
         ### Copy
         if event.key == 'c':
             self.copy_btn.setChecked(True)
             self.on_tool_select('copy')
             self.active_tool.set_origin(self.snap(event.xdata, event.ydata))
-            self.app.info(translate_("Click on target point."))
+            self.app.info("Click on target point.")
 
         ### Snap
         if event.key == 'g':
@@ -1470,11 +1451,11 @@ class FlatCAMDraw(QtCore.QObject):
         selected = self.get_selected()
 
         if len(selected) == 0:
-            self.app.inform.emit(translate_("[warning] Nothing selected for buffering."))
+            self.app.inform.emit("[warning] Nothing selected for buffering.")
             return
 
         if not isinstance(buf_distance, float):
-            self.app.inform.emit(translate_("[warning] Invalid distance for buffering."))
+            self.app.inform.emit("[warning] Invalid distance for buffering.")
             return
 
         pre_buffer = cascaded_union([t.geo for t in selected])
@@ -1487,7 +1468,7 @@ class FlatCAMDraw(QtCore.QObject):
         selected = self.get_selected()
 
         if len(selected) == 0:
-            self.app.inform.emit(translate_("[warning] Nothing selected for painting."))
+            self.app.inform.emit("[warning] Nothing selected for painting.")
             return
 
         for param in [tooldia, overlap, margin]:

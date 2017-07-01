@@ -9,15 +9,6 @@
 import sys
 from PyQt4 import QtGui
 from FlatCAMApp import App
-import gettext 
-import os
-import sys
-if sys.platform == 'win32':
-       import gettext_windows
-       gettext_windows.setup_env()	   
-pathname = os.path.dirname(sys.argv[0])
-localdir = os.path.abspath(pathname) + "/locale"
-gettext.install("messages", localdir)
 
 
 def debug_trace():

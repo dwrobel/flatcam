@@ -6,33 +6,13 @@ from FlatCAMObj import *
 from shapely.geometry import Point
 from shapely import affinity
 
-# For the translation by Daniel Sallin Debut
-# Use translate_("txt") for translate the "txt" string
-# Using gettext for translate 
-# Using os for def a locale path
-# Using unidecode for accents compatibility
-# coding: utf8
-import gettext
-import os
-import sys
-from unidecode import unidecode
-if sys.platform == 'win32':
-       import gettext_windows
-       gettext_windows.setup_env()
-pathname = os.path.dirname(sys.argv[0])
-localdir = os.path.abspath(pathname) + "/locale"
-gettext.install("messages", localdir)
-def translate_(txt):
-    return unicode(_(txt),'utf-8')
-# For the translation by Daniel Sallin fin
 
 class DblSidedTool(FlatCAMTool):
 
-    toolName = translate_("Double-Sided PCB Tool")
+    toolName = "Double-Sided PCB Tool"
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
-		
 
         ## Title
         title_label = QtGui.QLabel("<font size=4><b>%s</b></font>" % self.toolName)
@@ -45,43 +25,43 @@ class DblSidedTool(FlatCAMTool):
         ## Layer to mirror
         self.object_combo = QtGui.QComboBox()
         self.object_combo.setModel(self.app.collection)
-        self.botlay_label = QtGui.QLabel(translate_("Bottom Layer:"))
-        self.botlay_label.setToolTip(translate_(
+        self.botlay_label = QtGui.QLabel("Bottom Layer:")
+        self.botlay_label.setToolTip(
             "Layer to be mirrorer."
-        ))
+        )
         # form_layout.addRow("Bottom Layer:", self.object_combo)
         form_layout.addRow(self.botlay_label, self.object_combo)
 
         ## Axis
-        self.mirax_label = QtGui.QLabel(translate_("Mirror Axis:"))
-        self.mirax_label.setToolTip(
-            translate_("Mirror vertically (X) or horizontally (Y).")
-        )
         self.mirror_axis = RadioSet([{'label': 'X', 'value': 'X'},
-                                     {'label': 'Y', 'value': 'Y'}])		
+                                     {'label': 'Y', 'value': 'Y'}])
+        self.mirax_label = QtGui.QLabel("Mirror Axis:")
+        self.mirax_label.setToolTip(
+            "Mirror vertically (X) or horizontally (Y)."
+        )
         # form_layout.addRow("Mirror Axis:", self.mirror_axis)
         form_layout.addRow(self.mirax_label, self.mirror_axis)
 
         ## Axis Location
-        self.axis_location = RadioSet([{'label': translate_('Point'), 'value': 'point'},
-                                       {'label': translate_('Box'), 'value': 'box'}])
-        self.axloc_label = QtGui.QLabel(translate_("Axis Location:"))
-        self.axloc_label.setToolTip(translate_(
+        self.axis_location = RadioSet([{'label': 'Point', 'value': 'point'},
+                                       {'label': 'Box', 'value': 'box'}])
+        self.axloc_label = QtGui.QLabel("Axis Location:")
+        self.axloc_label.setToolTip(
             "The axis should pass through a <b>point</b> or cut "
             "a specified <b>box</b> (in a Geometry object) in "
             "the middle."
-        ))
+        )
         # form_layout.addRow("Axis Location:", self.axis_location)
         form_layout.addRow(self.axloc_label, self.axis_location)
 
         ## Point/Box
         self.point_box_container = QtGui.QVBoxLayout()
-        self.pb_label = QtGui.QLabel(translate_("Point/Box:"))
-        self.pb_label.setToolTip(translate_(
+        self.pb_label = QtGui.QLabel("Point/Box:")
+        self.pb_label.setToolTip(
             "Specify the point (x, y) through which the mirror axis "
             "passes or the Geometry object containing a rectangle "
             "that the mirror axis cuts in half."
-        ))
+        )
         # form_layout.addRow("Point/Box:", self.point_box_container)
         form_layout.addRow(self.pb_label, self.point_box_container)
 
@@ -94,38 +74,38 @@ class DblSidedTool(FlatCAMTool):
 
         ## Alignment holes
         self.alignment_holes = EvalEntry()
-        self.ah_label = QtGui.QLabel(translate_("Alignment Holes:"))
-        self.ah_label.setToolTip(translate_(
+        self.ah_label = QtGui.QLabel("Alignment Holes:")
+        self.ah_label.setToolTip(
             "Alignment holes (x1, y1), (x2, y2), ... "
             "on one side of the mirror axis."
-        ))
+        )
         form_layout.addRow(self.ah_label, self.alignment_holes)
 
         ## Drill diameter for alignment holes
         self.drill_dia = LengthEntry()
-        self.dd_label = QtGui.QLabel(translate_("Drill diam.:"))
-        self.dd_label.setToolTip(translate_(
+        self.dd_label = QtGui.QLabel("Drill diam.:")
+        self.dd_label.setToolTip(
             "Diameter of the drill for the "
             "alignment holes."
-        ))
+        )
         form_layout.addRow(self.dd_label, self.drill_dia)
 
         ## Buttons
         hlay = QtGui.QHBoxLayout()
         self.layout.addLayout(hlay)
         hlay.addStretch()
-        self.create_alignment_hole_button = QtGui.QPushButton(translate_("Create Alignment Drill"))
-        self.create_alignment_hole_button.setToolTip(translate_(
+        self.create_alignment_hole_button = QtGui.QPushButton("Create Alignment Drill")
+        self.create_alignment_hole_button.setToolTip(
             "Creates an Excellon Object containing the "
             "specified alignment holes and their mirror "
             "images."
-        ))
-        self.mirror_object_button = QtGui.QPushButton(translate_("Mirror Object"))
-        self.mirror_object_button.setToolTip(translate_(
+        )
+        self.mirror_object_button = QtGui.QPushButton("Mirror Object")
+        self.mirror_object_button.setToolTip(
             "Mirrors (flips) the specified object around "
             "the specified axis. Does not create a new "
             "object, but modifies it."
-        ))
+        )
         hlay.addWidget(self.create_alignment_hole_button)
         hlay.addWidget(self.mirror_object_button)
 

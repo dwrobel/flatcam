@@ -1,4 +1,3 @@
 *.pyc
 .idea/
 tests/tmp/
-share/Thumbs.db

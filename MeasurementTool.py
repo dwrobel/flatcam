@@ -3,26 +3,10 @@ from FlatCAMTool import FlatCAMTool
 from copy import copy
 from math import sqrt
 
-# For the translation by Daniel Sallin Debut
-# Use translate_("txt") for translate the "txt" string
-# Using gettext for translate 
-# Using os for def a locale path
-# Using unidecode for accents compatibility
-# coding: utf8
-import gettext
-import os
-import sys
-from unidecode import unidecode
-pathname = os.path.dirname(sys.argv[0])
-localdir = os.path.abspath(pathname) + "/locale"
-gettext.install("messages", localdir)
-def translate_(txt):
-    return unicode(_(txt),'utf-8')
-# For the translation by Daniel Sallin fin
 
 class Measurement(FlatCAMTool):
 
-    toolName = translate_("Measurement Tool")
+    toolName = "Measurement Tool"
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -35,7 +19,7 @@ class Measurement(FlatCAMTool):
 
         self.point1 = None
         self.point2 = None
-        self.label = QtGui.QLabel(translate_("Click on a reference point ..."))
+        self.label = QtGui.QLabel("Click on a reference point ...")
         self.label.setFrameStyle(QtGui.QFrame.StyledPanel | QtGui.QFrame.Plain)
         self.label.setMargin(3)
         self.layout.addWidget(self.label)
@@ -77,7 +61,7 @@ class Measurement(FlatCAMTool):
 
     def on_move(self, event):
         if self.point1 is None:
-            self.label.setText(translate_("Click on a reference point..."))
+            self.label.setText("Click on a reference point...")
         else:
             try:
                 dx = event.xdata - self.point1[0]

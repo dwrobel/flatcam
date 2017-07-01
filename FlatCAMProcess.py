@@ -153,4 +153,4 @@ class FCVisibleProcessContainer(QtCore.QObject, FCProcessContainer):
             self.view.set_busy(self.procs[0]().status_msg())
 
         else:
-            self.view.set_busy(translate_("%d processes running.") % len(self.procs))
+            self.view.set_busy("%d processes running." % len(self.procs))

@@ -470,7 +470,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             # Propagate options
             follow_obj.options["cnctooldia"] = self.options["isotooldia"]
             follow_obj.solid_geometry = self.solid_geometry
-            app_obj.info(translate_("Follow geometry created: %s") % follow_obj.options["name"])
+            app_obj.info("Follow geometry created: %s" % follow_obj.options["name"])
 
         # TODO: Do something if this is None. Offer changing name?
         self.app.new_object("geometry", follow_name, follow_init)
@@ -531,7 +531,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     offset = (2 * i + 1) / 2.0 * dia - i * overlap * dia
                     geom = generate_envelope (offset, i == 0)
                     geo_obj.solid_geometry.append(geom)
-                app_obj.info(translate_("Isolation geometry created: %s") % geo_obj.options["name"])
+                app_obj.info("Isolation geometry created: %s" % geo_obj.options["name"])
 
             # TODO: Do something if this is None. Offer changing name?
             self.app.new_object("geometry", iso_name, iso_init)
@@ -550,7 +550,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     # Propagate options
                     geo_obj.options["cnctooldia"] = self.options["isotooldia"]
                     geo_obj.solid_geometry = generate_envelope (offset, i == 0)
-                    app_obj.info(translate_("Isolation geometry created: %s") % geo_obj.options["name"])
+                    app_obj.info("Isolation geometry created: %s" % geo_obj.options["name"])
 
                 # TODO: Do something if this is None. Offer changing name?
                 self.app.new_object("geometry", iso_name, iso_init)
@@ -755,7 +755,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # Populate tool list
         n = len(self.tools)
         self.ui.tools_table.setColumnCount(2)
-        self.ui.tools_table.setHorizontalHeaderLabels(['#', translate_('Diameter')])
+        self.ui.tools_table.setHorizontalHeaderLabels(['#', 'Diameter'])
         self.ui.tools_table.setRowCount(n)
         self.ui.tools_table.setSortingEnabled(False)
         i = 0
@@ -851,12 +851,12 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             log.debug("Tools 'all' and sorted are: %s" % str(tools))
 
         if len(tools) == 0:
-            self.app.inform.emit(translate_("Please select one or more tools from the list and try again."))
+            self.app.inform.emit("Please select one or more tools from the list and try again.")
             return False, "Error: No tools."
 
         for tool in tools:
             if self.tools[tool]["C"] < tooldia:
-                self.app.inform.emit(translate_("[warning] Milling tool is larger than hole size. Cancelled."))
+                self.app.inform.emit("[warning] Milling tool is larger than hole size. Cancelled.")
                 return False, "Error: Milling tool is larger than hole."
 
         def geo_init(geo_obj, app_obj):
@@ -899,7 +899,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         tools = self.get_selected_tools_list()
 
         if len(tools) == 0:
-            self.app.inform.emit(translate_("Please select one or more tools from the list and try again."))
+            self.app.inform.emit("Please select one or more tools from the list and try again.")
             return
 
         job_name = self.options["name"] + "_cnc"
@@ -1133,7 +1133,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # Just for adding it to the recent files list.
         self.app.file_opened.emit("cncjob", filename)
 
-        self.app.inform.emit(translate_("Saved to: ") + filename)
+        self.app.inform.emit("Saved to: " + filename)
 
     def get_gcode(self, preamble='', postamble=''):
         #we need this to beable get_gcode separatelly for shell command export_code
@@ -1319,10 +1319,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # No polygon?
         if poly is None:
             self.app.log.warning('No polygon found.')
-            self.app.inform.emit(translate_('[warning] No polygon found.'))
+            self.app.inform.emit('[warning] No polygon found.')
             return
 
-        proc = self.app.proc_container.new(translate_("Painting polygon."))
+        proc = self.app.proc_container.new("Painting polygon.")
 
         name = outname or self.options["name"] + "_paint"
 
@@ -1369,7 +1369,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 raise e
             proc.done()
 
-        self.app.inform.emit(translate_("Polygon Paint started ..."))
+        self.app.inform.emit("Polygon Paint started ...")
 
         # Promise object with the new name
         self.app.collection.promise(name)
@@ -1456,7 +1456,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 raise e
             proc.done()
 
-        self.app.inform.emit(translate_("Polygon Paint started ..."))
+        self.app.inform.emit("Polygon Paint started ...")
 
         # Promise object with the new name
         self.app.collection.promise(name)
@@ -1547,9 +1547,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         if use_thread:
             # To be run in separate thread
             def job_thread(app_obj):
-                with self.app.proc_container.new(translate_("Generating CNC Job.")):
+                with self.app.proc_container.new("Generating CNC Job."):
                     app_obj.new_object("cncjob", outname, job_init)
-                    app_obj.inform.emit(translate_("CNCjob created: %s") % outname)
+                    app_obj.inform.emit("CNCjob created: %s" % outname)
                     app_obj.progress.emit(100)
 
             # Create a promise with the name
