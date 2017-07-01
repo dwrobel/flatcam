@@ -21,7 +21,8 @@ class TclCommandWriteGCode(TclCommand.TclCommandSignaled):
     # Dictionary of types from Tcl command, needs to be ordered.
     # For options like -optionname value
     option_types = collections.OrderedDict([
-
+        ('preamble', str),
+        ('postamble', str)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -32,7 +33,9 @@ class TclCommandWriteGCode(TclCommand.TclCommandSignaled):
         'main': "Saves G-code of a CNC Job object to file.",
         'args': collections.OrderedDict([
             ('name', 'Source CNC Job object.'),
-            ('filename', 'Output filename'),
+            ('filename', 'Output filename.'),
+            ('preamble', 'Text to append at the beginning.'),
+            ('postamble', 'Text to append at the end.')
         ]),
         'examples': []
     }
@@ -56,8 +59,8 @@ class TclCommandWriteGCode(TclCommand.TclCommandSignaled):
         obj_name = args['name']
         filename = args['filename']
 
-        preamble = ''
-        postamble = ''
+        preamble = args['preamble'] if 'preamble' in args else ''
+        postamble = args['postamble'] if 'postamble' in args else ''
 
         # TODO: This is not needed any more? All targets should be present.
         # If there are promised objects, wait until all promises have been fulfilled.

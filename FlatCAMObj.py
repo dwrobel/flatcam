@@ -667,7 +667,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             "tooldia": 0.1,
             "toolchange": False,
             "toolchangez": 1.0,
-            "spindlespeed": None
+            "spindlespeed": None,
+            "postprocessor_name": 'default'
         })
 
         # TODO: Document this.
@@ -824,7 +825,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         """
         Note: This method is a good template for generic operations as
         it takes it's options from parameters or otherwise from the
-        object's options and returns a success, msg tuple as feedback
+        object's options and returns a (success, msg) tuple as feedback
         for shell operations.
 
         :return: Success/failure condition tuple (bool, str).
@@ -841,6 +842,13 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         if tooldia is None:
             tooldia = self.options["tooldia"]
+
+        # Sort tools by diameter. items() -> [('name', diameter), ...]
+        sorted_tools = sorted(self.tools.items(), key=lambda tl: tl[1])
+
+        if tools == "all":
+            tools = [i[0] for i in sorted_tools]  # List if ordered tool names.
+            log.debug("Tools 'all' and sorted are: %s" % str(tools))
 
         if len(tools) == 0:
             self.app.inform.emit(translate_("Please select one or more tools from the list and try again."))
@@ -906,6 +914,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.z_move = self.options["travelz"]
             job_obj.feedrate = self.options["feedrate"]
             job_obj.spindlespeed = self.options["spindlespeed"]
+            job_obj.postprocessor_name = self.options["postprocessor_name"]
             # There could be more than one drill size...
             # job_obj.tooldia =   # TODO: duplicate variable!
             # job_obj.options["tooldia"] =
@@ -995,7 +1004,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
     def __init__(self, name, units="in", kind="generic", z_move=0.1,
                  feedrate=3.0, z_cut=-0.002, tooldia=0.0,
-                 spindlespeed=None):
+                 spindlespeed=None, postprocessor_name='default'):
 
         FlatCAMApp.App.log.debug("Creating CNCJob object...")
 
@@ -1014,6 +1023,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             "prepend": "",
             "dwell": False,
             "dwelltime": 1
+            ,'postprocessor_name':'default'
         })
 
         # Attributes to be included in serialization
@@ -1056,10 +1066,10 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.read_form()
 
         try:
-            filename = QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ...",
-                                                         directory=self.app.defaults["last_folder"])
+            filename = unicode(QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ...",
+                                                         directory=self.app.defaults["last_folder"]))
         except TypeError:
-            filename = QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ...")
+            filename = unicode(QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ..."))
 
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
@@ -1213,6 +1223,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "pathconnect": True,
             "paintcontour": True,
             "multidepth": False,
+            "postprocessor_name": 'default',
             "depthperpass": 0.002,
             "selectmethod": "single"
         })
@@ -1247,9 +1258,12 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "pathconnect": self.ui.pathconnect_cb,
             "paintcontour": self.ui.paintcontour_cb,
             "multidepth": self.ui.mpass_cb,
+            "postprocessor_name": self.ui.postprocessor_name_entry,
             "depthperpass": self.ui.maxdepth_entry,
             "selectmethod": self.ui.selectmethod_combo
         })
+        for name in self.app.postprocessors.keys():
+            self.ui.postprocessor_name_entry.addItem(name)
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
@@ -1463,6 +1477,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                        outname=None,
                        spindlespeed=None,
                        multidepth=None,
+                       postprocessor_name=None,
                        depthperpass=None,
                        use_thread=True):
         """
@@ -1476,6 +1491,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :param tooldia: Tool diameter
         :param outname: Name of the new object
         :param spindlespeed: Spindle speed (RPM)
+        :param postprocessor_name: Name of the postprocessor
         :return: None
         """
 
@@ -1486,6 +1502,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         tooldia = tooldia if tooldia is not None else self.options["cnctooldia"]
         multidepth = multidepth if multidepth is not None else self.options["multidepth"]
         depthperpass = depthperpass if depthperpass is not None else self.options["depthperpass"]
+        postprocessor_name = postprocessor_name if postprocessor_name is not None else self.options["postprocessor_name"]
+
 
         # To allow default value to be "" (optional in gui) and translate to None
         # if not isinstance(spindlespeed, int):
@@ -1512,6 +1530,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             job_obj.z_cut = z_cut
             job_obj.z_move = z_move
             job_obj.feedrate = feedrate
+            job_obj.postprocessor_name = postprocessor_name
             job_obj.spindlespeed = spindlespeed
             app_obj.progress.emit(40)
             # TODO: The tolerance should not be hard coded. Just for testing.

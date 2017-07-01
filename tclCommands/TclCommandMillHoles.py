@@ -15,15 +15,15 @@ class TclCommandMillHoles(TclCommand.TclCommandSignaled):
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
-        ('name', str),
-        ('tools', str),
-        ('tooldia', float),
-        ('outname', str)
+        ('name', str)
     ])
 
-    # Dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
+    # Dictionary of types from Tcl command, needs to be ordered.
+    # This is  for options  like -optionname value
     option_types = collections.OrderedDict([
-
+        ('tools', str),
+        ('outname', str),
+        ('tooldia', float)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -38,23 +38,29 @@ class TclCommandMillHoles(TclCommand.TclCommandSignaled):
             ('tooldia', 'Diameter of the milling tool (example: 0.1).'),
             ('outname', 'Name of object to create.')
         ]),
-        'examples': ['scale my_geometry 4.2']
+        'examples': ['millholes mydrills']
     }
 
     def execute(self, args, unnamed_args):
         """
 
-        :param args:
-        :param unnamed_args:
-        :return:
+        :param args: array of known named arguments and options
+        :param unnamed_args: array of other values which were passed into command
+            without -somename and  we do not have them in known arg_names
+        :return: None or exception
         """
 
         name = args['name']
 
+        if 'outname' not in args:
+            args['outname'] = name + "_mill"
+
         try:
-            if 'tools' in args:
+            if 'tools' in args and args['tools'] != 'all':
                 # Split and put back. We are passing the whole dictionary later.
                 args['tools'] = [x.strip() for x in args['tools'].split(",")]
+            else:
+                args['tools'] = 'all'
         except Exception as e:
             self.raise_tcl_error("Bad tools: %s" % str(e))
 
@@ -67,6 +73,9 @@ class TclCommandMillHoles(TclCommand.TclCommandSignaled):
             self.raise_tcl_error('Only Excellon objects can be mill-drilled, got %s %s.' % (name, type(obj)))
 
         try:
+            # 'name' is not an argument of obj.generate_milling()
+            del args['name']
+
             # This runs in the background... Is blocking handled?
             success, msg = obj.generate_milling(**args)
 

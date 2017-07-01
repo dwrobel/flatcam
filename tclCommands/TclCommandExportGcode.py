@@ -4,15 +4,15 @@ import TclCommand
 
 class TclCommandExportGcode(TclCommand.TclCommandSignaled):
     """
-    Tcl shell command to export gcode as  tcl output for "set X [export_gcode ...]"
+    Tcl shell command to export gcode as tcl output for "set X [export_gcode ...]"
 
     Requires name to be available. It might still be in the
     making at the time this function is called, so check for
     promises and send to background if there are promises.
 
 
-    this  export   may be  catched   by tcl and past as preable  to another  export_gcode or write_gcode
-    this can be used to join GCODES
+    This export may be captured and passed as preable
+    to another "export_gcode" or "write_gcode" call to join G-Code.
 
     example:
         set_sys units MM

@@ -30,6 +30,7 @@ include_files = []
 include_files.append((os.path.join(site_dir, "shapely"), "shapely"))
 include_files.append((os.path.join(site_dir, "matplotlib"), "matplotlib"))
 include_files.append(("share", "share"))
+include_files.append(("postprocessors", "postprocessors"))
 include_files.append((os.path.join(site_dir, "rtree"), "rtree"))
 include_files.append(("README.md", "README.md"))
 include_files.append(("LICENSE", "LICENSE"))
