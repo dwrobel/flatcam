@@ -38,6 +38,7 @@ from shapely.wkt import dumps as sdumps
 from shapely.geometry.base import BaseGeometry
 
 # Used for solid polygons in Matplotlib
+import FlatCAMApp
 from descartes.patch import PolygonPatch
 
 import simplejson as json
@@ -55,7 +56,7 @@ from svg.path import Path, Line, Arc, CubicBezier, QuadraticBezier, parse_path
 from svgparse import *
 
 import logging
-
+import os
 log = logging.getLogger('base2')
 log.setLevel(logging.DEBUG)
 # log.setLevel(logging.WARNING)
@@ -68,7 +69,6 @@ log.addHandler(handler)
 
 class ParseError(Exception):
     pass
-
 
 class Geometry(object):
     """
@@ -2873,6 +2873,11 @@ class Excellon(Geometry):
         return factor
 
 
+class AttrDict(dict):
+    def __init__(self, *args, **kwargs):
+        super(AttrDict, self).__init__(*args, **kwargs)
+        self.__dict__ = self
+
 class CNCjob(Geometry):
     """
     Represents work to be done by a CNC machine.
@@ -2892,7 +2897,7 @@ class CNCjob(Geometry):
 
     defaults = {
         "zdownrate": None,
-        "coordinate_format": "X%.4fY%.4f"
+        "postprocessor_name":'default'
     }
 
     def __init__(self,
@@ -2901,6 +2906,7 @@ class CNCjob(Geometry):
                  z_move=0.1,
                  feedrate=3.0,
                  z_cut=-0.002,
+                 postprocessor_name='default',
                  tooldia=0.0,
                  zdownrate=None,
                  spindlespeed=None):
@@ -2915,12 +2921,13 @@ class CNCjob(Geometry):
         self.unitcode = {"IN": "G20", "MM": "G21"}
         # TODO: G04 Does not exist. It's G4 and now we are handling in postprocessing.
         #self.pausecode = "G04 P1"
-        self.feedminutecode = "G94"
-        self.absolutecode = "G90"
         self.gcode = ""
         self.input_geometry_bounds = None
         self.gcode_parsed = None
         self.steps_per_circ = 20  # Used when parsing G-code arcs
+
+        self.postprocessor_name = postprocessor_name
+        self.postprocessor = self.app.postprocessors[self.postprocessor_name]
 
         if zdownrate is not None:
             self.zdownrate = float(zdownrate)
@@ -2938,6 +2945,10 @@ class CNCjob(Geometry):
                            'gcode', 'input_geometry_bounds', 'gcode_parsed',
                            'steps_per_circ']
 
+    @property
+    def postdata(self):
+        return self.__dict__
+
     def convert_units(self, units):
         factor = Geometry.convert_units(self, units)
         log.debug("CNCjob.convert_units()")
@@ -2949,8 +2960,24 @@ class CNCjob(Geometry):
 
         return factor
 
+    def doformat(self, fun, **kwargs):
+        return self.doformat2(fun, **kwargs) + "\n"
+
+    def doformat2(self, fun, **kwargs):
+        attributes = AttrDict()
+        attributes.update(self.postdata)
+        attributes.update(kwargs)
+        try:
+            returnvalue = fun(attributes)
+            return returnvalue
+        except Exception,e:
+            self.app.log.error('Exception ocurred inside a postprocessor: '+traceback.format_exc())
+            return ''
+
+
     def generate_from_excellon_by_tool(self, exobj, tools="all",
-                                       toolchange=False, toolchangez=0.1):
+                                       toolchange=False, toolchangez=0.1, ):
+        self.z_toolchange = toolchangez
         """
         Creates gcode for this object from an Excellon object
         for the specified tools.
@@ -2997,53 +3024,39 @@ class CNCjob(Geometry):
         #log.debug("Found %d drills." % len(points))
         self.gcode = []
 
+        self.postprocessor = self.app.postprocessors[self.postprocessor_name]
+        p = self.postprocessor
         # Basic G-Code macros
-        t = "G00 " + CNCjob.defaults["coordinate_format"] + "\n"
-        down = "G01 Z%.4f\n" % self.z_cut
-        up = "G00 Z%.4f\n" % self.z_move
-        up_to_zero = "G01 Z0\n"
 
         # Initialization
-        gcode = self.unitcode[self.units.upper()] + "\n"
-        gcode += self.absolutecode + "\n"
-        gcode += self.feedminutecode + "\n"
-        gcode += "F%.2f\n" % self.feedrate
-        gcode += "G00 Z%.4f\n" % self.z_move  # Move to travel height
+        gcode  = self.doformat(p.start_code)
 
-        if self.spindlespeed is not None:
-            # Spindle start with configured speed
-            gcode += "M03 S%d\n" % int(self.spindlespeed)
-        else:
-            gcode += "M03\n"  # Spindle start
+        gcode += self.doformat(p.feedrate_code)
+        gcode += self.doformat(p.lift_code)
+        gcode += self.doformat(p.spindle_code)
 
         #gcode += self.pausecode + "\n"
 
         for tool in tools:
-
+            self.tool=tool
+            self.postdata['toolC']=exobj.tools[tool]["C"]
             # Only if tool has points.
             if tool in points:
                 # Tool change sequence (optional)
                 if toolchange:
-                    gcode += "G00 Z%.4f\n" % toolchangez
-                    gcode += "T%d\n" % int(tool)  # Indicate tool slot (for automatic tool changer)
-                    gcode += "M5\n"  # Spindle Stop
-                    gcode += "M6\n"  # Tool change
-                    gcode += "(MSG, Change to tool dia=%.4f)\n" % exobj.tools[tool]["C"]
-                    gcode += "M0\n"  # Temporary machine stop
-                    if self.spindlespeed is not None:
-                        # Spindle start with configured speed
-                        gcode += "M03 S%d\n" % int(self.spindlespeed)
-                    else:
-                        gcode += "M03\n"  # Spindle start
+                    gcode += self.doformat(p.toolchange_code)
+                    gcode += self.doformat(p.spindle_code)  # Spindle start
 
                 # Drillling!
                 for point in points[tool]:
                     x, y = point.coords.xy
-                    gcode += t % (x[0], y[0])
-                    gcode += down + up_to_zero + up
+                    gcode += self.doformat(p.rapid_code,x=x[0],y=y[0])
+                    gcode += self.doformat(p.down_code)
+                    gcode += self.doformat(p.up_to_zero_code)
+                    gcode += self.doformat(p.lift_code)
 
-        gcode += t % (0, 0)
-        gcode += "M05\n"  # Spindle stop
+        gcode += self.doformat(p.end_code)
+        gcode += self.doformat(p.spindle_stop_code)  # Spindle stop
 
         self.gcode = gcode
 
@@ -3104,15 +3117,14 @@ class CNCjob(Geometry):
             self.gcode = ""
 
         # Initial G-Code
-        self.gcode = self.unitcode[self.units.upper()] + "\n"
-        self.gcode += self.absolutecode + "\n"
-        self.gcode += self.feedminutecode + "\n"
-        self.gcode += "F%.2f\n" % self.feedrate
-        self.gcode += "G00 Z%.4f\n" % self.z_move  # Move (up) to travel height
-        if self.spindlespeed is not None:
-            self.gcode += "M03 S%d\n" % int(self.spindlespeed)  # Spindle start with configured speed
-        else:
-            self.gcode += "M03\n"  # Spindle start
+        self.postprocessor = self.app.postprocessors[self.postprocessor_name]
+        p = self.postprocessor
+
+        self.gcode  = self.doformat(p.start_code)
+
+        self.gcode += self.doformat(p.feedrate_code) # sets the feed rate
+        self.gcode += self.doformat(p.lift_code)  # Move (up) to travel height
+        self.gcode += self.doformat(p.spindle_code)  # Spindle start
         #self.gcode += self.pausecode + "\n"
 
         ## Iterate over geometry paths getting the nearest each time.
@@ -3175,7 +3187,7 @@ class CNCjob(Geometry):
                         # So, an extra G00 should show up but is inconsequential.
                         if type(geo) == LineString or type(geo) == LinearRing:
                             self.gcode += self.linear2gcode(geo, tolerance=tolerance,
-                                                            zcut=depth,
+                                                            z_cut=depth,
                                                             up=False)
 
                         # Ignore multi-pass for points.
@@ -3198,7 +3210,7 @@ class CNCjob(Geometry):
                             geo.coords = list(geo.coords)[::-1]
 
                     # Lift the tool
-                    self.gcode += "G00 Z%.4f\n" % self.z_move
+                    self.gcode += self.doformat(p.lift_code)
                     # self.gcode += "( End of path. )\n"
 
                 # Did deletion at the beginning.
@@ -3217,9 +3229,9 @@ class CNCjob(Geometry):
         log.debug("%s paths traced." % path_count)
 
         # Finish
-        self.gcode += "G00 Z%.4f\n" % self.z_move  # Stop cutting
-        self.gcode += "G00 X0Y0\n"
-        self.gcode += "M05\n"  # Spindle stop
+        self.gcode += self.doformat(p.lift_code)
+        self.gcode += self.doformat(p.end_code)
+        self.gcode += self.doformat(p.spindle_stop_code)
 
     @staticmethod
     def codes_split(gline):
@@ -3411,7 +3423,7 @@ class CNCjob(Geometry):
         self.solid_geometry = cascaded_union([geo['geom'] for geo in self.gcode_parsed])
 
     def linear2gcode(self, linear, tolerance=0, down=True, up=True,
-                     zcut=None, ztravel=None, downrate=None,
+                     z_cut=None, z_move=None, zdownrate=None,
                      feedrate=None, cont=False):
         """
         Generates G-code to cut along the linear feature.
@@ -3425,19 +3437,17 @@ class CNCjob(Geometry):
         :rtype: str
         """
 
-        if zcut is None:
-            zcut = self.z_cut
+        if z_cut is None:
+            z_cut = self.z_cut
 
-        if ztravel is None:
-            ztravel = self.z_move
+        if z_move is None:
+            z_move = self.z_move
 
-        if downrate is None:
-            downrate = self.zdownrate
+        if zdownrate is None:
+            zdownrate = self.zdownrate
 
         if feedrate is None:
             feedrate = self.feedrate
-
-        t = "G0%d " + CNCjob.defaults["coordinate_format"] + "\n"
 
         # Simplify paths?
         if tolerance > 0:
@@ -3448,46 +3458,51 @@ class CNCjob(Geometry):
         gcode = ""
 
         path = list(target_linear.coords)
+        p = self.postprocessor
 
         # Move fast to 1st point
         if not cont:
-            gcode += t % (0, path[0][0], path[0][1])  # Move to first point
+            gcode += self.doformat(p.rapid_code,x=path[0][0],y=path[0][1])  # Move to first point
+
 
         # Move down to cutting depth
         if down:
             # Different feedrate for vertical cut?
             if self.zdownrate is not None:
-                gcode += "F%.2f\n" % downrate
-                gcode += "G01 Z%.4f\n" % zcut       # Start cutting
-                gcode += "F%.2f\n" % feedrate       # Restore feedrate
+
+                gcode += self.doformat(p.feedrate_code,feedrate=zdownrate)
+                gcode += self.doformat(p.down_code)
+                gcode += self.doformat(p.feedrate_code,feedrate=feedrate)
             else:
-                gcode += "G01 Z%.4f\n" % zcut       # Start cutting
+
+                gcode += self.doformat(p.down_code, z_cut=z_cut)      # Start cutting
 
         # Cutting...
         for pt in path[1:]:
-            gcode += t % (1, pt[0], pt[1])    # Linear motion to point
+            gcode += self.doformat(p.linear_code,x=pt[0],y=pt[1])    # Linear motion to point
 
         # Up to travelling height.
         if up:
-            gcode += "G00 Z%.4f\n" % ztravel  # Stop cutting
+            gcode += self.doformat(p.lift_code, z_move=z_move)  # Stop cutting
 
         return gcode
 
     def point2gcode(self, point):
         gcode = ""
         #t = "G0%d X%.4fY%.4f\n"
-        t = "G0%d " + CNCjob.defaults["coordinate_format"] + "\n"
         path = list(point.coords)
-        gcode += t % (0, path[0][0], path[0][1])  # Move to first point
+        p=self.postprocessor
+        gcode += self.doformat(p.linear_code,x=path[0][0], y=path[0][1])  # Move to first point
 
         if self.zdownrate is not None:
-            gcode += "F%.2f\n" % self.zdownrate
-            gcode += "G01 Z%.4f\n" % self.z_cut       # Start cutting
-            gcode += "F%.2f\n" % self.feedrate
+            gcode += self.doformat(p.feedrate_code,feedrate=self.zdownrate)
+            gcode += self.doformat(p.down_code)
+            gcode += self.doformat(p.feedrate_code)
         else:
-            gcode += "G01 Z%.4f\n" % self.z_cut       # Start cutting
 
-        gcode += "G00 Z%.4f\n" % self.z_move      # Stop cutting
+            gcode += self.doformat(p.down_code) # Start cutting
+
+        gcode += self.doformat(p.lift_code)      # Stop cutting
         return gcode
 
     def scale(self, factor):

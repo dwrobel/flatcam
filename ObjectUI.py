@@ -3,7 +3,7 @@ from PyQt4 import QtGui, QtCore
 #from GUIElements import *
 from GUIElements import FCEntry, FloatEntry, EvalEntry, FCCheckBox, \
     LengthEntry, FCTextArea, IntEntry, RadioSet, OptionalInputSection
-
+from GUIElements import FCComboBox
 
 class ObjectUI(QtGui.QWidget):
     """
@@ -328,6 +328,17 @@ class GeometryObjectUI(ObjectUI):
         grid1.addWidget(self.maxdepth_entry, 6, 1)
 
         self.ois_mpass = OptionalInputSection(self.mpass_cb, [self.maxdepth_entry])
+
+        # postprocessor selection
+        postprocessor_label = QtGui.QLabel("Postprocessor")
+        postprocessor_label.setToolTip(
+            "The json file that dictates\n"
+            "gcode output."
+        )
+        self.custom_box.addWidget(postprocessor_label)
+        self.postprocessor_name_entry = FCComboBox()
+        self.custom_box.addWidget(self.postprocessor_name_entry)
+
 
         # Button
         self.generate_cnc_button = QtGui.QPushButton('Generate')

@@ -215,6 +215,17 @@ class FCTextArea(QtGui.QPlainTextEdit):
     def get_value(self):
         return str(self.toPlainText())
 
+class FCComboBox(QtGui.QComboBox):
+    def __init__(self, parent=None):
+        super(FCComboBox, self).__init__(parent)
+
+    def get_value(self):
+        return str(self.currentText())
+
+    def set_value(self, val):
+        self.setCurrentIndex(self.findText(val))
+
+
 
 class VerticalScrollArea(QtGui.QScrollArea):
     """
