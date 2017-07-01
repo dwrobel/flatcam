@@ -1115,7 +1115,7 @@ class App(QtCore.QObject):
                 layout1.addLayout(layout2)
 
                 logo = QtGui.QLabel()
-                logo.setPixmap(QtGui.QPixmap('share/flatcam_icon256.png'))
+                logo.setPixmap(QtGui.QPixmap('share:flatcam_icon256.png'))
                 layout2.addWidget(logo, stretch=0)
 
                 title = QtGui.QLabel(
@@ -4131,11 +4131,11 @@ class App(QtCore.QObject):
 
         # TODO: Move this to constructor
         icons = {
-            "gerber": "share/flatcam_icon16.png",
-            "excellon": "share/drill16.png",
-            "cncjob": "share/cnc16.png",
-            "project": "share/project16.png",
-            "svg": "share/geometry16.png"
+            "gerber": "share:flatcam_icon16.png",
+            "excellon": "share:drill16.png",
+            "cncjob": "share:cnc16.png",
+            "project": "share:project16.png",
+            "svg": "share:geometry16.png"
         }
 
         openers = {

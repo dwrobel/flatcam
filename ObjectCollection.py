@@ -38,10 +38,10 @@ class ObjectCollection(QtCore.QAbstractListModel):
     }
 
     icon_files = {
-        "gerber": "share/flatcam_icon16.png",
-        "excellon": "share/drill16.png",
-        "cncjob": "share/cnc16.png",
-        "geometry": "share/geometry16.png"
+        "gerber": "share:flatcam_icon16.png",
+        "excellon": "share:drill16.png",
+        "cncjob": "share:cnc16.png",
+        "geometry": "share:geometry16.png"
     }
 
     def __init__(self, parent=None):
