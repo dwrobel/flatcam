@@ -265,7 +265,6 @@ class CNCObjectUI(ObjectUI):
         self.ois_dpc = OptionalInputSection(self.multidepth_entry,
                                             [self.depthpercut_entry])
 
-
         # GO Button
         self.regenerate_gcode_button = QtGui.QPushButton('Regenerate')
         self.regenerate_gcode_button.setToolTip("Nothing")
@@ -719,7 +718,6 @@ class GerberObjectUI(ObjectUI):
             "Combine all passes into one object"
         )
         grid1.addWidget(self.combine_passes_cb, 3, 0)
-
 
         self.generate_iso_button = QtGui.QPushButton('Generate Geometry')
         self.generate_iso_button.setToolTip(
