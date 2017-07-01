@@ -11,7 +11,7 @@ class ObjectUI(QtGui.QWidget):
     put UI elements in ObjectUI.custom_box (QtGui.QLayout).
     """
 
-    def __init__(self, icon_file='share/flatcam_icon32.png', title='FlatCAM Object', parent=None):
+    def __init__(self, icon_file='share:flatcam_icon32.png', title='FlatCAM Object', parent=None):
         QtGui.QWidget.__init__(self, parent=parent)
 
         layout = QtGui.QVBoxLayout()
@@ -117,7 +117,7 @@ class CNCObjectUI(ObjectUI):
         be placed in ``self.custom_box`` to preserve the layout.
         """
 
-        ObjectUI.__init__(self, title='CNC Job Object', icon_file='share/cnc32.png', parent=parent)
+        ObjectUI.__init__(self, title='CNC Job Object', icon_file='share:cnc32.png', parent=parent)
 
         # Scale and offset are not available for CNCJob objects.
         # Hiding from the GUI.
@@ -231,7 +231,7 @@ class GeometryObjectUI(ObjectUI):
     """
 
     def __init__(self, parent=None):
-        super(GeometryObjectUI, self).__init__(title='Geometry Object', icon_file='share/geometry32.png', parent=parent)
+        super(GeometryObjectUI, self).__init__(title='Geometry Object', icon_file='share:geometry32.png', parent=parent)
 
         ## Plot options
         self.plot_options_label = QtGui.QLabel("<b>Plot Options:</b>")
@@ -450,7 +450,7 @@ class ExcellonObjectUI(ObjectUI):
 
     def __init__(self, parent=None):
         ObjectUI.__init__(self, title='Excellon Object',
-                          icon_file='share/drill32.png',
+                          icon_file='share:drill32.png',
                           parent=parent)
 
         #### Plot options ####
