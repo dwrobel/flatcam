@@ -126,10 +126,10 @@ class CNCObjectUI(ObjectUI):
         self.scale_label.hide()
         self.scale_button.hide()
 
-        for i in range(0, self.offset_grid.count()):
-            self.offset_grid.itemAt(i).widget().hide()
-        self.offset_label.hide()
-        self.offset_button.hide()
+        # for i in range(0, self.offset_grid.count()):
+        #     self.offset_grid.itemAt(i).widget().hide()
+        # self.offset_label.hide()
+        # self.offset_button.hide()
 
         ## Plot options
         self.plot_options_label = QtGui.QLabel("<b>Plot Options:</b>")

@@ -726,7 +726,19 @@ class Geometry(object):
         :type vect: tuple
         :return: None
         """
-        return
+
+        dx, dy = vect
+
+        def translate_recursion(geom):
+            if type(geom) == list:
+                geoms = list()
+                for local_geom in geom:
+                    geoms.append(translate_recursion(local_geom))
+                return geoms
+            else:
+                return affinity.translate(geom, xoff=dx, yoff=dy)
+
+        self.solid_geometry = translate_recursion(self.solid_geometry)
 
     @staticmethod
     def paint_connect(storage, boundary, tooldia, max_walk=None):
@@ -3542,12 +3554,17 @@ class CNCjob(Geometry):
         :type vect: tuple
         :return: None
         """
+
         dx, dy = vect
 
-        for g in self.gcode_parsed:
-            g['geom'] = affinity.translate(g['geom'], xoff=dx, yoff=dy)
+        # for g in self.gcode_parsed:
+        #     g['geom'] = affinity.translate(g['geom'], xoff=dx, yoff=dy)
+        #
+        # self.create_geometry()
 
-        self.create_geometry()
+        self.base.offset(vect)
+        self.regenerate()
+        self.gcode_parse()
 
     def export_svg(self, scale_factor=0.00):
         """

@@ -1032,6 +1032,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.ser_attrs += ['options', 'kind']
 
     def set_ui(self, ui):
+
         FlatCAMObj.set_ui(self, ui)
 
         FlatCAMApp.App.log.debug("FlatCAMCNCJob.set_ui()")
@@ -1597,14 +1598,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         def translate_recursion(geom):
             if type(geom) == list:
-                geoms=list()
+                geoms = list()
                 for local_geom in geom:
                     geoms.append(translate_recursion(local_geom))
                 return geoms
             else:
-                return  affinity.translate(geom, xoff=dx, yoff=dy)
+                return affinity.translate(geom, xoff=dx, yoff=dy)
 
-        self.solid_geometry=translate_recursion(self.solid_geometry)
+        self.solid_geometry = translate_recursion(self.solid_geometry)
 
     def convert_units(self, units):
         factor = Geometry.convert_units(self, units)
