@@ -66,7 +66,10 @@ class ObjectCollection(QtCore.QAbstractListModel):
         #self.view = QtGui.QListView()
         self.view = KeySensitiveListView()
         self.view.setSelectionMode(Qt.QAbstractItemView.ExtendedSelection)
-        self.view.setModel(self)
+        self.model = QtGui.QStandardItemModel(self.view)
+        self.view.setModel(self.model)
+        self.model.itemChanged.connect(self.on_item_changed)
+        #self.view.setModel(self)
 
         self.click_modifier = None
 
@@ -96,8 +99,13 @@ class ObjectCollection(QtCore.QAbstractListModel):
             self.get_active().ui.plot_cb.toggle()
             return
 
+    def print_list(self):
+        for obj in self.object_list:
+            print obj
+
     def on_mouse_down(self, event):
         FlatCAMApp.App.log.debug("Mouse button pressed on list")
+        #self.print_list()
 
     def rowCount(self, parent=QtCore.QModelIndex(), *args, **kwargs):
         return len(self.object_list)
@@ -118,10 +126,6 @@ class ObjectCollection(QtCore.QAbstractListModel):
         #         return Qt.Qt.Checked
         #     else:
         #         return Qt.Qt.Unchecked
-
-    def print_list(self):
-        for obj in self.object_list:
-            print obj
 
     def append(self, obj, active=False):
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> OC.append()")
@@ -151,13 +155,24 @@ class ObjectCollection(QtCore.QAbstractListModel):
         obj.set_ui(obj.ui_type())
 
         # Required before appending (Qt MVC)
-        self.beginInsertRows(QtCore.QModelIndex(), len(self.object_list), len(self.object_list))
+        #self.beginInsertRows(QtCore.QModelIndex(), len(self.object_list), len(self.object_list))
 
         # Simply append to the python list
         self.object_list.append(obj)
 
+        # Create the model item to insert into the QListView
+        icon = QtGui.QIcon(self.icons[obj.kind])#self.icons["gerber"])
+        item = QtGui.QStandardItem(icon, name)
+        item.setCheckable(True)
+        if obj.options["plot"] == True:
+            item.setCheckState(2)#Qt.Checked)
+        else:
+            item.setCheckState(0) #Qt.Unchecked)
+
+        self.model.appendRow(item)
+
         # Required after appending (Qt MVC)
-        self.endInsertRows()
+        #self.endInsertRows()
 
     def get_names(self):
         """
@@ -220,11 +235,12 @@ class ObjectCollection(QtCore.QAbstractListModel):
             return
         row = selections[0].row()
 
-        self.beginRemoveRows(QtCore.QModelIndex(), row, row)
+        #self.beginRemoveRows(QtCore.QModelIndex(), row, row)
 
         self.object_list.pop(row)
+        self.model.removeRow(row)
 
-        self.endRemoveRows()
+        #self.endRemoveRows()
 
     def get_active(self):
         """
@@ -289,6 +305,16 @@ class ObjectCollection(QtCore.QAbstractListModel):
 
         self.object_list[selection_index].build_ui()
 
+    def on_item_changed(self, item):
+        #FlatCAMApp.App.log.debug("on_item_changed(): " + str(item.row()) + " " + self.object_list[item.row()].options["name"])
+        if item.checkState() == QtCore.Qt.Checked:
+           self.object_list[item.row()].options["plot"] = True #(item.checkState() == QtCore.Qt.Checked)
+        else:
+           self.object_list[item.row()].options["plot"] = False #(item.checkState() == QtCore.Qt.Checked)
+
+        self.object_list[item.row()].plot()
+        return
+
     def on_item_activated(self, index):
         """
         Double-click or Enter on item.
@@ -303,6 +329,7 @@ class ObjectCollection(QtCore.QAbstractListModel):
 
         self.beginResetModel()
 
+        self.model.removeRows(0, self.model.rowCount())
         self.object_list = []
         self.checked_indexes = []
 
