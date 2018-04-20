@@ -554,6 +554,8 @@ class App(QtCore.QObject):
         # Options
         self.ui.options_combo.activated.connect(self.on_options_combo_change)
         self.options_form.units_radio.group_toggle_fn = self.on_toggle_units
+        #Notebook tabs
+        self.ui.notebook.currentChanged.connect(self.on_tab_change)
 
         ####################
         ### Other setups ###
@@ -1528,6 +1530,61 @@ class App(QtCore.QObject):
 
     def on_row_activated(self, index):
         self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
+
+    def on_tab_change(self, tabIndex):
+        """
+        Event callback that signals when a tab in the notebook is switched.
+
+        When switching TO the Project tab, this method synchronizes the state of the plot checkboxes
+        in the object list with the state of the plot checkbox for the selected object in
+        the Selected tab. It might not be the most efficient way but it does a check on
+        all objects in the list and compares their plot setting value to the value of the
+        checkbox state. The matches the value of the checkbox to the value of the settings.
+
+        When switching TO the Selected tab, this method synchronizes the plot checkbox state with
+        the state of the plot settings as long as it can find a plot_cb associated with the
+        FlatCAMObj ui.
+
+        :param tabIndex: The integer index of the tab that is selected and broight into view.
+        :return: None
+        """
+        #print("TAB CHANGE!!!!!!!!!!!!!!!!!!!" + str(tabIndex))
+        # Because the checkboxes attached to the list model might be
+        # programmatically toggled, we block their signal to avoid
+        # unnecessarily sending it out.
+        self.collection.model.blockSignals(True)
+
+        # Tab index 0 is the Project tab
+        if tabIndex == 0:
+            # Loop through all objects in the collection list by index
+            for index in range(len(self.collection.object_list)):
+                # Use the index to retrieve the matching item from the ListView model
+                item = self.collection.model.item(index)
+                # Verify the current state of the checkbox in the Project tab ListView model
+                checked = item.checkState() == QtCore.Qt.Checked
+                # Use the index of the item to retrieve the matching object from the object list
+                obj = self.collection.object_list[item.row()]
+                # Compare the value of the checkbox to that of the settings and update as required
+                if obj.options["plot"] != checked: #(item.checkState() == QtCore.Qt.Checked)
+                    if obj.options["plot"] == True:
+                        item.setCheckState(2)#Qt.Checked)
+                    else:
+                        item.setCheckState(0) #Qt.Unchecked)
+        # Tab index 1 is Selected tab
+        elif tabIndex == 1:
+            # Grab the active object from the collection
+            obj = self.collection.get_active()
+            # If an object is selected and it has a plot_cb object and the plot checkbox state
+            # does NOT match the plot options state
+            if obj != None and obj.ui.plot_cb != None and obj.ui.plot_cb.get_value() != obj.options["plot"]:
+                # Block the checkbox signal
+                obj.ui.plot_cb.blockSignals(True)
+                # Set the checkbox state to match the options state
+                obj.ui.plot_cb.set_value(obj.options["plot"])
+                # Restore the checkbox signal
+                obj.ui.plot_cb.blockSignals(False)
+        # Unblock the signals in the ListView model to return to normal operation
+        self.collection.model.blockSignals(False)
 
     def on_object_created(self, obj):
         """

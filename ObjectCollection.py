@@ -306,7 +306,7 @@ class ObjectCollection(QtCore.QAbstractListModel):
         self.object_list[selection_index].build_ui()
 
     def on_item_changed(self, item):
-        #FlatCAMApp.App.log.debug("on_item_changed(): " + str(item.row()) + " " + self.object_list[item.row()].options["name"])
+        FlatCAMApp.App.log.debug("on_item_changed(): " + str(item.row()) + " " + self.object_list[item.row()].options["name"])
         if item.checkState() == QtCore.Qt.Checked:
            self.object_list[item.row()].options["plot"] = True #(item.checkState() == QtCore.Qt.Checked)
         else:
