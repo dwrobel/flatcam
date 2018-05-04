@@ -178,19 +178,20 @@ class ObjectCollection():
         #self.endInsertRows()
 
     def on_object_option_changed(self, obj, key):
-        self.model.blockSignals(True)
-        name = obj.options["name"]
-        state = 0 #Qt.Unchecked
-        for index in range(self.model.rowCount()):
-            item = self.model.item(index)
-            if self.object_list[item.row()].options["name"] == name:
-                if obj.options["plot"] == True:
-                    state = 2 #Qt.Checked
+        if key == "plot":
+            self.model.blockSignals(True)
+            name = obj.options["name"]
+            state = 0 #Qt.Unchecked
+            for index in range(self.model.rowCount()):
+                item = self.model.item(index)
+                if self.object_list[item.row()].options["name"] == name:
+                    if obj.options["plot"] == True:
+                        state = 2 #Qt.Checked
 
-                item.setCheckState(state)
-                obj.ui.plot_cb.set_value(state)
-                break
-        self.model.blockSignals(False)
+                    item.setCheckState(state)
+                    obj.ui.plot_cb.set_value(state)
+                    break
+            self.model.blockSignals(False)
 
     def get_names(self):
         """
