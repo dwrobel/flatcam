@@ -24,7 +24,7 @@ class DblSidedTool(FlatCAMTool):
 
         ## Layer to mirror
         self.object_combo = QtGui.QComboBox()
-        self.object_combo.setModel(self.app.collection)
+        self.object_combo.setModel(self.app.collection.model)
         self.botlay_label = QtGui.QLabel("Bottom Layer:")
         self.botlay_label.setToolTip(
             "Layer to be mirrorer."
@@ -68,7 +68,7 @@ class DblSidedTool(FlatCAMTool):
         self.point = EvalEntry()
         self.point_box_container.addWidget(self.point)
         self.box_combo = QtGui.QComboBox()
-        self.box_combo.setModel(self.app.collection)
+        self.box_combo.setModel(self.app.collection.model)
         self.point_box_container.addWidget(self.box_combo)
         self.box_combo.hide()
 
@@ -179,6 +179,12 @@ class DblSidedTool(FlatCAMTool):
             xmin, ymin, xmax, ymax = bb_obj.bounds()
             px = 0.5 * (xmin + xmax)
             py = 0.5 * (ymin + ymax)
+
+        # Ensure that the selected object will display when it is mirrored.
+        # If an object's plot setting is False it will still be available in
+        # the combo box. If the plot is not enforced to True then the user
+        # gets no feedback of the operation.
+        fcobj.options["plot"] = True;
 
         fcobj.mirror(axis, [px, py])
         fcobj.plot()

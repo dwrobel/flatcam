@@ -30,6 +30,8 @@ class FlatCAMObj(QtCore.QObject):
     # Instance of the application to which these are related.
     # The app should set this value.
     app = None
+    
+    option_changed = QtCore.pyqtSignal(QtCore.QObject, str)
 
     def __init__(self, name):
         """
@@ -79,7 +81,8 @@ class FlatCAMObj(QtCore.QObject):
                 setattr(self, attr, d[attr])
 
     def on_options_change(self, key):
-        self.emit(QtCore.SIGNAL("optionChanged"), key)
+        #self.emit(QtCore.SIGNAL("optionChanged()"), key)
+        self.option_changed.emit(self, key)
 
     def set_ui(self, ui):
         self.ui = ui

@@ -555,7 +555,7 @@ class App(QtCore.QObject):
         self.ui.options_combo.activated.connect(self.on_options_combo_change)
         self.options_form.units_radio.group_toggle_fn = self.on_toggle_units
         #Notebook tabs
-        self.ui.notebook.currentChanged.connect(self.on_tab_change)
+        #self.ui.notebook.currentChanged.connect(self.on_tab_change)
 
         ####################
         ### Other setups ###

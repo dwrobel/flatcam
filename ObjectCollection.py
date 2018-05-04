@@ -25,7 +25,8 @@ class KeySensitiveListView(QtGui.QListView):
         self.keyPressed.emit(event.key())
 
 
-class ObjectCollection(QtCore.QAbstractListModel):
+#class ObjectCollection(QtCore.QAbstractListModel):
+class ObjectCollection():
     """
     Object storage and management.
     """
@@ -45,7 +46,7 @@ class ObjectCollection(QtCore.QAbstractListModel):
     }
 
     def __init__(self, parent=None):
-        QtCore.QAbstractListModel.__init__(self, parent=parent)
+        #QtCore.QAbstractListModel.__init__(self, parent=parent)
         ### Icons for the list view
         self.icons = {}
         for kind in ObjectCollection.icon_files:
@@ -171,8 +172,25 @@ class ObjectCollection(QtCore.QAbstractListModel):
 
         self.model.appendRow(item)
 
+        obj.option_changed.connect(self.on_object_option_changed)
+
         # Required after appending (Qt MVC)
         #self.endInsertRows()
+
+    def on_object_option_changed(self, obj, key):
+        self.model.blockSignals(True)
+        name = obj.options["name"]
+        state = 0 #Qt.Unchecked
+        for index in range(self.model.rowCount()):
+            item = self.model.item(index)
+            if self.object_list[item.row()].options["name"] == name:
+                if obj.options["plot"] == True:
+                    state = 2 #Qt.Checked
+
+                item.setCheckState(state)
+                obj.ui.plot_cb.set_value(state)
+                break
+        self.model.blockSignals(False)
 
     def get_names(self):
         """
@@ -327,13 +345,13 @@ class ObjectCollection(QtCore.QAbstractListModel):
     def delete_all(self):
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.delete_all()")
 
-        self.beginResetModel()
+#        self.beginResetModel()
 
         self.model.removeRows(0, self.model.rowCount())
         self.object_list = []
         self.checked_indexes = []
 
-        self.endResetModel()
+#        self.endResetModel()
 
     def get_list(self):
         return self.object_list
