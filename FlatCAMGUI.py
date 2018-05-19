@@ -5,7 +5,6 @@
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
 ############################################################
-
 from PyQt4 import QtGui, QtCore, Qt
 from GUIElements import *
 
@@ -152,6 +151,7 @@ class FlatCAMGUI(QtGui.QMainWindow):
         ### Notebook ###
         ################
         self.notebook = QtGui.QTabWidget()
+        
         # self.notebook.setMinimumWidth(250)
 
         ### Projet ###
@@ -268,6 +268,7 @@ class FlatCAMGUI(QtGui.QMainWindow):
         QtGui.qApp.quit()
 
 
+
 class FlatCAMActivityView(QtGui.QWidget):
 
     def __init__(self, parent=None):
@@ -375,6 +376,7 @@ class GerberOptionsGroupUI(OptionsGroupUI):
         self.plot_options_label.setToolTip(
             "Plot (show) this object."
         )
+
         grid0.addWidget(self.plot_cb, 0, 0)
 
         # Solid CB
