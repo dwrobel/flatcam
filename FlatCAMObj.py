@@ -92,7 +92,9 @@ class FlatCAMObj(QtCore.QObject):
         assert isinstance(self.ui, ObjectUI)
         self.ui.name_entry.returnPressed.connect(self.on_name_activate)
         self.ui.offset_button.clicked.connect(self.on_offset_button_click)
+        self.ui.auto_offset_button.clicked.connect(self.on_auto_offset_button_click)
         self.ui.scale_button.clicked.connect(self.on_scale_button_click)
+        self.ui.mirror_button.clicked.connect(self.on_mirror_button_click)
 
     def __str__(self):
         return "<FlatCAMObj({:12s}): {:20s}>".format(self.kind, self.options["name"])
@@ -110,12 +112,38 @@ class FlatCAMObj(QtCore.QObject):
         vect = self.ui.offsetvector_entry.get_value()
         self.offset(vect)
         self.plot()
+    
+    def on_auto_offset_button_click(self):
+        self.app.report_usage("obj_on_auto_offset_button")
+        self.read_form()
+        minx, miny, maxx, maxy = self.bounds()
+        vect = (-minx, -miny)
+        self.ui.offsetvector_entry.set_value(vect)
+        self.offset(vect)
+        self.plot()
 
     def on_scale_button_click(self):
         self.app.report_usage("obj_on_scale_button")
         self.read_form()
         factor = self.ui.scale_entry.get_value()
         self.scale(factor)
+        self.plot()
+
+    def on_mirror_button_click(self):
+        self.app.report_usage("obj_on_mirror_button")
+        self.read_form()
+        minx, miny, maxx, maxy = self.bounds()
+        
+        axis = self.ui.mirror_axis_radio.get_value()
+        
+        if not self.ui.mirror_auto_center_cb.get_value():
+          vect = (0, 0)
+        elif axis == 'X':
+          vect = (0, (maxy + miny)/2)
+        else:
+          vect = ((maxx + minx)/2, 0)
+        
+        self.mirror(axis, vect)
         self.plot()
 
     def setup_axes(self, figure):
