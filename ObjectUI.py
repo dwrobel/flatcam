@@ -203,8 +203,8 @@ class CNCObjectUI(ObjectUI):
             "is generated."
         )
         self.custom_box.addWidget(processorlabel)
-        self.processing_script = FCTextArea()
-        self.custom_box.addWidget(self.processing_script)
+        self.process_script = FCTextArea()
+        self.custom_box.addWidget(self.process_script)
 
 
         # Dwell

@@ -1074,7 +1074,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
-		processor = str(self.ui.process_script.get_value())
+	processor = str(self.ui.process_script.get_value())
 
         self.export_gcode(filename, preamble=preamble, postamble=postamble, processor=processor)
 
