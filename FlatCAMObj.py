@@ -1044,6 +1044,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             "tooldia": self.ui.tooldia_entry,
             "append": self.ui.append_text,
             "prepend": self.ui.prepend_text,
+			"postprocess": self.ui.process_script,
             "dwell": self.ui.dwell_cb,
             "dwelltime": self.ui.dwelltime_entry
         })
@@ -1073,8 +1074,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
+		processor = str(self.ui.process_script.get_value())
 
-        self.export_gcode(filename, preamble=preamble, postamble=postamble)
+        self.export_gcode(filename, preamble=preamble, postamble=postamble, processor=processor)
 
     def dwell_generator(self, lines):
         """
@@ -1110,7 +1112,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         raise StopIteration
 
-    def export_gcode(self, filename, preamble='', postamble=''):
+    def export_gcode(self, filename, preamble='', postamble='', processor=''):
 
         lines = StringIO(self.gcode)
 

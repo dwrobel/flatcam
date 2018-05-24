@@ -196,6 +196,17 @@ class CNCObjectUI(ObjectUI):
         self.append_text = FCTextArea()
         self.custom_box.addWidget(self.append_text)
 
+        processorlabel = QtGui.QLabel('Postprocessing-Script:')
+        processorlabel.setToolTip(
+            "Enter a Postprocessing Script here.\n"
+            "It gets applied to the G-Code after it\n"
+            "is generated."
+        )
+        self.custom_box.addWidget(processorlabel)
+        self.processing_script = FCTextArea()
+        self.custom_box.addWidget(self.processing_script)
+
+
         # Dwell
         grid1 = QtGui.QGridLayout()
         self.custom_box.addLayout(grid1)
