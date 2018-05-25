@@ -1006,7 +1006,7 @@ class Geometry(object):
 
     def export_svg(self, scale_factor=0.00):
         """
-        Exports the Gemoetry Object as a SVG Element
+        Exports the Geometry Object as a SVG Element
 
         :return: SVG Element
         """
@@ -1849,7 +1849,7 @@ class Gerber (Geometry):
                 #log.debug("%3s %s" % (line_num, gline))
 
                 ### Aperture Macros
-                # Having this at the beggining will slow things down
+                # Having this at the beginning will slow things down
                 # but macros can have complicated statements than could
                 # be caught by other patterns.
                 if current_macro is None:  # No macro started yet
@@ -2228,6 +2228,15 @@ class Gerber (Geometry):
                     log.debug("Line %d: Aperture change to (%s)" % (line_num, match.group(1)))
                     log.debug(self.apertures[current_aperture])
 
+                    # If the aperture value is zero then make it something quite small but with a non-zero value
+                    # so it can be processed by FlatCAM.
+                    # But first test to see if the aperture type is "aperture macro". In that case
+                    # we should not test for "size" key as it does not exist in this case.
+                    if self.apertures[current_aperture]["type"] is not "AM":
+                        if self.apertures[current_aperture]["size"] == 0:
+                            self.apertures[current_aperture]["size"] = 0.0000001
+                    log.debug(self.apertures[current_aperture])
+
                     # Take care of the current path with the previous tool
                     if len(path) > 1:
                         # --- Buffered ----
@@ -2511,7 +2520,6 @@ class Excellon(Geometry):
 
         # self.tools[name] = {"C": diameter<float>}
         self.tools = {}
-        
         self.drills = []
 
         ## IN|MM -> Units are inherited from Geometry
