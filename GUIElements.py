@@ -77,6 +77,18 @@ class LengthEntry(QtGui.QLineEdit):
             'MM': {'IN': 25.4,
                    'MM': 1.0}
         }
+        self.readyToEdit = True
+
+    def mousePressEvent(self, e, Parent=None):
+        super(LengthEntry, self).mousePressEvent(e)  # required to deselect on 2e click
+        if self.readyToEdit:
+            self.selectAll()
+            self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        super(LengthEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+        self.deselect()
+        self.readyToEdit = True
 
     def returnPressed(self, *args, **kwargs):
         val = self.get_value()
@@ -111,6 +123,18 @@ class LengthEntry(QtGui.QLineEdit):
 class FloatEntry(QtGui.QLineEdit):
     def __init__(self, parent=None):
         super(FloatEntry, self).__init__(parent)
+        self.readyToEdit = True
+
+    def mousePressEvent(self, e, Parent=None):
+        super(FloatEntry, self).mousePressEvent(e)  # required to deselect on 2e click
+        if self.readyToEdit:
+            self.selectAll()
+            self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        super(FloatEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+        self.deselect()
+        self.readyToEdit = True
 
     def returnPressed(self, *args, **kwargs):
         val = self.get_value()
@@ -139,6 +163,18 @@ class IntEntry(QtGui.QLineEdit):
         super(IntEntry, self).__init__(parent)
         self.allow_empty = allow_empty
         self.empty_val = empty_val
+        self.readyToEdit = True
+
+    def mousePressEvent(self, e, Parent=None):
+        super(IntEntry, self).mousePressEvent(e)  # required to deselect on 2e click
+        if self.readyToEdit:
+            self.selectAll()
+            self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        super(IntEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+        self.deselect()
+        self.readyToEdit = True
 
     def get_value(self):
 
@@ -160,6 +196,18 @@ class IntEntry(QtGui.QLineEdit):
 class FCEntry(QtGui.QLineEdit):
     def __init__(self, parent=None):
         super(FCEntry, self).__init__(parent)
+        self.readyToEdit = True
+
+    def mousePressEvent(self, e, Parent=None):
+        super(FCEntry, self).mousePressEvent(e)  # required to deselect on 2e click
+        if self.readyToEdit:
+            self.selectAll()
+            self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        super(FCEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+        self.deselect()
+        self.readyToEdit = True
 
     def get_value(self):
         return str(self.text())
@@ -171,6 +219,18 @@ class FCEntry(QtGui.QLineEdit):
 class EvalEntry(QtGui.QLineEdit):
     def __init__(self, parent=None):
         super(EvalEntry, self).__init__(parent)
+        self.readyToEdit = True
+
+    def mousePressEvent(self, e, Parent=None):
+        super(EvalEntry, self).mousePressEvent(e)  # required to deselect on 2e click
+        if self.readyToEdit:
+            self.selectAll()
+            self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        super(EvalEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+        self.deselect()
+        self.readyToEdit = True
 
     def returnPressed(self, *args, **kwargs):
         val = self.get_value()

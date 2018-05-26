@@ -28,6 +28,8 @@ from numpy.linalg import solve
 
 from rtree import index as rtindex
 
+from GUIElements import FCEntry
+
 
 class BufferSelectionTool(FlatCAMTool):
     """
@@ -710,17 +712,17 @@ class FlatCAMDraw(QtCore.QObject):
         ### Snap Toolbar ###
         self.snap_toolbar = QtGui.QToolBar()
         self.grid_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share:grid32.png'), 'Snap to grid')
-        self.grid_gap_x_entry = QtGui.QLineEdit()
+        self.grid_gap_x_entry = FCEntry()
         self.grid_gap_x_entry.setMaximumWidth(70)
         self.grid_gap_x_entry.setToolTip("Grid X distance")
         self.snap_toolbar.addWidget(self.grid_gap_x_entry)
-        self.grid_gap_y_entry = QtGui.QLineEdit()
+        self.grid_gap_y_entry = FCEntry()
         self.grid_gap_y_entry.setMaximumWidth(70)
         self.grid_gap_y_entry.setToolTip("Grid Y distante")
         self.snap_toolbar.addWidget(self.grid_gap_y_entry)
 
         self.corner_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share:corner32.png'), 'Snap to corner')
-        self.snap_max_dist_entry = QtGui.QLineEdit()
+        self.snap_max_dist_entry = FCEntry()
         self.snap_max_dist_entry.setMaximumWidth(70)
         self.snap_max_dist_entry.setToolTip("Max. magnet distance")
         self.snap_toolbar.addWidget(self.snap_max_dist_entry)
