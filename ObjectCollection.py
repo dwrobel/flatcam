@@ -70,7 +70,6 @@ class ObjectCollection():
         self.model = QtGui.QStandardItemModel(self.view)
         self.view.setModel(self.model)
         self.model.itemChanged.connect(self.on_item_changed)
-        #self.view.setModel(self)
 
         self.click_modifier = None
 
@@ -164,6 +163,10 @@ class ObjectCollection():
         # Create the model item to insert into the QListView
         icon = QtGui.QIcon(self.icons[obj.kind])#self.icons["gerber"])
         item = QtGui.QStandardItem(icon, name)
+        # Item is not editable, so that double click
+        # does not allow cell value modification.
+        item.setEditable(False)
+        # The item is checkable, to add the checkbox.
         item.setCheckable(True)
         if obj.options["plot"] == True:
             item.setCheckState(2)#Qt.Checked)
