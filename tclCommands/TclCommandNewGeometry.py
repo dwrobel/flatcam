@@ -1,8 +1,8 @@
 from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import TclCommandSignaled
 
 
-class TclCommandNewGeometry(TclCommand.TclCommandSignaled):
+class TclCommandNewGeometry(TclCommandSignaled):
     """
     Tcl shell command to subtract polygon from the given Geometry object.
     """

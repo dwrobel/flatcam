@@ -1,8 +1,8 @@
 from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import TclCommandSignaled
 
 
-class TclCommandIsolate(TclCommand.TclCommandSignaled):
+class TclCommandIsolate(TclCommandSignaled):
     """
     Tcl shell command to Creates isolation routing geometry for the given Gerber.
 

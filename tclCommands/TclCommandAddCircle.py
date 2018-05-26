@@ -1,8 +1,8 @@
 from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import TclCommand
 
 
-class TclCommandAddCircle(TclCommand.TclCommand):
+class TclCommandAddCircle(TclCommand):
     """
     Tcl shell command to creates a circle in the given Geometry object.
 

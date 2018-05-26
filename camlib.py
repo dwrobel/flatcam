@@ -9,7 +9,7 @@
 #from scipy import optimize
 #import traceback
 
-from cStringIO import StringIO
+from io import StringIO
 from numpy import arctan2, Inf, array, sqrt, pi, ceil, sin, cos, dot, float32, \
     transpose
 from numpy.linalg import solve, norm
@@ -2360,7 +2360,7 @@ class Gerber (Geometry):
             else:
                 self.solid_geometry = self.solid_geometry.difference(new_poly)
 
-        except Exception, err:
+        except Exception as err:
             ex_type, ex, tb = sys.exc_info()
             traceback.print_tb(tb)
             #print traceback.format_exc()
@@ -2972,14 +2972,18 @@ class CNCjob(Geometry):
         # Tools
         
         # Sort tools by diameter. items() -> [('name', diameter), ...]
-        sorted_tools = sorted(exobj.tools.items(), key=lambda tl: tl[1])
+        #sorted_tools = sorted(list(exobj.tools.items()), key=lambda tl: tl[1])
+        sort = []
+        for k, v in exobj.tools.items():
+            sort.append((k, v.get('C')))
+        sorted_tools = sorted(sort, key=lambda t1: t1[1])
 
         if tools == "all":
             tools = [i[0] for i in sorted_tools]   # List if ordered tool names.
             log.debug("Tools 'all' and sorted are: %s" % str(tools))
         else:
             selected_tools = [x.strip() for x in tools.split(",")]
-            selected_tools = filter(lambda tl: tl in selected_tools, selected_tools)
+            selected_tools = [tl for tl in selected_tools if tl in selected_tools]
 
             # Create a sorted list of selected tools from the sorted_tools list
             tools = [i for i, j in sorted_tools for k in selected_tools if i == k]
@@ -4103,7 +4107,7 @@ class FlatCAMRTree(object):
         :param pt:
         :return:
         """
-        return self.rti.nearest(pt, objects=True).next()
+        return next(self.rti.nearest(pt, objects=True))
 
 
 class FlatCAMRTreeStorage(FlatCAMRTree):

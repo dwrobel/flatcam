@@ -6,7 +6,7 @@
 # MIT Licence                                              #
 ############################################################
 
-from cStringIO import StringIO
+from io import StringIO
 from PyQt4 import QtCore
 from copy import copy
 from ObjectUI import *
@@ -511,15 +511,16 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             # to cut on the right side of the left over copper i.e on the left side of the features. 
             geom = self.isolation_geometry(offset)
             if invert:
-                if type(geom) is MultiPolygon:
-                    pl = []
-                    for p in geom:
-                        pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
-                    geom = MultiPolygon(pl)
-                elif type(geom) is Polygon:
-                    geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
-                else:
-                    raise "Unexpected Geometry"
+                try:
+                    if type(geom) is MultiPolygon:
+                        pl = []
+                        for p in geom:
+                            pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+                        geom = MultiPolygon(pl)
+                    elif type(geom) is Polygon:
+                        geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
+                except Exception as e:
+                    str("Unexpected Geometry")
             return geom
 
         if combine:
@@ -728,20 +729,20 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                     exc_final.drills.append({"point": point, "tool": drill['tool']})
                 toolsrework=dict()
                 max_numeric_tool=0
-                for toolname in exc.tools.iterkeys():
+                for toolname in list(exc.tools.keys()):
                     numeric_tool=int(toolname)
                     if numeric_tool>max_numeric_tool:
                         max_numeric_tool=numeric_tool
                     toolsrework[exc.tools[toolname]['C']]=toolname
 
                 #exc_final as last because names from final tools will be used
-                for toolname in exc_final.tools.iterkeys():
+                for toolname in list(exc_final.tools.keys()):
                     numeric_tool=int(toolname)
                     if numeric_tool>max_numeric_tool:
                         max_numeric_tool=numeric_tool
                     toolsrework[exc_final.tools[toolname]['C']]=toolname
 
-                for toolvalues in toolsrework.iterkeys():
+                for toolvalues in list(toolsrework.keys()):
                     if toolsrework[toolvalues] in exc_final.tools:
                         if exc_final.tools[toolsrework[toolvalues]]!={"C": toolvalues}:
                             exc_final.tools[str(max_numeric_tool+1)]={"C": toolvalues}
@@ -846,7 +847,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             tooldia = self.options["tooldia"]
 
         # Sort tools by diameter. items() -> [('name', diameter), ...]
-        sorted_tools = sorted(self.tools.items(), key=lambda tl: tl[1])
+        sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1])
 
         if tools == "all":
             tools = [i[0] for i in sorted_tools]  # List if ordered tool names.
@@ -1066,10 +1067,10 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.read_form()
 
         try:
-            filename = unicode(QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ...",
+            filename = str(QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ...",
                                                          directory=self.app.defaults["last_folder"]))
         except TypeError:
-            filename = unicode(QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ..."))
+            filename = str(QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ..."))
 
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
@@ -1351,9 +1352,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             geo_obj.options["cnctooldia"] = tooldia
 
             # Experimental...
-            print "Indexing...",
+            print("Indexing...")
             geo_obj.make_index()
-            print "Done"
+            print("Done")
 
             self.app.inform.emit("Done.")
 
@@ -1437,9 +1438,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             geo_obj.options["cnctooldia"] = tooldia
 
             # Experimental...
-            print "Indexing...",
+            print("Indexing...")
             geo_obj.make_index()
-            print "Done"
+            print("Done")
 
             self.app.inform.emit("Done.")
 

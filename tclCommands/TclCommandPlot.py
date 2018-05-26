@@ -1,8 +1,8 @@
 from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import TclCommand
 
 
-class TclCommandPlot(TclCommand.TclCommand):
+class TclCommandPlot(TclCommand):
     """
     Tcl shell command to update the plot on the user interface.
 

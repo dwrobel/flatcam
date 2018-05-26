@@ -1,8 +1,8 @@
 from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import TclCommandSignaled
 
 
-class TclCommandAddPolygon(TclCommand.TclCommandSignaled):
+class TclCommandAddPolygon(TclCommandSignaled):
     """
     Tcl shell command to create a polygon in the given Geometry object
     """

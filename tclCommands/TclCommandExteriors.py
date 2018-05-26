@@ -1,8 +1,8 @@
 from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import TclCommandSignaled
 
 
-class TclCommandExteriors(TclCommand.TclCommandSignaled):
+class TclCommandExteriors(TclCommandSignaled):
     """
     Tcl shell command to get exteriors of polygons
     """

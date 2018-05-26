@@ -1,8 +1,8 @@
 from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import TclCommand
 
 
-class TclCommandNew(TclCommand.TclCommand):
+class TclCommandNew(TclCommand):
     """
     Tcl shell command to starts a new project. Clears objects from memory
     """

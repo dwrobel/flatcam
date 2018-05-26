@@ -1,10 +1,10 @@
 from ObjectCollection import *
 from copy import copy,deepcopy
 
-import TclCommand
+from tclCommands.TclCommand import TclCommand
 
 
-class TclCommandPanelize(TclCommand.TclCommand):
+class TclCommandPanelize(TclCommand):
     """
     Tcl shell command to pannelize an object.
 

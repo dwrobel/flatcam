@@ -75,66 +75,66 @@ class PaintConnectTest(PaintTestCase):
         self.boundary = Polygon([[0, 0], [0, 5], [5, 5], [5, 0]])
 
     def test_jump(self):
-        print "Test: WALK Expected"
+        print("Test: WALK Expected")
         paths = [
             LineString([[0.5, 2], [2, 4.5]]),
             LineString([[2, 0.5], [4.5, 2]])
         ]
         for p in paths:
-            print p
+            print(p)
 
         tooldia = 1.0
 
-        print "--"
+        print("--")
         result = Geometry.paint_connect(mkstorage(deepcopy(paths)), self.boundary, tooldia)
 
         result = list(result.get_objects())
         for r in result:
-            print r
+            print(r)
 
         self.assertEqual(len(result), 1)
 
         # self.plot_summary_A(paths, tooldia, result, "WALK expected.")
 
     def test_no_jump1(self):
-        print "Test: FLY Expected"
+        print("Test: FLY Expected")
         paths = [
             LineString([[0, 2], [2, 5]]),
             LineString([[2, 0], [5, 2]])
         ]
         for p in paths:
-            print p
+            print(p)
 
         tooldia = 1.0
 
-        print "--"
+        print("--")
         result = Geometry.paint_connect(mkstorage(deepcopy(paths)), self.boundary, tooldia)
 
         result = list(result.get_objects())
         for r in result:
-            print r
+            print(r)
 
         self.assertEqual(len(result), len(paths))
 
         # self.plot_summary_A(paths, tooldia, result, "FLY Expected")
 
     def test_no_jump2(self):
-        print "Test: FLY Expected"
+        print("Test: FLY Expected")
         paths = [
             LineString([[0.5, 2], [2, 4.5]]),
             LineString([[2, 0.5], [4.5, 2]])
         ]
         for p in paths:
-            print p
+            print(p)
 
         tooldia = 1.1
 
-        print "--"
+        print("--")
         result = Geometry.paint_connect(mkstorage(deepcopy(paths)), self.boundary, tooldia)
 
         result = list(result.get_objects())
         for r in result:
-            print r
+            print(r)
 
         self.assertEqual(len(result), len(paths))
 
@@ -153,22 +153,22 @@ class PaintConnectTest2(PaintTestCase):
         )
 
     def test_no_jump3(self):
-        print "TEST: No jump expected"
+        print("TEST: No jump expected")
         paths = [
             LineString([[0.5, 1], [1.5, 3]]),
             LineString([[4, 1], [4, 4]])
         ]
         for p in paths:
-            print p
+            print(p)
 
         tooldia = 1.0
 
-        print "--"
+        print("--")
         result = Geometry.paint_connect(mkstorage(deepcopy(paths)), self.boundary, tooldia)
 
         result = list(result.get_objects())
         for r in result:
-            print r
+            print(r)
 
         self.assertEqual(len(result), len(paths))
 
@@ -182,26 +182,26 @@ class PaintConnectTest3(PaintTestCase):
 
     def setUp(self):
         self.boundary = Polygon([[0, 0], [0, 5], [5, 5], [5, 0]])
-        print "TEST w/ LinearRings"
+        print("TEST w/ LinearRings")
 
     def test_jump2(self):
-        print "Test: WALK Expected"
+        print("Test: WALK Expected")
         paths = [
             LineString([[0.5, 2], [2, 4.5]]),
             LineString([[2, 0.5], [4.5, 2]]),
             self.boundary.buffer(-0.5).exterior
         ]
         for p in paths:
-            print p
+            print(p)
 
         tooldia = 1.0
 
-        print "--"
+        print("--")
         result = Geometry.paint_connect(mkstorage(deepcopy(paths)), self.boundary, tooldia)
 
         result = list(result.get_objects())
         for r in result:
-            print r
+            print(r)
 
         self.assertEqual(len(result), 1)
 

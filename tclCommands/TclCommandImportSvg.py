@@ -1,8 +1,8 @@
 from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import TclCommandSignaled
 
 
-class TclCommandImportSvg(TclCommand.TclCommandSignaled):
+class TclCommandImportSvg(TclCommandSignaled):
     """
     Tcl shell command to import an SVG file as a Geometry Object.
     """

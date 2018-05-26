@@ -1,8 +1,8 @@
 from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import TclCommandSignaled
 
 
-class TclCommandSubtractRectangle(TclCommand.TclCommandSignaled):
+class TclCommandSubtractRectangle(TclCommandSignaled):
     """
     Tcl shell command to subtract a rectange from the given Geometry object.
     """

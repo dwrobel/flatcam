@@ -1,8 +1,8 @@
 from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import TclCommand
 
 
-class TclCommandGetSys(TclCommand.TclCommand):
+class TclCommandGetSys(TclCommand):
     """
     Tcl shell command to get the value of a system variable
 

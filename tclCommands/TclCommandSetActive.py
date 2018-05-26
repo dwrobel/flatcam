@@ -1,8 +1,8 @@
 from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import TclCommand
 
 
-class TclCommandSetActive(TclCommand.TclCommand):
+class TclCommandSetActive(TclCommand):
     """
     Tcl shell command to set an object as active in the GUI.
 

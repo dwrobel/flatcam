@@ -1,8 +1,8 @@
 from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import TclCommandSignaled
 
 
-class TclCommandMillHoles(TclCommand.TclCommandSignaled):
+class TclCommandMillHoles(TclCommandSignaled):
     """
     Tcl shell command to Create Geometry Object for milling holes from Excellon.
 

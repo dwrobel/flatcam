@@ -1,8 +1,8 @@
 from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import TclCommandSignaled
 
 
-class TclCommandSubtractPoly(TclCommand.TclCommandSignaled):
+class TclCommandSubtractPoly(TclCommandSignaled):
     """
     Tcl shell command to create a new empty Geometry object.
     """

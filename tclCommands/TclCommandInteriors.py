@@ -1,8 +1,8 @@
 from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import TclCommandSignaled
 
 
-class TclCommandInteriors(TclCommand.TclCommandSignaled):
+class TclCommandInteriors(TclCommandSignaled):
     """
     Tcl shell command to get interiors of polygons
     """

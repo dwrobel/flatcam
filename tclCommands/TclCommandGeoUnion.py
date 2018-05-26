@@ -1,8 +1,8 @@
 from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import TclCommand
 
 
-class TclCommandGeoUnion(TclCommand.TclCommand):
+class TclCommandGeoUnion(TclCommand):
     """
     Tcl shell command to run a union (addition) operation on the
     components of a geometry object.

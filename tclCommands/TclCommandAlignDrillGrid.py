@@ -1,8 +1,8 @@
 from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import TclCommandSignaled
 
 
-class TclCommandAlignDrillGrid(TclCommand.TclCommandSignaled):
+class TclCommandAlignDrillGrid(TclCommandSignaled):
     """
     Tcl shell command to create an Excellon object
     with drills for aligment grid.

@@ -1,8 +1,8 @@
 from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import TclCommand
 
 
-class TclCommandOffset(TclCommand.TclCommand):
+class TclCommandOffset(TclCommand):
     """
     Tcl shell command to change the position of the object.
 

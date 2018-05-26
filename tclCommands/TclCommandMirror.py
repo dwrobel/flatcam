@@ -1,8 +1,8 @@
 from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import TclCommandSignaled
 
 
-class TclCommandMirror(TclCommand.TclCommandSignaled):
+class TclCommandMirror(TclCommandSignaled):
     """
     Tcl shell command to mirror an object.
     """
@@ -90,7 +90,7 @@ class TclCommandMirror(TclCommand.TclCommandSignaled):
                 obj.mirror(axis, [px, py])
                 obj.plot()
 
-            except Exception, e:
+            except Exception as e:
                 return "Operation failed: %s" % str(e)
 
         else:
@@ -104,5 +104,5 @@ class TclCommandMirror(TclCommand.TclCommandSignaled):
             try:
                 obj.mirror(axis, [dist, dist])
                 obj.plot()
-            except Exception, e:
+            except Exception as e:
                 return "Operation failed: %s" % str(e)
