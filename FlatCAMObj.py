@@ -847,7 +847,14 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             tooldia = self.options["tooldia"]
 
         # Sort tools by diameter. items() -> [('name', diameter), ...]
-        sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1])
+        # sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1])
+
+        # Python3 no longer allows direct comparison between dicts so we need to sort tools differently
+        sort = []
+        for k, v in self.tools.items():
+            sort.append((k, v.get('C')))
+        sorted_tools = sorted(sort, key=lambda t1: t1[1])
+        log.debug("Tools are sorted: %s" % str(sorted_tools))
 
         if tools == "all":
             tools = [i[0] for i in sorted_tools]  # List if ordered tool names.
