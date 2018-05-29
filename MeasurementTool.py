@@ -29,8 +29,8 @@ class Measurement(FlatCAMTool):
         self.click_subscription = None
         self.move_subscription = None
 
-    def install(self):
-        FlatCAMTool.install(self)
+    def install(self, icon=None):
+        FlatCAMTool.install(self, icon)
         self.app.ui.right_layout.addWidget(self)
         self.app.plotcanvas.mpl_connect('key_press_event', self.on_key_press)
 

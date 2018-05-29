@@ -132,7 +132,6 @@ class TermWidget(QWidget):
             self._edit.setPlainText("...proccessing... [%s]" % detail)
 
         self._edit.setDisabled(True)
-        self._edit.setFocus()
 
     def close_proccessing(self):
         """
