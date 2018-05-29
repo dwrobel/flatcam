@@ -55,7 +55,9 @@ class TclCommandSetSys(TclCommand):
             "false": False,
             "False": False,
             "true": True,
-            "True": True
+            "True": True,
+            "mm": "MM",
+            "in": "IN"
         }
 
         if param in self.app.defaults:

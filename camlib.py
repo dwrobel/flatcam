@@ -2970,7 +2970,7 @@ class CNCjob(Geometry):
         log.debug("Creating CNC Job from Excellon...")
 
         # Tools
-        
+
         # Sort tools by diameter. items() -> [('name', diameter), ...]
         #sorted_tools = sorted(list(exobj.tools.items()), key=lambda tl: tl[1])
         sort = []
@@ -2987,7 +2987,7 @@ class CNCjob(Geometry):
 
             # Create a sorted list of selected tools from the sorted_tools list
             tools = [i for i, j in sorted_tools for k in selected_tools if i == k]
-            log.debug("Tools selected and sorted are: %s" % str(tools)) 
+            log.debug("Tools selected and sorted are: %s" % str(tools))
 
         # Points (Group by tool)
         points = {}
@@ -2998,7 +2998,7 @@ class CNCjob(Geometry):
                 except KeyError:
                     points[drill['tool']] = [drill['point']]
 
-        #log.debug("Found %d drills." % len(points))
+        # log.debug("Found %d drills." % len(points))
         self.gcode = []
 
         # Basic G-Code macros
@@ -3020,7 +3020,7 @@ class CNCjob(Geometry):
         else:
             gcode += "M03\n"  # Spindle start
 
-        #gcode += self.pausecode + "\n"
+        # gcode += self.pausecode + "\n"
 
         for tool in tools:
 
@@ -3191,7 +3191,7 @@ class CNCjob(Geometry):
                             log.warning("G-code generation not implemented for %s" % (str(type(geo))))
 
                         # Reverse coordinates if not a loop so we can continue
-                        # cutting without returning to the beginhing.
+                        # cutting without returning to the beginning.
                         if type(geo) == LineString:
                             geo.coords = list(geo.coords)[::-1]
                             reverse = True
