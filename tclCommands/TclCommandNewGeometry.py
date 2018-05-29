@@ -1,5 +1,4 @@
-from ObjectCollection import *
-from tclCommands.TclCommand import TclCommandSignaled
+from tclCommands.TclCommand import *
 
 
 class TclCommandNewGeometry(TclCommandSignaled):

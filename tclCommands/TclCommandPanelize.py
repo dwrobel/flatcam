@@ -1,7 +1,5 @@
-from ObjectCollection import *
 from copy import copy,deepcopy
-
-from tclCommands.TclCommand import TclCommand
+from tclCommands.TclCommand import *
 
 
 class TclCommandPanelize(TclCommand):

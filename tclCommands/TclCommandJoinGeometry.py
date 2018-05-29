@@ -1,5 +1,4 @@
-from ObjectCollection import *
-from tclCommands.TclCommand import TclCommand
+from tclCommands.TclCommand import *
 
 
 class TclCommandJoinGeometry(TclCommand):

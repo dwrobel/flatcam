@@ -6,7 +6,6 @@
 # MIT Licence                                              #
 ############################################################
 
-#from PyQt4.QtCore import QModelIndex
 from FlatCAMObj import *
 import inspect  # TODO: Remove
 import FlatCAMApp
@@ -162,13 +161,13 @@ class ObjectCollection():
         self.object_list.append(obj)
 
         # Create the model item to insert into the QListView
-        icon = QtGui.QIcon(self.icons[obj.kind])#self.icons["gerber"])
-        item = QtGui.QStandardItem(icon, name)
+        icon = QtGui.QIcon(self.icons[obj.kind])    #self.icons["gerber"])
+        item = QtGui.QStandardItem(icon, str(name))
         item.setCheckable(True)
-        if obj.options["plot"] == True:
-            item.setCheckState(2)#Qt.Checked)
+        if obj.options["plot"] is True:
+            item.setCheckState(2)   #Qt.Checked)
         else:
-            item.setCheckState(0) #Qt.Unchecked)
+            item.setCheckState(0)   #Qt.Unchecked)
 
         self.model.appendRow(item)
 
@@ -289,7 +288,7 @@ class ObjectCollection():
         :param name: Name of the FlatCAM Object
         :return: None
         """
-        iobj = self.createIndex(self.get_names().index(name), 0)  # Column 0
+        iobj = self.model.createIndex(self.get_names().index(name), 0)  # Column 0
         self.view.selectionModel().select(iobj, QtGui.QItemSelectionModel.Select)
 
     def set_inactive(self, name):
@@ -300,7 +299,7 @@ class ObjectCollection():
         :param name: Name of the FlatCAM Object
         :return: None
         """
-        iobj = self.createIndex(self.get_names().index(name), 0)  # Column 0
+        iobj = self.model.createIndex(self.get_names().index(name), 0)  # Column 0
         self.view.selectionModel().select(iobj, QtGui.QItemSelectionModel.Deselect)
 
     def set_all_inactive(self):

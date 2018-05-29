@@ -17,7 +17,7 @@ import re
 import webbrowser
 import os
 import tkinter
-from PyQt4 import QtCore
+from PyQt4 import Qt, QtCore, QtGui
 import time  # Just used for debugging. Double check before removing.
 from xml.dom.minidom import parseString as parse_xml_string
 from contextlib import contextmanager
@@ -27,10 +27,10 @@ from contextlib import contextmanager
 ########################################
 import FlatCAMVersion
 from FlatCAMWorker import Worker
-from ObjectCollection import *
-from FlatCAMObj import *
-from PlotCanvas import *
-from FlatCAMGUI import *
+import ObjectCollection
+from FlatCAMObj import FlatCAMCNCjob, FlatCAMExcellon, FlatCAMGerber, FlatCAMGeometry, FlatCAMObj
+from PlotCanvas import PlotCanvas
+from FlatCAMGUI import FlatCAMGUI, GlobalOptionsUI, FlatCAMActivityView, FlatCAMInfoBar
 from FlatCAMCommon import LoudDict
 from FlatCAMShell import FCShell
 from FlatCAMDraw import FlatCAMDraw
@@ -38,6 +38,8 @@ from FlatCAMProcess import *
 from MeasurementTool import Measurement
 from DblSidedTool import DblSidedTool
 import tclCommands
+
+from camlib import *
 
 
 ########################################
@@ -471,7 +473,7 @@ class App(QtCore.QObject):
         #self.options_write_form()
         self.on_options_combo_change(0)  # Will show the initial form
 
-        self.collection = ObjectCollection()
+        self.collection = ObjectCollection.ObjectCollection()
         self.ui.project_tab_layout.addWidget(self.collection.view)
         #### End of Data ####
 
@@ -1065,7 +1067,7 @@ class App(QtCore.QObject):
             t3 = time.time()
             self.log.debug("%f seconds converting units." % (t3 - t2))
 
-        FlatCAMApp.App.log.debug("Moving new object back to main thread.")
+        self.log.debug("Moving new object back to main thread.")
 
         # Move the object to the main thread and let the app know that it is available.
         obj.moveToThread(QtGui.QApplication.instance().thread())

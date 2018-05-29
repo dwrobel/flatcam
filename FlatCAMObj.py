@@ -221,7 +221,7 @@ class FlatCAMObj(QtCore.QObject):
         try:
             self.form_fields[option].set_value(self.options[option])
         except KeyError:
-            self.app.log.warn("Tried to set an option or field that does not exist: %s" % option)
+            self.app.log.warning("Tried to set an option or field that does not exist: %s" % option)
 
     def read_form_item(self, option):
         """

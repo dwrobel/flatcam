@@ -1,5 +1,4 @@
-from ObjectCollection import *
-from tclCommands.TclCommand import TclCommandSignaled
+from tclCommands.TclCommand import *
 
 
 class TclCommandOpenGerber(TclCommandSignaled):
@@ -48,7 +47,7 @@ class TclCommandOpenGerber(TclCommandSignaled):
         # How the object should be initialized
         def obj_init(gerber_obj, app_obj):
 
-            if not isinstance(gerber_obj, Geometry):
+            if not isinstance(gerber_obj, FlatCAMGerber):
                 self.raise_tcl_error('Expected FlatCAMGerber, got %s %s.' % (outname, type(gerber_obj)))
 
             # Opening the file happens here
