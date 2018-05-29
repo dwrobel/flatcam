@@ -32,11 +32,13 @@ class FlatCAMTool(QtGui.QWidget):
 
         self.menuAction = None
 
-    def install(self, icon=None):
+    def install(self, icon=None, separator=None):
         if icon is None:
             self.menuAction = self.app.ui.menutool.addAction(self.toolName)
         else:
             self.menuAction = self.app.ui.menutool.addAction(icon, self.toolName)
+        if separator is True:
+            self.app.ui.menutool.addSeparator()
         self.menuAction.triggered.connect(self.run)
 
     def run(self):

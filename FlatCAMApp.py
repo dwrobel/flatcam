@@ -573,7 +573,7 @@ class App(QtCore.QObject):
         ### Tools and Plugins ###
         #########################
         self.dblsidedtool = DblSidedTool(self)
-        self.dblsidedtool.install(icon=QtGui.QIcon('share:doubleside16.png'))
+        self.dblsidedtool.install(icon=QtGui.QIcon('share:doubleside16.png'), separator=True)
 
         self.measeurement_tool = Measurement(self)
         self.measeurement_tool.install(icon=QtGui.QIcon('share:measure16.png'))
@@ -606,6 +606,7 @@ class App(QtCore.QObject):
         self.ui.shell_dock.setFeatures(QtGui.QDockWidget.DockWidgetMovable |
                              QtGui.QDockWidget.DockWidgetFloatable | QtGui.QDockWidget.DockWidgetClosable)
         self.ui.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.ui.shell_dock)
+
 
         if self.defaults["shell_at_startup"]:
             self.ui.shell_dock.show()
