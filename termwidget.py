@@ -132,6 +132,7 @@ class TermWidget(QWidget):
             self._edit.setPlainText("...proccessing... [%s]" % detail)
 
         self._edit.setDisabled(True)
+        self._edit.setFocus()
 
     def close_proccessing(self):
         """
@@ -143,6 +144,7 @@ class TermWidget(QWidget):
         self._edit.setTextBackgroundColor(Qt.white)
         self._edit.setPlainText('')
         self._edit.setDisabled(False)
+        self._edit.setFocus()
 
     def _append_to_browser(self, style, text):
         """
