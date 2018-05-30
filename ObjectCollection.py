@@ -69,7 +69,6 @@ class ObjectCollection():
         self.model = QtGui.QStandardItemModel(self.view)
         self.view.setModel(self.model)
         self.model.itemChanged.connect(self.on_item_changed)
-        #self.view.setModel(self)
 
         self.click_modifier = None
 
@@ -161,8 +160,8 @@ class ObjectCollection():
         self.object_list.append(obj)
 
         # Create the model item to insert into the QListView
-        icon = QtGui.QIcon(self.icons[obj.kind])  # self.icons["gerber"])
-        item = QtGui.QStandardItem(icon, str(name))
+        icon = QtGui.QIcon(self.icons[obj.kind])#self.icons["gerber"])
+        item = QtGui.QStandardItem(icon, name)
         # Item is not editable, so that double click
         # does not allow cell value modification.
         item.setEditable(False)
