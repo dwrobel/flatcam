@@ -101,7 +101,7 @@ class FlatCAMObj(QtCore.QObject):
         old_name = copy(self.options["name"])
         new_name = self.ui.name_entry.get_value()
         self.options["name"] = self.ui.name_entry.get_value()
-        self.app.info("Name changed from %s to %s" % (old_name, new_name))
+        self.app.inform.emit("Name changed from %s to %s" % (old_name, new_name))
 
     def on_offset_button_click(self):
         self.app.report_usage("obj_on_offset_button")
@@ -473,7 +473,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             # Propagate options
             follow_obj.options["cnctooldia"] = self.options["isotooldia"]
             follow_obj.solid_geometry = self.solid_geometry
-            app_obj.info("Follow geometry created: %s" % follow_obj.options["name"])
+            app_obj.inform.emit("Follow geometry created: %s" % follow_obj.options["name"])
 
         # TODO: Do something if this is None. Offer changing name?
         self.app.new_object("geometry", follow_name, follow_init)
@@ -519,7 +519,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 elif type(geom) is Polygon:
                     geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
                 else:
-                    raise "Unexpected Geometry"
+                    raise str("Unexpected Geometry")
             return geom
 
         if combine:
@@ -534,7 +534,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     offset = (2 * i + 1) / 2.0 * dia - i * overlap * dia
                     geom = generate_envelope (offset, i == 0)
                     geo_obj.solid_geometry.append(geom)
-                app_obj.info("Isolation geometry created: %s" % geo_obj.options["name"])
+                app_obj.inform.emit("Isolation geometry created: %s" % geo_obj.options["name"])
 
             # TODO: Do something if this is None. Offer changing name?
             self.app.new_object("geometry", iso_name, iso_init)
@@ -553,7 +553,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     # Propagate options
                     geo_obj.options["cnctooldia"] = self.options["isotooldia"]
                     geo_obj.solid_geometry = generate_envelope (offset, i == 0)
-                    app_obj.info("Isolation geometry created: %s" % geo_obj.options["name"])
+                    app_obj.inform.emit("Isolation geometry created: %s" % geo_obj.options["name"])
 
                 # TODO: Do something if this is None. Offer changing name?
                 self.app.new_object("geometry", iso_name, iso_init)
@@ -1294,11 +1294,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             return
 
         if self.options["selectmethod"] == "single":
-            self.app.info("Click inside the desired polygon.")
+            self.app.inform.emit("Click inside the desired polygon.")
 
             # To be called after clicking on the plot.
             def doit(event):
-                self.app.info("Painting polygon...")
+                self.app.inform.emit("Painting polygon...")
                 self.app.plotcanvas.mpl_disconnect(subscription)
                 point = [event.xdata, event.ydata]
                 self.paint_poly_single_click(point, tooldia, overlap,
