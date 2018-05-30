@@ -22,12 +22,20 @@
 import os, site, sys
 from cx_Freeze import setup, Executable
 
+# this is done to solve the tkinter not being found (Python3)
+# still the DLL's need to be copied to the lib folder but the script can't do it
+PYTHON_INSTALL_DIR = os.path.dirname(os.path.dirname(os.__file__))
+os.environ['TCL_LIBRARY'] = os.path.join(PYTHON_INSTALL_DIR, 'tcl', 'tcl8.6')
+os.environ['TK_LIBRARY'] = os.path.join(PYTHON_INSTALL_DIR, 'tcl', 'tk8.6')
+
 ## Get the site-package folder, not everybody will install
 ## Python into C:\PythonXX
 site_dir = site.getsitepackages()[1]
 
 include_files = []
 include_files.append((os.path.join(site_dir, "shapely"), "shapely"))
+include_files.append((os.path.join(site_dir, "svg"), "svg"))
+include_files.append((os.path.join(site_dir, "svg/path"), "svg"))
 include_files.append((os.path.join(site_dir, "matplotlib"), "matplotlib"))
 include_files.append(("share", "share"))
 include_files.append((os.path.join(site_dir, "rtree"), "rtree"))
@@ -41,18 +49,16 @@ if sys.platform == "win32":
     base = "Win32GUI"
 
 buildOptions = dict(
-    compressed=False,
     include_files=include_files,
-    icon='share:flatcam_icon48.ico',
     # excludes=['PyQt4', 'tk', 'tcl']
     excludes=['scipy.lib.lapack.flapack.pyd',
               'scipy.lib.blas.fblas.pyd',
               'QtOpenGL4.dll']
 )
 
-print "INCLUDE_FILES", include_files
+print(("INCLUDE_FILES", include_files))
 
-execfile('clean.py')
+exec(compile(open('clean.py').read(), 'clean.py', 'exec'))
 
 setup(
     name="FlatCAM",
@@ -60,5 +66,5 @@ setup(
     version="8.5",
     description="FlatCAM: 2D Computer Aided PCB Manufacturing",
     options=dict(build_exe=buildOptions),
-    executables=[Executable("FlatCAM.py", base=base)]
+    executables=[Executable("FlatCAM.py", icon='share/flatcam_icon48.ico', base=base)]
 )
