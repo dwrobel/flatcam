@@ -554,7 +554,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     # Propagate options
                     geo_obj.options["cnctooldia"] = self.options["isotooldia"]
                     geo_obj.solid_geometry = generate_envelope (offset, i == 0)
-                    app_obj.info("Isolation geometry created: %s" % geo_obj.options["name"])
+
+                    # The following line is commented because it creates errors
+                    # regarding QPixmaps used outside GUI thread
+                    # app_obj.info("Isolation geometry created: %s" % geo_obj.options["name"])
 
                 # TODO: Do something if this is None. Offer changing name?
                 self.app.new_object("geometry", iso_name, iso_init)
