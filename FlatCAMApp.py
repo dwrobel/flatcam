@@ -1639,8 +1639,9 @@ class App(QtCore.QObject):
         try:
             App.log.debug('button=%d, x=%d, y=%d, xdata=%f, ydata=%f' % (
                 event.button, event.x, event.y, event.xdata, event.ydata))
-
-            self.clipboard.setText(self.defaults["point_clipboard_format"] % (event.xdata, event.ydata))
+            modifiers = QtGui.QApplication.keyboardModifiers()
+            if modifiers == QtCore.Qt.ControlModifier:
+                self.clipboard.setText(self.defaults["point_clipboard_format"] % (event.xdata, event.ydata))
 
         except Exception, e:
             App.log.debug("Outside plot?")
