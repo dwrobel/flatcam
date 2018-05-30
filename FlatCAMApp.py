@@ -3632,27 +3632,27 @@ class App(QtCore.QObject):
 
             return output
 
-        def follow(obj_name, *args):
-            a, kwa = h(*args)
-
-            types = {'outname': str}
-
-            for key in kwa:
-                if key not in types:
-                    return 'Unknown parameter: %s' % key
-                kwa[key] = types[key](kwa[key])
-
-            try:
-                obj = self.collection.get_by_name(str(obj_name))
-            except:
-                return "Could not retrieve object: %s" % obj_name
-            if obj is None:
-                return "Object not found: %s" % obj_name
-
-            try:
-                obj.follow(**kwa)
-            except Exception, e:
-                return "ERROR: %s" % str(e)
+        # def follow(obj_name, *args):
+        #     a, kwa = h(*args)
+        #
+        #     types = {'outname': str}
+        #
+        #     for key in kwa:
+        #         if key not in types:
+        #             return 'Unknown parameter: %s' % key
+        #         kwa[key] = types[key](kwa[key])
+        #
+        #     try:
+        #         obj = self.collection.get_by_name(str(obj_name))
+        #     except:
+        #         return "Could not retrieve object: %s" % obj_name
+        #     if obj is None:
+        #         return "Object not found: %s" % obj_name
+        #
+        #     try:
+        #         obj.follow(**kwa)
+        #     except Exception, e:
+        #         return "ERROR: %s" % str(e)
 
         # def get_sys(param):
         #     if param in self.defaults:
@@ -4096,13 +4096,13 @@ class App(QtCore.QObject):
                 'fcn': make_docs,
                 'help': 'Prints command rererence in reStructuredText format.'
             },
-            'follow': {
-                'fcn': follow,
-                'help': 'Creates a geometry object following gerber paths.\n' +
-                        '> follow <name> [-outname <oname>]\n' +
-                        '   name: Name of the gerber object.\n' +
-                        '   outname: Name of the output geometry object.'
-            },
+            # 'follow': {
+            #     'fcn': follow,
+            #     'help': 'Creates a geometry object following gerber paths.\n' +
+            #             '> follow <name> [-outname <oname>]\n' +
+            #             '   name: Name of the gerber object.\n' +
+            #             '   outname: Name of the output geometry object.'
+            # },
 
             # 'get_sys': {
             #     'fcn': get_sys,
