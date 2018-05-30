@@ -161,8 +161,12 @@ class ObjectCollection():
         self.object_list.append(obj)
 
         # Create the model item to insert into the QListView
-        icon = QtGui.QIcon(self.icons[obj.kind])    #self.icons["gerber"])
-        item = QtGui.QStandardItem(icon, str(name))
+        icon = QtGui.QIcon(self.icons[obj.kind])  # self.icons["gerber"])
+        item = QtGui.QStandardItem(icon, name)
+        # Item is not editable, so that double click
+        # does not allow cell value modification.
+        item.setEditable(False)
+        # The item is checkable, to add the checkbox.
         item.setCheckable(True)
         if obj.options["plot"] is True:
             item.setCheckState(2)   #Qt.Checked)
