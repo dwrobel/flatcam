@@ -693,7 +693,7 @@ class App(QtCore.QObject):
         :return: None
         """
         if not isinstance(self.collection.get_active(), FlatCAMGeometry):
-            self.info("Select a Geometry Object to edit.")
+            self.inform.emit("Select a Geometry Object to edit.")
             return
 
         self.ui.updategeo_btn.setEnabled(True)
@@ -708,7 +708,7 @@ class App(QtCore.QObject):
         """
         geo = self.collection.get_active()
         if not isinstance(geo, FlatCAMGeometry):
-            self.info("Select a Geometry Object to update.")
+            self.inform.emit("Select a Geometry Object to update.")
             return
 
         self.draw.update_fcgeometry(geo)
