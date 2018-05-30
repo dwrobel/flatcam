@@ -511,15 +511,14 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             # to cut on the right side of the left over copper i.e on the left side of the features. 
             geom = self.isolation_geometry(offset)
             if invert:
-                try:
-                    if type(geom) is MultiPolygon:
-                        pl = []
-                        for p in geom:
-                            pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
-                        geom = MultiPolygon(pl)
-                    elif type(geom) is Polygon:
-                        geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
-                except Exception as e:
+                if type(geom) is MultiPolygon:
+                    pl = []
+                    for p in geom:
+                        pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+                    geom = MultiPolygon(pl)
+                elif type(geom) is Polygon:
+                    geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
+                else:
                     str("Unexpected Geometry")
             return geom
 
