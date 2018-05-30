@@ -38,14 +38,15 @@ class ObjectCollection():
     }
 
     icon_files = {
-        "gerber": "share/flatcam_icon16.png",
-        "excellon": "share/drill16.png",
-        "cncjob": "share/cnc16.png",
-        "geometry": "share/geometry16.png"
+        "gerber": "share:flatcam_icon16.png",
+        "excellon": "share:drill16.png",
+        "cncjob": "share:cnc16.png",
+        "geometry": "share:geometry16.png"
     }
 
     def __init__(self, parent=None):
         #QtCore.QAbstractListModel.__init__(self, parent=parent)
+
         ### Icons for the list view
         self.icons = {}
         for kind in ObjectCollection.icon_files:
@@ -161,7 +162,7 @@ class ObjectCollection():
 
         # Create the model item to insert into the QListView
         icon = QtGui.QIcon(self.icons[obj.kind])#self.icons["gerber"])
-        item = QtGui.QStandardItem(icon, name)
+        item = QtGui.QStandardItem(icon, str(name))
         # Item is not editable, so that double click
         # does not allow cell value modification.
         item.setEditable(False)
