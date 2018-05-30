@@ -519,7 +519,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 elif type(geom) is Polygon:
                     geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
                 else:
-                    str("Unexpected Geometry")
+                    raise str("Unexpected Geometry")
             return geom
 
         if combine:
