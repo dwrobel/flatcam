@@ -983,7 +983,7 @@ class FlatCAMDraw(QtCore.QObject):
                         self.tools[t]["button"].setChecked(False)
 
                 self.active_tool = self.tools[tool]["constructor"](self)
-                self.app.info(self.active_tool.start_msg)
+                self.app.inform.emit(self.active_tool.start_msg)
             else:
                 self.app.log.debug("%s is NOT checked." % tool)
                 for t in self.tools:
@@ -1002,7 +1002,7 @@ class FlatCAMDraw(QtCore.QObject):
         if self.active_tool is not None and event.button is 1:
             # Dispatch event to active_tool
             msg = self.active_tool.click(self.snap(event.xdata, event.ydata))
-            self.app.info(msg)
+            self.app.inform.emit(msg)
 
             # If it is a shape generating tool
             if isinstance(self.active_tool, FCShapeTool) and self.active_tool.complete:
@@ -1114,14 +1114,14 @@ class FlatCAMDraw(QtCore.QObject):
                 self.active_tool.make()
                 if self.active_tool.complete:
                     self.on_shape_complete()
-                    self.app.info("Done.")
+                    self.app.inform.emit("Done.")
             return
 
         ### Abort the current action
         if event.key == 'escape':
             # TODO: ...?
             #self.on_tool_select("select")
-            self.app.info("Cancelled.")
+            self.app.inform.emit("Cancelled.")
 
             self.delete_utility_geometry()
 
@@ -1141,14 +1141,14 @@ class FlatCAMDraw(QtCore.QObject):
             self.move_btn.setChecked(True)
             self.on_tool_select('move')
             self.active_tool.set_origin(self.snap(event.xdata, event.ydata))
-            self.app.info("Click on target point.")
+            self.app.inform.emit("Click on target point.")
 
         ### Copy
         if event.key == 'c':
             self.copy_btn.setChecked(True)
             self.on_tool_select('copy')
             self.active_tool.set_origin(self.snap(event.xdata, event.ydata))
-            self.app.info("Click on target point.")
+            self.app.inform.emit("Click on target point.")
 
         ### Snap
         if event.key == 'g':
@@ -1165,7 +1165,7 @@ class FlatCAMDraw(QtCore.QObject):
         if self.active_tool is not None:
             response = self.active_tool.on_key(event.key)
         if response is not None:
-            self.app.info(response)
+            self.app.inform.emit(response)
 
     def on_canvas_key_release(self, event):
         self.key = None
