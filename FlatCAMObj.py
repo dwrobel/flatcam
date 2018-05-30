@@ -757,18 +757,29 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         # Populate tool list
         n = len(self.tools)
-        self.ui.tools_table.setColumnCount(2)
-        self.ui.tools_table.setHorizontalHeaderLabels(['#', 'Diameter'])
+        self.ui.tools_table.setColumnCount(3)
+        self.ui.tools_table.setHorizontalHeaderLabels(['#', 'Diameter', 'Count'])
         self.ui.tools_table.setRowCount(n)
         self.ui.tools_table.setSortingEnabled(False)
+
         i = 0
         for tool in self.tools:
+
+            drill_cnt = 0   # variable to store the nr of drills per tool
+            # Find no of drills for the current tool
+            for drill in self.drills:
+                if drill.get('tool') == tool:
+                    drill_cnt += 1
+
             id = QtGui.QTableWidgetItem(tool)
             id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self.ui.tools_table.setItem(i, 0, id)  # Tool name/id
             dia = QtGui.QTableWidgetItem(str(self.tools[tool]['C']))
             dia.setFlags(QtCore.Qt.ItemIsEnabled)
+            drill_count = QtGui.QTableWidgetItem('%d' % drill_cnt)
+            drill_count.setFlags(QtCore.Qt.ItemIsEnabled)
             self.ui.tools_table.setItem(i, 1, dia)  # Diameter
+            self.ui.tools_table.setItem(i, 2, drill_count)  # Number of drills per tool
             i += 1
         
         # sort the tool diameter column
@@ -778,7 +789,11 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         
         self.ui.tools_table.resizeColumnsToContents()
         self.ui.tools_table.resizeRowsToContents()
-        self.ui.tools_table.horizontalHeader().setStretchLastSection(True)
+        horizontal_header = self.ui.tools_table.horizontalHeader()
+        horizontal_header.setResizeMode(0, QtGui.QHeaderView.ResizeToContents)
+        horizontal_header.setResizeMode(1, QtGui.QHeaderView.Stretch)
+        horizontal_header.setResizeMode(2, QtGui.QHeaderView.ResizeToContents)
+        # horizontal_header.setStretchLastSection(True)
         self.ui.tools_table.verticalHeader().hide()
         self.ui.tools_table.setSortingEnabled(True)
 
