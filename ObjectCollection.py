@@ -289,7 +289,7 @@ class ObjectCollection():
         :param name: Name of the FlatCAM Object
         :return: None
         """
-        iobj = self.createIndex(self.get_names().index(name), 0)  # Column 0
+        iobj = self.model.createIndex(self.get_names().index(name), 0)  # Column 0
         self.view.selectionModel().select(iobj, QtGui.QItemSelectionModel.Select)
 
     def set_inactive(self, name):
@@ -300,7 +300,7 @@ class ObjectCollection():
         :param name: Name of the FlatCAM Object
         :return: None
         """
-        iobj = self.createIndex(self.get_names().index(name), 0)  # Column 0
+        iobj = self.model.createIndex(self.get_names().index(name), 0)  # Column 0
         self.view.selectionModel().select(iobj, QtGui.QItemSelectionModel.Deselect)
 
     def set_all_inactive(self):

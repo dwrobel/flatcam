@@ -112,10 +112,10 @@ class App(QtCore.QObject):
 
     plots_updated = QtCore.pyqtSignal()
 
-    # Emitted by new_object() and passes the new object as argument.
-    # on_object_created() adds the object to the collection,
+    # Emitted by new_object() and passes the new object as argument and a plot flag
+    # on_object_created() adds the object to the collection, plot the object if plot flag is True
     # and emits new_object_available.
-    object_created = QtCore.pyqtSignal(object)
+    object_created = QtCore.pyqtSignal(object, bool)
 
     # Emitted when a new object has been added to the collection
     # and is ready to be used.
@@ -1021,9 +1021,12 @@ class App(QtCore.QObject):
          but before it is attached to the application. The function is
          called with 2 parameters: the new object and the App instance.
         :type initialize: function
+        :param plot: Whether to plot the object or not
+        :type plot: Bool
         :return: None
         :rtype: None
         """
+        self.plot = plot
 
         App.log.debug("new_object()")
 
@@ -1047,6 +1050,10 @@ class App(QtCore.QObject):
                 oname = option[len(kind) + 1:]
                 obj.options[oname] = self.options[option]
 
+        # make sure that the plot option of the new object is reflecting the current status and not the general option
+        # solve issues with the modelview currently used (checkbox on the Project Tab)
+        obj.options['plot'] = self.plot
+
         # Initialize as per user request
         # User must take care to implement initialize
         # in a thread-safe way as is is likely that we
@@ -1069,7 +1076,7 @@ class App(QtCore.QObject):
 
         # Move the object to the main thread and let the app know that it is available.
         obj.moveToThread(QtGui.QApplication.instance().thread())
-        self.object_created.emit(obj)
+        self.object_created.emit(obj, self.plot)
 
         return obj
 
@@ -1483,12 +1490,14 @@ class App(QtCore.QObject):
         # Keep this for later
         try:
             name = self.collection.get_active().options["name"]
+            isPlotted = self.collection.get_active().options["plot"]
         except AttributeError:
             self.log.debug("Nothing selected for deletion")
             return
 
-        # Remove plot
-        self.plotcanvas.figure.delaxes(self.collection.get_active().axes)
+        # Remove plot only if the object was plotted otherwise delaxes will fail
+        if isPlotted:
+            self.plotcanvas.figure.delaxes(self.collection.get_active().axes)
         self.plotcanvas.auto_adjust_axes()
 
         # Clear form
@@ -1530,11 +1539,12 @@ class App(QtCore.QObject):
     def on_row_activated(self, index):
         self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
 
-    def on_object_created(self, obj):
+    def on_object_created(self, obj, plot):
         """
         Event callback for object creation.
 
         :param obj: The newly created FlatCAM object.
+        :param plot: If to plot the new object, bool
         :return: None
         """
         t0 = time.time()  # DEBUG
@@ -1545,7 +1555,9 @@ class App(QtCore.QObject):
 
         self.inform.emit("Object (%s) created: %s" % (obj.kind, obj.options['name']))
         self.new_object_available.emit(obj)
-        obj.plot()
+        if plot:
+            obj.plot()
+
         self.on_zoom_fit(None)
         t1 = time.time()  # DEBUG
         self.log.debug("%f seconds adding object and plotting." % (t1 - t0))
