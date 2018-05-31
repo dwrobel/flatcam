@@ -28,12 +28,14 @@ class FlatCAMGUI(QtGui.QMainWindow):
         self.menufile = self.menu.addMenu('&File')
 
         # New
-        self.menufilenew = QtGui.QAction(QtGui.QIcon('share/file16.png'), '&New', self)
+        self.menufilenew = QtGui.QAction(QtGui.QIcon('share/file16.png'), '&New project', self)
         self.menufile.addAction(self.menufilenew)
-        # Open recent
 
         # Recent
         self.recent = self.menufile.addMenu(QtGui.QIcon('share/folder16.png'), "Open recent ...")
+
+        # Separator
+        self.menufile.addSeparator()
 
         # Open gerber ...
         self.menufileopengerber = QtGui.QAction(QtGui.QIcon('share/folder16.png'), 'Open &Gerber ...', self)
@@ -51,6 +53,9 @@ class FlatCAMGUI(QtGui.QMainWindow):
         self.menufileopenproject = QtGui.QAction(QtGui.QIcon('share/folder16.png'), 'Open &Project ...', self)
         self.menufile.addAction(self.menufileopenproject)
 
+        # Separator
+        self.menufile.addSeparator()
+
         # Import SVG ...
         self.menufileimportsvg = QtGui.QAction(QtGui.QIcon('share/folder16.png'), 'Import &SVG ...', self)
         self.menufile.addAction(self.menufileimportsvg)
@@ -58,6 +63,9 @@ class FlatCAMGUI(QtGui.QMainWindow):
         # Export SVG ...
         self.menufileexportsvg = QtGui.QAction(QtGui.QIcon('share/folder16.png'), 'Export &SVG ...', self)
         self.menufile.addAction(self.menufileexportsvg)
+
+        # Separator
+        self.menufile.addSeparator()
 
         # Save Project
         self.menufilesaveproject = QtGui.QAction(QtGui.QIcon('share/floppy16.png'), '&Save Project', self)
@@ -75,13 +83,15 @@ class FlatCAMGUI(QtGui.QMainWindow):
         self.menufilesavedefaults = QtGui.QAction(QtGui.QIcon('share/floppy16.png'), 'Save &Defaults', self)
         self.menufile.addAction(self.menufilesavedefaults)
 
+        # Separator
+        self.menufile.addSeparator()
+
         # Quit
         self.exit_action = QtGui.QAction(QtGui.QIcon('share/power16.png'), '&Exit', self)
+        self.menufile.addAction(self.exit_action)
         # exitAction.setShortcut('Ctrl+Q')
         # exitAction.setStatusTip('Exit application')
         #self.exit_action.triggered.connect(QtGui.qApp.quit)
-
-        self.menufile.addAction(self.exit_action)
 
         ### Edit ###
         self.menuedit = self.menu.addMenu('&Edit')
@@ -111,7 +121,7 @@ class FlatCAMGUI(QtGui.QMainWindow):
         self.menuviewenable = self.menuview.addAction(QtGui.QIcon('share/replot16.png'), 'Enable all plots')
 
         ### Tool ###
-        #self.menutool = self.menu.addMenu('&Tool')
+
         self.menutool = QtGui.QMenu('&Tool')
         self.menutoolaction = self.menu.addMenu(self.menutool)
         self.menutoolshell = self.menutool.addAction(QtGui.QIcon('share/shell16.png'), '&Command Line')
@@ -125,21 +135,38 @@ class FlatCAMGUI(QtGui.QMainWindow):
         ###############
         ### Toolbar ###
         ###############
-        self.toolbar = QtGui.QToolBar()
-        self.addToolBar(self.toolbar)
+        self.toolbarfile = QtGui.QToolBar('File Toolbar')
+        self.addToolBar(self.toolbarfile)
+        self.open_gerber_btn = self.toolbarfile.addAction(QtGui.QIcon('share/flatcam_icon32.png'), "Open &Gerber")
+        self.open_exc_btn = self.toolbarfile.addAction(QtGui.QIcon('share/drill32.png'), "Open &Excellon")
+        self.open_gcode_btn = self.toolbarfile.addAction(QtGui.QIcon('share/cnc32.png'), "Open Gco&de")
+        self.save_btn = self.toolbarfile.addAction(QtGui.QIcon('share/floppy32.png'), 'Save Project &As ...')
 
-        self.zoom_fit_btn = self.toolbar.addAction(QtGui.QIcon('share/zoom_fit32.png'), "&Zoom Fit")
-        self.zoom_out_btn = self.toolbar.addAction(QtGui.QIcon('share/zoom_out32.png'), "&Zoom Out")
-        self.zoom_in_btn = self.toolbar.addAction(QtGui.QIcon('share/zoom_in32.png'), "&Zoom In")
-        self.clear_plot_btn = self.toolbar.addAction(QtGui.QIcon('share/clear_plot32.png'), "&Clear Plot")
-        self.replot_btn = self.toolbar.addAction(QtGui.QIcon('share/replot32.png'), "&Replot")
-        self.newgeo_btn = self.toolbar.addAction(QtGui.QIcon('share/new_geo32.png'), "New Blank Geometry")
-        self.editgeo_btn = self.toolbar.addAction(QtGui.QIcon('share/edit32.png'), "Edit Geometry")
-        self.updategeo_btn = self.toolbar.addAction(QtGui.QIcon('share/edit_ok32.png'), "Update Geometry")
+        self.toolbarview= QtGui.QToolBar('View Toolbar')
+        self.addToolBar(self.toolbarview)
+        self.zoom_fit_btn = self.toolbarview.addAction(QtGui.QIcon('share/zoom_fit32.png'), "&Zoom Fit")
+        self.zoom_out_btn = self.toolbarview.addAction(QtGui.QIcon('share/zoom_out32.png'), "&Zoom Out")
+        self.zoom_in_btn = self.toolbarview.addAction(QtGui.QIcon('share/zoom_in32.png'), "&Zoom In")
+        # Separator
+        self.toolbarview.addSeparator()
+        self.clear_plot_btn = self.toolbarview.addAction(QtGui.QIcon('share/clear_plot32.png'), "&Clear Plot")
+        self.replot_btn = self.toolbarview.addAction(QtGui.QIcon('share/replot32.png'), "&Replot")
+
+        self.toolbareditobj = QtGui.QToolBar('Obj.Editor Toolbar')
+        self.addToolBar(self.toolbareditobj)
+        self.newgeo_btn = self.toolbareditobj.addAction(QtGui.QIcon('share/new_geo32.png'), "New Blank Geometry")
+        self.editgeo_btn = self.toolbareditobj.addAction(QtGui.QIcon('share/edit32.png'), "Edit Geometry")
+        self.updategeo_btn = self.toolbareditobj.addAction(QtGui.QIcon('share/edit_ok32.png'), "Update Geometry")
         self.updategeo_btn.setEnabled(False)
-        #self.canceledit_btn = self.toolbar.addAction(QtGui.QIcon('share/cancel_edit32.png'), "Cancel Edit")
-        self.delete_btn = self.toolbar.addAction(QtGui.QIcon('share/delete32.png'), "&Delete")
-        self.shell_btn = self.toolbar.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
+
+        self.toolbaredit = QtGui.QToolBar('Edit Toolbar')
+        self.addToolBar(self.toolbaredit)
+        self.delete_btn = self.toolbaredit.addAction(QtGui.QIcon('share/delete32.png'), "&Delete")
+
+        self.toolbartools = QtGui.QToolBar('Tools Toolbar')
+        self.addToolBar(self.toolbartools)
+        self.shell_btn = self.toolbartools.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
+        self.measure_btn = self.toolbartools.addAction(QtGui.QIcon('share/measure32.png'), "&Measurement Tool")
 
         ################
         ### Splitter ###
@@ -154,7 +181,7 @@ class FlatCAMGUI(QtGui.QMainWindow):
         
         # self.notebook.setMinimumWidth(250)
 
-        ### Projet ###
+        ### Project ###
         project_tab = QtGui.QWidget()
         project_tab.setMinimumWidth(250)  # Hack
         self.project_tab_layout = QtGui.QVBoxLayout(project_tab)

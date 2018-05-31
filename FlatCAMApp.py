@@ -541,6 +541,10 @@ class App(QtCore.QObject):
         self.ui.menuhelp_home.triggered.connect(lambda: webbrowser.open(self.app_url))
         self.ui.menuhelp_manual.triggered.connect(lambda: webbrowser.open(self.manual_url))
         # Toolbar
+        self.ui.open_gerber_btn.triggered.connect(self.on_fileopengerber)
+        self.ui.open_exc_btn.triggered.connect(self.on_fileopenexcellon)
+        self.ui.open_gcode_btn.triggered.connect(self.on_fileopengcode)
+        self.ui.save_btn.triggered.connect(self.on_file_saveprojectas)
         self.ui.zoom_fit_btn.triggered.connect(self.on_zoom_fit)
         self.ui.zoom_in_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
         self.ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
@@ -571,10 +575,12 @@ class App(QtCore.QObject):
         ### Tools and Plugins ###
         #########################
         self.dblsidedtool = DblSidedTool(self)
-        self.dblsidedtool.install()
+        self.dblsidedtool.install(icon=QtGui.QIcon('share/doubleside16.png'), separator=True)
 
         self.measeurement_tool = Measurement(self)
-        self.measeurement_tool.install()
+        self.measeurement_tool.install(icon=QtGui.QIcon('share/measure16.png'))
+
+        self.ui.measure_btn.triggered.connect(self.measeurement_tool.run)
 
         self.draw = FlatCAMDraw(self, disabled=True)
 
@@ -602,6 +608,7 @@ class App(QtCore.QObject):
         self.ui.shell_dock.setFeatures(QtGui.QDockWidget.DockWidgetMovable |
                              QtGui.QDockWidget.DockWidgetFloatable | QtGui.QDockWidget.DockWidgetClosable)
         self.ui.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.ui.shell_dock)
+
 
         if self.defaults["shell_at_startup"]:
             self.ui.shell_dock.show()
@@ -3634,27 +3641,51 @@ class App(QtCore.QObject):
 
             return output
 
-        def follow(obj_name, *args):
-            a, kwa = h(*args)
 
-            types = {'outname': str}
+        # def follow(obj_name, *args):
+        #     a, kwa = h(*args)
+        #
+        #     types = {'outname': str}
+        #
+        #     for key in kwa:
+        #         if key not in types:
+        #             return 'Unknown parameter: %s' % key
+        #         kwa[key] = types[key](kwa[key])
+        #
+        #     try:
+        #         obj = self.collection.get_by_name(str(obj_name))
+        #     except:
+        #         return "Could not retrieve object: %s" % obj_name
+        #     if obj is None:
+        #         return "Object not found: %s" % obj_name
+        #
+        #     try:
+        #         obj.follow(**kwa)
+        #     except Exception, e:
+        #         return "ERROR: %s" % str(e)
 
-            for key in kwa:
-                if key not in types:
-                    return 'Unknown parameter: %s' % key
-                kwa[key] = types[key](kwa[key])
+        # def follow(obj_name, *args):
+        #     a, kwa = h(*args)
+        #
+        #     types = {'outname': str}
+        #
+        #     for key in kwa:
+        #         if key not in types:
+        #             return 'Unknown parameter: %s' % key
+        #         kwa[key] = types[key](kwa[key])
+        #
+        #     try:
+        #         obj = self.collection.get_by_name(str(obj_name))
+        #     except:
+        #         return "Could not retrieve object: %s" % obj_name
+        #     if obj is None:
+        #         return "Object not found: %s" % obj_name
+        #
+        #     try:
+        #         obj.follow(**kwa)
+        #     except Exception as e:
+        #         return "ERROR: %s" % str(e)
 
-            try:
-                obj = self.collection.get_by_name(str(obj_name))
-            except:
-                return "Could not retrieve object: %s" % obj_name
-            if obj is None:
-                return "Object not found: %s" % obj_name
-
-            try:
-                obj.follow(**kwa)
-            except Exception as e:
-                return "ERROR: %s" % str(e)
 
         # def get_sys(param):
         #     if param in self.defaults:
@@ -4098,13 +4129,13 @@ class App(QtCore.QObject):
                 'fcn': make_docs,
                 'help': 'Prints command rererence in reStructuredText format.'
             },
-            'follow': {
-                'fcn': follow,
-                'help': 'Creates a geometry object following gerber paths.\n' +
-                        '> follow <name> [-outname <oname>]\n' +
-                        '   name: Name of the gerber object.\n' +
-                        '   outname: Name of the output geometry object.'
-            },
+            # 'follow': {
+            #     'fcn': follow,
+            #     'help': 'Creates a geometry object following gerber paths.\n' +
+            #             '> follow <name> [-outname <oname>]\n' +
+            #             '   name: Name of the gerber object.\n' +
+            #             '   outname: Name of the output geometry object.'
+            # },
 
             # 'get_sys': {
             #     'fcn': get_sys,
