@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandOpenGCode(TclCommand.TclCommandSignaled):
+class TclCommandOpenGCode(TclCommandSignaled):
     """
     Tcl shell command to open a G-Code file.
     """

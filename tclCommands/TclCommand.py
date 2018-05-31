@@ -5,6 +5,7 @@ import abc
 import collections
 from PyQt4 import QtCore
 from contextlib import contextmanager
+from FlatCAMObj import FlatCAMGerber, FlatCAMExcellon, FlatCAMGeometry, FlatCAMCNCjob, FlatCAMObj
 
 
 class TclCommand(object):
@@ -97,7 +98,7 @@ class TclCommand(object):
 
             command_string = []
 
-            for arg_key, arg_type in self.help['args'].items():
+            for arg_key, arg_type in list(self.help['args'].items()):
                 command_string.append(get_decorated_argument(arg_key, arg_type, True))
 
             return "> " + alias_name + " " + " ".join(command_string)
@@ -147,7 +148,7 @@ class TclCommand(object):
         for alias in self.aliases:
             help_string.append(get_decorated_command(alias))
 
-        for key, value in self.help['args'].items():
+        for key, value in list(self.help['args'].items()):
             help_string.append(get_decorated_argument(key, value))
 
         # timeout is unique for signaled commands (this is not best oop practice, but much easier for now)
@@ -206,13 +207,13 @@ class TclCommand(object):
 
         # check arguments
         idx = 0
-        arg_names_items = self.arg_names.items()
+        arg_names_items = list(self.arg_names.items())
         for argument in arguments:
             if len(self.arg_names) > idx:
                 key, arg_type = arg_names_items[idx]
                 try:
                     named_args[key] = arg_type(argument)
-                except Exception, e:
+                except Exception as e:
                     self.raise_tcl_error("Cannot cast named argument '%s' to type %s  with exception '%s'."
                                          % (key, arg_type, str(e)))
             else:
@@ -228,7 +229,7 @@ class TclCommand(object):
                     named_args[key] = self.option_types[key](options[key])
                 else:
                     named_args[key] = int(options[key])
-            except Exception, e:
+            except Exception as e:
                 self.raise_tcl_error("Cannot cast argument '-%s' to type '%s' with exception '%s'."
                                      % (key, self.option_types[key], str(e)))
 
@@ -292,7 +293,7 @@ class TclCommandSignaled(TclCommand):
     """
         !!! I left it here only  for demonstration !!!
         Go to TclCommandCncjob and  into class definition put
-            class TclCommandCncjob(TclCommand.TclCommandSignaled):
+            class TclCommandCncjob(TclCommandSignaled):
         also change
             obj.generatecncjob(use_thread = False, **args)
         to

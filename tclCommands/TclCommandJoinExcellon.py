@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandJoinExcellon(TclCommand.TclCommand):
+class TclCommandJoinExcellon(TclCommand):
     """
     Tcl shell command to merge Excellon objects.
 

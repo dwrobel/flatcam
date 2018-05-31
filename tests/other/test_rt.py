@@ -13,12 +13,12 @@ rt = rtindex.Index(properties=p)
 
 # If interleaved is True, the coordinates must be in
 # the form [xmin, ymin, ..., kmin, xmax, ymax, ..., kmax].
-print rt.interleaved
+print((rt.interleaved))
 
 [rt.add(0, pt2rect(pt)) for pt in pts]
-print [r.bbox for r in list(rt.nearest((0, 0), 10, True))]
+print([r.bbox for r in list(rt.nearest((0, 0), 10, True))])
 
 for pt in pts:
     rt.delete(0, pt2rect(pt))
-    print pt2rect(pt), [r.bbox for r in list(rt.nearest((0, 0), 10, True))]
+    print((pt2rect(pt), [r.bbox for r in list(rt.nearest((0, 0), 10, True))]))
 

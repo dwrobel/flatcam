@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandCutout(TclCommand.TclCommand):
+class TclCommandCutout(TclCommand):
     """
     Tcl shell command to create a board cutout geometry.
 
@@ -95,5 +94,5 @@ class TclCommandCutout(TclCommand.TclCommand):
 
         try:
             obj.app.new_object("geometry", name + "_cutout", geo_init_me)
-        except Exception, e:
+        except Exception as e:
             return "Operation failed: %s" % str(e)

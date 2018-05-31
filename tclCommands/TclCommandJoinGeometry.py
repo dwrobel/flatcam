@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandJoinGeometry(TclCommand.TclCommand):
+class TclCommandJoinGeometry(TclCommand):
     """
     Tcl shell command to merge Excellon objects.
 
