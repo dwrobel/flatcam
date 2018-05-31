@@ -575,10 +575,10 @@ class App(QtCore.QObject):
         ### Tools and Plugins ###
         #########################
         self.dblsidedtool = DblSidedTool(self)
-        self.dblsidedtool.install(icon=QtGui.QIcon('share:doubleside16.png'), separator=True)
+        self.dblsidedtool.install(icon=QtGui.QIcon('share/doubleside16.png'), separator=True)
 
         self.measeurement_tool = Measurement(self)
-        self.measeurement_tool.install(icon=QtGui.QIcon('share:measure16.png'))
+        self.measeurement_tool.install(icon=QtGui.QIcon('share/measure16.png'))
 
         self.ui.measure_btn.triggered.connect(self.measeurement_tool.run)
 
