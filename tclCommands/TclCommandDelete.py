@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandDelete(TclCommand.TclCommand):
+class TclCommandDelete(TclCommand):
     """
     Tcl shell command to delete an object.
 

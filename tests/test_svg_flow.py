@@ -29,18 +29,18 @@ class SVGFlowTestCase(unittest.TestCase):
         self.fc.import_svg('tests/svg/' + self.filename)
 
         names = self.fc.collection.get_names()
-        print names
+        print(names)
 
         #--------------------------------------
         # Total of 1 objects.
         #--------------------------------------
-        self.assertEquals(len(names), 1,
+        self.assertEqual(len(names), 1,
                           "Expected 1 object, found %d" % len(names))
 
         #--------------------------------------
         # Object's name matches the file name.
         #--------------------------------------
-        self.assertEquals(names[0], self.filename,
+        self.assertEqual(names[0], self.filename,
                           "Expected name == %s, got %s" % (self.filename, names[0]))
 
         #---------------------------------------
@@ -58,14 +58,14 @@ class SVGFlowTestCase(unittest.TestCase):
         # TODO: Open GUI with double-click on object.
         # Opens the Object's GUI, populates it.
         geo_obj.build_ui()
-        for option, value in geo_obj.options.iteritems():
+        for option, value in list(geo_obj.options.items()):
             try:
                 form_field = geo_obj.form_fields[option]
             except KeyError:
-                print ("**********************************************************\n"
+                print(("**********************************************************\n"
                        "* WARNING: Option '{}' has no form field\n"
                        "**********************************************************"
-                       "".format(option))
+                       "".format(option)))
                 continue
             self.assertEqual(value, form_field.get_value(),
                              "Option '{}' == {} but form has {}".format(
@@ -126,4 +126,4 @@ class SVGFlowTestCase(unittest.TestCase):
         self.assertTrue(os.path.isfile(output_filename))
         os.remove(output_filename)
 
-        print names
+        print(names)

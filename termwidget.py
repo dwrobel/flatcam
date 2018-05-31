@@ -3,7 +3,7 @@ Terminal emulator widget.
 Shows intput and output text. Allows to enter commands. Supports history.
 """
 
-import cgi
+import html
 from PyQt4.QtCore import pyqtSignal, Qt
 from PyQt4.QtGui import QColor, QKeySequence, QLineEdit, QPalette, \
                         QSizePolicy, QTextCursor, QTextEdit, \
@@ -151,7 +151,7 @@ class TermWidget(QWidget):
         """
         assert style in ('in', 'out', 'err')
 
-        text = cgi.escape(text)
+        text = html.escape(text)
         text = text.replace('\n', '<br/>')
 
         if style == 'in':

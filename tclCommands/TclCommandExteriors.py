@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandExteriors(TclCommand.TclCommandSignaled):
+class TclCommandExteriors(TclCommandSignaled):
     """
     Tcl shell command to get exteriors of polygons
     """
@@ -54,7 +53,7 @@ class TclCommandExteriors(TclCommand.TclCommandSignaled):
         if obj is None:
             self.raise_tcl_error("Object not found: %s" % name)
 
-        if not isinstance(obj, Geometry):
+        if not isinstance(obj, FlatCAMGeometry):
             self.raise_tcl_error('Expected Geometry, got %s %s.' % (name, type(obj)))
 
         def geo_init(geo_obj, app_obj):

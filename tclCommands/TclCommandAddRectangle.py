@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandAddRectangle(TclCommand.TclCommandSignaled):
+class TclCommandAddRectangle(TclCommandSignaled):
     """
     Tcl shell command to add a rectange to the given Geometry object.
     """
