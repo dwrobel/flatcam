@@ -30,9 +30,9 @@ class PolyPaintTestCase(unittest.TestCase):
 
     def test_poly_paint_svg_all(self):
 
-        print "*********************************"
-        print "*         svg_all               *"
-        print "*********************************"
+        print("*********************************")
+        print("*         svg_all               *")
+        print("*********************************")
 
         # Clear workspace
         self.fc.on_file_new()
@@ -69,9 +69,9 @@ class PolyPaintTestCase(unittest.TestCase):
 
     def test_poly_paint_svg_click(self):
 
-        print "*********************************"
-        print "*         svg_click             *"
-        print "*********************************"
+        print("*********************************")
+        print("*         svg_click             *")
+        print("*********************************")
 
         # Clear workspace
         self.fc.on_file_new()
@@ -109,9 +109,9 @@ class PolyPaintTestCase(unittest.TestCase):
 
     def test_poly_paint_noncopper_all(self):
 
-        print "*********************************"
-        print "*         noncopper_all         *"
-        print "*********************************"
+        print("*********************************")
+        print("*         noncopper_all         *")
+        print("*********************************")
 
         # Clear workspace
         self.fc.on_file_new()
@@ -165,9 +165,9 @@ class PolyPaintTestCase(unittest.TestCase):
 
     def test_poly_paint_noncopper_click(self):
 
-        print "*********************************"
-        print "*         noncopper_click       *"
-        print "*********************************"
+        print("*********************************")
+        print("*         noncopper_click       *")
+        print("*********************************")
 
         # Clear workspace
         self.fc.on_file_new()

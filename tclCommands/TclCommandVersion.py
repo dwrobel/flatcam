@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandVersion(TclCommand.TclCommand):
+class TclCommandVersion(TclCommand):
     """
     Tcl shell command to check the program version.
 

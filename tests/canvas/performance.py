@@ -1,9 +1,9 @@
-from __future__ import division
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
-import cStringIO
+import io
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure

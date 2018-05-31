@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandSetSys(TclCommand.TclCommand):
+class TclCommandSetSys(TclCommand):
     """
     Tcl shell command to set the value of a system variable
 

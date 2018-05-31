@@ -36,18 +36,18 @@ class GerberFlowTestCase(unittest.TestCase):
     def test_flow(self):
         # Names of available objects.
         names = self.fc.collection.get_names()
-        print names
+        print(names)
 
         #--------------------------------------
         # Total of 1 objects.
         #--------------------------------------
-        self.assertEquals(len(names), 1,
+        self.assertEqual(len(names), 1,
                           "Expected 1 object, found %d" % len(names))
 
         #--------------------------------------
         # Object's name matches the file name.
         #--------------------------------------
-        self.assertEquals(names[0], self.filename,
+        self.assertEqual(names[0], self.filename,
                           "Expected name == %s, got %s" % (self.filename, names[0]))
 
         #---------------------------------------
@@ -65,14 +65,14 @@ class GerberFlowTestCase(unittest.TestCase):
         # TODO: Open GUI with double-click on object.
         # Opens the Object's GUI, populates it.
         gerber_obj.build_ui()
-        for option, value in gerber_obj.options.iteritems():
+        for option, value in list(gerber_obj.options.items()):
             try:
                 form_field = gerber_obj.form_fields[option]
             except KeyError:
-                print ("**********************************************************\n"
+                print(("**********************************************************\n"
                        "* WARNING: Option '{}' has no form field\n"
                        "**********************************************************"
-                       "".format(option))
+                       "".format(option)))
                 continue
             self.assertEqual(value, form_field.get_value(),
                              "Option '{}' == {} but form has {}".format(
@@ -87,7 +87,7 @@ class GerberFlowTestCase(unittest.TestCase):
         form_field = gerber_obj.form_fields['isotooldia']
         value = form_field.get_value()
         form_field.set_value(value * 1.1)  # Increase by 10%
-        print "'isotooldia' == {}".format(value)
+        print(("'isotooldia' == {}".format(value)))
 
         #--------------------------------------------------
         # Create isolation routing using default values
@@ -110,7 +110,7 @@ class GerberFlowTestCase(unittest.TestCase):
         self.assertEqual(value, form_value,
                          "Form value for '{}' == {} was not read into options"
                          "which has {}".format('isotooldia', form_value, value))
-        print "'isotooldia' == {}".format(value)
+        print(("'isotooldia' == {}".format(value)))
 
         #---------------------------------------------
         # Check that only 1 object has been created.
@@ -187,4 +187,4 @@ class GerberFlowTestCase(unittest.TestCase):
         self.assertTrue(os.path.isfile(output_filename))
         os.remove(output_filename)
 
-        print names
+        print(names)

@@ -6,7 +6,7 @@
 # MIT Licence                                              #
 ############################################################
 
-from cStringIO import StringIO
+from io import StringIO
 from PyQt4 import QtCore
 from copy import copy
 from ObjectUI import *
@@ -221,7 +221,7 @@ class FlatCAMObj(QtCore.QObject):
         try:
             self.form_fields[option].set_value(self.options[option])
         except KeyError:
-            self.app.log.warn("Tried to set an option or field that does not exist: %s" % option)
+            self.app.log.warning("Tried to set an option or field that does not exist: %s" % option)
 
     def read_form_item(self, option):
         """
@@ -728,20 +728,20 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                     exc_final.drills.append({"point": point, "tool": drill['tool']})
                 toolsrework=dict()
                 max_numeric_tool=0
-                for toolname in exc.tools.iterkeys():
+                for toolname in list(exc.tools.copy().keys()):
                     numeric_tool=int(toolname)
                     if numeric_tool>max_numeric_tool:
                         max_numeric_tool=numeric_tool
                     toolsrework[exc.tools[toolname]['C']]=toolname
 
                 #exc_final as last because names from final tools will be used
-                for toolname in exc_final.tools.iterkeys():
+                for toolname in list(exc_final.tools.copy().keys()):
                     numeric_tool=int(toolname)
                     if numeric_tool>max_numeric_tool:
                         max_numeric_tool=numeric_tool
                     toolsrework[exc_final.tools[toolname]['C']]=toolname
 
-                for toolvalues in toolsrework.iterkeys():
+                for toolvalues in list(toolsrework.copy().keys()):
                     if toolsrework[toolvalues] in exc_final.tools:
                         if exc_final.tools[toolsrework[toolvalues]]!={"C": toolvalues}:
                             exc_final.tools[str(max_numeric_tool+1)]={"C": toolvalues}
@@ -861,7 +861,14 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             tooldia = self.options["tooldia"]
 
         # Sort tools by diameter. items() -> [('name', diameter), ...]
-        sorted_tools = sorted(self.tools.items(), key=lambda tl: tl[1])
+        # sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1])
+
+        # Python3 no longer allows direct comparison between dicts so we need to sort tools differently
+        sort = []
+        for k, v in self.tools.items():
+            sort.append((k, v.get('C')))
+        sorted_tools = sorted(sort, key=lambda t1: t1[1])
+        log.debug("Tools are sorted: %s" % str(sorted_tools))
 
         if tools == "all":
             tools = [i[0] for i in sorted_tools]  # List if ordered tool names.
@@ -1082,10 +1089,10 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.read_form()
 
         try:
-            filename = unicode(QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ...",
+            filename = str(QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ...",
                                                          directory=self.app.defaults["last_folder"]))
         except TypeError:
-            filename = unicode(QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ..."))
+            filename = str(QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ..."))
 
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
@@ -1368,9 +1375,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             geo_obj.options["cnctooldia"] = tooldia
 
             # Experimental...
-            print "Indexing...",
+            print("Indexing...")
             geo_obj.make_index()
-            print "Done"
+            print("Done")
 
             self.app.inform.emit("Done.")
 
@@ -1454,9 +1461,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             geo_obj.options["cnctooldia"] = tooldia
 
             # Experimental...
-            print "Indexing...",
+            print("Indexing...")
             geo_obj.make_index()
-            print "Done"
+            print("Done")
 
             self.app.inform.emit("Done.")
 

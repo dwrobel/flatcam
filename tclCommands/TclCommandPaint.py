@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandPaint(TclCommand.TclCommandSignaled):
+class TclCommandPaint(TclCommandSignaled):
     """
     Paint the interior of polygons
     """

@@ -1,5 +1,5 @@
 from FlatCAMObj import FlatCAMGerber, FlatCAMGeometry, FlatCAMObj
-from test_TclCommandIsolate import *
+from .test_TclCommandIsolate import *
 
 def test_cncjob(self):
     """

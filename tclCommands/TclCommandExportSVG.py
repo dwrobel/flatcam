@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandExportSVG(TclCommand.TclCommand):
+class TclCommandExportSVG(TclCommand):
     """
     Tcl shell command to export a Geometry Object as an SVG File.
 

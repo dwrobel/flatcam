@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandAlignDrill(TclCommand.TclCommandSignaled):
+class TclCommandAlignDrill(TclCommandSignaled):
     """
     Tcl shell command to create excellon with drills for aligment.
     """
@@ -180,7 +179,7 @@ class TclCommandAlignDrill(TclCommand.TclCommandSignaled):
                                    name + "_aligndrill",
                                    alligndrill_init_me)
 
-            except Exception, e:
+            except Exception as e:
                 return "Operation failed: %s" % str(e)
 
         else:
@@ -195,7 +194,7 @@ class TclCommandAlignDrill(TclCommand.TclCommandSignaled):
                 px = dist
                 py = dist
                 obj.app.new_object("excellon", name + "_alligndrill", alligndrill_init_me)
-            except Exception, e:
+            except Exception as e:
                 return "Operation failed: %s" % str(e)
 
         return 'Ok'

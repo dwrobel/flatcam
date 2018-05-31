@@ -1,8 +1,8 @@
 import os
 import tempfile
 
-from test_TclCommandCncjob import *
-from test_TclCommandDrillcncjob import *
+from .test_TclCommandCncjob import *
+from .test_TclCommandDrillcncjob import *
 
 
 def test_export_gcodecncjob(self):
