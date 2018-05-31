@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandFollow(TclCommand.TclCommandSignaled):
+class TclCommandFollow(TclCommandSignaled):
     """
     Tcl shell command to follow a Gerber file
     """
