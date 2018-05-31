@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandDrillcncjob(TclCommand.TclCommandSignaled):
+class TclCommandDrillcncjob(TclCommandSignaled):
     """
     Tcl shell command to Generates a Drill CNC Job from a Excellon Object.
     """

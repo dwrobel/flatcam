@@ -26,12 +26,12 @@ for geo in geoms:
 current_pt = (0, 0)
 pt, geo = s.nearest(current_pt)
 while geo is not None:
-    print pt, geo
-    print "OBJECTS BEFORE:", s.objects
+    print((pt, geo))
+    print(("OBJECTS BEFORE:", s.objects))
 
     #geo.coords = list(geo.coords[::-1])
     s.remove(geo)
 
-    print "OBJECTS AFTER:", s.objects
+    print(("OBJECTS AFTER:", s.objects))
     current_pt = geo.coords[-1]
     pt, geo = s.nearest(current_pt)

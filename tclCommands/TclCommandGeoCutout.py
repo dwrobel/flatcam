@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandGeoCutout(TclCommand.TclCommandSignaled):
+class TclCommandGeoCutout(TclCommandSignaled):
     """
     Tcl shell command to cut holding gaps from geometry.
     """

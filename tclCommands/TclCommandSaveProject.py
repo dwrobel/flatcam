@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandSaveProject(TclCommand.TclCommandSignaled):
+class TclCommandSaveProject(TclCommandSignaled):
     """
     Tcl shell command to save the FlatCAM project to file.
     """

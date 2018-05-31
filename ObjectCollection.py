@@ -6,7 +6,6 @@
 # MIT Licence                                              #
 ############################################################
 
-#from PyQt4.QtCore import QModelIndex
 from FlatCAMObj import *
 import inspect  # TODO: Remove
 import FlatCAMApp
@@ -47,6 +46,7 @@ class ObjectCollection():
 
     def __init__(self, parent=None):
         #QtCore.QAbstractListModel.__init__(self, parent=parent)
+
         ### Icons for the list view
         self.icons = {}
         for kind in ObjectCollection.icon_files:
@@ -101,7 +101,7 @@ class ObjectCollection():
 
     def print_list(self):
         for obj in self.object_list:
-            print obj
+            print(obj)
 
     def on_mouse_down(self, event):
         FlatCAMApp.App.log.debug("Mouse button pressed on list")
@@ -162,16 +162,16 @@ class ObjectCollection():
 
         # Create the model item to insert into the QListView
         icon = QtGui.QIcon(self.icons[obj.kind])#self.icons["gerber"])
-        item = QtGui.QStandardItem(icon, name)
+        item = QtGui.QStandardItem(icon, str(name))
         # Item is not editable, so that double click
         # does not allow cell value modification.
         item.setEditable(False)
         # The item is checkable, to add the checkbox.
         item.setCheckable(True)
-        if obj.options["plot"] == True:
-            item.setCheckState(2)#Qt.Checked)
+        if obj.options["plot"] is True:
+            item.setCheckState(2)   #Qt.Checked)
         else:
-            item.setCheckState(0) #Qt.Unchecked)
+            item.setCheckState(0)   #Qt.Unchecked)
 
         self.model.appendRow(item)
 

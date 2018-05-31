@@ -72,9 +72,9 @@ def register_all_commands(app, commands):
     :return: None
     """
 
-    tcl_modules = {k: v for k, v in sys.modules.items() if k.startswith('tclCommands.TclCommand')}
+    tcl_modules = {k: v for k, v in list(sys.modules.items()) if k.startswith('tclCommands.TclCommand')}
 
-    for key, mod in tcl_modules.items():
+    for key, mod in list(tcl_modules.items()):
         if key != 'tclCommands.TclCommand':
             class_name = key.split('.')[1]
             class_type = getattr(mod, class_name)

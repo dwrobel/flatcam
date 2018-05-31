@@ -19,10 +19,10 @@ def gerber_find(filename, coords, frac_digits=5, tol=0.1):
                     current_y = parse_gerber_number(match.group(3), frac_digits)
 
                 if distance(coords, (current_x, current_y)) <= tol:
-                    print line_num, ":", line.strip('\n\r')
+                    print((line_num, ":", line.strip('\n\r')))
         except Exception as e:
-            print str(e)
-            print line_num, ":", line.strip('\n\r')
+            print((str(e)))
+            print((line_num, ":", line.strip('\n\r')))
 
 
 if __name__ == "__main__":
