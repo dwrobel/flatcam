@@ -16,6 +16,7 @@ import tclCommands.TclCommandDrillcncjob
 import tclCommands.TclCommandExportGcode
 import tclCommands.TclCommandExportSVG
 import tclCommands.TclCommandExteriors
+import tclCommands.TclCommandFollow
 import tclCommands.TclCommandGeoCutout
 import tclCommands.TclCommandGeoUnion
 import tclCommands.TclCommandGetNames

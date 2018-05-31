@@ -103,6 +103,46 @@ class ObjectUI(QtGui.QWidget):
         )
         layout.addWidget(self.offset_button)
 
+        self.auto_offset_button = QtGui.QPushButton('Offset auto')
+        self.auto_offset_button.setToolTip(
+            "Align the object with the x and y axes."
+        )
+        layout.addWidget(self.auto_offset_button)
+        
+        #### Mirror ####
+        self.mirror_label = QtGui.QLabel('<b>Mirror:</b>')
+        self.mirror_label.setToolTip(
+            "Flip the object along an axis."
+        )
+        layout.addWidget(self.mirror_label)
+        
+        self.mirror_axis_grid = QtGui.QGridLayout()
+        layout.addLayout(self.mirror_axis_grid)
+        
+        axislabel = QtGui.QLabel('Axis:')
+        axislabel.setToolTip(
+            "Mirror axis parallel to the x or y axis."
+        )
+        self.mirror_axis_grid.addWidget(axislabel, 0, 0)
+        
+        self.mirror_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
+                                           {'label': 'Y', 'value': 'Y'}])
+        self.mirror_axis_radio.set_value('Y')
+        self.mirror_axis_grid.addWidget(self.mirror_axis_radio, 0, 1)
+        
+        self.mirror_auto_center_cb = FCCheckBox(label='Center axis automatically')
+        self.mirror_auto_center_cb.setToolTip(
+            "Place the mirror axis on the middle of the object."
+        )
+        self.mirror_auto_center_cb.set_value(True)
+        layout.addWidget(self.mirror_auto_center_cb)
+
+        self.mirror_button = QtGui.QPushButton('Mirror')
+        self.mirror_button.setToolTip(
+            "Perform the mirror operation."
+        )
+        layout.addWidget(self.mirror_button)
+
         layout.addStretch()
 
 
@@ -130,6 +170,13 @@ class CNCObjectUI(ObjectUI):
             self.offset_grid.itemAt(i).widget().hide()
         self.offset_label.hide()
         self.offset_button.hide()
+        self.auto_offset_button.hide()
+        
+        self.mirror_label.hide()
+        for i in range(0, self.mirror_axis_grid.count()):
+            self.mirror_axis_grid.itemAt(i).widget().hide()
+        self.mirror_auto_center_cb.hide()
+        self.mirror_button.hide()
 
         ## Plot options
         self.plot_options_label = QtGui.QLabel("<b>Plot Options:</b>")
@@ -812,7 +859,7 @@ class GerberObjectUI(ObjectUI):
 
         self.generate_bb_button = QtGui.QPushButton('Generate Geometry')
         self.generate_bb_button.setToolTip(
-            "Genrate the Geometry object."
+            "Generate the Geometry object."
         )
         self.custom_box.addWidget(self.generate_bb_button)
 
