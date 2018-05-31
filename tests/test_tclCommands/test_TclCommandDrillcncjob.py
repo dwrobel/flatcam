@@ -1,5 +1,5 @@
 from FlatCAMObj import FlatCAMObj
-from test_TclCommandOpenExcellon import *
+from .test_TclCommandOpenExcellon import *
 
 
 def test_drillcncjob(self):

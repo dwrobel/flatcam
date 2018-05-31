@@ -521,6 +521,6 @@ if __name__ == "__main__":
     tree = ET.parse('tests/svg/drawing.svg')
     root = tree.getroot()
     ns = re.search(r'\{(.*)\}', root.tag).group(1)
-    print ns
+    print(ns)
     for geo in getsvggeo(root):
-        print geo
+        print(geo)

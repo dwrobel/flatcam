@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 ############################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
@@ -30,6 +30,6 @@ debug_trace()
 # NOTE: Never talk to the GUI from threads! This is why I commented the above.
 
 app = QtGui.QApplication(sys.argv)
-QtCore.QDir.setSearchPaths("share", QtCore.QStringList(("share", "share/flatcam", "/usr/share/flatcam")));
+QtCore.QDir.setSearchPaths("share", str(("share", "share/flatcam", "/usr/share/flatcam")));
 fc = App()
 sys.exit(app.exec_())

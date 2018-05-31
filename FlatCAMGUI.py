@@ -28,55 +28,55 @@ class FlatCAMGUI(QtGui.QMainWindow):
         self.menufile = self.menu.addMenu('&File')
 
         # New
-        self.menufilenew = QtGui.QAction(QtGui.QIcon('share:file16.png'), '&New', self)
+        self.menufilenew = QtGui.QAction(QtGui.QIcon('share/file16.png'), '&New', self)
         self.menufile.addAction(self.menufilenew)
         # Open recent
 
         # Recent
-        self.recent = self.menufile.addMenu(QtGui.QIcon('share:folder16.png'), "Open recent ...")
+        self.recent = self.menufile.addMenu(QtGui.QIcon('share/folder16.png'), "Open recent ...")
 
         # Open gerber ...
-        self.menufileopengerber = QtGui.QAction(QtGui.QIcon('share:folder16.png'), 'Open &Gerber ...', self)
+        self.menufileopengerber = QtGui.QAction(QtGui.QIcon('share/folder16.png'), 'Open &Gerber ...', self)
         self.menufile.addAction(self.menufileopengerber)
 
         # Open Excellon ...
-        self.menufileopenexcellon = QtGui.QAction(QtGui.QIcon('share:folder16.png'), 'Open &Excellon ...', self)
+        self.menufileopenexcellon = QtGui.QAction(QtGui.QIcon('share/folder16.png'), 'Open &Excellon ...', self)
         self.menufile.addAction(self.menufileopenexcellon)
 
         # Open G-Code ...
-        self.menufileopengcode = QtGui.QAction(QtGui.QIcon('share:folder16.png'), 'Open G-&Code ...', self)
+        self.menufileopengcode = QtGui.QAction(QtGui.QIcon('share/folder16.png'), 'Open G-&Code ...', self)
         self.menufile.addAction(self.menufileopengcode)
 
         # Open Project ...
-        self.menufileopenproject = QtGui.QAction(QtGui.QIcon('share:folder16.png'), 'Open &Project ...', self)
+        self.menufileopenproject = QtGui.QAction(QtGui.QIcon('share/folder16.png'), 'Open &Project ...', self)
         self.menufile.addAction(self.menufileopenproject)
 
         # Import SVG ...
-        self.menufileimportsvg = QtGui.QAction(QtGui.QIcon('share:folder16.png'), 'Import &SVG ...', self)
+        self.menufileimportsvg = QtGui.QAction(QtGui.QIcon('share/folder16.png'), 'Import &SVG ...', self)
         self.menufile.addAction(self.menufileimportsvg)
 
         # Export SVG ...
-        self.menufileexportsvg = QtGui.QAction(QtGui.QIcon('share:folder16.png'), 'Export &SVG ...', self)
+        self.menufileexportsvg = QtGui.QAction(QtGui.QIcon('share/folder16.png'), 'Export &SVG ...', self)
         self.menufile.addAction(self.menufileexportsvg)
 
         # Save Project
-        self.menufilesaveproject = QtGui.QAction(QtGui.QIcon('share:floppy16.png'), '&Save Project', self)
+        self.menufilesaveproject = QtGui.QAction(QtGui.QIcon('share/floppy16.png'), '&Save Project', self)
         self.menufile.addAction(self.menufilesaveproject)
 
         # Save Project As ...
-        self.menufilesaveprojectas = QtGui.QAction(QtGui.QIcon('share:floppy16.png'), 'Save Project &As ...', self)
+        self.menufilesaveprojectas = QtGui.QAction(QtGui.QIcon('share/floppy16.png'), 'Save Project &As ...', self)
         self.menufile.addAction(self.menufilesaveprojectas)
 
         # Save Project Copy ...
-        self.menufilesaveprojectcopy = QtGui.QAction(QtGui.QIcon('share:floppy16.png'), 'Save Project C&opy ...', self)
+        self.menufilesaveprojectcopy = QtGui.QAction(QtGui.QIcon('share/floppy16.png'), 'Save Project C&opy ...', self)
         self.menufile.addAction(self.menufilesaveprojectcopy)
 
         # Save Defaults
-        self.menufilesavedefaults = QtGui.QAction(QtGui.QIcon('share:floppy16.png'), 'Save &Defaults', self)
+        self.menufilesavedefaults = QtGui.QAction(QtGui.QIcon('share/floppy16.png'), 'Save &Defaults', self)
         self.menufile.addAction(self.menufilesavedefaults)
 
         # Quit
-        self.exit_action = QtGui.QAction(QtGui.QIcon('share:power16.png'), '&Exit', self)
+        self.exit_action = QtGui.QAction(QtGui.QIcon('share/power16.png'), '&Exit', self)
         # exitAction.setShortcut('Ctrl+Q')
         # exitAction.setStatusTip('Exit application')
         #self.exit_action.triggered.connect(QtGui.qApp.quit)
@@ -85,13 +85,13 @@ class FlatCAMGUI(QtGui.QMainWindow):
 
         ### Edit ###
         self.menuedit = self.menu.addMenu('&Edit')
-        self.menueditnew = self.menuedit.addAction(QtGui.QIcon('share:new_geo16.png'), 'New Geometry')
-        self.menueditedit = self.menuedit.addAction(QtGui.QIcon('share:edit16.png'), 'Edit Geometry')
-        self.menueditok = self.menuedit.addAction(QtGui.QIcon('share:edit_ok16.png'), 'Update Geometry')
+        self.menueditnew = self.menuedit.addAction(QtGui.QIcon('share/new_geo16.png'), 'New Geometry')
+        self.menueditedit = self.menuedit.addAction(QtGui.QIcon('share/edit16.png'), 'Edit Geometry')
+        self.menueditok = self.menuedit.addAction(QtGui.QIcon('share/edit_ok16.png'), 'Update Geometry')
         #self.menueditok.
-        #self.menueditcancel = self.menuedit.addAction(QtGui.QIcon('share:cancel_edit16.png'), "Cancel Edit")
-        self.menueditjoin = self.menuedit.addAction(QtGui.QIcon('share:join16.png'), 'Join Geometry')
-        self.menueditdelete = self.menuedit.addAction(QtGui.QIcon('share:trash16.png'), 'Delete')
+        #self.menueditcancel = self.menuedit.addAction(QtGui.QIcon('share/cancel_edit16.png'), "Cancel Edit")
+        self.menueditjoin = self.menuedit.addAction(QtGui.QIcon('share/join16.png'), 'Join Geometry')
+        self.menueditdelete = self.menuedit.addAction(QtGui.QIcon('share/trash16.png'), 'Delete')
 
         ### Options ###
         self.menuoptions = self.menu.addMenu('&Options')
@@ -105,22 +105,22 @@ class FlatCAMGUI(QtGui.QMainWindow):
 
         ### View ###
         self.menuview = self.menu.addMenu('&View')
-        self.menuviewdisableall = self.menuview.addAction(QtGui.QIcon('share:clear_plot16.png'), 'Disable all plots')
-        self.menuviewdisableother = self.menuview.addAction(QtGui.QIcon('share:clear_plot16.png'),
+        self.menuviewdisableall = self.menuview.addAction(QtGui.QIcon('share/clear_plot16.png'), 'Disable all plots')
+        self.menuviewdisableother = self.menuview.addAction(QtGui.QIcon('share/clear_plot16.png'),
                                                             'Disable all plots but this one')
-        self.menuviewenable = self.menuview.addAction(QtGui.QIcon('share:replot16.png'), 'Enable all plots')
+        self.menuviewenable = self.menuview.addAction(QtGui.QIcon('share/replot16.png'), 'Enable all plots')
 
         ### Tool ###
         #self.menutool = self.menu.addMenu('&Tool')
         self.menutool = QtGui.QMenu('&Tool')
         self.menutoolaction = self.menu.addMenu(self.menutool)
-        self.menutoolshell = self.menutool.addAction(QtGui.QIcon('share:shell16.png'), '&Command Line')
+        self.menutoolshell = self.menutool.addAction(QtGui.QIcon('share/shell16.png'), '&Command Line')
 
         ### Help ###
         self.menuhelp = self.menu.addMenu('&Help')
-        self.menuhelp_about = self.menuhelp.addAction(QtGui.QIcon('share:tv16.png'), 'About FlatCAM')
-        self.menuhelp_home = self.menuhelp.addAction(QtGui.QIcon('share:home16.png'), 'Home')
-        self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share:globe16.png'), 'Manual')
+        self.menuhelp_about = self.menuhelp.addAction(QtGui.QIcon('share/tv16.png'), 'About FlatCAM')
+        self.menuhelp_home = self.menuhelp.addAction(QtGui.QIcon('share/home16.png'), 'Home')
+        self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), 'Manual')
 
         ###############
         ### Toolbar ###
@@ -128,18 +128,18 @@ class FlatCAMGUI(QtGui.QMainWindow):
         self.toolbar = QtGui.QToolBar()
         self.addToolBar(self.toolbar)
 
-        self.zoom_fit_btn = self.toolbar.addAction(QtGui.QIcon('share:zoom_fit32.png'), "&Zoom Fit")
-        self.zoom_out_btn = self.toolbar.addAction(QtGui.QIcon('share:zoom_out32.png'), "&Zoom Out")
-        self.zoom_in_btn = self.toolbar.addAction(QtGui.QIcon('share:zoom_in32.png'), "&Zoom In")
-        self.clear_plot_btn = self.toolbar.addAction(QtGui.QIcon('share:clear_plot32.png'), "&Clear Plot")
-        self.replot_btn = self.toolbar.addAction(QtGui.QIcon('share:replot32.png'), "&Replot")
-        self.newgeo_btn = self.toolbar.addAction(QtGui.QIcon('share:new_geo32.png'), "New Blank Geometry")
-        self.editgeo_btn = self.toolbar.addAction(QtGui.QIcon('share:edit32.png'), "Edit Geometry")
-        self.updategeo_btn = self.toolbar.addAction(QtGui.QIcon('share:edit_ok32.png'), "Update Geometry")
+        self.zoom_fit_btn = self.toolbar.addAction(QtGui.QIcon('share/zoom_fit32.png'), "&Zoom Fit")
+        self.zoom_out_btn = self.toolbar.addAction(QtGui.QIcon('share/zoom_out32.png'), "&Zoom Out")
+        self.zoom_in_btn = self.toolbar.addAction(QtGui.QIcon('share/zoom_in32.png'), "&Zoom In")
+        self.clear_plot_btn = self.toolbar.addAction(QtGui.QIcon('share/clear_plot32.png'), "&Clear Plot")
+        self.replot_btn = self.toolbar.addAction(QtGui.QIcon('share/replot32.png'), "&Replot")
+        self.newgeo_btn = self.toolbar.addAction(QtGui.QIcon('share/new_geo32.png'), "New Blank Geometry")
+        self.editgeo_btn = self.toolbar.addAction(QtGui.QIcon('share/edit32.png'), "Edit Geometry")
+        self.updategeo_btn = self.toolbar.addAction(QtGui.QIcon('share/edit_ok32.png'), "Update Geometry")
         self.updategeo_btn.setEnabled(False)
-        #self.canceledit_btn = self.toolbar.addAction(QtGui.QIcon('share:cancel_edit32.png'), "Cancel Edit")
-        self.delete_btn = self.toolbar.addAction(QtGui.QIcon('share:delete32.png'), "&Delete")
-        self.shell_btn = self.toolbar.addAction(QtGui.QIcon('share:shell32.png'), "&Command Line")
+        #self.canceledit_btn = self.toolbar.addAction(QtGui.QIcon('share/cancel_edit32.png'), "Cancel Edit")
+        self.delete_btn = self.toolbar.addAction(QtGui.QIcon('share/delete32.png'), "&Delete")
+        self.shell_btn = self.toolbar.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
 
         ################
         ### Splitter ###
@@ -179,7 +179,7 @@ class FlatCAMGUI(QtGui.QMainWindow):
         self.options_tab_layout.addLayout(hlay1)
 
         self.icon = QtGui.QLabel()
-        self.icon.setPixmap(QtGui.QPixmap('share:gear48.png'))
+        self.icon.setPixmap(QtGui.QPixmap('share/gear48.png'))
         hlay1.addWidget(self.icon)
 
         self.options_combo = QtGui.QComboBox()
@@ -247,12 +247,12 @@ class FlatCAMGUI(QtGui.QMainWindow):
         ### Icons ###
         #############
         self.app_icon = QtGui.QIcon()
-        self.app_icon.addFile('share:flatcam_icon16.png', QtCore.QSize(16, 16))
-        self.app_icon.addFile('share:flatcam_icon24.png', QtCore.QSize(24, 24))
-        self.app_icon.addFile('share:flatcam_icon32.png', QtCore.QSize(32, 32))
-        self.app_icon.addFile('share:flatcam_icon48.png', QtCore.QSize(48, 48))
-        self.app_icon.addFile('share:flatcam_icon128.png', QtCore.QSize(128, 128))
-        self.app_icon.addFile('share:flatcam_icon256.png', QtCore.QSize(256, 256))
+        self.app_icon.addFile('share/flatcam_icon16.png', QtCore.QSize(16, 16))
+        self.app_icon.addFile('share/flatcam_icon24.png', QtCore.QSize(24, 24))
+        self.app_icon.addFile('share/flatcam_icon32.png', QtCore.QSize(32, 32))
+        self.app_icon.addFile('share/flatcam_icon48.png', QtCore.QSize(48, 48))
+        self.app_icon.addFile('share/flatcam_icon128.png', QtCore.QSize(128, 128))
+        self.app_icon.addFile('share/flatcam_icon256.png', QtCore.QSize(256, 256))
         self.setWindowIcon(self.app_icon)
 
         self.setGeometry(100, 100, 1024, 650)
@@ -278,7 +278,7 @@ class FlatCAMActivityView(QtGui.QWidget):
 
         self.icon = QtGui.QLabel(self)
         self.icon.setGeometry(0, 0, 12, 12)
-        self.movie = QtGui.QMovie("share:active.gif")
+        self.movie = QtGui.QMovie("share/active.gif")
         self.icon.setMovie(self.movie)
         #self.movie.start()
 
@@ -309,7 +309,7 @@ class FlatCAMInfoBar(QtGui.QWidget):
 
         self.icon = QtGui.QLabel(self)
         self.icon.setGeometry(0, 0, 12, 12)
-        self.pmap = QtGui.QPixmap('share:graylight12.png')
+        self.pmap = QtGui.QPixmap('share/graylight12.png')
         self.icon.setPixmap(self.pmap)
 
         layout = QtGui.QHBoxLayout()
@@ -334,13 +334,13 @@ class FlatCAMInfoBar(QtGui.QWidget):
         level = str(level)
         self.pmap.fill()
         if level == "error":
-            self.pmap = QtGui.QPixmap('share:redlight12.png')
+            self.pmap = QtGui.QPixmap('share/redlight12.png')
         elif level == "success":
-            self.pmap = QtGui.QPixmap('share:greenlight12.png')
+            self.pmap = QtGui.QPixmap('share/greenlight12.png')
         elif level == "warning":
-            self.pmap = QtGui.QPixmap('share:yellowlight12.png')
+            self.pmap = QtGui.QPixmap('share/yellowlight12.png')
         else:
-            self.pmap = QtGui.QPixmap('share:graylight12.png')
+            self.pmap = QtGui.QPixmap('share/graylight12.png')
 
         self.icon.setPixmap(self.pmap)
         self.set_text_(text)

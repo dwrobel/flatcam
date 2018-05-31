@@ -8,7 +8,7 @@
 
 import sys
 import traceback
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import getopt
 import random
 import logging
@@ -16,8 +16,8 @@ import simplejson as json
 import re
 import webbrowser
 import os
-import Tkinter
-from PyQt4 import QtCore
+import tkinter
+from PyQt4 import Qt, QtCore, QtGui
 import time  # Just used for debugging. Double check before removing.
 from xml.dom.minidom import parseString as parse_xml_string
 from contextlib import contextmanager
@@ -27,10 +27,10 @@ from contextlib import contextmanager
 ########################################
 import FlatCAMVersion
 from FlatCAMWorker import Worker
-from ObjectCollection import *
-from FlatCAMObj import *
-from PlotCanvas import *
-from FlatCAMGUI import *
+import ObjectCollection
+from FlatCAMObj import FlatCAMCNCjob, FlatCAMExcellon, FlatCAMGerber, FlatCAMGeometry, FlatCAMObj
+from PlotCanvas import PlotCanvas
+from FlatCAMGUI import FlatCAMGUI, GlobalOptionsUI, FlatCAMActivityView, FlatCAMInfoBar
 from FlatCAMCommon import LoudDict
 from FlatCAMShell import FCShell
 from FlatCAMDraw import FlatCAMDraw
@@ -38,6 +38,8 @@ from FlatCAMProcess import *
 from MeasurementTool import Measurement
 from DblSidedTool import DblSidedTool
 import tclCommands
+
+from camlib import *
 
 
 ########################################
@@ -54,11 +56,11 @@ class App(QtCore.QObject):
     try:
         cmd_line_options, args = getopt.getopt(sys.argv[1:], "h:", "shellfile=")
     except getopt.GetoptError:
-        print cmd_line_help
+        print(cmd_line_help)
         sys.exit(2)
     for opt, arg in cmd_line_options:
         if opt == '-h':
-            print cmd_line_help
+            print(cmd_line_help)
             sys.exit()
         elif opt == '--shellfile':
             cmd_line_shellfile = arg
@@ -106,7 +108,7 @@ class App(QtCore.QObject):
     # Note: Setting the parameters to unicode does not seem
     #       to have an effect. Then are received as Qstring
     #       anyway.
-    file_opened = QtCore.pyqtSignal(unicode, unicode)  # File type and filename
+    file_opened = QtCore.pyqtSignal(str, str)  # File type and filename
 
     progress = QtCore.pyqtSignal(int)  # Percentage of progress
 
@@ -471,7 +473,7 @@ class App(QtCore.QObject):
         #self.options_write_form()
         self.on_options_combo_change(0)  # Will show the initial form
 
-        self.collection = ObjectCollection()
+        self.collection = ObjectCollection.ObjectCollection()
         self.ui.project_tab_layout.addWidget(self.collection.view)
         #### End of Data ####
 
@@ -612,7 +614,7 @@ class App(QtCore.QObject):
                     cmd_line_shellfile_text = myfile.read()
                     self.shell._sysShell.exec_command(cmd_line_shellfile_text)
             except Exception as ext:
-                print "ERROR: ", ext
+                print(("ERROR: ", ext))
                 sys.exit(2)
 
         # Post-GUI initialization: Experimental attempt
@@ -630,7 +632,7 @@ class App(QtCore.QObject):
             # because tcl  was execudted in old instance of TCL
             pass
         else:
-            self.tcl = Tkinter.Tcl()
+            self.tcl = tkinter.Tcl()
             self.setup_shell()
 
     def defaults_read_form(self):
@@ -849,7 +851,7 @@ class App(QtCore.QObject):
             if result != 'None':
                 self.shell.append_output(result + '\n')
 
-        except Tkinter.TclError, e:
+        except tkinter.TclError as e:
             # This will display more precise answer if something in TCL shell fails
             result = self.tcl.eval("set errorInfo")
             self.log.error("Exec command Exception: %s" % (result + '\n'))
@@ -895,7 +897,7 @@ class App(QtCore.QObject):
             if retval and retfcn(retval):
                 self.shell.append_output(retfcn(retval) + "\n")
 
-        except Exception, e:
+        except Exception as e:
             #self.shell.append_error(''.join(traceback.format_exc()))
             #self.shell.append_error("?\n")
             self.shell.append_error(str(e) + "\n")
@@ -915,14 +917,14 @@ class App(QtCore.QObject):
         if match:
             level = match.group(1)
             msg_ = match.group(2)
-            self.ui.fcinfo.set_status(QtCore.QString(msg_), level=level)
+            self.ui.fcinfo.set_status(str(msg_), level=level)
 
             if toshell:
                 error = level == "error" or level == "warning"
                 self.shell_message(msg, error=error, show=True)
 
         else:
-            self.ui.fcinfo.set_status(QtCore.QString(msg), level="info")
+            self.ui.fcinfo.set_status(str(msg), level="info")
 
             if toshell:
                 self.shell_message(msg)
@@ -973,7 +975,7 @@ class App(QtCore.QObject):
         self.log.debug("   %s" % kind)
         self.log.debug("   %s" % filename)
 
-        record = {'kind': unicode(kind), 'filename': unicode(filename)}
+        record = {'kind': str(kind), 'filename': str(filename)}
         if record in self.recent:
             return
 
@@ -1072,7 +1074,7 @@ class App(QtCore.QObject):
             t3 = time.time()
             self.log.debug("%f seconds converting units." % (t3 - t2))
 
-        FlatCAMApp.App.log.debug("Moving new object back to main thread.")
+        self.log.debug("Moving new object back to main thread.")
 
         # Move the object to the main thread and let the app know that it is available.
         obj.moveToThread(QtGui.QApplication.instance().thread())
@@ -1123,7 +1125,7 @@ class App(QtCore.QObject):
                 layout1.addLayout(layout2)
 
                 logo = QtGui.QLabel()
-                logo.setPixmap(QtGui.QPixmap('share:flatcam_icon256.png'))
+                logo.setPixmap(QtGui.QPixmap('share/flatcam_icon256.png'))
                 layout2.addWidget(logo, stretch=0)
 
                 title = QtGui.QLabel(
@@ -1643,7 +1645,7 @@ class App(QtCore.QObject):
             if modifiers == QtCore.Qt.ControlModifier:
                 self.clipboard.setText(self.defaults["point_clipboard_format"] % (event.xdata, event.ydata))
 
-        except Exception, e:
+        except Exception as e:
             App.log.debug("Outside plot?")
             App.log.debug(str(e))
 
@@ -1713,7 +1715,7 @@ class App(QtCore.QObject):
         # The Qt methods above will return a QString which can cause problems later.
         # So far json.dump() will fail to serialize it.
         # TODO: Improve the serialization methods and remove this fix.
-        filename = unicode(filename)
+        filename = str(filename)
 
         if filename == "":
             self.inform.emit("Open cancelled.")
@@ -1740,7 +1742,7 @@ class App(QtCore.QObject):
         # The Qt methods above will return a QString which can cause problems later.
         # So far json.dump() will fail to serialize it.
         # TODO: Improve the serialization methods and remove this fix.
-        filename = unicode(filename)
+        filename = str(filename)
 
         if filename == "":
             self.inform.emit("Open cancelled.")
@@ -1767,7 +1769,7 @@ class App(QtCore.QObject):
         # The Qt methods above will return a QString which can cause problems later.
         # So far json.dump() will fail to serialize it.
         # TODO: Improve the serialization methods and remove this fix.
-        filename = unicode(filename)
+        filename = str(filename)
 
         if filename == "":
             self.inform.emit("Open cancelled.")
@@ -1794,7 +1796,7 @@ class App(QtCore.QObject):
         # The Qt methods above will return a QString which can cause problems later.
         # So far json.dump() will fail to serialize it.
         # TODO: Improve the serialization methods and remove this fix.
-        filename = unicode(filename)
+        filename = str(filename)
 
         if filename == "":
             self.inform.emit("Open cancelled.")
@@ -1844,7 +1846,7 @@ class App(QtCore.QObject):
         except TypeError:
             filename = QtGui.QFileDialog.getSaveFileName(caption="Export SVG")
 
-        filename = unicode(filename)
+        filename = str(filename)
 
         if filename == "":
             self.inform.emit("Export SVG cancelled.")
@@ -1867,7 +1869,7 @@ class App(QtCore.QObject):
         except TypeError:
             filename = QtGui.QFileDialog.getOpenFileName(caption="Import SVG")
 
-        filename = unicode(filename)
+        filename = str(filename)
 
         if filename == "":
             self.inform.emit("Open cancelled.")
@@ -1910,7 +1912,7 @@ class App(QtCore.QObject):
         except TypeError:
             filename = QtGui.QFileDialog.getSaveFileName(caption="Save Project As ...")
 
-        filename = unicode(filename)
+        filename = str(filename)
 
         try:
             f = open(filename, 'r')
@@ -2044,7 +2046,7 @@ class App(QtCore.QObject):
                 app_obj.progress.emit(0)
                 raise IOError('Failed to open file: ' + filename)
 
-            except ParseError, e:
+            except ParseError as e:
                 app_obj.inform.emit("[error] Failed to parse file: " + filename + ". " + e[0])
                 app_obj.progress.emit(0)
                 self.log.error(str(e))
@@ -2345,7 +2347,7 @@ class App(QtCore.QObject):
         self.worker_task.emit({'fcn': worker_task, 'params': [self]})
 
     def register_folder(self, filename):
-        self.defaults["last_folder"] = os.path.split(unicode(filename))[0]
+        self.defaults["last_folder"] = os.path.split(str(filename))[0]
 
     def set_progress_bar(self, percentage, text=""):
         self.ui.progress_bar.setValue(int(percentage))
@@ -3597,7 +3599,7 @@ class App(QtCore.QObject):
             output = ''
             import collections
             od = collections.OrderedDict(sorted(commands.items()))
-            for cmd_, val in od.iteritems():
+            for cmd_, val in list(od.items()):
                 #print cmd, '\n', ''.join(['~']*len(cmd))
                 output += cmd_ + ' \n' + ''.join(['~'] * len(cmd_)) + '\n'
 
@@ -3651,7 +3653,7 @@ class App(QtCore.QObject):
 
             try:
                 obj.follow(**kwa)
-            except Exception, e:
+            except Exception as e:
                 return "ERROR: %s" % str(e)
 
         # def get_sys(param):
@@ -4145,11 +4147,11 @@ class App(QtCore.QObject):
 
         # TODO: Move this to constructor
         icons = {
-            "gerber": "share:flatcam_icon16.png",
-            "excellon": "share:drill16.png",
-            "cncjob": "share:cnc16.png",
-            "project": "share:project16.png",
-            "svg": "share:geometry16.png"
+            "gerber": "share/flatcam_icon16.png",
+            "excellon": "share/drill16.png",
+            "cncjob": "share/cnc16.png",
+            "project": "share/project16.png",
+            "svg": "share/geometry16.png"
         }
 
         openers = {
@@ -4238,12 +4240,12 @@ class App(QtCore.QObject):
             "?s=" + str(self.defaults['serial']) + \
             "&v=" + str(self.version) + \
             "&os=" + str(self.os) + \
-            "&" + urllib.urlencode(self.defaults["stats"])
+            "&" + urllib.parse.urlencode(self.defaults["stats"])
         App.log.debug("Checking for updates @ %s" % full_url)
 
         ### Get the data
         try:
-            f = urllib.urlopen(full_url)
+            f = urllib.request.urlopen(full_url)
         except:
             # App.log.warning("Failed checking for latest version. Could not connect.")
             self.log.warning("Failed checking for latest version. Could not connect.")
@@ -4252,7 +4254,7 @@ class App(QtCore.QObject):
 
         try:
             data = json.load(f)
-        except Exception, e:
+        except Exception as e:
             App.log.error("Could not parse information about latest version.")
             self.inform.emit("[error] Could not parse information about latest version.")
             App.log.debug("json.load(): %s" % str(e))
@@ -4270,7 +4272,7 @@ class App(QtCore.QObject):
         App.log.debug("Newer version available.")
         self.message.emit(
             "Newer Version Available",
-            QtCore.QString("There is a newer version of FlatCAM " +
+            str("There is a newer version of FlatCAM " +
                            "available for download:<br><br>" +
                            "<B>" + data["name"] + "</b><br>" +
                            data["message"].replace("\n", "<br>")),

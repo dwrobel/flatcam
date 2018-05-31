@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandOptions(TclCommand.TclCommandSignaled):
+class TclCommandOptions(TclCommandSignaled):
     """
     Tcl shell command to open an Excellon file.
     """
