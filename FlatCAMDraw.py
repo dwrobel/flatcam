@@ -733,7 +733,7 @@ class FlatCAMDraw(QtCore.QObject):
         self.snap_toolbar.addWidget(self.grid_gap_y_entry)
 
 
-        self.corner_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share:corner32.png'), 'Snap to corner')
+        self.corner_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share/corner32.png'), 'Snap to corner')
         self.snap_max_dist_entry = FCEntry()
 
         self.snap_max_dist_entry.setMaximumWidth(70)
