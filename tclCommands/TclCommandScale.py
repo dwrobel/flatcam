@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandScale(TclCommand.TclCommand):
+class TclCommandScale(TclCommand):
     """
     Tcl shell command to resizes the object by a factor.
 

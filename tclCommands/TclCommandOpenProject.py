@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandOpenProject(TclCommand.TclCommandSignaled):
+class TclCommandOpenProject(TclCommandSignaled):
     """
     Tcl shell command to open a FlatCAM project.
     """

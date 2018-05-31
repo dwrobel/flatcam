@@ -695,24 +695,26 @@ class FlatCAMDraw(QtCore.QObject):
         self.drawing_toolbar = QtGui.QToolBar()
         self.drawing_toolbar.setDisabled(disabled)
         self.app.ui.addToolBar(self.drawing_toolbar)
-        self.select_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share:pointer32.png'), "Select 'Esc'")
-        self.add_circle_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share:circle32.png'), 'Add Circle')
-        self.add_arc_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share:arc32.png'), 'Add Arc')
-        self.add_rectangle_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share:rectangle32.png'), 'Add Rectangle')
-        self.add_polygon_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share:polygon32.png'), 'Add Polygon')
-        self.add_path_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share:path32.png'), 'Add Path')
-        self.union_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share:union32.png'), 'Polygon Union')
-        self.intersection_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share:intersection32.png'), 'Polygon Intersection')
-        self.subtract_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share:subtract32.png'), 'Polygon Subtraction')
-        self.cutpath_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share:cutpath32.png'), 'Cut Path')
-        self.move_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share:move32.png'), "Move Objects 'm'")
-        self.copy_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share:copy32.png'), "Copy Objects 'c'")
-        self.delete_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share:deleteshape32.png'), "Delete Shape '-'")
+        self.select_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select 'Esc'")
+        self.add_circle_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/circle32.png'), 'Add Circle')
+        self.add_arc_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/arc32.png'), 'Add Arc')
+        self.add_rectangle_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/rectangle32.png'), 'Add Rectangle')
+        self.add_polygon_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), 'Add Polygon')
+        self.add_path_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/path32.png'), 'Add Path')
+        self.union_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/union32.png'), 'Polygon Union')
+        self.intersection_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/intersection32.png'), 'Polygon Intersection')
+        self.subtract_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/subtract32.png'), 'Polygon Subtraction')
+        self.cutpath_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/cutpath32.png'), 'Cut Path')
+        self.move_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Objects 'm'")
+        self.copy_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/copy32.png'), "Copy Objects 'c'")
+        self.delete_btn = self.drawing_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'), "Delete Shape '-'")
 
         ### Snap Toolbar ###
         self.snap_toolbar = QtGui.QToolBar()
+
         self.grid_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share:grid32.png'), 'Snap to grid')
         self.grid_gap_x_entry = FCEntry()
+
         self.grid_gap_x_entry.setMaximumWidth(70)
         self.grid_gap_x_entry.setToolTip("Grid X distance")
         self.snap_toolbar.addWidget(self.grid_gap_x_entry)
@@ -721,8 +723,10 @@ class FlatCAMDraw(QtCore.QObject):
         self.grid_gap_y_entry.setToolTip("Grid Y distante")
         self.snap_toolbar.addWidget(self.grid_gap_y_entry)
 
+
         self.corner_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share:corner32.png'), 'Snap to corner')
         self.snap_max_dist_entry = FCEntry()
+
         self.snap_max_dist_entry.setMaximumWidth(70)
         self.snap_max_dist_entry.setToolTip("Max. magnet distance")
         self.snap_toolbar.addWidget(self.snap_max_dist_entry)
@@ -733,21 +737,21 @@ class FlatCAMDraw(QtCore.QObject):
         ### Application menu ###
         self.menu = QtGui.QMenu("Drawing")
         self.app.ui.menu.insertMenu(self.app.ui.menutoolaction, self.menu)
-        # self.select_menuitem = self.menu.addAction(QtGui.QIcon('share:pointer16.png'), "Select 'Esc'")
-        # self.add_circle_menuitem = self.menu.addAction(QtGui.QIcon('share:circle16.png'), 'Add Circle')
-        # self.add_arc_menuitem = self.menu.addAction(QtGui.QIcon('share:arc16.png'), 'Add Arc')
-        # self.add_rectangle_menuitem = self.menu.addAction(QtGui.QIcon('share:rectangle16.png'), 'Add Rectangle')
-        # self.add_polygon_menuitem = self.menu.addAction(QtGui.QIcon('share:polygon16.png'), 'Add Polygon')
-        # self.add_path_menuitem = self.menu.addAction(QtGui.QIcon('share:path16.png'), 'Add Path')
-        self.union_menuitem = self.menu.addAction(QtGui.QIcon('share:union16.png'), 'Polygon Union')
-        self.intersection_menuitem = self.menu.addAction(QtGui.QIcon('share:intersection16.png'), 'Polygon Intersection')
-        # self.subtract_menuitem = self.menu.addAction(QtGui.QIcon('share:subtract16.png'), 'Polygon Subtraction')
-        self.cutpath_menuitem = self.menu.addAction(QtGui.QIcon('share:cutpath16.png'), 'Cut Path')
-        # self.move_menuitem = self.menu.addAction(QtGui.QIcon('share:move16.png'), "Move Objects 'm'")
-        # self.copy_menuitem = self.menu.addAction(QtGui.QIcon('share:copy16.png'), "Copy Objects 'c'")
-        self.delete_menuitem = self.menu.addAction(QtGui.QIcon('share:deleteshape16.png'), "Delete Shape '-'")
-        self.buffer_menuitem = self.menu.addAction(QtGui.QIcon('share:buffer16.png'), "Buffer selection 'b'")
-        self.paint_menuitem = self.menu.addAction(QtGui.QIcon('share:paint16.png'), "Paint selection")
+        # self.select_menuitem = self.menu.addAction(QtGui.QIcon('share/pointer16.png'), "Select 'Esc'")
+        # self.add_circle_menuitem = self.menu.addAction(QtGui.QIcon('share/circle16.png'), 'Add Circle')
+        # self.add_arc_menuitem = self.menu.addAction(QtGui.QIcon('share/arc16.png'), 'Add Arc')
+        # self.add_rectangle_menuitem = self.menu.addAction(QtGui.QIcon('share/rectangle16.png'), 'Add Rectangle')
+        # self.add_polygon_menuitem = self.menu.addAction(QtGui.QIcon('share/polygon16.png'), 'Add Polygon')
+        # self.add_path_menuitem = self.menu.addAction(QtGui.QIcon('share/path16.png'), 'Add Path')
+        self.union_menuitem = self.menu.addAction(QtGui.QIcon('share/union16.png'), 'Polygon Union')
+        self.intersection_menuitem = self.menu.addAction(QtGui.QIcon('share/intersection16.png'), 'Polygon Intersection')
+        # self.subtract_menuitem = self.menu.addAction(QtGui.QIcon('share/subtract16.png'), 'Polygon Subtraction')
+        self.cutpath_menuitem = self.menu.addAction(QtGui.QIcon('share/cutpath16.png'), 'Cut Path')
+        # self.move_menuitem = self.menu.addAction(QtGui.QIcon('share/move16.png'), "Move Objects 'm'")
+        # self.copy_menuitem = self.menu.addAction(QtGui.QIcon('share/copy16.png'), "Copy Objects 'c'")
+        self.delete_menuitem = self.menu.addAction(QtGui.QIcon('share/deleteshape16.png'), "Delete Shape '-'")
+        self.buffer_menuitem = self.menu.addAction(QtGui.QIcon('share/buffer16.png'), "Buffer selection 'b'")
+        self.paint_menuitem = self.menu.addAction(QtGui.QIcon('share/paint16.png'), "Paint selection")
         self.menu.addSeparator()
 
         self.paint_menuitem.triggered.connect(self.on_paint_tool)
@@ -985,7 +989,7 @@ class FlatCAMDraw(QtCore.QObject):
                         self.tools[t]["button"].setChecked(False)
 
                 self.active_tool = self.tools[tool]["constructor"](self)
-                self.app.info(self.active_tool.start_msg)
+                self.app.inform.emit(self.active_tool.start_msg)
             else:
                 self.app.log.debug("%s is NOT checked." % tool)
                 for t in self.tools:
@@ -1004,7 +1008,7 @@ class FlatCAMDraw(QtCore.QObject):
         if self.active_tool is not None and event.button is 1:
             # Dispatch event to active_tool
             msg = self.active_tool.click(self.snap(event.xdata, event.ydata))
-            self.app.info(msg)
+            self.app.inform.emit(msg)
 
             # If it is a shape generating tool
             if isinstance(self.active_tool, FCShapeTool) and self.active_tool.complete:
@@ -1116,14 +1120,14 @@ class FlatCAMDraw(QtCore.QObject):
                 self.active_tool.make()
                 if self.active_tool.complete:
                     self.on_shape_complete()
-                    self.app.info("Done.")
+                    self.app.inform.emit("Done.")
             return
 
         ### Abort the current action
         if event.key == 'escape':
             # TODO: ...?
             #self.on_tool_select("select")
-            self.app.info("Cancelled.")
+            self.app.inform.emit("Cancelled.")
 
             self.delete_utility_geometry()
 
@@ -1143,14 +1147,14 @@ class FlatCAMDraw(QtCore.QObject):
             self.move_btn.setChecked(True)
             self.on_tool_select('move')
             self.active_tool.set_origin(self.snap(event.xdata, event.ydata))
-            self.app.info("Click on target point.")
+            self.app.inform.emit("Click on target point.")
 
         ### Copy
         if event.key == 'c':
             self.copy_btn.setChecked(True)
             self.on_tool_select('copy')
             self.active_tool.set_origin(self.snap(event.xdata, event.ydata))
-            self.app.info("Click on target point.")
+            self.app.inform.emit("Click on target point.")
 
         ### Snap
         if event.key == 'g':
@@ -1167,7 +1171,7 @@ class FlatCAMDraw(QtCore.QObject):
         if self.active_tool is not None:
             response = self.active_tool.on_key(event.key)
         if response is not None:
-            self.app.info(response)
+            self.app.inform.emit(response)
 
     def on_canvas_key_release(self, event):
         self.key = None
@@ -1475,7 +1479,7 @@ class FlatCAMDraw(QtCore.QObject):
 
         for param in [tooldia, overlap, margin]:
             if not isinstance(param, float):
-                param_name = [k for k, v in locals().iteritems() if v is param][0]
+                param_name = [k for k, v in list(locals().items()) if v is param][0]
                 self.app.inform.emit("[warning] Invalid value for {}".format())
 
         # Todo: Check for valid method.

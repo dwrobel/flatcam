@@ -93,7 +93,7 @@ class LengthEntry(QtGui.QLineEdit):
     def returnPressed(self, *args, **kwargs):
         val = self.get_value()
         if val is not None:
-            self.set_text(QtCore.QString(str(val)))
+            self.set_text(str(val))
         else:
             log.warning("Could not interpret entry: %s" % self.get_text())
 
@@ -117,7 +117,7 @@ class LengthEntry(QtGui.QLineEdit):
             return None
 
     def set_value(self, val):
-        self.setText(QtCore.QString(str(val)))
+        self.setText(str(val))
 
 
 class FloatEntry(QtGui.QLineEdit):
@@ -139,7 +139,7 @@ class FloatEntry(QtGui.QLineEdit):
     def returnPressed(self, *args, **kwargs):
         val = self.get_value()
         if val is not None:
-            self.set_text(QtCore.QString(str(val)))
+            self.set_text(str(val))
         else:
             log.warning("Could not interpret entry: %s" % self.text())
 
@@ -187,10 +187,10 @@ class IntEntry(QtGui.QLineEdit):
     def set_value(self, val):
 
         if val == self.empty_val and self.allow_empty:
-            self.setText(QtCore.QString(""))
+            self.setText("")
             return
 
-        self.setText(QtCore.QString(str(val)))
+        self.setText(str(val))
 
 
 class FCEntry(QtGui.QLineEdit):
@@ -213,7 +213,7 @@ class FCEntry(QtGui.QLineEdit):
         return str(self.text())
 
     def set_value(self, val):
-        self.setText(QtCore.QString(str(val)))
+        self.setText(str(val))
 
 
 class EvalEntry(QtGui.QLineEdit):
@@ -235,7 +235,7 @@ class EvalEntry(QtGui.QLineEdit):
     def returnPressed(self, *args, **kwargs):
         val = self.get_value()
         if val is not None:
-            self.setText(QtCore.QString(str(val)))
+            self.setText(str(val))
         else:
             log.warning("Could not interpret entry: %s" % self.get_text())
 
@@ -248,12 +248,12 @@ class EvalEntry(QtGui.QLineEdit):
             return None
 
     def set_value(self, val):
-        self.setText(QtCore.QString(str(val)))
+        self.setText(str(val))
 
 
 class FCCheckBox(QtGui.QCheckBox):
     def __init__(self, label='', parent=None):
-        super(FCCheckBox, self).__init__(QtCore.QString(label), parent)
+        super(FCCheckBox, self).__init__(str(label), parent)
 
     def get_value(self):
         return self.isChecked()

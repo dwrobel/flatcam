@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandCncjob(TclCommand.TclCommandSignaled):
+class TclCommandCncjob(TclCommandSignaled):
     """
     Tcl shell command to Generates a CNC Job from a Geometry Object.
 

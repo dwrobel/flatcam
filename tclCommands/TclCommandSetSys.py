@@ -1,8 +1,7 @@
-from ObjectCollection import *
-import TclCommand
+from tclCommands.TclCommand import *
 
 
-class TclCommandSetSys(TclCommand.TclCommand):
+class TclCommandSetSys(TclCommand):
     """
     Tcl shell command to set the value of a system variable
 
@@ -55,7 +54,9 @@ class TclCommandSetSys(TclCommand.TclCommand):
             "false": False,
             "False": False,
             "true": True,
-            "True": True
+            "True": True,
+            "mm": "MM",
+            "in": "IN"
         }
 
         if param in self.app.defaults:

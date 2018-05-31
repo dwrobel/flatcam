@@ -1,10 +1,8 @@
-from ObjectCollection import *
 from copy import copy,deepcopy
+from tclCommands.TclCommand import *
 
-import TclCommand
 
-
-class TclCommandPanelize(TclCommand.TclCommand):
+class TclCommandPanelize(TclCommand):
     """
     Tcl shell command to pannelize an object.
 
@@ -13,7 +11,7 @@ class TclCommandPanelize(TclCommand.TclCommand):
     """
 
     # List of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
-    aliases = ['panelize']
+    aliases = ['panelize', 'pan', 'panel']
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -130,10 +128,9 @@ class TclCommandPanelize(TclCommand.TclCommand):
                 for col in range(args['columns']):
                     local_outname = outname + ".tmp." + str(col) + "." + str(row)
                     if isinstance(obj, FlatCAMExcellon):
-                        self.app.new_object("excellon", local_outname, initialize_local_excellon)
+                        self.app.new_object("excellon", local_outname, initialize_local_excellon, plot=False)
                     else:
-                        self.app.new_object("geometry", local_outname, initialize_local)
-
+                        self.app.new_object("geometry", local_outname, initialize_local, plot=False)
                     currentx += lenghtx
                 currenty += lenghty
 

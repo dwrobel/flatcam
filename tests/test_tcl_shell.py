@@ -82,7 +82,7 @@ class TclShellTest(unittest.TestCase):
         # Units must be IN
         #----------------------------------------
         units = self.fc.exec_command_test('get_sys units')
-        self.assertEquals(units, "IN")
+        self.assertEqual(units, "IN")
 
         # MM
         self.fc.exec_command_test('set_sys units MM')
@@ -92,7 +92,7 @@ class TclShellTest(unittest.TestCase):
         # Units must be MM
         #----------------------------------------
         units = self.fc.exec_command_test('get_sys units')
-        self.assertEquals(units, "MM")
+        self.assertEqual(units, "MM")
 
     def test_gerber_flow(self):
         """

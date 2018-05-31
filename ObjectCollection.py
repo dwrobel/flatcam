@@ -6,7 +6,6 @@
 # MIT Licence                                              #
 ############################################################
 
-#from PyQt4.QtCore import QModelIndex
 from FlatCAMObj import *
 import inspect  # TODO: Remove
 import FlatCAMApp
@@ -47,6 +46,7 @@ class ObjectCollection():
 
     def __init__(self, parent=None):
         #QtCore.QAbstractListModel.__init__(self, parent=parent)
+
         ### Icons for the list view
         self.icons = {}
         for kind in ObjectCollection.icon_files:
@@ -70,7 +70,6 @@ class ObjectCollection():
         self.model = QtGui.QStandardItemModel(self.view)
         self.view.setModel(self.model)
         self.model.itemChanged.connect(self.on_item_changed)
-        #self.view.setModel(self)
 
         self.click_modifier = None
 
@@ -102,7 +101,7 @@ class ObjectCollection():
 
     def print_list(self):
         for obj in self.object_list:
-            print obj
+            print(obj)
 
     def on_mouse_down(self, event):
         FlatCAMApp.App.log.debug("Mouse button pressed on list")
@@ -163,12 +162,16 @@ class ObjectCollection():
 
         # Create the model item to insert into the QListView
         icon = QtGui.QIcon(self.icons[obj.kind])#self.icons["gerber"])
-        item = QtGui.QStandardItem(icon, name)
+        item = QtGui.QStandardItem(icon, str(name))
+        # Item is not editable, so that double click
+        # does not allow cell value modification.
+        item.setEditable(False)
+        # The item is checkable, to add the checkbox.
         item.setCheckable(True)
-        if obj.options["plot"] == True:
-            item.setCheckState(2)#Qt.Checked)
+        if obj.options["plot"] is True:
+            item.setCheckState(2)   #Qt.Checked)
         else:
-            item.setCheckState(0) #Qt.Unchecked)
+            item.setCheckState(0)   #Qt.Unchecked)
 
         self.model.appendRow(item)
 
@@ -289,7 +292,7 @@ class ObjectCollection():
         :param name: Name of the FlatCAM Object
         :return: None
         """
-        iobj = self.createIndex(self.get_names().index(name), 0)  # Column 0
+        iobj = self.model.createIndex(self.get_names().index(name), 0)  # Column 0
         self.view.selectionModel().select(iobj, QtGui.QItemSelectionModel.Select)
 
     def set_inactive(self, name):
@@ -300,7 +303,7 @@ class ObjectCollection():
         :param name: Name of the FlatCAM Object
         :return: None
         """
-        iobj = self.createIndex(self.get_names().index(name), 0)  # Column 0
+        iobj = self.model.createIndex(self.get_names().index(name), 0)  # Column 0
         self.view.selectionModel().select(iobj, QtGui.QItemSelectionModel.Deselect)
 
     def set_all_inactive(self):

@@ -6,7 +6,7 @@
 # MIT Licence                                              #
 ############################################################
 
-from cStringIO import StringIO
+from io import StringIO
 from PyQt4 import QtCore
 from copy import copy
 from ObjectUI import *
@@ -101,7 +101,7 @@ class FlatCAMObj(QtCore.QObject):
         old_name = copy(self.options["name"])
         new_name = self.ui.name_entry.get_value()
         self.options["name"] = self.ui.name_entry.get_value()
-        self.app.info("Name changed from %s to %s" % (old_name, new_name))
+        self.app.inform.emit("Name changed from %s to %s" % (old_name, new_name))
 
     def on_offset_button_click(self):
         self.app.report_usage("obj_on_offset_button")
@@ -221,7 +221,7 @@ class FlatCAMObj(QtCore.QObject):
         try:
             self.form_fields[option].set_value(self.options[option])
         except KeyError:
-            self.app.log.warn("Tried to set an option or field that does not exist: %s" % option)
+            self.app.log.warning("Tried to set an option or field that does not exist: %s" % option)
 
     def read_form_item(self, option):
         """
@@ -473,7 +473,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             # Propagate options
             follow_obj.options["cnctooldia"] = self.options["isotooldia"]
             follow_obj.solid_geometry = self.solid_geometry
-            app_obj.info("Follow geometry created: %s" % follow_obj.options["name"])
+            app_obj.inform.emit("Follow geometry created: %s" % follow_obj.options["name"])
 
         # TODO: Do something if this is None. Offer changing name?
         self.app.new_object("geometry", follow_name, follow_init)
@@ -519,7 +519,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 elif type(geom) is Polygon:
                     geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
                 else:
-                    raise "Unexpected Geometry"
+                    raise str("Unexpected Geometry")
             return geom
 
         if combine:
@@ -534,7 +534,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     offset = (2 * i + 1) / 2.0 * dia - i * overlap * dia
                     geom = generate_envelope (offset, i == 0)
                     geo_obj.solid_geometry.append(geom)
-                app_obj.info("Isolation geometry created: %s" % geo_obj.options["name"])
+                app_obj.inform.emit("Isolation geometry created: %s" % geo_obj.options["name"])
 
             # TODO: Do something if this is None. Offer changing name?
             self.app.new_object("geometry", iso_name, iso_init)
@@ -553,7 +553,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     # Propagate options
                     geo_obj.options["cnctooldia"] = self.options["isotooldia"]
                     geo_obj.solid_geometry = generate_envelope (offset, i == 0)
-                    app_obj.info("Isolation geometry created: %s" % geo_obj.options["name"])
+                    app_obj.inform.emit("Isolation geometry created: %s" % geo_obj.options["name"])
 
                 # TODO: Do something if this is None. Offer changing name?
                 self.app.new_object("geometry", iso_name, iso_init)
@@ -728,20 +728,20 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                     exc_final.drills.append({"point": point, "tool": drill['tool']})
                 toolsrework=dict()
                 max_numeric_tool=0
-                for toolname in exc.tools.iterkeys():
+                for toolname in list(exc.tools.copy().keys()):
                     numeric_tool=int(toolname)
                     if numeric_tool>max_numeric_tool:
                         max_numeric_tool=numeric_tool
                     toolsrework[exc.tools[toolname]['C']]=toolname
 
                 #exc_final as last because names from final tools will be used
-                for toolname in exc_final.tools.iterkeys():
+                for toolname in list(exc_final.tools.copy().keys()):
                     numeric_tool=int(toolname)
                     if numeric_tool>max_numeric_tool:
                         max_numeric_tool=numeric_tool
                     toolsrework[exc_final.tools[toolname]['C']]=toolname
 
-                for toolvalues in toolsrework.iterkeys():
+                for toolvalues in list(toolsrework.copy().keys()):
                     if toolsrework[toolvalues] in exc_final.tools:
                         if exc_final.tools[toolsrework[toolvalues]]!={"C": toolvalues}:
                             exc_final.tools[str(max_numeric_tool+1)]={"C": toolvalues}
@@ -756,18 +756,29 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         # Populate tool list
         n = len(self.tools)
-        self.ui.tools_table.setColumnCount(2)
-        self.ui.tools_table.setHorizontalHeaderLabels(['#', 'Diameter'])
+        self.ui.tools_table.setColumnCount(3)
+        self.ui.tools_table.setHorizontalHeaderLabels(['#', 'Diameter', 'Count'])
         self.ui.tools_table.setRowCount(n)
         self.ui.tools_table.setSortingEnabled(False)
+
         i = 0
         for tool in self.tools:
+
+            drill_cnt = 0   # variable to store the nr of drills per tool
+            # Find no of drills for the current tool
+            for drill in self.drills:
+                if drill.get('tool') == tool:
+                    drill_cnt += 1
+
             id = QtGui.QTableWidgetItem(tool)
             id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
             self.ui.tools_table.setItem(i, 0, id)  # Tool name/id
             dia = QtGui.QTableWidgetItem(str(self.tools[tool]['C']))
             dia.setFlags(QtCore.Qt.ItemIsEnabled)
+            drill_count = QtGui.QTableWidgetItem('%d' % drill_cnt)
+            drill_count.setFlags(QtCore.Qt.ItemIsEnabled)
             self.ui.tools_table.setItem(i, 1, dia)  # Diameter
+            self.ui.tools_table.setItem(i, 2, drill_count)  # Number of drills per tool
             i += 1
         
         # sort the tool diameter column
@@ -777,7 +788,11 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         
         self.ui.tools_table.resizeColumnsToContents()
         self.ui.tools_table.resizeRowsToContents()
-        self.ui.tools_table.horizontalHeader().setStretchLastSection(True)
+        horizontal_header = self.ui.tools_table.horizontalHeader()
+        horizontal_header.setResizeMode(0, QtGui.QHeaderView.ResizeToContents)
+        horizontal_header.setResizeMode(1, QtGui.QHeaderView.Stretch)
+        horizontal_header.setResizeMode(2, QtGui.QHeaderView.ResizeToContents)
+        # horizontal_header.setStretchLastSection(True)
         self.ui.tools_table.verticalHeader().hide()
         self.ui.tools_table.setSortingEnabled(True)
 
@@ -846,7 +861,14 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             tooldia = self.options["tooldia"]
 
         # Sort tools by diameter. items() -> [('name', diameter), ...]
-        sorted_tools = sorted(self.tools.items(), key=lambda tl: tl[1])
+        # sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1])
+
+        # Python3 no longer allows direct comparison between dicts so we need to sort tools differently
+        sort = []
+        for k, v in self.tools.items():
+            sort.append((k, v.get('C')))
+        sorted_tools = sorted(sort, key=lambda t1: t1[1])
+        log.debug("Tools are sorted: %s" % str(sorted_tools))
 
         if tools == "all":
             tools = [i[0] for i in sorted_tools]  # List if ordered tool names.
@@ -1044,6 +1066,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             "tooldia": self.ui.tooldia_entry,
             "append": self.ui.append_text,
             "prepend": self.ui.prepend_text,
+            "postprocess": self.ui.process_script,
             "dwell": self.ui.dwell_cb,
             "dwelltime": self.ui.dwelltime_entry
         })
@@ -1066,15 +1089,16 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.read_form()
 
         try:
-            filename = unicode(QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ...",
+            filename = str(QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ...",
                                                          directory=self.app.defaults["last_folder"]))
         except TypeError:
-            filename = unicode(QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ..."))
+            filename = str(QtGui.QFileDialog.getSaveFileName(caption="Export G-Code ..."))
 
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
+        processor = str(self.ui.process_script.get_value())
 
-        self.export_gcode(filename, preamble=preamble, postamble=postamble)
+        self.export_gcode(filename, preamble=preamble, postamble=postamble, processor=processor)
 
     def dwell_generator(self, lines):
         """
@@ -1110,7 +1134,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         raise StopIteration
 
-    def export_gcode(self, filename, preamble='', postamble=''):
+    def export_gcode(self, filename, preamble='', postamble='', processor=''):
 
         lines = StringIO(self.gcode)
 
@@ -1279,11 +1303,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             return
 
         if self.options["selectmethod"] == "single":
-            self.app.info("Click inside the desired polygon.")
+            self.app.inform.emit("Click inside the desired polygon.")
 
             # To be called after clicking on the plot.
             def doit(event):
-                self.app.info("Painting polygon...")
+                self.app.inform.emit("Painting polygon...")
                 self.app.plotcanvas.mpl_disconnect(subscription)
                 point = [event.xdata, event.ydata]
                 self.paint_poly_single_click(point, tooldia, overlap,
@@ -1351,9 +1375,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             geo_obj.options["cnctooldia"] = tooldia
 
             # Experimental...
-            print "Indexing...",
+            print("Indexing...")
             geo_obj.make_index()
-            print "Done"
+            print("Done")
 
             self.app.inform.emit("Done.")
 
@@ -1437,9 +1461,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             geo_obj.options["cnctooldia"] = tooldia
 
             # Experimental...
-            print "Indexing...",
+            print("Indexing...")
             geo_obj.make_index()
-            print "Done"
+            print("Done")
 
             self.app.inform.emit("Done.")
 
