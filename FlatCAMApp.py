@@ -541,6 +541,10 @@ class App(QtCore.QObject):
         self.ui.menuhelp_home.triggered.connect(lambda: webbrowser.open(self.app_url))
         self.ui.menuhelp_manual.triggered.connect(lambda: webbrowser.open(self.manual_url))
         # Toolbar
+        self.ui.open_gerber_btn.triggered.connect(self.on_fileopengerber)
+        self.ui.open_exc_btn.triggered.connect(self.on_fileopenexcellon)
+        self.ui.open_gcode_btn.triggered.connect(self.on_fileopengcode)
+        self.ui.save_btn.triggered.connect(self.on_file_saveprojectas)
         self.ui.zoom_fit_btn.triggered.connect(self.on_zoom_fit)
         self.ui.zoom_in_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
         self.ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
@@ -571,10 +575,12 @@ class App(QtCore.QObject):
         ### Tools and Plugins ###
         #########################
         self.dblsidedtool = DblSidedTool(self)
-        self.dblsidedtool.install()
+        self.dblsidedtool.install(icon=QtGui.QIcon('share/doubleside16.png'), separator=True)
 
         self.measeurement_tool = Measurement(self)
-        self.measeurement_tool.install()
+        self.measeurement_tool.install(icon=QtGui.QIcon('share/measure16.png'))
+
+        self.ui.measure_btn.triggered.connect(self.measeurement_tool.run)
 
         self.draw = FlatCAMDraw(self, disabled=True)
 
@@ -602,6 +608,7 @@ class App(QtCore.QObject):
         self.ui.shell_dock.setFeatures(QtGui.QDockWidget.DockWidgetMovable |
                              QtGui.QDockWidget.DockWidgetFloatable | QtGui.QDockWidget.DockWidgetClosable)
         self.ui.addDockWidget(QtCore.Qt.BottomDockWidgetArea, self.ui.shell_dock)
+
 
         if self.defaults["shell_at_startup"]:
             self.ui.shell_dock.show()
