@@ -286,6 +286,7 @@ class App(QtCore.QObject):
         self.defaults = LoudDict()
         self.defaults.set_change_callback(self.on_defaults_dict_change)  # When the dictionary changes.
         self.defaults.update({
+            "global_mouse_pan_button": 2,
             "serial": 0,
             "stats": {},
             "units": "IN",
@@ -475,6 +476,8 @@ class App(QtCore.QObject):
 
         self.collection = ObjectCollection.ObjectCollection()
         self.ui.project_tab_layout.addWidget(self.collection.view)
+
+        self.mouse_pan_button = int(self.defaults['global_mouse_pan_button'])
         #### End of Data ####
 
         #### Worker ####
