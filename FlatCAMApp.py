@@ -1567,6 +1567,11 @@ class App(QtCore.QObject):
         if plot:
             obj.plot()
 
+        # deselect all previously selected objects and select the new one
+        self.collection.set_all_inactive()
+        name = obj.options['name']
+        self.collection.set_active(name)
+
         self.on_zoom_fit(None)
         t1 = time.time()  # DEBUG
         self.log.debug("%f seconds adding object and plotting." % (t1 - t0))
