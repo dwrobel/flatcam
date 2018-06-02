@@ -26,6 +26,7 @@ import tclCommands.TclCommandInteriors
 import tclCommands.TclCommandIsolate
 import tclCommands.TclCommandJoinExcellon
 import tclCommands.TclCommandJoinGeometry
+import tclCommands.TclCommandListSys
 import tclCommands.TclCommandMillHoles
 import tclCommands.TclCommandMirror
 import tclCommands.TclCommandNew
