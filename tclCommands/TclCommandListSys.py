@@ -14,6 +14,7 @@ class TclCommandListSys(TclCommand):
 
     # Dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
+        ('selection', str),
     ])
 
     # Dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
@@ -27,10 +28,17 @@ class TclCommandListSys(TclCommand):
     # structured help for current command, args needs to be ordered
     help = {
         'main': "Returns the list of the names of system variables.\n"
-                "Note: Use get_sys command to get the value and set_sys command to set it.",
+                "Without a parameter it will list all the system parameters. "
+                "As a parameter use first letter or first letters from the name "
+                "of the system variable.\n"
+                "In that case it will list only the system variables that starts with that string.\n"
+                "Main categories start with: gerber or excellon or geometry or cncjob or global.\n"
+                "Note: Use get_sys command to get the value and set_sys command to set it.\n",
         'args': collections.OrderedDict([
         ]),
-        'examples': []
+        'examples': ['list_sys',
+                     'list_sys gerber',
+                     'list_sys cncjob']
     }
 
     def execute(self, args, unnamed_args):
@@ -40,4 +48,9 @@ class TclCommandListSys(TclCommand):
         :param unnamed_args:
         :return:
         """
-        return str([*self.app.defaults])
+        if 'selection' in args:
+            argument = args['selection']
+            print(argument)
+            return str([k for k in self.app.defaults.keys() if str(k).startswith(str(argument))])
+        else:
+            return str([*self.app.defaults])
