@@ -536,6 +536,8 @@ class App(QtCore.QObject):
         self.ui.menuoptions_transfer_p2a.triggered.connect(self.on_options_project2app)
         self.ui.menuoptions_transfer_o2p.triggered.connect(self.on_options_object2project)
         self.ui.menuoptions_transfer_p2o.triggered.connect(self.on_options_project2object)
+        self.ui.menuoptions_transform_flipx.triggered.connect(self.on_flipx)
+        self.ui.menuoptions_transform_flipy.triggered.connect(self.on_flipy)
         self.ui.menuviewdisableall.triggered.connect(self.disable_plots)
         self.ui.menuviewdisableother.triggered.connect(lambda: self.disable_plots(except_current=True))
         self.ui.menuviewenable.triggered.connect(self.enable_all_plots)
@@ -1484,6 +1486,88 @@ class App(QtCore.QObject):
         form.show()
 
         # self.options2form()
+
+    def on_flipx(self):
+        obj_list = self.collection.get_selected()
+        xminlist = []
+        yminlist = []
+        xmaxlist = []
+        ymaxlist = []
+
+        if not obj_list:
+            self.inform.emit("WARNING: No object selected.")
+            msg = "Please Select an object to flip!"
+            warningbox = QtGui.QMessageBox()
+            warningbox.setText(msg)
+            warningbox.setWindowTitle("Warning ...")
+            warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+            warningbox.setStandardButtons(QtGUi.QMessageBox.Ok)
+            warningbox.setDefaultButton(QtGui.QMessageBox.Ok)
+            warningbox.exec_()
+        else:
+            # first get a bounding box to fit all
+            for obj in obj_list:
+                xmin, ymin, xmax, ymax = obj.bounds()
+                xminlist.append(xmin)
+                yminlist.append(ymin)
+                xmaxlist.append(xmax)
+                ymaxlist.append(ymax)
+
+            # get the minimum x,y and maximum x,y for all objects selected
+            xminimal = min(xminlist)
+            yminimal = min(yminlist)
+            xmaximal = max(xmaxlist)
+            ymaximal = max(ymaxlist)
+
+            px = 0.5 * (xminimal + xmaximal)
+            py = 0.5 * (yminimal + ymaximal)
+
+            # execute mirroring
+            for obj in obj_list:
+                obj.mirror('X', [px, py])
+                obj.plot()
+                self.info('Flipped on the X axis ...')
+
+    def on_flipy(self):
+        obj_list = self.collection.get_selected()
+        xminlist = []
+        yminlist = []
+        xmaxlist = []
+        ymaxlist = []
+
+        if not obj_list:
+            self.inform.emit("WARNING: No object selected.")
+            msg = "Please Select an object to flip!"
+            warningbox = QtGui.QMessageBox()
+            warningbox.setText(msg)
+            warningbox.setWindowTitle("Warning ...")
+            warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+            warningbox.setStandardButtons(QtGui.QMessageBox.Ok)
+            warningbox.setDefaultButton(QtGui.QMessageBox.Ok)
+            warningbox.exec_()
+        else:
+            # first get a bounding box to fit all
+            for obj in obj_list:
+                xmin, ymin, xmax, ymax = obj.bounds()
+                xminlist.append(xmin)
+                yminlist.append(ymin)
+                xmaxlist.append(xmax)
+                ymaxlist.append(ymax)
+
+            # get the minimum x,y and maximum x,y for all objects selected
+            xminimal = min(xminlist)
+            yminimal = min(yminlist)
+            xmaximal = max(xmaxlist)
+            ymaximal = max(ymaxlist)
+
+            px = 0.5 * (xminimal + xmaximal)
+            py = 0.5 * (yminimal + ymaximal)
+
+            # execute mirroring
+            for obj in obj_list:
+                obj.mirror('Y', [px, py])
+                obj.plot()
+                self.info('Flipped on the Y axis ...')
 
     def on_delete(self):
         """

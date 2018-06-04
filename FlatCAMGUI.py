@@ -105,13 +105,20 @@ class FlatCAMGUI(QtGui.QMainWindow):
 
         ### Options ###
         self.menuoptions = self.menu.addMenu('&Options')
-        self.menuoptions_transfer = self.menuoptions.addMenu('Transfer options')
+        self.menuoptions_transfer = self.menuoptions.addMenu(QtGui.QIcon('share/transfer.png'), 'Transfer options')
         self.menuoptions_transfer_a2p = self.menuoptions_transfer.addAction("Application to Project")
         self.menuoptions_transfer_p2a = self.menuoptions_transfer.addAction("Project to Application")
         self.menuoptions_transfer_p2o = self.menuoptions_transfer.addAction("Project to Object")
         self.menuoptions_transfer_o2p = self.menuoptions_transfer.addAction("Object to Project")
         self.menuoptions_transfer_a2o = self.menuoptions_transfer.addAction("Application to Object")
         self.menuoptions_transfer_o2a = self.menuoptions_transfer.addAction("Object to Application")
+
+        ### Transform Object ###
+        self.menuoptions_transform = self.menuoptions.addMenu(QtGui.QIcon('share/transform.png'), '&Transform Object')
+        self.menuoptions_transform_flipx = self.menuoptions_transform.addAction(QtGui.QIcon('share/flipx.png'),
+                                                                                "Flip Selection on &X axis")
+        self.menuoptions_transform_flipy = self.menuoptions_transform.addAction(QtGui.QIcon('share/flipy.png'),
+                                                                                "Flip Selection on &Y axis")
 
         ### View ###
         self.menuview = self.menu.addMenu('&View')
