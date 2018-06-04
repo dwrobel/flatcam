@@ -138,6 +138,8 @@ class PlotCanvas(QtCore.QObject):
         self.axes = self.figure.add_axes([0.05, 0.05, 0.9, 0.9], label="base", alpha=0.0)
         self.axes.set_aspect(1)
         self.axes.grid(True)
+        self.axes.axhline(color='Black')
+        self.axes.axvline(color='Black')
 
         # The canvas is the top level container (FigureCanvasQTAgg)
         self.canvas = FigureCanvas(self.figure)
@@ -445,7 +447,7 @@ class PlotCanvas(QtCore.QObject):
     def on_mouse_press(self, event):
 
         # Check for middle mouse button press
-        if event.button == 2:
+        if event.button == self.app.mouse_pan_button:
 
             # Prepare axes for pan (using 'matplotlib' pan function)
             self.pan_axes = []
@@ -461,7 +463,7 @@ class PlotCanvas(QtCore.QObject):
     def on_mouse_release(self, event):
 
         # Check for middle mouse button release to complete pan procedure
-        if event.button == 2:
+        if event.button == self.app.mouse_pan_button:
             for a in self.pan_axes:
                 a.end_pan()
 
