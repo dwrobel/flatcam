@@ -138,6 +138,8 @@ class PlotCanvas(QtCore.QObject):
         self.axes = self.figure.add_axes([0.05, 0.05, 0.9, 0.9], label="base", alpha=0.0)
         self.axes.set_aspect(1)
         self.axes.grid(True)
+        self.axes.axhline(color='Black')
+        self.axes.axvline(color='Black')
 
         # The canvas is the top level container (FigureCanvasQTAgg)
         self.canvas = FigureCanvas(self.figure)
