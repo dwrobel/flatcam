@@ -80,13 +80,15 @@ class LengthEntry(QtGui.QLineEdit):
         self.readyToEdit = True
 
     def mousePressEvent(self, e, Parent=None):
-        super(LengthEntry, self).mousePressEvent(e)  # required to deselect on 2e click
+        # required to deselect on 2nd click
+        super(LengthEntry, self).mousePressEvent(e)
         if self.readyToEdit:
             self.selectAll()
             self.readyToEdit = False
 
     def focusOutEvent(self, e):
-        super(LengthEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+        # required to remove cursor on focusOut
+        super(LengthEntry, self).focusOutEvent(e)
         self.deselect()
         self.readyToEdit = True
 
@@ -126,13 +128,15 @@ class FloatEntry(QtGui.QLineEdit):
         self.readyToEdit = True
 
     def mousePressEvent(self, e, Parent=None):
-        super(FloatEntry, self).mousePressEvent(e)  # required to deselect on 2e click
+        # required to deselect on 2nd click
+        super(FloatEntry, self).mousePressEvent(e)
         if self.readyToEdit:
             self.selectAll()
             self.readyToEdit = False
 
     def focusOutEvent(self, e):
-        super(FloatEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+        # required to remove cursor on focusOut
+        super(FloatEntry, self).focusOutEvent(e)
         self.deselect()
         self.readyToEdit = True
 
@@ -166,13 +170,15 @@ class IntEntry(QtGui.QLineEdit):
         self.readyToEdit = True
 
     def mousePressEvent(self, e, Parent=None):
-        super(IntEntry, self).mousePressEvent(e)  # required to deselect on 2e click
+        # required to deselect on 2nd click
+        super(IntEntry, self).mousePressEvent(e)
         if self.readyToEdit:
             self.selectAll()
             self.readyToEdit = False
 
     def focusOutEvent(self, e):
-        super(IntEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+        # required to remove cursor on focusOut
+        super(IntEntry, self).focusOutEvent(e)
         self.deselect()
         self.readyToEdit = True
 
@@ -199,13 +205,15 @@ class FCEntry(QtGui.QLineEdit):
         self.readyToEdit = True
 
     def mousePressEvent(self, e, Parent=None):
-        super(FCEntry, self).mousePressEvent(e)  # required to deselect on 2e click
+        # required to deselect on 2nd click
+        super(FCEntry, self).mousePressEvent(e)
         if self.readyToEdit:
             self.selectAll()
             self.readyToEdit = False
 
     def focusOutEvent(self, e):
-        super(FCEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+        # required to remove cursor on focusOut
+        super(FCEntry, self).focusOutEvent(e)
         self.deselect()
         self.readyToEdit = True
 
@@ -222,13 +230,15 @@ class EvalEntry(QtGui.QLineEdit):
         self.readyToEdit = True
 
     def mousePressEvent(self, e, Parent=None):
-        super(EvalEntry, self).mousePressEvent(e)  # required to deselect on 2e click
+        # required to deselect on 2nd click
+        super(EvalEntry, self).mousePressEvent(e)
         if self.readyToEdit:
             self.selectAll()
             self.readyToEdit = False
 
     def focusOutEvent(self, e):
-        super(EvalEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+        # required to remove cursor on focusOut
+        super(EvalEntry, self).focusOutEvent(e)
         self.deselect()
         self.readyToEdit = True
 
@@ -274,6 +284,55 @@ class FCTextArea(QtGui.QPlainTextEdit):
 
     def get_value(self):
         return str(self.toPlainText())
+
+class FCInputDialog(QtGui.QInputDialog):
+    def __init__(self, parent=None, ok=False, val=None):
+        super(FCInputDialog, self).__init__(parent)
+        self.allow_empty = ok
+        self.empty_val = val
+        self.readyToEdit = True
+
+    def mousePressEvent(self, e, Parent=None):
+        # required to deselect on 2nd click
+        super(FCInputDialog, self).mousePressEvent(e)
+        if self.readyToEdit:
+            self.selectAll()
+            self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        # required to remove cursor on focusOut
+        super(FCInputDialog, self).focusOutEvent(e)
+        self.deselect()
+        self.readyToEdit = True
+
+    def get_value(self, title=None, message=None, min=None, max=None, decimals=None):
+        if title is None:
+            title = "FlatCAM action"
+        if message is None:
+            message = "Please enter the value: "
+        if min is None:
+            min = 0.0
+        if max is None:
+            max = 100.0
+        if decimals is None:
+            decimals = 1
+        self.val,self.ok = self.getDouble(self, title, message, min=min,
+                                                      max=max, decimals=decimals)
+        return [self.val,self.ok]
+
+    def set_value(self, val):
+        pass
+
+
+class FCButton(QtGui.QPushButton):
+    def __init__(self, parent=None):
+        super(FCButton, self).__init__(parent)
+
+    def get_value(self):
+        return self.isChecked()
+
+    def set_value(self, val):
+        self.setText(str(val))
 
 
 class VerticalScrollArea(QtGui.QScrollArea):

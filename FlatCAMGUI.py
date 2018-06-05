@@ -98,14 +98,16 @@ class FlatCAMGUI(QtGui.QMainWindow):
         self.menueditnew = self.menuedit.addAction(QtGui.QIcon('share/new_geo16.png'), 'New Geometry')
         self.menueditedit = self.menuedit.addAction(QtGui.QIcon('share/edit16.png'), 'Edit Geometry')
         self.menueditok = self.menuedit.addAction(QtGui.QIcon('share/edit_ok16.png'), 'Update Geometry')
-        #self.menueditok.
-        #self.menueditcancel = self.menuedit.addAction(QtGui.QIcon('share/cancel_edit16.png'), "Cancel Edit")
+        # Separator
+        self.menuedit.addSeparator()
         self.menueditjoin = self.menuedit.addAction(QtGui.QIcon('share/join16.png'), 'Join Geometry')
         self.menueditdelete = self.menuedit.addAction(QtGui.QIcon('share/trash16.png'), 'Delete')
+        self.menuedit.addSeparator()
+
 
         ### Options ###
         self.menuoptions = self.menu.addMenu('&Options')
-        self.menuoptions_transfer = self.menuoptions.addMenu('Transfer options')
+        self.menuoptions_transfer = self.menuoptions.addMenu(QtGui.QIcon('share/transfer.png'), 'Transfer options')
         self.menuoptions_transfer_a2p = self.menuoptions_transfer.addAction("Application to Project")
         self.menuoptions_transfer_p2a = self.menuoptions_transfer.addAction("Project to Application")
         self.menuoptions_transfer_p2o = self.menuoptions_transfer.addAction("Project to Object")
