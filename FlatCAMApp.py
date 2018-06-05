@@ -1526,7 +1526,7 @@ class App(QtCore.QObject):
             for obj in obj_list:
                 obj.mirror('X', [px, py])
                 obj.plot()
-                self.info('Flipped on the X axis ...')
+            self.inform.emit('Flipped on the X axis ...')
 
     def on_flipy(self):
         obj_list = self.collection.get_selected()
@@ -1567,7 +1567,7 @@ class App(QtCore.QObject):
             for obj in obj_list:
                 obj.mirror('Y', [px, py])
                 obj.plot()
-                self.info('Flipped on the Y axis ...')
+            self.inform.emit('Flipped on the Y axis ...')
 
     def on_delete(self):
         """
