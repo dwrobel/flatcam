@@ -1615,6 +1615,7 @@ class App(QtCore.QObject):
                     xmaximal = max(xmaxlist)
                     ymaximal = max(ymaxlist)
 
+                for sel_obj in obj_list:
                     px = 0.5 * (xminimal + xmaximal)
                     py = 0.5 * (yminimal + ymaximal)
 
