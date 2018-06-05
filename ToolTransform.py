@@ -40,7 +40,7 @@ class ToolTransform(FlatCAMTool):
         self.rotate_entry = FCEntry()
         self.rotate_entry.setFixedWidth(70)
         self.rotate_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.rotate_label = QtGui.QLabel("Angle:")
+        self.rotate_label = QtGui.QLabel("Angle Rotation:")
         self.rotate_label.setToolTip(
             "Angle for Rotation action, in degrees.\n"
             "Float number between -360 and 359.\n"
@@ -74,7 +74,7 @@ class ToolTransform(FlatCAMTool):
         self.skewx_entry = FCEntry()
         self.skewx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.skewx_entry.setFixedWidth(70)
-        self.skewx_label = QtGui.QLabel("Angle:")
+        self.skewx_label = QtGui.QLabel("Angle SkewX:")
         self.skewx_label.setToolTip(
             "Angle for Skew action, in degrees.\n"
             "Float number between -360 and 359."
@@ -92,7 +92,7 @@ class ToolTransform(FlatCAMTool):
         self.skewy_entry = FCEntry()
         self.skewy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.skewy_entry.setFixedWidth(70)
-        self.skewy_label = QtGui.QLabel("Angle:")
+        self.skewy_label = QtGui.QLabel("Angle SkewY:")
         self.skewy_label.setToolTip(
             "Angle for Skew action, in degrees.\n"
             "Float number between -360 and 359."
