@@ -36,8 +36,9 @@ from FlatCAMShell import FCShell
 from FlatCAMDraw import FlatCAMDraw
 from FlatCAMProcess import *
 from GUIElements import FCInputDialog
-from MeasurementTool import Measurement
-from DblSidedTool import DblSidedTool
+from ToolMeasurement import Measurement
+from ToolDblSided import DblSidedTool
+from ToolTransform import ToolTransform
 import tclCommands
 
 from camlib import *
@@ -537,11 +538,6 @@ class App(QtCore.QObject):
         self.ui.menuoptions_transfer_p2a.triggered.connect(self.on_options_project2app)
         self.ui.menuoptions_transfer_o2p.triggered.connect(self.on_options_object2project)
         self.ui.menuoptions_transfer_p2o.triggered.connect(self.on_options_project2object)
-        self.ui.menuoptions_transform_flipx.triggered.connect(self.on_flipx)
-        self.ui.menuoptions_transform_flipy.triggered.connect(self.on_flipy)
-        self.ui.menuoptions_transform_skewx.triggered.connect(self.on_skewx)
-        self.ui.menuoptions_transform_skewy.triggered.connect(self.on_skewy)
-        self.ui.menuoptions_transform_rotate.triggered.connect(self.on_rotate)
         self.ui.menuviewdisableall.triggered.connect(self.disable_plots)
         self.ui.menuviewdisableother.triggered.connect(lambda: self.disable_plots(except_current=True))
         self.ui.menuviewenable.triggered.connect(self.enable_all_plots)
@@ -586,10 +582,12 @@ class App(QtCore.QObject):
         self.dblsidedtool = DblSidedTool(self)
         self.dblsidedtool.install(icon=QtGui.QIcon('share/doubleside16.png'), separator=True)
 
-        self.measeurement_tool = Measurement(self)
-        self.measeurement_tool.install(icon=QtGui.QIcon('share/measure16.png'))
+        self.measurement_tool = Measurement(self)
+        self.measurement_tool.install(icon=QtGui.QIcon('share/measure16.png'))
+        self.ui.measure_btn.triggered.connect(self.measurement_tool.run)
 
-        self.ui.measure_btn.triggered.connect(self.measeurement_tool.run)
+        self.transform_tool = ToolTransform(self)
+        self.transform_tool.install(icon=QtGui.QIcon('share/transform.png'), pos=self.ui.menuedit)
 
         self.draw = FlatCAMDraw(self, disabled=True)
 
@@ -1490,209 +1488,6 @@ class App(QtCore.QObject):
         form.show()
 
         # self.options2form()
-
-    def on_flipx(self):
-        obj_list = self.collection.get_selected()
-        xminlist = []
-        yminlist = []
-        xmaxlist = []
-        ymaxlist = []
-
-        if not obj_list:
-            self.inform.emit("WARNING: No object selected.")
-            msg = "Please Select an object to flip!"
-            warningbox = QtGui.QMessageBox()
-            warningbox.setText(msg)
-            warningbox.setWindowTitle("Warning ...")
-            warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-            warningbox.setStandardButtons(QtGui.QMessageBox.Ok)
-            warningbox.setDefaultButton(QtGui.QMessageBox.Ok)
-            warningbox.exec_()
-        else:
-            # first get a bounding box to fit all
-            for obj in obj_list:
-                xmin, ymin, xmax, ymax = obj.bounds()
-                xminlist.append(xmin)
-                yminlist.append(ymin)
-                xmaxlist.append(xmax)
-                ymaxlist.append(ymax)
-
-            # get the minimum x,y and maximum x,y for all objects selected
-            xminimal = min(xminlist)
-            yminimal = min(yminlist)
-            xmaximal = max(xmaxlist)
-            ymaximal = max(ymaxlist)
-
-            px = 0.5 * (xminimal + xmaximal)
-            py = 0.5 * (yminimal + ymaximal)
-
-            # execute mirroring
-            for obj in obj_list:
-                obj.mirror('X', [px, py])
-                obj.plot()
-            self.inform.emit('Flipped on the X axis ...')
-
-    def on_flipy(self):
-        obj_list = self.collection.get_selected()
-        xminlist = []
-        yminlist = []
-        xmaxlist = []
-        ymaxlist = []
-
-        if not obj_list:
-            self.inform.emit("WARNING: No object selected.")
-            msg = "Please Select an object to flip!"
-            warningbox = QtGui.QMessageBox()
-            warningbox.setText(msg)
-            warningbox.setWindowTitle("Warning ...")
-            warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-            warningbox.setStandardButtons(QtGui.QMessageBox.Ok)
-            warningbox.setDefaultButton(QtGui.QMessageBox.Ok)
-            warningbox.exec_()
-        else:
-            # first get a bounding box to fit all
-            for obj in obj_list:
-                xmin, ymin, xmax, ymax = obj.bounds()
-                xminlist.append(xmin)
-                yminlist.append(ymin)
-                xmaxlist.append(xmax)
-                ymaxlist.append(ymax)
-
-            # get the minimum x,y and maximum x,y for all objects selected
-            xminimal = min(xminlist)
-            yminimal = min(yminlist)
-            xmaximal = max(xmaxlist)
-            ymaximal = max(ymaxlist)
-
-            px = 0.5 * (xminimal + xmaximal)
-            py = 0.5 * (yminimal + ymaximal)
-
-            # execute mirroring
-            for obj in obj_list:
-                obj.mirror('Y', [px, py])
-                obj.plot()
-            self.inform.emit('Flipped on the Y axis ...')
-
-    def on_rotate(self, preset=None):
-        obj_list = self.collection.get_selected()
-        xminlist = []
-        yminlist = []
-        xmaxlist = []
-        ymaxlist = []
-
-        if not obj_list:
-            self.inform.emit("WARNING: No object selected.")
-            msg = "Please Select an object to rotate!"
-            warningbox = QtGui.QMessageBox()
-            warningbox.setText(msg)
-            warningbox.setWindowTitle("Warning ...")
-            warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-            warningbox.setStandardButtons(QtGui.QMessageBox.Ok)
-            warningbox.setDefaultButton(QtGui.QMessageBox.Ok)
-            warningbox.exec_()
-        else:
-            if preset is not None:
-                rotatebox = FCInputDialog()
-                num, ok = rotatebox.get_value(title='Transform', message='Enter the Angle value',
-                                              min=-360, max=360, decimals=3)
-            else:
-                num = preset
-                ok = True
-
-            if ok:
-                for sel_obj in obj_list:
-                    # first get a bounding box to fit all
-                    for obj in obj_list:
-                        xmin, ymin, xmax, ymax = obj.bounds()
-                        xminlist.append(xmin)
-                        yminlist.append(ymin)
-                        xmaxlist.append(xmax)
-                        ymaxlist.append(ymax)
-
-                    # get the minimum x,y and maximum x,y for all objects selected
-                    xminimal = min(xminlist)
-                    yminimal = min(yminlist)
-                    xmaximal = max(xmaxlist)
-                    ymaximal = max(ymaxlist)
-
-                for sel_obj in obj_list:
-                    px = 0.5 * (xminimal + xmaximal)
-                    py = 0.5 * (yminimal + ymaximal)
-
-                    sel_obj.rotate(-num, point=(px, py))
-                    sel_obj.plot()
-                self.inform.emit('Object was rotated ...')
-
-    def on_skewx(self):
-        obj_list = self.collection.get_selected()
-        xminlist = []
-        yminlist = []
-
-        if not obj_list:
-            self.inform.emit("WARNING: No object selected.")
-            msg = "Please Select an object to skew/shear!"
-            warningbox = QtGui.QMessageBox()
-            warningbox.setText(msg)
-            warningbox.setWindowTitle("Warning ...")
-            warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-            warningbox.setStandardButtons(QtGui.QMessageBox.Ok)
-            warningbox.setDefaultButton(QtGui.QMessageBox.Ok)
-            warningbox.exec_()
-        else:
-            skewxbox = FCInputDialog()
-            num, ok = skewxbox.get_value(title='Transform', message='Enter the Angle value',
-                                          min=-360, max=360, decimals=3)
-            if ok:
-                # first get a bounding box to fit all
-                for obj in obj_list:
-                    xmin, ymin, xmax, ymax = obj.bounds()
-                    xminlist.append(xmin)
-                    yminlist.append(ymin)
-
-                # get the minimum x,y and maximum x,y for all objects selected
-                xminimal = min(xminlist)
-                yminimal = min(yminlist)
-
-                for obj in obj_list:
-                    obj.skew(num, 0, point=(xminimal, yminimal))
-                    obj.plot()
-                self.inform.emit('Object was skewed on X axis ...')
-
-    def on_skewy(self):
-        obj_list = self.collection.get_selected()
-        xminlist = []
-        yminlist = []
-
-
-        if not obj_list:
-            self.inform.emit("WARNING: No object selected.")
-            msg = "Please Select an object to skew/shear!"
-            warningbox = QtGui.QMessageBox()
-            warningbox.setText(msg)
-            warningbox.setWindowTitle("Warning ...")
-            warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-            warningbox.setStandardButtons(QtGui.QMessageBox.Ok)
-            warningbox.setDefaultButton(QtGui.QMessageBox.Ok)
-            warningbox.exec_()
-        else:
-            skewybox = FCInputDialog()
-            num, ok = skewybox.get_value(title='Transform', message='Enter the Angle value',
-                                         min=-360, max=360, decimals=3)
-            if ok:
-                # first get a bounding box to fit all
-                for obj in obj_list:
-                    xmin, ymin, xmax, ymax = obj.bounds()
-                    xminlist.append(xmin)
-                    yminlist.append(ymin)
-
-                # get the minimum x,y and maximum x,y for all objects selected
-                xminimal = min(xminlist)
-                yminimal = min(yminlist)
-
-                for obj in obj_list:
-                    obj.skew(0, num, point=(xminimal, yminimal))
-                    obj.plot()
-                self.inform.emit('Object was skewed on Y axis ...')
 
     def on_delete(self):
         """

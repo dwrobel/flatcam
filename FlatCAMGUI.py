@@ -98,10 +98,12 @@ class FlatCAMGUI(QtGui.QMainWindow):
         self.menueditnew = self.menuedit.addAction(QtGui.QIcon('share/new_geo16.png'), 'New Geometry')
         self.menueditedit = self.menuedit.addAction(QtGui.QIcon('share/edit16.png'), 'Edit Geometry')
         self.menueditok = self.menuedit.addAction(QtGui.QIcon('share/edit_ok16.png'), 'Update Geometry')
-        #self.menueditok.
-        #self.menueditcancel = self.menuedit.addAction(QtGui.QIcon('share/cancel_edit16.png'), "Cancel Edit")
+        # Separator
+        self.menuedit.addSeparator()
         self.menueditjoin = self.menuedit.addAction(QtGui.QIcon('share/join16.png'), 'Join Geometry')
         self.menueditdelete = self.menuedit.addAction(QtGui.QIcon('share/trash16.png'), 'Delete')
+        self.menuedit.addSeparator()
+
 
         ### Options ###
         self.menuoptions = self.menu.addMenu('&Options')
@@ -112,23 +114,6 @@ class FlatCAMGUI(QtGui.QMainWindow):
         self.menuoptions_transfer_o2p = self.menuoptions_transfer.addAction("Object to Project")
         self.menuoptions_transfer_a2o = self.menuoptions_transfer.addAction("Application to Object")
         self.menuoptions_transfer_o2a = self.menuoptions_transfer.addAction("Object to Application")
-
-        ### Transform Object ###
-        self.menuoptions_transform = self.menuoptions.addMenu(QtGui.QIcon('share/transform.png'), '&Transform Object')
-        self.menuoptions_transform_flipx = self.menuoptions_transform.addAction(QtGui.QIcon('share/flipx.png'),
-                                                                                "Flip Selection on &X axis")
-        self.menuoptions_transform_flipy = self.menuoptions_transform.addAction(QtGui.QIcon('share/flipy.png'),
-                                                                                "Flip Selection on &Y axis")
-        # Separator
-        self.menuoptions_transform.addSeparator()
-        self.menuoptions_transform_skewx = self.menuoptions_transform.addAction(QtGui.QIcon('share/skewx.png'),
-                                                                                "&Skew Selection on X axis")
-        self.menuoptions_transform_skewy = self.menuoptions_transform.addAction(QtGui.QIcon('share/skewy.png'),
-                                                                                "S&kew Selection on Y axis")
-        # Separator
-        self.menuoptions_transform.addSeparator()
-        self.menuoptions_transform_rotate = self.menuoptions_transform.addAction(QtGui.QIcon('share/rotate.png'),
-                                                                                 "&Rotate Selection")
 
         ### View ###
         self.menuview = self.menu.addMenu('&View')
