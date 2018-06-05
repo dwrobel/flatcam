@@ -119,6 +119,16 @@ class FlatCAMGUI(QtGui.QMainWindow):
                                                                                 "Flip Selection on &X axis")
         self.menuoptions_transform_flipy = self.menuoptions_transform.addAction(QtGui.QIcon('share/flipy.png'),
                                                                                 "Flip Selection on &Y axis")
+        # Separator
+        self.menuoptions_transform.addSeparator()
+        self.menuoptions_transform_skewx = self.menuoptions_transform.addAction(QtGui.QIcon('share/skewx.png'),
+                                                                                "&Skew Selection on X axis")
+        self.menuoptions_transform_skewy = self.menuoptions_transform.addAction(QtGui.QIcon('share/skewy.png'),
+                                                                                "S&kew Selection on Y axis")
+        # Separator
+        self.menuoptions_transform.addSeparator()
+        self.menuoptions_transform_rotate = self.menuoptions_transform.addAction(QtGui.QIcon('share/rotate.png'),
+                                                                                 "&Rotate Selection")
 
         ### View ###
         self.menuview = self.menu.addMenu('&View')
