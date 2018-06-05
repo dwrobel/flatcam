@@ -32,13 +32,39 @@ class FlatCAMTool(QtGui.QWidget):
 
         self.menuAction = None
 
-    def install(self, icon=None, separator=None):
-        if icon is None:
-            self.menuAction = self.app.ui.menutool.addAction(self.toolName)
+    def install(self, icon=None, separator=None, **kwargs):
+        before = None
+
+        # 'pos' is the menu where the Action has to be installed
+        # if no 'pos' kwarg is provided then by default our Action will be installed in the menutool
+        # as it previously was
+        if 'pos' in kwargs:
+            pos = kwargs['pos']
         else:
-            self.menuAction = self.app.ui.menutool.addAction(icon, self.toolName)
+            pos = self.app.ui.menutool
+
+        # 'before' is the Action in the menu stated by 'pos' kwarg, before which we want our Action to be installed
+        # if 'before' kwarg is not provided, by default our Action will be added in the last place.
+        if 'before' in kwargs:
+            before = (kwargs['before'])
+
+        # create the new Action
+        self.menuAction = QtGui.QAction(self)
+        # if provided, add an icon to this Action
+        if icon is not None:
+            self.menuAction.setIcon(icon)
+        # set the text name of the Action, which will be displayed in the menu
+        self.menuAction.setText(self.toolName)
+        # add a ToolTip to the new Action
+        # self.menuAction.setToolTip(self.toolTip) # currently not available
+
+        # insert the action in the position specified by 'before' and 'pos' kwargs
+        pos.insertAction(before, self.menuAction)
+
+        # if separator parameter is True add a Separator after the newly created Action
         if separator is True:
-            self.app.ui.menutool.addSeparator()
+            pos.addSeparator()
+
         self.menuAction.triggered.connect(self.run)
 
     def run(self):
