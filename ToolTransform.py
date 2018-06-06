@@ -2,7 +2,7 @@ from PyQt4 import QtGui, QtCore
 from PyQt4 import Qt
 from GUIElements import FCEntry, FCButton
 from FlatCAMTool import FlatCAMTool
-from FlatCAMObj import FlatCAMGerber, FlatCAMExcellon, FlatCAMGeometry
+from camlib import *
 
 
 class ToolTransform(FlatCAMTool):
@@ -224,7 +224,7 @@ class ToolTransform(FlatCAMTool):
                 self.app.inform.emit('Object was rotated ...')
             except Exception as e:
                 self.app.inform.emit("[ERROR] Due of %s, rotation movement was not executed." % str(e))
-                return
+                raise
 
     def on_flip(self, axis):
         obj_list = self.app.collection.get_selected()
@@ -276,7 +276,7 @@ class ToolTransform(FlatCAMTool):
 
             except Exception as e:
                 self.app.inform.emit("[ERROR] Due of %s, Flip action was not executed.")
-                return
+                raise
 
     def on_skew(self, axis, num):
         obj_list = self.app.collection.get_selected()
@@ -314,6 +314,6 @@ class ToolTransform(FlatCAMTool):
                 self.app.inform.emit('Object was skewed on %s axis ...' % str(axis))
             except Exception as e:
                 self.app.inform.emit("[ERROR] Due of %s, Skew action was not executed." % str(e))
-                return
+                raise
 
 # end of file
