@@ -35,8 +35,10 @@ from FlatCAMCommon import LoudDict
 from FlatCAMShell import FCShell
 from FlatCAMDraw import FlatCAMDraw
 from FlatCAMProcess import *
-from MeasurementTool import Measurement
-from DblSidedTool import DblSidedTool
+from GUIElements import FCInputDialog
+from ToolMeasurement import Measurement
+from ToolDblSided import DblSidedTool
+from ToolTransform import ToolTransform
 import tclCommands
 
 from camlib import *
@@ -580,10 +582,12 @@ class App(QtCore.QObject):
         self.dblsidedtool = DblSidedTool(self)
         self.dblsidedtool.install(icon=QtGui.QIcon('share/doubleside16.png'), separator=True)
 
-        self.measeurement_tool = Measurement(self)
-        self.measeurement_tool.install(icon=QtGui.QIcon('share/measure16.png'))
+        self.measurement_tool = Measurement(self)
+        self.measurement_tool.install(icon=QtGui.QIcon('share/measure16.png'))
+        self.ui.measure_btn.triggered.connect(self.measurement_tool.run)
 
-        self.ui.measure_btn.triggered.connect(self.measeurement_tool.run)
+        self.transform_tool = ToolTransform(self)
+        self.transform_tool.install(icon=QtGui.QIcon('share/transform.png'), pos=self.ui.menuedit)
 
         self.draw = FlatCAMDraw(self, disabled=True)
 

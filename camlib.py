@@ -1051,6 +1051,46 @@ class Geometry(object):
 
         self.solid_geometry = mirror_geom(self.solid_geometry)
 
+    def skew(self, angle_x=None, angle_y=None, point=None):
+        """
+        Shear/Skew the geometries of an object by angles along x and y dimensions.
+
+        Parameters
+        ----------
+        xs, ys : float, float
+            The shear angle(s) for the x and y axes respectively. These can be
+            specified in either degrees (default) or radians by setting
+            use_radians=True.
+
+        See shapely manual for more information:
+        http://toblerity.org/shapely/manual.html#affine-transformations
+        """
+        if angle_y is None:
+            angle_y = 0.0
+        if angle_x is None:
+            angle_x = 0.0
+        if point is None:
+            self.solid_geometry = affinity.skew(self.solid_geometry, angle_x, angle_y,
+                                            origin=(0, 0))
+        else:
+            px, py = point
+            self.solid_geometry = affinity.skew(self.solid_geometry, angle_x, angle_y,
+                                                origin=(px, py))
+        return
+
+    def rotate(self, angle, point=None):
+        """
+        Rotate an object by a given angle around given coords (point)
+        :param angle:
+        :param point:
+        :return:
+        """
+        if point is None:
+            self.solid_geometry = affinity.rotate(self.solid_geometry, angle, origin='center')
+        else:
+            px, py = point
+            self.solid_geometry = affinity.rotate(self.solid_geometry, angle, origin=(px, py))
+        return
 
 class ApertureMacro:
     """
@@ -2869,6 +2909,60 @@ class Excellon(Geometry):
         # Recreate geometry
         self.create_geometry()
 
+    def skew(self, angle_x=None, angle_y=None, point=None):
+        """
+        Shear/Skew the geometries of an object by angles along x and y dimensions.
+        Tool sizes, feedrates an Z-plane dimensions are untouched.
+
+        Parameters
+        ----------
+        angle_x, angle_y: float, float
+            The shear angle(s) for the x and y axes respectively. These can be
+            specified in either degrees (default) or radians by setting
+            use_radians=True.
+        point: point of origin for skew, tuple of coordinates
+
+        See shapely manual for more information:
+        http://toblerity.org/shapely/manual.html#affine-transformations
+        """
+
+        if angle_y is None:
+            angle_y = 0.0
+        if angle_x is None:
+            angle_x = 0.0
+        if point is None:
+            # Drills
+            for drill in self.drills:
+                drill['point'] = affinity.skew(drill['point'], angle_x, angle_y,
+                                               origin=(0, 0))
+        else:
+            # Drills
+            px, py = point
+            for drill in self.drills:
+                drill['point'] = affinity.skew(drill['point'], angle_x, angle_y,
+                                               origin=(px, py))
+
+        self.create_geometry()
+
+    def rotate(self, angle, point=None):
+        """
+        Rotate the geometry of an object by an angle around the 'point' coordinates
+        :param angle:
+        :param point: point around which to rotate
+        :return:
+        """
+        if point is None:
+            # Drills
+            for drill in self.drills:
+                drill['point'] = affinity.rotate(drill['point'], angle, origin='center')
+        else:
+            # Drills
+            px, py = point
+            for drill in self.drills:
+                drill['point'] = affinity.rotate(drill['point'], angle, origin=(px, py))
+
+        self.create_geometry()
+
     def convert_units(self, units):
         factor = Geometry.convert_units(self, units)
 
@@ -3532,6 +3626,54 @@ class CNCjob(Geometry):
 
         for g in self.gcode_parsed:
             g['geom'] = affinity.translate(g['geom'], xoff=dx, yoff=dy)
+
+        self.create_geometry()
+
+    def skew(self, angle_x=None, angle_y=None, point=None):
+        """
+        Shear/Skew the geometries of an object by angles along x and y dimensions.
+
+        Parameters
+        ----------
+        angle_x, angle_y : float, float
+            The shear angle(s) for the x and y axes respectively. These can be
+            specified in either degrees (default) or radians by setting
+            use_radians=True.
+        point: tupple of coordinates . Origin for skew.
+
+        See shapely manual for more information:
+        http://toblerity.org/shapely/manual.html#affine-transformations
+        """
+
+        if angle_y is None:
+            angle_y = 0.0
+        if angle_x is None:
+            angle_x = 0.0
+        if point == None:
+            for g in self.gcode_parsed:
+                g['geom'] = affinity.skew(g['geom'], angle_x, angle_y,
+                                          origin=(0, 0))
+        else:
+            for g in self.gcode_parsed:
+                g['geom'] = affinity.skew(g['geom'], angle_x, angle_y,
+                                          origin=point)
+
+        self.create_geometry()
+
+    def rotate(self, angle, point=None):
+        """
+        Rotate the geometrys of an object by an given angle around the coordinates of the 'point'
+        :param angle:
+        :param point:
+        :return:
+        """
+        if point is None:
+            for g in self.gcode_parsed:
+                g['geom'] = affinity.rotate(g['geom'], angle, origin='center')
+        else:
+            px, py = point
+            for g in self.gcode_parsed:
+                g['geom'] = affinity.rotate(g['geom'], angle, origin=(px, py))
 
         self.create_geometry()
 
