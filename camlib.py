@@ -1039,7 +1039,6 @@ class Geometry(object):
 
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
-
         def mirror_geom(obj):
             if type(obj) is list:
                 new_obj = []
@@ -1065,31 +1064,60 @@ class Geometry(object):
         See shapely manual for more information:
         http://toblerity.org/shapely/manual.html#affine-transformations
         """
-        if angle_y is None:
-            angle_y = 0.0
+
         if angle_x is None:
-            angle_x = 0.0
+            angle_x = 0
+        if angle_y is None:
+            angle_y = 0
         if point is None:
-            self.solid_geometry = affinity.skew(self.solid_geometry, angle_x, angle_y,
-                                            origin=(0, 0))
+            point = (0,0)
         else:
             px, py = point
-            self.solid_geometry = affinity.skew(self.solid_geometry, angle_x, angle_y,
-                                                origin=(px, py))
+
+        def skew_geom(obj):
+            if type(obj) is list:
+                new_obj = []
+                for g in obj:
+                    new_obj.append(skew_geom(g))
+                return new_obj
+            else:
+                return affinity.skew(obj, angle_x, angle_y,
+                              origin=(px, py))
+
+        self.solid_geometry = skew_geom(self.solid_geometry)
         return
 
     def rotate(self, angle, point=None):
         """
-        Rotate an object by a given angle around given coords (point)
-        :param angle:
-        :param point:
-        :return:
+        Rotate an object by an angle (in degrees) around the provided coordinates.
+
+        Parameters
+        ----------
+        The angle of rotation are specified in degrees (default). Positive angles are
+        counter-clockwise and negative are clockwise rotations.
+
+        The point of origin can be a keyword 'center' for the bounding box
+        center (default), 'centroid' for the geometry's centroid, a Point object
+        or a coordinate tuple (x0, y0).
+
+        See shapely manual for more information:
+        http://toblerity.org/shapely/manual.html#affine-transformations
         """
-        if point is None:
-            self.solid_geometry = affinity.rotate(self.solid_geometry, angle, origin='center')
-        else:
+        if point is not None:
             px, py = point
-            self.solid_geometry = affinity.rotate(self.solid_geometry, angle, origin=(px, py))
+        else:
+            px, py = (0,0)
+
+        def rotate_geom(obj):
+            if type(obj) is list:
+                new_obj = []
+                for g in obj:
+                    new_obj.append(rotate_geom(g))
+                return new_obj
+            else:
+                return affinity.rotate(obj, angle, origin=(px, py))
+
+        self.solid_geometry = rotate_geom(self.solid_geometry)
         return
 
 class ApertureMacro:
@@ -3676,6 +3704,26 @@ class CNCjob(Geometry):
                 g['geom'] = affinity.rotate(g['geom'], angle, origin=(px, py))
 
         self.create_geometry()
+
+    def mirror(self, axis, point=None):
+        """
+        Mirror the geometrys of an object around the coordinates of the 'point'
+        :param axis: X or Y
+        :param point: tupple of coordinates
+        :return:
+        """
+        if point is None:
+            return
+        else:
+            px, py = point
+
+        xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
+
+        for g in self.gcode_parsed:
+            g['geom'] = affinity.scale(g['geom'], xscale, yscale, origin=(px, py))
+
+        self.create_geometry()
+        return
 
     def export_svg(self, scale_factor=0.00):
         """
