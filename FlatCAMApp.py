@@ -2032,7 +2032,7 @@ class App(QtCore.QObject):
                     "<a href = \"https://bitbucket.org/jpcgt/flatcam/pull-requests/?state=MERGED\">here.</a><BR>"
                     "<BR>"
                     "Development is done "
-                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/src/beta/\">here.</a><BR>"
+                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/src/Beta/\">here.</a><BR>"
                     "DOWNLOAD area "
                     "<a href = \"https://bitbucket.org/jpcgt/flatcam/downloads/\">here.</a><BR>"
                     "" % (version, version_date, platform.architecture()[0])
