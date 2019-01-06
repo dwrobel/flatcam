@@ -4754,16 +4754,14 @@ class CNCjob(Geometry):
         self.gcode = gcode
 
     def generate_from_multitool_geometry(self, geometry, append=True,
-                                 tooldia=None, offset=0.0, tolerance=0,
-                                 z_cut=1.0, z_move=2.0,
-                                 feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
-                                 spindlespeed=None, dwell=False, dwelltime=1.0,
-                                 multidepth=False, depthpercut=None,
-                                 toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0",
-                                 extracut=False, startz=None, endz=2.0,
-                                 pp_geometry_name=None, tool_no=1):
+                                         tooldia=None, offset=0.0, tolerance=0, z_cut=1.0, z_move=2.0,
+                                         feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
+                                         spindlespeed=None, dwell=False, dwelltime=1.0,
+                                         multidepth=False, depthpercut=None,
+                                         toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0", extracut=False,
+                                         startz=None, endz=2.0, pp_geometry_name=None, tool_no=1):
         """
-        Second algorithm to generate from Geometry.
+        Algorithm to generate from multitool Geometry.
 
         Algorithm description:
         ----------------------
@@ -4781,7 +4779,7 @@ class CNCjob(Geometry):
         :return: None
         """
 
-        log.debug("Generate_from_geometry_2()")
+        log.debug("Generate_from_multitool_geometry()")
 
         temp_solid_geometry = []
         if offset != 0.0:
@@ -4948,7 +4946,10 @@ class CNCjob(Geometry):
             overlapping the first point in path to ensure complete copper removal
         :return: None
         """
-        assert isinstance(geometry, Geometry), "Expected a Geometry, got %s" % type(geometry)
+
+        if not isinstance(geometry, Geometry):
+            self.app.inform.emit("[error]Expected a Geometry, got %s" % type(geometry))
+            return 'fail'
         log.debug("Generate_from_geometry_2()")
 
         # if solid_geometry is empty raise an exception

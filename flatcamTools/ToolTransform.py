@@ -43,7 +43,7 @@ class ToolTransform(FlatCAMTool):
         ## Layout
         form_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form_layout)
-        form_child = QtWidgets.QFormLayout()
+        form_child = QtWidgets.QHBoxLayout()
 
         self.rotate_label = QtWidgets.QLabel("Angle:")
         self.rotate_label.setToolTip(
@@ -55,7 +55,7 @@ class ToolTransform(FlatCAMTool):
         self.rotate_label.setFixedWidth(50)
 
         self.rotate_entry = FCEntry()
-        self.rotate_entry.setFixedWidth(60)
+        # self.rotate_entry.setFixedWidth(60)
         self.rotate_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
 
         self.rotate_button = FCButton()
@@ -67,7 +67,9 @@ class ToolTransform(FlatCAMTool):
         )
         self.rotate_button.setFixedWidth(60)
 
-        form_child.addRow(self.rotate_entry, self.rotate_button)
+        form_child.addWidget(self.rotate_entry)
+        form_child.addWidget(self.rotate_button)
+
         form_layout.addRow(self.rotate_label, form_child)
 
         self.transform_lay.addWidget(self.empty_label1)
@@ -79,8 +81,8 @@ class ToolTransform(FlatCAMTool):
         ## Form Layout
         form1_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form1_layout)
-        form1_child_1 = QtWidgets.QFormLayout()
-        form1_child_2 = QtWidgets.QFormLayout()
+        form1_child_1 = QtWidgets.QHBoxLayout()
+        form1_child_2 = QtWidgets.QHBoxLayout()
 
         self.skewx_label = QtWidgets.QLabel("Angle X:")
         self.skewx_label.setToolTip(
@@ -90,7 +92,7 @@ class ToolTransform(FlatCAMTool):
         self.skewx_label.setFixedWidth(50)
         self.skewx_entry = FCEntry()
         self.skewx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.skewx_entry.setFixedWidth(60)
+        # self.skewx_entry.setFixedWidth(60)
 
         self.skewx_button = FCButton()
         self.skewx_button.set_value("Skew X")
@@ -108,7 +110,7 @@ class ToolTransform(FlatCAMTool):
         self.skewy_label.setFixedWidth(50)
         self.skewy_entry = FCEntry()
         self.skewy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.skewy_entry.setFixedWidth(60)
+        # self.skewy_entry.setFixedWidth(60)
 
         self.skewy_button = FCButton()
         self.skewy_button.set_value("Skew Y")
@@ -118,8 +120,12 @@ class ToolTransform(FlatCAMTool):
             "the bounding box for all selected objects.")
         self.skewy_button.setFixedWidth(60)
 
-        form1_child_1.addRow(self.skewx_entry, self.skewx_button)
-        form1_child_2.addRow(self.skewy_entry, self.skewy_button)
+        form1_child_1.addWidget(self.skewx_entry)
+        form1_child_1.addWidget(self.skewx_button)
+
+        form1_child_2.addWidget(self.skewy_entry)
+        form1_child_2.addWidget(self.skewy_button)
+
         form1_layout.addRow(self.skewx_label, form1_child_1)
         form1_layout.addRow(self.skewy_label, form1_child_2)
 
@@ -132,8 +138,8 @@ class ToolTransform(FlatCAMTool):
         ## Form Layout
         form2_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form2_layout)
-        form2_child_1 = QtWidgets.QFormLayout()
-        form2_child_2 = QtWidgets.QFormLayout()
+        form2_child_1 = QtWidgets.QHBoxLayout()
+        form2_child_2 = QtWidgets.QHBoxLayout()
 
         self.scalex_label = QtWidgets.QLabel("Factor X:")
         self.scalex_label.setToolTip(
@@ -142,7 +148,7 @@ class ToolTransform(FlatCAMTool):
         self.scalex_label.setFixedWidth(50)
         self.scalex_entry = FCEntry()
         self.scalex_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.scalex_entry.setFixedWidth(60)
+        # self.scalex_entry.setFixedWidth(60)
 
         self.scalex_button = FCButton()
         self.scalex_button.set_value("Scale X")
@@ -159,7 +165,7 @@ class ToolTransform(FlatCAMTool):
         self.scaley_label.setFixedWidth(50)
         self.scaley_entry = FCEntry()
         self.scaley_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.scaley_entry.setFixedWidth(60)
+        # self.scaley_entry.setFixedWidth(60)
 
         self.scaley_button = FCButton()
         self.scaley_button.set_value("Scale Y")
@@ -186,8 +192,12 @@ class ToolTransform(FlatCAMTool):
             "and the center of the biggest bounding box\n"
             "of the selected objects when unchecked.")
 
-        form2_child_1.addRow(self.scalex_entry, self.scalex_button)
-        form2_child_2.addRow(self.scaley_entry, self.scaley_button)
+        form2_child_1.addWidget(self.scalex_entry)
+        form2_child_1.addWidget(self.scalex_button)
+
+        form2_child_2.addWidget(self.scaley_entry)
+        form2_child_2.addWidget(self.scaley_button)
+
         form2_layout.addRow(self.scalex_label, form2_child_1)
         form2_layout.addRow(self.scaley_label, form2_child_2)
         form2_layout.addRow(self.scale_link_cb, self.scale_zero_ref_cb)
@@ -202,8 +212,8 @@ class ToolTransform(FlatCAMTool):
         ## Form Layout
         form3_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form3_layout)
-        form3_child_1 = QtWidgets.QFormLayout()
-        form3_child_2 = QtWidgets.QFormLayout()
+        form3_child_1 = QtWidgets.QHBoxLayout()
+        form3_child_2 = QtWidgets.QHBoxLayout()
 
         self.offx_label = QtWidgets.QLabel("Value X:")
         self.offx_label.setToolTip(
@@ -212,7 +222,7 @@ class ToolTransform(FlatCAMTool):
         self.offx_label.setFixedWidth(50)
         self.offx_entry = FCEntry()
         self.offx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.offx_entry.setFixedWidth(60)
+        # self.offx_entry.setFixedWidth(60)
 
         self.offx_button = FCButton()
         self.offx_button.set_value("Offset X")
@@ -229,7 +239,7 @@ class ToolTransform(FlatCAMTool):
         self.offy_label.setFixedWidth(50)
         self.offy_entry = FCEntry()
         self.offy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.offy_entry.setFixedWidth(60)
+        # self.offy_entry.setFixedWidth(60)
 
         self.offy_button = FCButton()
         self.offy_button.set_value("Offset Y")
@@ -239,8 +249,12 @@ class ToolTransform(FlatCAMTool):
             "the bounding box for all selected objects.\n")
         self.offy_button.setFixedWidth(60)
 
-        form3_child_1.addRow(self.offx_entry, self.offx_button)
-        form3_child_2.addRow(self.offy_entry, self.offy_button)
+        form3_child_1.addWidget(self.offx_entry)
+        form3_child_1.addWidget(self.offx_button)
+
+        form3_child_2.addWidget(self.offy_entry)
+        form3_child_2.addWidget(self.offy_button)
+
         form3_layout.addRow(self.offx_label, form3_child_1)
         form3_layout.addRow(self.offy_label, form3_child_2)
 
@@ -252,9 +266,10 @@ class ToolTransform(FlatCAMTool):
 
         ## Form Layout
         form4_layout = QtWidgets.QFormLayout()
+        form4_child_hlay = QtWidgets.QHBoxLayout()
+        self.transform_lay.addLayout(form4_child_hlay)
         self.transform_lay.addLayout(form4_layout)
-        form4_child = QtWidgets.QFormLayout()
-        form4_child_1 = QtWidgets.QFormLayout()
+        form4_child_1 = QtWidgets.QHBoxLayout()
 
         self.flipx_button = FCButton()
         self.flipx_button.set_value("Flip on X")
@@ -296,7 +311,7 @@ class ToolTransform(FlatCAMTool):
         self.flip_ref_label.setFixedWidth(50)
         self.flip_ref_entry = EvalEntry2("(0, 0)")
         self.flip_ref_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.flip_ref_entry.setFixedWidth(60)
+        # self.flip_ref_entry.setFixedWidth(60)
 
         self.flip_ref_button = FCButton()
         self.flip_ref_button.set_value("Add")
@@ -306,10 +321,13 @@ class ToolTransform(FlatCAMTool):
             "SHIFT key. Then click Add button to insert.")
         self.flip_ref_button.setFixedWidth(60)
 
-        form4_child.addRow(self.flipx_button, self.flipy_button)
-        form4_child_1.addRow(self.flip_ref_entry, self.flip_ref_button)
+        form4_child_hlay.addStretch()
+        form4_child_hlay.addWidget(self.flipx_button)
+        form4_child_hlay.addWidget(self.flipy_button)
 
-        form4_layout.addRow(self.empty_label, form4_child)
+        form4_child_1.addWidget(self.flip_ref_entry)
+        form4_child_1.addWidget(self.flip_ref_button)
+
         form4_layout.addRow(self.flip_ref_cb)
         form4_layout.addRow(self.flip_ref_label, form4_child_1)
         self.ois_flip = OptionalInputSection(self.flip_ref_cb,

@@ -87,8 +87,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 'Beta1'
-    version_date = "2019/01/03"
+    version = '8.6 Beta1'
+    version_date = "2019/01/06"
 
     # URL for update checks and statistics
     version_url = "http://flatcam.org/version"
@@ -1091,13 +1091,13 @@ class App(QtCore.QObject):
 
         self.myKeywords = self.tcl_commands_list + self.ordinary_keywords
 
-        self.shell = FCShell(self)
+        self.shell = FCShell(self, version=self.version)
         self.shell._edit.set_model_data(self.myKeywords)
         self.shell.setWindowIcon(self.ui.app_icon)
         self.shell.setWindowTitle("FlatCAM Shell")
         self.shell.resize(*self.defaults["global_shell_shape"])
-        self.shell.append_output("FlatCAM %s\n(c) 2014-2019 Juan Pablo Caram\n\n" % self.version)
-        self.shell.append_output("Type help to get started.\n\n")
+        self.shell.append_output("FlatCAM %s (c)2014-2019 Juan Pablo Caram " % self.version)
+        self.shell.append_output("(Type help to get started)\n\n")
 
         self.init_tcl()
 

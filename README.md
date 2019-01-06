@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+5.01.2019
+
+- fixed cncjob TclCommand - it used the default values for parameters
+- fixed the layout in ToolTransform
+- fixed the initial text in the ToolShell
+
 3.01.2019
 
 - initial merge into FlatCAM regular

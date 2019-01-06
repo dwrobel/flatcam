@@ -14,9 +14,10 @@ from PyQt5.QtWidgets import QLineEdit, QSizePolicy, QTextEdit, QVBoxLayout, QWid
 
 class _BrowserTextEdit(QTextEdit):
 
-    def __init__(self):
+    def __init__(self, version):
         QTextEdit.__init__(self)
         self.menu = None
+        self.version = version
 
     def contextMenuEvent(self, event):
         self.menu = self.createStandardContextMenu(event.pos())
@@ -29,7 +30,7 @@ class _BrowserTextEdit(QTextEdit):
 
     def clear(self):
         QTextEdit.clear(self)
-        text = "FlatCAM 3000\n(c) 2014-2019 Juan Pablo Caram\n\nType help to get started.\n\n"
+        text = "FlatCAM %s (c)2014-2019 Juan Pablo Caram (Type help to get started)\n\n" % self.version
         text = html.escape(text)
         text = text.replace('\n', '<br/>')
         self.moveCursor(QTextCursor.End)
@@ -174,10 +175,10 @@ class TermWidget(QWidget):
     User pressed Enter. Client class should decide, if command must be executed or user may continue edit it
     """
 
-    def __init__(self, *args):
+    def __init__(self, version, *args):
         QWidget.__init__(self, *args)
 
-        self._browser = _BrowserTextEdit()
+        self._browser = _BrowserTextEdit(version=version)
         self._browser.setStyleSheet("font: 9pt \"Courier\";")
         self._browser.setReadOnly(True)
         self._browser.document().setDefaultStyleSheet(
@@ -338,8 +339,8 @@ class TermWidget(QWidget):
             self._edit.moveCursor(QTextCursor.End)
 
 class FCShell(TermWidget):
-    def __init__(self, sysShell, *args):
-        TermWidget.__init__(self, *args)
+    def __init__(self, sysShell, version, *args):
+        TermWidget.__init__(self, version, *args)
         self._sysShell = sysShell
 
     def is_command_complete(self, text):

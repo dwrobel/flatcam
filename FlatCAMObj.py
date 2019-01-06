@@ -3221,8 +3221,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         ppname_g = ppname_g if ppname_g else self.options["ppname_g"]
 
-        print(self.tools)
-
         # Object initialization function for app.new_object()
         # RUNNING ON SEPARATE THREAD!
         def job_init(job_obj, app_obj):
@@ -3232,15 +3230,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             job_obj.options["tooldia"] = tooldia
 
             app_obj.progress.emit(20)
-            job_obj.z_cut = z_cut
-            job_obj.z_move = z_move
-            job_obj.feedrate = feedrate
-            job_obj.feedrate_z = feedrate_z
-            job_obj.feedrate_rapid = feedrate_rapid
-            job_obj.pp_geometry_name = ppname_g
-            job_obj.spindlespeed = spindlespeed
-            job_obj.dwell = dwell
-            job_obj.dwelltime = dwelltime
+
             job_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
             job_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
             app_obj.progress.emit(40)
@@ -3248,16 +3238,16 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             job_obj.options['type'] = 'Geometry'
             job_obj.options['tool_dia'] = tooldia
 
-            job_obj.toolchange = self.options["toolchange"]
-            job_obj.toolchangez = self.options["toolchangez"]
-            job_obj.toolchangexy = self.options["toolchangexy"]
-
             # TODO: The tolerance should not be hard coded. Just for testing.
-            job_obj.generate_from_geometry_2(self, tooldia=tooldia, offset=offset,
+            job_obj.generate_from_geometry_2(self, tooldia=tooldia, offset=offset, tolerance=0.0005,
+                                             z_cut=z_cut, z_move=z_move,
+                                             feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
+                                             spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
                                              multidepth=multidepth, depthpercut=depthperpass,
-                                             tolerance=0.0005,
-                                             extracut=extracut,  endz=endz, startz=startz,
-                                             toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy)
+                                             toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
+                                             extracut=extracut, startz=startz, endz=endz,
+                                             pp_geometry_name=ppname_g
+                                             )
 
             app_obj.progress.emit(50)
             # tell gcode_parse from which point to start drawing the lines depending on what kind of object is the
