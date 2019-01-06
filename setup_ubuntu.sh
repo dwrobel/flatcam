@@ -16,6 +16,7 @@ apt-get install python3-gdal
 apt-get install python3-lxml
 apt-get install python3-ezdxf
 easy_install3 -U distribute
+pip3 install --upgrade dill
 pip3 install --upgrade Shapely
 pip3 install --upgrade vispy
 pip3 install --upgrade rtree

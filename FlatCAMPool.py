@@ -15,6 +15,7 @@ def apply_async(pool, fun, args):
 def func1():
     print("func")
 
+
 class WorkerPool(QtCore.QObject):
 
     def __init__(self):

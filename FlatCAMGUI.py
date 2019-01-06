@@ -16,7 +16,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
     geom_update = QtCore.pyqtSignal(int, int, int, int, int, name='geomUpdate')
     final_save = QtCore.pyqtSignal(name='saveBeforeExit')
 
-    def __init__(self, version, app):
+    def __init__(self, version, beta, app):
         super(FlatCAMGUI, self).__init__()
 
         self.app = app
@@ -717,7 +717,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.setWindowIcon(self.app_icon)
 
         self.setGeometry(100, 100, 1024, 650)
-        self.setWindowTitle('FlatCAM %s - %s' % (version, platform.architecture()[0]))
+        self.setWindowTitle('FlatCAM %s %s - %s' % (version, ('BETA' if beta else ''), platform.architecture()[0]))
         self.show()
 
         self.filename = ""

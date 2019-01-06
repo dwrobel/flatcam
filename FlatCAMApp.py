@@ -87,8 +87,9 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = '8.6 Beta1'
+    version = 8.6
     version_date = "2019/01/06"
+    beta = True
 
     # URL for update checks and statistics
     version_url = "http://flatcam.org/version"
@@ -260,7 +261,7 @@ class App(QtCore.QObject):
 
         QtCore.QObject.__init__(self)
 
-        self.ui = FlatCAMGUI(self.version, self)
+        self.ui = FlatCAMGUI(self.version, self.beta, self)
         # self.connect(self.ui,
         #              QtCore.SIGNAL("geomUpdate(int, int, int, int, int)"),
         #              self.save_geometry) PyQt4
@@ -1136,6 +1137,24 @@ class App(QtCore.QObject):
                 print("ERROR: ", ext)
                 sys.exit(2)
 
+        ###########################
+        #### Check for updates ####
+        ###########################
+
+        # Separate thread (Not worker)
+        if self.beta is False or self.beta is None:
+            App.log.info("Checking for updates in backgroud (this is version %s)." % str(self.version))
+
+            self.thr2 = QtCore.QThread()
+            self.worker_task.emit({'fcn': self.version_check,
+                                   'params': []})
+            self.thr2.start()
+
+
+        ####################################
+        #### Variables for global usage ####
+        ####################################
+
         # coordinates for relative position display
         self.rel_point1 = (0, 0)
         self.rel_point2 = (0, 0)
@@ -1996,6 +2015,7 @@ class App(QtCore.QObject):
 
         version = self.version
         version_date = self.version_date
+        beta = self.beta
 
         class AboutDialog(QtWidgets.QDialog):
             def __init__(self, parent=None):
@@ -2017,7 +2037,7 @@ class App(QtCore.QObject):
 
                 title = QtWidgets.QLabel(
                     "<font size=8><B>FlatCAM</B></font><BR>"
-                    "Version %s (%s) - %s <BR>"
+                    "Version %s %s (%s) - %s <BR>"
                     "<BR>"
                     "2D Computer-Aided Printed Circuit Board<BR>"
                     "Manufacturing.<BR>"
@@ -2035,7 +2055,7 @@ class App(QtCore.QObject):
                     "<a href = \"https://bitbucket.org/jpcgt/flatcam/src/Beta/\">here.</a><BR>"
                     "DOWNLOAD area "
                     "<a href = \"https://bitbucket.org/jpcgt/flatcam/downloads/\">here.</a><BR>"
-                    "" % (version, version_date, platform.architecture()[0])
+                    "" % (version, ('BETA' if beta else ''), version_date, platform.architecture()[0])
                 )
                 title.setOpenExternalLinks(True)
 
@@ -5664,20 +5684,20 @@ class App(QtCore.QObject):
         """
 
         self.log.debug("version_check()")
-        full_url = App.version_url + \
-            "?s=" + str(self.defaults['serial']) + \
-            "&v=" + str(self.version) + \
-            "&os=" + str(self.os) + \
-            "&" + urllib.parse.urlencode(self.defaults["global_stats"])
-        App.log.debug("Checking for updates @ %s" % full_url)
 
+        full_url = App.version_url + \
+                   "?s=" + str(self.defaults['global_serial']) + \
+                   "&v=" + str(self.version) + \
+                   "&os=" + str(self.os) + \
+                   "&" + urllib.parse.urlencode(self.defaults["global_stats"])
+        App.log.debug("Checking for updates @ %s" % full_url)
         ### Get the data
         try:
             f = urllib.request.urlopen(full_url)
         except:
             # App.log.warning("Failed checking for latest version. Could not connect.")
             self.log.warning("Failed checking for latest version. Could not connect.")
-            self.inform.emit("[warning] Failed checking for latest version. Could not connect.")
+            self.inform.emit("[warning_notcl] Failed checking for latest version. Could not connect.")
             return
 
         try:

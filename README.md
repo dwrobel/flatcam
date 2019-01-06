@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed cncjob TclCommand - it used the default values for parameters
 - fixed the layout in ToolTransform
 - fixed the initial text in the ToolShell
+- reactivated the version check in case the release is not BETA; FlatCAMApp.App has now a beta object that when set True the application will show in the Title and help-> About that is Beta (and it disable version checking)
+
 
 3.01.2019
 
