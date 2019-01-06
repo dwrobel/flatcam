@@ -413,6 +413,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # from predecessors.
         self.ser_attrs += ['options', 'kind']
 
+        self.multigeo = False
+
         # assert isinstance(self.ui, GerberObjectUI)
         # self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         # self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
@@ -869,6 +871,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.tot_slot_cnt = 0
         self.tool_row_slots = 0
 
+        self.multigeo = False
 
     @staticmethod
     def merge(exc_list, exc_final):
@@ -1733,10 +1736,12 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 except ValueError:
                     max_uid = 0
 
-                # add and merge tools
-                for tool_uid in geo.tools:
-                    max_uid += 1
-                    geo_final.tools[max_uid] = dict(geo.tools[tool_uid])
+                # add and merge tools. If what we try to merge as Geometry is Excellon's and/or Gerber's then don't try
+                # to merge the obj.tools as it is likely there is none to merge.
+                if not isinstance(geo, FlatCAMGerber) and not isinstance(geo, FlatCAMExcellon):
+                    for tool_uid in geo.tools:
+                        max_uid += 1
+                        geo_final.tools[max_uid] = dict(geo.tools[tool_uid])
 
     @staticmethod
     def get_pts(o):
