@@ -75,11 +75,10 @@ class manual_toolchange(FlatCAMPostProc):
         else:
             toolC_formatted = format(p.toolC, '.4f')
 
-        for i in p['options']['Tools_in_use']:
-            if i[0] == p.tool:
-                no_drills = i[2]
-
         if str(p['options']['type']) == 'Excellon':
+            for i in p['options']['Tools_in_use']:
+                if i[0] == p.tool:
+                    no_drills = i[2]
             return """G00 Z{toolchangez}
 T{tool}
 M5

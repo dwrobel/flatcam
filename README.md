@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+6.01.2019
+
+- fixed the Marlin postprocessor detection in GCode header
+- the version date in GCode header is now the one set in FlatCAMApp.App.version_date
+- fixed bug in postprocessor files: number of drills is now calculated only for the Excellon objects in toolchange function (only Excellon objects have drills) 
+
 5.01.2019
 
 - fixed cncjob TclCommand - it used the default values for parameters
@@ -17,7 +23,6 @@ CAD program, and create G-Code for Isolation routing.
 - reactivated the version check in case the release is not BETA; FlatCAMApp.App has now a beta object that when set True the application will show in the Title and help-> About that is Beta (and it disable version checking)
 - added a new name (mine: for good and/or bad) to the contributors list
 - fixed the Join function to work on Gerber and Excellon, Gerber and Gerber, Excellon and Excelon combination of objects. The merged property is the solid_geometry and the result is a FlatCAMGeometry object.
-
 
 3.01.2019
 

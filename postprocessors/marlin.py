@@ -69,11 +69,10 @@ class marlin(FlatCAMPostProc):
         else:
             toolC_formatted = format(p.toolC, '.4f')
 
-        for i in p['options']['Tools_in_use']:
-            if i[0] == p.tool:
-                no_drills = i[2]
-
         if str(p['options']['type']) == 'Excellon':
+            for i in p['options']['Tools_in_use']:
+                if i[0] == p.tool:
+                    no_drills = i[2]
             return """G0 Z{toolchangez}
 M5
 M0 Change to Tool Dia = {toolC}, Total drills for current tool = {t_drills}
