@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 7.01.2019
 
 - added tooltips in Edit->Convert menu
+- fixed cutting from copper features when doing Gerber isolation with multiple passes
 
 6.01.2019
 

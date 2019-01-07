@@ -519,14 +519,26 @@ class Geometry(object):
         #             geo_iso.append(mp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
         #     except TypeError:
         #         geo_iso.append(self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
+        # return geo_iso
 
-        geo_iso = []
-        flattened_geo = self.flatten_list(self.solid_geometry)
-        try:
-            for mp_geo in flattened_geo:
-                geo_iso.append(mp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
-        except TypeError:
-            geo_iso.append(self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
+
+        # commented this because of the bug with multiple passes cutting out of the copper
+        # geo_iso = []
+        # flattened_geo = self.flatten_list(self.solid_geometry)
+        # try:
+        #     for mp_geo in flattened_geo:
+        #         geo_iso.append(mp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
+        # except TypeError:
+        #     geo_iso.append(self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
+
+
+        # the previously commented block is replaced with this block - regression - to solve the bug with multiple
+        # isolation passes cutting from the copper features
+        if offset == 0:
+            geo_iso = self.solid_geometry
+        else:
+            geo_iso = self.solid_geometry.buffer(offset, int(self.geo_steps_per_circle / 4))
+        # end of replaced block
 
         if iso_type == 2:
             return geo_iso

@@ -604,6 +604,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 geom = self.isolation_geometry(offset, iso_type=envelope_iso_type)
             except Exception as e:
                 log.debug(str(e))
+                return 'fail'
 
             if invert:
                 try:
@@ -614,8 +615,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         geom = MultiPolygon(pl)
                     elif type(geom) is Polygon:
                         geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
+                    else:
+                        log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> Unexpected Geometry")
                 except Exception as e:
-                    s = str("Unexpected Geometry")
+                    log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> %s" % str(e))
             return geom
 
         if combine:
@@ -633,14 +636,14 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 geo_obj.options["cnctooldia"] = self.options["isotooldia"]
                 geo_obj.solid_geometry = []
                 for i in range(passes):
-                    offset = (((2 * i + 1) / 2.0) * dia) - (i * overlap * dia)
+                    iso_offset = (((2 * i + 1) / 2.0) * dia) - (i * overlap * dia)
 
                     # if milling type is climb then the move is counter-clockwise around features
                     if milling_type == 'cl':
                         # geom = generate_envelope (offset, i == 0)
-                        geom = generate_envelope(offset, 1, envelope_iso_type=self.iso_type)
+                        geom = generate_envelope(iso_offset, 1, envelope_iso_type=self.iso_type)
                     else:
-                        geom = generate_envelope(offset, 0, envelope_iso_type=self.iso_type)
+                        geom = generate_envelope(iso_offset, 0, envelope_iso_type=self.iso_type)
                     geo_obj.solid_geometry.append(geom)
 
                 # detect if solid_geometry is empty and this require list flattening which is "heavy"
