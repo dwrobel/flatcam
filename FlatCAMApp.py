@@ -87,8 +87,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 9.0
-    version_date = "2019/01/06"
+    version = 8.901
+    version_date = "2019/01/07"
     beta = True
 
     # URL for update checks and statistics

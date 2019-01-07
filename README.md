@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+7.01.2019
+
+- added tooltips in Edit->Convert menu
+
 6.01.2019
 
 - fixed the Marlin postprocessor detection in GCode header

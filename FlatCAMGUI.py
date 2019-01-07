@@ -159,15 +159,31 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # Separator
         self.menuedit.addSeparator()
         self.menuedit_convert = self.menuedit.addMenu(QtGui.QIcon('share/convert24.png'), 'Conversion')
-        self.menuedit_convertjoin = self.menuedit_convert.addAction(QtGui.QIcon('share/join16.png'), '&Join Geo/Gerber')
-        self.menuedit_convertjoinexc = self.menuedit_convert.addAction(QtGui.QIcon('share/join16.png'), 'Join Excellon')
+        self.menuedit_convertjoin = self.menuedit_convert.addAction(
+            QtGui.QIcon('share/join16.png'), '&Join Geo/Gerber/Exc -> Geo')
+        self.menuedit_convertjoin.setToolTip(
+            "Merge a selection of objects, which can be of type:\n"
+            "- Gerber\n"
+            "- Excellon\n"
+            "- Geometry\n"
+            "into a new combo Geometry object.")
+        self.menuedit_convertjoinexc = self.menuedit_convert.addAction(
+            QtGui.QIcon('share/join16.png'), 'Join Excellon(s) -> Excellon')
+        self.menuedit_convertjoinexc.setToolTip(
+            "Merge a selection of Excellon objects into a new combo Excellon object.")
         # Separator
         self.menuedit_convert.addSeparator()
         self.menuedit_convert_sg2mg = self.menuedit_convert.addAction(
             QtGui.QIcon('share/convert24.png'), 'Convert Single to MultiGeo')
+        self.menuedit_convert_sg2mg.setToolTip(
+            "Will convert a Geometry object from single_geometry type\n"
+            "to a multi_geometry type.")
         self.menuedit_convert_mg2sg = self.menuedit_convert.addAction(
             QtGui.QIcon('share/convert24.png'), 'Convert Multi to SingleGeo')
-
+        self.menuedit_convert_mg2sg.setToolTip(
+            "Will convert a Geometry object from multi_geometry type\n"
+            "to a single_geometry type.")
+        self.menuedit_convert.setToolTipsVisible(True)
         # Separator
         self.menuedit.addSeparator()
         self.menueditdelete = self.menuedit.addAction(QtGui.QIcon('share/trash16.png'), '&Delete')
@@ -1499,6 +1515,7 @@ class ExcellonPrefGroupUI(OptionsGroupUI):
             "\n"
             "PROTEUS 3:3 MM LZ\n"
             "DipTrace 5:2 MM TZ\n"
+            "DipTrace 4:3 MM LZ\n"
             "\n"
             "EAGLE 3:3 MM TZ\n"
             "EAGLE 4:3 MM TZ\n"
