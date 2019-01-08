@@ -909,6 +909,32 @@ class GeneralPrefGroupUI(OptionsGroupUI):
             "start automatically at startup."
         )
 
+        # Version Check CB
+        self.version_check_label = QtWidgets.QLabel('Version Check:')
+        self.version_check_label.setToolTip(
+            "Check this box if you want to check\n"
+            "for a new version automatically at startup."
+        )
+        self.version_check_cb = FCCheckBox(label='')
+        self.version_check_cb.setToolTip(
+            "Check this box if you want to check\n"
+            "for a new version automatically at startup."
+        )
+
+        # Send Stats CB
+        self.send_stats_label = QtWidgets.QLabel('Send Stats:')
+        self.send_stats_label.setToolTip(
+            "Check this box if you agree to send anonymous\n"
+            "stats automatically at startup, to help improve FlatCAM."
+        )
+        self.send_stats_cb= FCCheckBox(label='')
+        self.send_stats_cb.setToolTip(
+            "Check this box if you agree to send anonymous\n"
+            "stats automatically at startup, to help improve FlatCAM."
+        )
+
+        self.ois_version_check = OptionalInputSection(self.version_check_cb, [self.send_stats_cb])
+
         # Grid X Entry
         self.gridx_label = QtWidgets.QLabel('Grid X value:')
         self.gridx_label.setToolTip(
@@ -1151,6 +1177,9 @@ class GeneralPrefGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.unitslabel, self.units_radio)
         self.form_box.addRow(self.spacelabel, self.spacelabel)
         self.form_box.addRow(self.shell_startup_label, self.shell_startup_cb)
+        self.form_box.addRow(self.version_check_label, self.version_check_cb)
+        self.form_box.addRow(self.send_stats_label, self.send_stats_cb)
+
         self.form_box.addRow(self.gridx_label, self.gridx_entry)
         self.form_box.addRow(self.gridy_label, self.gridy_entry)
         self.form_box.addRow(self.panbuttonlabel, self.pan_button_radio)

@@ -88,8 +88,8 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.901
-    version_date = "2019/01/07"
-    beta = True
+    version_date = "2019/01/08"
+    beta = False
 
     # URL for update checks and statistics
     version_url = "http://flatcam.org/version"
@@ -290,6 +290,8 @@ class App(QtCore.QObject):
         self.defaults_form_fields = {
             "units": self.general_defaults_form.general_group.units_radio,
             "global_shell_at_startup": self.general_defaults_form.general_group.shell_startup_cb,
+            "global_version_check": self.general_defaults_form.general_group.version_check_cb,
+            "global_send_stats": self.general_defaults_form.general_group.send_stats_cb,
             "global_gridx": self.general_defaults_form.general_group.gridx_entry,
             "global_gridy": self.general_defaults_form.general_group.gridy_entry,
             "global_plot_fill": self.general_defaults_form.general_group.pf_color_entry,
@@ -404,6 +406,8 @@ class App(QtCore.QObject):
             "global_serial": 0,
             "global_stats": {},
             "units": "IN",
+            "global_version_check": True,
+            "global_send_stats": True,
             "global_gridx": 1.0,
             "global_gridy": 1.0,
             "global_plot_fill": '#BBF268BF',
@@ -1142,7 +1146,9 @@ class App(QtCore.QObject):
         ###########################
 
         # Separate thread (Not worker)
-        if self.beta is False or self.beta is None:
+        # Check for updates on startup but only if the user consent and the app is not in Beta version
+        if (self.beta is False or self.beta is None) and \
+                self.general_defaults_form.general_group.version_check_cb.get_value() is True:
             App.log.info("Checking for updates in backgroud (this is version %s)." % str(self.version))
 
             self.thr2 = QtCore.QThread()
@@ -5686,11 +5692,22 @@ class App(QtCore.QObject):
 
         self.log.debug("version_check()")
 
-        full_url = App.version_url + \
-                   "?s=" + str(self.defaults['global_serial']) + \
-                   "&v=" + str(self.version) + \
-                   "&os=" + str(self.os) + \
-                   "&" + urllib.parse.urlencode(self.defaults["global_stats"])
+        if self.general_defaults_form.general_group.send_stats_cb.get_value() is True:
+            full_url = App.version_url + \
+                       "?s=" + str(self.defaults['global_serial']) + \
+                       "&v=" + str(self.version) + \
+                       "&os=" + str(self.os) + \
+                       "&" + urllib.parse.urlencode(self.defaults["global_stats"])
+        else:
+            # no_stats dict; just so it won't break things on website
+            no_ststs_dict = {}
+            no_ststs_dict["global_ststs"] = {}
+            full_url = App.version_url + \
+                       "?s=" + str(self.defaults['global_serial']) + \
+                       "&v=" + str(self.version) + \
+                       "&os=" + str(self.os) + \
+                       "&" + urllib.parse.urlencode(no_ststs_dict["global_ststs"])
+
         App.log.debug("Checking for updates @ %s" % full_url)
         ### Get the data
         try:

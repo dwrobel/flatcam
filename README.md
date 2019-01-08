@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+8.01.2019
+
+- added checkboxes in Preferences -> General -> Global Preferences to switch on/off version check at application startup and also to control if the app will send anonymous statistics about FlatCAM usage to help improve FlatCAM
+
 7.01.2019
 
 - added tooltips in Edit->Convert menu
