@@ -803,7 +803,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # self.splitter.sizes()[0] is actually the size of the "notebook"
         self.geom_update.emit(grect.x(), grect.y(), grect.width(), grect.height(), self.splitter.sizes()[0])
         self.final_save.emit()
-
         QtWidgets.qApp.quit()
 
 

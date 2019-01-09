@@ -866,7 +866,7 @@ class App(QtCore.QObject):
 
         ## Standard signals
         # Menu
-        self.ui.menufilenew.triggered.connect(self.on_file_new)
+        self.ui.menufilenew.triggered.connect(self.on_file_new_click)
         self.ui.menufileopengerber.triggered.connect(self.on_fileopengerber)
         self.ui.menufileopengerber_follow.triggered.connect(self.on_fileopengerber_follow)
         self.ui.menufileopenexcellon.triggered.connect(self.on_fileopenexcellon)
@@ -2090,7 +2090,24 @@ class App(QtCore.QObject):
         self.save_defaults()
 
     def on_app_exit(self):
-        self.save_defaults()
+        if self.collection.get_list():
+            msgbox = QtWidgets.QMessageBox()
+            # msgbox.setText("<B>Save changes ...</B>")
+            msgbox.setInformativeText("There are files/objects opened in FlatCAM. "
+                                      "\n\n"
+                                      "Do you want to Save the project?")
+            msgbox.setWindowTitle("Save changes")
+            msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
+            msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Ok)
+            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+
+            response = msgbox.exec_()
+
+            if response == QtWidgets.QMessageBox.Ok:
+                self.on_file_saveprojectas(thread=False)
+            self.save_defaults()
+        else:
+            self.save_defaults()
         log.debug("Application defaults saved ... Exit event.")
         QtWidgets.qApp.quit()
 
@@ -2209,6 +2226,22 @@ class App(QtCore.QObject):
             self.inform.emit("Factory defaults saved.")
 
     def final_save(self):
+        if self.collection.get_list():
+            msgbox = QtWidgets.QMessageBox()
+            # msgbox.setText("<B>Save changes ...</B>")
+            msgbox.setInformativeText("There are files/objects opened in FlatCAM. "
+                                      "\n\n"
+                                      "Do you want to Save the project?")
+            msgbox.setWindowTitle("Save changes")
+            msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
+            msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Ok)
+            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+
+            response = msgbox.exec_()
+
+            if response == QtWidgets.QMessageBox.Ok:
+                self.on_file_saveprojectas(thread=False)
+
         self.save_defaults()
         log.debug("Application defaults saved ... Exit event.")
 
@@ -3925,6 +3958,27 @@ class App(QtCore.QObject):
         self.move_tool.sel_shapes.add(sel_rect, color=color, face_color=color_t, update=True,
                                       layer=0, tolerance=None)
 
+    def on_file_new_click(self):
+        if self.collection.get_list():
+            msgbox = QtWidgets.QMessageBox()
+            # msgbox.setText("<B>Save changes ...</B>")
+            msgbox.setInformativeText("There are files/objects opened in FlatCAM. "
+                                      "Creating a New project will delete them.\n\n"
+                                      "Do you want to Save the project?")
+            msgbox.setWindowTitle("Save changes")
+            msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
+            msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Ok)
+            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+
+            response = msgbox.exec_()
+
+            if response == QtWidgets.QMessageBox.Ok:
+                self.on_file_saveprojectas()
+            self.on_file_new()
+        else:
+            self.on_file_new()
+        self.inform.emit("[success] New Project created...")
+
     def on_file_new(self):
         """
         Callback for menu item File->New. Returns the application to its
@@ -4417,7 +4471,7 @@ class App(QtCore.QObject):
 
             self.file_saved.emit("project", self.project_filename)
 
-    def on_file_saveprojectas(self, make_copy=False):
+    def on_file_saveprojectas(self, make_copy=False, thread=True):
         """
         Callback for menu item File->Save Project As... Opens a file
         chooser and saves the project to the given file via
@@ -4458,8 +4512,12 @@ class App(QtCore.QObject):
             if result ==QtWidgets.QMessageBox.Cancel:
                 return
 
-        self.worker_task.emit({'fcn': self.save_project,
-                               'params': [filename]})
+        if thread is True:
+            self.worker_task.emit({'fcn': self.save_project,
+                                   'params': [filename]})
+        else:
+            self.save_project(filename)
+
         # self.save_project(filename)
         self.file_opened.emit("project", filename)
 
