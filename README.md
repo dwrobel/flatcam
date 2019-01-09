@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - added a fix to allow creating of Excellon geometry even when there are points with no tools by skipping those points and warning the user about this in a Tcl message
 - added a message box asking users if they want to save the project in case that either New Project menu entry is clicked or if Exit menu entry is clicked or if the app is closed from the close button. The message box will be showed only if there are objects in the collection.
+- modified the first line in the Gcode header to show the FlatCAM version and version_date
 
 8.01.2019
 
