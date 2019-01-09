@@ -4021,6 +4021,13 @@ class Excellon(Geometry):
         try:
             for drill in self.drills:
                 # poly = drill['point'].buffer(self.tools[drill['tool']]["C"]/2.0)
+                if drill['tool'] is '':
+                    self.app.inform.emit("[warning] Excellon.create_geometry() -> a drill location was skipped "
+                                         "due of not having a tool associated.\n"
+                                         "Check the resulting GCode.")
+                    log.debug("Excellon.create_geometry() -> a drill location was skipped "
+                              "due of not having a tool associated")
+                    continue
                 tooldia = self.tools[drill['tool']]['C']
                 poly = drill['point'].buffer(tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
                 self.solid_geometry.append(poly)
@@ -4033,8 +4040,10 @@ class Excellon(Geometry):
                 lines_string = LineString([start, stop])
                 poly = lines_string.buffer(slot_tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
                 self.solid_geometry.append(poly)
-        except:
+        except Exception as e:
+            log.debug("Excellon geometry creation failed due of ERROR: %s" % str(e))
             return "fail"
+
         # drill_geometry = {}
         # slot_geometry = {}
         #

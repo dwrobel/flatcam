@@ -88,8 +88,8 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.901
-    version_date = "2019/01/08"
-    beta = False
+    version_date = "2019/01/09"
+    beta = True
 
     # URL for update checks and statistics
     version_url = "http://flatcam.org/version"
@@ -1907,6 +1907,7 @@ class App(QtCore.QObject):
         self.log.debug("%f seconds executing initialize()." % (t2 - t1))
 
         if return_value == 'fail':
+            log.debug("Object (%s) parsing and/or geometry creation failed." % kind)
             return "fail"
 
         # Check units and convert if necessary
@@ -5118,13 +5119,14 @@ class App(QtCore.QObject):
             try:
                 ret = excellon_obj.parse_file(filename)
                 if ret == "fail":
+                    log.debug("Excellon parsing failed.")
                     self.inform.emit("[error_notcl] This is not Excellon file.")
                     return "fail"
             except IOError:
                 app_obj.inform.emit("[error_notcl] Cannot open file: " + filename)
+                log.debug("Could not open Excellon object.")
                 self.progress.emit(0)  # TODO: self and app_bjj mixed
                 return "fail"
-
             except:
                 msg = "[error_notcl] An internal error has occurred. See shell.\n"
                 msg += traceback.format_exc()
@@ -5133,6 +5135,7 @@ class App(QtCore.QObject):
 
             ret = excellon_obj.create_geometry()
             if ret == 'fail':
+                log.debug("Could not create geometry for Excellon object.")
                 return "fail"
 
             if excellon_obj.is_empty():

@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+9.01.2019
+
+- added a fix to allow creating of Excellon geometry even when there are points with no tools by skipping those points and warning the user about this in a Tcl message
+
 8.01.2019
 
 - added checkboxes in Preferences -> General -> Global Preferences to switch on/off version check at application startup and also to control if the app will send anonymous statistics about FlatCAM usage to help improve FlatCAM
