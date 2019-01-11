@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+11.01.2019
+
+- added a status message for font parsing
+
 9.01.2019
 
 - added a fix to allow creating of Excellon geometry even when there are points with no tools by skipping those points and warning the user about this in a Tcl message

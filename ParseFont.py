@@ -182,8 +182,10 @@ class ParseFont():
                 break
         return name, family
 
-    def __init__(self, parent=None):
+    def __init__(self, app, parent=None):
         super(ParseFont, self).__init__()
+
+        self.app = app
 
         # regular fonts
         self.regular_f = {}
@@ -281,8 +283,9 @@ class ParseFont():
             elif font_type == 'regular':
                 path_filename = regular_dict[font_name]
         except Exception as e:
+            self.app.inform.emit("[error_notcl] Font not supported, try another one.")
             log.debug("[error_notcl] Font Loading: %s" % str(e))
-            return"[ERROR] Font Loading: %s" % str(e)
+            return "flatcam font parse failed"
 
         face = ft.Face(path_filename)
         face.set_char_size(int(font_size) * 64)

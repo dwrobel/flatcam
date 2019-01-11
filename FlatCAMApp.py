@@ -1128,7 +1128,7 @@ class App(QtCore.QObject):
         self.install_tools()
 
         ### System Font Parsing ###
-        self.f_parse = ParseFont()
+        self.f_parse = ParseFont(self)
         self.parse_system_fonts()
 
         # test if the program was started with a script as parameter
