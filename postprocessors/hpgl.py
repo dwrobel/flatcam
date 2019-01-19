@@ -14,7 +14,7 @@ class hpgl(FlatCAMPostProc):
         return gcode
 
     def startz_code(self, p):
-        return 'SP%d' % int(p.tool)
+        return ''
 
     def lift_code(self, p):
         gcode = 'PU;' + '\n'
@@ -25,13 +25,13 @@ class hpgl(FlatCAMPostProc):
         return gcode
 
     def toolchange_code(self, p):
-        return ''
+        return 'SP%d;' % int(p.tool)
 
     def up_to_zero_code(self, p):
         return ''
 
     def position_code(self, p):
-        return ('PA' + self.coordinate_format + ',' + self.coordinate_format) % \
+        return ('PA' + self.coordinate_format + ',' + self.coordinate_format + ';') % \
                (p.coords_decimals, p.x, p.coords_decimals, p.y)
 
     def rapid_code(self, p):
