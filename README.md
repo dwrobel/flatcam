@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 19.01.2019
 
 - added initial implementation of HPGL postprocessor
+- fixed display HPGL code geometry on canvas
 
 11.01.2019
 

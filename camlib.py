@@ -5212,6 +5212,13 @@ class CNCjob(Geometry):
                 command['Y'] = float(match_z.group(2).replace(" ", "")) * 0.025
                 command['Z'] = float(match_z.group(3).replace(" ", "")) * 0.025
 
+        elif 'hpgl' in self.pp_excellon_name or 'hpgl' in self.pp_geometry_name:
+            match_pa = re.search(r"^PA(\s*-?\d+\.\d+?),(\s*\s*-?\d+\.\d+?)*;$", gline)
+            if match_pa:
+                command['G'] = 0
+                command['X'] = float(match_pa.group(1).replace(" ", ""))
+                command['Y'] = float(match_pa.group(2).replace(" ", ""))
+
         else:
             match = re.search(r'^\s*([A-Z])\s*([\+\-\.\d\s]+)', gline)
             while match:
@@ -5259,6 +5266,8 @@ class CNCjob(Geometry):
             ## Changing height
             if 'Z' in gobj:
                 if 'Roland' in self.pp_excellon_name or 'Roland' in self.pp_geometry_name:
+                    pass
+                elif 'hpgl' in self.pp_excellon_name or 'hpgl' in self.pp_geometry_name:
                     pass
                 elif ('X' in gobj or 'Y' in gobj) and gobj['Z'] != current['Z']:
                     log.warning("Non-orthogonal motion: From %s" % str(current))
