@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+19.01.2019
+
+- added initial implementation of HPGL postprocessor
+
 11.01.2019
 
 - added a status message for font parsing
