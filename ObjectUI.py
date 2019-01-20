@@ -882,7 +882,7 @@ class GeometryObjectUI(ObjectUI):
         self.toolchangeg_cb = FCCheckBox("Tool change")
         self.toolchangeg_cb.setToolTip(
             "Include tool-change sequence\n"
-            "in G-Code (Pause for tool change)."
+            "in the Machine Code (Pause for tool change)."
         )
         self.toolchangez_entry = LengthEntry()
 
@@ -982,7 +982,7 @@ class GeometryObjectUI(ObjectUI):
         pp_label = QtWidgets.QLabel("PostProcessor:")
         pp_label.setToolTip(
             "The Postprocessor file that dictates\n"
-            "Gcode output."
+            "the Machine Code (like GCode, RML, HPGL) output."
         )
         self.grid3.addWidget(pp_label, 16, 0)
         self.pp_geometry_name_cb = FCComboBox()

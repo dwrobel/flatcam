@@ -9,6 +9,13 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+20.01.2019
+
+- fixed the HPGL code geometry rendering when travel
+- fixed the message box layout when asking to save the current work
+- made sure that whenever the HPGL postprocessor is selected the Toolchange is always ON and the MultiDepth is OFF
+- the HPGL postprocessor entry is not allowed in Excellon Object postprocessor selection combobox as it is only applicable for Geometry
+
 19.01.2019
 
 - added initial implementation of HPGL postprocessor

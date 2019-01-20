@@ -1134,6 +1134,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         })
 
         for name in list(self.app.postprocessors.keys()):
+            # the HPGL postprocessor is only for Geometry not for Excellon job therefore don't add it
+            if name == 'hpgl':
+                continue
             self.ui.pp_excellon_name_cb.addItem(name)
 
         # Fill form fields
@@ -2104,8 +2107,13 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.tool_offset_entry.hide()
         self.ui.tool_offset_lbl.hide()
 
-        assert isinstance(self.ui, GeometryObjectUI), \
-            "Expected a GeometryObjectUI, got %s" % type(self.ui)
+        # used to store the state of the mpass_cb if the selected postproc for geometry is hpgl
+        self.old_pp_state = self.default_data['multidepth']
+        self.old_toolchangeg_state = self.default_data['toolchange']
+
+        if not isinstance(self.ui, GeometryObjectUI):
+            log.debug("Expected a GeometryObjectUI, got %s" % type(self.ui))
+            return
 
         self.ui.geo_tools_table.setupContextMenu()
         self.ui.geo_tools_table.addContextMenu(
@@ -2116,6 +2124,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(self.app.paint_tool.run)
+        self.ui.pp_geometry_name_cb.activated.connect(self.on_pp_changed)
 
     def set_tool_offset_visibility(self, current_row):
         if current_row is None:
@@ -2792,6 +2801,24 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         for item in table_tools_items:
             item[0] = str(item[0])
         return table_tools_items
+
+    def on_pp_changed(self):
+        current_pp = self.ui.pp_geometry_name_cb.get_value()
+        if current_pp == 'hpgl':
+            self.old_pp_state = self.ui.mpass_cb.get_value()
+            self.old_toolchangeg_state = self.ui.toolchangeg_cb.get_value()
+
+            self.ui.mpass_cb.set_value(False)
+            self.ui.mpass_cb.setDisabled(True)
+
+            self.ui.toolchangeg_cb.set_value(True)
+            self.ui.toolchangeg_cb.setDisabled(True)
+        else:
+            self.ui.mpass_cb.set_value(self.old_pp_state)
+            self.ui.mpass_cb.setDisabled(False)
+
+            self.ui.toolchangeg_cb.set_value(self.old_toolchangeg_state)
+            self.ui.toolchangeg_cb.setDisabled(False)
 
     def on_generatecnc_button_click(self, *args):
 

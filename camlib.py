@@ -5218,6 +5218,14 @@ class CNCjob(Geometry):
                 command['G'] = 0
                 command['X'] = float(match_pa.group(1).replace(" ", ""))
                 command['Y'] = float(match_pa.group(2).replace(" ", ""))
+            match_pen = re.search(r"^(P[U|D])", gline)
+            if match_pen:
+                if match_pen.group(1) == 'PU':
+                    # the value does not matter, only that it is positive so the gcode_parse() know it is > 0,
+                    # therefore the move is of kind T (travel)
+                    command['Z'] = 1
+                else:
+                    command['Z'] = 0
 
         else:
             match = re.search(r'^\s*([A-Z])\s*([\+\-\.\d\s]+)', gline)
