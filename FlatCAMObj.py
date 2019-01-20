@@ -1134,6 +1134,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         })
 
         for name in list(self.app.postprocessors.keys()):
+            # the HPGL postprocessor is only for Geometry not for Excellon job therefore don't add it
+            if name == 'hpgl':
+                continue
             self.ui.pp_excellon_name_cb.addItem(name)
 
         # Fill form fields
@@ -2104,8 +2107,13 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.tool_offset_entry.hide()
         self.ui.tool_offset_lbl.hide()
 
-        assert isinstance(self.ui, GeometryObjectUI), \
-            "Expected a GeometryObjectUI, got %s" % type(self.ui)
+        # used to store the state of the mpass_cb if the selected postproc for geometry is hpgl
+        self.old_pp_state = self.default_data['multidepth']
+        self.old_toolchangeg_state = self.default_data['toolchange']
+
+        if not isinstance(self.ui, GeometryObjectUI):
+            log.debug("Expected a GeometryObjectUI, got %s" % type(self.ui))
+            return
 
         self.ui.geo_tools_table.setupContextMenu()
         self.ui.geo_tools_table.addContextMenu(
@@ -2116,6 +2124,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(self.app.paint_tool.run)
+        self.ui.pp_geometry_name_cb.activated.connect(self.on_pp_changed)
 
     def set_tool_offset_visibility(self, current_row):
         if current_row is None:
@@ -2792,6 +2801,24 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         for item in table_tools_items:
             item[0] = str(item[0])
         return table_tools_items
+
+    def on_pp_changed(self):
+        current_pp = self.ui.pp_geometry_name_cb.get_value()
+        if current_pp == 'hpgl':
+            self.old_pp_state = self.ui.mpass_cb.get_value()
+            self.old_toolchangeg_state = self.ui.toolchangeg_cb.get_value()
+
+            self.ui.mpass_cb.set_value(False)
+            self.ui.mpass_cb.setDisabled(True)
+
+            self.ui.toolchangeg_cb.set_value(True)
+            self.ui.toolchangeg_cb.setDisabled(True)
+        else:
+            self.ui.mpass_cb.set_value(self.old_pp_state)
+            self.ui.mpass_cb.setDisabled(False)
+
+            self.ui.toolchangeg_cb.set_value(self.old_toolchangeg_state)
+            self.ui.toolchangeg_cb.setDisabled(False)
 
     def on_generatecnc_button_click(self, *args):
 
@@ -3771,21 +3798,24 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         if 'Roland' in self.pp_excellon_name or 'Roland' in self.pp_geometry_name:
             _filter_ = "RML1 Files (*.rol);;" \
                        "All Files (*.*)"
+        elif 'hpgl' in self.pp_geometry_name:
+            _filter_ = "HPGL Files (*.plt);;" \
+                       "All Files (*.*)"
         else:
             _filter_ = "G-Code Files (*.nc);;G-Code Files (*.txt);;G-Code Files (*.tap);;G-Code Files (*.cnc);;" \
                        "G-Code Files (*.g-code);;All Files (*.*)"
         try:
             filename = str(QtWidgets.QFileDialog.getSaveFileName(
-                caption="Export G-Code ...", directory=self.app.get_last_save_folder(), filter=_filter_)[0])
+                caption="Export Machine Code ...", directory=self.app.get_last_save_folder(), filter=_filter_)[0])
         except TypeError:
-            filename = str(QtWidgets.QFileDialog.getSaveFileName(caption="Export G-Code ...", filter=_filter_)[0])
+            filename = str(QtWidgets.QFileDialog.getSaveFileName(caption="Export Machine Code ...", filter=_filter_)[0])
 
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
 
         self.export_gcode(filename, preamble=preamble, postamble=postamble)
         self.app.file_saved.emit("gcode", filename)
-        self.app.inform.emit("[success] G-Code file saved to: %s" % filename)
+        self.app.inform.emit("[success] Machine Code file saved to: %s" % filename)
 
     def on_modifygcode_button_click(self, *args):
         # add the tab if it was closed
@@ -3819,10 +3849,15 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         log.debug("FlatCAMCNCJob.gcode_header()")
         time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
         marlin = False
+        hpgl = False
+
         try:
             for key in self.cnc_tools:
                 if self.cnc_tools[key]['data']['ppname_g'] == 'marlin':
                     marlin = True
+                    break
+                if self.cnc_tools[key]['data']['ppname_g'] == 'hpgl':
+                    hpgl = True
                     break
         except Exception as e:
             log.debug("FlatCAMCNCJob.gcode_header() error: --> %s" % str(e))
@@ -3834,7 +3869,31 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             except:
                 pass
 
-        if marlin is False:
+        if marlin is True:
+            gcode = ';Marlin G-CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date:    %s\n' % \
+                    (str(self.app.version), str(self.app.version_date)) + '\n'
+
+            gcode += ';Name: ' + str(self.options['name']) + '\n'
+            gcode += ';Type: ' + "G-code from " + str(self.options['type']) + '\n'
+
+            # if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
+            #     gcode += '(Tools in use: ' + str(p['options']['Tools_in_use']) + ')\n'
+
+            gcode += ';Units: ' + self.units.upper() + '\n' + "\n"
+            gcode += ';Created on ' + time_str + '\n' + '\n'
+        elif hpgl is True:
+            gcode = 'CO "HPGL CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date:    %s' % \
+                    (str(self.app.version), str(self.app.version_date)) + '";\n'
+
+            gcode += 'CO "Name: ' + str(self.options['name']) + '";\n'
+            gcode += 'CO "Type: ' + "HPGL code from " + str(self.options['type']) + '";\n'
+
+            # if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
+            #     gcode += '(Tools in use: ' + str(p['options']['Tools_in_use']) + ')\n'
+
+            gcode += 'CO "Units: ' + self.units.upper() + '";\n'
+            gcode += 'CO "Created on ' + time_str + '";\n'
+        else:
             gcode = '(G-CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s)\n' % \
                     (str(self.app.version), str(self.app.version_date)) + '\n'
 
@@ -3847,30 +3906,21 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             gcode += '(Units: ' + self.units.upper() + ')\n' + "\n"
             gcode += '(Created on ' + time_str + ')\n' + '\n'
 
-        else:
-            gcode = ';G-CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s\n' % \
-                    (str(self.app.version), str(self.app.version_date)) + '\n'
-
-            gcode += ';Name: ' + str(self.options['name']) + '\n'
-            gcode += ';Type: ' + "G-code from " + str(self.options['type']) + '\n'
-
-            # if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
-            #     gcode += '(Tools in use: ' + str(p['options']['Tools_in_use']) + ')\n'
-
-            gcode += ';Units: ' + self.units.upper() + '\n' + "\n"
-            gcode += ';Created on ' + time_str + '\n' + '\n'
-
         return gcode
 
     def export_gcode(self, filename=None, preamble='', postamble='', to_file=False):
         gcode = ''
         roland = False
+        hpgl = False
 
         # detect if using Roland postprocessor
         try:
             for key in self.cnc_tools:
                 if self.cnc_tools[key]['data']['ppname_g'] == 'Roland_MDX_20':
                     roland = True
+                    break
+                if self.cnc_tools[key]['data']['ppname_g'] == 'hpgl':
+                    hpgl = True
                     break
         except:
             try:
@@ -3882,7 +3932,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 pass
 
         # do not add gcode_header when using the Roland postprocessor, add it for every other postprocessor
-        if roland is False:
+        if roland is False and hpgl is False:
             gcode = self.gcode_header()
 
         # detect if using multi-tool and make the Gcode summation correctly for each case
@@ -3897,6 +3947,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         if roland is True:
             g = preamble + gcode + postamble
+        elif hpgl is True:
+            g = self.gcode_header() + preamble + gcode + postamble
         else:
             # fix so the preamble gets inserted in between the comments header and the actual start of GCODE
             g_idx = gcode.rfind('G20')

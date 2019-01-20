@@ -87,8 +87,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.901
-    version_date = "2019/01/09"
+    version = 8.902
+    version_date = "2019/01/20"
     beta = True
 
     # URL for update checks and statistics
@@ -2093,9 +2093,9 @@ class App(QtCore.QObject):
         if self.collection.get_list():
             msgbox = QtWidgets.QMessageBox()
             # msgbox.setText("<B>Save changes ...</B>")
-            msgbox.setInformativeText("There are files/objects opened in FlatCAM. "
-                                      "\n\n"
-                                      "Do you want to Save the project?")
+            msgbox.setText("There are files/objects opened in FlatCAM. "
+                           "\n"
+                           "Do you want to Save the project?")
             msgbox.setWindowTitle("Save changes")
             msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
             msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Ok)
@@ -2229,9 +2229,9 @@ class App(QtCore.QObject):
         if self.collection.get_list():
             msgbox = QtWidgets.QMessageBox()
             # msgbox.setText("<B>Save changes ...</B>")
-            msgbox.setInformativeText("There are files/objects opened in FlatCAM. "
-                                      "\n\n"
-                                      "Do you want to Save the project?")
+            msgbox.setText("There are files/objects opened in FlatCAM. "
+                           "\n"
+                           "Do you want to Save the project?")
             msgbox.setWindowTitle("Save changes")
             msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
             msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Ok)
@@ -3962,9 +3962,9 @@ class App(QtCore.QObject):
         if self.collection.get_list():
             msgbox = QtWidgets.QMessageBox()
             # msgbox.setText("<B>Save changes ...</B>")
-            msgbox.setInformativeText("There are files/objects opened in FlatCAM. "
-                                      "Creating a New project will delete them.\n\n"
-                                      "Do you want to Save the project?")
+            msgbox.setText("There are files/objects opened in FlatCAM.\n"
+                           "Creating a New project will delete them.\n"
+                           "Do you want to Save the project?")
             msgbox.setWindowTitle("Save changes")
             msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
             msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Ok)
