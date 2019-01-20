@@ -6,8 +6,6 @@ from FlatCAMPostProc import *
 class hpgl(FlatCAMPostProc):
 
     coordinate_format = "%.*f"
-    feedrate_format = '%.1f'
-    feedrate_rapid_format = '%.1f'
 
     def start_code(self, p):
         gcode = 'IN;'
@@ -31,8 +29,23 @@ class hpgl(FlatCAMPostProc):
         return ''
 
     def position_code(self, p):
+        units = str(p['units']).lower()
+
+        # we work only with METRIC units because HPGL mention only metric units so if FlatCAM units are INCH we
+        # transform them in METRIC
+        if units == 'in':
+            x = p.x * 25.4
+            y = p.y * 25.4
+        else:
+            x = p.x
+            y = p.y
+
+        # we need to have the coordinates as multiples of 0.025mm
+        x = round(x / 0.025) * 25 / 1000
+        y = round(y / 0.025) * 25 / 1000
+
         return ('PA' + self.coordinate_format + ',' + self.coordinate_format + ';') % \
-               (p.coords_decimals, p.x, p.coords_decimals, p.y)
+               (p.coords_decimals, x, p.coords_decimals, y)
 
     def rapid_code(self, p):
         return self.position_code(p).format(**p)

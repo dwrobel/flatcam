@@ -15,6 +15,9 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the message box layout when asking to save the current work
 - made sure that whenever the HPGL postprocessor is selected the Toolchange is always ON and the MultiDepth is OFF
 - the HPGL postprocessor entry is not allowed in Excellon Object postprocessor selection combobox as it is only applicable for Geometry
+- when saving HPGL code it will be saved as a file with extension .plt
+- the units mentioned in HPGL format are only METRIC therefore if FlatCAM units are in INCH they will be transform to METRIC
+- the minimum unit in HPGL is 0.025mm therefore the coordinates are rounded to a multiple of 0.025mm
 
 19.01.2019
 

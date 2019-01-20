@@ -3798,21 +3798,24 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         if 'Roland' in self.pp_excellon_name or 'Roland' in self.pp_geometry_name:
             _filter_ = "RML1 Files (*.rol);;" \
                        "All Files (*.*)"
+        elif 'hpgl' in self.pp_geometry_name:
+            _filter_ = "HPGL Files (*.plt);;" \
+                       "All Files (*.*)"
         else:
             _filter_ = "G-Code Files (*.nc);;G-Code Files (*.txt);;G-Code Files (*.tap);;G-Code Files (*.cnc);;" \
                        "G-Code Files (*.g-code);;All Files (*.*)"
         try:
             filename = str(QtWidgets.QFileDialog.getSaveFileName(
-                caption="Export G-Code ...", directory=self.app.get_last_save_folder(), filter=_filter_)[0])
+                caption="Export Machine Code ...", directory=self.app.get_last_save_folder(), filter=_filter_)[0])
         except TypeError:
-            filename = str(QtWidgets.QFileDialog.getSaveFileName(caption="Export G-Code ...", filter=_filter_)[0])
+            filename = str(QtWidgets.QFileDialog.getSaveFileName(caption="Export Machine Code ...", filter=_filter_)[0])
 
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
 
         self.export_gcode(filename, preamble=preamble, postamble=postamble)
         self.app.file_saved.emit("gcode", filename)
-        self.app.inform.emit("[success] G-Code file saved to: %s" % filename)
+        self.app.inform.emit("[success] Machine Code file saved to: %s" % filename)
 
     def on_modifygcode_button_click(self, *args):
         # add the tab if it was closed
@@ -3883,7 +3886,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                     (str(self.app.version), str(self.app.version_date)) + '";\n'
 
             gcode += 'CO "Name: ' + str(self.options['name']) + '";\n'
-            gcode += 'CO "Type: ' + "G-code from " + str(self.options['type']) + '";\n'
+            gcode += 'CO "Type: ' + "HPGL code from " + str(self.options['type']) + '";\n'
 
             # if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
             #     gcode += '(Tools in use: ' + str(p['options']['Tools_in_use']) + ')\n'
