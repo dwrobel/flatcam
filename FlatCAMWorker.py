@@ -60,7 +60,7 @@ class Worker(QtCore.QObject):
                 task['fcn'](*task['params'])
             except Exception as e:
                 self.app.thread_exception.emit(e)
-                raise e
+                # raise e
             finally:
                 self.task_completed.emit(self.name)
 

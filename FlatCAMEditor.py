@@ -28,6 +28,7 @@ from numpy.linalg import solve
 from rtree import index as rtindex
 from GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCEntry2, FCComboBox, FCTextAreaRich, \
     VerticalScrollArea, FCTable
+from ParseFont import *
 from vispy.scene.visuals import Markers
 from copy import copy
 import freetype as ft
@@ -139,6 +140,9 @@ class TextInputTool(FlatCAMTool):
 
         self.app = app
         self.text_path = []
+
+        self.f_parse = ParseFont(self)
+        self.f_parse.get_fonts_by_types()
 
         # this way I can hide/show the frame
         self.text_tool_frame = QtWidgets.QFrame()
@@ -278,10 +282,11 @@ class TextInputTool(FlatCAMTool):
             font_to_geo_type = 'bi'
         elif self.font_bold is False and self.font_italic is False:
             font_to_geo_type = 'regular'
+
         string_to_geo = self.text_input_entry.get_value()
         font_to_geo_size = self.font_size_cb.get_value()
 
-        self.text_path = self.app.f_parse.font_to_geometry(
+        self.text_path = self.f_parse.font_to_geometry(
                     char_string=string_to_geo,
                     font_name=self.font_name,
                     font_size=font_to_geo_size,
@@ -1214,6 +1219,7 @@ class FCText(FCShapeTool):
 
         self.start_msg = "Click on the Destination point..."
         self.origin = (0, 0)
+
         self.text_gui = TextInputTool(self.app)
         self.text_gui.run()
 
@@ -1251,6 +1257,7 @@ class FCText(FCShapeTool):
             return DrawToolUtilityShape(affinity.translate(self.text_gui.text_path, xoff=dx, yoff=dy))
         except:
             return
+
 
 class FCBuffer(FCShapeTool):
     def __init__(self, draw_app):

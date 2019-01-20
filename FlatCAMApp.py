@@ -50,7 +50,7 @@ from flatcamTools import *
 from multiprocessing import Pool
 import tclCommands
 
-from ParseFont import *
+# from ParseFont import *
 
 
 ########################################
@@ -87,7 +87,7 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.902
+    version = 8.903
     version_date = "2019/01/20"
     beta = True
 
@@ -398,6 +398,9 @@ class App(QtCore.QObject):
 
         for name in list(self.postprocessors.keys()):
             self.geometry_defaults_form.geometry_group.pp_geometry_name_cb.addItem(name)
+            # HPGL postprocessor is only for Geometry objects therefore it should not be in the Excellon Preferences
+            if name == 'hpgl':
+                continue
             self.excellon_defaults_form.excellon_group.pp_excellon_name_cb.addItem(name)
 
         self.defaults = LoudDict()
@@ -808,6 +811,7 @@ class App(QtCore.QObject):
         self.plotcanvas.vis_connect('mouse_press', self.on_mouse_click_over_plot)
         self.plotcanvas.vis_connect('mouse_release', self.on_mouse_click_release_over_plot)
         self.plotcanvas.vis_connect('mouse_double_click', self.on_double_click_over_plot)
+
         # Keys over plot enabled
         self.plotcanvas.vis_connect('key_press', self.on_key_over_plot)
         self.plotcanvas.vis_connect('key_release', self.on_key_release_over_plot)
@@ -1128,8 +1132,8 @@ class App(QtCore.QObject):
         self.install_tools()
 
         ### System Font Parsing ###
-        self.f_parse = ParseFont(self)
-        self.parse_system_fonts()
+        # self.f_parse = ParseFont(self)
+        # self.parse_system_fonts()
 
         # test if the program was started with a script as parameter
         if self.cmd_line_shellfile:
@@ -1247,7 +1251,6 @@ class App(QtCore.QObject):
                 except Exception as e:
                     log.debug("Could not open FlatCAM project file as App parameter due: %s" % str(e))
 
-
     def defaults_read_form(self):
         for option in self.defaults_form_fields:
             try:
@@ -1346,9 +1349,9 @@ class App(QtCore.QObject):
         self.install_tools()
         self.log.debug("Tools are initialized.")
 
-    def parse_system_fonts(self):
-        self.worker_task.emit({'fcn': self.f_parse.get_fonts_by_types,
-                               'params': []})
+    # def parse_system_fonts(self):
+    #     self.worker_task.emit({'fcn': self.f_parse.get_fonts_by_types,
+    #                            'params': []})
 
     def object2editor(self):
         """

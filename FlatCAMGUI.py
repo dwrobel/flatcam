@@ -11,6 +11,7 @@ from PyQt5.QtCore import Qt
 from GUIElements import *
 import platform
 
+
 class FlatCAMGUI(QtWidgets.QMainWindow):
     # Emitted when persistent window geometry needs to be retained
     geom_update = QtCore.pyqtSignal(int, int, int, int, int, name='geomUpdate')
@@ -1867,6 +1868,10 @@ class ExcellonPrefGroupUI(OptionsGroupUI):
                                           {'label': 'Both', 'value': 'both'}])
         grid2.addWidget(excellon_gcode_type_label, 13, 0)
         grid2.addWidget(self.excellon_gcode_type_radio, 13, 1)
+
+        # until I decide to implement this feature those remain disabled
+        excellon_gcode_type_label.setDisabled(True)
+        self.excellon_gcode_type_radio.setDisabled(True)
 
         #### Milling Holes ####
         self.mill_hole_label = QtWidgets.QLabel('<b>Mill Holes</b>')

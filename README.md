@@ -18,6 +18,10 @@ CAD program, and create G-Code for Isolation routing.
 - when saving HPGL code it will be saved as a file with extension .plt
 - the units mentioned in HPGL format are only METRIC therefore if FlatCAM units are in INCH they will be transform to METRIC
 - the minimum unit in HPGL is 0.025mm therefore the coordinates are rounded to a multiple of 0.025mm
+- removed the raise statement in do_worker_task() function as this is fatal in conjunction with PyQt5
+- added a try - except clause for the situations when for a font can't be determined the family and name
+- moved font parsing to the Geometry Editor: it is done everytime the Text tool is invoked
+- made sure that the HPGL postprocessor is not populated in the Excellon postprocessors in Preferences as it make no sense (HPGL is useful only for Geometries)
 
 19.01.2019
 

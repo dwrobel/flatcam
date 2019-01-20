@@ -229,7 +229,11 @@ class ParseFont():
         # split the installed fonts by type: regular, bold, italic (oblique), bold-italic and
         # store them in separate dictionaries {name: file_path/filename.ttf}
         for font in system_fonts:
-            name, family = ParseFont.get_font_name(font)
+            try:
+                name, family = ParseFont.get_font_name(font)
+            except Exception as e:
+                log.debug("ParseFont.get_fonts_by_types() --> Could not get the font name. %s" % str(e))
+                continue
 
             if 'Bold' in name and 'Italic' in name:
                 name = name.replace(" Bold Italic", '')
