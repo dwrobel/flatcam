@@ -1017,6 +1017,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # add a last row with the Total number of drills
         empty = QtWidgets.QTableWidgetItem('')
         empty.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        empty_1 = QtWidgets.QTableWidgetItem('')
+        empty_1.setFlags(~QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
 
         label_tot_drill_count = QtWidgets.QTableWidgetItem('Total Drills')
         tot_drill_count = QtWidgets.QTableWidgetItem('%d' % self.tot_drill_cnt)
@@ -1026,6 +1028,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.ui.tools_table.setItem(self.tool_row, 0, empty)
         self.ui.tools_table.setItem(self.tool_row, 1, label_tot_drill_count)
         self.ui.tools_table.setItem(self.tool_row, 2, tot_drill_count)  # Total number of drills
+        self.ui.tools_table.setItem(self.tool_row, 3, empty_1)  # Total number of drills
 
         font = QtGui.QFont()
         font.setBold(True)
@@ -1058,7 +1061,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.tools_table.item(self.tool_row, kl).setForeground(QtGui.QColor(0, 70, 255))
 
         # sort the tool diameter column
-        self.ui.tools_table.sortItems(1)
+        # self.ui.tools_table.sortItems(1)
         # all the tools are selected by default
         self.ui.tools_table.selectColumn(0)
         #
@@ -1077,7 +1080,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
         # horizontal_header.setStretchLastSection(True)
 
-        self.ui.tools_table.setSortingEnabled(True)
+        self.ui.tools_table.setSortingEnabled(False)
 
         self.ui.tools_table.setMinimumHeight(self.ui.tools_table.getHeight())
         self.ui.tools_table.setMaximumHeight(self.ui.tools_table.getHeight())
@@ -3643,6 +3646,14 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.ui_disconnect()
 
         FlatCAMObj.build_ui(self)
+
+        # if the FlatCAM object is Excellon don't build the CNC Tools Table but hide it
+        if self.cnc_tools:
+            self.ui.cnc_tools_table.show()
+            self.ui.plot_options_label.show()
+        else:
+            self.ui.cnc_tools_table.hide()
+            self.ui.plot_options_label.hide()
 
         offset = 0
         tool_idx = 0

@@ -421,6 +421,20 @@ class ExcellonObjectUI(ObjectUI):
         self.tools_table.setHorizontalHeaderLabels(['#', 'Diameter', 'D', 'S'])
         self.tools_table.setSortingEnabled(False)
 
+        self.tools_table.horizontalHeaderItem(0).setToolTip(
+            "This is the Tool Number.\n"
+            "When ToolChange is checked, on toolchange event this value\n"
+            "will be showed as a T1, T2 ... Tn in the Machine Code.")
+        self.tools_table.horizontalHeaderItem(1).setToolTip(
+            "Tool Diameter. It's value (in current FlatCAM units) \n"
+            "is the cut width into the material.")
+        self.tools_table.horizontalHeaderItem(2).setToolTip(
+            "The number of Drill holes. Holes that are drilled with\n"
+            "a drill bit.")
+        self.tools_table.horizontalHeaderItem(3).setToolTip(
+            "The number of Slot holes. Holes that are created by\n"
+            "milling them with an endmill bit.")
+
         self.empty_label = QtWidgets.QLabel('')
         self.tools_box.addWidget(self.empty_label)
 

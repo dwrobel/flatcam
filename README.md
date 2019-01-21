@@ -9,6 +9,14 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+21.01.2019
+
+- changed some tooltips
+- added tooltips in Excellon tool table headers
+- in Excellon Tool Table the columns are now only selectable by clicking on the header (sorting is done automatically)
+- if CNCJob from Excellon then hide the CNC tools table in CNCJob Object
+
+
 20.01.2019
 
 - fixed the HPGL code geometry rendering when travel

@@ -1521,14 +1521,16 @@ class ExcellonPrefGroupUI(OptionsGroupUI):
 
         grid1 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid1)
+
         self.plot_cb = FCCheckBox(label='Plot')
         self.plot_cb.setToolTip(
             "Plot (show) this object."
         )
         grid1.addWidget(self.plot_cb, 0, 0)
+
         self.solid_cb = FCCheckBox(label='Solid')
         self.solid_cb.setToolTip(
-            "Solid circles."
+            "Plot as solid circles."
         )
         grid1.addWidget(self.solid_cb, 0, 1)
 
@@ -1560,7 +1562,7 @@ class ExcellonPrefGroupUI(OptionsGroupUI):
 
         hlay1 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay1)
-        self.excellon_format_in_label = QtWidgets.QLabel("INCH")
+        self.excellon_format_in_label = QtWidgets.QLabel("INCH:")
         self.excellon_format_in_label.setAlignment(QtCore.Qt.AlignLeft)
         self.excellon_format_in_label.setToolTip(
             "Default values for INCH are 2:4")
@@ -1593,7 +1595,7 @@ class ExcellonPrefGroupUI(OptionsGroupUI):
 
         hlay2 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay2)
-        self.excellon_format_mm_label = QtWidgets.QLabel("METRIC")
+        self.excellon_format_mm_label = QtWidgets.QLabel("METRIC:")
         self.excellon_format_mm_label.setAlignment(QtCore.Qt.AlignLeft)
         self.excellon_format_mm_label.setToolTip(
             "Default values for METRIC are 3:3")
@@ -1627,10 +1629,10 @@ class ExcellonPrefGroupUI(OptionsGroupUI):
         hlay3 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay3)
 
-        self.excellon_zeros_label = QtWidgets.QLabel('Excellon <b>Zeros</b> Type:')
+        self.excellon_zeros_label = QtWidgets.QLabel('Default <b>Zeros</b> Type:')
         self.excellon_zeros_label.setAlignment(QtCore.Qt.AlignLeft)
         self.excellon_zeros_label.setToolTip(
-            "This sets the type of excellon zeros.\n"
+            "This sets the type of Excellon zeros.\n"
             "If LZ then Leading Zeros are kept and\n"
             "Trailing Zeros are removed.\n"
             "If TZ is checked then Trailing Zeros are kept\n"
@@ -1641,7 +1643,9 @@ class ExcellonPrefGroupUI(OptionsGroupUI):
         self.excellon_zeros_radio = RadioSet([{'label': 'LZ', 'value': 'L'},
                                      {'label': 'TZ', 'value': 'T'}])
         self.excellon_zeros_radio.setToolTip(
-            "This sets the type of excellon zeros.\n"
+            "This sets the default type of Excellon zeros.\n"
+            "If it is not detected in the parsed file the value here\n"
+            "will be used."
             "If LZ then Leading Zeros are kept and\n"
             "Trailing Zeros are removed.\n"
             "If TZ is checked then Trailing Zeros are kept\n"
@@ -1653,10 +1657,12 @@ class ExcellonPrefGroupUI(OptionsGroupUI):
         hlay4 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay4)
 
-        self.excellon_units_label = QtWidgets.QLabel('Excellon <b>Units</b> Type:')
+        self.excellon_units_label = QtWidgets.QLabel('Default <b>Units</b> Type:')
         self.excellon_units_label.setAlignment(QtCore.Qt.AlignLeft)
         self.excellon_units_label.setToolTip(
-            "This sets the units of Excellon files.\n"
+            "This sets the default units of Excellon files.\n"
+            "If it is not detected in the parsed file the value here\n"
+            "will be used."
             "Some Excellon files don't have an header\n"
             "therefore this parameter will be used.\n"
         )
@@ -1790,13 +1796,14 @@ class ExcellonPrefGroupUI(OptionsGroupUI):
 
         endzlabel = QtWidgets.QLabel('End move Z:')
         endzlabel.setToolTip(
-            "Tool Z where user can change drill bit."
+            "Height of the tool after\n"
+            "the last move at the end of the job."
         )
         grid2.addWidget(endzlabel, 6, 0)
         self.eendz_entry = LengthEntry()
         grid2.addWidget(self.eendz_entry, 6, 1)
 
-        frlabel = QtWidgets.QLabel('Feedrate (Plunge):')
+        frlabel = QtWidgets.QLabel('Feedrate:')
         frlabel.setToolTip(
             "Tool speed while drilling\n"
             "(in units per minute)."
@@ -1845,7 +1852,7 @@ class ExcellonPrefGroupUI(OptionsGroupUI):
         self.ois_dwell_exc = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
         # postprocessor selection
-        pp_excellon_label = QtWidgets.QLabel("Postprocessor")
+        pp_excellon_label = QtWidgets.QLabel("Postprocessor:")
         pp_excellon_label.setToolTip(
             "The postprocessor file that dictates\n"
             "gcode output."
@@ -1992,7 +1999,10 @@ class GeometryPrefGroupUI(OptionsGroupUI):
         dplabel = QtWidgets.QLabel('Depth/Pass:')
         dplabel.setToolTip(
             "The depth to cut on each pass,\n"
-            "when multidepth is enabled."
+            "when multidepth is enabled.\n"
+            "It has positive value although\n"
+            "it is a fraction from the depth\n"
+            "which has negative value."
         )
 
         grid2.addWidget(dplabel, 2, 0)
@@ -2042,8 +2052,7 @@ class GeometryPrefGroupUI(OptionsGroupUI):
         # Start move Z
         startzlabel = QtWidgets.QLabel('Start move Z:')
         startzlabel.setToolTip(
-            "Height of the tool just\n"
-            "after starting the work.\n"
+            "Height of the tool just after starting the work.\n"
             "Delete the value if you don't need this feature."
         )
         grid2.addWidget(startzlabel, 7, 0)
@@ -2054,7 +2063,7 @@ class GeometryPrefGroupUI(OptionsGroupUI):
         endzlabel = QtWidgets.QLabel('End move Z:')
         endzlabel.setToolTip(
             "Height of the tool after\n"
-            " the last move."
+            "the last move at the end of the job."
         )
         grid2.addWidget(endzlabel, 8, 0)
         self.gendz_entry = LengthEntry()
@@ -2071,10 +2080,11 @@ class GeometryPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(self.cncfeedrate_entry, 9, 1)
 
         # Feedrate Z (Plunge)
-        frz_label = QtWidgets.QLabel('Feed Rate Z (Plunge):')
+        frz_label = QtWidgets.QLabel('Feed Rate Z:')
         frz_label.setToolTip(
             "Cutting speed in the XY\n"
-            "plane in units per minute"
+            "plane in units per minute.\n"
+            "It is called also Plunge."
         )
         grid2.addWidget(frz_label, 10, 0)
         self.cncplunge_entry = LengthEntry()
@@ -2125,21 +2135,18 @@ class GeometryPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(dwelltime, 15, 0)
         grid2.addWidget(self.dwelltime_entry, 15, 1)
 
-        grid3 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid3)
-
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
         # postprocessor selection
-        pp_label = QtWidgets.QLabel("Postprocessor")
+        pp_label = QtWidgets.QLabel("Postprocessor:")
         pp_label.setToolTip(
             "The postprocessor file that dictates\n"
-            "gcode output."
+            "Machine Code output."
         )
-        grid3.addWidget(pp_label)
+        grid2.addWidget(pp_label, 16, 0)
         self.pp_geometry_name_cb = FCComboBox()
         self.pp_geometry_name_cb.setFocusPolicy(Qt.StrongFocus)
-        grid3.addWidget(self.pp_geometry_name_cb)
+        grid2.addWidget(self.pp_geometry_name_cb, 16, 1)
 
         # ------------------------------
         ## Paint area
