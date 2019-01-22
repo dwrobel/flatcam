@@ -88,7 +88,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.903
-    version_date = "2019/01/20"
+    version_date = "2019/01/23"
     beta = True
 
     # URL for update checks and statistics
