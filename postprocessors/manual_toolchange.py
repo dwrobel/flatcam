@@ -82,7 +82,7 @@ class manual_toolchange(FlatCAMPostProc):
             return """G00 Z{toolchangez}
 T{tool}
 M5
-G00 X{toolchangex}Y{toolchangey}    
+G00 X{toolchangex} Y{toolchangey}    
 (MSG, Change to Tool Dia = {toolC}, Total drills for current tool = {t_drills})
 M0
 G01 Z0
