@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+23.01.2019
+
+- added a new postprocessor file named 'line_xyz' which have x, y, z values on the same GCode line
+- fixed calculation of total path for Excellon Gcode file 
+
 21.01.2019
 
 - changed some tooltips
@@ -16,7 +21,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Excellon Tool Table the columns are now only selectable by clicking on the header (sorting is done automatically)
 - if CNCJob from Excellon then hide the CNC tools table in CNCJob Object
 
-
+ 
 20.01.2019
 
 - fixed the HPGL code geometry rendering when travel

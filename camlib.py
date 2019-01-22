@@ -4416,7 +4416,7 @@ class CNCjob(Geometry):
             returnvalue = fun(attributes)
             return returnvalue
         except Exception as e:
-            self.app.log.error('Exception ocurred inside a postprocessor: ' + traceback.format_exc())
+            self.app.log.error('Exception occurred within a postprocessor: ' + traceback.format_exc())
             return ''
 
     def optimized_travelling_salesman(self, points, start=None):
@@ -4435,6 +4435,7 @@ class CNCjob(Geometry):
         >>> optimized_travelling_salesman([[0,0],[10,0],[6,0]])
         [[0, 0], [6, 0], [10, 0]]
         """
+
         if start is None:
             start = points[0]
         must_visit = points
@@ -4541,7 +4542,7 @@ class CNCjob(Geometry):
         gcode = self.doformat(p.start_code)
         gcode += self.doformat(p.feedrate_code)
         gcode += self.doformat(p.lift_code, x=0, y=0)
-        gcode += self.doformat(p.startz_code)
+        gcode += self.doformat(p.startz_code, x=0, y=0)
 
         # Distance callback
         class CreateDistanceCallback(object):
@@ -4575,6 +4576,10 @@ class CNCjob(Geometry):
                 locations.append((point.coords.xy[0][0], point.coords.xy[1][0]))
             return locations
 
+        oldx = 0
+        oldy = 0
+        measured_distance = 0
+
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
             if excellon_optimization_type == 'M':
@@ -4600,7 +4605,8 @@ class CNCjob(Geometry):
 
                         # Set search time limit in milliseconds.
                         if float(self.app.defaults["excellon_search_time"]) != 0:
-                            search_parameters.time_limit_ms = int(float(self.app.defaults["excellon_search_time"]) * 1000)
+                            search_parameters.time_limit_ms = int(
+                                float(self.app.defaults["excellon_search_time"]) * 1000)
                         else:
                             search_parameters.time_limit_ms = 3000
 
@@ -4636,7 +4642,7 @@ class CNCjob(Geometry):
                     if tool in points:
                         # Tool change sequence (optional)
                         if toolchange:
-                            gcode += self.doformat(p.toolchange_code)
+                            gcode += self.doformat(p.toolchange_code,toolchangexy=(oldx, oldy))
                             gcode += self.doformat(p.spindle_code)  # Spindle start
                             if self.dwell is True:
                                 gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -4646,12 +4652,10 @@ class CNCjob(Geometry):
                                 gcode += self.doformat(p.dwell_code)  # Dwell time
 
                         # Drillling!
-                        oldx = 0
-                        oldy = 0
-                        measured_distance = 0
                         for k in node_list:
                             locx = locations[k][0]
                             locy = locations[k][1]
+
                             gcode += self.doformat(p.rapid_code, x=locx, y=locy)
                             gcode += self.doformat(p.down_code, x=locx, y=locy)
                             gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
@@ -4659,7 +4663,7 @@ class CNCjob(Geometry):
                             measured_distance += abs(distance_euclidian(locx, locy, oldx, oldy))
                             oldx = locx
                             oldy = locy
-                        log.debug("The total travel distance with Metaheuristics is: %s" % str(measured_distance) + '\n')
+                log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))
             elif excellon_optimization_type == 'B':
                 log.debug("Using OR-Tools Basic drill path optimization.")
                 for tool in tools:
@@ -4712,7 +4716,7 @@ class CNCjob(Geometry):
                     if tool in points:
                         # Tool change sequence (optional)
                         if toolchange:
-                            gcode += self.doformat(p.toolchange_code)
+                            gcode += self.doformat(p.toolchange_code,toolchangexy=(oldx, oldy))
                             gcode += self.doformat(p.spindle_code)  # Spindle start)
                             if self.dwell is True:
                                 gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -4722,9 +4726,6 @@ class CNCjob(Geometry):
                                 gcode += self.doformat(p.dwell_code)  # Dwell time
 
                         # Drillling!
-                        oldx = 0
-                        oldy = 0
-                        measured_distance = 0
                         for k in node_list:
                             locx = locations[k][0]
                             locy = locations[k][1]
@@ -4735,7 +4736,7 @@ class CNCjob(Geometry):
                             measured_distance += abs(distance_euclidian(locx, locy, oldx, oldy))
                             oldx = locx
                             oldy = locy
-                        log.debug("The total travel distance with Basic Algorithm is: %s" % str(measured_distance) + '\n')
+                log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" % str(measured_distance))
             else:
                 self.app.inform.emit("[error_notcl] Wrong optimization type selected.")
                 return
@@ -4749,7 +4750,7 @@ class CNCjob(Geometry):
                 if tool in points:
                     # Tool change sequence (optional)
                     if toolchange:
-                        gcode += self.doformat(p.toolchange_code)
+                        gcode += self.doformat(p.toolchange_code, toolchangexy=(oldx, oldy))
                         gcode += self.doformat(p.spindle_code)  # Spindle start)
                         if self.dwell is True:
                             gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -4768,10 +4769,17 @@ class CNCjob(Geometry):
                         gcode += self.doformat(p.down_code, x=point[0], y=point[1])
                         gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
                         gcode += self.doformat(p.lift_code, x=point[0], y=point[1])
+                        measured_distance += abs(distance_euclidian(point[0], point[1], oldx, oldy))
+                        oldx = point[0]
+                        oldy = point[1]
+            log.debug("The total travel distance with Travelling Salesman Algorithm is: %s" % str(measured_distance))
 
         gcode += self.doformat(p.spindle_stop_code)  # Spindle stop
         gcode += self.doformat(p.end_code, x=0, y=0)
 
+        measured_distance += abs(distance_euclidian(oldx, oldy, 0, 0))
+        log.debug("The total travel distance including travel to end position is: %s" %
+                  str(measured_distance) + '\n')
         self.gcode = gcode
 
     def generate_from_multitool_geometry(self, geometry, append=True,
@@ -4887,10 +4895,14 @@ class CNCjob(Geometry):
 
         self.gcode += self.doformat(p.feedrate_code)        # sets the feed rate
         self.gcode += self.doformat(p.lift_code, x=0, y=0)  # Move (up) to travel height
-        self.gcode += self.doformat(p.startz_code)
+        self.gcode += self.doformat(p.startz_code, x=0, y=0)
 
         if toolchange:
-            self.gcode += self.doformat(p.toolchange_code)
+            if "line_xyz" in self.pp_geometry_name:
+                self.gcode += self.doformat(p.toolchange_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+            else:
+                self.gcode += self.doformat(p.toolchange_code)
+
             self.gcode += self.doformat(p.spindle_code)     # Spindle start
             if self.dwell is True:
                 self.gcode += self.doformat(p.dwell_code)   # Dwell time
@@ -5063,10 +5075,14 @@ class CNCjob(Geometry):
 
         self.gcode += self.doformat(p.feedrate_code)        # sets the feed rate
         self.gcode += self.doformat(p.lift_code, x=0, y=0)  # Move (up) to travel height
-        self.gcode += self.doformat(p.startz_code)
+        self.gcode += self.doformat(p.startz_code, x=0, y=0)
 
         if toolchange:
-            self.gcode += self.doformat(p.toolchange_code)
+            if "line_xyz" in self.pp_geometry_name:
+                self.gcode += self.doformat(p.toolchange_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+            else:
+                self.gcode += self.doformat(p.toolchange_code)
+
             self.gcode += self.doformat(p.spindle_code)     # Spindle start
             if self.dwell is True:
                 self.gcode += self.doformat(p.dwell_code)   # Dwell time
@@ -5278,8 +5294,11 @@ class CNCjob(Geometry):
                 elif 'hpgl' in self.pp_excellon_name or 'hpgl' in self.pp_geometry_name:
                     pass
                 elif ('X' in gobj or 'Y' in gobj) and gobj['Z'] != current['Z']:
-                    log.warning("Non-orthogonal motion: From %s" % str(current))
-                    log.warning("  To: %s" % str(gobj))
+                    if self.pp_geometry_name == 'line_xyz' or self.pp_excellon_name == 'line_xyz':
+                        pass
+                    else:
+                        log.warning("Non-orthogonal motion: From %s" % str(current))
+                        log.warning("  To: %s" % str(gobj))
 
                 current['Z'] = gobj['Z']
                 # Store the path into geometry and reset path
