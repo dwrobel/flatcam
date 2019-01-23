@@ -589,8 +589,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.pref_import_button.setFixedWidth(130)
         self.pref_import_button.setToolTip(
             "Import a full set of FlatCAM settings from a file\n"
-            "previously saved on HDD.\n"
-            "FlatCAM automatically save a 'default' file\n"
+            "previously saved on HDD.\n\n"
+            "FlatCAM automatically save a 'factory_defaults' file\n"
             "on the first start. Do not delete that file.")
         self.pref_tab_bottom_layout_1.addWidget(self.pref_import_button)
 
@@ -598,9 +598,16 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.pref_export_button.setText("Export Preferences")
         self.pref_export_button.setFixedWidth(130)
         self.pref_export_button.setToolTip(
-            "Export a full set of FlatCAM settings ib a file\n"
+            "Export a full set of FlatCAM settings in a file\n"
             "that is saved on HDD.")
         self.pref_tab_bottom_layout_1.addWidget(self.pref_export_button)
+
+        self.pref_open_button = QtWidgets.QPushButton()
+        self.pref_open_button.setText("Open Pref Folder")
+        self.pref_open_button.setFixedWidth(130)
+        self.pref_open_button.setToolTip(
+            "Open the folder where FlatCAM save the preferences files.")
+        self.pref_tab_bottom_layout_1.addWidget(self.pref_open_button)
 
         self.pref_tab_bottom_layout_2 = QtWidgets.QHBoxLayout()
         self.pref_tab_bottom_layout_2.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
@@ -609,6 +616,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.pref_save_button = QtWidgets.QPushButton()
         self.pref_save_button.setText("Save Preferences")
         self.pref_save_button.setFixedWidth(130)
+        self.pref_save_button.setToolTip(
+            "Save the current settings in the 'current_defaults' file\n"
+            "which is the file storing the working default preferences.")
         self.pref_tab_bottom_layout_2.addWidget(self.pref_save_button)
 
         ########################################

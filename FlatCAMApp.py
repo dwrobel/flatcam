@@ -18,6 +18,7 @@ import simplejson as json
 import re
 import os
 from stat import S_IREAD, S_IRGRP, S_IROTH
+import subprocess
 
 import tkinter as tk
 from PyQt5 import QtCore, QtGui, QtWidgets, QtPrintSupport
@@ -183,7 +184,7 @@ class App(QtCore.QObject):
             else:
                 App.log.debug("Win64!")
             self.data_path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0) + \
-                '/FlatCAM'
+                '\FlatCAM'
             self.os = 'windows'
         else:  # Linux/Unix/MacOS
             self.data_path = os.path.expanduser('~') + \
@@ -1001,6 +1002,8 @@ class App(QtCore.QObject):
         self.ui.pref_save_button.clicked.connect(self.on_save_button)
         self.ui.pref_import_button.clicked.connect(self.on_import_preferences)
         self.ui.pref_export_button.clicked.connect(self.on_export_preferences)
+        self.ui.pref_open_button.clicked.connect(self.on_preferences_open_folder)
+
         self.general_options_form.general_group.units_radio.group_toggle_fn = self.on_toggle_units
         # Setting plot colors signals
         self.general_defaults_form.general_group.pf_color_entry.editingFinished.connect(self.on_pf_color_entry)
@@ -1854,6 +1857,15 @@ class App(QtCore.QObject):
                 self.inform.emit("[error_notcl] Failed to write defaults to file.")
                 return
         self.inform.emit("[success]Exported Defaults to %s" % filename)
+
+    def on_preferences_open_folder(self):
+        if sys.platform == 'win32':
+            subprocess.Popen('explorer %s' % self.data_path)
+        elif sys.platform == 'darwin':
+            os.system('open "%s"' % self.data_path)
+        else:
+            subprocess.Popen(['xdg-open', self.data_path])
+        self.inform.emit("[success]FlatCAM Preferences Folder opened.")
 
     def save_geometry(self, x, y, width, height, notebook_width):
         self.defaults["global_def_win_x"] = x
