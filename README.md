@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+24.01.2019
+
+- trying to fix painting single when the actual painted object it's a MultiPolygon
+
 23.01.2019
 
 - added a new postprocessor file named 'line_xyz' which have x, y, z values on the same GCode line

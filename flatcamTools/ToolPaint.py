@@ -750,14 +750,12 @@ class ToolPaint(FlatCAMTool, Gerber):
         def gen_paintarea(geo_obj, app_obj):
             assert isinstance(geo_obj, FlatCAMGeometry), \
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
-            #assert isinstance(app_obj, App)
+            # assert isinstance(app_obj, App)
 
-            geo_obj.solid_geometry = []
-            try:
-                poly_buf = poly.buffer(-paint_margin)
+            def paint_p(polyg):
                 if paint_method == "seed":
                     # Type(cp) == FlatCAMRTreeStorage | None
-                    cp = self.clear_polygon2(poly_buf,
+                    cp = self.clear_polygon2(polyg,
                                              tooldia=tooldia,
                                              steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                              overlap=overlap,
@@ -766,7 +764,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 elif paint_method == "lines":
                     # Type(cp) == FlatCAMRTreeStorage | None
-                    cp = self.clear_polygon3(poly_buf,
+                    cp = self.clear_polygon3(polyg,
                                              tooldia=tooldia,
                                              steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                              overlap=overlap,
@@ -775,7 +773,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 else:
                     # Type(cp) == FlatCAMRTreeStorage | None
-                    cp = self.clear_polygon(poly_buf,
+                    cp = self.clear_polygon(polyg,
                                              tooldia=tooldia,
                                              steps_per_circle=self.app.defaults["geometry_circle_steps"],
                                              overlap=overlap,
@@ -784,9 +782,19 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 if cp is not None:
                     geo_obj.solid_geometry += list(cp.get_objects())
+                    return cp
                 else:
                     self.app.inform.emit('[error_notcl] Geometry could not be painted completely')
-                    return
+                    return None
+
+            geo_obj.solid_geometry = []
+            try:
+                poly_buf = poly.buffer(-paint_margin)
+                if isinstance(poly_buf, MultiPolygon):
+                    for pp in poly_buf:
+                        cp = paint_p(pp)
+                else:
+                    cp = paint_p(poly_buf)
             except Exception as e:
                 log.debug("Could not Paint the polygons. %s" % str(e))
                 self.app.inform.emit(
