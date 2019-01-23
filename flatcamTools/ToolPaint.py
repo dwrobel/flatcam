@@ -791,8 +791,9 @@ class ToolPaint(FlatCAMTool, Gerber):
             try:
                 poly_buf = poly.buffer(-paint_margin)
                 if isinstance(poly_buf, MultiPolygon):
+                    cp = []
                     for pp in poly_buf:
-                        cp = paint_p(pp)
+                        cp.append(paint_p(pp))
                 else:
                     cp = paint_p(poly_buf)
             except Exception as e:
@@ -803,7 +804,11 @@ class ToolPaint(FlatCAMTool, Gerber):
                 return
 
             if cp is not None:
-                geo_obj.solid_geometry = list(cp.get_objects())
+                if isinstance(cp, list):
+                    for x in cp:
+                        geo_obj.solid_geometry += list(x.get_objects())
+                else:
+                    geo_obj.solid_geometry = list(cp.get_objects())
 
             geo_obj.options["cnctooldia"] = tooldia
             # this turn on the FlatCAMCNCJob plot for multiple tools
