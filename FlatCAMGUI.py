@@ -584,23 +584,31 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.pref_tab_bottom_layout_1.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.pref_tab_bottom_layout.addLayout(self.pref_tab_bottom_layout_1)
 
-        self.pref_factory_button = QtWidgets.QPushButton()
-        self.pref_factory_button.setText("Import Factory Def.")
-        self.pref_factory_button.setFixedWidth(110)
-        self.pref_tab_bottom_layout_1.addWidget(self.pref_factory_button)
+        self.pref_import_button = QtWidgets.QPushButton()
+        self.pref_import_button.setText("Import Preferences")
+        self.pref_import_button.setFixedWidth(130)
+        self.pref_import_button.setToolTip(
+            "Import a full set of FlatCAM settings from a file\n"
+            "previously saved on HDD.\n"
+            "FlatCAM automatically save a 'default' file\n"
+            "on the first start. Do not delete that file.")
+        self.pref_tab_bottom_layout_1.addWidget(self.pref_import_button)
 
-        self.pref_load_button = QtWidgets.QPushButton()
-        self.pref_load_button.setText("Load User Defaults")
-        self.pref_load_button.setFixedWidth(110)
-        self.pref_tab_bottom_layout_1.addWidget(self.pref_load_button)
+        self.pref_export_button = QtWidgets.QPushButton()
+        self.pref_export_button.setText("Export Preferences")
+        self.pref_export_button.setFixedWidth(130)
+        self.pref_export_button.setToolTip(
+            "Export a full set of FlatCAM settings ib a file\n"
+            "that is saved on HDD.")
+        self.pref_tab_bottom_layout_1.addWidget(self.pref_export_button)
 
         self.pref_tab_bottom_layout_2 = QtWidgets.QHBoxLayout()
         self.pref_tab_bottom_layout_2.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.pref_tab_bottom_layout.addLayout(self.pref_tab_bottom_layout_2)
 
         self.pref_save_button = QtWidgets.QPushButton()
-        self.pref_save_button.setText("Save")
-        self.pref_save_button.setFixedWidth(100)
+        self.pref_save_button.setText("Save Preferences")
+        self.pref_save_button.setFixedWidth(130)
         self.pref_tab_bottom_layout_2.addWidget(self.pref_save_button)
 
         ########################################

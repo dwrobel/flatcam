@@ -17,6 +17,8 @@ import simplejson as json
 
 import re
 import os
+from stat import S_IREAD, S_IRGRP, S_IROTH
+
 import tkinter as tk
 from PyQt5 import QtCore, QtGui, QtWidgets, QtPrintSupport
 import time  # Just used for debugging. Double check before removing.
@@ -203,23 +205,23 @@ class App(QtCore.QObject):
             os.makedirs(self.postprocessorpaths)
             App.log.debug('Created postprocessors folder: ' + self.postprocessorpaths)
 
-        # create defaults.json file if there is none
+        # create current_defaults.FlatConfig file if there is none
         try:
-            f = open(self.data_path + '/defaults.json')
+            f = open(self.data_path + '/current_defaults.FlatConfig')
             f.close()
         except IOError:
-            App.log.debug('Creating empty defaults.json')
-            f = open(self.data_path + '/defaults.json', 'w')
+            App.log.debug('Creating empty current_defaults.FlatConfig')
+            f = open(self.data_path + '/current_defaults.FlatConfig', 'w')
             json.dump({}, f)
             f.close()
 
-        # create factory_defaults.json file if there is none
+        # create factory_defaults.FlatConfig file if there is none
         try:
-            f = open(self.data_path + '/factory_defaults.json')
+            f = open(self.data_path + '/factory_defaults.FlatConfig')
             f.close()
         except IOError:
-            App.log.debug('Creating empty factory_defaults.json')
-            f = open(self.data_path + '/factory_defaults.json', 'w')
+            App.log.debug('Creating empty factory_defaults.FlatConfig')
+            f = open(self.data_path + '/factory_defaults.FlatConfig', 'w')
             json.dump({}, f)
             f.close()
 
@@ -550,7 +552,7 @@ class App(QtCore.QObject):
         ###############################
         ### Load defaults from file ###
         if user_defaults:
-            self.load_defaults()
+            self.load_defaults(filename='current_defaults')
 
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
         if self.defaults['global_serial'] == 0 or len(str(self.defaults['global_serial'])) < 10:
@@ -997,8 +999,8 @@ class App(QtCore.QObject):
         # Preferences Plot Area TAB
         self.ui.options_combo.activated.connect(self.on_options_combo_change)
         self.ui.pref_save_button.clicked.connect(self.on_save_button)
-        self.ui.pref_factory_button.clicked.connect(self.load_factory_defaults)
-        self.ui.pref_load_button.clicked.connect(self.load_user_defaults)
+        self.ui.pref_import_button.clicked.connect(self.on_import_preferences)
+        self.ui.pref_export_button.clicked.connect(self.on_export_preferences)
         self.general_options_form.general_group.units_radio.group_toggle_fn = self.on_toggle_units
         # Setting plot colors signals
         self.general_defaults_form.general_group.pf_color_entry.editingFinished.connect(self.on_pf_color_entry)
@@ -1216,9 +1218,9 @@ class App(QtCore.QObject):
         # flag for polygons not cleared
         self.poly_not_cleared = False
 
-        ### Save defaults to factory_defaults.json file ###
+        ### Save defaults to factory_defaults.FlatConfig file ###
         ### It's done only once after install #############
-        factory_file = open(self.data_path + '/factory_defaults.json')
+        factory_file = open(self.data_path + '/factory_defaults.FlatConfig')
         fac_def_from_file = factory_file.read()
         factory_defaults = json.loads(fac_def_from_file)
 
@@ -1226,6 +1228,9 @@ class App(QtCore.QObject):
         if not factory_defaults:
             self.save_factory_defaults(silent=False)
         factory_file.close()
+        # and then make the  factory_defaults.FlatConfig file read_only os it can't be modified after creation.
+        filename_factory = self.data_path + '/factory_defaults.FlatConfig'
+        os.chmod(filename_factory, S_IREAD | S_IRGRP | S_IROTH)
 
         # Post-GUI initialization: Experimental attempt
         # to perform unit tests on the GUI.
@@ -1693,36 +1698,7 @@ class App(QtCore.QObject):
             if msg != '':
                 self.shell_message(msg)
 
-    def load_defaults(self):
-        """
-        Loads the aplication's default settings from defaults.json into
-        ``self.defaults``.
-
-        :return: None
-        """
-        try:
-            f = open(self.data_path + "/defaults.json")
-            options = f.read()
-            f.close()
-        except IOError:
-            self.log.error("Could not load defaults file.")
-            self.inform.emit("[error] Could not load defaults file.")
-            # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 31
-            return
-
-        try:
-            defaults = json.loads(options)
-        except:
-            # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 31
-            e = sys.exc_info()[0]
-            App.log.error(str(e))
-            self.inform.emit("[error] Failed to parse defaults file.")
-            return
-        self.defaults.update(defaults)
-
-        # restore the toolbar view
+    def restore_toolbar_view(self):
         tb = self.defaults["global_toolbar_view"]
         if tb & 1:
             self.ui.toolbarfile.setVisible(True)
@@ -1749,35 +1725,135 @@ class App(QtCore.QObject):
         else:
             self.ui.snap_toolbar.setVisible(False)
 
-    def load_factory_defaults(self):
+    def load_defaults(self, filename):
         """
-        Loads the aplication's factory default settings from factory_defaults.json into
+        Loads the aplication's default settings from current_defaults.FlatConfig into
         ``self.defaults``.
 
         :return: None
         """
         try:
-            f = open(self.data_path + "/factory_defaults.json")
+            f = open(self.data_path + "/" + filename + ".FlatConfig")
             options = f.read()
             f.close()
         except IOError:
-            self.log.error("Could not load factory defaults file.")
-            self.inform.emit("[error] Could not load factory defaults file.")
+            self.log.error("Could not load defaults file.")
+            self.inform.emit("[error] Could not load defaults file.")
+            # in case the defaults file can't be loaded, show all toolbars
+            self.defaults["global_toolbar_view"] = 31
             return
 
         try:
-            factory_defaults = json.loads(options)
+            defaults = json.loads(options)
         except:
+            # in case the defaults file can't be loaded, show all toolbars
+            self.defaults["global_toolbar_view"] = 31
             e = sys.exc_info()[0]
             App.log.error(str(e))
-            self.inform.emit("[error] Failed to parse factory defaults file.")
+            self.inform.emit("[error] Failed to parse defaults file.")
             return
-        self.defaults.update(factory_defaults)
-        self.inform.emit("[success] Imported Factory Defaults ...")
+        self.defaults.update(defaults)
+        log.debug("FlatCAM defaults loaded from: %s" % filename)
 
-    def load_user_defaults(self):
-        self.load_defaults()
-        self.inform.emit("[success] Loaded User Defaults ...")
+        # restore the toolbar view
+        self.restore_toolbar_view()
+
+    def on_import_preferences(self):
+        """
+        Loads the aplication's factory default settings from factory_defaults.FlatConfig into
+        ``self.defaults``.
+
+        :return: None
+        """
+
+        self.report_usage("on_import_preferences")
+        App.log.debug("on_import_preferences()")
+
+        filter = "Config File (*.FlatConfig);;All Files (*.*)"
+        try:
+            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Import FlatCAM Preferences",
+                                                                directory=self.data_path, filter=filter)
+        except TypeError:
+            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Import FlatCAM Preferences", filter=filter)
+
+        filename = str(filename)
+
+        if filename == "":
+            self.inform.emit("[warning_notcl]FlatCAM preferences import cancelled.")
+        else:
+            try:
+                f = open(filename)
+                options = f.read()
+                f.close()
+            except IOError:
+                self.log.error("Could not load defaults file.")
+                self.inform.emit("[error_notcl] Could not load defaults file.")
+                return
+
+            try:
+                defaults_from_file = json.loads(options)
+            except:
+                e = sys.exc_info()[0]
+                App.log.error(str(e))
+                self.inform.emit("[error_notcl] Failed to parse defaults file.")
+                return
+            self.defaults.update(defaults_from_file)
+            self.inform.emit("[success]Imported Defaults from %s" %filename)
+
+    def on_export_preferences(self):
+
+        self.report_usage("on_export_preferences")
+        App.log.debug("on_export_preferences()")
+
+        filter = "Config File (*.FlatConfig);;All Files (*.*)"
+        try:
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export FlatCAM Preferences",
+                                                                directory=self.data_path, filter=filter)
+        except TypeError:
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export FlatCAM Preferences", filter=filter)
+
+        filename = str(filename)
+        defaults_from_file = {}
+
+        if filename == "":
+            self.inform.emit("[warning_notcl]FlatCAM preferences export cancelled.")
+            return
+        else:
+            try:
+                f = open(filename, 'w')
+                defaults_file_content = f.read()
+                f.close()
+            except IOError:
+                App.log.debug('Creating a new preferences file ...')
+                f = open(filename, 'w')
+                json.dump({}, f)
+                f.close()
+            except:
+                e = sys.exc_info()[0]
+                App.log.error("Could not load defaults file.")
+                App.log.error(str(e))
+                self.inform.emit("[error_notcl]Could not load defaults file.")
+                return
+
+            try:
+                defaults_from_file = json.loads(defaults_file_content)
+            except:
+                App.log.warning("Trying to read an empty Preferences file. Continue.")
+
+            # Update options
+            self.defaults_read_form()
+            defaults_from_file.update(self.defaults)
+            self.propagate_defaults(silent=True)
+
+            # Save update options
+            try:
+                f = open(filename, "w")
+                json.dump(defaults_from_file, f)
+                f.close()
+            except:
+                self.inform.emit("[error_notcl] Failed to write defaults to file.")
+                return
+        self.inform.emit("[success]Exported Defaults to %s" % filename)
 
     def save_geometry(self, x, y, width, height, notebook_width):
         self.defaults["global_def_win_x"] = x
@@ -2085,7 +2161,7 @@ class App(QtCore.QObject):
     def on_file_savedefaults(self):
         """
         Callback for menu item File->Save Defaults. Saves application default options
-        ``self.defaults`` to defaults.json.
+        ``self.defaults`` to current_defaults.FlatConfig.
 
         :return: None
         """
@@ -2117,7 +2193,7 @@ class App(QtCore.QObject):
     def save_defaults(self, silent=False):
         """
         Saves application default options
-        ``self.defaults`` to defaults.json.
+        ``self.defaults`` to current_defaults.FlatConfig.
 
         :return: None
         """
@@ -2125,7 +2201,7 @@ class App(QtCore.QObject):
 
         # Read options from file
         try:
-            f = open(self.data_path + "/defaults.json")
+            f = open(self.data_path + "/current_defaults.FlatConfig")
             defaults_file_content = f.read()
             f.close()
         except:
@@ -2151,7 +2227,7 @@ class App(QtCore.QObject):
 
         # Save update options
         try:
-            f = open(self.data_path + "/defaults.json", "w")
+            f = open(self.data_path + "/current_defaults.FlatConfig", "w")
             json.dump(defaults, f)
             f.close()
         except:
@@ -2183,7 +2259,7 @@ class App(QtCore.QObject):
     def save_factory_defaults(self, silent=False):
         """
                 Saves application factory default options
-                ``self.defaults`` to factory_defaults.json.
+                ``self.defaults`` to factory_defaults.FlatConfig.
                 It's a one time job done just after the first install.
 
                 :return: None
@@ -2192,7 +2268,7 @@ class App(QtCore.QObject):
 
         # Read options from file
         try:
-            f_f_def = open(self.data_path + "/factory_defaults.json")
+            f_f_def = open(self.data_path + "/factory_defaults.FlatConfig")
             factory_defaults_file_content = f_f_def.read()
             f_f_def.close()
         except:
@@ -2218,7 +2294,7 @@ class App(QtCore.QObject):
 
         # Save update options
         try:
-            f_f_def_s = open(self.data_path + "/factory_defaults.json", "w")
+            f_f_def_s = open(self.data_path + "/factory_defaults.FlatConfig", "w")
             json.dump(factory_defaults, f_f_def_s)
             f_f_def_s.close()
         except:
@@ -2826,7 +2902,7 @@ class App(QtCore.QObject):
     def on_save_button(self):
         self.save_defaults(silent=False)
         # load the defaults so they are updated into the app
-        self.load_defaults()
+        self.load_defaults(filename='current_defaults')
         # Re-fresh project options
         self.on_options_app2project()
 
@@ -4011,7 +4087,7 @@ class App(QtCore.QObject):
         self.project_filename = None
 
         # Load the application defaults
-        self.load_defaults()
+        self.load_defaults(filename='current_defaults')
 
         # Re-fresh project options
         self.on_options_app2project()

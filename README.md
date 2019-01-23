@@ -12,7 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 23.01.2019
 
 - added a new postprocessor file named 'line_xyz' which have x, y, z values on the same GCode line
-- fixed calculation of total path for Excellon Gcode file 
+- fixed calculation of total path for Excellon Gcode file
+- modified the way FlatCAM preferences are saved. Now they can be saved as new files with .FlatConfig extension by the user and shared.
 
 21.01.2019
 
