@@ -957,7 +957,10 @@ class App(QtCore.QObject):
         self.ui.menuprojectdisable.triggered.connect(lambda: self.disable_plots(self.collection.get_selected()))
         self.ui.menuprojectgeneratecnc.triggered.connect(lambda: self.generate_cnc_job(self.collection.get_selected()))
         self.ui.menuprojectcopy.triggered.connect(self.on_copy_object)
+        self.ui.menuprojectedit.triggered.connect(self.object2editor)
+
         self.ui.menuprojectdelete.triggered.connect(self.on_delete)
+        self.ui.menuprojectproperties.triggered.connect(self.obj_properties)
 
         # Toolbar
         #self.ui.file_new_btn.triggered.connect(self.on_file_new)

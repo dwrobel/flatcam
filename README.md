@@ -19,6 +19,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed 'grbl_laser' postprocessor bugs (missing functions)
 - fixed display geometry for 'grbl_laser' postprocessor
 - Excellon Editor - added possibility to create an linear drill array rotated at an custom angle
+- added the Edit and Properties entries to the Project context menu
+
 
 23.01.2019
 
