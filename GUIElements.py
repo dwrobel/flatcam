@@ -693,9 +693,22 @@ class FCSpinner(QtWidgets.QSpinBox):
     #     default_hint_size = super(FCSpinner, self).sizeHint()
     #     return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
+
 class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
     def __init__(self, parent=None):
         super(FCDoubleSpinner, self).__init__(parent)
+        self.readyToEdit = True
+
+    def mousePressEvent(self, e, parent=None):
+        super(FCDoubleSpinner, self).mousePressEvent(e)  # required to deselect on 2e click
+        if self.readyToEdit:
+            self.lineEdit().selectAll()
+            self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        super(FCDoubleSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
+        self.lineEdit().deselect()
+        self.readyToEdit = True
 
     def get_value(self):
         return str(self.value())
