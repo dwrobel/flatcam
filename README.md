@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the Copy Object function when the object is Gerber
 - added the Copy entry to the Project context menu
 - made the functions behind Disable and Enable project context menu entries, non-threaded to fix a possible issue
+- added multiple object selection on Open ... and Import ... (idea and code snippet came from Travers Carter, BitBucket user https://bitbucket.org/travc/
 
 23.01.2019
 

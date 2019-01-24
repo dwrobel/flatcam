@@ -4141,21 +4141,20 @@ class App(QtCore.QObject):
                    "All Files (*.*)"
 
         try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Gerber",
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Gerber",
                                                          directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Gerber", filter=_filter_)
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Gerber", filter=_filter_)
 
-        # The Qt methods above will return a QString which can cause problems later.
-        # So far json.dump() will fail to serialize it.
-        # TODO: Improve the serialization methods and remove this fix.
-        filename = str(filename)
+        filenames = [str(filename) for filename in filenames]
 
-        if filename == "":
+        if len(filenames) == 0:
             self.inform.emit("[warning_notcl]Open Gerber cancelled.")
         else:
-            self.worker_task.emit({'fcn': self.open_gerber,
-                                   'params': [filename]})
+            for filename in filenames:
+                if filename != '':
+                    self.worker_task.emit({'fcn': self.open_gerber,
+                                           'params': [filename]})
 
     def on_fileopengerber_follow(self):
         """
@@ -4207,21 +4206,20 @@ class App(QtCore.QObject):
                    "All Files (*.*)"
 
         try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Excellon",
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Excellon",
                                                          directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Excellon", filter=_filter_)
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Excellon", filter=_filter_)
 
-        # The Qt methods above will return a QString which can cause problems later.
-        # So far json.dump() will fail to serialize it.
-        # TODO: Improve the serialization methods and remove this fix.
-        filename = str(filename)
+        filenames = [str(filename) for filename in filenames]
 
-        if filename == "":
+        if len(filenames) == 0:
             self.inform.emit("[warning_notcl]Open Excellon cancelled.")
         else:
-            self.worker_task.emit({'fcn': self.open_excellon,
-                                   'params': [filename]})
+            for filename in filenames:
+                if filename != '':
+                    self.worker_task.emit({'fcn': self.open_excellon,
+                                           'params': [filename]})
 
     def on_fileopengcode(self):
         """
@@ -4238,21 +4236,20 @@ class App(QtCore.QObject):
                    " *.din *.xpi *.hnc *.h *.i *.ncp *.min *.gcd *.rol *.mpr *.ply *.out *.eia *.plt *.sbp *.mpf);;" \
                    "All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open G-Code",
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Open G-Code",
                                                          directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open G-Code", filter=_filter_)
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Open G-Code", filter=_filter_)
 
-        # The Qt methods above will return a QString which can cause problems later.
-        # So far json.dump() will fail to serialize it.
-        # TODO: Improve the serialization methods and remove this fix.
-        filename = str(filename)
+        filenames = [str(filename) for filename in filenames]
 
-        if filename == "":
+        if len(filenames) == 0:
             self.inform.emit("[warning_notcl]Open G-Code cancelled.")
         else:
-            self.worker_task.emit({'fcn': self.open_gcode,
-                                   'params': [filename]})
+            for filename in filenames:
+                if filename != '':
+                    self.worker_task.emit({'fcn': self.open_gcode,
+                                           'params': [filename]})
 
     def on_file_openproject(self):
         """
@@ -4472,21 +4469,23 @@ class App(QtCore.QObject):
 
         filter = "SVG File (*.svg);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Import SVG",
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Import SVG",
                                                          directory=self.get_last_folder(), filter=filter)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Import SVG", filter=filter)
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Import SVG", filter=filter)
 
-        filename = str(filename)
         if type_of_obj is not "geometry" and type_of_obj is not "gerber":
             type_of_obj = "geometry"
 
-        if filename == "":
-            self.inform.emit("[warning_notcl]Open cancelled.")
+        filenames = [str(filename) for filename in filenames]
+
+        if len(filenames) == 0:
+            self.inform.emit("[warning_notcl]Open SVG cancelled.")
         else:
-            self.worker_task.emit({'fcn': self.import_svg,
-                                   'params': [filename, type_of_obj]})
-            #  self.import_svg(filename, "geometry")
+            for filename in filenames:
+                if filename != '':
+                    self.worker_task.emit({'fcn': self.import_svg,
+                                           'params': [filename, type_of_obj]})
 
     def on_file_importdxf(self, type_of_obj):
         """
@@ -4500,20 +4499,23 @@ class App(QtCore.QObject):
 
         filter = "DXF File (*.DXF);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Import DXF",
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Import DXF",
                                                          directory=self.get_last_folder(), filter=filter)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Import DXF", filter=filter)
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Import DXF", filter=filter)
 
-        filename = str(filename)
         if type_of_obj is not "geometry" and type_of_obj is not "gerber":
             type_of_obj = "geometry"
 
-        if filename == "":
-            self.inform.emit("[warning_notcl]Open cancelled.")
+        filenames = [str(filename) for filename in filenames]
+
+        if len(filenames) == 0:
+            self.inform.emit("[warning_notcl]Open DXF cancelled.")
         else:
-            self.worker_task.emit({'fcn': self.import_dxf,
-                                   'params': [filename, type_of_obj]})
+            for filename in filenames:
+                if filename != '':
+                    self.worker_task.emit({'fcn': self.import_dxf,
+                                           'params': [filename, type_of_obj]})
 
     def on_filerunscript(self):
         """
