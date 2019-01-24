@@ -12,6 +12,9 @@ CAD program, and create G-Code for Isolation routing.
 24.01.2019
 
 - trying to fix painting single when the actual painted object it's a MultiPolygon
+- fixed the Copy Object function when the object is Gerber
+- added the Copy entry to the Project context menu
+- made the functions behind Disable and Enable project context menu entries, non-threaded to fix a possible issue
 
 23.01.2019
 

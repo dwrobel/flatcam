@@ -388,6 +388,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         sel = len(self.view.selectedIndexes()) > 0
         self.app.ui.menuprojectenable.setEnabled(sel)
         self.app.ui.menuprojectdisable.setEnabled(sel)
+        self.app.ui.menuprojectcopy.setEnabled(sel)
         self.app.ui.menuprojectdelete.setEnabled(sel)
 
         if sel:

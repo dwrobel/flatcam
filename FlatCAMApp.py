@@ -956,6 +956,7 @@ class App(QtCore.QObject):
         self.ui.menuprojectenable.triggered.connect(lambda: self.enable_plots(self.collection.get_selected()))
         self.ui.menuprojectdisable.triggered.connect(lambda: self.disable_plots(self.collection.get_selected()))
         self.ui.menuprojectgeneratecnc.triggered.connect(lambda: self.generate_cnc_job(self.collection.get_selected()))
+        self.ui.menuprojectcopy.triggered.connect(self.on_copy_object)
         self.ui.menuprojectdelete.triggered.connect(self.on_delete)
 
         # Toolbar
@@ -3090,8 +3091,11 @@ class App(QtCore.QObject):
 
         def initialize(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
-            if obj.tools:
-                obj_init.tools = obj.tools
+            try:
+                if obj.tools:
+                    obj_init.tools = obj.tools
+            except Exception as e:
+                log.debug("on_copy_object() --> %s" % str(e))
 
         def initialize_excellon(obj_init, app):
             obj_init.tools = obj.tools
@@ -3118,8 +3122,11 @@ class App(QtCore.QObject):
 
         def initialize_geometry(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
-            if obj.tools:
-                obj_init.tools = obj.tools
+            try:
+                if obj.tools:
+                    obj_init.tools = obj.tools
+            except Exception as e:
+                log.debug("on_copy_object2() --> %s" % str(e))
 
         def initialize_gerber(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
@@ -5899,28 +5906,51 @@ class App(QtCore.QObject):
             "info"
         )
 
-    def enable_plots(self, objects):
-        def worker_task(app_obj):
-            percentage = 0.1
-            try:
-                delta = 0.9 / len(objects)
-            except ZeroDivisionError:
+    # TODO: FIX THIS
+    '''
+    By default this is not threaded
+    If threaded the app give warnings like this:
+    
+    QObject::connect: Cannot queue arguments of type 'QVector<int>' 
+    (Make sure 'QVector<int>' is registered using qRegisterMetaType().
+    '''
+    def enable_plots(self, objects, threaded=False):
+        if threaded is True:
+            def worker_task(app_obj):
+                percentage = 0.1
+                try:
+                    delta = 0.9 / len(objects)
+                except ZeroDivisionError:
+                    self.progress.emit(0)
+                    return
+                for obj in objects:
+                    obj.options['plot'] = True
+                    percentage += delta
+                    self.progress.emit(int(percentage*100))
+
                 self.progress.emit(0)
-                return
+                self.plots_updated.emit()
+                self.collection.update_view()
+
+            # Send to worker
+            # self.worker.add_task(worker_task, [self])
+            self.worker_task.emit({'fcn': worker_task, 'params': [self]})
+        else:
             for obj in objects:
                 obj.options['plot'] = True
-                percentage += delta
-                self.progress.emit(int(percentage*100))
-
             self.progress.emit(0)
             self.plots_updated.emit()
             self.collection.update_view()
 
-        # Send to worker
-        # self.worker.add_task(worker_task, [self])
-        self.worker_task.emit({'fcn': worker_task, 'params': [self]})
+    # TODO: FIX THIS
+    '''
+    By default this is not threaded
+    If threaded the app give warnings like this:
 
-    def disable_plots(self, objects):
+    QObject::connect: Cannot queue arguments of type 'QVector<int>' 
+    (Make sure 'QVector<int>' is registered using qRegisterMetaType().
+    '''
+    def disable_plots(self, objects, threaded=False):
         # TODO: This method is very similar to replot_all. Try to merge.
         """
         Disables plots
@@ -5928,27 +5958,33 @@ class App(QtCore.QObject):
             Objects to be disabled
         :return:
         """
-        self.progress.emit(10)
 
-        def worker_task(app_obj):
-            percentage = 0.1
-            try:
-                delta = 0.9 / len(objects)
-            except ZeroDivisionError:
+        if threaded is True:
+            self.progress.emit(10)
+            def worker_task(app_obj):
+                percentage = 0.1
+                try:
+                    delta = 0.9 / len(objects)
+                except ZeroDivisionError:
+                    self.progress.emit(0)
+                    return
+
+                for obj in objects:
+                    obj.options['plot'] = False
+                    percentage += delta
+                    self.progress.emit(int(percentage*100))
+
                 self.progress.emit(0)
-                return
+                self.plots_updated.emit()
+                self.collection.update_view()
 
+            # Send to worker
+            self.worker_task.emit({'fcn': worker_task, 'params': [self]})
+        else:
             for obj in objects:
                 obj.options['plot'] = False
-                percentage += delta
-                self.progress.emit(int(percentage*100))
-
-            self.progress.emit(0)
             self.plots_updated.emit()
             self.collection.update_view()
-
-        # Send to worker
-        self.worker_task.emit({'fcn': worker_task, 'params': [self]})
 
     def clear_plots(self):
 

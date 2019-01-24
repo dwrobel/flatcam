@@ -323,6 +323,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuproject.addSeparator()
         self.menuprojectgeneratecnc = self.menuproject.addAction('Generate CNC')
         self.menuproject.addSeparator()
+        self.menuprojectcopy = self.menuproject.addAction('Copy')
         self.menuprojectdelete = self.menuproject.addAction('Delete')
 
         ###############
