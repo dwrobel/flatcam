@@ -15,9 +15,10 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the Copy Object function when the object is Gerber
 - added the Copy entry to the Project context menu
 - made the functions behind Disable and Enable project context menu entries, non-threaded to fix a possible issue
-- added multiple object selection on Open ... and Import ... (idea and code snippet came from Travers Carter, BitBucket user https://bitbucket.org/travc/
+- added multiple object selection on Open ... and Import ... (idea and code snippet came from Travers Carter, BitBucket user https://bitbucket.org/travc/)
 - fixed 'grbl_laser' postprocessor bugs (missing functions)
 - fixed display geometry for 'grbl_laser' postprocessor
+- Excellon Editor - added possibility to create an linear drill array rotated at an custom angle
 
 23.01.2019
 

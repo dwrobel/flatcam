@@ -685,12 +685,35 @@ class FCSpinner(QtWidgets.QSpinBox):
         try:
             k = int(val)
         except Exception as e:
-            raise e
+            log.debug(str(e))
+            return
         self.setValue(k)
 
     # def sizeHint(self):
     #     default_hint_size = super(FCSpinner, self).sizeHint()
     #     return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
+
+class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
+    def __init__(self, parent=None):
+        super(FCDoubleSpinner, self).__init__(parent)
+
+    def get_value(self):
+        return str(self.value())
+
+    def set_value(self, val):
+        try:
+            k = int(val)
+        except Exception as e:
+            log.debug(str(e))
+            return
+        self.setValue(k)
+
+    def set_precision(self, val):
+        self.setDecimals(val)
+
+    def set_range(self, min_val, max_val):
+        self.setRange(self, min_val, max_val)
+
 
 class Dialog_box(QtWidgets.QWidget):
     def __init__(self, title=None, label=None):
