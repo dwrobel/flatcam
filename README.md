@@ -16,6 +16,8 @@ CAD program, and create G-Code for Isolation routing.
 - added the Copy entry to the Project context menu
 - made the functions behind Disable and Enable project context menu entries, non-threaded to fix a possible issue
 - added multiple object selection on Open ... and Import ... (idea and code snippet came from Travers Carter, BitBucket user https://bitbucket.org/travc/
+- fixed 'grbl_laser' postprocessor bugs (missing functions)
+- fixed display geometry for 'grbl_laser' postprocessor
 
 23.01.2019
 

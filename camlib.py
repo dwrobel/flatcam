@@ -5074,6 +5074,7 @@ class CNCjob(Geometry):
         self.gcode = self.doformat(p.start_code)
 
         self.gcode += self.doformat(p.feedrate_code)        # sets the feed rate
+
         self.gcode += self.doformat(p.lift_code, x=0, y=0)  # Move (up) to travel height
         self.gcode += self.doformat(p.startz_code, x=0, y=0)
 
@@ -5084,8 +5085,10 @@ class CNCjob(Geometry):
                 self.gcode += self.doformat(p.toolchange_code)
 
             self.gcode += self.doformat(p.spindle_code)     # Spindle start
+
             if self.dwell is True:
                 self.gcode += self.doformat(p.dwell_code)   # Dwell time
+
         else:
             self.gcode += self.doformat(p.spindle_code)     # Spindle start
             if self.dwell is True:
@@ -5243,6 +5246,21 @@ class CNCjob(Geometry):
                 else:
                     command['Z'] = 0
 
+        elif 'grbl_laser' in self.pp_excellon_name or 'grbl_laser' in self.pp_geometry_name:
+            match_lsr = re.search(r"X([\+-]?\d+.[\+-]?\d+)\s*Y([\+-]?\d+.[\+-]?\d+)", gline)
+            if match_lsr:
+                command['X'] = float(match_lsr.group(1).replace(" ", ""))
+                command['Y'] = float(match_lsr.group(2).replace(" ", ""))
+
+            match_lsr_pos = re.search(r"^(M0[3|5])", gline)
+            if match_lsr_pos:
+                if match_lsr_pos.group(1) == 'M05':
+                    # the value does not matter, only that it is positive so the gcode_parse() know it is > 0,
+                    # therefore the move is of kind T (travel)
+                    command['Z'] = 1
+                else:
+                    command['Z'] = 0
+
         else:
             match = re.search(r'^\s*([A-Z])\s*([\+\-\.\d\s]+)', gline)
             while match:
@@ -5292,6 +5310,8 @@ class CNCjob(Geometry):
                 if 'Roland' in self.pp_excellon_name or 'Roland' in self.pp_geometry_name:
                     pass
                 elif 'hpgl' in self.pp_excellon_name or 'hpgl' in self.pp_geometry_name:
+                    pass
+                elif 'grbl_laser' in self.pp_excellon_name or 'grbl_laser' in self.pp_geometry_name:
                     pass
                 elif ('X' in gobj or 'Y' in gobj) and gobj['Z'] != current['Z']:
                     if self.pp_geometry_name == 'line_xyz' or self.pp_excellon_name == 'line_xyz':
