@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 26.01.2019
 
 - fixed grbl_11 postprocessor in linear_code() function
+- added icons to the Project Tab context menu
+- added new entries to the Canvas context menu (Copy, Delete, Edit/Save, Move, New Excellon, New Geometry, New Project)
 
 25.01.2019
 

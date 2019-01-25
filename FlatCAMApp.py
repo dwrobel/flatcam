@@ -983,6 +983,10 @@ class App(QtCore.QObject):
         self.ui.shell_btn.triggered.connect(self.on_toggle_shell)
 
         # Context Menu
+        self.ui.popmenu_new_geo.triggered.connect(lambda: self.new_object('geometry', 'new_g', lambda x, y: None))
+        self.ui.popmenu_new_exc.triggered.connect(self.new_excellon_object)
+        self.ui.popmenu_new_prj.triggered.connect(self.on_file_new)
+
         self.ui.gridmenu_1.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("0.05"))
         self.ui.gridmenu_2.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("0.1"))
         self.ui.gridmenu_3.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("0.2"))
@@ -999,6 +1003,13 @@ class App(QtCore.QObject):
         self.ui.zoomfit.triggered.connect(self.on_zoom_fit)
         self.ui.clearplot.triggered.connect(self.clear_plots)
         self.ui.replot.triggered.connect(self.plot_all)
+
+        self.ui.popmenu_copy.triggered.connect(self.on_copy_object)
+        self.ui.popmenu_delete.triggered.connect(self.on_delete)
+        self.ui.popmenu_edit.triggered.connect(self.object2editor)
+        self.ui.popmenu_save.triggered.connect(self.editor2object)
+        self.ui.popmenu_move.triggered.connect(self.obj_move)
+
         self.ui.popmenu_properties.triggered.connect(self.obj_properties)
 
         # Preferences Plot Area TAB
@@ -1373,6 +1384,10 @@ class App(QtCore.QObject):
         :return: None
         """
 
+        # adjust the visibility of some of the canvas context menu
+        self.ui.popmenu_edit.setVisible(False)
+        self.ui.popmenu_save.setVisible(True)
+
         if isinstance(self.collection.get_active(), FlatCAMGeometry):
             edited_object = self.collection.get_active()
             # for now, if the Geometry is MultiGeo do not allow the editing
@@ -1415,6 +1430,11 @@ class App(QtCore.QObject):
 
         :return: None
         """
+
+        # adjust the visibility of some of the canvas context menu
+        self.ui.popmenu_edit.setVisible(True)
+        self.ui.popmenu_save.setVisible(False)
+
         edited_obj = self.collection.get_active()
         obj_type = ""
 
@@ -4123,6 +4143,9 @@ class App(QtCore.QObject):
 
     def obj_properties(self):
         self.properties_tool.run()
+
+    def obj_move(self):
+        self.move_tool.run()
 
     def on_fileopengerber(self):
         """

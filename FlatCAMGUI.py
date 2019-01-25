@@ -313,21 +313,21 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuhelp_shortcut_list = self.menuhelp.addAction(QtGui.QIcon('share/shortcuts24.png'), 'Shortcuts List')
         self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/videohelp24.png'), 'See on YouTube')
 
-        ####################
-        ### Context menu ###
-        ####################
+        ################################
+        ### Project Tab Context menu ###
+        ################################
 
         self.menuproject = QtWidgets.QMenu()
-        self.menuprojectenable = self.menuproject.addAction('Enable')
-        self.menuprojectdisable = self.menuproject.addAction('Disable')
+        self.menuprojectenable = self.menuproject.addAction(QtGui.QIcon('share/replot32.png'), 'Enable')
+        self.menuprojectdisable = self.menuproject.addAction(QtGui.QIcon('share/clear_plot32.png'), 'Disable')
         self.menuproject.addSeparator()
-        self.menuprojectgeneratecnc = self.menuproject.addAction('Generate CNC')
+        self.menuprojectgeneratecnc = self.menuproject.addAction(QtGui.QIcon('share/cnc32.png'), 'Generate CNC')
         self.menuproject.addSeparator()
-        self.menuprojectcopy = self.menuproject.addAction('Copy')
-        self.menuprojectedit = self.menuproject.addAction('Edit')
-        self.menuprojectdelete = self.menuproject.addAction('Delete')
+        self.menuprojectcopy = self.menuproject.addAction(QtGui.QIcon('share/copy32.png'), 'Copy')
+        self.menuprojectedit = self.menuproject.addAction(QtGui.QIcon('share/edit_ok32.png'), 'Edit')
+        self.menuprojectdelete = self.menuproject.addAction(QtGui.QIcon('share/delete32.png'), 'Delete')
         self.menuproject.addSeparator()
-        self.menuprojectproperties = self.menuproject.addAction('Properties')
+        self.menuprojectproperties = self.menuproject.addAction(QtGui.QIcon('share/properties32.png'), 'Properties')
 
         ###############
         ### Toolbar ###
@@ -625,10 +625,18 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             "which is the file storing the working default preferences.")
         self.pref_tab_bottom_layout_2.addWidget(self.pref_save_button)
 
-        ########################################
+
+        ##############################################################
         ### HERE WE BUILD THE CONTEXT MENU FOR RMB CLICK ON CANVAS ###
-        ########################################
+        ##############################################################
         self.popMenu = QtWidgets.QMenu()
+
+        self.cmenu_newmenu = self.popMenu.addMenu(QtGui.QIcon('share/file32.png'), "New")
+        self.popmenu_new_geo = self.cmenu_newmenu.addAction(QtGui.QIcon('share/new_geo32_bis.png'), "Geo Obj")
+        self.popmenu_new_exc = self.cmenu_newmenu.addAction(QtGui.QIcon('share/new_exc32.png'), "Exc. Obj")
+        self.cmenu_newmenu.addSeparator()
+        self.popmenu_new_prj = self.cmenu_newmenu.addAction(QtGui.QIcon('share/file16.png'), "Project")
+        self.popMenu.addSeparator()
 
         self.cmenu_gridmenu = self.popMenu.addMenu(QtGui.QIcon('share/grid32_menu.png'), "Grids")
         self.gridmenu_1 = self.cmenu_gridmenu.addAction(QtGui.QIcon('share/grid32_menu.png'), "0.05")
@@ -636,6 +644,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.gridmenu_3 = self.cmenu_gridmenu.addAction(QtGui.QIcon('share/grid32_menu.png'), "0.20")
         self.gridmenu_4 = self.cmenu_gridmenu.addAction(QtGui.QIcon('share/grid32_menu.png'), "0.50")
         self.gridmenu_5 = self.cmenu_gridmenu.addAction(QtGui.QIcon('share/grid32_menu.png'), "1.00")
+
+        self.cmenu_viewmenu = self.popMenu.addMenu(QtGui.QIcon('share/view64.png'), "View")
+        self.zoomfit = self.cmenu_viewmenu.addAction(QtGui.QIcon('share/zoom_fit32.png'), "Zoom Fit")
+        self.clearplot = self.cmenu_viewmenu.addAction(QtGui.QIcon('share/clear_plot32.png'), "Clear Plot")
+        self.replot = self.cmenu_viewmenu.addAction(QtGui.QIcon('share/replot32.png'), "Replot")
+        self.popMenu.addSeparator()
 
         self.g_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/draw32.png'), "Geo Editor")
         self.draw_line = self.g_editor_cmenu.addAction(QtGui.QIcon('share/path32.png'), "Line")
@@ -647,11 +661,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.drill_array = self.e_editor_cmenu.addAction(QtGui.QIcon('share/addarray32.png'), "Add Drill Array")
         self.drill_copy = self.e_editor_cmenu.addAction(QtGui.QIcon('share/copy32.png'), "Copy Drill(s)")
 
-        self.cmenu_viewmenu = self.popMenu.addMenu(QtGui.QIcon('share/view64.png'), "View")
-        self.zoomfit = self.cmenu_viewmenu.addAction(QtGui.QIcon('share/zoom_fit32.png'), "Zoom Fit")
-        self.clearplot = self.cmenu_viewmenu.addAction(QtGui.QIcon('share/clear_plot32.png'), "Clear Plot")
-        self.replot = self.cmenu_viewmenu.addAction(QtGui.QIcon('share/replot32.png'), "Replot")
+        self.popMenu.addSeparator()
+        self.popmenu_copy = self.popMenu.addAction(QtGui.QIcon('share/copy32.png'), "Copy")
+        self.popmenu_delete = self.popMenu.addAction(QtGui.QIcon('share/delete32.png'), "Delete")
+        self.popmenu_edit = self.popMenu.addAction(QtGui.QIcon('share/edit32.png'), "Edit")
+        self.popmenu_save = self.popMenu.addAction(QtGui.QIcon('share/floppy32.png'), "Save && Close Edit")
+        self.popmenu_save.setVisible(False)
+        self.popMenu.addSeparator()
 
+        self.popmenu_move = self.popMenu.addAction(QtGui.QIcon('share/move32.png'), "Move")
         self.popmenu_properties = self.popMenu.addAction(QtGui.QIcon('share/properties32.png'), "Properties")
 
 
