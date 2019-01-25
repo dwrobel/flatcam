@@ -13,8 +13,10 @@ CAD program, and create G-Code for Isolation routing.
 
 - deleted junk folders
 - remade the Panelize Tool: now it is much faster, it is multi-threaded, it works with multitool geometries and it works with multigeo geometries too.
-- make sure to copy the options attribute to the final object in the case of: FlatCAMGeometry.merge(), FlatCAMGerber.merge() and for the Panelize Tool
+- made sure to copy the options attribute to the final object in the case of: FlatCAMGeometry.merge(), FlatCAMGerber.merge() and for the Panelize Tool
 - modified the panelize TclCommand to take advantage of the new panelize() function; added a 'threaded' parameter (default value is 1) which controls the execution of the panelize TclCommand: threaded or non-threaded
+- fixed TclCommand Cutout
+- added a new TclCommand named CutoutAny. Keyword: cutout_any
 
 24.01.2019
 

@@ -1086,7 +1086,8 @@ class App(QtCore.QObject):
         # Auto-complete KEYWORDS
         self.tcl_commands_list = ['add_circle', 'add_poly', 'add_polygon', 'add_polyline', 'add_rectangle',
                                   'aligndrill', 'clear',
-                                  'aligndrillgrid', 'cncjob', 'cutout', 'delete', 'drillcncjob', 'export_gcode',
+                                  'aligndrillgrid', 'cncjob', 'cutout', 'cutout_any', 'delete', 'drillcncjob',
+                                  'export_gcode',
                                   'export_svg', 'ext', 'exteriors', 'follow', 'geo_union', 'geocutout', 'get_names',
                                   'get_sys', 'getsys', 'help', 'import_svg', 'interiors', 'isolate', 'join_excellon',
                                   'join_excellons', 'join_geometries', 'join_geometry', 'list_sys', 'listsys', 'mill',
