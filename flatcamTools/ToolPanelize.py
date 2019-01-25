@@ -359,6 +359,13 @@ class Panelize(FlatCAMTool):
                     obj_fin.slots = []
                     obj_fin.solid_geometry = []
 
+                    for option in panel_obj.options:
+                        if option is not 'name':
+                            try:
+                                obj_fin.options[option] = panel_obj.options[option]
+                            except:
+                                log.warning("Failed to copy option.", option)
+
                     for row in range(rows):
                         currentx = 0.0
                         for col in range(columns):
@@ -386,6 +393,8 @@ class Panelize(FlatCAMTool):
                         currenty += lenghty
 
                     obj_fin.create_geometry()
+                    obj_fin.zeros = panel_obj.zeros
+                    obj_fin.units = panel_obj.units
 
                 def job_init_geometry(obj_fin, app_obj):
                     currentx = 0.0
