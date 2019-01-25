@@ -52,7 +52,8 @@ class grbl_laser(FlatCAMPostProc):
         return ('G00 ' + self.position_code(p)).format(**p)
 
     def linear_code(self, p):
-        return ('G01 ' + self.position_code(p)).format(**p) + " " + self.feedrate_code(p)
+        return ('G01 ' + self.position_code(p)).format(**p) + \
+               ' F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate))
 
     def end_code(self, p):
         gcode = ('G00 Z' + self.feedrate_format %(p.fr_decimals, p.endz) + "\n")

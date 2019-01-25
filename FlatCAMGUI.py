@@ -318,14 +318,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         ################################
 
         self.menuproject = QtWidgets.QMenu()
-        self.menuprojectenable = self.menuproject.addAction(QtGui.QIcon('share/replot32.png'), 'Enable')
-        self.menuprojectdisable = self.menuproject.addAction(QtGui.QIcon('share/clear_plot32.png'), 'Disable')
+        self.menuprojectenable = self.menuproject.addAction(QtGui.QIcon('share/replot32.png'), 'Enable Plot')
+        self.menuprojectdisable = self.menuproject.addAction(QtGui.QIcon('share/clear_plot32.png'), 'Disable Plot')
         self.menuproject.addSeparator()
         self.menuprojectgeneratecnc = self.menuproject.addAction(QtGui.QIcon('share/cnc32.png'), 'Generate CNC')
         self.menuproject.addSeparator()
         self.menuprojectcopy = self.menuproject.addAction(QtGui.QIcon('share/copy32.png'), 'Copy')
-        self.menuprojectedit = self.menuproject.addAction(QtGui.QIcon('share/edit_ok32.png'), 'Edit')
         self.menuprojectdelete = self.menuproject.addAction(QtGui.QIcon('share/delete32.png'), 'Delete')
+        self.menuprojectedit = self.menuproject.addAction(QtGui.QIcon('share/edit_ok32.png'), 'Edit')
         self.menuproject.addSeparator()
         self.menuprojectproperties = self.menuproject.addAction(QtGui.QIcon('share/properties32.png'), 'Properties')
 
