@@ -266,15 +266,15 @@ class Panelize(FlatCAMTool):
                     rows -= 1
                     panel_lengthy = ((ymax - ymin) * rows) + (spacing_rows * (rows - 1))
 
-        def clean_temp():
-            # deselect all  to avoid  delete selected object when run  delete  from  shell
-            self.app.collection.set_all_inactive()
-
-            for del_obj in self.objs:
-                self.app.collection.set_active(del_obj.options['name'])
-                self.app.on_delete()
-
-            self.objs[:] = []
+        # def clean_temp():
+        #     # deselect all  to avoid  delete selected object when run  delete  from  shell
+        #     self.app.collection.set_all_inactive()
+        #
+        #     for del_obj in self.objs:
+        #         self.app.collection.set_active(del_obj.options['name'])
+        #         self.app.on_delete()
+        #
+        #     self.objs[:] = []
 
         # def panelize():
         #     if panel_obj is not None:
@@ -463,7 +463,8 @@ class Panelize(FlatCAMTool):
                 self.app.inform.emit("[success]Panel created successfully.")
             except Exception as e:
                 proc.done()
-                raise e
+                log.debug(str(e))
+                return
             proc.done()
 
         self.app.collection.promise(self.outname)
