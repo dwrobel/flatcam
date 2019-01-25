@@ -3201,7 +3201,7 @@ class Excellon(Geometry):
     Key               Value
     ================  ====================================
     start             (Shapely.Point) Start point of the slot
-    start             (Shapely.Point) Stop point of the slot
+    stop              (Shapely.Point) Stop point of the slot
     tool              (str) A key in ``tools``
     ================  ====================================
     """

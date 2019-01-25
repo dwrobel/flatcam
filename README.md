@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+25.01.2019
+
+- deleted junk folders
+- remade the Panelize Tool: now it is much faster, it is multi-threaded, it works with multitool geometries and it works with multigeo geometries too.
+
+
 24.01.2019
 
 - trying to fix painting single when the actual painted object it's a MultiPolygon
@@ -20,7 +26,6 @@ CAD program, and create G-Code for Isolation routing.
 - fixed display geometry for 'grbl_laser' postprocessor
 - Excellon Editor - added possibility to create an linear drill array rotated at an custom angle
 - added the Edit and Properties entries to the Project context menu
-
 
 23.01.2019
 
