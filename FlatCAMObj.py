@@ -370,6 +370,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             grb_final.solid_geometry = [grb_final.solid_geometry]
 
         for grb in grb_list:
+            for option in grb.options:
+                if option is not 'name':
+                    try:
+                        grb_final.options[option] = grb.options[option]
+                    except:
+                        log.warning("Failed to copy option.", option)
 
             # Expand lists
             if type(grb) is list:
@@ -1716,11 +1722,19 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         if type(geo_final.solid_geometry) is not list:
             geo_final.solid_geometry = [geo_final.solid_geometry]
 
+
+
         for geo in geo_list:
+            for option in geo.options:
+                if option is not 'name':
+                    try:
+                        geo_final.options[option] = geo.options[option]
+                    except:
+                        log.warning("Failed to copy option.", option)
+
             # Expand lists
             if type(geo) is list:
                 FlatCAMGeometry.merge(geo, geo_final)
-
             # If not list, just append
             else:
                 # merge solid_geometry, useful for singletool geometry, for multitool each is empty

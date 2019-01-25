@@ -4,7 +4,7 @@ from tclCommands.TclCommand import TclCommand
 
 class TclCommandCutout(TclCommand):
     """
-    Tcl shell command to create a board cutout geometry.
+    Tcl shell command to create a board cutout geometry. Rectangular shape only.
 
     example:
 
@@ -33,13 +33,13 @@ class TclCommandCutout(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': 'Creates board cutout.',
+        'main': 'Creates board cutout from an object (Gerber or Geometry) with a rectangular shape',
         'args': collections.OrderedDict([
             ('name', 'Name of the object.'),
-            ('dia', 'Tool diameter.'),
-            ('margin', 'Margin over bounds.'),
-            ('gapsize', 'size of gap.'),
-            ('gaps', 'type of gaps.'),
+            ('dia', 'Tool diameter. Default = 0.1'),
+            ('margin', 'Margin over bounds. Default = 0.001'),
+            ('gapsize', 'Size of gap. Default = 0.1'),
+            ('gaps', "Type of gaps. Can be: 'tb' = top-bottom, 'lr' = left-right and '4' = one each side. Default = 4"),
         ]),
         'examples': []
     }
@@ -52,7 +52,32 @@ class TclCommandCutout(TclCommand):
         :return:
         """
 
-        name = args['name']
+        if 'name' in args:
+            name = args['name']
+        else:
+            self.app.inform.emit(
+                "[warning]The name of the object for which cutout is done is missing. Add it and retry.")
+            return
+
+        if 'margin' in args:
+            margin_par = args['margin']
+        else:
+            margin_par = 0.001
+
+        if 'dia' in args:
+            dia_par = args['dia']
+        else:
+            dia_par = 0.1
+
+        if 'gaps' in args:
+            gaps_par = args['gaps']
+        else:
+            gaps_par = 4
+
+        if 'gapsize' in args:
+            gapsize_par = args['gapsize']
+        else:
+            gapsize_par = 0.1
 
         try:
             obj = self.app.collection.get_by_name(str(name))
@@ -60,8 +85,9 @@ class TclCommandCutout(TclCommand):
             return "Could not retrieve object: %s" % name
 
         def geo_init_me(geo_obj, app_obj):
-            margin = args['margin'] + args['dia'] / 2
-            gap_size = args['dia'] + args['gapsize']
+            margin =  margin_par + dia_par / 2
+            gap_size = dia_par + gapsize_par
+
             minx, miny, maxx, maxy = obj.bounds()
             minx -= margin
             maxx += margin
@@ -90,10 +116,11 @@ class TclCommandCutout(TclCommand):
                            [pts[3], pts[4], pts[5]],
                            [pts[6], pts[7], pts[8]],
                            [pts[9], pts[10], pts[11]]]}
-            cuts = cases[args['gaps']]
+            cuts = cases[gaps_par]
             geo_obj.solid_geometry = cascaded_union([LineString(segment) for segment in cuts])
 
         try:
             obj.app.new_object("geometry", name + "_cutout", geo_init_me)
+            self.app.inform.emit("[success]Rectangular-form Cutout operation finished.")
         except Exception as e:
             return "Operation failed: %s" % str(e)

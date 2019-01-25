@@ -9,6 +9,27 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+25.01.2019
+
+- deleted junk folders
+- remade the Panelize Tool: now it is much faster, it is multi-threaded, it works with multitool geometries and it works with multigeo geometries too.
+- made sure to copy the options attribute to the final object in the case of: FlatCAMGeometry.merge(), FlatCAMGerber.merge() and for the Panelize Tool
+- modified the panelize TclCommand to take advantage of the new panelize() function; added a 'threaded' parameter (default value is 1) which controls the execution of the panelize TclCommand: threaded or non-threaded
+- fixed TclCommand Cutout
+- added a new TclCommand named CutoutAny. Keyword: cutout_any
+
+24.01.2019
+
+- trying to fix painting single when the actual painted object it's a MultiPolygon
+- fixed the Copy Object function when the object is Gerber
+- added the Copy entry to the Project context menu
+- made the functions behind Disable and Enable project context menu entries, non-threaded to fix a possible issue
+- added multiple object selection on Open ... and Import ... (idea and code snippet came from Travers Carter, BitBucket user https://bitbucket.org/travc/)
+- fixed 'grbl_laser' postprocessor bugs (missing functions)
+- fixed display geometry for 'grbl_laser' postprocessor
+- Excellon Editor - added possibility to create an linear drill array rotated at an custom angle
+- added the Edit and Properties entries to the Project context menu
+
 23.01.2019
 
 - added a new postprocessor file named 'line_xyz' which have x, y, z values on the same GCode line

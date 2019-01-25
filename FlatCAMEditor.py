@@ -27,7 +27,7 @@ from numpy.linalg import solve
 
 from rtree import index as rtindex
 from GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCEntry2, FCComboBox, FCTextAreaRich, \
-    VerticalScrollArea, FCTable
+    VerticalScrollArea, FCTable, FCDoubleSpinner
 from ParseFont import *
 from vispy.scene.visuals import Markers
 from copy import copy
@@ -1464,6 +1464,7 @@ class FCDrillArray(FCShapeTool):
         self.drill_array = 'linear'
         self.drill_array_size = None
         self.drill_pitch = None
+        self.drill_linear_angle = None
 
         self.drill_angle = None
         self.drill_direction = None
@@ -1529,6 +1530,7 @@ class FCDrillArray(FCShapeTool):
             self.drill_array_size = int(self.draw_app.drill_array_size_entry.get_value())
             try:
                 self.drill_pitch = float(self.draw_app.drill_pitch_entry.get_value())
+                self.drill_linear_angle = float(self.draw_app.linear_angle_spinner.get_value())
                 self.drill_angle = float(self.draw_app.drill_angle_entry.get_value())
             except TypeError:
                 self.draw_app.app.inform.emit(
@@ -1556,6 +1558,13 @@ class FCDrillArray(FCShapeTool):
                     geo = self.util_shape(((data[0] + (self.drill_pitch * item)), data[1]))
                 if self.drill_axis == 'Y':
                     geo = self.util_shape((data[0], (data[1] + (self.drill_pitch * item))))
+                if self.drill_axis == 'A':
+                    x_adj = self.drill_pitch * math.cos(math.radians(self.drill_linear_angle))
+                    y_adj = self.drill_pitch * math.sin(math.radians(self.drill_linear_angle))
+                    geo = self.util_shape(
+                        ((data[0] + (x_adj * item)), (data[1] + (y_adj * item)))
+                    )
+
                 if static is None or static is False:
                     geo_list.append(affinity.translate(geo, xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)))
                 else:
@@ -1570,7 +1579,6 @@ class FCDrillArray(FCShapeTool):
                 temp_points = [x for x in self.pt]
                 temp_points.append(data)
                 return DrawToolUtilityShape(LineString(temp_points))
-
 
     def util_shape(self, point):
         start_hor_line = ((point[0] - (self.selected_dia / 2)), point[1])
@@ -1599,6 +1607,12 @@ class FCDrillArray(FCShapeTool):
                     geo = self.util_shape(((self.points[0] + (self.drill_pitch * item)), self.points[1]))
                 if self.drill_axis == 'Y':
                     geo = self.util_shape((self.points[0], (self.points[1] + (self.drill_pitch * item))))
+                if self.drill_axis == 'A':
+                    x_adj = self.drill_pitch * math.cos(math.radians(self.drill_linear_angle))
+                    y_adj = self.drill_pitch * math.sin(math.radians(self.drill_linear_angle))
+                    geo = self.util_shape(
+                        ((self.points[0] + (x_adj * item)), (self.points[1] + (y_adj * item)))
+                    )
 
                 self.geometry.append(DrawToolShape(geo))
         else:
@@ -3469,6 +3483,21 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.linear_form = QtWidgets.QFormLayout()
         self.linear_box.addLayout(self.linear_form)
 
+        self.drill_axis_label = QtWidgets.QLabel('Direction:')
+        self.drill_axis_label.setToolTip(
+            "Direction on which the linear array is oriented:\n"
+            "- 'X' - horizontal axis \n"
+            "- 'Y' - vertical axis or \n"
+            "- 'Angle' - a custom angle for the array inclination"
+        )
+        self.drill_axis_label.setFixedWidth(100)
+
+        self.drill_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
+                                          {'label': 'Y', 'value': 'Y'},
+                                          {'label': 'Angle', 'value': 'A'}])
+        self.drill_axis_radio.set_value('X')
+        self.linear_form.addRow(self.drill_axis_label, self.drill_axis_radio)
+
         self.drill_pitch_label = QtWidgets.QLabel('Pitch:')
         self.drill_pitch_label.setToolTip(
             "Pitch = Distance between elements of the array."
@@ -3478,16 +3507,19 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.drill_pitch_entry = LengthEntry()
         self.linear_form.addRow(self.drill_pitch_label, self.drill_pitch_entry)
 
-        self.drill_axis_label = QtWidgets.QLabel('Axis:')
-        self.drill_axis_label.setToolTip(
-            "Axis on which the linear array is oriented: 'X' or 'Y'."
+        self.linear_angle_label = QtWidgets.QLabel('Angle:')
+        self.linear_angle_label.setToolTip(
+            "Angle at which the linear array is placed.\n"
+            "The precision is of max 2 decimals.\n"
+            "Min value is: -359.99 degrees.\n"
+            "Max value is:  360.00 degrees."
         )
-        self.drill_axis_label.setFixedWidth(100)
+        self.linear_angle_label.setFixedWidth(100)
 
-        self.drill_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
-                                          {'label': 'Y', 'value': 'Y'}])
-        self.drill_axis_radio.set_value('X')
-        self.linear_form.addRow(self.drill_axis_label, self.drill_axis_radio)
+        self.linear_angle_spinner = FCDoubleSpinner()
+        self.linear_angle_spinner.set_precision(2)
+        self.linear_angle_spinner.setRange(-359.99, 360.00)
+        self.linear_form.addRow(self.linear_angle_label, self.linear_angle_spinner)
 
         self.array_circular_frame = QtWidgets.QFrame()
         self.array_circular_frame.setContentsMargins(0, 0, 0, 0)
@@ -3496,18 +3528,6 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.circular_box.setContentsMargins(0, 0, 0, 0)
         self.array_circular_frame.setLayout(self.circular_box)
 
-        self.drill_angle_label = QtWidgets.QLabel('Angle:')
-        self.drill_angle_label.setToolTip(
-            "Angle at which each element in circular array is placed."
-        )
-        self.drill_angle_label.setFixedWidth(100)
-
-        self.circular_form = QtWidgets.QFormLayout()
-        self.circular_box.addLayout(self.circular_form)
-
-        self.drill_angle_entry = LengthEntry()
-        self.circular_form.addRow(self.drill_angle_label, self.drill_angle_entry)
-
         self.drill_direction_label = QtWidgets.QLabel('Direction:')
         self.drill_direction_label.setToolTip(
             "Direction for circular array."
@@ -3515,12 +3535,28 @@ class FlatCAMExcEditor(QtCore.QObject):
         )
         self.drill_direction_label.setFixedWidth(100)
 
+        self.circular_form = QtWidgets.QFormLayout()
+        self.circular_box.addLayout(self.circular_form)
+
         self.drill_direction_radio = RadioSet([{'label': 'CW', 'value': 'CW'},
-                                          {'label': 'CCW.', 'value': 'CCW'}])
+                                               {'label': 'CCW.', 'value': 'CCW'}])
         self.drill_direction_radio.set_value('CW')
         self.circular_form.addRow(self.drill_direction_label, self.drill_direction_radio)
 
+        self.drill_angle_label = QtWidgets.QLabel('Angle:')
+        self.drill_angle_label.setToolTip(
+            "Angle at which each element in circular array is placed."
+        )
+        self.drill_angle_label.setFixedWidth(100)
+
+        self.drill_angle_entry = LengthEntry()
+        self.circular_form.addRow(self.drill_angle_label, self.drill_angle_entry)
+
         self.array_circular_frame.hide()
+
+        self.linear_angle_spinner.hide()
+        self.linear_angle_label.hide()
+
         self.array_frame.hide()
         self.tools_box.addStretch()
 
@@ -3576,6 +3612,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.deltool_btn.clicked.connect(self.on_tool_delete)
         self.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
         self.array_type_combo.currentIndexChanged.connect(self.on_array_type_combo)
+
+        self.drill_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
 
         self.drill_array_size_entry.set_value(5)
         self.drill_pitch_entry.set_value(2.54)
@@ -5037,6 +5075,15 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.array_circular_frame.show()
             self.array_linear_frame.hide()
             self.app.inform.emit("Click on the circular array Center position")
+
+    def on_linear_angle_radio(self):
+        val = self.drill_axis_radio.get_value()
+        if val == 'A':
+            self.linear_angle_spinner.show()
+            self.linear_angle_label.show()
+        else:
+            self.linear_angle_spinner.hide()
+            self.linear_angle_label.hide()
 
     def exc_add_drill(self):
         self.select_tool('add')

@@ -22,7 +22,6 @@ class grbl_laser(FlatCAMPostProc):
             gcode += '(Postprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n'
         else:
             gcode += '(Postprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n'
-
         gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
         gcode += 'G90\n'
         gcode += 'G94\n'
@@ -63,9 +62,14 @@ class grbl_laser(FlatCAMPostProc):
     def feedrate_code(self, p):
         return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate))
 
-    def spindle_code(self,p):
+    def feedrate_z_code(self, p):
+        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate_z))
+
+    def spindle_code(self, p):
         if p.spindlespeed:
             return 'S%d' % p.spindlespeed
+        else:
+            return ''
 
     def dwell_code(self, p):
         return ''

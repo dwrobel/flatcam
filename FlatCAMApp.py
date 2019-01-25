@@ -90,8 +90,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.903
-    version_date = "2019/01/23"
+    version = 8.904
+    version_date = "2019/01/25"
     beta = True
 
     # URL for update checks and statistics
@@ -956,7 +956,11 @@ class App(QtCore.QObject):
         self.ui.menuprojectenable.triggered.connect(lambda: self.enable_plots(self.collection.get_selected()))
         self.ui.menuprojectdisable.triggered.connect(lambda: self.disable_plots(self.collection.get_selected()))
         self.ui.menuprojectgeneratecnc.triggered.connect(lambda: self.generate_cnc_job(self.collection.get_selected()))
+        self.ui.menuprojectcopy.triggered.connect(self.on_copy_object)
+        self.ui.menuprojectedit.triggered.connect(self.object2editor)
+
         self.ui.menuprojectdelete.triggered.connect(self.on_delete)
+        self.ui.menuprojectproperties.triggered.connect(self.obj_properties)
 
         # Toolbar
         #self.ui.file_new_btn.triggered.connect(self.on_file_new)
@@ -1082,7 +1086,8 @@ class App(QtCore.QObject):
         # Auto-complete KEYWORDS
         self.tcl_commands_list = ['add_circle', 'add_poly', 'add_polygon', 'add_polyline', 'add_rectangle',
                                   'aligndrill', 'clear',
-                                  'aligndrillgrid', 'cncjob', 'cutout', 'delete', 'drillcncjob', 'export_gcode',
+                                  'aligndrillgrid', 'cncjob', 'cutout', 'cutout_any', 'delete', 'drillcncjob',
+                                  'export_gcode',
                                   'export_svg', 'ext', 'exteriors', 'follow', 'geo_union', 'geocutout', 'get_names',
                                   'get_sys', 'getsys', 'help', 'import_svg', 'interiors', 'isolate', 'join_excellon',
                                   'join_excellons', 'join_geometries', 'join_geometry', 'list_sys', 'listsys', 'mill',
@@ -3090,8 +3095,11 @@ class App(QtCore.QObject):
 
         def initialize(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
-            if obj.tools:
-                obj_init.tools = obj.tools
+            try:
+                if obj.tools:
+                    obj_init.tools = obj.tools
+            except Exception as e:
+                log.debug("on_copy_object() --> %s" % str(e))
 
         def initialize_excellon(obj_init, app):
             obj_init.tools = obj.tools
@@ -3118,8 +3126,11 @@ class App(QtCore.QObject):
 
         def initialize_geometry(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
-            if obj.tools:
-                obj_init.tools = obj.tools
+            try:
+                if obj.tools:
+                    obj_init.tools = obj.tools
+            except Exception as e:
+                log.debug("on_copy_object2() --> %s" % str(e))
 
         def initialize_gerber(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
@@ -4134,21 +4145,20 @@ class App(QtCore.QObject):
                    "All Files (*.*)"
 
         try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Gerber",
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Gerber",
                                                          directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Gerber", filter=_filter_)
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Gerber", filter=_filter_)
 
-        # The Qt methods above will return a QString which can cause problems later.
-        # So far json.dump() will fail to serialize it.
-        # TODO: Improve the serialization methods and remove this fix.
-        filename = str(filename)
+        filenames = [str(filename) for filename in filenames]
 
-        if filename == "":
+        if len(filenames) == 0:
             self.inform.emit("[warning_notcl]Open Gerber cancelled.")
         else:
-            self.worker_task.emit({'fcn': self.open_gerber,
-                                   'params': [filename]})
+            for filename in filenames:
+                if filename != '':
+                    self.worker_task.emit({'fcn': self.open_gerber,
+                                           'params': [filename]})
 
     def on_fileopengerber_follow(self):
         """
@@ -4200,21 +4210,20 @@ class App(QtCore.QObject):
                    "All Files (*.*)"
 
         try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Excellon",
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Excellon",
                                                          directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Excellon", filter=_filter_)
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Excellon", filter=_filter_)
 
-        # The Qt methods above will return a QString which can cause problems later.
-        # So far json.dump() will fail to serialize it.
-        # TODO: Improve the serialization methods and remove this fix.
-        filename = str(filename)
+        filenames = [str(filename) for filename in filenames]
 
-        if filename == "":
+        if len(filenames) == 0:
             self.inform.emit("[warning_notcl]Open Excellon cancelled.")
         else:
-            self.worker_task.emit({'fcn': self.open_excellon,
-                                   'params': [filename]})
+            for filename in filenames:
+                if filename != '':
+                    self.worker_task.emit({'fcn': self.open_excellon,
+                                           'params': [filename]})
 
     def on_fileopengcode(self):
         """
@@ -4231,21 +4240,20 @@ class App(QtCore.QObject):
                    " *.din *.xpi *.hnc *.h *.i *.ncp *.min *.gcd *.rol *.mpr *.ply *.out *.eia *.plt *.sbp *.mpf);;" \
                    "All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open G-Code",
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Open G-Code",
                                                          directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open G-Code", filter=_filter_)
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Open G-Code", filter=_filter_)
 
-        # The Qt methods above will return a QString which can cause problems later.
-        # So far json.dump() will fail to serialize it.
-        # TODO: Improve the serialization methods and remove this fix.
-        filename = str(filename)
+        filenames = [str(filename) for filename in filenames]
 
-        if filename == "":
+        if len(filenames) == 0:
             self.inform.emit("[warning_notcl]Open G-Code cancelled.")
         else:
-            self.worker_task.emit({'fcn': self.open_gcode,
-                                   'params': [filename]})
+            for filename in filenames:
+                if filename != '':
+                    self.worker_task.emit({'fcn': self.open_gcode,
+                                           'params': [filename]})
 
     def on_file_openproject(self):
         """
@@ -4465,21 +4473,23 @@ class App(QtCore.QObject):
 
         filter = "SVG File (*.svg);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Import SVG",
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Import SVG",
                                                          directory=self.get_last_folder(), filter=filter)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Import SVG", filter=filter)
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Import SVG", filter=filter)
 
-        filename = str(filename)
         if type_of_obj is not "geometry" and type_of_obj is not "gerber":
             type_of_obj = "geometry"
 
-        if filename == "":
-            self.inform.emit("[warning_notcl]Open cancelled.")
+        filenames = [str(filename) for filename in filenames]
+
+        if len(filenames) == 0:
+            self.inform.emit("[warning_notcl]Open SVG cancelled.")
         else:
-            self.worker_task.emit({'fcn': self.import_svg,
-                                   'params': [filename, type_of_obj]})
-            #  self.import_svg(filename, "geometry")
+            for filename in filenames:
+                if filename != '':
+                    self.worker_task.emit({'fcn': self.import_svg,
+                                           'params': [filename, type_of_obj]})
 
     def on_file_importdxf(self, type_of_obj):
         """
@@ -4493,20 +4503,23 @@ class App(QtCore.QObject):
 
         filter = "DXF File (*.DXF);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Import DXF",
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Import DXF",
                                                          directory=self.get_last_folder(), filter=filter)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Import DXF", filter=filter)
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Import DXF", filter=filter)
 
-        filename = str(filename)
         if type_of_obj is not "geometry" and type_of_obj is not "gerber":
             type_of_obj = "geometry"
 
-        if filename == "":
-            self.inform.emit("[warning_notcl]Open cancelled.")
+        filenames = [str(filename) for filename in filenames]
+
+        if len(filenames) == 0:
+            self.inform.emit("[warning_notcl]Open DXF cancelled.")
         else:
-            self.worker_task.emit({'fcn': self.import_dxf,
-                                   'params': [filename, type_of_obj]})
+            for filename in filenames:
+                if filename != '':
+                    self.worker_task.emit({'fcn': self.import_dxf,
+                                           'params': [filename, type_of_obj]})
 
     def on_filerunscript(self):
         """
@@ -5899,28 +5912,51 @@ class App(QtCore.QObject):
             "info"
         )
 
-    def enable_plots(self, objects):
-        def worker_task(app_obj):
-            percentage = 0.1
-            try:
-                delta = 0.9 / len(objects)
-            except ZeroDivisionError:
+    # TODO: FIX THIS
+    '''
+    By default this is not threaded
+    If threaded the app give warnings like this:
+    
+    QObject::connect: Cannot queue arguments of type 'QVector<int>' 
+    (Make sure 'QVector<int>' is registered using qRegisterMetaType().
+    '''
+    def enable_plots(self, objects, threaded=False):
+        if threaded is True:
+            def worker_task(app_obj):
+                percentage = 0.1
+                try:
+                    delta = 0.9 / len(objects)
+                except ZeroDivisionError:
+                    self.progress.emit(0)
+                    return
+                for obj in objects:
+                    obj.options['plot'] = True
+                    percentage += delta
+                    self.progress.emit(int(percentage*100))
+
                 self.progress.emit(0)
-                return
+                self.plots_updated.emit()
+                self.collection.update_view()
+
+            # Send to worker
+            # self.worker.add_task(worker_task, [self])
+            self.worker_task.emit({'fcn': worker_task, 'params': [self]})
+        else:
             for obj in objects:
                 obj.options['plot'] = True
-                percentage += delta
-                self.progress.emit(int(percentage*100))
-
             self.progress.emit(0)
             self.plots_updated.emit()
             self.collection.update_view()
 
-        # Send to worker
-        # self.worker.add_task(worker_task, [self])
-        self.worker_task.emit({'fcn': worker_task, 'params': [self]})
+    # TODO: FIX THIS
+    '''
+    By default this is not threaded
+    If threaded the app give warnings like this:
 
-    def disable_plots(self, objects):
+    QObject::connect: Cannot queue arguments of type 'QVector<int>' 
+    (Make sure 'QVector<int>' is registered using qRegisterMetaType().
+    '''
+    def disable_plots(self, objects, threaded=False):
         # TODO: This method is very similar to replot_all. Try to merge.
         """
         Disables plots
@@ -5928,27 +5964,33 @@ class App(QtCore.QObject):
             Objects to be disabled
         :return:
         """
-        self.progress.emit(10)
 
-        def worker_task(app_obj):
-            percentage = 0.1
-            try:
-                delta = 0.9 / len(objects)
-            except ZeroDivisionError:
+        if threaded is True:
+            self.progress.emit(10)
+            def worker_task(app_obj):
+                percentage = 0.1
+                try:
+                    delta = 0.9 / len(objects)
+                except ZeroDivisionError:
+                    self.progress.emit(0)
+                    return
+
+                for obj in objects:
+                    obj.options['plot'] = False
+                    percentage += delta
+                    self.progress.emit(int(percentage*100))
+
                 self.progress.emit(0)
-                return
+                self.plots_updated.emit()
+                self.collection.update_view()
 
+            # Send to worker
+            self.worker_task.emit({'fcn': worker_task, 'params': [self]})
+        else:
             for obj in objects:
                 obj.options['plot'] = False
-                percentage += delta
-                self.progress.emit(int(percentage*100))
-
-            self.progress.emit(0)
             self.plots_updated.emit()
             self.collection.update_view()
-
-        # Send to worker
-        self.worker_task.emit({'fcn': worker_task, 'params': [self]})
 
     def clear_plots(self):
 

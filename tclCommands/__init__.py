@@ -12,6 +12,7 @@ import tclCommands.TclCommandAlignDrillGrid
 import tclCommands.TclCommandClearShell
 import tclCommands.TclCommandCncjob
 import tclCommands.TclCommandCutout
+import tclCommands.TclCommandCutoutAny
 import tclCommands.TclCommandDelete
 import tclCommands.TclCommandDrillcncjob
 import tclCommands.TclCommandExportGcode

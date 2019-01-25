@@ -27,7 +27,8 @@ class TclCommandPanelize(TclCommand):
         ('spacing_columns', float),
         ('spacing_rows', float),
         ('box', str),
-        ('outname', str)
+        ('outname', str),
+        ('threaded', int)
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -44,7 +45,8 @@ class TclCommandPanelize(TclCommand):
             ('spacing_rows', 'Spacing between rows.'),
             ('columns', 'Number of columns.'),
             ('rows', 'Number of rows;'),
-            ('outname', 'Name of the new geometry object.')
+            ('outname', 'Name of the new geometry object.'),
+            ('threaded', '0 = non-threaded || 1 = threaded')
         ]),
         'examples': []
     }
@@ -85,6 +87,11 @@ class TclCommandPanelize(TclCommand):
         else:
             outname = name + '_panelized'
 
+        if 'threaded' in args:
+            threaded = args['threaded']
+        else:
+            threaded = 1
+
         if 'spacing_columns' in args:
             spacing_columns = args['spacing_columns']
         else:
@@ -95,60 +102,189 @@ class TclCommandPanelize(TclCommand):
         else:
             spacing_rows = 5
 
+        rows = args['rows']
+        columns = args['columns']
+
         xmin, ymin, xmax, ymax = box.bounds()
         lenghtx = xmax - xmin + spacing_columns
         lenghty = ymax - ymin + spacing_rows
 
-        currenty = 0
+        # def panelize():
+        #     currenty = 0
+        #
+        #     def initialize_local(obj_init, app):
+        #         obj_init.solid_geometry = obj.solid_geometry
+        #         obj_init.offset([float(currentx), float(currenty)])
+        #         objs.append(obj_init)
+        #
+        #     def initialize_local_excellon(obj_init, app):
+        #         obj_init.tools = obj.tools
+        #         # drills are offset, so they need to be deep copied
+        #         obj_init.drills = deepcopy(obj.drills)
+        #         obj_init.offset([float(currentx), float(currenty)])
+        #         obj_init.create_geometry()
+        #         objs.append(obj_init)
+        #
+        #     def initialize_geometry(obj_init, app):
+        #         FlatCAMGeometry.merge(objs, obj_init)
+        #
+        #     def initialize_excellon(obj_init, app):
+        #         # merge expects tools to exist in the target object
+        #         obj_init.tools = obj.tools.copy()
+        #         FlatCAMExcellon.merge(objs, obj_init)
+        #
+        #     objs = []
+        #     if obj is not None:
+        #
+        #         for row in range(rows):
+        #             currentx = 0
+        #             for col in range(columns):
+        #                 local_outname = outname + ".tmp." + str(col) + "." + str(row)
+        #                 if isinstance(obj, FlatCAMExcellon):
+        #                     self.app.new_object("excellon", local_outname, initialize_local_excellon, plot=False,
+        #                                         autoselected=False)
+        #                 else:
+        #                     self.app.new_object("geometry", local_outname, initialize_local, plot=False,
+        #                                         autoselected=False)
+        #
+        #                 currentx += lenghtx
+        #             currenty += lenghty
+        #
+        #         if isinstance(obj, FlatCAMExcellon):
+        #             self.app.new_object("excellon", outname, initialize_excellon)
+        #         else:
+        #             self.app.new_object("geometry", outname, initialize_geometry)
+        #
+        #         # deselect all  to avoid  delete selected object when run  delete  from  shell
+        #         self.app.collection.set_all_inactive()
+        #         for delobj in objs:
+        #             self.app.collection.set_active(delobj.options['name'])
+        #             self.app.on_delete()
+        #     else:
+        #         return "fail"
+        #
+        # ret_value = panelize()
+        # if ret_value == 'fail':
+        #     return 'fail'
 
-        def initialize_local(obj_init, app):
-            obj_init.solid_geometry = obj.solid_geometry
-            obj_init.offset([float(currentx), float(currenty)])
-            objs.append(obj_init)
+        def panelize_2():
+            if obj is not None:
+                self.app.inform.emit("Generating panel ... Please wait.")
 
-        def initialize_local_excellon(obj_init, app):
-            obj_init.tools = obj.tools
-            # drills are offset, so they need to be deep copied
-            obj_init.drills = deepcopy(obj.drills) 
-            obj_init.offset([float(currentx), float(currenty)])
-            obj_init.create_geometry()
-            objs.append(obj_init)
+                self.app.progress.emit(0)
 
-        def initialize_geometry(obj_init, app):
-            FlatCAMGeometry.merge(objs, obj_init)
+                def job_init_excellon(obj_fin, app_obj):
+                    currenty = 0.0
+                    self.app.progress.emit(10)
+                    obj_fin.tools = obj.tools.copy()
+                    obj_fin.drills = []
+                    obj_fin.slots = []
+                    obj_fin.solid_geometry = []
 
-        def initialize_excellon(obj_init, app):
-            # merge expects tools to exist in the target object
-            obj_init.tools = obj.tools.copy()
-            FlatCAMExcellon.merge(objs, obj_init)
+                    for option in obj.options:
+                        if option is not 'name':
+                            try:
+                                obj_fin.options[option] = obj.options[option]
+                            except:
+                                log.warning("Failed to copy option.", option)
 
-        objs = []
-        if obj is not None:           
+                    for row in range(rows):
+                        currentx = 0.0
+                        for col in range(columns):
+                            if obj.drills:
+                                for tool_dict in obj.drills:
+                                    point_offseted = affinity.translate(tool_dict['point'], currentx, currenty)
+                                    obj_fin.drills.append(
+                                        {
+                                            "point": point_offseted,
+                                            "tool": tool_dict['tool']
+                                        }
+                                    )
+                            if obj.slots:
+                                for tool_dict in obj.slots:
+                                    start_offseted = affinity.translate(tool_dict['start'], currentx, currenty)
+                                    stop_offseted = affinity.translate(tool_dict['stop'], currentx, currenty)
+                                    obj_fin.slots.append(
+                                        {
+                                            "start": start_offseted,
+                                            "stop": stop_offseted,
+                                            "tool": tool_dict['tool']
+                                        }
+                                    )
+                            currentx += lenghtx
+                        currenty += lenghty
 
-            for row in range(args['rows']):
-                currentx = 0
-                for col in range(args['columns']):
-                    local_outname = outname + ".tmp." + str(col) + "." + str(row)
-                    if isinstance(obj, FlatCAMExcellon):
-                        self.app.new_object("excellon", local_outname, initialize_local_excellon, plot=False,
-                                            autoselected=False)
-                    else:
-                        self.app.new_object("geometry", local_outname, initialize_local, plot=False, autoselected=False)
+                    obj_fin.create_geometry()
+                    obj_fin.zeros = obj.zeros
+                    obj_fin.units = obj.units
 
-                    currentx += lenghtx
-                currenty += lenghty
+                def job_init_geometry(obj_fin, app_obj):
+                    currentx = 0.0
+                    currenty = 0.0
 
-            if isinstance(obj, FlatCAMExcellon):
-                self.app.new_object("excellon", outname, initialize_excellon)
-            else:
-                self.app.new_object("geometry", outname, initialize_geometry)
+                    def translate_recursion(geom):
+                        if type(geom) == list:
+                            geoms = list()
+                            for local_geom in geom:
+                                geoms.append(translate_recursion(local_geom))
+                            return geoms
+                        else:
+                            return affinity.translate(geom, xoff=currentx, yoff=currenty)
 
-            # deselect all  to avoid  delete selected object when run  delete  from  shell
-            self.app.collection.set_all_inactive()
-            for delobj in objs:
-                self.app.collection.set_active(delobj.options['name'])
-                self.app.on_delete()
+                    obj_fin.solid_geometry = []
+
+                    if isinstance(obj, FlatCAMGeometry):
+                        obj_fin.multigeo = obj.multigeo
+                        obj_fin.tools = deepcopy(obj.tools)
+                        if obj.multigeo is True:
+                            for tool in obj.tools:
+                                obj_fin.tools[tool]['solid_geometry'][:] = []
+
+                    self.app.progress.emit(0)
+                    for row in range(rows):
+                        currentx = 0.0
+
+                        for col in range(columns):
+                            if isinstance(obj, FlatCAMGeometry):
+                                if obj.multigeo is True:
+                                    for tool in obj.tools:
+                                        obj_fin.tools[tool]['solid_geometry'].append(translate_recursion(
+                                            obj.tools[tool]['solid_geometry'])
+                                        )
+                                else:
+                                    obj_fin.solid_geometry.append(
+                                        translate_recursion(obj.solid_geometry)
+                                    )
+                            else:
+                                obj_fin.solid_geometry.append(
+                                    translate_recursion(obj.solid_geometry)
+                                )
+
+                            currentx += lenghtx
+                        currenty += lenghty
+
+                if isinstance(obj, FlatCAMExcellon):
+                    self.app.progress.emit(50)
+                    self.app.new_object("excellon", outname, job_init_excellon, plot=True, autoselected=True)
+                else:
+                    self.app.progress.emit(50)
+                    self.app.new_object("geometry", outname, job_init_geometry, plot=True, autoselected=True)
+
+        if threaded == 1:
+            proc = self.app.proc_container.new("Generating panel ... Please wait.")
+
+            def job_thread(app_obj):
+                try:
+                    panelize_2()
+                    self.app.inform.emit("[success]Panel created successfully.")
+                except Exception as e:
+                    proc.done()
+                    log.debug(str(e))
+                    return
+                proc.done()
+
+            self.app.collection.promise(outname)
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
-            return "ERROR: obj is None"
-
-        return "Ok"
+            panelize_2()
+            self.app.inform.emit("[success]Panel created successfully.")
