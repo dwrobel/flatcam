@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+26.01.2019
+
+- fixed grbl_11 postprocessor in linear_code() function
+
 25.01.2019
 
 - deleted junk folders
