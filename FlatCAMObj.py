@@ -899,14 +899,21 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         :return: None
         """
 
+        # flag to signal that we need to reorder the tools dictionary and drills and slots lists
+        flag_order = False
+
         try:
             flattened_list = list(itertools.chain(*exc_list))
         except TypeError:
             flattened_list = exc_list
 
         # this dict will hold the unique tool diameters found in the exc_list objects as the dict keys and the dict
-        # values will be list of Shapely Points
-        custom_dict = {}
+        # values will be list of Shapely Points; for drills
+        custom_dict_drills = {}
+
+        # this dict will hold the unique tool diameters found in the exc_list objects as the dict keys and the dict
+        # values will be list of Shapely Points; for slots
+        custom_dict_slots = {}
 
         for exc in flattened_list:
             # copy options of the current excellon obj to the final excellon obj
@@ -920,21 +927,29 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             for drill in exc.drills:
                 exc_tool_dia = float('%.3f' % exc.tools[drill['tool']]['C'])
 
-                if exc_tool_dia not in custom_dict:
-                    custom_dict[exc_tool_dia] = [drill['point']]
+                if exc_tool_dia not in custom_dict_drills:
+                    custom_dict_drills[exc_tool_dia] = [drill['point']]
                 else:
-                    custom_dict[exc_tool_dia].append(drill['point'])
+                    custom_dict_drills[exc_tool_dia].append(drill['point'])
 
-                # add the zeros and units to the exc_final object
+            for slot in exc.slots:
+                exc_tool_dia = float('%.3f' % exc.tools[slot['tool']]['C'])
+
+                if exc_tool_dia not in custom_dict_slots:
+                    custom_dict_slots[exc_tool_dia] = [[slot['start'], slot['stop']]]
+                else:
+                    custom_dict_slots[exc_tool_dia].append([slot['start'], slot['stop']])
+
+            # add the zeros and units to the exc_final object
             exc_final.zeros = exc.zeros
             exc_final.units = exc.units
 
         # variable to make tool_name for the tools
         current_tool = 0
-
         # Here we add data to the exc_final object
-        # the tools diameter are now the keys in the drill_dia dict and the values are the Shapely Points
-        for tool_dia in custom_dict:
+        # the tools diameter are now the keys in the drill_dia dict and the values are the Shapely Points in case of
+        # drills
+        for tool_dia in custom_dict_drills:
             # we create a tool name for each key in the drill_dia dict (the key is a unique drill diameter)
             current_tool += 1
 
@@ -943,13 +958,101 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             exc_final.tools[tool_name] = spec
 
             # rebuild the drills list of dict's that belong to the exc_final object
-            for point in custom_dict[tool_dia]:
+            for point in custom_dict_drills[tool_dia]:
                 exc_final.drills.append(
                     {
                         "point": point,
                         "tool": str(current_tool)
                     }
                 )
+
+        # Here we add data to the exc_final object
+        # the tools diameter are now the keys in the drill_dia dict and the values are a list ([start, stop])
+        # of two Shapely Points in case of slots
+        for tool_dia in custom_dict_slots:
+            # we create a tool name for each key in the slot_dia dict (the key is a unique slot diameter)
+            # but only if there are no drills
+            if not exc_final.tools:
+                current_tool += 1
+                tool_name = str(current_tool)
+                spec = {"C": float(tool_dia)}
+                exc_final.tools[tool_name] = spec
+            else:
+                dia_list = []
+                for v in exc_final.tools.values():
+                    dia_list.append(float(v["C"]))
+
+                if tool_dia not in dia_list:
+                    flag_order = True
+
+                    current_tool = len(dia_list) + 1
+                    tool_name = str(current_tool)
+                    spec = {"C": float(tool_dia)}
+                    exc_final.tools[tool_name] = spec
+
+                else:
+                    for k, v in exc_final.tools.items():
+                        if v["C"] == tool_dia:
+                            current_tool = int(k)
+                            break
+
+            # rebuild the slots list of dict's that belong to the exc_final object
+            for point in custom_dict_slots[tool_dia]:
+                exc_final.slots.append(
+                    {
+                        "start": point[0],
+                        "stop": point[1],
+                        "tool": str(current_tool)
+                    }
+                )
+
+        # flag_order == True means that there was an slot diameter not in the tools and we also have drills
+        # and the new tool was added to self.tools therefore we need to reorder the tools and drills and slots
+        current_tool = 0
+        if flag_order is True:
+            dia_list = []
+            temp_drills = []
+            temp_slots = []
+            temp_tools = {}
+            for v in exc_final.tools.values():
+                dia_list.append(float(v["C"]))
+            dia_list.sort()
+            for ordered_dia in dia_list:
+                current_tool += 1
+                tool_name_temp = str(current_tool)
+                spec_temp = {"C": float(ordered_dia)}
+                temp_tools[tool_name_temp] = spec_temp
+
+                for drill in exc_final.drills:
+                    exc_tool_dia = float('%.3f' % exc_final.tools[drill['tool']]['C'])
+                    if exc_tool_dia == ordered_dia:
+                        temp_drills.append(
+                            {
+                                "point": drill["point"],
+                                "tool": str(current_tool)
+                            }
+                        )
+
+                for slot in exc_final.slots:
+                    slot_tool_dia = float('%.3f' % exc_final.tools[slot['tool']]['C'])
+                    if slot_tool_dia == ordered_dia:
+                        temp_slots.append(
+                            {
+                                "start": slot["start"],
+                                "stop": slot["stop"],
+                                "tool": str(current_tool)
+                            }
+                        )
+
+            # delete the exc_final tools, drills and slots
+            exc_final.tools = dict()
+            exc_final.drills[:] = []
+            exc_final.slots[:] = []
+
+            # update the exc_final tools, drills and slots with the ordered values
+            exc_final.tools = temp_tools
+            exc_final.drills[:] = temp_drills
+            exc_final.slots[:] = temp_slots
 
         # create the geometry for the exc_final object
         exc_final.create_geometry()

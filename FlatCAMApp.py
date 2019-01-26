@@ -3126,6 +3126,8 @@ class App(QtCore.QObject):
 
             # drills are offset, so they need to be deep copied
             obj_init.drills = deepcopy(obj.drills)
+            # slots are offset, so they need to be deep copied
+            obj_init.slots = deepcopy(obj.slots)
             obj_init.create_geometry()
 
         for obj in self.collection.get_selected():
@@ -3161,6 +3163,8 @@ class App(QtCore.QObject):
             obj_init.tools = obj.tools
             # drills are offset, so they need to be deep copied
             obj_init.drills = deepcopy(obj.drills)
+            # slots are offset, so they need to be deep copied
+            obj_init.slots = deepcopy(obj.slots)
             obj_init.create_geometry()
 
         for obj in self.collection.get_selected():

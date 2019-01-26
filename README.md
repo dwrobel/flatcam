@@ -15,6 +15,8 @@ CAD program, and create G-Code for Isolation routing.
 - added icons to the Project Tab context menu
 - added new entries to the Canvas context menu (Copy, Delete, Edit/Save, Move, New Excellon, New Geometry, New Project)
 - fixed grbl_laser postprocessor file
+- updated function for copy of an Excellon object for the case when the object has slots
+- updated FlatCAMExcellon.merge() function to work in case some (or all) of the merged objects have slots  
 
 25.01.2019
 
