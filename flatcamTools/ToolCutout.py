@@ -9,7 +9,7 @@ from FlatCAMObj import FlatCAMGeometry, FlatCAMExcellon, FlatCAMGerber
 
 class ToolCutout(FlatCAMTool):
 
-    toolName = "Cutout PCB Tool"
+    toolName = "Cutout PCB"
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -187,6 +187,9 @@ class ToolCutout(FlatCAMTool):
     def run(self):
         FlatCAMTool.run(self)
         self.app.ui.notebook.setTabText(2, "Cutout Tool")
+
+    def install(self, icon=None, separator=None, **kwargs):
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+U', **kwargs)
 
     def on_freeform_cutout(self):
 

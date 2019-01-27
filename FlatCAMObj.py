@@ -1295,7 +1295,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         """
 
         excellon_code = ''
-        units = self.app.general_options_form.general_group.units_radio.get_value().upper()
+        units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
 
         # store here if the file has slots, return 1 if any slots, 0 if only drills
         has_slots = 0
@@ -1355,7 +1355,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         """
 
         excellon_code = ''
-        units = self.app.general_options_form.general_group.units_radio.get_value().upper()
+        units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
 
         # store here if the file has slots, return 1 if any slots, 0 if only drills
         has_slots = 0
@@ -2862,7 +2862,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.setCurrentItem(self.ui.geo_tools_table.item(row, 0))
 
     def export_dxf(self):
-        units = self.app.general_options_form.general_group.units_radio.get_value().upper()
+        units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
         dwg = None
         try:
             dwg = ezdxf.new('R2010')

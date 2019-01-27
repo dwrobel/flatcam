@@ -8,7 +8,7 @@ from PyQt5 import QtCore
 
 class DblSidedTool(FlatCAMTool):
 
-    toolName = "Double-Sided PCB Tool"
+    toolName = "2-Sided PCB"
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -253,6 +253,9 @@ class DblSidedTool(FlatCAMTool):
         self.mirror_axis.set_value('X')
         self.axis_location.set_value('point')
         self.drill_dia.set_value(1)
+
+    def install(self, icon=None, separator=None, **kwargs):
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+D', **kwargs)
 
     def on_combo_box_type(self):
         obj_type = self.box_combo_type.currentIndex()

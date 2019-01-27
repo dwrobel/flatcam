@@ -5,7 +5,7 @@ from ObjectCollection import *
 
 class ToolPaint(FlatCAMTool, Gerber):
 
-    toolName = "Paint Area Tool"
+    toolName = "Paint Area"
 
     def __init__(self, app):
         self.app = app
@@ -290,7 +290,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+P', **kwargs)
 
     def run(self):
         FlatCAMTool.run(self)
@@ -327,7 +327,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.paintoverlap_entry.set_value(self.default_data["paintoverlap"])
 
         # updated units
-        self.units = self.app.general_options_form.general_group.units_radio.get_value().upper()
+        self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
 
         if self.units == "IN":
             self.addtool_entry.set_value(0.039)
@@ -390,7 +390,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             pass
 
         # updated units
-        self.units = self.app.general_options_form.general_group.units_radio.get_value().upper()
+        self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
 
         sorted_tools = []
         for k, v in self.paint_tools.items():

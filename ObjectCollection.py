@@ -262,6 +262,9 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             if key == QtCore.Qt.Key_G:
                 self.app.on_fileopengerber()
 
+            if key == QtCore.Qt.Key_N:
+                self.app.on_file_new_click()
+
             if key == QtCore.Qt.Key_M:
                 self.app.measurement_tool.run()
             if key == QtCore.Qt.Key_O:
@@ -271,6 +274,11 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 self.app.on_file_saveproject()
             return
         elif modifiers == QtCore.Qt.ShiftModifier:
+
+            # Copy Object Name
+            # Copy Object Name
+            if key == QtCore.Qt.Key_C:
+                self.app.on_copy_name()
 
             # Toggle axis
             if key == QtCore.Qt.Key_G:
@@ -286,9 +294,49 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                     self.appplotcanvas.redraw()
                     self.app.toggle_axis = False
 
+            # Open Preferences Window
+            if key == QtCore.Qt.Key_P:
+                self.app.on_preferences()
+                return
+
             # Rotate Object by 90 degree CCW
             if key == QtCore.Qt.Key_R:
                 self.app.on_rotate(silent=True, preset=-90)
+                return
+
+            # Toggle Workspace
+            if key == QtCore.Qt.Key_W:
+                self.app.on_workspace_menu()
+                return
+
+            # Skew on X axis
+            if key == QtCore.Qt.Key_X:
+                self.app.on_skewx()
+                return
+
+            # Skew on Y axis
+            if key == QtCore.Qt.Key_Y:
+                self.app.on_skewy()
+                return
+        elif modifiers == QtCore.Qt.AltModifier:
+            # 2-Sided PCB Tool
+            if key == QtCore.Qt.Key_D:
+                self.app.dblsidedtool.run()
+                return
+
+            # Non-Copper Clear Tool
+            if key == QtCore.Qt.Key_N:
+                self.app.ncclear_tool.run()
+                return
+
+            # Transformation Tool
+            if key == QtCore.Qt.Key_R:
+                self.app.measurement_tool.run()
+                return
+
+            # Cutout Tool
+            if key == QtCore.Qt.Key_U:
+                self.app.cutout_tool.run()
                 return
 
         else:
@@ -317,10 +365,6 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 self.app.delete_selection_shape()
 
             # Copy Object Name
-            if key == QtCore.Qt.Key_C:
-                self.app.on_copy_name()
-
-            # Copy Object Name
             if key == QtCore.Qt.Key_E:
                 self.app.object2editor()
 
@@ -340,12 +384,22 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             if key == QtCore.Qt.Key_N:
                 self.app.on_new_geometry()
 
+            # Set Origin
+            if key == QtCore.Qt.Key_O:
+                self.app.on_set_origin()
+                return
+
+            # Set Origin
+            if key == QtCore.Qt.Key_P:
+                self.app.properties_tool.run()
+                return
+
             # Change Units
             if key == QtCore.Qt.Key_Q:
                 if self.app.options["units"] == 'MM':
-                    self.app.general_options_form.general_group.units_radio.set_value("IN")
+                    self.app.general_options_form.general_app_group.units_radio.set_value("IN")
                 else:
-                    self.app.general_options_form.general_group.units_radio.set_value("MM")
+                    self.app.general_options_form.general_app_group.units_radio.set_value("MM")
                 self.app.on_toggle_units()
 
             # Rotate Object by 90 degree CW

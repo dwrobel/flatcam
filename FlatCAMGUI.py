@@ -36,22 +36,24 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile = self.menu.addMenu('&File')
 
         # New
-        self.menufilenew = QtWidgets.QAction(QtGui.QIcon('share/file16.png'), '&New Project', self)
+        self.menufilenew = QtWidgets.QAction(QtGui.QIcon('share/file16.png'), '&New Project ...\tCTRL+N', self)
         self.menufile.addAction(self.menufilenew)
 
         self.menufile_open = self.menufile.addMenu(QtGui.QIcon('share/folder32_bis.png'), 'Open')
         # Open gerber ...
-        self.menufileopengerber = QtWidgets.QAction(QtGui.QIcon('share/flatcam_icon24.png'), 'Open &Gerber ...', self)
+        self.menufileopengerber = QtWidgets.QAction(QtGui.QIcon('share/flatcam_icon24.png'),
+                                                    'Open &Gerber ...\tCTRL+G', self)
         self.menufile_open.addAction(self.menufileopengerber)
 
         # Open gerber with follow...
         self.menufileopengerber_follow = QtWidgets.QAction(QtGui.QIcon('share/flatcam_icon24.png'),
-                                                       'Open &Gerber (w/ Follow)', self)
+                                                       'Open &Gerber (w/ Follow) ...', self)
         self.menufile_open.addAction(self.menufileopengerber_follow)
         self.menufile_open.addSeparator()
 
         # Open Excellon ...
-        self.menufileopenexcellon = QtWidgets.QAction(QtGui.QIcon('share/open_excellon32.png'), 'Open &Excellon ...',
+        self.menufileopenexcellon = QtWidgets.QAction(QtGui.QIcon('share/open_excellon32.png'),
+                                                      'Open &Excellon ...\tCTRL+E',
                                                   self)
         self.menufile_open.addAction(self.menufileopenexcellon)
 
@@ -70,7 +72,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile.addSeparator()
 
         # Run Scripts
-        self.menufilerunscript = QtWidgets.QAction(QtGui.QIcon('share/script16.png'), 'Run Script', self)
+        self.menufilerunscript = QtWidgets.QAction(QtGui.QIcon('share/script16.png'), 'Run Script ...', self)
         self.menufile.addAction(self.menufilerunscript)
 
         # Separator
@@ -79,18 +81,18 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # Import ...
         self.menufileimport = self.menufile.addMenu(QtGui.QIcon('share/import.png'), 'Import')
         self.menufileimportsvg = QtWidgets.QAction(QtGui.QIcon('share/svg16.png'),
-                                               '&SVG as Geometry Object', self)
+                                               '&SVG as Geometry Object ...', self)
         self.menufileimport.addAction(self.menufileimportsvg)
         self.menufileimportsvg_as_gerber = QtWidgets.QAction(QtGui.QIcon('share/svg16.png'),
-                                                         '&SVG as Gerber Object', self)
+                                                         '&SVG as Gerber Object ...', self)
         self.menufileimport.addAction(self.menufileimportsvg_as_gerber)
         self.menufileimport.addSeparator()
 
         self.menufileimportdxf = QtWidgets.QAction(QtGui.QIcon('share/dxf16.png'),
-                                               '&DXF as Geometry Object', self)
+                                               '&DXF as Geometry Object ...', self)
         self.menufileimport.addAction(self.menufileimportdxf)
         self.menufileimportdxf_as_gerber = QtWidgets.QAction(QtGui.QIcon('share/dxf16.png'),
-                                                         '&DXF as Gerber Object', self)
+                                                         '&DXF as Gerber Object ...', self)
         self.menufileimport.addAction(self.menufileimportdxf_as_gerber)
         self.menufileimport.addSeparator()
 
@@ -128,11 +130,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.menufile_save = self.menufile.addMenu(QtGui.QIcon('share/save_as.png'), 'Save')
         # Save Project
-        self.menufilesaveproject = QtWidgets.QAction(QtGui.QIcon('share/floppy16.png'), '&Save Project', self)
+        self.menufilesaveproject = QtWidgets.QAction(QtGui.QIcon('share/floppy16.png'), '&Save Project ...', self)
         self.menufile_save.addAction(self.menufilesaveproject)
 
         # Save Project As ...
-        self.menufilesaveprojectas = QtWidgets.QAction(QtGui.QIcon('share/save_as.png'), 'Save Project &As ...', self)
+        self.menufilesaveprojectas = QtWidgets.QAction(QtGui.QIcon('share/save_as.png'),
+                                                       'Save Project &As ...\tCTRL+S', self)
         self.menufile_save.addAction(self.menufilesaveprojectas)
 
         # Save Project Copy ...
@@ -151,12 +154,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Edit ###
         self.menuedit = self.menu.addMenu('&Edit')
-        self.menueditnew = self.menuedit.addAction(QtGui.QIcon('share/new_geo16.png'), '&New Geometry')
-        self.menueditnewexc = self.menuedit.addAction(QtGui.QIcon('share/new_geo16.png'), 'New Excellon')
+        self.menueditnew = self.menuedit.addAction(QtGui.QIcon('share/new_geo16.png'), '&New Geometry\tN')
+        self.menueditnewexc = self.menuedit.addAction(QtGui.QIcon('share/new_geo16.png'), 'New Excellon\tX')
         # Separator
         self.menuedit.addSeparator()
-        self.menueditedit = self.menuedit.addAction(QtGui.QIcon('share/edit16.png'), 'Edit Object')
-        self.menueditok = self.menuedit.addAction(QtGui.QIcon('share/edit_ok16.png'), '&Update Object')
+        self.menueditedit = self.menuedit.addAction(QtGui.QIcon('share/edit16.png'), 'Edit Object\tE')
+        self.menueditok = self.menuedit.addAction(QtGui.QIcon('share/edit_ok16.png'), '&Update Object\tCTRL+S')
         # Separator
         self.menuedit.addSeparator()
         self.menuedit_convert = self.menuedit.addMenu(QtGui.QIcon('share/convert24.png'), 'Conversion')
@@ -185,29 +188,31 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             "Will convert a Geometry object from multi_geometry type\n"
             "to a single_geometry type.")
         self.menuedit_convert.setToolTipsVisible(True)
-        # Separator
-        self.menuedit.addSeparator()
-        self.menueditdelete = self.menuedit.addAction(QtGui.QIcon('share/trash16.png'), '&Delete')
 
         # Separator
         self.menuedit.addSeparator()
-        self.menueditcopyobject = self.menuedit.addAction(QtGui.QIcon('share/copy.png'), '&Copy Object')
+        self.menueditcopyobject = self.menuedit.addAction(QtGui.QIcon('share/copy.png'), '&Copy Object\tCTRL+C')
         self.menueditcopyobjectasgeom = self.menuedit.addAction(QtGui.QIcon('share/copy_geo.png'),
                                                                 'Copy as &Geom')
+        # Separator
+        self.menuedit.addSeparator()
+        self.menueditdelete = self.menuedit.addAction(QtGui.QIcon('share/trash16.png'), '&Delete\tDEL')
 
         # Separator
         self.menuedit.addSeparator()
-        self.menueditorigin = self.menuedit.addAction(QtGui.QIcon('share/origin.png'), 'Se&t Origin')
-        self.menueditjump = self.menuedit.addAction(QtGui.QIcon('share/jump_to16.png'), 'Jump to Location')
+        self.menueditorigin = self.menuedit.addAction(QtGui.QIcon('share/origin.png'), 'Se&t Origin\tO')
+        self.menueditjump = self.menuedit.addAction(QtGui.QIcon('share/jump_to16.png'), 'Jump to Location\tJ')
 
         # Separator
         self.menuedit.addSeparator()
+        self.menuedittoggleunits= self.menuedit.addAction(QtGui.QIcon('share/toggle_units16.png'),
+                                                         'Toggle Units\tQ')
         self.menueditselectall = self.menuedit.addAction(QtGui.QIcon('share/select_all.png'),
-                                                         '&Select All')
+                                                         '&Select All\tCTRL+A')
 
         # Separator
         self.menuedit.addSeparator()
-        self.menueditpreferences = self.menuedit.addAction(QtGui.QIcon('share/pref.png'), '&Preferences')
+        self.menueditpreferences = self.menuedit.addAction(QtGui.QIcon('share/pref.png'), '&Preferences\tSHIFT+P')
 
         ### Options ###
         self.menuoptions = self.menu.addMenu('&Options')
@@ -225,21 +230,21 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # self.menuoptions_transform = self.menuoptions.addMenu(QtGui.QIcon('share/transform.png'),
         #                                                       '&Transform Object')
         self.menuoptions_transform_rotate = self.menuoptions.addAction(QtGui.QIcon('share/rotate.png'),
-                                                                                 "&Rotate Selection")
+                                                                                 "&Rotate Selection\tSHIFT+(R)")
         # Separator
         self.menuoptions.addSeparator()
 
         self.menuoptions_transform_skewx = self.menuoptions.addAction(QtGui.QIcon('share/skewX.png'),
-                                                                                "&Skew on X axis")
+                                                                                "&Skew on X axis\tSHIFT+X")
         self.menuoptions_transform_skewy = self.menuoptions.addAction(QtGui.QIcon('share/skewY.png'),
-                                                                                "S&kew on Y axis")
+                                                                                "S&kew on Y axis\tSHIFT+Y")
 
         # Separator
         self.menuoptions.addSeparator()
         self.menuoptions_transform_flipx = self.menuoptions.addAction(QtGui.QIcon('share/flipx.png'),
-                                                                                "Flip on &X axis")
+                                                                                "Flip on &X axis\tX")
         self.menuoptions_transform_flipy = self.menuoptions.addAction(QtGui.QIcon('share/flipy.png'),
-                                                                                "Flip on &Y axis")
+                                                                                "Flip on &Y axis\tY")
         # Separator
         self.menuoptions.addSeparator()
 
@@ -252,14 +257,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                             'Disable non-selected')
         # Separator
         self.menuview.addSeparator()
-        self.menuview_zoom_fit = self.menuview.addAction(QtGui.QIcon('share/zoom_fit32.png'), "&Zoom Fit")
-        self.menuview_zoom_in = self.menuview.addAction(QtGui.QIcon('share/zoom_in32.png'), "&Zoom In")
-        self.menuview_zoom_out = self.menuview.addAction(QtGui.QIcon('share/zoom_out32.png'), "&Zoom Out")
+        self.menuview_zoom_fit = self.menuview.addAction(QtGui.QIcon('share/zoom_fit32.png'), "&Zoom Fit\t1")
+        self.menuview_zoom_in = self.menuview.addAction(QtGui.QIcon('share/zoom_in32.png'), "&Zoom In\t2")
+        self.menuview_zoom_out = self.menuview.addAction(QtGui.QIcon('share/zoom_out32.png'), "&Zoom Out\t3")
 
         self.menuview.addSeparator()
-        self.menuview_toggle_axis = self.menuview.addAction(QtGui.QIcon('share/axis32.png'), "&Toggle Axis")
+        self.menuview_toggle_grid = self.menuview.addAction(QtGui.QIcon('share/grid32.png'), "&Toggle Grid\tG")
+        self.menuview_toggle_axis = self.menuview.addAction(QtGui.QIcon('share/axis32.png'), "&Toggle Axis\tSHIFT+G")
         self.menuview_toggle_workspace = self.menuview.addAction(QtGui.QIcon('share/workspace24.png'),
-                                                                 "Toggle Workspace")
+                                                                 "Toggle Workspace\tSHIFT+W")
 
 
         ### FlatCAM Editor menu ###
@@ -269,28 +275,46 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menu.addMenu(self.geo_editor_menu)
 
         # self.select_menuitem = self.menu.addAction(QtGui.QIcon('share/pointer16.png'), "Select 'Esc'")
-        self.geo_add_circle_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/circle32.png'), 'Add Circle')
-        self.geo_add_arc_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/arc16.png'), 'Add Arc')
+        self.geo_add_circle_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon('share/circle32.png'), 'Add Circle\tO'
+        )
+        self.geo_add_arc_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/arc16.png'), 'Add Arc\tA')
         self.geo_editor_menu.addSeparator()
-        self.geo_add_rectangle_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/rectangle32.png'), 'Add Rectangle')
-        self.geo_add_polygon_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/polygon32.png'), 'Add Polygon')
-        self.geo_add_path_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/path32.png'), 'Add Path')
+        self.geo_add_rectangle_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon('share/rectangle32.png'), 'Add Rectangle\tR'
+        )
+        self.geo_add_polygon_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon('share/polygon32.png'), 'Add Polygon\tN'
+        )
+        self.geo_add_path_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/path32.png'), 'Add Path\tP')
         self.geo_editor_menu.addSeparator()
-        self.geo_add_text_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/text32.png'), 'Add Text')
+        self.geo_add_text_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/text32.png'), 'Add Text\tT')
         self.geo_editor_menu.addSeparator()
         self.geo_union_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/union16.png'), 'Polygon Union')
         self.geo_intersection_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/intersection16.png'),
                                                          'Polygon Intersection')
-        self.geo_subtract_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/subtract16.png'), 'Polygon Subtraction')
+        self.geo_subtract_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon('share/subtract16.png'), 'Polygon Subtraction'
+        )
         self.geo_editor_menu.addSeparator()
-        self.geo_cutpath_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/cutpath16.png'), 'Cut Path')
+        self.geo_cutpath_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/cutpath16.png'), 'Cut Path\tX')
         # self.move_menuitem = self.menu.addAction(QtGui.QIcon('share/move16.png'), "Move Objects 'm'")
-        self.geo_copy_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/copy16.png'), "Copy Geom")
-        self.geo_delete_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/deleteshape16.png'), "Delete Shape")
+        self.geo_copy_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/copy16.png'), "Copy Geom\tC")
+        self.geo_delete_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon('share/deleteshape16.png'), "Delete Shape\tDEL"
+        )
         self.geo_editor_menu.addSeparator()
-        self.geo_buffer_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/buffer16.png'), "Buffer Selection")
-        self.geo_paint_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/paint16.png'), "Paint Selection")
+        self.geo_move_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/move32.png'), "Move\tM")
+        self.geo_buffer_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon('share/buffer16.png'), "Buffer Selection\tB"
+        )
+        self.geo_paint_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon('share/paint16.png'), "Paint Selection\tI"
+        )
         self.geo_editor_menu.addSeparator()
+        self.geo_cornersnap_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon('share/corner32.png'), "Toggle Corner Snap\tK"
+        )
 
         # self.exc_editor_menu = QtWidgets.QMenu("Excellon Editor")
         # self.menu.addMenu(self.exc_editor_menu)
@@ -302,7 +326,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # self.menutool = self.menu.addMenu('&Tool')
         self.menutool = QtWidgets.QMenu('&Tool')
         self.menutoolaction = self.menu.addMenu(self.menutool)
-        self.menutoolshell = self.menutool.addAction(QtGui.QIcon('share/shell16.png'), '&Command Line')
+        self.menutoolshell = self.menutool.addAction(QtGui.QIcon('share/shell16.png'), '&Command Line\tS')
 
         ### Help ###
         self.menuhelp = self.menu.addMenu('&Help')
@@ -655,6 +679,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.draw_line = self.g_editor_cmenu.addAction(QtGui.QIcon('share/path32.png'), "Line")
         self.draw_rect = self.g_editor_cmenu.addAction(QtGui.QIcon('share/rectangle32.png'), "Rectangle")
         self.draw_cut = self.g_editor_cmenu.addAction(QtGui.QIcon('share/cutpath32.png'), "Cut")
+        self.g_editor_cmenu.addSeparator()
+        self.draw_move = self.g_editor_cmenu.addAction(QtGui.QIcon('share/move32.png'), "Move")
 
         self.e_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/drill32.png'), "Exc Editor")
         self.drill = self.e_editor_cmenu.addAction(QtGui.QIcon('share/drill32.png'), "Add Drill")
@@ -844,18 +870,29 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # self.splitter.sizes()[0] is actually the size of the "notebook"
         self.geom_update.emit(grect.x(), grect.y(), grect.width(), grect.height(), self.splitter.sizes()[0])
         self.final_save.emit()
-        QtWidgets.qApp.quit()
+
+        if self.app.should_we_quit is True:
+            QtWidgets.qApp.quit()
+        else:
+            self.app.should_we_quit = True
+            event.ignore()
 
 
 class GeneralPreferencesUI(QtWidgets.QWidget):
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
-        self.layout = QtWidgets.QVBoxLayout()
+        self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
 
-        self.general_group = GeneralPrefGroupUI()
-        self.general_group.setFixedWidth(260)
-        self.layout.addWidget(self.general_group)
+        self.general_app_group = GeneralAppPrefGroupUI()
+        self.general_app_group.setFixedWidth(260)
+
+        self.general_gui_group = GeneralGUIPrefGroupUI()
+        self.general_gui_group.setFixedWidth(260)
+
+        self.layout.addWidget(self.general_app_group)
+        self.layout.addWidget(self.general_gui_group)
+        self.layout.addStretch()
 
 
 class GerberPreferencesUI(QtWidgets.QWidget):
@@ -922,58 +959,14 @@ class OptionsGroupUI(QtWidgets.QGroupBox):
         self.setLayout(self.layout)
 
 
-class GeneralPrefGroupUI(OptionsGroupUI):
+class GeneralGUIPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):
-        super(GeneralPrefGroupUI, self).__init__(self)
+        super(GeneralGUIPrefGroupUI, self).__init__(self)
 
-        self.setTitle(str("Global Preferences"))
+        self.setTitle(str("GUI Preferences"))
 
         # Create a form layout for the Application general settings
         self.form_box = QtWidgets.QFormLayout()
-
-        # Units for FlatCAM
-        self.unitslabel = QtWidgets.QLabel('<b>Units:</b>')
-        self.unitslabel.setToolTip("Those are units in which FlatCAM works.")
-        self.units_radio = RadioSet([{'label': 'IN', 'value': 'IN'},
-                                     {'label': 'MM', 'value': 'MM'}])
-
-        # Shell StartUp CB
-        self.shell_startup_label = QtWidgets.QLabel('Shell at StartUp:')
-        self.shell_startup_label.setToolTip(
-            "Check this box if you want the shell to\n"
-            "start automatically at startup."
-        )
-        self.shell_startup_cb = FCCheckBox(label='')
-        self.shell_startup_cb.setToolTip(
-            "Check this box if you want the shell to\n"
-            "start automatically at startup."
-        )
-
-        # Version Check CB
-        self.version_check_label = QtWidgets.QLabel('Version Check:')
-        self.version_check_label.setToolTip(
-            "Check this box if you want to check\n"
-            "for a new version automatically at startup."
-        )
-        self.version_check_cb = FCCheckBox(label='')
-        self.version_check_cb.setToolTip(
-            "Check this box if you want to check\n"
-            "for a new version automatically at startup."
-        )
-
-        # Send Stats CB
-        self.send_stats_label = QtWidgets.QLabel('Send Stats:')
-        self.send_stats_label.setToolTip(
-            "Check this box if you agree to send anonymous\n"
-            "stats automatically at startup, to help improve FlatCAM."
-        )
-        self.send_stats_cb= FCCheckBox(label='')
-        self.send_stats_cb.setToolTip(
-            "Check this box if you agree to send anonymous\n"
-            "stats automatically at startup, to help improve FlatCAM."
-        )
-
-        self.ois_version_check = OptionalInputSection(self.version_check_cb, [self.send_stats_cb])
 
         # Grid X Entry
         self.gridx_label = QtWidgets.QLabel('Grid X value:')
@@ -988,30 +981,6 @@ class GeneralPrefGroupUI(OptionsGroupUI):
             "This is the Grid value on Y axis\n"
         )
         self.gridy_entry = LengthEntry()
-
-        # Select mouse pan button
-        self.panbuttonlabel = QtWidgets.QLabel('<b>Pan Button:</b>')
-        self.panbuttonlabel.setToolTip("Select the mouse button to use for panning.")
-        self.pan_button_radio = RadioSet([{'label': 'Middle But.', 'value': '3'},
-                                     {'label': 'Right But.', 'value': '2'}])
-
-        # Multiple Selection Modifier Key
-        self.mselectlabel = QtWidgets.QLabel('<b>Multiple Sel:</b>')
-        self.mselectlabel.setToolTip("Select the key used for multiple selection.")
-        self.mselect_radio = RadioSet([{'label': 'CTRL', 'value': 'Control'},
-                                     {'label': 'SHIFT', 'value': 'Shift'}])
-
-        # # Mouse panning with "Space" key, CB
-        # self.pan_with_space_label = QtWidgets.QLabel('Pan w/ Space:')
-        # self.pan_with_space_label.setToolTip(
-        #     "Check this box if you want to pan when mouse is moved,\n"
-        #     "and key 'Space' is pressed."
-        # )
-        # self.pan_with_space_cb = FCCheckBox(label='')
-        # self.pan_with_space_cb.setToolTip(
-        #     "Check this box if you want to pan when mouse is moved,\n"
-        #     "and key 'Space' is pressed."
-        # )
 
         # Workspace
         self.workspace_lbl = QtWidgets.QLabel('Workspace:')
@@ -1214,17 +1183,12 @@ class GeneralPrefGroupUI(OptionsGroupUI):
         self.spacelabel = QtWidgets.QLabel('')
 
         # Add (label - input field) pair to the QFormLayout
-        self.form_box.addRow(self.unitslabel, self.units_radio)
+
         self.form_box.addRow(self.spacelabel, self.spacelabel)
-        self.form_box.addRow(self.shell_startup_label, self.shell_startup_cb)
-        self.form_box.addRow(self.version_check_label, self.version_check_cb)
-        self.form_box.addRow(self.send_stats_label, self.send_stats_cb)
 
         self.form_box.addRow(self.gridx_label, self.gridx_entry)
         self.form_box.addRow(self.gridy_label, self.gridy_entry)
-        self.form_box.addRow(self.panbuttonlabel, self.pan_button_radio)
-        self.form_box.addRow(self.mselectlabel, self.mselect_radio)
-        # self.form_box.addRow(self.pan_with_space_label, self.pan_with_space_cb)
+
         self.form_box.addRow(self.workspace_lbl, self.workspace_cb)
         self.form_box.addRow(self.workspace_type_lbl, self.wk_cb)
         self.form_box.addRow(self.spacelabel, self.spacelabel)
@@ -1239,6 +1203,114 @@ class GeneralPrefGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.alt_sl_color_label, self.form_box_child_9)
         self.form_box.addRow(self.draw_color_label, self.form_box_child_10)
         self.form_box.addRow(self.sel_draw_color_label, self.form_box_child_11)
+
+        # Add the QFormLayout that holds the Application general defaults
+        # to the main layout of this TAB
+        self.layout.addLayout(self.form_box)
+
+
+class GeneralAppPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        super(GeneralAppPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("App Preferences"))
+
+        # Create a form layout for the Application general settings
+        self.form_box = QtWidgets.QFormLayout()
+
+        # Units for FlatCAM
+        self.unitslabel = QtWidgets.QLabel('<b>Units:</b>')
+        self.unitslabel.setToolTip("Those are units in which FlatCAM works.")
+        self.units_radio = RadioSet([{'label': 'IN', 'value': 'IN'},
+                                     {'label': 'MM', 'value': 'MM'}])
+
+        # Languages for FlatCAM
+        self.languagelabel = QtWidgets.QLabel('<b>Languages:</b>')
+        self.languagelabel.setToolTip("Set the language used for FlatCAM texts.")
+        self.language_cb = FCComboBox()
+        self.languagespace = QtWidgets.QLabel('')
+        self.language_apply_btn = FCButton("Apply Language")
+
+        # Shell StartUp CB
+        self.shell_startup_label = QtWidgets.QLabel('Shell at StartUp:')
+        self.shell_startup_label.setToolTip(
+            "Check this box if you want the shell to\n"
+            "start automatically at startup."
+        )
+        self.shell_startup_cb = FCCheckBox(label='')
+        self.shell_startup_cb.setToolTip(
+            "Check this box if you want the shell to\n"
+            "start automatically at startup."
+        )
+
+        # Version Check CB
+        self.version_check_label = QtWidgets.QLabel('Version Check:')
+        self.version_check_label.setToolTip(
+            "Check this box if you want to check\n"
+            "for a new version automatically at startup."
+        )
+        self.version_check_cb = FCCheckBox(label='')
+        self.version_check_cb.setToolTip(
+            "Check this box if you want to check\n"
+            "for a new version automatically at startup."
+        )
+
+        # Send Stats CB
+        self.send_stats_label = QtWidgets.QLabel('Send Stats:')
+        self.send_stats_label.setToolTip(
+            "Check this box if you agree to send anonymous\n"
+            "stats automatically at startup, to help improve FlatCAM."
+        )
+        self.send_stats_cb= FCCheckBox(label='')
+        self.send_stats_cb.setToolTip(
+            "Check this box if you agree to send anonymous\n"
+            "stats automatically at startup, to help improve FlatCAM."
+        )
+
+        self.ois_version_check = OptionalInputSection(self.version_check_cb, [self.send_stats_cb])
+
+        # Select mouse pan button
+        self.panbuttonlabel = QtWidgets.QLabel('<b>Pan Button:</b>')
+        self.panbuttonlabel.setToolTip("Select the mouse button to use for panning.")
+        self.pan_button_radio = RadioSet([{'label': 'Middle But.', 'value': '3'},
+                                     {'label': 'Right But.', 'value': '2'}])
+
+        # Multiple Selection Modifier Key
+        self.mselectlabel = QtWidgets.QLabel('<b>Multiple Sel:</b>')
+        self.mselectlabel.setToolTip("Select the key used for multiple selection.")
+        self.mselect_radio = RadioSet([{'label': 'CTRL', 'value': 'Control'},
+                                     {'label': 'SHIFT', 'value': 'Shift'}])
+
+        # # Mouse panning with "Space" key, CB
+        # self.pan_with_space_label = QtWidgets.QLabel('Pan w/ Space:')
+        # self.pan_with_space_label.setToolTip(
+        #     "Check this box if you want to pan when mouse is moved,\n"
+        #     "and key 'Space' is pressed."
+        # )
+        # self.pan_with_space_cb = FCCheckBox(label='')
+        # self.pan_with_space_cb.setToolTip(
+        #     "Check this box if you want to pan when mouse is moved,\n"
+        #     "and key 'Space' is pressed."
+        # )
+
+
+        # Just to add empty rows
+        self.spacelabel = QtWidgets.QLabel('')
+
+        # Add (label - input field) pair to the QFormLayout
+        self.form_box.addRow(self.unitslabel, self.units_radio)
+        self.form_box.addRow(self.languagelabel, self.language_cb)
+        self.form_box.addRow(self.languagespace, self.language_apply_btn)
+
+        self.form_box.addRow(self.spacelabel, self.spacelabel)
+        self.form_box.addRow(self.shell_startup_label, self.shell_startup_cb)
+        self.form_box.addRow(self.version_check_label, self.version_check_cb)
+        self.form_box.addRow(self.send_stats_label, self.send_stats_cb)
+
+        self.form_box.addRow(self.panbuttonlabel, self.pan_button_radio)
+        self.form_box.addRow(self.mselectlabel, self.mselect_radio)
+        # self.form_box.addRow(self.pan_with_space_label, self.pan_with_space_cb)
+        self.form_box.addRow(self.spacelabel, self.spacelabel)
 
         # Add the QFormLayout that holds the Application general defaults
         # to the main layout of this TAB

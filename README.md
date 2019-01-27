@@ -9,6 +9,13 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+27.01.2018
+
+- added more key shortcuts into the application; they are now displayed in the GUI menu's
+- reorganized the Edit -> Preferences -> Global
+- redesigned the messagebox that is showed when quiting ot creating a New Project: now it has an option ('Cancel') to abort the process returning to the app
+
+
 26.01.2019
 
 - fixed grbl_11 postprocessor in linear_code() function

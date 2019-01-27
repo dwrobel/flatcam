@@ -6,7 +6,7 @@ import time
 
 class Panelize(FlatCAMTool):
 
-    toolName = "Panelize PCB Tool"
+    toolName = "Panelize PCB"
 
     def __init__(self, app):
         super(Panelize, self).__init__(self)
@@ -196,6 +196,9 @@ class Panelize(FlatCAMTool):
     def run(self):
         FlatCAMTool.run(self)
         self.app.ui.notebook.setTabText(2, "Panel. Tool")
+
+    def install(self, icon=None, separator=None, **kwargs):
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+Z', **kwargs)
 
     def on_panelize(self):
         name = self.object_combo.currentText()

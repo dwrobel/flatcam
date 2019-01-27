@@ -291,7 +291,7 @@ class TextInputTool(FlatCAMTool):
                     font_name=self.font_name,
                     font_size=font_to_geo_size,
                     font_type=font_to_geo_type,
-                    units=self.app.general_options_form.general_group.units_radio.get_value().upper())
+                    units=self.app.general_options_form.general_app_group.units_radio.get_value().upper())
 
     def font_family(self, font):
         self.text_input_entry.selectAll()
@@ -1143,6 +1143,7 @@ class FCMove(FCShapeTool):
         self.start_msg = "Click on reference point."
 
     def set_origin(self, origin):
+        self.draw_app.app.inform.emit("Click on destination point.")
         self.origin = origin
 
     def click(self, point):
@@ -1901,6 +1902,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.geo_cutpath_btn.triggered.connect(self.cutpath)
         self.app.ui.geo_delete_btn.triggered.connect(self.on_delete_btn)
 
+        self.app.ui.geo_move_menuitem.triggered.connect(self.on_move)
+        self.app.ui.geo_cornersnap_menuitem.triggered.connect(self.on_corner_snap)
+
         ## Toolbar events and properties
         self.tools = {
             "select": {"button": self.app.ui.geo_select_btn,
@@ -2596,14 +2600,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # Corner Snap
         if event.key.name == 'K':
-            self.app.ui.corner_snap_btn.trigger()
+            self.on_corner_snap()
 
         # Move
         if event.key.name == 'M':
-            self.app.ui.geo_move_btn.setChecked(True)
-            self.on_tool_select('move')
-            self.active_tool.set_origin(self.snap(self.x, self.y))
-            self.app.inform.emit("Click on target point.")
+            self.on_move_click()
 
         # Polygon Tool
         if event.key.name == 'N':
@@ -2717,6 +2718,17 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         if shape in self.selected:
             self.selected.remove(shape)  # TODO: Check performance
+
+    def on_move(self):
+        self.app.ui.geo_move_btn.setChecked(True)
+        self.on_tool_select('move')
+
+    def on_move_click(self):
+        self.on_move()
+        self.active_tool.set_origin(self.snap(self.x, self.y))
+
+    def on_corner_snap(self):
+        self.app.ui.corner_snap_btn.trigger()
 
     def get_selected(self):
         """
@@ -3638,7 +3650,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.move_timer.setSingleShot(True)
 
         ## Current application units in Upper Case
-        self.units = self.app.general_options_form.general_group.units_radio.get_value().upper()
+        self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
 
         self.key = None  # Currently pressed key
         self.modifiers = None
@@ -3712,7 +3724,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
     def set_ui(self):
         # updated units
-        self.units = self.app.general_options_form.general_group.units_radio.get_value().upper()
+        self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
 
         self.olddia_newdia.clear()
         self.tool2tooldia.clear()
@@ -3752,7 +3764,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             pass
 
         # updated units
-        self.units = self.app.general_options_form.general_group.units_radio.get_value().upper()
+        self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
 
         # make a new name for the new Excellon object (the one with edited content)
         self.edited_obj_name = self.exc_obj.options['name']
