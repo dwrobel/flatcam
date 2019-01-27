@@ -146,8 +146,8 @@ class ToolCutout(FlatCAMTool):
             "- one gap Left / one gap Right\n"
             "- one gap on each of the 4 sides."
         )
-        self.gaps_rect_radio = RadioSet([{'label': 'T/B', 'value': 'tb'},
-                                    {'label': 'L/R', 'value': 'lr'},
+        self.gaps_rect_radio = RadioSet([{'label': '2(T/B)', 'value': 'tb'},
+                                    {'label': '2(L/R)', 'value': 'lr'},
                                     {'label': '4', 'value': '4'}])
         form_layout_3.addRow(gapslabel_rect, self.gaps_rect_radio)
 
@@ -186,10 +186,18 @@ class ToolCutout(FlatCAMTool):
 
     def run(self):
         FlatCAMTool.run(self)
+        self.set_ui()
         self.app.ui.notebook.setTabText(2, "Cutout Tool")
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+U', **kwargs)
+
+    def set_ui(self):
+        self.dia.set_value(float(self.app.defaults["tools_cutouttooldia"]))
+        self.margin.set_value(float(self.app.defaults["tools_cutoutmargin"]))
+        self.gapsize.set_value(float(self.app.defaults["tools_cutoutgapsize"]))
+        self.gaps.set_value(4)
+        self.gaps_rect_radio.set_value(str(self.app.defaults["tools_gaps_rect"]))
 
     def on_freeform_cutout(self):
 

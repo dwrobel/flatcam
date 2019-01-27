@@ -604,6 +604,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.cncjob_scroll_area = VerticalScrollArea()
         self.cncjob_tab_lay.addWidget(self.cncjob_scroll_area)
 
+        self.tools_tab = QtWidgets.QWidget()
+        self.pref_tab_area.addTab(self.tools_tab, "TOOLS")
+        self.tools_tab_lay = QtWidgets.QVBoxLayout()
+        self.tools_tab_lay.setContentsMargins(2, 2, 2, 2)
+        self.tools_tab.setLayout(self.tools_tab_lay)
+
+        self.tools_scroll_area = VerticalScrollArea()
+        self.tools_tab_lay.addWidget(self.tools_scroll_area)
+
         self.pref_tab_bottom_layout = QtWidgets.QHBoxLayout()
         self.pref_tab_bottom_layout.setAlignment(QtCore.Qt.AlignVCenter)
         self.pref_tab_layout.addLayout(self.pref_tab_bottom_layout)
@@ -911,12 +920,17 @@ class ExcellonPreferencesUI(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
-        self.layout = QtWidgets.QVBoxLayout()
+        self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
 
-        self.excellon_group = ExcellonPrefGroupUI()
-        self.excellon_group.setFixedWidth(260)
-        self.layout.addWidget(self.excellon_group)
+        self.excellon_gen_group = ExcellonGenPrefGroupUI()
+        self.excellon_gen_group.setFixedWidth(260)
+        self.excellon_opt_group = ExcellonOptPrefGroupUI()
+        self.excellon_opt_group.setFixedWidth(260)
+
+        self.layout.addWidget(self.excellon_gen_group)
+        self.layout.addWidget(self.excellon_opt_group)
+        self.layout.addStretch()
 
 
 class GeometryPreferencesUI(QtWidgets.QWidget):
@@ -930,6 +944,22 @@ class GeometryPreferencesUI(QtWidgets.QWidget):
         self.geometry_group.setFixedWidth(260)
         self.layout.addWidget(self.geometry_group)
 
+
+class ToolsPreferencesUI(QtWidgets.QWidget):
+
+    def __init__(self, parent=None):
+        QtWidgets.QWidget.__init__(self, parent=parent)
+        self.layout = QtWidgets.QHBoxLayout()
+        self.setLayout(self.layout)
+
+        self.tools_ncc_group = ToolsNCCPrefGroupUI()
+        self.tools_ncc_group.setFixedWidth(260)
+        self.tools_cutout_group = ToolsCutoutPrefGroupUI()
+        self.tools_cutout_group.setFixedWidth(260)
+
+        self.layout.addWidget(self.tools_ncc_group)
+        self.layout.addWidget(self.tools_cutout_group)
+        self.layout.addStretch()
 
 class CNCJobPreferencesUI(QtWidgets.QWidget):
 
@@ -1345,7 +1375,7 @@ class GerberPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.solid_cb, 0, 1)
 
         # Multicolored CB
-        self.multicolored_cb = FCCheckBox(label='Multicolored')
+        self.multicolored_cb = FCCheckBox(label='M-Color')
         self.multicolored_cb.setToolTip(
             "Draw polygons in different colors."
         )
@@ -1427,148 +1457,6 @@ class GerberPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.clearcopper_label)
 
-        grid5 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid5)
-        ncctdlabel = QtWidgets.QLabel('Tools dia:')
-        ncctdlabel.setToolTip(
-            "Diameters of the cutting tools, separated by ','"
-        )
-        grid5.addWidget(ncctdlabel, 0, 0)
-        self.ncc_tool_dia_entry = FCEntry()
-        grid5.addWidget(self.ncc_tool_dia_entry, 0, 1)
-
-        nccoverlabel = QtWidgets.QLabel('Overlap:')
-        nccoverlabel.setToolTip(
-            "How much (fraction) of the tool width to overlap each tool pass.\n"
-            "Example:\n"
-            "A value here of 0.25 means 25% from the tool diameter found above.\n\n"
-            "Adjust the value starting with lower values\n"
-            "and increasing it if areas that should be cleared are still \n"
-            "not cleared.\n"
-            "Lower values = faster processing, faster execution on PCB.\n"
-            "Higher values = slow processing and slow execution on CNC\n"
-            "due of too many paths."
-        )
-        grid5.addWidget(nccoverlabel, 1, 0)
-        self.ncc_overlap_entry = FloatEntry()
-        grid5.addWidget(self.ncc_overlap_entry, 1, 1)
-
-        nccmarginlabel = QtWidgets.QLabel('Margin:')
-        nccmarginlabel.setToolTip(
-            "Bounding box margin."
-        )
-        grid5.addWidget(nccmarginlabel, 2, 0)
-        self.ncc_margin_entry = FloatEntry()
-        grid5.addWidget(self.ncc_margin_entry, 2, 1)
-
-        # Method
-        methodlabel = QtWidgets.QLabel('Method:')
-        methodlabel.setToolTip(
-            "Algorithm for non-copper clearing:<BR>"
-            "<B>Standard</B>: Fixed step inwards.<BR>"
-            "<B>Seed-based</B>: Outwards from seed.<BR>"
-            "<B>Line-based</B>: Parallel lines."
-        )
-        grid5.addWidget(methodlabel, 3, 0)
-        self.ncc_method_radio = RadioSet([
-            {"label": "Standard", "value": "standard"},
-            {"label": "Seed-based", "value": "seed"},
-            {"label": "Straight lines", "value": "lines"}
-        ], orientation='vertical', stretch=False)
-        grid5.addWidget(self.ncc_method_radio, 3, 1)
-
-        # Connect lines
-        pathconnectlabel = QtWidgets.QLabel("Connect:")
-        pathconnectlabel.setToolTip(
-            "Draw lines between resulting\n"
-            "segments to minimize tool lifts."
-        )
-        grid5.addWidget(pathconnectlabel, 4, 0)
-        self.ncc_connect_cb = FCCheckBox()
-        grid5.addWidget(self.ncc_connect_cb, 4, 1)
-
-        contourlabel = QtWidgets.QLabel("Contour:")
-        contourlabel.setToolTip(
-            "Cut around the perimeter of the polygon\n"
-            "to trim rough edges."
-        )
-        grid5.addWidget(contourlabel, 5, 0)
-        self.ncc_contour_cb = FCCheckBox()
-        grid5.addWidget(self.ncc_contour_cb, 5, 1)
-
-        restlabel = QtWidgets.QLabel("Rest M.:")
-        restlabel.setToolTip(
-            "If checked, use 'rest machining'.\n"
-            "Basically it will clear copper outside PCB features,\n"
-            "using the biggest tool and continue with the next tools,\n"
-            "from bigger to smaller, to clear areas of copper that\n"
-            "could not be cleared by previous tool.\n"
-            "If not checked, use the standard algorithm."
-        )
-        grid5.addWidget(restlabel, 6, 0)
-        self.ncc_rest_cb = FCCheckBox()
-        grid5.addWidget(self.ncc_rest_cb, 6, 1)
-
-        ## Board cuttout
-        self.board_cutout_label = QtWidgets.QLabel("<b>Board cutout:</b>")
-        self.board_cutout_label.setToolTip(
-            "Create toolpaths to cut around\n"
-            "the PCB and separate it from\n"
-            "the original board."
-        )
-        self.layout.addWidget(self.board_cutout_label)
-
-        grid2 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid2)
-        tdclabel = QtWidgets.QLabel('Tool dia:')
-        tdclabel.setToolTip(
-            "Diameter of the cutting tool."
-        )
-        grid2.addWidget(tdclabel, 0, 0)
-        self.cutout_tooldia_entry = LengthEntry()
-        grid2.addWidget(self.cutout_tooldia_entry, 0, 1)
-
-        marginlabel = QtWidgets.QLabel('Margin:')
-        marginlabel.setToolTip(
-            "Distance from objects at which\n"
-            "to draw the cutout."
-        )
-        grid2.addWidget(marginlabel, 1, 0)
-        self.cutout_margin_entry = LengthEntry()
-        grid2.addWidget(self.cutout_margin_entry, 1, 1)
-
-        gaplabel = QtWidgets.QLabel('Gap size:')
-        gaplabel.setToolTip(
-            "Size of the gaps in the toolpath\n"
-            "that will remain to hold the\n"
-            "board in place."
-        )
-        grid2.addWidget(gaplabel, 2, 0)
-        self.cutout_gap_entry = LengthEntry()
-        grid2.addWidget(self.cutout_gap_entry, 2, 1)
-
-        gapslabel = QtWidgets.QLabel('Gaps:')
-        gapslabel.setToolTip(
-            "Where to place the gaps, Top/Bottom\n"
-            "Left/Rigt, or on all 4 sides."
-        )
-        grid2.addWidget(gapslabel, 3, 0)
-        self.gaps_radio = RadioSet([{'label': '2 (T/B)', 'value': 'tb'},
-                                    {'label': '2 (L/R)', 'value': 'lr'},
-                                    {'label': '4', 'value': '4'}])
-        grid2.addWidget(self.gaps_radio, 3, 1)
-
-        ## Non-copper regions
-        self.noncopper_label = QtWidgets.QLabel("<b>Non-copper regions:</b>")
-        self.noncopper_label.setToolTip(
-            "Create polygons covering the\n"
-            "areas without copper on the PCB.\n"
-            "Equivalent to the inverse of this\n"
-            "object. Can be used to remove all\n"
-            "copper from a specified region."
-        )
-        self.layout.addWidget(self.noncopper_label)
-
         grid3 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid3)
 
@@ -1619,13 +1507,13 @@ class GerberPrefGroupUI(OptionsGroupUI):
         self.layout.addStretch()
 
 
-class ExcellonPrefGroupUI(OptionsGroupUI):
+class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
     def __init__(self, parent=None):
         # OptionsGroupUI.__init__(self, "Excellon Options", parent=parent)
-        super(ExcellonPrefGroupUI, self).__init__(self)
+        super(ExcellonGenPrefGroupUI, self).__init__(self)
 
-        self.setTitle(str("Excellon Options"))
+        self.setTitle(str("Excellon General"))
 
         # Plot options
         self.plot_options_label = QtWidgets.QLabel("<b>Plot Options:</b>")
@@ -1741,7 +1629,7 @@ class ExcellonPrefGroupUI(OptionsGroupUI):
         hlay3 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay3)
 
-        self.excellon_zeros_label = QtWidgets.QLabel('Default <b>Zeros</b> Type:')
+        self.excellon_zeros_label = QtWidgets.QLabel('Default <b>Zeros</b>:')
         self.excellon_zeros_label.setAlignment(QtCore.Qt.AlignLeft)
         self.excellon_zeros_label.setToolTip(
             "This sets the type of Excellon zeros.\n"
@@ -1769,7 +1657,7 @@ class ExcellonPrefGroupUI(OptionsGroupUI):
         hlay4 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay4)
 
-        self.excellon_units_label = QtWidgets.QLabel('Default <b>Units</b> Type:')
+        self.excellon_units_label = QtWidgets.QLabel('Default <b>Units</b>:')
         self.excellon_units_label.setAlignment(QtCore.Qt.AlignLeft)
         self.excellon_units_label.setToolTip(
             "This sets the default units of Excellon files.\n"
@@ -1841,6 +1729,17 @@ class ExcellonPrefGroupUI(OptionsGroupUI):
         else:
             self.excellon_optimization_label.setDisabled(True)
             self.excellon_optimization_radio.setDisabled(True)
+
+        self.layout.addStretch()
+
+
+class ExcellonOptPrefGroupUI(OptionsGroupUI):
+
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Excellon Options", parent=parent)
+        super(ExcellonOptPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("Excellon Options"))
 
         ## Create CNC Job
         self.cncjob_label = QtWidgets.QLabel('<b>Create CNC Job</b>')
@@ -2475,6 +2374,167 @@ class CNCJobPrefGroupUI(OptionsGroupUI):
 
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
+
+
+class ToolsNCCPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "NCC Tool Options", parent=parent)
+        super(ToolsNCCPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("NCC Tool Options"))
+
+        ## Clear non-copper regions
+        self.clearcopper_label = QtWidgets.QLabel("<b>Clear non-copper:</b>")
+        self.clearcopper_label.setToolTip(
+            "Create a Geometry object with\n"
+            "toolpaths to cut all non-copper regions."
+        )
+        self.layout.addWidget(self.clearcopper_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        ncctdlabel = QtWidgets.QLabel('Tools dia:')
+        ncctdlabel.setToolTip(
+            "Diameters of the cutting tools, separated by ','"
+        )
+        grid0.addWidget(ncctdlabel, 0, 0)
+        self.ncc_tool_dia_entry = FCEntry()
+        grid0.addWidget(self.ncc_tool_dia_entry, 0, 1)
+
+        nccoverlabel = QtWidgets.QLabel('Overlap:')
+        nccoverlabel.setToolTip(
+            "How much (fraction) of the tool width to overlap each tool pass.\n"
+            "Example:\n"
+            "A value here of 0.25 means 25% from the tool diameter found above.\n\n"
+            "Adjust the value starting with lower values\n"
+            "and increasing it if areas that should be cleared are still \n"
+            "not cleared.\n"
+            "Lower values = faster processing, faster execution on PCB.\n"
+            "Higher values = slow processing and slow execution on CNC\n"
+            "due of too many paths."
+        )
+        grid0.addWidget(nccoverlabel, 1, 0)
+        self.ncc_overlap_entry = FloatEntry()
+        grid0.addWidget(self.ncc_overlap_entry, 1, 1)
+
+        nccmarginlabel = QtWidgets.QLabel('Margin:')
+        nccmarginlabel.setToolTip(
+            "Bounding box margin."
+        )
+        grid0.addWidget(nccmarginlabel, 2, 0)
+        self.ncc_margin_entry = FloatEntry()
+        grid0.addWidget(self.ncc_margin_entry, 2, 1)
+
+        # Method
+        methodlabel = QtWidgets.QLabel('Method:')
+        methodlabel.setToolTip(
+            "Algorithm for non-copper clearing:<BR>"
+            "<B>Standard</B>: Fixed step inwards.<BR>"
+            "<B>Seed-based</B>: Outwards from seed.<BR>"
+            "<B>Line-based</B>: Parallel lines."
+        )
+        grid0.addWidget(methodlabel, 3, 0)
+        self.ncc_method_radio = RadioSet([
+            {"label": "Standard", "value": "standard"},
+            {"label": "Seed-based", "value": "seed"},
+            {"label": "Straight lines", "value": "lines"}
+        ], orientation='vertical', stretch=False)
+        grid0.addWidget(self.ncc_method_radio, 3, 1)
+
+        # Connect lines
+        pathconnectlabel = QtWidgets.QLabel("Connect:")
+        pathconnectlabel.setToolTip(
+            "Draw lines between resulting\n"
+            "segments to minimize tool lifts."
+        )
+        grid0.addWidget(pathconnectlabel, 4, 0)
+        self.ncc_connect_cb = FCCheckBox()
+        grid0.addWidget(self.ncc_connect_cb, 4, 1)
+
+        contourlabel = QtWidgets.QLabel("Contour:")
+        contourlabel.setToolTip(
+            "Cut around the perimeter of the polygon\n"
+            "to trim rough edges."
+        )
+        grid0.addWidget(contourlabel, 5, 0)
+        self.ncc_contour_cb = FCCheckBox()
+        grid0.addWidget(self.ncc_contour_cb, 5, 1)
+
+        restlabel = QtWidgets.QLabel("Rest M.:")
+        restlabel.setToolTip(
+            "If checked, use 'rest machining'.\n"
+            "Basically it will clear copper outside PCB features,\n"
+            "using the biggest tool and continue with the next tools,\n"
+            "from bigger to smaller, to clear areas of copper that\n"
+            "could not be cleared by previous tool.\n"
+            "If not checked, use the standard algorithm."
+        )
+        grid0.addWidget(restlabel, 6, 0)
+        self.ncc_rest_cb = FCCheckBox()
+        grid0.addWidget(self.ncc_rest_cb, 6, 1)
+
+        self.layout.addStretch()
+
+
+class ToolsCutoutPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Cutout Tool Options", parent=parent)
+        super(ToolsCutoutPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("Cutout Tool Options"))
+
+        ## Board cuttout
+        self.board_cutout_label = QtWidgets.QLabel("<b>Board cutout:</b>")
+        self.board_cutout_label.setToolTip(
+            "Create toolpaths to cut around\n"
+            "the PCB and separate it from\n"
+            "the original board."
+        )
+        self.layout.addWidget(self.board_cutout_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        tdclabel = QtWidgets.QLabel('Tool dia:')
+        tdclabel.setToolTip(
+            "Diameter of the cutting tool."
+        )
+        grid0.addWidget(tdclabel, 0, 0)
+        self.cutout_tooldia_entry = LengthEntry()
+        grid0.addWidget(self.cutout_tooldia_entry, 0, 1)
+
+        marginlabel = QtWidgets.QLabel('Margin:')
+        marginlabel.setToolTip(
+            "Distance from objects at which\n"
+            "to draw the cutout."
+        )
+        grid0.addWidget(marginlabel, 1, 0)
+        self.cutout_margin_entry = LengthEntry()
+        grid0.addWidget(self.cutout_margin_entry, 1, 1)
+
+        gaplabel = QtWidgets.QLabel('Gap size:')
+        gaplabel.setToolTip(
+            "Size of the gaps in the toolpath\n"
+            "that will remain to hold the\n"
+            "board in place."
+        )
+        grid0.addWidget(gaplabel, 2, 0)
+        self.cutout_gap_entry = LengthEntry()
+        grid0.addWidget(self.cutout_gap_entry, 2, 1)
+
+        gapslabel = QtWidgets.QLabel('Gaps:')
+        gapslabel.setToolTip(
+            "Where to place the gaps, Top/Bottom\n"
+            "Left/Rigt, or on all 4 sides."
+        )
+        grid0.addWidget(gapslabel, 3, 0)
+        self.gaps_radio = RadioSet([{'label': '2 (T/B)', 'value': 'tb'},
+                                    {'label': '2 (L/R)', 'value': 'lr'},
+                                    {'label': '4', 'value': '4'}])
+        grid0.addWidget(self.gaps_radio, 3, 1)
+
+        self.layout.addStretch()
 
 
 class FlatCAMActivityView(QtWidgets.QWidget):

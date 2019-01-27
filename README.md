@@ -18,6 +18,8 @@ CAD program, and create G-Code for Isolation routing.
 - added shortcut key 'L' for creating 'New Excellon' 
 - added shortcut key combo 'SHIFT+S' for Running a Script.
 - modified grbl_laser postprocessor file so it includes a Sxxxx command on the line with M02 (laser active) whenever a value is enter in the Spindlespeed entry field
+- remade the EDIT -> PREFERENCES window, the Excellon and Gerber sections. Created a new section named TOOLS
+
 
 26.01.2019
 
