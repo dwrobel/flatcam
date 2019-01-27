@@ -304,6 +304,11 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 self.app.on_rotate(silent=True, preset=-90)
                 return
 
+            # Run a Script
+            if key == QtCore.Qt.Key_S:
+                self.app.on_filerunscript()
+                return
+
             # Toggle Workspace
             if key == QtCore.Qt.Key_W:
                 self.app.on_workspace_menu()
@@ -331,7 +336,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
             # Transformation Tool
             if key == QtCore.Qt.Key_R:
-                self.app.measurement_tool.run()
+                self.app.transform_tool.run()
                 return
 
             # Cutout Tool

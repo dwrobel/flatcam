@@ -72,7 +72,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile.addSeparator()
 
         # Run Scripts
-        self.menufilerunscript = QtWidgets.QAction(QtGui.QIcon('share/script16.png'), 'Run Script ...', self)
+        self.menufilerunscript = QtWidgets.QAction(QtGui.QIcon('share/script16.png'), 'Run Script ...\tSHIFT+S', self)
         self.menufile.addAction(self.menufilerunscript)
 
         # Separator

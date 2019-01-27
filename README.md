@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - redesigned the messagebox that is showed when quiting ot creating a New Project: now it has an option ('Cancel') to abort the process returning to the app
 - added options for trace segmentation that can be useful for auto-levelling (code snippet from Lei Zheng from a rejected pull request on FlatCAM https://bitbucket.org/realthunder/ )
 - added shortcut key 'L' for creating 'New Excellon' 
+- added shortcut key combo 'SHIFT+S' for Running a Script.
 
 26.01.2019
 

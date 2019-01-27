@@ -3672,6 +3672,10 @@ class App(QtCore.QObject):
             if event.key == 'R':
                 self.on_rotate(silent=True, preset=-90)
 
+            # Run a Script
+            if event.key == 'S':
+                self.on_filerunscript()
+
             # Toggle Workspace
             if event.key == 'W':
                 self.on_workspace_menu()
@@ -3781,6 +3785,7 @@ class App(QtCore.QObject):
 <b>E:</b>       Edit Object (if selected)<br>
 <b>G:</b>       Grid On/Off<br>
 <b>J:</b>       Jump to Coordinates<br>
+<b>L:</b>       New Excellon<br>
 <b>M:</b>       Move Obj<br>
 <b>M:</b>       Move Geo Item (when in Edit Mode)<br>
 <b>N:</b>       New Geometry<br>
@@ -3812,6 +3817,7 @@ class App(QtCore.QObject):
 <b>SHIFT+G:</b>  Toggle the axis<br>
 <b>SHIFT+P:</b>  Open Preferences Window<br>
 <b>SHIFT+R:</b>  Rotate by 90 degree CCW<br>
+<b>SHIFT+S:</b>  Run a Script<br>
 <b>SHIFT+W:</b>  Toggle the workspace<br>
 <b>SHIFT+X:</b>  Skew on X axis<br>
 <b>SHIFT+Y:</b>  Skew on Y axis<br>
