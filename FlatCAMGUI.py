@@ -155,7 +155,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         ### Edit ###
         self.menuedit = self.menu.addMenu('&Edit')
         self.menueditnew = self.menuedit.addAction(QtGui.QIcon('share/new_geo16.png'), '&New Geometry\tN')
-        self.menueditnewexc = self.menuedit.addAction(QtGui.QIcon('share/new_geo16.png'), 'New Excellon\tX')
+        self.menueditnewexc = self.menuedit.addAction(QtGui.QIcon('share/new_geo16.png'), 'New Excellon\tL')
         # Separator
         self.menuedit.addSeparator()
         self.menueditedit = self.menuedit.addAction(QtGui.QIcon('share/edit16.png'), 'Edit Object\tE')

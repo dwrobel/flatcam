@@ -376,6 +376,10 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             if key == QtCore.Qt.Key_J:
                 self.app.on_jump_to()
 
+            # New Excellon
+            if key == QtCore.Qt.Key_L:
+                self.app.new_excellon_object()
+
             # Move tool toggle
             if key == QtCore.Qt.Key_M:
                 self.app.move_tool.toggle()

@@ -91,7 +91,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.905
-    version_date = "2019/01/26"
+    version_date = "2019/01/28"
     beta = True
 
     # URL for update checks and statistics
@@ -3715,6 +3715,9 @@ class App(QtCore.QObject):
 
             if event.key == 'J':
                 self.on_jump_to()
+
+            if event.key == 'L':
+                self.new_excellon_object()
 
             if event.key == 'M':
                 self.move_tool.toggle()
