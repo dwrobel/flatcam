@@ -2962,7 +2962,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             self.app.inform.emit("[error_notcl] Failed. No tool selected in the tool table ...")
 
-    def mtool_gen_cncjob(self, use_thread=True):
+    def mtool_gen_cncjob(self, segx=None, segy=None, use_thread=True):
         """
         Creates a multi-tool CNCJob out of this Geometry object.
         The actual work is done by the target FlatCAMCNCjob object's
@@ -2986,6 +2986,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia
         outname = "%s_%s" % (self.options["name"], 'cnc')
 
+        segx = segx if segx is not None else float(self.app.defaults['geometry_segx'])
+        segy = segy if segy is not None else float(self.app.defaults['geometry_segy'])
+
         # Object initialization function for app.new_object()
         # RUNNING ON SEPARATE THREAD!
         def job_init_single_geometry(job_obj, app_obj):
@@ -3004,6 +3007,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             # job_obj.create_geometry()
 
             job_obj.options['Tools_in_use'] = self.get_selected_tools_table_items()
+            job_obj.segx = segx
+            job_obj.segy = segy
 
             for tooluid_key in self.sel_tools:
                 tool_cnt += 1
@@ -3345,6 +3350,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                        toolchange=None, toolchangez=None, toolchangexy=None,
                        extracut=None, startz=None, endz=None,
                        ppname_g=None,
+                       segx=None,
+                       segy=None,
                        use_thread=True):
         """
         Only used for TCL Command.
@@ -3375,6 +3382,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         multidepth = multidepth if multidepth is not None else self.options["multidepth"]
         depthperpass = depthperpass if depthperpass is not None else self.options["depthperpass"]
+
+        segx = segx if segx is not None else float(self.app.defaults['geometry_segx'])
+        segy = segy if segy is not None else float(self.app.defaults['geometry_segy'])
 
         extracut = extracut if extracut is not None else self.options["extracut"]
         startz = startz if startz is not None else self.options["startz"]
@@ -3409,6 +3419,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
             job_obj.options['type'] = 'Geometry'
             job_obj.options['tool_dia'] = tooldia
+
+            job_obj.segx = segx
+            job_obj.segy = segy
 
             # TODO: The tolerance should not be hard coded. Just for testing.
             job_obj.generate_from_geometry_2(self, tooldia=tooldia, offset=offset, tolerance=0.0005,

@@ -2260,6 +2260,28 @@ class GeometryPrefGroupUI(OptionsGroupUI):
         self.pp_geometry_name_cb.setFocusPolicy(Qt.StrongFocus)
         grid2.addWidget(self.pp_geometry_name_cb, 16, 1)
 
+        # Size of trace segment on X axis
+        segx_label = QtWidgets.QLabel("Seg. X size:")
+        segx_label.setToolTip(
+            "The size of the trace segment on the X axis.\n"
+            "Useful for auto-leveling.\n"
+            "A value of 0 means no segmentation on the X axis."
+        )
+        grid2.addWidget(segx_label, 17, 0)
+        self.segx_entry = FCEntry()
+        grid2.addWidget(self.segx_entry, 17, 1)
+
+        # Size of trace segment on Y axis
+        segy_label = QtWidgets.QLabel("Seg. Y size:")
+        segy_label.setToolTip(
+            "The size of the trace segment on the Y axis.\n"
+            "Useful for auto-leveling.\n"
+            "A value of 0 means no segmentation on the Y axis."
+        )
+        grid2.addWidget(segy_label, 18, 0)
+        self.segy_entry = FCEntry()
+        grid2.addWidget(self.segy_entry, 18, 1)
+
         # ------------------------------
         ## Paint area
         # ------------------------------

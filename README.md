@@ -14,7 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - added more key shortcuts into the application; they are now displayed in the GUI menu's
 - reorganized the Edit -> Preferences -> Global
 - redesigned the messagebox that is showed when quiting ot creating a New Project: now it has an option ('Cancel') to abort the process returning to the app
-
+- added options for trace segmentation that can be useful for auto-levelling (code snippet from Lei Zheng from a rejected pull request on FlatCAM https://bitbucket.org/realthunder/ )
 
 26.01.2019
 
