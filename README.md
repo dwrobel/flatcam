@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - added options for trace segmentation that can be useful for auto-levelling (code snippet from Lei Zheng from a rejected pull request on FlatCAM https://bitbucket.org/realthunder/ )
 - added shortcut key 'L' for creating 'New Excellon' 
 - added shortcut key combo 'SHIFT+S' for Running a Script.
+- modified grbl_laser postprocessor file so it includes a Sxxxx command on the line with M02 (laser active) whenever a value is enter in the Spindlespeed entry field
 
 26.01.2019
 

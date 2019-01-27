@@ -970,8 +970,9 @@ class GeometryObjectUI(ObjectUI):
         # Spindlespeed
         spdlabel = QtWidgets.QLabel('Spindle speed:')
         spdlabel.setToolTip(
-            "Speed of the spindle\n"
-            "in RPM (optional)"
+            "Speed of the spindle in RPM (optional).\n"
+            "If LASER postprocessor is used,\n"
+            "this value is the power of laser."
         )
         self.grid3.addWidget(spdlabel, 14, 0)
         self.cncspindlespeed_entry = IntEntry(allow_empty=True)
