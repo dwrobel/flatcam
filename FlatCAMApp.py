@@ -354,6 +354,7 @@ class App(QtCore.QObject):
             "excellon_tooldia": self.excellon_defaults_form.excellon_opt_group.tooldia_entry,
             "excellon_slot_tooldia": self.excellon_defaults_form.excellon_opt_group.slot_tooldia_entry,
             "excellon_gcode_type": self.excellon_defaults_form.excellon_opt_group.excellon_gcode_type_radio,
+
             "geometry_plot": self.geometry_defaults_form.geometry_group.plot_cb,
             "geometry_segx": self.geometry_defaults_form.geometry_group.segx_entry,
             "geometry_segy": self.geometry_defaults_form.geometry_group.segy_entry,
@@ -363,16 +364,9 @@ class App(QtCore.QObject):
             "geometry_feedrate_z": self.geometry_defaults_form.geometry_group.cncplunge_entry,
             "geometry_feedrate_rapid": self.geometry_defaults_form.geometry_group.cncfeedrate_rapid_entry,
             "geometry_cnctooldia": self.geometry_defaults_form.geometry_group.cnctooldia_entry,
-            "geometry_painttooldia": self.geometry_defaults_form.geometry_group.painttooldia_entry,
             "geometry_spindlespeed": self.geometry_defaults_form.geometry_group.cncspindlespeed_entry,
             "geometry_dwell": self.geometry_defaults_form.geometry_group.dwell_cb,
             "geometry_dwelltime": self.geometry_defaults_form.geometry_group.dwelltime_entry,
-            "geometry_paintoverlap": self.geometry_defaults_form.geometry_group.paintoverlap_entry,
-            "geometry_paintmargin": self.geometry_defaults_form.geometry_group.paintmargin_entry,
-            "geometry_paintmethod": self.geometry_defaults_form.geometry_group.paintmethod_combo,
-            "geometry_selectmethod": self.geometry_defaults_form.geometry_group.selectmethod_combo,
-            "geometry_pathconnect": self.geometry_defaults_form.geometry_group.pathconnect_cb,
-            "geometry_paintcontour": self.geometry_defaults_form.geometry_group.contour_cb,
             "geometry_ppname_g": self.geometry_defaults_form.geometry_group.pp_geometry_name_cb,
             "geometry_toolchange": self.geometry_defaults_form.geometry_group.toolchange_cb,
             "geometry_toolchangez": self.geometry_defaults_form.geometry_group.toolchangez_entry,
@@ -383,6 +377,7 @@ class App(QtCore.QObject):
             "geometry_depthperpass": self.geometry_defaults_form.geometry_group.depthperpass_entry,
             "geometry_extracut": self.geometry_defaults_form.geometry_group.extracut_cb,
             "geometry_circle_steps": self.geometry_defaults_form.geometry_group.circle_steps_entry,
+
             "cncjob_plot": self.cncjob_defaults_form.cncjob_group.plot_cb,
             "cncjob_tooldia": self.cncjob_defaults_form.cncjob_group.tooldia_entry,
             "cncjob_coords_decimals": self.cncjob_defaults_form.cncjob_group.coords_dec_entry,
@@ -402,7 +397,15 @@ class App(QtCore.QObject):
             "tools_cutouttooldia": self.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
             "tools_cutoutmargin": self.tools_defaults_form.tools_cutout_group.cutout_margin_entry,
             "tools_cutoutgapsize": self.tools_defaults_form.tools_cutout_group.cutout_gap_entry,
-            "tools_gaps_rect": self.tools_defaults_form.tools_cutout_group.gaps_radio
+            "tools_gaps_rect": self.tools_defaults_form.tools_cutout_group.gaps_radio,
+
+            "tools_painttooldia": self.tools_defaults_form.tools_paint_group.painttooldia_entry,
+            "tools_paintoverlap": self.tools_defaults_form.tools_paint_group.paintoverlap_entry,
+            "tools_paintmargin": self.tools_defaults_form.tools_paint_group.paintmargin_entry,
+            "tools_paintmethod": self.tools_defaults_form.tools_paint_group.paintmethod_combo,
+            "tools_selectmethod": self.tools_defaults_form.tools_paint_group.selectmethod_combo,
+            "tools_pathconnect": self.tools_defaults_form.tools_paint_group.pathconnect_cb,
+            "tools_paintcontour": self.tools_defaults_form.tools_paint_group.contour_cb
         }
         # loads postprocessors
         self.postprocessors = load_postprocessors(self)
@@ -439,6 +442,35 @@ class App(QtCore.QObject):
             "global_workspaceT": "A4P",
             "global_toolbar_view": 31,
 
+            "global_background_timeout": 300000,  # Default value is 5 minutes
+            "global_verbose_error_level": 0,  # Shell verbosity 0 = default
+            # (python trace only for unknown errors),
+            # 1 = show trace(show trace allways),
+            # 2 = (For the future).
+
+            # Persistence
+            "global_last_folder": None,
+            "global_last_save_folder": None,
+
+            # Default window geometry
+            "global_def_win_x": 100,
+            "global_def_win_y": 100,
+            "global_def_win_w": 1024,
+            "global_def_win_h": 650,
+
+            # Constants...
+            "global_defaults_save_period_ms": 20000,  # Time between default saves.
+            "global_shell_shape": [500, 300],  # Shape of the shell in pixels.
+            "global_shell_at_startup": False,  # Show the shell at startup.
+            "global_recent_limit": 10,  # Max. items in recent list.
+            "fit_key": '1',
+            "zoom_out_key": '2',
+            "zoom_in_key": '3',
+            "grid_toggle_key": 'G',
+            "zoom_ratio": 1.5,
+            "global_point_clipboard_format": "(%.4f, %.4f)",
+            "global_zdownrate": None,
+
             "gerber_plot": True,
             "gerber_solid": True,
             "gerber_multicolored": False,
@@ -448,14 +480,15 @@ class App(QtCore.QObject):
 
             "gerber_combine_passes": False,
             "gerber_milling_type": "cl",
-            "gerber_noncoppermargin": 0.0,
+            "gerber_noncoppermargin": 0.1,
             "gerber_noncopperrounded": False,
-            "gerber_bboxmargin": 0.0,
+            "gerber_bboxmargin": 0.1,
             "gerber_bboxrounded": False,
             "gerber_circle_steps": 64,
+            "gerber_use_buffer_for_union": True,
 
             "excellon_plot": True,
-            "excellon_solid": False,
+            "excellon_solid": True,
             "excellon_format_upper_in": 2,
             "excellon_format_lower_in": 4,
             "excellon_format_upper_mm": 3,
@@ -499,13 +532,6 @@ class App(QtCore.QObject):
             "geometry_spindlespeed": None,
             "geometry_dwell": False,
             "geometry_dwelltime": 1,
-            "geometry_painttooldia": 0.07,
-            "geometry_paintoverlap": 0.15,
-            "geometry_paintmargin": 0.0,
-            "geometry_paintmethod": "seed",
-            "geometry_selectmethod": "single",
-            "geometry_pathconnect": True,
-            "geometry_paintcontour": True,
             "geometry_ppname_g": 'default',
             "geometry_depthperpass": 0.002,
             "geometry_multidepth": False,
@@ -522,45 +548,25 @@ class App(QtCore.QObject):
 
             "tools_ncctools": "1.0, 0.5",
             "tools_nccoverlap": 0.4,
-            "tools_nccmargin": 1,
+            "tools_nccmargin": 0.1,
             "tools_nccmethod": "seed",
             "tools_nccconnect": True,
             "tools_ncccontour": True,
             "tools_nccrest": False,
-            "tools_cutouttooldia": 0.07,
+
+            "tools_cutouttooldia": 0.1,
             "tools_cutoutmargin": 0.1,
             "tools_cutoutgapsize": 0.15,
             "tools_gaps_rect": "4",
 
-            "global_background_timeout": 300000,  # Default value is 5 minutes
-            "global_verbose_error_level": 0,  # Shell verbosity 0 = default
-                                       # (python trace only for unknown errors),
-                                       # 1 = show trace(show trace allways),
-                                       # 2 = (For the future).
+            "tools_painttooldia": 0.07,
+            "tools_paintoverlap": 0.15,
+            "tools_paintmargin": 0.0,
+            "tools_paintmethod": "seed",
+            "tools_selectmethod": "single",
+            "tools_pathconnect": True,
+            "tools_paintcontour": True
 
-            # Persistence
-            "global_last_folder": None,
-            "global_last_save_folder": None,
-
-            # Default window geometry
-            "global_def_win_x": 100,
-            "global_def_win_y": 100,
-            "global_def_win_w": 1024,
-            "global_def_win_h": 650,
-
-            # Constants...
-            "global_defaults_save_period_ms": 20000,   # Time between default saves.
-            "global_shell_shape": [500, 300],          # Shape of the shell in pixels.
-            "global_shell_at_startup": False,          # Show the shell at startup.
-            "global_recent_limit": 10,                 # Max. items in recent list.
-            "fit_key": '1',
-            "zoom_out_key": '2',
-            "zoom_in_key": '3',
-            "grid_toggle_key": 'G',
-            "zoom_ratio": 1.5,
-            "global_point_clipboard_format": "(%.4f, %.4f)",
-            "global_zdownrate": None,
-            "gerber_use_buffer_for_union": True
         })
 
         ###############################
@@ -648,10 +654,6 @@ class App(QtCore.QObject):
             "geometry_dwell": self.geometry_options_form.geometry_group.dwell_cb,
             "geometry_dwelltime": self.geometry_options_form.geometry_group.dwelltime_entry,
             "geometry_cnctooldia": self.geometry_options_form.geometry_group.cnctooldia_entry,
-            "geometry_painttooldia": self.geometry_options_form.geometry_group.painttooldia_entry,
-            "geometry_paintoverlap": self.geometry_options_form.geometry_group.paintoverlap_entry,
-            "geometry_paintmargin": self.geometry_options_form.geometry_group.paintmargin_entry,
-            "geometry_selectmethod": self.geometry_options_form.geometry_group.selectmethod_combo,
             "geometry_ppname_g": self.geometry_options_form.geometry_group.pp_geometry_name_cb,
             "geometry_toolchange": self.geometry_options_form.geometry_group.toolchange_cb,
             "geometry_toolchangez": self.geometry_options_form.geometry_group.toolchangez_entry,
@@ -675,6 +677,14 @@ class App(QtCore.QObject):
             "tools_cutoutmargin": self.tools_options_form.tools_cutout_group.cutout_margin_entry,
             "tools_cutoutgapsize": self.tools_options_form.tools_cutout_group.cutout_gap_entry,
             "tools_gaps": self.tools_options_form.tools_cutout_group.gaps_radio,
+
+            "tools_painttooldia": self.tools_options_form.tools_paint_group.painttooldia_entry,
+            "tools_paintoverlap": self.tools_options_form.tools_paint_group.paintoverlap_entry,
+            "tools_paintmargin": self.tools_options_form.tools_paint_group.paintmargin_entry,
+            "tools_paintmethod": self.tools_options_form.tools_paint_group.paintmethod_combo,
+            "tools_selectmethod": self.tools_options_form.tools_paint_group.selectmethod_combo,
+            "tools_pathconnect": self.tools_options_form.tools_paint_group.pathconnect_cb,
+            "tools_paintcontour": self.tools_options_form.tools_paint_group.contour_cb
         }
 
         for name in list(self.postprocessors.keys()):
@@ -687,6 +697,11 @@ class App(QtCore.QObject):
             "units": "IN",
             "global_gridx": 1.0,
             "global_gridy": 1.0,
+            "global_background_timeout": 300000,  # Default value is 5 minutes
+            "global_verbose_error_level": 0,  # Shell verbosity:
+            # 0 = default(python trace only for unknown errors),
+            # 1 = show trace(show trace allways), 2 = (For the future).
+
             "gerber_plot": True,
             "gerber_solid": True,
             "gerber_multicolored": False,
@@ -698,6 +713,7 @@ class App(QtCore.QObject):
             "gerber_noncopperrounded": False,
             "gerber_bboxmargin": 0.0,
             "gerber_bboxrounded": False,
+
             "excellon_plot": True,
             "excellon_solid": False,
             "excellon_format_upper_in": 2,
@@ -736,10 +752,6 @@ class App(QtCore.QObject):
             "geometry_dwell": True,
             "geometry_dwelltime": 1000,
             "geometry_cnctooldia": 0.016,
-            "geometry_painttooldia": 0.07,
-            "geometry_paintoverlap": 0.15,
-            "geometry_paintmargin": 0.0,
-            "geometry_selectmethod": "single",
             "geometry_toolchange": False,
             "geometry_toolchangez": 2.0,
             "geometry_toolchangexy": "0.0, 0.0",
@@ -763,10 +775,14 @@ class App(QtCore.QObject):
             "tools_cutoutgapsize": 0.15,
             "tools_gaps": "4",
 
-            "global_background_timeout": 300000,  # Default value is 5 minutes
-            "global_verbose_error_level": 0,  # Shell verbosity:
-                                       # 0 = default(python trace only for unknown errors),
-                                       # 1 = show trace(show trace allways), 2 = (For the future).
+            "tools_painttooldia": 0.07,
+            "tools_paintoverlap": 0.15,
+            "tools_paintmargin": 0.0,
+            "tools_paintmethod": "seed",
+            "tools_selectmethod": "single",
+            "tools_pathconnect": True,
+            "tools_paintcontour": True
+
         })
 
         self.options.update(self.defaults)  # Copy app defaults to project options

@@ -960,10 +960,18 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
 
         self.tools_ncc_group = ToolsNCCPrefGroupUI()
         self.tools_ncc_group.setFixedWidth(260)
+        self.tools_paint_group = ToolsPaintPrefGroupUI()
+        self.tools_paint_group.setFixedWidth(260)
+
         self.tools_cutout_group = ToolsCutoutPrefGroupUI()
         self.tools_cutout_group.setFixedWidth(260)
 
-        self.layout.addWidget(self.tools_ncc_group)
+        self.vlay = QtWidgets.QVBoxLayout()
+        self.vlay.addWidget(self.tools_ncc_group)
+        self.vlay.addWidget(self.tools_paint_group)
+
+        self.layout.addLayout(self.vlay)
+
         self.layout.addWidget(self.tools_cutout_group)
         self.layout.addStretch()
 
@@ -2187,101 +2195,6 @@ class GeometryPrefGroupUI(OptionsGroupUI):
         self.segy_entry = FCEntry()
         grid2.addWidget(self.segy_entry, 18, 1)
 
-        # ------------------------------
-        ## Paint area
-        # ------------------------------
-        self.paint_label = QtWidgets.QLabel('<b>Paint Area:</b>')
-        self.paint_label.setToolTip(
-            "Creates tool paths to cover the\n"
-            "whole area of a polygon (remove\n"
-            "all copper). You will be asked\n"
-            "to click on the desired polygon."
-        )
-        self.layout.addWidget(self.paint_label)
-
-        grid4 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid4)
-
-        # Tool dia
-        ptdlabel = QtWidgets.QLabel('Tool dia:')
-        ptdlabel.setToolTip(
-            "Diameter of the tool to\n"
-            "be used in the operation."
-        )
-        grid4.addWidget(ptdlabel, 0, 0)
-
-        self.painttooldia_entry = LengthEntry()
-        grid4.addWidget(self.painttooldia_entry, 0, 1)
-
-        # Overlap
-        ovlabel = QtWidgets.QLabel('Overlap:')
-        ovlabel.setToolTip(
-            "How much (fraction) of the tool\n"
-            "width to overlap each tool pass."
-        )
-        grid4.addWidget(ovlabel, 1, 0)
-        self.paintoverlap_entry = LengthEntry()
-        grid4.addWidget(self.paintoverlap_entry, 1, 1)
-
-        # Margin
-        marginlabel = QtWidgets.QLabel('Margin:')
-        marginlabel.setToolTip(
-            "Distance by which to avoid\n"
-            "the edges of the polygon to\n"
-            "be painted."
-        )
-        grid4.addWidget(marginlabel, 2, 0)
-        self.paintmargin_entry = LengthEntry()
-        grid4.addWidget(self.paintmargin_entry, 2, 1)
-
-        # Method
-        methodlabel = QtWidgets.QLabel('Method:')
-        methodlabel.setToolTip(
-            "Algorithm to paint the polygon:<BR>"
-            "<B>Standard</B>: Fixed step inwards.<BR>"
-            "<B>Seed-based</B>: Outwards from seed."
-        )
-        grid4.addWidget(methodlabel, 3, 0)
-        self.paintmethod_combo = RadioSet([
-            {"label": "Standard", "value": "standard"},
-            {"label": "Seed-based", "value": "seed"},
-            {"label": "Straight lines", "value": "lines"}
-        ], orientation='vertical', stretch=False)
-        grid4.addWidget(self.paintmethod_combo, 3, 1)
-
-        # Connect lines
-        pathconnectlabel = QtWidgets.QLabel("Connect:")
-        pathconnectlabel.setToolTip(
-            "Draw lines between resulting\n"
-            "segments to minimize tool lifts."
-        )
-        grid4.addWidget(pathconnectlabel, 4, 0)
-        self.pathconnect_cb = FCCheckBox()
-        grid4.addWidget(self.pathconnect_cb, 4, 1)
-
-        # Paint contour
-        contourlabel = QtWidgets.QLabel("Contour:")
-        contourlabel.setToolTip(
-            "Cut around the perimeter of the polygon\n"
-            "to trim rough edges."
-        )
-        grid4.addWidget(contourlabel, 5, 0)
-        self.contour_cb = FCCheckBox()
-        grid4.addWidget(self.contour_cb, 5, 1)
-
-        # Polygon selection
-        selectlabel = QtWidgets.QLabel('Selection:')
-        selectlabel.setToolTip(
-            "How to select the polygons to paint."
-        )
-        grid4.addWidget(selectlabel, 6, 0)
-        self.selectmethod_combo = RadioSet([
-            {"label": "Single", "value": "single"},
-            {"label": "All", "value": "all"},
-            # {"label": "Rectangle", "value": "rectangle"}
-        ])
-        grid4.addWidget(self.selectmethod_combo, 6, 1)
-
         self.layout.addStretch()
 
 
@@ -2539,6 +2452,111 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
                                     {'label': '2 (L/R)', 'value': 'lr'},
                                     {'label': '4', 'value': '4'}])
         grid0.addWidget(self.gaps_radio, 3, 1)
+
+        self.layout.addStretch()
+
+
+class ToolsPaintPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Paint Area Tool Options", parent=parent)
+        super(ToolsPaintPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("Paint Area Tool Options"))
+
+        # ------------------------------
+        ## Paint area
+        # ------------------------------
+        self.paint_label = QtWidgets.QLabel('<b>Paint Area:</b>')
+        self.paint_label.setToolTip(
+            "Creates tool paths to cover the\n"
+            "whole area of a polygon (remove\n"
+            "all copper). You will be asked\n"
+            "to click on the desired polygon."
+        )
+        self.layout.addWidget(self.paint_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        # Tool dia
+        ptdlabel = QtWidgets.QLabel('Tool dia:')
+        ptdlabel.setToolTip(
+            "Diameter of the tool to\n"
+            "be used in the operation."
+        )
+        grid0.addWidget(ptdlabel, 0, 0)
+
+        self.painttooldia_entry = LengthEntry()
+        grid0.addWidget(self.painttooldia_entry, 0, 1)
+
+        # Overlap
+        ovlabel = QtWidgets.QLabel('Overlap:')
+        ovlabel.setToolTip(
+            "How much (fraction) of the tool\n"
+            "width to overlap each tool pass."
+        )
+        grid0.addWidget(ovlabel, 1, 0)
+        self.paintoverlap_entry = LengthEntry()
+        grid0.addWidget(self.paintoverlap_entry, 1, 1)
+
+        # Margin
+        marginlabel = QtWidgets.QLabel('Margin:')
+        marginlabel.setToolTip(
+            "Distance by which to avoid\n"
+            "the edges of the polygon to\n"
+            "be painted."
+        )
+        grid0.addWidget(marginlabel, 2, 0)
+        self.paintmargin_entry = LengthEntry()
+        grid0.addWidget(self.paintmargin_entry, 2, 1)
+
+        # Method
+        methodlabel = QtWidgets.QLabel('Method:')
+        methodlabel.setToolTip(
+            "Algorithm to paint the polygon:<BR>"
+            "<B>Standard</B>: Fixed step inwards.<BR>"
+            "<B>Seed-based</B>: Outwards from seed."
+        )
+        grid0.addWidget(methodlabel, 3, 0)
+        self.paintmethod_combo = RadioSet([
+            {"label": "Standard", "value": "standard"},
+            {"label": "Seed-based", "value": "seed"},
+            {"label": "Straight lines", "value": "lines"}
+        ], orientation='vertical', stretch=False)
+        grid0.addWidget(self.paintmethod_combo, 3, 1)
+
+        # Connect lines
+        pathconnectlabel = QtWidgets.QLabel("Connect:")
+        pathconnectlabel.setToolTip(
+            "Draw lines between resulting\n"
+            "segments to minimize tool lifts."
+        )
+        grid0.addWidget(pathconnectlabel, 4, 0)
+        self.pathconnect_cb = FCCheckBox()
+        grid0.addWidget(self.pathconnect_cb, 4, 1)
+
+        # Paint contour
+        contourlabel = QtWidgets.QLabel("Contour:")
+        contourlabel.setToolTip(
+            "Cut around the perimeter of the polygon\n"
+            "to trim rough edges."
+        )
+        grid0.addWidget(contourlabel, 5, 0)
+        self.contour_cb = FCCheckBox()
+        grid0.addWidget(self.contour_cb, 5, 1)
+
+        # Polygon selection
+        selectlabel = QtWidgets.QLabel('Selection:')
+        selectlabel.setToolTip(
+            "How to select the polygons to paint."
+        )
+        grid0.addWidget(selectlabel, 6, 0)
+        self.selectmethod_combo = RadioSet([
+            {"label": "Single", "value": "single"},
+            {"label": "All", "value": "all"},
+            # {"label": "Rectangle", "value": "rectangle"}
+        ])
+        grid0.addWidget(self.selectmethod_combo, 6, 1)
 
         self.layout.addStretch()
 

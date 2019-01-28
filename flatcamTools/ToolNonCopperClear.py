@@ -263,7 +263,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.default_data.update({
             "name": '_ncc',
             "plot": self.app.defaults["geometry_plot"],
-            "tooldia": self.app.defaults["geometry_painttooldia"],
             "cutz": self.app.defaults["geometry_cutz"],
             "vtipdia": 0.1,
             "vtipangle": 30,
@@ -283,12 +282,15 @@ class NonCopperClear(FlatCAMTool, Gerber):
             "spindlespeed": self.app.defaults["geometry_spindlespeed"],
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "startz": self.app.defaults["geometry_startz"],
-            "paintmargin": self.app.defaults["geometry_paintmargin"],
-            "paintmethod": self.app.defaults["geometry_paintmethod"],
-            "selectmethod": self.app.defaults["geometry_selectmethod"],
-            "pathconnect": self.app.defaults["geometry_pathconnect"],
-            "paintcontour": self.app.defaults["geometry_paintcontour"],
-            "paintoverlap": self.app.defaults["geometry_paintoverlap"],
+
+            "tooldia": self.app.defaults["tools_painttooldia"],
+            "paintmargin": self.app.defaults["tools_paintmargin"],
+            "paintmethod": self.app.defaults["tools_paintmethod"],
+            "selectmethod": self.app.defaults["tools_selectmethod"],
+            "pathconnect": self.app.defaults["tools_pathconnect"],
+            "paintcontour": self.app.defaults["tools_paintcontour"],
+            "paintoverlap": self.app.defaults["tools_paintoverlap"],
+
             "nccoverlap": self.app.defaults["tools_nccoverlap"],
             "nccmargin": self.app.defaults["tools_nccmargin"],
             "nccmethod": self.app.defaults["tools_nccmethod"],
@@ -298,7 +300,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         })
 
         try:
-            dias = [float(eval(dia)) for dia in self.app.defaults["gerber_ncctools"].split(",")]
+            dias = [float(eval(dia)) for dia in self.app.defaults["tools_ncctools"].split(",")]
         except:
             log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> TOOLS -> NCC Tools.")
             return

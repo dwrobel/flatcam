@@ -13,7 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed the FlatCAMGerber.merge() function
 - added a new menu entry for the Gerber Join function: Edit -> Conversions -> "Join Gerber(s) to Gerber" allowing joining Gerber objects into a final Gerber object
-
+- moved Paint Tool defaults from Geometry section to the Tools section in Edit -> Preferences
 
 27.01.2018
 
@@ -23,7 +23,7 @@ CAD program, and create G-Code for Isolation routing.
 - added options for trace segmentation that can be useful for auto-levelling (code snippet from Lei Zheng from a rejected pull request on FlatCAM https://bitbucket.org/realthunder/ )
 - added shortcut key 'L' for creating 'New Excellon' 
 - added shortcut key combo 'SHIFT+S' for Running a Script.
-- modified grbl_laser postprocessor file so it includes a Sxxxx command on the line with M02 (laser active) whenever a value is enter in the Spindlespeed entry field
+- modified grbl_laser postprocessor file so it includes a Sxxxx command on the line with M03 (laser active) whenever a value is enter in the Spindlespeed entry field
 - remade the EDIT -> PREFERENCES window, the Excellon and Gerber sections. Created a new section named TOOLS
 
 26.01.2019
