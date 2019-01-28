@@ -3018,8 +3018,20 @@ class Gerber (Geometry):
         :rtype : None
         """
 
+        try:
+            xfactor = float(xfactor)
+        except:
+            self.app.inform.emit("[error_notcl] Scale factor has to be a number: integer or float.")
+            return
+
         if yfactor is None:
             yfactor = xfactor
+        else:
+            try:
+                yfactor = float(yfactor)
+            except:
+                self.app.inform.emit("[error_notcl] Scale factor has to be a number: integer or float.")
+                return
 
         if point is None:
             px = 0
@@ -3038,6 +3050,7 @@ class Gerber (Geometry):
                                              yfactor, origin=(px, py))
 
         self.solid_geometry = scale_geom(self.solid_geometry)
+        self.app.inform.emit("[success]Gerber Scale done.")
 
         ## solid_geometry ???
         #  It's a cascaded union of objects.
@@ -3066,8 +3079,12 @@ class Gerber (Geometry):
         :type vect: tuple
         :return: None
         """
-
-        dx, dy = vect
+        try:
+            dx, dy = vect
+        except TypeError:
+            self.app.inform.emit("[error_notcl]An (x,y) pair of values are needed. "
+                                 "Probable you entered only one value in the Offset field.")
+            return
 
         def offset_geom(obj):
             if type(obj) is list:
@@ -3081,6 +3098,7 @@ class Gerber (Geometry):
         ## Solid geometry
         # self.solid_geometry = affinity.translate(self.solid_geometry, xoff=dx, yoff=dy)
         self.solid_geometry = offset_geom(self.solid_geometry)
+        self.app.inform.emit("[success]Gerber Offset done.")
 
     def mirror(self, axis, point):
         """

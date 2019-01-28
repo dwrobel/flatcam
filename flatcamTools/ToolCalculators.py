@@ -157,7 +157,7 @@ class ToolCalculator(FlatCAMTool):
             tip_diameter = float(self.tipDia_entry.get_value())
             half_tip_angle = float(self.tipAngle_entry.get_value()) / 2
             cut_depth = float(self.cutDepth_entry.get_value())
-        except TypeError:
+        except:
             return
 
         tool_diameter = tip_diameter + (2 * cut_depth * math.tan(math.radians(half_tip_angle)))

@@ -3470,8 +3470,20 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :rtype: None
         """
 
+        try:
+            xfactor = float(xfactor)
+        except:
+            self.app.inform.emit("[error_notcl] Scale factor has to be a number: integer or float.")
+            return
+
         if yfactor is None:
             yfactor = xfactor
+        else:
+            try:
+                yfactor = float(yfactor)
+            except:
+                self.app.inform.emit("[error_notcl] Scale factor has to be a number: integer or float.")
+                return
 
         if point is None:
             px = 0
@@ -3489,6 +3501,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             self.solid_geometry = affinity.scale(self.solid_geometry, xfactor, yfactor,
                                                  origin=(px, py))
+        self.app.inform.emit("[success]Geometry Scale done.")
 
     def offset(self, vect):
         """
@@ -3500,7 +3513,12 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :rtype: None
         """
 
-        dx, dy = vect
+        try:
+            dx, dy = vect
+        except TypeError:
+            self.app.inform.emit("[error_notcl]An (x,y) pair of values are needed. "
+                                 "Probable you entered only one value in the Offset field.")
+            return
 
         def translate_recursion(geom):
             if type(geom) == list:
@@ -3516,6 +3534,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 self.tools[tool]['solid_geometry'] = translate_recursion(self.tools[tool]['solid_geometry'])
         else:
             self.solid_geometry=translate_recursion(self.solid_geometry)
+        self.app.inform.emit("[success]Geometry Offset done.")
 
     def convert_units(self, units):
         self.ui_disconnect()

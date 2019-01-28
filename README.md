@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+29.01.2019
+
+- fixed issue in Tool Calculators when a float value was entered starting only with the dot.
+- added protection for entering incorrect values in Offset and Scale fields for Gerber and Geometry objects (in Selected Tab)
+
 28.01.2018
 
 - fixed the FlatCAMGerber.merge() function
