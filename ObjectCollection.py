@@ -12,6 +12,7 @@ import inspect  # TODO: Remove
 import FlatCAMApp
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt
+import webbrowser
 
 
 class KeySensitiveListView(QtWidgets.QTreeView):
@@ -345,6 +346,14 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 return
 
         else:
+            # Open Manual
+            if key == QtCore.Qt.Key_F1:
+                webbrowser.open(self.app.manual_url)
+
+            # Open Video Help
+            if key == QtCore.Qt.Key_F2:
+                webbrowser.open(self.app.video_url)
+
             # Zoom Fit
             if key == QtCore.Qt.Key_1:
                 self.app.on_zoom_fit(None)

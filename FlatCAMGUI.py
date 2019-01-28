@@ -336,10 +336,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuhelp = self.menu.addMenu('&Help')
         self.menuhelp_about = self.menuhelp.addAction(QtGui.QIcon('share/tv16.png'), 'About FlatCAM')
         self.menuhelp_home = self.menuhelp.addAction(QtGui.QIcon('share/home16.png'), 'Home')
-        self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), 'Manual')
+        self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), 'Manual\tF1')
         self.menuhelp.addSeparator()
-        self.menuhelp_shortcut_list = self.menuhelp.addAction(QtGui.QIcon('share/shortcuts24.png'), 'Shortcuts List')
-        self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/videohelp24.png'), 'See on YouTube')
+        self.menuhelp_shortcut_list = self.menuhelp.addAction(QtGui.QIcon('share/shortcuts24.png'), 'Shortcuts List\t`')
+        self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/videohelp24.png'), 'See on YouTube\tF2')
 
         ################################
         ### Project Tab Context menu ###

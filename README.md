@@ -14,7 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the FlatCAMGerber.merge() function
 - added a new menu entry for the Gerber Join function: Edit -> Conversions -> "Join Gerber(s) to Gerber" allowing joining Gerber objects into a final Gerber object
 - moved Paint Tool defaults from Geometry section to the Tools section in Edit -> Preferences
-
+- added key shortcuts for Open Manual = F1 and for Open Online VideoHelp = F2
 
 27.01.2018
 

@@ -3757,6 +3757,14 @@ class App(QtCore.QObject):
 
             return
         else:
+            if event.key == 'F1':
+                webbrowser.open(self.manual_url)
+                return
+
+            if event.key == 'F2':
+                webbrowser.open(self.video_url)
+                return
+
             if event.key == self.defaults['fit_key']:  # 1
                 self.on_zoom_fit(None)
                 return
@@ -3896,8 +3904,11 @@ class App(QtCore.QObject):
 <b>ALT+P:</b>    Paint Area Tool<br>
 <b>ALT+R:</b>    Transformation Tool<br>
 <b>ALT+U:</b>    Cutout PCB Tool<br>
-<b>ALT+Z:</b>    Panelize PCB Tool<br>
-<b>Del:</b>      Delete Obj'''
+<br>
+<b>F1:</b>       Open Online Manual<br>
+<b>F2:</b>       Open Online Tutorials<br>
+<b>Del:</b>      Delete Obj
+'''
 
         helpbox = QtWidgets.QMessageBox()
         helpbox.setText(msg)
