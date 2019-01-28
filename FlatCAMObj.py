@@ -366,6 +366,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         if grb_final.solid_geometry is None:
             grb_final.solid_geometry = []
+
         if type(grb_final.solid_geometry) is not list:
             grb_final.solid_geometry = [grb_final.solid_geometry]
 
@@ -380,10 +381,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             # Expand lists
             if type(grb) is list:
                 FlatCAMGerber.merge(grb, grb_final)
+            else:   # If not list, just append
+                for geos in grb.solid_geometry:
+                    grb_final.solid_geometry.append(geos)
 
-            # If not list, just append
-            else:
-                grb_final.solid_geometry.append(grb.solid_geometry)
+        grb_final.solid_geometry = MultiPolygon(grb_final.solid_geometry)
 
     def __init__(self, name):
         Gerber.__init__(self, steps_per_circle=self.app.defaults["gerber_circle_steps"])

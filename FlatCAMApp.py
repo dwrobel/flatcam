@@ -937,6 +937,8 @@ class App(QtCore.QObject):
 
         self.ui.menuedit_convertjoin.triggered.connect(self.on_edit_join)
         self.ui.menuedit_convertjoinexc.triggered.connect(self.on_edit_join_exc)
+        self.ui.menuedit_convertjoingrb.triggered.connect(self.on_edit_join_grb)
+
         self.ui.menuedit_convert_sg2mg.triggered.connect(self.on_convert_singlegeo_to_multigeo)
         self.ui.menuedit_convert_mg2sg.triggered.connect(self.on_convert_multigeo_to_singlegeo)
 
@@ -2484,6 +2486,25 @@ class App(QtCore.QObject):
             FlatCAMExcellon.merge(objs, obj)
 
         self.new_object("excellon", 'Combo_Excellon', initialize)
+
+    def on_edit_join_grb(self):
+        """
+                Callback for Edit->Join Gerber. Joins the selected Gerber objects into
+                a new one.
+
+                :return: None
+                """
+        objs = self.collection.get_selected()
+
+        for obj in objs:
+            if not isinstance(obj, FlatCAMGerber):
+                self.inform.emit("[error_notcl]Failed. Gerber joining works only on Gerber objects.")
+                return
+
+        def initialize(obj, app):
+            FlatCAMGerber.merge(objs, obj)
+
+        self.new_object("gerber", 'Combo_Gerber', initialize)
 
     def on_convert_singlegeo_to_multigeo(self):
         obj = self.collection.get_active()

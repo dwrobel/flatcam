@@ -159,7 +159,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # Separator
         self.menuedit.addSeparator()
         self.menueditedit = self.menuedit.addAction(QtGui.QIcon('share/edit16.png'), 'Edit Object\tE')
-        self.menueditok = self.menuedit.addAction(QtGui.QIcon('share/edit_ok16.png'), '&Update Object\tCTRL+S')
+        self.menueditok = self.menuedit.addAction(QtGui.QIcon('share/edit_ok16.png'), 'Save && Close Editor\tCTRL+S')
         # Separator
         self.menuedit.addSeparator()
         self.menuedit_convert = self.menuedit.addMenu(QtGui.QIcon('share/convert24.png'), 'Conversion')
@@ -175,6 +175,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon('share/join16.png'), 'Join Excellon(s) -> Excellon')
         self.menuedit_convertjoinexc.setToolTip(
             "Merge a selection of Excellon objects into a new combo Excellon object.")
+        self.menuedit_convertjoingrb = self.menuedit_convert.addAction(
+            QtGui.QIcon('share/join16.png'), 'Join Gerber(s) -> Gerber')
+        self.menuedit_convertjoingrb.setToolTip(
+            "Merge a selection of Gerber objects into a new combo Gerber object.")
         # Separator
         self.menuedit_convert.addSeparator()
         self.menuedit_convert_sg2mg = self.menuedit_convert.addAction(
@@ -372,7 +376,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.newexc_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_exc32.png'), "New Blank Excellon")
         self.toolbargeo.addSeparator()
         self.editgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/edit32.png'), "Editor")
-        self.update_obj_btn = self.toolbargeo.addAction(QtGui.QIcon('share/edit_ok32_bis.png'), "Save Object")
+        self.update_obj_btn = self.toolbargeo.addAction(
+            QtGui.QIcon('share/edit_ok32_bis.png'), "Save Object and close the Editor"
+        )
         self.update_obj_btn.setEnabled(False)
         self.toolbargeo.addSeparator()
         self.delete_btn = self.toolbargeo.addAction(QtGui.QIcon('share/cancel_edit32.png'), "&Delete")

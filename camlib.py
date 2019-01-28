@@ -2965,7 +2965,7 @@ class Gerber (Geometry):
             return 0, 0, 0, 0
 
         def bounds_rec(obj):
-            if type(obj) is list:
+            if type(obj) is list and type(obj) is not MultiPolygon:
                 minx = Inf
                 miny = Inf
                 maxx = -Inf
@@ -2980,7 +2980,12 @@ class Gerber (Geometry):
                             maxx = max(maxx, maxx_)
                             maxy = max(maxy, maxy_)
                     else:
-                        minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                        try:
+                            minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                        except Exception as e:
+                            log.debug("camlib.Geometry.bounds() --> %s" % str(e))
+                            return
+
                         minx = min(minx, minx_)
                         miny = min(miny, miny_)
                         maxx = max(maxx, maxx_)

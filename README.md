@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+28.01.2018
+
+- fixed the FlatCAMGerber.merge() function
+- added a new menu entry for the Gerber Join function: Edit -> Conversions -> "Join Gerber(s) to Gerber" allowing joining Gerber objects into a final Gerber object
+
+
 27.01.2018
 
 - added more key shortcuts into the application; they are now displayed in the GUI menu's
@@ -19,7 +25,6 @@ CAD program, and create G-Code for Isolation routing.
 - added shortcut key combo 'SHIFT+S' for Running a Script.
 - modified grbl_laser postprocessor file so it includes a Sxxxx command on the line with M02 (laser active) whenever a value is enter in the Spindlespeed entry field
 - remade the EDIT -> PREFERENCES window, the Excellon and Gerber sections. Created a new section named TOOLS
-
 
 26.01.2019
 
