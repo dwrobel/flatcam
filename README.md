@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - added a new menu entry for the Gerber Join function: Edit -> Conversions -> "Join Gerber(s) to Gerber" allowing joining Gerber objects into a final Gerber object
 - moved Paint Tool defaults from Geometry section to the Tools section in Edit -> Preferences
 
+
 27.01.2018
 
 - added more key shortcuts into the application; they are now displayed in the GUI menu's
