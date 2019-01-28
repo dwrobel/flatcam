@@ -404,9 +404,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             "isooverlap": 0.15,
             "milling_type": "cl",
             "combine_passes": True,
-            "ncctools": "1.0, 0.5",
-            "nccoverlap": 0.4,
-            "nccmargin": 1,
             "noncoppermargin": 0.0,
             "noncopperrounded": False,
             "bboxmargin": 0.0,
@@ -757,9 +754,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         factor = Gerber.convert_units(self, units)
 
         self.options['isotooldia'] *= factor
-        self.options['cutoutmargin'] *= factor
-        self.options['cutoutgapsize'] *= factor
-        self.options['noncoppermargin'] *= factor
         self.options['bboxmargin'] *= factor
 
     def plot(self, **kwargs):

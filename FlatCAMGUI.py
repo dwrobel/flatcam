@@ -569,6 +569,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.options_combo.addItem("PROJ. OPTIONS ")
         self.hlay1.addWidget(self.options_combo)
 
+        # disable this button as it may no longer be useful
+        self.options_combo.setVisible(False)
         self.hlay1.addStretch()
 
         self.general_scroll_area = VerticalScrollArea()
