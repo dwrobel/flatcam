@@ -104,7 +104,7 @@ M0 Change to Tool Dia = {toolC}
     def end_code(self, p):
         coords_xy = p['toolchange_xy']
         gcode = ('G0 Z' + self.feedrate_format %(p.fr_decimals, p.endz) + " " + self.feedrate_rapid_code(p) + "\n")
-        gcode += 'G0 X{x}Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + " " + self.feedrate_rapid_code(p) + "\n"
+        gcode += 'G0 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + " " + self.feedrate_rapid_code(p) + "\n"
 
         return gcode
 

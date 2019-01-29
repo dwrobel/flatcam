@@ -128,7 +128,7 @@ M0
     def end_code(self, p):
         coords_xy = p['toolchange_xy']
         gcode = ('G00 Z' + self.feedrate_format %(p.fr_decimals, p.endz) + "\n")
-        gcode += 'G00 X{x}Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
+        gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
         return gcode
 
     def feedrate_code(self, p):

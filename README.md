@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+30.01.2019
+
+- added a space before Y coordinate in end_code() function in some of the postprocessor files
+
 29.01.2019
 
 - fixed issue in Tool Calculators when a float value was entered starting only with the dot.
