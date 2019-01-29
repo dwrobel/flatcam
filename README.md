@@ -16,6 +16,8 @@ CAD program, and create G-Code for Isolation routing.
 - added more shortcut keys in the Geometry Editor and in Excellon Editor; activated also the zoom (fit, in, out) shortcut keys ('1' , '2', '3') for the editors
 - disabled the context menu in tools table on Paint Tool in case that the painting method is single.
 - added protection when trying to do Intersection in Geometry Editor without having selected Geometry items.
+- fixed the scale, mirror, rotate, skew functions to work with Geometry Objects of multi-geometry type.
+
 
 28.01.2018
 

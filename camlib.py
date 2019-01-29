@@ -1354,10 +1354,16 @@ class Geometry(object):
                 return affinity.scale(obj, xscale, yscale, origin=(px,py))
 
         try:
-            self.solid_geometry = mirror_geom(self.solid_geometry)
+            if self.multigeo is True:
+                for tool in self.tools:
+                    self.tools[tool]['solid_geometry'] = mirror_geom(self.tools[tool]['solid_geometry'])
+            else:
+                self.solid_geometry = mirror_geom(self.solid_geometry)
             self.app.inform.emit('[success]Object was mirrored ...')
         except AttributeError:
             self.app.inform.emit("[error_notcl] Failed to mirror. No object selected")
+
+
 
     def rotate(self, angle, point):
         """
@@ -1388,7 +1394,11 @@ class Geometry(object):
                 return affinity.rotate(obj, angle, origin=(px, py))
 
         try:
-            self.solid_geometry = rotate_geom(self.solid_geometry)
+            if self.multigeo is True:
+                for tool in self.tools:
+                    self.tools[tool]['solid_geometry'] = rotate_geom(self.tools[tool]['solid_geometry'])
+            else:
+                self.solid_geometry = rotate_geom(self.solid_geometry)
             self.app.inform.emit('[success]Object was rotated ...')
         except AttributeError:
             self.app.inform.emit("[error_notcl] Failed to rotate. No object selected")
@@ -1420,7 +1430,11 @@ class Geometry(object):
                 return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
 
         try:
-            self.solid_geometry = skew_geom(self.solid_geometry)
+            if self.multigeo is True:
+                for tool in self.tools:
+                    self.tools[tool]['solid_geometry'] = skew_geom(self.tools[tool]['solid_geometry'])
+            else:
+                self.solid_geometry = skew_geom(self.solid_geometry)
             self.app.inform.emit('[success]Object was skewed ...')
         except AttributeError:
             self.app.inform.emit("[error_notcl] Failed to skew. No object selected")

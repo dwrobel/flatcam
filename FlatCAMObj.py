@@ -3491,16 +3491,32 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             px, py = point
 
-        if type(self.solid_geometry) == list:
-            geo_list =  self.flatten(self.solid_geometry)
-            self.solid_geometry = []
-            # for g in geo_list:
-            #     self.solid_geometry.append(affinity.scale(g, xfactor, yfactor, origin=(px, py)))
-            self.solid_geometry = [affinity.scale(g, xfactor, yfactor, origin=(px, py))
-                                   for g in geo_list]
+        # if type(self.solid_geometry) == list:
+        #     geo_list =  self.flatten(self.solid_geometry)
+        #     self.solid_geometry = []
+        #     # for g in geo_list:
+        #     #     self.solid_geometry.append(affinity.scale(g, xfactor, yfactor, origin=(px, py)))
+        #     self.solid_geometry = [affinity.scale(g, xfactor, yfactor, origin=(px, py))
+        #                            for g in geo_list]
+        # else:
+        #     self.solid_geometry = affinity.scale(self.solid_geometry, xfactor, yfactor,
+        #                                          origin=(px, py))
+        # self.app.inform.emit("[success]Geometry Scale done.")
+
+        def scale_recursion(geom):
+            if type(geom) == list:
+                geoms=list()
+                for local_geom in geom:
+                    geoms.append(scale_recursion(local_geom))
+                return geoms
+            else:
+                return  affinity.scale(geom, xfactor, yfactor, origin=(px, py))
+
+        if self.multigeo is True:
+            for tool in self.tools:
+                self.tools[tool]['solid_geometry'] = scale_recursion(self.tools[tool]['solid_geometry'])
         else:
-            self.solid_geometry = affinity.scale(self.solid_geometry, xfactor, yfactor,
-                                                 origin=(px, py))
+            self.solid_geometry=scale_recursion(self.solid_geometry)
         self.app.inform.emit("[success]Geometry Scale done.")
 
     def offset(self, vect):
