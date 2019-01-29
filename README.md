@@ -21,6 +21,7 @@ CAD program, and create G-Code for Isolation routing.
 - more changes in Edit -> Preferences -> Geometry, Gerber and in CNCJob
 - added new option for Cutout Tool Freeform Gaps in Edit -> Preferences -> Tools
 - fixed Freeform Cutout gaps issue (it was double than the value set)
+- added protection so the Cutout (either Freeform or Rectangular) cannot be done on a multigeo Geometry
 
 28.01.2018
 

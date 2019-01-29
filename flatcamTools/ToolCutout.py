@@ -253,6 +253,12 @@ class ToolCutout(FlatCAMTool):
                                  "Fill in a correct value and retry. ")
             return
 
+        if cutout_obj.multigeo is True:
+            self.app.inform.emit("[error]Cutout operation cannot be done on a multi-geo Geometry.\n"
+                                 "Optionally, this Multi-geo Geometry can be converted to Single-geo Geometry,\n"
+                                 "and after that perform Cutout.")
+            return
+
         # Get min and max data for each object as we just cut rectangles across X or Y
         xmin, ymin, xmax, ymax = cutout_obj.bounds()
         px = 0.5 * (xmin + xmax) + margin
@@ -362,6 +368,12 @@ class ToolCutout(FlatCAMTool):
         if 0 in {dia}:
             self.app.inform.emit("[error_notcl]Tool Diameter is zero value. Change it to a positive integer.")
             return "Tool Diameter is zero value. Change it to a positive integer."
+
+        if cutout_obj.multigeo is True:
+            self.app.inform.emit("[error]Cutout operation cannot be done on a multi-geo Geometry.\n"
+                                 "Optionally, this Multi-geo Geometry can be converted to Single-geo Geometry,\n"
+                                 "and after that perform Cutout.")
+            return
 
         def geo_init(geo_obj, app_obj):
             real_margin = margin + (dia / 2)
