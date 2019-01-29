@@ -1343,7 +1343,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.panbuttonlabel = QtWidgets.QLabel('<b>Pan Button:</b>')
         self.panbuttonlabel.setToolTip("Select the mouse button to use for panning:\n"
                                        "- MMB --> Middle Mouse Button\n"
-                                       "- RMB --> Middle Mouse Button")
+                                       "- RMB --> Right Mouse Button")
         self.pan_button_radio = RadioSet([{'label': 'MMB', 'value': '3'},
                                      {'label': 'RMB', 'value': '2'}])
 
