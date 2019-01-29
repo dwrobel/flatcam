@@ -312,11 +312,13 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.addtool_entry.setDisabled(True)
             self.addtool_btn.setDisabled(True)
             self.deltool_btn.setDisabled(True)
+            self.tools_table.setContextMenuPolicy(Qt.NoContextMenu)
         else:
             self.rest_cb.setDisabled(False)
             self.addtool_entry.setDisabled(False)
             self.addtool_btn.setDisabled(False)
             self.deltool_btn.setDisabled(False)
+            self.tools_table.setContextMenuPolicy(Qt.ActionsContextMenu)
 
     def set_ui(self):
         ## Init the GUI interface
@@ -382,6 +384,10 @@ class ToolPaint(FlatCAMTool, Gerber):
         # call on self.on_tool_add() counts as an call to self.build_ui()
         # through this, we add a initial row / tool in the tool_table
         self.on_tool_add(self.app.defaults["tools_painttooldia"], muted=True)
+
+        # if the Paint Method is "Single" disable the tool table context menu
+        if  self.default_data["selectmethod"] == "single":
+            self.tools_table.setContextMenuPolicy(Qt.NoContextMenu)
 
     def build_ui(self):
 

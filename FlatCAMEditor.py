@@ -613,6 +613,7 @@ class FCCircle(FCShapeTool):
         radius = distance(p1, p2)
         self.geometry = DrawToolShape(Point(p1).buffer(radius, int(self.steps_per_circ / 4)))
         self.complete = True
+        self.draw_app.app.inform.emit("[success]Done. Adding Circle completed.")
 
 
 class FCArc(FCShapeTool):
@@ -794,6 +795,7 @@ class FCArc(FCShapeTool):
             self.geometry = DrawToolShape(LineString(arc(center, radius, startangle, stopangle,
                                                          self.direction, self.steps_per_circ)))
         self.complete = True
+        self.draw_app.app.inform.emit("[success]Done. Arc completed.")
 
 
 class FCRectangle(FCShapeTool):
@@ -831,6 +833,7 @@ class FCRectangle(FCShapeTool):
         # self.geometry = LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])])
         self.geometry = DrawToolShape(Polygon([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])]))
         self.complete = True
+        self.draw_app.app.inform.emit("[success]Done. Rectangle completed.")
 
 
 class FCPolygon(FCShapeTool):
@@ -869,6 +872,7 @@ class FCPolygon(FCShapeTool):
         self.geometry = DrawToolShape(Polygon(self.points))
         self.draw_app.in_action = False
         self.complete = True
+        self.draw_app.app.inform.emit("[success]Done. Polygon completed.")
 
     def on_key(self, key):
         if key == 'backspace':
@@ -885,6 +889,7 @@ class FCPath(FCPolygon):
         self.geometry = DrawToolShape(LineString(self.points))
         self.draw_app.in_action = False
         self.complete = True
+        self.draw_app.app.inform.emit("[success]Done. Path completed.")
 
     def utility_geometry(self, data=None):
         if len(self.points) > 0:
@@ -1174,6 +1179,7 @@ class FCMove(FCShapeTool):
         #     self.draw_app.set_selected(g)
 
         self.complete = True
+        self.draw_app.app.inform.emit("[success]Done. Geometry(s) Move completed.")
 
     def utility_geometry(self, data=None):
         """
@@ -1209,6 +1215,7 @@ class FCCopy(FCMove):
         self.geometry = [DrawToolShape(affinity.translate(geom.geo, xoff=dx, yoff=dy))
                          for geom in self.draw_app.get_selected()]
         self.complete = True
+        self.draw_app.app.inform.emit("[success]Done. Geometry(s) Copy completed.")
 
 
 class FCText(FCShapeTool):
@@ -1242,6 +1249,7 @@ class FCText(FCShapeTool):
         self.text_gui.text_path = []
         self.text_gui.hide_tool()
         self.complete = True
+        self.draw_app.app.inform.emit("[success]Done. Adding Text completed.")
 
     def utility_geometry(self, data=None):
         """
@@ -1282,6 +1290,7 @@ class FCBuffer(FCShapeTool):
         self.draw_app.buffer(buffer_distance, join_style)
         self.app.ui.notebook.setTabText(2, "Tools")
         self.disactivate()
+        self.draw_app.app.inform.emit("[success]Done. Buffer Tool completed.")
 
     def on_buffer_int(self):
         buffer_distance = self.buff_tool.buffer_distance_entry.get_value()
@@ -1291,6 +1300,7 @@ class FCBuffer(FCShapeTool):
         self.draw_app.buffer_int(buffer_distance, join_style)
         self.app.ui.notebook.setTabText(2, "Tools")
         self.disactivate()
+        self.draw_app.app.inform.emit("[success]Done. Buffer Int Tool completed.")
 
     def on_buffer_ext(self):
         buffer_distance = self.buff_tool.buffer_distance_entry.get_value()
@@ -1300,6 +1310,7 @@ class FCBuffer(FCShapeTool):
         self.draw_app.buffer_ext(buffer_distance, join_style)
         self.app.ui.notebook.setTabText(2, "Tools")
         self.disactivate()
+        self.draw_app.app.inform.emit("[success]Done. Buffer Ext Tool completed.")
 
     def activate(self):
         self.buff_tool.buffer_button.clicked.disconnect()
@@ -1361,6 +1372,7 @@ class FCRotate(FCShapeTool):
         # Delete old
         self.draw_app.delete_selected()
         self.complete = True
+        self.draw_app.app.inform.emit("[success]Done. Geometry rotate completed.")
 
         # MS: automatically select the Select Tool after finishing the action but is not working yet :(
         #self.draw_app.select_tool("select")
@@ -2006,7 +2018,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
             try:
                 self.options[option] = float(entry.text())
             except Exception as e:
-                log.debug(str(e))
+                log.debug("FlatCAMGeoEditor.__init__().entry2option() --> %s" % str(e))
+                return
 
         self.app.ui.grid_gap_x_entry.setValidator(QtGui.QDoubleValidator())
         self.app.ui.grid_gap_x_entry.textChanged.connect(
@@ -3020,7 +3033,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         shapes = self.get_selected()
 
-        results = shapes[0].geo
+        try:
+            results = shapes[0].geo
+        except Exception as e:
+            log.debug("FlatCAMGeoEditor.intersection() --> %s" % str(e))
+            self.app.inform.emit("[warning_notcl]A selection of at least 2 geo items is required to do Intersection.")
+            self.select_tool('select')
+            return
 
         for shape in shapes[1:]:
             results = results.intersection(shape.geo)

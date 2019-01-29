@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed issue in Tool Calculators when a float value was entered starting only with the dot.
 - added protection for entering incorrect values in Offset and Scale fields for Gerber and Geometry objects (in Selected Tab)
 - added more shortcut keys in the Geometry Editor and in Excellon Editor; activated also the zoom (fit, in, out) shortcut keys ('1' , '2', '3') for the editors
+- disabled the context menu in tools table on Paint Tool in case that the painting method is single.
+- added protection when trying to do Intersection in Geometry Editor without having selected Geometry items.
 
 28.01.2018
 
