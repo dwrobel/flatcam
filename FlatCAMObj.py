@@ -4189,13 +4189,16 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         cw_row = cw_index.row()
 
         self.shapes.clear(update=True)
+
         for tooluid_key in self.cnc_tools:
             tooldia = float('%.4f' % float(self.cnc_tools[tooluid_key]['tooldia']))
             gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
             # tool_uid = int(self.ui.cnc_tools_table.item(cw_row, 3).text())
 
-            if self.ui.cnc_tools_table.cellWidget((tooluid_key - 1), 6).isChecked():
-                self.plot2(tooldia=tooldia, obj=self, visible=True, gcode_parsed=gcode_parsed)
+            for r in range(self.ui.cnc_tools_table.rowCount()):
+                if int(self.ui.cnc_tools_table.item(r, 5).text()) == int(tooluid_key):
+                    if self.ui.cnc_tools_table.cellWidget(r, 6).isChecked():
+                        self.plot2(tooldia=tooldia, obj=self, visible=True, gcode_parsed=gcode_parsed)
 
         self.shapes.redraw()
 

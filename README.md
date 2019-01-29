@@ -23,6 +23,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed Freeform Cutout gaps issue (it was double than the value set)
 - added protection so the Cutout (either Freeform or Rectangular) cannot be done on a multigeo Geometry
 - added 2Sided Tool default values in Edit -> Preferences -> Tools
+- optimized the FlatCAMCNCJob.on_plot_cb_click_table() plot function and solved a bug regarding having tools numbers not in sync with the cnc tool table
 
 28.01.2018
 
