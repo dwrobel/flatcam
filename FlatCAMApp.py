@@ -409,7 +409,11 @@ class App(QtCore.QObject):
             "tools_paintmethod": self.tools_defaults_form.tools_paint_group.paintmethod_combo,
             "tools_selectmethod": self.tools_defaults_form.tools_paint_group.selectmethod_combo,
             "tools_pathconnect": self.tools_defaults_form.tools_paint_group.pathconnect_cb,
-            "tools_paintcontour": self.tools_defaults_form.tools_paint_group.contour_cb
+            "tools_paintcontour": self.tools_defaults_form.tools_paint_group.contour_cb,
+
+            "tools_2sided_mirror_axis": self.tools_defaults_form.tools_2sided_group.mirror_axis_radio,
+            "tools_2sided_axis_loc": self.tools_defaults_form.tools_2sided_group.axis_location_radio,
+            "tools_2sided_drilldia": self.tools_defaults_form.tools_2sided_group.drill_dia_entry,
         }
         # loads postprocessors
         self.postprocessors = load_postprocessors(self)
@@ -570,7 +574,11 @@ class App(QtCore.QObject):
             "tools_paintmethod": "seed",
             "tools_selectmethod": "single",
             "tools_pathconnect": True,
-            "tools_paintcontour": True
+            "tools_paintcontour": True,
+
+            "tools_2sided_mirror_axis": "X",
+            "tools_2sided_axis_loc": "point",
+            "tools_2sided_drilldia": 1,
 
         })
 
@@ -686,7 +694,7 @@ class App(QtCore.QObject):
             "tools_cutoutmargin": self.tools_options_form.tools_cutout_group.cutout_margin_entry,
             "tools_cutoutgapsize": self.tools_options_form.tools_cutout_group.cutout_gap_entry,
             "tools_gaps_rect": self.tools_options_form.tools_cutout_group.gaps_radio,
-            "tools_gaps_rect": self.tools_options_form.tools_cutout_group.gaps_combo,
+            "tools_gaps_ff": self.tools_options_form.tools_cutout_group.gaps_combo,
 
             "tools_painttooldia": self.tools_options_form.tools_paint_group.painttooldia_entry,
             "tools_paintoverlap": self.tools_options_form.tools_paint_group.paintoverlap_entry,
@@ -694,7 +702,11 @@ class App(QtCore.QObject):
             "tools_paintmethod": self.tools_options_form.tools_paint_group.paintmethod_combo,
             "tools_selectmethod": self.tools_options_form.tools_paint_group.selectmethod_combo,
             "tools_pathconnect": self.tools_options_form.tools_paint_group.pathconnect_cb,
-            "tools_paintcontour": self.tools_options_form.tools_paint_group.contour_cb
+            "tools_paintcontour": self.tools_options_form.tools_paint_group.contour_cb,
+
+            "tools_2sided_mirror_axis": self.tools_options_form.tools_2sided_group.mirror_axis_radio,
+            "tools_2sided_axis_loc": self.tools_options_form.tools_2sided_group.axis_location_radio,
+            "tools_2sided_drilldia": self.tools_options_form.tools_2sided_group.drill_dia_entry
         }
 
         for name in list(self.postprocessors.keys()):
@@ -792,7 +804,11 @@ class App(QtCore.QObject):
             "tools_paintmethod": "seed",
             "tools_selectmethod": "single",
             "tools_pathconnect": True,
-            "tools_paintcontour": True
+            "tools_paintcontour": True,
+
+            "tools_2sided_mirror_axis": "X",
+            "tools_2sided_axis_loc": 'point',
+            "tools_2sided_drilldia": 1
 
         })
 

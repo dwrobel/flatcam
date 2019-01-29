@@ -978,13 +978,20 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.tools_cutout_group = ToolsCutoutPrefGroupUI()
         self.tools_cutout_group.setFixedWidth(260)
 
+        self.tools_2sided_group = Tools2sidedPrefGroupUI()
+        self.tools_2sided_group.setFixedWidth(260)
+
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.tools_ncc_group)
         self.vlay.addWidget(self.tools_paint_group)
 
-        self.layout.addLayout(self.vlay)
+        self.vlay1 = QtWidgets.QVBoxLayout()
+        self.vlay1.addWidget(self.tools_cutout_group)
+        self.vlay1.addWidget(self.tools_2sided_group)
 
-        self.layout.addWidget(self.tools_cutout_group)
+        self.layout.addLayout(self.vlay)
+        self.layout.addLayout(self.vlay1)
+
         self.layout.addStretch()
 
 class CNCJobPreferencesUI(QtWidgets.QWidget):
@@ -2552,6 +2559,63 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         for it in gaps_items:
             self.gaps_combo.addItem(it)
             self.gaps_combo.setStyleSheet('background-color: rgb(255,255,255)')
+
+        self.layout.addStretch()
+
+
+class Tools2sidedPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "2sided Tool Options", parent=parent)
+        super(Tools2sidedPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("2Sided Tool Options"))
+
+        ## Board cuttout
+        self.dblsided_label = QtWidgets.QLabel("<b>Double Sided:</b>")
+        self.dblsided_label.setToolTip(
+            "A tool to help in creating a double sided\n"
+            "PCB using alignment holes."
+        )
+        self.layout.addWidget(self.dblsided_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        ## Drill diameter for alignment holes
+        self.drill_dia_entry = LengthEntry()
+        self.dd_label = QtWidgets.QLabel("Drill diam.:")
+        self.dd_label.setToolTip(
+            "Diameter of the drill for the "
+            "alignment holes."
+        )
+        grid0.addWidget(self.dd_label, 0, 0)
+        grid0.addWidget(self.drill_dia_entry, 0, 1)
+
+        ## Axis
+        self.mirror_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
+                                     {'label': 'Y', 'value': 'Y'}])
+        self.mirax_label = QtWidgets.QLabel("Mirror Axis:")
+        self.mirax_label.setToolTip(
+            "Mirror vertically (X) or horizontally (Y)."
+        )
+        # grid_lay.addRow("Mirror Axis:", self.mirror_axis)
+        self.empty_lb1 = QtWidgets.QLabel("")
+        grid0.addWidget(self.empty_lb1, 1, 0)
+        grid0.addWidget(self.mirax_label, 2, 0)
+        grid0.addWidget(self.mirror_axis_radio, 2, 1)
+
+        ## Axis Location
+        self.axis_location_radio = RadioSet([{'label': 'Point', 'value': 'point'},
+                                       {'label': 'Box', 'value': 'box'}])
+        self.axloc_label = QtWidgets.QLabel("Axis Ref:")
+        self.axloc_label.setToolTip(
+            "The axis should pass through a <b>point</b> or cut\n "
+            "a specified <b>box</b> (in a Geometry object) in \n"
+            "the middle."
+        )
+        # grid_lay.addRow("Axis Location:", self.axis_location)
+        grid0.addWidget(self.axloc_label, 3, 0)
+        grid0.addWidget(self.axis_location_radio, 3, 1)
 
         self.layout.addStretch()
 

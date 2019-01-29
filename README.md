@@ -22,6 +22,7 @@ CAD program, and create G-Code for Isolation routing.
 - added new option for Cutout Tool Freeform Gaps in Edit -> Preferences -> Tools
 - fixed Freeform Cutout gaps issue (it was double than the value set)
 - added protection so the Cutout (either Freeform or Rectangular) cannot be done on a multigeo Geometry
+- added 2Sided Tool default values in Edit -> Preferences -> Tools
 
 28.01.2018
 
