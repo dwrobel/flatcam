@@ -141,6 +141,9 @@ class ToolCalculator(FlatCAMTool):
         FlatCAMTool.run(self)
         self.app.ui.notebook.setTabText(2, "Calc. Tool")
 
+    def install(self, icon=None, separator=None, **kwargs):
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+C', **kwargs)
+
     def on_calculate_tool_dia(self):
         # Calculation:
         # Manufacturer gives total angle of the the tip but we need only half of it
@@ -154,7 +157,7 @@ class ToolCalculator(FlatCAMTool):
             tip_diameter = float(self.tipDia_entry.get_value())
             half_tip_angle = float(self.tipAngle_entry.get_value()) / 2
             cut_depth = float(self.cutDepth_entry.get_value())
-        except TypeError:
+        except:
             return
 
         tool_diameter = tip_diameter + (2 * cut_depth * math.tan(math.radians(half_tip_angle)))

@@ -90,8 +90,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.904
-    version_date = "2019/01/25"
+    version = 8.905
+    version_date = "2019/01/29"
     beta = True
 
     # URL for update checks and statistics
@@ -104,6 +104,7 @@ class App(QtCore.QObject):
     manual_url = "http://flatcam.org/manual/index.html"
     video_url = "https://www.youtube.com/playlist?list=PLVvP2SYRpx-AQgNlfoxw93tXUXon7G94_"
 
+    should_we_quit = True
 
     ##################
     ##    Signals   ##
@@ -287,124 +288,142 @@ class App(QtCore.QObject):
         self.excellon_defaults_form = ExcellonPreferencesUI()
         self.geometry_defaults_form = GeometryPreferencesUI()
         self.cncjob_defaults_form = CNCJobPreferencesUI()
+        self.tools_defaults_form = ToolsPreferencesUI()
 
         # when adding entries here read the comments in the  method found bellow named:
         # def new_object(self, kind, name, initialize, active=True, fit=True, plot=True)
         self.defaults_form_fields = {
-            "units": self.general_defaults_form.general_group.units_radio,
-            "global_shell_at_startup": self.general_defaults_form.general_group.shell_startup_cb,
-            "global_version_check": self.general_defaults_form.general_group.version_check_cb,
-            "global_send_stats": self.general_defaults_form.general_group.send_stats_cb,
-            "global_gridx": self.general_defaults_form.general_group.gridx_entry,
-            "global_gridy": self.general_defaults_form.general_group.gridy_entry,
-            "global_plot_fill": self.general_defaults_form.general_group.pf_color_entry,
-            "global_plot_line": self.general_defaults_form.general_group.pl_color_entry,
-            "global_sel_fill": self.general_defaults_form.general_group.sf_color_entry,
-            "global_sel_line": self.general_defaults_form.general_group.sl_color_entry,
-            "global_alt_sel_fill": self.general_defaults_form.general_group.alt_sf_color_entry,
-            "global_alt_sel_line": self.general_defaults_form.general_group.alt_sl_color_entry,
-            "global_draw_color": self.general_defaults_form.general_group.draw_color_entry,
-            "global_sel_draw_color": self.general_defaults_form.general_group.sel_draw_color_entry,
-            "global_pan_button": self.general_defaults_form.general_group.pan_button_radio,
-            "global_mselect_key": self.general_defaults_form.general_group.mselect_radio,
-            # "global_pan_with_space_key": self.general_defaults_form.general_group.pan_with_space_cb,
-            "global_workspace": self.general_defaults_form.general_group.workspace_cb,
-            "global_workspaceT": self.general_defaults_form.general_group.wk_cb,
+            "units": self.general_defaults_form.general_app_group.units_radio,
+            "global_shell_at_startup": self.general_defaults_form.general_app_group.shell_startup_cb,
+            "global_version_check": self.general_defaults_form.general_app_group.version_check_cb,
+            "global_send_stats": self.general_defaults_form.general_app_group.send_stats_cb,
+            "global_gridx": self.general_defaults_form.general_gui_group.gridx_entry,
+            "global_gridy": self.general_defaults_form.general_gui_group.gridy_entry,
+            "global_plot_fill": self.general_defaults_form.general_gui_group.pf_color_entry,
+            "global_plot_line": self.general_defaults_form.general_gui_group.pl_color_entry,
+            "global_sel_fill": self.general_defaults_form.general_gui_group.sf_color_entry,
+            "global_sel_line": self.general_defaults_form.general_gui_group.sl_color_entry,
+            "global_alt_sel_fill": self.general_defaults_form.general_gui_group.alt_sf_color_entry,
+            "global_alt_sel_line": self.general_defaults_form.general_gui_group.alt_sl_color_entry,
+            "global_draw_color": self.general_defaults_form.general_gui_group.draw_color_entry,
+            "global_sel_draw_color": self.general_defaults_form.general_gui_group.sel_draw_color_entry,
+            "global_pan_button": self.general_defaults_form.general_app_group.pan_button_radio,
+            "global_mselect_key": self.general_defaults_form.general_app_group.mselect_radio,
+            # "global_pan_with_space_key": self.general_defaults_form.general_gui_group.pan_with_space_cb,
+            "global_workspace": self.general_defaults_form.general_gui_group.workspace_cb,
+            "global_workspaceT": self.general_defaults_form.general_gui_group.wk_cb,
 
-            "gerber_plot": self.gerber_defaults_form.gerber_group.plot_cb,
-            "gerber_solid": self.gerber_defaults_form.gerber_group.solid_cb,
-            "gerber_multicolored": self.gerber_defaults_form.gerber_group.multicolored_cb,
-            "gerber_isotooldia": self.gerber_defaults_form.gerber_group.iso_tool_dia_entry,
-            "gerber_isopasses": self.gerber_defaults_form.gerber_group.iso_width_entry,
-            "gerber_isooverlap": self.gerber_defaults_form.gerber_group.iso_overlap_entry,
-            "gerber_ncctools": self.gerber_defaults_form.gerber_group.ncc_tool_dia_entry,
-            "gerber_nccoverlap": self.gerber_defaults_form.gerber_group.ncc_overlap_entry,
-            "gerber_nccmargin": self.gerber_defaults_form.gerber_group.ncc_margin_entry,
-            "gerber_nccmethod": self.gerber_defaults_form.gerber_group.ncc_method_radio,
-            "gerber_nccconnect": self.gerber_defaults_form.gerber_group.ncc_connect_cb,
-            "gerber_ncccontour": self.gerber_defaults_form.gerber_group.ncc_contour_cb,
-            "gerber_nccrest": self.gerber_defaults_form.gerber_group.ncc_rest_cb,
+            "gerber_plot": self.gerber_defaults_form.gerber_gen_group.plot_cb,
+            "gerber_solid": self.gerber_defaults_form.gerber_gen_group.solid_cb,
+            "gerber_multicolored": self.gerber_defaults_form.gerber_gen_group.multicolored_cb,
+            "gerber_circle_steps": self.gerber_defaults_form.gerber_gen_group.circle_steps_entry,
 
-            "gerber_combine_passes": self.gerber_defaults_form.gerber_group.combine_passes_cb,
-            "gerber_milling_type": self.gerber_defaults_form.gerber_group.milling_type_radio,
-            "gerber_cutouttooldia": self.gerber_defaults_form.gerber_group.cutout_tooldia_entry,
-            "gerber_cutoutmargin": self.gerber_defaults_form.gerber_group.cutout_margin_entry,
-            "gerber_cutoutgapsize": self.gerber_defaults_form.gerber_group.cutout_gap_entry,
-            "gerber_gaps": self.gerber_defaults_form.gerber_group.gaps_radio,
-            "gerber_noncoppermargin": self.gerber_defaults_form.gerber_group.noncopper_margin_entry,
-            "gerber_noncopperrounded": self.gerber_defaults_form.gerber_group.noncopper_rounded_cb,
-            "gerber_bboxmargin": self.gerber_defaults_form.gerber_group.bbmargin_entry,
-            "gerber_bboxrounded": self.gerber_defaults_form.gerber_group.bbrounded_cb,
-            "gerber_circle_steps": self.gerber_defaults_form.gerber_group.circle_steps_entry,
-            "excellon_plot": self.excellon_defaults_form.excellon_group.plot_cb,
-            "excellon_solid": self.excellon_defaults_form.excellon_group.solid_cb,
-            "excellon_drillz": self.excellon_defaults_form.excellon_group.cutz_entry,
-            "excellon_travelz": self.excellon_defaults_form.excellon_group.travelz_entry,
-            "excellon_feedrate": self.excellon_defaults_form.excellon_group.feedrate_entry,
-            "excellon_feedrate_rapid": self.excellon_defaults_form.excellon_group.feedrate_rapid_entry,
-            "excellon_spindlespeed": self.excellon_defaults_form.excellon_group.spindlespeed_entry,
-            "excellon_dwell": self.excellon_defaults_form.excellon_group.dwell_cb,
-            "excellon_dwelltime": self.excellon_defaults_form.excellon_group.dwelltime_entry,
-            "excellon_toolchange": self.excellon_defaults_form.excellon_group.toolchange_cb,
-            "excellon_toolchangez": self.excellon_defaults_form.excellon_group.toolchangez_entry,
-            "excellon_toolchangexy": self.excellon_defaults_form.excellon_group.toolchangexy_entry,
-            "excellon_ppname_e": self.excellon_defaults_form.excellon_group.pp_excellon_name_cb,
-            "excellon_startz": self.excellon_defaults_form.excellon_group.estartz_entry,
-            "excellon_endz": self.excellon_defaults_form.excellon_group.eendz_entry,
-            "excellon_tooldia": self.excellon_defaults_form.excellon_group.tooldia_entry,
-            "excellon_slot_tooldia": self.excellon_defaults_form.excellon_group.slot_tooldia_entry,
-            "excellon_format_upper_in": self.excellon_defaults_form.excellon_group.excellon_format_upper_in_entry,
-            "excellon_format_lower_in": self.excellon_defaults_form.excellon_group.excellon_format_lower_in_entry,
-            "excellon_format_upper_mm": self.excellon_defaults_form.excellon_group.excellon_format_upper_mm_entry,
-            "excellon_format_lower_mm": self.excellon_defaults_form.excellon_group.excellon_format_lower_mm_entry,
-            "excellon_zeros": self.excellon_defaults_form.excellon_group.excellon_zeros_radio,
-            "excellon_units": self.excellon_defaults_form.excellon_group.excellon_units_radio,
-            "excellon_optimization_type": self.excellon_defaults_form.excellon_group.excellon_optimization_radio,
-            "excellon_gcode_type": self.excellon_defaults_form.excellon_group.excellon_gcode_type_radio,
-            "geometry_plot": self.geometry_defaults_form.geometry_group.plot_cb,
-            "geometry_cutz": self.geometry_defaults_form.geometry_group.cutz_entry,
-            "geometry_travelz": self.geometry_defaults_form.geometry_group.travelz_entry,
-            "geometry_feedrate": self.geometry_defaults_form.geometry_group.cncfeedrate_entry,
-            "geometry_feedrate_z": self.geometry_defaults_form.geometry_group.cncplunge_entry,
-            "geometry_feedrate_rapid": self.geometry_defaults_form.geometry_group.cncfeedrate_rapid_entry,
-            "geometry_cnctooldia": self.geometry_defaults_form.geometry_group.cnctooldia_entry,
-            "geometry_painttooldia": self.geometry_defaults_form.geometry_group.painttooldia_entry,
-            "geometry_spindlespeed": self.geometry_defaults_form.geometry_group.cncspindlespeed_entry,
-            "geometry_dwell": self.geometry_defaults_form.geometry_group.dwell_cb,
-            "geometry_dwelltime": self.geometry_defaults_form.geometry_group.dwelltime_entry,
-            "geometry_paintoverlap": self.geometry_defaults_form.geometry_group.paintoverlap_entry,
-            "geometry_paintmargin": self.geometry_defaults_form.geometry_group.paintmargin_entry,
-            "geometry_paintmethod": self.geometry_defaults_form.geometry_group.paintmethod_combo,
-            "geometry_selectmethod": self.geometry_defaults_form.geometry_group.selectmethod_combo,
-            "geometry_pathconnect": self.geometry_defaults_form.geometry_group.pathconnect_cb,
-            "geometry_paintcontour": self.geometry_defaults_form.geometry_group.contour_cb,
-            "geometry_ppname_g": self.geometry_defaults_form.geometry_group.pp_geometry_name_cb,
-            "geometry_toolchange": self.geometry_defaults_form.geometry_group.toolchange_cb,
-            "geometry_toolchangez": self.geometry_defaults_form.geometry_group.toolchangez_entry,
-            "geometry_toolchangexy": self.geometry_defaults_form.geometry_group.toolchangexy_entry,
-            "geometry_startz": self.geometry_defaults_form.geometry_group.gstartz_entry,
-            "geometry_endz": self.geometry_defaults_form.geometry_group.gendz_entry,
-            "geometry_multidepth": self.geometry_defaults_form.geometry_group.multidepth_cb,
-            "geometry_depthperpass": self.geometry_defaults_form.geometry_group.depthperpass_entry,
-            "geometry_extracut": self.geometry_defaults_form.geometry_group.extracut_cb,
-            "geometry_circle_steps": self.geometry_defaults_form.geometry_group.circle_steps_entry,
-            "cncjob_plot": self.cncjob_defaults_form.cncjob_group.plot_cb,
-            "cncjob_tooldia": self.cncjob_defaults_form.cncjob_group.tooldia_entry,
-            "cncjob_coords_decimals": self.cncjob_defaults_form.cncjob_group.coords_dec_entry,
-            "cncjob_fr_decimals": self.cncjob_defaults_form.cncjob_group.fr_dec_entry,
-            "cncjob_prepend": self.cncjob_defaults_form.cncjob_group.prepend_text,
-            "cncjob_append": self.cncjob_defaults_form.cncjob_group.append_text,
-            "cncjob_steps_per_circle": self.cncjob_defaults_form.cncjob_group.steps_per_circle_entry
+            "gerber_isotooldia": self.gerber_defaults_form.gerber_opt_group.iso_tool_dia_entry,
+            "gerber_isopasses": self.gerber_defaults_form.gerber_opt_group.iso_width_entry,
+            "gerber_isooverlap": self.gerber_defaults_form.gerber_opt_group.iso_overlap_entry,
+            "gerber_combine_passes": self.gerber_defaults_form.gerber_opt_group.combine_passes_cb,
+            "gerber_milling_type": self.gerber_defaults_form.gerber_opt_group.milling_type_radio,
+            "gerber_noncoppermargin": self.gerber_defaults_form.gerber_opt_group.noncopper_margin_entry,
+            "gerber_noncopperrounded": self.gerber_defaults_form.gerber_opt_group.noncopper_rounded_cb,
+            "gerber_bboxmargin": self.gerber_defaults_form.gerber_opt_group.bbmargin_entry,
+            "gerber_bboxrounded": self.gerber_defaults_form.gerber_opt_group.bbrounded_cb,
+
+            "excellon_plot": self.excellon_defaults_form.excellon_gen_group.plot_cb,
+            "excellon_solid": self.excellon_defaults_form.excellon_gen_group.solid_cb,
+            "excellon_format_upper_in": self.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry,
+            "excellon_format_lower_in": self.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry,
+            "excellon_format_upper_mm": self.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry,
+            "excellon_format_lower_mm": self.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry,
+            "excellon_zeros": self.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio,
+            "excellon_units": self.excellon_defaults_form.excellon_gen_group.excellon_units_radio,
+            "excellon_optimization_type": self.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio,
+            "excellon_search_time": self.excellon_defaults_form.excellon_gen_group.optimization_time_entry,
+
+            "excellon_drillz": self.excellon_defaults_form.excellon_opt_group.cutz_entry,
+            "excellon_travelz": self.excellon_defaults_form.excellon_opt_group.travelz_entry,
+            "excellon_feedrate": self.excellon_defaults_form.excellon_opt_group.feedrate_entry,
+            "excellon_feedrate_rapid": self.excellon_defaults_form.excellon_opt_group.feedrate_rapid_entry,
+            "excellon_spindlespeed": self.excellon_defaults_form.excellon_opt_group.spindlespeed_entry,
+            "excellon_dwell": self.excellon_defaults_form.excellon_opt_group.dwell_cb,
+            "excellon_dwelltime": self.excellon_defaults_form.excellon_opt_group.dwelltime_entry,
+            "excellon_toolchange": self.excellon_defaults_form.excellon_opt_group.toolchange_cb,
+            "excellon_toolchangez": self.excellon_defaults_form.excellon_opt_group.toolchangez_entry,
+            "excellon_toolchangexy": self.excellon_defaults_form.excellon_opt_group.toolchangexy_entry,
+            "excellon_ppname_e": self.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb,
+            "excellon_startz": self.excellon_defaults_form.excellon_opt_group.estartz_entry,
+            "excellon_endz": self.excellon_defaults_form.excellon_opt_group.eendz_entry,
+            "excellon_tooldia": self.excellon_defaults_form.excellon_opt_group.tooldia_entry,
+            "excellon_slot_tooldia": self.excellon_defaults_form.excellon_opt_group.slot_tooldia_entry,
+            "excellon_gcode_type": self.excellon_defaults_form.excellon_opt_group.excellon_gcode_type_radio,
+
+            "geometry_plot": self.geometry_defaults_form.geometry_gen_group.plot_cb,
+            "geometry_cnctooldia": self.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
+            "geometry_circle_steps": self.geometry_defaults_form.geometry_gen_group.circle_steps_entry,
+
+            "geometry_segx": self.geometry_defaults_form.geometry_opt_group.segx_entry,
+            "geometry_segy": self.geometry_defaults_form.geometry_opt_group.segy_entry,
+            "geometry_cutz": self.geometry_defaults_form.geometry_opt_group.cutz_entry,
+            "geometry_travelz": self.geometry_defaults_form.geometry_opt_group.travelz_entry,
+            "geometry_feedrate": self.geometry_defaults_form.geometry_opt_group.cncfeedrate_entry,
+            "geometry_feedrate_z": self.geometry_defaults_form.geometry_opt_group.cncplunge_entry,
+            "geometry_feedrate_rapid": self.geometry_defaults_form.geometry_opt_group.cncfeedrate_rapid_entry,
+            "geometry_spindlespeed": self.geometry_defaults_form.geometry_opt_group.cncspindlespeed_entry,
+            "geometry_dwell": self.geometry_defaults_form.geometry_opt_group.dwell_cb,
+            "geometry_dwelltime": self.geometry_defaults_form.geometry_opt_group.dwelltime_entry,
+            "geometry_ppname_g": self.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb,
+            "geometry_toolchange": self.geometry_defaults_form.geometry_opt_group.toolchange_cb,
+            "geometry_toolchangez": self.geometry_defaults_form.geometry_opt_group.toolchangez_entry,
+            "geometry_toolchangexy": self.geometry_defaults_form.geometry_opt_group.toolchangexy_entry,
+            "geometry_startz": self.geometry_defaults_form.geometry_opt_group.gstartz_entry,
+            "geometry_endz": self.geometry_defaults_form.geometry_opt_group.gendz_entry,
+            "geometry_multidepth": self.geometry_defaults_form.geometry_opt_group.multidepth_cb,
+            "geometry_depthperpass": self.geometry_defaults_form.geometry_opt_group.depthperpass_entry,
+            "geometry_extracut": self.geometry_defaults_form.geometry_opt_group.extracut_cb,
+
+            "cncjob_plot": self.cncjob_defaults_form.cncjob_gen_group.plot_cb,
+            "cncjob_tooldia": self.cncjob_defaults_form.cncjob_gen_group.tooldia_entry,
+            "cncjob_coords_decimals": self.cncjob_defaults_form.cncjob_gen_group.coords_dec_entry,
+            "cncjob_fr_decimals": self.cncjob_defaults_form.cncjob_gen_group.fr_dec_entry,
+            "cncjob_steps_per_circle": self.cncjob_defaults_form.cncjob_gen_group.steps_per_circle_entry,
+
+            "cncjob_prepend": self.cncjob_defaults_form.cncjob_opt_group.prepend_text,
+            "cncjob_append": self.cncjob_defaults_form.cncjob_opt_group.append_text,
+
+            "tools_ncctools": self.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
+            "tools_nccoverlap": self.tools_defaults_form.tools_ncc_group.ncc_overlap_entry,
+            "tools_nccmargin": self.tools_defaults_form.tools_ncc_group.ncc_margin_entry,
+            "tools_nccmethod": self.tools_defaults_form.tools_ncc_group.ncc_method_radio,
+            "tools_nccconnect": self.tools_defaults_form.tools_ncc_group.ncc_connect_cb,
+            "tools_ncccontour": self.tools_defaults_form.tools_ncc_group.ncc_contour_cb,
+            "tools_nccrest": self.tools_defaults_form.tools_ncc_group.ncc_rest_cb,
+
+            "tools_cutouttooldia": self.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
+            "tools_cutoutmargin": self.tools_defaults_form.tools_cutout_group.cutout_margin_entry,
+            "tools_cutoutgapsize": self.tools_defaults_form.tools_cutout_group.cutout_gap_entry,
+            "tools_gaps_rect": self.tools_defaults_form.tools_cutout_group.gaps_radio,
+            "tools_gaps_ff": self.tools_defaults_form.tools_cutout_group.gaps_combo,
+
+            "tools_painttooldia": self.tools_defaults_form.tools_paint_group.painttooldia_entry,
+            "tools_paintoverlap": self.tools_defaults_form.tools_paint_group.paintoverlap_entry,
+            "tools_paintmargin": self.tools_defaults_form.tools_paint_group.paintmargin_entry,
+            "tools_paintmethod": self.tools_defaults_form.tools_paint_group.paintmethod_combo,
+            "tools_selectmethod": self.tools_defaults_form.tools_paint_group.selectmethod_combo,
+            "tools_pathconnect": self.tools_defaults_form.tools_paint_group.pathconnect_cb,
+            "tools_paintcontour": self.tools_defaults_form.tools_paint_group.contour_cb,
+
+            "tools_2sided_mirror_axis": self.tools_defaults_form.tools_2sided_group.mirror_axis_radio,
+            "tools_2sided_axis_loc": self.tools_defaults_form.tools_2sided_group.axis_location_radio,
+            "tools_2sided_drilldia": self.tools_defaults_form.tools_2sided_group.drill_dia_entry,
         }
         # loads postprocessors
         self.postprocessors = load_postprocessors(self)
 
         for name in list(self.postprocessors.keys()):
-            self.geometry_defaults_form.geometry_group.pp_geometry_name_cb.addItem(name)
+            self.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.addItem(name)
             # HPGL postprocessor is only for Geometry objects therefore it should not be in the Excellon Preferences
             if name == 'hpgl':
                 continue
-            self.excellon_defaults_form.excellon_group.pp_excellon_name_cb.addItem(name)
+            self.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb.addItem(name)
 
         self.defaults = LoudDict()
         self.defaults.set_change_callback(self.on_defaults_dict_change)  # When the dictionary changes.
@@ -431,34 +450,62 @@ class App(QtCore.QObject):
             "global_workspaceT": "A4P",
             "global_toolbar_view": 31,
 
+            "global_background_timeout": 300000,  # Default value is 5 minutes
+            "global_verbose_error_level": 0,  # Shell verbosity 0 = default
+            # (python trace only for unknown errors),
+            # 1 = show trace(show trace allways),
+            # 2 = (For the future).
+
+            # Persistence
+            "global_last_folder": None,
+            "global_last_save_folder": None,
+
+            # Default window geometry
+            "global_def_win_x": 100,
+            "global_def_win_y": 100,
+            "global_def_win_w": 1024,
+            "global_def_win_h": 650,
+
+            # Constants...
+            "global_defaults_save_period_ms": 20000,  # Time between default saves.
+            "global_shell_shape": [500, 300],  # Shape of the shell in pixels.
+            "global_shell_at_startup": False,  # Show the shell at startup.
+            "global_recent_limit": 10,  # Max. items in recent list.
+            "fit_key": '1',
+            "zoom_out_key": '2',
+            "zoom_in_key": '3',
+            "grid_toggle_key": 'G',
+            "zoom_ratio": 1.5,
+            "global_point_clipboard_format": "(%.4f, %.4f)",
+            "global_zdownrate": None,
+
             "gerber_plot": True,
             "gerber_solid": True,
             "gerber_multicolored": False,
             "gerber_isotooldia": 0.016,
             "gerber_isopasses": 1,
             "gerber_isooverlap": 0.15,
-            "gerber_ncctools": "1.0, 0.5",
-            "gerber_nccoverlap": 0.4,
-            "gerber_nccmargin": 1,
-            "gerber_nccmethod": "seed",
-            "gerber_nccconnect": True,
-            "gerber_ncccontour": True,
-            "gerber_nccrest": False,
 
             "gerber_combine_passes": False,
             "gerber_milling_type": "cl",
-            "gerber_cutouttooldia": 0.07,
-            "gerber_cutoutmargin": 0.1,
-            "gerber_cutoutgapsize": 0.15,
-            "gerber_gaps": "4",
-            "gerber_noncoppermargin": 0.0,
+            "gerber_noncoppermargin": 0.1,
             "gerber_noncopperrounded": False,
-            "gerber_bboxmargin": 0.0,
+            "gerber_bboxmargin": 0.1,
             "gerber_bboxrounded": False,
             "gerber_circle_steps": 64,
+            "gerber_use_buffer_for_union": True,
 
             "excellon_plot": True,
-            "excellon_solid": False,
+            "excellon_solid": True,
+            "excellon_format_upper_in": 2,
+            "excellon_format_lower_in": 4,
+            "excellon_format_upper_mm": 3,
+            "excellon_format_lower_mm": 3,
+            "excellon_zeros": "L",
+            "excellon_units": "INCH",
+            "excellon_optimization_type": 'B',
+            "excellon_search_time": 3,
+
             "excellon_drillz": -0.1,
             "excellon_travelz": 0.1,
             "excellon_feedrate": 3.0,
@@ -474,17 +521,11 @@ class App(QtCore.QObject):
             "excellon_startz": None,
             "excellon_endz": 2.0,
             "excellon_ppname_e": 'default',
-            "excellon_format_upper_in": 2,
-            "excellon_format_lower_in": 4,
-            "excellon_format_upper_mm": 3,
-            "excellon_format_lower_mm": 3,
-            "excellon_zeros": "L",
-            "excellon_units": "INCH",
-            "excellon_optimization_type": 'B',
-            "excellon_search_time": 3,
             "excellon_gcode_type": "drills",
 
             "geometry_plot": True,
+            "geometry_segx": 0.0,
+            "geometry_segy": 0.0,
             "geometry_cutz": -0.002,
             "geometry_travelz": 0.1,
             "geometry_toolchange": False,
@@ -499,13 +540,6 @@ class App(QtCore.QObject):
             "geometry_spindlespeed": None,
             "geometry_dwell": False,
             "geometry_dwelltime": 1,
-            "geometry_painttooldia": 0.07,
-            "geometry_paintoverlap": 0.15,
-            "geometry_paintmargin": 0.0,
-            "geometry_paintmethod": "seed",
-            "geometry_selectmethod": "single",
-            "geometry_pathconnect": True,
-            "geometry_paintcontour": True,
             "geometry_ppname_g": 'default',
             "geometry_depthperpass": 0.002,
             "geometry_multidepth": False,
@@ -519,35 +553,33 @@ class App(QtCore.QObject):
             "cncjob_prepend": "",
             "cncjob_append": "",
             "cncjob_steps_per_circle": 64,
-            "global_background_timeout": 300000,  # Default value is 5 minutes
-            "global_verbose_error_level": 0,  # Shell verbosity 0 = default
-                                       # (python trace only for unknown errors),
-                                       # 1 = show trace(show trace allways),
-                                       # 2 = (For the future).
 
-            # Persistence
-            "global_last_folder": None,
-            "global_last_save_folder": None,
+            "tools_ncctools": "1.0, 0.5",
+            "tools_nccoverlap": 0.4,
+            "tools_nccmargin": 0.1,
+            "tools_nccmethod": "seed",
+            "tools_nccconnect": True,
+            "tools_ncccontour": True,
+            "tools_nccrest": False,
 
-            # Default window geometry
-            "global_def_win_x": 100,
-            "global_def_win_y": 100,
-            "global_def_win_w": 1024,
-            "global_def_win_h": 650,
+            "tools_cutouttooldia": 0.1,
+            "tools_cutoutmargin": 0.1,
+            "tools_cutoutgapsize": 0.15,
+            "tools_gaps_rect": "4",
+            "tools_gaps_ff": "8",
 
-            # Constants...
-            "global_defaults_save_period_ms": 20000,   # Time between default saves.
-            "global_shell_shape": [500, 300],          # Shape of the shell in pixels.
-            "global_shell_at_startup": False,          # Show the shell at startup.
-            "global_recent_limit": 10,                 # Max. items in recent list.
-            "fit_key": '1',
-            "zoom_out_key": '2',
-            "zoom_in_key": '3',
-            "grid_toggle_key": 'G',
-            "zoom_ratio": 1.5,
-            "global_point_clipboard_format": "(%.4f, %.4f)",
-            "global_zdownrate": None,
-            "gerber_use_buffer_for_union": True
+            "tools_painttooldia": 0.07,
+            "tools_paintoverlap": 0.15,
+            "tools_paintmargin": 0.0,
+            "tools_paintmethod": "seed",
+            "tools_selectmethod": "single",
+            "tools_pathconnect": True,
+            "tools_paintcontour": True,
+
+            "tools_2sided_mirror_axis": "X",
+            "tools_2sided_axis_loc": "point",
+            "tools_2sided_drilldia": 1,
+
         })
 
         ###############################
@@ -580,84 +612,106 @@ class App(QtCore.QObject):
         self.excellon_options_form = ExcellonPreferencesUI()
         self.geometry_options_form = GeometryPreferencesUI()
         self.cncjob_options_form = CNCJobPreferencesUI()
+        self.tools_options_form = ToolsPreferencesUI()
 
         self.options_form_fields = {
-            "units": self.general_options_form.general_group.units_radio,
-            "global_gridx": self.general_options_form.general_group.gridx_entry,
-            "global_gridy": self.general_options_form.general_group.gridy_entry,
-            "gerber_plot": self.gerber_options_form.gerber_group.plot_cb,
-            "gerber_solid": self.gerber_options_form.gerber_group.solid_cb,
-            "gerber_multicolored": self.gerber_options_form.gerber_group.multicolored_cb,
-            "gerber_isotooldia": self.gerber_options_form.gerber_group.iso_tool_dia_entry,
-            "gerber_isopasses": self.gerber_options_form.gerber_group.iso_width_entry,
-            "gerber_isooverlap": self.gerber_options_form.gerber_group.iso_overlap_entry,
-            "gerber_ncctools": self.gerber_options_form.gerber_group.ncc_tool_dia_entry,
-            "gerber_nccoverlap": self.gerber_options_form.gerber_group.ncc_overlap_entry,
-            "gerber_nccmargin": self.gerber_options_form.gerber_group.ncc_margin_entry,
-            "gerber_combine_passes": self.gerber_options_form.gerber_group.combine_passes_cb,
-            "gerber_cutouttooldia": self.gerber_options_form.gerber_group.cutout_tooldia_entry,
-            "gerber_cutoutmargin": self.gerber_options_form.gerber_group.cutout_margin_entry,
-            "gerber_cutoutgapsize": self.gerber_options_form.gerber_group.cutout_gap_entry,
-            "gerber_gaps": self.gerber_options_form.gerber_group.gaps_radio,
-            "gerber_noncoppermargin": self.gerber_options_form.gerber_group.noncopper_margin_entry,
-            "gerber_noncopperrounded": self.gerber_options_form.gerber_group.noncopper_rounded_cb,
-            "gerber_bboxmargin": self.gerber_options_form.gerber_group.bbmargin_entry,
-            "gerber_bboxrounded": self.gerber_options_form.gerber_group.bbrounded_cb,
-            "excellon_plot": self.excellon_options_form.excellon_group.plot_cb,
-            "excellon_solid": self.excellon_options_form.excellon_group.solid_cb,
-            "excellon_drillz": self.excellon_options_form.excellon_group.cutz_entry,
-            "excellon_travelz": self.excellon_options_form.excellon_group.travelz_entry,
-            "excellon_feedrate": self.excellon_options_form.excellon_group.feedrate_entry,
-            "excellon_feedrate_rapid": self.excellon_options_form.excellon_group.feedrate_rapid_entry,
-            "excellon_spindlespeed": self.excellon_options_form.excellon_group.spindlespeed_entry,
-            "excellon_dwell": self.excellon_options_form.excellon_group.dwell_cb,
-            "excellon_dwelltime": self.excellon_options_form.excellon_group.dwelltime_entry,
-            "excellon_toolchange": self.excellon_options_form.excellon_group.toolchange_cb,
-            "excellon_toolchangez": self.excellon_options_form.excellon_group.toolchangez_entry,
-            "excellon_toolchangexy": self.excellon_options_form.excellon_group.toolchangexy_entry,
-            "excellon_tooldia": self.excellon_options_form.excellon_group.tooldia_entry,
-            "excellon_ppname_e": self.excellon_options_form.excellon_group.pp_excellon_name_cb,
-            "excellon_startz": self.excellon_options_form.excellon_group.estartz_entry,
-            "excellon_endz": self.excellon_options_form.excellon_group.eendz_entry,
-            "excellon_format_upper_in": self.excellon_options_form.excellon_group.excellon_format_upper_in_entry,
-            "excellon_format_lower_in": self.excellon_options_form.excellon_group.excellon_format_lower_in_entry,
-            "excellon_format_upper_mm": self.excellon_options_form.excellon_group.excellon_format_upper_mm_entry,
-            "excellon_format_lower_mm": self.excellon_options_form.excellon_group.excellon_format_lower_mm_entry,
-            "excellon_zeros": self.excellon_options_form.excellon_group.excellon_zeros_radio,
-            "excellon_units": self.excellon_options_form.excellon_group.excellon_units_radio,
-            "excellon_optimization_type": self.excellon_options_form.excellon_group.excellon_optimization_radio,
-            "geometry_plot": self.geometry_options_form.geometry_group.plot_cb,
-            "geometry_cutz": self.geometry_options_form.geometry_group.cutz_entry,
-            "geometry_travelz": self.geometry_options_form.geometry_group.travelz_entry,
-            "geometry_feedrate": self.geometry_options_form.geometry_group.cncfeedrate_entry,
-            "geometry_feedrate_z": self.geometry_options_form.geometry_group.cncplunge_entry,
-            "geometry_feedrate_rapid": self.geometry_options_form.geometry_group.cncfeedrate_rapid_entry,
-            "geometry_spindlespeed": self.geometry_options_form.geometry_group.cncspindlespeed_entry,
-            "geometry_dwell": self.geometry_options_form.geometry_group.dwell_cb,
-            "geometry_dwelltime": self.geometry_options_form.geometry_group.dwelltime_entry,
-            "geometry_cnctooldia": self.geometry_options_form.geometry_group.cnctooldia_entry,
-            "geometry_painttooldia": self.geometry_options_form.geometry_group.painttooldia_entry,
-            "geometry_paintoverlap": self.geometry_options_form.geometry_group.paintoverlap_entry,
-            "geometry_paintmargin": self.geometry_options_form.geometry_group.paintmargin_entry,
-            "geometry_selectmethod": self.geometry_options_form.geometry_group.selectmethod_combo,
-            "geometry_ppname_g": self.geometry_options_form.geometry_group.pp_geometry_name_cb,
-            "geometry_toolchange": self.geometry_options_form.geometry_group.toolchange_cb,
-            "geometry_toolchangez": self.geometry_options_form.geometry_group.toolchangez_entry,
-            "geometry_toolchangexy": self.geometry_options_form.geometry_group.toolchangexy_entry,
-            "geometry_startz": self.geometry_options_form.geometry_group.gstartz_entry,
-            "geometry_endz": self.geometry_options_form.geometry_group.gendz_entry,
-            "geometry_depthperpass": self.geometry_options_form.geometry_group.depthperpass_entry,
-            "geometry_multidepth": self.geometry_options_form.geometry_group.multidepth_cb,
-            "geometry_extracut": self.geometry_options_form.geometry_group.extracut_cb,
-            "cncjob_plot": self.cncjob_options_form.cncjob_group.plot_cb,
-            "cncjob_tooldia": self.cncjob_options_form.cncjob_group.tooldia_entry,
-            "cncjob_prepend": self.cncjob_options_form.cncjob_group.prepend_text,
-            "cncjob_append": self.cncjob_options_form.cncjob_group.append_text
+            "units": self.general_options_form.general_app_group.units_radio,
+            "global_gridx": self.general_options_form.general_gui_group.gridx_entry,
+            "global_gridy": self.general_options_form.general_gui_group.gridy_entry,
+
+            "gerber_plot": self.gerber_options_form.gerber_gen_group.plot_cb,
+            "gerber_solid": self.gerber_options_form.gerber_gen_group.solid_cb,
+            "gerber_multicolored": self.gerber_options_form.gerber_gen_group.multicolored_cb,
+
+            "gerber_isotooldia": self.gerber_options_form.gerber_opt_group.iso_tool_dia_entry,
+            "gerber_isopasses": self.gerber_options_form.gerber_opt_group.iso_width_entry,
+            "gerber_isooverlap": self.gerber_options_form.gerber_opt_group.iso_overlap_entry,
+            "gerber_combine_passes": self.gerber_options_form.gerber_opt_group.combine_passes_cb,
+            "gerber_noncoppermargin": self.gerber_options_form.gerber_opt_group.noncopper_margin_entry,
+            "gerber_noncopperrounded": self.gerber_options_form.gerber_opt_group.noncopper_rounded_cb,
+            "gerber_bboxmargin": self.gerber_options_form.gerber_opt_group.bbmargin_entry,
+            "gerber_bboxrounded": self.gerber_options_form.gerber_opt_group.bbrounded_cb,
+
+            "excellon_plot": self.excellon_options_form.excellon_gen_group.plot_cb,
+            "excellon_solid": self.excellon_options_form.excellon_gen_group.solid_cb,
+            "excellon_format_upper_in": self.excellon_options_form.excellon_gen_group.excellon_format_upper_in_entry,
+            "excellon_format_lower_in": self.excellon_options_form.excellon_gen_group.excellon_format_lower_in_entry,
+            "excellon_format_upper_mm": self.excellon_options_form.excellon_gen_group.excellon_format_upper_mm_entry,
+            "excellon_format_lower_mm": self.excellon_options_form.excellon_gen_group.excellon_format_lower_mm_entry,
+            "excellon_zeros": self.excellon_options_form.excellon_gen_group.excellon_zeros_radio,
+            "excellon_units": self.excellon_options_form.excellon_gen_group.excellon_units_radio,
+            "excellon_optimization_type": self.excellon_options_form.excellon_gen_group.excellon_optimization_radio,
+
+            "excellon_drillz": self.excellon_options_form.excellon_opt_group.cutz_entry,
+            "excellon_travelz": self.excellon_options_form.excellon_opt_group.travelz_entry,
+            "excellon_feedrate": self.excellon_options_form.excellon_opt_group.feedrate_entry,
+            "excellon_feedrate_rapid": self.excellon_options_form.excellon_opt_group.feedrate_rapid_entry,
+            "excellon_spindlespeed": self.excellon_options_form.excellon_opt_group.spindlespeed_entry,
+            "excellon_dwell": self.excellon_options_form.excellon_opt_group.dwell_cb,
+            "excellon_dwelltime": self.excellon_options_form.excellon_opt_group.dwelltime_entry,
+            "excellon_toolchange": self.excellon_options_form.excellon_opt_group.toolchange_cb,
+            "excellon_toolchangez": self.excellon_options_form.excellon_opt_group.toolchangez_entry,
+            "excellon_toolchangexy": self.excellon_options_form.excellon_opt_group.toolchangexy_entry,
+            "excellon_tooldia": self.excellon_options_form.excellon_opt_group.tooldia_entry,
+            "excellon_ppname_e": self.excellon_options_form.excellon_opt_group.pp_excellon_name_cb,
+            "excellon_startz": self.excellon_options_form.excellon_opt_group.estartz_entry,
+            "excellon_endz": self.excellon_options_form.excellon_opt_group.eendz_entry,
+
+            "geometry_plot": self.geometry_options_form.geometry_gen_group.plot_cb,
+            "geometry_cnctooldia": self.geometry_options_form.geometry_gen_group.cnctooldia_entry,
+
+            "geometry_segx": self.geometry_options_form.geometry_opt_group.segx_entry,
+            "geometry_segy": self.geometry_options_form.geometry_opt_group.segy_entry,
+            "geometry_cutz": self.geometry_options_form.geometry_opt_group.cutz_entry,
+            "geometry_travelz": self.geometry_options_form.geometry_opt_group.travelz_entry,
+            "geometry_feedrate": self.geometry_options_form.geometry_opt_group.cncfeedrate_entry,
+            "geometry_feedrate_z": self.geometry_options_form.geometry_opt_group.cncplunge_entry,
+            "geometry_feedrate_rapid": self.geometry_options_form.geometry_opt_group.cncfeedrate_rapid_entry,
+            "geometry_spindlespeed": self.geometry_options_form.geometry_opt_group.cncspindlespeed_entry,
+            "geometry_dwell": self.geometry_options_form.geometry_opt_group.dwell_cb,
+            "geometry_dwelltime": self.geometry_options_form.geometry_opt_group.dwelltime_entry,
+            "geometry_ppname_g": self.geometry_options_form.geometry_opt_group.pp_geometry_name_cb,
+            "geometry_toolchange": self.geometry_options_form.geometry_opt_group.toolchange_cb,
+            "geometry_toolchangez": self.geometry_options_form.geometry_opt_group.toolchangez_entry,
+            "geometry_toolchangexy": self.geometry_options_form.geometry_opt_group.toolchangexy_entry,
+            "geometry_startz": self.geometry_options_form.geometry_opt_group.gstartz_entry,
+            "geometry_endz": self.geometry_options_form.geometry_opt_group.gendz_entry,
+            "geometry_depthperpass": self.geometry_options_form.geometry_opt_group.depthperpass_entry,
+            "geometry_multidepth": self.geometry_options_form.geometry_opt_group.multidepth_cb,
+            "geometry_extracut": self.geometry_options_form.geometry_opt_group.extracut_cb,
+
+            "cncjob_plot": self.cncjob_options_form.cncjob_gen_group.plot_cb,
+            "cncjob_tooldia": self.cncjob_options_form.cncjob_gen_group.tooldia_entry,
+
+            "cncjob_prepend": self.cncjob_options_form.cncjob_opt_group.prepend_text,
+            "cncjob_append": self.cncjob_options_form.cncjob_opt_group.append_text,
+
+            "tools_ncctools": self.tools_options_form.tools_ncc_group.ncc_tool_dia_entry,
+            "tools_nccoverlap": self.tools_options_form.tools_ncc_group.ncc_overlap_entry,
+            "tools_nccmargin": self.tools_options_form.tools_ncc_group.ncc_margin_entry,
+
+            "tools_cutouttooldia": self.tools_options_form.tools_cutout_group.cutout_tooldia_entry,
+            "tools_cutoutmargin": self.tools_options_form.tools_cutout_group.cutout_margin_entry,
+            "tools_cutoutgapsize": self.tools_options_form.tools_cutout_group.cutout_gap_entry,
+            "tools_gaps_rect": self.tools_options_form.tools_cutout_group.gaps_radio,
+            "tools_gaps_ff": self.tools_options_form.tools_cutout_group.gaps_combo,
+
+            "tools_painttooldia": self.tools_options_form.tools_paint_group.painttooldia_entry,
+            "tools_paintoverlap": self.tools_options_form.tools_paint_group.paintoverlap_entry,
+            "tools_paintmargin": self.tools_options_form.tools_paint_group.paintmargin_entry,
+            "tools_paintmethod": self.tools_options_form.tools_paint_group.paintmethod_combo,
+            "tools_selectmethod": self.tools_options_form.tools_paint_group.selectmethod_combo,
+            "tools_pathconnect": self.tools_options_form.tools_paint_group.pathconnect_cb,
+            "tools_paintcontour": self.tools_options_form.tools_paint_group.contour_cb,
+
+            "tools_2sided_mirror_axis": self.tools_options_form.tools_2sided_group.mirror_axis_radio,
+            "tools_2sided_axis_loc": self.tools_options_form.tools_2sided_group.axis_location_radio,
+            "tools_2sided_drilldia": self.tools_options_form.tools_2sided_group.drill_dia_entry
         }
 
         for name in list(self.postprocessors.keys()):
-            self.geometry_options_form.geometry_group.pp_geometry_name_cb.addItem(name)
-            self.excellon_options_form.excellon_group.pp_excellon_name_cb.addItem(name)
+            self.geometry_options_form.geometry_opt_group.pp_geometry_name_cb.addItem(name)
+            self.excellon_options_form.excellon_opt_group.pp_excellon_name_cb.addItem(name)
 
         self.options = LoudDict()
         self.options.set_change_callback(self.on_options_dict_change)
@@ -665,26 +719,34 @@ class App(QtCore.QObject):
             "units": "IN",
             "global_gridx": 1.0,
             "global_gridy": 1.0,
+            "global_background_timeout": 300000,  # Default value is 5 minutes
+            "global_verbose_error_level": 0,  # Shell verbosity:
+            # 0 = default(python trace only for unknown errors),
+            # 1 = show trace(show trace allways), 2 = (For the future).
+
             "gerber_plot": True,
             "gerber_solid": True,
             "gerber_multicolored": False,
             "gerber_isotooldia": 0.016,
             "gerber_isopasses": 1,
             "gerber_isooverlap": 0.15,
-            "gerber_ncctools": "1.0, 0.5",
-            "gerber_nccoverlap": 0.4,
-            "gerber_nccmargin": 1,
             "gerber_combine_passes": True,
-            "gerber_cutouttooldia": 0.07,
-            "gerber_cutoutmargin": 0.1,
-            "gerber_cutoutgapsize": 0.15,
-            "gerber_gaps": "4",
             "gerber_noncoppermargin": 0.0,
             "gerber_noncopperrounded": False,
             "gerber_bboxmargin": 0.0,
             "gerber_bboxrounded": False,
+
             "excellon_plot": True,
             "excellon_solid": False,
+            "excellon_format_upper_in": 2,
+            "excellon_format_lower_in": 4,
+            "excellon_format_upper_mm": 3,
+            "excellon_format_lower_mm": 3,
+            "excellon_units": 'INCH',
+            "excellon_optimization_type": 'B',
+            "excellon_search_time": 3,
+            "excellon_zeros": "L",
+
             "excellon_drillz": -0.1,
             "excellon_travelz": 0.1,
             "excellon_feedrate": 3.0,
@@ -697,17 +759,12 @@ class App(QtCore.QObject):
             "excellon_toolchangexy": "0.0, 0.0",
             "excellon_tooldia": 0.016,
             "excellon_ppname_e": 'default',
-            "excellon_format_upper_in": 2,
-            "excellon_format_lower_in": 4,
-            "excellon_format_upper_mm": 3,
-            "excellon_format_lower_mm": 3,
-            "excellon_units": 'INCH',
-            "excellon_optimization_type": 'B',
-            "excellon_search_time": 3,
             "excellon_startz": None,
             "excellon_endz": 2.0,
-            "excellon_zeros": "L",
+
             "geometry_plot": True,
+            "geometry_segx": 0.0,
+            "geometry_segy": 0.0,
             "geometry_cutz": -0.002,
             "geometry_travelz": 0.1,
             "geometry_feedrate": 3.0,
@@ -717,10 +774,6 @@ class App(QtCore.QObject):
             "geometry_dwell": True,
             "geometry_dwelltime": 1000,
             "geometry_cnctooldia": 0.016,
-            "geometry_painttooldia": 0.07,
-            "geometry_paintoverlap": 0.15,
-            "geometry_paintmargin": 0.0,
-            "geometry_selectmethod": "single",
             "geometry_toolchange": False,
             "geometry_toolchangez": 2.0,
             "geometry_toolchangexy": "0.0, 0.0",
@@ -730,14 +783,33 @@ class App(QtCore.QObject):
             "geometry_depthperpass": 0.002,
             "geometry_multidepth": False,
             "geometry_extracut": False,
+
             "cncjob_plot": True,
             "cncjob_tooldia": 0.016,
             "cncjob_prepend": "",
             "cncjob_append": "",
-            "global_background_timeout": 300000,  # Default value is 5 minutes
-            "global_verbose_error_level": 0,  # Shell verbosity:
-                                       # 0 = default(python trace only for unknown errors),
-                                       # 1 = show trace(show trace allways), 2 = (For the future).
+
+            "tools_ncctools": "1.0, 0.5",
+            "tools_nccoverlap": 0.4,
+            "tools_nccmargin": 1,
+            "tools_cutouttooldia": 0.07,
+            "tools_cutoutmargin": 0.1,
+            "tools_cutoutgapsize": 0.15,
+            "tools_gaps_rect": "4",
+            "tools_gaps_ff": "8",
+
+            "tools_painttooldia": 0.07,
+            "tools_paintoverlap": 0.15,
+            "tools_paintmargin": 0.0,
+            "tools_paintmethod": "seed",
+            "tools_selectmethod": "single",
+            "tools_pathconnect": True,
+            "tools_paintcontour": True,
+
+            "tools_2sided_mirror_axis": "X",
+            "tools_2sided_axis_loc": 'point',
+            "tools_2sided_drilldia": 1
+
         })
 
         self.options.update(self.defaults)  # Copy app defaults to project options
@@ -747,6 +819,7 @@ class App(QtCore.QObject):
         self.exc_form = None
         self.geo_form = None
         self.cnc_form = None
+        self.tools_form = None
         self.on_options_combo_change(0)  # Will show the initial form
 
         ### Define OBJECT COLLECTION ###
@@ -758,51 +831,51 @@ class App(QtCore.QObject):
 
         ### Initialize the color box's color in Preferences -> Global -> Color
         # Init Plot Colors
-        self.general_defaults_form.general_group.pf_color_entry.set_value(self.defaults['global_plot_fill'])
-        self.general_defaults_form.general_group.pf_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.pf_color_entry.set_value(self.defaults['global_plot_fill'])
+        self.general_defaults_form.general_gui_group.pf_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_plot_fill'])[:7])
-        self.general_defaults_form.general_group.pf_color_alpha_spinner.set_value(
+        self.general_defaults_form.general_gui_group.pf_color_alpha_spinner.set_value(
             int(self.defaults['global_plot_fill'][7:9], 16))
-        self.general_defaults_form.general_group.pf_color_alpha_slider.setValue(
+        self.general_defaults_form.general_gui_group.pf_color_alpha_slider.setValue(
             int(self.defaults['global_plot_fill'][7:9], 16))
 
-        self.general_defaults_form.general_group.pl_color_entry.set_value(self.defaults['global_plot_line'])
-        self.general_defaults_form.general_group.pl_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.pl_color_entry.set_value(self.defaults['global_plot_line'])
+        self.general_defaults_form.general_gui_group.pl_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_plot_line'])[:7])
 
         # Init Left-Right Selection colors
-        self.general_defaults_form.general_group.sf_color_entry.set_value(self.defaults['global_sel_fill'])
-        self.general_defaults_form.general_group.sf_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.sf_color_entry.set_value(self.defaults['global_sel_fill'])
+        self.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_sel_fill'])[:7])
-        self.general_defaults_form.general_group.sf_color_alpha_spinner.set_value(
+        self.general_defaults_form.general_gui_group.sf_color_alpha_spinner.set_value(
             int(self.defaults['global_sel_fill'][7:9], 16))
-        self.general_defaults_form.general_group.sf_color_alpha_slider.setValue(
+        self.general_defaults_form.general_gui_group.sf_color_alpha_slider.setValue(
             int(self.defaults['global_sel_fill'][7:9], 16))
 
-        self.general_defaults_form.general_group.sl_color_entry.set_value(self.defaults['global_sel_line'])
-        self.general_defaults_form.general_group.sl_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.sl_color_entry.set_value(self.defaults['global_sel_line'])
+        self.general_defaults_form.general_gui_group.sl_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_sel_line'])[:7])
 
         # Init Right-Left Selection colors
-        self.general_defaults_form.general_group.alt_sf_color_entry.set_value(self.defaults['global_alt_sel_fill'])
-        self.general_defaults_form.general_group.alt_sf_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.alt_sf_color_entry.set_value(self.defaults['global_alt_sel_fill'])
+        self.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_alt_sel_fill'])[:7])
-        self.general_defaults_form.general_group.alt_sf_color_alpha_spinner.set_value(
+        self.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.set_value(
             int(self.defaults['global_sel_fill'][7:9], 16))
-        self.general_defaults_form.general_group.alt_sf_color_alpha_slider.setValue(
+        self.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.setValue(
             int(self.defaults['global_sel_fill'][7:9], 16))
 
-        self.general_defaults_form.general_group.alt_sl_color_entry.set_value(self.defaults['global_alt_sel_line'])
-        self.general_defaults_form.general_group.alt_sl_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.alt_sl_color_entry.set_value(self.defaults['global_alt_sel_line'])
+        self.general_defaults_form.general_gui_group.alt_sl_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_alt_sel_line'])[:7])
 
         # Init Draw color and Selection Draw Color
-        self.general_defaults_form.general_group.draw_color_entry.set_value(self.defaults['global_draw_color'])
-        self.general_defaults_form.general_group.draw_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.draw_color_entry.set_value(self.defaults['global_draw_color'])
+        self.general_defaults_form.general_gui_group.draw_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_draw_color'])[:7])
 
-        self.general_defaults_form.general_group.sel_draw_color_entry.set_value(self.defaults['global_sel_draw_color'])
-        self.general_defaults_form.general_group.sel_draw_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(self.defaults['global_sel_draw_color'])
+        self.general_defaults_form.general_gui_group.sel_draw_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_sel_draw_color'])[:7])
         #### End of Data ####
 
@@ -907,6 +980,8 @@ class App(QtCore.QObject):
 
         self.ui.menuedit_convertjoin.triggered.connect(self.on_edit_join)
         self.ui.menuedit_convertjoinexc.triggered.connect(self.on_edit_join_exc)
+        self.ui.menuedit_convertjoingrb.triggered.connect(self.on_edit_join_grb)
+
         self.ui.menuedit_convert_sg2mg.triggered.connect(self.on_convert_singlegeo_to_multigeo)
         self.ui.menuedit_convert_mg2sg.triggered.connect(self.on_convert_multigeo_to_singlegeo)
 
@@ -917,6 +992,7 @@ class App(QtCore.QObject):
         self.ui.menueditorigin.triggered.connect(self.on_set_origin)
         self.ui.menueditjump.triggered.connect(self.on_jump_to)
 
+        self.ui.menuedittoggleunits.triggered.connect(self.on_toggle_units_click)
         self.ui.menueditselectall.triggered.connect(self.on_selectall)
         self.ui.menueditpreferences.triggered.connect(self.on_preferences)
 
@@ -942,6 +1018,7 @@ class App(QtCore.QObject):
         self.ui.menuview_zoom_fit.triggered.connect(self.on_zoom_fit)
         self.ui.menuview_zoom_in.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
         self.ui.menuview_zoom_out.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
+        self.ui.menuview_toggle_grid.triggered.connect(self.on_toggle_grid)
         self.ui.menuview_toggle_axis.triggered.connect(self.on_toggle_axis)
         self.ui.menuview_toggle_workspace.triggered.connect(self.on_workspace_menu)
 
@@ -983,6 +1060,10 @@ class App(QtCore.QObject):
         self.ui.shell_btn.triggered.connect(self.on_toggle_shell)
 
         # Context Menu
+        self.ui.popmenu_new_geo.triggered.connect(lambda: self.new_object('geometry', 'new_g', lambda x, y: None))
+        self.ui.popmenu_new_exc.triggered.connect(self.new_excellon_object)
+        self.ui.popmenu_new_prj.triggered.connect(self.on_file_new)
+
         self.ui.gridmenu_1.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("0.05"))
         self.ui.gridmenu_2.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("0.1"))
         self.ui.gridmenu_3.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("0.2"))
@@ -991,6 +1072,7 @@ class App(QtCore.QObject):
         self.ui.draw_line.triggered.connect(self.geo_editor.draw_tool_path)
         self.ui.draw_rect.triggered.connect(self.geo_editor.draw_tool_rectangle)
         self.ui.draw_cut.triggered.connect(self.geo_editor.cutpath)
+        self.ui.draw_move.triggered.connect(self.geo_editor.on_move)
         self.ui.drill.triggered.connect(self.exc_editor.exc_add_drill)
         self.ui.drill_array.triggered.connect(self.exc_editor.exc_add_drill_array)
         self.ui.drill_copy.triggered.connect(self.exc_editor.exc_copy_drills)
@@ -999,6 +1081,13 @@ class App(QtCore.QObject):
         self.ui.zoomfit.triggered.connect(self.on_zoom_fit)
         self.ui.clearplot.triggered.connect(self.clear_plots)
         self.ui.replot.triggered.connect(self.plot_all)
+
+        self.ui.popmenu_copy.triggered.connect(self.on_copy_object)
+        self.ui.popmenu_delete.triggered.connect(self.on_delete)
+        self.ui.popmenu_edit.triggered.connect(self.object2editor)
+        self.ui.popmenu_save.triggered.connect(self.editor2object)
+        self.ui.popmenu_move.triggered.connect(self.obj_move)
+
         self.ui.popmenu_properties.triggered.connect(self.obj_properties)
 
         # Preferences Plot Area TAB
@@ -1008,39 +1097,48 @@ class App(QtCore.QObject):
         self.ui.pref_export_button.clicked.connect(self.on_export_preferences)
         self.ui.pref_open_button.clicked.connect(self.on_preferences_open_folder)
 
-        self.general_options_form.general_group.units_radio.group_toggle_fn = self.on_toggle_units
+        ###############################
+        ### GUI PREFERENCES SIGNALS ###
+        ###############################
+        self.general_options_form.general_app_group.units_radio.group_toggle_fn = self.on_toggle_units
+        self.general_defaults_form.general_app_group.language_apply_btn.clicked.connect(self.on_language_apply)
+
+        ###############################
+        ### GUI PREFERENCES SIGNALS ###
+        ###############################
+
         # Setting plot colors signals
-        self.general_defaults_form.general_group.pf_color_entry.editingFinished.connect(self.on_pf_color_entry)
-        self.general_defaults_form.general_group.pf_color_button.clicked.connect(self.on_pf_color_button)
-        self.general_defaults_form.general_group.pf_color_alpha_spinner.valueChanged.connect(self.on_pf_color_spinner)
-        self.general_defaults_form.general_group.pf_color_alpha_slider.valueChanged.connect(self.on_pf_color_slider)
-        self.general_defaults_form.general_group.pl_color_entry.editingFinished.connect(self.on_pl_color_entry)
-        self.general_defaults_form.general_group.pl_color_button.clicked.connect(self.on_pl_color_button)
+        self.general_defaults_form.general_gui_group.pf_color_entry.editingFinished.connect(self.on_pf_color_entry)
+        self.general_defaults_form.general_gui_group.pf_color_button.clicked.connect(self.on_pf_color_button)
+        self.general_defaults_form.general_gui_group.pf_color_alpha_spinner.valueChanged.connect(self.on_pf_color_spinner)
+        self.general_defaults_form.general_gui_group.pf_color_alpha_slider.valueChanged.connect(self.on_pf_color_slider)
+        self.general_defaults_form.general_gui_group.pl_color_entry.editingFinished.connect(self.on_pl_color_entry)
+        self.general_defaults_form.general_gui_group.pl_color_button.clicked.connect(self.on_pl_color_button)
         # Setting selection (left - right) colors signals
-        self.general_defaults_form.general_group.sf_color_entry.editingFinished.connect(self.on_sf_color_entry)
-        self.general_defaults_form.general_group.sf_color_button.clicked.connect(self.on_sf_color_button)
-        self.general_defaults_form.general_group.sf_color_alpha_spinner.valueChanged.connect(self.on_sf_color_spinner)
-        self.general_defaults_form.general_group.sf_color_alpha_slider.valueChanged.connect(self.on_sf_color_slider)
-        self.general_defaults_form.general_group.sl_color_entry.editingFinished.connect(self.on_sl_color_entry)
-        self.general_defaults_form.general_group.sl_color_button.clicked.connect(self.on_sl_color_button)
+        self.general_defaults_form.general_gui_group.sf_color_entry.editingFinished.connect(self.on_sf_color_entry)
+        self.general_defaults_form.general_gui_group.sf_color_button.clicked.connect(self.on_sf_color_button)
+        self.general_defaults_form.general_gui_group.sf_color_alpha_spinner.valueChanged.connect(self.on_sf_color_spinner)
+        self.general_defaults_form.general_gui_group.sf_color_alpha_slider.valueChanged.connect(self.on_sf_color_slider)
+        self.general_defaults_form.general_gui_group.sl_color_entry.editingFinished.connect(self.on_sl_color_entry)
+        self.general_defaults_form.general_gui_group.sl_color_button.clicked.connect(self.on_sl_color_button)
         # Setting selection (right - left) colors signals
-        self.general_defaults_form.general_group.alt_sf_color_entry.editingFinished.connect(self.on_alt_sf_color_entry)
-        self.general_defaults_form.general_group.alt_sf_color_button.clicked.connect(self.on_alt_sf_color_button)
-        self.general_defaults_form.general_group.alt_sf_color_alpha_spinner.valueChanged.connect(
+        self.general_defaults_form.general_gui_group.alt_sf_color_entry.editingFinished.connect(self.on_alt_sf_color_entry)
+        self.general_defaults_form.general_gui_group.alt_sf_color_button.clicked.connect(self.on_alt_sf_color_button)
+        self.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.valueChanged.connect(
             self.on_alt_sf_color_spinner)
-        self.general_defaults_form.general_group.alt_sf_color_alpha_slider.valueChanged.connect(
+        self.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.valueChanged.connect(
             self.on_alt_sf_color_slider)
-        self.general_defaults_form.general_group.alt_sl_color_entry.editingFinished.connect(self.on_alt_sl_color_entry)
-        self.general_defaults_form.general_group.alt_sl_color_button.clicked.connect(self.on_alt_sl_color_button)
+        self.general_defaults_form.general_gui_group.alt_sl_color_entry.editingFinished.connect(self.on_alt_sl_color_entry)
+        self.general_defaults_form.general_gui_group.alt_sl_color_button.clicked.connect(self.on_alt_sl_color_button)
         # Setting Editor Draw colors signals
-        self.general_defaults_form.general_group.draw_color_entry.editingFinished.connect(self.on_draw_color_entry)
-        self.general_defaults_form.general_group.draw_color_button.clicked.connect(self.on_draw_color_button)
+        self.general_defaults_form.general_gui_group.draw_color_entry.editingFinished.connect(self.on_draw_color_entry)
+        self.general_defaults_form.general_gui_group.draw_color_button.clicked.connect(self.on_draw_color_button)
 
-        self.general_defaults_form.general_group.sel_draw_color_entry.editingFinished.connect(self.on_sel_draw_color_entry)
-        self.general_defaults_form.general_group.sel_draw_color_button.clicked.connect(self.on_sel_draw_color_button)
+        self.general_defaults_form.general_gui_group.sel_draw_color_entry.editingFinished.connect(self.on_sel_draw_color_entry)
+        self.general_defaults_form.general_gui_group.sel_draw_color_button.clicked.connect(self.on_sel_draw_color_button)
 
-        self.general_defaults_form.general_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
-        self.general_defaults_form.general_group.workspace_cb.stateChanged.connect(self.on_workspace)
+        self.general_defaults_form.general_gui_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
+        self.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
 
 
         # Modify G-CODE Plot Area TAB
@@ -1056,14 +1154,14 @@ class App(QtCore.QObject):
         self.collection.view.activated.connect(self.on_row_activated)
 
         # Monitor the checkbox from the Application Defaults Tab and show the TCL shell or not depending on it's value
-        self.general_defaults_form.general_group.shell_startup_cb.clicked.connect(self.on_toggle_shell)
+        self.general_defaults_form.general_app_group.shell_startup_cb.clicked.connect(self.on_toggle_shell)
 
         # Load the defaults values into the Excellon Format and Excellon Zeros fields
-        self.excellon_defaults_form.excellon_group.excellon_defaults_button.clicked.connect(
+        self.excellon_defaults_form.excellon_opt_group.excellon_defaults_button.clicked.connect(
             self.on_excellon_defaults_button)
 
         # Load the defaults values into the Excellon Format and Excellon Zeros fields
-        self.excellon_options_form.excellon_group.excellon_defaults_button.clicked.connect(
+        self.excellon_options_form.excellon_opt_group.excellon_defaults_button.clicked.connect(
             self.on_excellon_options_button)
 
         # this is a flag to signal to other tools that the ui tooltab is locked and not accessible
@@ -1162,7 +1260,7 @@ class App(QtCore.QObject):
         # Separate thread (Not worker)
         # Check for updates on startup but only if the user consent and the app is not in Beta version
         if (self.beta is False or self.beta is None) and \
-                self.general_defaults_form.general_group.version_check_cb.get_value() is True:
+                self.general_defaults_form.general_gui_group.version_check_cb.get_value() is True:
             App.log.info("Checking for updates in backgroud (this is version %s)." % str(self.version))
 
             self.thr2 = QtCore.QThread()
@@ -1373,6 +1471,10 @@ class App(QtCore.QObject):
         :return: None
         """
 
+        # adjust the visibility of some of the canvas context menu
+        self.ui.popmenu_edit.setVisible(False)
+        self.ui.popmenu_save.setVisible(True)
+
         if isinstance(self.collection.get_active(), FlatCAMGeometry):
             edited_object = self.collection.get_active()
             # for now, if the Geometry is MultiGeo do not allow the editing
@@ -1415,6 +1517,11 @@ class App(QtCore.QObject):
 
         :return: None
         """
+
+        # adjust the visibility of some of the canvas context menu
+        self.ui.popmenu_edit.setVisible(True)
+        self.ui.popmenu_save.setVisible(False)
+
         edited_obj = self.collection.get_active()
         obj_type = ""
 
@@ -2194,13 +2301,16 @@ class App(QtCore.QObject):
                            "Do you want to Save the project?")
             msgbox.setWindowTitle("Save changes")
             msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Ok)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+            msgbox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No |
+                                      QtWidgets.QMessageBox.Cancel)
+            msgbox.setDefaultButton(QtWidgets.QMessageBox.Yes)
 
             response = msgbox.exec_()
 
-            if response == QtWidgets.QMessageBox.Ok:
+            if response == QtWidgets.QMessageBox.Yes:
                 self.on_file_saveprojectas(thread=False)
+            elif response == QtWidgets.QMessageBox.Cancel:
+                return
             self.save_defaults()
         else:
             self.save_defaults()
@@ -2330,14 +2440,17 @@ class App(QtCore.QObject):
                            "Do you want to Save the project?")
             msgbox.setWindowTitle("Save changes")
             msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Ok)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+            msgbox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No |
+                                      QtWidgets.QMessageBox.Cancel)
+            msgbox.setDefaultButton(QtWidgets.QMessageBox.Yes)
 
             response = msgbox.exec_()
 
-            if response == QtWidgets.QMessageBox.Ok:
+            if response == QtWidgets.QMessageBox.Yes:
                 self.on_file_saveprojectas(thread=False)
-
+            elif response == QtWidgets.QMessageBox.Cancel:
+                self.should_we_quit = False
+                return
         self.save_defaults()
         log.debug("Application defaults saved ... Exit event.")
 
@@ -2417,6 +2530,25 @@ class App(QtCore.QObject):
 
         self.new_object("excellon", 'Combo_Excellon', initialize)
 
+    def on_edit_join_grb(self):
+        """
+                Callback for Edit->Join Gerber. Joins the selected Gerber objects into
+                a new one.
+
+                :return: None
+                """
+        objs = self.collection.get_selected()
+
+        for obj in objs:
+            if not isinstance(obj, FlatCAMGerber):
+                self.inform.emit("[error_notcl]Failed. Gerber joining works only on Gerber objects.")
+                return
+
+        def initialize(obj, app):
+            FlatCAMGerber.merge(objs, obj)
+
+        self.new_object("gerber", 'Combo_Gerber', initialize)
+
     def on_convert_singlegeo_to_multigeo(self):
         obj = self.collection.get_active()
 
@@ -2488,14 +2620,14 @@ class App(QtCore.QObject):
             return
 
         # If option is the same, then ignore
-        if self.general_options_form.general_group.units_radio.get_value().upper() == self.options["units"].upper():
+        if self.general_options_form.general_app_group.units_radio.get_value().upper() == self.options["units"].upper():
             self.log.debug("on_toggle_units(): Same as options, so ignoring.")
             return
 
         # Options to scale
-        dimensions = ['gerber_isotooldia', 'gerber_cutoutmargin', 'gerber_cutoutgapsize',
-                      'gerber_noncoppermargin', 'gerber_bboxmargin','gerber_isooverlap','gerber_nccoverlap',
-                      'gerber_nccmargin','gerber_cutouttooldia','gerber_cutoutgapsize','gerber_cutoutmargin',
+        dimensions = ['gerber_isotooldia', 'tools_cutoutmargin', 'tools_cutoutgapsize',
+                      'gerber_noncoppermargin', 'gerber_bboxmargin','gerber_isooverlap','tools_nccoverlap',
+                      'tools_nccmargin','tools_cutouttooldia','tools_cutoutgapsize',
                       'gerber_noncoppermargin','gerber_bboxmargin',
                       'excellon_drillz', "excellon_toolchangexy",
                       'excellon_travelz', 'excellon_feedrate', 'excellon_feedrate_rapid', 'excellon_toolchangez',
@@ -2522,7 +2654,7 @@ class App(QtCore.QObject):
 
         # The scaling factor depending on choice of units.
         factor = 1/25.4
-        if self.general_options_form.general_group.units_radio.get_value().upper() == 'MM':
+        if self.general_options_form.general_app_group.units_radio.get_value().upper() == 'MM':
             factor = 25.4
 
 
@@ -2550,7 +2682,7 @@ class App(QtCore.QObject):
             self.ui.grid_gap_y_entry.set_value(float(self.ui.grid_gap_y_entry.get_value()) * factor)
 
             for obj in self.collection.get_list():
-                units = self.general_options_form.general_group.units_radio.get_value().upper()
+                units = self.general_options_form.general_app_group.units_radio.get_value().upper()
                 obj.convert_units(units)
 
                 # make that the properties stored in the object are also updated
@@ -2567,16 +2699,28 @@ class App(QtCore.QObject):
         else:
             # Undo toggling
             self.toggle_units_ignore = True
-            if self.general_options_form.general_group.units_radio.get_value().upper() == 'MM':
-                self.general_options_form.general_group.units_radio.set_value('IN')
+            if self.general_options_form.general_app_group.units_radio.get_value().upper() == 'MM':
+                self.general_options_form.general_app_group.units_radio.set_value('IN')
             else:
-                self.general_options_form.general_group.units_radio.set_value('MM')
+                self.general_options_form.general_app_group.units_radio.set_value('MM')
             self.toggle_units_ignore = False
 
         self.options_read_form()
         self.inform.emit("Converted units to %s" % self.options["units"])
         #self.ui.units_label.setText("[" + self.options["units"] + "]")
         self.set_screen_units(self.options["units"])
+
+    def on_toggle_units_click(self):
+        if self.options["units"] == 'MM':
+            self.general_options_form.general_app_group.units_radio.set_value("IN")
+        else:
+            self.general_options_form.general_app_group.units_radio.set_value("MM")
+        self.on_toggle_units()
+
+    def on_language_apply(self):
+        # TODO: apply the language
+        # app restart section
+        pass
 
     def on_toggle_axis(self):
         if self.toggle_axis is False:
@@ -2590,6 +2734,9 @@ class App(QtCore.QObject):
             self.plotcanvas.h_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
             self.plotcanvas.redraw()
             self.toggle_axis = False
+
+    def on_toggle_grid(self):
+        self.ui.grid_snap_btn.trigger()
 
     def on_options_combo_change(self, sel):
         """
@@ -2613,12 +2760,14 @@ class App(QtCore.QObject):
             self.exc_form = self.excellon_defaults_form
             self.geo_form = self.geometry_defaults_form
             self.cnc_form = self.cncjob_defaults_form
+            self.tools_form = self.tools_defaults_form
         elif sel == 1:
             self.gen_form = self.general_options_form
             self.ger_form = self.gerber_options_form
             self.exc_form = self.excellon_options_form
             self.geo_form = self.geometry_options_form
             self.cnc_form = self.cncjob_options_form
+            self.tools_form = self.tools_options_form
         else:
             return
 
@@ -2657,6 +2806,13 @@ class App(QtCore.QObject):
         self.ui.cncjob_scroll_area.setWidget(self.cnc_form)
         self.cnc_form.show()
 
+        try:
+            self.ui.tools_scroll_area.takeWidget()
+        except:
+            self.log.debug("Nothing to remove")
+        self.ui.tools_scroll_area.setWidget(self.tools_form)
+        self.tools_form.show()
+
         self.log.debug("Finished GUI form initialization.")
 
         # self.options2form()
@@ -2682,9 +2838,9 @@ class App(QtCore.QObject):
 
     # Setting plot colors handlers
     def on_pf_color_entry(self):
-        self.defaults['global_plot_fill'] = self.general_defaults_form.general_group.pf_color_entry.get_value()[:7] + \
+        self.defaults['global_plot_fill'] = self.general_defaults_form.general_gui_group.pf_color_entry.get_value()[:7] + \
                                             self.defaults['global_plot_fill'][7:9]
-        self.general_defaults_form.general_group.pf_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.pf_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_plot_fill'])[:7])
 
     def on_pf_color_button(self):
@@ -2696,29 +2852,29 @@ class App(QtCore.QObject):
         if plot_fill_color.isValid() is False:
             return
 
-        self.general_defaults_form.general_group.pf_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.pf_color_button.setStyleSheet(
             "background-color:%s" % str(plot_fill_color.name()))
 
         new_val = str(plot_fill_color.name()) + str(self.defaults['global_plot_fill'][7:9])
-        self.general_defaults_form.general_group.pf_color_entry.set_value(new_val)
+        self.general_defaults_form.general_gui_group.pf_color_entry.set_value(new_val)
         self.defaults['global_plot_fill'] = new_val
 
     def on_pf_color_spinner(self):
-        spinner_value = self.general_defaults_form.general_group.pf_color_alpha_spinner.value()
-        self.general_defaults_form.general_group.pf_color_alpha_slider.setValue(spinner_value)
+        spinner_value = self.general_defaults_form.general_gui_group.pf_color_alpha_spinner.value()
+        self.general_defaults_form.general_gui_group.pf_color_alpha_slider.setValue(spinner_value)
         self.defaults['global_plot_fill'] = self.defaults['global_plot_fill'][:7] + \
                                             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
         self.defaults['global_plot_line'] = self.defaults['global_plot_line'][:7] + \
                                             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
     def on_pf_color_slider(self):
-        slider_value = self.general_defaults_form.general_group.pf_color_alpha_slider.value()
-        self.general_defaults_form.general_group.pf_color_alpha_spinner.setValue(slider_value)
+        slider_value = self.general_defaults_form.general_gui_group.pf_color_alpha_slider.value()
+        self.general_defaults_form.general_gui_group.pf_color_alpha_spinner.setValue(slider_value)
 
     def on_pl_color_entry(self):
-        self.defaults['global_plot_line'] = self.general_defaults_form.general_group.pl_color_entry.get_value()[:7] + \
+        self.defaults['global_plot_line'] = self.general_defaults_form.general_gui_group.pl_color_entry.get_value()[:7] + \
                                             self.defaults['global_plot_line'][7:9]
-        self.general_defaults_form.general_group.pl_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.pl_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_plot_line'])[:7])
 
     def on_pl_color_button(self):
@@ -2731,18 +2887,18 @@ class App(QtCore.QObject):
         if plot_line_color.isValid() is False:
             return
 
-        self.general_defaults_form.general_group.pl_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.pl_color_button.setStyleSheet(
             "background-color:%s" % str(plot_line_color.name()))
 
         new_val_line = str(plot_line_color.name()) + str(self.defaults['global_plot_line'][7:9])
-        self.general_defaults_form.general_group.pl_color_entry.set_value(new_val_line)
+        self.general_defaults_form.general_gui_group.pl_color_entry.set_value(new_val_line)
         self.defaults['global_plot_line'] = new_val_line
 
     # Setting selection colors (left - right) handlers
     def on_sf_color_entry(self):
-        self.defaults['global_sel_fill'] = self.general_defaults_form.general_group.sf_color_entry.get_value()[:7] + \
+        self.defaults['global_sel_fill'] = self.general_defaults_form.general_gui_group.sf_color_entry.get_value()[:7] + \
                                             self.defaults['global_sel_fill'][7:9]
-        self.general_defaults_form.general_group.sf_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_sel_fill'])[:7])
 
     def on_sf_color_button(self):
@@ -2754,29 +2910,29 @@ class App(QtCore.QObject):
         if plot_fill_color.isValid() is False:
             return
 
-        self.general_defaults_form.general_group.sf_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
             "background-color:%s" % str(plot_fill_color.name()))
 
         new_val = str(plot_fill_color.name()) + str(self.defaults['global_sel_fill'][7:9])
-        self.general_defaults_form.general_group.sf_color_entry.set_value(new_val)
+        self.general_defaults_form.general_gui_group.sf_color_entry.set_value(new_val)
         self.defaults['global_sel_fill'] = new_val
 
     def on_sf_color_spinner(self):
-        spinner_value = self.general_defaults_form.general_group.sf_color_alpha_spinner.value()
-        self.general_defaults_form.general_group.sf_color_alpha_slider.setValue(spinner_value)
+        spinner_value = self.general_defaults_form.general_gui_group.sf_color_alpha_spinner.value()
+        self.general_defaults_form.general_gui_group.sf_color_alpha_slider.setValue(spinner_value)
         self.defaults['global_sel_fill'] = self.defaults['global_sel_fill'][:7] + \
                                             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
         self.defaults['global_sel_line'] = self.defaults['global_sel_line'][:7] + \
                                             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
     def on_sf_color_slider(self):
-        slider_value = self.general_defaults_form.general_group.sf_color_alpha_slider.value()
-        self.general_defaults_form.general_group.sf_color_alpha_spinner.setValue(slider_value)
+        slider_value = self.general_defaults_form.general_gui_group.sf_color_alpha_slider.value()
+        self.general_defaults_form.general_gui_group.sf_color_alpha_spinner.setValue(slider_value)
 
     def on_sl_color_entry(self):
-        self.defaults['global_sel_line'] = self.general_defaults_form.general_group.sl_color_entry.get_value()[:7] + \
+        self.defaults['global_sel_line'] = self.general_defaults_form.general_gui_group.sl_color_entry.get_value()[:7] + \
                                             self.defaults['global_sel_line'][7:9]
-        self.general_defaults_form.general_group.sl_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.sl_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_sel_line'])[:7])
 
     def on_sl_color_button(self):
@@ -2788,18 +2944,18 @@ class App(QtCore.QObject):
         if plot_line_color.isValid() is False:
             return
 
-        self.general_defaults_form.general_group.sl_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.sl_color_button.setStyleSheet(
             "background-color:%s" % str(plot_line_color.name()))
 
         new_val_line = str(plot_line_color.name()) + str(self.defaults['global_sel_line'][7:9])
-        self.general_defaults_form.general_group.sl_color_entry.set_value(new_val_line)
+        self.general_defaults_form.general_gui_group.sl_color_entry.set_value(new_val_line)
         self.defaults['global_sel_line'] = new_val_line
 
     # Setting selection colors (right - left) handlers
     def on_alt_sf_color_entry(self):
-        self.defaults['global_alt_sel_fill'] = self.general_defaults_form.general_group \
+        self.defaults['global_alt_sel_fill'] = self.general_defaults_form.general_gui_group \
                                    .alt_sf_color_entry.get_value()[:7] + self.defaults['global_alt_sel_fill'][7:9]
-        self.general_defaults_form.general_group.alt_sf_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_alt_sel_fill'])[:7])
 
     def on_alt_sf_color_button(self):
@@ -2811,29 +2967,29 @@ class App(QtCore.QObject):
         if plot_fill_color.isValid() is False:
             return
 
-        self.general_defaults_form.general_group.alt_sf_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
             "background-color:%s" % str(plot_fill_color.name()))
 
         new_val = str(plot_fill_color.name()) + str(self.defaults['global_alt_sel_fill'][7:9])
-        self.general_defaults_form.general_group.alt_sf_color_entry.set_value(new_val)
+        self.general_defaults_form.general_gui_group.alt_sf_color_entry.set_value(new_val)
         self.defaults['global_alt_sel_fill'] = new_val
 
     def on_alt_sf_color_spinner(self):
-        spinner_value = self.general_defaults_form.general_group.alt_sf_color_alpha_spinner.value()
-        self.general_defaults_form.general_group.alt_sf_color_alpha_slider.setValue(spinner_value)
+        spinner_value = self.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.value()
+        self.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.setValue(spinner_value)
         self.defaults['global_alt_sel_fill'] = self.defaults['global_alt_sel_fill'][:7] + \
                                             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
         self.defaults['global_alt_sel_line'] = self.defaults['global_alt_sel_line'][:7] + \
                                             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
     def on_alt_sf_color_slider(self):
-        slider_value = self.general_defaults_form.general_group.alt_sf_color_alpha_slider.value()
-        self.general_defaults_form.general_group.alt_sf_color_alpha_spinner.setValue(slider_value)
+        slider_value = self.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.value()
+        self.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.setValue(slider_value)
 
     def on_alt_sl_color_entry(self):
-        self.defaults['global_alt_sel_line'] = self.general_defaults_form.general_group \
+        self.defaults['global_alt_sel_line'] = self.general_defaults_form.general_gui_group \
                                    .alt_sl_color_entry.get_value()[:7] + self.defaults['global_alt_sel_line'][7:9]
-        self.general_defaults_form.general_group.alt_sl_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.alt_sl_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_alt_sel_line'])[:7])
 
     def on_alt_sl_color_button(self):
@@ -2845,18 +3001,18 @@ class App(QtCore.QObject):
         if plot_line_color.isValid() is False:
             return
 
-        self.general_defaults_form.general_group.alt_sl_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.alt_sl_color_button.setStyleSheet(
             "background-color:%s" % str(plot_line_color.name()))
 
         new_val_line = str(plot_line_color.name()) + str(self.defaults['global_alt_sel_line'][7:9])
-        self.general_defaults_form.general_group.alt_sl_color_entry.set_value(new_val_line)
+        self.general_defaults_form.general_gui_group.alt_sl_color_entry.set_value(new_val_line)
         self.defaults['global_alt_sel_line'] = new_val_line
 
     # Setting Editor colors
     def on_draw_color_entry(self):
-        self.defaults['global_draw_color'] = self.general_defaults_form.general_group \
+        self.defaults['global_draw_color'] = self.general_defaults_form.general_gui_group \
                                                    .draw_color_entry.get_value()
-        self.general_defaults_form.general_group.draw_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.draw_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_draw_color']))
 
     def on_draw_color_button(self):
@@ -2868,17 +3024,17 @@ class App(QtCore.QObject):
         if draw_color.isValid() is False:
             return
 
-        self.general_defaults_form.general_group.draw_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.draw_color_button.setStyleSheet(
             "background-color:%s" % str(draw_color.name()))
 
         new_val = str(draw_color.name())
-        self.general_defaults_form.general_group.draw_color_entry.set_value(new_val)
+        self.general_defaults_form.general_gui_group.draw_color_entry.set_value(new_val)
         self.defaults['global_draw_color'] = new_val
 
     def on_sel_draw_color_entry(self):
-        self.defaults['global_sel_draw_color'] = self.general_defaults_form.general_group \
+        self.defaults['global_sel_draw_color'] = self.general_defaults_form.general_gui_group \
                                                    .sel_draw_color_entry.get_value()
-        self.general_defaults_form.general_group.sel_draw_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.sel_draw_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_sel_draw_color']))
 
     def on_sel_draw_color_button(self):
@@ -2890,11 +3046,11 @@ class App(QtCore.QObject):
         if sel_draw_color.isValid() is False:
             return
 
-        self.general_defaults_form.general_group.sel_draw_color_button.setStyleSheet(
+        self.general_defaults_form.general_gui_group.sel_draw_color_button.setStyleSheet(
             "background-color:%s" % str(sel_draw_color.name()))
 
         new_val_sel = str(sel_draw_color.name())
-        self.general_defaults_form.general_group.sel_draw_color_entry.set_value(new_val_sel)
+        self.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(new_val_sel)
         self.defaults['global_sel_draw_color'] = new_val_sel
 
     def on_workspace_modified(self):
@@ -2902,7 +3058,7 @@ class App(QtCore.QObject):
         self.plotcanvas.draw_workspace()
 
     def on_workspace(self):
-        if self.general_defaults_form.general_group.workspace_cb.isChecked():
+        if self.general_defaults_form.general_gui_group.workspace_cb.isChecked():
             self.plotcanvas.restore_workspace()
         else:
             self.plotcanvas.delete_workspace()
@@ -2910,10 +3066,10 @@ class App(QtCore.QObject):
         self.save_defaults(silent=True)
 
     def on_workspace_menu(self):
-        if self.general_defaults_form.general_group.workspace_cb.isChecked():
-            self.general_defaults_form.general_group.workspace_cb.setChecked(False)
+        if self.general_defaults_form.general_gui_group.workspace_cb.isChecked():
+            self.general_defaults_form.general_gui_group.workspace_cb.setChecked(False)
         else:
-            self.general_defaults_form.general_group.workspace_cb.setChecked(True)
+            self.general_defaults_form.general_gui_group.workspace_cb.setChecked(True)
         self.on_workspace()
 
     def on_save_button(self):
@@ -3106,6 +3262,8 @@ class App(QtCore.QObject):
 
             # drills are offset, so they need to be deep copied
             obj_init.drills = deepcopy(obj.drills)
+            # slots are offset, so they need to be deep copied
+            obj_init.slots = deepcopy(obj.slots)
             obj_init.create_geometry()
 
         for obj in self.collection.get_selected():
@@ -3141,6 +3299,8 @@ class App(QtCore.QObject):
             obj_init.tools = obj.tools
             # drills are offset, so they need to be deep copied
             obj_init.drills = deepcopy(obj.drills)
+            # slots are offset, so they need to be deep copied
+            obj_init.slots = deepcopy(obj.slots)
             obj_init.create_geometry()
 
         for obj in self.collection.get_selected():
@@ -3549,6 +3709,9 @@ class App(QtCore.QObject):
             if event.key == 'G':
                 self.on_fileopengerber()
 
+            if event.key == 'N':
+                self.on_file_new_click()
+
             if event.key == 'M':
                 self.measurement_tool.run()
 
@@ -3561,24 +3724,74 @@ class App(QtCore.QObject):
             return
         elif self.key_modifiers == QtCore.Qt.AltModifier:
             # place holder for further shortcut key
-            return
+            if event.key == 'C':
+                self.calculator_tool.run()
+
+            if event.key == 'D':
+                self.dblsidedtool.run()
+
+            if event.key == 'L':
+                self.film_tool.run()
+
+            if event.key == 'N':
+                self.ncclear_tool.run()
+
+            if event.key == 'P':
+                self.paint_tool.run()
+
+            if event.key == 'R':
+                self.transform_tool.run()
+
+            if event.key == 'U':
+                self.cutout_tool.run()
+
+            if event.key == 'Z':
+                self.panelize_tool.run()
+
         elif self.key_modifiers == QtCore.Qt.ShiftModifier:
             # place holder for further shortcut key
+
+            if event.key == 'C':
+                self.on_copy_name()
 
             # Toggle axis
             if event.key == 'G':
                 self.on_toggle_axis()
 
+            # Open Preferences Window
+            if event.key == 'P':
+                self.on_preferences()
+
             # Rotate Object by 90 degree CCW
             if event.key == 'R':
                 self.on_rotate(silent=True, preset=-90)
+
+            # Run a Script
+            if event.key == 'S':
+                self.on_filerunscript()
 
             # Toggle Workspace
             if event.key == 'W':
                 self.on_workspace_menu()
 
+            # Skew on X axis
+            if event.key == 'X':
+                self.on_skewx()
+
+            # Skew on Y axis
+            if event.key == 'Y':
+                self.on_skewy()
+
             return
         else:
+            if event.key == 'F1':
+                webbrowser.open(self.manual_url)
+                return
+
+            if event.key == 'F2':
+                webbrowser.open(self.video_url)
+                return
+
             if event.key == self.defaults['fit_key']:  # 1
                 self.on_zoom_fit(None)
                 return
@@ -3600,9 +3813,6 @@ class App(QtCore.QObject):
                     self.collection.get_active().ui.plot_cb.toggle()
                     self.delete_selection_shape()
 
-            if event.key == 'C':
-                self.on_copy_name()
-
             if event.key == 'E':
                 self.object2editor()
 
@@ -3612,6 +3822,9 @@ class App(QtCore.QObject):
             if event.key == 'J':
                 self.on_jump_to()
 
+            if event.key == 'L':
+                self.new_excellon_object()
+
             if event.key == 'M':
                 self.move_tool.toggle()
                 return
@@ -3619,21 +3832,20 @@ class App(QtCore.QObject):
             if event.key == 'N':
                 self.on_new_geometry()
 
+            if event.key == 'O':
+                self.on_set_origin()
+
+            if event.key == 'P':
+                self.properties_tool.run()
+
             if event.key == 'Q':
-                if self.options["units"] == 'MM':
-                    self.general_options_form.general_group.units_radio.set_value("IN")
-                else:
-                    self.general_options_form.general_group.units_radio.set_value("MM")
-                self.on_toggle_units()
+                self.on_toggle_units_click()
 
             if event.key == 'R':
                 self.on_rotate(silent=True, preset=90)
 
             if event.key == 'S':
                 self.on_toggle_shell()
-
-            if event.key == 'T':
-                self.transform_tool.run()
 
             if event.key == 'V':
                 self.on_zoom_fit(None)
@@ -3671,22 +3883,23 @@ class App(QtCore.QObject):
 <b>2:</b>       Zoom Out<br>
 <b>3:</b>       Zoom In<br>
 <b>A:</b>       Draw an Arc (when in Edit Mode)<br>
-<b>C:</b>       Copy Obj_Name<br>
 <b>C:</b>       Copy Geo Item (when in Edit Mode)<br>
 <b>E:</b>       Edit Object (if selected)<br>
 <b>G:</b>       Grid On/Off<br>
 <b>J:</b>       Jump to Coordinates<br>
+<b>L:</b>       New Excellon<br>
 <b>M:</b>       Move Obj<br>
 <b>M:</b>       Move Geo Item (when in Edit Mode)<br>
 <b>N:</b>       New Geometry<br>
 <b>N:</b>       Draw a Polygon (when in Edit Mode)<br>
+<b>O:</b>       Set Origin<br>
 <b>O:</b>       Draw a Circle (when in Edit Mode)<br>
 <b>Q:</b>       Change Units<br>
+<b>P:</b>       Open Properties Tool<br>
 <b>P:</b>       Draw a Path (when in Edit Mode)<br>
 <b>R:</b>       Rotate by 90 degree CW<br>
 <b>R:</b>       Draw Rectangle (when in Edit Mode)<br>
 <b>S:</b>       Shell Toggle<br>
-<b>T:</b>       Transformation<br>
 <b>V:</b>       View Fit<br>
 <b>X:</b>       Flip on X_axis<br>
 <b>Y:</b>       Flip on Y_axis<br>
@@ -3696,15 +3909,33 @@ class App(QtCore.QObject):
 <b>CTRL+C:</b>   Copy Obj<br>
 <b>CTRL+E:</b>   Open Excellon File<br>
 <b>CTRL+G:</b>   Open Gerber File<br>
+<b>CTRL+N:</b>   New Project<br>
 <b>CTRL+M:</b>   Measurement Tool<br>
 <b>CTRL+O:</b>   Open Project<br>
 <b>CTRL+S:</b>   Save Project As<br>
 <b>CTRL+S:</b>   Save Object and Exit Editor (when in Edit Mode)<br>
 <br>
+<b>SHIFT+C:</b>  Copy Obj_Name<br>
 <b>SHIFT+G:</b>  Toggle the axis<br>
+<b>SHIFT+P:</b>  Open Preferences Window<br>
 <b>SHIFT+R:</b>  Rotate by 90 degree CCW<br>
+<b>SHIFT+S:</b>  Run a Script<br>
 <b>SHIFT+W:</b>  Toggle the workspace<br>
-<b>Del:</b>      Delete Obj'''
+<b>SHIFT+X:</b>  Skew on X axis<br>
+<b>SHIFT+Y:</b>  Skew on Y axis<br>
+<br>
+<b>ALT+C:</b>    Calculators Tool<br>
+<b>ALT+D:</b>    2-Sided PCB Tool<br>
+<b>ALT+L:</b>    Film PCB Tool<br>
+<b>ALT+N:</b>    Non-Copper Clearing Tool<br>
+<b>ALT+P:</b>    Paint Area Tool<br>
+<b>ALT+R:</b>    Transformation Tool<br>
+<b>ALT+U:</b>    Cutout PCB Tool<br>
+<br>
+<b>F1:</b>       Open Online Manual<br>
+<b>F2:</b>       Open Online Tutorials<br>
+<b>Del:</b>      Delete Obj
+'''
 
         helpbox = QtWidgets.QMessageBox()
         helpbox.setText(msg)
@@ -3716,7 +3947,13 @@ class App(QtCore.QObject):
 
     def on_copy_name(self):
         obj = self.collection.get_active()
-        name = obj.options["name"]
+        try:
+            name = obj.options["name"]
+        except AttributeError:
+            log.debug("on_copy_name() --> No object selected to copy it's name")
+            self.inform.emit("[warning_notcl]No object selected to copy it's name")
+            return
+
         self.clipboard.setText(name)
         self.inform.emit("Name copied on clipboard ...")
 
@@ -4069,13 +4306,16 @@ class App(QtCore.QObject):
                            "Do you want to Save the project?")
             msgbox.setWindowTitle("Save changes")
             msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Ok)
+            msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Yes |
+                                      QtWidgets.QMessageBox.No)
             msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
 
             response = msgbox.exec_()
 
-            if response == QtWidgets.QMessageBox.Ok:
+            if response == QtWidgets.QMessageBox.Yes:
                 self.on_file_saveprojectas()
+            elif response == QtWidgets.QMessageBox.Cancel:
+                return
             self.on_file_new()
         else:
             self.on_file_new()
@@ -4123,6 +4363,9 @@ class App(QtCore.QObject):
 
     def obj_properties(self):
         self.properties_tool.run()
+
+    def obj_move(self):
+        self.move_tool.run()
 
     def on_fileopengerber(self):
         """
@@ -4936,7 +5179,7 @@ class App(QtCore.QObject):
             return "Could not retrieve object: %s" % obj_name
 
         # updated units
-        units = self.general_options_form.general_group.units_radio.get_value().upper()
+        units = self.general_options_form.general_app_group.units_radio.get_value().upper()
         if units == 'IN' or units == 'INCH':
             units = 'INCH'
 
@@ -5029,7 +5272,7 @@ class App(QtCore.QObject):
             return "Could not retrieve object: %s" % obj_name
 
         # updated units
-        units = self.general_options_form.general_group.units_radio.get_value().upper()
+        units = self.general_options_form.general_app_group.units_radio.get_value().upper()
         if units == 'IN' or units == 'INCH':
             units = 'INCH'
         elif units == 'MM' or units == 'METIRC':
@@ -5082,7 +5325,7 @@ class App(QtCore.QObject):
                              "Only Geometry and Gerber are supported")
             return
 
-        units = self.general_options_form.general_group.units_radio.get_value().upper()
+        units = self.general_options_form.general_app_group.units_radio.get_value().upper()
 
         def obj_init(geo_obj, app_obj):
             geo_obj.import_svg(filename, obj_type, units=units)
@@ -5123,7 +5366,7 @@ class App(QtCore.QObject):
                              "Only Geometry and Gerber are supported")
             return
 
-        units = self.general_options_form.general_group.units_radio.get_value().upper()
+        units = self.general_options_form.general_app_group.units_radio.get_value().upper()
 
         def obj_init(geo_obj, app_obj):
             geo_obj.import_dxf(filename, obj_type, units=units)
@@ -5170,7 +5413,7 @@ class App(QtCore.QObject):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
-            units = self.general_options_form.general_group.units_radio.get_value()
+            units = self.general_options_form.general_app_group.units_radio.get_value()
 
             self.new_object(obj_type, name, obj_init)
             self.progress.emit(20)
@@ -5859,7 +6102,7 @@ class App(QtCore.QObject):
 
         self.log.debug("version_check()")
 
-        if self.general_defaults_form.general_group.send_stats_cb.get_value() is True:
+        if self.general_defaults_form.general_gui_group.send_stats_cb.get_value() is True:
             full_url = App.version_url + \
                        "?s=" + str(self.defaults['global_serial']) + \
                        "&v=" + str(self.version) + \

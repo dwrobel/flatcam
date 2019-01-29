@@ -366,6 +366,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         if grb_final.solid_geometry is None:
             grb_final.solid_geometry = []
+
         if type(grb_final.solid_geometry) is not list:
             grb_final.solid_geometry = [grb_final.solid_geometry]
 
@@ -380,10 +381,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             # Expand lists
             if type(grb) is list:
                 FlatCAMGerber.merge(grb, grb_final)
+            else:   # If not list, just append
+                for geos in grb.solid_geometry:
+                    grb_final.solid_geometry.append(geos)
 
-            # If not list, just append
-            else:
-                grb_final.solid_geometry.append(grb.solid_geometry)
+        grb_final.solid_geometry = MultiPolygon(grb_final.solid_geometry)
 
     def __init__(self, name):
         Gerber.__init__(self, steps_per_circle=self.app.defaults["gerber_circle_steps"])
@@ -402,9 +404,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             "isooverlap": 0.15,
             "milling_type": "cl",
             "combine_passes": True,
-            "ncctools": "1.0, 0.5",
-            "nccoverlap": 0.4,
-            "nccmargin": 1,
             "noncoppermargin": 0.0,
             "noncopperrounded": False,
             "bboxmargin": 0.0,
@@ -755,9 +754,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         factor = Gerber.convert_units(self, units)
 
         self.options['isotooldia'] *= factor
-        self.options['cutoutmargin'] *= factor
-        self.options['cutoutgapsize'] *= factor
-        self.options['noncoppermargin'] *= factor
         self.options['bboxmargin'] *= factor
 
     def plot(self, **kwargs):
@@ -899,14 +895,21 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         :return: None
         """
 
+        # flag to signal that we need to reorder the tools dictionary and drills and slots lists
+        flag_order = False
+
         try:
             flattened_list = list(itertools.chain(*exc_list))
         except TypeError:
             flattened_list = exc_list
 
         # this dict will hold the unique tool diameters found in the exc_list objects as the dict keys and the dict
-        # values will be list of Shapely Points
-        custom_dict = {}
+        # values will be list of Shapely Points; for drills
+        custom_dict_drills = {}
+
+        # this dict will hold the unique tool diameters found in the exc_list objects as the dict keys and the dict
+        # values will be list of Shapely Points; for slots
+        custom_dict_slots = {}
 
         for exc in flattened_list:
             # copy options of the current excellon obj to the final excellon obj
@@ -920,21 +923,29 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             for drill in exc.drills:
                 exc_tool_dia = float('%.3f' % exc.tools[drill['tool']]['C'])
 
-                if exc_tool_dia not in custom_dict:
-                    custom_dict[exc_tool_dia] = [drill['point']]
+                if exc_tool_dia not in custom_dict_drills:
+                    custom_dict_drills[exc_tool_dia] = [drill['point']]
                 else:
-                    custom_dict[exc_tool_dia].append(drill['point'])
+                    custom_dict_drills[exc_tool_dia].append(drill['point'])
 
-                # add the zeros and units to the exc_final object
+            for slot in exc.slots:
+                exc_tool_dia = float('%.3f' % exc.tools[slot['tool']]['C'])
+
+                if exc_tool_dia not in custom_dict_slots:
+                    custom_dict_slots[exc_tool_dia] = [[slot['start'], slot['stop']]]
+                else:
+                    custom_dict_slots[exc_tool_dia].append([slot['start'], slot['stop']])
+
+            # add the zeros and units to the exc_final object
             exc_final.zeros = exc.zeros
             exc_final.units = exc.units
 
         # variable to make tool_name for the tools
         current_tool = 0
-
         # Here we add data to the exc_final object
-        # the tools diameter are now the keys in the drill_dia dict and the values are the Shapely Points
-        for tool_dia in custom_dict:
+        # the tools diameter are now the keys in the drill_dia dict and the values are the Shapely Points in case of
+        # drills
+        for tool_dia in custom_dict_drills:
             # we create a tool name for each key in the drill_dia dict (the key is a unique drill diameter)
             current_tool += 1
 
@@ -943,13 +954,101 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             exc_final.tools[tool_name] = spec
 
             # rebuild the drills list of dict's that belong to the exc_final object
-            for point in custom_dict[tool_dia]:
+            for point in custom_dict_drills[tool_dia]:
                 exc_final.drills.append(
                     {
                         "point": point,
                         "tool": str(current_tool)
                     }
                 )
+
+        # Here we add data to the exc_final object
+        # the tools diameter are now the keys in the drill_dia dict and the values are a list ([start, stop])
+        # of two Shapely Points in case of slots
+        for tool_dia in custom_dict_slots:
+            # we create a tool name for each key in the slot_dia dict (the key is a unique slot diameter)
+            # but only if there are no drills
+            if not exc_final.tools:
+                current_tool += 1
+                tool_name = str(current_tool)
+                spec = {"C": float(tool_dia)}
+                exc_final.tools[tool_name] = spec
+            else:
+                dia_list = []
+                for v in exc_final.tools.values():
+                    dia_list.append(float(v["C"]))
+
+                if tool_dia not in dia_list:
+                    flag_order = True
+
+                    current_tool = len(dia_list) + 1
+                    tool_name = str(current_tool)
+                    spec = {"C": float(tool_dia)}
+                    exc_final.tools[tool_name] = spec
+
+                else:
+                    for k, v in exc_final.tools.items():
+                        if v["C"] == tool_dia:
+                            current_tool = int(k)
+                            break
+
+            # rebuild the slots list of dict's that belong to the exc_final object
+            for point in custom_dict_slots[tool_dia]:
+                exc_final.slots.append(
+                    {
+                        "start": point[0],
+                        "stop": point[1],
+                        "tool": str(current_tool)
+                    }
+                )
+
+        # flag_order == True means that there was an slot diameter not in the tools and we also have drills
+        # and the new tool was added to self.tools therefore we need to reorder the tools and drills and slots
+        current_tool = 0
+        if flag_order is True:
+            dia_list = []
+            temp_drills = []
+            temp_slots = []
+            temp_tools = {}
+            for v in exc_final.tools.values():
+                dia_list.append(float(v["C"]))
+            dia_list.sort()
+            for ordered_dia in dia_list:
+                current_tool += 1
+                tool_name_temp = str(current_tool)
+                spec_temp = {"C": float(ordered_dia)}
+                temp_tools[tool_name_temp] = spec_temp
+
+                for drill in exc_final.drills:
+                    exc_tool_dia = float('%.3f' % exc_final.tools[drill['tool']]['C'])
+                    if exc_tool_dia == ordered_dia:
+                        temp_drills.append(
+                            {
+                                "point": drill["point"],
+                                "tool": str(current_tool)
+                            }
+                        )
+
+                for slot in exc_final.slots:
+                    slot_tool_dia = float('%.3f' % exc_final.tools[slot['tool']]['C'])
+                    if slot_tool_dia == ordered_dia:
+                        temp_slots.append(
+                            {
+                                "start": slot["start"],
+                                "stop": slot["stop"],
+                                "tool": str(current_tool)
+                            }
+                        )
+
+            # delete the exc_final tools, drills and slots
+            exc_final.tools = dict()
+            exc_final.drills[:] = []
+            exc_final.slots[:] = []
+
+            # update the exc_final tools, drills and slots with the ordered values
+            exc_final.tools = temp_tools
+            exc_final.drills[:] = temp_drills
+            exc_final.slots[:] = temp_slots
 
         # create the geometry for the exc_final object
         exc_final.create_geometry()
@@ -1192,7 +1291,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         """
 
         excellon_code = ''
-        units = self.app.general_options_form.general_group.units_radio.get_value().upper()
+        units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
 
         # store here if the file has slots, return 1 if any slots, 0 if only drills
         has_slots = 0
@@ -1252,7 +1351,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         """
 
         excellon_code = ''
-        units = self.app.general_options_form.general_group.units_radio.get_value().upper()
+        units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
 
         # store here if the file has slots, return 1 if any slots, 0 if only drills
         has_slots = 0
@@ -2759,7 +2858,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.setCurrentItem(self.ui.geo_tools_table.item(row, 0))
 
     def export_dxf(self):
-        units = self.app.general_options_form.general_group.units_radio.get_value().upper()
+        units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
         dwg = None
         try:
             dwg = ezdxf.new('R2010')
@@ -2859,7 +2958,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             self.app.inform.emit("[error_notcl] Failed. No tool selected in the tool table ...")
 
-    def mtool_gen_cncjob(self, use_thread=True):
+    def mtool_gen_cncjob(self, segx=None, segy=None, use_thread=True):
         """
         Creates a multi-tool CNCJob out of this Geometry object.
         The actual work is done by the target FlatCAMCNCjob object's
@@ -2883,6 +2982,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia
         outname = "%s_%s" % (self.options["name"], 'cnc')
 
+        segx = segx if segx is not None else float(self.app.defaults['geometry_segx'])
+        segy = segy if segy is not None else float(self.app.defaults['geometry_segy'])
+
         # Object initialization function for app.new_object()
         # RUNNING ON SEPARATE THREAD!
         def job_init_single_geometry(job_obj, app_obj):
@@ -2901,6 +3003,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             # job_obj.create_geometry()
 
             job_obj.options['Tools_in_use'] = self.get_selected_tools_table_items()
+            job_obj.segx = segx
+            job_obj.segy = segy
 
             for tooluid_key in self.sel_tools:
                 tool_cnt += 1
@@ -3242,6 +3346,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                        toolchange=None, toolchangez=None, toolchangexy=None,
                        extracut=None, startz=None, endz=None,
                        ppname_g=None,
+                       segx=None,
+                       segy=None,
                        use_thread=True):
         """
         Only used for TCL Command.
@@ -3272,6 +3378,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         multidepth = multidepth if multidepth is not None else self.options["multidepth"]
         depthperpass = depthperpass if depthperpass is not None else self.options["depthperpass"]
+
+        segx = segx if segx is not None else float(self.app.defaults['geometry_segx'])
+        segy = segy if segy is not None else float(self.app.defaults['geometry_segy'])
 
         extracut = extracut if extracut is not None else self.options["extracut"]
         startz = startz if startz is not None else self.options["startz"]
@@ -3306,6 +3415,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
             job_obj.options['type'] = 'Geometry'
             job_obj.options['tool_dia'] = tooldia
+
+            job_obj.segx = segx
+            job_obj.segy = segy
 
             # TODO: The tolerance should not be hard coded. Just for testing.
             job_obj.generate_from_geometry_2(self, tooldia=tooldia, offset=offset, tolerance=0.0005,
@@ -3358,8 +3470,20 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :rtype: None
         """
 
+        try:
+            xfactor = float(xfactor)
+        except:
+            self.app.inform.emit("[error_notcl] Scale factor has to be a number: integer or float.")
+            return
+
         if yfactor is None:
             yfactor = xfactor
+        else:
+            try:
+                yfactor = float(yfactor)
+            except:
+                self.app.inform.emit("[error_notcl] Scale factor has to be a number: integer or float.")
+                return
 
         if point is None:
             px = 0
@@ -3367,16 +3491,33 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             px, py = point
 
-        if type(self.solid_geometry) == list:
-            geo_list =  self.flatten(self.solid_geometry)
-            self.solid_geometry = []
-            # for g in geo_list:
-            #     self.solid_geometry.append(affinity.scale(g, xfactor, yfactor, origin=(px, py)))
-            self.solid_geometry = [affinity.scale(g, xfactor, yfactor, origin=(px, py))
-                                   for g in geo_list]
+        # if type(self.solid_geometry) == list:
+        #     geo_list =  self.flatten(self.solid_geometry)
+        #     self.solid_geometry = []
+        #     # for g in geo_list:
+        #     #     self.solid_geometry.append(affinity.scale(g, xfactor, yfactor, origin=(px, py)))
+        #     self.solid_geometry = [affinity.scale(g, xfactor, yfactor, origin=(px, py))
+        #                            for g in geo_list]
+        # else:
+        #     self.solid_geometry = affinity.scale(self.solid_geometry, xfactor, yfactor,
+        #                                          origin=(px, py))
+        # self.app.inform.emit("[success]Geometry Scale done.")
+
+        def scale_recursion(geom):
+            if type(geom) == list:
+                geoms=list()
+                for local_geom in geom:
+                    geoms.append(scale_recursion(local_geom))
+                return geoms
+            else:
+                return  affinity.scale(geom, xfactor, yfactor, origin=(px, py))
+
+        if self.multigeo is True:
+            for tool in self.tools:
+                self.tools[tool]['solid_geometry'] = scale_recursion(self.tools[tool]['solid_geometry'])
         else:
-            self.solid_geometry = affinity.scale(self.solid_geometry, xfactor, yfactor,
-                                                 origin=(px, py))
+            self.solid_geometry=scale_recursion(self.solid_geometry)
+        self.app.inform.emit("[success]Geometry Scale done.")
 
     def offset(self, vect):
         """
@@ -3388,7 +3529,12 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :rtype: None
         """
 
-        dx, dy = vect
+        try:
+            dx, dy = vect
+        except TypeError:
+            self.app.inform.emit("[error_notcl]An (x,y) pair of values are needed. "
+                                 "Probable you entered only one value in the Offset field.")
+            return
 
         def translate_recursion(geom):
             if type(geom) == list:
@@ -3404,6 +3550,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 self.tools[tool]['solid_geometry'] = translate_recursion(self.tools[tool]['solid_geometry'])
         else:
             self.solid_geometry=translate_recursion(self.solid_geometry)
+        self.app.inform.emit("[success]Geometry Offset done.")
 
     def convert_units(self, units):
         self.ui_disconnect()
@@ -4042,13 +4189,16 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         cw_row = cw_index.row()
 
         self.shapes.clear(update=True)
+
         for tooluid_key in self.cnc_tools:
             tooldia = float('%.4f' % float(self.cnc_tools[tooluid_key]['tooldia']))
             gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
             # tool_uid = int(self.ui.cnc_tools_table.item(cw_row, 3).text())
 
-            if self.ui.cnc_tools_table.cellWidget((tooluid_key - 1), 6).isChecked():
-                self.plot2(tooldia=tooldia, obj=self, visible=True, gcode_parsed=gcode_parsed)
+            for r in range(self.ui.cnc_tools_table.rowCount()):
+                if int(self.ui.cnc_tools_table.item(r, 5).text()) == int(tooluid_key):
+                    if self.ui.cnc_tools_table.cellWidget(r, 6).isChecked():
+                        self.plot2(tooldia=tooldia, obj=self, visible=True, gcode_parsed=gcode_parsed)
 
         self.shapes.redraw()
 

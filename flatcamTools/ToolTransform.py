@@ -370,6 +370,9 @@ class ToolTransform(FlatCAMTool):
         FlatCAMTool.run(self)
         self.app.ui.notebook.setTabText(2, "Transform Tool")
 
+    def install(self, icon=None, separator=None, **kwargs):
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+R', **kwargs)
+
     def on_rotate(self):
         try:
             value = float(self.rotate_entry.get_value())

@@ -36,7 +36,10 @@ class grbl_laser(FlatCAMPostProc):
         return 'M05'
 
     def down_code(self, p):
-        return 'M03'
+        if p.spindlespeed:
+            return 'M03 S%d' % p.spindlespeed
+        else:
+            return 'M03'
 
     def toolchange_code(self, p):
         return ''
@@ -52,7 +55,8 @@ class grbl_laser(FlatCAMPostProc):
         return ('G00 ' + self.position_code(p)).format(**p)
 
     def linear_code(self, p):
-        return ('G01 ' + self.position_code(p)).format(**p) + " " + self.feedrate_code(p)
+        return ('G01 ' + self.position_code(p)).format(**p) + \
+               ' F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate))
 
     def end_code(self, p):
         gcode = ('G00 Z' + self.feedrate_format %(p.fr_decimals, p.endz) + "\n")
@@ -66,10 +70,7 @@ class grbl_laser(FlatCAMPostProc):
         return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate_z))
 
     def spindle_code(self, p):
-        if p.spindlespeed:
-            return 'S%d' % p.spindlespeed
-        else:
-            return ''
+        return ''
 
     def dwell_code(self, p):
         return ''

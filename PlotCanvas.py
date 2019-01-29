@@ -65,7 +65,7 @@ class PlotCanvas(QtCore.QObject):
         self.draw_workspace()
 
         # if self.app.defaults['global_workspace'] is True:
-        #     if self.app.general_options_form.general_group.units_radio.get_value().upper() == 'MM':
+        #     if self.app.general_options_form.general_app_group.units_radio.get_value().upper() == 'MM':
         #         self.wkspace_t = Line(pos=)
 
         self.shape_collections = []
@@ -92,7 +92,7 @@ class PlotCanvas(QtCore.QObject):
         a3p_mm = np.array([(0, 0), (297, 0), (297, 420), (0, 420)])
         a3l_mm = np.array([(0, 0), (420, 0), (420, 297), (0, 297)])
 
-        if self.app.general_options_form.general_group.units_radio.get_value().upper() == 'MM':
+        if self.app.general_options_form.general_app_group.units_radio.get_value().upper() == 'MM':
             if self.app.defaults['global_workspaceT'] == 'A4P':
                 a = a4p_mm
             elif self.app.defaults['global_workspaceT'] == 'A4L':

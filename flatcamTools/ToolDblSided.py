@@ -8,7 +8,7 @@ from PyQt5 import QtCore
 
 class DblSidedTool(FlatCAMTool):
 
-    toolName = "Double-Sided PCB Tool"
+    toolName = "2-Sided PCB"
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -249,10 +249,26 @@ class DblSidedTool(FlatCAMTool):
 
         self.drill_values = ""
 
+        self.set_ui()
+
+    def install(self, icon=None, separator=None, **kwargs):
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+D', **kwargs)
+
+    def run(self):
+        FlatCAMTool.run(self)
+
+        self.app.ui.notebook.setTabText(2, "2-Sided Tool")
+        self.reset_fields()
+        self.set_ui()
+
+    def set_ui(self):
         ## Initialize form
-        self.mirror_axis.set_value('X')
-        self.axis_location.set_value('point')
-        self.drill_dia.set_value(1)
+        self.point_entry.set_value("")
+        self.alignment_holes.set_value("")
+
+        self.mirror_axis.set_value(self.app.defaults["tools_2sided_mirror_axis"])
+        self.axis_location.set_value(self.app.defaults["tools_2sided_axis_loc"])
+        self.drill_dia.set_value(self.app.defaults["tools_2sided_drilldia"])
 
     def on_combo_box_type(self):
         obj_type = self.box_combo_type.currentIndex()
@@ -454,14 +470,6 @@ class DblSidedTool(FlatCAMTool):
 
 
         self.drill_values = ""
-        self.point_entry.set_value("")
-        self.alignment_holes.set_value("")
-        ## Initialize form
-        self.mirror_axis.set_value('X')
-        self.axis_location.set_value('point')
-        self.drill_dia.set_value(1)
 
-    def run(self):
-        FlatCAMTool.run(self)
-        self.app.ui.notebook.setTabText(2, "2-Sided Tool")
-        self.reset_fields()
+
+

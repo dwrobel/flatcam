@@ -6,7 +6,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 
 class Film(FlatCAMTool):
 
-    toolName = "Film PCB Tool"
+    toolName = "Film PCB"
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -153,6 +153,9 @@ class Film(FlatCAMTool):
     def run(self):
         FlatCAMTool.run(self)
         self.app.ui.notebook.setTabText(2, "Film Tool")
+
+    def install(self, icon=None, separator=None, **kwargs):
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+L', **kwargs)
 
     def on_film_creation(self):
         try:

@@ -291,7 +291,7 @@ class TextInputTool(FlatCAMTool):
                     font_name=self.font_name,
                     font_size=font_to_geo_size,
                     font_type=font_to_geo_type,
-                    units=self.app.general_options_form.general_group.units_radio.get_value().upper())
+                    units=self.app.general_options_form.general_app_group.units_radio.get_value().upper())
 
     def font_family(self, font):
         self.text_input_entry.selectAll()
@@ -613,6 +613,7 @@ class FCCircle(FCShapeTool):
         radius = distance(p1, p2)
         self.geometry = DrawToolShape(Point(p1).buffer(radius, int(self.steps_per_circ / 4)))
         self.complete = True
+        self.draw_app.app.inform.emit("[success]Done. Adding Circle completed.")
 
 
 class FCArc(FCShapeTool):
@@ -794,6 +795,7 @@ class FCArc(FCShapeTool):
             self.geometry = DrawToolShape(LineString(arc(center, radius, startangle, stopangle,
                                                          self.direction, self.steps_per_circ)))
         self.complete = True
+        self.draw_app.app.inform.emit("[success]Done. Arc completed.")
 
 
 class FCRectangle(FCShapeTool):
@@ -831,6 +833,7 @@ class FCRectangle(FCShapeTool):
         # self.geometry = LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])])
         self.geometry = DrawToolShape(Polygon([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])]))
         self.complete = True
+        self.draw_app.app.inform.emit("[success]Done. Rectangle completed.")
 
 
 class FCPolygon(FCShapeTool):
@@ -869,6 +872,7 @@ class FCPolygon(FCShapeTool):
         self.geometry = DrawToolShape(Polygon(self.points))
         self.draw_app.in_action = False
         self.complete = True
+        self.draw_app.app.inform.emit("[success]Done. Polygon completed.")
 
     def on_key(self, key):
         if key == 'backspace':
@@ -885,6 +889,7 @@ class FCPath(FCPolygon):
         self.geometry = DrawToolShape(LineString(self.points))
         self.draw_app.in_action = False
         self.complete = True
+        self.draw_app.app.inform.emit("[success]Done. Path completed.")
 
     def utility_geometry(self, data=None):
         if len(self.points) > 0:
@@ -1143,6 +1148,7 @@ class FCMove(FCShapeTool):
         self.start_msg = "Click on reference point."
 
     def set_origin(self, origin):
+        self.draw_app.app.inform.emit("Click on destination point.")
         self.origin = origin
 
     def click(self, point):
@@ -1173,6 +1179,7 @@ class FCMove(FCShapeTool):
         #     self.draw_app.set_selected(g)
 
         self.complete = True
+        self.draw_app.app.inform.emit("[success]Done. Geometry(s) Move completed.")
 
     def utility_geometry(self, data=None):
         """
@@ -1208,6 +1215,7 @@ class FCCopy(FCMove):
         self.geometry = [DrawToolShape(affinity.translate(geom.geo, xoff=dx, yoff=dy))
                          for geom in self.draw_app.get_selected()]
         self.complete = True
+        self.draw_app.app.inform.emit("[success]Done. Geometry(s) Copy completed.")
 
 
 class FCText(FCShapeTool):
@@ -1241,6 +1249,7 @@ class FCText(FCShapeTool):
         self.text_gui.text_path = []
         self.text_gui.hide_tool()
         self.complete = True
+        self.draw_app.app.inform.emit("[success]Done. Adding Text completed.")
 
     def utility_geometry(self, data=None):
         """
@@ -1281,6 +1290,7 @@ class FCBuffer(FCShapeTool):
         self.draw_app.buffer(buffer_distance, join_style)
         self.app.ui.notebook.setTabText(2, "Tools")
         self.disactivate()
+        self.draw_app.app.inform.emit("[success]Done. Buffer Tool completed.")
 
     def on_buffer_int(self):
         buffer_distance = self.buff_tool.buffer_distance_entry.get_value()
@@ -1290,6 +1300,7 @@ class FCBuffer(FCShapeTool):
         self.draw_app.buffer_int(buffer_distance, join_style)
         self.app.ui.notebook.setTabText(2, "Tools")
         self.disactivate()
+        self.draw_app.app.inform.emit("[success]Done. Buffer Int Tool completed.")
 
     def on_buffer_ext(self):
         buffer_distance = self.buff_tool.buffer_distance_entry.get_value()
@@ -1299,6 +1310,7 @@ class FCBuffer(FCShapeTool):
         self.draw_app.buffer_ext(buffer_distance, join_style)
         self.app.ui.notebook.setTabText(2, "Tools")
         self.disactivate()
+        self.draw_app.app.inform.emit("[success]Done. Buffer Ext Tool completed.")
 
     def activate(self):
         self.buff_tool.buffer_button.clicked.disconnect()
@@ -1360,6 +1372,7 @@ class FCRotate(FCShapeTool):
         # Delete old
         self.draw_app.delete_selected()
         self.complete = True
+        self.draw_app.app.inform.emit("[success]Done. Geometry rotate completed.")
 
         # MS: automatically select the Select Tool after finishing the action but is not working yet :(
         #self.draw_app.select_tool("select")
@@ -1901,6 +1914,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.geo_cutpath_btn.triggered.connect(self.cutpath)
         self.app.ui.geo_delete_btn.triggered.connect(self.on_delete_btn)
 
+        self.app.ui.geo_move_menuitem.triggered.connect(self.on_move)
+        self.app.ui.geo_cornersnap_menuitem.triggered.connect(self.on_corner_snap)
+
         ## Toolbar events and properties
         self.tools = {
             "select": {"button": self.app.ui.geo_select_btn,
@@ -2002,7 +2018,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
             try:
                 self.options[option] = float(entry.text())
             except Exception as e:
-                log.debug(str(e))
+                log.debug("FlatCAMGeoEditor.__init__().entry2option() --> %s" % str(e))
+                return
 
         self.app.ui.grid_gap_x_entry.setValidator(QtGui.QDoubleValidator())
         self.app.ui.grid_gap_x_entry.textChanged.connect(
@@ -2565,6 +2582,15 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.on_tool_select('rotate')
             self.active_tool.set_origin(self.snap(self.x, self.y))
 
+        if event.key == '1':
+            self.app.on_zoom_fit(None)
+
+        if event.key == '2':
+            self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'], [self.snap_x, self.snap_y])
+
+        if event.key == '3':
+            self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'], [self.snap_x, self.snap_y])
+
         # Arc Tool
         if event.key.name == 'A':
             self.select_tool('arc')
@@ -2579,6 +2605,22 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.on_tool_select('copy')
             self.active_tool.set_origin(self.snap(self.x, self.y))
             self.app.inform.emit("Click on target point.")
+
+        # Substract Tool
+        if event.key.name == 'E':
+            if self.get_selected() is not None:
+                self.intersection()
+            else:
+                msg = "Please select geometry items \n" \
+                      "on which to perform Intersection Tool."
+
+                messagebox =QtWidgets.QMessageBox()
+                messagebox.setText(msg)
+                messagebox.setWindowTitle("Warning")
+                messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                messagebox.exec_()
 
         # Grid Snap
         if event.key.name == 'G':
@@ -2596,14 +2638,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # Corner Snap
         if event.key.name == 'K':
-            self.app.ui.corner_snap_btn.trigger()
+            self.on_corner_snap()
 
         # Move
         if event.key.name == 'M':
-            self.app.ui.geo_move_btn.setChecked(True)
-            self.on_tool_select('move')
-            self.active_tool.set_origin(self.snap(self.x, self.y))
-            self.app.inform.emit("Click on target point.")
+            self.on_move_click()
 
         # Polygon Tool
         if event.key.name == 'N':
@@ -2621,13 +2660,41 @@ class FlatCAMGeoEditor(QtCore.QObject):
         if event.key.name == 'R':
             self.select_tool('rectangle')
 
-        # Select Tool
+        # Substract Tool
         if event.key.name == 'S':
-            self.select_tool('select')
+            if self.get_selected() is not None:
+                self.subtract()
+            else:
+                msg = "Please select geometry items \n" \
+                      "on which to perform Substraction Tool."
+
+                messagebox =QtWidgets.QMessageBox()
+                messagebox.setText(msg)
+                messagebox.setWindowTitle("Warning")
+                messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                messagebox.exec_()
 
         # Add Text Tool
         if event.key.name == 'T':
             self.select_tool('text')
+
+        # Substract Tool
+        if event.key.name == 'U':
+            if self.get_selected() is not None:
+                self.union()
+            else:
+                msg = "Please select geometry items \n" \
+                      "on which to perform union."
+
+                messagebox =QtWidgets.QMessageBox()
+                messagebox.setText(msg)
+                messagebox.setWindowTitle("Warning")
+                messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                messagebox.exec_()
 
         # Cut Action Tool
         if event.key.name == 'X':
@@ -2661,11 +2728,15 @@ class FlatCAMGeoEditor(QtCore.QObject):
     def on_shortcut_list(self):
         msg = '''<b>Shortcut list in Geometry Editor</b><br>
 <br>
+<b>1:</b>       Zoom Fit<br>
+<b>2:</b>       Zoom Out<br>
+<b>3:</b>       Zoom In<br>
 <b>A:</b>       Add an 'Arc'<br>
 <b>B:</b>       Add a Buffer Geo<br>
 <b>C:</b>       Copy Geo Item<br>
+<b>E:</b>       Intersection Tool<br>
 <b>G:</b>       Grid Snap On/Off<br>
-<b>G:</b>       Paint Tool<br>
+<b>I:</b>       Paint Tool<br>
 <b>K:</b>       Corner Snap On/Off<br>
 <b>M:</b>       Move Geo Item<br>
 <br>
@@ -2673,8 +2744,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
 <b>O:</b>       Add a 'Circle'<br>
 <b>P:</b>       Add a 'Path'<br>
 <b>R:</b>       Add an 'Rectangle'<br>
-<b>S:</b>       Select Tool Active<br>
+<b>S:</b>       Substraction Tool<br>
 <b>T:</b>       Add Text Geometry<br>
+<b>U:</b>       Union Tool<br>
 <br>
 <b>X:</b>       Cut Path<br>
 <br>
@@ -2682,7 +2754,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 <br>
 <b>Space:</b>   Rotate selected Geometry<br>
 <b>Enter:</b>   Finish Current Action<br>
-<b>Escape:</b>  Abort Current Action<br>
+<b>Escape:</b>  Select Tool (Exit any other Tool)<br>
 <b>Delete:</b>  Delete Obj'''
 
         helpbox =QtWidgets.QMessageBox()
@@ -2717,6 +2789,17 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         if shape in self.selected:
             self.selected.remove(shape)  # TODO: Check performance
+
+    def on_move(self):
+        self.app.ui.geo_move_btn.setChecked(True)
+        self.on_tool_select('move')
+
+    def on_move_click(self):
+        self.on_move()
+        self.active_tool.set_origin(self.snap(self.x, self.y))
+
+    def on_corner_snap(self):
+        self.app.ui.corner_snap_btn.trigger()
 
     def get_selected(self):
         """
@@ -2950,7 +3033,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         shapes = self.get_selected()
 
-        results = shapes[0].geo
+        try:
+            results = shapes[0].geo
+        except Exception as e:
+            log.debug("FlatCAMGeoEditor.intersection() --> %s" % str(e))
+            self.app.inform.emit("[warning_notcl]A selection of at least 2 geo items is required to do Intersection.")
+            self.select_tool('select')
+            return
 
         for shape in shapes[1:]:
             results = results.intersection(shape.geo)
@@ -3638,7 +3727,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.move_timer.setSingleShot(True)
 
         ## Current application units in Upper Case
-        self.units = self.app.general_options_form.general_group.units_radio.get_value().upper()
+        self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
 
         self.key = None  # Currently pressed key
         self.modifiers = None
@@ -3712,7 +3801,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
     def set_ui(self):
         # updated units
-        self.units = self.app.general_options_form.general_group.units_radio.get_value().upper()
+        self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
 
         self.olddia_newdia.clear()
         self.tool2tooldia.clear()
@@ -3752,7 +3841,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             pass
 
         # updated units
-        self.units = self.app.general_options_form.general_group.units_radio.get_value().upper()
+        self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
 
         # make a new name for the new Excellon object (the one with edited content)
         self.edited_obj_name = self.exc_obj.options['name']
@@ -4744,6 +4833,18 @@ class FlatCAMExcEditor(QtCore.QObject):
                 self.app.inform.emit("[warning_notcl]Cancelled. Nothing selected to delete.")
             return
 
+        if event.key == '1':
+            self.launched_from_shortcuts = True
+            self.app.on_zoom_fit(None)
+
+        if event.key == '2':
+            self.launched_from_shortcuts = True
+            self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'], [self.snap_x, self.snap_y])
+
+        if event.key == '3':
+            self.launched_from_shortcuts = True
+            self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'], [self.snap_x, self.snap_y])
+
         # Add Array of Drill Hole Tool
         if event.key.name == 'A':
             self.launched_from_shortcuts = True
@@ -4828,6 +4929,9 @@ class FlatCAMExcEditor(QtCore.QObject):
     def on_shortcut_list(self):
         msg = '''<b>Shortcut list in Geometry Editor</b><br>
 <br>
+<b>1:</b>       Zoom Fit<br>
+<b>2:</b>       Zoom Out<br>
+<b>3:</b>       Zoom In<br>
 <b>A:</b>       Add an 'Drill Array'<br>
 <b>C:</b>       Copy Drill Hole<br>
 <b>D:</b>       Add an Drill Hole<br>

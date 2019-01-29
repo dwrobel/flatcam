@@ -9,6 +9,49 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+29.01.2019
+
+- fixed issue in Tool Calculators when a float value was entered starting only with the dot.
+- added protection for entering incorrect values in Offset and Scale fields for Gerber and Geometry objects (in Selected Tab)
+- added more shortcut keys in the Geometry Editor and in Excellon Editor; activated also the zoom (fit, in, out) shortcut keys ('1' , '2', '3') for the editors
+- disabled the context menu in tools table on Paint Tool in case that the painting method is single.
+- added protection when trying to do Intersection in Geometry Editor without having selected Geometry items.
+- fixed the scale, mirror, rotate, skew functions to work with Geometry Objects of multi-geometry type.
+- added a GUI for Excellon Search time for OR-TOOLS path optimization in Edit -> Preferences -> Excellon General -> Optimization Time
+- more changes in Edit -> Preferences -> Geometry, Gerber and in CNCJob
+- added new option for Cutout Tool Freeform Gaps in Edit -> Preferences -> Tools
+- fixed Freeform Cutout gaps issue (it was double than the value set)
+- added protection so the Cutout (either Freeform or Rectangular) cannot be done on a multigeo Geometry
+- added 2Sided Tool default values in Edit -> Preferences -> Tools
+- optimized the FlatCAMCNCJob.on_plot_cb_click_table() plot function and solved a bug regarding having tools numbers not in sync with the cnc tool table
+
+28.01.2018
+
+- fixed the FlatCAMGerber.merge() function
+- added a new menu entry for the Gerber Join function: Edit -> Conversions -> "Join Gerber(s) to Gerber" allowing joining Gerber objects into a final Gerber object
+- moved Paint Tool defaults from Geometry section to the Tools section in Edit -> Preferences
+- added key shortcuts for Open Manual = F1 and for Open Online VideoHelp = F2
+
+27.01.2018
+
+- added more key shortcuts into the application; they are now displayed in the GUI menu's
+- reorganized the Edit -> Preferences -> Global
+- redesigned the messagebox that is showed when quiting ot creating a New Project: now it has an option ('Cancel') to abort the process returning to the app
+- added options for trace segmentation that can be useful for auto-levelling (code snippet from Lei Zheng from a rejected pull request on FlatCAM https://bitbucket.org/realthunder/ )
+- added shortcut key 'L' for creating 'New Excellon' 
+- added shortcut key combo 'SHIFT+S' for Running a Script.
+- modified grbl_laser postprocessor file so it includes a Sxxxx command on the line with M03 (laser active) whenever a value is enter in the Spindlespeed entry field
+- remade the EDIT -> PREFERENCES window, the Excellon and Gerber sections. Created a new section named TOOLS
+
+26.01.2019
+
+- fixed grbl_11 postprocessor in linear_code() function
+- added icons to the Project Tab context menu
+- added new entries to the Canvas context menu (Copy, Delete, Edit/Save, Move, New Excellon, New Geometry, New Project)
+- fixed grbl_laser postprocessor file
+- updated function for copy of an Excellon object for the case when the object has slots
+- updated FlatCAMExcellon.merge() function to work in case some (or all) of the merged objects have slots  
+
 25.01.2019
 
 - deleted junk folders

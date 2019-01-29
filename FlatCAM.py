@@ -6,6 +6,7 @@ from FlatCAMApp import App
 from multiprocessing import freeze_support
 import VisPyPatches
 
+
 if sys.platform == "win32":
     # cx_freeze 'module win32' workaround
     import OpenGL.platform.win32

@@ -33,7 +33,7 @@ class FlatCAMTool(QtWidgets.QWidget):
 
         self.menuAction = None
 
-    def install(self, icon=None, separator=None, **kwargs):
+    def install(self, icon=None, separator=None, shortcut=None, **kwargs):
         before = None
 
         # 'pos' is the menu where the Action has to be installed
@@ -54,8 +54,13 @@ class FlatCAMTool(QtWidgets.QWidget):
         # if provided, add an icon to this Action
         if icon is not None:
             self.menuAction.setIcon(icon)
+
         # set the text name of the Action, which will be displayed in the menu
-        self.menuAction.setText(self.toolName)
+        if shortcut is None:
+            self.menuAction.setText(self.toolName)
+        else:
+            self.menuAction.setText(self.toolName + '\t%s' % shortcut)
+
         # add a ToolTip to the new Action
         # self.menuAction.setToolTip(self.toolTip) # currently not available
 

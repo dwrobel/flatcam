@@ -5,7 +5,7 @@ from ObjectCollection import *
 
 class ToolPaint(FlatCAMTool, Gerber):
 
-    toolName = "Paint Area Tool"
+    toolName = "Paint Area"
 
     def __init__(self, app):
         self.app = app
@@ -250,7 +250,6 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.default_data.update({
             "name": '_paint',
             "plot": self.app.defaults["geometry_plot"],
-            "tooldia": self.app.defaults["geometry_painttooldia"],
             "cutz": self.app.defaults["geometry_cutz"],
             "vtipdia": 0.1,
             "vtipangle": 30,
@@ -270,12 +269,14 @@ class ToolPaint(FlatCAMTool, Gerber):
             "spindlespeed": self.app.defaults["geometry_spindlespeed"],
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "startz": self.app.defaults["geometry_startz"],
-            "paintmargin": self.app.defaults["geometry_paintmargin"],
-            "paintmethod": self.app.defaults["geometry_paintmethod"],
-            "selectmethod": self.app.defaults["geometry_selectmethod"],
-            "pathconnect": self.app.defaults["geometry_pathconnect"],
-            "paintcontour": self.app.defaults["geometry_paintcontour"],
-            "paintoverlap": self.app.defaults["geometry_paintoverlap"]
+
+            "tooldia": self.app.defaults["tools_painttooldia"],
+            "paintmargin": self.app.defaults["tools_paintmargin"],
+            "paintmethod": self.app.defaults["tools_paintmethod"],
+            "selectmethod": self.app.defaults["tools_selectmethod"],
+            "pathconnect": self.app.defaults["tools_pathconnect"],
+            "paintcontour": self.app.defaults["tools_paintcontour"],
+            "paintoverlap": self.app.defaults["tools_paintoverlap"]
         })
 
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
@@ -290,7 +291,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+P', **kwargs)
 
     def run(self):
         FlatCAMTool.run(self)
@@ -311,11 +312,13 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.addtool_entry.setDisabled(True)
             self.addtool_btn.setDisabled(True)
             self.deltool_btn.setDisabled(True)
+            self.tools_table.setContextMenuPolicy(Qt.NoContextMenu)
         else:
             self.rest_cb.setDisabled(False)
             self.addtool_entry.setDisabled(False)
             self.addtool_btn.setDisabled(False)
             self.deltool_btn.setDisabled(False)
+            self.tools_table.setContextMenuPolicy(Qt.ActionsContextMenu)
 
     def set_ui(self):
         ## Init the GUI interface
@@ -327,7 +330,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.paintoverlap_entry.set_value(self.default_data["paintoverlap"])
 
         # updated units
-        self.units = self.app.general_options_form.general_group.units_radio.get_value().upper()
+        self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
 
         if self.units == "IN":
             self.addtool_entry.set_value(0.039)
@@ -349,7 +352,6 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.default_data.update({
             "name": '_paint',
             "plot": self.app.defaults["geometry_plot"],
-            "tooldia": self.app.defaults["geometry_painttooldia"],
             "cutz": self.app.defaults["geometry_cutz"],
             "vtipdia": 0.1,
             "vtipangle": 30,
@@ -369,17 +371,23 @@ class ToolPaint(FlatCAMTool, Gerber):
             "spindlespeed": self.app.defaults["geometry_spindlespeed"],
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "startz": self.app.defaults["geometry_startz"],
-            "paintmargin": self.app.defaults["geometry_paintmargin"],
-            "paintmethod": self.app.defaults["geometry_paintmethod"],
-            "selectmethod": self.app.defaults["geometry_selectmethod"],
-            "pathconnect": self.app.defaults["geometry_pathconnect"],
-            "paintcontour": self.app.defaults["geometry_paintcontour"],
-            "paintoverlap": self.app.defaults["geometry_paintoverlap"]
+
+            "tooldia": self.app.defaults["tools_painttooldia"],
+            "paintmargin": self.app.defaults["tools_paintmargin"],
+            "paintmethod": self.app.defaults["tools_paintmethod"],
+            "selectmethod": self.app.defaults["tools_selectmethod"],
+            "pathconnect": self.app.defaults["tools_pathconnect"],
+            "paintcontour": self.app.defaults["tools_paintcontour"],
+            "paintoverlap": self.app.defaults["tools_paintoverlap"]
         })
 
         # call on self.on_tool_add() counts as an call to self.build_ui()
         # through this, we add a initial row / tool in the tool_table
-        self.on_tool_add(self.app.defaults["geometry_painttooldia"], muted=True)
+        self.on_tool_add(self.app.defaults["tools_painttooldia"], muted=True)
+
+        # if the Paint Method is "Single" disable the tool table context menu
+        if  self.default_data["selectmethod"] == "single":
+            self.tools_table.setContextMenuPolicy(Qt.NoContextMenu)
 
     def build_ui(self):
 
@@ -390,7 +398,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             pass
 
         # updated units
-        self.units = self.app.general_options_form.general_group.units_radio.get_value().upper()
+        self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
 
         sorted_tools = []
         for k, v in self.paint_tools.items():

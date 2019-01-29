@@ -31,7 +31,7 @@ class ToolMove(FlatCAMTool):
         self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.vispy_canvas.view.scene, layers=1)
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='M', **kwargs)
 
     def run(self):
         if self.app.tool_tab_locked is True:

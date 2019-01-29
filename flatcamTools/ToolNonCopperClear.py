@@ -7,7 +7,7 @@ import time
 
 class NonCopperClear(FlatCAMTool, Gerber):
 
-    toolName = "Non-Copper Clearing Tool"
+    toolName = "Non-Copper Clearing"
 
     def __init__(self, app):
         self.app = app
@@ -234,7 +234,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.generate_ncc_button.clicked.connect(self.on_ncc)
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+N', **kwargs)
 
     def run(self):
         FlatCAMTool.run(self)
@@ -244,12 +244,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.app.ui.notebook.setTabText(2, "NCC Tool")
 
     def set_ui(self):
-        self.ncc_overlap_entry.set_value(self.app.defaults["gerber_nccoverlap"])
-        self.ncc_margin_entry.set_value(self.app.defaults["gerber_nccmargin"])
-        self.ncc_method_radio.set_value(self.app.defaults["gerber_nccmethod"])
-        self.ncc_connect_cb.set_value(self.app.defaults["gerber_nccconnect"])
-        self.ncc_contour_cb.set_value(self.app.defaults["gerber_ncccontour"])
-        self.ncc_rest_cb.set_value(self.app.defaults["gerber_nccrest"])
+        self.ncc_overlap_entry.set_value(self.app.defaults["tools_nccoverlap"])
+        self.ncc_margin_entry.set_value(self.app.defaults["tools_nccmargin"])
+        self.ncc_method_radio.set_value(self.app.defaults["tools_nccmethod"])
+        self.ncc_connect_cb.set_value(self.app.defaults["tools_nccconnect"])
+        self.ncc_contour_cb.set_value(self.app.defaults["tools_ncccontour"])
+        self.ncc_rest_cb.set_value(self.app.defaults["tools_nccrest"])
 
         self.tools_table.setupContextMenu()
         self.tools_table.addContextMenu(
@@ -263,7 +263,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.default_data.update({
             "name": '_ncc',
             "plot": self.app.defaults["geometry_plot"],
-            "tooldia": self.app.defaults["geometry_painttooldia"],
             "cutz": self.app.defaults["geometry_cutz"],
             "vtipdia": 0.1,
             "vtipangle": 30,
@@ -283,24 +282,27 @@ class NonCopperClear(FlatCAMTool, Gerber):
             "spindlespeed": self.app.defaults["geometry_spindlespeed"],
             "toolchangexy": self.app.defaults["geometry_toolchangexy"],
             "startz": self.app.defaults["geometry_startz"],
-            "paintmargin": self.app.defaults["geometry_paintmargin"],
-            "paintmethod": self.app.defaults["geometry_paintmethod"],
-            "selectmethod": self.app.defaults["geometry_selectmethod"],
-            "pathconnect": self.app.defaults["geometry_pathconnect"],
-            "paintcontour": self.app.defaults["geometry_paintcontour"],
-            "paintoverlap": self.app.defaults["geometry_paintoverlap"],
-            "nccoverlap": self.app.defaults["gerber_nccoverlap"],
-            "nccmargin": self.app.defaults["gerber_nccmargin"],
-            "nccmethod": self.app.defaults["gerber_nccmethod"],
-            "nccconnect": self.app.defaults["gerber_nccconnect"],
-            "ncccontour": self.app.defaults["gerber_ncccontour"],
-            "nccrest": self.app.defaults["gerber_nccrest"]
+
+            "tooldia": self.app.defaults["tools_painttooldia"],
+            "paintmargin": self.app.defaults["tools_paintmargin"],
+            "paintmethod": self.app.defaults["tools_paintmethod"],
+            "selectmethod": self.app.defaults["tools_selectmethod"],
+            "pathconnect": self.app.defaults["tools_pathconnect"],
+            "paintcontour": self.app.defaults["tools_paintcontour"],
+            "paintoverlap": self.app.defaults["tools_paintoverlap"],
+
+            "nccoverlap": self.app.defaults["tools_nccoverlap"],
+            "nccmargin": self.app.defaults["tools_nccmargin"],
+            "nccmethod": self.app.defaults["tools_nccmethod"],
+            "nccconnect": self.app.defaults["tools_nccconnect"],
+            "ncccontour": self.app.defaults["tools_ncccontour"],
+            "nccrest": self.app.defaults["tools_nccrest"]
         })
 
         try:
-            dias = [float(eval(dia)) for dia in self.app.defaults["gerber_ncctools"].split(",")]
+            dias = [float(eval(dia)) for dia in self.app.defaults["tools_ncctools"].split(",")]
         except:
-            log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> Gerber Object -> NCC Tools.")
+            log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> TOOLS -> NCC Tools.")
             return
 
         self.tooluid = 0
@@ -322,13 +324,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.obj_name = ""
         self.ncc_obj = None
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
-        self.units = self.app.general_options_form.general_group.units_radio.get_value().upper()
+        self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
 
     def build_ui(self):
         self.ui_disconnect()
 
         # updated units
-        self.units = self.app.general_options_form.general_group.units_radio.get_value().upper()
+        self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
 
         if self.units == "IN":
             self.addtool_entry.set_value(0.039)
@@ -550,22 +552,22 @@ class NonCopperClear(FlatCAMTool, Gerber):
     def on_ncc(self):
 
         over = self.ncc_overlap_entry.get_value()
-        over = over if over else self.app.defaults["gerber_nccoverlap"]
+        over = over if over else self.app.defaults["tools_nccoverlap"]
 
         margin = self.ncc_margin_entry.get_value()
-        margin = margin if margin else self.app.defaults["gerber_nccmargin"]
+        margin = margin if margin else self.app.defaults["tools_nccmargin"]
 
         connect = self.ncc_connect_cb.get_value()
-        connect = connect if connect else self.app.defaults["gerber_nccconnect"]
+        connect = connect if connect else self.app.defaults["tools_nccconnect"]
 
         contour = self.ncc_contour_cb.get_value()
-        contour = contour if contour else self.app.defaults["gerber_ncccontour"]
+        contour = contour if contour else self.app.defaults["tools_ncccontour"]
 
         clearing_method = self.ncc_rest_cb.get_value()
-        clearing_method = clearing_method if clearing_method else self.app.defaults["gerber_nccrest"]
+        clearing_method = clearing_method if clearing_method else self.app.defaults["tools_nccrest"]
 
         pol_method = self.ncc_method_radio.get_value()
-        pol_method = pol_method if pol_method else self.app.defaults["gerber_nccmethod"]
+        pol_method = pol_method if pol_method else self.app.defaults["tools_nccmethod"]
 
         self.obj_name = self.object_combo.currentText()
         # Get source object.

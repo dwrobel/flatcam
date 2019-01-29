@@ -9,7 +9,7 @@ from FlatCAMObj import FlatCAMGeometry, FlatCAMExcellon, FlatCAMGerber
 
 class ToolCutout(FlatCAMTool):
 
-    toolName = "Cutout PCB Tool"
+    toolName = "Cutout PCB"
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -101,10 +101,9 @@ class ToolCutout(FlatCAMTool):
         # 8     - 2*left + 2*right +2*top + 2*bottom
 
         # Gaps
-        self.gaps = FCEntry()
-        self.gaps_label = QtWidgets.QLabel("Type of gaps:   ")
-        self.gaps_label.setToolTip(
-            "Number of gaps used for the cutout.\n"
+        gaps_ff_label = QtWidgets.QLabel('Gaps FF:      ')
+        gaps_ff_label.setToolTip(
+            "Number of gaps used for the FreeForm cutout.\n"
             "There can be maximum 8 bridges/gaps.\n"
             "The choices are:\n"
             "- lr    - left + right\n"
@@ -114,7 +113,13 @@ class ToolCutout(FlatCAMTool):
             "- 2tb  - 2*top + 2*bottom\n"
             "- 8     - 2*left + 2*right +2*top + 2*bottom"
         )
-        form_layout_2.addRow(self.gaps_label, self.gaps)
+
+        self.gaps = FCComboBox()
+        gaps_items = ['LR', 'TB', '4', '2LR', '2TB', '8']
+        for it in gaps_items:
+            self.gaps.addItem(it)
+            self.gaps.setStyleSheet('background-color: rgb(255,255,255)')
+        form_layout_2.addRow(gaps_ff_label, self.gaps)
 
         ## Buttons
         hlay = QtWidgets.QHBoxLayout()
@@ -146,8 +151,8 @@ class ToolCutout(FlatCAMTool):
             "- one gap Left / one gap Right\n"
             "- one gap on each of the 4 sides."
         )
-        self.gaps_rect_radio = RadioSet([{'label': 'T/B', 'value': 'tb'},
-                                    {'label': 'L/R', 'value': 'lr'},
+        self.gaps_rect_radio = RadioSet([{'label': '2(T/B)', 'value': 'tb'},
+                                    {'label': '2(L/R)', 'value': 'lr'},
                                     {'label': '4', 'value': '4'}])
         form_layout_3.addRow(gapslabel_rect, self.gaps_rect_radio)
 
@@ -186,7 +191,18 @@ class ToolCutout(FlatCAMTool):
 
     def run(self):
         FlatCAMTool.run(self)
+        self.set_ui()
         self.app.ui.notebook.setTabText(2, "Cutout Tool")
+
+    def install(self, icon=None, separator=None, **kwargs):
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+U', **kwargs)
+
+    def set_ui(self):
+        self.dia.set_value(float(self.app.defaults["tools_cutouttooldia"]))
+        self.margin.set_value(float(self.app.defaults["tools_cutoutmargin"]))
+        self.gapsize.set_value(float(self.app.defaults["tools_cutoutgapsize"]))
+        self.gaps.set_value(4)
+        self.gaps_rect_radio.set_value(str(self.app.defaults["tools_gaps_rect"]))
 
     def on_freeform_cutout(self):
 
@@ -204,7 +220,8 @@ class ToolCutout(FlatCAMTool):
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit("[error_notcl]Object not found: %s" % cutout_obj)
+            self.app.inform.emit("[error_notcl]There is no object selected for Cutout.\nSelect one and try again.")
+            return
 
         try:
             dia = float(self.dia.get_value())
@@ -236,6 +253,12 @@ class ToolCutout(FlatCAMTool):
                                  "Fill in a correct value and retry. ")
             return
 
+        if cutout_obj.multigeo is True:
+            self.app.inform.emit("[error]Cutout operation cannot be done on a multi-geo Geometry.\n"
+                                 "Optionally, this Multi-geo Geometry can be converted to Single-geo Geometry,\n"
+                                 "and after that perform Cutout.")
+            return
+
         # Get min and max data for each object as we just cut rectangles across X or Y
         xmin, ymin, xmax, ymax = cutout_obj.bounds()
         px = 0.5 * (xmin + xmax) + margin
@@ -243,7 +266,7 @@ class ToolCutout(FlatCAMTool):
         lenghtx = (xmax - xmin) + (margin * 2)
         lenghty = (ymax - ymin) + (margin * 2)
 
-        gapsize = gapsize + (dia / 2)
+        gapsize = gapsize / 2 + (dia / 2)
 
         if isinstance(cutout_obj,FlatCAMGeometry):
             # rename the obj name so it can be identified as cutout
@@ -345,6 +368,12 @@ class ToolCutout(FlatCAMTool):
         if 0 in {dia}:
             self.app.inform.emit("[error_notcl]Tool Diameter is zero value. Change it to a positive integer.")
             return "Tool Diameter is zero value. Change it to a positive integer."
+
+        if cutout_obj.multigeo is True:
+            self.app.inform.emit("[error]Cutout operation cannot be done on a multi-geo Geometry.\n"
+                                 "Optionally, this Multi-geo Geometry can be converted to Single-geo Geometry,\n"
+                                 "and after that perform Cutout.")
+            return
 
         def geo_init(geo_obj, app_obj):
             real_margin = margin + (dia / 2)

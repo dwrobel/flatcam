@@ -105,7 +105,8 @@ M0""".format(toolchangez=self.coordinate_format%(p.coords_decimals, toolchangez)
         return ('G00 ' + self.position_code(p)).format(**p)
 
     def linear_code(self, p):
-        return ('G01 ' + self.position_code(p)).format(**p) + " " + self.feedrate_code(p)
+        return ('G01 ' + self.position_code(p)).format(**p) + \
+               ' F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate))
 
     def end_code(self, p):
         coords_xy = p['toolchange_xy']

@@ -1354,10 +1354,16 @@ class Geometry(object):
                 return affinity.scale(obj, xscale, yscale, origin=(px,py))
 
         try:
-            self.solid_geometry = mirror_geom(self.solid_geometry)
+            if self.multigeo is True:
+                for tool in self.tools:
+                    self.tools[tool]['solid_geometry'] = mirror_geom(self.tools[tool]['solid_geometry'])
+            else:
+                self.solid_geometry = mirror_geom(self.solid_geometry)
             self.app.inform.emit('[success]Object was mirrored ...')
         except AttributeError:
             self.app.inform.emit("[error_notcl] Failed to mirror. No object selected")
+
+
 
     def rotate(self, angle, point):
         """
@@ -1388,7 +1394,11 @@ class Geometry(object):
                 return affinity.rotate(obj, angle, origin=(px, py))
 
         try:
-            self.solid_geometry = rotate_geom(self.solid_geometry)
+            if self.multigeo is True:
+                for tool in self.tools:
+                    self.tools[tool]['solid_geometry'] = rotate_geom(self.tools[tool]['solid_geometry'])
+            else:
+                self.solid_geometry = rotate_geom(self.solid_geometry)
             self.app.inform.emit('[success]Object was rotated ...')
         except AttributeError:
             self.app.inform.emit("[error_notcl] Failed to rotate. No object selected")
@@ -1420,7 +1430,11 @@ class Geometry(object):
                 return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
 
         try:
-            self.solid_geometry = skew_geom(self.solid_geometry)
+            if self.multigeo is True:
+                for tool in self.tools:
+                    self.tools[tool]['solid_geometry'] = skew_geom(self.tools[tool]['solid_geometry'])
+            else:
+                self.solid_geometry = skew_geom(self.solid_geometry)
             self.app.inform.emit('[success]Object was skewed ...')
         except AttributeError:
             self.app.inform.emit("[error_notcl] Failed to skew. No object selected")
@@ -2965,7 +2979,7 @@ class Gerber (Geometry):
             return 0, 0, 0, 0
 
         def bounds_rec(obj):
-            if type(obj) is list:
+            if type(obj) is list and type(obj) is not MultiPolygon:
                 minx = Inf
                 miny = Inf
                 maxx = -Inf
@@ -2980,7 +2994,12 @@ class Gerber (Geometry):
                             maxx = max(maxx, maxx_)
                             maxy = max(maxy, maxy_)
                     else:
-                        minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                        try:
+                            minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                        except Exception as e:
+                            log.debug("camlib.Geometry.bounds() --> %s" % str(e))
+                            return
+
                         minx = min(minx, minx_)
                         miny = min(miny, miny_)
                         maxx = max(maxx, maxx_)
@@ -3013,8 +3032,20 @@ class Gerber (Geometry):
         :rtype : None
         """
 
+        try:
+            xfactor = float(xfactor)
+        except:
+            self.app.inform.emit("[error_notcl] Scale factor has to be a number: integer or float.")
+            return
+
         if yfactor is None:
             yfactor = xfactor
+        else:
+            try:
+                yfactor = float(yfactor)
+            except:
+                self.app.inform.emit("[error_notcl] Scale factor has to be a number: integer or float.")
+                return
 
         if point is None:
             px = 0
@@ -3033,6 +3064,7 @@ class Gerber (Geometry):
                                              yfactor, origin=(px, py))
 
         self.solid_geometry = scale_geom(self.solid_geometry)
+        self.app.inform.emit("[success]Gerber Scale done.")
 
         ## solid_geometry ???
         #  It's a cascaded union of objects.
@@ -3061,8 +3093,12 @@ class Gerber (Geometry):
         :type vect: tuple
         :return: None
         """
-
-        dx, dy = vect
+        try:
+            dx, dy = vect
+        except TypeError:
+            self.app.inform.emit("[error_notcl]An (x,y) pair of values are needed. "
+                                 "Probable you entered only one value in the Offset field.")
+            return
 
         def offset_geom(obj):
             if type(obj) is list:
@@ -3076,6 +3112,7 @@ class Gerber (Geometry):
         ## Solid geometry
         # self.solid_geometry = affinity.translate(self.solid_geometry, xoff=dx, yoff=dy)
         self.solid_geometry = offset_geom(self.solid_geometry)
+        self.app.inform.emit("[success]Gerber Offset done.")
 
     def mirror(self, axis, point):
         """
@@ -4332,6 +4369,8 @@ class CNCjob(Geometry):
                  spindlespeed=None, dwell=True, dwelltime=1000,
                  toolchangez=0.787402,
                  endz=2.0,
+                 segx=None,
+                 segy=None,
                  steps_per_circle=None):
 
         # Used when parsing G-code arcs
@@ -4375,6 +4414,9 @@ class CNCjob(Geometry):
         self.spindlespeed = spindlespeed
         self.dwell = dwell
         self.dwelltime = dwelltime
+
+        self.segx = float(segx) if segx is not None else 0.0
+        self.segy = float(segy) if segy is not None else 0.0
 
         self.input_geometry_bounds = None
 
@@ -5456,6 +5498,61 @@ class CNCjob(Geometry):
         self.solid_geometry = cascaded_union([geo['geom'] for geo in self.gcode_parsed])
         return self.solid_geometry
 
+    # code snippet added by Lei Zheng in a rejected pull request on FlatCAM https://bitbucket.org/realthunder/
+    def segment(self, coords):
+        """
+        break long linear lines to make it more auto level friendly
+        """
+
+        if len(coords) < 2 or self.segx <= 0 and self.segy <= 0:
+            return list(coords)
+
+        path = [coords[0]]
+
+        # break the line in either x or y dimension only
+        def linebreak_single(line, dim, dmax):
+            if dmax <= 0:
+                return None
+
+            if line[1][dim] > line[0][dim]:
+                sign = 1.0
+                d = line[1][dim] - line[0][dim]
+            else:
+                sign = -1.0
+                d = line[0][dim] - line[1][dim]
+            if d > dmax:
+                # make sure we don't make any new lines too short
+                if d > dmax * 2:
+                    dd = dmax
+                else:
+                    dd = d / 2
+                other = dim ^ 1
+                return (line[0][dim] + dd * sign, line[0][other] + \
+                        dd * (line[1][other] - line[0][other]) / d)
+            return None
+
+        # recursively breaks down a given line until it is within the
+        # required step size
+        def linebreak(line):
+            pt_new = linebreak_single(line, 0, self.segx)
+            if pt_new is None:
+                pt_new2 = linebreak_single(line, 1, self.segy)
+            else:
+                pt_new2 = linebreak_single((line[0], pt_new), 1, self.segy)
+            if pt_new2 is not None:
+                pt_new = pt_new2[::-1]
+
+            if pt_new is None:
+                path.append(line[1])
+            else:
+                path.append(pt_new)
+                linebreak((pt_new, line[1]))
+
+        for pt in coords[1:]:
+            linebreak((path[-1], pt))
+
+        return path
+
     def linear2gcode(self, linear, tolerance=0, down=True, up=True,
                      z_cut=None, z_move=None, zdownrate=None,
                      feedrate=None, feedrate_z=None, feedrate_rapid=None, cont=False):
@@ -5500,7 +5597,9 @@ class CNCjob(Geometry):
 
         gcode = ""
 
-        path = list(target_linear.coords)
+        # path = list(target_linear.coords)
+        path = self.segment(target_linear.coords)
+
         p = self.pp_geometry
 
         # Move fast to 1st point
