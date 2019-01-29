@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed issue in Tool Calculators when a float value was entered starting only with the dot.
 - added protection for entering incorrect values in Offset and Scale fields for Gerber and Geometry objects (in Selected Tab)
+- added more shortcut keys in the Geometry Editor and in Excellon Editor; activated also the zoom (fit, in, out) shortcut keys ('1' , '2', '3') for the editors
 
 28.01.2018
 

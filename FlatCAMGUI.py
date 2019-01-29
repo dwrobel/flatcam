@@ -294,11 +294,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_editor_menu.addSeparator()
         self.geo_add_text_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/text32.png'), 'Add Text\tT')
         self.geo_editor_menu.addSeparator()
-        self.geo_union_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/union16.png'), 'Polygon Union')
+        self.geo_union_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/union16.png'), 'Polygon Union\tU')
         self.geo_intersection_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/intersection16.png'),
-                                                         'Polygon Intersection')
+                                                         'Polygon Intersection\tE')
         self.geo_subtract_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon('share/subtract16.png'), 'Polygon Subtraction'
+            QtGui.QIcon('share/subtract16.png'), 'Polygon Subtraction\tS'
         )
         self.geo_editor_menu.addSeparator()
         self.geo_cutpath_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/cutpath16.png'), 'Cut Path\tX')

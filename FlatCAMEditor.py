@@ -2569,6 +2569,15 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.on_tool_select('rotate')
             self.active_tool.set_origin(self.snap(self.x, self.y))
 
+        if event.key == '1':
+            self.app.on_zoom_fit(None)
+
+        if event.key == '2':
+            self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'], [self.snap_x, self.snap_y])
+
+        if event.key == '3':
+            self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'], [self.snap_x, self.snap_y])
+
         # Arc Tool
         if event.key.name == 'A':
             self.select_tool('arc')
@@ -2583,6 +2592,22 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.on_tool_select('copy')
             self.active_tool.set_origin(self.snap(self.x, self.y))
             self.app.inform.emit("Click on target point.")
+
+        # Substract Tool
+        if event.key.name == 'E':
+            if self.get_selected() is not None:
+                self.intersection()
+            else:
+                msg = "Please select geometry items \n" \
+                      "on which to perform Intersection Tool."
+
+                messagebox =QtWidgets.QMessageBox()
+                messagebox.setText(msg)
+                messagebox.setWindowTitle("Warning")
+                messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                messagebox.exec_()
 
         # Grid Snap
         if event.key.name == 'G':
@@ -2622,13 +2647,41 @@ class FlatCAMGeoEditor(QtCore.QObject):
         if event.key.name == 'R':
             self.select_tool('rectangle')
 
-        # Select Tool
+        # Substract Tool
         if event.key.name == 'S':
-            self.select_tool('select')
+            if self.get_selected() is not None:
+                self.subtract()
+            else:
+                msg = "Please select geometry items \n" \
+                      "on which to perform Substraction Tool."
+
+                messagebox =QtWidgets.QMessageBox()
+                messagebox.setText(msg)
+                messagebox.setWindowTitle("Warning")
+                messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                messagebox.exec_()
 
         # Add Text Tool
         if event.key.name == 'T':
             self.select_tool('text')
+
+        # Substract Tool
+        if event.key.name == 'U':
+            if self.get_selected() is not None:
+                self.union()
+            else:
+                msg = "Please select geometry items \n" \
+                      "on which to perform union."
+
+                messagebox =QtWidgets.QMessageBox()
+                messagebox.setText(msg)
+                messagebox.setWindowTitle("Warning")
+                messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                messagebox.exec_()
 
         # Cut Action Tool
         if event.key.name == 'X':
@@ -2662,11 +2715,15 @@ class FlatCAMGeoEditor(QtCore.QObject):
     def on_shortcut_list(self):
         msg = '''<b>Shortcut list in Geometry Editor</b><br>
 <br>
+<b>1:</b>       Zoom Fit<br>
+<b>2:</b>       Zoom Out<br>
+<b>3:</b>       Zoom In<br>
 <b>A:</b>       Add an 'Arc'<br>
 <b>B:</b>       Add a Buffer Geo<br>
 <b>C:</b>       Copy Geo Item<br>
+<b>E:</b>       Intersection Tool<br>
 <b>G:</b>       Grid Snap On/Off<br>
-<b>G:</b>       Paint Tool<br>
+<b>I:</b>       Paint Tool<br>
 <b>K:</b>       Corner Snap On/Off<br>
 <b>M:</b>       Move Geo Item<br>
 <br>
@@ -2674,8 +2731,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
 <b>O:</b>       Add a 'Circle'<br>
 <b>P:</b>       Add a 'Path'<br>
 <b>R:</b>       Add an 'Rectangle'<br>
-<b>S:</b>       Select Tool Active<br>
+<b>S:</b>       Substraction Tool<br>
 <b>T:</b>       Add Text Geometry<br>
+<b>U:</b>       Union Tool<br>
 <br>
 <b>X:</b>       Cut Path<br>
 <br>
@@ -2683,7 +2741,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 <br>
 <b>Space:</b>   Rotate selected Geometry<br>
 <b>Enter:</b>   Finish Current Action<br>
-<b>Escape:</b>  Abort Current Action<br>
+<b>Escape:</b>  Select Tool (Exit any other Tool)<br>
 <b>Delete:</b>  Delete Obj'''
 
         helpbox =QtWidgets.QMessageBox()
@@ -4756,6 +4814,18 @@ class FlatCAMExcEditor(QtCore.QObject):
                 self.app.inform.emit("[warning_notcl]Cancelled. Nothing selected to delete.")
             return
 
+        if event.key == '1':
+            self.launched_from_shortcuts = True
+            self.app.on_zoom_fit(None)
+
+        if event.key == '2':
+            self.launched_from_shortcuts = True
+            self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'], [self.snap_x, self.snap_y])
+
+        if event.key == '3':
+            self.launched_from_shortcuts = True
+            self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'], [self.snap_x, self.snap_y])
+
         # Add Array of Drill Hole Tool
         if event.key.name == 'A':
             self.launched_from_shortcuts = True
@@ -4840,6 +4910,9 @@ class FlatCAMExcEditor(QtCore.QObject):
     def on_shortcut_list(self):
         msg = '''<b>Shortcut list in Geometry Editor</b><br>
 <br>
+<b>1:</b>       Zoom Fit<br>
+<b>2:</b>       Zoom Out<br>
+<b>3:</b>       Zoom In<br>
 <b>A:</b>       Add an 'Drill Array'<br>
 <b>C:</b>       Copy Drill Hole<br>
 <b>D:</b>       Add an Drill Hole<br>
