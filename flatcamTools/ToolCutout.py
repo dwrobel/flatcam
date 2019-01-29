@@ -101,10 +101,9 @@ class ToolCutout(FlatCAMTool):
         # 8     - 2*left + 2*right +2*top + 2*bottom
 
         # Gaps
-        self.gaps = FCEntry()
-        self.gaps_label = QtWidgets.QLabel("Type of gaps:   ")
-        self.gaps_label.setToolTip(
-            "Number of gaps used for the cutout.\n"
+        gaps_ff_label = QtWidgets.QLabel('Gaps FF:      ')
+        gaps_ff_label.setToolTip(
+            "Number of gaps used for the FreeForm cutout.\n"
             "There can be maximum 8 bridges/gaps.\n"
             "The choices are:\n"
             "- lr    - left + right\n"
@@ -114,7 +113,13 @@ class ToolCutout(FlatCAMTool):
             "- 2tb  - 2*top + 2*bottom\n"
             "- 8     - 2*left + 2*right +2*top + 2*bottom"
         )
-        form_layout_2.addRow(self.gaps_label, self.gaps)
+
+        self.gaps = FCComboBox()
+        gaps_items = ['LR', 'TB', '4', '2LR', '2TB', '8']
+        for it in gaps_items:
+            self.gaps.addItem(it)
+            self.gaps.setStyleSheet('background-color: rgb(255,255,255)')
+        form_layout_2.addRow(gaps_ff_label, self.gaps)
 
         ## Buttons
         hlay = QtWidgets.QHBoxLayout()
@@ -215,7 +220,8 @@ class ToolCutout(FlatCAMTool):
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit("[error_notcl]Object not found: %s" % cutout_obj)
+            self.app.inform.emit("[error_notcl]There is no object selected for Cutout.\nSelect one and try again.")
+            return
 
         try:
             dia = float(self.dia.get_value())
@@ -254,7 +260,7 @@ class ToolCutout(FlatCAMTool):
         lenghtx = (xmax - xmin) + (margin * 2)
         lenghty = (ymax - ymin) + (margin * 2)
 
-        gapsize = gapsize + (dia / 2)
+        gapsize = gapsize / 2 + (dia / 2)
 
         if isinstance(cutout_obj,FlatCAMGeometry):
             # rename the obj name so it can be identified as cutout

@@ -916,12 +916,17 @@ class GerberPreferencesUI(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
-        self.layout = QtWidgets.QVBoxLayout()
+        self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
 
-        self.gerber_group = GerberPrefGroupUI()
-        self.gerber_group.setFixedWidth(260)
-        self.layout.addWidget(self.gerber_group)
+        self.gerber_gen_group = GerberGenPrefGroupUI()
+        self.gerber_gen_group.setFixedWidth(260)
+        self.gerber_opt_group = GerberOptPrefGroupUI()
+        self.gerber_opt_group.setFixedWidth(260)
+
+        self.layout.addWidget(self.gerber_gen_group)
+        self.layout.addWidget(self.gerber_opt_group)
+        self.layout.addStretch()
 
 
 class ExcellonPreferencesUI(QtWidgets.QWidget):
@@ -945,12 +950,17 @@ class GeometryPreferencesUI(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
-        self.layout = QtWidgets.QVBoxLayout()
+        self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
 
-        self.geometry_group = GeometryPrefGroupUI()
-        self.geometry_group.setFixedWidth(260)
-        self.layout.addWidget(self.geometry_group)
+        self.geometry_gen_group = GeometryGenPrefGroupUI()
+        self.geometry_gen_group.setFixedWidth(260)
+        self.geometry_opt_group = GeometryOptPrefGroupUI()
+        self.geometry_opt_group.setFixedWidth(260)
+
+        self.layout.addWidget(self.geometry_gen_group)
+        self.layout.addWidget(self.geometry_opt_group)
+        self.layout.addStretch()
 
 
 class ToolsPreferencesUI(QtWidgets.QWidget):
@@ -981,12 +991,17 @@ class CNCJobPreferencesUI(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
-        self.layout = QtWidgets.QVBoxLayout()
+        self.layout = QtWidgets.QHBoxLayout()
         self.setLayout(self.layout)
 
-        self.cncjob_group = CNCJobPrefGroupUI()
-        self.cncjob_group.setFixedWidth(260)
-        self.layout.addWidget(self.cncjob_group)
+        self.cncjob_gen_group = CNCJobGenPrefGroupUI()
+        self.cncjob_gen_group.setFixedWidth(260)
+        self.cncjob_opt_group = CNCJobOptPrefGroupUI()
+        self.cncjob_opt_group.setFixedWidth(260)
+
+        self.layout.addWidget(self.cncjob_gen_group)
+        self.layout.addWidget(self.cncjob_opt_group)
+        self.layout.addStretch()
 
 
 class OptionsGroupUI(QtWidgets.QGroupBox):
@@ -1266,13 +1281,15 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         # Units for FlatCAM
         self.unitslabel = QtWidgets.QLabel('<b>Units:</b>')
-        self.unitslabel.setToolTip("Those are units in which FlatCAM works.")
+        self.unitslabel.setToolTip("The default value for FlatCAM units.\n"
+                                   "Whatever is selected here is set every time\n"
+                                   "FLatCAM is started.")
         self.units_radio = RadioSet([{'label': 'IN', 'value': 'IN'},
                                      {'label': 'MM', 'value': 'MM'}])
 
         # Languages for FlatCAM
         self.languagelabel = QtWidgets.QLabel('<b>Languages:</b>')
-        self.languagelabel.setToolTip("Set the language used for FlatCAM texts.")
+        self.languagelabel.setToolTip("Set the language used throughout FlatCAM.")
         self.language_cb = FCComboBox()
         self.languagespace = QtWidgets.QLabel('')
         self.language_apply_btn = FCButton("Apply Language")
@@ -1317,9 +1334,11 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         # Select mouse pan button
         self.panbuttonlabel = QtWidgets.QLabel('<b>Pan Button:</b>')
-        self.panbuttonlabel.setToolTip("Select the mouse button to use for panning.")
-        self.pan_button_radio = RadioSet([{'label': 'Middle But.', 'value': '3'},
-                                     {'label': 'Right But.', 'value': '2'}])
+        self.panbuttonlabel.setToolTip("Select the mouse button to use for panning:\n"
+                                       "- MMB --> Middle Mouse Button\n"
+                                       "- RMB --> Middle Mouse Button")
+        self.pan_button_radio = RadioSet([{'label': 'MMB', 'value': '3'},
+                                     {'label': 'RMB', 'value': '2'}])
 
         # Multiple Selection Modifier Key
         self.mselectlabel = QtWidgets.QLabel('<b>Multiple Sel:</b>')
@@ -1363,12 +1382,12 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.layout.addLayout(self.form_box)
 
 
-class GerberPrefGroupUI(OptionsGroupUI):
+class GerberGenPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):
-        # OptionsGroupUI.__init__(self, "Gerber Options", parent=parent)
-        super(GerberPrefGroupUI, self).__init__(self)
+        # OptionsGroupUI.__init__(self, "Gerber General Preferences", parent=parent)
+        super(GerberGenPrefGroupUI, self).__init__(self)
 
-        self.setTitle(str("Gerber Options"))
+        self.setTitle(str("Gerber General"))
 
         ## Plot options
         self.plot_options_label = QtWidgets.QLabel("<b>Plot Options:</b>")
@@ -1407,6 +1426,17 @@ class GerberPrefGroupUI(OptionsGroupUI):
         self.circle_steps_entry = IntEntry()
         grid0.addWidget(self.circle_steps_entry, 1, 1)
 
+        self.layout.addStretch()
+
+
+class GerberOptPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Gerber Options Preferences", parent=parent)
+        super(GerberOptPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("Gerber Options"))
+
+
         ## Isolation Routing
         self.isolation_routing_label = QtWidgets.QLabel("<b>Isolation Routing:</b>")
         self.isolation_routing_label.setToolTip(
@@ -1416,15 +1446,16 @@ class GerberPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(self.isolation_routing_label)
 
         # Cutting Tool Diameter
-        grid1 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid1)
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
         tdlabel = QtWidgets.QLabel('Tool dia:')
         tdlabel.setToolTip(
             "Diameter of the cutting tool."
         )
-        grid1.addWidget(tdlabel, 0, 0)
+        grid0.addWidget(tdlabel, 0, 0)
         self.iso_tool_dia_entry = LengthEntry()
-        grid1.addWidget(self.iso_tool_dia_entry, 0, 1)
+        grid0.addWidget(self.iso_tool_dia_entry, 0, 1)
 
         # Nr of passes
         passlabel = QtWidgets.QLabel('Width (# passes):')
@@ -1432,9 +1463,9 @@ class GerberPrefGroupUI(OptionsGroupUI):
             "Width of the isolation gap in\n"
             "number (integer) of tool widths."
         )
-        grid1.addWidget(passlabel, 1, 0)
+        grid0.addWidget(passlabel, 1, 0)
         self.iso_width_entry = IntEntry()
-        grid1.addWidget(self.iso_width_entry, 1, 1)
+        grid0.addWidget(self.iso_width_entry, 1, 1)
 
         # Pass overlap
         overlabel = QtWidgets.QLabel('Pass overlap:')
@@ -1443,9 +1474,9 @@ class GerberPrefGroupUI(OptionsGroupUI):
             "Example:\n"
             "A value here of 0.25 means an overlap of 25% from the tool diameter found above."
         )
-        grid1.addWidget(overlabel, 2, 0)
+        grid0.addWidget(overlabel, 2, 0)
         self.iso_overlap_entry = FloatEntry()
-        grid1.addWidget(self.iso_overlap_entry, 2, 1)
+        grid0.addWidget(self.iso_overlap_entry, 2, 1)
 
         milling_type_label = QtWidgets.QLabel('Milling Type:')
         milling_type_label.setToolTip(
@@ -1453,17 +1484,17 @@ class GerberPrefGroupUI(OptionsGroupUI):
             "- climb / best for precision milling and to reduce tool usage\n"
             "- conventional / useful when there is no backlash compensation"
         )
-        grid1.addWidget(milling_type_label, 3, 0)
+        grid0.addWidget(milling_type_label, 3, 0)
         self.milling_type_radio = RadioSet([{'label': 'Climb', 'value': 'cl'},
                                             {'label': 'Conv.', 'value': 'cv'}])
-        grid1.addWidget(self.milling_type_radio, 3, 1)
+        grid0.addWidget(self.milling_type_radio, 3, 1)
 
         # Combine passes
         self.combine_passes_cb = FCCheckBox(label='Combine Passes')
         self.combine_passes_cb.setToolTip(
             "Combine all passes into one object"
         )
-        grid1.addWidget(self.combine_passes_cb, 4, 0)
+        grid0.addWidget(self.combine_passes_cb, 4, 0)
 
         ## Clear non-copper regions
         self.clearcopper_label = QtWidgets.QLabel("<b>Clear non-copper:</b>")
@@ -1473,8 +1504,8 @@ class GerberPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.clearcopper_label)
 
-        grid3 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid3)
+        grid1 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid1)
 
         # Margin
         bmlabel = QtWidgets.QLabel('Boundary Margin:')
@@ -1484,9 +1515,9 @@ class GerberPrefGroupUI(OptionsGroupUI):
             "objects with this minimum\n"
             "distance."
         )
-        grid3.addWidget(bmlabel, 0, 0)
+        grid1.addWidget(bmlabel, 0, 0)
         self.noncopper_margin_entry = LengthEntry()
-        grid3.addWidget(self.noncopper_margin_entry, 0, 1)
+        grid1.addWidget(self.noncopper_margin_entry, 0, 1)
 
         # Rounded corners
         self.noncopper_rounded_cb = FCCheckBox(label="Rounded corners")
@@ -1494,23 +1525,23 @@ class GerberPrefGroupUI(OptionsGroupUI):
             "Creates a Geometry objects with polygons\n"
             "covering the copper-free areas of the PCB."
         )
-        grid3.addWidget(self.noncopper_rounded_cb, 1, 0, 1, 2)
+        grid1.addWidget(self.noncopper_rounded_cb, 1, 0, 1, 2)
 
         ## Bounding box
         self.boundingbox_label = QtWidgets.QLabel('<b>Bounding Box:</b>')
         self.layout.addWidget(self.boundingbox_label)
 
-        grid4 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid4)
+        grid2 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid2)
 
         bbmargin = QtWidgets.QLabel('Boundary Margin:')
         bbmargin.setToolTip(
             "Distance of the edges of the box\n"
             "to the nearest polygon."
         )
-        grid4.addWidget(bbmargin, 0, 0)
+        grid2.addWidget(bbmargin, 0, 0)
         self.bbmargin_entry = LengthEntry()
-        grid4.addWidget(self.bbmargin_entry, 0, 1)
+        grid2.addWidget(self.bbmargin_entry, 0, 1)
 
         self.bbrounded_cb = FCCheckBox(label="Rounded corners")
         self.bbrounded_cb.setToolTip(
@@ -1519,7 +1550,7 @@ class GerberPrefGroupUI(OptionsGroupUI):
             "their radius is equal to\n"
             "the margin."
         )
-        grid4.addWidget(self.bbrounded_cb, 1, 0, 1, 2)
+        grid2.addWidget(self.bbrounded_cb, 1, 0, 1, 2)
         self.layout.addStretch()
 
 
@@ -1738,16 +1769,41 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
         form_box_excellon.addRow(self.excellon_optimization_label, self.excellon_optimization_radio)
 
+        self.optimization_time_label = QtWidgets.QLabel('Optimization Time:   ')
+        self.optimization_time_label.setAlignment(QtCore.Qt.AlignLeft)
+        self.optimization_time_label.setToolTip(
+            "When OR-Tools Metaheuristic (MH) is enabled there is a\n"
+            "maximum threshold for how much time is spent doing the\n"
+            "path optimization. This max duration is set here."
+
+        )
+
+        self.optimization_time_entry = LengthEntry()
+        form_box_excellon.addRow(self.optimization_time_label, self.optimization_time_entry)
+
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
             self.excellon_optimization_label.setDisabled(False)
             self.excellon_optimization_radio.setDisabled(False)
+            self.optimization_time_label.setDisabled(False)
+            self.optimization_time_entry.setDisabled(False)
+            self.excellon_optimization_radio.activated_custom.connect(self.optimization_selection)
+
         else:
             self.excellon_optimization_label.setDisabled(True)
             self.excellon_optimization_radio.setDisabled(True)
+            self.optimization_time_label.setDisabled(True)
+            self.optimization_time_entry.setDisabled(True)
 
         self.layout.addStretch()
 
+    def optimization_selection(self):
+        if self.excellon_optimization_radio.get_value() == 'M':
+            self.optimization_time_label.setDisabled(False)
+            self.optimization_time_entry.setDisabled(False)
+        else:
+            self.optimization_time_label.setDisabled(True)
+            self.optimization_time_entry.setDisabled(True)
 
 class ExcellonOptPrefGroupUI(OptionsGroupUI):
 
@@ -1944,12 +2000,12 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.layout.addStretch()
 
 
-class GeometryPrefGroupUI(OptionsGroupUI):
+class GeometryGenPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):
-        # OptionsGroupUI.__init__(self, "Geometry Options", parent=parent)
-        super(GeometryPrefGroupUI, self).__init__(self)
+        # OptionsGroupUI.__init__(self, "Geometry General Preferences", parent=parent)
+        super(GeometryGenPrefGroupUI, self).__init__(self)
 
-        self.setTitle(str("Geometry Options"))
+        self.setTitle(str("Geometry General"))
 
         ## Plot options
         self.plot_options_label = QtWidgets.QLabel("<b>Plot Options:</b>")
@@ -1991,6 +2047,16 @@ class GeometryPrefGroupUI(OptionsGroupUI):
         self.cnctooldia_entry = LengthEntry()
         grid1.addWidget(self.cnctooldia_entry, 0, 1)
 
+        self.layout.addStretch()
+
+
+class GeometryOptPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Geometry Options Preferences", parent=parent)
+        super(GeometryOptPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("Geometry Options"))
+
         # ------------------------------
         ## Create CNC Job
         # ------------------------------
@@ -2002,8 +2068,8 @@ class GeometryPrefGroupUI(OptionsGroupUI):
         )
         self.layout.addWidget(self.cncjob_label)
 
-        grid2 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid2)
+        grid1 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid1)
 
         # Cut Z
         cutzlabel = QtWidgets.QLabel('Cut Z:')
@@ -2011,16 +2077,16 @@ class GeometryPrefGroupUI(OptionsGroupUI):
             "Cutting depth (negative)\n"
             "below the copper surface."
         )
-        grid2.addWidget(cutzlabel, 0, 0)
+        grid1.addWidget(cutzlabel, 0, 0)
         self.cutz_entry = LengthEntry()
-        grid2.addWidget(self.cutz_entry, 0, 1)
+        grid1.addWidget(self.cutz_entry, 0, 1)
 
         # Multidepth CheckBox
         self.multidepth_cb = FCCheckBox(label='Multidepth')
         self.multidepth_cb.setToolTip(
             "Multidepth usage: True or False."
         )
-        grid2.addWidget(self.multidepth_cb, 1, 0)
+        grid1.addWidget(self.multidepth_cb, 1, 0)
 
         # Depth/pass
         dplabel = QtWidgets.QLabel('Depth/Pass:')
@@ -2032,9 +2098,9 @@ class GeometryPrefGroupUI(OptionsGroupUI):
             "which has negative value."
         )
 
-        grid2.addWidget(dplabel, 2, 0)
+        grid1.addWidget(dplabel, 2, 0)
         self.depthperpass_entry = LengthEntry()
-        grid2.addWidget(self.depthperpass_entry, 2, 1)
+        grid1.addWidget(self.depthperpass_entry, 2, 1)
 
         self.ois_multidepth = OptionalInputSection(self.multidepth_cb, [self.depthperpass_entry])
 
@@ -2044,9 +2110,9 @@ class GeometryPrefGroupUI(OptionsGroupUI):
             "Height of the tool when\n"
             "moving without cutting."
         )
-        grid2.addWidget(travelzlabel, 3, 0)
+        grid1.addWidget(travelzlabel, 3, 0)
         self.travelz_entry = LengthEntry()
-        grid2.addWidget(self.travelz_entry, 3, 1)
+        grid1.addWidget(self.travelz_entry, 3, 1)
 
         # Tool change:
         toolchlabel = QtWidgets.QLabel("Tool change:")
@@ -2055,26 +2121,26 @@ class GeometryPrefGroupUI(OptionsGroupUI):
             "in G-Code (Pause for tool change)."
         )
         self.toolchange_cb = FCCheckBox()
-        grid2.addWidget(toolchlabel, 4, 0)
-        grid2.addWidget(self.toolchange_cb, 4, 1)
+        grid1.addWidget(toolchlabel, 4, 0)
+        grid1.addWidget(self.toolchange_cb, 4, 1)
 
         # Toolchange Z
         toolchangezlabel = QtWidgets.QLabel('Toolchange Z:')
         toolchangezlabel.setToolTip(
             "Toolchange Z position."
         )
-        grid2.addWidget(toolchangezlabel, 5, 0)
+        grid1.addWidget(toolchangezlabel, 5, 0)
         self.toolchangez_entry = LengthEntry()
-        grid2.addWidget(self.toolchangez_entry, 5, 1)
+        grid1.addWidget(self.toolchangez_entry, 5, 1)
 
         # Toolchange X,Y
         toolchange_xy_label = QtWidgets.QLabel('Toolchange X,Y:')
         toolchange_xy_label.setToolTip(
             "Toolchange X,Y position."
         )
-        grid2.addWidget(toolchange_xy_label, 6, 0)
+        grid1.addWidget(toolchange_xy_label, 6, 0)
         self.toolchangexy_entry = FCEntry()
-        grid2.addWidget(self.toolchangexy_entry, 6, 1)
+        grid1.addWidget(self.toolchangexy_entry, 6, 1)
 
         # Start move Z
         startzlabel = QtWidgets.QLabel('Start move Z:')
@@ -2082,9 +2148,9 @@ class GeometryPrefGroupUI(OptionsGroupUI):
             "Height of the tool just after starting the work.\n"
             "Delete the value if you don't need this feature."
         )
-        grid2.addWidget(startzlabel, 7, 0)
+        grid1.addWidget(startzlabel, 7, 0)
         self.gstartz_entry = FloatEntry()
-        grid2.addWidget(self.gstartz_entry, 7, 1)
+        grid1.addWidget(self.gstartz_entry, 7, 1)
 
         # End move Z
         endzlabel = QtWidgets.QLabel('End move Z:')
@@ -2092,9 +2158,9 @@ class GeometryPrefGroupUI(OptionsGroupUI):
             "Height of the tool after\n"
             "the last move at the end of the job."
         )
-        grid2.addWidget(endzlabel, 8, 0)
+        grid1.addWidget(endzlabel, 8, 0)
         self.gendz_entry = LengthEntry()
-        grid2.addWidget(self.gendz_entry, 8, 1)
+        grid1.addWidget(self.gendz_entry, 8, 1)
 
         # Feedrate X-Y
         frlabel = QtWidgets.QLabel('Feed Rate X-Y:')
@@ -2102,9 +2168,9 @@ class GeometryPrefGroupUI(OptionsGroupUI):
             "Cutting speed in the XY\n"
             "plane in units per minute"
         )
-        grid2.addWidget(frlabel, 9, 0)
+        grid1.addWidget(frlabel, 9, 0)
         self.cncfeedrate_entry = LengthEntry()
-        grid2.addWidget(self.cncfeedrate_entry, 9, 1)
+        grid1.addWidget(self.cncfeedrate_entry, 9, 1)
 
         # Feedrate Z (Plunge)
         frz_label = QtWidgets.QLabel('Feed Rate Z:')
@@ -2113,9 +2179,9 @@ class GeometryPrefGroupUI(OptionsGroupUI):
             "plane in units per minute.\n"
             "It is called also Plunge."
         )
-        grid2.addWidget(frz_label, 10, 0)
+        grid1.addWidget(frz_label, 10, 0)
         self.cncplunge_entry = LengthEntry()
-        grid2.addWidget(self.cncplunge_entry, 10, 1)
+        grid1.addWidget(self.cncplunge_entry, 10, 1)
 
         # Feedrate rapids
         fr_rapid_label = QtWidgets.QLabel('Feed Rate Rapids:')
@@ -2123,9 +2189,9 @@ class GeometryPrefGroupUI(OptionsGroupUI):
             "Cutting speed in the XY\n"
             "plane in units per minute"
         )
-        grid2.addWidget(fr_rapid_label, 11, 0)
+        grid1.addWidget(fr_rapid_label, 11, 0)
         self.cncfeedrate_rapid_entry = LengthEntry()
-        grid2.addWidget(self.cncfeedrate_rapid_entry, 11, 1)
+        grid1.addWidget(self.cncfeedrate_rapid_entry, 11, 1)
 
         # End move extra cut
         self.extracut_cb = FCCheckBox(label='Cut over 1st pt.')
@@ -2135,7 +2201,7 @@ class GeometryPrefGroupUI(OptionsGroupUI):
             "meet with last cut, we generate an\n"
             "extended cut over the first cut section."
         )
-        grid2.addWidget(self.extracut_cb, 12, 0)
+        grid1.addWidget(self.extracut_cb, 12, 0)
 
         # Spindle Speed
         spdlabel = QtWidgets.QLabel('Spindle speed:')
@@ -2143,9 +2209,9 @@ class GeometryPrefGroupUI(OptionsGroupUI):
             "Speed of the spindle\n"
             "in RPM (optional)"
         )
-        grid2.addWidget(spdlabel, 13, 0)
+        grid1.addWidget(spdlabel, 13, 0)
         self.cncspindlespeed_entry = IntEntry(allow_empty=True)
-        grid2.addWidget(self.cncspindlespeed_entry, 13, 1)
+        grid1.addWidget(self.cncspindlespeed_entry, 13, 1)
 
         # Dwell
         self.dwell_cb = FCCheckBox(label='Dwell:')
@@ -2158,9 +2224,9 @@ class GeometryPrefGroupUI(OptionsGroupUI):
             "Number of milliseconds for spindle to dwell."
         )
         self.dwelltime_entry = FCEntry()
-        grid2.addWidget(self.dwell_cb, 14, 0)
-        grid2.addWidget(dwelltime, 15, 0)
-        grid2.addWidget(self.dwelltime_entry, 15, 1)
+        grid1.addWidget(self.dwell_cb, 14, 0)
+        grid1.addWidget(dwelltime, 15, 0)
+        grid1.addWidget(self.dwelltime_entry, 15, 1)
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
@@ -2170,10 +2236,10 @@ class GeometryPrefGroupUI(OptionsGroupUI):
             "The postprocessor file that dictates\n"
             "Machine Code output."
         )
-        grid2.addWidget(pp_label, 16, 0)
+        grid1.addWidget(pp_label, 16, 0)
         self.pp_geometry_name_cb = FCComboBox()
         self.pp_geometry_name_cb.setFocusPolicy(Qt.StrongFocus)
-        grid2.addWidget(self.pp_geometry_name_cb, 16, 1)
+        grid1.addWidget(self.pp_geometry_name_cb, 16, 1)
 
         # Size of trace segment on X axis
         segx_label = QtWidgets.QLabel("Seg. X size:")
@@ -2182,9 +2248,9 @@ class GeometryPrefGroupUI(OptionsGroupUI):
             "Useful for auto-leveling.\n"
             "A value of 0 means no segmentation on the X axis."
         )
-        grid2.addWidget(segx_label, 17, 0)
+        grid1.addWidget(segx_label, 17, 0)
         self.segx_entry = FCEntry()
-        grid2.addWidget(self.segx_entry, 17, 1)
+        grid1.addWidget(self.segx_entry, 17, 1)
 
         # Size of trace segment on Y axis
         segy_label = QtWidgets.QLabel("Seg. Y size:")
@@ -2193,19 +2259,19 @@ class GeometryPrefGroupUI(OptionsGroupUI):
             "Useful for auto-leveling.\n"
             "A value of 0 means no segmentation on the Y axis."
         )
-        grid2.addWidget(segy_label, 18, 0)
+        grid1.addWidget(segy_label, 18, 0)
         self.segy_entry = FCEntry()
-        grid2.addWidget(self.segy_entry, 18, 1)
+        grid1.addWidget(self.segy_entry, 18, 1)
 
         self.layout.addStretch()
 
 
-class CNCJobPrefGroupUI(OptionsGroupUI):
+class CNCJobGenPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):
-        # OptionsGroupUI.__init__(self, "CNC Job Options", parent=None)
-        super(CNCJobPrefGroupUI, self).__init__(self)
+        # OptionsGroupUI.__init__(self, "CNC Job General Preferences", parent=None)
+        super(CNCJobGenPrefGroupUI, self).__init__(self)
 
-        self.setTitle(str("CNC Job Options"))
+        self.setTitle(str("CNC Job General"))
 
         ## Plot options
         self.plot_options_label = QtWidgets.QLabel("<b>Plot Options:</b>")
@@ -2262,6 +2328,16 @@ class CNCJobPrefGroupUI(OptionsGroupUI):
         self.fr_dec_entry = IntEntry()
         grid0.addWidget(self.fr_dec_entry, 4, 1)
 
+        self.layout.addStretch()
+
+
+class CNCJobOptPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "CNC Job Options Preferences", parent=None)
+        super(CNCJobOptPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("CNC Job Options"))
+
         ## Export G-Code
         self.export_gcode_label = QtWidgets.QLabel("<b>Export G-Code:</b>")
         self.export_gcode_label.setToolTip(
@@ -2293,8 +2369,7 @@ class CNCJobPrefGroupUI(OptionsGroupUI):
         self.append_text = FCTextArea()
         self.layout.addWidget(self.append_text)
 
-        grid0 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid0)
+        self.layout.addStretch()
 
 
 class ToolsNCCPrefGroupUI(OptionsGroupUI):
@@ -2444,16 +2519,39 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.cutout_gap_entry = LengthEntry()
         grid0.addWidget(self.cutout_gap_entry, 2, 1)
 
-        gapslabel = QtWidgets.QLabel('Gaps:')
+        gapslabel = QtWidgets.QLabel('Gaps Rect:')
         gapslabel.setToolTip(
-            "Where to place the gaps, Top/Bottom\n"
-            "Left/Rigt, or on all 4 sides."
+            "Where to place the gaps when doing a Rectangular Cutout:\n"
+            " - 2 (T/B) --> Top/Bottom\n"
+            " - 2 (L/R) --> Left/Rigt\n"
+            " - 4       --> on each of all 4 sides."
         )
         grid0.addWidget(gapslabel, 3, 0)
         self.gaps_radio = RadioSet([{'label': '2 (T/B)', 'value': 'tb'},
                                     {'label': '2 (L/R)', 'value': 'lr'},
                                     {'label': '4', 'value': '4'}])
         grid0.addWidget(self.gaps_radio, 3, 1)
+
+        gaps_ff_label = QtWidgets.QLabel('Gaps FF:')
+        gaps_ff_label.setToolTip(
+            "Number of gaps used for the FreeForm cutout.\n"
+            "There can be maximum 8 bridges/gaps.\n"
+            "The choices are:\n"
+            "- lr    - left + right\n"
+            "- tb    - top + bottom\n"
+            "- 4     - left + right +top + bottom\n"
+            "- 2lr   - 2*left + 2*right\n"
+            "- 2tb  - 2*top + 2*bottom\n"
+            "- 8     - 2*left + 2*right +2*top + 2*bottom"
+        )
+        grid0.addWidget(gaps_ff_label, 4, 0)
+        self.gaps_combo = FCComboBox()
+        grid0.addWidget(self.gaps_combo, 4, 1)
+
+        gaps_items = ['LR', 'TB', '4', '2LR', '2TB', '8']
+        for it in gaps_items:
+            self.gaps_combo.addItem(it)
+            self.gaps_combo.setStyleSheet('background-color: rgb(255,255,255)')
 
         self.layout.addStretch()
 

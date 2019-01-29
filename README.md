@@ -17,7 +17,10 @@ CAD program, and create G-Code for Isolation routing.
 - disabled the context menu in tools table on Paint Tool in case that the painting method is single.
 - added protection when trying to do Intersection in Geometry Editor without having selected Geometry items.
 - fixed the scale, mirror, rotate, skew functions to work with Geometry Objects of multi-geometry type.
-
+- added a GUI for Excellon Search time for OR-TOOLS path optimization in Edit -> Preferences -> Excellon General -> Optimization Time
+- more changes in Edit -> Preferences -> Geometry, Gerber and in CNCJob
+- added new option for Cutout Tool Freeform Gaps in Edit -> Preferences -> Tools
+- fixed Freeform Cutout gaps issue (it was double than the value set)
 
 28.01.2018
 
