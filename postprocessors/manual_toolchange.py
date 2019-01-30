@@ -32,7 +32,7 @@ class manual_toolchange(FlatCAMPostProc):
         if coords_xy is not None:
             gcode += '(X,Y Toolchange: ' + "%.4f, %.4f" % (coords_xy[0], coords_xy[1]) + units + ')\n'
         else:
-            gcode += '(X,Y Toolchange: ' + "0.0, 0.0" + units + ')\n'
+            gcode += '(X,Y Toolchange: ' + "None" + units + ')\n'
         gcode += '(Z Start: ' + str(p['startz']) + units + ')\n'
         gcode += '(Z End: ' + str(p['endz']) + units + ')\n'
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
@@ -64,14 +64,14 @@ class manual_toolchange(FlatCAMPostProc):
 
     def toolchange_code(self, p):
         toolchangez = p.toolchangez
-        toolchangexy = p.toolchange_xy
+        toolchangexy = p['toolchange_xy']
 
         if toolchangexy is not None:
             toolchangex = toolchangexy[0]
             toolchangey = toolchangexy[1]
         else:
-            toolchangex = 0.0
-            toolchangey = 0.0
+            toolchangex = p.oldx
+            toolchangey = p.oldy
 
         no_drills = 1
 

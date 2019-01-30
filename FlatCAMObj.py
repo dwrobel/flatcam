@@ -1678,7 +1678,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                                                    drillz=self.options['drillz'],
                                                    toolchange=self.options["toolchange"],
                                                    toolchangez=self.options["toolchangez"],
-                                                   toolchangexy=self.options["toolchangexy"],
                                                    startz=self.options["startz"],
                                                    endz=self.options["endz"],
                                                    excellon_optimization_type=self.options["optimization_type"])
@@ -1724,10 +1723,17 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.options['feedrate_rapid'] *= factor
         self.options['toolchangez'] *= factor
 
-        coords_xy = [float(eval(coord)) for coord in self.app.defaults["excellon_toolchangexy"].split(",")]
-        coords_xy[0] *= factor
-        coords_xy[1] *= factor
-        self.options['toolchangexy'] = "%f, %f" % (coords_xy[0], coords_xy[1])
+        if self.app.defaults["excellon_toolchangexy"] == '':
+            self.options['toolchangexy'] = "0.0, 0.0"
+        else:
+            coords_xy = [float(eval(coord)) for coord in self.app.defaults["excellon_toolchangexy"].split(",")]
+            if len(coords_xy) < 2:
+                self.app.inform.emit("[error]The Toolchange X,Y field in Edit -> Preferences has to be "
+                                     "in the format (x, y) \nbut now there is only one value, not two. ")
+                return 'fail'
+            coords_xy[0] *= factor
+            coords_xy[1] *= factor
+            self.options['toolchangexy'] = "%f, %f" % (coords_xy[0], coords_xy[1])
 
         if self.options['startz'] is not None:
             self.options['startz'] *= factor
@@ -3583,10 +3589,17 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         self.options["toolchangez"] *= factor
 
-        coords_xy = [float(eval(coord)) for coord in self.app.defaults["geometry_toolchangexy"].split(",")]
-        coords_xy[0] *= factor
-        coords_xy[1] *= factor
-        self.options['toolchangexy'] = "%f, %f" % (coords_xy[0], coords_xy[1])
+        if self.app.defaults["geometry_toolchangexy"] == '':
+            self.options['toolchangexy'] = "0.0, 0.0"
+        else:
+            coords_xy = [float(eval(coord)) for coord in self.app.defaults["geometry_toolchangexy"].split(",")]
+            if len(coords_xy) < 2:
+                self.app.inform.emit("[error]The Toolchange X,Y field in Edit -> Preferences has to be "
+                                     "in the format (x, y) \nbut now there is only one value, not two. ")
+                return 'fail'
+            coords_xy[0] *= factor
+            coords_xy[1] *= factor
+            self.options['toolchangexy'] = "%f, %f" % (coords_xy[0], coords_xy[1])
 
         if self.options['startz'] is not None:
             self.options['startz'] *= factor

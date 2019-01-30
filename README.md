@@ -17,6 +17,9 @@ CAD program, and create G-Code for Isolation routing.
 - added a traceback report in the TCL Shell for the errors that don't allow creation of an object; useful to trace exceptions/errors
 - in case that the Toolchange X,Y parameter in Selected (or in Preferences) are deleted then the app will still do the job using the current coordinates for toolchange
 - fixed an issue in camlib.CNCJob where tha variable self.toolchange_xy was used for 2 different purposes which created loss of information.
+- fixed unit conversion functions in case the toolchange_xy parameter is None
+- more fixes in camlib.CNCJob regarding usage of toolchange (in case it is None)
+- fixed postprocessor files to work with toolchange_xy parameter value = None (no values in Edit - Preferences fields)
 
 29.01.2019
 

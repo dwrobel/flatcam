@@ -2857,7 +2857,7 @@ class Gerber (Geometry):
             traceback.print_tb(tb)
             #print traceback.format_exc()
 
-            log.error("PARSING FAILED. Line %d: %s" % (line_num, gline))
+            log.error("Gerber PARSING FAILED. Line %d: %s" % (line_num, gline))
             self.app.inform.emit("[error] Gerber Parser ERROR.\n Line %d: %s" % (line_num, gline), repr(err))
 
     @staticmethod
@@ -3987,10 +3987,13 @@ class Excellon(Geometry):
             # from self.defaults['excellon_units']
             log.info("Zeros: %s, Units %s." % (self.zeros, self.units))
 
-
         except Exception as e:
-            log.error("PARSING FAILED. Line %d: %s" % (line_num, eline))
-            self.app.inform.emit('[error] Excellon Parser ERROR.\nPARSING FAILED. Line %d: %s' % (line_num, eline))
+            log.error("Excellon PARSING FAILED. Line %d: %s" % (line_num, eline))
+            msg = "[error_notcl] An internal error has ocurred. See shell.\n"
+            msg += '[error] Excellon Parser error.\nParsing Failed. Line %d: %s\n' % (line_num, eline)
+            msg += traceback.format_exc()
+            self.app.inform.emit(msg)
+
             return "fail"
         
     def parse_number(self, number_str):
@@ -4367,7 +4370,7 @@ class CNCjob(Geometry):
                  pp_geometry_name='default', pp_excellon_name='default',
                  depthpercut = 0.1,
                  spindlespeed=None, dwell=True, dwelltime=1000,
-                 toolchangez=0.787402,
+                 toolchangez=0.787402, toolchange_xy=[0.0, 0.0],
                  endz=2.0,
                  segx=None,
                  segy=None,
@@ -4392,7 +4395,7 @@ class CNCjob(Geometry):
 
         self.tooldia = tooldia
         self.toolchangez = toolchangez
-        self.toolchange_xy = None
+        self.toolchange_xy = toolchange_xy
         self.toolchange_xy_type = None
 
         self.endz = endz
@@ -4420,6 +4423,9 @@ class CNCjob(Geometry):
         self.segy = float(segy) if segy is not None else 0.0
 
         self.input_geometry_bounds = None
+
+        self.oldx = None
+        self.oldy = None
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -4491,7 +4497,7 @@ class CNCjob(Geometry):
         return path
 
     def generate_from_excellon_by_tool(self, exobj, tools="all", drillz = 3.0,
-                                       toolchange=False, toolchangez=0.1, toolchangexy="0.0, 0.0",
+                                       toolchange=False, toolchangez=0.1, toolchangexy='',
                                        endz=2.0, startz=None,
                                        excellon_optimization_type='B'):
         """
@@ -4596,8 +4602,13 @@ class CNCjob(Geometry):
         # Initialization
         gcode = self.doformat(p.start_code)
         gcode += self.doformat(p.feedrate_code)
-        gcode += self.doformat(p.lift_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
-        gcode += self.doformat(p.startz_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+
+        if self.toolchange_xy is not None:
+            gcode += self.doformat(p.lift_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+            gcode += self.doformat(p.startz_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+        else:
+            gcode += self.doformat(p.lift_code, x=0.0, y=0.0)
+            gcode += self.doformat(p.startz_code, x=0.0, y=0.0)
 
         # Distance callback
         class CreateDistanceCallback(object):
@@ -4631,8 +4642,13 @@ class CNCjob(Geometry):
                 locations.append((point.coords.xy[0][0], point.coords.xy[1][0]))
             return locations
 
-        oldx = self.toolchange_xy[0]
-        oldy = self.toolchange_xy[1]
+        if self.toolchange_xy is not None:
+            self.oldx = self.toolchange_xy[0]
+            self.oldy = self.toolchange_xy[1]
+        else:
+            self.oldx = 0.0
+            self.oldy = 0.0
+
         measured_distance = 0
 
         current_platform = platform.architecture()[0]
@@ -4697,7 +4713,7 @@ class CNCjob(Geometry):
                     if tool in points:
                         # Tool change sequence (optional)
                         if toolchange:
-                            gcode += self.doformat(p.toolchange_code,toolchangexy=(oldx, oldy))
+                            gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
                             gcode += self.doformat(p.spindle_code)  # Spindle start
                             if self.dwell is True:
                                 gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -4715,9 +4731,9 @@ class CNCjob(Geometry):
                             gcode += self.doformat(p.down_code, x=locx, y=locy)
                             gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
                             gcode += self.doformat(p.lift_code, x=locx, y=locy)
-                            measured_distance += abs(distance_euclidian(locx, locy, oldx, oldy))
-                            oldx = locx
-                            oldy = locy
+                            measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                            self.oldx = locx
+                            self.oldy = locy
                 log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))
             elif excellon_optimization_type == 'B':
                 log.debug("Using OR-Tools Basic drill path optimization.")
@@ -4771,7 +4787,7 @@ class CNCjob(Geometry):
                     if tool in points:
                         # Tool change sequence (optional)
                         if toolchange:
-                            gcode += self.doformat(p.toolchange_code,toolchangexy=(oldx, oldy))
+                            gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
                             gcode += self.doformat(p.spindle_code)  # Spindle start)
                             if self.dwell is True:
                                 gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -4788,9 +4804,9 @@ class CNCjob(Geometry):
                             gcode += self.doformat(p.down_code, x=locx, y=locy)
                             gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
                             gcode += self.doformat(p.lift_code, x=locx, y=locy)
-                            measured_distance += abs(distance_euclidian(locx, locy, oldx, oldy))
-                            oldx = locx
-                            oldy = locy
+                            measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                            self.oldx = locx
+                            self.oldy = locy
                 log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" % str(measured_distance))
             else:
                 self.app.inform.emit("[error_notcl] Wrong optimization type selected.")
@@ -4805,7 +4821,7 @@ class CNCjob(Geometry):
                 if tool in points:
                     # Tool change sequence (optional)
                     if toolchange:
-                        gcode += self.doformat(p.toolchange_code, toolchangexy=(oldx, oldy))
+                        gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
                         gcode += self.doformat(p.spindle_code)  # Spindle start)
                         if self.dwell is True:
                             gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -4824,15 +4840,15 @@ class CNCjob(Geometry):
                         gcode += self.doformat(p.down_code, x=point[0], y=point[1])
                         gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
                         gcode += self.doformat(p.lift_code, x=point[0], y=point[1])
-                        measured_distance += abs(distance_euclidian(point[0], point[1], oldx, oldy))
-                        oldx = point[0]
-                        oldy = point[1]
+                        measured_distance += abs(distance_euclidian(point[0], point[1], self.oldx, self.oldy))
+                        self.oldx = point[0]
+                        self.oldy = point[1]
             log.debug("The total travel distance with Travelling Salesman Algorithm is: %s" % str(measured_distance))
 
         gcode += self.doformat(p.spindle_stop_code)  # Spindle stop
         gcode += self.doformat(p.end_code, x=0, y=0)
 
-        measured_distance += abs(distance_euclidian(oldx, oldy, 0, 0))
+        measured_distance += abs(distance_euclidian(self.oldx, self.oldy, 0, 0))
         log.debug("The total travel distance including travel to end position is: %s" %
                   str(measured_distance) + '\n')
         self.gcode = gcode
@@ -4900,7 +4916,19 @@ class CNCjob(Geometry):
         self.multidepth = multidepth
 
         self.toolchangez = toolchangez
-        self.toolchange_xy = [float(eval(a)) for a in toolchangexy.split(",")]
+
+        try:
+            if toolchangexy == '':
+                self.toolchange_xy = None
+            else:
+                self.toolchange_xy = [float(eval(a)) for a in toolchangexy.split(",")]
+                if len(self.toolchange_xy) < 2:
+                    self.app.inform.emit("[error]The Toolchange X,Y field in Edit -> Preferences has to be "
+                                         "in the format (x, y) \nbut now there is only one value, not two. ")
+                    return 'fail'
+        except Exception as e:
+            log.debug("camlib.CNCJob.generate_from_multitool_geometry() --> %s" % str(e))
+            pass
 
         self.pp_geometry_name = pp_geometry_name if pp_geometry_name else 'default'
 
@@ -4953,10 +4981,11 @@ class CNCjob(Geometry):
         self.gcode += self.doformat(p.startz_code, x=0, y=0)
 
         if toolchange:
-            if "line_xyz" in self.pp_geometry_name:
-                self.gcode += self.doformat(p.toolchange_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
-            else:
-                self.gcode += self.doformat(p.toolchange_code)
+            # if "line_xyz" in self.pp_geometry_name:
+            #     self.gcode += self.doformat(p.toolchange_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+            # else:
+            #     self.gcode += self.doformat(p.toolchange_code)
+            self.gcode += self.doformat(p.toolchange_code)
 
             self.gcode += self.doformat(p.spindle_code)     # Spindle start
             if self.dwell is True:
@@ -5146,10 +5175,11 @@ class CNCjob(Geometry):
         self.gcode += self.doformat(p.startz_code, x=0, y=0)
 
         if toolchange:
-            if "line_xyz" in self.pp_geometry_name:
-                self.gcode += self.doformat(p.toolchange_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
-            else:
-                self.gcode += self.doformat(p.toolchange_code)
+            # if "line_xyz" in self.pp_geometry_name:
+            #     self.gcode += self.doformat(p.toolchange_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+            # else:
+            #     self.gcode += self.doformat(p.toolchange_code)
+            self.gcode += self.doformat(p.toolchange_code)
 
             self.gcode += self.doformat(p.spindle_code)     # Spindle start
 
