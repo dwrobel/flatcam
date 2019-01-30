@@ -29,7 +29,10 @@ class line_xyz(FlatCAMPostProc):
 
         gcode += '(Z_Move: ' + str(p['z_move']) + units + ')\n'
         gcode += '(Z Toolchange: ' + str(p['toolchangez']) + units + ')\n'
-        gcode += '(X,Y Toolchange: ' + "%.4f, %.4f" % (coords_xy[0], coords_xy[1]) + units + ')\n'
+        if coords_xy is not None:
+            gcode += '(X,Y Toolchange: ' + "%.4f, %.4f" % (coords_xy[0], coords_xy[1]) + units + ')\n'
+        else:
+            gcode += '(X,Y Toolchange: ' + "None" + units + ')\n'
         gcode += '(Z Start: ' + str(p['startz']) + units + ')\n'
         gcode += '(Z End: ' + str(p['endz']) + units + ')\n'
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
@@ -71,8 +74,14 @@ class line_xyz(FlatCAMPostProc):
     def toolchange_code(self, p):
         toolchangez = p.toolchangez
         toolchangexy = p.toolchange_xy
-        toolchangex = toolchangexy[0]
-        toolchangey = toolchangexy[1]
+        gcode = ''
+
+        if toolchangexy is not None:
+            toolchangex = toolchangexy[0]
+            toolchangey = toolchangexy[1]
+        else:
+            toolchangex = p.x
+            toolchangey = p.y
 
         no_drills = 1
 
@@ -132,7 +141,11 @@ M0""".format(toolchangex=self.coordinate_format%(p.coords_decimals, toolchangex)
         return g
 
     def end_code(self, p):
-        g = ('G00 ' + self.position_code(p)).format(**p)
+        coords_xy = p['toolchange_xy']
+        if coords_xy is not None:
+            g = 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
+        else:
+            g = ('G00 ' + self.position_code(p)).format(**p)
         g += ' Z' + self.coordinate_format % (p.coords_decimals, p.endz)
         return g
 

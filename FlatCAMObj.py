@@ -1665,7 +1665,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.dwell = self.options["dwell"]
             job_obj.dwelltime = self.options["dwelltime"]
             job_obj.pp_excellon_name = pp_excellon_name
-            job_obj.toolchange_xy = "excellon"
+            job_obj.toolchange_xy_type = "excellon"
             job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
             job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])
 
@@ -3116,7 +3116,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
                 app_obj.progress.emit(40)
 
-                dia_cnc_dict['gcode'] = job_obj.generate_from_geometry_2(
+                res = job_obj.generate_from_geometry_2(
                     self, tooldia=tooldia_val, offset=tool_offset, tolerance=0.0005,
                     z_cut=z_cut, z_move=z_move,
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
@@ -3127,10 +3127,16 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     pp_geometry_name=pp_geometry_name,
                     tool_no=tool_cnt)
 
+                if res == 'fail':
+                    log.debug("FlatCAMGeometry.mtool_gen_cncjob() --> generate_from_geometry2() failed")
+                    return 'fail'
+                else:
+                    dia_cnc_dict['gcode'] = res
+
                 app_obj.progress.emit(50)
                 # tell gcode_parse from which point to start drawing the lines depending on what kind of
                 # object is the source of gcode
-                job_obj.toolchange_xy = "geometry"
+                job_obj.toolchange_xy_type = "geometry"
 
                 dia_cnc_dict['gcode_parsed'] = job_obj.gcode_parse()
 
@@ -3283,7 +3289,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 app_obj.progress.emit(40)
 
                 tool_solid_geometry = self.tools[current_uid]['solid_geometry']
-                dia_cnc_dict['gcode'] = job_obj.generate_from_multitool_geometry(
+                res = job_obj.generate_from_multitool_geometry(
                     tool_solid_geometry, tooldia=tooldia_val, offset=tool_offset,
                     tolerance=0.0005, z_cut=z_cut, z_move=z_move,
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
@@ -3294,6 +3300,12 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     pp_geometry_name=pp_geometry_name,
                     tool_no=tool_cnt)
 
+                if res == 'fail':
+                    log.debug("FlatCAMGeometry.mtool_gen_cncjob() --> generate_from_geometry2() failed")
+                    return 'fail'
+                else:
+                    dia_cnc_dict['gcode'] = res
+
                 dia_cnc_dict['gcode_parsed'] = job_obj.gcode_parse()
 
                 # TODO this serve for bounding box creation only; should be optimized
@@ -3301,7 +3313,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
                 # tell gcode_parse from which point to start drawing the lines depending on what kind of
                 # object is the source of gcode
-                job_obj.toolchange_xy = "geometry"
+                job_obj.toolchange_xy_type = "geometry"
 
                 app_obj.progress.emit(80)
 
@@ -3317,14 +3329,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             def job_thread(app_obj):
                 if self.solid_geometry:
                     with self.app.proc_container.new("Generating CNC Code"):
-                        app_obj.new_object("cncjob", outname, job_init_single_geometry)
-                        app_obj.inform.emit("[success]CNCjob created: %s" % outname)
-                        app_obj.progress.emit(100)
+                        if app_obj.new_object("cncjob", outname, job_init_single_geometry) != 'fail':
+                            app_obj.inform.emit("[success]CNCjob created: %s" % outname)
+                            app_obj.progress.emit(100)
                 else:
                     with self.app.proc_container.new("Generating CNC Code"):
-                        app_obj.new_object("cncjob", outname, job_init_multi_geometry)
-                        app_obj.inform.emit("[success]CNCjob created: %s" % outname)
-                        app_obj.progress.emit(100)
+                        if app_obj.new_object("cncjob", outname, job_init_multi_geometry) != 'fail':
+                            app_obj.inform.emit("[success]CNCjob created: %s" % outname)
+                            app_obj.progress.emit(100)
 
             # Create a promise with the name
             self.app.collection.promise(outname)
@@ -3433,7 +3445,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             app_obj.progress.emit(50)
             # tell gcode_parse from which point to start drawing the lines depending on what kind of object is the
             # source of gcode
-            job_obj.toolchange_xy = "geometry"
+            job_obj.toolchange_xy_type = "geometry"
             job_obj.gcode_parse()
 
             app_obj.progress.emit(80)

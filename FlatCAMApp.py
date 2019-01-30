@@ -2102,10 +2102,15 @@ class App(QtCore.QObject):
         try:
             return_value = initialize(obj, self)
         except Exception as e:
-            if str(e) == "Empty Geometry":
-                self.inform.emit("[error_notcl] Object (%s) failed because: %s" % (kind, str(e)))
-            else:
-                self.inform.emit("[error] Object (%s) failed because: %s" % (kind, str(e)))
+            msg = "[error_notcl] An internal error has ocurred. See shell.\n"
+            msg += "Object (%s) failed because: %s \n\n" % (kind, str(e))
+            msg += traceback.format_exc()
+            self.inform.emit(msg)
+
+            # if str(e) == "Empty Geometry":
+            #     self.inform.emit("[error_notcl] )
+            # else:
+            #     self.inform.emit("[error] Object (%s) failed because: %s" % (kind, str(e)))
             return "fail"
 
         t2 = time.time()

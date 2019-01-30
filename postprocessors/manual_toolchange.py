@@ -29,7 +29,10 @@ class manual_toolchange(FlatCAMPostProc):
 
         gcode += '(Z_Move: ' + str(p['z_move']) + units + ')\n'
         gcode += '(Z Toolchange: ' + str(p['toolchangez']) + units + ')\n'
-        gcode += '(X,Y Toolchange: ' + "%.4f, %.4f" % (coords_xy[0], coords_xy[1]) + units + ')\n'
+        if coords_xy is not None:
+            gcode += '(X,Y Toolchange: ' + "%.4f, %.4f" % (coords_xy[0], coords_xy[1]) + units + ')\n'
+        else:
+            gcode += '(X,Y Toolchange: ' + "0.0, 0.0" + units + ')\n'
         gcode += '(Z Start: ' + str(p['startz']) + units + ')\n'
         gcode += '(Z End: ' + str(p['endz']) + units + ')\n'
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
@@ -62,8 +65,13 @@ class manual_toolchange(FlatCAMPostProc):
     def toolchange_code(self, p):
         toolchangez = p.toolchangez
         toolchangexy = p.toolchange_xy
-        toolchangex = toolchangexy[0]
-        toolchangey = toolchangexy[1]
+
+        if toolchangexy is not None:
+            toolchangex = toolchangexy[0]
+            toolchangey = toolchangexy[1]
+        else:
+            toolchangex = 0.0
+            toolchangey = 0.0
 
         no_drills = 1
 
@@ -128,7 +136,10 @@ M0
     def end_code(self, p):
         coords_xy = p['toolchange_xy']
         gcode = ('G00 Z' + self.feedrate_format %(p.fr_decimals, p.endz) + "\n")
-        gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
+        if coords_xy is not None:
+            gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
+        else:
+            gcode += 'G00 X0 Y0' + "\n"
         return gcode
 
     def feedrate_code(self, p):

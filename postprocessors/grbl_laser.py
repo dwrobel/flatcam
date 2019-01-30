@@ -59,8 +59,11 @@ class grbl_laser(FlatCAMPostProc):
                ' F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate))
 
     def end_code(self, p):
+        coords_xy = p['toolchange_xy']
         gcode = ('G00 Z' + self.feedrate_format %(p.fr_decimals, p.endz) + "\n")
-        gcode += 'G00 X0Y0'
+
+        if coords_xy is not None:
+            gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
         return gcode
 
     def feedrate_code(self, p):

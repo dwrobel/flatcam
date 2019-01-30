@@ -14,6 +14,9 @@ CAD program, and create G-Code for Isolation routing.
 - added a space before Y coordinate in end_code() function in some of the postprocessor files
 - added in Calculators Tool an Electroplating Calculator.
 - remade the App Menu for Editors: now they will be showed only when the respective Editor is active and hidden when the Editor is closed.
+- added a traceback report in the TCL Shell for the errors that don't allow creation of an object; useful to trace exceptions/errors
+- in case that the Toolchange X,Y parameter in Selected (or in Preferences) are deleted then the app will still do the job using the current coordinates for toolchange
+- fixed an issue in camlib.CNCJob where tha variable self.toolchange_xy was used for 2 different purposes which created loss of information.
 
 29.01.2019
 

@@ -4393,6 +4393,7 @@ class CNCjob(Geometry):
         self.tooldia = tooldia
         self.toolchangez = toolchangez
         self.toolchange_xy = None
+        self.toolchange_xy_type = None
 
         self.endz = endz
         self.depthpercut = depthpercut
@@ -4534,7 +4535,19 @@ class CNCjob(Geometry):
             self.z_cut = drillz
 
         self.toolchangez = toolchangez
-        self.toolchange_xy = [float(eval(a)) for a in toolchangexy.split(",")]
+
+        try:
+            if toolchangexy == '':
+                self.toolchange_xy = None
+            else:
+                self.toolchange_xy = [float(eval(a)) for a in toolchangexy.split(",")]
+                if len(self.toolchange_xy) < 2:
+                    self.app.inform.emit("[error]The Toolchange X,Y field in Edit -> Preferences has to be "
+                                         "in the format (x, y) \nbut now there is only one value, not two. ")
+                    return 'fail'
+        except Exception as e:
+            log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> %s" % str(e))
+            pass
 
         self.startz = startz
         self.endz = endz
@@ -4583,8 +4596,8 @@ class CNCjob(Geometry):
         # Initialization
         gcode = self.doformat(p.start_code)
         gcode += self.doformat(p.feedrate_code)
-        gcode += self.doformat(p.lift_code, x=0, y=0)
-        gcode += self.doformat(p.startz_code, x=0, y=0)
+        gcode += self.doformat(p.lift_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+        gcode += self.doformat(p.startz_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
 
         # Distance callback
         class CreateDistanceCallback(object):
@@ -4618,8 +4631,8 @@ class CNCjob(Geometry):
                 locations.append((point.coords.xy[0][0], point.coords.xy[1][0]))
             return locations
 
-        oldx = 0
-        oldy = 0
+        oldx = self.toolchange_xy[0]
+        oldy = self.toolchange_xy[1]
         measured_distance = 0
 
         current_platform = platform.architecture()[0]
@@ -5067,7 +5080,19 @@ class CNCjob(Geometry):
         self.multidepth = multidepth
 
         self.toolchangez = toolchangez
-        self.toolchange_xy = [float(eval(a)) for a in toolchangexy.split(",")]
+
+        try:
+            if toolchangexy == '':
+                self.toolchange_xy = None
+            else:
+                self.toolchange_xy = [float(eval(a)) for a in toolchangexy.split(",")]
+                if len(self.toolchange_xy) < 2:
+                    self.app.inform.emit("[error]The Toolchange X,Y field in Edit -> Preferences has to be "
+                                         "in the format (x, y) \nbut now there is only one value, not two. ")
+                    return 'fail'
+        except Exception as e:
+            log.debug("camlib.CNCJob.generate_from_geometry_2() --> %s" % str(e))
+            pass
 
         self.pp_geometry_name = pp_geometry_name if pp_geometry_name else 'default'
 
@@ -5328,10 +5353,17 @@ class CNCjob(Geometry):
 
         # Current path: temporary storage until tool is
         # lifted or lowered.
-        if self.toolchange_xy == "excellon":
-            pos_xy = [float(eval(a)) for a in self.app.defaults["excellon_toolchangexy"].split(",")]
+        if self.toolchange_xy_type == "excellon":
+            if self.app.defaults["excellon_toolchangexy"] == '':
+                pos_xy = [0, 0]
+            else:
+                pos_xy = [float(eval(a)) for a in self.app.defaults["excellon_toolchangexy"].split(",")]
         else:
-            pos_xy = [float(eval(a)) for a in self.app.defaults["geometry_toolchangexy"].split(",")]
+            if self.app.defaults["geometry_toolchangexy"] == '':
+                pos_xy = [0, 0]
+            else:
+                pos_xy = [float(eval(a)) for a in self.app.defaults["geometry_toolchangexy"].split(",")]
+
         path = [pos_xy]
         # path = [(0, 0)]
 

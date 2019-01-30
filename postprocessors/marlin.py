@@ -9,6 +9,7 @@ class marlin(FlatCAMPostProc):
 
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
+        coords_xy = p['toolchange_xy']
         gcode = ''
 
         if str(p['options']['type']) == 'Geometry':
@@ -29,6 +30,12 @@ class marlin(FlatCAMPostProc):
 
         gcode += ';Z_Move: ' + str(p['z_move']) + units + '\n'
         gcode += ';Z Toolchange: ' + str(p['toolchangez']) + units + '\n'
+
+        if coords_xy is not None:
+            gcode += ';X,Y Toolchange: ' + "%.4f, %.4f" % (coords_xy[0], coords_xy[1]) + units + '\n'
+        else:
+            gcode += ';X,Y Toolchange: ' + "None" + units + '\n'
+
         gcode += ';Z Start: ' + str(p['startz']) + units + '\n'
         gcode += ';Z End: ' + str(p['endz']) + units + '\n'
         gcode += ';Steps per circle: ' + str(p['steps_per_circle']) + '\n'
@@ -104,7 +111,9 @@ M0 Change to Tool Dia = {toolC}
     def end_code(self, p):
         coords_xy = p['toolchange_xy']
         gcode = ('G0 Z' + self.feedrate_format %(p.fr_decimals, p.endz) + " " + self.feedrate_rapid_code(p) + "\n")
-        gcode += 'G0 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + " " + self.feedrate_rapid_code(p) + "\n"
+
+        if coords_xy is not None:
+            gcode += 'G0 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + " " + self.feedrate_rapid_code(p) + "\n"
 
         return gcode
 
