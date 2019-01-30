@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 30.01.2019
 
 - added a space before Y coordinate in end_code() function in some of the postprocessor files
+- added in Calculators Tool an Electroplating Calculator.
 
 29.01.2019
 
