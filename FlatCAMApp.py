@@ -1069,10 +1069,12 @@ class App(QtCore.QObject):
         self.ui.gridmenu_3.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("0.2"))
         self.ui.gridmenu_4.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("0.5"))
         self.ui.gridmenu_5.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("1.0"))
+
         self.ui.draw_line.triggered.connect(self.geo_editor.draw_tool_path)
         self.ui.draw_rect.triggered.connect(self.geo_editor.draw_tool_rectangle)
         self.ui.draw_cut.triggered.connect(self.geo_editor.cutpath)
         self.ui.draw_move.triggered.connect(self.geo_editor.on_move)
+
         self.ui.drill.triggered.connect(self.exc_editor.exc_add_drill)
         self.ui.drill_array.triggered.connect(self.exc_editor.exc_add_drill_array)
         self.ui.drill_copy.triggered.connect(self.exc_editor.exc_copy_drills)

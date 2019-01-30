@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - added a space before Y coordinate in end_code() function in some of the postprocessor files
 - added in Calculators Tool an Electroplating Calculator.
+- remade the App Menu for Editors: now they will be showed only when the respective Editor is active and hidden when the Editor is closed.
 
 29.01.2019
 

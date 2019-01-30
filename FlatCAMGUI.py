@@ -271,11 +271,26 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuview_toggle_workspace = self.menuview.addAction(QtGui.QIcon('share/workspace24.png'),
                                                                  "Toggle Workspace\tSHIFT+W")
 
+        ### Tool ###
+        # self.menutool = self.menu.addMenu('&Tool')
+        self.menutool = QtWidgets.QMenu('&Tool')
+        self.menutoolaction = self.menu.addMenu(self.menutool)
+        self.menutoolshell = self.menutool.addAction(QtGui.QIcon('share/shell16.png'), '&Command Line\tS')
+
+        ### Help ###
+        self.menuhelp = self.menu.addMenu('&Help')
+        self.menuhelp_about = self.menuhelp.addAction(QtGui.QIcon('share/tv16.png'), 'About FlatCAM')
+        self.menuhelp_home = self.menuhelp.addAction(QtGui.QIcon('share/home16.png'), 'Home')
+        self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), 'Manual\tF1')
+        self.menuhelp.addSeparator()
+        self.menuhelp_shortcut_list = self.menuhelp.addAction(QtGui.QIcon('share/shortcuts24.png'), 'Shortcuts List\t`')
+        self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/videohelp24.png'), 'See on YouTube\tF2')
+
 
         ### FlatCAM Editor menu ###
         # self.editor_menu = QtWidgets.QMenu("Editor")
         # self.menu.addMenu(self.editor_menu)
-        self.geo_editor_menu = QtWidgets.QMenu("Geo Editor")
+        self.geo_editor_menu = QtWidgets.QMenu(">Geo Editor<")
         self.menu.addMenu(self.geo_editor_menu)
 
         # self.select_menuitem = self.menu.addAction(QtGui.QIcon('share/pointer16.png'), "Select 'Esc'")
@@ -320,26 +335,31 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon('share/corner32.png'), "Toggle Corner Snap\tK"
         )
 
-        # self.exc_editor_menu = QtWidgets.QMenu("Excellon Editor")
-        # self.menu.addMenu(self.exc_editor_menu)
+        self.exc_editor_menu = QtWidgets.QMenu(">Excellon Editor<")
+        self.menu.addMenu(self.exc_editor_menu)
 
+        self.exc_add_array_drill_menuitem = self.exc_editor_menu.addAction(
+            QtGui.QIcon('share/rectangle32.png'), 'Add Drill Array\tA')
+        self.exc_add_drill_menuitem = self.exc_editor_menu.addAction(QtGui.QIcon('share/plus16.png'), 'Add Drill\tD')
+        self.exc_editor_menu.addSeparator()
+
+        self.exc_resize_drill_menuitem = self.exc_editor_menu.addAction(
+            QtGui.QIcon('share/resize16.png'), 'Resize Drill(S)\tR'
+        )
+        self.exc_copy_drill_menuitem = self.exc_editor_menu.addAction(QtGui.QIcon('share/copy32.png'), 'Copy\tC')
+        self.exc_delete_drill_menuitem = self.exc_editor_menu.addAction(
+            QtGui.QIcon('share/deleteshape32.png'), 'Delete\tDEL'
+        )
+        self.exc_editor_menu.addSeparator()
+
+        self.exc_move_drill_menuitem = self.exc_editor_menu.addAction(
+            QtGui.QIcon('share/move32.png'), 'Move Drill(s)\tM')
+
+        self.geo_editor_menu.menuAction().setVisible(False)
         self.geo_editor_menu.setDisabled(True)
-        # self.exc_editor_menu.setDisabled(True)
 
-        ### Tool ###
-        # self.menutool = self.menu.addMenu('&Tool')
-        self.menutool = QtWidgets.QMenu('&Tool')
-        self.menutoolaction = self.menu.addMenu(self.menutool)
-        self.menutoolshell = self.menutool.addAction(QtGui.QIcon('share/shell16.png'), '&Command Line\tS')
-
-        ### Help ###
-        self.menuhelp = self.menu.addMenu('&Help')
-        self.menuhelp_about = self.menuhelp.addAction(QtGui.QIcon('share/tv16.png'), 'About FlatCAM')
-        self.menuhelp_home = self.menuhelp.addAction(QtGui.QIcon('share/home16.png'), 'Home')
-        self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), 'Manual\tF1')
-        self.menuhelp.addSeparator()
-        self.menuhelp_shortcut_list = self.menuhelp.addAction(QtGui.QIcon('share/shortcuts24.png'), 'Shortcuts List\t`')
-        self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/videohelp24.png'), 'See on YouTube\tF2')
+        self.exc_editor_menu.menuAction().setVisible(False)
+        self.exc_editor_menu.setDisabled(True)
 
         ################################
         ### Project Tab Context menu ###

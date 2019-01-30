@@ -2052,6 +2052,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.corner_snap_btn.setEnabled(True)
 
         self.app.ui.geo_editor_menu.setDisabled(False)
+        self.app.ui.geo_editor_menu.menuAction().setVisible(True)
         # Tell the App that the editor is active
         self.editor_active = True
 
@@ -2071,6 +2072,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.app_cursor.enabled = False
 
         self.app.ui.geo_editor_menu.setDisabled(True)
+        self.app.ui.geo_editor_menu.menuAction().setVisible(False)
         # Tell the app that the editor is no longer active
         self.editor_active = False
 
@@ -3704,6 +3706,17 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.drill_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
 
+        self.app.ui.exc_add_array_drill_menuitem.triggered.connect(self.exc_add_drill_array)
+        self.app.ui.exc_add_drill_menuitem.triggered.connect(self.exc_add_drill)
+
+        self.app.ui.exc_resize_drill_menuitem.triggered.connect(self.exc_resize_drills)
+        self.app.ui.exc_copy_drill_menuitem.triggered.connect(self.exc_copy_drills)
+        self.app.ui.exc_delete_drill_menuitem.triggered.connect(self.on_delete_btn)
+
+        self.app.ui.exc_move_drill_menuitem.triggered.connect(self.exc_move_drills)
+
+
+        # Init GUI
         self.drill_array_size_entry.set_value(5)
         self.drill_pitch_entry.set_value(2.54)
         self.drill_angle_entry.set_value(12)
@@ -4174,6 +4187,10 @@ class FlatCAMExcEditor(QtCore.QObject):
         # self.app.app_cursor.enabled = True
         self.app.ui.snap_max_dist_entry.setDisabled(False)
         self.app.ui.corner_snap_btn.setEnabled(True)
+
+        self.app.ui.exc_editor_menu.setDisabled(False)
+        self.app.ui.exc_editor_menu.menuAction().setVisible(True)
+
         # Tell the App that the editor is active
         self.editor_active = True
 
@@ -4192,6 +4209,9 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # Tell the app that the editor is no longer active
         self.editor_active = False
+
+        self.app.ui.exc_editor_menu.setDisabled(True)
+        self.app.ui.exc_editor_menu.menuAction().setVisible(False)
 
         # Show original geometry
         if self.exc_obj:
@@ -5197,8 +5217,16 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.select_tool('add_array')
         return
 
+    def exc_resize_drills(self):
+        self.select_tool('resize')
+        return
+
     def exc_copy_drills(self):
         self.select_tool('copy')
+        return
+
+    def exc_move_drills(self):
+        self.select_tool('move')
         return
 
 def distance(pt1, pt2):
