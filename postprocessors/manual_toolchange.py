@@ -64,14 +64,15 @@ class manual_toolchange(FlatCAMPostProc):
 
     def toolchange_code(self, p):
         toolchangez = p.toolchangez
-        toolchangexy = p['toolchange_xy']
+        toolchangexy = p.toolchange_xy
+        gcode = ''
 
         if toolchangexy is not None:
             toolchangex = toolchangexy[0]
             toolchangey = toolchangexy[1]
-        else:
-            toolchangex = p.oldx
-            toolchangey = p.oldy
+        # else:
+        #     toolchangex = p.oldx
+        #     toolchangey = p.oldy
 
         no_drills = 1
 
@@ -87,10 +88,12 @@ class manual_toolchange(FlatCAMPostProc):
             for i in p['options']['Tools_in_use']:
                 if i[0] == p.tool:
                     no_drills = i[2]
-            return """G00 Z{toolchangez}
+
+            if toolchangexy is not None:
+                gcode =  """G00 Z{toolchangez}
 T{tool}
-M5
-G00 X{toolchangex} Y{toolchangey}    
+M5   
+G00 X{toolchangex} Y{toolchangey} 
 (MSG, Change to Tool Dia = {toolC}, Total drills for current tool = {t_drills})
 M0
 G01 Z0
@@ -103,8 +106,28 @@ M0
            tool=int(p.tool),
            t_drills=no_drills,
            toolC=toolC_formatted)
+
+            else:
+                gcode =  """G00 Z{toolchangez}
+T{tool}
+M5  
+(MSG, Change to Tool Dia = {toolC}, Total drills for current tool = {t_drills})
+M0
+G01 Z0
+M0
+G00 Z{toolchangez}
+M0
+""".format(
+           toolchangez=self.coordinate_format%(p.coords_decimals, toolchangez),
+           tool=int(p.tool),
+           t_drills=no_drills,
+           toolC=toolC_formatted)
+
+            return gcode
+
         else:
-            return """G00 Z{toolchangez}
+            if toolchangexy is not None:
+                gcode =  """G00 Z{toolchangez}
 T{tool}
 M5
 G00 X{toolchangex}Y{toolchangey}    
@@ -119,6 +142,21 @@ M0
            toolchangez=self.coordinate_format%(p.coords_decimals, toolchangez),
            tool=int(p.tool),
            toolC=toolC_formatted)
+            else:
+                                gcode =  """G00 Z{toolchangez}
+T{tool}
+M5  
+(MSG, Change to Tool Dia = {toolC})
+M0
+G01 Z0
+M0
+G00 Z{toolchangez}
+M0
+""".format(toolchangez=self.coordinate_format%(p.coords_decimals, toolchangez),
+           tool=int(p.tool),
+           toolC=toolC_formatted)
+
+            return gcode
 
     def up_to_zero_code(self, p):
         return 'G01 Z0'

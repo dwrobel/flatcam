@@ -55,6 +55,9 @@ class TclCommandCncjob(TclCommandSignaled):
             ('multidepth', 'Use or not multidepth cnccut. (True or False)'),
             ('depthperpass', 'Height of one layer for multidepth.'),
             ('extracut', 'Use or not an extra cnccut over the first point in path,in the job end (example: True)'),
+            ('toolchange', 'Enable tool changes (example: True).'),
+            ('toolchangez', 'Z distance for toolchange (example: 30.0).'),
+            ('toolchangexy', 'X, Y coordonates for toolchange in format (x, y) (example: (2.0, 3.1) ).'),
             ('endz', 'Height where the last move will park.'),
             ('outname', 'Name of the resulting Geometry object.'),
             ('ppname_g', 'Name of the Geometry postprocessor. No quotes, case sensitive')
@@ -95,6 +98,10 @@ class TclCommandCncjob(TclCommandSignaled):
         args["extracut"] = args["extracut"] if "extracut" in args else obj.options["extracut"]
         args["endz"]= args["endz"] if "endz" in args else obj.options["endz"]
         args["ppname_g"] = args["ppname_g"] if "ppname_g" in args else obj.options["ppname_g"]
+
+        args["toolchange"] = True if "toolchange" in args and args["toolchange"] == 1 else False
+        args["toolchangez"] = args["toolchangez"] if "toolchangez" in args else obj.options["toolchangez"]
+        args["toolchangexy"] = args["toolchangexy"] if "toolchangexy" in args else obj.options["toolchangexy"]
 
         del args['name']
 

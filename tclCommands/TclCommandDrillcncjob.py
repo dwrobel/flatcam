@@ -47,6 +47,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             ('spindlespeed', 'Speed of the spindle in rpm (example: 4000).'),
             ('toolchange', 'Enable tool changes (example: True).'),
             ('toolchangez', 'Z distance for toolchange (example: 30.0).'),
+            ('toolchangexy', 'X, Y coordonates for toolchange in format (x, y) (example: (2.0, 3.1) ).'),
             ('endz', 'Z distance at job end (example: 30.0).'),
             ('ppname_e', 'This is the Excellon postprocessor name: case_sensitive, no_quotes'),
             ('outname', 'Name of the resulting Geometry object.'),
@@ -93,13 +94,16 @@ class TclCommandDrillcncjob(TclCommandSignaled):
 
             toolchange = True if "toolchange" in args and args["toolchange"] == 1 else False
             toolchangez = args["toolchangez"] if "toolchangez" in args else obj.options["toolchangez"]
+            toolchangexy = args["toolchangexy"] if "toolchangexy" in args else obj.options["toolchangexy"]
 
             endz = args["endz"] if "endz" in args else obj.options["endz"]
 
             tools = args["tools"] if "tools" in args else 'all'
             opt_type = args["opt_type"] if "opt_type" in args else 'B'
 
-            job_obj.generate_from_excellon_by_tool(obj, tools, drillz=drillz, toolchangez=toolchangez, endz=endz,
+            job_obj.generate_from_excellon_by_tool(obj, tools, drillz=drillz, toolchangez=toolchangez,
+                                                   toolchangexy=toolchangexy,
+                                                   endz=endz,
                                                    toolchange=toolchange, excellon_optimization_type=opt_type)
             job_obj.gcode_parse()
             job_obj.create_geometry()

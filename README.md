@@ -20,6 +20,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed unit conversion functions in case the toolchange_xy parameter is None
 - more fixes in camlib.CNCJob regarding usage of toolchange (in case it is None)
 - fixed postprocessor files to work with toolchange_xy parameter value = None (no values in Edit - Preferences fields)
+- fixed Tcl commands CncJob and DrillCncJob to work with toolchange
 
 29.01.2019
 

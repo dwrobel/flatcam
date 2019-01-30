@@ -1678,6 +1678,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                                                    drillz=self.options['drillz'],
                                                    toolchange=self.options["toolchange"],
                                                    toolchangez=self.options["toolchangez"],
+                                                   toolchangexy=self.options["toolchangexy"],
                                                    startz=self.options["startz"],
                                                    endz=self.options["endz"],
                                                    excellon_optimization_type=self.options["optimization_type"])

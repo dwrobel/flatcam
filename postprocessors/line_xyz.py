@@ -80,8 +80,12 @@ class line_xyz(FlatCAMPostProc):
             toolchangex = toolchangexy[0]
             toolchangey = toolchangexy[1]
         else:
-            toolchangex = p.x
-            toolchangey = p.y
+            if str(p['options']['type']) == 'Excellon':
+                toolchangex = p.oldx
+                toolchangey = p.oldy
+            else:
+                toolchangex = p.x
+                toolchangey = p.y
 
         no_drills = 1
 

@@ -5167,12 +5167,15 @@ class CNCjob(Geometry):
         self.pp_geometry = self.app.postprocessors[self.pp_geometry_name]
         p = self.pp_geometry
 
+        self.oldx = 0.0
+        self.oldy = 0.0
+
         self.gcode = self.doformat(p.start_code)
 
         self.gcode += self.doformat(p.feedrate_code)        # sets the feed rate
 
-        self.gcode += self.doformat(p.lift_code, x=0, y=0)  # Move (up) to travel height
-        self.gcode += self.doformat(p.startz_code, x=0, y=0)
+        self.gcode += self.doformat(p.lift_code, x=self.oldx , y=self.oldy )  # Move (up) to travel height
+        self.gcode += self.doformat(p.startz_code, x=self.oldx , y=self.oldy )
 
         if toolchange:
             # if "line_xyz" in self.pp_geometry_name:

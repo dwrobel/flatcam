@@ -66,6 +66,13 @@ class marlin(FlatCAMPostProc):
 
     def toolchange_code(self, p):
         toolchangez = p.toolchangez
+        toolchangexy = p.toolchange_xy
+        gcode = ''
+
+        if toolchangexy is not None:
+            toolchangex = toolchangexy[0]
+            toolchangey = toolchangexy[1]
+
         no_drills = 1
 
         if int(p.tool) == 1 and p.startz is not None:
@@ -80,20 +87,57 @@ class marlin(FlatCAMPostProc):
             for i in p['options']['Tools_in_use']:
                 if i[0] == p.tool:
                     no_drills = i[2]
-            return """G0 Z{toolchangez}
+
+            if toolchangexy is not None:
+                gcode = """G0 Z{toolchangez}
+G0 X{toolchangex} Y{toolchangey}                
+T{tool}
 M5
-M0 Change to Tool Dia = {toolC}, Total drills for current tool = {t_drills}
-""".format(toolchangez=self.coordinate_format%(p.coords_decimals, toolchangez),
-           tool=int(p.tool),
-           t_drills=no_drills,
-           toolC=toolC_formatted)
+M6
+(MSG, Change to Tool Dia = {toolC}, Total drills for tool T{tool} = {t_drills})
+M0""".format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchangex),
+             toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
+             toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
+             tool=int(p.tool),
+             t_drills=no_drills,
+             toolC=toolC_formatted)
+            else:
+                gcode = """G0 Z{toolchangez}
+T{tool}
+M5
+M6
+(MSG, Change to Tool Dia = {toolC}, Total drills for tool T{tool} = {t_drills})
+M0""".format(toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
+             tool=int(p.tool),
+             t_drills=no_drills,
+             toolC=toolC_formatted)
+
+            return gcode
+
         else:
-            return """G0 Z{toolchangez}
+            if toolchangexy is not None:
+                gcode = """G0 Z{toolchangez}
+G0 X{toolchangex} Y{toolchangey}
+T{tool}
 M5
-M0 Change to Tool Dia = {toolC}
-""".format(toolchangez=self.coordinate_format%(p.coords_decimals, toolchangez),
-           tool=int(p.tool),
-           toolC=toolC_formatted)
+M6    
+(MSG, Change to Tool Dia = {toolC})
+M0""".format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchangex),
+             toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
+             toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
+             tool=int(p.tool),
+             toolC=toolC_formatted)
+            else:
+                gcode = """G0 Z{toolchangez}
+T{tool}
+M5
+M6    
+(MSG, Change to Tool Dia = {toolC})
+M0""".format(toolchangez=self.coordinate_format%(p.coords_decimals, toolchangez),
+             tool=int(p.tool),
+             toolC=toolC_formatted)
+
+            return gcode
 
     def up_to_zero_code(self, p):
         return 'G1 Z0' + " " + self.feedrate_code(p)
