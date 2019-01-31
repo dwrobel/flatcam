@@ -921,8 +921,8 @@ class App(QtCore.QObject):
 
         # start with GRID activated
         self.ui.grid_snap_btn.trigger()
-        self.ui.corner_snap_btn.setEnabled(False)
-        self.ui.snap_max_dist_entry.setEnabled(False)
+        self.ui.corner_snap_btn.setVisible(False)
+        self.ui.snap_magnet.setVisible(False)
         self.ui.g_editor_cmenu.setEnabled(False)
         self.ui.e_editor_cmenu.setEnabled(False)
 

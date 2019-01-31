@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - added a parameter ('Fast plunge' in Edit -> Preferences -> Geometry Options and Excellon Options) to control if the fast move to Z_move is done or not
 - added new function to toggle fullscreen status in Menu -> View -> Toggle Full Screen. Shortcut key: Alt+F10
 - added key shortcuts for Enable Plots, Disable Plots and Disable other plots functions (Alt+1, Alt+2, Alt+3)
+- hidden the snap magnet entry and snap magnet toggle from the main view; they are now active only in Editor Mode
 
 30.01.2019
 

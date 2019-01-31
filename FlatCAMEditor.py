@@ -1890,8 +1890,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app = app
         self.canvas = app.plotcanvas
 
-        self.app.ui.geo_edit_toolbar.setDisabled(disabled)
-        self.app.ui.snap_max_dist_entry.setDisabled(disabled)
+        self.app.ui.geo_edit_toolbar.setDisabled(True)
+        self.app.ui.snap_magnet.setVisible(False)
 
         self.app.ui.geo_add_circle_menuitem.triggered.connect(lambda: self.select_tool('circle'))
         self.app.ui.geo_add_arc_menuitem.triggered.connect(lambda: self.select_tool('arc'))
@@ -2048,8 +2048,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.shapes.enabled = True
         self.tool_shape.enabled = True
         self.app.app_cursor.enabled = True
-        self.app.ui.snap_max_dist_entry.setDisabled(False)
-        self.app.ui.corner_snap_btn.setEnabled(True)
+        self.app.ui.snap_magnet.setVisible(True)
+        self.app.ui.corner_snap_btn.setVisible(True)
 
         self.app.ui.geo_editor_menu.setDisabled(False)
         self.app.ui.geo_editor_menu.menuAction().setVisible(True)
@@ -2061,8 +2061,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.clear()
         self.app.ui.geo_edit_toolbar.setDisabled(True)
         self.app.ui.geo_edit_toolbar.setVisible(False)
-        self.app.ui.snap_max_dist_entry.setDisabled(True)
-        self.app.ui.corner_snap_btn.setEnabled(False)
+        self.app.ui.snap_magnet.setVisible(False)
+        self.app.ui.corner_snap_btn.setVisible(False)
         # never deactivate the snap toolbar - MS
         # self.app.ui.snap_toolbar.setDisabled(True)  # TODO: Combine and move into tool
 
@@ -4185,8 +4185,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.shapes.enabled = True
         self.tool_shape.enabled = True
         # self.app.app_cursor.enabled = True
-        self.app.ui.snap_max_dist_entry.setDisabled(False)
-        self.app.ui.corner_snap_btn.setEnabled(True)
+        self.app.ui.snap_magnet.setVisible(True)
+        self.app.ui.corner_snap_btn.setVisible(True)
 
         self.app.ui.exc_editor_menu.setDisabled(False)
         self.app.ui.exc_editor_menu.menuAction().setVisible(True)
@@ -4199,8 +4199,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.clear()
         self.app.ui.exc_edit_toolbar.setDisabled(True)
         self.app.ui.exc_edit_toolbar.setVisible(False)
-        self.app.ui.snap_max_dist_entry.setDisabled(True)
-        self.app.ui.corner_snap_btn.setEnabled(False)
+        self.app.ui.snap_magnet.setVisible(False)
+        self.app.ui.corner_snap_btn.setVisible(False)
 
         # Disable visuals
         self.shapes.enabled = False

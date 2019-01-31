@@ -501,10 +501,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.corner_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share/corner32.png'), 'Snap to corner')
 
-        self.snap_max_dist_entry = QtWidgets.QLineEdit()
+        self.snap_max_dist_entry = FCEntry()
         self.snap_max_dist_entry.setMaximumWidth(70)
         self.snap_max_dist_entry.setToolTip("Max. magnet distance")
-        self.snap_toolbar.addWidget(self.snap_max_dist_entry)
+        self.snap_magnet = self.snap_toolbar.addWidget(self.snap_max_dist_entry)
 
         self.grid_snap_btn.setCheckable(True)
         self.corner_snap_btn.setCheckable(True)
