@@ -65,6 +65,7 @@ class manual_toolchange(FlatCAMPostProc):
     def toolchange_code(self, p):
         toolchangez = p.toolchangez
         toolchangexy = p.toolchange_xy
+        f_plunge = p.f_plunge
         gcode = ''
 
         if toolchangexy is not None:
@@ -123,7 +124,8 @@ M0
            t_drills=no_drills,
            toolC=toolC_formatted)
 
-            gcode += 'G00 Z%.*f' % (p.coords_decimals, p.z_move)
+            if f_plunge is True:
+                gcode += '\nG00 Z%.*f' % (p.coords_decimals, p.z_move)
             return gcode
 
         else:
@@ -157,7 +159,8 @@ M0
            tool=int(p.tool),
            toolC=toolC_formatted)
 
-            gcode += 'G00 Z%.*f' % (p.coords_decimals, p.z_move)
+            if f_plunge is True:
+                gcode += '\nG00 Z%.*f' % (p.coords_decimals, p.z_move)
             return gcode
 
     def up_to_zero_code(self, p):

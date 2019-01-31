@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+31.01.2019
+
+- added a parameter ('Fast plunge' in Edit -> Preferences -> Geometry Options and Excellon Options) to control if the fast move to Z_move is done or not
+
 30.01.2019
 
 - added a space before Y coordinate in end_code() function in some of the postprocessor files

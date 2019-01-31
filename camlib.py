@@ -4415,6 +4415,9 @@ class CNCjob(Geometry):
         self.pp_excellon_name = pp_excellon_name
         self.pp_excellon = self.app.postprocessors[self.pp_excellon_name]
 
+        # Controls if the move from Z_Toolchange to Z_Move is done fast with G0 or normally with G1
+        self.f_plunge = None
+
         self.spindlespeed = spindlespeed
         self.dwell = dwell
         self.dwelltime = dwelltime
@@ -4595,9 +4598,10 @@ class CNCjob(Geometry):
 
         self.gcode = []
 
-        # Basic G-Code macros
         self.pp_excellon = self.app.postprocessors[self.pp_excellon_name]
         p = self.pp_excellon
+
+        self.f_plunge = self.app.defaults["excellon_f_plunge"]
 
         # Initialization
         gcode = self.doformat(p.start_code)
@@ -4931,6 +4935,7 @@ class CNCjob(Geometry):
             pass
 
         self.pp_geometry_name = pp_geometry_name if pp_geometry_name else 'default'
+        self.f_plunge = self.app.defaults["geometry_f_plunge"]
 
         if self.z_cut > 0:
             self.app.inform.emit("[warning] The Cut Z parameter has positive value. "
@@ -5124,6 +5129,7 @@ class CNCjob(Geometry):
             pass
 
         self.pp_geometry_name = pp_geometry_name if pp_geometry_name else 'default'
+        self.f_plunge = self.app.defaults["geometry_f_plunge"]
 
         if self.z_cut > 0:
             self.app.inform.emit("[warning] The Cut Z parameter has positive value. "

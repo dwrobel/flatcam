@@ -74,6 +74,7 @@ class line_xyz(FlatCAMPostProc):
     def toolchange_code(self, p):
         toolchangez = p.toolchangez
         toolchangexy = p.toolchange_xy
+        f_plunge = p.f_plunge
         gcode = ''
 
         if toolchangexy is not None:
@@ -101,7 +102,7 @@ class line_xyz(FlatCAMPostProc):
             for i in p['options']['Tools_in_use']:
                 if i[0] == p.tool:
                     no_drills = i[2]
-            return """G00 X{toolchangex} Y{toolchangey} Z{toolchangez}
+            gcode =  """G00 X{toolchangex} Y{toolchangey} Z{toolchangez}
 T{tool}
 M5
 M6
@@ -112,8 +113,15 @@ M0""".format(toolchangex=self.coordinate_format%(p.coords_decimals, toolchangex)
              tool=int(p.tool),
              t_drills=no_drills,
              toolC=toolC_formatted)
+
+            if f_plunge is True:
+                gcode += """\nG00 X{toolchangex} Y{toolchangey} Z{z_move}""".format(
+                    toolchangex=self.coordinate_format%(p.coords_decimals, toolchangex),
+                    toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
+                    z_move=self.coordinate_format % (p.coords_decimals, p.z_move))
+            return gcode
         else:
-            return """G00 X{toolchangex} Y{toolchangey} Z{toolchangez}
+            gcode =  """G00 X{toolchangex} Y{toolchangey} Z{toolchangez}
 T{tool}
 M5
 M6    
@@ -123,6 +131,13 @@ M0""".format(toolchangex=self.coordinate_format%(p.coords_decimals, toolchangex)
              toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
              tool=int(p.tool),
              toolC=toolC_formatted)
+
+            if f_plunge is True:
+                gcode += """\nG00 X{toolchangex} Y{toolchangey} Z{z_move}""".format(
+                    toolchangex=self.coordinate_format % (p.coords_decimals, toolchangex),
+                    toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
+                    z_move=self.coordinate_format % (p.coords_decimals, p.z_move))
+            return gcode
 
     def up_to_zero_code(self, p):
         g = 'G01 ' + 'X' + self.coordinate_format % (p.coords_decimals, p.x) + \
