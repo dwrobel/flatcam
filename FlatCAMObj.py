@@ -1638,6 +1638,11 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.app.inform.emit("[error_notcl]Please select one or more tools from the list and try again.")
             return
 
+        xmin = self.options['xmin']
+        ymin = self.options['ymin']
+        xmax = self.options['xmax']
+        ymax = self.options['ymax']
+
         job_name = self.options["name"] + "_cnc"
         pp_excellon_name = self.options["ppname_e"]
 
@@ -1669,6 +1674,11 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.toolchange_xy_type = "excellon"
             job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
             job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])
+
+            job_obj.options['xmin'] = xmin
+            job_obj.options['ymin'] = ymin
+            job_obj.options['xmax'] = xmax
+            job_obj.options['ymax'] = ymax
 
             # There could be more than one drill size...
             # job_obj.tooldia =   # TODO: duplicate variable!
@@ -2952,7 +2962,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         self.app.report_usage("geometry_on_generatecnc_button")
         self.read_form()
-
         # test to see if we have tools available in the tool table
         if self.ui.geo_tools_table.selectedItems():
             for x in self.ui.geo_tools_table.selectedItems():
@@ -2996,6 +3005,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         segx = segx if segx is not None else float(self.app.defaults['geometry_segx'])
         segy = segy if segy is not None else float(self.app.defaults['geometry_segy'])
+
+        xmin = self.options['xmin']
+        ymin = self.options['ymin']
+        xmax = self.options['xmax']
+        ymax = self.options['ymax']
 
         # Object initialization function for app.new_object()
         # RUNNING ON SEPARATE THREAD!
@@ -3125,6 +3139,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 job_obj.options["tooldia"] = tooldia_val
                 job_obj.options['type'] = 'Geometry'
                 job_obj.options['tool_dia'] = tooldia_val
+
+                job_obj.options['xmin'] = xmin
+                job_obj.options['ymin'] = ymin
+                job_obj.options['xmax'] = xmax
+                job_obj.options['ymax'] = ymax
 
                 app_obj.progress.emit(40)
 
@@ -3390,6 +3409,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :param ppname_g Name of the postprocessor
         :return: None
         """
+
         tooldia = tooldia if tooldia else self.options["cnctooldia"]
         outname = outname if outname is not None else self.options["name"]
 
@@ -4045,7 +4065,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
         self.app.gcode_edited = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
-
+        print(self.app.gcode_edited)
         # first clear previous text in text editor (if any)
         self.app.ui.code_editor.clear()
 

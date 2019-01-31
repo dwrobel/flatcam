@@ -22,7 +22,13 @@ class grbl_laser(FlatCAMPostProc):
             gcode += '(Postprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n'
         else:
             gcode += '(Postprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n'
-        gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
+        gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n" + '\n'
+
+        gcode += '(X min: ' + '%.*f' % (p.coords_decimals, p['options']['xmin']) + units + ')\n'
+        gcode += '(Y min: ' + '%.*f' % (p.coords_decimals, p['options']['ymin']) + units + ')\n'
+        gcode += '(X max: ' + '%.*f' % (p.coords_decimals, p['options']['xmax']) + units + ')\n'
+        gcode += '(Y max: ' + '%.*f' % (p.coords_decimals, p['options']['ymax']) + units + ')\n\n'
+
         gcode += 'G90\n'
         gcode += 'G94\n'
         gcode += 'G17\n'

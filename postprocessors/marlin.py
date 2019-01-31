@@ -43,7 +43,12 @@ class marlin(FlatCAMPostProc):
         if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
             gcode += ';Postprocessor Excellon: ' + str(p['pp_excellon_name']) + '\n'
         else:
-            gcode += ';Postprocessor Geometry: ' + str(p['pp_geometry_name']) + '\n'
+            gcode += ';Postprocessor Geometry: ' + str(p['pp_geometry_name']) + '\n' + '\n'
+
+        gcode += ';X min: ' + '%.*f' % (p.coords_decimals, p['options']['xmin']) + units + '\n'
+        gcode += ';Y min: ' + '%.*f' % (p.coords_decimals, p['options']['ymin']) + units + '\n'
+        gcode += ';X max: ' + '%.*f' % (p.coords_decimals, p['options']['xmax']) + units + '\n'
+        gcode += ';Y max: ' + '%.*f' % (p.coords_decimals, p['options']['ymax']) + units + '\n\n'
 
         gcode += ';Spindle Speed: ' + str(p['spindlespeed']) + ' RPM' + '\n' + '\n'
 
