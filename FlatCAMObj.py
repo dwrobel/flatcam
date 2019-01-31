@@ -9,7 +9,7 @@
 from io import StringIO
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import Qt
-from copy import copy, deepcopy
+import copy
 import inspect  # TODO: For debugging only.
 from shapely.geometry.base import JOIN_STYLE
 from datetime import datetime
@@ -165,7 +165,7 @@ class FlatCAMObj(QtCore.QObject):
         self.muted_ui = False
 
     def on_name_activate(self):
-        old_name = copy(self.options["name"])
+        old_name = copy.copy(self.options["name"])
         new_name = self.ui.name_entry.get_value()
 
         # update the SHELL auto-completer model data
@@ -1870,7 +1870,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 if not isinstance(geo, FlatCAMGerber) and not isinstance(geo, FlatCAMExcellon):
                     for tool_uid in geo.tools:
                         max_uid += 1
-                        geo_final.tools[max_uid] = dict(geo.tools[tool_uid])
+                        geo_final.tools[max_uid] = copy.deepcopy(geo.tools[tool_uid])
 
     @staticmethod
     def get_pts(o):
@@ -2208,7 +2208,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     'type': 'Rough',
                     'tool_type': 'C1',
                     'data': self.default_data,
-                    'solid_geometry': []
+                    'solid_geometry': self.solid_geometry
                 }
             })
         else:
@@ -2220,12 +2220,12 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             temp_tools = {}
             new_key = 0.0
             for tooluid_key in self.tools:
-                val =  dict(self.tools[tooluid_key])
-                new_key = deepcopy(int(tooluid_key))
+                val =  copy.deepcopy(self.tools[tooluid_key])
+                new_key = copy.deepcopy(int(tooluid_key))
                 temp_tools[new_key] = val
 
             self.tools.clear()
-            self.tools = dict(temp_tools)
+            self.tools = copy.deepcopy(temp_tools)
 
         self.ui.tool_offset_entry.hide()
         self.ui.tool_offset_lbl.hide()
@@ -2435,8 +2435,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     'offset_value': 0.0,
                     'type': 'Rough',
                     'tool_type': 'C1',
-                    'data': dict(self.default_data),
-                    'solid_geometry': []
+                    'data': copy.deepcopy(self.default_data),
+                    'solid_geometry': self.solid_geometry
                 }
             })
         else:
@@ -2448,6 +2448,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             last_tool_type = self.tools[max_uid]['tool_type']
             last_solid_geometry = self.tools[max_uid]['solid_geometry']
 
+            # if previous geometry was empty (it may happen for the first tool added)
+            # then copy the object.solid_geometry
+            if not last_solid_geometry:
+                last_solid_geometry = self.solid_geometry
+
             self.tools.update({
                 self.tooluid: {
                     'tooldia': tooldia,
@@ -2455,8 +2460,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     'offset_value': last_offset_value,
                     'type': last_type,
                     'tool_type': last_tool_type,
-                    'data': dict(last_data),
-                    'solid_geometry': deepcopy(last_solid_geometry)
+                    'data': copy.deepcopy(last_data),
+                    'solid_geometry': copy.deepcopy(last_solid_geometry)
                 }
             })
             # print("CURRENT", self.tools[-1])
@@ -2497,7 +2502,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         tooluid_copy = int(self.ui.geo_tools_table.item(current_row.row(), 5).text())
                         self.set_tool_offset_visibility(current_row.row())
                         max_uid += 1
-                        self.tools[int(max_uid)] = dict(self.tools[tooluid_copy])
+                        self.tools[int(max_uid)] = copy.deepcopy(self.tools[tooluid_copy])
                     except AttributeError:
                         self.app.inform.emit("[warning_notcl]Failed. Select a tool to copy.")
                         self.build_ui()
@@ -2513,10 +2518,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             # we copy all tools in geo_tools_table
             try:
-                temp_tools = dict(self.tools)
+                temp_tools = copy.deepcopy(self.tools)
                 max_uid += 1
                 for tooluid in temp_tools:
-                    self.tools[int(max_uid)] = dict(temp_tools[tooluid])
+                    self.tools[int(max_uid)] = copy.deepcopy(temp_tools[tooluid])
                 temp_tools.clear()
             except Exception as e:
                 log.debug("on_tool_copy() --> " + str(e))
@@ -2570,11 +2575,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         tooluid_del = int(self.ui.geo_tools_table.item(current_row.row(), 5).text())
                         self.set_tool_offset_visibility(current_row.row())
 
-                        temp_tools = dict(self.tools)
+                        temp_tools = copy.deepcopy(self.tools)
                         for tooluid_key in self.tools:
                             if int(tooluid_key) == tooluid_del:
                                 temp_tools.pop(tooluid_del, None)
-                        self.tools = dict(temp_tools)
+                        self.tools = copy.deepcopy(temp_tools)
                         temp_tools.clear()
                     except AttributeError:
                         self.app.inform.emit("[warning_notcl]Failed. Select a tool to delete.")
@@ -2840,19 +2845,19 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                             # updated from self.app.defaults
                             if data_key not in self.form_fields:
                                 temp_data[data_key] = value[data_key]
-                        temp_dia[key] = dict(temp_data)
+                        temp_dia[key] = copy.deepcopy(temp_data)
                         temp_data.clear()
 
                     if key == 'solid_geometry':
-                        temp_dia[key] = deepcopy(self.tools[tooluid_key]['solid_geometry'])
+                        temp_dia[key] = copy.deepcopy(self.tools[tooluid_key]['solid_geometry'])
 
-                    temp_tools[tooluid_key] = dict(temp_dia)
+                    temp_tools[tooluid_key] = copy.deepcopy(temp_dia)
 
             else:
-                temp_tools[tooluid_key] = dict(tooluid_value)
+                temp_tools[tooluid_key] = copy.deepcopy(tooluid_value)
 
         self.tools.clear()
-        self.tools = dict(temp_tools)
+        self.tools = copy.deepcopy(temp_tools)
         temp_tools.clear()
         self.ui_connect()
 
@@ -2957,7 +2962,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 for tooluid_key, tooluid_value in self.tools.items():
                     if int(tooluid_key) == tooluid:
                         self.sel_tools.update({
-                            tooluid: dict(tooluid_value)
+                            tooluid: copy.deepcopy(tooluid_value)
                         })
             self.mtool_gen_cncjob()
 
@@ -3084,7 +3089,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                             if data_key == "dwelltime":
                                 dwelltime = data_value
 
-                        datadict = dict(diadict_value)
+                        datadict = copy.deepcopy(diadict_value)
                         dia_cnc_dict.update({
                             diadict_key: datadict
                         })
@@ -3153,7 +3158,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 app_obj.progress.emit(80)
 
                 job_obj.cnc_tools.update({
-                    tooluid_key: dict(dia_cnc_dict)
+                    tooluid_key: copy.deepcopy(dia_cnc_dict)
                 })
                 dia_cnc_dict.clear()
 
@@ -3256,7 +3261,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                             if data_key == "dwelltime":
                                 dwelltime = data_value
 
-                        datadict = dict(diadict_value)
+                        datadict = copy.deepcopy(diadict_value)
                         dia_cnc_dict.update({
                             diadict_key: datadict
                         })
@@ -3325,7 +3330,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 app_obj.progress.emit(80)
 
                 job_obj.cnc_tools.update({
-                    tooluid_key: dict(dia_cnc_dict)
+                    tooluid_key: copy.deepcopy(dia_cnc_dict)
                 })
                 dia_cnc_dict.clear()
 
@@ -3584,9 +3589,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.options['feedrate_rapid'] *= factor
         self.options['endz'] *= factor
         # self.options['cnctooldia'] *= factor
-        self.options['painttooldia'] *= factor
-        self.options['paintmargin'] *= factor
-        self.options['paintoverlap'] *= factor
+        # self.options['painttooldia'] *= factor
+        # self.options['paintmargin'] *= factor
+        # self.options['paintoverlap'] *= factor
 
         self.options["toolchangez"] *= factor
 
@@ -3642,17 +3647,17 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         # copy the other dict entries that are not convertible
                         if data_key not in param_list:
                             data_copy[data_key] = data_value
-                    tool_dia_copy[dia_key] = dict(data_copy)
+                    tool_dia_copy[dia_key] = copy.deepcopy(data_copy)
                     data_copy.clear()
 
             temp_tools_dict.update({
-                tooluid_key: dict(tool_dia_copy)
+                tooluid_key: copy.deepcopy(tool_dia_copy)
             })
             tool_dia_copy.clear()
 
 
         self.tools.clear()
-        self.tools = dict(temp_tools_dict)
+        self.tools = copy.deepcopy(temp_tools_dict)
 
         # if there is a value in the new tool field then convert that one too
         tooldia = self.ui.addtool_entry.get_value()
@@ -3817,11 +3822,22 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # (like the one in the TCL Command), False
         self.multitool = False
 
-        # used for parsing the GCode lines to adjust the offset when the GCode was offseted
-        offsetx_re_string = r'(?=.*(X[-\+]?\d*\.\d*))'
-        self.g_offsetx_re = re.compile(offsetx_re_string)
-        offsety_re_string = r'(?=.*(Y[-\+]?\d*\.\d*))'
-        self.g_offsety_re = re.compile(offsety_re_string)
+        # used for parsing the GCode lines to adjust the GCode when the GCode is offseted or scaled
+        gcodex_re_string = r'(?=.*(X[-\+]?\d*\.\d*))'
+        self.g_x_re = re.compile(gcodex_re_string)
+        gcodey_re_string = r'(?=.*(Y[-\+]?\d*\.\d*))'
+        self.g_y_re = re.compile(gcodey_re_string)
+        gcodez_re_string = r'(?=.*(Z[-\+]?\d*\.\d*))'
+        self.g_z_re = re.compile(gcodez_re_string)
+
+        gcodef_re_string = r'(?=.*(F[-\+]?\d*\.\d*))'
+        self.g_f_re = re.compile(gcodef_re_string)
+        gcodet_re_string = r'(?=.*(\=\s*[-\+]?\d*\.\d*))'
+        self.g_t_re = re.compile(gcodet_re_string)
+
+        gcodenr_re_string = r'([+-]?\d*\.\d*)'
+        self.g_nr_re = re.compile(gcodenr_re_string)
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -4271,5 +4287,64 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         factor = CNCjob.convert_units(self, units)
         FlatCAMApp.App.log.debug("FlatCAMCNCjob.convert_units()")
         self.options["tooldia"] *= factor
+
+        param_list = ['cutz', 'depthperpass', 'travelz', 'feedrate', 'feedrate_z', 'feedrate_rapid',
+                      'endz', 'toolchangez']
+
+        temp_tools_dict = {}
+        tool_dia_copy = {}
+        data_copy = {}
+
+        for tooluid_key, tooluid_value in self.cnc_tools.items():
+            for dia_key, dia_value in tooluid_value.items():
+                if dia_key == 'tooldia':
+                    dia_value *= factor
+                    dia_value = float('%.4f' % dia_value)
+                    tool_dia_copy[dia_key] = dia_value
+                if dia_key == 'offset':
+                    tool_dia_copy[dia_key] = dia_value
+                if dia_key == 'offset_value':
+                    dia_value *= factor
+                    tool_dia_copy[dia_key] = dia_value
+
+                if dia_key == 'type':
+                    tool_dia_copy[dia_key] = dia_value
+                if dia_key == 'tool_type':
+                    tool_dia_copy[dia_key] = dia_value
+                if dia_key == 'data':
+                    for data_key, data_value in dia_value.items():
+                        # convert the form fields that are convertible
+                        for param in param_list:
+                            if data_key == param and data_value is not None:
+                                data_copy[data_key] = data_value * factor
+                        # copy the other dict entries that are not convertible
+                        if data_key not in param_list:
+                            data_copy[data_key] = data_value
+                    tool_dia_copy[dia_key] = copy.deepcopy(data_copy)
+                    data_copy.clear()
+
+                if dia_key == 'gcode':
+                    tool_dia_copy[dia_key] = dia_value
+                if dia_key == 'gcode_parsed':
+                    tool_dia_copy[dia_key] = dia_value
+                if dia_key == 'solid_geometry':
+                    tool_dia_copy[dia_key] = dia_value
+
+                # if dia_key == 'solid_geometry':
+                #     tool_dia_copy[dia_key] = affinity.scale(dia_value, xfact=factor, origin=(0, 0))
+                # if dia_key == 'gcode_parsed':
+                #     for g in dia_value:
+                #         g['geom'] = affinity.scale(g['geom'], factor, factor, origin=(0, 0))
+                #
+                #     tool_dia_copy['gcode_parsed'] = copy.deepcopy(dia_value)
+                #     tool_dia_copy['solid_geometry'] = cascaded_union([geo['geom'] for geo in dia_value])
+
+            temp_tools_dict.update({
+                tooluid_key: copy.deepcopy(tool_dia_copy)
+            })
+            tool_dia_copy.clear()
+
+        self.cnc_tools.clear()
+        self.cnc_tools = copy.deepcopy(temp_tools_dict)
 
 # end of file

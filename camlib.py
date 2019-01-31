@@ -5869,6 +5869,7 @@ class CNCjob(Geometry):
             else:
                 # it's a Shapely object, return it's bounds
                 return obj.bounds
+
         if self.multitool is False:
             log.debug("CNCJob->bounds()")
             if self.solid_geometry is None:
@@ -5877,21 +5878,30 @@ class CNCjob(Geometry):
 
             bounds_coords = bounds_rec(self.solid_geometry)
         else:
+
             for k, v in self.cnc_tools.items():
                 minx = Inf
                 miny = Inf
                 maxx = -Inf
                 maxy = -Inf
-
-                for k in v['solid_geometry']:
-                    minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                try:
+                    for k in v['solid_geometry']:
+                        minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                        minx = min(minx, minx_)
+                        miny = min(miny, miny_)
+                        maxx = max(maxx, maxx_)
+                        maxy = max(maxy, maxy_)
+                except TypeError:
+                    minx_, miny_, maxx_, maxy_ = bounds_rec(v['solid_geometry'])
                     minx = min(minx, minx_)
                     miny = min(miny, miny_)
                     maxx = max(maxx, maxx_)
                     maxy = max(maxy, maxy_)
+
             bounds_coords = minx, miny, maxx, maxy
         return bounds_coords
 
+    # TODO This function should be replaced at some point with a "real" function. Until then it's an ugly hack ...
     def scale(self, xfactor, yfactor=None, point=None):
         """
         Scales all the geometry on the XY plane in the object by the
@@ -5915,8 +5925,124 @@ class CNCjob(Geometry):
         else:
             px, py = point
 
-        for g in self.gcode_parsed:
-            g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
+        def scale_g(g):
+            """
+
+            :param g: 'g' parameter it's a gcode string
+            :return:  scaled gcode string
+            """
+
+            temp_gcode = ''
+            header_start = False
+            header_stop = False
+            units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
+
+            lines = StringIO(g)
+            for line in lines:
+
+                # this changes the GCODE header ---- UGLY HACK
+                if "TOOL DIAMETER" in line or "Feedrate:" in line:
+                    header_start = True
+
+                if "G20" in line or "G21" in line:
+                    header_start = False
+                    header_stop = True
+
+                if header_start is True:
+                    header_stop = False
+                    if "in" in line:
+                        if units == 'MM':
+                            line = line.replace("in", "mm")
+                    if "mm" in line:
+                        if units == 'IN':
+                            line = line.replace("mm", "in")
+
+                    # find any number in header and convert it
+                    match_nr = self.g_nr_re.search(line)
+                    if match_nr:
+                        new_nr = float(match_nr.group()) * xfactor
+                        # replace the updated string
+                        line = line.replace(match_nr.group(),
+                                            ('%.*f' % (self.app.defaults["cncjob_coords_decimals"], new_nr))
+                        )
+
+                # this scales all the X and Y and Z and F values and also the Tool Dia in the toolchange message
+                if header_stop is True:
+                    if "G20" in line:
+                        if units == 'MM':
+                            line = line.replace("G20", "G21")
+                    if "G21" in line:
+                        if units == 'IN':
+                            line = line.replace("G21", "G20")
+
+                    # find the X group
+                    match_x = self.g_x_re.search(line)
+                    if match_x:
+                        if match_x.group(1) is not None:
+                            new_x = float(match_x.group(1)[1:]) * xfactor
+                            # replace the updated string
+                            line = line.replace(
+                                match_x.group(1),
+                                'X%.*f' % (self.app.defaults["cncjob_coords_decimals"], new_x)
+                            )
+                    # find the Y group
+                    match_y = self.g_y_re.search(line)
+                    if match_y:
+                        if match_y.group(1) is not None:
+                            new_y = float(match_y.group(1)[1:]) * yfactor
+                            line = line.replace(
+                                match_y.group(1),
+                                'Y%.*f' % (self.app.defaults["cncjob_coords_decimals"], new_y)
+                            )
+                    # find the Z group
+                    match_z = self.g_z_re.search(line)
+                    if match_z:
+                        if match_z.group(1) is not None:
+                            new_z = float(match_z.group(1)[1:]) * xfactor
+                            line = line.replace(
+                                match_z.group(1),
+                                'Z%.*f' % (self.app.defaults["cncjob_coords_decimals"], new_z)
+                            )
+
+                    # find the F group
+                    match_f = self.g_f_re.search(line)
+                    if match_f:
+                        if match_f.group(1) is not None:
+                            new_f = float(match_f.group(1)[1:]) * xfactor
+                            line = line.replace(
+                                match_f.group(1),
+                                'F%.*f' % (self.app.defaults["cncjob_fr_decimals"], new_f)
+                            )
+                    # find the T group (tool dia on toolchange)
+                    match_t = self.g_t_re.search(line)
+                    if match_t:
+                        if match_t.group(1) is not None:
+                            new_t = float(match_t.group(1)[1:]) * xfactor
+                            line = line.replace(
+                                match_t.group(1),
+                                '= %.*f' % (self.app.defaults["cncjob_coords_decimals"], new_t)
+                            )
+
+                temp_gcode += line
+            lines.close()
+            header_stop = False
+            return temp_gcode
+
+        if self.multitool is False:
+            # offset Gcode
+            self.gcode = scale_g(self.gcode)
+            # offset geometry
+            for g in self.gcode_parsed:
+                g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
+            self.create_geometry()
+        else:
+            for k, v in self.cnc_tools.items():
+                # scale Gcode
+                v['gcode'] = scale_g(v['gcode'])
+                # scale gcode_parsed
+                for g in v['gcode_parsed']:
+                    g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
+                v['solid_geometry'] = cascaded_union([geo['geom'] for geo in v['gcode_parsed']])
 
         self.create_geometry()
 
@@ -5946,7 +6072,7 @@ class CNCjob(Geometry):
             lines = StringIO(g)
             for line in lines:
                 # find the X group
-                match_x = self.g_offsetx_re.search(line)
+                match_x = self.g_x_re.search(line)
                 if match_x:
                     if match_x.group(1) is not None:
                         # get the coordinate and add X offset
@@ -5956,7 +6082,7 @@ class CNCjob(Geometry):
                             match_x.group(1),
                             'X%.*f' % (self.app.defaults["cncjob_coords_decimals"], new_x)
                         )
-                match_y = self.g_offsety_re.search(line)
+                match_y = self.g_y_re.search(line)
                 if match_y:
                     if match_y.group(1) is not None:
                         new_y = float(match_y.group(1)[1:]) + dy

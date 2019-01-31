@@ -2652,9 +2652,9 @@ class App(QtCore.QObject):
                       'excellon_travelz', 'excellon_feedrate', 'excellon_feedrate_rapid', 'excellon_toolchangez',
                       'excellon_tooldia', 'excellon_endz', 'cncjob_tooldia',
                       'geometry_cutz', 'geometry_travelz', 'geometry_feedrate', 'geometry_feedrate_rapid',
-                      'geometry_cnctooldia', 'geometry_painttooldia', 'geometry_paintoverlap', 'geometry_toolchangexy',
+                      'geometry_cnctooldia', 'tools_painttooldia', 'tools_paintoverlap', 'geometry_toolchangexy',
                       'geometry_toolchangez',
-                      'geometry_paintmargin', 'geometry_endz', 'geometry_depthperpass', 'global_gridx', 'global_gridy']
+                      'tools_paintmargin', 'geometry_endz', 'geometry_depthperpass', 'global_gridx', 'global_gridy']
 
         def scale_options(sfactor):
             for dim in dimensions:
