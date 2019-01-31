@@ -112,6 +112,7 @@ M0""".format(toolchangez=self.coordinate_format % (p.coords_decimals, toolchange
              t_drills=no_drills,
              toolC=toolC_formatted)
 
+            gcode += 'G0 Z%.*f' % (p.coords_decimals, p.zmove)
             return gcode
 
         else:
@@ -137,6 +138,7 @@ M0""".format(toolchangez=self.coordinate_format%(p.coords_decimals, toolchangez)
              tool=int(p.tool),
              toolC=toolC_formatted)
 
+            gcode += 'G0 Z%.*f' % (p.coords_decimals, p.zmove)
             return gcode
 
     def up_to_zero_code(self, p):

@@ -21,6 +21,7 @@ CAD program, and create G-Code for Isolation routing.
 - more fixes in camlib.CNCJob regarding usage of toolchange (in case it is None)
 - fixed postprocessor files to work with toolchange_xy parameter value = None (no values in Edit - Preferences fields)
 - fixed Tcl commands CncJob and DrillCncJob to work with toolchange
+- added to the postprocessor files the command after toolchange to go with G00 (fastest) to "Z Move" value of Z pozition.
 
 29.01.2019
 

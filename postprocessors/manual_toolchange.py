@@ -123,6 +123,7 @@ M0
            t_drills=no_drills,
            toolC=toolC_formatted)
 
+            gcode += 'G00 Z%.*f' % (p.coords_decimals, p.zmove)
             return gcode
 
         else:
@@ -143,7 +144,7 @@ M0
            tool=int(p.tool),
            toolC=toolC_formatted)
             else:
-                                gcode =  """G00 Z{toolchangez}
+                gcode =  """G00 Z{toolchangez}
 T{tool}
 M5  
 (MSG, Change to Tool Dia = {toolC})
@@ -156,6 +157,7 @@ M0
            tool=int(p.tool),
            toolC=toolC_formatted)
 
+            gcode += 'G00 Z%.*f' % (p.coords_decimals, p.zmove)
             return gcode
 
     def up_to_zero_code(self, p):
