@@ -254,16 +254,20 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### View ###
         self.menuview = self.menu.addMenu('&View')
-        self.menuviewenable = self.menuview.addAction(QtGui.QIcon('share/replot16.png'), 'Enable all plots')
+        self.menuviewenable = self.menuview.addAction(QtGui.QIcon('share/replot16.png'), 'Enable all plots\tALT+1')
         self.menuviewdisableall = self.menuview.addAction(QtGui.QIcon('share/clear_plot16.png'),
-                                                          'Disable all plots')
+                                                          'Disable all plots\tALT+2')
         self.menuviewdisableother = self.menuview.addAction(QtGui.QIcon('share/clear_plot16.png'),
-                                                            'Disable non-selected')
+                                                            'Disable non-selected\tALT+3')
         # Separator
         self.menuview.addSeparator()
         self.menuview_zoom_fit = self.menuview.addAction(QtGui.QIcon('share/zoom_fit32.png'), "&Zoom Fit\t1")
         self.menuview_zoom_in = self.menuview.addAction(QtGui.QIcon('share/zoom_in32.png'), "&Zoom In\t2")
         self.menuview_zoom_out = self.menuview.addAction(QtGui.QIcon('share/zoom_out32.png'), "&Zoom Out\t3")
+
+        self.menuview.addSeparator()
+        self.menuview_toggle_fscreen = self.menuview.addAction(
+            QtGui.QIcon('share/fscreen32.png'), "&Toggle FullScreen\tALT+F10")
 
         self.menuview.addSeparator()
         self.menuview_toggle_grid = self.menuview.addAction(QtGui.QIcon('share/grid32.png'), "&Toggle Grid\tG")
@@ -1801,7 +1805,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.optimization_time_label.setToolTip(
             "When OR-Tools Metaheuristic (MH) is enabled there is a\n"
             "maximum threshold for how much time is spent doing the\n"
-            "path optimization. This max duration is set here."
+            "path optimization. This max duration is set here.\n"
+            "In seconds."
 
         )
 
@@ -1976,7 +1981,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         fplungelabel.setToolTip(
             "By checking this, the vertical move from\n"
             "Z_Toolchange to Z_move is done with G0,\n"
-            "meaning the fastest speed available."
+            "meaning the fastest speed available.\n"
+            "WARNING: the move is done at Toolchange X,Y coords."
         )
         self.fplunge_cb = FCCheckBox()
         grid2.addWidget(fplungelabel, 13, 0)
@@ -2283,7 +2289,8 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         fplungelabel.setToolTip(
             "By checking this, the vertical move from\n"
             "Z_Toolchange to Z_move is done with G0,\n"
-            "meaning the fastest speed available."
+            "meaning the fastest speed available.\n"
+            "WARNING: the move is done at Toolchange X,Y coords."
         )
         self.fplunge_cb = FCCheckBox()
         grid1.addWidget(fplungelabel, 17, 0)

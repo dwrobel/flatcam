@@ -1020,12 +1020,13 @@ class App(QtCore.QObject):
         self.ui.menuoptions_transform_flipy.triggered.connect(self.on_flipy)
 
 
-        self.ui.menuviewdisableall.triggered.connect(lambda: self.disable_plots(self.collection.get_list()))
-        self.ui.menuviewdisableother.triggered.connect(lambda: self.disable_plots(self.collection.get_non_selected()))
-        self.ui.menuviewenable.triggered.connect(lambda: self.enable_plots(self.collection.get_list()))
+        self.ui.menuviewdisableall.triggered.connect(self.disable_all_plots)
+        self.ui.menuviewdisableother.triggered.connect(self.disable_other_plots)
+        self.ui.menuviewenable.triggered.connect(self.enable_all_plots)
         self.ui.menuview_zoom_fit.triggered.connect(self.on_zoom_fit)
         self.ui.menuview_zoom_in.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
         self.ui.menuview_zoom_out.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
+        self.ui.menuview_toggle_fscreen.triggered.connect(self.on_fullscreen)
         self.ui.menuview_toggle_grid.triggered.connect(self.on_toggle_grid)
         self.ui.menuview_toggle_axis.triggered.connect(self.on_toggle_axis)
         self.ui.menuview_toggle_workspace.triggered.connect(self.on_workspace_menu)
@@ -1313,6 +1314,9 @@ class App(QtCore.QObject):
 
         # Variable to hold the status of the axis
         self.toggle_axis = True
+
+        # Variable to store the status of the fullscreen event
+        self.toggle_fscreen = False
 
         self.cursor = None
 
@@ -2737,6 +2741,17 @@ class App(QtCore.QObject):
         # app restart section
         pass
 
+    def on_fullscreen(self):
+        if self.toggle_fscreen is False:
+            for tb in self.ui.findChildren(QtWidgets.QToolBar):
+                tb.setVisible(False)
+            self.ui.notebook.setVisible(False)
+            self.toggle_fscreen = True
+        else:
+            self.restore_toolbar_view()
+            self.ui.notebook.setVisible(True)
+            self.toggle_fscreen = False
+
     def on_toggle_axis(self):
         if self.toggle_axis is False:
             self.plotcanvas.v_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
@@ -3674,17 +3689,7 @@ class App(QtCore.QObject):
             if index.internalPointer().parent_item != self.collection.root_item:
                 self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
 
-    def on_zoom_fit(self, event):
-        """
-        Callback for zoom-out request. This can be either from the corresponding
-        toolbar button or the '1' key when the canvas is focused. Calls ``self.adjust_axes()``
-        with axes limits from the geometry bounds of all objects.
 
-        :param event: Ignored.
-        :return: None
-        """
-
-        self.plotcanvas.fit_view()
 
     def grid_status(self):
         if self.ui.grid_snap_btn.isChecked():
@@ -3739,6 +3744,16 @@ class App(QtCore.QObject):
             return
         elif self.key_modifiers == QtCore.Qt.AltModifier:
             # place holder for further shortcut key
+
+            if event.key == '1':
+                self.enable_all_plots()
+
+            if event.key == '2':
+                self.disable_all_plots()
+
+            if event.key == '3':
+                self.disable_other_plots()
+
             if event.key == 'C':
                 self.calculator_tool.run()
 
@@ -3762,6 +3777,9 @@ class App(QtCore.QObject):
 
             if event.key == 'Z':
                 self.panelize_tool.run()
+
+            if event.key == 'F10':
+                self.on_fullscreen()
 
         elif self.key_modifiers == QtCore.Qt.ShiftModifier:
             # place holder for further shortcut key
@@ -3946,6 +3964,7 @@ class App(QtCore.QObject):
 <b>ALT+P:</b>    Paint Area Tool<br>
 <b>ALT+R:</b>    Transformation Tool<br>
 <b>ALT+U:</b>    Cutout PCB Tool<br>
+<b>ALT+F10:</b>  Toggle Full Screen<br>
 <br>
 <b>F1:</b>       Open Online Manual<br>
 <b>F2:</b>       Open Online Tutorials<br>
@@ -6169,6 +6188,30 @@ class App(QtCore.QObject):
                            data["message"].replace("\n", "<br>")),
             "info"
         )
+
+    def on_zoom_fit(self, event):
+        """
+        Callback for zoom-out request. This can be either from the corresponding
+        toolbar button or the '1' key when the canvas is focused. Calls ``self.adjust_axes()``
+        with axes limits from the geometry bounds of all objects.
+
+        :param event: Ignored.
+        :return: None
+        """
+
+        self.plotcanvas.fit_view()
+
+    def disable_all_plots(self):
+        self.disable_plots(self.collection.get_list())
+        self.inform.emit("[success]All plots disabled.")
+
+    def disable_other_plots(self):
+        self.disable_plots(self.collection.get_non_selected())
+        self.inform.emit("[success]All non selected plots disabled.")
+
+    def enable_all_plots(self):
+        self.enable_plots(self.collection.get_list())
+        self.inform.emit("[success]All plots enabled.")
 
     # TODO: FIX THIS
     '''

@@ -325,6 +325,18 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 self.app.on_skewy()
                 return
         elif modifiers == QtCore.Qt.AltModifier:
+            # Eanble all plots
+            if key == Qt.Key_1:
+                self.app.enable_all_plots()
+
+            # Disable all plots
+            if key == Qt.Key_2:
+                self.app.disable_all_plots()
+
+            # Disable all other plots
+            if key == Qt.Key_3:
+                self.app.disable_other_plots()
+
             # 2-Sided PCB Tool
             if key == QtCore.Qt.Key_D:
                 self.app.dblsidedtool.run()
