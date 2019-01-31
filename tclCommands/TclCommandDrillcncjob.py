@@ -86,7 +86,8 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             drillz = args["drillz"] if "drillz" in args else obj.options["drillz"]
             job_obj.z_move = args["travelz"] if "travelz" in args else obj.options["travelz"]
             job_obj.feedrate = args["feedrate"] if "feedrate" in args else obj.options["feedrate"]
-            job_obj.feedrate_rapid = args["feedrate_rapid"] if "feedrate_rapid" in args else obj.options["feedrate_rapid"]
+            job_obj.feedrate_rapid = args["feedrate_rapid"] \
+                if "feedrate_rapid" in args else obj.options["feedrate_rapid"]
 
             job_obj.spindlespeed = args["spindlespeed"] if "spindlespeed" in args else None
             job_obj.pp_excellon_name = args["ppname_e"] if "ppname_e" in args \
@@ -94,7 +95,7 @@ class TclCommandDrillcncjob(TclCommandSignaled):
 
             toolchange = True if "toolchange" in args and args["toolchange"] == 1 else False
             toolchangez = args["toolchangez"] if "toolchangez" in args else obj.options["toolchangez"]
-            toolchangexy = args["toolchangexy"] if "toolchangexy" in args else obj.options["toolchangexy"]
+            job_obj.toolchangexy = args["toolchangexy"] if "toolchangexy" in args else obj.options["toolchangexy"]
 
             endz = args["endz"] if "endz" in args else obj.options["endz"]
 
@@ -102,7 +103,6 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             opt_type = args["opt_type"] if "opt_type" in args else 'B'
 
             job_obj.generate_from_excellon_by_tool(obj, tools, drillz=drillz, toolchangez=toolchangez,
-                                                   toolchangexy=toolchangexy,
                                                    endz=endz,
                                                    toolchange=toolchange, excellon_optimization_type=opt_type)
             job_obj.gcode_parse()

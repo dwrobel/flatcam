@@ -105,7 +105,7 @@ class line_xyz(FlatCAMPostProc):
 T{tool}
 M5
 M6
-(MSG, Change to Tool Dia = {toolC}, Total drills for current tool = {t_drills})
+(MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
 M0""".format(toolchangex=self.coordinate_format%(p.coords_decimals, toolchangex),
              toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
              toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),

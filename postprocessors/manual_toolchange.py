@@ -94,7 +94,7 @@ class manual_toolchange(FlatCAMPostProc):
 T{tool}
 M5   
 G00 X{toolchangex} Y{toolchangey} 
-(MSG, Change to Tool Dia = {toolC}, Total drills for current tool = {t_drills})
+(MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
 M0
 G01 Z0
 M0
@@ -111,7 +111,7 @@ M0
                 gcode =  """G00 Z{toolchangez}
 T{tool}
 M5  
-(MSG, Change to Tool Dia = {toolC}, Total drills for current tool = {t_drills})
+(MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
 M0
 G01 Z0
 M0
