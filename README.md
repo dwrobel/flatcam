@@ -21,6 +21,8 @@ CAD program, and create G-Code for Isolation routing.
 - Plot Area Tab view can now be toggled, added entry in View Menu and shortcut key CTRL+F10
 - All the tabs in the GUI right side are (Plot Are, Preferences etc) are now detachable to a separate windows which when closed it returns in the previous location in the toolbar. Those detached tabs can be also reattached by drag and drop.
 - fixed postprocessor files so now the bounds values are right aligned (assuming max string length of 9 chars which means 4 digits and 4 decimals)
+- corrected small type in list_sys Tcl command; added a protection of the Plot Area Tab after a successful edit.
+
 
 30.01.2019
 

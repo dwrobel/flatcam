@@ -1531,6 +1531,7 @@ class App(QtCore.QObject):
 
 
         self.ui.plot_tab_area.setTabText(0, "EDITOR Area")
+        self.ui.plot_tab_area.protectTab(0)
         self.inform.emit("[warning_notcl]Editor is activated ...")
 
     def editor2object(self):
@@ -1592,6 +1593,7 @@ class App(QtCore.QObject):
 
         edited_obj.plot()
         self.ui.plot_tab_area.setTabText(0, "Plot Area")
+        self.ui.plot_tab_area.protectTab(0)
         self.inform.emit("[success] %s is updated, returning to App..." % obj_type)
 
         # reset the Object UI to original settings
