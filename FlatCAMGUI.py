@@ -385,7 +385,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         ### Toolbar ###
         ###############
         self.toolbarfile = QtWidgets.QToolBar('File Toolbar')
+        self.toolbarfile.setObjectName('File_TB')
         self.addToolBar(self.toolbarfile)
+
         self.file_open_gerber_btn = self.toolbarfile.addAction(QtGui.QIcon('share/flatcam_icon32.png'),
                                                                "Open GERBER")
         self.file_open_excellon_btn = self.toolbarfile.addAction(QtGui.QIcon('share/drill32.png'), "Open EXCELLON")
@@ -394,6 +396,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.file_save_btn = self.toolbarfile.addAction(QtGui.QIcon('share/floppy32.png'), "Save project")
 
         self.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
+        self.toolbargeo.setObjectName('Edit_TB')
         self.addToolBar(self.toolbargeo)
 
         self.newgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_geo32_bis.png'), "New Blank Geometry")
@@ -408,7 +411,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.delete_btn = self.toolbargeo.addAction(QtGui.QIcon('share/cancel_edit32.png'), "&Delete")
 
         self.toolbarview = QtWidgets.QToolBar('View Toolbar')
+        self.toolbarview.setObjectName('View_TB')
         self.addToolBar(self.toolbarview)
+
         self.replot_btn = self.toolbarview.addAction(QtGui.QIcon('share/replot32.png'), "&Replot")
         self.clear_plot_btn = self.toolbarview.addAction(QtGui.QIcon('share/clear_plot32.png'), "&Clear plot")
         self.zoom_in_btn = self.toolbarview.addAction(QtGui.QIcon('share/zoom_in32.png'), "Zoom In")
@@ -418,11 +423,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # self.toolbarview.setVisible(False)
 
         self.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
+        self.toolbartools.setObjectName('Tools_TB')
         self.addToolBar(self.toolbartools)
+
         self.shell_btn = self.toolbartools.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
 
         ### Drill Editor Toolbar ###
         self.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
+        self.exc_edit_toolbar.setObjectName('ExcEditor_TB')
         self.addToolBar(self.exc_edit_toolbar)
 
         self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select 'Esc'")
@@ -444,6 +452,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         ### Geometry Editor Toolbar ###
         self.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
         self.geo_edit_toolbar.setVisible(False)
+        self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
         self.addToolBar(self.geo_edit_toolbar)
 
         self.geo_select_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select 'Esc'")
@@ -476,6 +485,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Snap Toolbar ###
         self.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
+        self.snap_toolbar.setObjectName('Snap_TB')
         # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
         self.addToolBar(self.snap_toolbar)
 
@@ -847,6 +857,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.filename = ""
         self.setAcceptDrops(True)
 
+        # restore the Toolbar State from file
+        try:
+            with open(self.app.data_path + '\state.config', 'rb') as stream:
+                self.restoreState(QtCore.QByteArray(stream.read()))
+            log.debug("FlatCAMGUI.__init__() --> UI state restored.")
+        except IOError:
+            log.debug("FlatCAMGUI.__init__() --> UI state not restored. IOError")
+            pass
+
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls:
             event.accept()
@@ -913,6 +932,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.final_save.emit()
 
         if self.app.should_we_quit is True:
+            # save toolbar state to file
+            with open(self.app.data_path + '\state.config', 'wb') as stream:
+                stream.write(self.saveState().data())
+                log.debug("FlatCAMGUI.__init__() --> UI state saved.")
             QtWidgets.qApp.quit()
         else:
             self.app.should_we_quit = True

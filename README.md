@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - hidden the snap magnet entry and snap magnet toggle from the main view; they are now active only in Editor Mode
 - updated the camlib.CNCJob.scale() function so now the GCode is scaled also (quite a HACK :( it will need to be replaced at some point)). Units change work now on the GCODE also.
 - added the bounds coordinates to the GCODE header
+- FlatCAM saves now to a file in self.data_path the toolbar positions and the position of TCL Shell
 
 30.01.2019
 

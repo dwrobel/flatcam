@@ -266,6 +266,7 @@ class App(QtCore.QObject):
         QtCore.QObject.__init__(self)
 
         self.ui = FlatCAMGUI(self.version, self.beta, self)
+
         # self.connect(self.ui,
         #              QtCore.SIGNAL("geomUpdate(int, int, int, int, int)"),
         #              self.save_geometry) PyQt4
@@ -1230,6 +1231,7 @@ class App(QtCore.QObject):
         self.init_tcl()
 
         self.ui.shell_dock = QtWidgets.QDockWidget("FlatCAM TCL Shell")
+        self.ui.shell_dock.setObjectName('Shell_DockWidget')
         self.ui.shell_dock.setWidget(self.shell)
         self.ui.shell_dock.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
         self.ui.shell_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetMovable |
