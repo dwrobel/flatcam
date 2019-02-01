@@ -22,6 +22,8 @@ import subprocess
 
 import tkinter as tk
 from PyQt5 import QtCore, QtGui, QtWidgets, QtPrintSupport
+from PyQt5.QtCore import QSettings
+
 import time  # Just used for debugging. Double check before removing.
 import urllib.request, urllib.parse, urllib.error
 import webbrowser
@@ -91,7 +93,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.906
-    version_date = "2019/02/1"
+    version_date = "2019/02/2"
     beta = True
 
     # URL for update checks and statistics
@@ -264,8 +266,8 @@ class App(QtCore.QObject):
         self.FC_dark_blue = '#0000ffbf'
 
         QtCore.QObject.__init__(self)
-
         self.ui = FlatCAMGUI(self.version, self.beta, self)
+
 
         # self.connect(self.ui,
         #              QtCore.SIGNAL("geomUpdate(int, int, int, int, int)"),
@@ -300,6 +302,7 @@ class App(QtCore.QObject):
             "global_send_stats": self.general_defaults_form.general_app_group.send_stats_cb,
             "global_gridx": self.general_defaults_form.general_gui_group.gridx_entry,
             "global_gridy": self.general_defaults_form.general_gui_group.gridy_entry,
+            "global_snap_max": self.general_defaults_form.general_gui_group.snap_max_dist_entry,
             "global_plot_fill": self.general_defaults_form.general_gui_group.pf_color_entry,
             "global_plot_line": self.general_defaults_form.general_gui_group.pl_color_entry,
             "global_sel_fill": self.general_defaults_form.general_gui_group.sf_color_entry,
@@ -313,7 +316,6 @@ class App(QtCore.QObject):
             # "global_pan_with_space_key": self.general_defaults_form.general_gui_group.pan_with_space_cb,
             "global_workspace": self.general_defaults_form.general_gui_group.workspace_cb,
             "global_workspaceT": self.general_defaults_form.general_gui_group.wk_cb,
-            "global_theme": self.general_defaults_form.general_gui_group.theme_combo,
 
             "gerber_plot": self.gerber_defaults_form.gerber_gen_group.plot_cb,
             "gerber_solid": self.gerber_defaults_form.gerber_gen_group.solid_cb,
@@ -439,6 +441,8 @@ class App(QtCore.QObject):
             "global_send_stats": True,
             "global_gridx": 1.0,
             "global_gridy": 1.0,
+            "global_snap_max": 0.05,
+
             "global_plot_fill": '#BBF268BF',
             "global_plot_line": '#006E20BF',
             "global_sel_fill": '#a5a5ffbf',
@@ -452,7 +456,7 @@ class App(QtCore.QObject):
             # "global_pan_with_space_key": False,
             "global_workspace": False,
             "global_workspaceT": "A4P",
-            "global_toolbar_view": 31,
+            "global_toolbar_view": 127,
 
             "global_background_timeout": 300000,  # Default value is 5 minutes
             "global_verbose_error_level": 0,  # Shell verbosity 0 = default
@@ -469,7 +473,6 @@ class App(QtCore.QObject):
             "global_def_win_y": 100,
             "global_def_win_w": 1024,
             "global_def_win_h": 650,
-            "global_theme": 'standard',
 
             # Constants...
             "global_defaults_save_period_ms": 20000,  # Time between default saves.
@@ -625,7 +628,7 @@ class App(QtCore.QObject):
             "units": self.general_options_form.general_app_group.units_radio,
             "global_gridx": self.general_options_form.general_gui_group.gridx_entry,
             "global_gridy": self.general_options_form.general_gui_group.gridy_entry,
-            "global_theme": self.general_options_form.general_gui_group.theme_combo,
+            "global_snap_max": self.general_options_form.general_gui_group.snap_max_dist_entry,
 
             "gerber_plot": self.gerber_options_form.gerber_gen_group.plot_cb,
             "gerber_solid": self.gerber_options_form.gerber_gen_group.solid_cb,
@@ -729,11 +732,11 @@ class App(QtCore.QObject):
             "units": "IN",
             "global_gridx": 1.0,
             "global_gridy": 1.0,
+            "global_snap_max": 0.05,
             "global_background_timeout": 300000,  # Default value is 5 minutes
             "global_verbose_error_level": 0,  # Shell verbosity:
             # 0 = default(python trace only for unknown errors),
             # 1 = show trace(show trace allways), 2 = (For the future).
-            "global_theme": 'standard',
 
             "gerber_plot": True,
             "gerber_solid": True,
@@ -924,12 +927,6 @@ class App(QtCore.QObject):
         self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
         self.exc_editor = FlatCAMExcEditor(self)
 
-        # start with GRID activated
-        self.ui.grid_snap_btn.trigger()
-        self.ui.corner_snap_btn.setVisible(False)
-        self.ui.snap_magnet.setVisible(False)
-        self.ui.g_editor_cmenu.setEnabled(False)
-        self.ui.e_editor_cmenu.setEnabled(False)
 
         #### Adjust tabs width ####
         # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
@@ -1157,7 +1154,7 @@ class App(QtCore.QObject):
         self.general_defaults_form.general_gui_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
         self.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
 
-        self.general_defaults_form.general_gui_group.theme_combo.currentIndexChanged.connect(self.on_theme)
+        self.general_defaults_form.general_gui_group.theme_combo.activated.connect(self.on_theme)
 
         # Modify G-CODE Plot Area TAB
         self.ui.code_editor.textChanged.connect(self.handleTextChanged)
@@ -1497,26 +1494,21 @@ class App(QtCore.QObject):
         self.ui.popmenu_edit.setVisible(False)
         self.ui.popmenu_save.setVisible(True)
 
-        if isinstance(self.collection.get_active(), FlatCAMGeometry):
-            edited_object = self.collection.get_active()
+        edited_object = self.collection.get_active()
+
+        if isinstance(edited_object, FlatCAMGeometry):
             # for now, if the Geometry is MultiGeo do not allow the editing
             if edited_object.multigeo is True:
                 self.inform.emit("[warning_notcl]Editing a MultiGeo Geometry is not possible for the moment.")
                 return
-            self.ui.update_obj_btn.setEnabled(True)
+
             self.geo_editor.edit_fcgeometry(edited_object)
-            self.ui.g_editor_cmenu.setEnabled(True)
             # set call source to the Editor we go into
             self.call_source = 'geo_editor'
 
-            # prevent the user to change anything in the Selected Tab while the Geo Editor is active
-            sel_tab_widget_list = self.ui.selected_tab.findChildren(QtWidgets.QWidget)
-            for w in sel_tab_widget_list:
-                w.setEnabled(False)
-        elif isinstance(self.collection.get_active(), FlatCAMExcellon):
-            self.ui.update_obj_btn.setEnabled(True)
-            self.exc_editor.edit_exc_obj(self.collection.get_active())
-            self.ui.e_editor_cmenu.setEnabled(True)
+        elif isinstance(edited_object, FlatCAMExcellon):
+            self.exc_editor.edit_fcexcellon(edited_object)
+
             # set call source to the Editor we go into
             self.call_source = 'exc_editor'
         else:
@@ -1528,7 +1520,6 @@ class App(QtCore.QObject):
 
         # delete any selection shape that might be active as they are not relevant in Editor
         self.delete_selection_shape()
-
 
         self.ui.plot_tab_area.setTabText(0, "EDITOR Area")
         self.ui.plot_tab_area.protectTab(0)
@@ -1552,16 +1543,7 @@ class App(QtCore.QObject):
             obj_type = "Geometry"
             self.geo_editor.update_fcgeometry(edited_obj)
             self.geo_editor.update_options(edited_obj)
-
             self.geo_editor.deactivate()
-
-            # edited_obj.on_tool_delete(all=True)
-            # edited_obj.on_tool_add(dia=edited_obj.options['cnctooldia'])
-
-            self.ui.corner_snap_btn.setEnabled(False)
-            self.ui.update_obj_btn.setEnabled(False)
-            self.ui.g_editor_cmenu.setEnabled(False)
-            self.ui.e_editor_cmenu.setEnabled(False)
 
             # update the geo object options so it is including the bounding box values
             try:
@@ -1575,15 +1557,18 @@ class App(QtCore.QObject):
 
         elif isinstance(edited_obj, FlatCAMExcellon):
             obj_type = "Excellon"
-
-            self.exc_editor.update_exc_obj(edited_obj)
-
+            self.exc_editor.update_fcexcellon(edited_obj)
             self.exc_editor.deactivate()
-            self.ui.corner_snap_btn.setEnabled(False)
-            self.ui.update_obj_btn.setEnabled(False)
-            self.ui.g_editor_cmenu.setEnabled(False)
-            self.ui.e_editor_cmenu.setEnabled(False)
 
+            # update the exc object options so it is including the bounding box values
+            try:
+                xmin, ymin, xmax, ymax = edited_obj.bounds()
+                edited_obj.options['xmin'] = xmin
+                edited_obj.options['ymin'] = ymin
+                edited_obj.options['xmax'] = xmax
+                edited_obj.options['ymax'] = ymax
+            except AttributeError:
+                self.inform.emit("[warning] Object empty after edit.")
         else:
             self.inform.emit("[warning_notcl]Select a Geometry or Excellon Object to update.")
             return
@@ -1860,6 +1845,16 @@ class App(QtCore.QObject):
             self.ui.toolbartools.setVisible(False)
 
         if tb & 16:
+            self.ui.exc_edit_toolbar.setVisible(True)
+        else:
+            self.ui.exc_edit_toolbar.setVisible(False)
+
+        if tb & 32:
+            self.ui.geo_edit_toolbar.setVisible(True)
+        else:
+            self.ui.geo_edit_toolbar.setVisible(False)
+
+        if tb & 64:
             self.ui.snap_toolbar.setVisible(True)
         else:
             self.ui.snap_toolbar.setVisible(False)
@@ -1879,14 +1874,14 @@ class App(QtCore.QObject):
             self.log.error("Could not load defaults file.")
             self.inform.emit("[error] Could not load defaults file.")
             # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 31
+            self.defaults["global_toolbar_view"] = 127
             return
 
         try:
             defaults = json.loads(options)
         except:
             # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 31
+            self.defaults["global_toolbar_view"] = 127
             e = sys.exc_info()[0]
             App.log.error(str(e))
             self.inform.emit("[error] Failed to parse defaults file.")
@@ -2404,8 +2399,14 @@ class App(QtCore.QObject):
         if self.ui.toolbartools.isVisible():
             tb_status += 8
 
-        if self.ui.snap_toolbar.isVisible():
+        if self.ui.exc_edit_toolbar.isVisible():
             tb_status += 16
+
+        if self.ui.geo_edit_toolbar.isVisible():
+            tb_status += 32
+
+        if self.ui.snap_toolbar.isVisible():
+            tb_status += 64
 
         self.defaults["global_toolbar_view"] = tb_status
 
@@ -3129,7 +3130,94 @@ class App(QtCore.QObject):
         self.on_workspace()
 
     def on_theme(self):
-        self.defaults["global_theme"] = self.general_defaults_form.general_gui_group.theme_combo.get_value()
+        current_theme= self.general_defaults_form.general_gui_group.theme_combo.get_value().lower()
+
+        settings = QSettings("Open Source", "FlatCAM")
+        settings.setValue('theme', current_theme)
+
+        # This will write the setting to the platform specific storage.
+        del settings
+
+        # first remove the toolbars:
+        self.ui.removeToolBar(self.ui.toolbarfile)
+        self.ui.removeToolBar(self.ui.toolbargeo)
+        self.ui.removeToolBar(self.ui.toolbarview)
+        self.ui.removeToolBar(self.ui.toolbartools)
+        self.ui.removeToolBar(self.ui.exc_edit_toolbar)
+        self.ui.removeToolBar(self.ui.geo_edit_toolbar)
+        self.ui.removeToolBar(self.ui.snap_toolbar)
+
+        if current_theme == 'standard':
+            ### TOOLBAR INSTALLATION ###
+            self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
+            self.ui.toolbarfile.setObjectName('File_TB')
+            self.ui.addToolBar(self.ui.toolbarfile)
+
+            self.ui.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
+            self.ui.toolbargeo.setObjectName('Edit_TB')
+            self.ui.addToolBar(self.ui.toolbargeo)
+
+            self.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
+            self.ui.toolbarview.setObjectName('View_TB')
+            self.ui.addToolBar(self.ui.toolbarview)
+
+            self.ui.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
+            self.ui.toolbartools.setObjectName('Tools_TB')
+            self.ui.addToolBar(self.ui.toolbartools)
+
+            self.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
+            self.ui.exc_edit_toolbar.setVisible(False)
+            self.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
+            self.ui.addToolBar(self.ui.exc_edit_toolbar)
+
+            self.ui.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
+            self.ui.geo_edit_toolbar.setVisible(False)
+            self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
+            self.ui.addToolBar(self.ui.geo_edit_toolbar)
+
+            self.ui.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
+            self.ui.snap_toolbar.setObjectName('Snap_TB')
+            # self.ui.snap_toolbar.setMaximumHeight(30)
+            self.ui.addToolBar(self.ui.snap_toolbar)
+
+            self.ui.corner_snap_btn.setVisible(False)
+            self.ui.snap_magnet.setVisible(False)
+        elif current_theme == 'compact':
+            ### TOOLBAR INSTALLATION ###
+            self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
+            self.ui.toolbarfile.setObjectName('File_TB')
+            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarfile)
+            self.ui.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
+            self.ui.toolbargeo.setObjectName('Edit_TB')
+            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbargeo)
+            self.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
+            self.ui.toolbarview.setObjectName('View_TB')
+            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarview)
+            self.ui.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
+            self.ui.toolbartools.setObjectName('Tools_TB')
+            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbartools)
+            self.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
+            self.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
+            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.exc_edit_toolbar)
+            self.ui.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
+            self.ui.geo_edit_toolbar.setVisible(False)
+            self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
+            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.geo_edit_toolbar)
+            self.ui.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
+            self.ui.snap_toolbar.setObjectName('Snap_TB')
+            self.ui.snap_toolbar.setMaximumHeight(30)
+            self.ui.splitter_left.addWidget(self.ui.snap_toolbar)
+
+            self.ui.corner_snap_btn.setVisible(True)
+            self.ui.snap_magnet.setVisible(True)
+
+        self.ui.populate_toolbars()
+
+        self.ui.grid_snap_btn.setChecked(True)
+        self.ui.grid_gap_x_entry.setText(str(self.defaults["global_gridx"]))
+        self.ui.grid_gap_y_entry.setText(str(self.defaults["global_gridy"]))
+        self.ui.snap_max_dist_entry.setText(str(self.defaults["global_snap_max"]))
+        self.ui.grid_gap_link_cb.setChecked(True)
 
     def on_save_button(self):
         self.save_defaults(silent=False)

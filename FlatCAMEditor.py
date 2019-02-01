@@ -7,7 +7,7 @@
 ############################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSettings
 import FlatCAMApp
 from camlib import *
 from FlatCAMTool import FlatCAMTool
@@ -1890,9 +1890,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app = app
         self.canvas = app.plotcanvas
 
-        self.app.ui.geo_edit_toolbar.setDisabled(True)
-        self.app.ui.snap_magnet.setVisible(False)
-
         self.app.ui.geo_add_circle_menuitem.triggered.connect(lambda: self.select_tool('circle'))
         self.app.ui.geo_add_arc_menuitem.triggered.connect(lambda: self.select_tool('arc'))
         self.app.ui.geo_add_rectangle_menuitem.triggered.connect(lambda: self.select_tool('rectangle'))
@@ -1996,7 +1993,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.options = {
             "global_gridx": 0.1,
             "global_gridy": 0.1,
-            "snap_max": 0.05,
+            "global_snap_max": 0.05,
             "grid_snap": True,
             "corner_snap": False,
             "grid_gap_link": True
@@ -2009,7 +2006,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.app.ui.grid_gap_x_entry.setText(str(self.options["global_gridx"]))
         self.app.ui.grid_gap_y_entry.setText(str(self.options["global_gridy"]))
-        self.app.ui.snap_max_dist_entry.setText(str(self.options["snap_max"]))
+        self.app.ui.snap_max_dist_entry.setText(str(self.options["global_snap_max"]))
         self.app.ui.grid_gap_link_cb.setChecked(True)
 
         self.rtree_index = rtindex.Index()
@@ -2053,6 +2050,19 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.app.ui.geo_editor_menu.setDisabled(False)
         self.app.ui.geo_editor_menu.menuAction().setVisible(True)
+
+        self.app.ui.update_obj_btn.setEnabled(True)
+        self.app.ui.g_editor_cmenu.setEnabled(True)
+
+        self.app.ui.geo_edit_toolbar.setDisabled(False)
+        self.app.ui.geo_edit_toolbar.setVisible(True)
+        self.app.ui.snap_toolbar.setDisabled(False)
+
+        # prevent the user to change anything in the Selected Tab while the Geo Editor is active
+        sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
+        for w in sel_tab_widget_list:
+            w.setEnabled(False)
+
         # Tell the App that the editor is active
         self.editor_active = True
 
@@ -2060,11 +2070,20 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.disconnect_canvas_event_handlers()
         self.clear()
         self.app.ui.geo_edit_toolbar.setDisabled(True)
-        self.app.ui.geo_edit_toolbar.setVisible(False)
-        self.app.ui.snap_magnet.setVisible(False)
-        self.app.ui.corner_snap_btn.setVisible(False)
-        # never deactivate the snap toolbar - MS
-        # self.app.ui.snap_toolbar.setDisabled(True)  # TODO: Combine and move into tool
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("theme"):
+            theme = settings.value('theme', type=str)
+            if theme == 'standard':
+                self.app.ui.geo_edit_toolbar.setVisible(False)
+                self.app.ui.snap_magnet.setVisible(False)
+                self.app.ui.corner_snap_btn.setVisible(False)
+            elif theme == 'compact':
+                pass
+        else:
+            self.app.ui.geo_edit_toolbar.setVisible(False)
+            self.app.ui.snap_magnet.setVisible(False)
+            self.app.ui.corner_snap_btn.setVisible(False)
 
         # Disable visuals
         self.shapes.enabled = False
@@ -2073,6 +2092,12 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.app.ui.geo_editor_menu.setDisabled(True)
         self.app.ui.geo_editor_menu.menuAction().setVisible(False)
+
+        self.app.ui.corner_snap_btn.setEnabled(False)
+        self.app.ui.update_obj_btn.setEnabled(False)
+        self.app.ui.g_editor_cmenu.setEnabled(False)
+        self.app.ui.e_editor_cmenu.setEnabled(False)
+
         # Tell the app that the editor is no longer active
         self.editor_active = False
 
@@ -2232,9 +2257,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                     self.add_shape(DrawToolShape(shape))
 
         self.replot()
-        self.app.ui.geo_edit_toolbar.setDisabled(False)
-        self.app.ui.geo_edit_toolbar.setVisible(True)
-        self.app.ui.snap_toolbar.setDisabled(False)
+
 
         # start with GRID toolbar activated
         if self.app.ui.grid_snap_btn.isChecked() == False:
@@ -2947,7 +2970,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 nearest_pt, shape = self.storage.nearest((x, y))
 
                 nearest_pt_distance = distance((x, y), nearest_pt)
-                if nearest_pt_distance <= self.options["snap_max"]:
+                if nearest_pt_distance <= self.options["global_snap_max"]:
                     snap_distance = nearest_pt_distance
                     snap_x, snap_y = nearest_pt
             except (StopIteration, AssertionError):
@@ -4191,6 +4214,17 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app.ui.exc_editor_menu.setDisabled(False)
         self.app.ui.exc_editor_menu.menuAction().setVisible(True)
 
+        self.app.ui.update_obj_btn.setEnabled(True)
+        self.app.ui.e_editor_cmenu.setEnabled(True)
+
+        self.app.ui.exc_edit_toolbar.setDisabled(False)
+        self.app.ui.exc_edit_toolbar.setVisible(True)
+        # self.app.ui.snap_toolbar.setDisabled(False)
+
+        # start with GRID toolbar activated
+        if self.app.ui.grid_snap_btn.isChecked() is False:
+            self.app.ui.grid_snap_btn.trigger()
+
         # Tell the App that the editor is active
         self.editor_active = True
 
@@ -4198,9 +4232,18 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.disconnect_canvas_event_handlers()
         self.clear()
         self.app.ui.exc_edit_toolbar.setDisabled(True)
-        self.app.ui.exc_edit_toolbar.setVisible(False)
-        self.app.ui.snap_magnet.setVisible(False)
-        self.app.ui.corner_snap_btn.setVisible(False)
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("theme"):
+            theme = settings.value('theme', type=str)
+            if theme == 'standard':
+                self.app.ui.exc_edit_toolbar.setVisible(False)
+                self.app.ui.snap_magnet.setVisible(False)
+                self.app.ui.corner_snap_btn.setVisible(False)
+            elif theme == 'compact':
+                pass
+        else:
+            pass
 
         # Disable visuals
         self.shapes.enabled = False
@@ -4212,6 +4255,10 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.app.ui.exc_editor_menu.setDisabled(True)
         self.app.ui.exc_editor_menu.menuAction().setVisible(False)
+        self.app.ui.corner_snap_btn.setEnabled(False)
+        self.app.ui.update_obj_btn.setEnabled(False)
+        self.app.ui.g_editor_cmenu.setEnabled(False)
+        self.app.ui.e_editor_cmenu.setEnabled(False)
 
         # Show original geometry
         if self.exc_obj:
@@ -4270,7 +4317,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         # self.storage = FlatCAMExcEditor.make_storage()
         self.replot()
 
-    def edit_exc_obj(self, exc_obj):
+    def edit_fcexcellon(self, exc_obj):
         """
         Imports the geometry from the given FlatCAM Excellon object
         into the editor.
@@ -4318,15 +4365,8 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.storage_dict[tool_dia] = storage_elem
 
         self.replot()
-        self.app.ui.exc_edit_toolbar.setDisabled(False)
-        self.app.ui.exc_edit_toolbar.setVisible(True)
-        self.app.ui.snap_toolbar.setDisabled(False)
 
-        # start with GRID toolbar activated
-        if self.app.ui.grid_snap_btn.isChecked() is False:
-            self.app.ui.grid_snap_btn.trigger()
-
-    def update_exc_obj(self, exc_obj):
+    def update_fcexcellon(self, exc_obj):
         """
         Create a new Excellon object that contain the edited content of the source Excellon object
 

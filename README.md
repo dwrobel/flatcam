@@ -22,7 +22,9 @@ CAD program, and create G-Code for Isolation routing.
 - All the tabs in the GUI right side are (Plot Are, Preferences etc) are now detachable to a separate windows which when closed it returns in the previous location in the toolbar. Those detached tabs can be also reattached by drag and drop.
 - fixed postprocessor files so now the bounds values are right aligned (assuming max string length of 9 chars which means 4 digits and 4 decimals)
 - corrected small type in list_sys Tcl command; added a protection of the Plot Area Tab after a successful edit.
-
+- remade the way FlatCAM saves the GUI position data from a file (previously) to use PyQt QSettings
+- added a 'theme' combo selection in Edit -> Preferences. Two themes are available: standard and compact.
+- some code cleanup
 
 30.01.2019
 
