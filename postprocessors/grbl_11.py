@@ -11,6 +11,11 @@ class grbl_11(FlatCAMPostProc):
         coords_xy = p['toolchange_xy']
         gcode = ''
 
+        xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
+        xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
+        ymin = '%.*f' % (p.coords_decimals, p['options']['ymin'])
+        ymax = '%.*f' % (p.coords_decimals, p['options']['ymax'])
+
         if str(p['options']['type']) == 'Geometry':
             gcode += '(TOOL DIAMETER: ' + str(p['options']['tool_dia']) + units + ')\n' + '\n'
 
@@ -42,10 +47,8 @@ class grbl_11(FlatCAMPostProc):
         else:
             gcode += '(Postprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n' + '\n'
 
-        gcode += '(X min: ' + '%.*f' % (p.coords_decimals, p['options']['xmin']) + units + ')\n'
-        gcode += '(Y min: ' + '%.*f' % (p.coords_decimals, p['options']['ymin']) + units + ')\n'
-        gcode += '(X max: ' + '%.*f' % (p.coords_decimals, p['options']['xmax']) + units + ')\n'
-        gcode += '(Y max: ' + '%.*f' % (p.coords_decimals, p['options']['ymax']) + units + ')\n\n'
+        gcode += '(X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + ')\n'
+        gcode += '(Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + ')\n\n'
 
         gcode += '(Spindle Speed: ' + str(p['spindlespeed']) + ' RPM' + ')\n' + '\n'
 

@@ -20,6 +20,7 @@ CAD program, and create G-Code for Isolation routing.
 - FlatCAM saves now to a file in self.data_path the toolbar positions and the position of TCL Shell
 - Plot Area Tab view can now be toggled, added entry in View Menu and shortcut key CTRL+F10
 - All the tabs in the GUI right side are (Plot Are, Preferences etc) are now detachable to a separate windows which when closed it returns in the previous location in the toolbar. Those detached tabs can be also reattached by drag and drop.
+- fixed postprocessor files so now the bounds values are right aligned (assuming max string length of 9 chars which means 4 digits and 4 decimals)
 
 30.01.2019
 

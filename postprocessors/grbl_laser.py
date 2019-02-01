@@ -13,6 +13,11 @@ class grbl_laser(FlatCAMPostProc):
         units = ' ' + str(p['units']).lower()
         gcode = ''
 
+        xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
+        xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
+        ymin = '%.*f' % (p.coords_decimals, p['options']['ymin'])
+        ymax = '%.*f' % (p.coords_decimals, p['options']['ymax'])
+
         gcode += '(Feedrate: ' + str(p['feedrate']) + units + '/min' + ')\n'
         gcode += '(Feedrate rapids ' + str(p['feedrate_rapid']) + units + '/min' + ')\n' + '\n'
 
@@ -24,10 +29,8 @@ class grbl_laser(FlatCAMPostProc):
             gcode += '(Postprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n'
         gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n" + '\n'
 
-        gcode += '(X min: ' + '%.*f' % (p.coords_decimals, p['options']['xmin']) + units + ')\n'
-        gcode += '(Y min: ' + '%.*f' % (p.coords_decimals, p['options']['ymin']) + units + ')\n'
-        gcode += '(X max: ' + '%.*f' % (p.coords_decimals, p['options']['xmax']) + units + ')\n'
-        gcode += '(Y max: ' + '%.*f' % (p.coords_decimals, p['options']['ymax']) + units + ')\n\n'
+        gcode += '(X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + ')\n'
+        gcode += '(Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + ')\n\n'
 
         gcode += 'G90\n'
         gcode += 'G94\n'
