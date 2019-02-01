@@ -18,6 +18,8 @@ CAD program, and create G-Code for Isolation routing.
 - updated the camlib.CNCJob.scale() function so now the GCode is scaled also (quite a HACK :( it will need to be replaced at some point)). Units change work now on the GCODE also.
 - added the bounds coordinates to the GCODE header
 - FlatCAM saves now to a file in self.data_path the toolbar positions and the position of TCL Shell
+- Plot Area Tab view can now be toggled, added entry in View Menu and shortcut key CTRL+F10
+- All the tabs in the GUI right side are (Plot Are, Preferences etc) are now detachable to a separate windows which when closed it returns in the previous location in the toolbar. Those detached tabs can be also reattached by drag and drop.
 
 30.01.2019
 

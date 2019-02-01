@@ -1032,6 +1032,7 @@ class App(QtCore.QObject):
         self.ui.menuview_zoom_in.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
         self.ui.menuview_zoom_out.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
         self.ui.menuview_toggle_fscreen.triggered.connect(self.on_fullscreen)
+        self.ui.menuview_toggle_parea.triggered.connect(self.on_toggle_plotarea)
         self.ui.menuview_toggle_grid.triggered.connect(self.on_toggle_grid)
         self.ui.menuview_toggle_axis.triggered.connect(self.on_toggle_axis)
         self.ui.menuview_toggle_workspace.triggered.connect(self.on_workspace_menu)
@@ -2752,12 +2753,28 @@ class App(QtCore.QObject):
         if self.toggle_fscreen is False:
             for tb in self.ui.findChildren(QtWidgets.QToolBar):
                 tb.setVisible(False)
-            self.ui.notebook.setVisible(False)
+            self.ui.splitter_left.setVisible(False)
             self.toggle_fscreen = True
         else:
             self.restore_toolbar_view()
-            self.ui.notebook.setVisible(True)
+            self.ui.splitter_left.setVisible(True)
             self.toggle_fscreen = False
+
+    def on_toggle_plotarea(self):
+        try:
+            name = self.ui.plot_tab_area.widget(0).objectName()
+        except AttributeError:
+            self.ui.plot_tab_area.addTab(self.ui.plot_tab, "Plot Area")
+            # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
+            self.ui.plot_tab_area.protectTab(0)
+            return
+
+        if name != 'plotarea':
+            self.ui.plot_tab_area.insertTab(0, self.ui.plot_tab, "Plot Area")
+            # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
+            self.ui.plot_tab_area.protectTab(0)
+        else:
+            self.ui.plot_tab_area.closeTab(0)
 
     def on_toggle_axis(self):
         if self.toggle_axis is False:
@@ -3751,6 +3768,10 @@ class App(QtCore.QObject):
             if event.key == 'S':
                 self.on_file_saveproject()
 
+            # Toggle Plot Area
+            if event.key == 'F10':
+                self.on_toggle_plotarea()
+
             return
         elif self.key_modifiers == QtCore.Qt.AltModifier:
             # place holder for further shortcut key
@@ -3791,6 +3812,7 @@ class App(QtCore.QObject):
             if event.key == 'F10':
                 self.on_fullscreen()
 
+            return
         elif self.key_modifiers == QtCore.Qt.ShiftModifier:
             # place holder for further shortcut key
 
@@ -3825,7 +3847,6 @@ class App(QtCore.QObject):
             if event.key == 'Y':
                 self.on_skewy()
 
-            return
         else:
             if event.key == 'F1':
                 webbrowser.open(self.manual_url)
@@ -3917,6 +3938,17 @@ class App(QtCore.QObject):
             return
 
     def on_shortcut_list(self):
+
+        # add the tab if it was closed
+        self.ui.plot_tab_area.addTab(self.ui.shortcuts_tab, "Key Shortcut List")
+
+        # delete the absolute and relative position and messages in the infobar
+        self.ui.position_label.setText("")
+        self.ui.rel_position_label.setText("")
+
+        # Switch plot_area to preferences page
+        self.ui.plot_tab_area.setCurrentWidget(self.ui.shortcuts_tab)
+        self.ui.show()
 
         msg = '''<b>Shortcut list</b><br>
 <br>

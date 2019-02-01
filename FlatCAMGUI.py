@@ -268,6 +268,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuview.addSeparator()
         self.menuview_toggle_fscreen = self.menuview.addAction(
             QtGui.QIcon('share/fscreen32.png'), "&Toggle FullScreen\tALT+F10")
+        self.menuview_toggle_parea = self.menuview.addAction(
+            QtGui.QIcon('share/plot32.png'), "&Toggle Plot Area\tCTRL+F10")
 
         self.menuview.addSeparator()
         self.menuview_toggle_grid = self.menuview.addAction(QtGui.QIcon('share/grid32.png'), "&Toggle Grid\tG")
@@ -408,52 +410,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.addToolBar(self.geo_edit_toolbar)
         self.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
         self.snap_toolbar.setObjectName('Snap_TB')
+        # self.snap_toolbar.setMaximumHeight(30)
         self.addToolBar(self.snap_toolbar)
-        # if self.app.gui_defaults['global_theme'] == 'standard':
-        #     self.toolbarfile = QtWidgets.QToolBar('File Toolbar')
-        #     self.toolbarfile.setObjectName('File_TB')
-        #     self.addToolBar(self.toolbarfile)
-        #     self.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
-        #     self.toolbargeo.setObjectName('Edit_TB')
-        #     self.addToolBar(self.toolbargeo)
-        #     self.toolbarview = QtWidgets.QToolBar('View Toolbar')
-        #     self.toolbarview.setObjectName('View_TB')
-        #     self.addToolBar(self.toolbarview)
-        #     self.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
-        #     self.toolbartools.setObjectName('Tools_TB')
-        #     self.addToolBar(self.toolbartools)
-        #     self.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
-        #     self.exc_edit_toolbar.setObjectName('ExcEditor_TB')
-        #     self.addToolBar(self.exc_edit_toolbar)
-        #     self.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
-        #     self.geo_edit_toolbar.setVisible(False)
-        #     self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
-        #     self.addToolBar(self.geo_edit_toolbar)
-        #     self.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
-        #     self.snap_toolbar.setObjectName('Snap_TB')
-        # elif self.app.defaults['global_theme'] == 'compact':
-        #     self.toolbarfile = QtWidgets.QToolBar('File Toolbar')
-        #     self.toolbarfile.setObjectName('File_TB')
-        #     self.addToolBar(self.toolbarfile)
-        #     self.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
-        #     self.toolbargeo.setObjectName('Edit_TB')
-        #     self.addToolBar(self.toolbargeo)
-        #     self.toolbarview = QtWidgets.QToolBar('View Toolbar')
-        #     self.toolbarview.setObjectName('View_TB')
-        #     self.addToolBar(self.toolbarview)
-        #     self.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
-        #     self.toolbartools.setObjectName('Tools_TB')
-        #     self.addToolBar(self.toolbartools)
-        #     self.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
-        #     self.exc_edit_toolbar.setObjectName('ExcEditor_TB')
-        #     self.addToolBar(self.exc_edit_toolbar)
-        #     self.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
-        #     self.geo_edit_toolbar.setVisible(False)
-        #     self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
-        #     self.addToolBar(self.geo_edit_toolbar)
-        #     self.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
-        #     self.snap_toolbar.setObjectName('Snap_TB')
-        #     self.addToolBar(self.snap_toolbar)
 
         ### File Toolbar ###
         self.file_open_gerber_btn = self.toolbarfile.addAction(QtGui.QIcon('share/flatcam_icon32.png'),
@@ -580,15 +538,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.notebook = QtWidgets.QTabWidget()
         self.splitter.addWidget(self.notebook)
 
-        # if self.app.defaults['global_theme'] == 'standard':
-        #     self.splitter.addWidget(self.notebook)
-        # elif self.app.defaults['global_theme'] == 'compact':
-        #     self.splitter_2 = QtWidgets.QSplitter(Qt.Vertical)
-        #     self.splitter.addWidget(self.splitter_2)
-        #     self.splitter_2.addWidget(self.notebook)
-        #     self.splitter_2.setHandleWidth(0)
-        #     self.snap_toolbar.setMaximumHeight(30)
-        #     self.splitter_2.addWidget(self.snap_toolbar)
+        self.splitter_left = QtWidgets.QSplitter(Qt.Vertical)
+        self.splitter.addWidget(self.splitter_left)
+        self.splitter_left.addWidget(self.notebook)
+        self.splitter_left.setHandleWidth(0)
 
         ### Project ###
         self.project_tab = QtWidgets.QWidget()
@@ -620,16 +573,19 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.right_lay = QtWidgets.QVBoxLayout()
         self.right_lay.setContentsMargins(0, 0, 0, 0)
         self.right_widget.setLayout(self.right_lay)
-        self.plot_tab_area = FCTab()
+        # self.plot_tab_area = FCTab()
+        self.plot_tab_area = FCDetachableTab()
+
         self.right_lay.addWidget(self.plot_tab_area)
         self.plot_tab_area.setTabsClosable(True)
 
-        plot_tab = QtWidgets.QWidget()
-        self.plot_tab_area.addTab(plot_tab, "Plot Area")
+        self.plot_tab = QtWidgets.QWidget()
+        self.plot_tab.setObjectName("plotarea")
+        self.plot_tab_area.addTab(self.plot_tab, "Plot Area")
 
         self.right_layout = QtWidgets.QVBoxLayout()
         self.right_layout.setContentsMargins(2, 2, 2, 2)
-        plot_tab.setLayout(self.right_layout)
+        self.plot_tab.setLayout(self.right_layout)
 
         # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
         self.plot_tab_area.protectTab(0)
@@ -758,6 +714,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             "Save the current settings in the 'current_defaults' file\n"
             "which is the file storing the working default preferences.")
         self.pref_tab_bottom_layout_2.addWidget(self.pref_save_button)
+
+        ########################################
+        ### HERE WE BUILD THE SHORTCUTS LIST. TAB AREA ###
+        ########################################
+        self.shortcuts_tab = QtWidgets.QWidget()
+        self.sh_tab_layout = QtWidgets.QVBoxLayout(self.shortcuts_tab)
+        self.sh_tab_layout.setContentsMargins(2, 2, 2, 2)
 
 
         ##############################################################
@@ -918,7 +881,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # restore the Toolbar State from file
         try:
-            with open(self.app.data_path + '\state.config', 'rb') as stream:
+            with open(self.app.data_path + '\gui_state.config', 'rb') as stream:
                 self.restoreState(QtCore.QByteArray(stream.read()))
             log.debug("FlatCAMGUI.__init__() --> UI state restored.")
         except IOError:
@@ -992,7 +955,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         if self.app.should_we_quit is True:
             # save toolbar state to file
-            with open(self.app.data_path + '\state.config', 'wb') as stream:
+            with open(self.app.data_path + '\gui_state.config', 'wb') as stream:
                 stream.write(self.saveState().data())
                 log.debug("FlatCAMGUI.__init__() --> UI state saved.")
             QtWidgets.qApp.quit()

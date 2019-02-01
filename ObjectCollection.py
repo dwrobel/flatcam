@@ -273,6 +273,11 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
             if key == QtCore.Qt.Key_S:
                 self.app.on_file_saveproject()
+
+            # Toggle Plot Area
+            if key == QtCore.Qt.Key_F10:
+                self.app.on_toggle_plotarea()
+
             return
         elif modifiers == QtCore.Qt.ShiftModifier:
 
@@ -324,6 +329,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             if key == QtCore.Qt.Key_Y:
                 self.app.on_skewy()
                 return
+
         elif modifiers == QtCore.Qt.AltModifier:
             # Eanble all plots
             if key == Qt.Key_1:
