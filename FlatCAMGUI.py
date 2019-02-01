@@ -365,6 +365,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.exc_editor_menu.menuAction().setVisible(False)
         self.exc_editor_menu.setDisabled(True)
 
+
         ################################
         ### Project Tab Context menu ###
         ################################
@@ -384,10 +385,77 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         ###############
         ### Toolbar ###
         ###############
+
+        ### TOOLBAR INSTALLATION ###
         self.toolbarfile = QtWidgets.QToolBar('File Toolbar')
         self.toolbarfile.setObjectName('File_TB')
         self.addToolBar(self.toolbarfile)
+        self.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
+        self.toolbargeo.setObjectName('Edit_TB')
+        self.addToolBar(self.toolbargeo)
+        self.toolbarview = QtWidgets.QToolBar('View Toolbar')
+        self.toolbarview.setObjectName('View_TB')
+        self.addToolBar(self.toolbarview)
+        self.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
+        self.toolbartools.setObjectName('Tools_TB')
+        self.addToolBar(self.toolbartools)
+        self.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
+        self.exc_edit_toolbar.setObjectName('ExcEditor_TB')
+        self.addToolBar(self.exc_edit_toolbar)
+        self.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
+        self.geo_edit_toolbar.setVisible(False)
+        self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
+        self.addToolBar(self.geo_edit_toolbar)
+        self.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
+        self.snap_toolbar.setObjectName('Snap_TB')
+        self.addToolBar(self.snap_toolbar)
+        # if self.app.gui_defaults['global_theme'] == 'standard':
+        #     self.toolbarfile = QtWidgets.QToolBar('File Toolbar')
+        #     self.toolbarfile.setObjectName('File_TB')
+        #     self.addToolBar(self.toolbarfile)
+        #     self.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
+        #     self.toolbargeo.setObjectName('Edit_TB')
+        #     self.addToolBar(self.toolbargeo)
+        #     self.toolbarview = QtWidgets.QToolBar('View Toolbar')
+        #     self.toolbarview.setObjectName('View_TB')
+        #     self.addToolBar(self.toolbarview)
+        #     self.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
+        #     self.toolbartools.setObjectName('Tools_TB')
+        #     self.addToolBar(self.toolbartools)
+        #     self.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
+        #     self.exc_edit_toolbar.setObjectName('ExcEditor_TB')
+        #     self.addToolBar(self.exc_edit_toolbar)
+        #     self.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
+        #     self.geo_edit_toolbar.setVisible(False)
+        #     self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
+        #     self.addToolBar(self.geo_edit_toolbar)
+        #     self.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
+        #     self.snap_toolbar.setObjectName('Snap_TB')
+        # elif self.app.defaults['global_theme'] == 'compact':
+        #     self.toolbarfile = QtWidgets.QToolBar('File Toolbar')
+        #     self.toolbarfile.setObjectName('File_TB')
+        #     self.addToolBar(self.toolbarfile)
+        #     self.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
+        #     self.toolbargeo.setObjectName('Edit_TB')
+        #     self.addToolBar(self.toolbargeo)
+        #     self.toolbarview = QtWidgets.QToolBar('View Toolbar')
+        #     self.toolbarview.setObjectName('View_TB')
+        #     self.addToolBar(self.toolbarview)
+        #     self.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
+        #     self.toolbartools.setObjectName('Tools_TB')
+        #     self.addToolBar(self.toolbartools)
+        #     self.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
+        #     self.exc_edit_toolbar.setObjectName('ExcEditor_TB')
+        #     self.addToolBar(self.exc_edit_toolbar)
+        #     self.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
+        #     self.geo_edit_toolbar.setVisible(False)
+        #     self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
+        #     self.addToolBar(self.geo_edit_toolbar)
+        #     self.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
+        #     self.snap_toolbar.setObjectName('Snap_TB')
+        #     self.addToolBar(self.snap_toolbar)
 
+        ### File Toolbar ###
         self.file_open_gerber_btn = self.toolbarfile.addAction(QtGui.QIcon('share/flatcam_icon32.png'),
                                                                "Open GERBER")
         self.file_open_excellon_btn = self.toolbarfile.addAction(QtGui.QIcon('share/drill32.png'), "Open EXCELLON")
@@ -395,10 +463,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.file_open_btn = self.toolbarfile.addAction(QtGui.QIcon('share/folder32.png'), "Open project")
         self.file_save_btn = self.toolbarfile.addAction(QtGui.QIcon('share/floppy32.png'), "Save project")
 
-        self.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
-        self.toolbargeo.setObjectName('Edit_TB')
-        self.addToolBar(self.toolbargeo)
-
+        ### Edit Toolbar ###
         self.newgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_geo32_bis.png'), "New Blank Geometry")
         self.newexc_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_exc32.png'), "New Blank Excellon")
         self.toolbargeo.addSeparator()
@@ -410,10 +475,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.toolbargeo.addSeparator()
         self.delete_btn = self.toolbargeo.addAction(QtGui.QIcon('share/cancel_edit32.png'), "&Delete")
 
-        self.toolbarview = QtWidgets.QToolBar('View Toolbar')
-        self.toolbarview.setObjectName('View_TB')
-        self.addToolBar(self.toolbarview)
-
+        ### View Toolbar ###
         self.replot_btn = self.toolbarview.addAction(QtGui.QIcon('share/replot32.png'), "&Replot")
         self.clear_plot_btn = self.toolbarview.addAction(QtGui.QIcon('share/clear_plot32.png'), "&Clear plot")
         self.zoom_in_btn = self.toolbarview.addAction(QtGui.QIcon('share/zoom_in32.png'), "Zoom In")
@@ -422,17 +484,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # self.toolbarview.setVisible(False)
 
-        self.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
-        self.toolbartools.setObjectName('Tools_TB')
-        self.addToolBar(self.toolbartools)
-
+        ### Tools Toolbar ###
         self.shell_btn = self.toolbartools.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
 
         ### Drill Editor Toolbar ###
-        self.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
-        self.exc_edit_toolbar.setObjectName('ExcEditor_TB')
-        self.addToolBar(self.exc_edit_toolbar)
-
         self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select 'Esc'")
         self.add_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), 'Add Drill Hole')
         self.add_drill_array_btn = self.exc_edit_toolbar.addAction(
@@ -450,11 +505,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.exc_edit_toolbar.setVisible(False)
 
         ### Geometry Editor Toolbar ###
-        self.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
-        self.geo_edit_toolbar.setVisible(False)
-        self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
-        self.addToolBar(self.geo_edit_toolbar)
-
         self.geo_select_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select 'Esc'")
         self.geo_add_circle_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/circle32.png'), 'Add Circle')
         self.geo_add_arc_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/arc32.png'), 'Add Arc')
@@ -484,10 +534,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_move_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Objects 'm'")
 
         ### Snap Toolbar ###
-        self.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
-        self.snap_toolbar.setObjectName('Snap_TB')
         # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
-        self.addToolBar(self.snap_toolbar)
+        # self.addToolBar(self.snap_toolbar)
 
         self.grid_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share/grid32.png'), 'Snap to grid')
         self.grid_gap_x_entry = FCEntry2()
@@ -519,6 +567,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grid_snap_btn.setCheckable(True)
         self.corner_snap_btn.setCheckable(True)
 
+
         ################
         ### Splitter ###
         ################
@@ -530,6 +579,16 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         ################
         self.notebook = QtWidgets.QTabWidget()
         self.splitter.addWidget(self.notebook)
+
+        # if self.app.defaults['global_theme'] == 'standard':
+        #     self.splitter.addWidget(self.notebook)
+        # elif self.app.defaults['global_theme'] == 'compact':
+        #     self.splitter_2 = QtWidgets.QSplitter(Qt.Vertical)
+        #     self.splitter.addWidget(self.splitter_2)
+        #     self.splitter_2.addWidget(self.notebook)
+        #     self.splitter_2.setHandleWidth(0)
+        #     self.snap_toolbar.setMaximumHeight(30)
+        #     self.splitter_2.addWidget(self.snap_toolbar)
 
         ### Project ###
         self.project_tab = QtWidgets.QWidget()
@@ -1294,6 +1353,15 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_11.addWidget(self.sel_draw_color_button)
         self.form_box_child_11.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
+        # Theme selection
+        self.theme_label = QtWidgets.QLabel('Theme:')
+        self.alt_sf_color_label.setToolTip(
+            "Select a theme for FlatCAM."
+        )
+        self.theme_combo = FCComboBox()
+        self.theme_combo.addItem("Standard")
+        self.theme_combo.addItem("Compact")
+
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
@@ -1319,6 +1387,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.draw_color_label, self.form_box_child_10)
         self.form_box.addRow(self.sel_draw_color_label, self.form_box_child_11)
 
+        self.form_box.addRow(self.spacelabel, self.spacelabel)
+        self.form_box.addRow(self.theme_label, self.theme_combo)
         # Add the QFormLayout that holds the Application general defaults
         # to the main layout of this TAB
         self.layout.addLayout(self.form_box)

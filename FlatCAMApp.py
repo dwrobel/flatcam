@@ -313,6 +313,7 @@ class App(QtCore.QObject):
             # "global_pan_with_space_key": self.general_defaults_form.general_gui_group.pan_with_space_cb,
             "global_workspace": self.general_defaults_form.general_gui_group.workspace_cb,
             "global_workspaceT": self.general_defaults_form.general_gui_group.wk_cb,
+            "global_theme": self.general_defaults_form.general_gui_group.theme_combo,
 
             "gerber_plot": self.gerber_defaults_form.gerber_gen_group.plot_cb,
             "gerber_solid": self.gerber_defaults_form.gerber_gen_group.solid_cb,
@@ -468,6 +469,7 @@ class App(QtCore.QObject):
             "global_def_win_y": 100,
             "global_def_win_w": 1024,
             "global_def_win_h": 650,
+            "global_theme": 'standard',
 
             # Constants...
             "global_defaults_save_period_ms": 20000,  # Time between default saves.
@@ -623,6 +625,7 @@ class App(QtCore.QObject):
             "units": self.general_options_form.general_app_group.units_radio,
             "global_gridx": self.general_options_form.general_gui_group.gridx_entry,
             "global_gridy": self.general_options_form.general_gui_group.gridy_entry,
+            "global_theme": self.general_options_form.general_gui_group.theme_combo,
 
             "gerber_plot": self.gerber_options_form.gerber_gen_group.plot_cb,
             "gerber_solid": self.gerber_options_form.gerber_gen_group.solid_cb,
@@ -730,6 +733,7 @@ class App(QtCore.QObject):
             "global_verbose_error_level": 0,  # Shell verbosity:
             # 0 = default(python trace only for unknown errors),
             # 1 = show trace(show trace allways), 2 = (For the future).
+            "global_theme": 'standard',
 
             "gerber_plot": True,
             "gerber_solid": True,
@@ -1152,6 +1156,7 @@ class App(QtCore.QObject):
         self.general_defaults_form.general_gui_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
         self.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
 
+        self.general_defaults_form.general_gui_group.theme_combo.currentIndexChanged.connect(self.on_theme)
 
         # Modify G-CODE Plot Area TAB
         self.ui.code_editor.textChanged.connect(self.handleTextChanged)
@@ -3103,6 +3108,9 @@ class App(QtCore.QObject):
         else:
             self.general_defaults_form.general_gui_group.workspace_cb.setChecked(True)
         self.on_workspace()
+
+    def on_theme(self):
+        self.defaults["global_theme"] = self.general_defaults_form.general_gui_group.theme_combo.get_value()
 
     def on_save_button(self):
         self.save_defaults(silent=False)
