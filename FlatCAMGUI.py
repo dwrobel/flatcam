@@ -1040,6 +1040,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             self.snap_magnet.setVisible(False)
 
     def populate_toolbars(self):
+
         ### File Toolbar ###
         self.file_open_gerber_btn = self.toolbarfile.addAction(QtGui.QIcon('share/flatcam_icon32.png'),
                                                                "Open GERBER")
@@ -1145,6 +1146,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.snap_max_dist_entry.setMaximumWidth(70)
         self.snap_max_dist_entry.setToolTip("Max. magnet distance")
         self.snap_magnet = self.snap_toolbar.addWidget(self.snap_max_dist_entry)
+
+        self.grid_snap_btn.setCheckable(True)
+        self.corner_snap_btn.setCheckable(True)
+        self.update_obj_btn.setEnabled(False)
+        # start with GRID activated
+        self.grid_snap_btn.trigger()
 
         settings = QSettings("Open Source", "FlatCAM")
         if settings.contains("theme"):
