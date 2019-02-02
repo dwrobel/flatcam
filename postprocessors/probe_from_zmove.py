@@ -1,7 +1,7 @@
 from FlatCAMPostProc import *
 
 
-class default(FlatCAMPostProc):
+class probe_from_zmove(FlatCAMPostProc):
 
     coordinate_format = "%.*f"
     feedrate_format = '%.*f'
