@@ -93,7 +93,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.906
-    version_date = "2019/02/2"
+    version_date = "2019/02/3"
     beta = True
 
     # URL for update checks and statistics
@@ -1432,7 +1432,7 @@ class App(QtCore.QObject):
         self.move_tool.install(icon=QtGui.QIcon('share/move16.png'), pos=self.ui.menuedit,
                                before=self.ui.menueditorigin)
 
-        self.cutout_tool = ToolCutout(self)
+        self.cutout_tool = ToolCutOut(self)
         self.cutout_tool.install(icon=QtGui.QIcon('share/cut16.png'), pos=self.ui.menutool,
                                  before=self.measurement_tool.menuAction)
 
@@ -1558,6 +1558,7 @@ class App(QtCore.QObject):
         elif isinstance(edited_obj, FlatCAMExcellon):
             obj_type = "Excellon"
             self.exc_editor.update_fcexcellon(edited_obj)
+            self.exc_editor.update_options(edited_obj)
             self.exc_editor.deactivate()
 
             # update the exc object options so it is including the bounding box values

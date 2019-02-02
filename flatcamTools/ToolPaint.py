@@ -93,7 +93,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.addtool_entry_lbl.setToolTip(
             "Diameter for the new tool."
         )
-        self.addtool_entry = FloatEntry()
+        self.addtool_entry = FCEntry()
 
         # hlay.addWidget(self.addtool_label)
         # hlay.addStretch()
@@ -145,7 +145,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             "due of too many paths."
         )
         grid3.addWidget(ovlabel, 1, 0)
-        self.paintoverlap_entry = LengthEntry()
+        self.paintoverlap_entry = FCEntry()
         grid3.addWidget(self.paintoverlap_entry, 1, 1)
 
         # Margin
@@ -156,7 +156,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             "be painted."
         )
         grid3.addWidget(marginlabel, 2, 0)
-        self.paintmargin_entry = LengthEntry()
+        self.paintmargin_entry = FCEntry()
         grid3.addWidget(self.paintmargin_entry, 2, 1)
 
         # Method
@@ -486,7 +486,17 @@ class ToolPaint(FlatCAMTool, Gerber):
         if dia:
             tool_dia = dia
         else:
-            tool_dia = self.addtool_entry.get_value()
+            try:
+                tool_dia = float(self.addtool_entry.get_value())
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    tool_dia = float(self.addtool_entry.get_value().replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                         "use a number.")
+                    return
+
             if tool_dia is None:
                 self.build_ui()
                 self.app.inform.emit("[warning_notcl] Please enter a tool diameter to add, in Float format.")
@@ -546,7 +556,16 @@ class ToolPaint(FlatCAMTool, Gerber):
                     tool_dias.append(float('%.4f' % v[tool_v]))
 
         for row in range(self.tools_table.rowCount()):
-            new_tool_dia = float(self.tools_table.item(row, 1).text())
+            try:
+                new_tool_dia = float(self.tools_table.item(row, 1).text())
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    new_tool_dia = float(self.tools_table.item(row, 1).text().replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                         "use a number.")
+                    return
             tooluid = int(self.tools_table.item(row, 3).text())
 
             # identify the tool that was edited and get it's tooluid
@@ -672,8 +691,17 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.app.report_usage("geometry_on_paint_button")
 
         self.app.inform.emit("[warning_notcl]Click inside the desired polygon.")
+        try:
+            overlap = float(self.paintoverlap_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                overlap = float(self.paintoverlap_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
 
-        overlap = self.paintoverlap_entry.get_value()
         connect = self.pathconnect_cb.get_value()
         contour = self.paintcontour_cb.get_value()
         select_method = self.selectmethod_combo.get_value()
@@ -744,7 +772,17 @@ class ToolPaint(FlatCAMTool, Gerber):
         # poly = find_polygon(self.solid_geometry, inside_pt)
         poly = obj.find_polygon(inside_pt)
         paint_method = self.paintmethod_combo.get_value()
-        paint_margin = self.paintmargin_entry.get_value()
+
+        try:
+            paint_margin = float(self.paintmargin_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                paint_margin = float(self.paintmargin_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
 
         # No polygon?
         if poly is None:
@@ -878,10 +916,19 @@ class ToolPaint(FlatCAMTool, Gerber):
         :return:
         """
         paint_method = self.paintmethod_combo.get_value()
-        paint_margin = self.paintmargin_entry.get_value()
+
+        try:
+            paint_margin = float(self.paintmargin_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                paint_margin = float(self.paintmargin_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
 
         proc = self.app.proc_container.new("Painting polygon.")
-
         name = outname if outname else self.obj_name + "_paint"
         over = overlap
         conn = connect

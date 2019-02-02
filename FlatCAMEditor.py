@@ -4471,6 +4471,13 @@ class FlatCAMExcEditor(QtCore.QObject):
         # Switch notebook to Selected page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
+    def update_options(self, obj):
+        if not obj.options:
+            obj.options = {}
+            return True
+        else:
+            return False
+
     def new_edited_excellon(self, outname):
         """
         Creates a new Excellon object for the edited Excellon. Thread-safe.

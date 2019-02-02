@@ -5527,7 +5527,7 @@ class CNCjob(Geometry):
         
     def plot2(self, tooldia=None, dpi=75, margin=0.1, gcode_parsed=None,
               color={"T": ["#F0E24D4C", "#B5AB3A4C"], "C": ["#5E6CFFFF", "#4650BDFF"]},
-              alpha={"T": 0.3, "C": 1.0}, tool_tolerance=0.0005, obj=None, visible=False):
+              alpha={"T": 0.3, "C": 1.0}, tool_tolerance=0.0005, obj=None, visible=False, kind='all'):
         """
         Plots the G-code job onto the given axes.
 
@@ -5548,7 +5548,15 @@ class CNCjob(Geometry):
 
         if tooldia == 0:
             for geo in gcode_parsed:
-                obj.add_shape(shape=geo['geom'], color=color[geo['kind'][0]][1], visible=visible)
+                if kind == 'all':
+                    obj.add_shape(shape=geo['geom'], color=color[geo['kind'][0]][1], visible=visible)
+                elif kind == 'travel':
+                    if geo['kind'][0] == 'T':
+                        obj.add_shape(shape=geo['geom'], color=color['T'][1], visible=visible)
+                elif kind == 'cut':
+                    if geo['kind'][0] == 'C':
+                        obj.add_shape(shape=geo['geom'], color=color['C'][1], visible=visible)
+
         else:
             text = []
             pos = []
@@ -5559,8 +5567,17 @@ class CNCjob(Geometry):
                 pos.append(geo['geom'].coords[0])
 
                 poly = geo['geom'].buffer(tooldia / 2.0).simplify(tool_tolerance)
-                obj.add_shape(shape=poly, color=color[geo['kind'][0]][1], face_color=color[geo['kind'][0]][0],
+                if kind == 'all':
+                    obj.add_shape(shape=poly, color=color[geo['kind'][0]][1], face_color=color[geo['kind'][0]][0],
                               visible=visible, layer=1 if geo['kind'][0] == 'C' else 2)
+                elif kind == 'travel':
+                    if geo['kind'][0] == 'T':
+                        obj.add_shape(shape=poly, color=color['T'][1], face_color=color['T'][0],
+                                      visible=visible, layer=2)
+                elif kind == 'cut':
+                    if geo['kind'][0] == 'C':
+                        obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
+                                      visible=visible, layer=1)
 
             obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'])
 

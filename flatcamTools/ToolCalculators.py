@@ -255,10 +255,37 @@ class ToolCalculator(FlatCAMTool):
 
         try:
             tip_diameter = float(self.tipDia_entry.get_value())
-            half_tip_angle = float(self.tipAngle_entry.get_value()) / 2
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                tip_diameter = float(self.tipDia_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
+
+        try:
+            half_tip_angle = float(self.tipAngle_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                half_tip_angle = float(self.tipAngle_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
+        half_tip_angle /= 2
+
+        try:
             cut_depth = float(self.cutDepth_entry.get_value())
-        except:
-            return
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                cut_depth = float(self.cutDepth_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
 
         tool_diameter = tip_diameter + (2 * cut_depth * math.tan(math.radians(half_tip_angle)))
         self.effectiveToolDia_entry.set_value("%.4f" % tool_diameter)
@@ -270,10 +297,50 @@ class ToolCalculator(FlatCAMTool):
         self.mm_entry.set_value('%.6f' % (float(self.inch_entry.get_value()) * 25.4))
 
     def on_calculate_eplate(self):
-        length = float(self.pcblength_entry.get_value())
-        width = float(self.pcbwidth_entry.get_value())
-        density = float(self.cdensity_entry.get_value())
-        copper = float(self.growth_entry.get_value())
+
+        try:
+            length = float(self.pcblength_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                length = float(self.pcblength_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
+
+        try:
+            width = float(self.pcbwidth_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                width = float(self.pcbwidth_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
+
+        try:
+            density = float(self.cdensity_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                density = float(self.cdensity_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
+
+        try:
+            copper = float(self.growth_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                copper = float(self.growth_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
 
         calculated_current = (length * width * density) * 0.0021527820833419
         calculated_time = copper * 2.142857142857143 * float(20 / density)

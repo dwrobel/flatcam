@@ -8,7 +8,7 @@ from GUIElements import IntEntry, RadioSet, LengthEntry
 from FlatCAMObj import FlatCAMGeometry, FlatCAMExcellon, FlatCAMGerber
 
 
-class ToolCutout(FlatCAMTool):
+class ToolCutOut(FlatCAMTool):
 
     toolName = "Cutout PCB"
 
@@ -228,19 +228,37 @@ class ToolCutout(FlatCAMTool):
 
         try:
             dia = float(self.dia.get_value())
-        except TypeError:
-            self.app.inform.emit("[warning_notcl] Tool diameter value is missing. Add it and retry.")
-            return
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                dia = float(self.dia.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[warning_notcl] Tool diameter value is missing or wrong format. "
+                                     "Add it and retry.")
+                return
+
         try:
             margin = float(self.margin.get_value())
-        except TypeError:
-            self.app.inform.emit("[warning_notcl] Margin value is missing. Add it and retry.")
-            return
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                margin = float(self.margin.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[warning_notcl] Margin value is missing or wrong format. "
+                                     "Add it and retry.")
+                return
+
         try:
             gapsize = float(self.gapsize.get_value())
-        except TypeError:
-            self.app.inform.emit("[warning_notcl] Gap size value is missing. Add it and retry.")
-            return
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                gapsize = float(self.gapsize.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[warning_notcl] Gap size value is missing or wrong format. "
+                                     "Add it and retry.")
+                return
+
         try:
             gaps = self.gaps.get_value()
         except TypeError:
@@ -349,19 +367,37 @@ class ToolCutout(FlatCAMTool):
 
         try:
             dia = float(self.dia.get_value())
-        except TypeError:
-            self.app.inform.emit("[warning_notcl] Tool diameter value is missing. Add it and retry.")
-            return
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                dia = float(self.dia.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[warning_notcl] Tool diameter value is missing or wrong format. "
+                                     "Add it and retry.")
+                return
+
         try:
             margin = float(self.margin.get_value())
-        except TypeError:
-            self.app.inform.emit("[warning_notcl] Margin value is missing. Add it and retry.")
-            return
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                margin = float(self.margin.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[warning_notcl] Margin value is missing or wrong format. "
+                                     "Add it and retry.")
+                return
+
         try:
             gapsize = float(self.gapsize.get_value())
-        except TypeError:
-            self.app.inform.emit("[warning_notcl] Gap size value is missing. Add it and retry.")
-            return
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                gapsize = float(self.gapsize.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[warning_notcl] Gap size value is missing or wrong format. "
+                                     "Add it and retry.")
+                return
+
         try:
             gaps = self.gaps_rect_radio.get_value()
         except TypeError:

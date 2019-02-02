@@ -2291,7 +2291,18 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
             for tooluid_key, tooluid_value in self.tools.items():
                 if int(tooluid_key) == tool_uid:
-                    tooluid_value['offset_value'] = self.ui.tool_offset_entry.get_value()
+                    try:
+                        tooluid_value['offset_value'] = float(self.ui.tool_offset_entry.get_value())
+                    except ValueError:
+                        # try to convert comma to decimal point. if it's still not working error message and return
+                        try:
+                            tooluid_value['offset_value'] = float(
+                                self.ui.tool_offset_entry.get_value().replace(',', '.')
+                            )
+                        except ValueError:
+                            self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                                 "use a number.")
+                            return
 
     def ui_connect(self):
 
@@ -2408,10 +2419,23 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         last_data = None
         last_solid_geometry = []
 
+        # if a Tool diameter entered is a char instead a number the final message of Tool adding is changed
+        # because the Default value for Tool is used.
+        change_message = False
+
         if dia is not None:
             tooldia = dia
         else:
-            tooldia = self.ui.addtool_entry.get_value()
+            try:
+                tooldia = float(self.ui.addtool_entry.get_value())
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    tooldia = float(self.ui.addtool_entry.get_value().replace(',', '.'))
+                except ValueError:
+                    change_message = True
+                    tooldia = float(self.app.defaults["geometry_cnctooldia"])
+
             if tooldia is None:
                 self.build_ui()
                 self.app.inform.emit("[error_notcl] Please enter the desired tool diameter in Float format.")
@@ -2486,7 +2510,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             pass
         self.ser_attrs.append('tools')
 
-        self.app.inform.emit("[success] Tool added in Tool Table.")
+        if change_message is False:
+            self.app.inform.emit("[success] Tool added in Tool Table.")
+        else:
+            change_message = False
+            self.app.inform.emit("[error_notcl]Default Tool added. Wrong value format entered.")
         self.build_ui()
 
     def on_tool_copy(self, all=None):
@@ -2556,7 +2584,18 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui_disconnect()
 
         current_row = current_item.row()
-        tool_dia = float('%.4f' % float(self.ui.geo_tools_table.item(current_row, 1).text()))
+        try:
+            d = float(self.ui.geo_tools_table.item(current_row, 1).text())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                d = float(self.ui.geo_tools_table.item(current_row, 1).text().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
+
+        tool_dia = float('%.4f' % d)
         tooluid = int(self.ui.geo_tools_table.item(current_row, 5).text())
 
         self.tools[tooluid]['tooldia'] = tool_dia
@@ -2823,7 +2862,17 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         tool_type_item = self.ui.geo_tools_table.cellWidget(row, 4).currentText()
         tooluid_item = int(self.ui.geo_tools_table.item(row, 5).text())
 
-        offset_value_item = self.ui.tool_offset_entry.get_value()
+        try:
+            offset_value_item = float(self.ui.tool_offset_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                offset_value_item = float(self.ui.tool_offset_entry.get_value().replace(',', '.')
+                                     )
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
 
         # this new dict will hold the actual useful data, another dict that is the value of key 'data'
         temp_tools = {}
@@ -2965,7 +3014,16 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # test to see if we have tools available in the tool table
         if self.ui.geo_tools_table.selectedItems():
             for x in self.ui.geo_tools_table.selectedItems():
-                tooldia = float(self.ui.geo_tools_table.item(x.row(), 1).text())
+                try:
+                    tooldia = float(self.ui.geo_tools_table.item(x.row(), 1).text())
+                except ValueError:
+                    # try to convert comma to decimal point. if it's still not working error message and return
+                    try:
+                        tooldia = float(self.ui.geo_tools_table.item(x.row(), 1).text().replace(',', '.'))
+                    except ValueError:
+                        self.app.inform.emit("[error_notcl]Wrong Tool Dia value format entered, "
+                                             "use a number.")
+                        return
                 tooluid = int(self.ui.geo_tools_table.item(x.row(), 5).text())
 
                 for tooluid_key, tooluid_value in self.tools.items():
@@ -3119,7 +3177,17 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     tool_offset = 0.0
                 else:
                     offset_str = 'custom'
-                    offset_value = self.ui.tool_offset_entry.get_value()
+                    try:
+                        offset_value = float(self.ui.tool_offset_entry.get_value())
+                    except ValueError:
+                        # try to convert comma to decimal point. if it's still not working error message and return
+                        try:
+                            offset_value = float(self.ui.tool_offset_entry.get_value().replace(',', '.')
+                                                 )
+                        except ValueError:
+                            self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                                 "use a number.")
+                            return
                     if offset_value:
                         tool_offset = float(offset_value)
                     else:
@@ -3296,7 +3364,17 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     tool_offset = 0.0
                 else:
                     offset_str = 'custom'
-                    offset_value = self.ui.tool_offset_entry.get_value()
+                    try:
+                        offset_value = float(self.ui.tool_offset_entry.get_value())
+                    except ValueError:
+                        # try to convert comma to decimal point. if it's still not working error message and return
+                        try:
+                            offset_value = float(self.ui.tool_offset_entry.get_value().replace(',', '.')
+                                                  )
+                        except ValueError:
+                            self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                                 "use a number.")
+                            return
                     if offset_value:
                         tool_offset = float(offset_value)
                     else:
@@ -3649,7 +3727,18 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     tool_dia_copy[dia_key] = dia_value
 
                     # convert the value in the Custom Tool Offset entry in UI
-                    custom_offset = self.ui.tool_offset_entry.get_value()
+                    try:
+                        custom_offset = float(self.ui.tool_offset_entry.get_value())
+                    except ValueError:
+                        # try to convert comma to decimal point. if it's still not working error message and return
+                        try:
+                            custom_offset = float(self.ui.tool_offset_entry.get_value().replace(',', '.')
+                            )
+                        except ValueError:
+                            self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                                 "use a number.")
+                            return
+
                     if custom_offset:
                         custom_offset *= factor
                         self.ui.tool_offset_entry.set_value(custom_offset)
@@ -3998,9 +4087,14 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # Fill form fields only on object create
         self.to_form()
 
+        # set the kind of geometries are plotted by default with plot2() from camlib.CNCJob
+        self.ui.cncplot_method_combo.set_value('all')
+
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)
         self.ui.modify_gcode_button.clicked.connect(self.on_modifygcode_button_click)
+
+        self.ui.cncplot_method_combo.activated_custom.connect(self.on_plot_kind_change)
 
     def ui_connect(self):
         for row in range(self.ui.cnc_tools_table.rowCount()):
@@ -4023,6 +4117,10 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         """
         self.read_form()
         self.plot()
+
+    def on_plot_kind_change(self):
+        kind = self.ui.cncplot_method_combo.get_value()
+        self.plot(kind=kind)
 
     def on_exportgcode_button_click(self, *args):
         self.app.report_usage("cncjob_on_exportgcode_button")
@@ -4280,7 +4378,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.ui_connect()
 
 
-    def plot(self, visible=None):
+    def plot(self, visible=None, kind='all'):
 
         # Does all the required setup and returns False
         # if the 'ptint' option is set to False.
@@ -4291,13 +4389,13 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         try:
             if self.multitool is False: # single tool usage
-                self.plot2(tooldia=self.options["tooldia"], obj=self, visible=visible)
+                self.plot2(tooldia=self.options["tooldia"], obj=self, visible=visible, kind=kind)
             else:
                 # multiple tools usage
                 for tooluid_key in self.cnc_tools:
                     tooldia = float('%.4f' % float(self.cnc_tools[tooluid_key]['tooldia']))
                     gcode_parsed = self.cnc_tools[tooluid_key]['gcode_parsed']
-                    self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed)
+                    self.plot2(tooldia=tooldia, obj=self, visible=visible, gcode_parsed=gcode_parsed, kind=kind)
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)

@@ -1,6 +1,6 @@
 from FlatCAMTool import FlatCAMTool
 
-from GUIElements import RadioSet, FloatEntry
+from GUIElements import RadioSet, FCEntry
 from PyQt5 import QtGui, QtCore, QtWidgets
 
 
@@ -99,7 +99,7 @@ class Film(FlatCAMTool):
 
         # Boundary for negative film generation
 
-        self.boundary_entry = FloatEntry()
+        self.boundary_entry = FCEntry()
         self.boundary_label = QtWidgets.QLabel("Border:")
         self.boundary_label.setToolTip(
             "Specify a border around the object.\n"
@@ -172,7 +172,17 @@ class Film(FlatCAMTool):
             self.app.inform.emit("[error_notcl] No Box object selected. Load a Box object and retry.")
             return
 
-        border = float(self.boundary_entry.get_value())
+        try:
+            border = float(self.boundary_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                border = float(self.boundary_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
+
         if border is None:
             border = 0
 

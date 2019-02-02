@@ -377,9 +377,14 @@ class ToolTransform(FlatCAMTool):
     def on_rotate(self):
         try:
             value = float(self.rotate_entry.get_value())
-        except Exception as e:
-            self.app.inform.emit("[error] Failed to rotate due of: %s" % str(e))
-            return
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                value = float(self.rotate_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered for Rotate, "
+                                     "use a number.")
+                return
         self.app.worker_task.emit({'fcn': self.on_rotate_action,
                                        'params': [value]})
         # self.on_rotate_action(value)
@@ -406,9 +411,15 @@ class ToolTransform(FlatCAMTool):
     def on_skewx(self):
         try:
             value = float(self.skewx_entry.get_value())
-        except:
-            self.app.inform.emit("[warning_notcl] No value for Skew!")
-            return
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                value = float(self.skewx_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered for Skew X, "
+                                     "use a number.")
+                return
+
         # self.on_skew("X", value)
         axis = 'X'
         self.app.worker_task.emit({'fcn': self.on_skew,
@@ -418,9 +429,15 @@ class ToolTransform(FlatCAMTool):
     def on_skewy(self):
         try:
             value = float(self.skewy_entry.get_value())
-        except:
-            self.app.inform.emit("[warning_notcl] No value for Skew!")
-            return
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                value = float(self.skewy_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered for Skew Y, "
+                                     "use a number.")
+                return
+
         # self.on_skew("Y", value)
         axis = 'Y'
         self.app.worker_task.emit({'fcn': self.on_skew,
@@ -430,9 +447,15 @@ class ToolTransform(FlatCAMTool):
     def on_scalex(self):
         try:
             xvalue = float(self.scalex_entry.get_value())
-        except:
-            self.app.inform.emit("[warning_notcl] No value for Scale!")
-            return
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                xvalue = float(self.scalex_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered for Scale X, "
+                                     "use a number.")
+                return
+
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
         if xvalue == 0:
             xvalue = 1
@@ -458,9 +481,15 @@ class ToolTransform(FlatCAMTool):
         xvalue = 1
         try:
             yvalue = float(self.scaley_entry.get_value())
-        except:
-            self.app.inform.emit("[warning_notcl] No value for Scale!")
-            return
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                yvalue = float(self.scaley_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered for Scale Y, "
+                                     "use a number.")
+                return
+
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
         if yvalue == 0:
             yvalue = 1
@@ -481,9 +510,15 @@ class ToolTransform(FlatCAMTool):
     def on_offx(self):
         try:
             value = float(self.offx_entry.get_value())
-        except:
-            self.app.inform.emit("[warning_notcl] No value for Offset!")
-            return
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                value = float(self.offx_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered for Offset X, "
+                                     "use a number.")
+                return
+
         # self.on_offset("X", value)
         axis = 'X'
         self.app.worker_task.emit({'fcn': self.on_offset,
@@ -493,9 +528,15 @@ class ToolTransform(FlatCAMTool):
     def on_offy(self):
         try:
             value = float(self.offy_entry.get_value())
-        except:
-            self.app.inform.emit("[warning_notcl] No value for Offset!")
-            return
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                value = float(self.offy_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered for Offset Y, "
+                                     "use a number.")
+                return
+
         # self.on_offset("Y", value)
         axis = 'Y'
         self.app.worker_task.emit({'fcn': self.on_offset,

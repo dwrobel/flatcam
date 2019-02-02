@@ -5,7 +5,8 @@ from flatcamTools.ToolPanelize import Panelize
 from flatcamTools.ToolFilm import Film
 from flatcamTools.ToolMove import ToolMove
 from flatcamTools.ToolDblSided import DblSidedTool
-from flatcamTools.ToolCutout import ToolCutout
+
+from flatcamTools.ToolCutOut import ToolCutOut
 from flatcamTools.ToolCalculators import ToolCalculator
 from flatcamTools.ToolProperties import Properties
 from flatcamTools.ToolImage import ToolImage

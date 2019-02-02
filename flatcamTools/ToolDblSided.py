@@ -6,6 +6,7 @@ from shapely.geometry import Point
 from shapely import affinity
 from PyQt5 import QtCore
 
+
 class DblSidedTool(FlatCAMTool):
 
     toolName = "2-Sided PCB"
@@ -113,8 +114,8 @@ class DblSidedTool(FlatCAMTool):
         self.axloc_label = QtWidgets.QLabel("Axis Ref:")
         self.axloc_label.setToolTip(
             "The axis should pass through a <b>point</b> or cut\n "
-            "a specified <b>box</b> (in a Geometry object) in \n"
-            "the middle."
+            "a specified <b>box</b> (in a FlatCAM object) through \n"
+            "the center."
         )
         # grid_lay.addRow("Axis Location:", self.axis_location)
         grid_lay.addWidget(self.axloc_label, 8, 0)
@@ -127,19 +128,18 @@ class DblSidedTool(FlatCAMTool):
         self.point_box_container = QtWidgets.QVBoxLayout()
         self.pb_label = QtWidgets.QLabel("<b>Point/Box:</b>")
         self.pb_label.setToolTip(
-            "Specify the point (x, y) through which the mirror axis \n "
-            "passes or the Geometry object containing a rectangle \n"
-            "that the mirror axis cuts in half."
+            "If 'Point' is selected above it store the coordinates (x, y) through which\n"
+            "the mirroring axis passes.\n"
+            "If 'Box' is selected above, select here a FlatCAM object (Gerber, Exc or Geo).\n"
+            "Through the center of this object pass the mirroring axis selected above."
         )
-        # grid_lay.addRow("Point/Box:", self.point_box_container)
 
         self.add_point_button = QtWidgets.QPushButton("Add")
         self.add_point_button.setToolTip(
-            "Add the <b>point (x, y)</b> through which the mirror axis \n "
-            "passes or the Object containing a rectangle \n"
-            "that the mirror axis cuts in half.\n"
-            "The point is captured by pressing SHIFT key\n"
-            "and left mouse clicking on canvas or you can enter them manually."
+            "Add the coordinates in format <b>(x, y)</b> through which the mirroring axis \n "
+            "selected in 'MIRROR AXIS' pass.\n"
+            "The (x, y) coordinates are captured by pressing SHIFT key\n"
+            "and left mouse button click on canvas or you can enter the coords manually."
         )
         self.add_point_button.setFixedWidth(40)
 
@@ -171,9 +171,9 @@ class DblSidedTool(FlatCAMTool):
         self.ah_label.setToolTip(
             "Alignment holes (x1, y1), (x2, y2), ... "
             "on one side of the mirror axis. For each set of (x, y) coordinates\n"
-            "entered here, a pair of drills will be created: one on the\n"
-            "coordinates entered and one in mirror position over the axis\n"
-            "selected above in the 'Mirror Axis'."
+            "entered here, a pair of drills will be created:\n\n"
+            "- one drill at the coordinates from the field\n"
+            "- one drill in mirror position over the axis selected above in the 'Mirror Axis'."
         )
         self.layout.addWidget(self.ah_label)
 
@@ -184,10 +184,13 @@ class DblSidedTool(FlatCAMTool):
 
         self.add_drill_point_button = QtWidgets.QPushButton("Add")
         self.add_drill_point_button.setToolTip(
-            "Add alignment drill holes coords (x1, y1), (x2, y2), ... \n"
-            "on one side of the mirror axis.\n"
-            "The point(s) can be captured by pressing SHIFT key\n"
-            "and left mouse clicking on canvas. Or you can enter them manually."
+            "Add alignment drill holes coords in the format: (x1, y1), (x2, y2), ... \n"
+            "on one side of the mirror axis.\n\n"
+            "The coordinates set can be obtained:\n"
+            "- press SHIFT key and left mouse clicking on canvas. Then click Add.\n"
+            "- press SHIFT key and left mouse clicking on canvas. Then CTRL+V in the field.\n"
+            "- press SHIFT key and left mouse clicking on canvas. Then RMB click in the field and click Paste.\n"
+            "- by entering the coords manually in the format: (x1, y1), (x2, y2), ..."
         )
         self.add_drill_point_button.setFixedWidth(40)
 
@@ -195,11 +198,10 @@ class DblSidedTool(FlatCAMTool):
         grid_lay1.addWidget(self.add_drill_point_button, 0, 3)
 
         ## Drill diameter for alignment holes
-        self.dt_label = QtWidgets.QLabel("<b>Alignment Drill Creation</b>:")
+        self.dt_label = QtWidgets.QLabel("<b>Alignment Drill Diameter</b>:")
         self.dt_label.setToolTip(
-            "Create a set of alignment drill holes\n"
-            "with the specified diameter,\n"
-            "at the specified coordinates."
+            "Diameter of the drill for the "
+            "alignment holes."
         )
         self.layout.addWidget(self.dt_label)
 
@@ -295,6 +297,9 @@ class DblSidedTool(FlatCAMTool):
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
         dia = self.drill_dia.get_value()
+        if dia is None:
+            self.app.inform.emit("[warning_notcl]No value or wrong format in Drill Dia entry. Add it and retry.")
+            return
         tools = {"1": {"C": dia}}
 
         # holes = self.alignment_holes.get_value()

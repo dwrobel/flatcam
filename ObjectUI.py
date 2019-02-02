@@ -708,6 +708,8 @@ class GeometryObjectUI(ObjectUI):
         self.geo_tools_table.setColumnWidth(0, 20)
         self.geo_tools_table.setHorizontalHeaderLabels(['#', 'Dia', 'Offset', 'Type', 'TT', '', 'P'])
         self.geo_tools_table.setColumnHidden(5, True)
+        # stylesheet = "::section{Background-color:rgb(239,239,245)}"
+        # self.geo_tools_table.horizontalHeader().setStyleSheet(stylesheet)
 
         self.geo_tools_table.horizontalHeaderItem(0).setToolTip(
             "This is the Tool Number.\n"
@@ -758,7 +760,7 @@ class GeometryObjectUI(ObjectUI):
             "cut and negative for 'inside' cut."
         )
         self.grid1.addWidget(self.tool_offset_lbl, 0, 0)
-        self.tool_offset_entry = FloatEntry()
+        self.tool_offset_entry = FCEntry()
         spacer_lbl = QtWidgets.QLabel(" ")
         spacer_lbl.setFixedWidth(80)
 
@@ -777,7 +779,7 @@ class GeometryObjectUI(ObjectUI):
         self.addtool_entry_lbl.setToolTip(
             "Diameter for the new tool"
         )
-        self.addtool_entry = FloatEntry()
+        self.addtool_entry = FCEntry()
 
         # hlay.addWidget(self.addtool_label)
         # hlay.addStretch()
@@ -1067,15 +1069,26 @@ class CNCObjectUI(ObjectUI):
         self.plot_options_label = QtWidgets.QLabel("<b>Plot Options:</b>")
         self.custom_box.addWidget(self.plot_options_label)
 
-        # # Tool dia for plot
-        # tdlabel = QtWidgets.QLabel('Tool dia:')
-        # tdlabel.setToolTip(
-        #     "Diameter of the tool to be\n"
-        #     "rendered in the plot."
-        # )
-        # grid0.addWidget(tdlabel, 1, 0)
-        # self.tooldia_entry = LengthEntry()
-        # grid0.addWidget(self.tooldia_entry, 1, 1)
+        self.cncplot_method_label = QtWidgets.QLabel("Plot kind:")
+        self.cncplot_method_label.setToolTip(
+            "This selects the kind of geometries on the canvas to plot.\n"
+            "Those can be either of type 'Travel' which means the moves\n"
+            "above the work piece or it can be of type 'Cut',\n"
+            "which means the moves that cut into the material."
+        )
+
+        self.cncplot_method_combo = RadioSet([
+            {"label": "All", "value": "all"},
+            {"label": "Travel", "value": "travel"},
+            {"label": "Cut", "value": "cut"}
+        ], stretch=False)
+
+        f_lay = QtWidgets.QFormLayout()
+        self.custom_box.addLayout(f_lay)
+        f_lay.addRow(self.cncplot_method_label, self.cncplot_method_combo)
+
+        e1_lbl = QtWidgets.QLabel('')
+        self.custom_box.addWidget(e1_lbl)
 
         hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(hlay)
@@ -1115,6 +1128,8 @@ class CNCObjectUI(ObjectUI):
         self.cnc_tools_table.setColumnWidth(0, 20)
         self.cnc_tools_table.setHorizontalHeaderLabels(['#', 'Dia', 'Offset', 'Type', 'TT', '', 'P'])
         self.cnc_tools_table.setColumnHidden(5, True)
+        # stylesheet = "::section{Background-color:rgb(239,239,245)}"
+        # self.cnc_tools_table.horizontalHeader().setStyleSheet(stylesheet)
 
         # Update plot button
         self.updateplot_button = QtWidgets.QPushButton('Update Plot')

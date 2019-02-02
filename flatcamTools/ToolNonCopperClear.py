@@ -96,7 +96,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.addtool_entry_lbl.setToolTip(
             "Diameter for the new tool to add in the Tool Table"
         )
-        self.addtool_entry = FloatEntry()
+        self.addtool_entry = FCEntry()
 
         # hlay.addWidget(self.addtool_label)
         # hlay.addStretch()
@@ -150,7 +150,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             "due of too many paths."
         )
         grid3.addWidget(nccoverlabel, 1, 0)
-        self.ncc_overlap_entry = FloatEntry()
+        self.ncc_overlap_entry = FCEntry()
         grid3.addWidget(self.ncc_overlap_entry, 1, 1)
 
         nccmarginlabel = QtWidgets.QLabel('Margin:')
@@ -158,7 +158,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             "Bounding box margin."
         )
         grid3.addWidget(nccmarginlabel, 2, 0)
-        self.ncc_margin_entry = FloatEntry()
+        self.ncc_margin_entry = FCEntry()
         grid3.addWidget(self.ncc_margin_entry, 2, 1)
 
         # Method
@@ -430,7 +430,16 @@ class NonCopperClear(FlatCAMTool, Gerber):
         if dia:
             tool_dia = dia
         else:
-            tool_dia = self.addtool_entry.get_value()
+            try:
+                tool_dia = float(self.addtool_entry.get_value())
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    tool_dia = float(self.addtool_entry.get_value().replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                         "use a number.")
+                    return
             if tool_dia is None:
                 self.build_ui()
                 self.app.inform.emit("[warning_notcl] Please enter a tool diameter to add, in Float format.")
@@ -487,7 +496,18 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     tool_dias.append(float('%.4f' % v[tool_v]))
 
         for row in range(self.tools_table.rowCount()):
-            new_tool_dia = float(self.tools_table.item(row, 1).text())
+
+            try:
+                new_tool_dia = float(self.tools_table.item(row, 1).text())
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    new_tool_dia = float(self.tools_table.item(row, 1).text().replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                         "use a number.")
+                    return
+
             tooluid = int(self.tools_table.item(row, 3).text())
 
             # identify the tool that was edited and get it's tooluid
@@ -553,10 +573,28 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
     def on_ncc(self):
 
-        over = self.ncc_overlap_entry.get_value()
+        try:
+            over = float(self.ncc_overlap_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                over = float(self.ncc_overlap_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
         over = over if over else self.app.defaults["tools_nccoverlap"]
 
-        margin = self.ncc_margin_entry.get_value()
+        try:
+            margin = float(self.ncc_margin_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                margin = float(self.ncc_margin_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
         margin = margin if margin else self.app.defaults["tools_nccmargin"]
 
         connect = self.ncc_connect_cb.get_value()

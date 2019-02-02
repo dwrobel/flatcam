@@ -82,7 +82,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.box_combo_label, self.box_combo)
 
         ## Spacing Columns
-        self.spacing_columns = FloatEntry()
+        self.spacing_columns = FCEntry()
         self.spacing_columns_label = QtWidgets.QLabel("Spacing cols:")
         self.spacing_columns_label.setToolTip(
             "Spacing between columns of the desired panel.\n"
@@ -91,7 +91,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.spacing_columns_label, self.spacing_columns)
 
         ## Spacing Rows
-        self.spacing_rows = FloatEntry()
+        self.spacing_rows = FCEntry()
         self.spacing_rows_label = QtWidgets.QLabel("Spacing rows:")
         self.spacing_rows_label.setToolTip(
             "Spacing between rows of the desired panel.\n"
@@ -100,7 +100,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.spacing_rows_label, self.spacing_rows)
 
         ## Columns
-        self.columns = IntEntry()
+        self.columns = FCEntry()
         self.columns_label = QtWidgets.QLabel("Columns:")
         self.columns_label.setToolTip(
             "Number of columns of the desired panel"
@@ -108,7 +108,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.columns_label, self.columns)
 
         ## Rows
-        self.rows = IntEntry()
+        self.rows = FCEntry()
         self.rows_label = QtWidgets.QLabel("Rows:")
         self.rows_label.setToolTip(
             "Number of rows of the desired panel"
@@ -126,7 +126,7 @@ class Panelize(FlatCAMTool):
         )
         form_layout.addRow(self.constrain_cb)
 
-        self.x_width_entry = FloatEntry()
+        self.x_width_entry = FCEntry()
         self.x_width_lbl = QtWidgets.QLabel("Width (DX):")
         self.x_width_lbl.setToolTip(
             "The width (DX) within which the panel must fit.\n"
@@ -134,7 +134,7 @@ class Panelize(FlatCAMTool):
         )
         form_layout.addRow(self.x_width_lbl, self.x_width_entry)
 
-        self.y_height_entry = FloatEntry()
+        self.y_height_entry = FCEntry()
         self.y_height_lbl = QtWidgets.QLabel("Height (DY):")
         self.y_height_lbl.setToolTip(
             "The height (DY)within which the panel must fit.\n"
@@ -237,20 +237,77 @@ class Panelize(FlatCAMTool):
 
         self.outname = name + '_panelized'
 
-        spacing_columns = self.spacing_columns.get_value()
+        try:
+            spacing_columns = float(self.spacing_columns.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                spacing_columns = float(self.spacing_columns.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
         spacing_columns = spacing_columns if spacing_columns is not None else 0
 
-        spacing_rows = self.spacing_rows.get_value()
+        try:
+            spacing_rows = float(self.spacing_rows.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                spacing_rows = float(self.spacing_rows.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
         spacing_rows = spacing_rows if spacing_rows is not None else 0
 
-        rows = self.rows.get_value()
+        try:
+            rows = int(self.rows.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                rows = float(self.rows.get_value().replace(',', '.'))
+                rows = int(rows)
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
         rows = rows if rows is not None else 1
 
-        columns = self.columns.get_value()
+        try:
+            columns = int(self.columns.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                columns = float(self.columns.get_value().replace(',', '.'))
+                columns = int(columns)
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
         columns = columns if columns is not None else 1
 
-        constrain_dx = self.x_width_entry.get_value()
-        constrain_dy = self.y_height_entry.get_value()
+        try:
+            constrain_dx = float(self.x_width_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                constrain_dx = float(self.x_width_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
+
+        try:
+            constrain_dy = float(self.y_height_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                constrain_dy = float(self.y_height_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                                     "use a number.")
+                return
 
         if 0 in {columns, rows}:
             self.app.inform.emit("[error_notcl]Columns or Rows are zero value. Change them to a positive integer.")
