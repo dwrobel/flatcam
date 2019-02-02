@@ -43,7 +43,6 @@ class Film(FlatCAMTool):
         self.tf_object_combo = QtWidgets.QComboBox()
         self.tf_object_combo.setModel(self.app.collection)
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.tf_object_combo.setCurrentIndex(1)
         self.tf_object_label = QtWidgets.QLabel("Film Object:")
         self.tf_object_label.setToolTip(
             "Object for which to create the film."
@@ -75,7 +74,6 @@ class Film(FlatCAMTool):
         self.tf_box_combo = QtWidgets.QComboBox()
         self.tf_box_combo.setModel(self.app.collection)
         self.tf_box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.tf_box_combo.setCurrentIndex(1)
 
         self.tf_box_combo_label = QtWidgets.QLabel("Box Object:")
         self.tf_box_combo_label.setToolTip(
@@ -136,10 +134,6 @@ class Film(FlatCAMTool):
         self.tf_type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
         self.tf_type_box_combo.currentIndexChanged.connect(self.on_type_box_index_changed)
 
-        ## Initialize form
-        self.film_type.set_value('neg')
-        self.boundary_entry.set_value(0.0)
-
     def on_type_obj_index_changed(self, index):
         obj_type = self.tf_type_obj_combo.currentIndex()
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
@@ -152,10 +146,19 @@ class Film(FlatCAMTool):
 
     def run(self):
         FlatCAMTool.run(self)
+        self.set_tool_ui()
         self.app.ui.notebook.setTabText(2, "Film Tool")
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+L', **kwargs)
+
+    def set_tool_ui(self):
+        self.reset_fields()
+
+        self.tf_object_combo.setCurrentIndex(1)
+        self.tf_box_combo.setCurrentIndex(1)
+        self.film_type.set_value('neg')
+        self.boundary_entry.set_value(0.0)
 
     def on_film_creation(self):
         try:

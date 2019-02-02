@@ -212,17 +212,16 @@ class ToolCalculator(FlatCAMTool):
 
         self.calculate_plate_button.clicked.connect(self.on_calculate_eplate)
 
-        self.set_ui()
 
     def run(self):
         FlatCAMTool.run(self)
-        self.set_ui()
+        self.set_tool_ui()
         self.app.ui.notebook.setTabText(2, "Calc. Tool")
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+C', **kwargs)
 
-    def set_ui(self):
+    def set_tool_ui(self):
         ## Initialize form
         self.mm_entry.set_value('0')
         self.inch_entry.set_value('0')

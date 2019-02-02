@@ -34,7 +34,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.object_combo = QtWidgets.QComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.object_combo.setCurrentIndex(1)
         self.object_label = QtWidgets.QLabel("Gerber:")
         self.object_label.setToolTip(
             "Gerber object to be cleared of excess copper.                        "
@@ -238,12 +237,15 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
     def run(self):
         FlatCAMTool.run(self)
-        self.tools_frame.show()
-        self.set_ui()
+        self.set_tool_ui()
         self.build_ui()
         self.app.ui.notebook.setTabText(2, "NCC Tool")
 
-    def set_ui(self):
+    def set_tool_ui(self):
+        self.tools_frame.show()
+
+        self.object_combo.setCurrentIndex(1)
+
         self.ncc_overlap_entry.set_value(self.app.defaults["tools_nccoverlap"])
         self.ncc_margin_entry.set_value(self.app.defaults["tools_nccmargin"])
         self.ncc_method_radio.set_value(self.app.defaults["tools_nccmethod"])
@@ -882,3 +884,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         # Background
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+
+    def reset_fields(self):
+        self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+

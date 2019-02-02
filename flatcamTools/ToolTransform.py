@@ -355,7 +355,15 @@ class ToolTransform(FlatCAMTool):
         self.offx_entry.returnPressed.connect(self.on_offx)
         self.offy_entry.returnPressed.connect(self.on_offy)
 
+    def run(self):
+        FlatCAMTool.run(self)
+        self.set_tool_ui()
+        self.app.ui.notebook.setTabText(2, "Transform Tool")
 
+    def install(self, icon=None, separator=None, **kwargs):
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+R', **kwargs)
+
+    def set_tool_ui(self):
         ## Initialize form
         self.rotate_entry.set_value('0')
         self.skewx_entry.set_value('0')
@@ -365,13 +373,6 @@ class ToolTransform(FlatCAMTool):
         self.offx_entry.set_value('0')
         self.offy_entry.set_value('0')
         self.flip_ref_cb.setChecked(False)
-
-    def run(self):
-        FlatCAMTool.run(self)
-        self.app.ui.notebook.setTabText(2, "Transform Tool")
-
-    def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+R', **kwargs)
 
     def on_rotate(self):
         try:

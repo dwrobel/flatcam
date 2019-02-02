@@ -32,7 +32,6 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.object_combo = QtWidgets.QComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        self.object_combo.setCurrentIndex(1)
         self.object_label = QtWidgets.QLabel("Geometry:")
         self.object_label.setToolTip(
             "Geometry object to be painted.                        "
@@ -295,8 +294,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
     def run(self):
         FlatCAMTool.run(self)
-        self.tools_frame.show()
-        self.set_ui()
+        self.set_tool_ui()
         self.app.ui.notebook.setTabText(2, "Paint Tool")
 
     def on_radio_selection(self):
@@ -320,7 +318,11 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.deltool_btn.setDisabled(False)
             self.tools_table.setContextMenuPolicy(Qt.ActionsContextMenu)
 
-    def set_ui(self):
+    def set_tool_ui(self):
+        self.tools_frame.show()
+        self.reset_fields()
+        self.object_combo.setCurrentIndex(1)
+
         ## Init the GUI interface
         self.paintmargin_entry.set_value(self.default_data["paintmargin"])
         self.paintmethod_combo.set_value(self.default_data["paintmethod"])
@@ -1125,3 +1127,6 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         # Background
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+
+    def reset_fields(self):
+        self.object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))

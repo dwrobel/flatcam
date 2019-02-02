@@ -7,6 +7,7 @@ from GUIElements import IntEntry, RadioSet, LengthEntry
 
 from FlatCAMObj import FlatCAMGeometry, FlatCAMExcellon, FlatCAMGerber
 
+
 class ToolCutout(FlatCAMTool):
 
     toolName = "Cutout PCB"
@@ -47,7 +48,6 @@ class ToolCutout(FlatCAMTool):
         self.obj_combo = QtWidgets.QComboBox()
         self.obj_combo.setModel(self.app.collection)
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.obj_combo.setCurrentIndex(1)
         self.object_label = QtWidgets.QLabel("Object:")
         self.object_label.setToolTip(
             "Object to be cutout.                        "
@@ -172,11 +172,11 @@ class ToolCutout(FlatCAMTool):
         self.layout.addStretch()
 
         ## Init GUI
-        self.dia.set_value(1)
-        self.margin.set_value(0)
-        self.gapsize.set_value(1)
-        self.gaps.set_value(4)
-        self.gaps_rect_radio.set_value("4")
+        # self.dia.set_value(1)
+        # self.margin.set_value(0)
+        # self.gapsize.set_value(1)
+        # self.gaps.set_value(4)
+        # self.gaps_rect_radio.set_value("4")
 
         ## Signals
         self.ff_cutout_object_btn.clicked.connect(self.on_freeform_cutout)
@@ -191,13 +191,16 @@ class ToolCutout(FlatCAMTool):
 
     def run(self):
         FlatCAMTool.run(self)
-        self.set_ui()
+        self.set_tool_ui()
         self.app.ui.notebook.setTabText(2, "Cutout Tool")
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+U', **kwargs)
 
-    def set_ui(self):
+    def set_tool_ui(self):
+        self.reset_fields()
+        self.obj_combo.setCurrentIndex(1)
+
         self.dia.set_value(float(self.app.defaults["tools_cutouttooldia"]))
         self.margin.set_value(float(self.app.defaults["tools_cutoutmargin"]))
         self.gapsize.set_value(float(self.app.defaults["tools_cutoutgapsize"]))

@@ -43,7 +43,6 @@ class Panelize(FlatCAMTool):
         self.object_combo = QtWidgets.QComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.object_combo.setCurrentIndex(1)
         self.object_label = QtWidgets.QLabel("Object:")
         self.object_label.setToolTip(
             "Object to be panelized. This means that it will\n"
@@ -75,7 +74,6 @@ class Panelize(FlatCAMTool):
         self.box_combo = QtWidgets.QComboBox()
         self.box_combo.setModel(self.app.collection)
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.box_combo.setCurrentIndex(1)
         self.box_combo_label = QtWidgets.QLabel("Box Object:")
         self.box_combo_label.setToolTip(
             "The actual object that is used a container for the\n "
@@ -85,7 +83,6 @@ class Panelize(FlatCAMTool):
 
         ## Spacing Columns
         self.spacing_columns = FloatEntry()
-        self.spacing_columns.set_value(0.0)
         self.spacing_columns_label = QtWidgets.QLabel("Spacing cols:")
         self.spacing_columns_label.setToolTip(
             "Spacing between columns of the desired panel.\n"
@@ -95,7 +92,6 @@ class Panelize(FlatCAMTool):
 
         ## Spacing Rows
         self.spacing_rows = FloatEntry()
-        self.spacing_rows.set_value(0.0)
         self.spacing_rows_label = QtWidgets.QLabel("Spacing rows:")
         self.spacing_rows_label.setToolTip(
             "Spacing between rows of the desired panel.\n"
@@ -105,7 +101,6 @@ class Panelize(FlatCAMTool):
 
         ## Columns
         self.columns = IntEntry()
-        self.columns.set_value(1)
         self.columns_label = QtWidgets.QLabel("Columns:")
         self.columns_label.setToolTip(
             "Number of columns of the desired panel"
@@ -114,7 +109,6 @@ class Panelize(FlatCAMTool):
 
         ## Rows
         self.rows = IntEntry()
-        self.rows.set_value(1)
         self.rows_label = QtWidgets.QLabel("Rows:")
         self.rows_label.setToolTip(
             "Number of rows of the desired panel"
@@ -133,7 +127,6 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.constrain_cb)
 
         self.x_width_entry = FloatEntry()
-        self.x_width_entry.set_value(0.0)
         self.x_width_lbl = QtWidgets.QLabel("Width (DX):")
         self.x_width_lbl.setToolTip(
             "The width (DX) within which the panel must fit.\n"
@@ -142,7 +135,6 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.x_width_lbl, self.x_width_entry)
 
         self.y_height_entry = FloatEntry()
-        self.y_height_entry.set_value(0.0)
         self.y_height_lbl = QtWidgets.QLabel("Height (DY):")
         self.y_height_lbl.setToolTip(
             "The height (DY)within which the panel must fit.\n"
@@ -183,6 +175,28 @@ class Panelize(FlatCAMTool):
         # flag to signal the constrain was activated
         self.constrain_flag = False
 
+    def run(self):
+        FlatCAMTool.run(self)
+        self.set_tool_ui()
+        self.app.ui.notebook.setTabText(2, "Panel. Tool")
+
+    def install(self, icon=None, separator=None, **kwargs):
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+Z', **kwargs)
+
+    def set_tool_ui(self):
+        self.reset_fields()
+        self.object_combo.setCurrentIndex(1)
+        self.box_combo.setCurrentIndex(1)
+
+        self.spacing_columns.set_value(0.0)
+        self.spacing_rows.set_value(0.0)
+
+        self.rows.set_value(1)
+        self.columns.set_value(1)
+
+        self.x_width_entry.set_value(0.0)
+        self.y_height_entry.set_value(0.0)
+
     def on_type_obj_index_changed(self):
         obj_type = self.type_obj_combo.currentIndex()
         self.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
@@ -192,13 +206,6 @@ class Panelize(FlatCAMTool):
         obj_type = self.type_box_combo.currentIndex()
         self.box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.box_combo.setCurrentIndex(0)
-
-    def run(self):
-        FlatCAMTool.run(self)
-        self.app.ui.notebook.setTabText(2, "Panel. Tool")
-
-    def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+Z', **kwargs)
 
     def on_panelize(self):
         name = self.object_combo.currentText()

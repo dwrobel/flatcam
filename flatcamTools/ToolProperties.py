@@ -45,16 +45,17 @@ class Properties(FlatCAMTool):
 
         if self.app.tool_tab_locked is True:
             return
-
-        # this reset the TreeWidget
-        self.treeWidget.clear()
-        self.properties_frame.show()
-
+        self.set_tool_ui()
         FlatCAMTool.run(self)
         self.properties()
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='P', **kwargs)
+
+    def set_tool_ui(self):
+        # this reset the TreeWidget
+        self.treeWidget.clear()
+        self.properties_frame.show()
 
     def properties(self):
         obj_list = self.app.collection.get_selected()

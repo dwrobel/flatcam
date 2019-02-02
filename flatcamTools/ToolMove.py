@@ -38,6 +38,38 @@ class ToolMove(FlatCAMTool):
             return
         self.toggle()
 
+    def toggle(self):
+        if self.isVisible():
+            self.setVisible(False)
+
+            self.app.plotcanvas.vis_disconnect('mouse_move', self.on_move)
+            self.app.plotcanvas.vis_disconnect('mouse_press', self.on_left_click)
+            self.app.plotcanvas.vis_disconnect('key_release', self.on_key_press)
+            self.app.plotcanvas.vis_connect('key_press', self.app.on_key_over_plot)
+
+            self.clicked_move = 0
+
+            # signal that there is no command active
+            self.app.command_active = None
+
+            # delete the selection box
+            self.delete_shape()
+            return
+        else:
+            self.setVisible(True)
+            # signal that there is a command active and it is 'Move'
+            self.app.command_active = "Move"
+
+            if self.app.collection.get_selected():
+                self.app.inform.emit("MOVE: Click on the Start point ...")
+                # draw the selection box
+                self.draw_sel_bbox()
+            else:
+                self.setVisible(False)
+                # signal that there is no command active
+                self.app.command_active = None
+                self.app.inform.emit("[warning_notcl]MOVE action cancelled. No object(s) to move.")
+
     def on_left_click(self, event):
         # mouse click will be accepted only if the left button is clicked
         # this is necessary because right mouse click and middle mouse click
@@ -145,38 +177,6 @@ class ToolMove(FlatCAMTool):
             self.app.inform.emit("[warning_notcl]Move action cancelled.")
             self.toggle()
         return
-
-    def toggle(self):
-        if self.isVisible():
-            self.setVisible(False)
-
-            self.app.plotcanvas.vis_disconnect('mouse_move', self.on_move)
-            self.app.plotcanvas.vis_disconnect('mouse_press', self.on_left_click)
-            self.app.plotcanvas.vis_disconnect('key_release', self.on_key_press)
-            self.app.plotcanvas.vis_connect('key_press', self.app.on_key_over_plot)
-
-            self.clicked_move = 0
-
-            # signal that there is no command active
-            self.app.command_active = None
-
-            # delete the selection box
-            self.delete_shape()
-            return
-        else:
-            self.setVisible(True)
-            # signal that there is a command active and it is 'Move'
-            self.app.command_active = "Move"
-
-            if self.app.collection.get_selected():
-                self.app.inform.emit("MOVE: Click on the Start point ...")
-                # draw the selection box
-                self.draw_sel_bbox()
-            else:
-                self.setVisible(False)
-                # signal that there is no command active
-                self.app.command_active = None
-                self.app.inform.emit("[warning_notcl]MOVE action cancelled. No object(s) to move.")
 
     def draw_sel_bbox(self):
         xminlist = []

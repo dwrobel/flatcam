@@ -28,7 +28,6 @@ class DblSidedTool(FlatCAMTool):
         self.gerber_object_combo = QtWidgets.QComboBox()
         self.gerber_object_combo.setModel(self.app.collection)
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.gerber_object_combo.setCurrentIndex(1)
 
         self.botlay_label = QtWidgets.QLabel("<b>GERBER:</b>")
         self.botlay_label.setToolTip(
@@ -52,7 +51,6 @@ class DblSidedTool(FlatCAMTool):
         self.exc_object_combo = QtWidgets.QComboBox()
         self.exc_object_combo.setModel(self.app.collection)
         self.exc_object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
-        self.exc_object_combo.setCurrentIndex(1)
 
         self.excobj_label = QtWidgets.QLabel("<b>EXCELLON:</b>")
         self.excobj_label.setToolTip(
@@ -249,20 +247,20 @@ class DblSidedTool(FlatCAMTool):
 
         self.drill_values = ""
 
-        self.set_ui()
-
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+D', **kwargs)
 
     def run(self):
         FlatCAMTool.run(self)
-
+        self.set_tool_ui()
         self.app.ui.notebook.setTabText(2, "2-Sided Tool")
-        self.reset_fields()
-        self.set_ui()
 
-    def set_ui(self):
-        ## Initialize form
+    def set_tool_ui(self):
+        self.reset_fields()
+
+        self.gerber_object_combo.setCurrentIndex(1)
+        self.exc_object_combo.setCurrentIndex(1)
+
         self.point_entry.set_value("")
         self.alignment_holes.set_value("")
 

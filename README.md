@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+2.2.2019
+
+- code cleanup in Tools
+- some GUI structure optimization's
+
 1.02.2019
 
 - fixed postprocessor files so now the bounds values are right aligned (assuming max string length of 9 chars which means 4 digits and 4 decimals)
@@ -20,7 +25,6 @@ CAD program, and create G-Code for Isolation routing.
 - fixed gcode conversion/scale (on units change) when multiple values are found on each line
 - replaced the pop-up window for the shortcut list with a new detachable tab
 - removed the pop-up messages from the rotate, skew, flip commands
-
 
 31.01.2019
 

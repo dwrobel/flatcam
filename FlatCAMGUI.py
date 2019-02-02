@@ -384,6 +384,24 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuproject.addSeparator()
         self.menuprojectproperties = self.menuproject.addAction(QtGui.QIcon('share/properties32.png'), 'Properties')
 
+        ################
+        ### Splitter ###
+        ################
+
+        # IMPORTANT #
+        # The order: SPITTER -> NOTEBOOK -> SNAP TOOLBAR is important and without it the GUI will not be initialized as
+        # desired.
+        self.splitter = QtWidgets.QSplitter()
+        self.setCentralWidget(self.splitter)
+
+        self.notebook = QtWidgets.QTabWidget()
+        self.splitter.addWidget(self.notebook)
+
+        self.splitter_left = QtWidgets.QSplitter(Qt.Vertical)
+        self.splitter.addWidget(self.splitter_left)
+        self.splitter_left.addWidget(self.notebook)
+        self.splitter_left.setHandleWidth(0)
+
         ###############
         ### Toolbar ###
         ###############
@@ -408,24 +426,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
         self.addToolBar(self.geo_edit_toolbar)
 
-        ################
-        ### Splitter ###
-        ################
-
-        # IMPORTANT #
-        # The order: SPITTER -> NOTEBOOK -> SNAP TOOLBAR is important and without it the GUI will not be initialized as
-        # desired.
-        self.splitter = QtWidgets.QSplitter()
-        self.setCentralWidget(self.splitter)
-
-        self.notebook = QtWidgets.QTabWidget()
-        self.splitter.addWidget(self.notebook)
-
-        self.splitter_left = QtWidgets.QSplitter(Qt.Vertical)
-        self.splitter.addWidget(self.splitter_left)
-        self.splitter_left.addWidget(self.notebook)
-        self.splitter_left.setHandleWidth(0)
-
         self.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
         self.snap_toolbar.setObjectName('Snap_TB')
 
@@ -440,8 +440,114 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         else:
             self.addToolBar(self.snap_toolbar)
 
-        # add the actions/widgets to the toolbars
-        self.populate_toolbars()
+        ### File Toolbar ###
+        self.file_open_gerber_btn = self.toolbarfile.addAction(QtGui.QIcon('share/flatcam_icon32.png'),
+                                                               "Open GERBER")
+        self.file_open_excellon_btn = self.toolbarfile.addAction(QtGui.QIcon('share/drill32.png'), "Open EXCELLON")
+        self.toolbarfile.addSeparator()
+        self.file_open_btn = self.toolbarfile.addAction(QtGui.QIcon('share/folder32.png'), "Open project")
+        self.file_save_btn = self.toolbarfile.addAction(QtGui.QIcon('share/floppy32.png'), "Save project")
+
+        ### Edit Toolbar ###
+        self.newgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_geo32_bis.png'), "New Blank Geometry")
+        self.newexc_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_exc32.png'), "New Blank Excellon")
+        self.toolbargeo.addSeparator()
+        self.editgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/edit32.png'), "Editor")
+        self.update_obj_btn = self.toolbargeo.addAction(
+            QtGui.QIcon('share/edit_ok32_bis.png'), "Save Object and close the Editor"
+        )
+
+        self.toolbargeo.addSeparator()
+        self.delete_btn = self.toolbargeo.addAction(QtGui.QIcon('share/cancel_edit32.png'), "&Delete")
+
+        ### View Toolbar ###
+        self.replot_btn = self.toolbarview.addAction(QtGui.QIcon('share/replot32.png'), "&Replot")
+        self.clear_plot_btn = self.toolbarview.addAction(QtGui.QIcon('share/clear_plot32.png'), "&Clear plot")
+        self.zoom_in_btn = self.toolbarview.addAction(QtGui.QIcon('share/zoom_in32.png'), "Zoom In")
+        self.zoom_out_btn = self.toolbarview.addAction(QtGui.QIcon('share/zoom_out32.png'), "Zoom Out")
+        self.zoom_fit_btn = self.toolbarview.addAction(QtGui.QIcon('share/zoom_fit32.png'), "Zoom Fit")
+
+        # self.toolbarview.setVisible(False)
+
+        ### Tools Toolbar ###
+        self.shell_btn = self.toolbartools.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
+
+        ### Drill Editor Toolbar ###
+        self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select 'Esc'")
+        self.add_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), 'Add Drill Hole')
+        self.add_drill_array_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon('share/addarray16.png'), 'Add Drill Hole Array')
+        self.resize_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/resize16.png'), 'Resize Drill')
+        self.exc_edit_toolbar.addSeparator()
+
+        self.copy_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), 'Copy Drill')
+        self.delete_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'), "Delete Drill")
+
+        self.exc_edit_toolbar.addSeparator()
+        self.move_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Drill")
+
+        ### Geometry Editor Toolbar ###
+        self.geo_select_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select 'Esc'")
+        self.geo_add_circle_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/circle32.png'), 'Add Circle')
+        self.geo_add_arc_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/arc32.png'), 'Add Arc')
+        self.geo_add_rectangle_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/rectangle32.png'),
+                                                                     'Add Rectangle')
+
+        self.geo_edit_toolbar.addSeparator()
+        self.geo_add_path_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/path32.png'), 'Add Path')
+        self.geo_add_polygon_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), 'Add Polygon')
+        self.geo_edit_toolbar.addSeparator()
+        self.geo_add_text_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/text32.png'), 'Add Text')
+        self.geo_add_buffer_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), 'Add Buffer')
+        self.geo_add_paint_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/paint20_1.png'), 'Paint Shape')
+
+        self.geo_edit_toolbar.addSeparator()
+        self.geo_union_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/union32.png'), 'Polygon Union')
+        self.geo_intersection_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/intersection32.png'),
+                                                                    'Polygon Intersection')
+        self.geo_subtract_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/subtract32.png'),
+                                                                'Polygon Subtraction')
+
+        self.geo_edit_toolbar.addSeparator()
+        self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/cutpath32.png'), 'Cut Path')
+        self.geo_copy_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), "Copy Objects 'c'")
+        self.geo_rotate_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/rotate.png'), "Rotate Objects 'Space'")
+        self.geo_delete_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'),
+                                                              "Delete Shape '-'")
+
+        self.geo_edit_toolbar.addSeparator()
+        self.geo_move_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Objects 'm'")
+
+        ### Snap Toolbar ###
+        # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
+        # self.addToolBar(self.snap_toolbar)
+
+        self.grid_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share/grid32.png'), 'Snap to grid')
+        self.grid_gap_x_entry = FCEntry2()
+        self.grid_gap_x_entry.setMaximumWidth(70)
+        self.grid_gap_x_entry.setToolTip("Grid X distance")
+        self.snap_toolbar.addWidget(self.grid_gap_x_entry)
+
+        self.grid_gap_y_entry = FCEntry2()
+        self.grid_gap_y_entry.setMaximumWidth(70)
+        self.grid_gap_y_entry.setToolTip("Grid Y distance")
+        self.snap_toolbar.addWidget(self.grid_gap_y_entry)
+
+        self.grid_space_label = QtWidgets.QLabel("  ")
+        self.snap_toolbar.addWidget(self.grid_space_label)
+        self.grid_gap_link_cb = FCCheckBox()
+        self.grid_gap_link_cb.setToolTip("When active, value on Grid_X\n"
+                                         "is copied to the Grid_Y value.")
+        self.snap_toolbar.addWidget(self.grid_gap_link_cb)
+
+        self.ois_grid = OptionalInputSection(self.grid_gap_link_cb, [self.grid_gap_y_entry], logic=False)
+
+        self.corner_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share/corner32.png'), 'Snap to corner')
+
+        self.snap_max_dist_entry = FCEntry()
+        self.snap_max_dist_entry.setMaximumWidth(70)
+        self.snap_max_dist_entry.setToolTip("Max. magnet distance")
+        self.snap_magnet = self.snap_toolbar.addWidget(self.snap_max_dist_entry)
 
 
         ################
@@ -897,6 +1003,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # start with GRID activated
         self.grid_snap_btn.trigger()
 
+        self.g_editor_cmenu.setEnabled(False)
+        self.e_editor_cmenu.setEnabled(False)
+
         # restore the Toolbar State from file
         settings = QSettings("Open Source", "FlatCAM")
         if settings.contains("saved_gui_state"):
@@ -912,9 +1021,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 self.geo_edit_toolbar.setVisible(False)
                 self.geo_edit_toolbar.setDisabled(True)
 
-                self.g_editor_cmenu.setEnabled(False)
-                self.e_editor_cmenu.setEnabled(False)
-
                 self.corner_snap_btn.setVisible(False)
                 self.snap_magnet.setVisible(False)
             elif theme == 'compact':
@@ -922,14 +1028,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 self.geo_edit_toolbar.setDisabled(True)
                 self.snap_magnet.setVisible(True)
                 self.corner_snap_btn.setVisible(True)
+                self.snap_magnet.setDisabled(True)
+                self.corner_snap_btn.setDisabled(True)
         else:
             self.exc_edit_toolbar.setVisible(False)
             self.exc_edit_toolbar.setDisabled(True)
             self.geo_edit_toolbar.setVisible(False)
             self.geo_edit_toolbar.setDisabled(True)
-
-            self.g_editor_cmenu.setEnabled(False)
-            self.e_editor_cmenu.setEnabled(False)
 
             self.corner_snap_btn.setVisible(False)
             self.snap_magnet.setVisible(False)
