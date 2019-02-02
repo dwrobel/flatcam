@@ -929,7 +929,12 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                 drag.setMimeData(mimeData)
                 # screen = QScreen(self.parentWidget().currentWidget().winId())
                 # Create the appearance of dragging the tab content
-                pixmap = self.parent().widget(self.tabAt(self.dragStartPos)).grab()
+                try:
+                    pixmap = self.parent().widget(self.tabAt(self.dragStartPos)).grab()
+                except Exception as e:
+                    log.debug("GUIElements.FCDetachable. FCTabBar.mouseMoveEvent() --> %s" % str(e))
+                    return
+
                 targetPixmap = QtGui.QPixmap(pixmap.size())
                 targetPixmap.fill(QtCore.Qt.transparent)
                 painter = QtGui.QPainter(targetPixmap)

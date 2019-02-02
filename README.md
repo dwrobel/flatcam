@@ -25,6 +25,10 @@ CAD program, and create G-Code for Isolation routing.
 - remade the way FlatCAM saves the GUI position data from a file (previously) to use PyQt QSettings
 - added a 'theme' combo selection in Edit -> Preferences. Two themes are available: standard and compact.
 - some code cleanup
+- fixed a source of possible errors in DetachableTab Widget.
+- fixed gcode conversion/scale (on units change) when multiple values are found on each line
+- replaced the pop-up window for the shortcut list with a new detachable tab
+- removed the pop-up messages from the rotate, skew, flip commands
 
 30.01.2019
 

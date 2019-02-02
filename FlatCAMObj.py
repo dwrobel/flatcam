@@ -3855,7 +3855,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         gcodet_re_string = r'(?=.*(\=\s*[-\+]?\d*\.\d*))'
         self.g_t_re = re.compile(gcodet_re_string)
 
-        gcodenr_re_string = r'([+-]?\d*\.\d*)'
+        gcodenr_re_string = r'([+-]?\d*\.\d+)'
         self.g_nr_re = re.compile(gcodenr_re_string)
 
         # Attributes to be included in serialization

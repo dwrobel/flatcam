@@ -3547,15 +3547,7 @@ class App(QtCore.QObject):
         ymaxlist = []
 
         if not obj_list:
-            self.inform.emit("[warning_notcl] No object selected.")
-            msg = "Please Select an object to flip!"
-            warningbox = QtWidgets.QMessageBox()
-            warningbox.setText(msg)
-            warningbox.setWindowTitle("Warning ...")
-            warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-            warningbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            warningbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-            warningbox.exec_()
+            self.inform.emit("[warning_notcl] No object selected to Flip on Y axis.")
         else:
             try:
                 # first get a bounding box to fit all
@@ -3592,15 +3584,7 @@ class App(QtCore.QObject):
         ymaxlist = []
 
         if not obj_list:
-            self.inform.emit("[warning_notcl] No object selected.")
-            msg = "Please Select an object to flip!"
-            warningbox = QtWidgets.QMessageBox()
-            warningbox.setText(msg)
-            warningbox.setWindowTitle("Warning ...")
-            warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-            warningbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            warningbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-            warningbox.exec_()
+            self.inform.emit("[warning_notcl] No object selected to Flip on X axis.")
         else:
             try:
                 # first get a bounding box to fit all
@@ -3637,15 +3621,7 @@ class App(QtCore.QObject):
         ymaxlist = []
 
         if not obj_list:
-            self.inform.emit("[warning_notcl] No object selected.")
-            msg = "Please Select an object to rotate!"
-            warningbox = QtWidgets.QMessageBox()
-            warningbox.setText(msg)
-            warningbox.setWindowTitle("Warning ...")
-            warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-            warningbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            warningbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-            warningbox.exec_()
+            self.inform.emit("[warning_notcl] No object selected to Rotate.")
         else:
             if silent is False:
                 rotatebox = FCInputDialog(title="Transform", text="Enter the Angle value:",
@@ -3687,15 +3663,7 @@ class App(QtCore.QObject):
         yminlist = []
 
         if not obj_list:
-            self.inform.emit("[warning_notcl] No object selected.")
-            msg = "Please Select an object to skew/shear!"
-            warningbox = QtWidgets.QMessageBox()
-            warningbox.setText(msg)
-            warningbox.setWindowTitle("Warning ...")
-            warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-            warningbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            warningbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-            warningbox.exec_()
+            self.inform.emit("[warning_notcl] No object selected to Skew/Shear on X axis.")
         else:
             skewxbox = FCInputDialog(title="Transform", text="Enter the Angle value:",
                                           min=-360, max=360, decimals=3)
@@ -3722,15 +3690,7 @@ class App(QtCore.QObject):
         yminlist = []
 
         if not obj_list:
-            self.inform.emit("[warning_notcl] No object selected.")
-            msg = "Please Select an object to skew/shear!"
-            warningbox = QtWidgets.QMessageBox()
-            warningbox.setText(msg)
-            warningbox.setWindowTitle("Warning ...")
-            warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-            warningbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            warningbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-            warningbox.exec_()
+            self.inform.emit("[warning_notcl] No object selected to Skew/Shear on Y axis.")
         else:
             skewybox = FCInputDialog(title="Transform", text="Enter the Angle value:",
                                           min=-360, max=360, decimals=3)
@@ -4028,7 +3988,6 @@ class App(QtCore.QObject):
             return
 
     def on_shortcut_list(self):
-
         # add the tab if it was closed
         self.ui.plot_tab_area.addTab(self.ui.shortcuts_tab, "Key Shortcut List")
 
@@ -4039,77 +3998,6 @@ class App(QtCore.QObject):
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.ui.shortcuts_tab)
         self.ui.show()
-
-        msg = '''<b>Shortcut list</b><br>
-<br>
-<b>~:</b>       Show Shortcut List<br>
-<br>
-<b>1:</b>       Zoom Fit<br>
-<b>2:</b>       Zoom Out<br>
-<b>3:</b>       Zoom In<br>
-<b>A:</b>       Draw an Arc (when in Edit Mode)<br>
-<b>C:</b>       Copy Geo Item (when in Edit Mode)<br>
-<b>E:</b>       Edit Object (if selected)<br>
-<b>G:</b>       Grid On/Off<br>
-<b>J:</b>       Jump to Coordinates<br>
-<b>L:</b>       New Excellon<br>
-<b>M:</b>       Move Obj<br>
-<b>M:</b>       Move Geo Item (when in Edit Mode)<br>
-<b>N:</b>       New Geometry<br>
-<b>N:</b>       Draw a Polygon (when in Edit Mode)<br>
-<b>O:</b>       Set Origin<br>
-<b>O:</b>       Draw a Circle (when in Edit Mode)<br>
-<b>Q:</b>       Change Units<br>
-<b>P:</b>       Open Properties Tool<br>
-<b>P:</b>       Draw a Path (when in Edit Mode)<br>
-<b>R:</b>       Rotate by 90 degree CW<br>
-<b>R:</b>       Draw Rectangle (when in Edit Mode)<br>
-<b>S:</b>       Shell Toggle<br>
-<b>V:</b>       View Fit<br>
-<b>X:</b>       Flip on X_axis<br>
-<b>Y:</b>       Flip on Y_axis<br>
-<br>
-<b>Space:</b>    En(Dis)able Obj Plot<br>
-<b>CTRL+A:</b>   Select All<br>
-<b>CTRL+C:</b>   Copy Obj<br>
-<b>CTRL+E:</b>   Open Excellon File<br>
-<b>CTRL+G:</b>   Open Gerber File<br>
-<b>CTRL+N:</b>   New Project<br>
-<b>CTRL+M:</b>   Measurement Tool<br>
-<b>CTRL+O:</b>   Open Project<br>
-<b>CTRL+S:</b>   Save Project As<br>
-<b>CTRL+S:</b>   Save Object and Exit Editor (when in Edit Mode)<br>
-<br>
-<b>SHIFT+C:</b>  Copy Obj_Name<br>
-<b>SHIFT+G:</b>  Toggle the axis<br>
-<b>SHIFT+P:</b>  Open Preferences Window<br>
-<b>SHIFT+R:</b>  Rotate by 90 degree CCW<br>
-<b>SHIFT+S:</b>  Run a Script<br>
-<b>SHIFT+W:</b>  Toggle the workspace<br>
-<b>SHIFT+X:</b>  Skew on X axis<br>
-<b>SHIFT+Y:</b>  Skew on Y axis<br>
-<br>
-<b>ALT+C:</b>    Calculators Tool<br>
-<b>ALT+D:</b>    2-Sided PCB Tool<br>
-<b>ALT+L:</b>    Film PCB Tool<br>
-<b>ALT+N:</b>    Non-Copper Clearing Tool<br>
-<b>ALT+P:</b>    Paint Area Tool<br>
-<b>ALT+R:</b>    Transformation Tool<br>
-<b>ALT+U:</b>    Cutout PCB Tool<br>
-<b>ALT+F10:</b>  Toggle Full Screen<br>
-<br>
-<b>F1:</b>       Open Online Manual<br>
-<b>F2:</b>       Open Online Tutorials<br>
-<b>Del:</b>      Delete Obj
-'''
-
-        helpbox = QtWidgets.QMessageBox()
-        helpbox.setText(msg)
-        helpbox.setWindowTitle("Help")
-        helpbox.setWindowIcon(QtGui.QIcon('share/help.png'))
-        helpbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-        helpbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-        helpbox.exec_()
 
     def on_copy_name(self):
         obj = self.collection.get_active()

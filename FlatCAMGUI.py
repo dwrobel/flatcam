@@ -624,8 +624,102 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         ### HERE WE BUILD THE SHORTCUTS LIST. TAB AREA ###
         ########################################
         self.shortcuts_tab = QtWidgets.QWidget()
-        self.sh_tab_layout = QtWidgets.QVBoxLayout(self.shortcuts_tab)
+        self.sh_tab_layout = QtWidgets.QVBoxLayout()
         self.sh_tab_layout.setContentsMargins(2, 2, 2, 2)
+        self.shortcuts_tab.setLayout(self.sh_tab_layout)
+
+        self.sh_hlay = QtWidgets.QHBoxLayout()
+        self.sh_title = QtWidgets.QTextEdit(
+            '<b>Shortcut Key List</b>')
+        self.sh_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+        self.sh_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        self.sh_title.setMaximumHeight(30)
+        font = self.sh_title.font()
+        font.setPointSize(12)
+        self.sh_title.setFont(font)
+
+        self.sh_tab_layout.addWidget(self.sh_title)
+        self.sh_tab_layout.addLayout(self.sh_hlay)
+
+        self.app_sh_msg = '''<b>Shortcut list</b><br>
+<br>
+<b>~:</b>       Show Shortcut List<br>
+<br>
+<b>1:</b>       Zoom Fit<br>
+<b>2:</b>       Zoom Out<br>
+<b>3:</b>       Zoom In<br>
+<b>E:</b>       Edit Object (if selected)<br>
+<b>G:</b>       Grid On/Off<br>
+<b>J:</b>       Jump to Coordinates<br>
+<b>L:</b>       New Excellon<br>
+<b>M:</b>       Move Obj<br>
+<b>N:</b>       New Geometry<br>
+<b>O:</b>       Set Origin<br>
+<b>Q:</b>       Change Units<br>
+<b>P:</b>       Open Properties Tool<br>
+<b>R:</b>       Rotate by 90 degree CW<br>
+<b>S:</b>       Shell Toggle<br>
+<b>V:</b>       View Fit<br>
+<b>X:</b>       Flip on X_axis<br>
+<b>Y:</b>       Flip on Y_axis<br>
+<br>
+<b>Space:</b>    En(Dis)able Obj Plot<br>
+<b>CTRL+A:</b>   Select All<br>
+<b>CTRL+C:</b>   Copy Obj<br>
+<b>CTRL+E:</b>   Open Excellon File<br>
+<b>CTRL+G:</b>   Open Gerber File<br>
+<b>CTRL+N:</b>   New Project<br>
+<b>CTRL+M:</b>   Measurement Tool<br>
+<b>CTRL+O:</b>   Open Project<br>
+<b>CTRL+S:</b>   Save Project As<br>
+<br>
+<b>SHIFT+C:</b>  Copy Obj_Name<br>
+<b>SHIFT+G:</b>  Toggle the axis<br>
+<b>SHIFT+P:</b>  Open Preferences Window<br>
+<b>SHIFT+R:</b>  Rotate by 90 degree CCW<br>
+<b>SHIFT+S:</b>  Run a Script<br>
+<b>SHIFT+W:</b>  Toggle the workspace<br>
+<b>SHIFT+X:</b>  Skew on X axis<br>
+<b>SHIFT+Y:</b>  Skew on Y axis<br>
+<br>
+<b>ALT+C:</b>    Calculators Tool<br>
+<b>ALT+D:</b>    2-Sided PCB Tool<br>
+<b>ALT+L:</b>    Film PCB Tool<br>
+<b>ALT+N:</b>    Non-Copper Clearing Tool<br>
+<b>ALT+P:</b>    Paint Area Tool<br>
+<b>ALT+R:</b>    Transformation Tool<br>
+<b>ALT+U:</b>    Cutout PCB Tool<br>
+<b>ALT+F10:</b>  Toggle Full Screen<br>
+<br>
+<b>F1:</b>       Open Online Manual<br>
+<b>F2:</b>       Open Online Tutorials<br>
+<b>Del:</b>      Delete Obj
+'''
+        self.sh_app = QtWidgets.QTextEdit()
+        self.sh_app.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+
+        self.sh_app.setText(self.app_sh_msg)
+        self.sh_app.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.sh_hlay.addWidget(self.sh_app)
+
+        self.editor_sh_msg = '''<b>A:</b>       Draw an Arc (when in Edit Mode)<br>
+<b>C:</b>       Copy Geo Item (when in Edit Mode)<br>
+<b>M:</b>       Move Geo Item (when in Edit Mode)<br>
+<b>N:</b>       Draw a Polygon (when in Edit Mode)<br>
+<b>O:</b>       Draw a Circle (when in Edit Mode)<br>
+<b>P:</b>       Draw a Path (when in Edit Mode)<br>
+<b>R:</b>       Draw Rectangle (when in Edit Mode)<br>
+<br>
+<b>CTRL+S:</b>   Save Object and Exit Editor (when in Edit Mode)<br>
+<br>            
+<b>Space:</b>    Rotate Geometry<br>
+<b>ENTER:</b>    Finish drawing for certain tools<br>
+        '''
+        self.sh_editor = QtWidgets.QTextEdit()
+        self.sh_editor.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+        self.sh_editor.setText(self.editor_sh_msg)
+        self.sh_editor.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.sh_hlay.addWidget(self.sh_editor)
 
 
         ##############################################################

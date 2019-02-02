@@ -5957,14 +5957,14 @@ class CNCjob(Geometry):
                         if units == 'IN':
                             line = line.replace("mm", "in")
 
-                    # find any number in header and convert it
-                    match_nr = self.g_nr_re.search(line)
-                    if match_nr:
-                        new_nr = float(match_nr.group()) * xfactor
-                        # replace the updated string
-                        line = line.replace(match_nr.group(),
-                                            ('%.*f' % (self.app.defaults["cncjob_coords_decimals"], new_nr))
-                        )
+                    # find any float number in header (even multiple on the same line) and convert it
+                    numbers_in_header = re.findall(self.g_nr_re, line)
+                    if numbers_in_header:
+                        for nr in numbers_in_header:
+                            new_nr = float(nr) * xfactor
+                            # replace the updated string
+                            line = line.replace(nr, ('%.*f' % (self.app.defaults["cncjob_coords_decimals"], new_nr))
+                            )
 
                 # this scales all the X and Y and Z and F values and also the Tool Dia in the toolchange message
                 if header_stop is True:
