@@ -4163,7 +4163,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
         self.app.gcode_edited = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
-        print(self.app.gcode_edited)
+        # print(self.app.gcode_edited)
         # first clear previous text in text editor (if any)
         self.app.ui.code_editor.clear()
 

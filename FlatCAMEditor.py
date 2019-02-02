@@ -1988,6 +1988,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.tools[tool]["button"].setCheckable(True)  # Checkable
 
         self.app.ui.grid_snap_btn.triggered.connect(self.on_grid_toggled)
+        self.app.ui.corner_snap_btn.setCheckable(True)
         self.app.ui.corner_snap_btn.triggered.connect(lambda: self.toolbar_tool_toggle("corner_snap"))
 
         self.options = {
@@ -2045,6 +2046,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.shapes.enabled = True
         self.tool_shape.enabled = True
         self.app.app_cursor.enabled = True
+
+        self.app.ui.snap_max_dist_entry.setEnabled(True)
+        self.app.ui.corner_snap_btn.setEnabled(True)
         self.app.ui.snap_magnet.setVisible(True)
         self.app.ui.corner_snap_btn.setVisible(True)
 
@@ -2076,14 +2080,19 @@ class FlatCAMGeoEditor(QtCore.QObject):
             theme = settings.value('theme', type=str)
             if theme == 'standard':
                 self.app.ui.geo_edit_toolbar.setVisible(False)
+                self.app.ui.snap_max_dist_entry.setEnabled(False)
+                self.app.ui.corner_snap_btn.setEnabled(False)
                 self.app.ui.snap_magnet.setVisible(False)
                 self.app.ui.corner_snap_btn.setVisible(False)
             elif theme == 'compact':
-                pass
+                self.app.ui.snap_max_dist_entry.setEnabled(False)
+                self.app.ui.corner_snap_btn.setEnabled(False)
         else:
             self.app.ui.geo_edit_toolbar.setVisible(False)
             self.app.ui.snap_magnet.setVisible(False)
             self.app.ui.corner_snap_btn.setVisible(False)
+            self.app.ui.snap_max_dist_entry.setEnabled(False)
+            self.app.ui.corner_snap_btn.setEnabled(False)
 
         # Disable visuals
         self.shapes.enabled = False
@@ -2093,8 +2102,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.geo_editor_menu.setDisabled(True)
         self.app.ui.geo_editor_menu.menuAction().setVisible(False)
 
-        self.app.ui.corner_snap_btn.setEnabled(False)
-        self.app.ui.update_obj_btn.setEnabled(False)
+
         self.app.ui.g_editor_cmenu.setEnabled(False)
         self.app.ui.e_editor_cmenu.setEnabled(False)
 
@@ -2970,7 +2978,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 nearest_pt, shape = self.storage.nearest((x, y))
 
                 nearest_pt_distance = distance((x, y), nearest_pt)
-                if nearest_pt_distance <= self.options["global_snap_max"]:
+                if nearest_pt_distance <= float(self.options["global_snap_max"]):
                     snap_distance = nearest_pt_distance
                     snap_x, snap_y = nearest_pt
             except (StopIteration, AssertionError):
@@ -4208,6 +4216,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.shapes.enabled = True
         self.tool_shape.enabled = True
         # self.app.app_cursor.enabled = True
+        self.app.ui.snap_max_dist_entry.setEnabled(True)
+        self.app.ui.corner_snap_btn.setEnabled(True)
         self.app.ui.snap_magnet.setVisible(True)
         self.app.ui.corner_snap_btn.setVisible(True)
 
@@ -4238,12 +4248,22 @@ class FlatCAMExcEditor(QtCore.QObject):
             theme = settings.value('theme', type=str)
             if theme == 'standard':
                 self.app.ui.exc_edit_toolbar.setVisible(False)
+                self.app.ui.snap_max_dist_entry.setEnabled(False)
+                self.app.ui.corner_snap_btn.setEnabled(False)
                 self.app.ui.snap_magnet.setVisible(False)
                 self.app.ui.corner_snap_btn.setVisible(False)
             elif theme == 'compact':
-                pass
+                self.app.ui.exc_edit_toolbar.setVisible(False)
+                self.app.ui.snap_max_dist_entry.setEnabled(False)
+                self.app.ui.corner_snap_btn.setEnabled(False)
+                self.app.ui.snap_magnet.setVisible(True)
+                self.app.ui.corner_snap_btn.setVisible(True)
         else:
-            pass
+            self.app.ui.exc_edit_toolbar.setVisible(False)
+            self.app.ui.snap_max_dist_entry.setEnabled(False)
+            self.app.ui.corner_snap_btn.setEnabled(False)
+            self.app.ui.snap_magnet.setVisible(False)
+            self.app.ui.corner_snap_btn.setVisible(False)
 
         # Disable visuals
         self.shapes.enabled = False
@@ -4255,7 +4275,6 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.app.ui.exc_editor_menu.setDisabled(True)
         self.app.ui.exc_editor_menu.menuAction().setVisible(False)
-        self.app.ui.corner_snap_btn.setEnabled(False)
         self.app.ui.update_obj_btn.setEnabled(False)
         self.app.ui.g_editor_cmenu.setEnabled(False)
         self.app.ui.e_editor_cmenu.setEnabled(False)
@@ -4472,11 +4491,15 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
     def update_options(self, obj):
-        if not obj.options:
+        try:
+            if not obj.options:
+                obj.options = {}
+                return True
+            else:
+                return False
+        except AttributeError:
             obj.options = {}
             return True
-        else:
-            return False
 
     def new_edited_excellon(self, outname):
         """
@@ -4497,6 +4520,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             excellon_obj.drills = self.new_drills
             excellon_obj.tools = self.new_tools
             excellon_obj.slots = self.new_slots
+            excellon_obj.options['name'] = outname
 
             try:
                 excellon_obj.create_geometry()

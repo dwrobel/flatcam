@@ -16,6 +16,9 @@ CAD program, and create G-Code for Isolation routing.
 - added protection against entering float numbers with comma separator instead of decimal dot separator in key points of FlatCAM (not everywhere)
 - added a choice of plotting the kind of geometry for the CNC plot (all, travel and cut kind of geometries) in CNCJob Selected Tab
 - added a new postprocessor file named: 'probe_from_zmove' which allow probing to be done from z_move position on toolchange event 
+- fixed the snap magnet button in Geometry Editor, restored the checkable property to True
+- some more changes in the Editors GUI in deactivate() function
+- a fix for saving again empt an edited new and empty Excellon Object
 
 1.02.2019
 
