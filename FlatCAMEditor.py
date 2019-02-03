@@ -4184,6 +4184,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.shapes.enabled = True
         self.tool_shape.enabled = True
         # self.app.app_cursor.enabled = True
+
         self.app.ui.snap_max_dist_entry.setEnabled(True)
         self.app.ui.corner_snap_btn.setEnabled(True)
         self.app.ui.snap_magnet.setVisible(True)

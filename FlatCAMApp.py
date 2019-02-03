@@ -1459,6 +1459,10 @@ class App(QtCore.QObject):
 
         self.log.debug("Tools are installed.")
 
+    def remove_tools(self):
+        for act in self.ui.menutool.actions():
+            self.ui.menutool.removeAction(act)
+
     def init_tools(self):
 
         # delete the data currently in the Tools Tab and the Tab itself
@@ -1476,6 +1480,9 @@ class App(QtCore.QObject):
         self.ui.tool_tab_layout.addWidget(self.ui.tool_scroll_area)
 
         # reinstall all the Tools as some may have been removed when the data was removed from the Tools Tab
+        # first remove all of them
+        self.remove_tools()
+        # second install all of them
         self.install_tools()
         self.log.debug("Tools are initialized.")
 

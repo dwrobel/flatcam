@@ -16,7 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - some more changes to GUI interface (solved issues)
 - added some status bar messages in the Geometry Editor to guide the user when using the Geometry Tools
 - now the '`' shortcut key that shows the 'shortcut key list' in Editors points to the same window which is created in a tab no longer as a pop-up window. This tab can be detached if needed.
-- 
+- added a remove_tools() function before install_tools() in the init_tools() that is called when creating a new project. Should solve the issue with having double menu entry's in the TOOLS menu
 
 2.2.2019
 
