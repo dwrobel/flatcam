@@ -190,6 +190,8 @@ class ToolCutOut(FlatCAMTool):
         self.obj_combo.setCurrentIndex(0)
 
     def run(self):
+        self.app.report_usage("ToolCutOut()")
+
         FlatCAMTool.run(self)
         self.set_tool_ui()
         self.app.ui.notebook.setTabText(2, "Cutout Tool")

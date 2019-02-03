@@ -293,6 +293,8 @@ class ToolPaint(FlatCAMTool, Gerber):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+P', **kwargs)
 
     def run(self):
+        self.app.report_usage("ToolPaint()")
+
         FlatCAMTool.run(self)
         self.set_tool_ui()
         self.app.ui.notebook.setTabText(2, "Paint Tool")

@@ -356,6 +356,8 @@ class ToolTransform(FlatCAMTool):
         self.offy_entry.returnPressed.connect(self.on_offy)
 
     def run(self):
+        self.app.report_usage("ToolTransform()")
+
         FlatCAMTool.run(self)
         self.set_tool_ui()
         self.app.ui.notebook.setTabText(2, "Transform Tool")

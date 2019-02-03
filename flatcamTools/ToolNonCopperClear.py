@@ -236,6 +236,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+N', **kwargs)
 
     def run(self):
+        self.app.report_usage("ToolNonCopperClear()")
+
         FlatCAMTool.run(self)
         self.set_tool_ui()
         self.build_ui()

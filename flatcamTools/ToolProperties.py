@@ -42,6 +42,7 @@ class Properties(FlatCAMTool):
         self.vlay.setStretch(0,0)
 
     def run(self):
+        self.app.report_usage("ToolProperties()")
 
         if self.app.tool_tab_locked is True:
             return

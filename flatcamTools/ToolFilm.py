@@ -145,6 +145,8 @@ class Film(FlatCAMTool):
         self.tf_box_combo.setCurrentIndex(0)
 
     def run(self):
+        self.app.report_usage("ToolFilm()")
+
         FlatCAMTool.run(self)
         self.set_tool_ui()
         self.app.ui.notebook.setTabText(2, "Film Tool")
@@ -190,29 +192,33 @@ class Film(FlatCAMTool):
 
         if self.film_type.get_value() == "pos":
             try:
-                filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export SVG positive",
-                                                             directory=self.app.get_last_save_folder(), filter="*.svg")
+                filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                    caption="Export SVG positive",
+                    directory=self.app.get_last_save_folder() + '/' + name,
+                    filter="*.svg")
             except TypeError:
                 filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export SVG positive")
 
             filename = str(filename)
 
             if str(filename) == "":
-                self.app.inform.emit("Export SVG positive cancelled.")
+                self.app.inform.emit("[WARNING_NOTCL]Export SVG positive cancelled.")
                 return
             else:
                 self.app.export_svg_black(name, boxname, filename)
         else:
             try:
-                filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export SVG negative",
-                                                             directory=self.app.get_last_save_folder(), filter="*.svg")
+                filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                    caption="Export SVG negative",
+                    directory=self.app.get_last_save_folder() + '/' + name,
+                    filter="*.svg")
             except TypeError:
                 filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export SVG negative")
 
             filename = str(filename)
 
             if str(filename) == "":
-                self.app.inform.emit("Export SVG negative cancelled.")
+                self.app.inform.emit("[WARNING_NOTCL]Export SVG negative cancelled.")
                 return
             else:
                 self.app.export_svg_negative(name, boxname, filename, border)

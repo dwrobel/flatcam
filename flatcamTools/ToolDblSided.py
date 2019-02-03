@@ -253,6 +253,8 @@ class DblSidedTool(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+D', **kwargs)
 
     def run(self):
+        self.app.report_usage("Tool2Sided()")
+
         FlatCAMTool.run(self)
         self.set_tool_ui()
         self.app.ui.notebook.setTabText(2, "2-Sided Tool")

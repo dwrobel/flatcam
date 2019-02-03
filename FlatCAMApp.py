@@ -96,6 +96,9 @@ class App(QtCore.QObject):
     version_date = "2019/02/3"
     beta = True
 
+    # current date now
+    date = str(datetime.today()).rpartition(' ')[0]
+
     # URL for update checks and statistics
     version_url = "http://flatcam.org/version"
 
@@ -1499,6 +1502,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
+        self.report_usage("object2editor()")
 
         # adjust the visibility of some of the canvas context menu
         self.ui.popmenu_edit.setVisible(False)
@@ -1541,6 +1545,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
+        self.report_usage("editor2object()")
 
         # adjust the visibility of some of the canvas context menu
         self.ui.popmenu_edit.setVisible(True)
@@ -1966,8 +1971,10 @@ class App(QtCore.QObject):
 
         filter = "Config File (*.FlatConfig);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export FlatCAM Preferences",
-                                                                directory=self.data_path, filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                caption="Export FlatCAM Preferences",
+                directory=self.data_path + '/preferences_' + self.date.replace('-', ''), filter=filter
+            )
         except TypeError:
             filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export FlatCAM Preferences", filter=filter)
 
@@ -2015,6 +2022,8 @@ class App(QtCore.QObject):
         self.inform.emit("[success]Exported Defaults to %s" % filename)
 
     def on_preferences_open_folder(self):
+        self.report_usage("on_preferences_open_folder()")
+
         if sys.platform == 'win32':
             subprocess.Popen('explorer %s' % self.data_path)
         elif sys.platform == 'darwin':
@@ -2190,6 +2199,8 @@ class App(QtCore.QObject):
         return obj
 
     def new_excellon_object(self):
+        self.report_usage("new_excellon_object()")
+
         self.new_object('excellon', 'new_e', lambda x, y: None)
 
     def on_object_created(self, obj, plot, autoselect):
@@ -2342,6 +2353,8 @@ class App(QtCore.QObject):
         self.save_defaults()
 
     def on_app_exit(self):
+        self.report_usage("on_app_exit()")
+
         if self.collection.get_list():
             msgbox = QtWidgets.QMessageBox()
             # msgbox.setText("<B>Save changes ...</B>")
@@ -2514,6 +2527,7 @@ class App(QtCore.QObject):
         toggle shell if is  visible close it if  closed open it
         :return:
         """
+        self.report_usage("on_toggle_shell()")
 
         if self.ui.shell_dock.isVisible():
             self.ui.shell_dock.hide()
@@ -2527,6 +2541,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
+        self.report_usage("on_edit_join()")
 
         obj_name_single = str(name) if name else "Combo_SingleGeo"
         obj_name_multi = str(name) if name else "Combo_MultiGeo"
@@ -2573,6 +2588,8 @@ class App(QtCore.QObject):
 
         :return: None
         """
+        self.report_usage("on_edit_join_exc()")
+
         objs = self.collection.get_selected()
 
         for obj in objs:
@@ -2592,6 +2609,8 @@ class App(QtCore.QObject):
 
                 :return: None
                 """
+        self.report_usage("on_edit_join_grb()")
+
         objs = self.collection.get_selected()
 
         for obj in objs:
@@ -2605,6 +2624,8 @@ class App(QtCore.QObject):
         self.new_object("gerber", 'Combo_Gerber', initialize)
 
     def on_convert_singlegeo_to_multigeo(self):
+        self.report_usage("on_convert_singlegeo_to_multigeo()")
+
         obj = self.collection.get_active()
 
         if obj is None:
@@ -2626,6 +2647,8 @@ class App(QtCore.QObject):
         self.inform.emit("[success] A Geometry object was converted to MultiGeo type.")
 
     def on_convert_multigeo_to_singlegeo(self):
+        self.report_usage("on_convert_multigeo_to_singlegeo()")
+
         obj = self.collection.get_active()
 
         if obj is None:
@@ -2773,11 +2796,15 @@ class App(QtCore.QObject):
         self.on_toggle_units()
 
     def on_language_apply(self):
+        self.report_usage("on_language_apply()")
+
         # TODO: apply the language
         # app restart section
         pass
 
     def on_fullscreen(self):
+        self.report_usage("on_fullscreen()")
+
         if self.toggle_fscreen is False:
             for tb in self.ui.findChildren(QtWidgets.QToolBar):
                 tb.setVisible(False)
@@ -2789,6 +2816,8 @@ class App(QtCore.QObject):
             self.toggle_fscreen = False
 
     def on_toggle_plotarea(self):
+        self.report_usage("on_toggle_plotarea()")
+
         try:
             name = self.ui.plot_tab_area.widget(0).objectName()
         except AttributeError:
@@ -2805,6 +2834,8 @@ class App(QtCore.QObject):
             self.ui.plot_tab_area.closeTab(0)
 
     def on_toggle_axis(self):
+        self.report_usage("on_toggle_axis()")
+
         if self.toggle_axis is False:
             self.plotcanvas.v_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
             self.plotcanvas.h_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
@@ -2818,6 +2849,8 @@ class App(QtCore.QObject):
             self.toggle_axis = False
 
     def on_toggle_grid(self):
+        self.report_usage("on_toggle_grid()")
+
         self.ui.grid_snap_btn.trigger()
 
     def on_options_combo_change(self, sel):
@@ -3140,6 +3173,8 @@ class App(QtCore.QObject):
         self.plotcanvas.draw_workspace()
 
     def on_workspace(self):
+        self.report_usage("on_workspace()")
+
         if self.general_defaults_form.general_gui_group.workspace_cb.isChecked():
             self.plotcanvas.restore_workspace()
         else:
@@ -3155,6 +3190,8 @@ class App(QtCore.QObject):
         self.on_workspace()
 
     def on_theme(self):
+        self.report_usage("on_theme()")
+
         current_theme= self.general_defaults_form.general_gui_group.theme_combo.get_value().lower()
 
         settings = QSettings("Open Source", "FlatCAM")
@@ -3252,6 +3289,8 @@ class App(QtCore.QObject):
         self.on_options_app2project()
 
     def handleOpen(self):
+        self.report_usage("handleOpen()")
+
         filter_group = " G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
                    "All Files (*.*)"
         path, _ = QtWidgets.QFileDialog.getOpenFileName(
@@ -3265,39 +3304,56 @@ class App(QtCore.QObject):
                 file.close()
 
     def handlePrint(self):
+        self.report_usage("handlePrint()")
+
         dialog = QtPrintSupport.QPrintDialog()
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
             self.ui.code_editor.document().print_(dialog.printer())
 
     def handlePreview(self):
+        self.report_usage("handlePreview()")
+
         dialog = QtPrintSupport.QPrintPreviewDialog()
         dialog.paintRequested.connect(self.ui.code_editor.print_)
         dialog.exec_()
 
     def handleTextChanged(self):
+        self.report_usage("handleTextChanged()")
+
         # enable = not self.ui.code_editor.document().isEmpty()
         # self.ui.buttonPrint.setEnabled(enable)
         # self.ui.buttonPreview.setEnabled(enable)
         pass
 
     def handleSaveGCode(self):
+        self.report_usage("handleSaveGCode()")
+
+        obj_name = self.collection.get_active().options['name']
+
         _filter_ = " G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
                    "All Files (*.*)"
         try:
             filename = str(QtWidgets.QFileDialog.getSaveFileName(
-                caption="Export G-Code ...", directory=self.defaults["global_last_folder"], filter=_filter_)[0])
+                caption="Export G-Code ...",
+                directory=self.defaults["global_last_folder"] + '/' + str(obj_name),
+                filter=_filter_
+            )[0])
         except TypeError:
             filename = str(QtWidgets.QFileDialog.getSaveFileName(caption="Export G-Code ...", filter=_filter_)[0])
 
-        try:
-            my_gcode = self.ui.code_editor.toPlainText()
-            with open(filename, 'w') as f:
-                for line in my_gcode:
-                    f.write(line)
-
-        except FileNotFoundError:
-            self.inform.emit("[WARNING] No such file or directory")
+        if filename == "":
+            self.inform.emit("[WARNING_NOTCL]Export CNC Code cancelled.")
             return
+        else:
+            try:
+                my_gcode = self.ui.code_editor.toPlainText()
+                with open(filename, 'w') as f:
+                    for line in my_gcode:
+                        f.write(line)
+
+            except FileNotFoundError:
+                self.inform.emit("[WARNING] No such file or directory")
+                return
 
         # Just for adding it to the recent files list.
         self.file_opened.emit("cncjob", filename)
@@ -3306,6 +3362,8 @@ class App(QtCore.QObject):
         self.inform.emit("Saved to: " + filename)
 
     def handleFindGCode(self):
+        self.report_usage("handleFindGCode()")
+
         flags = QtGui.QTextDocument.FindCaseSensitively
         text_to_be_found = self.ui.entryFind.get_value()
 
@@ -3313,8 +3371,9 @@ class App(QtCore.QObject):
         if r is False:
             self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
 
-
     def handleReplaceGCode(self):
+        self.report_usage("handleReplaceGCode()")
+
         old = self.ui.entryFind.get_value()
         new = self.ui.entryReplace.get_value()
 
@@ -3343,8 +3402,9 @@ class App(QtCore.QObject):
             # Mark end of undo block
             cursor.endEditBlock()
 
-
     def on_new_geometry(self):
+        self.report_usage("on_new_geometry()")
+
         def initialize(obj, self):
             obj.multitool = False
 
@@ -3357,6 +3417,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
+        self.report_usage("on_delete()")
 
         # Make sure that the deletion will happen only after the Editor is no longer active otherwise we might delete
         # a geometry object before we update it.
@@ -3385,6 +3446,8 @@ class App(QtCore.QObject):
 
         #display the message for the user
         #and ask him to click on the desired position
+        self.report_usage("on_set_origin()")
+
         self.inform.emit('Click to set the origin ...')
 
         self.plotcanvas.vis_connect('mouse_press', self.on_set_zero_click)
@@ -3395,6 +3458,7 @@ class App(QtCore.QObject):
         :return:
 
         """
+        self.report_usage("on_jump_to()")
 
         dia_box = Dialog_box(title="Jump to Coordinates", label="Enter the coordinates in format X,Y:")
 
@@ -3420,6 +3484,7 @@ class App(QtCore.QObject):
         self.inform.emit("Done.")
 
     def on_copy_object(self):
+        self.report_usage("on_copy_object()")
 
         def initialize(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
@@ -3488,6 +3553,8 @@ class App(QtCore.QObject):
                 return "Operation failed: %s" % str(e)
 
     def on_rename_object(self, text):
+        self.report_usage("on_rename_object()")
+
         named_obj = self.collection.get_active()
         for obj in named_obj:
             if obj is list:
@@ -3499,6 +3566,7 @@ class App(QtCore.QObject):
                     log.warning("Could not rename the object in the list")
 
     def on_copy_object_as_geometry(self):
+        self.report_usage("on_copy_object_as_geometry()")
 
         def initialize(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
@@ -3543,6 +3611,8 @@ class App(QtCore.QObject):
             self.plotcanvas.vis_disconnect('mouse_press', self.on_set_zero_click)
 
     def on_selectall(self):
+        self.report_usage("on_selectall()")
+
         # delete the possible selection box around a possible selected object
         self.delete_selection_shape()
         for name in self.collection.get_names():
@@ -3565,6 +3635,8 @@ class App(QtCore.QObject):
         self.ui.show()
 
     def on_flipy(self):
+        self.report_usage("on_flipy()")
+
         obj_list = self.collection.get_selected()
         xminlist = []
         yminlist = []
@@ -3602,6 +3674,8 @@ class App(QtCore.QObject):
                 return
 
     def on_flipx(self):
+        self.report_usage("on_flipx()")
+
         obj_list = self.collection.get_selected()
         xminlist = []
         yminlist = []
@@ -3639,6 +3713,8 @@ class App(QtCore.QObject):
                 return
 
     def on_rotate(self, silent=False, preset=None):
+        self.report_usage("on_rotate()")
+
         obj_list = self.collection.get_selected()
         xminlist = []
         yminlist = []
@@ -3683,6 +3759,8 @@ class App(QtCore.QObject):
                     return
 
     def on_skewx(self):
+        self.report_usage("on_skewx()")
+
         obj_list = self.collection.get_selected()
         xminlist = []
         yminlist = []
@@ -3710,6 +3788,8 @@ class App(QtCore.QObject):
                     self.object_changed.emit(obj)
 
     def on_skewy(self):
+        self.report_usage("on_skewy()")
+
         obj_list = self.collection.get_selected()
         xminlist = []
         yminlist = []
@@ -4013,6 +4093,8 @@ class App(QtCore.QObject):
             return
 
     def on_shortcut_list(self):
+        self.report_usage("on_shortcut_list()")
+
         # add the tab if it was closed
         self.ui.plot_tab_area.addTab(self.ui.shortcuts_tab, "Key Shortcut List")
 
@@ -4025,6 +4107,8 @@ class App(QtCore.QObject):
         self.ui.show()
 
     def on_copy_name(self):
+        self.report_usage("on_copy_name()")
+
         obj = self.collection.get_active()
         try:
             name = obj.options["name"]
@@ -4441,9 +4525,13 @@ class App(QtCore.QObject):
         self.ui.notebook.setCurrentWidget(self.ui.project_tab)
 
     def obj_properties(self):
+        self.report_usage("obj_properties()")
+
         self.properties_tool.run()
 
     def obj_move(self):
+        self.report_usage("obj_move()")
+
         self.move_tool.run()
 
     def on_fileopengerber(self):
@@ -4642,8 +4730,10 @@ class App(QtCore.QObject):
 
         filter = "SVG File (*.svg);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export SVG",
-                                                         directory=self.get_last_save_folder(), filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                caption="Export SVG",
+                directory=self.get_last_save_folder() + '/' + str(name),
+                filter=filter)
         except TypeError:
             filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export SVG", filter=filter)
 
@@ -4667,12 +4757,14 @@ class App(QtCore.QObject):
             self.inform.emit('[[WARNING_NOTCL]] Data must be a 3D array with last dimension 3 or 4')
             return
 
-        filter = "PNG File (*.png);;All Files (*.*)"
+        filter_ = "PNG File (*.png);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export PNG Image",
-                                                         directory=self.get_last_save_folder(), filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                caption="Export PNG Image",
+                directory=self.get_last_save_folder() + '/png_' + str(self.date).replace('-', ''),
+                filter=filter_)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export PNG Image", filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export PNG Image", filter=filter_)
 
         filename = str(filename)
 
@@ -4717,8 +4809,10 @@ class App(QtCore.QObject):
 
         filter = "Excellon File (*.drl);;Excellon File (*.txt);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export Excellon",
-                                                         directory=self.get_last_save_folder(), filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                caption="Export Excellon",
+                directory=self.get_last_save_folder() + '/' + name,
+                filter=filter)
         except TypeError:
             filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export Excellon", filter=filter)
 
@@ -4728,7 +4822,7 @@ class App(QtCore.QObject):
             self.inform.emit("[WARNING_NOTCL]Export Excellon cancelled.")
             return
         else:
-            if altium_format == None:
+            if altium_format is None:
                 self.export_excellon(name, filename)
                 self.file_saved.emit("Excellon", filename)
             else:
@@ -4769,8 +4863,10 @@ class App(QtCore.QObject):
 
         filter = "DXF File (*.DXF);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export DXF",
-                                                         directory=self.get_last_save_folder(), filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                caption="Export DXF",
+                directory=self.get_last_save_folder() + '/' + name,
+                filter=filter)
         except TypeError:
             filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export DXF", filter=filter)
 
@@ -4908,12 +5004,14 @@ class App(QtCore.QObject):
 
         self.report_usage("on_file_saveprojectas")
 
-        filter = "FlatCAM Project (*.FlatPrj);; All Files (*.*)"
+        filter_ = "FlatCAM Project (*.FlatPrj);; All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Save Project As ...",
-                                                         directory=self.get_last_save_folder(), filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                caption="Save Project As ...",
+                directory=self.get_last_save_folder() + '/Project_' + self.date.replace('-', ''),
+                filter=filter_)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Save Project As ...", filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Save Project As ...", filter=filter_)
 
         filename = str(filename)
 
@@ -4958,6 +5056,8 @@ class App(QtCore.QObject):
         :param filename: Path to the SVG file to save to.
         :return:
         """
+        self.report_usage("export_svg()")
+
         if filename is None:
             filename = self.defaults["global_last_save_folder"]
 
@@ -5013,6 +5113,7 @@ class App(QtCore.QObject):
         :type: Bool
         :return:
         """
+        self.report_usage("export_negative()")
 
         if filename is None:
             filename = self.defaults["global_last_save_folder"]
@@ -5132,6 +5233,7 @@ class App(QtCore.QObject):
         :type: Bool
         :return:
         """
+        self.report_usage("export_svg_black()")
 
         if filename is None:
             filename = self.defaults["global_last_save_folder"]
@@ -5243,6 +5345,8 @@ class App(QtCore.QObject):
         :param filename: Path to the Excellon file to save to.
         :return:
         """
+        self.report_usage("export_excellon()")
+
         if filename is None:
             filename = self.defaults["global_last_save_folder"]
 
@@ -5336,6 +5440,8 @@ class App(QtCore.QObject):
         :param filename: Path to the DXF file to save to.
         :return:
         """
+        self.report_usage("export_dxf()")
+
         if filename is None:
             filename = self.defaults["global_last_save_folder"]
 
@@ -5394,6 +5500,8 @@ class App(QtCore.QObject):
         :param outname:
         :return:
         """
+        self.report_usage("import_svg()")
+
         obj_type = ""
         if geo_type is None or geo_type == "geometry":
             obj_type = "geometry"
@@ -5434,6 +5542,7 @@ class App(QtCore.QObject):
         :type putname: str
         :return:
         """
+        self.report_usage("import_dxf()")
 
         obj_type = ""
         if geo_type is None or geo_type == "geometry":
@@ -5474,6 +5583,8 @@ class App(QtCore.QObject):
         :param outname:
         :return:
         """
+        self.report_usage("import_image()")
+
         obj_type = ""
         if type is None or type == "geometry":
             obj_type = "geometry"
@@ -6247,14 +6358,20 @@ class App(QtCore.QObject):
         self.plotcanvas.fit_view()
 
     def disable_all_plots(self):
+        self.report_usage("disable_all_plots()")
+
         self.disable_plots(self.collection.get_list())
         self.inform.emit("[success]All plots disabled.")
 
     def disable_other_plots(self):
+        self.report_usage("disable_other_plots()")
+
         self.disable_plots(self.collection.get_non_selected())
         self.inform.emit("[success]All non selected plots disabled.")
 
     def enable_all_plots(self):
+        self.report_usage("enable_all_plots()")
+
         self.enable_plots(self.collection.get_list())
         self.inform.emit("[success]All plots enabled.")
 
@@ -6349,6 +6466,8 @@ class App(QtCore.QObject):
         self.clear_pool()
 
     def generate_cnc_job(self, objects):
+        self.report_usage("generate_cnc_job()")
+
         for obj in objects:
             obj.generatecncjob()
 

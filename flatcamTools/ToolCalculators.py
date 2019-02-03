@@ -214,6 +214,8 @@ class ToolCalculator(FlatCAMTool):
 
 
     def run(self):
+        self.app.report_usage("ToolCalculators()")
+
         FlatCAMTool.run(self)
         self.set_tool_ui()
         self.app.ui.notebook.setTabText(2, "Calc. Tool")

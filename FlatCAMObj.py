@@ -4126,6 +4126,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.app.report_usage("cncjob_on_exportgcode_button")
 
         self.read_form()
+        name = self.app.collection.get_active().options['name']
 
         if 'Roland' in self.pp_excellon_name or 'Roland' in self.pp_geometry_name:
             _filter_ = "RML1 Files (*.rol);;" \
@@ -4136,11 +4137,19 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         else:
             _filter_ = "G-Code Files (*.nc);;G-Code Files (*.txt);;G-Code Files (*.tap);;G-Code Files (*.cnc);;" \
                        "G-Code Files (*.g-code);;All Files (*.*)"
+
         try:
             filename = str(QtWidgets.QFileDialog.getSaveFileName(
-                caption="Export Machine Code ...", directory=self.app.get_last_save_folder(), filter=_filter_)[0])
+                caption="Export Machine Code ...",
+                directory=self.app.get_last_save_folder() + '/' + name,
+                filter=_filter_
+            )[0])
         except TypeError:
             filename = str(QtWidgets.QFileDialog.getSaveFileName(caption="Export Machine Code ...", filter=_filter_)[0])
+
+        if filename == '':
+            self.app.inform.emit("[WARNING_NOTCL]Export Machine Code cancelled ...")
+            return
 
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())

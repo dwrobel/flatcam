@@ -18,6 +18,8 @@ CAD program, and create G-Code for Isolation routing.
 - now the '`' shortcut key that shows the 'shortcut key list' in Editors points to the same window which is created in a tab no longer as a pop-up window. This tab can be detached if needed.
 - added a remove_tools() function before install_tools() in the init_tools() that is called when creating a new project. Should solve the issue with having double menu entry's in the TOOLS menu
 - fixed remove_tools() so the Tcl Shell action is readded to the Tools menu and reconnected to it's slot function
+- added an automatic name on each save operation based on the object name and/or the current date
+- added more information's for the statistics
 
 2.2.2019
 

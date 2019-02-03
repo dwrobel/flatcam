@@ -152,6 +152,8 @@ class Measurement(FlatCAMTool):
         self.measure_btn.clicked.connect(self.toggle)
 
     def run(self):
+        self.app.report_usage("ToolMeasurement()")
+
         if self.app.tool_tab_locked is True:
             return
         self.toggle()

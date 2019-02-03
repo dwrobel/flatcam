@@ -34,6 +34,8 @@ class ToolMove(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='M', **kwargs)
 
     def run(self):
+        self.app.report_usage("ToolMove()")
+
         if self.app.tool_tab_locked is True:
             return
         self.toggle()

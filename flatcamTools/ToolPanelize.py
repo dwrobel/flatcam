@@ -176,6 +176,8 @@ class Panelize(FlatCAMTool):
         self.constrain_flag = False
 
     def run(self):
+        self.app.report_usage("ToolPanelize()")
+
         FlatCAMTool.run(self)
         self.set_tool_ui()
         self.app.ui.notebook.setTabText(2, "Panel. Tool")
