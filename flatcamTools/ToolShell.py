@@ -234,7 +234,7 @@ class TermWidget(QWidget):
         """
         Convert text to HTML for inserting it to browser
         """
-        assert style in ('in', 'out', 'err')
+        assert style in ('in', 'out', 'err', 'warning', 'success')
 
         text = html.escape(text)
         text = text.replace('\n', '<br/>')
@@ -243,6 +243,10 @@ class TermWidget(QWidget):
             text = '<span style="font-weight: bold;">%s</span>' % text
         elif style == 'err':
             text = '<span style="font-weight: bold; color: red;">%s</span>' % text
+        elif style == 'warning':
+            text = '<span style="font-weight: bold; color: rgb(244, 182, 66);">%s</span>' % text
+        elif style == 'success':
+            text = '<span style="font-weight: bold; color: rgb(8, 68, 0);">%s</span>' % text
         else:
             text = '<span>%s</span>' % text  # without span <br/> is ignored!!!
 
@@ -303,6 +307,16 @@ class TermWidget(QWidget):
         """Appent text to output widget
         """
         self._append_to_browser('out', text)
+
+    def append_success(self, text):
+        """Appent text to output widget
+        """
+        self._append_to_browser('success', text)
+
+    def append_warning(self, text):
+        """Appent text to output widget
+        """
+        self._append_to_browser('warning', text)
 
     def append_error(self, text):
         """Appent error text to output widget. Text is drawn with red background

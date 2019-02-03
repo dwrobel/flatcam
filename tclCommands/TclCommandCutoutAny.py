@@ -61,7 +61,7 @@ class TclCommandCutoutAny(TclCommand):
             name = args['name']
         else:
             self.app.inform.emit(
-                "[warning]The name of the object for which cutout is done is missing. Add it and retry.")
+                "[WARNING]The name of the object for which cutout is done is missing. Add it and retry.")
             return
 
         if 'margin' in args:
@@ -91,11 +91,11 @@ class TclCommandCutoutAny(TclCommand):
             return "Could not retrieve object: %s" % name
 
         if 0 in {dia}:
-            self.app.inform.emit("[warning]Tool Diameter is zero value. Change it to a positive integer.")
+            self.app.inform.emit("[WARNING]Tool Diameter is zero value. Change it to a positive integer.")
             return "Tool Diameter is zero value. Change it to a positive integer."
 
         if gaps not in ['lr', 'tb', '2lr', '2tb', 4, 8]:
-            self.app.inform.emit("[warning]Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
+            self.app.inform.emit("[WARNING]Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
                                  "Fill in a correct value and retry. ")
             return
 
@@ -129,7 +129,7 @@ class TclCommandCutoutAny(TclCommand):
 
             cutout_obj = self.app.collection.get_by_name(outname)
         else:
-            self.app.inform.emit("[error]Cancelled. Object type is not supported.")
+            self.app.inform.emit("[ERROR]Cancelled. Object type is not supported.")
             return
 
         try:

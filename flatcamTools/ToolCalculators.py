@@ -260,7 +260,7 @@ class ToolCalculator(FlatCAMTool):
             try:
                 tip_diameter = float(self.tipDia_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number.")
                 return
 
@@ -271,7 +271,7 @@ class ToolCalculator(FlatCAMTool):
             try:
                 half_tip_angle = float(self.tipAngle_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number.")
                 return
         half_tip_angle /= 2
@@ -283,7 +283,7 @@ class ToolCalculator(FlatCAMTool):
             try:
                 cut_depth = float(self.cutDepth_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number.")
                 return
 
@@ -305,7 +305,7 @@ class ToolCalculator(FlatCAMTool):
             try:
                 length = float(self.pcblength_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number.")
                 return
 
@@ -316,7 +316,7 @@ class ToolCalculator(FlatCAMTool):
             try:
                 width = float(self.pcbwidth_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number.")
                 return
 
@@ -327,7 +327,7 @@ class ToolCalculator(FlatCAMTool):
             try:
                 density = float(self.cdensity_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number.")
                 return
 
@@ -338,7 +338,7 @@ class ToolCalculator(FlatCAMTool):
             try:
                 copper = float(self.growth_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number.")
                 return
 

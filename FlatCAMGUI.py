@@ -747,7 +747,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.sh_tab_layout.addWidget(self.sh_title)
         self.sh_tab_layout.addLayout(self.sh_hlay)
 
-        self.app_sh_msg = '''<b>Shortcut list</b><br>
+        self.app_sh_msg = '''<b>General Shortcut list</b><br>
 <br>
 <b>~:</b>       Show Shortcut List<br>
 <br>
@@ -778,6 +778,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 <b>CTRL+M:</b>   Measurement Tool<br>
 <b>CTRL+O:</b>   Open Project<br>
 <b>CTRL+S:</b>   Save Project As<br>
+<b>CTRL+F10:</b> Toggle Plot Area<br>
 <br>
 <b>SHIFT+C:</b>  Copy Obj_Name<br>
 <b>SHIFT+G:</b>  Toggle the axis<br>
@@ -795,6 +796,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 <b>ALT+P:</b>    Paint Area Tool<br>
 <b>ALT+R:</b>    Transformation Tool<br>
 <b>ALT+U:</b>    Cutout PCB Tool<br>
+<b>ALT+1:</b>    Enable all Plots<br>
+<b>ALT+2:</b>    Disable all Plots<br>
+<b>ALT+3:</b>    Disable Non-selected Plots<br>
 <b>ALT+F10:</b>  Toggle Full Screen<br>
 <br>
 <b>F1:</b>       Open Online Manual<br>
@@ -808,18 +812,49 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.sh_app.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.sh_hlay.addWidget(self.sh_app)
 
-        self.editor_sh_msg = '''<b>A:</b>       Draw an Arc (when in Edit Mode)<br>
-<b>C:</b>       Copy Geo Item (when in Edit Mode)<br>
-<b>M:</b>       Move Geo Item (when in Edit Mode)<br>
-<b>N:</b>       Draw a Polygon (when in Edit Mode)<br>
-<b>O:</b>       Draw a Circle (when in Edit Mode)<br>
-<b>P:</b>       Draw a Path (when in Edit Mode)<br>
-<b>R:</b>       Draw Rectangle (when in Edit Mode)<br>
+        self.editor_sh_msg = '''<b>Editor Shortcut list</b><br>
 <br>
-<b>CTRL+S:</b>   Save Object and Exit Editor (when in Edit Mode)<br>
+<b></b>         GEOMETRY EDITOR<br>
+<br>
+<b>A:</b>       Draw an Arc<br>
+<b>B:</b>       Buffer Tool<br>
+<b>C:</b>       Copy Geo Item<br>
+<b>E:</b>       Polygon Intersection Tool<br>
+
+<b>I:</b>       Paint Tool<br>
+<b>K:</b>       Toggle Corner Snap<br>
+
+<b>M:</b>       Move Geo Item<br>
+<b>N:</b>       Draw a Polygon<br>
+<b>O:</b>       Draw a Circle<br>
+<b>P:</b>       Draw a Path<br>
+<b>R:</b>       Draw Rectangle<br>
+<b>S:</b>       Polygon Substraction Tool<br>
+<b>T:</b>       Add Text Tool<br>
+<b>U:</b>       Polygon Union Tool<br>
+<b>X:</b>       Polygon Cut Tool<br>
+
+<br>
+<b>CTRL+S:</b>  Save Object and Exit Editor<br>
 <br>            
-<b>Space:</b>    Rotate Geometry<br>
-<b>ENTER:</b>    Finish drawing for certain tools<br>
+<b>Space:</b>   Rotate Geometry<br>
+<b>ENTER:</b>   Finish drawing for certain tools<br>
+<b>ESC:</b>     Abort and return to Select<br>
+<b>Del:</b>     Delete Shape<br>
+<br>
+<br>
+<b></b>         EXCELLON EDITOR<br>
+<br>
+<b>A:</b>       Add Drill Array<br>
+<b>C:</b>       Copy Drill(s)<br>
+<b>D:</b>       Add Drill<br>
+<b>M:</b>       Move Drill(s)<br>
+
+<b>R:</b>       Resize Drill(s)<br>
+<br>
+<b>Del:</b>     Delete Drill(s)<br>
+<b>ESC:</b>     Abort and return to Select<br>
+<b>CTRL+S:</b>  Save Object and Exit Editor<br>
         '''
         self.sh_editor = QtWidgets.QTextEdit()
         self.sh_editor.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
@@ -3196,11 +3231,11 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
     def set_status(self, text, level="info"):
         level = str(level)
         self.pmap.fill()
-        if level == "error" or level == "error_notcl":
+        if level == "ERROR" or level == "ERROR_NOTCL":
             self.pmap = QtGui.QPixmap('share/redlight12.png')
         elif level == "success":
             self.pmap = QtGui.QPixmap('share/greenlight12.png')
-        elif level == "warning" or level == "warning_notcl":
+        elif level == "WARNING" or level == "WARNING_NOTCL":
             self.pmap = QtGui.QPixmap('share/yellowlight12.png')
         else:
             self.pmap = QtGui.QPixmap('share/graylight12.png')

@@ -121,7 +121,7 @@ def path2shapely(path, object_type, res=1.0):
                 # geo_element = Polygon(points)
                 geo_element = LineString(points)
             else:
-                log.error("[error]: Not a valid target object.")
+                log.error("[ERROR]: Not a valid target object.")
             if not points:
                 continue
             else:
@@ -639,7 +639,7 @@ def parse_svg_transform(trstr):
             continue
 
         # raise Exception("Don't know how to parse: %s" % trstr)
-        log.error("[error] Don't know how to parse: %s" % trstr)
+        log.error("[ERROR] Don't know how to parse: %s" % trstr)
 
     return trlist
 

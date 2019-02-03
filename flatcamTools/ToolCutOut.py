@@ -219,11 +219,11 @@ class ToolCutOut(FlatCAMTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except:
-            self.app.inform.emit("[error_notcl]Could not retrieve object: %s" % name)
+            self.app.inform.emit("[ERROR_NOTCL]Could not retrieve object: %s" % name)
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit("[error_notcl]There is no object selected for Cutout.\nSelect one and try again.")
+            self.app.inform.emit("[ERROR_NOTCL]There is no object selected for Cutout.\nSelect one and try again.")
             return
 
         try:
@@ -233,7 +233,7 @@ class ToolCutOut(FlatCAMTool):
             try:
                 dia = float(self.dia.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[warning_notcl] Tool diameter value is missing or wrong format. "
+                self.app.inform.emit("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
                                      "Add it and retry.")
                 return
 
@@ -244,7 +244,7 @@ class ToolCutOut(FlatCAMTool):
             try:
                 margin = float(self.margin.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[warning_notcl] Margin value is missing or wrong format. "
+                self.app.inform.emit("[WARNING_NOTCL] Margin value is missing or wrong format. "
                                      "Add it and retry.")
                 return
 
@@ -255,27 +255,27 @@ class ToolCutOut(FlatCAMTool):
             try:
                 gapsize = float(self.gapsize.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[warning_notcl] Gap size value is missing or wrong format. "
+                self.app.inform.emit("[WARNING_NOTCL] Gap size value is missing or wrong format. "
                                      "Add it and retry.")
                 return
 
         try:
             gaps = self.gaps.get_value()
         except TypeError:
-            self.app.inform.emit("[warning_notcl] Number of gaps value is missing. Add it and retry.")
+            self.app.inform.emit("[WARNING_NOTCL] Number of gaps value is missing. Add it and retry.")
             return
 
         if 0 in {dia}:
-            self.app.inform.emit("[warning_notcl]Tool Diameter is zero value. Change it to a positive integer.")
+            self.app.inform.emit("[WARNING_NOTCL]Tool Diameter is zero value. Change it to a positive integer.")
             return "Tool Diameter is zero value. Change it to a positive integer."
 
         if gaps not in ['lr', 'tb', '2lr', '2tb', '4', '8']:
-            self.app.inform.emit("[warning_notcl] Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
+            self.app.inform.emit("[WARNING_NOTCL] Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
                                  "Fill in a correct value and retry. ")
             return
 
         if cutout_obj.multigeo is True:
-            self.app.inform.emit("[error]Cutout operation cannot be done on a multi-geo Geometry.\n"
+            self.app.inform.emit("[ERROR]Cutout operation cannot be done on a multi-geo Geometry.\n"
                                  "Optionally, this Multi-geo Geometry can be converted to Single-geo Geometry,\n"
                                  "and after that perform Cutout.")
             return
@@ -359,11 +359,11 @@ class ToolCutOut(FlatCAMTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except:
-            self.app.inform.emit("[error_notcl]Could not retrieve object: %s" % name)
+            self.app.inform.emit("[ERROR_NOTCL]Could not retrieve object: %s" % name)
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit("[error_notcl]Object not found: %s" % cutout_obj)
+            self.app.inform.emit("[ERROR_NOTCL]Object not found: %s" % cutout_obj)
 
         try:
             dia = float(self.dia.get_value())
@@ -372,7 +372,7 @@ class ToolCutOut(FlatCAMTool):
             try:
                 dia = float(self.dia.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[warning_notcl] Tool diameter value is missing or wrong format. "
+                self.app.inform.emit("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
                                      "Add it and retry.")
                 return
 
@@ -383,7 +383,7 @@ class ToolCutOut(FlatCAMTool):
             try:
                 margin = float(self.margin.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[warning_notcl] Margin value is missing or wrong format. "
+                self.app.inform.emit("[WARNING_NOTCL] Margin value is missing or wrong format. "
                                      "Add it and retry.")
                 return
 
@@ -394,22 +394,22 @@ class ToolCutOut(FlatCAMTool):
             try:
                 gapsize = float(self.gapsize.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[warning_notcl] Gap size value is missing or wrong format. "
+                self.app.inform.emit("[WARNING_NOTCL] Gap size value is missing or wrong format. "
                                      "Add it and retry.")
                 return
 
         try:
             gaps = self.gaps_rect_radio.get_value()
         except TypeError:
-            self.app.inform.emit("[warning_notcl] Number of gaps value is missing. Add it and retry.")
+            self.app.inform.emit("[WARNING_NOTCL] Number of gaps value is missing. Add it and retry.")
             return
 
         if 0 in {dia}:
-            self.app.inform.emit("[error_notcl]Tool Diameter is zero value. Change it to a positive integer.")
+            self.app.inform.emit("[ERROR_NOTCL]Tool Diameter is zero value. Change it to a positive integer.")
             return "Tool Diameter is zero value. Change it to a positive integer."
 
         if cutout_obj.multigeo is True:
-            self.app.inform.emit("[error]Cutout operation cannot be done on a multi-geo Geometry.\n"
+            self.app.inform.emit("[ERROR]Cutout operation cannot be done on a multi-geo Geometry.\n"
                                  "Optionally, this Multi-geo Geometry can be converted to Single-geo Geometry,\n"
                                  "and after that perform Cutout.")
             return

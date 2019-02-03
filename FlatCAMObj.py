@@ -1467,12 +1467,12 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             log.debug("Tools 'all' and sorted are: %s" % str(tools))
 
         if len(tools) == 0:
-            self.app.inform.emit("[error_notcl]Please select one or more tools from the list and try again.")
+            self.app.inform.emit("[ERROR_NOTCL]Please select one or more tools from the list and try again.")
             return False, "Error: No tools."
 
         for tool in tools:
             if tooldia > self.tools[tool]["C"]:
-                self.app.inform.emit("[error_notcl] Milling tool for DRILLS is larger than hole size. Cancelled.")
+                self.app.inform.emit("[ERROR_NOTCL] Milling tool for DRILLS is larger than hole size. Cancelled.")
                 return False, "Error: Milling tool is larger than hole."
 
         def geo_init(geo_obj, app_obj):
@@ -1554,12 +1554,12 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             log.debug("Tools 'all' and sorted are: %s" % str(tools))
 
         if len(tools) == 0:
-            self.app.inform.emit("[error_notcl]Please select one or more tools from the list and try again.")
+            self.app.inform.emit("[ERROR_NOTCL]Please select one or more tools from the list and try again.")
             return False, "Error: No tools."
 
         for tool in tools:
             if tooldia > self.tools[tool]["C"]:
-                self.app.inform.emit("[error_notcl] Milling tool for SLOTS is larger than hole size. Cancelled.")
+                self.app.inform.emit("[ERROR_NOTCL] Milling tool for SLOTS is larger than hole size. Cancelled.")
                 return False, "Error: Milling tool is larger than hole."
 
         def geo_init(geo_obj, app_obj):
@@ -1635,7 +1635,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         tools = self.get_selected_tools_list()
 
         if len(tools) == 0:
-            self.app.inform.emit("[error_notcl]Please select one or more tools from the list and try again.")
+            self.app.inform.emit("[ERROR_NOTCL]Please select one or more tools from the list and try again.")
             return
 
         xmin = self.options['xmin']
@@ -1739,7 +1739,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         else:
             coords_xy = [float(eval(coord)) for coord in self.app.defaults["excellon_toolchangexy"].split(",")]
             if len(coords_xy) < 2:
-                self.app.inform.emit("[error]The Toolchange X,Y field in Edit -> Preferences has to be "
+                self.app.inform.emit("[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be "
                                      "in the format (x, y) \nbut now there is only one value, not two. ")
                 return 'fail'
             coords_xy[0] *= factor
@@ -2300,7 +2300,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                                 self.ui.tool_offset_entry.get_value().replace(',', '.')
                             )
                         except ValueError:
-                            self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                            self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                                  "use a number.")
                             return
 
@@ -2438,7 +2438,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
             if tooldia is None:
                 self.build_ui()
-                self.app.inform.emit("[error_notcl] Please enter the desired tool diameter in Float format.")
+                self.app.inform.emit("[ERROR_NOTCL] Please enter the desired tool diameter in Float format.")
                 return
 
         # construct a list of all 'tooluid' in the self.tools
@@ -2514,7 +2514,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.app.inform.emit("[success] Tool added in Tool Table.")
         else:
             change_message = False
-            self.app.inform.emit("[error_notcl]Default Tool added. Wrong value format entered.")
+            self.app.inform.emit("[ERROR_NOTCL]Default Tool added. Wrong value format entered.")
         self.build_ui()
 
     def on_tool_copy(self, all=None):
@@ -2542,7 +2542,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         max_uid += 1
                         self.tools[int(max_uid)] = copy.deepcopy(self.tools[tooluid_copy])
                     except AttributeError:
-                        self.app.inform.emit("[warning_notcl]Failed. Select a tool to copy.")
+                        self.app.inform.emit("[WARNING_NOTCL]Failed. Select a tool to copy.")
                         self.build_ui()
                         return
                     except Exception as e:
@@ -2550,7 +2550,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # deselect the table
                 # self.ui.geo_tools_table.clearSelection()
             else:
-                self.app.inform.emit("[warning_notcl]Failed. Select a tool to copy.")
+                self.app.inform.emit("[WARNING_NOTCL]Failed. Select a tool to copy.")
                 self.build_ui()
                 return
         else:
@@ -2591,7 +2591,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             try:
                 d = float(self.ui.geo_tools_table.item(current_row, 1).text().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number.")
                 return
 
@@ -2631,7 +2631,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         self.tools = copy.deepcopy(temp_tools)
                         temp_tools.clear()
                     except AttributeError:
-                        self.app.inform.emit("[warning_notcl]Failed. Select a tool to delete.")
+                        self.app.inform.emit("[WARNING_NOTCL]Failed. Select a tool to delete.")
                         self.build_ui()
                         return
                     except Exception as e:
@@ -2639,7 +2639,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # deselect the table
                 # self.ui.geo_tools_table.clearSelection()
             else:
-                self.app.inform.emit("[warning_notcl]Failed. Select a tool to delete.")
+                self.app.inform.emit("[WARNING_NOTCL]Failed. Select a tool to delete.")
                 self.build_ui()
                 return
         else:
@@ -2870,7 +2870,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 offset_value_item = float(self.ui.tool_offset_entry.get_value().replace(',', '.')
                                      )
             except ValueError:
-                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number.")
                 return
 
@@ -3021,7 +3021,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     try:
                         tooldia = float(self.ui.geo_tools_table.item(x.row(), 1).text().replace(',', '.'))
                     except ValueError:
-                        self.app.inform.emit("[error_notcl]Wrong Tool Dia value format entered, "
+                        self.app.inform.emit("[ERROR_NOTCL]Wrong Tool Dia value format entered, "
                                              "use a number.")
                         return
                 tooluid = int(self.ui.geo_tools_table.item(x.row(), 5).text())
@@ -3035,7 +3035,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
             self.ui.geo_tools_table.clearSelection()
         else:
-            self.app.inform.emit("[error_notcl] Failed. No tool selected in the tool table ...")
+            self.app.inform.emit("[ERROR_NOTCL] Failed. No tool selected in the tool table ...")
 
     def mtool_gen_cncjob(self, segx=None, segy=None, use_thread=True):
         """
@@ -3185,14 +3185,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                             offset_value = float(self.ui.tool_offset_entry.get_value().replace(',', '.')
                                                  )
                         except ValueError:
-                            self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                            self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                                  "use a number.")
                             return
                     if offset_value:
                         tool_offset = float(offset_value)
                     else:
                         self.app.inform.emit(
-                            "[warning] Tool Offset is selected in Tool Table but no value is provided.\n"
+                            "[WARNING] Tool Offset is selected in Tool Table but no value is provided.\n"
                             "Add a Tool Offset or change the Offset Type."
                         )
                         return
@@ -3372,14 +3372,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                             offset_value = float(self.ui.tool_offset_entry.get_value().replace(',', '.')
                                                   )
                         except ValueError:
-                            self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                            self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                                  "use a number.")
                             return
                     if offset_value:
                         tool_offset = float(offset_value)
                     else:
                         self.app.inform.emit(
-                            "[warning] Tool Offset is selected in Tool Table but no value is provided.\n"
+                            "[WARNING] Tool Offset is selected in Tool Table but no value is provided.\n"
                             "Add a Tool Offset or change the Offset Type."
                         )
                         return
@@ -3595,7 +3595,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         try:
             xfactor = float(xfactor)
         except:
-            self.app.inform.emit("[error_notcl] Scale factor has to be a number: integer or float.")
+            self.app.inform.emit("[ERROR_NOTCL] Scale factor has to be a number: integer or float.")
             return
 
         if yfactor is None:
@@ -3604,7 +3604,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             try:
                 yfactor = float(yfactor)
             except:
-                self.app.inform.emit("[error_notcl] Scale factor has to be a number: integer or float.")
+                self.app.inform.emit("[ERROR_NOTCL] Scale factor has to be a number: integer or float.")
                 return
 
         if point is None:
@@ -3654,7 +3654,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         try:
             dx, dy = vect
         except TypeError:
-            self.app.inform.emit("[error_notcl]An (x,y) pair of values are needed. "
+            self.app.inform.emit("[ERROR_NOTCL]An (x,y) pair of values are needed. "
                                  "Probable you entered only one value in the Offset field.")
             return
 
@@ -3698,7 +3698,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             coords_xy = [float(eval(coord)) for coord in self.app.defaults["geometry_toolchangexy"].split(",")]
             if len(coords_xy) < 2:
-                self.app.inform.emit("[error]The Toolchange X,Y field in Edit -> Preferences has to be "
+                self.app.inform.emit("[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be "
                                      "in the format (x, y) \nbut now there is only one value, not two. ")
                 return 'fail'
             coords_xy[0] *= factor
@@ -3735,7 +3735,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                             custom_offset = float(self.ui.tool_offset_entry.get_value().replace(',', '.')
                             )
                         except ValueError:
-                            self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                            self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                                  "use a number.")
                             return
 
@@ -4291,7 +4291,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
             # if it did not find 'G20' and it did not find 'G21' then there is an error and return
             if g_idx == -1:
-                self.app.inform.emit("[error_notcl] G-code does not have a units code: either G20 or G21")
+                self.app.inform.emit("[ERROR_NOTCL] G-code does not have a units code: either G20 or G21")
                 return
 
             g = gcode[:g_idx] + preamble + '\n' + gcode[g_idx:] + postamble
@@ -4307,7 +4307,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                         f.write(line)
 
             except FileNotFoundError:
-                self.app.inform.emit("[warning_notcl] No such file or directory")
+                self.app.inform.emit("[WARNING_NOTCL] No such file or directory")
                 return
         elif to_file is False:
             # Just for adding it to the recent files list.

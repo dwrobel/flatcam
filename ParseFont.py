@@ -287,8 +287,8 @@ class ParseFont():
             elif font_type == 'regular':
                 path_filename = regular_dict[font_name]
         except Exception as e:
-            self.app.inform.emit("[error_notcl] Font not supported, try another one.")
-            log.debug("[error_notcl] Font Loading: %s" % str(e))
+            self.app.inform.emit("[ERROR_NOTCL] Font not supported, try another one.")
+            log.debug("[ERROR_NOTCL] Font Loading: %s" % str(e))
             return "flatcam font parse failed"
 
         face = ft.Face(path_filename)

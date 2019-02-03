@@ -283,7 +283,7 @@ class DblSidedTool(FlatCAMTool):
             try:
                 px, py = self.point_entry.get_value()
             except TypeError:
-                self.app.inform.emit("[warning_notcl] 'Point' reference is selected and 'Point' coordinates "
+                self.app.inform.emit("[WARNING_NOTCL] 'Point' reference is selected and 'Point' coordinates "
                                      "are missing. Add them and retry.")
                 return
         else:
@@ -298,14 +298,14 @@ class DblSidedTool(FlatCAMTool):
 
         dia = self.drill_dia.get_value()
         if dia is None:
-            self.app.inform.emit("[warning_notcl]No value or wrong format in Drill Dia entry. Add it and retry.")
+            self.app.inform.emit("[WARNING_NOTCL]No value or wrong format in Drill Dia entry. Add it and retry.")
             return
         tools = {"1": {"C": dia}}
 
         # holes = self.alignment_holes.get_value()
         holes = eval('[{}]'.format(self.alignment_holes.text()))
         if not holes:
-            self.app.inform.emit("[warning_notcl] There are no Alignment Drill Coordinates to use. Add them and retry.")
+            self.app.inform.emit("[WARNING_NOTCL] There are no Alignment Drill Coordinates to use. Add them and retry.")
             return
 
         drills = []
@@ -331,11 +331,11 @@ class DblSidedTool(FlatCAMTool):
         try:
             fcobj = model_index.internalPointer().obj
         except Exception as e:
-            self.app.inform.emit("[warning_notcl] There is no Gerber object loaded ...")
+            self.app.inform.emit("[WARNING_NOTCL] There is no Gerber object loaded ...")
             return
 
         if not isinstance(fcobj, FlatCAMGerber):
-            self.app.inform.emit("[error_notcl] Only Gerber, Excellon and Geometry objects can be mirrored.")
+            self.app.inform.emit("[ERROR_NOTCL] Only Gerber, Excellon and Geometry objects can be mirrored.")
             return
 
         axis = self.mirror_axis.get_value()
@@ -345,7 +345,7 @@ class DblSidedTool(FlatCAMTool):
             try:
                 px, py = self.point_entry.get_value()
             except TypeError:
-                self.app.inform.emit("[warning_notcl] 'Point' coordinates missing. "
+                self.app.inform.emit("[WARNING_NOTCL] 'Point' coordinates missing. "
                                      "Using Origin (0, 0) as mirroring reference.")
                 px, py = (0, 0)
 
@@ -355,7 +355,7 @@ class DblSidedTool(FlatCAMTool):
             try:
                 bb_obj = model_index_box.internalPointer().obj
             except Exception as e:
-                self.app.inform.emit("[warning_notcl] There is no Box object loaded ...")
+                self.app.inform.emit("[WARNING_NOTCL] There is no Box object loaded ...")
                 return
 
             xmin, ymin, xmax, ymax = bb_obj.bounds()
@@ -373,11 +373,11 @@ class DblSidedTool(FlatCAMTool):
         try:
             fcobj = model_index.internalPointer().obj
         except Exception as e:
-            self.app.inform.emit("[warning_notcl] There is no Excellon object loaded ...")
+            self.app.inform.emit("[WARNING_NOTCL] There is no Excellon object loaded ...")
             return
 
         if not isinstance(fcobj, FlatCAMExcellon):
-            self.app.inform.emit("[error_notcl] Only Gerber, Excellon and Geometry objects can be mirrored.")
+            self.app.inform.emit("[ERROR_NOTCL] Only Gerber, Excellon and Geometry objects can be mirrored.")
             return
 
         axis = self.mirror_axis.get_value()
@@ -391,7 +391,7 @@ class DblSidedTool(FlatCAMTool):
             try:
                 bb_obj = model_index_box.internalPointer().obj
             except Exception as e:
-                self.app.inform.emit("[warning_notcl] There is no Box object loaded ...")
+                self.app.inform.emit("[WARNING_NOTCL] There is no Box object loaded ...")
                 return
 
             xmin, ymin, xmax, ymax = bb_obj.bounds()
@@ -409,11 +409,11 @@ class DblSidedTool(FlatCAMTool):
         try:
             fcobj = model_index.internalPointer().obj
         except Exception as e:
-            self.app.inform.emit("[warning_notcl] There is no Geometry object loaded ...")
+            self.app.inform.emit("[WARNING_NOTCL] There is no Geometry object loaded ...")
             return
 
         if not isinstance(fcobj, FlatCAMGeometry):
-            self.app.inform.emit("[error_notcl] Only Gerber, Excellon and Geometry objects can be mirrored.")
+            self.app.inform.emit("[ERROR_NOTCL] Only Gerber, Excellon and Geometry objects can be mirrored.")
             return
 
         axis = self.mirror_axis.get_value()
@@ -427,7 +427,7 @@ class DblSidedTool(FlatCAMTool):
             try:
                 bb_obj = model_index_box.internalPointer().obj
             except Exception as e:
-                self.app.inform.emit("[warning_notcl] There is no Box object loaded ...")
+                self.app.inform.emit("[WARNING_NOTCL] There is no Box object loaded ...")
                 return
 
             xmin, ymin, xmax, ymax = bb_obj.bounds()

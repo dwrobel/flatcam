@@ -9,6 +9,15 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+3.3.2019
+
+- updated the new shortcut list with the shortcuts added lately
+- now the special messages in the Shell are color coded according to the level. Before they all were RED. Now the WARNINGS are yellow, ERRORS are red and SUCCESS is a dark green. Also the level is in CAPS LOCK to make them more obvious
+- some more changes to GUI interface (solved issues)
+- added some status bar messages in the Geometry Editor to guide the user when using the Geometry Tools
+- now the '`' shortcut key that shows the 'shortcut key list' in Editors points to the same window which is created in a tab no longer as a pop-up window. This tab can be detached if needed.
+- 
+
 2.2.2019
 
 - code cleanup in Tools
@@ -288,7 +297,7 @@ CAD program, and create G-Code for Isolation routing.
 - solved a small bug that didn't allow the Paint Job to be done with lines when the results were geometries not iterable 
 - added protection for the case when trying to run the cncjob Tcl Command on a Geometry object that do not have solid geometry or one that is multi-tool
 - Paint Tool Table: now it is possible to edit a tool to a new diameter and then edit another tool to the former diameter of the first edited tool
-- added a new type of warning, [warning_notcl]
+- added a new type of warning, [WARNING_NOTCL]
 - fixed conflict with "space" keyboard shortcut for CNC job
 
 16.12.2018

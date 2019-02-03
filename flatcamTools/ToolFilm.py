@@ -164,12 +164,12 @@ class Film(FlatCAMTool):
         try:
             name = self.tf_object_combo.currentText()
         except:
-            self.app.inform.emit("[error_notcl] No Film object selected. Load a Film object and retry.")
+            self.app.inform.emit("[ERROR_NOTCL] No Film object selected. Load a Film object and retry.")
             return
         try:
             boxname = self.tf_box_combo.currentText()
         except:
-            self.app.inform.emit("[error_notcl] No Box object selected. Load a Box object and retry.")
+            self.app.inform.emit("[ERROR_NOTCL] No Box object selected. Load a Box object and retry.")
             return
 
         try:
@@ -179,7 +179,7 @@ class Film(FlatCAMTool):
             try:
                 border = float(self.boundary_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number.")
                 return
 

@@ -214,13 +214,13 @@ class Panelize(FlatCAMTool):
         try:
             obj = self.app.collection.get_by_name(str(name))
         except:
-            self.app.inform.emit("[error_notcl]Could not retrieve object: %s" % name)
+            self.app.inform.emit("[ERROR_NOTCL]Could not retrieve object: %s" % name)
             return "Could not retrieve object: %s" % name
 
         panel_obj = obj
 
         if panel_obj is None:
-            self.app.inform.emit("[error_notcl]Object not found: %s" % panel_obj)
+            self.app.inform.emit("[ERROR_NOTCL]Object not found: %s" % panel_obj)
             return "Object not found: %s" % panel_obj
 
         boxname = self.box_combo.currentText()
@@ -228,11 +228,11 @@ class Panelize(FlatCAMTool):
         try:
             box = self.app.collection.get_by_name(boxname)
         except:
-            self.app.inform.emit("[error_notcl]Could not retrieve object: %s" % boxname)
+            self.app.inform.emit("[ERROR_NOTCL]Could not retrieve object: %s" % boxname)
             return "Could not retrieve object: %s" % boxname
 
         if box is None:
-            self.app.inform.emit("[warning]No object Box. Using instead %s" % panel_obj)
+            self.app.inform.emit("[WARNING]No object Box. Using instead %s" % panel_obj)
             box = panel_obj
 
         self.outname = name + '_panelized'
@@ -244,7 +244,7 @@ class Panelize(FlatCAMTool):
             try:
                 spacing_columns = float(self.spacing_columns.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number.")
                 return
         spacing_columns = spacing_columns if spacing_columns is not None else 0
@@ -256,7 +256,7 @@ class Panelize(FlatCAMTool):
             try:
                 spacing_rows = float(self.spacing_rows.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number.")
                 return
         spacing_rows = spacing_rows if spacing_rows is not None else 0
@@ -269,7 +269,7 @@ class Panelize(FlatCAMTool):
                 rows = float(self.rows.get_value().replace(',', '.'))
                 rows = int(rows)
             except ValueError:
-                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number.")
                 return
         rows = rows if rows is not None else 1
@@ -282,7 +282,7 @@ class Panelize(FlatCAMTool):
                 columns = float(self.columns.get_value().replace(',', '.'))
                 columns = int(columns)
             except ValueError:
-                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number.")
                 return
         columns = columns if columns is not None else 1
@@ -294,7 +294,7 @@ class Panelize(FlatCAMTool):
             try:
                 constrain_dx = float(self.x_width_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number.")
                 return
 
@@ -305,12 +305,12 @@ class Panelize(FlatCAMTool):
             try:
                 constrain_dy = float(self.y_height_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[error_notcl]Wrong value format entered, "
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number.")
                 return
 
         if 0 in {columns, rows}:
-            self.app.inform.emit("[error_notcl]Columns or Rows are zero value. Change them to a positive integer.")
+            self.app.inform.emit("[ERROR_NOTCL]Columns or Rows are zero value. Change them to a positive integer.")
             return "Columns or Rows are zero value. Change them to a positive integer."
 
         xmin, ymin, xmax, ymax = box.bounds()
@@ -406,7 +406,7 @@ class Panelize(FlatCAMTool):
         #             self.app.new_object("geometry", self.outname, job_init_geometry, plot=True, autoselected=True)
         #
         #     else:
-        #         self.app.inform.emit("[error_notcl] Obj is None")
+        #         self.app.inform.emit("[ERROR_NOTCL] Obj is None")
         #         return "ERROR: Obj is None"
 
         # panelize()
@@ -519,7 +519,7 @@ class Panelize(FlatCAMTool):
             self.app.inform.emit("[success]Panel done...")
         else:
             self.constrain_flag = False
-            self.app.inform.emit("[warning] Too big for the constrain area. Final panel has %s columns and %s rows" %
+            self.app.inform.emit("[WARNING] Too big for the constrain area. Final panel has %s columns and %s rows" %
                                  (columns, rows))
 
         proc = self.app.proc_container.new("Generating panel ... Please wait.")
