@@ -2454,9 +2454,11 @@ class Gerber (Geometry):
                         region = Polygon()
                     else:
                         region = Polygon(path)
+
                     if not region.is_valid:
                         if not follow:
                             region = region.buffer(0, int(self.steps_per_circle / 4))
+
                     if not region.is_empty:
                         poly_buffer.append(region)
 
@@ -2838,6 +2840,7 @@ class Gerber (Geometry):
 
             if self.use_buffer_for_union:
                 log.debug("Union by buffer...")
+
                 new_poly = MultiPolygon(poly_buffer)
                 new_poly = new_poly.buffer(0.00000001)
                 new_poly = new_poly.buffer(-0.00000001)
@@ -2858,7 +2861,8 @@ class Gerber (Geometry):
             #print traceback.format_exc()
 
             log.error("Gerber PARSING FAILED. Line %d: %s" % (line_num, gline))
-            self.app.inform.emit("[error] Gerber Parser ERROR.\n Line %d: %s" % (line_num, gline), repr(err))
+            loc = 'Gerber Line #%d Gerber Line Content: %s\n' % (line_num, gline) + repr(err)
+            self.app.inform.emit("[error]Gerber Parser ERROR.\n%s:" % loc)
 
     @staticmethod
     def create_flash_geometry(location, aperture, steps_per_circle=None):
