@@ -1464,7 +1464,7 @@ class App(QtCore.QObject):
             self.ui.menutool.removeAction(act)
 
     def init_tools(self):
-
+        log.debug("init_tools()")
         # delete the data currently in the Tools Tab and the Tab itself
         widget = QtWidgets.QTabWidget.widget(self.ui.notebook, 2)
         if widget is not None:
@@ -1482,7 +1482,10 @@ class App(QtCore.QObject):
         # reinstall all the Tools as some may have been removed when the data was removed from the Tools Tab
         # first remove all of them
         self.remove_tools()
-        # second install all of them
+        # second re add the TCL Shell action to the Tools menu and reconnect it to ist slot function
+        self.ui.menutoolshell = self.ui.menutool.addAction(QtGui.QIcon('share/shell16.png'), '&Command Line\tS')
+        self.ui.menutoolshell.triggered.connect(self.on_toggle_shell)
+        # third install all of them
         self.install_tools()
         self.log.debug("Tools are initialized.")
 

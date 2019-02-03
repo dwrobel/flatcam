@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - added some status bar messages in the Geometry Editor to guide the user when using the Geometry Tools
 - now the '`' shortcut key that shows the 'shortcut key list' in Editors points to the same window which is created in a tab no longer as a pop-up window. This tab can be detached if needed.
 - added a remove_tools() function before install_tools() in the init_tools() that is called when creating a new project. Should solve the issue with having double menu entry's in the TOOLS menu
+- fixed remove_tools() so the Tcl Shell action is readded to the Tools menu and reconnected to it's slot function
 
 2.2.2019
 
@@ -27,7 +28,7 @@ CAD program, and create G-Code for Isolation routing.
 - added a new postprocessor file named: 'probe_from_zmove' which allow probing to be done from z_move position on toolchange event 
 - fixed the snap magnet button in Geometry Editor, restored the checkable property to True
 - some more changes in the Editors GUI in deactivate() function
-- a fix for saving again empt an edited new and empty Excellon Object
+- a fix for saving as empty an edited new and empty Excellon Object
 
 1.02.2019
 
