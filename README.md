@@ -19,6 +19,8 @@ CAD program, and create G-Code for Isolation routing.
 - added ability to be detached for the tabs in the Notebook section (Project, Selected and Tool)
 - added ability for all detachable tabs to be restored to the same position from where they were detached.
 - changed the shortcut keys for Zoom In, Zoom Out and Zoom Fit from 1, 2, 3 to '-', '=' respectively 'V'. Added new shortcut keys '1', '2', '3' for Select Project Tab, Select Selected Tab and Select Tool Tab.
+- formatted the Shortcut List Tab into a HTML table
+
 3.3.2019
 
 - updated the new shortcut list with the shortcuts added lately

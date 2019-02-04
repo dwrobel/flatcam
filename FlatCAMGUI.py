@@ -753,65 +753,245 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.sh_tab_layout.addLayout(self.sh_hlay)
 
         self.app_sh_msg = '''<b>General Shortcut list</b><br>
-<br>
-<b>~:</b>       Show Shortcut List<br>
-<br>
-<b>1:</b>       Switch to Project Tab<br>
-<b>2:</b>       Switch to Selected Tab<br>
-<b>3:</b>       Switch to Tool Tab<br>
-<b>E:</b>       Edit Object (if selected)<br>
-<b>G:</b>       Grid On/Off<br>
-<b>J:</b>       Jump to Coordinates<br>
-<b>L:</b>       New Excellon<br>
-<b>M:</b>       Move Obj<br>
-<b>N:</b>       New Geometry<br>
-<b>O:</b>       Set Origin<br>
-<b>Q:</b>       Change Units<br>
-<b>P:</b>       Open Properties Tool<br>
-<b>R:</b>       Rotate by 90 degree CW<br>
-<b>S:</b>       Shell Toggle<br>
-<b>V:</b>       Zoom Fit<br>
-<b>X:</b>       Flip on X_axis<br>
-<b>Y:</b>       Flip on Y_axis<br>
-<b>=:</b>       Zoom Out<br>
-<b>-:</b>       Zoom In<br>
-<br>
-<b>Space:</b>    En(Dis)able Obj Plot<br>
-<b>CTRL+A:</b>   Select All<br>
-<b>CTRL+C:</b>   Copy Obj<br>
-<b>CTRL+E:</b>   Open Excellon File<br>
-<b>CTRL+G:</b>   Open Gerber File<br>
-<b>CTRL+N:</b>   New Project<br>
-<b>CTRL+M:</b>   Measurement Tool<br>
-<b>CTRL+O:</b>   Open Project<br>
-<b>CTRL+S:</b>   Save Project As<br>
-<b>CTRL+F10:</b> Toggle Plot Area<br>
-<br>
-<b>SHIFT+C:</b>  Copy Obj_Name<br>
-<b>SHIFT+G:</b>  Toggle the axis<br>
-<b>SHIFT+P:</b>  Open Preferences Window<br>
-<b>SHIFT+R:</b>  Rotate by 90 degree CCW<br>
-<b>SHIFT+S:</b>  Run a Script<br>
-<b>SHIFT+W:</b>  Toggle the workspace<br>
-<b>SHIFT+X:</b>  Skew on X axis<br>
-<b>SHIFT+Y:</b>  Skew on Y axis<br>
-<br>
-<b>ALT+C:</b>    Calculators Tool<br>
-<b>ALT+D:</b>    2-Sided PCB Tool<br>
-<b>ALT+L:</b>    Film PCB Tool<br>
-<b>ALT+N:</b>    Non-Copper Clearing Tool<br>
-<b>ALT+P:</b>    Paint Area Tool<br>
-<b>ALT+R:</b>    Transformation Tool<br>
-<b>ALT+U:</b>    Cutout PCB Tool<br>
-<b>ALT+1:</b>    Enable all Plots<br>
-<b>ALT+2:</b>    Disable all Plots<br>
-<b>ALT+3:</b>    Disable Non-selected Plots<br>
-<b>ALT+F10:</b>  Toggle Full Screen<br>
-<br>
-<b>F1:</b>       Open Online Manual<br>
-<b>F2:</b>       Open Online Tutorials<br>
-<b>Del:</b>      Delete Obj
+<table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+	<tbody>
+		<tr height="20">
+			<td height="20" width="89"><strong>~</strong></td>
+			<td width="194"><span style="color:#006400"><strong>&nbsp;SHOW SHORTCUT LIST</strong></span></td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>1</strong></td>
+			<td>&nbsp;Switch to Project Tab</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>2</strong></td>
+			<td>&nbsp;Switch to Selected Tab</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>3</strong></td>
+			<td>&nbsp;Switch to Tool Tab</td>
+		</tr>
+        <tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>E</strong></td>
+			<td>&nbsp;Edit Object (if selected)</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>G</strong></td>
+			<td>&nbsp;Grid On/Off</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>J</strong></td>
+			<td>&nbsp;Jump to Coordinates</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>L</strong></td>
+			<td>&nbsp;New Excellon</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>M</strong></td>
+			<td>&nbsp;Move Obj</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>N</strong></td>
+			<td>&nbsp;New Geometry</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>O</strong></td>
+			<td>&nbsp;Set Origin</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>Q</strong></td>
+			<td>&nbsp;Change Units</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>P</strong></td>
+			<td>&nbsp;Open Properties Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>R</strong></td>
+			<td>&nbsp;Rotate by 90 degree CW</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>S</strong></td>
+			<td>&nbsp;Shell Toggle</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>V</strong></td>
+			<td>&nbsp;Zoom Fit</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>X</strong></td>
+			<td>&nbsp;Flip on X_axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>Y</strong></td>
+			<td>&nbsp;Flip on Y_axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>&#39;=&#39;</strong></td>
+			<td>&nbsp;Zoom Out</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>&#39;-&#39;</strong></td>
+			<td>&nbsp;Zoom In</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+A</strong></td>
+			<td>&nbsp;Select All</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+C</strong></td>
+			<td>&nbsp;Copy Obj</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+E</strong></td>
+			<td>&nbsp;Open Excellon File</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+G</strong></td>
+			<td>&nbsp;Open Gerber File</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+N</strong></td>
+			<td>&nbsp;New Project</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+M</strong></td>
+			<td>&nbsp;Measurement Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+O</strong></td>
+			<td>&nbsp;Open Project</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+S</strong></td>
+			<td>&nbsp;Save Project As</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+F10</strong></td>
+			<td>&nbsp;Toggle Plot Area</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+C</strong></td>
+			<td>&nbsp;Copy Obj_Name</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+G</strong></td>
+			<td>&nbsp;Toggle the axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+P</strong></td>
+			<td>&nbsp;Open Preferences Window</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+R</strong></td>
+			<td>&nbsp;Rotate by 90 degree CCW</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+S</strong></td>
+			<td>&nbsp;Run a Script</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+W</strong></td>
+			<td>&nbsp;Toggle the workspace</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+X</strong></td>
+			<td>&nbsp;Skew on X axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+Y</strong></td>
+			<td>&nbsp;Skew on Y axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+C</strong></td>
+			<td>&nbsp;Calculators Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+D</strong></td>
+			<td>&nbsp;2-Sided PCB Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+L</strong></td>
+			<td>&nbsp;Film PCB Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+N</strong></td>
+			<td>&nbsp;Non-Copper Clearing Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+P</strong></td>
+			<td>&nbsp;Paint Area Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+R</strong></td>
+			<td>&nbsp;Transformation Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+U</strong></td>
+			<td>&nbsp;Cutout PCB Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+1</strong></td>
+			<td>&nbsp;Enable all Plots</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+2</strong></td>
+			<td>&nbsp;Disable all Plots</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+3</strong></td>
+			<td>&nbsp;Disable Non-selected Plots</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+F10</strong></td>
+			<td>&nbsp;Toggle Full Screen</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>F1</strong></td>
+			<td>&nbsp;Open Online Manual</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>F2</strong></td>
+			<td>&nbsp;Open Online Tutorials</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>Del</strong></td>
+			<td>&nbsp;Delete Obj</td>
+		</tr>
+        <tr height="20">
+			<td height="20"><strong>SPACE</strong></td>
+			<td>&nbsp;En(Dis)able Obj Plot</td>
+		</tr>
+	</tbody>
+</table>
+
 '''
+
         self.sh_app = QtWidgets.QTextEdit()
         self.sh_app.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
 
@@ -821,47 +1001,147 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.editor_sh_msg = '''<b>Editor Shortcut list</b><br>
 <br>
-<b></b>         GEOMETRY EDITOR<br>
-<br>
-<b>A:</b>       Draw an Arc<br>
-<b>B:</b>       Buffer Tool<br>
-<b>C:</b>       Copy Geo Item<br>
-<b>E:</b>       Polygon Intersection Tool<br>
+<strong><span style="color:#0000ff">GEOMETRY EDITOR</span></strong><br>
 
-<b>I:</b>       Paint Tool<br>
-<b>K:</b>       Toggle Corner Snap<br>
-
-<b>M:</b>       Move Geo Item<br>
-<b>N:</b>       Draw a Polygon<br>
-<b>O:</b>       Draw a Circle<br>
-<b>P:</b>       Draw a Path<br>
-<b>R:</b>       Draw Rectangle<br>
-<b>S:</b>       Polygon Substraction Tool<br>
-<b>T:</b>       Add Text Tool<br>
-<b>U:</b>       Polygon Union Tool<br>
-<b>X:</b>       Polygon Cut Tool<br>
-
+<table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+	<tbody>
+		<tr height="20">
+			<td height="20" width="89"><strong>A</strong></td>
+			<td width="194">&nbsp;Draw an Arc</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>B</strong></td>
+			<td>&nbsp;Buffer Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>C</strong></td>
+			<td>&nbsp;Copy Geo Item</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>E</strong></td>
+			<td>&nbsp;Polygon Intersection Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>I</strong></td>
+			<td>&nbsp;Paint Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>K</strong></td>
+			<td>&nbsp;Toggle Corner Snap</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>M</strong></td>
+			<td>&nbsp;Move Geo Item</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>N</strong></td>
+			<td>&nbsp;Draw a Polygon</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>O</strong></td>
+			<td>&nbsp;Draw a Circle</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>P</strong></td>
+			<td>&nbsp;Draw a Path</td>
+		</tr>
+		<tr height="20">
+			<td height="20">R</td>
+			<td>&nbsp;Draw Rectangle</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>S</strong></td>
+			<td>&nbsp;Polygon Substraction Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>T</strong></td>
+			<td>&nbsp;Add Text Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>U</strong></td>
+			<td>&nbsp;Polygon Union Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>X</strong></td>
+			<td>&nbsp;Polygon Cut Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+S</strong></td>
+			<td>&nbsp;Save Object and Exit Editor</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>Space</strong></td>
+			<td>&nbsp;Rotate Geometry</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ENTER</strong></td>
+			<td>&nbsp;Finish drawing for certain tools</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ESC</strong></td>
+			<td>&nbsp;Abort and return to Select</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>Del</strong></td>
+			<td>&nbsp;Delete Shape</td>
+		</tr>
+	</tbody>
+</table>
 <br>
-<b>CTRL+S:</b>  Save Object and Exit Editor<br>
-<br>            
-<b>Space:</b>   Rotate Geometry<br>
-<b>ENTER:</b>   Finish drawing for certain tools<br>
-<b>ESC:</b>     Abort and return to Select<br>
-<b>Del:</b>     Delete Shape<br>
 <br>
-<br>
-<b></b>         EXCELLON EDITOR<br>
-<br>
-<b>A:</b>       Add Drill Array<br>
-<b>C:</b>       Copy Drill(s)<br>
-<b>D:</b>       Add Drill<br>
-<b>M:</b>       Move Drill(s)<br>
-
-<b>R:</b>       Resize Drill(s)<br>
-<br>
-<b>Del:</b>     Delete Drill(s)<br>
-<b>ESC:</b>     Abort and return to Select<br>
-<b>CTRL+S:</b>  Save Object and Exit Editor<br>
+<strong><span style="color:#ff0000">EXCELLON EDITOR</span></strong><br>
+<table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+	<tbody>
+		<tr height="20">
+			<td height="20" width="89"><strong>A</strong></td>
+			<td width="194">&nbsp;Add Drill Array</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>C</strong></td>
+			<td>&nbsp;Copy Drill(s)</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>D</strong></td>
+			<td>&nbsp;Add Drill</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>M</strong></td>
+			<td>&nbsp;Move Drill(s)</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>R</strong></td>
+			<td>&nbsp;Resize Drill(s)</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>Del</strong></td>
+			<td>&nbsp;Delete Drill(s)</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ESC</strong></td>
+			<td>&nbsp;Abort and return to Select</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+S</strong></td>
+			<td>&nbsp;Save Object and Exit Editor</td>
+		</tr>
+	</tbody>
+</table>
         '''
         self.sh_editor = QtWidgets.QTextEdit()
         self.sh_editor.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
