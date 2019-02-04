@@ -756,9 +756,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 <br>
 <b>~:</b>       Show Shortcut List<br>
 <br>
-<b>1:</b>       Zoom Fit<br>
-<b>2:</b>       Zoom Out<br>
-<b>3:</b>       Zoom In<br>
+<b>1:</b>       Switch to Project Tab<br>
+<b>2:</b>       Switch to Selected Tab<br>
+<b>3:</b>       Switch to Tool Tab<br>
 <b>E:</b>       Edit Object (if selected)<br>
 <b>G:</b>       Grid On/Off<br>
 <b>J:</b>       Jump to Coordinates<br>
@@ -770,9 +770,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 <b>P:</b>       Open Properties Tool<br>
 <b>R:</b>       Rotate by 90 degree CW<br>
 <b>S:</b>       Shell Toggle<br>
-<b>V:</b>       View Fit<br>
+<b>V:</b>       Zoom Fit<br>
 <b>X:</b>       Flip on X_axis<br>
 <b>Y:</b>       Flip on Y_axis<br>
+<b>=:</b>       Zoom Out<br>
+<b>-:</b>       Zoom In<br>
 <br>
 <b>Space:</b>    En(Dis)able Obj Plot<br>
 <b>CTRL+A:</b>   Select All<br>
@@ -1214,6 +1216,17 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 self.snap_magnet.setVisible(True)
                 self.corner_snap_btn.setDisabled(True)
                 self.snap_magnet.setDisabled(True)
+
+    def keyPressEvent(self, event):
+
+        if event.key() == QtCore.Qt.Key_1:
+            self.app.on_select_tab('project')
+
+        if event.key() == QtCore.Qt.Key_2:
+            self.app.on_select_tab('selected')
+
+        if event.key() == QtCore.Qt.Key_3:
+            self.app.on_select_tab('tool')
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls:

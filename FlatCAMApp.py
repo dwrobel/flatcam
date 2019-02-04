@@ -494,9 +494,9 @@ class App(QtCore.QObject):
             "global_shell_shape": [500, 300],  # Shape of the shell in pixels.
             "global_shell_at_startup": False,  # Show the shell at startup.
             "global_recent_limit": 10,  # Max. items in recent list.
-            "fit_key": '1',
-            "zoom_out_key": '2',
-            "zoom_in_key": '3',
+            "fit_key": 'V',
+            "zoom_out_key": '-',
+            "zoom_in_key": '=',
             "grid_toggle_key": 'G',
             "zoom_ratio": 1.5,
             "global_point_clipboard_format": "(%.4f, %.4f)",
@@ -3914,8 +3914,6 @@ class App(QtCore.QObject):
             if index.internalPointer().parent_item != self.collection.root_item:
                 self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
 
-
-
     def grid_status(self):
         if self.ui.grid_snap_btn.isChecked():
             return 1
@@ -4054,15 +4052,11 @@ class App(QtCore.QObject):
                 webbrowser.open(self.video_url)
                 return
 
-            if event.key == self.defaults['fit_key']:  # 1
-                self.on_zoom_fit(None)
-                return
-
-            if event.key == self.defaults['zoom_out_key']:  # 2
+            if event.key == self.defaults['zoom_out_key']:  # '-'
                 self.plotcanvas.zoom(1 / self.defaults['zoom_ratio'], self.mouse)
                 return
 
-            if event.key == self.defaults['zoom_in_key']:  # 3
+            if event.key == self.defaults['zoom_in_key']:  # '='
                 self.plotcanvas.zoom(self.defaults['zoom_ratio'], self.mouse)
                 return
 
@@ -4074,6 +4068,15 @@ class App(QtCore.QObject):
                 if self.collection.get_active() is not None:
                     self.collection.get_active().ui.plot_cb.toggle()
                     self.delete_selection_shape()
+
+            if event.key == '1':
+                self.on_select_tab('project')
+
+            if event.key == '2':
+                self.on_select_tab('selected')
+
+            if event.key == '3':
+                self.on_select_tab('tool')
 
             if event.key == 'E':
                 self.object2editor()
@@ -4148,6 +4151,14 @@ class App(QtCore.QObject):
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.ui.shortcuts_tab)
         self.ui.show()
+
+    def on_select_tab(self, name):
+        if name == 'project':
+            self.ui.notebook.setCurrentWidget(self.ui.project_tab)
+        elif name == 'selected':
+            self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
+        elif name == 'tool':
+            self.ui.notebook.setCurrentWidget(self.ui.tool_tab)
 
     def on_copy_name(self):
         self.report_usage("on_copy_name()")

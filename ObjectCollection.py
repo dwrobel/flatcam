@@ -387,17 +387,17 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             if key == QtCore.Qt.Key_F2:
                 webbrowser.open(self.app.video_url)
 
-            # Zoom Fit
+            # Switch to Project Tab
             if key == QtCore.Qt.Key_1:
-                self.app.on_zoom_fit(None)
+                self.app.on_select_tab('project')
 
-            # Zoom In
+            # Switch to Selected Tab
             if key == QtCore.Qt.Key_2:
-                self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'], self.app.mouse)
+                self.app.on_select_tab('selected')
 
-            # Zoom Out
+            # Switch to Tool Tab
             if key == QtCore.Qt.Key_3:
-                self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'], self.app.mouse)
+                self.app.on_select_tab('tool')
 
             # Delete
             if key == QtCore.Qt.Key_Delete and active:
@@ -476,6 +476,14 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             # Mirror on Y the selected object(s)
             if key == QtCore.Qt.Key_Y:
                 self.app.on_flipy()
+
+            # Zoom In
+            if key == QtCore.Qt.Key_Equal:
+                self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'], self.app.mouse)
+
+            # Zoom Out
+            if key == QtCore.Qt.Key_Minus:
+                self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'], self.app.mouse)
 
             # Show shortcut list
             if key == QtCore.Qt.Key_Ampersand:
