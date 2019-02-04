@@ -394,7 +394,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.splitter = QtWidgets.QSplitter()
         self.setCentralWidget(self.splitter)
 
-        self.notebook = QtWidgets.QTabWidget()
+        # self.notebook = QtWidgets.QTabWidget()
+        self.notebook = FCDetachableTab(protect=True)
+        self.notebook.setTabsClosable(False)
+        self.notebook.useOldIndex(True)
+
         self.splitter.addWidget(self.notebook)
 
         self.splitter_left = QtWidgets.QSplitter(Qt.Vertical)
@@ -585,7 +589,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.right_lay.setContentsMargins(0, 0, 0, 0)
         self.right_widget.setLayout(self.right_lay)
         # self.plot_tab_area = FCTab()
-        self.plot_tab_area = FCDetachableTab()
+        self.plot_tab_area = FCDetachableTab(protect=False, protect_by_name=['Plot Area'])
+        self.plot_tab_area.useOldIndex(True)
 
         self.right_lay.addWidget(self.plot_tab_area)
         self.plot_tab_area.setTabsClosable(True)
@@ -2840,7 +2845,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.setTitle(str("NCC Tool Options"))
 
         ## Clear non-copper regions
-        self.clearcopper_label = QtWidgets.QLabel("<b>Clear non-copper:</b>")
+        self.clearcopper_label = QtWidgets.QLabel("<b>Parameters:</b>")
         self.clearcopper_label.setToolTip(
             "Create a Geometry object with\n"
             "toolpaths to cut all non-copper regions."
@@ -2941,7 +2946,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.setTitle(str("Cutout Tool Options"))
 
         ## Board cuttout
-        self.board_cutout_label = QtWidgets.QLabel("<b>Board cutout:</b>")
+        self.board_cutout_label = QtWidgets.QLabel("<b>Parameters:</b>")
         self.board_cutout_label.setToolTip(
             "Create toolpaths to cut around\n"
             "the PCB and separate it from\n"
@@ -3024,7 +3029,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         self.setTitle(str("2Sided Tool Options"))
 
         ## Board cuttout
-        self.dblsided_label = QtWidgets.QLabel("<b>Double Sided:</b>")
+        self.dblsided_label = QtWidgets.QLabel("<b>Parameters:</b>")
         self.dblsided_label.setToolTip(
             "A tool to help in creating a double sided\n"
             "PCB using alignment holes."
@@ -3083,7 +3088,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # ------------------------------
         ## Paint area
         # ------------------------------
-        self.paint_label = QtWidgets.QLabel('<b>Paint Area:</b>')
+        self.paint_label = QtWidgets.QLabel('<b>Parameters:</b>')
         self.paint_label.setToolTip(
             "Creates tool paths to cover the\n"
             "whole area of a polygon (remove\n"
@@ -3186,7 +3191,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.setTitle(str("Film Tool Options"))
 
         ## Board cuttout
-        self.film_label = QtWidgets.QLabel("<b>Film parameters:</b>")
+        self.film_label = QtWidgets.QLabel("<b>Parameters:</b>")
         self.film_label.setToolTip(
             "Create a PCB film from a Gerber or Geometry\n"
             "FlatCAM object.\n"
@@ -3225,14 +3230,15 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.film_boundary_label, 1, 0)
         grid0.addWidget(self.film_boundary_entry, 1, 1)
 
-        self.film_adjust_entry = FCEntry()
-        self.film_adjust_label = QtWidgets.QLabel("Adjust:")
-        self.film_adjust_label.setToolTip(
-            "Adjust the line thickness of each feature in the SVG file.\n"
-            "In pixels."
+        self.film_scale_entry = FCEntry()
+        self.film_scale_label = QtWidgets.QLabel("Scale Stroke:")
+        self.film_scale_label.setToolTip(
+            "Scale the line stroke thickness of each feature in the SVG file.\n"
+            "It means that the line that envelope each SVG feature will be thicker or thinner,\n"
+            "therefore the fine features may be more affected by this parameter."
         )
-        grid0.addWidget(self.film_adjust_label, 2, 0)
-        grid0.addWidget(self.film_adjust_entry, 2, 1)
+        grid0.addWidget(self.film_scale_label, 2, 0)
+        grid0.addWidget(self.film_scale_entry, 2, 1)
 
         self.layout.addStretch()
 
@@ -3245,7 +3251,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         self.setTitle(str("Panelize Tool Options"))
 
         ## Board cuttout
-        self.panelize_label = QtWidgets.QLabel("<b>Board cutout:</b>")
+        self.panelize_label = QtWidgets.QLabel("<b>Parameters:</b>")
         self.panelize_label.setToolTip(
             "Create an object that contains an array of (x, y) elements,\n"
             "each element is a copy of the source object spaced\n"

@@ -1970,6 +1970,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.move_timer = QtCore.QTimer()
         self.move_timer.setSingleShot(True)
 
+        # this var will store the state of the toolbar before starting the editor
+        self.toolbar_old_state = False
+
         self.key = None  # Currently pressed key
         self.geo_key_modifiers = None
         self.x = None  # Current mouse cursor pos
@@ -2083,23 +2086,28 @@ class FlatCAMGeoEditor(QtCore.QObject):
         if settings.contains("theme"):
             theme = settings.value('theme', type=str)
             if theme == 'standard':
-                self.app.ui.geo_edit_toolbar.setVisible(False)
+                # self.app.ui.geo_edit_toolbar.setVisible(False)
 
                 self.app.ui.snap_max_dist_entry.setEnabled(False)
                 self.app.ui.corner_snap_btn.setEnabled(False)
                 self.app.ui.snap_magnet.setVisible(False)
                 self.app.ui.corner_snap_btn.setVisible(False)
             elif theme == 'compact':
-                self.app.ui.snap_max_dist_entry.setEnabled(False)
+                # self.app.ui.geo_edit_toolbar.setVisible(True)
 
+                self.app.ui.snap_max_dist_entry.setEnabled(False)
                 self.app.ui.corner_snap_btn.setEnabled(False)
         else:
-            self.app.ui.geo_edit_toolbar.setVisible(False)
+            # self.app.ui.geo_edit_toolbar.setVisible(False)
 
             self.app.ui.snap_magnet.setVisible(False)
             self.app.ui.corner_snap_btn.setVisible(False)
             self.app.ui.snap_max_dist_entry.setEnabled(False)
             self.app.ui.corner_snap_btn.setEnabled(False)
+
+        # set the Editor Toolbar visibility to what was before entering in the Editor
+        self.app.ui.geo_edit_toolbar.setVisible(False) if self.toolbar_old_state is False \
+            else self.app.ui.geo_edit_toolbar.setVisible(True)
 
         # Disable visuals
         self.shapes.enabled = False
@@ -3695,6 +3703,9 @@ class FlatCAMExcEditor(QtCore.QObject):
         # this will flag if the Editor "tools" are launched from key shortcuts (True) or from menu toolbar (False)
         self.launched_from_shortcuts = False
 
+        # this var will store the state of the toolbar before starting the editor
+        self.toolbar_old_state = False
+
         self.app.ui.delete_drill_btn.triggered.connect(self.on_delete_btn)
         self.name_entry.returnPressed.connect(self.on_name_activate)
         self.addtool_btn.clicked.connect(self.on_tool_add)
@@ -4216,26 +4227,30 @@ class FlatCAMExcEditor(QtCore.QObject):
         if settings.contains("theme"):
             theme = settings.value('theme', type=str)
             if theme == 'standard':
-                self.app.ui.exc_edit_toolbar.setVisible(False)
+                # self.app.ui.exc_edit_toolbar.setVisible(False)
 
                 self.app.ui.snap_max_dist_entry.setEnabled(False)
                 self.app.ui.corner_snap_btn.setEnabled(False)
                 self.app.ui.snap_magnet.setVisible(False)
                 self.app.ui.corner_snap_btn.setVisible(False)
             elif theme == 'compact':
-                self.app.ui.exc_edit_toolbar.setVisible(True)
+                # self.app.ui.exc_edit_toolbar.setVisible(True)
 
                 self.app.ui.snap_max_dist_entry.setEnabled(False)
                 self.app.ui.corner_snap_btn.setEnabled(False)
                 self.app.ui.snap_magnet.setVisible(True)
                 self.app.ui.corner_snap_btn.setVisible(True)
         else:
-            self.app.ui.exc_edit_toolbar.setVisible(False)
+            # self.app.ui.exc_edit_toolbar.setVisible(False)
 
             self.app.ui.snap_max_dist_entry.setEnabled(False)
             self.app.ui.corner_snap_btn.setEnabled(False)
             self.app.ui.snap_magnet.setVisible(False)
             self.app.ui.corner_snap_btn.setVisible(False)
+
+        # set the Editor Toolbar visibility to what was before entering in the Editor
+        self.app.ui.exc_edit_toolbar.setVisible(False) if self.toolbar_old_state is False \
+            else self.app.ui.exc_edit_toolbar.setVisible(True)
 
         # Disable visuals
         self.shapes.enabled = False

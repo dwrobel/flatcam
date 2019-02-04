@@ -426,7 +426,7 @@ class App(QtCore.QObject):
 
             "tools_film_type": self.tools_defaults_form.tools_film_group.film_type_radio,
             "tools_film_boundary": self.tools_defaults_form.tools_film_group.film_boundary_entry,
-            "tools_film_adjust": self.tools_defaults_form.tools_film_group.film_adjust_entry,
+            "tools_film_scale": self.tools_defaults_form.tools_film_group.film_scale_entry,
 
             "tools_panelize_spacing_columns": self.tools_defaults_form.tools_panelize_group.pspacing_columns,
             "tools_panelize_spacing_rows": self.tools_defaults_form.tools_panelize_group.pspacing_rows,
@@ -607,7 +607,7 @@ class App(QtCore.QObject):
 
             "tools_film_type": 'neg',
             "tools_film_boundary": 1,
-            "tools_film_adjust": 0,
+            "tools_film_scale": 0,
 
             "tools_panelize_spacing_columns": 0,
             "tools_panelize_spacing_rows": 0,
@@ -749,7 +749,7 @@ class App(QtCore.QObject):
 
             "tools_film_type": self.tools_options_form.tools_film_group.film_type_radio,
             "tools_film_boundary": self.tools_options_form.tools_film_group.film_boundary_entry,
-            "tools_film_adjust": self.tools_options_form.tools_film_group.film_adjust_entry,
+            "tools_film_scale": self.tools_options_form.tools_film_group.film_scale_entry,
 
             "tools_panelize_spacing_columns": self.tools_options_form.tools_panelize_group.pspacing_columns,
             "tools_panelize_spacing_rows": self.tools_options_form.tools_panelize_group.pspacing_rows,
@@ -867,7 +867,7 @@ class App(QtCore.QObject):
 
             "tools_film_type": 'neg',
             "tools_film_boundary": 1,
-            "tools_film_adjust": 0,
+            "tools_film_scale": 0,
 
             "tools_panelize_spacing_columns": 0,
             "tools_panelize_spacing_rows": 0,
@@ -1564,11 +1564,15 @@ class App(QtCore.QObject):
                 self.inform.emit("[WARNING_NOTCL]Editing a MultiGeo Geometry is not possible for the moment.")
                 return
 
+            # store the Geometry Editor Toolbar visibility before entering in the Editor
+            self.geo_editor.toolbar_old_state = True if self.ui.geo_edit_toolbar.isVisible() else False
             self.geo_editor.edit_fcgeometry(edited_object)
             # set call source to the Editor we go into
             self.call_source = 'geo_editor'
 
         elif isinstance(edited_object, FlatCAMExcellon):
+            # store the Excellon Editor Toolbar visibility before entering in the Editor
+            self.exc_editor.toolbar_old_state = True if self.ui.exc_edit_toolbar.isVisible() else False
             self.exc_editor.edit_fcexcellon(edited_object)
 
             # set call source to the Editor we go into

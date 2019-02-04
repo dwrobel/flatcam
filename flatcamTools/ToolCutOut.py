@@ -48,6 +48,8 @@ class ToolCutOut(FlatCAMTool):
         self.obj_combo = QtWidgets.QComboBox()
         self.obj_combo.setModel(self.app.collection)
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.obj_combo.setCurrentIndex(1)
+
         self.object_label = QtWidgets.QLabel("Object:")
         self.object_label.setToolTip(
             "Object to be cutout.                        "
@@ -201,7 +203,6 @@ class ToolCutOut(FlatCAMTool):
 
     def set_tool_ui(self):
         self.reset_fields()
-        self.obj_combo.setCurrentIndex(1)
 
         self.dia.set_value(float(self.app.defaults["tools_cutouttooldia"]))
         self.margin.set_value(float(self.app.defaults["tools_cutoutmargin"]))

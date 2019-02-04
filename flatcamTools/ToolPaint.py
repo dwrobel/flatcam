@@ -32,6 +32,8 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.object_combo = QtWidgets.QComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
+        self.object_combo.setCurrentIndex(1)
+
         self.object_label = QtWidgets.QLabel("Geometry:")
         self.object_label.setToolTip(
             "Geometry object to be painted.                        "
@@ -323,7 +325,6 @@ class ToolPaint(FlatCAMTool, Gerber):
     def set_tool_ui(self):
         self.tools_frame.show()
         self.reset_fields()
-        self.object_combo.setCurrentIndex(1)
 
         ## Init the GUI interface
         self.paintmargin_entry.set_value(self.default_data["paintmargin"])

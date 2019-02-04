@@ -43,6 +43,8 @@ class Film(FlatCAMTool):
         self.tf_object_combo = QtWidgets.QComboBox()
         self.tf_object_combo.setModel(self.app.collection)
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.tf_object_combo.setCurrentIndex(1)
+
         self.tf_object_label = QtWidgets.QLabel("Film Object:")
         self.tf_object_label.setToolTip(
             "Object for which to create the film."
@@ -74,6 +76,7 @@ class Film(FlatCAMTool):
         self.tf_box_combo = QtWidgets.QComboBox()
         self.tf_box_combo.setModel(self.app.collection)
         self.tf_box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.tf_box_combo.setCurrentIndex(1)
 
         self.tf_box_combo_label = QtWidgets.QLabel("Box Object:")
         self.tf_box_combo_label.setToolTip(
@@ -112,6 +115,15 @@ class Film(FlatCAMTool):
             "surroundings if not for this border."
         )
         tf_form_layout.addRow(self.boundary_label, self.boundary_entry)
+
+        self.film_scale_entry = FCEntry()
+        self.film_scale_label = QtWidgets.QLabel("Scale Stroke:")
+        self.film_scale_label.setToolTip(
+            "Scale the line stroke thickness of each feature in the SVG file.\n"
+            "It means that the line that envelope each SVG feature will be thicker or thinner,\n"
+            "therefore the fine features may be more affected by this parameter."
+        )
+        tf_form_layout.addRow(self.film_scale_label, self.film_scale_entry)
 
         # Buttons
         hlay = QtWidgets.QHBoxLayout()
@@ -157,12 +169,14 @@ class Film(FlatCAMTool):
     def set_tool_ui(self):
         self.reset_fields()
 
-        self.tf_object_combo.setCurrentIndex(1)
-        self.tf_box_combo.setCurrentIndex(1)
         f_type = self.app.defaults["tools_film_type"] if self.app.defaults["tools_film_type"] else 'neg'
         self.film_type.set_value(str(f_type))
+
         b_entry = self.app.defaults[ "tools_film_boundary"] if self.app.defaults[ "tools_film_boundary"] else 0.0
         self.boundary_entry.set_value(float(b_entry))
+
+        scale_stroke_width = self.app.defaults["tools_film_scale"] if self.app.defaults["tools_film_scale"] else 0.0
+        self.film_scale_entry.set_value(int(scale_stroke_width))
 
     def on_film_creation(self):
         try:
@@ -170,6 +184,7 @@ class Film(FlatCAMTool):
         except:
             self.app.inform.emit("[ERROR_NOTCL] No FlatCAM object selected. Load an object for Film and retry.")
             return
+
         try:
             boxname = self.tf_box_combo.currentText()
         except:
@@ -186,6 +201,13 @@ class Film(FlatCAMTool):
                 self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number.")
                 return
+
+        try:
+            scale_stroke_width = int(self.film_scale_entry.get_value())
+        except ValueError:
+            self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
+                                 "use a number.")
+            return
 
         if border is None:
             border = 0
@@ -207,7 +229,7 @@ class Film(FlatCAMTool):
                 self.app.inform.emit("[WARNING_NOTCL]Export SVG positive cancelled.")
                 return
             else:
-                self.app.export_svg_black(name, boxname, filename)
+                self.app.export_svg_black(name, boxname, filename, scale_factor=scale_stroke_width)
         else:
             try:
                 filename, _ = QtWidgets.QFileDialog.getSaveFileName(
@@ -223,7 +245,7 @@ class Film(FlatCAMTool):
                 self.app.inform.emit("[WARNING_NOTCL]Export SVG negative cancelled.")
                 return
             else:
-                self.app.export_svg_negative(name, boxname, filename, border)
+                self.app.export_svg_negative(name, boxname, filename, border, scale_factor=scale_stroke_width)
 
     def reset_fields(self):
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

@@ -554,7 +554,7 @@ class FCTab(QtWidgets.QTabWidget):
 
 class FCDetachableTab(QtWidgets.QTabWidget):
     # From here: https://stackoverflow.com/questions/47267195/in-pyqt4-is-it-possible-to-detach-tabs-from-a-qtabwidget
-    def __init__(self, parent=None):
+    def __init__(self, protect=None, protect_by_name=None, parent=None):
 
         super().__init__()
 
@@ -569,12 +569,26 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         # does not have a parent
         self.detachedTabs = {}
 
+        # a way to make sure that tabs can't be closed after they attach to the parent tab
+        self.protect_tab = True if protect is not None and protect is True else False
+
+        self.protect_by_name = protect_by_name if isinstance(protect_by_name, list) else None
+
         # Close all detached tabs if the application is closed explicitly
         QtWidgets.qApp.aboutToQuit.connect(self.closeDetachedTabs) # @UndefinedVariable
+
+        # used by the property self.useOldIndex(param)
+        self.use_old_index = None
+        self.old_index = None
 
         self.setTabsClosable(True)
         self.tabCloseRequested.connect(self.closeTab)
 
+    def useOldIndex(self, param):
+        if param:
+            self.use_old_index = True
+        else:
+            self.use_old_index = False
 
     def deleteTab(self, currentIndex):
         widget = self.widget(currentIndex)
@@ -610,7 +624,6 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         self.insertTab(toIndex, widget, icon, text)
         self.setCurrentIndex(toIndex)
 
-
     ##
     #  Detach the tab by removing it's contents and placing them in
     #  a DetachedTab window
@@ -619,6 +632,8 @@ class FCDetachableTab(QtWidgets.QTabWidget):
     #  @param    point    the screen position for creating the new DetachedTab window
     @pyqtSlot(int, QtCore.QPoint)
     def detachTab(self, index, point):
+
+        self.old_index = index
 
         # Get the tab content
         name = self.tabText(index)
@@ -663,6 +678,9 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         # Remove the reference
         del self.detachedTabs[name]
 
+        # helps in restoring the tab to the same index that it was before was detached
+        insert_index = self.old_index if self.use_old_index is True else insertAt
+
         # Create an image from the given icon (for comparison)
         if not icon.isNull():
             try:
@@ -686,21 +704,30 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         # Determine if the given image and the main window icon are the same.
         # If they are, then do not add the icon to the tab
         if tabIconImage == windowIconImage:
-            if insertAt == None:
+            if insert_index is None:
                 index = self.addTab(contentWidget, name)
             else:
-                index = self.insertTab(insertAt, contentWidget, name)
+                index = self.insertTab(insert_index, contentWidget, name)
         else:
-            if insertAt == None:
+            if insert_index is None:
                 index = self.addTab(contentWidget, icon, name)
             else:
-                index = self.insertTab(insertAt, contentWidget, icon, name)
+                index = self.insertTab(insert_index, contentWidget, icon, name)
 
+        # on reattaching the tab if protect is true then the closure button is not added
+        if self.protect_tab is True:
+            self.protectTab(index)
+
+        # on reattaching the tab disable the closure button for the tabs with the name in the self.protect_by_name list
+        if self.protect_by_name is not None:
+            for tab_name in self.protect_by_name:
+                for index in range(self.count()):
+                    if str(tab_name) == str(self.tabText(index)):
+                        self.protectTab(index)
 
         # Make this tab the current tab
-        if index > -1:
-            self.setCurrentIndex(index)
-
+            if index > -1:
+                self.setCurrentIndex(insert_index) if self.use_old_index else self.setCurrentIndex(index)
 
     ##
     #  Remove the tab with the given name, even if it is detached
@@ -985,8 +1012,6 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         def dropEvent(self, event):
             self.dragDropedPos = event.pos()
             QtWidgets.QTabBar.dropEvent(self, event)
-
-
 
         #  Determine if the detached tab drop event occurred on an existing tab,
         #  then send the event to the DetachableTabWidget

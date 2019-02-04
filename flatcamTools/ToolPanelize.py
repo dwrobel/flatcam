@@ -43,6 +43,8 @@ class Panelize(FlatCAMTool):
         self.object_combo = QtWidgets.QComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.object_combo.setCurrentIndex(1)
+
         self.object_label = QtWidgets.QLabel("Object:")
         self.object_label.setToolTip(
             "Object to be panelized. This means that it will\n"
@@ -74,6 +76,8 @@ class Panelize(FlatCAMTool):
         self.box_combo = QtWidgets.QComboBox()
         self.box_combo.setModel(self.app.collection)
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.box_combo.setCurrentIndex(1)
+
         self.box_combo_label = QtWidgets.QLabel("Box Object:")
         self.box_combo_label.setToolTip(
             "The actual object that is used a container for the\n "
@@ -187,8 +191,6 @@ class Panelize(FlatCAMTool):
 
     def set_tool_ui(self):
         self.reset_fields()
-        self.object_combo.setCurrentIndex(1)
-        self.box_combo.setCurrentIndex(1)
 
         sp_c = self.app.defaults["tools_panelize_spacing_columns"] if \
             self.app.defaults["tools_panelize_spacing_columns"] else 0.0

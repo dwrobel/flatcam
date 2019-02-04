@@ -9,11 +9,15 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
-24.02.2019
+4.02.2019
 
 - modified the Toolchange_Probe_general postprocessor file to remove any Z moves before the actual toolchange event
 - created a prototype postprocessor file for usage with tool probing in MACH3
 - added the default values for Tool Film and Tool Panelize to the Edit -> Preferences
+- added a new parameter in the Tool Film which control the thickness of the stroke width in the resulting SVG. It's a scale parameter.
+- whatever was the visibility of the corresponding toolbar when we enter in the Editor, it will be set after exit from the Editor (either Geometry Editor or Excellon Editor).
+- added ability to be detached for the tabs in the Notebook section (Project, Selected and Tool)
+- added ability for all detachable tabs to be restored to the same position from where they were detached.
 
 3.3.2019
 

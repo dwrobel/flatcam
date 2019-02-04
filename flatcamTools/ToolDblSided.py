@@ -29,6 +29,7 @@ class DblSidedTool(FlatCAMTool):
         self.gerber_object_combo = QtWidgets.QComboBox()
         self.gerber_object_combo.setModel(self.app.collection)
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.gerber_object_combo.setCurrentIndex(1)
 
         self.botlay_label = QtWidgets.QLabel("<b>GERBER:</b>")
         self.botlay_label.setToolTip(
@@ -52,6 +53,7 @@ class DblSidedTool(FlatCAMTool):
         self.exc_object_combo = QtWidgets.QComboBox()
         self.exc_object_combo.setModel(self.app.collection)
         self.exc_object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
+        self.exc_object_combo.setCurrentIndex(1)
 
         self.excobj_label = QtWidgets.QLabel("<b>EXCELLON:</b>")
         self.excobj_label.setToolTip(
@@ -261,9 +263,6 @@ class DblSidedTool(FlatCAMTool):
 
     def set_tool_ui(self):
         self.reset_fields()
-
-        self.gerber_object_combo.setCurrentIndex(1)
-        self.exc_object_combo.setCurrentIndex(1)
 
         self.point_entry.set_value("")
         self.alignment_holes.set_value("")
