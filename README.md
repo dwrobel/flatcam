@@ -11,7 +11,7 @@ CAD program, and create G-Code for Isolation routing.
 
 24.02.2019
 
-- modified the Toolchange_Probe_general postprocessor file to include now Z moves before the actual toolchange event
+- modified the Toolchange_Probe_general postprocessor file to remove any Z moves before the actual toolchange event
 - created a prototype postprocessor file for usage with tool probing in MACH3
 - added the default values for Tool Film and Tool Panelize to the Edit -> Preferences
 
