@@ -1302,10 +1302,10 @@ class GeneralPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.general_app_group = GeneralAppPrefGroupUI()
-        self.general_app_group.setFixedWidth(260)
+        self.general_app_group.setFixedWidth(250)
 
         self.general_gui_group = GeneralGUIPrefGroupUI()
-        self.general_gui_group.setFixedWidth(260)
+        self.general_gui_group.setFixedWidth(250)
 
         self.layout.addWidget(self.general_app_group)
         self.layout.addWidget(self.general_gui_group)
@@ -1320,9 +1320,9 @@ class GerberPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.gerber_gen_group = GerberGenPrefGroupUI()
-        self.gerber_gen_group.setFixedWidth(260)
+        self.gerber_gen_group.setFixedWidth(250)
         self.gerber_opt_group = GerberOptPrefGroupUI()
-        self.gerber_opt_group.setFixedWidth(260)
+        self.gerber_opt_group.setFixedWidth(250)
 
         self.layout.addWidget(self.gerber_gen_group)
         self.layout.addWidget(self.gerber_opt_group)
@@ -1337,9 +1337,9 @@ class ExcellonPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.excellon_gen_group = ExcellonGenPrefGroupUI()
-        self.excellon_gen_group.setFixedWidth(260)
+        self.excellon_gen_group.setFixedWidth(275)
         self.excellon_opt_group = ExcellonOptPrefGroupUI()
-        self.excellon_opt_group.setFixedWidth(260)
+        self.excellon_opt_group.setFixedWidth(275)
 
         self.layout.addWidget(self.excellon_gen_group)
         self.layout.addWidget(self.excellon_opt_group)
@@ -1354,9 +1354,9 @@ class GeometryPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.geometry_gen_group = GeometryGenPrefGroupUI()
-        self.geometry_gen_group.setFixedWidth(260)
+        self.geometry_gen_group.setFixedWidth(275)
         self.geometry_opt_group = GeometryOptPrefGroupUI()
-        self.geometry_opt_group.setFixedWidth(260)
+        self.geometry_opt_group.setFixedWidth(275)
 
         self.layout.addWidget(self.geometry_gen_group)
         self.layout.addWidget(self.geometry_opt_group)
@@ -1371,15 +1371,21 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.tools_ncc_group = ToolsNCCPrefGroupUI()
-        self.tools_ncc_group.setFixedWidth(260)
+        self.tools_ncc_group.setFixedWidth(200)
         self.tools_paint_group = ToolsPaintPrefGroupUI()
-        self.tools_paint_group.setFixedWidth(260)
+        self.tools_paint_group.setFixedWidth(200)
 
         self.tools_cutout_group = ToolsCutoutPrefGroupUI()
-        self.tools_cutout_group.setFixedWidth(260)
+        self.tools_cutout_group.setFixedWidth(200)
 
         self.tools_2sided_group = Tools2sidedPrefGroupUI()
-        self.tools_2sided_group.setFixedWidth(260)
+        self.tools_2sided_group.setFixedWidth(200)
+
+        self.tools_film_group = ToolsFilmPrefGroupUI()
+        self.tools_film_group.setFixedWidth(200)
+
+        self.tools_panelize_group = ToolsPanelizePrefGroupUI()
+        self.tools_panelize_group.setFixedWidth(200)
 
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.tools_ncc_group)
@@ -1388,9 +1394,14 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.vlay1 = QtWidgets.QVBoxLayout()
         self.vlay1.addWidget(self.tools_cutout_group)
         self.vlay1.addWidget(self.tools_2sided_group)
+        self.vlay1.addWidget(self.tools_film_group)
+
+        self.vlay2 = QtWidgets.QVBoxLayout()
+        self.vlay2.addWidget(self.tools_panelize_group)
 
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)
+        self.layout.addLayout(self.vlay2)
 
         self.layout.addStretch()
 
@@ -3067,7 +3078,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # OptionsGroupUI.__init__(self, "Paint Area Tool Options", parent=parent)
         super(ToolsPaintPrefGroupUI, self).__init__(self)
 
-        self.setTitle(str("Paint Area Tool Options"))
+        self.setTitle(str("Paint Tool Options"))
 
         # ------------------------------
         ## Paint area
@@ -3163,6 +3174,154 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
             # {"label": "Rectangle", "value": "rectangle"}
         ])
         grid0.addWidget(self.selectmethod_combo, 6, 1)
+
+        self.layout.addStretch()
+
+
+class ToolsFilmPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Cutout Tool Options", parent=parent)
+        super(ToolsFilmPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("Film Tool Options"))
+
+        ## Board cuttout
+        self.film_label = QtWidgets.QLabel("<b>Film parameters:</b>")
+        self.film_label.setToolTip(
+            "Create a PCB film from a Gerber or Geometry\n"
+            "FlatCAM object.\n"
+            "The file is saved in SVG format."
+        )
+        self.layout.addWidget(self.film_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        self.film_type_radio = RadioSet([{'label': 'Pos', 'value': 'pos'}, {'label': 'Neg', 'value': 'neg'}])
+        ftypelbl = QtWidgets.QLabel('Film Type:')
+        ftypelbl.setToolTip(
+            "Generate a Positive black film or a Negative film.\n"
+            "Positive means that it will print the features\n"
+            "with black on a white canvas.\n"
+            "Negative means that it will print the features\n"
+            "with white on a black canvas.\n"
+            "The Film format is SVG."
+        )
+        grid0.addWidget(ftypelbl, 0, 0)
+        grid0.addWidget(self.film_type_radio, 0, 1)
+
+        self.film_boundary_entry = FCEntry()
+        self.film_boundary_label = QtWidgets.QLabel("Border:")
+        self.film_boundary_label.setToolTip(
+            "Specify a border around the object.\n"
+            "Only for negative film.\n"
+            "It helps if we use as a Box Object the same \n"
+            "object as in Film Object. It will create a thick\n"
+            "black bar around the actual print allowing for a\n"
+            "better delimitation of the outline features which are of\n"
+            "white color like the rest and which may confound with the\n"
+            "surroundings if not for this border."
+        )
+        grid0.addWidget(self.film_boundary_label, 1, 0)
+        grid0.addWidget(self.film_boundary_entry, 1, 1)
+
+        self.film_adjust_entry = FCEntry()
+        self.film_adjust_label = QtWidgets.QLabel("Adjust:")
+        self.film_adjust_label.setToolTip(
+            "Adjust the line thickness of each feature in the SVG file.\n"
+            "In pixels."
+        )
+        grid0.addWidget(self.film_adjust_label, 2, 0)
+        grid0.addWidget(self.film_adjust_entry, 2, 1)
+
+        self.layout.addStretch()
+
+
+class ToolsPanelizePrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Cutout Tool Options", parent=parent)
+        super(ToolsPanelizePrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("Panelize Tool Options"))
+
+        ## Board cuttout
+        self.panelize_label = QtWidgets.QLabel("<b>Board cutout:</b>")
+        self.panelize_label.setToolTip(
+            "Create an object that contains an array of (x, y) elements,\n"
+            "each element is a copy of the source object spaced\n"
+            "at a X distance, Y distance of each other."
+        )
+        self.layout.addWidget(self.panelize_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        ## Spacing Columns
+        self.pspacing_columns = FCEntry()
+        self.spacing_columns_label = QtWidgets.QLabel("Spacing cols:")
+        self.spacing_columns_label.setToolTip(
+            "Spacing between columns of the desired panel.\n"
+            "In current units."
+        )
+        grid0.addWidget(self.spacing_columns_label, 0, 0)
+        grid0.addWidget(self.pspacing_columns, 0, 1)
+
+        ## Spacing Rows
+        self.pspacing_rows = FCEntry()
+        self.spacing_rows_label = QtWidgets.QLabel("Spacing rows:")
+        self.spacing_rows_label.setToolTip(
+            "Spacing between rows of the desired panel.\n"
+            "In current units."
+        )
+        grid0.addWidget(self.spacing_rows_label, 1, 0)
+        grid0.addWidget(self.pspacing_rows, 1, 1)
+
+        ## Columns
+        self.pcolumns = FCEntry()
+        self.columns_label = QtWidgets.QLabel("Columns:")
+        self.columns_label.setToolTip(
+            "Number of columns of the desired panel"
+        )
+        grid0.addWidget(self.columns_label, 2, 0)
+        grid0.addWidget(self.pcolumns, 2, 1)
+
+        ## Rows
+        self.prows = FCEntry()
+        self.rows_label = QtWidgets.QLabel("Rows:")
+        self.rows_label.setToolTip(
+            "Number of rows of the desired panel"
+        )
+        grid0.addWidget(self.rows_label, 3, 0)
+        grid0.addWidget(self.prows, 3, 1)
+
+        ## Constrains
+        self.pconstrain_cb = FCCheckBox("Constrain within:")
+        self.pconstrain_cb.setToolTip(
+            "Area define by DX and DY within to constrain the panel.\n"
+            "DX and DY values are in current units.\n"
+            "Regardless of how many columns and rows are desired,\n"
+            "the final panel will have as many columns and rows as\n"
+            "they fit completely within selected area."
+        )
+        grid0.addWidget(self.pconstrain_cb, 4, 0)
+
+        self.px_width_entry = FCEntry()
+        self.x_width_lbl = QtWidgets.QLabel("Width (DX):")
+        self.x_width_lbl.setToolTip(
+            "The width (DX) within which the panel must fit.\n"
+            "In current units."
+        )
+        grid0.addWidget(self.x_width_lbl, 5, 0)
+        grid0.addWidget(self.px_width_entry, 5, 1)
+
+        self.py_height_entry = FCEntry()
+        self.y_height_lbl = QtWidgets.QLabel("Height (DY):")
+        self.y_height_lbl.setToolTip(
+            "The height (DY)within which the panel must fit.\n"
+            "In current units."
+        )
+        grid0.addWidget(self.y_height_lbl, 6, 0)
+        grid0.addWidget(self.py_height_entry, 6, 1)
 
         self.layout.addStretch()
 

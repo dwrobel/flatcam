@@ -423,6 +423,18 @@ class App(QtCore.QObject):
             "tools_2sided_mirror_axis": self.tools_defaults_form.tools_2sided_group.mirror_axis_radio,
             "tools_2sided_axis_loc": self.tools_defaults_form.tools_2sided_group.axis_location_radio,
             "tools_2sided_drilldia": self.tools_defaults_form.tools_2sided_group.drill_dia_entry,
+
+            "tools_film_type": self.tools_defaults_form.tools_film_group.film_type_radio,
+            "tools_film_boundary": self.tools_defaults_form.tools_film_group.film_boundary_entry,
+            "tools_film_adjust": self.tools_defaults_form.tools_film_group.film_adjust_entry,
+
+            "tools_panelize_spacing_columns": self.tools_defaults_form.tools_panelize_group.pspacing_columns,
+            "tools_panelize_spacing_rows": self.tools_defaults_form.tools_panelize_group.pspacing_rows,
+            "tools_panelize_columns": self.tools_defaults_form.tools_panelize_group.pcolumns,
+            "tools_panelize_rows": self.tools_defaults_form.tools_panelize_group.prows,
+            "tools_panelize_constrain": self.tools_defaults_form.tools_panelize_group.pconstrain_cb,
+            "tools_panelize_constrainx": self.tools_defaults_form.tools_panelize_group.px_width_entry,
+            "tools_panelize_constrainy": self.tools_defaults_form.tools_panelize_group.py_height_entry
         }
         # loads postprocessors
         self.postprocessors = load_postprocessors(self)
@@ -593,6 +605,17 @@ class App(QtCore.QObject):
             "tools_2sided_axis_loc": "point",
             "tools_2sided_drilldia": 1,
 
+            "tools_film_type": 'neg',
+            "tools_film_boundary": 1,
+            "tools_film_adjust": 0,
+
+            "tools_panelize_spacing_columns": 0,
+            "tools_panelize_spacing_rows": 0,
+            "tools_panelize_columns": 1,
+            "tools_panelize_rows": 1,
+            "tools_panelize_constrain": False,
+            "tools_panelize_constrainx": 0.0,
+            "tools_panelize_constrainy": 0.0
         })
 
         ###############################
@@ -722,7 +745,20 @@ class App(QtCore.QObject):
 
             "tools_2sided_mirror_axis": self.tools_options_form.tools_2sided_group.mirror_axis_radio,
             "tools_2sided_axis_loc": self.tools_options_form.tools_2sided_group.axis_location_radio,
-            "tools_2sided_drilldia": self.tools_options_form.tools_2sided_group.drill_dia_entry
+            "tools_2sided_drilldia": self.tools_options_form.tools_2sided_group.drill_dia_entry,
+
+            "tools_film_type": self.tools_options_form.tools_film_group.film_type_radio,
+            "tools_film_boundary": self.tools_options_form.tools_film_group.film_boundary_entry,
+            "tools_film_adjust": self.tools_options_form.tools_film_group.film_adjust_entry,
+
+            "tools_panelize_spacing_columns": self.tools_options_form.tools_panelize_group.pspacing_columns,
+            "tools_panelize_spacing_rows": self.tools_options_form.tools_panelize_group.pspacing_rows,
+            "tools_panelize_columns": self.tools_options_form.tools_panelize_group.pcolumns,
+            "tools_panelize_rows": self.tools_options_form.tools_panelize_group.prows,
+            "tools_panelize_constrain": self.tools_options_form.tools_panelize_group.pconstrain_cb,
+            "tools_panelize_constrainx": self.tools_options_form.tools_panelize_group.px_width_entry,
+            "tools_panelize_constrainy": self.tools_options_form.tools_panelize_group.py_height_entry
+
         }
 
         for name in list(self.postprocessors.keys()):
@@ -827,7 +863,19 @@ class App(QtCore.QObject):
 
             "tools_2sided_mirror_axis": "X",
             "tools_2sided_axis_loc": 'point',
-            "tools_2sided_drilldia": 1
+            "tools_2sided_drilldia": 1,
+
+            "tools_film_type": 'neg',
+            "tools_film_boundary": 1,
+            "tools_film_adjust": 0,
+
+            "tools_panelize_spacing_columns": 0,
+            "tools_panelize_spacing_rows": 0,
+            "tools_panelize_columns": 1,
+            "tools_panelize_rows": 1,
+            "tools_panelize_constrain": False,
+            "tools_panelize_constrainx": 0.0,
+            "tools_panelize_constrainy": 0.0
 
         })
 
@@ -1576,15 +1624,6 @@ class App(QtCore.QObject):
             self.exc_editor.update_options(edited_obj)
             self.exc_editor.deactivate()
 
-            # update the exc object options so it is including the bounding box values
-            try:
-                xmin, ymin, xmax, ymax = edited_obj.bounds()
-                edited_obj.options['xmin'] = xmin
-                edited_obj.options['ymin'] = ymin
-                edited_obj.options['xmax'] = xmax
-                edited_obj.options['ymax'] = ymax
-            except AttributeError:
-                self.inform.emit("[WARNING] Object empty after edit.")
         else:
             self.inform.emit("[WARNING_NOTCL]Select a Geometry or Excellon Object to update.")
             return

@@ -190,14 +190,33 @@ class Panelize(FlatCAMTool):
         self.object_combo.setCurrentIndex(1)
         self.box_combo.setCurrentIndex(1)
 
-        self.spacing_columns.set_value(0.0)
-        self.spacing_rows.set_value(0.0)
+        sp_c = self.app.defaults["tools_panelize_spacing_columns"] if \
+            self.app.defaults["tools_panelize_spacing_columns"] else 0.0
+        self.spacing_columns.set_value(float(sp_c))
 
-        self.rows.set_value(1)
-        self.columns.set_value(1)
+        sp_r = self.app.defaults["tools_panelize_spacing_rows"] if \
+            self.app.defaults["tools_panelize_spacing_rows"] else 0.0
+        self.spacing_rows.set_value(float(sp_r))
 
-        self.x_width_entry.set_value(0.0)
-        self.y_height_entry.set_value(0.0)
+        rr = self.app.defaults["tools_panelize_rows"] if \
+            self.app.defaults["tools_panelize_rows"] else 0.0
+        self.rows.set_value(int(rr))
+
+        cc = self.app.defaults["tools_panelize_columns"] if \
+            self.app.defaults["tools_panelize_columns"] else 0.0
+        self.columns.set_value(int(cc))
+
+        c_cb = self.app.defaults["tools_panelize_constrain"] if \
+            self.app.defaults["tools_panelize_constrain"] else False
+        self.constrain_cb.set_value(c_cb)
+
+        x_w = self.app.defaults["tools_panelize_constrainx"] if \
+            self.app.defaults["tools_panelize_constrainx"] else 0.0
+        self.x_width_entry.set_value(float(x_w))
+
+        y_w = self.app.defaults["tools_panelize_constrainy"] if \
+            self.app.defaults["tools_panelize_constrainy"] else 0.0
+        self.y_height_entry.set_value(float(y_w))
 
     def on_type_obj_index_changed(self):
         obj_type = self.type_obj_combo.currentIndex()

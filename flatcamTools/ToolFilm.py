@@ -159,19 +159,21 @@ class Film(FlatCAMTool):
 
         self.tf_object_combo.setCurrentIndex(1)
         self.tf_box_combo.setCurrentIndex(1)
-        self.film_type.set_value('neg')
-        self.boundary_entry.set_value(0.0)
+        f_type = self.app.defaults["tools_film_type"] if self.app.defaults["tools_film_type"] else 'neg'
+        self.film_type.set_value(str(f_type))
+        b_entry = self.app.defaults[ "tools_film_boundary"] if self.app.defaults[ "tools_film_boundary"] else 0.0
+        self.boundary_entry.set_value(float(b_entry))
 
     def on_film_creation(self):
         try:
             name = self.tf_object_combo.currentText()
         except:
-            self.app.inform.emit("[ERROR_NOTCL] No Film object selected. Load a Film object and retry.")
+            self.app.inform.emit("[ERROR_NOTCL] No FlatCAM object selected. Load an object for Film and retry.")
             return
         try:
             boxname = self.tf_box_combo.currentText()
         except:
-            self.app.inform.emit("[ERROR_NOTCL] No Box object selected. Load a Box object and retry.")
+            self.app.inform.emit("[ERROR_NOTCL] No FlatCAM object selected. Load an object for Box and retry.")
             return
 
         try:
