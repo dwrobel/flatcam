@@ -108,17 +108,17 @@ M0
              tool=int(p.tool),
              t_drills=no_drills,
              toolC=toolC_formatted)
-                gcode += 'M0'
+
             else:
                 gcode = """
 T{tool}
 M5
 M6
 (MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
-M0""".format(tool=int(p.tool),
+M0
+""".format(tool=int(p.tool),
              t_drills=no_drills,
              toolC=toolC_formatted)
-                gcode += 'M0'
 
             if f_plunge is True:
                 gcode += '\nG00 Z%.*f' % (p.coords_decimals, p.z_move)
@@ -132,11 +132,11 @@ T{tool}
 M5
 M6    
 (MSG, Change to Tool Dia = {toolC})
-M0""".format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchangex),
+M0
+""".format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchangex),
              toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
              tool=int(p.tool),
              toolC=toolC_formatted)
-                gcode += 'M0'
             else:
                 gcode = """
 T{tool}
@@ -145,7 +145,6 @@ M6
 (MSG, Change to Tool Dia = {toolC})
 M0""".format(tool=int(p.tool),
              toolC=toolC_formatted)
-                gcode += 'M0'
 
             if f_plunge is True:
                 gcode += '\nG00 Z%.*f' % (p.coords_decimals, p.z_move)

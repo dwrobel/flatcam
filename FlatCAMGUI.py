@@ -2697,6 +2697,15 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.pdepth_entry = FCEntry()
         grid2.addWidget(self.pdepth_entry, 13, 1)
 
+        # Probe feedrate
+        self.feedrate_probe_label = QtWidgets.QLabel("Feedrate Probe:")
+        self.feedrate_probe_label.setToolTip(
+            "The feedrate used while the probe is probing."
+        )
+        grid2.addWidget(self.feedrate_probe_label, 14, 0)
+        self.feedrate_probe_entry = FCEntry()
+        grid2.addWidget(self.feedrate_probe_entry, 14, 1)
+
         fplungelabel = QtWidgets.QLabel('Fast Plunge:')
         fplungelabel.setToolTip(
             "By checking this, the vertical move from\n"
@@ -2705,8 +2714,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             "WARNING: the move is done at Toolchange X,Y coords."
         )
         self.fplunge_cb = FCCheckBox()
-        grid2.addWidget(fplungelabel, 14, 0)
-        grid2.addWidget(self.fplunge_cb, 14, 1)
+        grid2.addWidget(fplungelabel, 15, 0)
+        grid2.addWidget(self.fplunge_cb, 15, 1)
 
         #### Choose what to use for Gcode creation: Drills, Slots or Both
         excellon_gcode_type_label = QtWidgets.QLabel('<b>Gcode:    </b>')
@@ -2719,8 +2728,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.excellon_gcode_type_radio = RadioSet([{'label': 'Drills', 'value': 'drills'},
                                           {'label': 'Slots', 'value': 'slots'},
                                           {'label': 'Both', 'value': 'both'}])
-        grid2.addWidget(excellon_gcode_type_label, 15, 0)
-        grid2.addWidget(self.excellon_gcode_type_radio, 15, 1)
+        grid2.addWidget(excellon_gcode_type_label, 16, 0)
+        grid2.addWidget(self.excellon_gcode_type_radio, 16, 1)
 
         # until I decide to implement this feature those remain disabled
         excellon_gcode_type_label.setDisabled(True)
@@ -3014,6 +3023,15 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         self.pdepth_entry = FCEntry()
         grid1.addWidget(self.pdepth_entry, 17, 1)
 
+        # Probe feedrate
+        self.feedrate_probe_label = QtWidgets.QLabel("Feedrate Probe:")
+        self.feedrate_probe_label.setToolTip(
+            "The feedrate used while the probe is probing."
+        )
+        grid1.addWidget(self.feedrate_probe_label, 18, 0)
+        self.feedrate_probe_entry = FCEntry()
+        grid1.addWidget(self.feedrate_probe_entry, 18, 1)
+
         # Fast Move from Z Toolchange
         fplungelabel = QtWidgets.QLabel('Fast Plunge:')
         fplungelabel.setToolTip(
@@ -3023,8 +3041,8 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             "WARNING: the move is done at Toolchange X,Y coords."
         )
         self.fplunge_cb = FCCheckBox()
-        grid1.addWidget(fplungelabel, 18, 0)
-        grid1.addWidget(self.fplunge_cb, 18, 1)
+        grid1.addWidget(fplungelabel, 19, 0)
+        grid1.addWidget(self.fplunge_cb, 19, 1)
 
         # Size of trace segment on X axis
         segx_label = QtWidgets.QLabel("Seg. X size:")
@@ -3033,9 +3051,9 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             "Useful for auto-leveling.\n"
             "A value of 0 means no segmentation on the X axis."
         )
-        grid1.addWidget(segx_label, 19, 0)
+        grid1.addWidget(segx_label, 20, 0)
         self.segx_entry = FCEntry()
-        grid1.addWidget(self.segx_entry, 19, 1)
+        grid1.addWidget(self.segx_entry, 20, 1)
 
         # Size of trace segment on Y axis
         segy_label = QtWidgets.QLabel("Seg. Y size:")
@@ -3044,9 +3062,9 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             "Useful for auto-leveling.\n"
             "A value of 0 means no segmentation on the Y axis."
         )
-        grid1.addWidget(segy_label, 20, 0)
+        grid1.addWidget(segy_label, 21, 0)
         self.segy_entry = FCEntry()
-        grid1.addWidget(self.segy_entry, 21, 1)
+        grid1.addWidget(self.segy_entry, 22, 1)
 
         self.layout.addStretch()
 

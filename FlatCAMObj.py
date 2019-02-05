@@ -857,6 +857,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             "dwelltime": 1000,
             "ppname_e": 'defaults',
             "z_pdepth": -0.02,
+            "feedrate_probe": 3.0,
             "optimization_type": "R",
             "gcode_type": "drills"
         })
@@ -1240,6 +1241,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             "endz": self.ui.eendz_entry,
             "ppname_e": self.ui.pp_excellon_name_cb,
             "z_pdepth": self.ui.pdepth_entry,
+            "feedrate_probe": self.ui.feedrate_probe_entry,
             "gcode_type": self.ui.excellon_gcode_type_radio
         })
 
@@ -1637,9 +1639,15 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         if "toolchange_probe" in current_pp.lower():
             self.ui.pdepth_entry.setVisible(True)
             self.ui.pdepth_label.show()
+
+            self.ui.feedrate_probe_entry.setVisible(True)
+            self.ui.feedrate_probe_label.show()
         else:
             self.ui.pdepth_entry.setVisible(False)
             self.ui.pdepth_label.hide()
+
+            self.ui.feedrate_probe_entry.setVisible(False)
+            self.ui.feedrate_probe_label.hide()
 
     def on_create_cncjob_button_click(self, *args):
         self.app.report_usage("excellon_on_create_cncjob_button")
@@ -1674,6 +1682,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
             job_obj.options['Tools_in_use'] = tool_table_items
             job_obj.options['type'] = 'Excellon'
+            job_obj.options['ppname_e'] = pp_excellon_name
 
             app_obj.progress.emit(20)
             job_obj.z_cut = self.options["drillz"]
@@ -1703,6 +1712,17 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 except ValueError:
                     self.app.inform.emit(
                         '[ERROR_NOTCL]Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]')
+
+            try:
+                job_obj.feedrate_probe = float(self.options["feedrate_probe"])
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    job_obj.feedrate_rapid = float(self.options["feedrate_probe"].replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit(
+                        '[ERROR_NOTCL]Wrong value format for self.defaults["feedrate_probe"] '
+                        'or self.options["feedrate_probe"]')
 
             # There could be more than one drill size...
             # job_obj.tooldia =   # TODO: duplicate variable!
@@ -1973,6 +1993,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "startz": None,
             "ppname_g": 'default',
             "z_pdepth": -0.02,
+            "feedrate_probe": 3.0,
         })
 
         if "cnctooldia" not in self.options:
@@ -2186,6 +2207,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "multidepth": self.ui.mpass_cb,
             "ppname_g": self.ui.pp_geometry_name_cb,
             "z_pdepth": self.ui.pdepth_entry,
+            "feedrate_probe": self.ui.feedrate_probe_entry,
             "depthperpass": self.ui.maxdepth_entry,
             "extracut": self.ui.extracut_cb,
             "toolchange": self.ui.toolchangeg_cb,
@@ -3036,9 +3058,15 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         if "toolchange_probe" in current_pp.lower():
             self.ui.pdepth_entry.setVisible(True)
             self.ui.pdepth_label.show()
+
+            self.ui.feedrate_probe_entry.setVisible(True)
+            self.ui.feedrate_probe_label.show()
         else:
             self.ui.pdepth_entry.setVisible(False)
             self.ui.pdepth_label.hide()
+
+            self.ui.feedrate_probe_entry.setVisible(False)
+            self.ui.feedrate_probe_label.hide()
 
     def on_generatecnc_button_click(self, *args):
 
@@ -3132,6 +3160,17 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 except ValueError:
                     self.app.inform.emit(
                         '[ERROR_NOTCL]Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]')
+
+            try:
+                job_obj.feedrate_probe = float(self.options["feedrate_probe"])
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    job_obj.feedrate_rapid = float(self.options["feedrate_probe"].replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit(
+                        '[ERROR_NOTCL]Wrong value format for self.defaults["feedrate_probe"] '
+                        'or self.options["feedrate_probe"]')
 
             for tooluid_key in self.sel_tools:
                 tool_cnt += 1
@@ -3319,6 +3358,17 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 except ValueError:
                     self.app.inform.emit(
                         '[ERROR_NOTCL]Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]')
+
+            try:
+                job_obj.feedrate_probe = float(self.options["feedrate_probe"])
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    job_obj.feedrate_rapid = float(self.options["feedrate_probe"].replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit(
+                        '[ERROR_NOTCL]Wrong value format for self.defaults["feedrate_probe"] '
+                        'or self.options["feedrate_probe"]')
 
             for tooluid_key in self.sel_tools:
                 tool_cnt += 1
@@ -3603,6 +3653,17 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 except ValueError:
                     self.app.inform.emit(
                         '[ERROR_NOTCL]Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]')
+
+            try:
+                job_obj.feedrate_probe = float(self.options["feedrate_probe"])
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    job_obj.feedrate_rapid = float(self.options["feedrate_probe"].replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit(
+                        '[ERROR_NOTCL]Wrong value format for self.defaults["feedrate_probe"] '
+                        'or self.options["feedrate_probe"]')
 
             # TODO: The tolerance should not be hard coded. Just for testing.
             job_obj.generate_from_geometry_2(self, tooldia=tooldia, offset=offset, tolerance=0.0005,
@@ -4254,6 +4315,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
         marlin = False
         hpgl = False
+        probe_pp = False
 
         try:
             for key in self.cnc_tools:
@@ -4263,15 +4325,23 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 if self.cnc_tools[key]['data']['ppname_g'] == 'hpgl':
                     hpgl = True
                     break
+                if "toolchange_probe" in self.cnc_tools[key]['data']['ppname_g'].lower():
+                    probe_pp = True
+                    break
         except Exception as e:
             log.debug("FlatCAMCNCJob.gcode_header() error: --> %s" % str(e))
-            try:
-                for key in self.cnc_tools:
-                    if self.cnc_tools[key]['data']['ppname_e'] == 'marlin':
-                        marlin = True
-                        break
-            except:
-                pass
+
+        try:
+            if self.options['ppname_e'] == 'marlin':
+                marlin = True
+        except Exception as e:
+            log.debug("FlatCAMCNCJob.gcode_header(): --> %s" % str(e))
+
+        try:
+            if "toolchange_probe" in self.options['ppname_e'].lower():
+                probe_pp = True
+        except Exception as e:
+            log.debug("FlatCAMCNCJob.gcode_header(): --> %s" % str(e))
 
         if marlin is True:
             gcode = ';Marlin G-CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date:    %s\n' % \
@@ -4297,6 +4367,24 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
             gcode += 'CO "Units: ' + self.units.upper() + '";\n'
             gcode += 'CO "Created on ' + time_str + '";\n'
+        elif probe_pp is True:
+            gcode = '(G-CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s)\n' % \
+                    (str(self.app.version), str(self.app.version_date)) + '\n'
+
+            gcode += '(This GCode tool change is done by using a Probe.)\n' \
+                     '(Make sure that before you start the job you first do a rough zero for Z axis.)\n' \
+                     '(This means that you need to zero the CNC axis and then jog to the toolchange X, Y location,)\n' \
+                     '(mount the probe and adjust the Z so more or less the probe tip touch the plate. ' \
+                     'Then zero the Z axis.)\n' + '\n'
+
+            gcode += '(Name: ' + str(self.options['name']) + ')\n'
+            gcode += '(Type: ' + "G-code from " + str(self.options['type']) + ')\n'
+
+            # if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
+            #     gcode += '(Tools in use: ' + str(p['options']['Tools_in_use']) + ')\n'
+
+            gcode += '(Units: ' + self.units.upper() + ')\n' + "\n"
+            gcode += '(Created on ' + time_str + ')\n' + '\n'
         else:
             gcode = '(G-CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s)\n' % \
                     (str(self.app.version), str(self.app.version_date)) + '\n'

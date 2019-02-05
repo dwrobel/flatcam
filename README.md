@@ -16,6 +16,9 @@ CAD program, and create G-Code for Isolation routing.
 - added possibility to use the shortcut key for shortcut list in the Notebook tabs
 - added a way to set the Probe depth if Toolchange_Probe postprocessors are selected
 - finished the postprocessor file for MACH3 tool probing on toolchange event
+- added a new parameter to set the feedrate of the probing in case the used postprocessor does probing (has toolchange_probe in it's name)
+- fixed bug in Marlin postprocessor for the Excellon files; the header and toolchange event always used the parenthesis witch is not compatible with GCode for Marlin
+- fixed a issue with a move to Z_move before any toolchange
 
 4.02.2019
 

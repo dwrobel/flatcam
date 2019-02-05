@@ -4370,7 +4370,7 @@ class CNCjob(Geometry):
     def __init__(self,
                  units="in", kind="generic", tooldia=0.0,
                  z_cut=-0.002, z_move=0.1,
-                 feedrate=3.0, feedrate_z=3.0, feedrate_rapid=3.0,
+                 feedrate=3.0, feedrate_z=3.0, feedrate_rapid=3.0, feedrate_probe=3.0,
                  pp_geometry_name='default', pp_excellon_name='default',
                  depthpercut=0.1,z_pdepth=-0.02,
                  spindlespeed=None, dwell=True, dwelltime=1000,
@@ -4424,6 +4424,9 @@ class CNCjob(Geometry):
 
         # how much depth the probe can probe before error
         self.z_pdepth = z_pdepth if z_pdepth else None
+
+        # the feedrate(speed) with which the probel travel while probing
+        self.feedrate_probe = feedrate_probe if feedrate_probe else None
 
         self.spindlespeed = spindlespeed
         self.dwell = dwell
@@ -4614,12 +4617,13 @@ class CNCjob(Geometry):
         gcode = self.doformat(p.start_code)
         gcode += self.doformat(p.feedrate_code)
 
-        if self.toolchange_xy is not None:
-            gcode += self.doformat(p.lift_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
-            gcode += self.doformat(p.startz_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
-        else:
-            gcode += self.doformat(p.lift_code, x=0.0, y=0.0)
-            gcode += self.doformat(p.startz_code, x=0.0, y=0.0)
+        if toolchange is False:
+            if self.toolchange_xy is not None:
+                gcode += self.doformat(p.lift_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+                gcode += self.doformat(p.startz_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+            else:
+                gcode += self.doformat(p.lift_code, x=0.0, y=0.0)
+                gcode += self.doformat(p.startz_code, x=0.0, y=0.0)
 
         # Distance callback
         class CreateDistanceCallback(object):
@@ -4989,8 +4993,10 @@ class CNCjob(Geometry):
         self.gcode = self.doformat(p.start_code)
 
         self.gcode += self.doformat(p.feedrate_code)        # sets the feed rate
-        self.gcode += self.doformat(p.lift_code, x=0, y=0)  # Move (up) to travel height
-        self.gcode += self.doformat(p.startz_code, x=0, y=0)
+
+        if toolchange is False:
+            self.gcode += self.doformat(p.lift_code, x=0, y=0)  # Move (up) to travel height
+            self.gcode += self.doformat(p.startz_code, x=0, y=0)
 
         if toolchange:
             # if "line_xyz" in self.pp_geometry_name:
@@ -5187,8 +5193,9 @@ class CNCjob(Geometry):
 
         self.gcode += self.doformat(p.feedrate_code)        # sets the feed rate
 
-        self.gcode += self.doformat(p.lift_code, x=self.oldx , y=self.oldy )  # Move (up) to travel height
-        self.gcode += self.doformat(p.startz_code, x=self.oldx , y=self.oldy )
+        if toolchange is False:
+            self.gcode += self.doformat(p.lift_code, x=self.oldx , y=self.oldy )  # Move (up) to travel height
+            self.gcode += self.doformat(p.startz_code, x=self.oldx , y=self.oldy )
 
         if toolchange:
             # if "line_xyz" in self.pp_geometry_name:

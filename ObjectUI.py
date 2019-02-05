@@ -556,7 +556,7 @@ class ExcellonObjectUI(ObjectUI):
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
         # postprocessor selection
-        pp_excellon_label = QtWidgets.QLabel("Postprocessor")
+        pp_excellon_label = QtWidgets.QLabel("Postprocessor:")
         pp_excellon_label.setToolTip(
             "The json file that dictates\n"
             "gcode output."
@@ -577,6 +577,17 @@ class ExcellonObjectUI(ObjectUI):
         grid1.addWidget(self.pdepth_entry, 11, 1)
         self.pdepth_label.hide()
         self.pdepth_entry.setVisible(False)
+
+        # Probe feedrate
+        self.feedrate_probe_label = QtWidgets.QLabel("Feedrate Probe:")
+        self.feedrate_probe_label.setToolTip(
+            "The feedrate used while the probe is probing."
+        )
+        grid1.addWidget(self.feedrate_probe_label, 12, 0)
+        self.feedrate_probe_entry = FCEntry()
+        grid1.addWidget(self.feedrate_probe_entry, 12, 1)
+        self.feedrate_probe_label.hide()
+        self.feedrate_probe_entry.setVisible(False)
 
         choose_tools_label = QtWidgets.QLabel(
             "Select from the Tools Table above\n"
@@ -1030,11 +1041,22 @@ class GeometryObjectUI(ObjectUI):
         self.pdepth_label.hide()
         self.pdepth_entry.setVisible(False)
 
+        # Probe feedrate
+        self.feedrate_probe_label = QtWidgets.QLabel("Feedrate Probe:")
+        self.feedrate_probe_label.setToolTip(
+            "The feedrate used while the probe is probing."
+        )
+        self.grid3.addWidget(self.feedrate_probe_label, 18, 0)
+        self.feedrate_probe_entry = FCEntry()
+        self.grid3.addWidget(self.feedrate_probe_entry, 18, 1)
+        self.feedrate_probe_label.hide()
+        self.feedrate_probe_entry.setVisible(False)
+
         warning_lbl = QtWidgets.QLabel(
             "Add at least one tool in the tool-table.\n"
             "Click the header to select all, or Ctrl + LMB\n"
             "for custom selection of tools.")
-        self.grid3.addWidget(warning_lbl, 18, 0, 1, 2)
+        self.grid3.addWidget(warning_lbl, 19, 0, 1, 2)
 
         # Button
         self.generate_cnc_button = QtWidgets.QPushButton('Generate')

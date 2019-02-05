@@ -43,7 +43,7 @@ class Toolchange_manual(FlatCAMPostProc):
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
 
         if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
-            gcode += '(Postprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n'
+            gcode += '(Postprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n' + '\n'
         else:
             gcode += '(Postprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n' + '\n'
 
@@ -54,6 +54,7 @@ class Toolchange_manual(FlatCAMPostProc):
 
         gcode += ('G20\n' if p.units.upper() == 'IN' else 'G21\n')
         gcode += 'G90\n'
+        gcode += 'G17\n'
         gcode += 'G94\n'
 
         return gcode

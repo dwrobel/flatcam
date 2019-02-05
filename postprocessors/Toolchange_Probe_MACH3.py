@@ -25,6 +25,7 @@ class Toolchange_Probe_MACH3(FlatCAMPostProc):
             gcode += '(Feedrate_Z: ' + str(p['feedrate_z']) + units + '/min' + ')\n'
 
         gcode += '(Feedrate rapids ' + str(p['feedrate_rapid']) + units + '/min' + ')\n' + '\n'
+        gcode += '(Feedrate Probe ' + str(p['feedrate_probe']) + units + '/min' + ')\n' + '\n'
         gcode += '(Z_Cut: ' + str(p['z_cut']) + units + ')\n'
 
         if str(p['options']['type']) == 'Geometry':
@@ -42,6 +43,7 @@ class Toolchange_Probe_MACH3(FlatCAMPostProc):
 
         gcode += '(Z Start: ' + str(p['startz']) + units + ')\n'
         gcode += '(Z End: ' + str(p['endz']) + units + ')\n'
+        gcode += '(Z Probe Depth: ' + str(p['z_pdepth']) + units + ')\n'
         gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
 
         if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
@@ -99,16 +101,17 @@ class Toolchange_Probe_MACH3(FlatCAMPostProc):
                 gcode = """               
 T{tool}
 M5
+M6
 G00 Z{toolchangez}
 G00 X{toolchangex} Y{toolchangey}
 (MSG, Change to Tool Dia = {toolC} ||| Drills for this tool = {t_drills} ||| Tool Probing MACH3)
 M0
 G00 Z{z_move}
-F{fr}
+F{feedrate_probe}
 G31 Z{z_pdepth}
 G92 Z0
 G00 Z{z_move}
-F{fr_slow}
+F{feedrate_probe_slow}
 G31 Z{z_pdepth}
 G92 Z0
 (MSG, Remove any clips or other devices used for probing. CNC work is resuming ...)
@@ -118,8 +121,8 @@ G00 Z{z_move}
            toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
            toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
            z_move=self.coordinate_format % (p.coords_decimals, p.z_move),
-           fr=str(self.feedrate_format %(p.fr_decimals, p.feedrate)),
-           fr_slow=str(self.feedrate_format % (p.fr_decimals, (p.feedrate / 2))),
+           feedrate_probe=str(self.feedrate_format %(p.fr_decimals, p.feedrate_probe)),
+           feedrate_probe_slow=str(self.feedrate_format % (p.fr_decimals, (p.feedrate_probe / 2))),
            z_pdepth=self.coordinate_format % (p.coords_decimals, p.z_pdepth),
            tool=int(p.tool),
            t_drills=no_drills,
@@ -128,15 +131,16 @@ G00 Z{z_move}
                 gcode = """
 T{tool}
 M5
+M6
 G00 Z{toolchangez}
 (MSG, Change to Tool Dia = {toolC} ||| Drills for this tool = {t_drills} ||| Tool Probing MACH3)
 M0
 G00 Z{z_move}
-F{fr}
+F{feedrate_probe}
 G31 Z{z_pdepth}
 G92 Z0
 G00 Z{z_move}
-F{fr_slow}
+F{feedrate_probe_slow}
 G31 Z{z_pdepth}
 G92 Z0
 (MSG, Remove any clips or other devices used for probing. CNC work is resuming ...)
@@ -144,8 +148,8 @@ M0
 G00 Z{z_move}
 """.format(toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
            z_move=self.coordinate_format % (p.coords_decimals, p.z_move),
-           fr=str(self.feedrate_format %(p.fr_decimals, p.feedrate)),
-           fr_slow=str(self.feedrate_format % (p.fr_decimals, (p.feedrate / 2))),
+           feedrate_probe=str(self.feedrate_format %(p.fr_decimals, p.feedrate_probe)),
+           feedrate_probe_slow=str(self.feedrate_format % (p.fr_decimals, (p.feedrate_probe / 2))),
            z_pdepth=self.coordinate_format % (p.coords_decimals, p.z_pdepth),
            tool=int(p.tool),
            t_drills=no_drills,
@@ -160,16 +164,17 @@ G00 Z{z_move}
                 gcode = """
 T{tool}
 M5
+M6
 G00 Z{toolchangez}
 G00 X{toolchangex} Y{toolchangey}
 (MSG, Change to Tool Dia = {toolC} ||| Tool Probing MACH3)
 M0
 G00 Z{z_move}
-F{fr}
+F{feedrate_probe}
 G31 Z{z_pdepth}
 G92 Z0
 G00 Z{z_move}
-F{fr_slow}
+F{feedrate_probe_slow}
 G31 Z{z_pdepth}
 G92 Z0
 (MSG, Remove any clips or other devices used for probing. CNC work is resuming ...)
@@ -179,8 +184,8 @@ G00 Z{z_move}
            toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
            toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
            z_move=self.coordinate_format % (p.coords_decimals, p.z_move),
-           fr=str(self.feedrate_format % (p.fr_decimals, p.feedrate)),
-           fr_slow=str(self.feedrate_format % (p.fr_decimals, (p.feedrate / 2))),
+           feedrate_probe=str(self.feedrate_format %(p.fr_decimals, p.feedrate_probe)),
+           feedrate_probe_slow=str(self.feedrate_format % (p.fr_decimals, (p.feedrate_probe / 2))),
            z_pdepth=self.coordinate_format % (p.coords_decimals, p.z_pdepth),
            tool=int(p.tool),
            toolC=toolC_formatted)
@@ -188,15 +193,16 @@ G00 Z{z_move}
                 gcode = """
 T{tool}
 M5
+M6
 G00 Z{toolchangez}
 (MSG, Change to Tool Dia = {toolC} ||| Tool Probing MACH3)
 M0
 G00 Z{z_move}
-F{fr}
+F{feedrate_probe}
 G31 Z{z_pdepth}
 G92 Z0
 G00 Z{z_move}
-F{fr_slow}
+F{feedrate_probe_slow}
 G31 Z{z_pdepth}
 G92 Z0
 (MSG, Remove any clips or other devices used for probing. CNC work is resuming ...)
@@ -204,8 +210,8 @@ M0
 G00 Z{z_move}
 """.format(toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
            z_move=self.coordinate_format % (p.coords_decimals, p.z_move),
-           fr=str(self.feedrate_format %(p.fr_decimals, p.feedrate)),
-           fr_slow=str(self.feedrate_format % (p.fr_decimals, (p.feedrate / 2))),
+           feedrate_probe=str(self.feedrate_format %(p.fr_decimals, p.feedrate_probe)),
+           feedrate_probe_slow=str(self.feedrate_format % (p.fr_decimals, (p.feedrate_probe / 2))),
            z_pdepth=self.coordinate_format % (p.coords_decimals, p.z_pdepth),
            tool=int(p.tool),
            toolC=toolC_formatted)
