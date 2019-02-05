@@ -1508,6 +1508,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         if event.key() == QtCore.Qt.Key_3:
             self.app.on_select_tab('tool')
 
+        # Show shortcut list
+        if event.key() == QtCore.Qt.Key_Ampersand:
+            self.app.on_shortcut_list()
+
+        if event.key() == QtCore.Qt.Key_QuoteLeft:
+            self.app.on_shortcut_list()
+
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls:
             event.accept()

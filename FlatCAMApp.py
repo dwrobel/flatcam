@@ -93,7 +93,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.906
-    version_date = "2019/02/3"
+    version_date = "2019/02/5"
     beta = True
 
     # current date now
@@ -6322,15 +6322,15 @@ class App(QtCore.QObject):
         # label = QtWidgets.QLabel("Choose an item from Project")
         # label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
 
-        self.sel_title = QtWidgets.QTextEdit(
+        sel_title = QtWidgets.QTextEdit(
             '<b>Shortcut Key List</b>')
-        self.sel_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
-        self.sel_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        sel_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+        sel_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
         # font = self.sel_title.font()
         # font.setPointSize(12)
         # self.sel_title.setFont(font)
 
-        self.selected_text = '''
+        selected_text = '''
 <p><span style="font-size:14px"><strong>Selected Tab - Choose an Item from Project Tab</strong></span></p>
 
 <p><span style="font-size:10px"><strong>Details</strong>:<br />
@@ -6341,7 +6341,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
 	<br />
 	You can also load a <strong>FlatCAM project</strong> by double clicking on the project file, drag &amp; drop of the file into the FLATCAM GUI or through the menu/toolbar links offered within the app.</span><br />
 	&nbsp;</li>
-	<li><span style="font-size:10px">Once an object is available in the Project Tab, by selecting it and then selecting <strong>SELECTED TAB </strong>(more simpler is to double click the object name in the Project Tab), <strong>SELECTED TAB </strong>will be updated with the object properties according to it&#39;s kind: Gerber, Excellon or Geometry object.<br />
+	<li><span style="font-size:10px">Once an object is available in the Project Tab, by selecting it and then selecting <strong>SELECTED TAB </strong>(more simpler is to double click the object name in the Project Tab), <strong>SELECTED TAB </strong>will be updated with the object properties according to it&#39;s kind: Gerber, Excellon, Geometry or CNCJob object.<br />
 	<br />
 	If the selection of the object is done on the canvas by single click instead, and the <strong>SELECTED TAB</strong> is in focus, again the object properties will be displayed into the Selected Tab. Alternatively, double clicking on the object on the canvas will bring the <strong>SELECTED TAB</strong> and populate it even if it was out of focus.<br />
 	<br />
@@ -6354,14 +6354,39 @@ The normal flow when working in FlatCAM is the following:</span></p>
 
         '''
 
-        self.sel_title.setText(self.selected_text)
-        self.sel_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        sel_title.setText(selected_text)
+        sel_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
 
-        self.ui.selected_scroll_area.setWidget(self.sel_title)
+        self.ui.selected_scroll_area.setWidget(sel_title)
 
-        label = QtWidgets.QLabel("Choose a Tool from Tool Menu")
-        label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
-        self.ui.tool_scroll_area.setWidget(label)
+        tool_title = QtWidgets.QTextEdit(
+            '<b>Shortcut Key List</b>')
+        tool_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+        tool_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        # font = self.sel_title.font()
+        # font.setPointSize(12)
+        # self.sel_title.setFont(font)
+
+        tool_text = '''
+<p><span style="font-size:14px"><strong>Tool Tab - Choose an Item in Tools Menu</strong></span></p>
+
+<p><span style="font-size:10px"><strong>Details</strong>:<br />
+Some of the functionality of FlatCAM have been implemented as tools (a sort of plugins). </span></p>
+
+<p><span style="font-size:10px">Most of the tools are accessible through&nbsp;the Tools menu or by using the associated shortcut keys.<br />
+Each such a tool, if it needs an object to be used as a source it will provide the way to select this object(s) through a series of comboboxes. The result of using a tool is either a Geometry, an information that can be used in the app or it can be a file that can be saved.</span></p>
+
+<ol>
+</ol>
+
+<p><span style="font-size:10px">A list of key shortcuts is available through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut: &#39;`&#39; (key left to 1).</span></p>
+
+                '''
+
+        tool_title.setText(tool_text)
+        tool_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+
+        self.ui.tool_scroll_area.setWidget(tool_title)
 
     def setup_obj_classes(self):
         """
