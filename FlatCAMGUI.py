@@ -7,7 +7,7 @@
 ############################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSettings
 from GUIElements import *
 import platform
 
@@ -254,16 +254,22 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### View ###
         self.menuview = self.menu.addMenu('&View')
-        self.menuviewenable = self.menuview.addAction(QtGui.QIcon('share/replot16.png'), 'Enable all plots')
+        self.menuviewenable = self.menuview.addAction(QtGui.QIcon('share/replot16.png'), 'Enable all plots\tALT+1')
         self.menuviewdisableall = self.menuview.addAction(QtGui.QIcon('share/clear_plot16.png'),
-                                                          'Disable all plots')
+                                                          'Disable all plots\tALT+2')
         self.menuviewdisableother = self.menuview.addAction(QtGui.QIcon('share/clear_plot16.png'),
-                                                            'Disable non-selected')
+                                                            'Disable non-selected\tALT+3')
         # Separator
         self.menuview.addSeparator()
-        self.menuview_zoom_fit = self.menuview.addAction(QtGui.QIcon('share/zoom_fit32.png'), "&Zoom Fit\t1")
-        self.menuview_zoom_in = self.menuview.addAction(QtGui.QIcon('share/zoom_in32.png'), "&Zoom In\t2")
-        self.menuview_zoom_out = self.menuview.addAction(QtGui.QIcon('share/zoom_out32.png'), "&Zoom Out\t3")
+        self.menuview_zoom_fit = self.menuview.addAction(QtGui.QIcon('share/zoom_fit32.png'), "&Zoom Fit\tV")
+        self.menuview_zoom_in = self.menuview.addAction(QtGui.QIcon('share/zoom_in32.png'), "&Zoom In\t-")
+        self.menuview_zoom_out = self.menuview.addAction(QtGui.QIcon('share/zoom_out32.png'), "&Zoom Out\t=")
+
+        self.menuview.addSeparator()
+        self.menuview_toggle_fscreen = self.menuview.addAction(
+            QtGui.QIcon('share/fscreen32.png'), "&Toggle FullScreen\tALT+F10")
+        self.menuview_toggle_parea = self.menuview.addAction(
+            QtGui.QIcon('share/plot32.png'), "&Toggle Plot Area\tCTRL+F10")
 
         self.menuview.addSeparator()
         self.menuview_toggle_grid = self.menuview.addAction(QtGui.QIcon('share/grid32.png'), "&Toggle Grid\tG")
@@ -271,11 +277,26 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuview_toggle_workspace = self.menuview.addAction(QtGui.QIcon('share/workspace24.png'),
                                                                  "Toggle Workspace\tSHIFT+W")
 
+        ### Tool ###
+        # self.menutool = self.menu.addMenu('&Tool')
+        self.menutool = QtWidgets.QMenu('&Tool')
+        self.menutoolaction = self.menu.addMenu(self.menutool)
+        self.menutoolshell = self.menutool.addAction(QtGui.QIcon('share/shell16.png'), '&Command Line\tS')
+
+        ### Help ###
+        self.menuhelp = self.menu.addMenu('&Help')
+        self.menuhelp_about = self.menuhelp.addAction(QtGui.QIcon('share/tv16.png'), 'About FlatCAM')
+        self.menuhelp_home = self.menuhelp.addAction(QtGui.QIcon('share/home16.png'), 'Home')
+        self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), 'Manual\tF1')
+        self.menuhelp.addSeparator()
+        self.menuhelp_shortcut_list = self.menuhelp.addAction(QtGui.QIcon('share/shortcuts24.png'), 'Shortcuts List\t`')
+        self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/videohelp24.png'), 'See on YouTube\tF2')
+
 
         ### FlatCAM Editor menu ###
         # self.editor_menu = QtWidgets.QMenu("Editor")
         # self.menu.addMenu(self.editor_menu)
-        self.geo_editor_menu = QtWidgets.QMenu("Geo Editor")
+        self.geo_editor_menu = QtWidgets.QMenu(">Geo Editor<")
         self.menu.addMenu(self.geo_editor_menu)
 
         # self.select_menuitem = self.menu.addAction(QtGui.QIcon('share/pointer16.png'), "Select 'Esc'")
@@ -320,26 +341,32 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon('share/corner32.png'), "Toggle Corner Snap\tK"
         )
 
-        # self.exc_editor_menu = QtWidgets.QMenu("Excellon Editor")
-        # self.menu.addMenu(self.exc_editor_menu)
+        self.exc_editor_menu = QtWidgets.QMenu(">Excellon Editor<")
+        self.menu.addMenu(self.exc_editor_menu)
 
+        self.exc_add_array_drill_menuitem = self.exc_editor_menu.addAction(
+            QtGui.QIcon('share/rectangle32.png'), 'Add Drill Array\tA')
+        self.exc_add_drill_menuitem = self.exc_editor_menu.addAction(QtGui.QIcon('share/plus16.png'), 'Add Drill\tD')
+        self.exc_editor_menu.addSeparator()
+
+        self.exc_resize_drill_menuitem = self.exc_editor_menu.addAction(
+            QtGui.QIcon('share/resize16.png'), 'Resize Drill(S)\tR'
+        )
+        self.exc_copy_drill_menuitem = self.exc_editor_menu.addAction(QtGui.QIcon('share/copy32.png'), 'Copy\tC')
+        self.exc_delete_drill_menuitem = self.exc_editor_menu.addAction(
+            QtGui.QIcon('share/deleteshape32.png'), 'Delete\tDEL'
+        )
+        self.exc_editor_menu.addSeparator()
+
+        self.exc_move_drill_menuitem = self.exc_editor_menu.addAction(
+            QtGui.QIcon('share/move32.png'), 'Move Drill(s)\tM')
+
+        self.geo_editor_menu.menuAction().setVisible(False)
         self.geo_editor_menu.setDisabled(True)
-        # self.exc_editor_menu.setDisabled(True)
 
-        ### Tool ###
-        # self.menutool = self.menu.addMenu('&Tool')
-        self.menutool = QtWidgets.QMenu('&Tool')
-        self.menutoolaction = self.menu.addMenu(self.menutool)
-        self.menutoolshell = self.menutool.addAction(QtGui.QIcon('share/shell16.png'), '&Command Line\tS')
+        self.exc_editor_menu.menuAction().setVisible(False)
+        self.exc_editor_menu.setDisabled(True)
 
-        ### Help ###
-        self.menuhelp = self.menu.addMenu('&Help')
-        self.menuhelp_about = self.menuhelp.addAction(QtGui.QIcon('share/tv16.png'), 'About FlatCAM')
-        self.menuhelp_home = self.menuhelp.addAction(QtGui.QIcon('share/home16.png'), 'Home')
-        self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), 'Manual\tF1')
-        self.menuhelp.addSeparator()
-        self.menuhelp_shortcut_list = self.menuhelp.addAction(QtGui.QIcon('share/shortcuts24.png'), 'Shortcuts List\t`')
-        self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/videohelp24.png'), 'See on YouTube\tF2')
 
         ################################
         ### Project Tab Context menu ###
@@ -357,11 +384,67 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuproject.addSeparator()
         self.menuprojectproperties = self.menuproject.addAction(QtGui.QIcon('share/properties32.png'), 'Properties')
 
+        ################
+        ### Splitter ###
+        ################
+
+        # IMPORTANT #
+        # The order: SPITTER -> NOTEBOOK -> SNAP TOOLBAR is important and without it the GUI will not be initialized as
+        # desired.
+        self.splitter = QtWidgets.QSplitter()
+        self.setCentralWidget(self.splitter)
+
+        # self.notebook = QtWidgets.QTabWidget()
+        self.notebook = FCDetachableTab(protect=True)
+        self.notebook.setTabsClosable(False)
+        self.notebook.useOldIndex(True)
+
+        self.splitter.addWidget(self.notebook)
+
+        self.splitter_left = QtWidgets.QSplitter(Qt.Vertical)
+        self.splitter.addWidget(self.splitter_left)
+        self.splitter_left.addWidget(self.notebook)
+        self.splitter_left.setHandleWidth(0)
+
         ###############
         ### Toolbar ###
         ###############
+
+        ### TOOLBAR INSTALLATION ###
         self.toolbarfile = QtWidgets.QToolBar('File Toolbar')
+        self.toolbarfile.setObjectName('File_TB')
         self.addToolBar(self.toolbarfile)
+        self.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
+        self.toolbargeo.setObjectName('Edit_TB')
+        self.addToolBar(self.toolbargeo)
+        self.toolbarview = QtWidgets.QToolBar('View Toolbar')
+        self.toolbarview.setObjectName('View_TB')
+        self.addToolBar(self.toolbarview)
+        self.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
+        self.toolbartools.setObjectName('Tools_TB')
+        self.addToolBar(self.toolbartools)
+        self.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
+        self.exc_edit_toolbar.setObjectName('ExcEditor_TB')
+        self.addToolBar(self.exc_edit_toolbar)
+        self.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
+        self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
+        self.addToolBar(self.geo_edit_toolbar)
+
+        self.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
+        self.snap_toolbar.setObjectName('Snap_TB')
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("theme"):
+            theme = settings.value('theme', type=str)
+            if theme == 'standard':
+                self.addToolBar(self.snap_toolbar)
+            elif theme == 'compact':
+                self.snap_toolbar.setMaximumHeight(30)
+                self.splitter_left.addWidget(self.snap_toolbar)
+        else:
+            self.addToolBar(self.snap_toolbar)
+
+        ### File Toolbar ###
         self.file_open_gerber_btn = self.toolbarfile.addAction(QtGui.QIcon('share/flatcam_icon32.png'),
                                                                "Open GERBER")
         self.file_open_excellon_btn = self.toolbarfile.addAction(QtGui.QIcon('share/drill32.png'), "Open EXCELLON")
@@ -369,9 +452,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.file_open_btn = self.toolbarfile.addAction(QtGui.QIcon('share/folder32.png'), "Open project")
         self.file_save_btn = self.toolbarfile.addAction(QtGui.QIcon('share/floppy32.png'), "Save project")
 
-        self.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
-        self.addToolBar(self.toolbargeo)
-
+        ### Edit Toolbar ###
         self.newgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_geo32_bis.png'), "New Blank Geometry")
         self.newexc_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_exc32.png'), "New Blank Excellon")
         self.toolbargeo.addSeparator()
@@ -379,12 +460,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.update_obj_btn = self.toolbargeo.addAction(
             QtGui.QIcon('share/edit_ok32_bis.png'), "Save Object and close the Editor"
         )
-        self.update_obj_btn.setEnabled(False)
+
         self.toolbargeo.addSeparator()
         self.delete_btn = self.toolbargeo.addAction(QtGui.QIcon('share/cancel_edit32.png'), "&Delete")
 
-        self.toolbarview = QtWidgets.QToolBar('View Toolbar')
-        self.addToolBar(self.toolbarview)
+        ### View Toolbar ###
         self.replot_btn = self.toolbarview.addAction(QtGui.QIcon('share/replot32.png'), "&Replot")
         self.clear_plot_btn = self.toolbarview.addAction(QtGui.QIcon('share/clear_plot32.png'), "&Clear plot")
         self.zoom_in_btn = self.toolbarview.addAction(QtGui.QIcon('share/zoom_in32.png'), "Zoom In")
@@ -393,14 +473,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # self.toolbarview.setVisible(False)
 
-        self.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
-        self.addToolBar(self.toolbartools)
+        ### Tools Toolbar ###
         self.shell_btn = self.toolbartools.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
 
         ### Drill Editor Toolbar ###
-        self.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
-        self.addToolBar(self.exc_edit_toolbar)
-
         self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select 'Esc'")
         self.add_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), 'Add Drill Hole')
         self.add_drill_array_btn = self.exc_edit_toolbar.addAction(
@@ -414,18 +490,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.exc_edit_toolbar.addSeparator()
         self.move_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Drill")
 
-        self.exc_edit_toolbar.setDisabled(True)
-        self.exc_edit_toolbar.setVisible(False)
-
         ### Geometry Editor Toolbar ###
-        self.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
-        self.geo_edit_toolbar.setVisible(False)
-        self.addToolBar(self.geo_edit_toolbar)
-
         self.geo_select_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select 'Esc'")
         self.geo_add_circle_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/circle32.png'), 'Add Circle')
         self.geo_add_arc_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/arc32.png'), 'Add Arc')
-        self.geo_add_rectangle_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/rectangle32.png'), 'Add Rectangle')
+        self.geo_add_rectangle_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/rectangle32.png'),
+                                                                     'Add Rectangle')
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_add_path_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/path32.png'), 'Add Path')
@@ -438,22 +508,23 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_edit_toolbar.addSeparator()
         self.geo_union_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/union32.png'), 'Polygon Union')
         self.geo_intersection_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/intersection32.png'),
-                                                               'Polygon Intersection')
-        self.geo_subtract_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/subtract32.png'), 'Polygon Subtraction')
+                                                                    'Polygon Intersection')
+        self.geo_subtract_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/subtract32.png'),
+                                                                'Polygon Subtraction')
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/cutpath32.png'), 'Cut Path')
         self.geo_copy_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), "Copy Objects 'c'")
         self.geo_rotate_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/rotate.png'), "Rotate Objects 'Space'")
-        self.geo_delete_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'), "Delete Shape '-'")
+        self.geo_delete_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'),
+                                                              "Delete Shape '-'")
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_move_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Objects 'm'")
 
         ### Snap Toolbar ###
-        self.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
         # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
-        self.addToolBar(self.snap_toolbar)
+        # self.addToolBar(self.snap_toolbar)
 
         self.grid_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share/grid32.png'), 'Snap to grid')
         self.grid_gap_x_entry = FCEntry2()
@@ -477,25 +548,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.corner_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share/corner32.png'), 'Snap to corner')
 
-        self.snap_max_dist_entry = QtWidgets.QLineEdit()
+        self.snap_max_dist_entry = FCEntry()
         self.snap_max_dist_entry.setMaximumWidth(70)
         self.snap_max_dist_entry.setToolTip("Max. magnet distance")
-        self.snap_toolbar.addWidget(self.snap_max_dist_entry)
+        self.snap_magnet = self.snap_toolbar.addWidget(self.snap_max_dist_entry)
 
-        self.grid_snap_btn.setCheckable(True)
-        self.corner_snap_btn.setCheckable(True)
-
-        ################
-        ### Splitter ###
-        ################
-        self.splitter = QtWidgets.QSplitter()
-        self.setCentralWidget(self.splitter)
 
         ################
         ### Notebook ###
         ################
-        self.notebook = QtWidgets.QTabWidget()
-        self.splitter.addWidget(self.notebook)
 
         ### Project ###
         self.project_tab = QtWidgets.QWidget()
@@ -527,16 +588,20 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.right_lay = QtWidgets.QVBoxLayout()
         self.right_lay.setContentsMargins(0, 0, 0, 0)
         self.right_widget.setLayout(self.right_lay)
-        self.plot_tab_area = FCTab()
+        # self.plot_tab_area = FCTab()
+        self.plot_tab_area = FCDetachableTab(protect=False, protect_by_name=['Plot Area'])
+        self.plot_tab_area.useOldIndex(True)
+
         self.right_lay.addWidget(self.plot_tab_area)
         self.plot_tab_area.setTabsClosable(True)
 
-        plot_tab = QtWidgets.QWidget()
-        self.plot_tab_area.addTab(plot_tab, "Plot Area")
+        self.plot_tab = QtWidgets.QWidget()
+        self.plot_tab.setObjectName("plotarea")
+        self.plot_tab_area.addTab(self.plot_tab, "Plot Area")
 
         self.right_layout = QtWidgets.QVBoxLayout()
         self.right_layout.setContentsMargins(2, 2, 2, 2)
-        plot_tab.setLayout(self.right_layout)
+        self.plot_tab.setLayout(self.right_layout)
 
         # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
         self.plot_tab_area.protectTab(0)
@@ -665,6 +730,424 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             "Save the current settings in the 'current_defaults' file\n"
             "which is the file storing the working default preferences.")
         self.pref_tab_bottom_layout_2.addWidget(self.pref_save_button)
+
+        ########################################
+        ### HERE WE BUILD THE SHORTCUTS LIST. TAB AREA ###
+        ########################################
+        self.shortcuts_tab = QtWidgets.QWidget()
+        self.sh_tab_layout = QtWidgets.QVBoxLayout()
+        self.sh_tab_layout.setContentsMargins(2, 2, 2, 2)
+        self.shortcuts_tab.setLayout(self.sh_tab_layout)
+
+        self.sh_hlay = QtWidgets.QHBoxLayout()
+        self.sh_title = QtWidgets.QTextEdit(
+            '<b>Shortcut Key List</b>')
+        self.sh_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+        self.sh_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        self.sh_title.setMaximumHeight(30)
+        font = self.sh_title.font()
+        font.setPointSize(12)
+        self.sh_title.setFont(font)
+
+        self.sh_tab_layout.addWidget(self.sh_title)
+        self.sh_tab_layout.addLayout(self.sh_hlay)
+
+        self.app_sh_msg = '''<b>General Shortcut list</b><br>
+<table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+	<tbody>
+		<tr height="20">
+			<td height="20" width="89"><strong>~</strong></td>
+			<td width="194"><span style="color:#006400"><strong>&nbsp;SHOW SHORTCUT LIST</strong></span></td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>1</strong></td>
+			<td>&nbsp;Switch to Project Tab</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>2</strong></td>
+			<td>&nbsp;Switch to Selected Tab</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>3</strong></td>
+			<td>&nbsp;Switch to Tool Tab</td>
+		</tr>
+        <tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>E</strong></td>
+			<td>&nbsp;Edit Object (if selected)</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>G</strong></td>
+			<td>&nbsp;Grid On/Off</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>J</strong></td>
+			<td>&nbsp;Jump to Coordinates</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>L</strong></td>
+			<td>&nbsp;New Excellon</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>M</strong></td>
+			<td>&nbsp;Move Obj</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>N</strong></td>
+			<td>&nbsp;New Geometry</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>O</strong></td>
+			<td>&nbsp;Set Origin</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>Q</strong></td>
+			<td>&nbsp;Change Units</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>P</strong></td>
+			<td>&nbsp;Open Properties Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>R</strong></td>
+			<td>&nbsp;Rotate by 90 degree CW</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>S</strong></td>
+			<td>&nbsp;Shell Toggle</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>V</strong></td>
+			<td>&nbsp;Zoom Fit</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>X</strong></td>
+			<td>&nbsp;Flip on X_axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>Y</strong></td>
+			<td>&nbsp;Flip on Y_axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>&#39;=&#39;</strong></td>
+			<td>&nbsp;Zoom Out</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>&#39;-&#39;</strong></td>
+			<td>&nbsp;Zoom In</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+A</strong></td>
+			<td>&nbsp;Select All</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+C</strong></td>
+			<td>&nbsp;Copy Obj</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+E</strong></td>
+			<td>&nbsp;Open Excellon File</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+G</strong></td>
+			<td>&nbsp;Open Gerber File</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+N</strong></td>
+			<td>&nbsp;New Project</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+M</strong></td>
+			<td>&nbsp;Measurement Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+O</strong></td>
+			<td>&nbsp;Open Project</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+S</strong></td>
+			<td>&nbsp;Save Project As</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+F10</strong></td>
+			<td>&nbsp;Toggle Plot Area</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+C</strong></td>
+			<td>&nbsp;Copy Obj_Name</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+G</strong></td>
+			<td>&nbsp;Toggle the axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+P</strong></td>
+			<td>&nbsp;Open Preferences Window</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+R</strong></td>
+			<td>&nbsp;Rotate by 90 degree CCW</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+S</strong></td>
+			<td>&nbsp;Run a Script</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+W</strong></td>
+			<td>&nbsp;Toggle the workspace</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+X</strong></td>
+			<td>&nbsp;Skew on X axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+Y</strong></td>
+			<td>&nbsp;Skew on Y axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+C</strong></td>
+			<td>&nbsp;Calculators Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+D</strong></td>
+			<td>&nbsp;2-Sided PCB Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+L</strong></td>
+			<td>&nbsp;Film PCB Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+N</strong></td>
+			<td>&nbsp;Non-Copper Clearing Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+P</strong></td>
+			<td>&nbsp;Paint Area Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+R</strong></td>
+			<td>&nbsp;Transformation Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+U</strong></td>
+			<td>&nbsp;Cutout PCB Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+1</strong></td>
+			<td>&nbsp;Enable all Plots</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+2</strong></td>
+			<td>&nbsp;Disable all Plots</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+3</strong></td>
+			<td>&nbsp;Disable Non-selected Plots</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+F10</strong></td>
+			<td>&nbsp;Toggle Full Screen</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>F1</strong></td>
+			<td>&nbsp;Open Online Manual</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>F2</strong></td>
+			<td>&nbsp;Open Online Tutorials</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>Del</strong></td>
+			<td>&nbsp;Delete Obj</td>
+		</tr>
+        <tr height="20">
+			<td height="20"><strong>SPACE</strong></td>
+			<td>&nbsp;En(Dis)able Obj Plot</td>
+		</tr>
+	</tbody>
+</table>
+
+'''
+
+        self.sh_app = QtWidgets.QTextEdit()
+        self.sh_app.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+
+        self.sh_app.setText(self.app_sh_msg)
+        self.sh_app.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.sh_hlay.addWidget(self.sh_app)
+
+        self.editor_sh_msg = '''<b>Editor Shortcut list</b><br>
+<br>
+<strong><span style="color:#0000ff">GEOMETRY EDITOR</span></strong><br>
+
+<table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+	<tbody>
+		<tr height="20">
+			<td height="20" width="89"><strong>A</strong></td>
+			<td width="194">&nbsp;Draw an Arc</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>B</strong></td>
+			<td>&nbsp;Buffer Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>C</strong></td>
+			<td>&nbsp;Copy Geo Item</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>E</strong></td>
+			<td>&nbsp;Polygon Intersection Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>I</strong></td>
+			<td>&nbsp;Paint Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>K</strong></td>
+			<td>&nbsp;Toggle Corner Snap</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>M</strong></td>
+			<td>&nbsp;Move Geo Item</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>N</strong></td>
+			<td>&nbsp;Draw a Polygon</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>O</strong></td>
+			<td>&nbsp;Draw a Circle</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>P</strong></td>
+			<td>&nbsp;Draw a Path</td>
+		</tr>
+		<tr height="20">
+			<td height="20">R</td>
+			<td>&nbsp;Draw Rectangle</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>S</strong></td>
+			<td>&nbsp;Polygon Substraction Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>T</strong></td>
+			<td>&nbsp;Add Text Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>U</strong></td>
+			<td>&nbsp;Polygon Union Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>X</strong></td>
+			<td>&nbsp;Polygon Cut Tool</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+S</strong></td>
+			<td>&nbsp;Save Object and Exit Editor</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>Space</strong></td>
+			<td>&nbsp;Rotate Geometry</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ENTER</strong></td>
+			<td>&nbsp;Finish drawing for certain tools</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ESC</strong></td>
+			<td>&nbsp;Abort and return to Select</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>Del</strong></td>
+			<td>&nbsp;Delete Shape</td>
+		</tr>
+	</tbody>
+</table>
+<br>
+<br>
+<strong><span style="color:#ff0000">EXCELLON EDITOR</span></strong><br>
+<table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+	<tbody>
+		<tr height="20">
+			<td height="20" width="89"><strong>A</strong></td>
+			<td width="194">&nbsp;Add Drill Array</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>C</strong></td>
+			<td>&nbsp;Copy Drill(s)</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>D</strong></td>
+			<td>&nbsp;Add Drill</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>M</strong></td>
+			<td>&nbsp;Move Drill(s)</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>R</strong></td>
+			<td>&nbsp;Resize Drill(s)</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>Del</strong></td>
+			<td>&nbsp;Delete Drill(s)</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ESC</strong></td>
+			<td>&nbsp;Abort and return to Select</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>CTRL+S</strong></td>
+			<td>&nbsp;Save Object and Exit Editor</td>
+		</tr>
+	</tbody>
+</table>
+        '''
+        self.sh_editor = QtWidgets.QTextEdit()
+        self.sh_editor.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+        self.sh_editor.setText(self.editor_sh_msg)
+        self.sh_editor.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.sh_hlay.addWidget(self.sh_editor)
 
 
         ##############################################################
@@ -823,6 +1306,215 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.filename = ""
         self.setAcceptDrops(True)
 
+        # # restore the Toolbar State from file
+        # try:
+        #     with open(self.app.data_path + '\gui_state.config', 'rb') as stream:
+        #         self.restoreState(QtCore.QByteArray(stream.read()))
+        #     log.debug("FlatCAMGUI.__init__() --> UI state restored.")
+        # except IOError:
+        #     log.debug("FlatCAMGUI.__init__() --> UI state not restored. IOError")
+        #     pass
+
+        ######################
+        ### INITIALIZE GUI ###
+        ######################
+
+        self.grid_snap_btn.setCheckable(True)
+        self.corner_snap_btn.setCheckable(True)
+        self.update_obj_btn.setEnabled(False)
+        # start with GRID activated
+        self.grid_snap_btn.trigger()
+
+        self.g_editor_cmenu.setEnabled(False)
+        self.e_editor_cmenu.setEnabled(False)
+
+        # restore the Toolbar State from file
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("saved_gui_state"):
+            saved_gui_state = settings.value('saved_gui_state')
+            self.restoreState(saved_gui_state)
+            log.debug("FlatCAMGUI.__init__() --> UI state restored.")
+
+        if settings.contains("theme"):
+            theme = settings.value('theme', type=str)
+            if theme == 'standard':
+                self.exc_edit_toolbar.setVisible(False)
+                self.exc_edit_toolbar.setDisabled(True)
+                self.geo_edit_toolbar.setVisible(False)
+                self.geo_edit_toolbar.setDisabled(True)
+
+                self.corner_snap_btn.setVisible(False)
+                self.snap_magnet.setVisible(False)
+            elif theme == 'compact':
+                self.exc_edit_toolbar.setDisabled(True)
+                self.geo_edit_toolbar.setDisabled(True)
+                self.snap_magnet.setVisible(True)
+                self.corner_snap_btn.setVisible(True)
+                self.snap_magnet.setDisabled(True)
+                self.corner_snap_btn.setDisabled(True)
+        else:
+            self.exc_edit_toolbar.setVisible(False)
+            self.exc_edit_toolbar.setDisabled(True)
+            self.geo_edit_toolbar.setVisible(False)
+            self.geo_edit_toolbar.setDisabled(True)
+
+            self.corner_snap_btn.setVisible(False)
+            self.snap_magnet.setVisible(False)
+
+    def populate_toolbars(self):
+
+        ### File Toolbar ###
+        self.file_open_gerber_btn = self.toolbarfile.addAction(QtGui.QIcon('share/flatcam_icon32.png'),
+                                                               "Open GERBER")
+        self.file_open_excellon_btn = self.toolbarfile.addAction(QtGui.QIcon('share/drill32.png'), "Open EXCELLON")
+        self.toolbarfile.addSeparator()
+        self.file_open_btn = self.toolbarfile.addAction(QtGui.QIcon('share/folder32.png'), "Open project")
+        self.file_save_btn = self.toolbarfile.addAction(QtGui.QIcon('share/floppy32.png'), "Save project")
+
+        ### Edit Toolbar ###
+        self.newgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_geo32_bis.png'), "New Blank Geometry")
+        self.newexc_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_exc32.png'), "New Blank Excellon")
+        self.toolbargeo.addSeparator()
+        self.editgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/edit32.png'), "Editor")
+        self.update_obj_btn = self.toolbargeo.addAction(
+            QtGui.QIcon('share/edit_ok32_bis.png'), "Save Object and close the Editor"
+        )
+
+        self.toolbargeo.addSeparator()
+        self.delete_btn = self.toolbargeo.addAction(QtGui.QIcon('share/cancel_edit32.png'), "&Delete")
+
+        ### View Toolbar ###
+        self.replot_btn = self.toolbarview.addAction(QtGui.QIcon('share/replot32.png'), "&Replot")
+        self.clear_plot_btn = self.toolbarview.addAction(QtGui.QIcon('share/clear_plot32.png'), "&Clear plot")
+        self.zoom_in_btn = self.toolbarview.addAction(QtGui.QIcon('share/zoom_in32.png'), "Zoom In")
+        self.zoom_out_btn = self.toolbarview.addAction(QtGui.QIcon('share/zoom_out32.png'), "Zoom Out")
+        self.zoom_fit_btn = self.toolbarview.addAction(QtGui.QIcon('share/zoom_fit32.png'), "Zoom Fit")
+
+        # self.toolbarview.setVisible(False)
+
+        ### Tools Toolbar ###
+        self.shell_btn = self.toolbartools.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
+
+        ### Drill Editor Toolbar ###
+        self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select 'Esc'")
+        self.add_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), 'Add Drill Hole')
+        self.add_drill_array_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon('share/addarray16.png'), 'Add Drill Hole Array')
+        self.resize_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/resize16.png'), 'Resize Drill')
+        self.exc_edit_toolbar.addSeparator()
+
+        self.copy_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), 'Copy Drill')
+        self.delete_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'), "Delete Drill")
+
+        self.exc_edit_toolbar.addSeparator()
+        self.move_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Drill")
+
+        ### Geometry Editor Toolbar ###
+        self.geo_select_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select 'Esc'")
+        self.geo_add_circle_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/circle32.png'), 'Add Circle')
+        self.geo_add_arc_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/arc32.png'), 'Add Arc')
+        self.geo_add_rectangle_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/rectangle32.png'), 'Add Rectangle')
+
+        self.geo_edit_toolbar.addSeparator()
+        self.geo_add_path_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/path32.png'), 'Add Path')
+        self.geo_add_polygon_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), 'Add Polygon')
+        self.geo_edit_toolbar.addSeparator()
+        self.geo_add_text_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/text32.png'), 'Add Text')
+        self.geo_add_buffer_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), 'Add Buffer')
+        self.geo_add_paint_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/paint20_1.png'), 'Paint Shape')
+
+        self.geo_edit_toolbar.addSeparator()
+        self.geo_union_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/union32.png'), 'Polygon Union')
+        self.geo_intersection_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/intersection32.png'),
+                                                               'Polygon Intersection')
+        self.geo_subtract_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/subtract32.png'), 'Polygon Subtraction')
+
+        self.geo_edit_toolbar.addSeparator()
+        self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/cutpath32.png'), 'Cut Path')
+        self.geo_copy_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), "Copy Objects 'c'")
+        self.geo_rotate_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/rotate.png'), "Rotate Objects 'Space'")
+        self.geo_delete_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'), "Delete Shape '-'")
+
+        self.geo_edit_toolbar.addSeparator()
+        self.geo_move_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Objects 'm'")
+
+        ### Snap Toolbar ###
+        # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
+        # self.addToolBar(self.snap_toolbar)
+
+        self.grid_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share/grid32.png'), 'Snap to grid')
+        self.grid_gap_x_entry = FCEntry2()
+        self.grid_gap_x_entry.setMaximumWidth(70)
+        self.grid_gap_x_entry.setToolTip("Grid X distance")
+        self.snap_toolbar.addWidget(self.grid_gap_x_entry)
+
+        self.grid_gap_y_entry = FCEntry2()
+        self.grid_gap_y_entry.setMaximumWidth(70)
+        self.grid_gap_y_entry.setToolTip("Grid Y distance")
+        self.snap_toolbar.addWidget(self.grid_gap_y_entry)
+
+        self.grid_space_label = QtWidgets.QLabel("  ")
+        self.snap_toolbar.addWidget(self.grid_space_label)
+        self.grid_gap_link_cb = FCCheckBox()
+        self.grid_gap_link_cb.setToolTip("When active, value on Grid_X\n"
+                                         "is copied to the Grid_Y value.")
+        self.snap_toolbar.addWidget(self.grid_gap_link_cb)
+
+        self.ois_grid = OptionalInputSection(self.grid_gap_link_cb, [self.grid_gap_y_entry], logic=False)
+
+        self.corner_snap_btn = self.snap_toolbar.addAction(QtGui.QIcon('share/corner32.png'), 'Snap to corner')
+
+        self.snap_max_dist_entry = FCEntry()
+        self.snap_max_dist_entry.setMaximumWidth(70)
+        self.snap_max_dist_entry.setToolTip("Max. magnet distance")
+        self.snap_magnet = self.snap_toolbar.addWidget(self.snap_max_dist_entry)
+
+        self.grid_snap_btn.setCheckable(True)
+        self.corner_snap_btn.setCheckable(True)
+        self.update_obj_btn.setEnabled(False)
+        # start with GRID activated
+        self.grid_snap_btn.trigger()
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("theme"):
+            theme = settings.value('theme', type=str)
+            if theme == 'standard':
+                self.exc_edit_toolbar.setVisible(False)
+                self.exc_edit_toolbar.setDisabled(True)
+                self.geo_edit_toolbar.setVisible(False)
+                self.geo_edit_toolbar.setDisabled(True)
+
+                self.corner_snap_btn.setVisible(False)
+                self.snap_magnet.setVisible(False)
+            elif theme == 'compact':
+                self.exc_edit_toolbar.setVisible(True)
+                self.exc_edit_toolbar.setDisabled(True)
+                self.geo_edit_toolbar.setVisible(True)
+                self.geo_edit_toolbar.setDisabled(True)
+
+                self.corner_snap_btn.setVisible(True)
+                self.snap_magnet.setVisible(True)
+                self.corner_snap_btn.setDisabled(True)
+                self.snap_magnet.setDisabled(True)
+
+    def keyPressEvent(self, event):
+
+        if event.key() == QtCore.Qt.Key_1:
+            self.app.on_select_tab('project')
+
+        if event.key() == QtCore.Qt.Key_2:
+            self.app.on_select_tab('selected')
+
+        if event.key() == QtCore.Qt.Key_3:
+            self.app.on_select_tab('tool')
+
+        # Show shortcut list
+        if event.key() == QtCore.Qt.Key_Ampersand:
+            self.app.on_shortcut_list()
+
+        if event.key() == QtCore.Qt.Key_QuoteLeft:
+            self.app.on_shortcut_list()
+
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls:
             event.accept()
@@ -889,6 +1581,19 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.final_save.emit()
 
         if self.app.should_we_quit is True:
+            # # save toolbar state to file
+            # with open(self.app.data_path + '\gui_state.config', 'wb') as stream:
+            #     stream.write(self.saveState().data())
+            #     log.debug("FlatCAMGUI.__init__() --> UI state saved.")
+            # QtWidgets.qApp.quit()
+
+            # save toolbar state to file
+            settings = QSettings("Open Source", "FlatCAM")
+            settings.setValue('saved_gui_state', self.saveState())
+
+            # This will write the setting to the platform specific storage.
+            del settings
+            log.debug("FlatCAMGUI.__init__() --> UI state saved.")
             QtWidgets.qApp.quit()
         else:
             self.app.should_we_quit = True
@@ -902,10 +1607,10 @@ class GeneralPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.general_app_group = GeneralAppPrefGroupUI()
-        self.general_app_group.setFixedWidth(260)
+        self.general_app_group.setFixedWidth(250)
 
         self.general_gui_group = GeneralGUIPrefGroupUI()
-        self.general_gui_group.setFixedWidth(260)
+        self.general_gui_group.setFixedWidth(250)
 
         self.layout.addWidget(self.general_app_group)
         self.layout.addWidget(self.general_gui_group)
@@ -920,9 +1625,9 @@ class GerberPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.gerber_gen_group = GerberGenPrefGroupUI()
-        self.gerber_gen_group.setFixedWidth(260)
+        self.gerber_gen_group.setFixedWidth(250)
         self.gerber_opt_group = GerberOptPrefGroupUI()
-        self.gerber_opt_group.setFixedWidth(260)
+        self.gerber_opt_group.setFixedWidth(250)
 
         self.layout.addWidget(self.gerber_gen_group)
         self.layout.addWidget(self.gerber_opt_group)
@@ -937,9 +1642,9 @@ class ExcellonPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.excellon_gen_group = ExcellonGenPrefGroupUI()
-        self.excellon_gen_group.setFixedWidth(260)
+        self.excellon_gen_group.setFixedWidth(275)
         self.excellon_opt_group = ExcellonOptPrefGroupUI()
-        self.excellon_opt_group.setFixedWidth(260)
+        self.excellon_opt_group.setFixedWidth(275)
 
         self.layout.addWidget(self.excellon_gen_group)
         self.layout.addWidget(self.excellon_opt_group)
@@ -954,9 +1659,9 @@ class GeometryPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.geometry_gen_group = GeometryGenPrefGroupUI()
-        self.geometry_gen_group.setFixedWidth(260)
+        self.geometry_gen_group.setFixedWidth(275)
         self.geometry_opt_group = GeometryOptPrefGroupUI()
-        self.geometry_opt_group.setFixedWidth(260)
+        self.geometry_opt_group.setFixedWidth(275)
 
         self.layout.addWidget(self.geometry_gen_group)
         self.layout.addWidget(self.geometry_opt_group)
@@ -971,15 +1676,21 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.tools_ncc_group = ToolsNCCPrefGroupUI()
-        self.tools_ncc_group.setFixedWidth(260)
+        self.tools_ncc_group.setFixedWidth(200)
         self.tools_paint_group = ToolsPaintPrefGroupUI()
-        self.tools_paint_group.setFixedWidth(260)
+        self.tools_paint_group.setFixedWidth(200)
 
         self.tools_cutout_group = ToolsCutoutPrefGroupUI()
-        self.tools_cutout_group.setFixedWidth(260)
+        self.tools_cutout_group.setFixedWidth(200)
 
         self.tools_2sided_group = Tools2sidedPrefGroupUI()
-        self.tools_2sided_group.setFixedWidth(260)
+        self.tools_2sided_group.setFixedWidth(200)
+
+        self.tools_film_group = ToolsFilmPrefGroupUI()
+        self.tools_film_group.setFixedWidth(200)
+
+        self.tools_panelize_group = ToolsPanelizePrefGroupUI()
+        self.tools_panelize_group.setFixedWidth(200)
 
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.tools_ncc_group)
@@ -988,9 +1699,14 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.vlay1 = QtWidgets.QVBoxLayout()
         self.vlay1.addWidget(self.tools_cutout_group)
         self.vlay1.addWidget(self.tools_2sided_group)
+        self.vlay1.addWidget(self.tools_film_group)
+
+        self.vlay2 = QtWidgets.QVBoxLayout()
+        self.vlay2.addWidget(self.tools_panelize_group)
 
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)
+        self.layout.addLayout(self.vlay2)
 
         self.layout.addStretch()
 
@@ -1049,6 +1765,11 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
             "This is the Grid value on Y axis\n"
         )
         self.gridy_entry = LengthEntry()
+
+        # Snap Max Entry
+        self.snap_max_label = QtWidgets.QLabel('Snap Max:')
+        self.snap_max_label.setToolTip("Max. magnet distance")
+        self.snap_max_dist_entry = FCEntry()
 
         # Workspace
         self.workspace_lbl = QtWidgets.QLabel('Workspace:')
@@ -1247,6 +1968,16 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_11.addWidget(self.sel_draw_color_button)
         self.form_box_child_11.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
+        # Theme selection
+        self.theme_label = QtWidgets.QLabel('Theme:')
+        self.alt_sf_color_label.setToolTip(
+            "Select a theme for FlatCAM."
+        )
+        self.theme_combo = FCComboBox()
+        self.theme_combo.addItem("Standard")
+        self.theme_combo.addItem("Compact")
+        self.theme_combo.setCurrentIndex(0)
+
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
@@ -1256,6 +1987,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
 
         self.form_box.addRow(self.gridx_label, self.gridx_entry)
         self.form_box.addRow(self.gridy_label, self.gridy_entry)
+        self.form_box.addRow(self.snap_max_label, self.snap_max_dist_entry)
 
         self.form_box.addRow(self.workspace_lbl, self.workspace_cb)
         self.form_box.addRow(self.workspace_type_lbl, self.wk_cb)
@@ -1272,6 +2004,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.draw_color_label, self.form_box_child_10)
         self.form_box.addRow(self.sel_draw_color_label, self.form_box_child_11)
 
+        self.form_box.addRow(self.spacelabel, self.spacelabel)
+        self.form_box.addRow(self.theme_label, self.theme_combo)
         # Add the QFormLayout that holds the Application general defaults
         # to the main layout of this TAB
         self.layout.addLayout(self.form_box)
@@ -1781,7 +2515,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.optimization_time_label.setToolTip(
             "When OR-Tools Metaheuristic (MH) is enabled there is a\n"
             "maximum threshold for how much time is spent doing the\n"
-            "path optimization. This max duration is set here."
+            "path optimization. This max duration is set here.\n"
+            "In seconds."
 
         )
 
@@ -1952,6 +2687,36 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.pp_excellon_name_cb.setFocusPolicy(Qt.StrongFocus)
         grid2.addWidget(self.pp_excellon_name_cb, 12, 1)
 
+        # Probe depth
+        self.pdepth_label = QtWidgets.QLabel("Probe Z depth:")
+        self.pdepth_label.setToolTip(
+            "The maximum depth that the probe is allowed\n"
+            "to probe. Negative value, in current units."
+        )
+        grid2.addWidget(self.pdepth_label, 13, 0)
+        self.pdepth_entry = FCEntry()
+        grid2.addWidget(self.pdepth_entry, 13, 1)
+
+        # Probe feedrate
+        self.feedrate_probe_label = QtWidgets.QLabel("Feedrate Probe:")
+        self.feedrate_probe_label.setToolTip(
+            "The feedrate used while the probe is probing."
+        )
+        grid2.addWidget(self.feedrate_probe_label, 14, 0)
+        self.feedrate_probe_entry = FCEntry()
+        grid2.addWidget(self.feedrate_probe_entry, 14, 1)
+
+        fplungelabel = QtWidgets.QLabel('Fast Plunge:')
+        fplungelabel.setToolTip(
+            "By checking this, the vertical move from\n"
+            "Z_Toolchange to Z_move is done with G0,\n"
+            "meaning the fastest speed available.\n"
+            "WARNING: the move is done at Toolchange X,Y coords."
+        )
+        self.fplunge_cb = FCCheckBox()
+        grid2.addWidget(fplungelabel, 15, 0)
+        grid2.addWidget(self.fplunge_cb, 15, 1)
+
         #### Choose what to use for Gcode creation: Drills, Slots or Both
         excellon_gcode_type_label = QtWidgets.QLabel('<b>Gcode:    </b>')
         excellon_gcode_type_label.setToolTip(
@@ -1963,8 +2728,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.excellon_gcode_type_radio = RadioSet([{'label': 'Drills', 'value': 'drills'},
                                           {'label': 'Slots', 'value': 'slots'},
                                           {'label': 'Both', 'value': 'both'}])
-        grid2.addWidget(excellon_gcode_type_label, 13, 0)
-        grid2.addWidget(self.excellon_gcode_type_radio, 13, 1)
+        grid2.addWidget(excellon_gcode_type_label, 16, 0)
+        grid2.addWidget(self.excellon_gcode_type_radio, 16, 1)
 
         # until I decide to implement this feature those remain disabled
         excellon_gcode_type_label.setDisabled(True)
@@ -2248,6 +3013,37 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         self.pp_geometry_name_cb.setFocusPolicy(Qt.StrongFocus)
         grid1.addWidget(self.pp_geometry_name_cb, 16, 1)
 
+        # Probe depth
+        self.pdepth_label = QtWidgets.QLabel("Probe Z depth:")
+        self.pdepth_label.setToolTip(
+            "The maximum depth that the probe is allowed\n"
+            "to probe. Negative value, in current units."
+        )
+        grid1.addWidget(self.pdepth_label, 17, 0)
+        self.pdepth_entry = FCEntry()
+        grid1.addWidget(self.pdepth_entry, 17, 1)
+
+        # Probe feedrate
+        self.feedrate_probe_label = QtWidgets.QLabel("Feedrate Probe:")
+        self.feedrate_probe_label.setToolTip(
+            "The feedrate used while the probe is probing."
+        )
+        grid1.addWidget(self.feedrate_probe_label, 18, 0)
+        self.feedrate_probe_entry = FCEntry()
+        grid1.addWidget(self.feedrate_probe_entry, 18, 1)
+
+        # Fast Move from Z Toolchange
+        fplungelabel = QtWidgets.QLabel('Fast Plunge:')
+        fplungelabel.setToolTip(
+            "By checking this, the vertical move from\n"
+            "Z_Toolchange to Z_move is done with G0,\n"
+            "meaning the fastest speed available.\n"
+            "WARNING: the move is done at Toolchange X,Y coords."
+        )
+        self.fplunge_cb = FCCheckBox()
+        grid1.addWidget(fplungelabel, 19, 0)
+        grid1.addWidget(self.fplunge_cb, 19, 1)
+
         # Size of trace segment on X axis
         segx_label = QtWidgets.QLabel("Seg. X size:")
         segx_label.setToolTip(
@@ -2255,9 +3051,9 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             "Useful for auto-leveling.\n"
             "A value of 0 means no segmentation on the X axis."
         )
-        grid1.addWidget(segx_label, 17, 0)
+        grid1.addWidget(segx_label, 20, 0)
         self.segx_entry = FCEntry()
-        grid1.addWidget(self.segx_entry, 17, 1)
+        grid1.addWidget(self.segx_entry, 20, 1)
 
         # Size of trace segment on Y axis
         segy_label = QtWidgets.QLabel("Seg. Y size:")
@@ -2266,9 +3062,9 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             "Useful for auto-leveling.\n"
             "A value of 0 means no segmentation on the Y axis."
         )
-        grid1.addWidget(segy_label, 18, 0)
+        grid1.addWidget(segy_label, 21, 0)
         self.segy_entry = FCEntry()
-        grid1.addWidget(self.segy_entry, 18, 1)
+        grid1.addWidget(self.segy_entry, 22, 1)
 
         self.layout.addStretch()
 
@@ -2387,7 +3183,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.setTitle(str("NCC Tool Options"))
 
         ## Clear non-copper regions
-        self.clearcopper_label = QtWidgets.QLabel("<b>Clear non-copper:</b>")
+        self.clearcopper_label = QtWidgets.QLabel("<b>Parameters:</b>")
         self.clearcopper_label.setToolTip(
             "Create a Geometry object with\n"
             "toolpaths to cut all non-copper regions."
@@ -2488,7 +3284,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.setTitle(str("Cutout Tool Options"))
 
         ## Board cuttout
-        self.board_cutout_label = QtWidgets.QLabel("<b>Board cutout:</b>")
+        self.board_cutout_label = QtWidgets.QLabel("<b>Parameters:</b>")
         self.board_cutout_label.setToolTip(
             "Create toolpaths to cut around\n"
             "the PCB and separate it from\n"
@@ -2571,7 +3367,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         self.setTitle(str("2Sided Tool Options"))
 
         ## Board cuttout
-        self.dblsided_label = QtWidgets.QLabel("<b>Double Sided:</b>")
+        self.dblsided_label = QtWidgets.QLabel("<b>Parameters:</b>")
         self.dblsided_label.setToolTip(
             "A tool to help in creating a double sided\n"
             "PCB using alignment holes."
@@ -2625,12 +3421,12 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # OptionsGroupUI.__init__(self, "Paint Area Tool Options", parent=parent)
         super(ToolsPaintPrefGroupUI, self).__init__(self)
 
-        self.setTitle(str("Paint Area Tool Options"))
+        self.setTitle(str("Paint Tool Options"))
 
         # ------------------------------
         ## Paint area
         # ------------------------------
-        self.paint_label = QtWidgets.QLabel('<b>Paint Area:</b>')
+        self.paint_label = QtWidgets.QLabel('<b>Parameters:</b>')
         self.paint_label.setToolTip(
             "Creates tool paths to cover the\n"
             "whole area of a polygon (remove\n"
@@ -2725,6 +3521,155 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         self.layout.addStretch()
 
 
+class ToolsFilmPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Cutout Tool Options", parent=parent)
+        super(ToolsFilmPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("Film Tool Options"))
+
+        ## Board cuttout
+        self.film_label = QtWidgets.QLabel("<b>Parameters:</b>")
+        self.film_label.setToolTip(
+            "Create a PCB film from a Gerber or Geometry\n"
+            "FlatCAM object.\n"
+            "The file is saved in SVG format."
+        )
+        self.layout.addWidget(self.film_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        self.film_type_radio = RadioSet([{'label': 'Pos', 'value': 'pos'}, {'label': 'Neg', 'value': 'neg'}])
+        ftypelbl = QtWidgets.QLabel('Film Type:')
+        ftypelbl.setToolTip(
+            "Generate a Positive black film or a Negative film.\n"
+            "Positive means that it will print the features\n"
+            "with black on a white canvas.\n"
+            "Negative means that it will print the features\n"
+            "with white on a black canvas.\n"
+            "The Film format is SVG."
+        )
+        grid0.addWidget(ftypelbl, 0, 0)
+        grid0.addWidget(self.film_type_radio, 0, 1)
+
+        self.film_boundary_entry = FCEntry()
+        self.film_boundary_label = QtWidgets.QLabel("Border:")
+        self.film_boundary_label.setToolTip(
+            "Specify a border around the object.\n"
+            "Only for negative film.\n"
+            "It helps if we use as a Box Object the same \n"
+            "object as in Film Object. It will create a thick\n"
+            "black bar around the actual print allowing for a\n"
+            "better delimitation of the outline features which are of\n"
+            "white color like the rest and which may confound with the\n"
+            "surroundings if not for this border."
+        )
+        grid0.addWidget(self.film_boundary_label, 1, 0)
+        grid0.addWidget(self.film_boundary_entry, 1, 1)
+
+        self.film_scale_entry = FCEntry()
+        self.film_scale_label = QtWidgets.QLabel("Scale Stroke:")
+        self.film_scale_label.setToolTip(
+            "Scale the line stroke thickness of each feature in the SVG file.\n"
+            "It means that the line that envelope each SVG feature will be thicker or thinner,\n"
+            "therefore the fine features may be more affected by this parameter."
+        )
+        grid0.addWidget(self.film_scale_label, 2, 0)
+        grid0.addWidget(self.film_scale_entry, 2, 1)
+
+        self.layout.addStretch()
+
+
+class ToolsPanelizePrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Cutout Tool Options", parent=parent)
+        super(ToolsPanelizePrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("Panelize Tool Options"))
+
+        ## Board cuttout
+        self.panelize_label = QtWidgets.QLabel("<b>Parameters:</b>")
+        self.panelize_label.setToolTip(
+            "Create an object that contains an array of (x, y) elements,\n"
+            "each element is a copy of the source object spaced\n"
+            "at a X distance, Y distance of each other."
+        )
+        self.layout.addWidget(self.panelize_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        ## Spacing Columns
+        self.pspacing_columns = FCEntry()
+        self.spacing_columns_label = QtWidgets.QLabel("Spacing cols:")
+        self.spacing_columns_label.setToolTip(
+            "Spacing between columns of the desired panel.\n"
+            "In current units."
+        )
+        grid0.addWidget(self.spacing_columns_label, 0, 0)
+        grid0.addWidget(self.pspacing_columns, 0, 1)
+
+        ## Spacing Rows
+        self.pspacing_rows = FCEntry()
+        self.spacing_rows_label = QtWidgets.QLabel("Spacing rows:")
+        self.spacing_rows_label.setToolTip(
+            "Spacing between rows of the desired panel.\n"
+            "In current units."
+        )
+        grid0.addWidget(self.spacing_rows_label, 1, 0)
+        grid0.addWidget(self.pspacing_rows, 1, 1)
+
+        ## Columns
+        self.pcolumns = FCEntry()
+        self.columns_label = QtWidgets.QLabel("Columns:")
+        self.columns_label.setToolTip(
+            "Number of columns of the desired panel"
+        )
+        grid0.addWidget(self.columns_label, 2, 0)
+        grid0.addWidget(self.pcolumns, 2, 1)
+
+        ## Rows
+        self.prows = FCEntry()
+        self.rows_label = QtWidgets.QLabel("Rows:")
+        self.rows_label.setToolTip(
+            "Number of rows of the desired panel"
+        )
+        grid0.addWidget(self.rows_label, 3, 0)
+        grid0.addWidget(self.prows, 3, 1)
+
+        ## Constrains
+        self.pconstrain_cb = FCCheckBox("Constrain within:")
+        self.pconstrain_cb.setToolTip(
+            "Area define by DX and DY within to constrain the panel.\n"
+            "DX and DY values are in current units.\n"
+            "Regardless of how many columns and rows are desired,\n"
+            "the final panel will have as many columns and rows as\n"
+            "they fit completely within selected area."
+        )
+        grid0.addWidget(self.pconstrain_cb, 4, 0)
+
+        self.px_width_entry = FCEntry()
+        self.x_width_lbl = QtWidgets.QLabel("Width (DX):")
+        self.x_width_lbl.setToolTip(
+            "The width (DX) within which the panel must fit.\n"
+            "In current units."
+        )
+        grid0.addWidget(self.x_width_lbl, 5, 0)
+        grid0.addWidget(self.px_width_entry, 5, 1)
+
+        self.py_height_entry = FCEntry()
+        self.y_height_lbl = QtWidgets.QLabel("Height (DY):")
+        self.y_height_lbl.setToolTip(
+            "The height (DY)within which the panel must fit.\n"
+            "In current units."
+        )
+        grid0.addWidget(self.y_height_lbl, 6, 0)
+        grid0.addWidget(self.py_height_entry, 6, 1)
+
+        self.layout.addStretch()
+
+
 class FlatCAMActivityView(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
@@ -2789,11 +3734,11 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
     def set_status(self, text, level="info"):
         level = str(level)
         self.pmap.fill()
-        if level == "error" or level == "error_notcl":
+        if level == "ERROR" or level == "ERROR_NOTCL":
             self.pmap = QtGui.QPixmap('share/redlight12.png')
         elif level == "success":
             self.pmap = QtGui.QPixmap('share/greenlight12.png')
-        elif level == "warning" or level == "warning_notcl":
+        elif level == "WARNING" or level == "WARNING_NOTCL":
             self.pmap = QtGui.QPixmap('share/yellowlight12.png')
         else:
             self.pmap = QtGui.QPixmap('share/graylight12.png')

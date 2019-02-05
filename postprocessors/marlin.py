@@ -9,7 +9,13 @@ class marlin(FlatCAMPostProc):
 
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
+        coords_xy = p['toolchange_xy']
         gcode = ''
+
+        xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
+        xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
+        ymin = '%.*f' % (p.coords_decimals, p['options']['ymin'])
+        ymax = '%.*f' % (p.coords_decimals, p['options']['ymax'])
 
         if str(p['options']['type']) == 'Geometry':
             gcode += ';TOOL DIAMETER: ' + str(p['options']['tool_dia']) + units + '\n' + '\n'
@@ -29,6 +35,12 @@ class marlin(FlatCAMPostProc):
 
         gcode += ';Z_Move: ' + str(p['z_move']) + units + '\n'
         gcode += ';Z Toolchange: ' + str(p['toolchangez']) + units + '\n'
+
+        if coords_xy is not None:
+            gcode += ';X,Y Toolchange: ' + "%.4f, %.4f" % (coords_xy[0], coords_xy[1]) + units + '\n'
+        else:
+            gcode += ';X,Y Toolchange: ' + "None" + units + '\n'
+
         gcode += ';Z Start: ' + str(p['startz']) + units + '\n'
         gcode += ';Z End: ' + str(p['endz']) + units + '\n'
         gcode += ';Steps per circle: ' + str(p['steps_per_circle']) + '\n'
@@ -36,7 +48,10 @@ class marlin(FlatCAMPostProc):
         if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
             gcode += ';Postprocessor Excellon: ' + str(p['pp_excellon_name']) + '\n'
         else:
-            gcode += ';Postprocessor Geometry: ' + str(p['pp_geometry_name']) + '\n'
+            gcode += ';Postprocessor Geometry: ' + str(p['pp_geometry_name']) + '\n' + '\n'
+
+        gcode += ';X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + '\n'
+        gcode += ';Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + '\n\n'
 
         gcode += ';Spindle Speed: ' + str(p['spindlespeed']) + ' RPM' + '\n' + '\n'
 
@@ -59,6 +74,14 @@ class marlin(FlatCAMPostProc):
 
     def toolchange_code(self, p):
         toolchangez = p.toolchangez
+        toolchangexy = p.toolchange_xy
+        f_plunge = p.f_plunge
+        gcode = ''
+
+        if toolchangexy is not None:
+            toolchangex = toolchangexy[0]
+            toolchangey = toolchangexy[1]
+
         no_drills = 1
 
         if int(p.tool) == 1 and p.startz is not None:
@@ -73,20 +96,61 @@ class marlin(FlatCAMPostProc):
             for i in p['options']['Tools_in_use']:
                 if i[0] == p.tool:
                     no_drills = i[2]
-            return """G0 Z{toolchangez}
+
+            if toolchangexy is not None:
+                gcode = """G0 Z{toolchangez}
+G0 X{toolchangex} Y{toolchangey}                
+T{tool}
 M5
-M0 Change to Tool Dia = {toolC}, Total drills for current tool = {t_drills}
-""".format(toolchangez=self.coordinate_format%(p.coords_decimals, toolchangez),
-           tool=int(p.tool),
-           t_drills=no_drills,
-           toolC=toolC_formatted)
+M6
+;MSG, Change to Tool Dia = {toolC}, Total drills for tool T{tool} = {t_drills}
+M0""".format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchangex),
+             toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
+             toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
+             tool=int(p.tool),
+             t_drills=no_drills,
+             toolC=toolC_formatted)
+            else:
+                gcode = """G0 Z{toolchangez}
+T{tool}
+M5
+M6
+;MSG, Change to Tool Dia = {toolC}, Total drills for tool T{tool} = {t_drills}
+M0""".format(toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
+             tool=int(p.tool),
+             t_drills=no_drills,
+             toolC=toolC_formatted)
+
+            if f_plunge is True:
+                gcode += '\nG0 Z%.*f' % (p.coords_decimals, p.z_move)
+            return gcode
+
         else:
-            return """G0 Z{toolchangez}
+            if toolchangexy is not None:
+                gcode = """G0 Z{toolchangez}
+G0 X{toolchangex} Y{toolchangey}
+T{tool}
 M5
-M0 Change to Tool Dia = {toolC}
-""".format(toolchangez=self.coordinate_format%(p.coords_decimals, toolchangez),
-           tool=int(p.tool),
-           toolC=toolC_formatted)
+M6    
+;MSG, Change to Tool Dia = {toolC}
+M0""".format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchangex),
+             toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
+             toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
+             tool=int(p.tool),
+             toolC=toolC_formatted)
+            else:
+                gcode = """G0 Z{toolchangez}
+T{tool}
+M5
+M6    
+;MSG, Change to Tool Dia = {toolC}
+M0""".format(toolchangez=self.coordinate_format%(p.coords_decimals, toolchangez),
+             tool=int(p.tool),
+             toolC=toolC_formatted)
+
+            if f_plunge is True:
+                gcode += '\nG0 Z%.*f' % (p.coords_decimals, p.z_move)
+            return gcode
 
     def up_to_zero_code(self, p):
         return 'G1 Z0' + " " + self.feedrate_code(p)
@@ -104,7 +168,9 @@ M0 Change to Tool Dia = {toolC}
     def end_code(self, p):
         coords_xy = p['toolchange_xy']
         gcode = ('G0 Z' + self.feedrate_format %(p.fr_decimals, p.endz) + " " + self.feedrate_rapid_code(p) + "\n")
-        gcode += 'G0 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + " " + self.feedrate_rapid_code(p) + "\n"
+
+        if coords_xy is not None:
+            gcode += 'G0 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + " " + self.feedrate_rapid_code(p) + "\n"
 
         return gcode
 

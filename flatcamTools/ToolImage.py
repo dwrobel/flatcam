@@ -124,6 +124,17 @@ class ToolImage(FlatCAMTool):
         ## Signals
         self.import_button.clicked.connect(self.on_file_importimage)
 
+    def run(self):
+        self.app.report_usage("ToolImage()")
+
+        FlatCAMTool.run(self)
+        self.set_tool_ui()
+        self.app.ui.notebook.setTabText(2, "Image Tool")
+
+    def install(self, icon=None, separator=None, **kwargs):
+        FlatCAMTool.install(self, icon, separator, **kwargs)
+
+    def set_tool_ui(self):
         ## Initialize form
         self.dpi_entry.set_value(96)
         self.image_type.set_value('black')
@@ -131,10 +142,6 @@ class ToolImage(FlatCAMTool):
         self.mask_r_entry.set_value(250)
         self.mask_g_entry.set_value(250)
         self.mask_b_entry.set_value(250)
-
-    def run(self):
-        FlatCAMTool.run(self)
-        self.app.ui.notebook.setTabText(2, "Image Tool")
 
     def on_file_importimage(self):
         """

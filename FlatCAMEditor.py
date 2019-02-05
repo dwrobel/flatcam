@@ -7,7 +7,7 @@
 ############################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSettings
 import FlatCAMApp
 from camlib import *
 from FlatCAMTool import FlatCAMTool
@@ -590,6 +590,7 @@ class FCCircle(FCShapeTool):
         self.points.append(point)
 
         if len(self.points) == 1:
+            self.draw_app.app.inform.emit("Click on Circle perimeter point to complete ...")
             return "Click on perimeter to complete ..."
 
         if len(self.points) == 2:
@@ -638,9 +639,11 @@ class FCArc(FCShapeTool):
         self.points.append(point)
 
         if len(self.points) == 1:
+            self.draw_app.app.inform.emit("Click on Start arc point ...")
             return "Click on 1st point ..."
 
         if len(self.points) == 2:
+            self.draw_app.app.inform.emit("Click on End arc point to complete ...")
             return "Click on 2nd point to complete ..."
 
         if len(self.points) == 3:
@@ -850,6 +853,7 @@ class FCPolygon(FCShapeTool):
         self.points.append(point)
 
         if len(self.points) > 0:
+            self.draw_app.app.inform.emit("Click on next Point or click Right mouse button to complete ...")
             return "Click on next point or hit ENTER to complete ..."
 
         return ""
@@ -1239,7 +1243,7 @@ class FCText(FCShapeTool):
             self.geometry = DrawToolShape(affinity.translate(self.text_gui.text_path, xoff=dx, yoff=dy))
         except Exception as e:
             log.debug("Font geometry is empty or incorrect: %s" % str(e))
-            self.draw_app.app.inform.emit("[error]Font not supported. Only Regular, Bold, Italic and BoldItalic are "
+            self.draw_app.app.inform.emit("[ERROR]Font not supported. Only Regular, Bold, Italic and BoldItalic are "
                                           "supported. Error: %s" % str(e))
             self.text_gui.text_path = []
             self.text_gui.hide_tool()
@@ -1416,7 +1420,7 @@ class FCDrillAdd(FCShapeTool):
             self.draw_app.tools_table_exc.setCurrentItem(item)
 
         except KeyError:
-            self.draw_app.app.inform.emit("[warning_notcl] To add a drill first select a tool")
+            self.draw_app.app.inform.emit("[WARNING_NOTCL] To add a drill first select a tool")
             self.draw_app.select_tool("select")
             return
 
@@ -1500,7 +1504,7 @@ class FCDrillArray(FCShapeTool):
             item = self.draw_app.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
             self.draw_app.tools_table_exc.setCurrentItem(item)
         except KeyError:
-            self.draw_app.app.inform.emit("[warning_notcl] To add an Drill Array first select a tool in Tool Table")
+            self.draw_app.app.inform.emit("[WARNING_NOTCL] To add an Drill Array first select a tool in Tool Table")
             return
 
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y), static=True)
@@ -1525,7 +1529,7 @@ class FCDrillArray(FCShapeTool):
 
                 self.flag_for_circ_array = True
                 self.set_origin(point)
-                self.draw_app.app.inform.emit("Click on the circular array Start position")
+                self.draw_app.app.inform.emit("Click on the Drill Circular Array Start position")
             else:
                 self.destination = point
                 self.make()
@@ -1547,10 +1551,10 @@ class FCDrillArray(FCShapeTool):
                 self.drill_angle = float(self.draw_app.drill_angle_entry.get_value())
             except TypeError:
                 self.draw_app.app.inform.emit(
-                    "[error_notcl] The value is not Float. Check for comma instead of dot separator.")
+                    "[ERROR_NOTCL] The value is not Float. Check for comma instead of dot separator.")
                 return
         except Exception as e:
-            self.draw_app.app.inform.emit("[error_notcl] The value is mistyped. Check the value.")
+            self.draw_app.app.inform.emit("[ERROR_NOTCL] The value is mistyped. Check the value.")
             return
 
         if self.drill_array == 'Linear':
@@ -1630,7 +1634,7 @@ class FCDrillArray(FCShapeTool):
                 self.geometry.append(DrawToolShape(geo))
         else:
             if (self.drill_angle * self.drill_array_size) > 360:
-                self.draw_app.app.inform.emit("[warning_notcl]Too many drills for the selected spacing angle.")
+                self.draw_app.app.inform.emit("[WARNING_NOTCL]Too many drills for the selected spacing angle.")
                 return
 
             radius = distance(self.destination, self.origin)
@@ -1676,7 +1680,7 @@ class FCDrillResize(FCShapeTool):
         try:
             new_dia = self.draw_app.resdrill_entry.get_value()
         except:
-            self.draw_app.app.inform.emit("[error_notcl]Resize drill(s) failed. Please enter a diameter for resize.")
+            self.draw_app.app.inform.emit("[ERROR_NOTCL]Resize drill(s) failed. Please enter a diameter for resize.")
             return
 
         if new_dia not in self.draw_app.olddia_newdia:
@@ -1890,9 +1894,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app = app
         self.canvas = app.plotcanvas
 
-        self.app.ui.geo_edit_toolbar.setDisabled(disabled)
-        self.app.ui.snap_max_dist_entry.setDisabled(disabled)
-
         self.app.ui.geo_add_circle_menuitem.triggered.connect(lambda: self.select_tool('circle'))
         self.app.ui.geo_add_arc_menuitem.triggered.connect(lambda: self.select_tool('arc'))
         self.app.ui.geo_add_rectangle_menuitem.triggered.connect(lambda: self.select_tool('rectangle'))
@@ -1969,6 +1970,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.move_timer = QtCore.QTimer()
         self.move_timer.setSingleShot(True)
 
+        # this var will store the state of the toolbar before starting the editor
+        self.toolbar_old_state = False
+
         self.key = None  # Currently pressed key
         self.geo_key_modifiers = None
         self.x = None  # Current mouse cursor pos
@@ -1991,12 +1995,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.tools[tool]["button"].setCheckable(True)  # Checkable
 
         self.app.ui.grid_snap_btn.triggered.connect(self.on_grid_toggled)
+        self.app.ui.corner_snap_btn.setCheckable(True)
         self.app.ui.corner_snap_btn.triggered.connect(lambda: self.toolbar_tool_toggle("corner_snap"))
 
         self.options = {
             "global_gridx": 0.1,
             "global_gridy": 0.1,
-            "snap_max": 0.05,
+            "global_snap_max": 0.05,
             "grid_snap": True,
             "corner_snap": False,
             "grid_gap_link": True
@@ -2009,7 +2014,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.app.ui.grid_gap_x_entry.setText(str(self.options["global_gridx"]))
         self.app.ui.grid_gap_y_entry.setText(str(self.options["global_gridy"]))
-        self.app.ui.snap_max_dist_entry.setText(str(self.options["snap_max"]))
+        self.app.ui.snap_max_dist_entry.setText(str(self.options["global_snap_max"]))
         self.app.ui.grid_gap_link_cb.setChecked(True)
 
         self.rtree_index = rtindex.Index()
@@ -2048,10 +2053,27 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.shapes.enabled = True
         self.tool_shape.enabled = True
         self.app.app_cursor.enabled = True
-        self.app.ui.snap_max_dist_entry.setDisabled(False)
+
+        self.app.ui.snap_max_dist_entry.setEnabled(True)
         self.app.ui.corner_snap_btn.setEnabled(True)
+        self.app.ui.snap_magnet.setVisible(True)
+        self.app.ui.corner_snap_btn.setVisible(True)
 
         self.app.ui.geo_editor_menu.setDisabled(False)
+        self.app.ui.geo_editor_menu.menuAction().setVisible(True)
+
+        self.app.ui.update_obj_btn.setEnabled(True)
+        self.app.ui.g_editor_cmenu.setEnabled(True)
+
+        self.app.ui.geo_edit_toolbar.setDisabled(False)
+        self.app.ui.geo_edit_toolbar.setVisible(True)
+        self.app.ui.snap_toolbar.setDisabled(False)
+
+        # prevent the user to change anything in the Selected Tab while the Geo Editor is active
+        sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
+        for w in sel_tab_widget_list:
+            w.setEnabled(False)
+
         # Tell the App that the editor is active
         self.editor_active = True
 
@@ -2059,11 +2081,33 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.disconnect_canvas_event_handlers()
         self.clear()
         self.app.ui.geo_edit_toolbar.setDisabled(True)
-        self.app.ui.geo_edit_toolbar.setVisible(False)
-        self.app.ui.snap_max_dist_entry.setDisabled(True)
-        self.app.ui.corner_snap_btn.setEnabled(False)
-        # never deactivate the snap toolbar - MS
-        # self.app.ui.snap_toolbar.setDisabled(True)  # TODO: Combine and move into tool
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("theme"):
+            theme = settings.value('theme', type=str)
+            if theme == 'standard':
+                # self.app.ui.geo_edit_toolbar.setVisible(False)
+
+                self.app.ui.snap_max_dist_entry.setEnabled(False)
+                self.app.ui.corner_snap_btn.setEnabled(False)
+                self.app.ui.snap_magnet.setVisible(False)
+                self.app.ui.corner_snap_btn.setVisible(False)
+            elif theme == 'compact':
+                # self.app.ui.geo_edit_toolbar.setVisible(True)
+
+                self.app.ui.snap_max_dist_entry.setEnabled(False)
+                self.app.ui.corner_snap_btn.setEnabled(False)
+        else:
+            # self.app.ui.geo_edit_toolbar.setVisible(False)
+
+            self.app.ui.snap_magnet.setVisible(False)
+            self.app.ui.corner_snap_btn.setVisible(False)
+            self.app.ui.snap_max_dist_entry.setEnabled(False)
+            self.app.ui.corner_snap_btn.setEnabled(False)
+
+        # set the Editor Toolbar visibility to what was before entering in the Editor
+        self.app.ui.geo_edit_toolbar.setVisible(False) if self.toolbar_old_state is False \
+            else self.app.ui.geo_edit_toolbar.setVisible(True)
 
         # Disable visuals
         self.shapes.enabled = False
@@ -2071,6 +2115,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.app_cursor.enabled = False
 
         self.app.ui.geo_editor_menu.setDisabled(True)
+        self.app.ui.geo_editor_menu.menuAction().setVisible(False)
+
+        self.app.ui.update_obj_btn.setEnabled(False)
+
+        self.app.ui.g_editor_cmenu.setEnabled(False)
+        self.app.ui.e_editor_cmenu.setEnabled(False)
+
         # Tell the app that the editor is no longer active
         self.editor_active = False
 
@@ -2230,9 +2281,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                     self.add_shape(DrawToolShape(shape))
 
         self.replot()
-        self.app.ui.geo_edit_toolbar.setDisabled(False)
-        self.app.ui.geo_edit_toolbar.setVisible(True)
-        self.app.ui.snap_toolbar.setDisabled(False)
+
 
         # start with GRID toolbar activated
         if self.app.ui.grid_snap_btn.isChecked() == False:
@@ -2561,7 +2610,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         if event.key.name == 'Escape':
             # TODO: ...?
             # self.on_tool_select("select")
-            self.app.inform.emit("[warning_notcl]Cancelled.")
+            self.app.inform.emit("[WARNING_NOTCL]Cancelled.")
 
             self.delete_utility_geometry()
 
@@ -2723,47 +2772,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # Show Shortcut list
         if event.key.name == '`':
-            self.on_shortcut_list()
-
-    def on_shortcut_list(self):
-        msg = '''<b>Shortcut list in Geometry Editor</b><br>
-<br>
-<b>1:</b>       Zoom Fit<br>
-<b>2:</b>       Zoom Out<br>
-<b>3:</b>       Zoom In<br>
-<b>A:</b>       Add an 'Arc'<br>
-<b>B:</b>       Add a Buffer Geo<br>
-<b>C:</b>       Copy Geo Item<br>
-<b>E:</b>       Intersection Tool<br>
-<b>G:</b>       Grid Snap On/Off<br>
-<b>I:</b>       Paint Tool<br>
-<b>K:</b>       Corner Snap On/Off<br>
-<b>M:</b>       Move Geo Item<br>
-<br>
-<b>N:</b>       Add an 'Polygon'<br>
-<b>O:</b>       Add a 'Circle'<br>
-<b>P:</b>       Add a 'Path'<br>
-<b>R:</b>       Add an 'Rectangle'<br>
-<b>S:</b>       Substraction Tool<br>
-<b>T:</b>       Add Text Geometry<br>
-<b>U:</b>       Union Tool<br>
-<br>
-<b>X:</b>       Cut Path<br>
-<br>
-<b>~:</b>       Show Shortcut List<br>
-<br>
-<b>Space:</b>   Rotate selected Geometry<br>
-<b>Enter:</b>   Finish Current Action<br>
-<b>Escape:</b>  Select Tool (Exit any other Tool)<br>
-<b>Delete:</b>  Delete Obj'''
-
-        helpbox =QtWidgets.QMessageBox()
-        helpbox.setText(msg)
-        helpbox.setWindowTitle("Help")
-        helpbox.setWindowIcon(QtGui.QIcon('share/help.png'))
-        helpbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-        helpbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-        helpbox.exec_()
+            self.app.on_shortcut_list()
 
     def on_canvas_key_release(self, event):
         self.key = None
@@ -2945,7 +2954,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 nearest_pt, shape = self.storage.nearest((x, y))
 
                 nearest_pt_distance = distance((x, y), nearest_pt)
-                if nearest_pt_distance <= self.options["snap_max"]:
+                if nearest_pt_distance <= float(self.options["global_snap_max"]):
                     snap_distance = nearest_pt_distance
                     snap_x, snap_y = nearest_pt
             except (StopIteration, AssertionError):
@@ -3037,7 +3046,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             results = shapes[0].geo
         except Exception as e:
             log.debug("FlatCAMGeoEditor.intersection() --> %s" % str(e))
-            self.app.inform.emit("[warning_notcl]A selection of at least 2 geo items is required to do Intersection.")
+            self.app.inform.emit("[WARNING_NOTCL]A selection of at least 2 geo items is required to do Intersection.")
             self.select_tool('select')
             return
 
@@ -3075,7 +3084,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         if buf_distance < 0:
             self.app.inform.emit(
-                "[error_notcl]Negative buffer value is not accepted. Use Buffer interior to generate an 'inside' shape")
+                "[ERROR_NOTCL]Negative buffer value is not accepted. Use Buffer interior to generate an 'inside' shape")
 
             # deselect everything
             self.selected = []
@@ -3083,11 +3092,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
             return
 
         if len(selected) == 0:
-            self.app.inform.emit("[warning_notcl] Nothing selected for buffering.")
+            self.app.inform.emit("[WARNING_NOTCL] Nothing selected for buffering.")
             return
 
         if not isinstance(buf_distance, float):
-            self.app.inform.emit("[warning_notcl] Invalid distance for buffering.")
+            self.app.inform.emit("[WARNING_NOTCL] Invalid distance for buffering.")
 
             # deselect everything
             self.selected = []
@@ -3097,7 +3106,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         pre_buffer = cascaded_union([t.geo for t in selected])
         results = pre_buffer.buffer(buf_distance - 1e-10, resolution=32, join_style=join_style)
         if results.is_empty:
-            self.app.inform.emit("[error_notcl]Failed, the result is empty. Choose a different buffer value.")
+            self.app.inform.emit("[ERROR_NOTCL]Failed, the result is empty. Choose a different buffer value.")
             # deselect everything
             self.selected = []
             self.replot()
@@ -3112,18 +3121,18 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         if buf_distance < 0:
             self.app.inform.emit(
-                "[error_notcl]Negative buffer value is not accepted. Use Buffer interior to generate an 'inside' shape")
+                "[ERROR_NOTCL]Negative buffer value is not accepted. Use Buffer interior to generate an 'inside' shape")
             # deselect everything
             self.selected = []
             self.replot()
             return
 
         if len(selected) == 0:
-            self.app.inform.emit("[warning_notcl] Nothing selected for buffering.")
+            self.app.inform.emit("[WARNING_NOTCL] Nothing selected for buffering.")
             return
 
         if not isinstance(buf_distance, float):
-            self.app.inform.emit("[warning_notcl] Invalid distance for buffering.")
+            self.app.inform.emit("[WARNING_NOTCL] Invalid distance for buffering.")
             # deselect everything
             self.selected = []
             self.replot()
@@ -3132,7 +3141,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         pre_buffer = cascaded_union([t.geo for t in selected])
         results = pre_buffer.buffer(-buf_distance + 1e-10, resolution=32, join_style=join_style)
         if results.is_empty:
-            self.app.inform.emit("[error_notcl]Failed, the result is empty. Choose a smaller buffer value.")
+            self.app.inform.emit("[ERROR_NOTCL]Failed, the result is empty. Choose a smaller buffer value.")
             # deselect everything
             self.selected = []
             self.replot()
@@ -3152,7 +3161,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         #     return
         #
         # if not isinstance(buf_distance, float):
-        #     self.app.inform.emit("[warning] Invalid distance for buffering.")
+        #     self.app.inform.emit("[WARNING] Invalid distance for buffering.")
         #     return
         #
         # pre_buffer = cascaded_union([t.geo for t in selected])
@@ -3182,7 +3191,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         selected = self.get_selected()
 
         if buf_distance < 0:
-            self.app.inform.emit("[error_notcl]Negative buffer value is not accepted. "
+            self.app.inform.emit("[ERROR_NOTCL]Negative buffer value is not accepted. "
                                  "Use Buffer interior to generate an 'inside' shape")
             # deselect everything
             self.selected = []
@@ -3190,11 +3199,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
             return
 
         if len(selected) == 0:
-            self.app.inform.emit("[warning_notcl] Nothing selected for buffering.")
+            self.app.inform.emit("[WARNING_NOTCL] Nothing selected for buffering.")
             return
 
         if not isinstance(buf_distance, float):
-            self.app.inform.emit("[warning_notcl] Invalid distance for buffering.")
+            self.app.inform.emit("[WARNING_NOTCL] Invalid distance for buffering.")
             # deselect everything
             self.selected = []
             self.replot()
@@ -3203,7 +3212,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         pre_buffer = cascaded_union([t.geo for t in selected])
         results = pre_buffer.buffer(buf_distance - 1e-10, resolution=32, join_style=join_style)
         if results.is_empty:
-            self.app.inform.emit("[error_notcl]Failed, the result is empty. Choose a different buffer value.")
+            self.app.inform.emit("[ERROR_NOTCL]Failed, the result is empty. Choose a different buffer value.")
             # deselect everything
             self.selected = []
             self.replot()
@@ -3221,13 +3230,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
     #     selected = self.get_selected()
     #
     #     if len(selected) == 0:
-    #         self.app.inform.emit("[warning] Nothing selected for painting.")
+    #         self.app.inform.emit("[WARNING] Nothing selected for painting.")
     #         return
     #
     #     for param in [tooldia, overlap, margin]:
     #         if not isinstance(param, float):
     #             param_name = [k for k, v in locals().items() if v is param][0]
-    #             self.app.inform.emit("[warning] Invalid value for {}".format(param))
+    #             self.app.inform.emit("[WARNING] Invalid value for {}".format(param))
     #
     #     # Todo: Check for valid method.
     #
@@ -3279,19 +3288,19 @@ class FlatCAMGeoEditor(QtCore.QObject):
         selected = self.get_selected()
 
         if len(selected) == 0:
-            self.app.inform.emit("[warning_notcl]Nothing selected for painting.")
+            self.app.inform.emit("[WARNING_NOTCL]Nothing selected for painting.")
             return
 
         for param in [tooldia, overlap, margin]:
             if not isinstance(param, float):
                 param_name = [k for k, v in locals().items() if v is param][0]
-                self.app.inform.emit("[warning] Invalid value for {}".format(param))
+                self.app.inform.emit("[WARNING] Invalid value for {}".format(param))
 
         results = []
 
         if tooldia >= overlap:
             self.app.inform.emit(
-                "[error_notcl] Could not do Paint. Overlap value has to be less than Tool Dia value.")
+                "[ERROR_NOTCL] Could not do Paint. Overlap value has to be less than Tool Dia value.")
             return
 
         def recurse(geometry, reset=True):
@@ -3350,7 +3359,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 except Exception as e:
                     log.debug("Could not Paint the polygons. %s" % str(e))
                     self.app.inform.emit(
-                        "[error] Could not do Paint. Try a different combination of parameters. "
+                        "[ERROR] Could not do Paint. Try a different combination of parameters. "
                         "Or a different method of Paint\n%s" % str(e))
                     return
 
@@ -3694,6 +3703,9 @@ class FlatCAMExcEditor(QtCore.QObject):
         # this will flag if the Editor "tools" are launched from key shortcuts (True) or from menu toolbar (False)
         self.launched_from_shortcuts = False
 
+        # this var will store the state of the toolbar before starting the editor
+        self.toolbar_old_state = False
+
         self.app.ui.delete_drill_btn.triggered.connect(self.on_delete_btn)
         self.name_entry.returnPressed.connect(self.on_name_activate)
         self.addtool_btn.clicked.connect(self.on_tool_add)
@@ -3704,6 +3716,17 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.drill_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
 
+        self.app.ui.exc_add_array_drill_menuitem.triggered.connect(self.exc_add_drill_array)
+        self.app.ui.exc_add_drill_menuitem.triggered.connect(self.exc_add_drill)
+
+        self.app.ui.exc_resize_drill_menuitem.triggered.connect(self.exc_resize_drills)
+        self.app.ui.exc_copy_drill_menuitem.triggered.connect(self.exc_copy_drills)
+        self.app.ui.exc_delete_drill_menuitem.triggered.connect(self.on_delete_btn)
+
+        self.app.ui.exc_move_drill_menuitem.triggered.connect(self.exc_move_drills)
+
+
+        # Init GUI
         self.drill_array_size_entry.set_value(5)
         self.drill_pitch_entry.set_value(2.54)
         self.drill_angle_entry.set_value(12)
@@ -4046,7 +4069,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             # each time a tool diameter is edited or added
             self.olddia_newdia[tool_dia] = tool_dia
         else:
-            self.app.inform.emit("[warning_notcl]Tool already in the original or actual tool list.\n"
+            self.app.inform.emit("[WARNING_NOTCL]Tool already in the original or actual tool list.\n"
                                  "Save and reedit Excellon if you need to add this tool. ")
             return
 
@@ -4084,7 +4107,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 else:
                     deleted_tool_dia_list.append(float('%.4f' % dia))
         except:
-            self.app.inform.emit("[warning_notcl]Select a tool in Tool Table")
+            self.app.inform.emit("[WARNING_NOTCL]Select a tool in Tool Table")
             return
 
         for deleted_tool_dia in deleted_tool_dia_list:
@@ -4172,8 +4195,26 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.shapes.enabled = True
         self.tool_shape.enabled = True
         # self.app.app_cursor.enabled = True
-        self.app.ui.snap_max_dist_entry.setDisabled(False)
+
+        self.app.ui.snap_max_dist_entry.setEnabled(True)
         self.app.ui.corner_snap_btn.setEnabled(True)
+        self.app.ui.snap_magnet.setVisible(True)
+        self.app.ui.corner_snap_btn.setVisible(True)
+
+        self.app.ui.exc_editor_menu.setDisabled(False)
+        self.app.ui.exc_editor_menu.menuAction().setVisible(True)
+
+        self.app.ui.update_obj_btn.setEnabled(True)
+        self.app.ui.e_editor_cmenu.setEnabled(True)
+
+        self.app.ui.exc_edit_toolbar.setDisabled(False)
+        self.app.ui.exc_edit_toolbar.setVisible(True)
+        # self.app.ui.snap_toolbar.setDisabled(False)
+
+        # start with GRID toolbar activated
+        if self.app.ui.grid_snap_btn.isChecked() is False:
+            self.app.ui.grid_snap_btn.trigger()
+
         # Tell the App that the editor is active
         self.editor_active = True
 
@@ -4181,9 +4222,35 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.disconnect_canvas_event_handlers()
         self.clear()
         self.app.ui.exc_edit_toolbar.setDisabled(True)
-        self.app.ui.exc_edit_toolbar.setVisible(False)
-        self.app.ui.snap_max_dist_entry.setDisabled(True)
-        self.app.ui.corner_snap_btn.setEnabled(False)
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("theme"):
+            theme = settings.value('theme', type=str)
+            if theme == 'standard':
+                # self.app.ui.exc_edit_toolbar.setVisible(False)
+
+                self.app.ui.snap_max_dist_entry.setEnabled(False)
+                self.app.ui.corner_snap_btn.setEnabled(False)
+                self.app.ui.snap_magnet.setVisible(False)
+                self.app.ui.corner_snap_btn.setVisible(False)
+            elif theme == 'compact':
+                # self.app.ui.exc_edit_toolbar.setVisible(True)
+
+                self.app.ui.snap_max_dist_entry.setEnabled(False)
+                self.app.ui.corner_snap_btn.setEnabled(False)
+                self.app.ui.snap_magnet.setVisible(True)
+                self.app.ui.corner_snap_btn.setVisible(True)
+        else:
+            # self.app.ui.exc_edit_toolbar.setVisible(False)
+
+            self.app.ui.snap_max_dist_entry.setEnabled(False)
+            self.app.ui.corner_snap_btn.setEnabled(False)
+            self.app.ui.snap_magnet.setVisible(False)
+            self.app.ui.corner_snap_btn.setVisible(False)
+
+        # set the Editor Toolbar visibility to what was before entering in the Editor
+        self.app.ui.exc_edit_toolbar.setVisible(False) if self.toolbar_old_state is False \
+            else self.app.ui.exc_edit_toolbar.setVisible(True)
 
         # Disable visuals
         self.shapes.enabled = False
@@ -4192,6 +4259,14 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # Tell the app that the editor is no longer active
         self.editor_active = False
+
+        self.app.ui.exc_editor_menu.setDisabled(True)
+        self.app.ui.exc_editor_menu.menuAction().setVisible(False)
+
+        self.app.ui.update_obj_btn.setEnabled(False)
+
+        self.app.ui.g_editor_cmenu.setEnabled(False)
+        self.app.ui.e_editor_cmenu.setEnabled(False)
 
         # Show original geometry
         if self.exc_obj:
@@ -4250,7 +4325,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         # self.storage = FlatCAMExcEditor.make_storage()
         self.replot()
 
-    def edit_exc_obj(self, exc_obj):
+    def edit_fcexcellon(self, exc_obj):
         """
         Imports the geometry from the given FlatCAM Excellon object
         into the editor.
@@ -4298,15 +4373,8 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.storage_dict[tool_dia] = storage_elem
 
         self.replot()
-        self.app.ui.exc_edit_toolbar.setDisabled(False)
-        self.app.ui.exc_edit_toolbar.setVisible(True)
-        self.app.ui.snap_toolbar.setDisabled(False)
 
-        # start with GRID toolbar activated
-        if self.app.ui.grid_snap_btn.isChecked() is False:
-            self.app.ui.grid_snap_btn.trigger()
-
-    def update_exc_obj(self, exc_obj):
+    def update_fcexcellon(self, exc_obj):
         """
         Create a new Excellon object that contain the edited content of the source Excellon object
 
@@ -4411,6 +4479,21 @@ class FlatCAMExcEditor(QtCore.QObject):
         # Switch notebook to Selected page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
+    def update_options(self, obj):
+        try:
+            if not obj.options:
+                obj.options = {}
+                obj.options['xmin'] = 0
+                obj.options['ymin'] = 0
+                obj.options['xmax'] = 0
+                obj.options['ymax'] = 0
+                return True
+            else:
+                return False
+        except AttributeError:
+            obj.options = {}
+            return True
+
     def new_edited_excellon(self, outname):
         """
         Creates a new Excellon object for the edited Excellon. Thread-safe.
@@ -4430,14 +4513,15 @@ class FlatCAMExcEditor(QtCore.QObject):
             excellon_obj.drills = self.new_drills
             excellon_obj.tools = self.new_tools
             excellon_obj.slots = self.new_slots
+            excellon_obj.options['name'] = outname
 
             try:
                 excellon_obj.create_geometry()
             except KeyError:
                 self.app.inform.emit(
-                    "[error_notcl] There are no Tools definitions in the file. Aborting Excellon creation.")
+                    "[ERROR_NOTCL] There are no Tools definitions in the file. Aborting Excellon creation.")
             except:
-                msg = "[error] An internal error has ocurred. See shell.\n"
+                msg = "[ERROR] An internal error has ocurred. See shell.\n"
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
                 raise
@@ -4469,7 +4553,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             # self.draw_app.select_tool('select')
             self.complete = True
             current_tool = 'select'
-            self.app.inform.emit("[warning_notcl]Cancelled. There is no Tool/Drill selected")
+            self.app.inform.emit("[WARNING_NOTCL]Cancelled. There is no Tool/Drill selected")
 
         # This is to make the group behave as radio group
         if current_tool in self.tools_exc:
@@ -4813,7 +4897,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         if event.key.name == 'Escape':
             # TODO: ...?
             # self.on_tool_select("select")
-            self.app.inform.emit("[warning_notcl]Cancelled.")
+            self.app.inform.emit("[WARNING_NOTCL]Cancelled.")
 
             self.delete_utility_geometry()
 
@@ -4830,7 +4914,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 self.delete_selected()
                 self.replot()
             else:
-                self.app.inform.emit("[warning_notcl]Cancelled. Nothing selected to delete.")
+                self.app.inform.emit("[WARNING_NOTCL]Cancelled. Nothing selected to delete.")
             return
 
         if event.key == '1':
@@ -4862,7 +4946,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 self.on_tool_select('copy')
                 self.active_tool.set_origin((self.snap_x, self.snap_y))
             else:
-                self.app.inform.emit("[warning_notcl]Cancelled. Nothing selected to copy.")
+                self.app.inform.emit("[WARNING_NOTCL]Cancelled. Nothing selected to copy.")
             return
 
         # Add Drill Hole Tool
@@ -4899,7 +4983,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 self.on_tool_select('move')
                 self.active_tool.set_origin((self.snap_x, self.snap_y))
             else:
-                self.app.inform.emit("[warning_notcl]Cancelled. Nothing selected to move.")
+                self.app.inform.emit("[WARNING_NOTCL]Cancelled. Nothing selected to move.")
             return
 
         # Resize Tool
@@ -4923,38 +5007,8 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # Show Shortcut list
         if event.key.name == '`':
-            self.on_shortcut_list()
+            self.app.on_shortcut_list()
             return
-
-    def on_shortcut_list(self):
-        msg = '''<b>Shortcut list in Geometry Editor</b><br>
-<br>
-<b>1:</b>       Zoom Fit<br>
-<b>2:</b>       Zoom Out<br>
-<b>3:</b>       Zoom In<br>
-<b>A:</b>       Add an 'Drill Array'<br>
-<b>C:</b>       Copy Drill Hole<br>
-<b>D:</b>       Add an Drill Hole<br>
-<b>G:</b>       Grid Snap On/Off<br>
-<b>K:</b>       Corner Snap On/Off<br>
-<b>M:</b>       Move Drill Hole<br>
-<br>
-<b>R:</b>       Resize a 'Drill Hole'<br>
-<b>S:</b>       Select Tool Active<br>
-<br>
-<b>~:</b>       Show Shortcut List<br>
-<br>
-<b>Enter:</b>   Finish Current Action<br>
-<b>Escape:</b>  Abort Current Action<br>
-<b>Delete:</b>  Delete Drill Hole'''
-
-        helpbox =QtWidgets.QMessageBox()
-        helpbox.setText(msg)
-        helpbox.setWindowTitle("Help")
-        helpbox.setWindowIcon(QtGui.QIcon('share/help.png'))
-        helpbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-        helpbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-        helpbox.exec_()
 
     def on_canvas_key_release(self, event):
         self.key = None
@@ -5197,8 +5251,16 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.select_tool('add_array')
         return
 
+    def exc_resize_drills(self):
+        self.select_tool('resize')
+        return
+
     def exc_copy_drills(self):
         self.select_tool('copy')
+        return
+
+    def exc_move_drills(self):
+        self.select_tool('move')
         return
 
 def distance(pt1, pt2):

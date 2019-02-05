@@ -37,7 +37,7 @@ class TclCommandListSys(TclCommand):
         'args': collections.OrderedDict([
         ]),
         'examples': ['list_sys',
-                     'list_sys ser'
+                     'list_sys ser',
                      'list_sys gerber',
                      'list_sys cncj']
     }

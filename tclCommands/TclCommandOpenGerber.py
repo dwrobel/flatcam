@@ -57,12 +57,12 @@ class TclCommandOpenGerber(TclCommandSignaled):
                 gerber_obj.parse_file(filename, follow=follow)
 
             except IOError:
-                app_obj.inform.emit("[error_notcl] Failed to open file: %s " % filename)
+                app_obj.inform.emit("[ERROR_NOTCL] Failed to open file: %s " % filename)
                 app_obj.progress.emit(0)
                 self.raise_tcl_error('Failed to open file: %s' % filename)
 
             except ParseError as e:
-                app_obj.inform.emit("[error_notcl] Failed to parse file: %s, %s " % (filename, str(e)))
+                app_obj.inform.emit("[ERROR_NOTCL] Failed to parse file: %s, %s " % (filename, str(e)))
                 app_obj.progress.emit(0)
                 self.log.error(str(e))
                 return

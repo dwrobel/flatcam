@@ -186,7 +186,7 @@ class Geometry(object):
         if isinstance(self.solid_geometry, list):
             return len(self.solid_geometry) == 0
 
-        self.app.inform.emit("[error_notcl] self.solid_geometry is neither BaseGeometry or list.")
+        self.app.inform.emit("[ERROR_NOTCL] self.solid_geometry is neither BaseGeometry or list.")
         return
 
     def subtract_polygon(self, points):
@@ -300,7 +300,7 @@ class Geometry(object):
         #     else:
         #         return self.solid_geometry.bounds
         # except Exception as e:
-        #     self.app.inform.emit("[error_notcl] Error cause: %s" % str(e))
+        #     self.app.inform.emit("[ERROR_NOTCL] Error cause: %s" % str(e))
 
         # log.debug("Geometry->bounds()")
         # if self.solid_geometry is None:
@@ -1361,7 +1361,7 @@ class Geometry(object):
                 self.solid_geometry = mirror_geom(self.solid_geometry)
             self.app.inform.emit('[success]Object was mirrored ...')
         except AttributeError:
-            self.app.inform.emit("[error_notcl] Failed to mirror. No object selected")
+            self.app.inform.emit("[ERROR_NOTCL] Failed to mirror. No object selected")
 
 
 
@@ -1401,7 +1401,7 @@ class Geometry(object):
                 self.solid_geometry = rotate_geom(self.solid_geometry)
             self.app.inform.emit('[success]Object was rotated ...')
         except AttributeError:
-            self.app.inform.emit("[error_notcl] Failed to rotate. No object selected")
+            self.app.inform.emit("[ERROR_NOTCL] Failed to rotate. No object selected")
 
     def skew(self, angle_x, angle_y, point):
         """
@@ -1437,7 +1437,7 @@ class Geometry(object):
                 self.solid_geometry = skew_geom(self.solid_geometry)
             self.app.inform.emit('[success]Object was skewed ...')
         except AttributeError:
-            self.app.inform.emit("[error_notcl] Failed to skew. No object selected")
+            self.app.inform.emit("[ERROR_NOTCL] Failed to skew. No object selected")
 
         # if type(self.solid_geometry) == list:
         #     self.solid_geometry = [affinity.skew(g, angle_x, angle_y, origin=(px, py))
@@ -2454,9 +2454,11 @@ class Gerber (Geometry):
                         region = Polygon()
                     else:
                         region = Polygon(path)
+
                     if not region.is_valid:
                         if not follow:
                             region = region.buffer(0, int(self.steps_per_circle / 4))
+
                     if not region.is_empty:
                         poly_buffer.append(region)
 
@@ -2531,8 +2533,8 @@ class Gerber (Geometry):
                                     pass
                             last_path_aperture = current_aperture
                         else:
-                            self.app.inform.emit("[warning] Coordinates missing, line ignored: %s" % str(gline))
-                            self.app.inform.emit("[warning_notcl] GERBER file might be CORRUPT. Check the file !!!")
+                            self.app.inform.emit("[WARNING] Coordinates missing, line ignored: %s" % str(gline))
+                            self.app.inform.emit("[WARNING_NOTCL] GERBER file might be CORRUPT. Check the file !!!")
 
                     elif current_operation_code == 2:
                         if len(path) > 1:
@@ -2550,7 +2552,7 @@ class Gerber (Geometry):
                                         geo = Polygon(path)
                                     except ValueError:
                                         log.warning("Problem %s %s" % (gline, line_num))
-                                        self.app.inform.emit("[error] Region does not have enough points. "
+                                        self.app.inform.emit("[ERROR] Region does not have enough points. "
                                                              "File will be processed but there are parser errors. "
                                                              "Line number: %s" % str(line_num))
                             else:
@@ -2574,8 +2576,8 @@ class Gerber (Geometry):
                         if linear_x is not None and linear_y is not None:
                             path = [[linear_x, linear_y]]  # Start new path
                         else:
-                            self.app.inform.emit("[warning] Coordinates missing, line ignored: %s" % str(gline))
-                            self.app.inform.emit("[warning_notcl] GERBER file might be CORRUPT. Check the file !!!")
+                            self.app.inform.emit("[WARNING] Coordinates missing, line ignored: %s" % str(gline))
+                            self.app.inform.emit("[WARNING_NOTCL] GERBER file might be CORRUPT. Check the file !!!")
 
                     # Flash
                     # Not allowed in region mode.
@@ -2838,6 +2840,7 @@ class Gerber (Geometry):
 
             if self.use_buffer_for_union:
                 log.debug("Union by buffer...")
+
                 new_poly = MultiPolygon(poly_buffer)
                 new_poly = new_poly.buffer(0.00000001)
                 new_poly = new_poly.buffer(-0.00000001)
@@ -2857,8 +2860,9 @@ class Gerber (Geometry):
             traceback.print_tb(tb)
             #print traceback.format_exc()
 
-            log.error("PARSING FAILED. Line %d: %s" % (line_num, gline))
-            self.app.inform.emit("[error] Gerber Parser ERROR.\n Line %d: %s" % (line_num, gline), repr(err))
+            log.error("Gerber PARSING FAILED. Line %d: %s" % (line_num, gline))
+            loc = 'Gerber Line #%d Gerber Line Content: %s\n' % (line_num, gline) + repr(err)
+            self.app.inform.emit("[ERROR]Gerber Parser ERROR.\n%s:" % loc)
 
     @staticmethod
     def create_flash_geometry(location, aperture, steps_per_circle=None):
@@ -3035,7 +3039,7 @@ class Gerber (Geometry):
         try:
             xfactor = float(xfactor)
         except:
-            self.app.inform.emit("[error_notcl] Scale factor has to be a number: integer or float.")
+            self.app.inform.emit("[ERROR_NOTCL] Scale factor has to be a number: integer or float.")
             return
 
         if yfactor is None:
@@ -3044,7 +3048,7 @@ class Gerber (Geometry):
             try:
                 yfactor = float(yfactor)
             except:
-                self.app.inform.emit("[error_notcl] Scale factor has to be a number: integer or float.")
+                self.app.inform.emit("[ERROR_NOTCL] Scale factor has to be a number: integer or float.")
                 return
 
         if point is None:
@@ -3096,7 +3100,7 @@ class Gerber (Geometry):
         try:
             dx, dy = vect
         except TypeError:
-            self.app.inform.emit("[error_notcl]An (x,y) pair of values are needed. "
+            self.app.inform.emit("[ERROR_NOTCL]An (x,y) pair of values are needed. "
                                  "Probable you entered only one value in the Offset field.")
             return
 
@@ -3460,7 +3464,7 @@ class Excellon(Geometry):
                 # and we need to exit from here
                 if self.detect_gcode_re.search(eline):
                     log.warning("This is GCODE mark: %s" % eline)
-                    self.app.inform.emit('[error_notcl] This is GCODE mark: %s' % eline)
+                    self.app.inform.emit('[ERROR_NOTCL] This is GCODE mark: %s' % eline)
                     return
 
                 # Header Begin (M48) #
@@ -3987,10 +3991,13 @@ class Excellon(Geometry):
             # from self.defaults['excellon_units']
             log.info("Zeros: %s, Units %s." % (self.zeros, self.units))
 
-
         except Exception as e:
-            log.error("PARSING FAILED. Line %d: %s" % (line_num, eline))
-            self.app.inform.emit('[error] Excellon Parser ERROR.\nPARSING FAILED. Line %d: %s' % (line_num, eline))
+            log.error("Excellon PARSING FAILED. Line %d: %s" % (line_num, eline))
+            msg = "[ERROR_NOTCL] An internal error has ocurred. See shell.\n"
+            msg += '[ERROR] Excellon Parser error.\nParsing Failed. Line %d: %s\n' % (line_num, eline)
+            msg += traceback.format_exc()
+            self.app.inform.emit(msg)
+
             return "fail"
         
     def parse_number(self, number_str):
@@ -4059,7 +4066,7 @@ class Excellon(Geometry):
             for drill in self.drills:
                 # poly = drill['point'].buffer(self.tools[drill['tool']]["C"]/2.0)
                 if drill['tool'] is '':
-                    self.app.inform.emit("[warning] Excellon.create_geometry() -> a drill location was skipped "
+                    self.app.inform.emit("[WARNING] Excellon.create_geometry() -> a drill location was skipped "
                                          "due of not having a tool associated.\n"
                                          "Check the resulting GCode.")
                     log.debug("Excellon.create_geometry() -> a drill location was skipped "
@@ -4363,11 +4370,11 @@ class CNCjob(Geometry):
     def __init__(self,
                  units="in", kind="generic", tooldia=0.0,
                  z_cut=-0.002, z_move=0.1,
-                 feedrate=3.0, feedrate_z=3.0, feedrate_rapid=3.0,
+                 feedrate=3.0, feedrate_z=3.0, feedrate_rapid=3.0, feedrate_probe=3.0,
                  pp_geometry_name='default', pp_excellon_name='default',
-                 depthpercut = 0.1,
+                 depthpercut=0.1,z_pdepth=-0.02,
                  spindlespeed=None, dwell=True, dwelltime=1000,
-                 toolchangez=0.787402,
+                 toolchangez=0.787402, toolchange_xy=[0.0, 0.0],
                  endz=2.0,
                  segx=None,
                  segy=None,
@@ -4392,7 +4399,8 @@ class CNCjob(Geometry):
 
         self.tooldia = tooldia
         self.toolchangez = toolchangez
-        self.toolchange_xy = None
+        self.toolchange_xy = toolchange_xy
+        self.toolchange_xy_type = None
 
         self.endz = endz
         self.depthpercut = depthpercut
@@ -4411,6 +4419,15 @@ class CNCjob(Geometry):
         self.pp_excellon_name = pp_excellon_name
         self.pp_excellon = self.app.postprocessors[self.pp_excellon_name]
 
+        # Controls if the move from Z_Toolchange to Z_Move is done fast with G0 or normally with G1
+        self.f_plunge = None
+
+        # how much depth the probe can probe before error
+        self.z_pdepth = z_pdepth if z_pdepth else None
+
+        # the feedrate(speed) with which the probel travel while probing
+        self.feedrate_probe = feedrate_probe if feedrate_probe else None
+
         self.spindlespeed = spindlespeed
         self.dwell = dwell
         self.dwelltime = dwelltime
@@ -4419,6 +4436,9 @@ class CNCjob(Geometry):
         self.segy = float(segy) if segy is not None else 0.0
 
         self.input_geometry_bounds = None
+
+        self.oldx = None
+        self.oldy = None
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -4490,7 +4510,7 @@ class CNCjob(Geometry):
         return path
 
     def generate_from_excellon_by_tool(self, exobj, tools="all", drillz = 3.0,
-                                       toolchange=False, toolchangez=0.1, toolchangexy="0.0, 0.0",
+                                       toolchange=False, toolchangez=0.1, toolchangexy='',
                                        endz=2.0, startz=None,
                                        excellon_optimization_type='B'):
         """
@@ -4520,24 +4540,39 @@ class CNCjob(Geometry):
         :rtype: None
         """
         if drillz > 0:
-            self.app.inform.emit("[warning] The Cut Z parameter has positive value. "
+            self.app.inform.emit("[WARNING] The Cut Z parameter has positive value. "
                                  "It is the depth value to drill into material.\n"
                                  "The Cut Z parameter needs to have a negative value, assuming it is a typo "
                                  "therefore the app will convert the value to negative. "
                                  "Check the resulting CNC code (Gcode etc).")
             self.z_cut = -drillz
         elif drillz == 0:
-            self.app.inform.emit("[warning] The Cut Z parameter is zero. "
+            self.app.inform.emit("[WARNING] The Cut Z parameter is zero. "
                                  "There will be no cut, skipping %s file" % exobj.options['name'])
             return
         else:
             self.z_cut = drillz
 
         self.toolchangez = toolchangez
-        self.toolchange_xy = [float(eval(a)) for a in toolchangexy.split(",")]
+
+        try:
+            if toolchangexy == '':
+                self.toolchange_xy = None
+            else:
+                self.toolchange_xy = [float(eval(a)) for a in toolchangexy.split(",")]
+                if len(self.toolchange_xy) < 2:
+                    self.app.inform.emit("[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be "
+                                         "in the format (x, y) \nbut now there is only one value, not two. ")
+                    return 'fail'
+        except Exception as e:
+            log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> %s" % str(e))
+            pass
 
         self.startz = startz
         self.endz = endz
+
+        self.pp_excellon = self.app.postprocessors[self.pp_excellon_name]
+        p = self.pp_excellon
 
         log.debug("Creating CNC Job from Excellon...")
 
@@ -4576,15 +4611,19 @@ class CNCjob(Geometry):
 
         self.gcode = []
 
-        # Basic G-Code macros
-        self.pp_excellon = self.app.postprocessors[self.pp_excellon_name]
-        p = self.pp_excellon
+        self.f_plunge = self.app.defaults["excellon_f_plunge"]
 
         # Initialization
         gcode = self.doformat(p.start_code)
         gcode += self.doformat(p.feedrate_code)
-        gcode += self.doformat(p.lift_code, x=0, y=0)
-        gcode += self.doformat(p.startz_code, x=0, y=0)
+
+        if toolchange is False:
+            if self.toolchange_xy is not None:
+                gcode += self.doformat(p.lift_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+                gcode += self.doformat(p.startz_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+            else:
+                gcode += self.doformat(p.lift_code, x=0.0, y=0.0)
+                gcode += self.doformat(p.startz_code, x=0.0, y=0.0)
 
         # Distance callback
         class CreateDistanceCallback(object):
@@ -4618,8 +4657,13 @@ class CNCjob(Geometry):
                 locations.append((point.coords.xy[0][0], point.coords.xy[1][0]))
             return locations
 
-        oldx = 0
-        oldy = 0
+        if self.toolchange_xy is not None:
+            self.oldx = self.toolchange_xy[0]
+            self.oldy = self.toolchange_xy[1]
+        else:
+            self.oldx = 0.0
+            self.oldy = 0.0
+
         measured_distance = 0
 
         current_platform = platform.architecture()[0]
@@ -4684,7 +4728,7 @@ class CNCjob(Geometry):
                     if tool in points:
                         # Tool change sequence (optional)
                         if toolchange:
-                            gcode += self.doformat(p.toolchange_code,toolchangexy=(oldx, oldy))
+                            gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
                             gcode += self.doformat(p.spindle_code)  # Spindle start
                             if self.dwell is True:
                                 gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -4702,9 +4746,9 @@ class CNCjob(Geometry):
                             gcode += self.doformat(p.down_code, x=locx, y=locy)
                             gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
                             gcode += self.doformat(p.lift_code, x=locx, y=locy)
-                            measured_distance += abs(distance_euclidian(locx, locy, oldx, oldy))
-                            oldx = locx
-                            oldy = locy
+                            measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                            self.oldx = locx
+                            self.oldy = locy
                 log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))
             elif excellon_optimization_type == 'B':
                 log.debug("Using OR-Tools Basic drill path optimization.")
@@ -4758,7 +4802,7 @@ class CNCjob(Geometry):
                     if tool in points:
                         # Tool change sequence (optional)
                         if toolchange:
-                            gcode += self.doformat(p.toolchange_code,toolchangexy=(oldx, oldy))
+                            gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
                             gcode += self.doformat(p.spindle_code)  # Spindle start)
                             if self.dwell is True:
                                 gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -4775,12 +4819,12 @@ class CNCjob(Geometry):
                             gcode += self.doformat(p.down_code, x=locx, y=locy)
                             gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
                             gcode += self.doformat(p.lift_code, x=locx, y=locy)
-                            measured_distance += abs(distance_euclidian(locx, locy, oldx, oldy))
-                            oldx = locx
-                            oldy = locy
+                            measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                            self.oldx = locx
+                            self.oldy = locy
                 log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" % str(measured_distance))
             else:
-                self.app.inform.emit("[error_notcl] Wrong optimization type selected.")
+                self.app.inform.emit("[ERROR_NOTCL] Wrong optimization type selected.")
                 return
         else:
             log.debug("Using Travelling Salesman drill path optimization.")
@@ -4792,7 +4836,7 @@ class CNCjob(Geometry):
                 if tool in points:
                     # Tool change sequence (optional)
                     if toolchange:
-                        gcode += self.doformat(p.toolchange_code, toolchangexy=(oldx, oldy))
+                        gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
                         gcode += self.doformat(p.spindle_code)  # Spindle start)
                         if self.dwell is True:
                             gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -4811,15 +4855,15 @@ class CNCjob(Geometry):
                         gcode += self.doformat(p.down_code, x=point[0], y=point[1])
                         gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
                         gcode += self.doformat(p.lift_code, x=point[0], y=point[1])
-                        measured_distance += abs(distance_euclidian(point[0], point[1], oldx, oldy))
-                        oldx = point[0]
-                        oldy = point[1]
+                        measured_distance += abs(distance_euclidian(point[0], point[1], self.oldx, self.oldy))
+                        self.oldx = point[0]
+                        self.oldy = point[1]
             log.debug("The total travel distance with Travelling Salesman Algorithm is: %s" % str(measured_distance))
 
         gcode += self.doformat(p.spindle_stop_code)  # Spindle stop
         gcode += self.doformat(p.end_code, x=0, y=0)
 
-        measured_distance += abs(distance_euclidian(oldx, oldy, 0, 0))
+        measured_distance += abs(distance_euclidian(self.oldx, self.oldy, 0, 0))
         log.debug("The total travel distance including travel to end position is: %s" %
                   str(measured_distance) + '\n')
         self.gcode = gcode
@@ -4887,19 +4931,32 @@ class CNCjob(Geometry):
         self.multidepth = multidepth
 
         self.toolchangez = toolchangez
-        self.toolchange_xy = [float(eval(a)) for a in toolchangexy.split(",")]
+
+        try:
+            if toolchangexy == '':
+                self.toolchange_xy = None
+            else:
+                self.toolchange_xy = [float(eval(a)) for a in toolchangexy.split(",")]
+                if len(self.toolchange_xy) < 2:
+                    self.app.inform.emit("[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be "
+                                         "in the format (x, y) \nbut now there is only one value, not two. ")
+                    return 'fail'
+        except Exception as e:
+            log.debug("camlib.CNCJob.generate_from_multitool_geometry() --> %s" % str(e))
+            pass
 
         self.pp_geometry_name = pp_geometry_name if pp_geometry_name else 'default'
+        self.f_plunge = self.app.defaults["geometry_f_plunge"]
 
         if self.z_cut > 0:
-            self.app.inform.emit("[warning] The Cut Z parameter has positive value. "
+            self.app.inform.emit("[WARNING] The Cut Z parameter has positive value. "
                                  "It is the depth value to cut into material.\n"
                                  "The Cut Z parameter needs to have a negative value, assuming it is a typo "
                                  "therefore the app will convert the value to negative."
                                  "Check the resulting CNC code (Gcode etc).")
             self.z_cut = -self.z_cut
         elif self.z_cut == 0:
-            self.app.inform.emit("[warning] The Cut Z parameter is zero. "
+            self.app.inform.emit("[WARNING] The Cut Z parameter is zero. "
                                  "There will be no cut, skipping %s file" % self.options['name'])
 
         ## Index first and last points in paths
@@ -4936,14 +4993,17 @@ class CNCjob(Geometry):
         self.gcode = self.doformat(p.start_code)
 
         self.gcode += self.doformat(p.feedrate_code)        # sets the feed rate
-        self.gcode += self.doformat(p.lift_code, x=0, y=0)  # Move (up) to travel height
-        self.gcode += self.doformat(p.startz_code, x=0, y=0)
+
+        if toolchange is False:
+            self.gcode += self.doformat(p.lift_code, x=0, y=0)  # Move (up) to travel height
+            self.gcode += self.doformat(p.startz_code, x=0, y=0)
 
         if toolchange:
-            if "line_xyz" in self.pp_geometry_name:
-                self.gcode += self.doformat(p.toolchange_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
-            else:
-                self.gcode += self.doformat(p.toolchange_code)
+            # if "line_xyz" in self.pp_geometry_name:
+            #     self.gcode += self.doformat(p.toolchange_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+            # else:
+            #     self.gcode += self.doformat(p.toolchange_code)
+            self.gcode += self.doformat(p.toolchange_code)
 
             self.gcode += self.doformat(p.spindle_code)     # Spindle start
             if self.dwell is True:
@@ -5023,13 +5083,13 @@ class CNCjob(Geometry):
         """
 
         if not isinstance(geometry, Geometry):
-            self.app.inform.emit("[error]Expected a Geometry, got %s" % type(geometry))
+            self.app.inform.emit("[ERROR]Expected a Geometry, got %s" % type(geometry))
             return 'fail'
         log.debug("Generate_from_geometry_2()")
 
         # if solid_geometry is empty raise an exception
         if not geometry.solid_geometry:
-            self.app.inform.emit("[error_notcl]Trying to generate a CNC Job "
+            self.app.inform.emit("[ERROR_NOTCL]Trying to generate a CNC Job "
                                  "from a Geometry object without solid_geometry.")
 
         temp_solid_geometry = []
@@ -5067,19 +5127,32 @@ class CNCjob(Geometry):
         self.multidepth = multidepth
 
         self.toolchangez = toolchangez
-        self.toolchange_xy = [float(eval(a)) for a in toolchangexy.split(",")]
+
+        try:
+            if toolchangexy == '':
+                self.toolchange_xy = None
+            else:
+                self.toolchange_xy = [float(eval(a)) for a in toolchangexy.split(",")]
+                if len(self.toolchange_xy) < 2:
+                    self.app.inform.emit("[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be "
+                                         "in the format (x, y) \nbut now there is only one value, not two. ")
+                    return 'fail'
+        except Exception as e:
+            log.debug("camlib.CNCJob.generate_from_geometry_2() --> %s" % str(e))
+            pass
 
         self.pp_geometry_name = pp_geometry_name if pp_geometry_name else 'default'
+        self.f_plunge = self.app.defaults["geometry_f_plunge"]
 
         if self.z_cut > 0:
-            self.app.inform.emit("[warning] The Cut Z parameter has positive value. "
+            self.app.inform.emit("[WARNING] The Cut Z parameter has positive value. "
                                  "It is the depth value to cut into material.\n"
                                  "The Cut Z parameter needs to have a negative value, assuming it is a typo "
                                  "therefore the app will convert the value to negative."
                                  "Check the resulting CNC code (Gcode etc).")
             self.z_cut = -self.z_cut
         elif self.z_cut == 0:
-            self.app.inform.emit("[warning] The Cut Z parameter is zero. "
+            self.app.inform.emit("[WARNING] The Cut Z parameter is zero. "
                                  "There will be no cut, skipping %s file" % geometry.options['name'])
 
         ## Index first and last points in paths
@@ -5113,18 +5186,23 @@ class CNCjob(Geometry):
         self.pp_geometry = self.app.postprocessors[self.pp_geometry_name]
         p = self.pp_geometry
 
+        self.oldx = 0.0
+        self.oldy = 0.0
+
         self.gcode = self.doformat(p.start_code)
 
         self.gcode += self.doformat(p.feedrate_code)        # sets the feed rate
 
-        self.gcode += self.doformat(p.lift_code, x=0, y=0)  # Move (up) to travel height
-        self.gcode += self.doformat(p.startz_code, x=0, y=0)
+        if toolchange is False:
+            self.gcode += self.doformat(p.lift_code, x=self.oldx , y=self.oldy )  # Move (up) to travel height
+            self.gcode += self.doformat(p.startz_code, x=self.oldx , y=self.oldy )
 
         if toolchange:
-            if "line_xyz" in self.pp_geometry_name:
-                self.gcode += self.doformat(p.toolchange_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
-            else:
-                self.gcode += self.doformat(p.toolchange_code)
+            # if "line_xyz" in self.pp_geometry_name:
+            #     self.gcode += self.doformat(p.toolchange_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+            # else:
+            #     self.gcode += self.doformat(p.toolchange_code)
+            self.gcode += self.doformat(p.toolchange_code)
 
             self.gcode += self.doformat(p.spindle_code)     # Spindle start
 
@@ -5328,10 +5406,17 @@ class CNCjob(Geometry):
 
         # Current path: temporary storage until tool is
         # lifted or lowered.
-        if self.toolchange_xy == "excellon":
-            pos_xy = [float(eval(a)) for a in self.app.defaults["excellon_toolchangexy"].split(",")]
+        if self.toolchange_xy_type == "excellon":
+            if self.app.defaults["excellon_toolchangexy"] == '':
+                pos_xy = [0, 0]
+            else:
+                pos_xy = [float(eval(a)) for a in self.app.defaults["excellon_toolchangexy"].split(",")]
         else:
-            pos_xy = [float(eval(a)) for a in self.app.defaults["geometry_toolchangexy"].split(",")]
+            if self.app.defaults["geometry_toolchangexy"] == '':
+                pos_xy = [0, 0]
+            else:
+                pos_xy = [float(eval(a)) for a in self.app.defaults["geometry_toolchangexy"].split(",")]
+
         path = [pos_xy]
         # path = [(0, 0)]
 
@@ -5456,7 +5541,7 @@ class CNCjob(Geometry):
         
     def plot2(self, tooldia=None, dpi=75, margin=0.1, gcode_parsed=None,
               color={"T": ["#F0E24D4C", "#B5AB3A4C"], "C": ["#5E6CFFFF", "#4650BDFF"]},
-              alpha={"T": 0.3, "C": 1.0}, tool_tolerance=0.0005, obj=None, visible=False):
+              alpha={"T": 0.3, "C": 1.0}, tool_tolerance=0.0005, obj=None, visible=False, kind='all'):
         """
         Plots the G-code job onto the given axes.
 
@@ -5477,7 +5562,15 @@ class CNCjob(Geometry):
 
         if tooldia == 0:
             for geo in gcode_parsed:
-                obj.add_shape(shape=geo['geom'], color=color[geo['kind'][0]][1], visible=visible)
+                if kind == 'all':
+                    obj.add_shape(shape=geo['geom'], color=color[geo['kind'][0]][1], visible=visible)
+                elif kind == 'travel':
+                    if geo['kind'][0] == 'T':
+                        obj.add_shape(shape=geo['geom'], color=color['T'][1], visible=visible)
+                elif kind == 'cut':
+                    if geo['kind'][0] == 'C':
+                        obj.add_shape(shape=geo['geom'], color=color['C'][1], visible=visible)
+
         else:
             text = []
             pos = []
@@ -5488,8 +5581,17 @@ class CNCjob(Geometry):
                 pos.append(geo['geom'].coords[0])
 
                 poly = geo['geom'].buffer(tooldia / 2.0).simplify(tool_tolerance)
-                obj.add_shape(shape=poly, color=color[geo['kind'][0]][1], face_color=color[geo['kind'][0]][0],
+                if kind == 'all':
+                    obj.add_shape(shape=poly, color=color[geo['kind'][0]][1], face_color=color[geo['kind'][0]][0],
                               visible=visible, layer=1 if geo['kind'][0] == 'C' else 2)
+                elif kind == 'travel':
+                    if geo['kind'][0] == 'T':
+                        obj.add_shape(shape=poly, color=color['T'][1], face_color=color['T'][0],
+                                      visible=visible, layer=2)
+                elif kind == 'cut':
+                    if geo['kind'][0] == 'C':
+                        obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
+                                      visible=visible, layer=1)
 
             obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'])
 
@@ -5798,6 +5900,7 @@ class CNCjob(Geometry):
             else:
                 # it's a Shapely object, return it's bounds
                 return obj.bounds
+
         if self.multitool is False:
             log.debug("CNCJob->bounds()")
             if self.solid_geometry is None:
@@ -5806,21 +5909,30 @@ class CNCjob(Geometry):
 
             bounds_coords = bounds_rec(self.solid_geometry)
         else:
+
             for k, v in self.cnc_tools.items():
                 minx = Inf
                 miny = Inf
                 maxx = -Inf
                 maxy = -Inf
-
-                for k in v['solid_geometry']:
-                    minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                try:
+                    for k in v['solid_geometry']:
+                        minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                        minx = min(minx, minx_)
+                        miny = min(miny, miny_)
+                        maxx = max(maxx, maxx_)
+                        maxy = max(maxy, maxy_)
+                except TypeError:
+                    minx_, miny_, maxx_, maxy_ = bounds_rec(v['solid_geometry'])
                     minx = min(minx, minx_)
                     miny = min(miny, miny_)
                     maxx = max(maxx, maxx_)
                     maxy = max(maxy, maxy_)
+
             bounds_coords = minx, miny, maxx, maxy
         return bounds_coords
 
+    # TODO This function should be replaced at some point with a "real" function. Until then it's an ugly hack ...
     def scale(self, xfactor, yfactor=None, point=None):
         """
         Scales all the geometry on the XY plane in the object by the
@@ -5844,8 +5956,124 @@ class CNCjob(Geometry):
         else:
             px, py = point
 
-        for g in self.gcode_parsed:
-            g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
+        def scale_g(g):
+            """
+
+            :param g: 'g' parameter it's a gcode string
+            :return:  scaled gcode string
+            """
+
+            temp_gcode = ''
+            header_start = False
+            header_stop = False
+            units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
+
+            lines = StringIO(g)
+            for line in lines:
+
+                # this changes the GCODE header ---- UGLY HACK
+                if "TOOL DIAMETER" in line or "Feedrate:" in line:
+                    header_start = True
+
+                if "G20" in line or "G21" in line:
+                    header_start = False
+                    header_stop = True
+
+                if header_start is True:
+                    header_stop = False
+                    if "in" in line:
+                        if units == 'MM':
+                            line = line.replace("in", "mm")
+                    if "mm" in line:
+                        if units == 'IN':
+                            line = line.replace("mm", "in")
+
+                    # find any float number in header (even multiple on the same line) and convert it
+                    numbers_in_header = re.findall(self.g_nr_re, line)
+                    if numbers_in_header:
+                        for nr in numbers_in_header:
+                            new_nr = float(nr) * xfactor
+                            # replace the updated string
+                            line = line.replace(nr, ('%.*f' % (self.app.defaults["cncjob_coords_decimals"], new_nr))
+                            )
+
+                # this scales all the X and Y and Z and F values and also the Tool Dia in the toolchange message
+                if header_stop is True:
+                    if "G20" in line:
+                        if units == 'MM':
+                            line = line.replace("G20", "G21")
+                    if "G21" in line:
+                        if units == 'IN':
+                            line = line.replace("G21", "G20")
+
+                    # find the X group
+                    match_x = self.g_x_re.search(line)
+                    if match_x:
+                        if match_x.group(1) is not None:
+                            new_x = float(match_x.group(1)[1:]) * xfactor
+                            # replace the updated string
+                            line = line.replace(
+                                match_x.group(1),
+                                'X%.*f' % (self.app.defaults["cncjob_coords_decimals"], new_x)
+                            )
+                    # find the Y group
+                    match_y = self.g_y_re.search(line)
+                    if match_y:
+                        if match_y.group(1) is not None:
+                            new_y = float(match_y.group(1)[1:]) * yfactor
+                            line = line.replace(
+                                match_y.group(1),
+                                'Y%.*f' % (self.app.defaults["cncjob_coords_decimals"], new_y)
+                            )
+                    # find the Z group
+                    match_z = self.g_z_re.search(line)
+                    if match_z:
+                        if match_z.group(1) is not None:
+                            new_z = float(match_z.group(1)[1:]) * xfactor
+                            line = line.replace(
+                                match_z.group(1),
+                                'Z%.*f' % (self.app.defaults["cncjob_coords_decimals"], new_z)
+                            )
+
+                    # find the F group
+                    match_f = self.g_f_re.search(line)
+                    if match_f:
+                        if match_f.group(1) is not None:
+                            new_f = float(match_f.group(1)[1:]) * xfactor
+                            line = line.replace(
+                                match_f.group(1),
+                                'F%.*f' % (self.app.defaults["cncjob_fr_decimals"], new_f)
+                            )
+                    # find the T group (tool dia on toolchange)
+                    match_t = self.g_t_re.search(line)
+                    if match_t:
+                        if match_t.group(1) is not None:
+                            new_t = float(match_t.group(1)[1:]) * xfactor
+                            line = line.replace(
+                                match_t.group(1),
+                                '= %.*f' % (self.app.defaults["cncjob_coords_decimals"], new_t)
+                            )
+
+                temp_gcode += line
+            lines.close()
+            header_stop = False
+            return temp_gcode
+
+        if self.multitool is False:
+            # offset Gcode
+            self.gcode = scale_g(self.gcode)
+            # offset geometry
+            for g in self.gcode_parsed:
+                g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
+            self.create_geometry()
+        else:
+            for k, v in self.cnc_tools.items():
+                # scale Gcode
+                v['gcode'] = scale_g(v['gcode'])
+                # scale gcode_parsed
+                for g in v['gcode_parsed']:
+                    g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
+                v['solid_geometry'] = cascaded_union([geo['geom'] for geo in v['gcode_parsed']])
 
         self.create_geometry()
 
@@ -5875,7 +6103,7 @@ class CNCjob(Geometry):
             lines = StringIO(g)
             for line in lines:
                 # find the X group
-                match_x = self.g_offsetx_re.search(line)
+                match_x = self.g_x_re.search(line)
                 if match_x:
                     if match_x.group(1) is not None:
                         # get the coordinate and add X offset
@@ -5885,7 +6113,7 @@ class CNCjob(Geometry):
                             match_x.group(1),
                             'X%.*f' % (self.app.defaults["cncjob_coords_decimals"], new_x)
                         )
-                match_y = self.g_offsety_re.search(line)
+                match_y = self.g_y_re.search(line)
                 if match_y:
                     if match_y.group(1) is not None:
                         new_y = float(match_y.group(1)[1:]) + dy

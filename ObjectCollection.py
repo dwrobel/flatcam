@@ -46,56 +46,65 @@ class KeySensitiveListView(QtWidgets.QTreeView):
             event.ignore()
 
     def dragMoveEvent(self, event):
+        self.setDropIndicatorShown(True)
         if event.mimeData().hasUrls:
             event.accept()
         else:
             event.ignore()
 
     def dropEvent(self, event):
-        if event.mimeData().hasUrls:
-            event.setDropAction(QtCore.Qt.CopyAction)
+        drop_indicator = self.dropIndicatorPosition()
+
+        m = event.mimeData()
+        if m.hasUrls:
             event.accept()
-            for url in event.mimeData().urls():
+
+            for url in m.urls():
                 self.filename = str(url.toLocalFile())
 
-            if self.filename == "":
-                self.app.inform.emit("Open cancelled.")
+            # file drop from outside application
+            if drop_indicator == QtWidgets.QAbstractItemView.OnItem:
+                if self.filename == "":
+                    self.app.inform.emit("Open cancelled.")
+                else:
+                    if self.filename.lower().rpartition('.')[-1] in self.app.grb_list:
+                        self.app.worker_task.emit({'fcn': self.app.open_gerber,
+                                                   'params': [self.filename]})
+                    else:
+                        event.ignore()
+
+                    if self.filename.lower().rpartition('.')[-1] in self.app.exc_list:
+                        self.app.worker_task.emit({'fcn': self.app.open_excellon,
+                                                   'params': [self.filename]})
+                    else:
+                        event.ignore()
+
+                    if self.filename.lower().rpartition('.')[-1] in self.app.gcode_list:
+                        self.app.worker_task.emit({'fcn': self.app.open_gcode,
+                                                   'params': [self.filename]})
+                    else:
+                        event.ignore()
+
+                    if self.filename.lower().rpartition('.')[-1] in self.app.svg_list:
+                        object_type = 'geometry'
+                        self.app.worker_task.emit({'fcn': self.app.import_svg,
+                                                   'params': [self.filename, object_type, None]})
+
+                    if self.filename.lower().rpartition('.')[-1] in self.app.dxf_list:
+                        object_type = 'geometry'
+                        self.app.worker_task.emit({'fcn': self.app.import_dxf,
+                                                   'params': [self.filename, object_type, None]})
+
+                    if self.filename.lower().rpartition('.')[-1] in self.app.prj_list:
+                        # self.app.open_project() is not Thread Safe
+                        self.app.open_project(self.filename)
+                    else:
+                        event.ignore()
             else:
-                if self.filename.lower().rpartition('.')[-1] in self.app.grb_list:
-                    self.app.worker_task.emit({'fcn': self.app.open_gerber,
-                                               'params': [self.filename]})
-                else:
-                    event.ignore()
-
-                if self.filename.lower().rpartition('.')[-1] in self.app.exc_list:
-                    self.app.worker_task.emit({'fcn': self.app.open_excellon,
-                                               'params': [self.filename]})
-                else:
-                    event.ignore()
-
-                if self.filename.lower().rpartition('.')[-1] in self.app.gcode_list:
-                    self.app.worker_task.emit({'fcn': self.app.open_gcode,
-                                               'params': [self.filename]})
-                else:
-                    event.ignore()
-
-                if self.filename.lower().rpartition('.')[-1] in self.app.svg_list:
-                    object_type = 'geometry'
-                    self.app.worker_task.emit({'fcn': self.app.import_svg,
-                                               'params': [self.filename, object_type, None]})
-
-                if self.filename.lower().rpartition('.')[-1] in self.app.dxf_list:
-                    object_type = 'geometry'
-                    self.app.worker_task.emit({'fcn': self.app.import_dxf,
-                                               'params': [self.filename, object_type, None]})
-
-                if self.filename.lower().rpartition('.')[-1] in self.app.prj_list:
-                    # self.app.open_project() is not Thread Safe
-                    self.app.open_project(self.filename)
-                else:
-                    event.ignore()
+                pass
         else:
             event.ignore()
+
 
 class TreeItem:
     """
@@ -221,9 +230,15 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         ### View
         self.view = KeySensitiveListView(app)
-        self.view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.view.setModel(self)
+
         self.view.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        # self.view.setDragDropMode(QtWidgets.QAbstractItemView.InternalMove)
+        # self.view.setDragEnabled(True)
+        # self.view.setAcceptDrops(True)
+        # self.view.setDropIndicatorShown(True)
+
         font = QtGui.QFont()
         font.setPixelSize(12)
         font.setFamily("Seagoe UI")
@@ -273,6 +288,11 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
             if key == QtCore.Qt.Key_S:
                 self.app.on_file_saveproject()
+
+            # Toggle Plot Area
+            if key == QtCore.Qt.Key_F10:
+                self.app.on_toggle_plotarea()
+
             return
         elif modifiers == QtCore.Qt.ShiftModifier:
 
@@ -324,7 +344,20 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             if key == QtCore.Qt.Key_Y:
                 self.app.on_skewy()
                 return
+
         elif modifiers == QtCore.Qt.AltModifier:
+            # Eanble all plots
+            if key == Qt.Key_1:
+                self.app.enable_all_plots()
+
+            # Disable all plots
+            if key == Qt.Key_2:
+                self.app.disable_all_plots()
+
+            # Disable all other plots
+            if key == Qt.Key_3:
+                self.app.disable_other_plots()
+
             # 2-Sided PCB Tool
             if key == QtCore.Qt.Key_D:
                 self.app.dblsidedtool.run()
@@ -354,17 +387,17 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             if key == QtCore.Qt.Key_F2:
                 webbrowser.open(self.app.video_url)
 
-            # Zoom Fit
+            # Switch to Project Tab
             if key == QtCore.Qt.Key_1:
-                self.app.on_zoom_fit(None)
+                self.app.on_select_tab('project')
 
-            # Zoom In
+            # Switch to Selected Tab
             if key == QtCore.Qt.Key_2:
-                self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'], self.app.mouse)
+                self.app.on_select_tab('selected')
 
-            # Zoom Out
+            # Switch to Tool Tab
             if key == QtCore.Qt.Key_3:
-                self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'], self.app.mouse)
+                self.app.on_select_tab('tool')
 
             # Delete
             if key == QtCore.Qt.Key_Delete and active:
@@ -444,6 +477,14 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             if key == QtCore.Qt.Key_Y:
                 self.app.on_flipy()
 
+            # Zoom In
+            if key == QtCore.Qt.Key_Equal:
+                self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'], self.app.mouse)
+
+            # Zoom Out
+            if key == QtCore.Qt.Key_Minus:
+                self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'], self.app.mouse)
+
             # Show shortcut list
             if key == QtCore.Qt.Key_Ampersand:
                 self.app.on_shortcut_list()
@@ -483,13 +524,13 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         if not self.hasIndex(row, column, parent):
             return QtCore.QModelIndex()
 
-        if not parent.isValid():
-            parent_item = self.root_item
-        else:
-            parent_item = parent.internalPointer()
+        # if not parent.isValid():
+        #     parent_item = self.root_item
+        # else:
+        #     parent_item = parent.internalPointer()
+        parent_item = parent.internalPointer() if parent.isValid() else self.root_item
 
         child_item = parent_item.child(row)
-
         if child_item:
             return self.createIndex(row, column, child_item)
         else:
@@ -569,39 +610,27 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                         "setData() --> Could not remove the old object name from auto-completer model list")
 
                 obj.build_ui()
-            self.app.inform.emit("Object renamed from %s to %s" % (old_name, new_name))
+                self.app.inform.emit("Object renamed from %s to %s" % (old_name, new_name))
 
         return True
 
+    def supportedDropActions(self):
+        return Qt.MoveAction
+
     def flags(self, index):
+        default_flags = QtCore.QAbstractItemModel.flags(self, index)
+
         if not index.isValid():
-            return 0
+            return Qt.ItemIsEnabled | default_flags
 
         # Prevent groups from selection
         if not index.internalPointer().obj:
             return Qt.ItemIsEnabled
         else:
-            return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable
+            return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable | \
+                   Qt.ItemIsDragEnabled | Qt.ItemIsDropEnabled
 
-        return QtWidgets.QAbstractItemModel.flags(self, index)
-
-    # def data(self, index, role=Qt.Qt.DisplayRole):
-    #     if not index.isValid() or not 0 <= index.row() < self.rowCount():
-    #         return QtCore.QVariant()
-    #     row = index.row()
-    #     if role == Qt.Qt.DisplayRole:
-    #         return self.object_list[row].options["name"]
-    #     if role == Qt.Qt.DecorationRole:
-    #         return self.icons[self.object_list[row].kind]
-    #     # if role == Qt.Qt.CheckStateRole:
-    #     #     if row in self.checked_indexes:
-    #     #         return Qt.Qt.Checked
-    #     #     else:
-    #     #         return Qt.Qt.Unchecked
-
-    def print_list(self):
-        for obj in self.get_list():
-            print(obj)
+        # return QtWidgets.QAbstractItemModel.flags(self, index)
 
     def append(self, obj, active=False):
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> OC.append()")
@@ -611,8 +640,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # Check promises and clear if exists
         if name in self.promises:
             self.promises.remove(name)
-            FlatCAMApp.App.log.debug("Promised object %s became available." % name)
-            FlatCAMApp.App.log.debug("%d promised objects remaining." % len(self.promises))
+            # FlatCAMApp.App.log.debug("Promised object %s became available." % name)
+            # FlatCAMApp.App.log.debug("%d promised objects remaining." % len(self.promises))
         # Prevent same name
         while name in self.get_names():
             ## Create a new name

@@ -556,15 +556,38 @@ class ExcellonObjectUI(ObjectUI):
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
         # postprocessor selection
-        pp_excellon_label = QtWidgets.QLabel("Postprocessor")
+        pp_excellon_label = QtWidgets.QLabel("Postprocessor:")
         pp_excellon_label.setToolTip(
             "The json file that dictates\n"
             "gcode output."
         )
-        self.tools_box.addWidget(pp_excellon_label)
         self.pp_excellon_name_cb = FCComboBox()
         self.pp_excellon_name_cb.setFocusPolicy(QtCore.Qt.StrongFocus)
-        self.tools_box.addWidget(self.pp_excellon_name_cb)
+        grid1.addWidget(pp_excellon_label, 10, 0)
+        grid1.addWidget(self.pp_excellon_name_cb, 10, 1)
+
+        # Probe depth
+        self.pdepth_label = QtWidgets.QLabel("Probe Z depth:")
+        self.pdepth_label.setToolTip(
+            "The maximum depth that the probe is allowed\n"
+            "to probe. Negative value, in current units."
+        )
+        grid1.addWidget(self.pdepth_label, 11, 0)
+        self.pdepth_entry = FCEntry()
+        grid1.addWidget(self.pdepth_entry, 11, 1)
+        self.pdepth_label.hide()
+        self.pdepth_entry.setVisible(False)
+
+        # Probe feedrate
+        self.feedrate_probe_label = QtWidgets.QLabel("Feedrate Probe:")
+        self.feedrate_probe_label.setToolTip(
+            "The feedrate used while the probe is probing."
+        )
+        grid1.addWidget(self.feedrate_probe_label, 12, 0)
+        self.feedrate_probe_entry = FCEntry()
+        grid1.addWidget(self.feedrate_probe_entry, 12, 1)
+        self.feedrate_probe_label.hide()
+        self.feedrate_probe_entry.setVisible(False)
 
         choose_tools_label = QtWidgets.QLabel(
             "Select from the Tools Table above\n"
@@ -708,6 +731,8 @@ class GeometryObjectUI(ObjectUI):
         self.geo_tools_table.setColumnWidth(0, 20)
         self.geo_tools_table.setHorizontalHeaderLabels(['#', 'Dia', 'Offset', 'Type', 'TT', '', 'P'])
         self.geo_tools_table.setColumnHidden(5, True)
+        # stylesheet = "::section{Background-color:rgb(239,239,245)}"
+        # self.geo_tools_table.horizontalHeader().setStyleSheet(stylesheet)
 
         self.geo_tools_table.horizontalHeaderItem(0).setToolTip(
             "This is the Tool Number.\n"
@@ -758,7 +783,7 @@ class GeometryObjectUI(ObjectUI):
             "cut and negative for 'inside' cut."
         )
         self.grid1.addWidget(self.tool_offset_lbl, 0, 0)
-        self.tool_offset_entry = FloatEntry()
+        self.tool_offset_entry = FCEntry()
         spacer_lbl = QtWidgets.QLabel(" ")
         spacer_lbl.setFixedWidth(80)
 
@@ -777,7 +802,7 @@ class GeometryObjectUI(ObjectUI):
         self.addtool_entry_lbl.setToolTip(
             "Diameter for the new tool"
         )
-        self.addtool_entry = FloatEntry()
+        self.addtool_entry = FCEntry()
 
         # hlay.addWidget(self.addtool_label)
         # hlay.addStretch()
@@ -1004,11 +1029,34 @@ class GeometryObjectUI(ObjectUI):
         self.pp_geometry_name_cb.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.grid3.addWidget(self.pp_geometry_name_cb, 16, 1)
 
+        # Probe depth
+        self.pdepth_label = QtWidgets.QLabel("Probe Z depth:")
+        self.pdepth_label.setToolTip(
+            "The maximum depth that the probe is allowed\n"
+            "to probe. Negative value, in current units."
+        )
+        self.grid3.addWidget(self.pdepth_label, 17, 0)
+        self.pdepth_entry = FCEntry()
+        self.grid3.addWidget(self.pdepth_entry, 17, 1)
+        self.pdepth_label.hide()
+        self.pdepth_entry.setVisible(False)
+
+        # Probe feedrate
+        self.feedrate_probe_label = QtWidgets.QLabel("Feedrate Probe:")
+        self.feedrate_probe_label.setToolTip(
+            "The feedrate used while the probe is probing."
+        )
+        self.grid3.addWidget(self.feedrate_probe_label, 18, 0)
+        self.feedrate_probe_entry = FCEntry()
+        self.grid3.addWidget(self.feedrate_probe_entry, 18, 1)
+        self.feedrate_probe_label.hide()
+        self.feedrate_probe_entry.setVisible(False)
+
         warning_lbl = QtWidgets.QLabel(
             "Add at least one tool in the tool-table.\n"
             "Click the header to select all, or Ctrl + LMB\n"
             "for custom selection of tools.")
-        self.grid3.addWidget(warning_lbl, 17, 0, 1, 2)
+        self.grid3.addWidget(warning_lbl, 19, 0, 1, 2)
 
         # Button
         self.generate_cnc_button = QtWidgets.QPushButton('Generate')
@@ -1067,15 +1115,26 @@ class CNCObjectUI(ObjectUI):
         self.plot_options_label = QtWidgets.QLabel("<b>Plot Options:</b>")
         self.custom_box.addWidget(self.plot_options_label)
 
-        # # Tool dia for plot
-        # tdlabel = QtWidgets.QLabel('Tool dia:')
-        # tdlabel.setToolTip(
-        #     "Diameter of the tool to be\n"
-        #     "rendered in the plot."
-        # )
-        # grid0.addWidget(tdlabel, 1, 0)
-        # self.tooldia_entry = LengthEntry()
-        # grid0.addWidget(self.tooldia_entry, 1, 1)
+        self.cncplot_method_label = QtWidgets.QLabel("Plot kind:")
+        self.cncplot_method_label.setToolTip(
+            "This selects the kind of geometries on the canvas to plot.\n"
+            "Those can be either of type 'Travel' which means the moves\n"
+            "above the work piece or it can be of type 'Cut',\n"
+            "which means the moves that cut into the material."
+        )
+
+        self.cncplot_method_combo = RadioSet([
+            {"label": "All", "value": "all"},
+            {"label": "Travel", "value": "travel"},
+            {"label": "Cut", "value": "cut"}
+        ], stretch=False)
+
+        f_lay = QtWidgets.QFormLayout()
+        self.custom_box.addLayout(f_lay)
+        f_lay.addRow(self.cncplot_method_label, self.cncplot_method_combo)
+
+        e1_lbl = QtWidgets.QLabel('')
+        self.custom_box.addWidget(e1_lbl)
 
         hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(hlay)
@@ -1115,6 +1174,8 @@ class CNCObjectUI(ObjectUI):
         self.cnc_tools_table.setColumnWidth(0, 20)
         self.cnc_tools_table.setHorizontalHeaderLabels(['#', 'Dia', 'Offset', 'Type', 'TT', '', 'P'])
         self.cnc_tools_table.setColumnHidden(5, True)
+        # stylesheet = "::section{Background-color:rgb(239,239,245)}"
+        # self.cnc_tools_table.horizontalHeader().setStyleSheet(stylesheet)
 
         # Update plot button
         self.updateplot_button = QtWidgets.QPushButton('Update Plot')

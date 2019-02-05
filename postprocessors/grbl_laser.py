@@ -13,6 +13,11 @@ class grbl_laser(FlatCAMPostProc):
         units = ' ' + str(p['units']).lower()
         gcode = ''
 
+        xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
+        xmax = '%.*f' % (p.coords_decimals, p['options']['xmax'])
+        ymin = '%.*f' % (p.coords_decimals, p['options']['ymin'])
+        ymax = '%.*f' % (p.coords_decimals, p['options']['ymax'])
+
         gcode += '(Feedrate: ' + str(p['feedrate']) + units + '/min' + ')\n'
         gcode += '(Feedrate rapids ' + str(p['feedrate_rapid']) + units + '/min' + ')\n' + '\n'
 
@@ -22,7 +27,11 @@ class grbl_laser(FlatCAMPostProc):
             gcode += '(Postprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n'
         else:
             gcode += '(Postprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n'
-        gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n"
+        gcode += ('G20' if p.units.upper() == 'IN' else 'G21') + "\n" + '\n'
+
+        gcode += '(X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + ')\n'
+        gcode += '(Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + ')\n\n'
+
         gcode += 'G90\n'
         gcode += 'G94\n'
         gcode += 'G17\n'
@@ -59,8 +68,11 @@ class grbl_laser(FlatCAMPostProc):
                ' F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate))
 
     def end_code(self, p):
+        coords_xy = p['toolchange_xy']
         gcode = ('G00 Z' + self.feedrate_format %(p.fr_decimals, p.endz) + "\n")
-        gcode += 'G00 X0Y0'
+
+        if coords_xy is not None:
+            gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
         return gcode
 
     def feedrate_code(self, p):

@@ -9,9 +9,93 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+6.02.2019
+
+- fixed the units calculators crash FlatCAM when using comma as decimal separator
+
+5.02.3019
+
+- added a text in the Selected Tab which is showed whenever the Selected Tab is selected but without having an object selected to display it's properties
+- added an initial text in the Tools tab
+- added possibility to use the shortcut key for shortcut list in the Notebook tabs
+- added a way to set the Probe depth if Toolchange_Probe postprocessors are selected
+- finished the postprocessor file for MACH3 tool probing on toolchange event
+- added a new parameter to set the feedrate of the probing in case the used postprocessor does probing (has toolchange_probe in it's name)
+- fixed bug in Marlin postprocessor for the Excellon files; the header and toolchange event always used the parenthesis witch is not compatible with GCode for Marlin
+- fixed a issue with a move to Z_move before any toolchange
+
+4.02.2019
+
+- modified the Toolchange_Probe_general postprocessor file to remove any Z moves before the actual toolchange event
+- created a prototype postprocessor file for usage with tool probing in MACH3
+- added the default values for Tool Film and Tool Panelize to the Edit -> Preferences
+- added a new parameter in the Tool Film which control the thickness of the stroke width in the resulting SVG. It's a scale parameter.
+- whatever was the visibility of the corresponding toolbar when we enter in the Editor, it will be set after exit from the Editor (either Geometry Editor or Excellon Editor).
+- added ability to be detached for the tabs in the Notebook section (Project, Selected and Tool)
+- added ability for all detachable tabs to be restored to the same position from where they were detached.
+- changed the shortcut keys for Zoom In, Zoom Out and Zoom Fit from 1, 2, 3 to '-', '=' respectively 'V'. Added new shortcut keys '1', '2', '3' for Select Project Tab, Select Selected Tab and Select Tool Tab.
+- formatted the Shortcut List Tab into a HTML table
+
+3.3.2019
+
+- updated the new shortcut list with the shortcuts added lately
+- now the special messages in the Shell are color coded according to the level. Before they all were RED. Now the WARNINGS are yellow, ERRORS are red and SUCCESS is a dark green. Also the level is in CAPS LOCK to make them more obvious
+- some more changes to GUI interface (solved issues)
+- added some status bar messages in the Geometry Editor to guide the user when using the Geometry Tools
+- now the '`' shortcut key that shows the 'shortcut key list' in Editors points to the same window which is created in a tab no longer as a pop-up window. This tab can be detached if needed.
+- added a remove_tools() function before install_tools() in the init_tools() that is called when creating a new project. Should solve the issue with having double menu entry's in the TOOLS menu
+- fixed remove_tools() so the Tcl Shell action is readded to the Tools menu and reconnected to it's slot function
+- added an automatic name on each save operation based on the object name and/or the current date
+- added more information's for the statistics
+
+2.2.2019
+
+- code cleanup in Tools
+- some GUI structure optimization's
+- added protection against entering float numbers with comma separator instead of decimal dot separator in key points of FlatCAM (not everywhere)
+- added a choice of plotting the kind of geometry for the CNC plot (all, travel and cut kind of geometries) in CNCJob Selected Tab
+- added a new postprocessor file named: 'probe_from_zmove' which allow probing to be done from z_move position on toolchange event 
+- fixed the snap magnet button in Geometry Editor, restored the checkable property to True
+- some more changes in the Editors GUI in deactivate() function
+- a fix for saving as empty an edited new and empty Excellon Object
+
+1.02.2019
+
+- fixed postprocessor files so now the bounds values are right aligned (assuming max string length of 9 chars which means 4 digits and 4 decimals)
+- corrected small type in list_sys Tcl command; added a protection of the Plot Area Tab after a successful edit.
+- remade the way FlatCAM saves the GUI position data from a file (previously) to use PyQt QSettings
+- added a 'theme' combo selection in Edit -> Preferences. Two themes are available: standard and compact.
+- some code cleanup
+- fixed a source of possible errors in DetachableTab Widget.
+- fixed gcode conversion/scale (on units change) when multiple values are found on each line
+- replaced the pop-up window for the shortcut list with a new detachable tab
+- removed the pop-up messages from the rotate, skew, flip commands
+
+31.01.2019
+
+- added a parameter ('Fast plunge' in Edit -> Preferences -> Geometry Options and Excellon Options) to control if the fast move to Z_move is done or not
+- added new function to toggle fullscreen status in Menu -> View -> Toggle Full Screen. Shortcut key: Alt+F10
+- added key shortcuts for Enable Plots, Disable Plots and Disable other plots functions (Alt+1, Alt+2, Alt+3)
+- hidden the snap magnet entry and snap magnet toggle from the main view; they are now active only in Editor Mode
+- updated the camlib.CNCJob.scale() function so now the GCode is scaled also (quite a HACK :( it will need to be replaced at some point)). Units change work now on the GCODE also.
+- added the bounds coordinates to the GCODE header
+- FlatCAM saves now to a file in self.data_path the toolbar positions and the position of TCL Shell
+- Plot Area Tab view can now be toggled, added entry in View Menu and shortcut key CTRL+F10
+- All the tabs in the GUI right side are (Plot Are, Preferences etc) are now detachable to a separate windows which when closed it returns in the previous location in the toolbar. Those detached tabs can be also reattached by drag and drop.
+
 30.01.2019
 
 - added a space before Y coordinate in end_code() function in some of the postprocessor files
+- added in Calculators Tool an Electroplating Calculator.
+- remade the App Menu for Editors: now they will be showed only when the respective Editor is active and hidden when the Editor is closed.
+- added a traceback report in the TCL Shell for the errors that don't allow creation of an object; useful to trace exceptions/errors
+- in case that the Toolchange X,Y parameter in Selected (or in Preferences) are deleted then the app will still do the job using the current coordinates for toolchange
+- fixed an issue in camlib.CNCJob where tha variable self.toolchange_xy was used for 2 different purposes which created loss of information.
+- fixed unit conversion functions in case the toolchange_xy parameter is None
+- more fixes in camlib.CNCJob regarding usage of toolchange (in case it is None)
+- fixed postprocessor files to work with toolchange_xy parameter value = None (no values in Edit - Preferences fields)
+- fixed Tcl commands CncJob and DrillCncJob to work with toolchange
+- added to the postprocessor files the command after toolchange to go with G00 (fastest) to "Z Move" value of Z pozition.
 
 29.01.2019
 
@@ -243,7 +327,7 @@ CAD program, and create G-Code for Isolation routing.
 - solved a small bug that didn't allow the Paint Job to be done with lines when the results were geometries not iterable 
 - added protection for the case when trying to run the cncjob Tcl Command on a Geometry object that do not have solid geometry or one that is multi-tool
 - Paint Tool Table: now it is possible to edit a tool to a new diameter and then edit another tool to the former diameter of the first edited tool
-- added a new type of warning, [warning_notcl]
+- added a new type of warning, [WARNING_NOTCL]
 - fixed conflict with "space" keyboard shortcut for CNC job
 
 16.12.2018

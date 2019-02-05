@@ -152,11 +152,19 @@ class Measurement(FlatCAMTool):
         self.measure_btn.clicked.connect(self.toggle)
 
     def run(self):
+        self.app.report_usage("ToolMeasurement()")
+
         if self.app.tool_tab_locked is True:
             return
-
         self.toggle()
 
+        self.set_tool_ui()
+        self.app.ui.notebook.setTabText(2, "Meas. Tool")
+
+    def install(self, icon=None, separator=None, **kwargs):
+        FlatCAMTool.install(self, icon, separator, shortcut='CTRL+M', **kwargs)
+
+    def set_tool_ui(self):
         # Remove anything else in the GUI
         self.app.ui.tool_scroll_area.takeWidget()
 
@@ -167,21 +175,6 @@ class Measurement(FlatCAMTool):
         self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
         self.units = self.app.general_options_form.general_app_group.units_radio.get_value().lower()
         self.show()
-        self.app.ui.notebook.setTabText(2, "Meas. Tool")
-
-    def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='CTRL+M', **kwargs)
-
-    def on_key_release_meas(self, event):
-        if event.key == 'escape':
-            # abort the measurement action
-            self.toggle()
-            return
-
-        if event.key == 'G':
-            # toggle grid status
-            self.app.ui.grid_snap_btn.trigger()
-            return
 
     def toggle(self):
         # the self.active var is doing the 'toggle'
@@ -263,6 +256,17 @@ class Measurement(FlatCAMTool):
             self.units_entry_5.set_value(str(self.units))
 
             self.app.inform.emit("MEASURING: Click on the Start point ...")
+
+    def on_key_release_meas(self, event):
+        if event.key == 'escape':
+            # abort the measurement action
+            self.toggle()
+            return
+
+        if event.key == 'G':
+            # toggle grid status
+            self.app.ui.grid_snap_btn.trigger()
+            return
 
     def on_click_meas(self, event):
         # mouse click will be accepted only if the left button is clicked

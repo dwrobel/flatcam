@@ -56,7 +56,7 @@ class TclCommandCutout(TclCommand):
             name = args['name']
         else:
             self.app.inform.emit(
-                "[warning]The name of the object for which cutout is done is missing. Add it and retry.")
+                "[WARNING]The name of the object for which cutout is done is missing. Add it and retry.")
             return
 
         if 'margin' in args:

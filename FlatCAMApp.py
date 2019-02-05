@@ -22,6 +22,8 @@ import subprocess
 
 import tkinter as tk
 from PyQt5 import QtCore, QtGui, QtWidgets, QtPrintSupport
+from PyQt5.QtCore import QSettings
+
 import time  # Just used for debugging. Double check before removing.
 import urllib.request, urllib.parse, urllib.error
 import webbrowser
@@ -90,9 +92,12 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.906
-    version_date = "2019/01/30"
+    version = 8.907
+    version_date = "2019/02/6"
     beta = True
+
+    # current date now
+    date = str(datetime.today()).rpartition(' ')[0]
 
     # URL for update checks and statistics
     version_url = "http://flatcam.org/version"
@@ -264,8 +269,9 @@ class App(QtCore.QObject):
         self.FC_dark_blue = '#0000ffbf'
 
         QtCore.QObject.__init__(self)
-
         self.ui = FlatCAMGUI(self.version, self.beta, self)
+
+
         # self.connect(self.ui,
         #              QtCore.SIGNAL("geomUpdate(int, int, int, int, int)"),
         #              self.save_geometry) PyQt4
@@ -299,6 +305,7 @@ class App(QtCore.QObject):
             "global_send_stats": self.general_defaults_form.general_app_group.send_stats_cb,
             "global_gridx": self.general_defaults_form.general_gui_group.gridx_entry,
             "global_gridy": self.general_defaults_form.general_gui_group.gridy_entry,
+            "global_snap_max": self.general_defaults_form.general_gui_group.snap_max_dist_entry,
             "global_plot_fill": self.general_defaults_form.general_gui_group.pf_color_entry,
             "global_plot_line": self.general_defaults_form.general_gui_group.pl_color_entry,
             "global_sel_fill": self.general_defaults_form.general_gui_group.sf_color_entry,
@@ -343,6 +350,7 @@ class App(QtCore.QObject):
             "excellon_travelz": self.excellon_defaults_form.excellon_opt_group.travelz_entry,
             "excellon_feedrate": self.excellon_defaults_form.excellon_opt_group.feedrate_entry,
             "excellon_feedrate_rapid": self.excellon_defaults_form.excellon_opt_group.feedrate_rapid_entry,
+            "excellon_feedrate_probe": self.excellon_defaults_form.excellon_opt_group.feedrate_probe_entry,
             "excellon_spindlespeed": self.excellon_defaults_form.excellon_opt_group.spindlespeed_entry,
             "excellon_dwell": self.excellon_defaults_form.excellon_opt_group.dwell_cb,
             "excellon_dwelltime": self.excellon_defaults_form.excellon_opt_group.dwelltime_entry,
@@ -350,6 +358,8 @@ class App(QtCore.QObject):
             "excellon_toolchangez": self.excellon_defaults_form.excellon_opt_group.toolchangez_entry,
             "excellon_toolchangexy": self.excellon_defaults_form.excellon_opt_group.toolchangexy_entry,
             "excellon_ppname_e": self.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb,
+            "excellon_z_pdepth": self.excellon_defaults_form.excellon_opt_group.pdepth_entry,
+            "excellon_f_plunge": self.excellon_defaults_form.excellon_opt_group.fplunge_cb,
             "excellon_startz": self.excellon_defaults_form.excellon_opt_group.estartz_entry,
             "excellon_endz": self.excellon_defaults_form.excellon_opt_group.eendz_entry,
             "excellon_tooldia": self.excellon_defaults_form.excellon_opt_group.tooldia_entry,
@@ -367,10 +377,13 @@ class App(QtCore.QObject):
             "geometry_feedrate": self.geometry_defaults_form.geometry_opt_group.cncfeedrate_entry,
             "geometry_feedrate_z": self.geometry_defaults_form.geometry_opt_group.cncplunge_entry,
             "geometry_feedrate_rapid": self.geometry_defaults_form.geometry_opt_group.cncfeedrate_rapid_entry,
+            "geometry_feedrate_probe": self.geometry_defaults_form.geometry_opt_group.feedrate_probe_entry,
             "geometry_spindlespeed": self.geometry_defaults_form.geometry_opt_group.cncspindlespeed_entry,
             "geometry_dwell": self.geometry_defaults_form.geometry_opt_group.dwell_cb,
             "geometry_dwelltime": self.geometry_defaults_form.geometry_opt_group.dwelltime_entry,
             "geometry_ppname_g": self.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb,
+            "geometry_z_pdepth": self.geometry_defaults_form.geometry_opt_group.pdepth_entry,
+            "geometry_f_plunge": self.geometry_defaults_form.geometry_opt_group.fplunge_cb,
             "geometry_toolchange": self.geometry_defaults_form.geometry_opt_group.toolchange_cb,
             "geometry_toolchangez": self.geometry_defaults_form.geometry_opt_group.toolchangez_entry,
             "geometry_toolchangexy": self.geometry_defaults_form.geometry_opt_group.toolchangexy_entry,
@@ -414,6 +427,18 @@ class App(QtCore.QObject):
             "tools_2sided_mirror_axis": self.tools_defaults_form.tools_2sided_group.mirror_axis_radio,
             "tools_2sided_axis_loc": self.tools_defaults_form.tools_2sided_group.axis_location_radio,
             "tools_2sided_drilldia": self.tools_defaults_form.tools_2sided_group.drill_dia_entry,
+
+            "tools_film_type": self.tools_defaults_form.tools_film_group.film_type_radio,
+            "tools_film_boundary": self.tools_defaults_form.tools_film_group.film_boundary_entry,
+            "tools_film_scale": self.tools_defaults_form.tools_film_group.film_scale_entry,
+
+            "tools_panelize_spacing_columns": self.tools_defaults_form.tools_panelize_group.pspacing_columns,
+            "tools_panelize_spacing_rows": self.tools_defaults_form.tools_panelize_group.pspacing_rows,
+            "tools_panelize_columns": self.tools_defaults_form.tools_panelize_group.pcolumns,
+            "tools_panelize_rows": self.tools_defaults_form.tools_panelize_group.prows,
+            "tools_panelize_constrain": self.tools_defaults_form.tools_panelize_group.pconstrain_cb,
+            "tools_panelize_constrainx": self.tools_defaults_form.tools_panelize_group.px_width_entry,
+            "tools_panelize_constrainy": self.tools_defaults_form.tools_panelize_group.py_height_entry
         }
         # loads postprocessors
         self.postprocessors = load_postprocessors(self)
@@ -435,6 +460,8 @@ class App(QtCore.QObject):
             "global_send_stats": True,
             "global_gridx": 1.0,
             "global_gridy": 1.0,
+            "global_snap_max": 0.05,
+
             "global_plot_fill": '#BBF268BF',
             "global_plot_line": '#006E20BF',
             "global_sel_fill": '#a5a5ffbf',
@@ -448,7 +475,7 @@ class App(QtCore.QObject):
             # "global_pan_with_space_key": False,
             "global_workspace": False,
             "global_workspaceT": "A4P",
-            "global_toolbar_view": 31,
+            "global_toolbar_view": 127,
 
             "global_background_timeout": 300000,  # Default value is 5 minutes
             "global_verbose_error_level": 0,  # Shell verbosity 0 = default
@@ -471,9 +498,9 @@ class App(QtCore.QObject):
             "global_shell_shape": [500, 300],  # Shape of the shell in pixels.
             "global_shell_at_startup": False,  # Show the shell at startup.
             "global_recent_limit": 10,  # Max. items in recent list.
-            "fit_key": '1',
-            "zoom_out_key": '2',
-            "zoom_in_key": '3',
+            "fit_key": 'V',
+            "zoom_out_key": '-',
+            "zoom_in_key": '=',
             "grid_toggle_key": 'G',
             "zoom_ratio": 1.5,
             "global_point_clipboard_format": "(%.4f, %.4f)",
@@ -510,6 +537,7 @@ class App(QtCore.QObject):
             "excellon_travelz": 0.1,
             "excellon_feedrate": 3.0,
             "excellon_feedrate_rapid": 3.0,
+            "excellon_feedrate_probe": 3.0,
             "excellon_spindlespeed": None,
             "excellon_dwell": False,
             "excellon_dwelltime": 1,
@@ -521,6 +549,8 @@ class App(QtCore.QObject):
             "excellon_startz": None,
             "excellon_endz": 2.0,
             "excellon_ppname_e": 'default',
+            "excellon_z_pdepth": -0.02,
+            "excellon_f_plunge": False,
             "excellon_gcode_type": "drills",
 
             "geometry_plot": True,
@@ -536,11 +566,14 @@ class App(QtCore.QObject):
             "geometry_feedrate": 3.0,
             "geometry_feedrate_z": 3.0,
             "geometry_feedrate_rapid": 3.0,
+            "geometry_feedrate_probe": 3.0,
             "geometry_cnctooldia": 0.016,
             "geometry_spindlespeed": None,
             "geometry_dwell": False,
             "geometry_dwelltime": 1,
             "geometry_ppname_g": 'default',
+            "geometry_z_pdepth": -0.02,
+            "geometry_f_plunge": False,
             "geometry_depthperpass": 0.002,
             "geometry_multidepth": False,
             "geometry_extracut": False,
@@ -580,6 +613,17 @@ class App(QtCore.QObject):
             "tools_2sided_axis_loc": "point",
             "tools_2sided_drilldia": 1,
 
+            "tools_film_type": 'neg',
+            "tools_film_boundary": 1,
+            "tools_film_scale": 0,
+
+            "tools_panelize_spacing_columns": 0,
+            "tools_panelize_spacing_rows": 0,
+            "tools_panelize_columns": 1,
+            "tools_panelize_rows": 1,
+            "tools_panelize_constrain": False,
+            "tools_panelize_constrainx": 0.0,
+            "tools_panelize_constrainy": 0.0
         })
 
         ###############################
@@ -618,6 +662,7 @@ class App(QtCore.QObject):
             "units": self.general_options_form.general_app_group.units_radio,
             "global_gridx": self.general_options_form.general_gui_group.gridx_entry,
             "global_gridy": self.general_options_form.general_gui_group.gridy_entry,
+            "global_snap_max": self.general_options_form.general_gui_group.snap_max_dist_entry,
 
             "gerber_plot": self.gerber_options_form.gerber_gen_group.plot_cb,
             "gerber_solid": self.gerber_options_form.gerber_gen_group.solid_cb,
@@ -654,6 +699,7 @@ class App(QtCore.QObject):
             "excellon_toolchangexy": self.excellon_options_form.excellon_opt_group.toolchangexy_entry,
             "excellon_tooldia": self.excellon_options_form.excellon_opt_group.tooldia_entry,
             "excellon_ppname_e": self.excellon_options_form.excellon_opt_group.pp_excellon_name_cb,
+            "excellon_f_plunge": self.excellon_options_form.excellon_opt_group.fplunge_cb,
             "excellon_startz": self.excellon_options_form.excellon_opt_group.estartz_entry,
             "excellon_endz": self.excellon_options_form.excellon_opt_group.eendz_entry,
 
@@ -671,6 +717,7 @@ class App(QtCore.QObject):
             "geometry_dwell": self.geometry_options_form.geometry_opt_group.dwell_cb,
             "geometry_dwelltime": self.geometry_options_form.geometry_opt_group.dwelltime_entry,
             "geometry_ppname_g": self.geometry_options_form.geometry_opt_group.pp_geometry_name_cb,
+            "geometry_f_plunge": self.geometry_options_form.geometry_opt_group.fplunge_cb,
             "geometry_toolchange": self.geometry_options_form.geometry_opt_group.toolchange_cb,
             "geometry_toolchangez": self.geometry_options_form.geometry_opt_group.toolchangez_entry,
             "geometry_toolchangexy": self.geometry_options_form.geometry_opt_group.toolchangexy_entry,
@@ -706,7 +753,20 @@ class App(QtCore.QObject):
 
             "tools_2sided_mirror_axis": self.tools_options_form.tools_2sided_group.mirror_axis_radio,
             "tools_2sided_axis_loc": self.tools_options_form.tools_2sided_group.axis_location_radio,
-            "tools_2sided_drilldia": self.tools_options_form.tools_2sided_group.drill_dia_entry
+            "tools_2sided_drilldia": self.tools_options_form.tools_2sided_group.drill_dia_entry,
+
+            "tools_film_type": self.tools_options_form.tools_film_group.film_type_radio,
+            "tools_film_boundary": self.tools_options_form.tools_film_group.film_boundary_entry,
+            "tools_film_scale": self.tools_options_form.tools_film_group.film_scale_entry,
+
+            "tools_panelize_spacing_columns": self.tools_options_form.tools_panelize_group.pspacing_columns,
+            "tools_panelize_spacing_rows": self.tools_options_form.tools_panelize_group.pspacing_rows,
+            "tools_panelize_columns": self.tools_options_form.tools_panelize_group.pcolumns,
+            "tools_panelize_rows": self.tools_options_form.tools_panelize_group.prows,
+            "tools_panelize_constrain": self.tools_options_form.tools_panelize_group.pconstrain_cb,
+            "tools_panelize_constrainx": self.tools_options_form.tools_panelize_group.px_width_entry,
+            "tools_panelize_constrainy": self.tools_options_form.tools_panelize_group.py_height_entry
+
         }
 
         for name in list(self.postprocessors.keys()):
@@ -719,6 +779,7 @@ class App(QtCore.QObject):
             "units": "IN",
             "global_gridx": 1.0,
             "global_gridy": 1.0,
+            "global_snap_max": 0.05,
             "global_background_timeout": 300000,  # Default value is 5 minutes
             "global_verbose_error_level": 0,  # Shell verbosity:
             # 0 = default(python trace only for unknown errors),
@@ -759,6 +820,7 @@ class App(QtCore.QObject):
             "excellon_toolchangexy": "0.0, 0.0",
             "excellon_tooldia": 0.016,
             "excellon_ppname_e": 'default',
+            "excellon_f_plunge": False,
             "excellon_startz": None,
             "excellon_endz": 2.0,
 
@@ -780,6 +842,7 @@ class App(QtCore.QObject):
             "geometry_startz": None,
             "geometry_endz": 2.0,
             "geometry_ppname_g": "default",
+            "geometry_f_plunge": False,
             "geometry_depthperpass": 0.002,
             "geometry_multidepth": False,
             "geometry_extracut": False,
@@ -808,7 +871,19 @@ class App(QtCore.QObject):
 
             "tools_2sided_mirror_axis": "X",
             "tools_2sided_axis_loc": 'point',
-            "tools_2sided_drilldia": 1
+            "tools_2sided_drilldia": 1,
+
+            "tools_film_type": 'neg',
+            "tools_film_boundary": 1,
+            "tools_film_scale": 0,
+
+            "tools_panelize_spacing_columns": 0,
+            "tools_panelize_spacing_rows": 0,
+            "tools_panelize_columns": 1,
+            "tools_panelize_rows": 1,
+            "tools_panelize_constrain": False,
+            "tools_panelize_constrainx": 0.0,
+            "tools_panelize_constrainy": 0.0
 
         })
 
@@ -911,12 +986,6 @@ class App(QtCore.QObject):
         self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
         self.exc_editor = FlatCAMExcEditor(self)
 
-        # start with GRID activated
-        self.ui.grid_snap_btn.trigger()
-        self.ui.corner_snap_btn.setEnabled(False)
-        self.ui.snap_max_dist_entry.setEnabled(False)
-        self.ui.g_editor_cmenu.setEnabled(False)
-        self.ui.e_editor_cmenu.setEnabled(False)
 
         #### Adjust tabs width ####
         # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
@@ -1012,12 +1081,14 @@ class App(QtCore.QObject):
         self.ui.menuoptions_transform_flipy.triggered.connect(self.on_flipy)
 
 
-        self.ui.menuviewdisableall.triggered.connect(lambda: self.disable_plots(self.collection.get_list()))
-        self.ui.menuviewdisableother.triggered.connect(lambda: self.disable_plots(self.collection.get_non_selected()))
-        self.ui.menuviewenable.triggered.connect(lambda: self.enable_plots(self.collection.get_list()))
+        self.ui.menuviewdisableall.triggered.connect(self.disable_all_plots)
+        self.ui.menuviewdisableother.triggered.connect(self.disable_other_plots)
+        self.ui.menuviewenable.triggered.connect(self.enable_all_plots)
         self.ui.menuview_zoom_fit.triggered.connect(self.on_zoom_fit)
         self.ui.menuview_zoom_in.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
         self.ui.menuview_zoom_out.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
+        self.ui.menuview_toggle_fscreen.triggered.connect(self.on_fullscreen)
+        self.ui.menuview_toggle_parea.triggered.connect(self.on_toggle_plotarea)
         self.ui.menuview_toggle_grid.triggered.connect(self.on_toggle_grid)
         self.ui.menuview_toggle_axis.triggered.connect(self.on_toggle_axis)
         self.ui.menuview_toggle_workspace.triggered.connect(self.on_workspace_menu)
@@ -1069,10 +1140,12 @@ class App(QtCore.QObject):
         self.ui.gridmenu_3.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("0.2"))
         self.ui.gridmenu_4.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("0.5"))
         self.ui.gridmenu_5.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("1.0"))
+
         self.ui.draw_line.triggered.connect(self.geo_editor.draw_tool_path)
         self.ui.draw_rect.triggered.connect(self.geo_editor.draw_tool_rectangle)
         self.ui.draw_cut.triggered.connect(self.geo_editor.cutpath)
         self.ui.draw_move.triggered.connect(self.geo_editor.on_move)
+
         self.ui.drill.triggered.connect(self.exc_editor.exc_add_drill)
         self.ui.drill_array.triggered.connect(self.exc_editor.exc_add_drill_array)
         self.ui.drill_copy.triggered.connect(self.exc_editor.exc_copy_drills)
@@ -1140,6 +1213,7 @@ class App(QtCore.QObject):
         self.general_defaults_form.general_gui_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
         self.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
 
+        self.general_defaults_form.general_gui_group.theme_combo.activated.connect(self.on_theme)
 
         # Modify G-CODE Plot Area TAB
         self.ui.code_editor.textChanged.connect(self.handleTextChanged)
@@ -1219,6 +1293,7 @@ class App(QtCore.QObject):
         self.init_tcl()
 
         self.ui.shell_dock = QtWidgets.QDockWidget("FlatCAM TCL Shell")
+        self.ui.shell_dock.setObjectName('Shell_DockWidget')
         self.ui.shell_dock.setWidget(self.shell)
         self.ui.shell_dock.setAllowedAreas(QtCore.Qt.AllDockWidgetAreas)
         self.ui.shell_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetMovable |
@@ -1303,6 +1378,9 @@ class App(QtCore.QObject):
 
         # Variable to hold the status of the axis
         self.toggle_axis = True
+
+        # Variable to store the status of the fullscreen event
+        self.toggle_fscreen = False
 
         self.cursor = None
 
@@ -1413,7 +1491,7 @@ class App(QtCore.QObject):
         self.move_tool.install(icon=QtGui.QIcon('share/move16.png'), pos=self.ui.menuedit,
                                before=self.ui.menueditorigin)
 
-        self.cutout_tool = ToolCutout(self)
+        self.cutout_tool = ToolCutOut(self)
         self.cutout_tool.install(icon=QtGui.QIcon('share/cut16.png'), pos=self.ui.menutool,
                                  before=self.measurement_tool.menuAction)
 
@@ -1440,8 +1518,12 @@ class App(QtCore.QObject):
 
         self.log.debug("Tools are installed.")
 
-    def init_tools(self):
+    def remove_tools(self):
+        for act in self.ui.menutool.actions():
+            self.ui.menutool.removeAction(act)
 
+    def init_tools(self):
+        log.debug("init_tools()")
         # delete the data currently in the Tools Tab and the Tab itself
         widget = QtWidgets.QTabWidget.widget(self.ui.notebook, 2)
         if widget is not None:
@@ -1457,6 +1539,12 @@ class App(QtCore.QObject):
         self.ui.tool_tab_layout.addWidget(self.ui.tool_scroll_area)
 
         # reinstall all the Tools as some may have been removed when the data was removed from the Tools Tab
+        # first remove all of them
+        self.remove_tools()
+        # second re add the TCL Shell action to the Tools menu and reconnect it to ist slot function
+        self.ui.menutoolshell = self.ui.menutool.addAction(QtGui.QIcon('share/shell16.png'), '&Command Line\tS')
+        self.ui.menutoolshell.triggered.connect(self.on_toggle_shell)
+        # third install all of them
         self.install_tools()
         self.log.debug("Tools are initialized.")
 
@@ -1470,35 +1558,35 @@ class App(QtCore.QObject):
 
         :return: None
         """
+        self.report_usage("object2editor()")
 
         # adjust the visibility of some of the canvas context menu
         self.ui.popmenu_edit.setVisible(False)
         self.ui.popmenu_save.setVisible(True)
 
-        if isinstance(self.collection.get_active(), FlatCAMGeometry):
-            edited_object = self.collection.get_active()
+        edited_object = self.collection.get_active()
+
+        if isinstance(edited_object, FlatCAMGeometry):
             # for now, if the Geometry is MultiGeo do not allow the editing
             if edited_object.multigeo is True:
-                self.inform.emit("[warning_notcl]Editing a MultiGeo Geometry is not possible for the moment.")
+                self.inform.emit("[WARNING_NOTCL]Editing a MultiGeo Geometry is not possible for the moment.")
                 return
-            self.ui.update_obj_btn.setEnabled(True)
+
+            # store the Geometry Editor Toolbar visibility before entering in the Editor
+            self.geo_editor.toolbar_old_state = True if self.ui.geo_edit_toolbar.isVisible() else False
             self.geo_editor.edit_fcgeometry(edited_object)
-            self.ui.g_editor_cmenu.setEnabled(True)
             # set call source to the Editor we go into
             self.call_source = 'geo_editor'
 
-            # prevent the user to change anything in the Selected Tab while the Geo Editor is active
-            sel_tab_widget_list = self.ui.selected_tab.findChildren(QtWidgets.QWidget)
-            for w in sel_tab_widget_list:
-                w.setEnabled(False)
-        elif isinstance(self.collection.get_active(), FlatCAMExcellon):
-            self.ui.update_obj_btn.setEnabled(True)
-            self.exc_editor.edit_exc_obj(self.collection.get_active())
-            self.ui.e_editor_cmenu.setEnabled(True)
+        elif isinstance(edited_object, FlatCAMExcellon):
+            # store the Excellon Editor Toolbar visibility before entering in the Editor
+            self.exc_editor.toolbar_old_state = True if self.ui.exc_edit_toolbar.isVisible() else False
+            self.exc_editor.edit_fcexcellon(edited_object)
+
             # set call source to the Editor we go into
             self.call_source = 'exc_editor'
         else:
-            self.inform.emit("[warning_notcl]Select a Geometry or Excellon Object to edit.")
+            self.inform.emit("[WARNING_NOTCL]Select a Geometry or Excellon Object to edit.")
             return
 
         # make sure that we can't select another object while in Editor Mode:
@@ -1507,9 +1595,9 @@ class App(QtCore.QObject):
         # delete any selection shape that might be active as they are not relevant in Editor
         self.delete_selection_shape()
 
-
         self.ui.plot_tab_area.setTabText(0, "EDITOR Area")
-        self.inform.emit("[warning_notcl]Editor is activated ...")
+        self.ui.plot_tab_area.protectTab(0)
+        self.inform.emit("[WARNING_NOTCL]Editor is activated ...")
 
     def editor2object(self):
         """
@@ -1517,6 +1605,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
+        self.report_usage("editor2object()")
 
         # adjust the visibility of some of the canvas context menu
         self.ui.popmenu_edit.setVisible(True)
@@ -1529,16 +1618,7 @@ class App(QtCore.QObject):
             obj_type = "Geometry"
             self.geo_editor.update_fcgeometry(edited_obj)
             self.geo_editor.update_options(edited_obj)
-
             self.geo_editor.deactivate()
-
-            # edited_obj.on_tool_delete(all=True)
-            # edited_obj.on_tool_add(dia=edited_obj.options['cnctooldia'])
-
-            self.ui.corner_snap_btn.setEnabled(False)
-            self.ui.update_obj_btn.setEnabled(False)
-            self.ui.g_editor_cmenu.setEnabled(False)
-            self.ui.e_editor_cmenu.setEnabled(False)
 
             # update the geo object options so it is including the bounding box values
             try:
@@ -1548,21 +1628,16 @@ class App(QtCore.QObject):
                 edited_obj.options['xmax'] = xmax
                 edited_obj.options['ymax'] = ymax
             except AttributeError:
-                self.inform.emit("[warning] Object empty after edit.")
+                self.inform.emit("[WARNING] Object empty after edit.")
 
         elif isinstance(edited_obj, FlatCAMExcellon):
             obj_type = "Excellon"
-
-            self.exc_editor.update_exc_obj(edited_obj)
-
+            self.exc_editor.update_fcexcellon(edited_obj)
+            self.exc_editor.update_options(edited_obj)
             self.exc_editor.deactivate()
-            self.ui.corner_snap_btn.setEnabled(False)
-            self.ui.update_obj_btn.setEnabled(False)
-            self.ui.g_editor_cmenu.setEnabled(False)
-            self.ui.e_editor_cmenu.setEnabled(False)
 
         else:
-            self.inform.emit("[warning_notcl]Select a Geometry or Excellon Object to update.")
+            self.inform.emit("[WARNING_NOTCL]Select a Geometry or Excellon Object to update.")
             return
 
         # restore the call_source to app
@@ -1570,6 +1645,7 @@ class App(QtCore.QObject):
 
         edited_obj.plot()
         self.ui.plot_tab_area.setTabText(0, "Plot Area")
+        self.ui.plot_tab_area.protectTab(0)
         self.inform.emit("[success] %s is updated, returning to App..." % obj_type)
 
         # reset the Object UI to original settings
@@ -1618,7 +1694,7 @@ class App(QtCore.QObject):
         """
         pass
 
-    def shell_message(self, msg, show=False, error=False):
+    def shell_message(self, msg, show=False, error=False, warning=False, success=False):
         """
         Shows a message on the FlatCAM Shell
 
@@ -1633,7 +1709,13 @@ class App(QtCore.QObject):
             if error:
                 self.shell.append_error(msg + "\n")
             else:
-                self.shell.append_output(msg + "\n")
+                if warning:
+                    self.shell.append_warning(msg + "\n")
+                else:
+                    if success:
+                        self.shell.append_success(msg + "\n")
+                    else:
+                        self.shell.append_output(msg + "\n")
         except AttributeError:
             log.debug("shell_message() is called before Shell Class is instantiated. The message is: %s", str(msg))
 
@@ -1799,12 +1881,20 @@ class App(QtCore.QObject):
             msg_ = match.group(2)
             self.ui.fcinfo.set_status(str(msg_), level=level)
 
-            if level == "error" or level == "warning":
+            if level.lower() == "error":
                 self.shell_message(msg, error=True, show=True)
-            elif level == "error_notcl" or level == "warning_notcl":
+            elif level.lower() == "warning":
+                self.shell_message(msg, warning=True, show=True)
+
+            elif level.lower() == "error_notcl":
                 self.shell_message(msg, error=True, show=False)
+            elif level.lower() == "warning_notcl":
+                self.shell_message(msg, warning=True, show=False)
+
+            elif level.lower() == "success":
+                self.shell_message(msg, success=True, show=False)
             else:
-                self.shell_message(msg, error=False, show=False)
+                self.shell_message(msg, show=False)
         else:
             self.ui.fcinfo.set_status(str(msg), level="info")
 
@@ -1836,6 +1926,16 @@ class App(QtCore.QObject):
             self.ui.toolbartools.setVisible(False)
 
         if tb & 16:
+            self.ui.exc_edit_toolbar.setVisible(True)
+        else:
+            self.ui.exc_edit_toolbar.setVisible(False)
+
+        if tb & 32:
+            self.ui.geo_edit_toolbar.setVisible(True)
+        else:
+            self.ui.geo_edit_toolbar.setVisible(False)
+
+        if tb & 64:
             self.ui.snap_toolbar.setVisible(True)
         else:
             self.ui.snap_toolbar.setVisible(False)
@@ -1853,19 +1953,19 @@ class App(QtCore.QObject):
             f.close()
         except IOError:
             self.log.error("Could not load defaults file.")
-            self.inform.emit("[error] Could not load defaults file.")
+            self.inform.emit("[ERROR] Could not load defaults file.")
             # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 31
+            self.defaults["global_toolbar_view"] = 127
             return
 
         try:
             defaults = json.loads(options)
         except:
             # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 31
+            self.defaults["global_toolbar_view"] = 127
             e = sys.exc_info()[0]
             App.log.error(str(e))
-            self.inform.emit("[error] Failed to parse defaults file.")
+            self.inform.emit("[ERROR] Failed to parse defaults file.")
             return
         self.defaults.update(defaults)
         log.debug("FlatCAM defaults loaded from: %s" % filename)
@@ -1894,7 +1994,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit("[warning_notcl]FlatCAM preferences import cancelled.")
+            self.inform.emit("[WARNING_NOTCL]FlatCAM preferences import cancelled.")
         else:
             try:
                 f = open(filename)
@@ -1902,7 +2002,7 @@ class App(QtCore.QObject):
                 f.close()
             except IOError:
                 self.log.error("Could not load defaults file.")
-                self.inform.emit("[error_notcl] Could not load defaults file.")
+                self.inform.emit("[ERROR_NOTCL] Could not load defaults file.")
                 return
 
             try:
@@ -1910,7 +2010,7 @@ class App(QtCore.QObject):
             except:
                 e = sys.exc_info()[0]
                 App.log.error(str(e))
-                self.inform.emit("[error_notcl] Failed to parse defaults file.")
+                self.inform.emit("[ERROR_NOTCL] Failed to parse defaults file.")
                 return
             self.defaults.update(defaults_from_file)
             self.inform.emit("[success]Imported Defaults from %s" %filename)
@@ -1922,8 +2022,10 @@ class App(QtCore.QObject):
 
         filter = "Config File (*.FlatConfig);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export FlatCAM Preferences",
-                                                                directory=self.data_path, filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                caption="Export FlatCAM Preferences",
+                directory=self.data_path + '/preferences_' + self.date.replace('-', ''), filter=filter
+            )
         except TypeError:
             filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export FlatCAM Preferences", filter=filter)
 
@@ -1931,7 +2033,7 @@ class App(QtCore.QObject):
         defaults_from_file = {}
 
         if filename == "":
-            self.inform.emit("[warning_notcl]FlatCAM preferences export cancelled.")
+            self.inform.emit("[WARNING_NOTCL]FlatCAM preferences export cancelled.")
             return
         else:
             try:
@@ -1947,7 +2049,7 @@ class App(QtCore.QObject):
                 e = sys.exc_info()[0]
                 App.log.error("Could not load defaults file.")
                 App.log.error(str(e))
-                self.inform.emit("[error_notcl]Could not load defaults file.")
+                self.inform.emit("[ERROR_NOTCL]Could not load defaults file.")
                 return
 
             try:
@@ -1966,11 +2068,13 @@ class App(QtCore.QObject):
                 json.dump(defaults_from_file, f)
                 f.close()
             except:
-                self.inform.emit("[error_notcl] Failed to write defaults to file.")
+                self.inform.emit("[ERROR_NOTCL] Failed to write defaults to file.")
                 return
         self.inform.emit("[success]Exported Defaults to %s" % filename)
 
     def on_preferences_open_folder(self):
+        self.report_usage("on_preferences_open_folder()")
+
         if sys.platform == 'win32':
             subprocess.Popen('explorer %s' % self.data_path)
         elif sys.platform == 'darwin':
@@ -2014,7 +2118,7 @@ class App(QtCore.QObject):
             f = open(self.data_path + '/recent.json', 'w')
         except IOError:
             App.log.error("Failed to open recent items file for writing.")
-            self.inform.emit('[error_notcl]Failed to open recent files file for writing.')
+            self.inform.emit('[ERROR_NOTCL]Failed to open recent files file for writing.')
             return
 
         #try:
@@ -2100,10 +2204,15 @@ class App(QtCore.QObject):
         try:
             return_value = initialize(obj, self)
         except Exception as e:
-            if str(e) == "Empty Geometry":
-                self.inform.emit("[error_notcl] Object (%s) failed because: %s" % (kind, str(e)))
-            else:
-                self.inform.emit("[error] Object (%s) failed because: %s" % (kind, str(e)))
+            msg = "[ERROR_NOTCL] An internal error has ocurred. See shell.\n"
+            msg += "Object (%s) failed because: %s \n\n" % (kind, str(e))
+            msg += traceback.format_exc()
+            self.inform.emit(msg)
+
+            # if str(e) == "Empty Geometry":
+            #     self.inform.emit("[ERROR_NOTCL] )
+            # else:
+            #     self.inform.emit("[ERROR] Object (%s) failed because: %s" % (kind, str(e)))
             return "fail"
 
         t2 = time.time()
@@ -2141,6 +2250,8 @@ class App(QtCore.QObject):
         return obj
 
     def new_excellon_object(self):
+        self.report_usage("new_excellon_object()")
+
         self.new_object('excellon', 'new_e', lambda x, y: None)
 
     def on_object_created(self, obj, plot, autoselect):
@@ -2293,6 +2404,8 @@ class App(QtCore.QObject):
         self.save_defaults()
 
     def on_app_exit(self):
+        self.report_usage("on_app_exit()")
+
         if self.collection.get_list():
             msgbox = QtWidgets.QMessageBox()
             # msgbox.setText("<B>Save changes ...</B>")
@@ -2335,7 +2448,7 @@ class App(QtCore.QObject):
             e = sys.exc_info()[0]
             App.log.error("Could not load defaults file.")
             App.log.error(str(e))
-            self.inform.emit("[error_notcl] Could not load defaults file.")
+            self.inform.emit("[ERROR_NOTCL] Could not load defaults file.")
             return
 
         try:
@@ -2344,7 +2457,7 @@ class App(QtCore.QObject):
             e = sys.exc_info()[0]
             App.log.error("Failed to parse defaults file.")
             App.log.error(str(e))
-            self.inform.emit("[error_notcl] Failed to parse defaults file.")
+            self.inform.emit("[ERROR_NOTCL] Failed to parse defaults file.")
             return
 
         # Update options
@@ -2358,7 +2471,7 @@ class App(QtCore.QObject):
             json.dump(defaults, f)
             f.close()
         except:
-            self.inform.emit("[error_notcl] Failed to write defaults to file.")
+            self.inform.emit("[ERROR_NOTCL] Failed to write defaults to file.")
             return
 
         # Save the toolbar view
@@ -2375,8 +2488,14 @@ class App(QtCore.QObject):
         if self.ui.toolbartools.isVisible():
             tb_status += 8
 
-        if self.ui.snap_toolbar.isVisible():
+        if self.ui.exc_edit_toolbar.isVisible():
             tb_status += 16
+
+        if self.ui.geo_edit_toolbar.isVisible():
+            tb_status += 32
+
+        if self.ui.snap_toolbar.isVisible():
+            tb_status += 64
 
         self.defaults["global_toolbar_view"] = tb_status
 
@@ -2402,7 +2521,7 @@ class App(QtCore.QObject):
             e = sys.exc_info()[0]
             App.log.error("Could not load factory defaults file.")
             App.log.error(str(e))
-            self.inform.emit("[error_notcl] Could not load factory defaults file.")
+            self.inform.emit("[ERROR_NOTCL] Could not load factory defaults file.")
             return
 
         try:
@@ -2411,7 +2530,7 @@ class App(QtCore.QObject):
             e = sys.exc_info()[0]
             App.log.error("Failed to parse factory defaults file.")
             App.log.error(str(e))
-            self.inform.emit("[error_notcl] Failed to parse factory defaults file.")
+            self.inform.emit("[ERROR_NOTCL] Failed to parse factory defaults file.")
             return
 
         # Update options
@@ -2425,7 +2544,7 @@ class App(QtCore.QObject):
             json.dump(factory_defaults, f_f_def_s)
             f_f_def_s.close()
         except:
-            self.inform.emit("[error_notcl] Failed to write factory defaults to file.")
+            self.inform.emit("[ERROR_NOTCL] Failed to write factory defaults to file.")
             return
 
         if silent is False:
@@ -2459,6 +2578,7 @@ class App(QtCore.QObject):
         toggle shell if is  visible close it if  closed open it
         :return:
         """
+        self.report_usage("on_toggle_shell()")
 
         if self.ui.shell_dock.isVisible():
             self.ui.shell_dock.hide()
@@ -2472,6 +2592,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
+        self.report_usage("on_edit_join()")
 
         obj_name_single = str(name) if name else "Combo_SingleGeo"
         obj_name_multi = str(name) if name else "Combo_MultiGeo"
@@ -2485,7 +2606,7 @@ class App(QtCore.QObject):
 
         # if len(set(geo_type_list)) == 1 means that all list elements are the same
         if len(set(geo_type_list)) != 1:
-            self.inform.emit("[error] Failed join. The Geometry objects are of different types.\n"
+            self.inform.emit("[ERROR] Failed join. The Geometry objects are of different types.\n"
                              "At least one is MultiGeo type and the other is SingleGeo type. A possibility is to "
                              "convert from one to another and retry joining \n"
                              "but in the case of converting from MultiGeo to SingleGeo, informations may be lost and "
@@ -2518,11 +2639,13 @@ class App(QtCore.QObject):
 
         :return: None
         """
+        self.report_usage("on_edit_join_exc()")
+
         objs = self.collection.get_selected()
 
         for obj in objs:
             if not isinstance(obj, FlatCAMExcellon):
-                self.inform.emit("[error_notcl]Failed. Excellon joining works only on Excellon objects.")
+                self.inform.emit("[ERROR_NOTCL]Failed. Excellon joining works only on Excellon objects.")
                 return
 
         def initialize(obj, app):
@@ -2537,11 +2660,13 @@ class App(QtCore.QObject):
 
                 :return: None
                 """
+        self.report_usage("on_edit_join_grb()")
+
         objs = self.collection.get_selected()
 
         for obj in objs:
             if not isinstance(obj, FlatCAMGerber):
-                self.inform.emit("[error_notcl]Failed. Gerber joining works only on Gerber objects.")
+                self.inform.emit("[ERROR_NOTCL]Failed. Gerber joining works only on Gerber objects.")
                 return
 
         def initialize(obj, app):
@@ -2550,14 +2675,16 @@ class App(QtCore.QObject):
         self.new_object("gerber", 'Combo_Gerber', initialize)
 
     def on_convert_singlegeo_to_multigeo(self):
+        self.report_usage("on_convert_singlegeo_to_multigeo()")
+
         obj = self.collection.get_active()
 
         if obj is None:
-            self.inform.emit("[error_notcl]Failed. Select a Geometry Object and try again.")
+            self.inform.emit("[ERROR_NOTCL]Failed. Select a Geometry Object and try again.")
             return
 
         if not isinstance(obj, FlatCAMGeometry):
-            self.inform.emit("[error_notcl]Expected a FlatCAMGeometry, got %s" % type(obj))
+            self.inform.emit("[ERROR_NOTCL]Expected a FlatCAMGeometry, got %s" % type(obj))
             return
 
         obj.multigeo = True
@@ -2571,14 +2698,16 @@ class App(QtCore.QObject):
         self.inform.emit("[success] A Geometry object was converted to MultiGeo type.")
 
     def on_convert_multigeo_to_singlegeo(self):
+        self.report_usage("on_convert_multigeo_to_singlegeo()")
+
         obj = self.collection.get_active()
 
         if obj is None:
-            self.inform.emit("[error_notcl]Failed. Select a Geometry Object and try again.")
+            self.inform.emit("[ERROR_NOTCL]Failed. Select a Geometry Object and try again.")
             return
 
         if not isinstance(obj, FlatCAMGeometry):
-            self.inform.emit("[error_notcl]Expected a FlatCAMGeometry, got %s" % type(obj))
+            self.inform.emit("[ERROR_NOTCL]Expected a FlatCAMGeometry, got %s" % type(obj))
             return
 
         obj.multigeo = False
@@ -2633,9 +2762,9 @@ class App(QtCore.QObject):
                       'excellon_travelz', 'excellon_feedrate', 'excellon_feedrate_rapid', 'excellon_toolchangez',
                       'excellon_tooldia', 'excellon_endz', 'cncjob_tooldia',
                       'geometry_cutz', 'geometry_travelz', 'geometry_feedrate', 'geometry_feedrate_rapid',
-                      'geometry_cnctooldia', 'geometry_painttooldia', 'geometry_paintoverlap', 'geometry_toolchangexy',
+                      'geometry_cnctooldia', 'tools_painttooldia', 'tools_paintoverlap', 'geometry_toolchangexy',
                       'geometry_toolchangez',
-                      'geometry_paintmargin', 'geometry_endz', 'geometry_depthperpass', 'global_gridx', 'global_gridy']
+                      'tools_paintmargin', 'geometry_endz', 'geometry_depthperpass', 'global_gridx', 'global_gridy']
 
         def scale_options(sfactor):
             for dim in dimensions:
@@ -2718,11 +2847,46 @@ class App(QtCore.QObject):
         self.on_toggle_units()
 
     def on_language_apply(self):
+        self.report_usage("on_language_apply()")
+
         # TODO: apply the language
         # app restart section
         pass
 
+    def on_fullscreen(self):
+        self.report_usage("on_fullscreen()")
+
+        if self.toggle_fscreen is False:
+            for tb in self.ui.findChildren(QtWidgets.QToolBar):
+                tb.setVisible(False)
+            self.ui.splitter_left.setVisible(False)
+            self.toggle_fscreen = True
+        else:
+            self.restore_toolbar_view()
+            self.ui.splitter_left.setVisible(True)
+            self.toggle_fscreen = False
+
+    def on_toggle_plotarea(self):
+        self.report_usage("on_toggle_plotarea()")
+
+        try:
+            name = self.ui.plot_tab_area.widget(0).objectName()
+        except AttributeError:
+            self.ui.plot_tab_area.addTab(self.ui.plot_tab, "Plot Area")
+            # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
+            self.ui.plot_tab_area.protectTab(0)
+            return
+
+        if name != 'plotarea':
+            self.ui.plot_tab_area.insertTab(0, self.ui.plot_tab, "Plot Area")
+            # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
+            self.ui.plot_tab_area.protectTab(0)
+        else:
+            self.ui.plot_tab_area.closeTab(0)
+
     def on_toggle_axis(self):
+        self.report_usage("on_toggle_axis()")
+
         if self.toggle_axis is False:
             self.plotcanvas.v_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
             self.plotcanvas.h_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
@@ -2736,6 +2900,8 @@ class App(QtCore.QObject):
             self.toggle_axis = False
 
     def on_toggle_grid(self):
+        self.report_usage("on_toggle_grid()")
+
         self.ui.grid_snap_btn.trigger()
 
     def on_options_combo_change(self, sel):
@@ -3058,6 +3224,8 @@ class App(QtCore.QObject):
         self.plotcanvas.draw_workspace()
 
     def on_workspace(self):
+        self.report_usage("on_workspace()")
+
         if self.general_defaults_form.general_gui_group.workspace_cb.isChecked():
             self.plotcanvas.restore_workspace()
         else:
@@ -3072,6 +3240,98 @@ class App(QtCore.QObject):
             self.general_defaults_form.general_gui_group.workspace_cb.setChecked(True)
         self.on_workspace()
 
+    def on_theme(self):
+        self.report_usage("on_theme()")
+
+        current_theme= self.general_defaults_form.general_gui_group.theme_combo.get_value().lower()
+
+        settings = QSettings("Open Source", "FlatCAM")
+        settings.setValue('theme', current_theme)
+
+        # This will write the setting to the platform specific storage.
+        del settings
+
+        # first remove the toolbars:
+        self.ui.removeToolBar(self.ui.toolbarfile)
+        self.ui.removeToolBar(self.ui.toolbargeo)
+        self.ui.removeToolBar(self.ui.toolbarview)
+        self.ui.removeToolBar(self.ui.toolbartools)
+        self.ui.removeToolBar(self.ui.exc_edit_toolbar)
+        self.ui.removeToolBar(self.ui.geo_edit_toolbar)
+        self.ui.removeToolBar(self.ui.snap_toolbar)
+
+        if current_theme == 'standard':
+            ### TOOLBAR INSTALLATION ###
+            self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
+            self.ui.toolbarfile.setObjectName('File_TB')
+            self.ui.addToolBar(self.ui.toolbarfile)
+
+            self.ui.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
+            self.ui.toolbargeo.setObjectName('Edit_TB')
+            self.ui.addToolBar(self.ui.toolbargeo)
+
+            self.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
+            self.ui.toolbarview.setObjectName('View_TB')
+            self.ui.addToolBar(self.ui.toolbarview)
+
+            self.ui.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
+            self.ui.toolbartools.setObjectName('Tools_TB')
+            self.ui.addToolBar(self.ui.toolbartools)
+
+            self.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
+            self.ui.exc_edit_toolbar.setVisible(False)
+            self.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
+            self.ui.addToolBar(self.ui.exc_edit_toolbar)
+
+            self.ui.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
+            self.ui.geo_edit_toolbar.setVisible(False)
+            self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
+            self.ui.addToolBar(self.ui.geo_edit_toolbar)
+
+            self.ui.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
+            self.ui.snap_toolbar.setObjectName('Snap_TB')
+            # self.ui.snap_toolbar.setMaximumHeight(30)
+            self.ui.addToolBar(self.ui.snap_toolbar)
+
+            self.ui.corner_snap_btn.setVisible(False)
+            self.ui.snap_magnet.setVisible(False)
+        elif current_theme == 'compact':
+            ### TOOLBAR INSTALLATION ###
+            self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
+            self.ui.toolbarfile.setObjectName('File_TB')
+            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarfile)
+            self.ui.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
+            self.ui.toolbargeo.setObjectName('Edit_TB')
+            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbargeo)
+            self.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
+            self.ui.toolbarview.setObjectName('View_TB')
+            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarview)
+            self.ui.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
+            self.ui.toolbartools.setObjectName('Tools_TB')
+            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbartools)
+            self.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
+            self.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
+            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.exc_edit_toolbar)
+            self.ui.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
+            self.ui.geo_edit_toolbar.setVisible(False)
+            self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
+            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.geo_edit_toolbar)
+            self.ui.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
+            self.ui.snap_toolbar.setObjectName('Snap_TB')
+            self.ui.snap_toolbar.setMaximumHeight(30)
+            self.ui.splitter_left.addWidget(self.ui.snap_toolbar)
+
+            self.ui.corner_snap_btn.setVisible(True)
+            self.ui.snap_magnet.setVisible(True)
+
+        self.ui.populate_toolbars()
+
+        self.ui.grid_snap_btn.setChecked(True)
+        self.ui.grid_gap_x_entry.setText(str(self.defaults["global_gridx"]))
+        self.ui.grid_gap_y_entry.setText(str(self.defaults["global_gridy"]))
+        self.ui.snap_max_dist_entry.setText(str(self.defaults["global_snap_max"]))
+        self.ui.grid_gap_link_cb.setChecked(True)
+
     def on_save_button(self):
         self.save_defaults(silent=False)
         # load the defaults so they are updated into the app
@@ -3080,6 +3340,8 @@ class App(QtCore.QObject):
         self.on_options_app2project()
 
     def handleOpen(self):
+        self.report_usage("handleOpen()")
+
         filter_group = " G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
                    "All Files (*.*)"
         path, _ = QtWidgets.QFileDialog.getOpenFileName(
@@ -3093,39 +3355,56 @@ class App(QtCore.QObject):
                 file.close()
 
     def handlePrint(self):
+        self.report_usage("handlePrint()")
+
         dialog = QtPrintSupport.QPrintDialog()
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
             self.ui.code_editor.document().print_(dialog.printer())
 
     def handlePreview(self):
+        self.report_usage("handlePreview()")
+
         dialog = QtPrintSupport.QPrintPreviewDialog()
         dialog.paintRequested.connect(self.ui.code_editor.print_)
         dialog.exec_()
 
     def handleTextChanged(self):
+        self.report_usage("handleTextChanged()")
+
         # enable = not self.ui.code_editor.document().isEmpty()
         # self.ui.buttonPrint.setEnabled(enable)
         # self.ui.buttonPreview.setEnabled(enable)
         pass
 
     def handleSaveGCode(self):
+        self.report_usage("handleSaveGCode()")
+
+        obj_name = self.collection.get_active().options['name']
+
         _filter_ = " G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
                    "All Files (*.*)"
         try:
             filename = str(QtWidgets.QFileDialog.getSaveFileName(
-                caption="Export G-Code ...", directory=self.defaults["global_last_folder"], filter=_filter_)[0])
+                caption="Export G-Code ...",
+                directory=self.defaults["global_last_folder"] + '/' + str(obj_name),
+                filter=_filter_
+            )[0])
         except TypeError:
             filename = str(QtWidgets.QFileDialog.getSaveFileName(caption="Export G-Code ...", filter=_filter_)[0])
 
-        try:
-            my_gcode = self.ui.code_editor.toPlainText()
-            with open(filename, 'w') as f:
-                for line in my_gcode:
-                    f.write(line)
-
-        except FileNotFoundError:
-            self.inform.emit("[WARNING] No such file or directory")
+        if filename == "":
+            self.inform.emit("[WARNING_NOTCL]Export CNC Code cancelled.")
             return
+        else:
+            try:
+                my_gcode = self.ui.code_editor.toPlainText()
+                with open(filename, 'w') as f:
+                    for line in my_gcode:
+                        f.write(line)
+
+            except FileNotFoundError:
+                self.inform.emit("[WARNING] No such file or directory")
+                return
 
         # Just for adding it to the recent files list.
         self.file_opened.emit("cncjob", filename)
@@ -3134,6 +3413,8 @@ class App(QtCore.QObject):
         self.inform.emit("Saved to: " + filename)
 
     def handleFindGCode(self):
+        self.report_usage("handleFindGCode()")
+
         flags = QtGui.QTextDocument.FindCaseSensitively
         text_to_be_found = self.ui.entryFind.get_value()
 
@@ -3141,8 +3422,9 @@ class App(QtCore.QObject):
         if r is False:
             self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
 
-
     def handleReplaceGCode(self):
+        self.report_usage("handleReplaceGCode()")
+
         old = self.ui.entryFind.get_value()
         new = self.ui.entryReplace.get_value()
 
@@ -3171,8 +3453,9 @@ class App(QtCore.QObject):
             # Mark end of undo block
             cursor.endEditBlock()
 
-
     def on_new_geometry(self):
+        self.report_usage("on_new_geometry()")
+
         def initialize(obj, self):
             obj.multitool = False
 
@@ -3185,6 +3468,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
+        self.report_usage("on_delete()")
 
         # Make sure that the deletion will happen only after the Editor is no longer active otherwise we might delete
         # a geometry object before we update it.
@@ -3213,6 +3497,8 @@ class App(QtCore.QObject):
 
         #display the message for the user
         #and ask him to click on the desired position
+        self.report_usage("on_set_origin()")
+
         self.inform.emit('Click to set the origin ...')
 
         self.plotcanvas.vis_connect('mouse_press', self.on_set_zero_click)
@@ -3223,6 +3509,7 @@ class App(QtCore.QObject):
         :return:
 
         """
+        self.report_usage("on_jump_to()")
 
         dia_box = Dialog_box(title="Jump to Coordinates", label="Enter the coordinates in format X,Y:")
 
@@ -3248,6 +3535,7 @@ class App(QtCore.QObject):
         self.inform.emit("Done.")
 
     def on_copy_object(self):
+        self.report_usage("on_copy_object()")
 
         def initialize(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
@@ -3316,6 +3604,8 @@ class App(QtCore.QObject):
                 return "Operation failed: %s" % str(e)
 
     def on_rename_object(self, text):
+        self.report_usage("on_rename_object()")
+
         named_obj = self.collection.get_active()
         for obj in named_obj:
             if obj is list:
@@ -3327,6 +3617,7 @@ class App(QtCore.QObject):
                     log.warning("Could not rename the object in the list")
 
     def on_copy_object_as_geometry(self):
+        self.report_usage("on_copy_object_as_geometry()")
 
         def initialize(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
@@ -3371,6 +3662,8 @@ class App(QtCore.QObject):
             self.plotcanvas.vis_disconnect('mouse_press', self.on_set_zero_click)
 
     def on_selectall(self):
+        self.report_usage("on_selectall()")
+
         # delete the possible selection box around a possible selected object
         self.delete_selection_shape()
         for name in self.collection.get_names():
@@ -3393,6 +3686,8 @@ class App(QtCore.QObject):
         self.ui.show()
 
     def on_flipy(self):
+        self.report_usage("on_flipy()")
+
         obj_list = self.collection.get_selected()
         xminlist = []
         yminlist = []
@@ -3400,15 +3695,7 @@ class App(QtCore.QObject):
         ymaxlist = []
 
         if not obj_list:
-            self.inform.emit("[warning_notcl] No object selected.")
-            msg = "Please Select an object to flip!"
-            warningbox = QtWidgets.QMessageBox()
-            warningbox.setText(msg)
-            warningbox.setWindowTitle("Warning ...")
-            warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-            warningbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            warningbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-            warningbox.exec_()
+            self.inform.emit("[WARNING_NOTCL] No object selected to Flip on Y axis.")
         else:
             try:
                 # first get a bounding box to fit all
@@ -3434,10 +3721,12 @@ class App(QtCore.QObject):
                     obj.plot()
                     self.object_changed.emit(obj)
             except Exception as e:
-                self.inform.emit("[error_notcl] Due of %s, Flip action was not executed." % str(e))
+                self.inform.emit("[ERROR_NOTCL] Due of %s, Flip action was not executed." % str(e))
                 return
 
     def on_flipx(self):
+        self.report_usage("on_flipx()")
+
         obj_list = self.collection.get_selected()
         xminlist = []
         yminlist = []
@@ -3445,15 +3734,7 @@ class App(QtCore.QObject):
         ymaxlist = []
 
         if not obj_list:
-            self.inform.emit("[warning_notcl] No object selected.")
-            msg = "Please Select an object to flip!"
-            warningbox = QtWidgets.QMessageBox()
-            warningbox.setText(msg)
-            warningbox.setWindowTitle("Warning ...")
-            warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-            warningbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            warningbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-            warningbox.exec_()
+            self.inform.emit("[WARNING_NOTCL] No object selected to Flip on X axis.")
         else:
             try:
                 # first get a bounding box to fit all
@@ -3479,10 +3760,12 @@ class App(QtCore.QObject):
                     obj.plot()
                     self.object_changed.emit(obj)
             except Exception as e:
-                self.inform.emit("[error_notcl] Due of %s, Flip action was not executed." % str(e))
+                self.inform.emit("[ERROR_NOTCL] Due of %s, Flip action was not executed." % str(e))
                 return
 
     def on_rotate(self, silent=False, preset=None):
+        self.report_usage("on_rotate()")
+
         obj_list = self.collection.get_selected()
         xminlist = []
         yminlist = []
@@ -3490,15 +3773,7 @@ class App(QtCore.QObject):
         ymaxlist = []
 
         if not obj_list:
-            self.inform.emit("[warning_notcl] No object selected.")
-            msg = "Please Select an object to rotate!"
-            warningbox = QtWidgets.QMessageBox()
-            warningbox.setText(msg)
-            warningbox.setWindowTitle("Warning ...")
-            warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-            warningbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            warningbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-            warningbox.exec_()
+            self.inform.emit("[WARNING_NOTCL] No object selected to Rotate.")
         else:
             if silent is False:
                 rotatebox = FCInputDialog(title="Transform", text="Enter the Angle value:",
@@ -3531,24 +3806,18 @@ class App(QtCore.QObject):
                         sel_obj.plot()
                         self.object_changed.emit(sel_obj)
                 except Exception as e:
-                    self.inform.emit("[error_notcl] Due of %s, rotation movement was not executed." % str(e))
+                    self.inform.emit("[ERROR_NOTCL] Due of %s, rotation movement was not executed." % str(e))
                     return
 
     def on_skewx(self):
+        self.report_usage("on_skewx()")
+
         obj_list = self.collection.get_selected()
         xminlist = []
         yminlist = []
 
         if not obj_list:
-            self.inform.emit("[warning_notcl] No object selected.")
-            msg = "Please Select an object to skew/shear!"
-            warningbox = QtWidgets.QMessageBox()
-            warningbox.setText(msg)
-            warningbox.setWindowTitle("Warning ...")
-            warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-            warningbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            warningbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-            warningbox.exec_()
+            self.inform.emit("[WARNING_NOTCL] No object selected to Skew/Shear on X axis.")
         else:
             skewxbox = FCInputDialog(title="Transform", text="Enter the Angle value:",
                                           min=-360, max=360, decimals=3)
@@ -3570,20 +3839,14 @@ class App(QtCore.QObject):
                     self.object_changed.emit(obj)
 
     def on_skewy(self):
+        self.report_usage("on_skewy()")
+
         obj_list = self.collection.get_selected()
         xminlist = []
         yminlist = []
 
         if not obj_list:
-            self.inform.emit("[warning_notcl] No object selected.")
-            msg = "Please Select an object to skew/shear!"
-            warningbox = QtWidgets.QMessageBox()
-            warningbox.setText(msg)
-            warningbox.setWindowTitle("Warning ...")
-            warningbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-            warningbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            warningbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-            warningbox.exec_()
+            self.inform.emit("[WARNING_NOTCL] No object selected to Skew/Shear on Y axis.")
         else:
             skewybox = FCInputDialog(title="Transform", text="Enter the Angle value:",
                                           min=-360, max=360, decimals=3)
@@ -3659,18 +3922,6 @@ class App(QtCore.QObject):
             if index.internalPointer().parent_item != self.collection.root_item:
                 self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
 
-    def on_zoom_fit(self, event):
-        """
-        Callback for zoom-out request. This can be either from the corresponding
-        toolbar button or the '1' key when the canvas is focused. Calls ``self.adjust_axes()``
-        with axes limits from the geometry bounds of all objects.
-
-        :param event: Ignored.
-        :return: None
-        """
-
-        self.plotcanvas.fit_view()
-
     def grid_status(self):
         if self.ui.grid_snap_btn.isChecked():
             return 1
@@ -3721,9 +3972,23 @@ class App(QtCore.QObject):
             if event.key == 'S':
                 self.on_file_saveproject()
 
+            # Toggle Plot Area
+            if event.key == 'F10':
+                self.on_toggle_plotarea()
+
             return
         elif self.key_modifiers == QtCore.Qt.AltModifier:
             # place holder for further shortcut key
+
+            if event.key == '1':
+                self.enable_all_plots()
+
+            if event.key == '2':
+                self.disable_all_plots()
+
+            if event.key == '3':
+                self.disable_other_plots()
+
             if event.key == 'C':
                 self.calculator_tool.run()
 
@@ -3748,6 +4013,10 @@ class App(QtCore.QObject):
             if event.key == 'Z':
                 self.panelize_tool.run()
 
+            if event.key == 'F10':
+                self.on_fullscreen()
+
+            return
         elif self.key_modifiers == QtCore.Qt.ShiftModifier:
             # place holder for further shortcut key
 
@@ -3782,7 +4051,6 @@ class App(QtCore.QObject):
             if event.key == 'Y':
                 self.on_skewy()
 
-            return
         else:
             if event.key == 'F1':
                 webbrowser.open(self.manual_url)
@@ -3792,15 +4060,11 @@ class App(QtCore.QObject):
                 webbrowser.open(self.video_url)
                 return
 
-            if event.key == self.defaults['fit_key']:  # 1
-                self.on_zoom_fit(None)
-                return
-
-            if event.key == self.defaults['zoom_out_key']:  # 2
+            if event.key == self.defaults['zoom_out_key']:  # '-'
                 self.plotcanvas.zoom(1 / self.defaults['zoom_ratio'], self.mouse)
                 return
 
-            if event.key == self.defaults['zoom_in_key']:  # 3
+            if event.key == self.defaults['zoom_in_key']:  # '='
                 self.plotcanvas.zoom(self.defaults['zoom_ratio'], self.mouse)
                 return
 
@@ -3812,6 +4076,15 @@ class App(QtCore.QObject):
                 if self.collection.get_active() is not None:
                     self.collection.get_active().ui.plot_cb.toggle()
                     self.delete_selection_shape()
+
+            if event.key == '1':
+                self.on_select_tab('project')
+
+            if event.key == '2':
+                self.on_select_tab('selected')
+
+            if event.key == '3':
+                self.on_select_tab('tool')
 
             if event.key == 'E':
                 self.object2editor()
@@ -3874,84 +4147,36 @@ class App(QtCore.QObject):
             return
 
     def on_shortcut_list(self):
+        self.report_usage("on_shortcut_list()")
 
-        msg = '''<b>Shortcut list</b><br>
-<br>
-<b>~:</b>       Show Shortcut List<br>
-<br>
-<b>1:</b>       Zoom Fit<br>
-<b>2:</b>       Zoom Out<br>
-<b>3:</b>       Zoom In<br>
-<b>A:</b>       Draw an Arc (when in Edit Mode)<br>
-<b>C:</b>       Copy Geo Item (when in Edit Mode)<br>
-<b>E:</b>       Edit Object (if selected)<br>
-<b>G:</b>       Grid On/Off<br>
-<b>J:</b>       Jump to Coordinates<br>
-<b>L:</b>       New Excellon<br>
-<b>M:</b>       Move Obj<br>
-<b>M:</b>       Move Geo Item (when in Edit Mode)<br>
-<b>N:</b>       New Geometry<br>
-<b>N:</b>       Draw a Polygon (when in Edit Mode)<br>
-<b>O:</b>       Set Origin<br>
-<b>O:</b>       Draw a Circle (when in Edit Mode)<br>
-<b>Q:</b>       Change Units<br>
-<b>P:</b>       Open Properties Tool<br>
-<b>P:</b>       Draw a Path (when in Edit Mode)<br>
-<b>R:</b>       Rotate by 90 degree CW<br>
-<b>R:</b>       Draw Rectangle (when in Edit Mode)<br>
-<b>S:</b>       Shell Toggle<br>
-<b>V:</b>       View Fit<br>
-<b>X:</b>       Flip on X_axis<br>
-<b>Y:</b>       Flip on Y_axis<br>
-<br>
-<b>Space:</b>    En(Dis)able Obj Plot<br>
-<b>CTRL+A:</b>   Select All<br>
-<b>CTRL+C:</b>   Copy Obj<br>
-<b>CTRL+E:</b>   Open Excellon File<br>
-<b>CTRL+G:</b>   Open Gerber File<br>
-<b>CTRL+N:</b>   New Project<br>
-<b>CTRL+M:</b>   Measurement Tool<br>
-<b>CTRL+O:</b>   Open Project<br>
-<b>CTRL+S:</b>   Save Project As<br>
-<b>CTRL+S:</b>   Save Object and Exit Editor (when in Edit Mode)<br>
-<br>
-<b>SHIFT+C:</b>  Copy Obj_Name<br>
-<b>SHIFT+G:</b>  Toggle the axis<br>
-<b>SHIFT+P:</b>  Open Preferences Window<br>
-<b>SHIFT+R:</b>  Rotate by 90 degree CCW<br>
-<b>SHIFT+S:</b>  Run a Script<br>
-<b>SHIFT+W:</b>  Toggle the workspace<br>
-<b>SHIFT+X:</b>  Skew on X axis<br>
-<b>SHIFT+Y:</b>  Skew on Y axis<br>
-<br>
-<b>ALT+C:</b>    Calculators Tool<br>
-<b>ALT+D:</b>    2-Sided PCB Tool<br>
-<b>ALT+L:</b>    Film PCB Tool<br>
-<b>ALT+N:</b>    Non-Copper Clearing Tool<br>
-<b>ALT+P:</b>    Paint Area Tool<br>
-<b>ALT+R:</b>    Transformation Tool<br>
-<b>ALT+U:</b>    Cutout PCB Tool<br>
-<br>
-<b>F1:</b>       Open Online Manual<br>
-<b>F2:</b>       Open Online Tutorials<br>
-<b>Del:</b>      Delete Obj
-'''
+        # add the tab if it was closed
+        self.ui.plot_tab_area.addTab(self.ui.shortcuts_tab, "Key Shortcut List")
 
-        helpbox = QtWidgets.QMessageBox()
-        helpbox.setText(msg)
-        helpbox.setWindowTitle("Help")
-        helpbox.setWindowIcon(QtGui.QIcon('share/help.png'))
-        helpbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-        helpbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-        helpbox.exec_()
+        # delete the absolute and relative position and messages in the infobar
+        self.ui.position_label.setText("")
+        self.ui.rel_position_label.setText("")
+
+        # Switch plot_area to preferences page
+        self.ui.plot_tab_area.setCurrentWidget(self.ui.shortcuts_tab)
+        self.ui.show()
+
+    def on_select_tab(self, name):
+        if name == 'project':
+            self.ui.notebook.setCurrentWidget(self.ui.project_tab)
+        elif name == 'selected':
+            self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
+        elif name == 'tool':
+            self.ui.notebook.setCurrentWidget(self.ui.tool_tab)
 
     def on_copy_name(self):
+        self.report_usage("on_copy_name()")
+
         obj = self.collection.get_active()
         try:
             name = obj.options["name"]
         except AttributeError:
             log.debug("on_copy_name() --> No object selected to copy it's name")
-            self.inform.emit("[warning_notcl]No object selected to copy it's name")
+            self.inform.emit("[WARNING_NOTCL]No object selected to copy it's name")
             return
 
         self.clipboard.setText(name)
@@ -4241,7 +4466,7 @@ class App(QtCore.QObject):
                     # TODO: on selected objects change the object colors and do not draw the selection box
                     # self.plotcanvas.vispy_canvas.update() # this updates the canvas
         except Exception as e:
-            log.error("[error] Something went bad. %s" % str(e))
+            log.error("[ERROR] Something went bad. %s" % str(e))
             return
 
     def delete_selection_shape(self):
@@ -4362,9 +4587,13 @@ class App(QtCore.QObject):
         self.ui.notebook.setCurrentWidget(self.ui.project_tab)
 
     def obj_properties(self):
+        self.report_usage("obj_properties()")
+
         self.properties_tool.run()
 
     def obj_move(self):
+        self.report_usage("obj_move()")
+
         self.move_tool.run()
 
     def on_fileopengerber(self):
@@ -4396,7 +4625,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit("[warning_notcl]Open Gerber cancelled.")
+            self.inform.emit("[WARNING_NOTCL]Open Gerber cancelled.")
         else:
             for filename in filenames:
                 if filename != '':
@@ -4434,7 +4663,7 @@ class App(QtCore.QObject):
         follow = True
 
         if filename == "":
-            self.inform.emit("[warning_notcl]Open Gerber-Follow cancelled.")
+            self.inform.emit("[WARNING_NOTCL]Open Gerber-Follow cancelled.")
         else:
             self.worker_task.emit({'fcn': self.open_gerber,
                                    'params': [filename, follow]})
@@ -4461,7 +4690,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit("[warning_notcl]Open Excellon cancelled.")
+            self.inform.emit("[WARNING_NOTCL]Open Excellon cancelled.")
         else:
             for filename in filenames:
                 if filename != '':
@@ -4491,7 +4720,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit("[warning_notcl]Open G-Code cancelled.")
+            self.inform.emit("[WARNING_NOTCL]Open G-Code cancelled.")
         else:
             for filename in filenames:
                 if filename != '':
@@ -4520,7 +4749,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit("[warning_notcl]Open Project cancelled.")
+            self.inform.emit("[WARNING_NOTCL]Open Project cancelled.")
         else:
             # self.worker_task.emit({'fcn': self.open_project,
             #                        'params': [filename]})
@@ -4551,7 +4780,7 @@ class App(QtCore.QObject):
         # Check for more compatible types and add as required
         if (not isinstance(obj, FlatCAMGeometry) and not isinstance(obj, FlatCAMGerber) and not isinstance(obj, FlatCAMCNCjob)
             and not isinstance(obj, FlatCAMExcellon)):
-            msg = "[error_notcl] Only Geometry, Gerber and CNCJob objects can be used."
+            msg = "[ERROR_NOTCL] Only Geometry, Gerber and CNCJob objects can be used."
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
             msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
@@ -4563,15 +4792,17 @@ class App(QtCore.QObject):
 
         filter = "SVG File (*.svg);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export SVG",
-                                                         directory=self.get_last_save_folder(), filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                caption="Export SVG",
+                directory=self.get_last_save_folder() + '/' + str(name),
+                filter=filter)
         except TypeError:
             filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export SVG", filter=filter)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit("[warning_notcl]Export SVG cancelled.")
+            self.inform.emit("[WARNING_NOTCL]Export SVG cancelled.")
             return
         else:
             self.export_svg(name, filename)
@@ -4585,15 +4816,17 @@ class App(QtCore.QObject):
         image = _screenshot()
         data = np.asarray(image)
         if not data.ndim == 3 and data.shape[-1] in (3, 4):
-            self.inform.emit('[[warning_notcl]] Data must be a 3D array with last dimension 3 or 4')
+            self.inform.emit('[[WARNING_NOTCL]] Data must be a 3D array with last dimension 3 or 4')
             return
 
-        filter = "PNG File (*.png);;All Files (*.*)"
+        filter_ = "PNG File (*.png);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export PNG Image",
-                                                         directory=self.get_last_save_folder(), filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                caption="Export PNG Image",
+                directory=self.get_last_save_folder() + '/png_' + str(self.date).replace('-', ''),
+                filter=filter_)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export PNG Image", filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export PNG Image", filter=filter_)
 
         filename = str(filename)
 
@@ -4615,7 +4848,7 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit("[warning_notcl] No object selected.")
+            self.inform.emit("[WARNING_NOTCL] No object selected.")
             msg = "Please Select an Excellon object to export"
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
@@ -4626,7 +4859,7 @@ class App(QtCore.QObject):
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMExcellon):
-            msg = "[warning_notcl] Only Excellon objects can be used."
+            msg = "[WARNING_NOTCL] Only Excellon objects can be used."
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
             msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
@@ -4638,18 +4871,20 @@ class App(QtCore.QObject):
 
         filter = "Excellon File (*.drl);;Excellon File (*.txt);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export Excellon",
-                                                         directory=self.get_last_save_folder(), filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                caption="Export Excellon",
+                directory=self.get_last_save_folder() + '/' + name,
+                filter=filter)
         except TypeError:
             filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export Excellon", filter=filter)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit("[warning_notcl]Export Excellon cancelled.")
+            self.inform.emit("[WARNING_NOTCL]Export Excellon cancelled.")
             return
         else:
-            if altium_format == None:
+            if altium_format is None:
                 self.export_excellon(name, filename)
                 self.file_saved.emit("Excellon", filename)
             else:
@@ -4667,7 +4902,7 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit("W[warning_notcl] No object selected.")
+            self.inform.emit("W[WARNING_NOTCL] No object selected.")
             msg = "Please Select a Geometry object to export"
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
@@ -4678,7 +4913,7 @@ class App(QtCore.QObject):
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMGeometry):
-            msg = "[error_notcl] Only Geometry objects can be used."
+            msg = "[ERROR_NOTCL] Only Geometry objects can be used."
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
             msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
@@ -4690,15 +4925,17 @@ class App(QtCore.QObject):
 
         filter = "DXF File (*.DXF);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export DXF",
-                                                         directory=self.get_last_save_folder(), filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                caption="Export DXF",
+                directory=self.get_last_save_folder() + '/' + name,
+                filter=filter)
         except TypeError:
             filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export DXF", filter=filter)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit("[warning_notcl]Export DXF cancelled.")
+            self.inform.emit("[WARNING_NOTCL]Export DXF cancelled.")
             return
         else:
             self.export_dxf(name, filename)
@@ -4727,7 +4964,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit("[warning_notcl]Open SVG cancelled.")
+            self.inform.emit("[WARNING_NOTCL]Open SVG cancelled.")
         else:
             for filename in filenames:
                 if filename != '':
@@ -4757,7 +4994,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit("[warning_notcl]Open DXF cancelled.")
+            self.inform.emit("[WARNING_NOTCL]Open DXF cancelled.")
         else:
             for filename in filenames:
                 if filename != '':
@@ -4786,7 +5023,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit("[warning_notcl]Open TCL script cancelled.")
+            self.inform.emit("[WARNING_NOTCL]Open TCL script cancelled.")
         else:
             try:
                 with open(filename, "r") as tcl_script:
@@ -4829,17 +5066,19 @@ class App(QtCore.QObject):
 
         self.report_usage("on_file_saveprojectas")
 
-        filter = "FlatCAM Project (*.FlatPrj);; All Files (*.*)"
+        filter_ = "FlatCAM Project (*.FlatPrj);; All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Save Project As ...",
-                                                         directory=self.get_last_save_folder(), filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                caption="Save Project As ...",
+                directory=self.get_last_save_folder() + '/Project_' + self.date.replace('-', ''),
+                filter=filter_)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Save Project As ...", filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Save Project As ...", filter=filter_)
 
         filename = str(filename)
 
         if filename == '':
-            self.inform.emit("[warning_notcl]Save Project cancelled.")
+            self.inform.emit("[WARNING_NOTCL]Save Project cancelled.")
             return
 
         try:
@@ -4879,6 +5118,8 @@ class App(QtCore.QObject):
         :param filename: Path to the SVG file to save to.
         :return:
         """
+        self.report_usage("export_svg()")
+
         if filename is None:
             filename = self.defaults["global_last_save_folder"]
 
@@ -4934,6 +5175,7 @@ class App(QtCore.QObject):
         :type: Bool
         :return:
         """
+        self.report_usage("export_negative()")
 
         if filename is None:
             filename = self.defaults["global_last_save_folder"]
@@ -4953,7 +5195,7 @@ class App(QtCore.QObject):
             return "Could not retrieve object: %s" % box_name
 
         if box is None:
-            self.inform.emit("[warning_notcl]No object Box. Using instead %s" % obj)
+            self.inform.emit("[WARNING_NOTCL]No object Box. Using instead %s" % obj)
             box = obj
 
         def make_negative_film():
@@ -5053,6 +5295,7 @@ class App(QtCore.QObject):
         :type: Bool
         :return:
         """
+        self.report_usage("export_svg_black()")
 
         if filename is None:
             filename = self.defaults["global_last_save_folder"]
@@ -5072,7 +5315,7 @@ class App(QtCore.QObject):
             return "Could not retrieve object: %s" % box_name
 
         if box is None:
-            self.inform.emit("[warning_notcl]No object Box. Using instead %s" % obj)
+            self.inform.emit("[WARNING_NOTCL]No object Box. Using instead %s" % obj)
             box = obj
 
         def make_black_film():
@@ -5164,6 +5407,8 @@ class App(QtCore.QObject):
         :param filename: Path to the Excellon file to save to.
         :return:
         """
+        self.report_usage("export_excellon()")
+
         if filename is None:
             filename = self.defaults["global_last_save_folder"]
 
@@ -5240,14 +5485,14 @@ class App(QtCore.QObject):
                 def job_thread_exc(app_obj):
                     ret = make_excellon()
                     if ret == 'fail':
-                        self.inform.emit('[error_notcl] Could not export Excellon file.')
+                        self.inform.emit('[ERROR_NOTCL] Could not export Excellon file.')
                         return
 
                 self.worker_task.emit({'fcn': job_thread_exc, 'params': [self]})
         else:
             ret = make_excellon()
             if ret == 'fail':
-                self.inform.emit('[error_notcl] Could not export Excellon file.')
+                self.inform.emit('[ERROR_NOTCL] Could not export Excellon file.')
                 return
 
     def export_dxf(self, obj_name, filename, use_thread=True):
@@ -5257,6 +5502,8 @@ class App(QtCore.QObject):
         :param filename: Path to the DXF file to save to.
         :return:
         """
+        self.report_usage("export_dxf()")
+
         if filename is None:
             filename = self.defaults["global_last_save_folder"]
 
@@ -5296,14 +5543,14 @@ class App(QtCore.QObject):
                 def job_thread_exc(app_obj):
                     ret = make_dxf()
                     if ret == 'fail':
-                        self.inform.emit('[[warning_notcl]] Could not export DXF file.')
+                        self.inform.emit('[[WARNING_NOTCL]] Could not export DXF file.')
                         return
 
                 self.worker_task.emit({'fcn': job_thread_exc, 'params': [self]})
         else:
             ret = make_dxf()
             if ret == 'fail':
-                self.inform.emit('[[warning_notcl]] Could not export DXF file.')
+                self.inform.emit('[[WARNING_NOTCL]] Could not export DXF file.')
                 return
 
     def import_svg(self, filename, geo_type='geometry', outname=None):
@@ -5315,13 +5562,15 @@ class App(QtCore.QObject):
         :param outname:
         :return:
         """
+        self.report_usage("import_svg()")
+
         obj_type = ""
         if geo_type is None or geo_type == "geometry":
             obj_type = "geometry"
         elif geo_type == "gerber":
             obj_type = geo_type
         else:
-            self.inform.emit("[error_notcl] Not supported type was choosed as parameter. "
+            self.inform.emit("[ERROR_NOTCL] Not supported type was choosed as parameter. "
                              "Only Geometry and Gerber are supported")
             return
 
@@ -5355,6 +5604,7 @@ class App(QtCore.QObject):
         :type putname: str
         :return:
         """
+        self.report_usage("import_dxf()")
 
         obj_type = ""
         if geo_type is None or geo_type == "geometry":
@@ -5362,7 +5612,7 @@ class App(QtCore.QObject):
         elif geo_type == "gerber":
             obj_type = geo_type
         else:
-            self.inform.emit("[error_notcl] Not supported type was choosed as parameter. "
+            self.inform.emit("[ERROR_NOTCL] Not supported type was choosed as parameter. "
                              "Only Geometry and Gerber are supported")
             return
 
@@ -5395,13 +5645,15 @@ class App(QtCore.QObject):
         :param outname:
         :return:
         """
+        self.report_usage("import_image()")
+
         obj_type = ""
         if type is None or type == "geometry":
             obj_type = "geometry"
         elif type == "gerber":
             obj_type = type
         else:
-            self.inform.emit("[error_notcl] Not supported type was picked as parameter. "
+            self.inform.emit("[ERROR_NOTCL] Not supported type was picked as parameter. "
                              "Only Geometry and Gerber are supported")
             return
 
@@ -5450,27 +5702,27 @@ class App(QtCore.QObject):
             try:
                 gerber_obj.parse_file(filename, follow=follow)
             except IOError:
-                app_obj.inform.emit("[error_notcl] Failed to open file: " + filename)
+                app_obj.inform.emit("[ERROR_NOTCL] Failed to open file: " + filename)
                 app_obj.progress.emit(0)
-                self.inform.emit('[error_notcl] Failed to open file: ' + filename)
+                self.inform.emit('[ERROR_NOTCL] Failed to open file: ' + filename)
                 return "fail"
             except ParseError as err:
-                app_obj.inform.emit("[error_notcl] Failed to parse file: " + filename + ". " + str(err))
+                app_obj.inform.emit("[ERROR_NOTCL] Failed to parse file: " + filename + ". " + str(err))
                 app_obj.progress.emit(0)
                 self.log.error(str(err))
                 return "fail"
 
             except:
-                msg = "[error] An internal error has ocurred. See shell.\n"
+                msg = "[ERROR] An internal error has ocurred. See shell.\n"
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
                 return "fail"
 
             if gerber_obj.is_empty():
-                # app_obj.inform.emit("[error] No geometry found in file: " + filename)
+                # app_obj.inform.emit("[ERROR] No geometry found in file: " + filename)
                 # self.collection.set_active(gerber_obj.options["name"])
                 # self.collection.delete_active()
-                self.inform.emit("[error_notcl] Object is not Gerber file or empty. Aborting object creation.")
+                self.inform.emit("[ERROR_NOTCL] Object is not Gerber file or empty. Aborting object creation.")
                 return "fail"
 
             # Further parsing
@@ -5491,7 +5743,7 @@ class App(QtCore.QObject):
             ### Object creation ###
             ret = self.new_object("gerber", name, obj_init, autoselected=False)
             if ret == 'fail':
-                self.inform.emit('[error_notcl] Open Gerber failed. Probable not a Gerber file.')
+                self.inform.emit('[ERROR_NOTCL] Open Gerber failed. Probable not a Gerber file.')
                 return
 
             # Register recent file
@@ -5527,15 +5779,15 @@ class App(QtCore.QObject):
                 ret = excellon_obj.parse_file(filename)
                 if ret == "fail":
                     log.debug("Excellon parsing failed.")
-                    self.inform.emit("[error_notcl] This is not Excellon file.")
+                    self.inform.emit("[ERROR_NOTCL] This is not Excellon file.")
                     return "fail"
             except IOError:
-                app_obj.inform.emit("[error_notcl] Cannot open file: " + filename)
+                app_obj.inform.emit("[ERROR_NOTCL] Cannot open file: " + filename)
                 log.debug("Could not open Excellon object.")
                 self.progress.emit(0)  # TODO: self and app_bjj mixed
                 return "fail"
             except:
-                msg = "[error_notcl] An internal error has occurred. See shell.\n"
+                msg = "[ERROR_NOTCL] An internal error has occurred. See shell.\n"
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
                 return "fail"
@@ -5546,7 +5798,7 @@ class App(QtCore.QObject):
                 return "fail"
 
             if excellon_obj.is_empty():
-                app_obj.inform.emit("[error_notcl] No geometry found in file: " + filename)
+                app_obj.inform.emit("[ERROR_NOTCL] No geometry found in file: " + filename)
                 return "fail"
 
         with self.proc_container.new("Opening Excellon."):
@@ -5556,7 +5808,7 @@ class App(QtCore.QObject):
 
             ret = self.new_object("excellon", name, obj_init, autoselected=False)
             if ret == 'fail':
-                self.inform.emit('[error_notcl] Open Excellon file failed. Probable not an Excellon file.')
+                self.inform.emit('[ERROR_NOTCL] Open Excellon file failed. Probable not an Excellon file.')
                 return
 
                 # Register recent file
@@ -5595,7 +5847,7 @@ class App(QtCore.QObject):
                 gcode = f.read()
                 f.close()
             except IOError:
-                app_obj_.inform.emit("[error_notcl] Failed to open " + filename)
+                app_obj_.inform.emit("[ERROR_NOTCL] Failed to open " + filename)
                 self.progress.emit(0)
                 return "fail"
 
@@ -5605,7 +5857,7 @@ class App(QtCore.QObject):
 
             ret = job_obj.gcode_parse()
             if ret == "fail":
-                self.inform.emit("[error_notcl] This is not GCODE")
+                self.inform.emit("[ERROR_NOTCL] This is not GCODE")
                 return "fail"
 
             self.progress.emit(60)
@@ -5619,7 +5871,7 @@ class App(QtCore.QObject):
             # New object creation and file processing
             ret = self.new_object("cncjob", name, obj_init, autoselected=False)
             if ret == 'fail':
-                self.inform.emit("[error_notcl] Failed to create CNCJob Object. Probable not a GCode file.\n "
+                self.inform.emit("[ERROR_NOTCL] Failed to create CNCJob Object. Probable not a GCode file.\n "
                                  "Attempting to create a FlatCAM CNCJob Object from "
                                  "G-Code file failed during processing")
                 return "fail"
@@ -5653,14 +5905,14 @@ class App(QtCore.QObject):
             f = open(filename, 'r')
         except IOError:
             App.log.error("Failed to open project file: %s" % filename)
-            self.inform.emit("[error_notcl] Failed to open project file: %s" % filename)
+            self.inform.emit("[ERROR_NOTCL] Failed to open project file: %s" % filename)
             return
 
         try:
             d = json.load(f, object_hook=dict2obj)
         except:
             App.log.error("Failed to parse project file: %s" % filename)
-            self.inform.emit("[error_notcl] Failed to parse project file: %s" % filename)
+            self.inform.emit("[ERROR_NOTCL] Failed to parse project file: %s" % filename)
             f.close()
             return
 
@@ -6011,14 +6263,14 @@ class App(QtCore.QObject):
             f = open(self.data_path + '/recent.json')
         except IOError:
             App.log.error("Failed to load recent item list.")
-            self.inform.emit("[error_notcl] Failed to load recent item list.")
+            self.inform.emit("[ERROR_NOTCL] Failed to load recent item list.")
             return
 
         try:
             self.recent = json.load(f)
         except json.scanner.JSONDecodeError:
             App.log.error("Failed to parse recent item list.")
-            self.inform.emit("[error_notcl] Failed to parse recent item list.")
+            self.inform.emit("[ERROR_NOTCL] Failed to parse recent item list.")
             f.close()
             return
         f.close()
@@ -6075,9 +6327,74 @@ class App(QtCore.QObject):
         self.log.debug("Recent items list has been populated.")
 
     def setup_component_editor(self):
-        label = QtWidgets.QLabel("Choose an item from Project")
-        label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
-        self.ui.selected_scroll_area.setWidget(label)
+        # label = QtWidgets.QLabel("Choose an item from Project")
+        # label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
+
+        sel_title = QtWidgets.QTextEdit(
+            '<b>Shortcut Key List</b>')
+        sel_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+        sel_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        # font = self.sel_title.font()
+        # font.setPointSize(12)
+        # self.sel_title.setFont(font)
+
+        selected_text = '''
+<p><span style="font-size:14px"><strong>Selected Tab - Choose an Item from Project Tab</strong></span></p>
+
+<p><span style="font-size:10px"><strong>Details</strong>:<br />
+The normal flow when working in FlatCAM is the following:</span></p>
+
+<ol>
+	<li><span style="font-size:10px">Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM using either the menu&#39;s, toolbars or key shortcuts.<br />
+	<br />
+	You can also load a <strong>FlatCAM project</strong> by double clicking on the project file, drag &amp; drop of the file into the FLATCAM GUI or through the menu/toolbar links offered within the app.</span><br />
+	&nbsp;</li>
+	<li><span style="font-size:10px">Once an object is available in the Project Tab, by selecting it and then selecting <strong>SELECTED TAB </strong>(more simpler is to double click the object name in the Project Tab), <strong>SELECTED TAB </strong>will be updated with the object properties according to it&#39;s kind: Gerber, Excellon, Geometry or CNCJob object.<br />
+	<br />
+	If the selection of the object is done on the canvas by single click instead, and the <strong>SELECTED TAB</strong> is in focus, again the object properties will be displayed into the Selected Tab. Alternatively, double clicking on the object on the canvas will bring the <strong>SELECTED TAB</strong> and populate it even if it was out of focus.<br />
+	<br />
+	You can change the parameters in this screen and the flow direction is like this:<br />
+	<br />
+	<strong>Gerber/Excellon Object</strong> -&gt; Change Param -&gt; Generate Geometry -&gt;<strong> Geometry Object </strong>-&gt; Add tools (change param in Selected Tab) -&gt; Generate CNCJob -&gt;<strong> CNCJob Object </strong>-&gt; Verify GCode (through Edit CNC Code) and/or append/prepend to GCode (again, done in <strong>SELECTED TAB)&nbsp;</strong>-&gt; Save GCode</span></li>
+</ol>
+
+<p><span style="font-size:10px">A list of key shortcuts is available through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut: &#39;`&#39; (key left to 1).</span></p>
+
+        '''
+
+        sel_title.setText(selected_text)
+        sel_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+
+        self.ui.selected_scroll_area.setWidget(sel_title)
+
+        tool_title = QtWidgets.QTextEdit(
+            '<b>Shortcut Key List</b>')
+        tool_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+        tool_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        # font = self.sel_title.font()
+        # font.setPointSize(12)
+        # self.sel_title.setFont(font)
+
+        tool_text = '''
+<p><span style="font-size:14px"><strong>Tool Tab - Choose an Item in Tools Menu</strong></span></p>
+
+<p><span style="font-size:10px"><strong>Details</strong>:<br />
+Some of the functionality of FlatCAM have been implemented as tools (a sort of plugins). </span></p>
+
+<p><span style="font-size:10px">Most of the tools are accessible through&nbsp;the Tools menu or by using the associated shortcut keys.<br />
+Each such a tool, if it needs an object to be used as a source it will provide the way to select this object(s) through a series of comboboxes. The result of using a tool is either a Geometry, an information that can be used in the app or it can be a file that can be saved.</span></p>
+
+<ol>
+</ol>
+
+<p><span style="font-size:10px">A list of key shortcuts is available through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut: &#39;`&#39; (key left to 1).</span></p>
+
+                '''
+
+        tool_title.setText(tool_text)
+        tool_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+
+        self.ui.tool_scroll_area.setWidget(tool_title)
 
     def setup_obj_classes(self):
         """
@@ -6125,14 +6442,14 @@ class App(QtCore.QObject):
         except:
             # App.log.warning("Failed checking for latest version. Could not connect.")
             self.log.warning("Failed checking for latest version. Could not connect.")
-            self.inform.emit("[warning_notcl] Failed checking for latest version. Could not connect.")
+            self.inform.emit("[WARNING_NOTCL] Failed checking for latest version. Could not connect.")
             return
 
         try:
             data = json.load(f)
         except Exception as e:
             App.log.error("Could not parse information about latest version.")
-            self.inform.emit("[error_notcl] Could not parse information about latest version.")
+            self.inform.emit("[ERROR_NOTCL] Could not parse information about latest version.")
             App.log.debug("json.load(): %s" % str(e))
             f.close()
             return
@@ -6154,6 +6471,36 @@ class App(QtCore.QObject):
                            data["message"].replace("\n", "<br>")),
             "info"
         )
+
+    def on_zoom_fit(self, event):
+        """
+        Callback for zoom-out request. This can be either from the corresponding
+        toolbar button or the '1' key when the canvas is focused. Calls ``self.adjust_axes()``
+        with axes limits from the geometry bounds of all objects.
+
+        :param event: Ignored.
+        :return: None
+        """
+
+        self.plotcanvas.fit_view()
+
+    def disable_all_plots(self):
+        self.report_usage("disable_all_plots()")
+
+        self.disable_plots(self.collection.get_list())
+        self.inform.emit("[success]All plots disabled.")
+
+    def disable_other_plots(self):
+        self.report_usage("disable_other_plots()")
+
+        self.disable_plots(self.collection.get_non_selected())
+        self.inform.emit("[success]All non selected plots disabled.")
+
+    def enable_all_plots(self):
+        self.report_usage("enable_all_plots()")
+
+        self.enable_plots(self.collection.get_list())
+        self.inform.emit("[success]All plots enabled.")
 
     # TODO: FIX THIS
     '''
@@ -6246,6 +6593,8 @@ class App(QtCore.QObject):
         self.clear_pool()
 
     def generate_cnc_job(self, objects):
+        self.report_usage("generate_cnc_job()")
+
         for obj in objects:
             obj.generatecncjob()
 
@@ -6265,7 +6614,7 @@ class App(QtCore.QObject):
             try:
                 self.collection.get_active().read_form()
             except:
-                self.log.debug("[warning] There was no active object")
+                self.log.debug("[WARNING] There was no active object")
                 pass
             # Project options
             self.options_read_form()
@@ -6279,7 +6628,7 @@ class App(QtCore.QObject):
             try:
                 f = open(filename, 'w')
             except IOError:
-                App.log.error("[error] Failed to open file for saving: %s", filename)
+                App.log.error("[ERROR] Failed to open file for saving: %s", filename)
                 return
 
             # Write
@@ -6291,13 +6640,13 @@ class App(QtCore.QObject):
             try:
                 saved_f = open(filename, 'r')
             except IOError:
-                self.inform.emit("[error_notcl] Failed to verify project file: %s. Retry to save it." % filename)
+                self.inform.emit("[ERROR_NOTCL] Failed to verify project file: %s. Retry to save it." % filename)
                 return
 
             try:
                 saved_d = json.load(saved_f, object_hook=dict2obj)
             except:
-                self.inform.emit("[error_notcl] Failed to parse saved project file: %s. Retry to save it." % filename)
+                self.inform.emit("[ERROR_NOTCL] Failed to parse saved project file: %s. Retry to save it." % filename)
                 f.close()
                 return
             saved_f.close()
@@ -6305,7 +6654,7 @@ class App(QtCore.QObject):
             if 'version' in saved_d:
                 self.inform.emit("[success] Project saved to: %s" % filename)
             else:
-                self.inform.emit("[error_notcl] Failed to save project file: %s. Retry to save it." % filename)
+                self.inform.emit("[ERROR_NOTCL] Failed to save project file: %s. Retry to save it." % filename)
 
     def on_options_app2project(self):
         """

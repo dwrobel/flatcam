@@ -1,6 +1,6 @@
 from FlatCAMTool import FlatCAMTool
 
-from GUIElements import RadioSet, FloatEntry
+from GUIElements import RadioSet, FCEntry
 from PyQt5 import QtGui, QtCore, QtWidgets
 
 
@@ -44,6 +44,7 @@ class Film(FlatCAMTool):
         self.tf_object_combo.setModel(self.app.collection)
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.tf_object_combo.setCurrentIndex(1)
+
         self.tf_object_label = QtWidgets.QLabel("Film Object:")
         self.tf_object_label.setToolTip(
             "Object for which to create the film."
@@ -101,7 +102,7 @@ class Film(FlatCAMTool):
 
         # Boundary for negative film generation
 
-        self.boundary_entry = FloatEntry()
+        self.boundary_entry = FCEntry()
         self.boundary_label = QtWidgets.QLabel("Border:")
         self.boundary_label.setToolTip(
             "Specify a border around the object.\n"
@@ -114,6 +115,15 @@ class Film(FlatCAMTool):
             "surroundings if not for this border."
         )
         tf_form_layout.addRow(self.boundary_label, self.boundary_entry)
+
+        self.film_scale_entry = FCEntry()
+        self.film_scale_label = QtWidgets.QLabel("Scale Stroke:")
+        self.film_scale_label.setToolTip(
+            "Scale the line stroke thickness of each feature in the SVG file.\n"
+            "It means that the line that envelope each SVG feature will be thicker or thinner,\n"
+            "therefore the fine features may be more affected by this parameter."
+        )
+        tf_form_layout.addRow(self.film_scale_label, self.film_scale_entry)
 
         # Buttons
         hlay = QtWidgets.QHBoxLayout()
@@ -136,10 +146,6 @@ class Film(FlatCAMTool):
         self.tf_type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
         self.tf_type_box_combo.currentIndexChanged.connect(self.on_type_box_index_changed)
 
-        ## Initialize form
-        self.film_type.set_value('neg')
-        self.boundary_entry.set_value(0.0)
-
     def on_type_obj_index_changed(self, index):
         obj_type = self.tf_type_obj_combo.currentIndex()
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
@@ -151,25 +157,58 @@ class Film(FlatCAMTool):
         self.tf_box_combo.setCurrentIndex(0)
 
     def run(self):
+        self.app.report_usage("ToolFilm()")
+
         FlatCAMTool.run(self)
+        self.set_tool_ui()
         self.app.ui.notebook.setTabText(2, "Film Tool")
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+L', **kwargs)
 
+    def set_tool_ui(self):
+        self.reset_fields()
+
+        f_type = self.app.defaults["tools_film_type"] if self.app.defaults["tools_film_type"] else 'neg'
+        self.film_type.set_value(str(f_type))
+
+        b_entry = self.app.defaults[ "tools_film_boundary"] if self.app.defaults[ "tools_film_boundary"] else 0.0
+        self.boundary_entry.set_value(float(b_entry))
+
+        scale_stroke_width = self.app.defaults["tools_film_scale"] if self.app.defaults["tools_film_scale"] else 0.0
+        self.film_scale_entry.set_value(int(scale_stroke_width))
+
     def on_film_creation(self):
         try:
             name = self.tf_object_combo.currentText()
         except:
-            self.app.inform.emit("[error_notcl] No Film object selected. Load a Film object and retry.")
+            self.app.inform.emit("[ERROR_NOTCL] No FlatCAM object selected. Load an object for Film and retry.")
             return
+
         try:
             boxname = self.tf_box_combo.currentText()
         except:
-            self.app.inform.emit("[error_notcl] No Box object selected. Load a Box object and retry.")
+            self.app.inform.emit("[ERROR_NOTCL] No FlatCAM object selected. Load an object for Box and retry.")
             return
 
-        border = float(self.boundary_entry.get_value())
+        try:
+            border = float(self.boundary_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                border = float(self.boundary_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number.")
+                return
+
+        try:
+            scale_stroke_width = int(self.film_scale_entry.get_value())
+        except ValueError:
+            self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
+                                 "use a number.")
+            return
+
         if border is None:
             border = 0
 
@@ -177,32 +216,36 @@ class Film(FlatCAMTool):
 
         if self.film_type.get_value() == "pos":
             try:
-                filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export SVG positive",
-                                                             directory=self.app.get_last_save_folder(), filter="*.svg")
+                filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                    caption="Export SVG positive",
+                    directory=self.app.get_last_save_folder() + '/' + name,
+                    filter="*.svg")
             except TypeError:
                 filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export SVG positive")
 
             filename = str(filename)
 
             if str(filename) == "":
-                self.app.inform.emit("Export SVG positive cancelled.")
+                self.app.inform.emit("[WARNING_NOTCL]Export SVG positive cancelled.")
                 return
             else:
-                self.app.export_svg_black(name, boxname, filename)
+                self.app.export_svg_black(name, boxname, filename, scale_factor=scale_stroke_width)
         else:
             try:
-                filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export SVG negative",
-                                                             directory=self.app.get_last_save_folder(), filter="*.svg")
+                filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                    caption="Export SVG negative",
+                    directory=self.app.get_last_save_folder() + '/' + name,
+                    filter="*.svg")
             except TypeError:
                 filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export SVG negative")
 
             filename = str(filename)
 
             if str(filename) == "":
-                self.app.inform.emit("Export SVG negative cancelled.")
+                self.app.inform.emit("[WARNING_NOTCL]Export SVG negative cancelled.")
                 return
             else:
-                self.app.export_svg_negative(name, boxname, filename, border)
+                self.app.export_svg_negative(name, boxname, filename, border, scale_factor=scale_stroke_width)
 
     def reset_fields(self):
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

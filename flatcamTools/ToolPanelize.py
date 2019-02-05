@@ -44,6 +44,7 @@ class Panelize(FlatCAMTool):
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(1)
+
         self.object_label = QtWidgets.QLabel("Object:")
         self.object_label.setToolTip(
             "Object to be panelized. This means that it will\n"
@@ -76,6 +77,7 @@ class Panelize(FlatCAMTool):
         self.box_combo.setModel(self.app.collection)
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.box_combo.setCurrentIndex(1)
+
         self.box_combo_label = QtWidgets.QLabel("Box Object:")
         self.box_combo_label.setToolTip(
             "The actual object that is used a container for the\n "
@@ -84,8 +86,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.box_combo_label, self.box_combo)
 
         ## Spacing Columns
-        self.spacing_columns = FloatEntry()
-        self.spacing_columns.set_value(0.0)
+        self.spacing_columns = FCEntry()
         self.spacing_columns_label = QtWidgets.QLabel("Spacing cols:")
         self.spacing_columns_label.setToolTip(
             "Spacing between columns of the desired panel.\n"
@@ -94,8 +95,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.spacing_columns_label, self.spacing_columns)
 
         ## Spacing Rows
-        self.spacing_rows = FloatEntry()
-        self.spacing_rows.set_value(0.0)
+        self.spacing_rows = FCEntry()
         self.spacing_rows_label = QtWidgets.QLabel("Spacing rows:")
         self.spacing_rows_label.setToolTip(
             "Spacing between rows of the desired panel.\n"
@@ -104,8 +104,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.spacing_rows_label, self.spacing_rows)
 
         ## Columns
-        self.columns = IntEntry()
-        self.columns.set_value(1)
+        self.columns = FCEntry()
         self.columns_label = QtWidgets.QLabel("Columns:")
         self.columns_label.setToolTip(
             "Number of columns of the desired panel"
@@ -113,8 +112,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.columns_label, self.columns)
 
         ## Rows
-        self.rows = IntEntry()
-        self.rows.set_value(1)
+        self.rows = FCEntry()
         self.rows_label = QtWidgets.QLabel("Rows:")
         self.rows_label.setToolTip(
             "Number of rows of the desired panel"
@@ -132,8 +130,7 @@ class Panelize(FlatCAMTool):
         )
         form_layout.addRow(self.constrain_cb)
 
-        self.x_width_entry = FloatEntry()
-        self.x_width_entry.set_value(0.0)
+        self.x_width_entry = FCEntry()
         self.x_width_lbl = QtWidgets.QLabel("Width (DX):")
         self.x_width_lbl.setToolTip(
             "The width (DX) within which the panel must fit.\n"
@@ -141,8 +138,7 @@ class Panelize(FlatCAMTool):
         )
         form_layout.addRow(self.x_width_lbl, self.x_width_entry)
 
-        self.y_height_entry = FloatEntry()
-        self.y_height_entry.set_value(0.0)
+        self.y_height_entry = FCEntry()
         self.y_height_lbl = QtWidgets.QLabel("Height (DY):")
         self.y_height_lbl.setToolTip(
             "The height (DY)within which the panel must fit.\n"
@@ -183,6 +179,47 @@ class Panelize(FlatCAMTool):
         # flag to signal the constrain was activated
         self.constrain_flag = False
 
+    def run(self):
+        self.app.report_usage("ToolPanelize()")
+
+        FlatCAMTool.run(self)
+        self.set_tool_ui()
+        self.app.ui.notebook.setTabText(2, "Panel. Tool")
+
+    def install(self, icon=None, separator=None, **kwargs):
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+Z', **kwargs)
+
+    def set_tool_ui(self):
+        self.reset_fields()
+
+        sp_c = self.app.defaults["tools_panelize_spacing_columns"] if \
+            self.app.defaults["tools_panelize_spacing_columns"] else 0.0
+        self.spacing_columns.set_value(float(sp_c))
+
+        sp_r = self.app.defaults["tools_panelize_spacing_rows"] if \
+            self.app.defaults["tools_panelize_spacing_rows"] else 0.0
+        self.spacing_rows.set_value(float(sp_r))
+
+        rr = self.app.defaults["tools_panelize_rows"] if \
+            self.app.defaults["tools_panelize_rows"] else 0.0
+        self.rows.set_value(int(rr))
+
+        cc = self.app.defaults["tools_panelize_columns"] if \
+            self.app.defaults["tools_panelize_columns"] else 0.0
+        self.columns.set_value(int(cc))
+
+        c_cb = self.app.defaults["tools_panelize_constrain"] if \
+            self.app.defaults["tools_panelize_constrain"] else False
+        self.constrain_cb.set_value(c_cb)
+
+        x_w = self.app.defaults["tools_panelize_constrainx"] if \
+            self.app.defaults["tools_panelize_constrainx"] else 0.0
+        self.x_width_entry.set_value(float(x_w))
+
+        y_w = self.app.defaults["tools_panelize_constrainy"] if \
+            self.app.defaults["tools_panelize_constrainy"] else 0.0
+        self.y_height_entry.set_value(float(y_w))
+
     def on_type_obj_index_changed(self):
         obj_type = self.type_obj_combo.currentIndex()
         self.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
@@ -193,13 +230,6 @@ class Panelize(FlatCAMTool):
         self.box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.box_combo.setCurrentIndex(0)
 
-    def run(self):
-        FlatCAMTool.run(self)
-        self.app.ui.notebook.setTabText(2, "Panel. Tool")
-
-    def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+Z', **kwargs)
-
     def on_panelize(self):
         name = self.object_combo.currentText()
 
@@ -207,13 +237,13 @@ class Panelize(FlatCAMTool):
         try:
             obj = self.app.collection.get_by_name(str(name))
         except:
-            self.app.inform.emit("[error_notcl]Could not retrieve object: %s" % name)
+            self.app.inform.emit("[ERROR_NOTCL]Could not retrieve object: %s" % name)
             return "Could not retrieve object: %s" % name
 
         panel_obj = obj
 
         if panel_obj is None:
-            self.app.inform.emit("[error_notcl]Object not found: %s" % panel_obj)
+            self.app.inform.emit("[ERROR_NOTCL]Object not found: %s" % panel_obj)
             return "Object not found: %s" % panel_obj
 
         boxname = self.box_combo.currentText()
@@ -221,32 +251,89 @@ class Panelize(FlatCAMTool):
         try:
             box = self.app.collection.get_by_name(boxname)
         except:
-            self.app.inform.emit("[error_notcl]Could not retrieve object: %s" % boxname)
+            self.app.inform.emit("[ERROR_NOTCL]Could not retrieve object: %s" % boxname)
             return "Could not retrieve object: %s" % boxname
 
         if box is None:
-            self.app.inform.emit("[warning]No object Box. Using instead %s" % panel_obj)
+            self.app.inform.emit("[WARNING]No object Box. Using instead %s" % panel_obj)
             box = panel_obj
 
         self.outname = name + '_panelized'
 
-        spacing_columns = self.spacing_columns.get_value()
+        try:
+            spacing_columns = float(self.spacing_columns.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                spacing_columns = float(self.spacing_columns.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number.")
+                return
         spacing_columns = spacing_columns if spacing_columns is not None else 0
 
-        spacing_rows = self.spacing_rows.get_value()
+        try:
+            spacing_rows = float(self.spacing_rows.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                spacing_rows = float(self.spacing_rows.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number.")
+                return
         spacing_rows = spacing_rows if spacing_rows is not None else 0
 
-        rows = self.rows.get_value()
+        try:
+            rows = int(self.rows.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                rows = float(self.rows.get_value().replace(',', '.'))
+                rows = int(rows)
+            except ValueError:
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number.")
+                return
         rows = rows if rows is not None else 1
 
-        columns = self.columns.get_value()
+        try:
+            columns = int(self.columns.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                columns = float(self.columns.get_value().replace(',', '.'))
+                columns = int(columns)
+            except ValueError:
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number.")
+                return
         columns = columns if columns is not None else 1
 
-        constrain_dx = self.x_width_entry.get_value()
-        constrain_dy = self.y_height_entry.get_value()
+        try:
+            constrain_dx = float(self.x_width_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                constrain_dx = float(self.x_width_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number.")
+                return
+
+        try:
+            constrain_dy = float(self.y_height_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                constrain_dy = float(self.y_height_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number.")
+                return
 
         if 0 in {columns, rows}:
-            self.app.inform.emit("[error_notcl]Columns or Rows are zero value. Change them to a positive integer.")
+            self.app.inform.emit("[ERROR_NOTCL]Columns or Rows are zero value. Change them to a positive integer.")
             return "Columns or Rows are zero value. Change them to a positive integer."
 
         xmin, ymin, xmax, ymax = box.bounds()
@@ -342,7 +429,7 @@ class Panelize(FlatCAMTool):
         #             self.app.new_object("geometry", self.outname, job_init_geometry, plot=True, autoselected=True)
         #
         #     else:
-        #         self.app.inform.emit("[error_notcl] Obj is None")
+        #         self.app.inform.emit("[ERROR_NOTCL] Obj is None")
         #         return "ERROR: Obj is None"
 
         # panelize()
@@ -455,7 +542,7 @@ class Panelize(FlatCAMTool):
             self.app.inform.emit("[success]Panel done...")
         else:
             self.constrain_flag = False
-            self.app.inform.emit("[warning] Too big for the constrain area. Final panel has %s columns and %s rows" %
+            self.app.inform.emit("[WARNING] Too big for the constrain area. Final panel has %s columns and %s rows" %
                                  (columns, rows))
 
         proc = self.app.proc_container.new("Generating panel ... Please wait.")
