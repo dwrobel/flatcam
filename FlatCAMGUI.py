@@ -261,9 +261,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                             'Disable non-selected\tALT+3')
         # Separator
         self.menuview.addSeparator()
-        self.menuview_zoom_fit = self.menuview.addAction(QtGui.QIcon('share/zoom_fit32.png'), "&Zoom Fit\t1")
-        self.menuview_zoom_in = self.menuview.addAction(QtGui.QIcon('share/zoom_in32.png'), "&Zoom In\t2")
-        self.menuview_zoom_out = self.menuview.addAction(QtGui.QIcon('share/zoom_out32.png'), "&Zoom Out\t3")
+        self.menuview_zoom_fit = self.menuview.addAction(QtGui.QIcon('share/zoom_fit32.png'), "&Zoom Fit\tV")
+        self.menuview_zoom_in = self.menuview.addAction(QtGui.QIcon('share/zoom_in32.png'), "&Zoom In\t-")
+        self.menuview_zoom_out = self.menuview.addAction(QtGui.QIcon('share/zoom_out32.png'), "&Zoom Out\t=")
 
         self.menuview.addSeparator()
         self.menuview_toggle_fscreen = self.menuview.addAction(
