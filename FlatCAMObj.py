@@ -3349,6 +3349,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             job_obj.multigeo = True
             job_obj.cnc_tools.clear()
 
+            job_obj.options['xmin'] = xmin
+            job_obj.options['ymin'] = ymin
+            job_obj.options['xmax'] = xmax
+            job_obj.options['ymax'] = ymax
+
             try:
                 job_obj.z_pdepth = float(self.options["z_pdepth"])
             except ValueError:
@@ -4301,9 +4306,14 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.app.ui.code_editor.clear()
 
         # then append the text from GCode to the text editor
-        for line in self.app.gcode_edited:
-            proc_line = str(line).strip('\n')
-            self.app.ui.code_editor.append(proc_line)
+        try:
+            for line in self.app.gcode_edited:
+                proc_line = str(line).strip('\n')
+                self.app.ui.code_editor.append(proc_line)
+        except Exception as e:
+            log.debug('FlatCAMCNNJob.on_modifygcode_button_click() -->%s' % str(e))
+            self.app.inform.emit('[ERROR]FlatCAMCNNJob.on_modifygcode_button_click() -->%s' % str(e))
+            return
 
         self.app.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
 

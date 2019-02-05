@@ -3064,7 +3064,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         )
         grid1.addWidget(segy_label, 21, 0)
         self.segy_entry = FCEntry()
-        grid1.addWidget(self.segy_entry, 22, 1)
+        grid1.addWidget(self.segy_entry, 21, 1)
 
         self.layout.addStretch()
 

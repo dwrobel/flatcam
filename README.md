@@ -12,6 +12,9 @@ CAD program, and create G-Code for Isolation routing.
 6.02.2019
 
 - fixed the units calculators crash FlatCAM when using comma as decimal separator
+- done a regression on Tool Tab default text. It somehow delete Tools in certain scenarios so I got rid of it
+- fixed bug in multigeometry geometry not having the bounds in self.options and crashing the GCode generation
+- fixed bug that crashed whole application in case that the GCode editor is activated on a Tool gcode that is defective. 
 
 5.02.3019
 

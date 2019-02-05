@@ -875,8 +875,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.set_inactive(name)
 
     def on_list_selection_change(self, current, previous):
-        FlatCAMApp.App.log.debug("on_list_selection_change()")
-        FlatCAMApp.App.log.debug("Current: %s, Previous %s" % (str(current), str(previous)))
+        # FlatCAMApp.App.log.debug("on_list_selection_change()")
+        # FlatCAMApp.App.log.debug("Current: %s, Previous %s" % (str(current), str(previous)))
 
         try:
             obj = current.indexes()[0].internalPointer().obj

@@ -839,6 +839,17 @@ class ToolPaint(FlatCAMTool, Gerber):
                     return None
 
             geo_obj.solid_geometry = []
+
+            try:
+                a, b, c, d = poly.bounds()
+                geo_obj.options['xmin'] = a
+                geo_obj.options['ymin'] = b
+                geo_obj.options['xmax'] = c
+                geo_obj.options['ymax'] = d
+            except Exception as e:
+                log.debug("ToolPaint.paint_poly.gen_paintarea() bounds error --> %s" % str(e))
+                return
+
             try:
                 poly_buf = poly.buffer(-paint_margin)
                 if isinstance(poly_buf, MultiPolygon):
@@ -988,6 +999,16 @@ class ToolPaint(FlatCAMTool, Gerber):
                 sorted_tools.append(float(self.tools_table.item(row, 1).text()))
             sorted_tools.sort(reverse=True)
 
+            try:
+                a, b, c, d = obj.bounds()
+                geo_obj.options['xmin'] = a
+                geo_obj.options['ymin'] = b
+                geo_obj.options['xmax'] = c
+                geo_obj.options['ymax'] = d
+            except Exception as e:
+                log.debug("ToolPaint.paint_poly.gen_paintarea() bounds error --> %s" % str(e))
+                return
+
             total_geometry = []
             current_uid = int(1)
             geo_obj.solid_geometry = []
@@ -1084,6 +1105,16 @@ class ToolPaint(FlatCAMTool, Gerber):
             cleared_geo = []
             current_uid = int(1)
             geo_obj.solid_geometry = []
+
+            try:
+                a, b, c, d = obj.bounds()
+                geo_obj.options['xmin'] = a
+                geo_obj.options['ymin'] = b
+                geo_obj.options['xmax'] = c
+                geo_obj.options['ymax'] = d
+            except Exception as e:
+                log.debug("ToolPaint.paint_poly.gen_paintarea() bounds error --> %s" % str(e))
+                return
 
             for tool_dia in sorted_tools:
                 for geo in recurse(obj.solid_geometry):

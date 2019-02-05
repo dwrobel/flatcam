@@ -829,7 +829,7 @@ class Geometry(object):
                     for i in current.interiors:
                         geoms.insert(i)
             else:
-                print("Current Area is zero")
+                log.debug("camlib.Geometry.clear_polygon() --> Current Area is zero")
                 break
 
         # Optimization: Reduce lifts
