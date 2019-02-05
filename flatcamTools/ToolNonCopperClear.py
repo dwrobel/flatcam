@@ -412,7 +412,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.tools_table.setMinimumHeight(self.tools_table.getHeight())
         self.tools_table.setMaximumHeight(self.tools_table.getHeight())
 
-        self.app.report_usage("gerber_on_ncc_button")
         self.ui_connect()
 
     def ui_connect(self):

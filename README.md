@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+5.02.3019
+
+- added a text in the Selected Tab which is showed whenever the Selected Tab is selected but without having an object selected to display it's properties
+
 4.02.2019
 
 - modified the Toolchange_Probe_general postprocessor file to remove any Z moves before the actual toolchange event
