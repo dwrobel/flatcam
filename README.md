@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+6.02.2019
+
+- fixed the units calculators crash FlatCAM when using comma as decimal separator
+
 5.02.3019
 
 - added a text in the Selected Tab which is showed whenever the Selected Tab is selected but without having an object selected to display it's properties

@@ -293,10 +293,30 @@ class ToolCalculator(FlatCAMTool):
         self.effectiveToolDia_entry.set_value("%.4f" % tool_diameter)
 
     def on_calculate_inch_units(self):
-        self.inch_entry.set_value('%.6f' % (float(self.mm_entry.get_value()) / 25.4))
+        try:
+            mm_val = float(self.mm_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                mm_val = float(self.mm_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number.")
+                return
+        self.inch_entry.set_value('%.6f' % (mm_val / 25.4))
 
     def on_calculate_mm_units(self):
-        self.mm_entry.set_value('%.6f' % (float(self.inch_entry.get_value()) * 25.4))
+        try:
+            inch_val = float(self.inch_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                inch_val = float(self.inch_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number.")
+                return
+        self.mm_entry.set_value('%.6f' % (inch_val * 25.4))
 
     def on_calculate_eplate(self):
 
