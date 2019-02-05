@@ -56,6 +56,7 @@ class Toolchange_Probe_MACH3(FlatCAMPostProc):
 
         gcode += ('G20\n' if p.units.upper() == 'IN' else 'G21\n')
         gcode += 'G90\n'
+        gcode += 'G17\n'
         gcode += 'G94\n'
 
         return gcode
@@ -95,59 +96,122 @@ class Toolchange_Probe_MACH3(FlatCAMPostProc):
                     no_drills = i[2]
 
             if toolchangexy is not None:
-                gcode = """
-G00 X{toolchangex} Y{toolchangey}                
+                gcode = """               
 T{tool}
 M5
-M6
-(MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
+G00 Z{toolchangez}
+G00 X{toolchangex} Y{toolchangey}
+(MSG, Change to Tool Dia = {toolC} ||| Drills for this tool = {t_drills} ||| Tool Probing MACH3)
 M0
+G00 Z{z_move}
+F{fr}
+G31 Z{z_pdepth}
+G92 Z0
+G00 Z{z_move}
+F{fr_slow}
+G31 Z{z_pdepth}
+G92 Z0
+(MSG, Remove any clips or other devices used for probing. CNC work is resuming ...)
+M0
+G00 Z{z_move}
 """.format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchangex),
-             toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
-             tool=int(p.tool),
-             t_drills=no_drills,
-             toolC=toolC_formatted)
-                gcode += 'M0'
+           toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
+           toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
+           z_move=self.coordinate_format % (p.coords_decimals, p.z_move),
+           fr=str(self.feedrate_format %(p.fr_decimals, p.feedrate)),
+           fr_slow=str(self.feedrate_format % (p.fr_decimals, (p.feedrate / 2))),
+           z_pdepth=self.coordinate_format % (p.coords_decimals, p.z_pdepth),
+           tool=int(p.tool),
+           t_drills=no_drills,
+           toolC=toolC_formatted)
             else:
                 gcode = """
 T{tool}
 M5
-M6
-(MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
-M0""".format(tool=int(p.tool),
-             t_drills=no_drills,
-             toolC=toolC_formatted)
-                gcode += 'M0'
+G00 Z{toolchangez}
+(MSG, Change to Tool Dia = {toolC} ||| Drills for this tool = {t_drills} ||| Tool Probing MACH3)
+M0
+G00 Z{z_move}
+F{fr}
+G31 Z{z_pdepth}
+G92 Z0
+G00 Z{z_move}
+F{fr_slow}
+G31 Z{z_pdepth}
+G92 Z0
+(MSG, Remove any clips or other devices used for probing. CNC work is resuming ...)
+M0
+G00 Z{z_move}
+""".format(toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
+           z_move=self.coordinate_format % (p.coords_decimals, p.z_move),
+           fr=str(self.feedrate_format %(p.fr_decimals, p.feedrate)),
+           fr_slow=str(self.feedrate_format % (p.fr_decimals, (p.feedrate / 2))),
+           z_pdepth=self.coordinate_format % (p.coords_decimals, p.z_pdepth),
+           tool=int(p.tool),
+           t_drills=no_drills,
+           toolC=toolC_formatted)
 
-            if f_plunge is True:
-                gcode += '\nG00 Z%.*f' % (p.coords_decimals, p.z_move)
+            # if f_plunge is True:
+            #     gcode += '\nG00 Z%.*f' % (p.coords_decimals, p.z_move)
             return gcode
 
         else:
             if toolchangexy is not None:
                 gcode = """
-G00 X{toolchangex} Y{toolchangey}
 T{tool}
 M5
-M6    
-(MSG, Change to Tool Dia = {toolC})
-M0""".format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchangex),
-             toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
-             tool=int(p.tool),
-             toolC=toolC_formatted)
-                gcode += 'M0'
+G00 Z{toolchangez}
+G00 X{toolchangex} Y{toolchangey}
+(MSG, Change to Tool Dia = {toolC} ||| Tool Probing MACH3)
+M0
+G00 Z{z_move}
+F{fr}
+G31 Z{z_pdepth}
+G92 Z0
+G00 Z{z_move}
+F{fr_slow}
+G31 Z{z_pdepth}
+G92 Z0
+(MSG, Remove any clips or other devices used for probing. CNC work is resuming ...)
+M0
+G00 Z{z_move}
+""".format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchangex),
+           toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
+           toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
+           z_move=self.coordinate_format % (p.coords_decimals, p.z_move),
+           fr=str(self.feedrate_format % (p.fr_decimals, p.feedrate)),
+           fr_slow=str(self.feedrate_format % (p.fr_decimals, (p.feedrate / 2))),
+           z_pdepth=self.coordinate_format % (p.coords_decimals, p.z_pdepth),
+           tool=int(p.tool),
+           toolC=toolC_formatted)
             else:
                 gcode = """
 T{tool}
 M5
-M6    
-(MSG, Change to Tool Dia = {toolC})
-M0""".format(tool=int(p.tool),
-             toolC=toolC_formatted)
-                gcode += 'M0'
+G00 Z{toolchangez}
+(MSG, Change to Tool Dia = {toolC} ||| Tool Probing MACH3)
+M0
+G00 Z{z_move}
+F{fr}
+G31 Z{z_pdepth}
+G92 Z0
+G00 Z{z_move}
+F{fr_slow}
+G31 Z{z_pdepth}
+G92 Z0
+(MSG, Remove any clips or other devices used for probing. CNC work is resuming ...)
+M0
+G00 Z{z_move}
+""".format(toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
+           z_move=self.coordinate_format % (p.coords_decimals, p.z_move),
+           fr=str(self.feedrate_format %(p.fr_decimals, p.feedrate)),
+           fr_slow=str(self.feedrate_format % (p.fr_decimals, (p.feedrate / 2))),
+           z_pdepth=self.coordinate_format % (p.coords_decimals, p.z_pdepth),
+           tool=int(p.tool),
+           toolC=toolC_formatted)
 
-            if f_plunge is True:
-                gcode += '\nG00 Z%.*f' % (p.coords_decimals, p.z_move)
+            # if f_plunge is True:
+            #     gcode += '\nG00 Z%.*f' % (p.coords_decimals, p.z_move)
             return gcode
 
     def up_to_zero_code(self, p):

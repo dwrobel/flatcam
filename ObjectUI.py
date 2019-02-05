@@ -561,10 +561,22 @@ class ExcellonObjectUI(ObjectUI):
             "The json file that dictates\n"
             "gcode output."
         )
-        self.tools_box.addWidget(pp_excellon_label)
         self.pp_excellon_name_cb = FCComboBox()
         self.pp_excellon_name_cb.setFocusPolicy(QtCore.Qt.StrongFocus)
-        self.tools_box.addWidget(self.pp_excellon_name_cb)
+        grid1.addWidget(pp_excellon_label, 10, 0)
+        grid1.addWidget(self.pp_excellon_name_cb, 10, 1)
+
+        # Probe depth
+        self.pdepth_label = QtWidgets.QLabel("Probe Z depth:")
+        self.pdepth_label.setToolTip(
+            "The maximum depth that the probe is allowed\n"
+            "to probe. Negative value, in current units."
+        )
+        grid1.addWidget(self.pdepth_label, 11, 0)
+        self.pdepth_entry = FCEntry()
+        grid1.addWidget(self.pdepth_entry, 11, 1)
+        self.pdepth_label.hide()
+        self.pdepth_entry.setVisible(False)
 
         choose_tools_label = QtWidgets.QLabel(
             "Select from the Tools Table above\n"
@@ -1006,11 +1018,23 @@ class GeometryObjectUI(ObjectUI):
         self.pp_geometry_name_cb.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.grid3.addWidget(self.pp_geometry_name_cb, 16, 1)
 
+        # Probe depth
+        self.pdepth_label = QtWidgets.QLabel("Probe Z depth:")
+        self.pdepth_label.setToolTip(
+            "The maximum depth that the probe is allowed\n"
+            "to probe. Negative value, in current units."
+        )
+        self.grid3.addWidget(self.pdepth_label, 17, 0)
+        self.pdepth_entry = FCEntry()
+        self.grid3.addWidget(self.pdepth_entry, 17, 1)
+        self.pdepth_label.hide()
+        self.pdepth_entry.setVisible(False)
+
         warning_lbl = QtWidgets.QLabel(
             "Add at least one tool in the tool-table.\n"
             "Click the header to select all, or Ctrl + LMB\n"
             "for custom selection of tools.")
-        self.grid3.addWidget(warning_lbl, 17, 0, 1, 2)
+        self.grid3.addWidget(warning_lbl, 18, 0, 1, 2)
 
         # Button
         self.generate_cnc_button = QtWidgets.QPushButton('Generate')

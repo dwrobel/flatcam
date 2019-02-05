@@ -856,6 +856,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             "dwell": True,
             "dwelltime": 1000,
             "ppname_e": 'defaults',
+            "z_pdepth": -0.02,
             "optimization_type": "R",
             "gcode_type": "drills"
         })
@@ -1238,6 +1239,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             "startz": self.ui.estartz_entry,
             "endz": self.ui.eendz_entry,
             "ppname_e": self.ui.pp_excellon_name_cb,
+            "z_pdepth": self.ui.pdepth_entry,
             "gcode_type": self.ui.excellon_gcode_type_radio
         })
 
@@ -1257,6 +1259,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.ui.generate_cnc_button.clicked.connect(self.on_create_cncjob_button_click)
         self.ui.generate_milling_button.clicked.connect(self.on_generate_milling_button_click)
         self.ui.generate_milling_slots_button.clicked.connect(self.on_generate_milling_slots_button_click)
+
+        self.ui.pp_excellon_name_cb.activated.connect(self.on_pp_changed)
 
     def get_selected_tools_list(self):
         """
@@ -1627,6 +1631,16 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         self.generate_milling_slots(use_thread=False)
 
+    def on_pp_changed(self):
+        current_pp = self.ui.pp_excellon_name_cb.get_value()
+
+        if "toolchange_probe" in current_pp.lower():
+            self.ui.pdepth_entry.setVisible(True)
+            self.ui.pdepth_label.show()
+        else:
+            self.ui.pdepth_entry.setVisible(False)
+            self.ui.pdepth_label.hide()
+
     def on_create_cncjob_button_click(self, *args):
         self.app.report_usage("excellon_on_create_cncjob_button")
         self.read_form()
@@ -1679,6 +1693,16 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.options['ymin'] = ymin
             job_obj.options['xmax'] = xmax
             job_obj.options['ymax'] = ymax
+
+            try:
+                job_obj.z_pdepth = float(self.options["z_pdepth"])
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    job_obj.z_pdepth = float(self.options["z_pdepth"].replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit(
+                        '[ERROR_NOTCL]Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]')
 
             # There could be more than one drill size...
             # job_obj.tooldia =   # TODO: duplicate variable!
@@ -1948,6 +1972,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "toolchangexy": "0.0, 0.0",
             "startz": None,
             "ppname_g": 'default',
+            "z_pdepth": -0.02,
         })
 
         if "cnctooldia" not in self.options:
@@ -2160,6 +2185,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "dwelltime": self.ui.dwelltime_entry,
             "multidepth": self.ui.mpass_cb,
             "ppname_g": self.ui.pp_geometry_name_cb,
+            "z_pdepth": self.ui.pdepth_entry,
             "depthperpass": self.ui.maxdepth_entry,
             "extracut": self.ui.extracut_cb,
             "toolchange": self.ui.toolchangeg_cb,
@@ -3007,6 +3033,13 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.toolchangeg_cb.set_value(self.old_toolchangeg_state)
             self.ui.toolchangeg_cb.setDisabled(False)
 
+        if "toolchange_probe" in current_pp.lower():
+            self.ui.pdepth_entry.setVisible(True)
+            self.ui.pdepth_label.show()
+        else:
+            self.ui.pdepth_entry.setVisible(False)
+            self.ui.pdepth_label.hide()
+
     def on_generatecnc_button_click(self, *args):
 
         self.app.report_usage("geometry_on_generatecnc_button")
@@ -3089,6 +3122,16 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             job_obj.options['Tools_in_use'] = self.get_selected_tools_table_items()
             job_obj.segx = segx
             job_obj.segy = segy
+
+            try:
+                job_obj.z_pdepth = float(self.options["z_pdepth"])
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    job_obj.z_pdepth = float(self.options["z_pdepth"].replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit(
+                        '[ERROR_NOTCL]Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]')
 
             for tooluid_key in self.sel_tools:
                 tool_cnt += 1
@@ -3266,6 +3309,16 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             job_obj.multitool = True
             job_obj.multigeo = True
             job_obj.cnc_tools.clear()
+
+            try:
+                job_obj.z_pdepth = float(self.options["z_pdepth"])
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    job_obj.z_pdepth = float(self.options["z_pdepth"].replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit(
+                        '[ERROR_NOTCL]Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]')
 
             for tooluid_key in self.sel_tools:
                 tool_cnt += 1
@@ -3540,6 +3593,16 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
             job_obj.segx = segx
             job_obj.segy = segy
+
+            try:
+                job_obj.z_pdepth = float(self.options["z_pdepth"])
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    job_obj.z_pdepth = float(self.options["z_pdepth"].replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit(
+                        '[ERROR_NOTCL]Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]')
 
             # TODO: The tolerance should not be hard coded. Just for testing.
             job_obj.generate_from_geometry_2(self, tooldia=tooldia, offset=offset, tolerance=0.0005,

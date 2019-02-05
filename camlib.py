@@ -4372,7 +4372,7 @@ class CNCjob(Geometry):
                  z_cut=-0.002, z_move=0.1,
                  feedrate=3.0, feedrate_z=3.0, feedrate_rapid=3.0,
                  pp_geometry_name='default', pp_excellon_name='default',
-                 depthpercut = 0.1,
+                 depthpercut=0.1,z_pdepth=-0.02,
                  spindlespeed=None, dwell=True, dwelltime=1000,
                  toolchangez=0.787402, toolchange_xy=[0.0, 0.0],
                  endz=2.0,
@@ -4421,6 +4421,9 @@ class CNCjob(Geometry):
 
         # Controls if the move from Z_Toolchange to Z_Move is done fast with G0 or normally with G1
         self.f_plunge = None
+
+        # how much depth the probe can probe before error
+        self.z_pdepth = z_pdepth if z_pdepth else None
 
         self.spindlespeed = spindlespeed
         self.dwell = dwell
@@ -4565,6 +4568,9 @@ class CNCjob(Geometry):
         self.startz = startz
         self.endz = endz
 
+        self.pp_excellon = self.app.postprocessors[self.pp_excellon_name]
+        p = self.pp_excellon
+
         log.debug("Creating CNC Job from Excellon...")
 
         # Tools
@@ -4601,9 +4607,6 @@ class CNCjob(Geometry):
         #log.debug("Found %d drills." % len(points))
 
         self.gcode = []
-
-        self.pp_excellon = self.app.postprocessors[self.pp_excellon_name]
-        p = self.pp_excellon
 
         self.f_plunge = self.app.defaults["excellon_f_plunge"]
 

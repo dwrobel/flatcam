@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - added a text in the Selected Tab which is showed whenever the Selected Tab is selected but without having an object selected to display it's properties
 - added an initial text in the Tools tab
 - added possibility to use the shortcut key for shortcut list in the Notebook tabs
+- added a way to set the Probe depth if Toolchange_Probe postprocessors are selected
+- finished the postprocessor file for MACH3 tool probing on toolchange event
 
 4.02.2019
 

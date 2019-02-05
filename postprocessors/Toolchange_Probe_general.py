@@ -56,6 +56,7 @@ class Toolchange_Probe_general(FlatCAMPostProc):
 
         gcode += ('G20\n' if p.units.upper() == 'IN' else 'G21\n')
         gcode += 'G90\n'
+        gcode += 'G17\n'
         gcode += 'G94\n'
 
         return gcode

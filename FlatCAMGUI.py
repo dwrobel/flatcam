@@ -2687,6 +2687,16 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.pp_excellon_name_cb.setFocusPolicy(Qt.StrongFocus)
         grid2.addWidget(self.pp_excellon_name_cb, 12, 1)
 
+        # Probe depth
+        self.pdepth_label = QtWidgets.QLabel("Probe Z depth:")
+        self.pdepth_label.setToolTip(
+            "The maximum depth that the probe is allowed\n"
+            "to probe. Negative value, in current units."
+        )
+        grid2.addWidget(self.pdepth_label, 13, 0)
+        self.pdepth_entry = FCEntry()
+        grid2.addWidget(self.pdepth_entry, 13, 1)
+
         fplungelabel = QtWidgets.QLabel('Fast Plunge:')
         fplungelabel.setToolTip(
             "By checking this, the vertical move from\n"
@@ -2695,8 +2705,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             "WARNING: the move is done at Toolchange X,Y coords."
         )
         self.fplunge_cb = FCCheckBox()
-        grid2.addWidget(fplungelabel, 13, 0)
-        grid2.addWidget(self.fplunge_cb, 13, 1)
+        grid2.addWidget(fplungelabel, 14, 0)
+        grid2.addWidget(self.fplunge_cb, 14, 1)
 
         #### Choose what to use for Gcode creation: Drills, Slots or Both
         excellon_gcode_type_label = QtWidgets.QLabel('<b>Gcode:    </b>')
@@ -2709,8 +2719,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.excellon_gcode_type_radio = RadioSet([{'label': 'Drills', 'value': 'drills'},
                                           {'label': 'Slots', 'value': 'slots'},
                                           {'label': 'Both', 'value': 'both'}])
-        grid2.addWidget(excellon_gcode_type_label, 14, 0)
-        grid2.addWidget(self.excellon_gcode_type_radio, 14, 1)
+        grid2.addWidget(excellon_gcode_type_label, 15, 0)
+        grid2.addWidget(self.excellon_gcode_type_radio, 15, 1)
 
         # until I decide to implement this feature those remain disabled
         excellon_gcode_type_label.setDisabled(True)
@@ -2994,6 +3004,16 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         self.pp_geometry_name_cb.setFocusPolicy(Qt.StrongFocus)
         grid1.addWidget(self.pp_geometry_name_cb, 16, 1)
 
+        # Probe depth
+        self.pdepth_label = QtWidgets.QLabel("Probe Z depth:")
+        self.pdepth_label.setToolTip(
+            "The maximum depth that the probe is allowed\n"
+            "to probe. Negative value, in current units."
+        )
+        grid1.addWidget(self.pdepth_label, 17, 0)
+        self.pdepth_entry = FCEntry()
+        grid1.addWidget(self.pdepth_entry, 17, 1)
+
         # Fast Move from Z Toolchange
         fplungelabel = QtWidgets.QLabel('Fast Plunge:')
         fplungelabel.setToolTip(
@@ -3003,8 +3023,8 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             "WARNING: the move is done at Toolchange X,Y coords."
         )
         self.fplunge_cb = FCCheckBox()
-        grid1.addWidget(fplungelabel, 17, 0)
-        grid1.addWidget(self.fplunge_cb, 17, 1)
+        grid1.addWidget(fplungelabel, 18, 0)
+        grid1.addWidget(self.fplunge_cb, 18, 1)
 
         # Size of trace segment on X axis
         segx_label = QtWidgets.QLabel("Seg. X size:")
@@ -3013,9 +3033,9 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             "Useful for auto-leveling.\n"
             "A value of 0 means no segmentation on the X axis."
         )
-        grid1.addWidget(segx_label, 18, 0)
+        grid1.addWidget(segx_label, 19, 0)
         self.segx_entry = FCEntry()
-        grid1.addWidget(self.segx_entry, 18, 1)
+        grid1.addWidget(self.segx_entry, 19, 1)
 
         # Size of trace segment on Y axis
         segy_label = QtWidgets.QLabel("Seg. Y size:")
@@ -3024,9 +3044,9 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             "Useful for auto-leveling.\n"
             "A value of 0 means no segmentation on the Y axis."
         )
-        grid1.addWidget(segy_label, 19, 0)
+        grid1.addWidget(segy_label, 20, 0)
         self.segy_entry = FCEntry()
-        grid1.addWidget(self.segy_entry, 19, 1)
+        grid1.addWidget(self.segy_entry, 21, 1)
 
         self.layout.addStretch()
 
