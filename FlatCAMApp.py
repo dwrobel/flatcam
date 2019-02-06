@@ -394,6 +394,7 @@ class App(QtCore.QObject):
             "geometry_extracut": self.geometry_defaults_form.geometry_opt_group.extracut_cb,
 
             "cncjob_plot": self.cncjob_defaults_form.cncjob_gen_group.plot_cb,
+            "cncjob_plot_kind": self.cncjob_defaults_form.cncjob_gen_group.cncplot_method_radio,
             "cncjob_tooldia": self.cncjob_defaults_form.cncjob_gen_group.tooldia_entry,
             "cncjob_coords_decimals": self.cncjob_defaults_form.cncjob_gen_group.coords_dec_entry,
             "cncjob_fr_decimals": self.cncjob_defaults_form.cncjob_gen_group.fr_dec_entry,
@@ -580,6 +581,7 @@ class App(QtCore.QObject):
             "geometry_circle_steps": 64,
 
             "cncjob_plot": True,
+            "cncjob_plot_kind": 'all',
             "cncjob_tooldia": 0.0393701,
             "cncjob_coords_decimals": 4,
             "cncjob_fr_decimals": 2,
@@ -2288,7 +2290,10 @@ class App(QtCore.QObject):
 
         def worker_task(obj):
             with self.proc_container.new("Plotting"):
-                obj.plot()
+                if isinstance(obj, FlatCAMCNCjob):
+                    obj.plot(kind=self.defaults["cncjob_plot_kind"])
+                else:
+                    obj.plot()
                 t1 = time.time()  # DEBUG
                 self.log.debug("%f seconds adding object and plotting." % (t1 - t0))
                 self.object_plotted.emit(obj)

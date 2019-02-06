@@ -4235,7 +4235,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.to_form()
 
         # set the kind of geometries are plotted by default with plot2() from camlib.CNCJob
-        self.ui.cncplot_method_combo.set_value('all')
+        self.ui.cncplot_method_combo.set_value(self.app.defaults["cncjob_plot_kind"])
 
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)

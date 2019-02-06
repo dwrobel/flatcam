@@ -1129,9 +1129,14 @@ class CNCObjectUI(ObjectUI):
             {"label": "Cut", "value": "cut"}
         ], stretch=False)
 
-        f_lay = QtWidgets.QFormLayout()
+        f_lay = QtWidgets.QGridLayout()
+        f_lay.setColumnStretch(1, 1)
+        f_lay.setColumnStretch(2, 1)
+
         self.custom_box.addLayout(f_lay)
-        f_lay.addRow(self.cncplot_method_label, self.cncplot_method_combo)
+        f_lay.addWidget(self.cncplot_method_label, 0, 0)
+        f_lay.addWidget(self.cncplot_method_combo, 0, 1)
+        f_lay.addWidget(QtWidgets.QLabel(''), 0, 2)
 
         e1_lbl = QtWidgets.QLabel('')
         self.custom_box.addWidget(e1_lbl)

@@ -21,6 +21,7 @@ CAD program, and create G-Code for Isolation routing.
 - changed the messages for Units Conversion
 - all key shortcuts work across the entire application; moved all the shortcuts definitions in FlatCAMGUI.keyPressEvent()
 - renamed the theme to layout because it is really a layout change
+- added plot kind for CNC Job in the App Preferences
 - combined the geocutout and cutout_any TCL commands - work in progress
 
 5.02.3019

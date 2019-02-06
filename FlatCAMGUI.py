@@ -1968,7 +1968,7 @@ class CNCJobPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.cncjob_gen_group = CNCJobGenPrefGroupUI()
-        self.cncjob_gen_group.setFixedWidth(260)
+        self.cncjob_gen_group.setFixedWidth(270)
         self.cncjob_opt_group = CNCJobOptPrefGroupUI()
         self.cncjob_opt_group.setFixedWidth(260)
 
@@ -3333,14 +3333,35 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
 
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
+        grid0.setColumnStretch(1, 1)
+        grid0.setColumnStretch(2, 1)
 
         # Plot CB
         # self.plot_cb = QtWidgets.QCheckBox('Plot')
-        self.plot_cb = FCCheckBox('Plot')
+        self.plot_cb = FCCheckBox('Plot Object')
         self.plot_cb.setToolTip(
             "Plot (show) this object."
         )
         grid0.addWidget(self.plot_cb, 0, 0)
+
+        # Plot Kind
+        self.cncplot_method_label = QtWidgets.QLabel("Plot kind:")
+        self.cncplot_method_label.setToolTip(
+            "This selects the kind of geometries on the canvas to plot.\n"
+            "Those can be either of type 'Travel' which means the moves\n"
+            "above the work piece or it can be of type 'Cut',\n"
+            "which means the moves that cut into the material."
+        )
+
+        self.cncplot_method_radio = RadioSet([
+            {"label": "All", "value": "all"},
+            {"label": "Travel", "value": "travel"},
+            {"label": "Cut", "value": "cut"}
+        ], stretch=False)
+
+        grid0.addWidget(self.cncplot_method_label, 1, 0)
+        grid0.addWidget(self.cncplot_method_radio, 1, 1)
+        grid0.addWidget(QtWidgets.QLabel(''), 1, 2)
 
         # Number of circle steps for circular aperture linear approximation
         self.steps_per_circle_label = QtWidgets.QLabel("Circle Steps:")
@@ -3348,9 +3369,9 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
             "The number of circle steps for <b>GCode</b> \n"
             "circle and arc shapes linear approximation."
         )
-        grid0.addWidget(self.steps_per_circle_label, 1, 0)
+        grid0.addWidget(self.steps_per_circle_label, 2, 0)
         self.steps_per_circle_entry = IntEntry()
-        grid0.addWidget(self.steps_per_circle_entry, 1, 1)
+        grid0.addWidget(self.steps_per_circle_entry, 2, 1)
 
         # Tool dia for plot
         tdlabel = QtWidgets.QLabel('Tool dia:')
@@ -3358,29 +3379,29 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
             "Diameter of the tool to be\n"
             "rendered in the plot."
         )
-        grid0.addWidget(tdlabel, 2, 0)
+        grid0.addWidget(tdlabel, 3, 0)
         self.tooldia_entry = LengthEntry()
-        grid0.addWidget(self.tooldia_entry, 2, 1)
+        grid0.addWidget(self.tooldia_entry, 3, 1)
 
         # Number of decimals to use in GCODE coordinates
-        cdeclabel = QtWidgets.QLabel('Coords decimals:')
+        cdeclabel = QtWidgets.QLabel('Coords dec.:')
         cdeclabel.setToolTip(
             "The number of decimals to be used for \n"
             "the X, Y, Z coordinates in CNC code (GCODE, etc.)"
         )
-        grid0.addWidget(cdeclabel, 3, 0)
+        grid0.addWidget(cdeclabel, 4, 0)
         self.coords_dec_entry = IntEntry()
-        grid0.addWidget(self.coords_dec_entry, 3, 1)
+        grid0.addWidget(self.coords_dec_entry, 4, 1)
 
         # Number of decimals to use in GCODE feedrate
-        frdeclabel = QtWidgets.QLabel('Feedrate decimals:')
+        frdeclabel = QtWidgets.QLabel('Feedrate dec.:')
         frdeclabel.setToolTip(
             "The number of decimals to be used for \n"
-            "the feedrate in CNC code (GCODE, etc.)"
+            "the Feedrate parameter in CNC code (GCODE, etc.)"
         )
-        grid0.addWidget(frdeclabel, 4, 0)
+        grid0.addWidget(frdeclabel, 5, 0)
         self.fr_dec_entry = IntEntry()
-        grid0.addWidget(self.fr_dec_entry, 4, 1)
+        grid0.addWidget(self.fr_dec_entry, 5, 1)
 
         self.layout.addStretch()
 
