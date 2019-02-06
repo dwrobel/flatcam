@@ -1507,8 +1507,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         if type(event) is int:
             key = event
         # events from the GUI are of type QKeyEvent
-        else:
+        elif type(event) == QtGui.QKeyEvent:
             key = event.key()
+        # events from Vispy are of type KeyEvent
+        else:
+            key = event.key
 
         if modifiers == QtCore.Qt.ControlModifier:
             if key == QtCore.Qt.Key_A:
@@ -1528,6 +1531,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
             if key == QtCore.Qt.Key_M:
                 self.app.measurement_tool.run()
+
             if key == QtCore.Qt.Key_O:
                 self.app.on_file_openproject()
 
@@ -1603,14 +1607,28 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             if key == Qt.Key_3:
                 self.app.disable_other_plots()
 
+            # Calculator Tool
+            if key == QtCore.Qt.Key_C:
+                self.app.calculator_tool.run()
+
             # 2-Sided PCB Tool
             if key == QtCore.Qt.Key_D:
                 self.app.dblsidedtool.run()
                 return
 
+            # Film Tool
+            if key == QtCore.Qt.Key_L:
+                self.app.film_tool.run()
+                return
+
             # Non-Copper Clear Tool
             if key == QtCore.Qt.Key_N:
                 self.app.ncclear_tool.run()
+                return
+
+            # Paint Tool
+            if key == QtCore.Qt.Key_P:
+                self.app.paint_tool.run()
                 return
 
             # Transformation Tool
@@ -1623,6 +1641,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 self.app.cutout_tool.run()
                 return
 
+            # Panelize Tool
+            if key == QtCore.Qt.Key_Z:
+                self.app.panelize_tool.run()
+                return
+
+            # Toggle Fullscreen
+            if key == QtCore.Qt.Key_F10:
+                self.app.on_fullscreen()
+                return
         else:
             # Open Manual
             if key == QtCore.Qt.Key_F1:

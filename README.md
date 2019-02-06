@@ -19,7 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the name self-insert in save dialog file for GCode; added protection in case the save path is None
 - fixed FlatCAM crash when trying to make drills GCode out of a file that have only slots.
 - changed the messages for Units Conversion
-- all kwy shortcuts work across the entire application; started to move all the shortcuts definitions in FlatCAMGUI.keyPressEvent()
+- all key shortcuts work across the entire application; moved all the shortcuts definitions in FlatCAMGUI.keyPressEvent()
 
 5.02.3019
 

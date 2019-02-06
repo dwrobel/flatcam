@@ -2134,19 +2134,20 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
         # but those from FlatCAMGeoEditor
-        self.app.plotcanvas.vis_disconnect('key_press', self.app.on_key_over_plot)
+
+        self.app.plotcanvas.vis_disconnect('key_press', self.app.ui.keyPressEvent)
         self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
-        self.app.collection.view.keyPressed.disconnect()
+
         self.app.collection.view.clicked.disconnect()
 
         self.canvas.vis_connect('mouse_press', self.on_canvas_click)
         self.canvas.vis_connect('mouse_move', self.on_canvas_move)
         self.canvas.vis_connect('mouse_release', self.on_canvas_click_release)
         self.canvas.vis_connect('key_press', self.on_canvas_key)
-        self.canvas.vis_connect('key_release', self.on_canvas_key_release)
+
 
     def disconnect_canvas_event_handlers(self):
 
@@ -2154,15 +2155,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
         self.canvas.vis_disconnect('mouse_release', self.on_canvas_click_release)
         self.canvas.vis_disconnect('key_press', self.on_canvas_key)
-        self.canvas.vis_disconnect('key_release', self.on_canvas_key_release)
+
 
         # we restore the key and mouse control to FlatCAMApp method
-        self.app.plotcanvas.vis_connect('key_press', self.app.on_key_over_plot)
+        self.app.plotcanvas.vis_connect('key_press', self.app.ui.keyPressEvent)
         self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
         self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
         self.app.plotcanvas.vis_connect('mouse_double_click', self.app.on_double_click_over_plot)
-        self.app.collection.view.keyPressed.connect(self.app.collection.on_key)
         self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
 
     def add_shape(self, shape):
@@ -4277,7 +4277,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
         # but those from FlatCAMGeoEditor
-        self.app.plotcanvas.vis_disconnect('key_press', self.app.on_key_over_plot)
+        self.app.plotcanvas.vis_disconnect('key_press', self.app.ui.keyPressEvent)
         self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
@@ -4289,10 +4289,9 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.canvas.vis_connect('mouse_move', self.on_canvas_move)
         self.canvas.vis_connect('mouse_release', self.on_canvas_click_release)
         self.canvas.vis_connect('key_press', self.on_canvas_key)
-        self.canvas.vis_connect('key_release', self.on_canvas_key_release)
+
 
     def disconnect_canvas_event_handlers(self):
-
         self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
         self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
         self.canvas.vis_disconnect('mouse_release', self.on_canvas_click_release)
@@ -4300,12 +4299,12 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.canvas.vis_disconnect('key_release', self.on_canvas_key_release)
 
         # we restore the key and mouse control to FlatCAMApp method
-        self.app.plotcanvas.vis_connect('key_press', self.app.on_key_over_plot)
+        self.app.plotcanvas.vis_connect('key_press', self.app.ui.keyPressEvent)
         self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
         self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
         self.app.plotcanvas.vis_connect('mouse_double_click', self.app.on_double_click_over_plot)
-        self.app.collection.view.keyPressed.connect(self.app.collection.on_key)
+
         self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
 
     def clear(self):

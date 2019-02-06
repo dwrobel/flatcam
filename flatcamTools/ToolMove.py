@@ -47,7 +47,7 @@ class ToolMove(FlatCAMTool):
             self.app.plotcanvas.vis_disconnect('mouse_move', self.on_move)
             self.app.plotcanvas.vis_disconnect('mouse_press', self.on_left_click)
             self.app.plotcanvas.vis_disconnect('key_release', self.on_key_press)
-            self.app.plotcanvas.vis_connect('key_press', self.app.on_key_over_plot)
+            self.app.plotcanvas.vis_connect('key_press', self.app.ui.keyPressEvent)
 
             self.clicked_move = 0
 
