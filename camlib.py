@@ -101,7 +101,7 @@ class Geometry(object):
         self.geo_steps_per_circle = geo_steps_per_circle
 
         if geo_steps_per_circle is None:
-            geo_steps_per_circle = Geometry.defaults["geo_steps_per_circle"]
+            geo_steps_per_circle = int(Geometry.defaults["geo_steps_per_circle"])
         self.geo_steps_per_circle = geo_steps_per_circle
 
     def make_index(self):
@@ -537,7 +537,7 @@ class Geometry(object):
         if offset == 0:
             geo_iso = self.solid_geometry
         else:
-            geo_iso = self.solid_geometry.buffer(offset, int(self.geo_steps_per_circle / 4))
+            geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
         # end of replaced block
 
         if iso_type == 2:
@@ -790,7 +790,7 @@ class Geometry(object):
 
         # Can only result in a Polygon or MultiPolygon
         # NOTE: The resulting polygon can be "empty".
-        current = polygon.buffer((-tooldia / 1.999999), int(steps_per_circle / 4))
+        current = polygon.buffer((-tooldia / 1.999999), int(int(steps_per_circle) / 4))
         if current.area == 0:
             # Otherwise, trying to to insert current.exterior == None
             # into the FlatCAMStorage will fail.
@@ -813,7 +813,7 @@ class Geometry(object):
         while True:
 
             # Can only result in a Polygon or MultiPolygon
-            current = current.buffer(-tooldia * (1 - overlap), int(steps_per_circle / 4))
+            current = current.buffer(-tooldia * (1 - overlap), int(int(steps_per_circle) / 4))
             if current.area > 0:
 
                 # current can be a MultiPolygon
@@ -835,7 +835,7 @@ class Geometry(object):
         # Optimization: Reduce lifts
         if connect:
             # log.debug("Reducing tool lifts...")
-            geoms = Geometry.paint_connect(geoms, polygon, tooldia, steps_per_circle)
+            geoms = Geometry.paint_connect(geoms, polygon, tooldia, int(steps_per_circle))
 
         return geoms
 
@@ -1873,11 +1873,11 @@ class Gerber (Geometry):
 
         # How to discretize a circle.
         if steps_per_circle is None:
-            steps_per_circle = Gerber.defaults['steps_per_circle']
-        self.steps_per_circle = steps_per_circle
+            steps_per_circle = int(Gerber.defaults['steps_per_circle'])
+        self.steps_per_circle = int(steps_per_circle)
 
         # Initialize parent
-        Geometry.__init__(self, geo_steps_per_circle=steps_per_circle)
+        Geometry.__init__(self, geo_steps_per_circle=int(steps_per_circle))
 
         self.solid_geometry = Polygon()
 
@@ -3268,10 +3268,10 @@ class Excellon(Geometry):
         """
 
         if geo_steps_per_circle is None:
-            geo_steps_per_circle = Excellon.defaults['geo_steps_per_circle']
-        self.geo_steps_per_circle = geo_steps_per_circle
+            geo_steps_per_circle = int(Excellon.defaults['geo_steps_per_circle'])
+        self.geo_steps_per_circle = int(geo_steps_per_circle)
 
-        Geometry.__init__(self, geo_steps_per_circle=geo_steps_per_circle)
+        Geometry.__init__(self, geo_steps_per_circle=int(geo_steps_per_circle))
 
         # dictionary to store tools, see above for description
         self.tools = {}
@@ -4382,10 +4382,10 @@ class CNCjob(Geometry):
 
         # Used when parsing G-code arcs
         if steps_per_circle is None:
-            steps_per_circle = CNCjob.defaults["steps_per_circle"]
-        self.steps_per_circle = steps_per_circle
+            steps_per_circle = int(CNCjob.defaults["steps_per_circle"])
+        self.steps_per_circle = int(steps_per_circle)
 
-        Geometry.__init__(self, geo_steps_per_circle=steps_per_circle)
+        Geometry.__init__(self, geo_steps_per_circle=int(steps_per_circle))
 
         self.kind = kind
         self.units = units

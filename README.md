@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - done a regression on Tool Tab default text. It somehow delete Tools in certain scenarios so I got rid of it
 - fixed bug in multigeometry geometry not having the bounds in self.options and crashing the GCode generation
 - fixed bug that crashed whole application in case that the GCode editor is activated on a Tool gcode that is defective. 
+- fixed bug in Excellon Slots milling: a value of a dict key was a string instead to be an int. A cast to integer solved it.
 
 5.02.3019
 

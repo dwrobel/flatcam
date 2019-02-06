@@ -388,7 +388,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         grb_final.solid_geometry = MultiPolygon(grb_final.solid_geometry)
 
     def __init__(self, name):
-        Gerber.__init__(self, steps_per_circle=self.app.defaults["gerber_circle_steps"])
+        Gerber.__init__(self, steps_per_circle=int(self.app.defaults["gerber_circle_steps"]))
         FlatCAMObj.__init__(self, name)
 
         self.kind = "gerber"
@@ -833,7 +833,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
     optionChanged = QtCore.pyqtSignal(str)
 
     def __init__(self, name):
-        Excellon.__init__(self, geo_steps_per_circle=self.app.defaults["geometry_circle_steps"])
+        Excellon.__init__(self, geo_steps_per_circle=int(self.app.defaults["geometry_circle_steps"]))
         FlatCAMObj.__init__(self, name)
 
         self.kind = "excellon"
@@ -1590,20 +1590,20 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # we add a tenth of the minimum value, meaning 0.0000001, which from our point of view is "almost zero"
             for slot in self.slots:
                 if slot['tool'] in tools:
-                    buffer_value = self.tools[slot['tool']]["C"] / 2 - tooldia / 2
+                    buffer_value = (float(self.tools[slot['tool']]["C"]) / 2) - float(tooldia / 2)
                     if buffer_value == 0:
                         start = slot['start']
                         stop = slot['stop']
 
                         lines_string = LineString([start, stop])
-                        poly = lines_string.buffer(0.0000001, self.geo_steps_per_circle).exterior
+                        poly = lines_string.buffer(0.0000001, int(self.geo_steps_per_circle)).exterior
                         geo_obj.solid_geometry.append(poly)
                     else:
                         start = slot['start']
                         stop = slot['stop']
 
                         lines_string = LineString([start, stop])
-                        poly = lines_string.buffer(buffer_value, self.geo_steps_per_circle).exterior
+                        poly = lines_string.buffer(buffer_value, int(self.geo_steps_per_circle)).exterior
                         geo_obj.solid_geometry.append(poly)
 
         if use_thread:
@@ -1967,7 +1967,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
     def __init__(self, name):
         FlatCAMObj.__init__(self, name)
-        Geometry.__init__(self, geo_steps_per_circle=self.app.defaults["geometry_circle_steps"])
+        Geometry.__init__(self, geo_steps_per_circle=int(self.app.defaults["geometry_circle_steps"]))
 
         self.kind = "geometry"
 
@@ -4020,7 +4020,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         CNCjob.__init__(self, units=units, kind=kind, z_move=z_move,
                         feedrate=feedrate, feedrate_rapid=feedrate_rapid, z_cut=z_cut, tooldia=tooldia,
-                        spindlespeed=spindlespeed, steps_per_circle=self.app.defaults["cncjob_steps_per_circle"])
+                        spindlespeed=spindlespeed, steps_per_circle=int(self.app.defaults["cncjob_steps_per_circle"]))
 
         FlatCAMObj.__init__(self, name)
 
