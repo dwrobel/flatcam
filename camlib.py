@@ -31,6 +31,7 @@ from shapely.wkt import loads as sloads
 from shapely.wkt import dumps as sdumps
 from shapely.geometry.base import BaseGeometry
 from shapely.geometry import shape
+from shapely import speedups
 
 from collections import Iterable
 

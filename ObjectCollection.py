@@ -684,7 +684,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         :rtype: list
         """
 
-        FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> OC.get_names()")
+        # FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> OC.get_names()")
         return [x.options['name'] for x in self.get_list()]
 
     def get_bounds(self):

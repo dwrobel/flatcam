@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 7.02.2019
 
 - in Paint Tool, when painting single polygon, when clicking on canvas for the polygon there is no longer a selection of the entire object
+- commented some debug messages
+- imported speedups for shapely
 
 6.02.2019
 

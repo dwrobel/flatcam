@@ -4228,8 +4228,8 @@ class App(QtCore.QObject):
             self.app_cursor.enabled = False
 
         try:
-            App.log.debug('button=%d, x=%d, y=%d, xdata=%f, ydata=%f' % (
-            event.button, event.pos[0], event.pos[1], self.pos[0], self.pos[1]))
+            # App.log.debug('button=%d, x=%d, y=%d, xdata=%f, ydata=%f' % (
+            # event.button, event.pos[0], event.pos[1], self.pos[0], self.pos[1]))
             modifiers = QtWidgets.QApplication.keyboardModifiers()
 
             if event.button == 1:
