@@ -16,6 +16,10 @@ CAD program, and create G-Code for Isolation routing.
 - fixed bug in multigeometry geometry not having the bounds in self.options and crashing the GCode generation
 - fixed bug that crashed whole application in case that the GCode editor is activated on a Tool gcode that is defective. 
 - fixed bug in Excellon Slots milling: a value of a dict key was a string instead to be an int. A cast to integer solved it.
+- fixed the name self-insert in save dialog file for GCode; added protection in case the save path is None
+- fixed FlatCAM crash when trying to make drills GCode out of a file that have only slots.
+- made the shell toggle shortcut key work when focused on Selected Tab; toggle units shortcut also
+- changed the messages for Units COnversion
 
 5.02.3019
 

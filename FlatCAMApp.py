@@ -1659,7 +1659,10 @@ class App(QtCore.QObject):
         return self.defaults["global_last_folder"]
 
     def get_last_save_folder(self):
-        return self.defaults["global_last_save_folder"]
+        loc = self.defaults["global_last_save_folder"]
+        if loc is None:
+            loc = self.defaults["global_last_folder"]
+        return loc
 
     def report_usage(self, resource):
         """
@@ -2070,6 +2073,8 @@ class App(QtCore.QObject):
             except:
                 self.inform.emit("[ERROR_NOTCL] Failed to write defaults to file.")
                 return
+
+        self.file_saved.emit("preferences", filename)
         self.inform.emit("[success]Exported Defaults to %s" % filename)
 
     def on_preferences_open_folder(self):
@@ -2825,6 +2830,9 @@ class App(QtCore.QObject):
                     current.to_form()
 
             self.plot_all()
+            self.inform.emit("[success]Converted units to %s" % self.options["units"])
+            # self.ui.units_label.setText("[" + self.options["units"] + "]")
+            self.set_screen_units(self.options["units"])
         else:
             # Undo toggling
             self.toggle_units_ignore = True
@@ -2833,11 +2841,9 @@ class App(QtCore.QObject):
             else:
                 self.general_options_form.general_app_group.units_radio.set_value('MM')
             self.toggle_units_ignore = False
+            self.inform.emit("[WARNING_NOTCL]Units conversion cancelled.")
 
         self.options_read_form()
-        self.inform.emit("Converted units to %s" % self.options["units"])
-        #self.ui.units_label.setText("[" + self.options["units"] + "]")
-        self.set_screen_units(self.options["units"])
 
     def on_toggle_units_click(self):
         if self.options["units"] == 'MM':
@@ -6044,7 +6050,7 @@ class App(QtCore.QObject):
         self.defaults["global_last_folder"] = os.path.split(str(filename))[0]
 
     def register_save_folder(self, filename):
-        self.defaults['global_last_save_folder'] = os.path.split(str(filename))[0]
+        self.defaults["global_last_save_folder"] = os.path.split(str(filename))[0]
 
     def set_progress_bar(self, percentage, text=""):
         self.ui.progress_bar.setValue(int(percentage))

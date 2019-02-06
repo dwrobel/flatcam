@@ -1564,7 +1564,10 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             return False, "Error: No tools."
 
         for tool in tools:
-            if tooldia > self.tools[tool]["C"]:
+            # I add the 0.0001 value to account for the rounding error in converting from IN to MM and reverse
+            adj_toolstable_tooldia = float('%.4f' % float(tooldia))
+            adj_file_tooldia = float('%.4f' % float(self.tools[tool]["C"]))
+            if adj_toolstable_tooldia > adj_file_tooldia + 0.0001:
                 self.app.inform.emit("[ERROR_NOTCL] Milling tool for SLOTS is larger than hole size. Cancelled.")
                 return False, "Error: Milling tool is larger than hole."
 
@@ -1590,7 +1593,12 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # we add a tenth of the minimum value, meaning 0.0000001, which from our point of view is "almost zero"
             for slot in self.slots:
                 if slot['tool'] in tools:
-                    buffer_value = (float(self.tools[slot['tool']]["C"]) / 2) - float(tooldia / 2)
+                    toolstable_tool = float('%.4f' % float(tooldia))
+                    file_tool = float('%.4f' % float(self.tools[tool]["C"]))
+
+                    # I add the 0.0001 value to account for the rounding error in converting from IN to MM and reverse
+                    # for the file_tool (tooldia actually)
+                    buffer_value = float(file_tool / 2) - float(toolstable_tool / 2) + 0.0001
                     if buffer_value == 0:
                         start = slot['start']
                         stop = slot['stop']
@@ -1729,14 +1737,16 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # job_obj.options["tooldia"] =
 
             tools_csv = ','.join(tools)
-            job_obj.generate_from_excellon_by_tool(self, tools_csv,
-                                                   drillz=self.options['drillz'],
-                                                   toolchange=self.options["toolchange"],
-                                                   toolchangez=self.options["toolchangez"],
-                                                   startz=self.options["startz"],
-                                                   endz=self.options["endz"],
-                                                   excellon_optimization_type=self.options["optimization_type"])
-
+            ret_val = job_obj.generate_from_excellon_by_tool(self, tools_csv,
+                                                             drillz=self.options['drillz'],
+                                                             toolchange=self.options["toolchange"],
+                                                             toolchangez=self.options["toolchangez"],
+                                                             startz=self.options["startz"],
+                                                             endz=self.options["endz"],
+                                                             excellon_optimization_type=self.app.defaults[
+                                                                 "excellon_optimization_type"])
+            if ret_val == 'fail':
+                return 'fail'
             app_obj.progress.emit(50)
             job_obj.gcode_parse()
 
@@ -3125,10 +3135,18 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         segx = segx if segx is not None else float(self.app.defaults['geometry_segx'])
         segy = segy if segy is not None else float(self.app.defaults['geometry_segy'])
 
-        xmin = self.options['xmin']
-        ymin = self.options['ymin']
-        xmax = self.options['xmax']
-        ymax = self.options['ymax']
+        try:
+            xmin = self.options['xmin']
+            ymin = self.options['ymin']
+            xmax = self.options['xmax']
+            ymax = self.options['ymax']
+        except Exception as e:
+            log.debug("FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s\n" % str(e))
+            msg = "[ERROR] An internal error has ocurred. See shell.\n"
+            msg += 'FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s' % str(e)
+            msg += traceback.format_exc()
+            self.app.inform.emit(msg)
+            return
 
         # Object initialization function for app.new_object()
         # RUNNING ON SEPARATE THREAD!
@@ -4267,14 +4285,17 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             _filter_ = "G-Code Files (*.nc);;G-Code Files (*.txt);;G-Code Files (*.tap);;G-Code Files (*.cnc);;" \
                        "G-Code Files (*.g-code);;All Files (*.*)"
 
+        dir_file_to_save = self.app.get_last_save_folder() + '/' + str(name)
         try:
-            filename = str(QtWidgets.QFileDialog.getSaveFileName(
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
                 caption="Export Machine Code ...",
-                directory=self.app.get_last_save_folder() + '/' + name,
+                directory=dir_file_to_save,
                 filter=_filter_
-            )[0])
+            )
         except TypeError:
-            filename = str(QtWidgets.QFileDialog.getSaveFileName(caption="Export Machine Code ...", filter=_filter_)[0])
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export Machine Code ...", filter=_filter_)
+
+        filename = str(filename)
 
         if filename == '':
             self.app.inform.emit("[WARNING_NOTCL]Export Machine Code cancelled ...")
@@ -4482,6 +4503,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         elif to_file is False:
             # Just for adding it to the recent files list.
             self.app.file_opened.emit("cncjob", filename)
+            self.app.file_saved.emit("cncjob", filename)
 
             self.app.inform.emit("[success] Saved to: " + filename)
         else:

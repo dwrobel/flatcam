@@ -4549,7 +4549,7 @@ class CNCjob(Geometry):
         elif drillz == 0:
             self.app.inform.emit("[WARNING] The Cut Z parameter is zero. "
                                  "There will be no cut, skipping %s file" % exobj.options['name'])
-            return
+            return 'fail'
         else:
             self.z_cut = drillz
 
@@ -4670,139 +4670,188 @@ class CNCjob(Geometry):
         if current_platform == '64bit':
             if excellon_optimization_type == 'M':
                 log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")
-                for tool in tools:
-                    self.tool=tool
-                    self.postdata['toolC']=exobj.tools[tool]["C"]
+                if exobj.drills:
+                    for tool in tools:
+                        self.tool=tool
+                        self.postdata['toolC']=exobj.tools[tool]["C"]
 
-                    ################################################
-                    # Create the data.
-                    node_list = []
-                    locations = create_data_array()
-                    tsp_size = len(locations)
-                    num_routes = 1  # The number of routes, which is 1 in the TSP.
-                    # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
-                    depot = 0
-                    # Create routing model.
-                    if tsp_size > 0:
-                        routing = pywrapcp.RoutingModel(tsp_size, num_routes, depot)
-                        search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
-                        search_parameters.local_search_metaheuristic = (
-                            routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
+                        ################################################
+                        # Create the data.
+                        node_list = []
+                        locations = create_data_array()
+                        tsp_size = len(locations)
+                        num_routes = 1  # The number of routes, which is 1 in the TSP.
+                        # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
+                        depot = 0
+                        # Create routing model.
+                        if tsp_size > 0:
+                            routing = pywrapcp.RoutingModel(tsp_size, num_routes, depot)
+                            search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
+                            search_parameters.local_search_metaheuristic = (
+                                routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
 
-                        # Set search time limit in milliseconds.
-                        if float(self.app.defaults["excellon_search_time"]) != 0:
-                            search_parameters.time_limit_ms = int(
-                                float(self.app.defaults["excellon_search_time"]) * 1000)
+                            # Set search time limit in milliseconds.
+                            if float(self.app.defaults["excellon_search_time"]) != 0:
+                                search_parameters.time_limit_ms = int(
+                                    float(self.app.defaults["excellon_search_time"]) * 1000)
+                            else:
+                                search_parameters.time_limit_ms = 3000
+
+                            # Callback to the distance function. The callback takes two
+                            # arguments (the from and to node indices) and returns the distance between them.
+                            dist_between_locations = CreateDistanceCallback()
+                            dist_callback = dist_between_locations.Distance
+                            routing.SetArcCostEvaluatorOfAllVehicles(dist_callback)
+
+                            # Solve, returns a solution if any.
+                            assignment = routing.SolveWithParameters(search_parameters)
+
+                            if assignment:
+                                # Solution cost.
+                                log.info("Total distance: " + str(assignment.ObjectiveValue()))
+
+                                # Inspect solution.
+                                # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
+                                route_number = 0
+                                node = routing.Start(route_number)
+                                start_node = node
+
+                                while not routing.IsEnd(node):
+                                    node_list.append(node)
+                                    node = assignment.Value(routing.NextVar(node))
+                            else:
+                                log.warning('No solution found.')
                         else:
-                            search_parameters.time_limit_ms = 3000
+                            log.warning('Specify an instance greater than 0.')
+                        ################################################
 
-                        # Callback to the distance function. The callback takes two
-                        # arguments (the from and to node indices) and returns the distance between them.
-                        dist_between_locations = CreateDistanceCallback()
-                        dist_callback = dist_between_locations.Distance
-                        routing.SetArcCostEvaluatorOfAllVehicles(dist_callback)
+                        # Only if tool has points.
+                        if tool in points:
+                            # Tool change sequence (optional)
+                            if toolchange:
+                                gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
+                                gcode += self.doformat(p.spindle_code)  # Spindle start
+                                if self.dwell is True:
+                                    gcode += self.doformat(p.dwell_code)  # Dwell time
+                            else:
+                                gcode += self.doformat(p.spindle_code)
+                                if self.dwell is True:
+                                    gcode += self.doformat(p.dwell_code)  # Dwell time
 
-                        # Solve, returns a solution if any.
-                        assignment = routing.SolveWithParameters(search_parameters)
+                            # Drillling!
+                            for k in node_list:
+                                locx = locations[k][0]
+                                locy = locations[k][1]
 
-                        if assignment:
-                            # Solution cost.
-                            log.info("Total distance: " + str(assignment.ObjectiveValue()))
+                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+                                gcode += self.doformat(p.down_code, x=locx, y=locy)
+                                gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                                self.oldx = locx
+                                self.oldy = locy
+                else:
+                    log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
+                              "The loaded Excellon file has no drills ...")
+                    self.app.inform.emit('[ERROR_NOTCL]The loaded Excellon file has no drills ...')
+                    return 'fail'
 
-                            # Inspect solution.
-                            # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
-                            route_number = 0
-                            node = routing.Start(route_number)
-                            start_node = node
-
-                            while not routing.IsEnd(node):
-                                node_list.append(node)
-                                node = assignment.Value(routing.NextVar(node))
-                        else:
-                            log.warning('No solution found.')
-                    else:
-                        log.warning('Specify an instance greater than 0.')
-                    ################################################
-
-                    # Only if tool has points.
-                    if tool in points:
-                        # Tool change sequence (optional)
-                        if toolchange:
-                            gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
-                            gcode += self.doformat(p.spindle_code)  # Spindle start
-                            if self.dwell is True:
-                                gcode += self.doformat(p.dwell_code)  # Dwell time
-                        else:
-                            gcode += self.doformat(p.spindle_code)
-                            if self.dwell is True:
-                                gcode += self.doformat(p.dwell_code)  # Dwell time
-
-                        # Drillling!
-                        for k in node_list:
-                            locx = locations[k][0]
-                            locy = locations[k][1]
-
-                            gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-                            gcode += self.doformat(p.down_code, x=locx, y=locy)
-                            gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
-                            measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
-                            self.oldx = locx
-                            self.oldy = locy
                 log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))
             elif excellon_optimization_type == 'B':
                 log.debug("Using OR-Tools Basic drill path optimization.")
-                for tool in tools:
-                    self.tool=tool
-                    self.postdata['toolC']=exobj.tools[tool]["C"]
+                if exobj.drills:
+                    for tool in tools:
+                        self.tool=tool
+                        self.postdata['toolC']=exobj.tools[tool]["C"]
 
-                    ################################################
-                    node_list = []
-                    locations = create_data_array()
-                    tsp_size = len(locations)
-                    num_routes = 1  # The number of routes, which is 1 in the TSP.
+                        ################################################
+                        node_list = []
+                        locations = create_data_array()
+                        tsp_size = len(locations)
+                        num_routes = 1  # The number of routes, which is 1 in the TSP.
 
-                    # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
-                    depot = 0
+                        # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
+                        depot = 0
 
-                    # Create routing model.
-                    if tsp_size > 0:
-                        routing = pywrapcp.RoutingModel(tsp_size, num_routes, depot)
-                        search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
+                        # Create routing model.
+                        if tsp_size > 0:
+                            routing = pywrapcp.RoutingModel(tsp_size, num_routes, depot)
+                            search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
 
-                        # Callback to the distance function. The callback takes two
-                        # arguments (the from and to node indices) and returns the distance between them.
-                        dist_between_locations = CreateDistanceCallback()
-                        dist_callback = dist_between_locations.Distance
-                        routing.SetArcCostEvaluatorOfAllVehicles(dist_callback)
+                            # Callback to the distance function. The callback takes two
+                            # arguments (the from and to node indices) and returns the distance between them.
+                            dist_between_locations = CreateDistanceCallback()
+                            dist_callback = dist_between_locations.Distance
+                            routing.SetArcCostEvaluatorOfAllVehicles(dist_callback)
 
-                        # Solve, returns a solution if any.
-                        assignment = routing.SolveWithParameters(search_parameters)
+                            # Solve, returns a solution if any.
+                            assignment = routing.SolveWithParameters(search_parameters)
 
-                        if assignment:
-                            # Solution cost.
-                            log.info("Total distance: " + str(assignment.ObjectiveValue()))
+                            if assignment:
+                                # Solution cost.
+                                log.info("Total distance: " + str(assignment.ObjectiveValue()))
 
-                            # Inspect solution.
-                            # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
-                            route_number = 0
-                            node = routing.Start(route_number)
-                            start_node = node
+                                # Inspect solution.
+                                # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
+                                route_number = 0
+                                node = routing.Start(route_number)
+                                start_node = node
 
-                            while not routing.IsEnd(node):
-                                node_list.append(node)
-                                node = assignment.Value(routing.NextVar(node))
+                                while not routing.IsEnd(node):
+                                    node_list.append(node)
+                                    node = assignment.Value(routing.NextVar(node))
+                            else:
+                                log.warning('No solution found.')
                         else:
-                            log.warning('No solution found.')
-                    else:
-                        log.warning('Specify an instance greater than 0.')
-                    ################################################
+                            log.warning('Specify an instance greater than 0.')
+                        ################################################
+
+                        # Only if tool has points.
+                        if tool in points:
+                            # Tool change sequence (optional)
+                            if toolchange:
+                                gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
+                                gcode += self.doformat(p.spindle_code)  # Spindle start)
+                                if self.dwell is True:
+                                    gcode += self.doformat(p.dwell_code)  # Dwell time
+                            else:
+                                gcode += self.doformat(p.spindle_code)
+                                if self.dwell is True:
+                                    gcode += self.doformat(p.dwell_code)  # Dwell time
+
+                            # Drillling!
+                            for k in node_list:
+                                locx = locations[k][0]
+                                locy = locations[k][1]
+                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+                                gcode += self.doformat(p.down_code, x=locx, y=locy)
+                                gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                                self.oldx = locx
+                                self.oldy = locy
+                else:
+                    log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
+                              "The loaded Excellon file has no drills ...")
+                    self.app.inform.emit('[ERROR_NOTCL]The loaded Excellon file has no drills ...')
+                    return 'fail'
+
+                log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" % str(measured_distance))
+            else:
+                self.app.inform.emit("[ERROR_NOTCL] Wrong optimization type selected.")
+                return 'fail'
+        else:
+            log.debug("Using Travelling Salesman drill path optimization.")
+            for tool in tools:
+                if exobj.drills:
+                    self.tool = tool
+                    self.postdata['toolC'] = exobj.tools[tool]["C"]
 
                     # Only if tool has points.
                     if tool in points:
                         # Tool change sequence (optional)
                         if toolchange:
-                            gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
+                            gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
                             gcode += self.doformat(p.spindle_code)  # Spindle start)
                             if self.dwell is True:
                                 gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -4812,52 +4861,23 @@ class CNCjob(Geometry):
                                 gcode += self.doformat(p.dwell_code)  # Dwell time
 
                         # Drillling!
-                        for k in node_list:
-                            locx = locations[k][0]
-                            locy = locations[k][1]
-                            gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-                            gcode += self.doformat(p.down_code, x=locx, y=locy)
-                            gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
-                            measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
-                            self.oldx = locx
-                            self.oldy = locy
-                log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" % str(measured_distance))
-            else:
-                self.app.inform.emit("[ERROR_NOTCL] Wrong optimization type selected.")
-                return
-        else:
-            log.debug("Using Travelling Salesman drill path optimization.")
-            for tool in tools:
-                self.tool = tool
-                self.postdata['toolC'] = exobj.tools[tool]["C"]
+                        altPoints = []
+                        for point in points[tool]:
+                            altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
 
-                # Only if tool has points.
-                if tool in points:
-                    # Tool change sequence (optional)
-                    if toolchange:
-                        gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
-                        gcode += self.doformat(p.spindle_code)  # Spindle start)
-                        if self.dwell is True:
-                            gcode += self.doformat(p.dwell_code)  # Dwell time
+                        for point in self.optimized_travelling_salesman(altPoints):
+                            gcode += self.doformat(p.rapid_code, x=point[0], y=point[1])
+                            gcode += self.doformat(p.down_code, x=point[0], y=point[1])
+                            gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
+                            gcode += self.doformat(p.lift_code, x=point[0], y=point[1])
+                            measured_distance += abs(distance_euclidian(point[0], point[1], self.oldx, self.oldy))
+                            self.oldx = point[0]
+                            self.oldy = point[1]
                     else:
-                        gcode += self.doformat(p.spindle_code)
-                        if self.dwell is True:
-                            gcode += self.doformat(p.dwell_code)  # Dwell time
-
-                    # Drillling!
-                    altPoints = []
-                    for point in points[tool]:
-                        altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
-
-                    for point in self.optimized_travelling_salesman(altPoints):
-                        gcode += self.doformat(p.rapid_code, x=point[0], y=point[1])
-                        gcode += self.doformat(p.down_code, x=point[0], y=point[1])
-                        gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
-                        gcode += self.doformat(p.lift_code, x=point[0], y=point[1])
-                        measured_distance += abs(distance_euclidian(point[0], point[1], self.oldx, self.oldy))
-                        self.oldx = point[0]
-                        self.oldy = point[1]
+                        log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
+                                  "The loaded Excellon file has no drills ...")
+                        self.app.inform.emit('[ERROR_NOTCL]The loaded Excellon file has no drills ...')
+                        return 'fail'
             log.debug("The total travel distance with Travelling Salesman Algorithm is: %s" % str(measured_distance))
 
         gcode += self.doformat(p.spindle_stop_code)  # Spindle stop
@@ -4867,6 +4887,7 @@ class CNCjob(Geometry):
         log.debug("The total travel distance including travel to end position is: %s" %
                   str(measured_distance) + '\n')
         self.gcode = gcode
+        return 'OK'
 
     def generate_from_multitool_geometry(self, geometry, append=True,
                                          tooldia=None, offset=0.0, tolerance=0, z_cut=1.0, z_move=2.0,
