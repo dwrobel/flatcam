@@ -55,6 +55,8 @@ class TclCommandGeoCutout(TclCommandSignaled):
                      "      geocutout BCu_margin_iso_exterior -dia 3 -gapsize 0.6 -gaps 4\n"]
     }
 
+    flat_geometry = []
+
     def execute(self, args, unnamed_args):
         """
 
@@ -63,9 +65,61 @@ class TclCommandGeoCutout(TclCommandSignaled):
         :return:
         """
 
+
         def subtract_rectangle(obj_, x0, y0, x1, y1):
             pts = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
             obj_.subtract_polygon(pts)
+
+        def substract_rectangle_geo(geo, x0, y0, x1, y1):
+            pts = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+
+
+            def flatten(geometry=None, reset=True, pathonly=False):
+                """
+                Creates a list of non-iterable linear geometry objects.
+                Polygons are expanded into its exterior and interiors if specified.
+
+                Results are placed in flat_geometry
+
+                :param geometry: Shapely type or list or list of list of such.
+                :param reset: Clears the contents of self.flat_geometry.
+                :param pathonly: Expands polygons into linear elements.
+                """
+
+                if reset:
+                    self.flat_geometry = []
+
+                ## If iterable, expand recursively.
+                try:
+                    for geo in geometry:
+                        if geo is not None:
+                            flatten(geometry=geo,
+                                    reset=False,
+                                    pathonly=pathonly)
+
+                ## Not iterable, do the actual indexing and add.
+                except TypeError:
+                    if pathonly and type(geometry) == Polygon:
+                        self.flat_geometry.append(geometry.exterior)
+                        flatten(geometry=geometry.interiors,
+                                reset=False,
+                                pathonly=True)
+                    else:
+                        self.flat_geometry.append(geometry)
+
+                return self.flat_geometry
+
+            flat_geometry = flatten(geo, pathonly=True)
+
+            polygon = Polygon(pts)
+            toolgeo = cascaded_union(polygon)
+            diffs = []
+            for target in flat_geometry:
+                if type(target) == LineString or type(target) == LinearRing:
+                    diffs.append(target.difference(toolgeo))
+                else:
+                    log.warning("Not implemented.")
+            return cascaded_union(diffs)
 
         if 'name' in args:
             name = args['name']
@@ -116,19 +170,104 @@ class TclCommandGeoCutout(TclCommandSignaled):
         lenghtx = (xmax - xmin) + (margin * 2)
         lenghty = (ymax - ymin) + (margin * 2)
 
-        gapsize = gapsize + (dia / 2)
+        gapsize = gapsize / 2 + (dia / 2)
+
+        try:
+            gaps_u = int(gaps)
+        except ValueError:
+            gaps_u = gaps
 
         if isinstance(cutout_obj, FlatCAMGeometry):
             # rename the obj name so it can be identified as cutout
             cutout_obj.options["name"] += "_cutout"
+
+            if gaps_u == 8 or gaps_u == '2lr':
+                subtract_rectangle(cutout_obj,
+                                   xmin - gapsize,  # botleft_x
+                                   py - gapsize + lenghty / 4,  # botleft_y
+                                   xmax + gapsize,  # topright_x
+                                   py + gapsize + lenghty / 4)  # topright_y
+                subtract_rectangle(cutout_obj,
+                                   xmin - gapsize,
+                                   py - gapsize - lenghty / 4,
+                                   xmax + gapsize,
+                                   py + gapsize - lenghty / 4)
+
+            if gaps_u == 8 or gaps_u == '2tb':
+                subtract_rectangle(cutout_obj,
+                                   px - gapsize + lenghtx / 4,
+                                   ymin - gapsize,
+                                   px + gapsize + lenghtx / 4,
+                                   ymax + gapsize)
+                subtract_rectangle(cutout_obj,
+                                   px - gapsize - lenghtx / 4,
+                                   ymin - gapsize,
+                                   px + gapsize - lenghtx / 4,
+                                   ymax + gapsize)
+
+            if gaps_u == 4 or gaps_u == 'lr':
+                subtract_rectangle(cutout_obj,
+                                   xmin - gapsize,
+                                   py - gapsize,
+                                   xmax + gapsize,
+                                   py + gapsize)
+
+            if gaps_u == 4 or gaps_u == 'tb':
+                subtract_rectangle(cutout_obj,
+                                   px - gapsize,
+                                   ymin - gapsize,
+                                   px + gapsize,
+                                   ymax + gapsize)
+
+            cutout_obj.plot()
+            self.app.inform.emit("[success]Any-form Cutout operation finished.")
         elif isinstance(cutout_obj, FlatCAMGerber):
 
             def geo_init(geo_obj, app_obj):
                 try:
-                    geo_obj.solid_geometry = cutout_obj.isolation_geometry((dia / 2), iso_type=0)
+                    geo = cutout_obj.isolation_geometry((dia / 2), iso_type=0, corner=2)
                 except Exception as e:
                     log.debug("TclCommandGeoCutout.execute() --> %s" % str(e))
                     return 'fail'
+
+                if gaps_u == 8 or gaps_u == '2lr':
+                    geo = substract_rectangle_geo(geo,
+                                       xmin - gapsize,  # botleft_x
+                                       py - gapsize + lenghty / 4,  # botleft_y
+                                       xmax + gapsize,  # topright_x
+                                       py + gapsize + lenghty / 4)  # topright_y
+                    geo = substract_rectangle_geo(geo,
+                                       xmin - gapsize,
+                                       py - gapsize - lenghty / 4,
+                                       xmax + gapsize,
+                                       py + gapsize - lenghty / 4)
+
+                if gaps_u == 8 or gaps_u == '2tb':
+                    geo = substract_rectangle_geo(geo,
+                                       px - gapsize + lenghtx / 4,
+                                       ymin - gapsize,
+                                       px + gapsize + lenghtx / 4,
+                                       ymax + gapsize)
+                    geo = substract_rectangle_geo(geo,
+                                       px - gapsize - lenghtx / 4,
+                                       ymin - gapsize,
+                                       px + gapsize - lenghtx / 4,
+                                       ymax + gapsize)
+
+                if gaps_u == 4 or gaps_u == 'lr':
+                    geo = substract_rectangle_geo(geo,
+                                       xmin - gapsize,
+                                       py - gapsize,
+                                       xmax + gapsize,
+                                       py + gapsize)
+
+                if gaps_u == 4 or gaps_u == 'tb':
+                    geo = substract_rectangle_geo(geo,
+                                       px - gapsize,
+                                       ymin - gapsize,
+                                       px + gapsize,
+                                       ymax + gapsize)
+                geo_obj.solid_geometry = geo
 
             outname = cutout_obj.options["name"] + "_cutout"
             self.app.new_object('geometry', outname, geo_init)
@@ -138,48 +277,6 @@ class TclCommandGeoCutout(TclCommandSignaled):
             self.app.inform.emit("[ERROR]Cancelled. Object type is not supported.")
             return
 
-        try:
-            gaps_u = int(gaps)
-        except ValueError:
-            gaps_u = gaps
 
-        if gaps_u == 8 or gaps_u == '2lr':
-            subtract_rectangle(cutout_obj,
-                               xmin - gapsize,  # botleft_x
-                               py - gapsize + lenghty / 4,  # botleft_y
-                               xmax + gapsize,  # topright_x
-                               py + gapsize + lenghty / 4)  # topright_y
-            subtract_rectangle(cutout_obj,
-                               xmin - gapsize,
-                               py - gapsize - lenghty / 4,
-                               xmax + gapsize,
-                               py + gapsize - lenghty / 4)
 
-        if gaps_u == 8 or gaps_u == '2tb':
-            subtract_rectangle(cutout_obj,
-                               px - gapsize + lenghtx / 4,
-                               ymin - gapsize,
-                               px + gapsize + lenghtx / 4,
-                               ymax + gapsize)
-            subtract_rectangle(cutout_obj,
-                               px - gapsize - lenghtx / 4,
-                               ymin - gapsize,
-                               px + gapsize - lenghtx / 4,
-                               ymax + gapsize)
 
-        if gaps_u == 4 or gaps_u == 'lr':
-            subtract_rectangle(cutout_obj,
-                               xmin - gapsize,
-                               py - gapsize,
-                               xmax + gapsize,
-                               py + gapsize)
-
-        if gaps_u == 4 or gaps_u == 'tb':
-            subtract_rectangle(cutout_obj,
-                               px - gapsize,
-                               ymin - gapsize,
-                               px + gapsize,
-                               ymax + gapsize)
-
-        cutout_obj.plot()
-        self.app.inform.emit("[success]Any-form Cutout operation finished.")

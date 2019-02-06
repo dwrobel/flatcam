@@ -25,6 +25,7 @@ CAD program, and create G-Code for Isolation routing.
 - combined the geocutout and cutout_any TCL commands - work in progress
 - added a new function (and shortcut key Escape) that when triggered it deselects all selected objects and delete the selection box(es) 
 - fixed bug in Excellon Gcode generation that made the toolchange X,Y always none regardless of the value in Preferences
+- fixed the Tcl Command Geocutout to work with Gerber objects too (besides Geometry objects)
 
 5.02.3019
 

@@ -106,21 +106,21 @@ class BufferSelectionTool(FlatCAMTool):
     def on_buffer(self):
         buffer_distance = self.buffer_distance_entry.get_value()
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
-        # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
+        # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
         join_style = self.buffer_corner_cb.currentIndex() + 1
         self.draw_app.buffer(buffer_distance, join_style)
 
     def on_buffer_int(self):
         buffer_distance = self.buffer_distance_entry.get_value()
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
-        # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
+        # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
         join_style = self.buffer_corner_cb.currentIndex() + 1
         self.draw_app.buffer_int(buffer_distance, join_style)
 
     def on_buffer_ext(self):
         buffer_distance = self.buffer_distance_entry.get_value()
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
-        # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
+        # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
         join_style = self.buffer_corner_cb.currentIndex() + 1
         self.draw_app.buffer_ext(buffer_distance, join_style)
 

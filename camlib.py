@@ -494,7 +494,7 @@ class Geometry(object):
     #
     #     return self.flat_geometry, self.flat_geometry_rtree
 
-    def isolation_geometry(self, offset, iso_type=2):
+    def isolation_geometry(self, offset, iso_type=2, corner=None):
         """
         Creates contours around geometry at a given
         offset distance.
@@ -503,6 +503,7 @@ class Geometry(object):
         :type offset: float
         :param iso_type: type of isolation, can be 0 = exteriors or 1 = interiors or 2 = both (complete)
         :type integer
+        :param corner: type of corner for the isolation: 0 = round; 1 = square; 2= beveled (line that connects the ends)
         :return: The buffered geometry.
         :rtype: Shapely.MultiPolygon or Shapely.Polygon
         """
@@ -537,7 +538,11 @@ class Geometry(object):
         if offset == 0:
             geo_iso = self.solid_geometry
         else:
-            geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
+            if corner is None:
+                geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
+            else:
+                geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4), join_style=corner)
+
         # end of replaced block
 
         if iso_type == 2:
