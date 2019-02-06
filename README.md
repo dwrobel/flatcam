@@ -19,7 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the name self-insert in save dialog file for GCode; added protection in case the save path is None
 - fixed FlatCAM crash when trying to make drills GCode out of a file that have only slots.
 - made the shell toggle shortcut key work when focused on Selected Tab; toggle units shortcut also
-- changed the messages for Units COnversion
+- changed the messages for Units Conversion
 
 5.02.3019
 

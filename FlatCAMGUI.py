@@ -1508,6 +1508,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         if event.key() == QtCore.Qt.Key_3:
             self.app.on_select_tab('tool')
 
+        if event.key() == QtCore.Qt.Key_G:
+            self.grid_snap_btn.trigger()
+
         if event.key == QtCore.Qt.Key_Q:
             self.app.on_toggle_units_click()
 
@@ -3726,7 +3729,7 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
         layout.addWidget(self.icon)
 
         self.text = QtWidgets.QLabel(self)
-        self.text.setText("Hello!")
+        self.text.setText("Application started ...")
         self.text.setToolTip("Hello!")
 
         layout.addWidget(self.text)
@@ -3742,7 +3745,7 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
         self.pmap.fill()
         if level == "ERROR" or level == "ERROR_NOTCL":
             self.pmap = QtGui.QPixmap('share/redlight12.png')
-        elif level == "success":
+        elif level == "success" or level == "SUCCESS":
             self.pmap = QtGui.QPixmap('share/greenlight12.png')
         elif level == "WARNING" or level == "WARNING_NOTCL":
             self.pmap = QtGui.QPixmap('share/yellowlight12.png')

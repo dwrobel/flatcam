@@ -417,7 +417,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
             # Grid toggle
             if key == QtCore.Qt.Key_G:
-                self.app.geo_editor.grid_snap_btn.trigger()
+                self.app.ui.grid_snap_btn.trigger()
 
             # Jump to coords
             if key == QtCore.Qt.Key_J:
