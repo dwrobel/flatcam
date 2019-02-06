@@ -750,7 +750,9 @@ class ToolPaint(FlatCAMTool, Gerber):
                                     overlap=overlap,
                                     connect=connect,
                                     contour=contour)
+                    self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
 
+            self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
             self.app.plotcanvas.vis_connect('mouse_press', doit)
 
     def paint_poly(self, obj, inside_pt, tooldia, overlap,
