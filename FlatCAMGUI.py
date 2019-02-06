@@ -10,6 +10,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
 from GUIElements import *
 import platform
+import webbrowser
 
 
 class FlatCAMGUI(QtWidgets.QMainWindow):
@@ -1498,31 +1499,244 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 self.snap_magnet.setDisabled(True)
 
     def keyPressEvent(self, event):
+        modifiers = QtWidgets.QApplication.keyboardModifiers()
+        active = self.app.collection.get_active()
+        selected = self.app.collection.get_selected()
 
-        if event.key() == QtCore.Qt.Key_1:
-            self.app.on_select_tab('project')
+        # events out of the self.app.collection view (it's about Project Tab) are of type int
+        if type(event) is int:
+            key = event
+        # events from the GUI are of type QKeyEvent
+        else:
+            key = event.key()
 
-        if event.key() == QtCore.Qt.Key_2:
-            self.app.on_select_tab('selected')
+        if modifiers == QtCore.Qt.ControlModifier:
+            if key == QtCore.Qt.Key_A:
+                self.app.on_selectall()
 
-        if event.key() == QtCore.Qt.Key_3:
-            self.app.on_select_tab('tool')
+            if key == QtCore.Qt.Key_C:
+                self.app.on_copy_object()
 
-        if event.key() == QtCore.Qt.Key_G:
-            self.grid_snap_btn.trigger()
+            if key == QtCore.Qt.Key_E:
+                self.app.on_fileopenexcellon()
 
-        if event.key == QtCore.Qt.Key_Q:
-            self.app.on_toggle_units_click()
+            if key == QtCore.Qt.Key_G:
+                self.app.on_fileopengerber()
 
-        if event.key() == QtCore.Qt.Key_S:
-            self.app.on_toggle_shell()
+            if key == QtCore.Qt.Key_N:
+                self.app.on_file_new_click()
 
-        # Show shortcut list
-        if event.key() == QtCore.Qt.Key_Ampersand:
-            self.app.on_shortcut_list()
+            if key == QtCore.Qt.Key_M:
+                self.app.measurement_tool.run()
+            if key == QtCore.Qt.Key_O:
+                self.app.on_file_openproject()
 
-        if event.key() == QtCore.Qt.Key_QuoteLeft:
-            self.app.on_shortcut_list()
+            if key == QtCore.Qt.Key_S:
+                self.app.on_file_saveproject()
+
+            # Toggle Plot Area
+            if key == QtCore.Qt.Key_F10:
+                self.app.on_toggle_plotarea()
+
+            return
+        elif modifiers == QtCore.Qt.ShiftModifier:
+
+            # Copy Object Name
+            # Copy Object Name
+            if key == QtCore.Qt.Key_C:
+                self.app.on_copy_name()
+
+            # Toggle axis
+            if key == QtCore.Qt.Key_G:
+                if self.toggle_axis is False:
+                    self.app.plotcanvas.v_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
+                    self.app.plotcanvas.h_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
+                    self.app.plotcanvas.redraw()
+                    self.app.toggle_axis = True
+                else:
+                    self.app.plotcanvas.v_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
+
+                    self.app.plotcanvas.h_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
+                    self.appplotcanvas.redraw()
+                    self.app.toggle_axis = False
+
+            # Open Preferences Window
+            if key == QtCore.Qt.Key_P:
+                self.app.on_preferences()
+                return
+
+            # Rotate Object by 90 degree CCW
+            if key == QtCore.Qt.Key_R:
+                self.app.on_rotate(silent=True, preset=-90)
+                return
+
+            # Run a Script
+            if key == QtCore.Qt.Key_S:
+                self.app.on_filerunscript()
+                return
+
+            # Toggle Workspace
+            if key == QtCore.Qt.Key_W:
+                self.app.on_workspace_menu()
+                return
+
+            # Skew on X axis
+            if key == QtCore.Qt.Key_X:
+                self.app.on_skewx()
+                return
+
+            # Skew on Y axis
+            if key == QtCore.Qt.Key_Y:
+                self.app.on_skewy()
+                return
+
+        elif modifiers == QtCore.Qt.AltModifier:
+            # Eanble all plots
+            if key == Qt.Key_1:
+                self.app.enable_all_plots()
+
+            # Disable all plots
+            if key == Qt.Key_2:
+                self.app.disable_all_plots()
+
+            # Disable all other plots
+            if key == Qt.Key_3:
+                self.app.disable_other_plots()
+
+            # 2-Sided PCB Tool
+            if key == QtCore.Qt.Key_D:
+                self.app.dblsidedtool.run()
+                return
+
+            # Non-Copper Clear Tool
+            if key == QtCore.Qt.Key_N:
+                self.app.ncclear_tool.run()
+                return
+
+            # Transformation Tool
+            if key == QtCore.Qt.Key_R:
+                self.app.transform_tool.run()
+                return
+
+            # Cutout Tool
+            if key == QtCore.Qt.Key_U:
+                self.app.cutout_tool.run()
+                return
+
+        else:
+            # Open Manual
+            if key == QtCore.Qt.Key_F1:
+                webbrowser.open(self.app.manual_url)
+
+            # Open Video Help
+            if key == QtCore.Qt.Key_F2:
+                webbrowser.open(self.app.video_url)
+
+            # Switch to Project Tab
+            if key == QtCore.Qt.Key_1:
+                self.app.on_select_tab('project')
+
+            # Switch to Selected Tab
+            if key == QtCore.Qt.Key_2:
+                self.app.on_select_tab('selected')
+
+            # Switch to Tool Tab
+            if key == QtCore.Qt.Key_3:
+                self.app.on_select_tab('tool')
+
+            # Delete
+            if key == QtCore.Qt.Key_Delete and active:
+                # Delete via the application to
+                # ensure cleanup of the GUI
+                active.app.on_delete()
+
+            # Space = Toggle Active/Inactive
+            if key == QtCore.Qt.Key_Space:
+                for select in selected:
+                    select.ui.plot_cb.toggle()
+                self.app.delete_selection_shape()
+
+            # Copy Object Name
+            if key == QtCore.Qt.Key_E:
+                self.app.object2editor()
+
+            # Grid toggle
+            if key == QtCore.Qt.Key_G:
+                self.app.ui.grid_snap_btn.trigger()
+
+            # Jump to coords
+            if key == QtCore.Qt.Key_J:
+                self.app.on_jump_to()
+
+            # New Excellon
+            if key == QtCore.Qt.Key_L:
+                self.app.new_excellon_object()
+
+            # Move tool toggle
+            if key == QtCore.Qt.Key_M:
+                self.app.move_tool.toggle()
+
+            # New Geometry
+            if key == QtCore.Qt.Key_N:
+                self.app.on_new_geometry()
+
+            # Set Origin
+            if key == QtCore.Qt.Key_O:
+                self.app.on_set_origin()
+                return
+
+            # Set Origin
+            if key == QtCore.Qt.Key_P:
+                self.app.properties_tool.run()
+                return
+
+            # Change Units
+            if key == QtCore.Qt.Key_Q:
+                if self.app.options["units"] == 'MM':
+                    self.app.general_options_form.general_app_group.units_radio.set_value("IN")
+                else:
+                    self.app.general_options_form.general_app_group.units_radio.set_value("MM")
+                self.app.on_toggle_units()
+
+            # Rotate Object by 90 degree CW
+            if key == QtCore.Qt.Key_R:
+                self.app.on_rotate(silent=True, preset=90)
+
+            # Shell toggle
+            if key == QtCore.Qt.Key_S:
+                self.app.on_toggle_shell()
+
+            # Transform Tool
+            if key == QtCore.Qt.Key_T:
+                self.app.transform_tool.run()
+
+            # Zoom Fit
+            if key == QtCore.Qt.Key_V:
+                self.app.on_zoom_fit(None)
+
+            # Mirror on X the selected object(s)
+            if key == QtCore.Qt.Key_X:
+                self.app.on_flipx()
+
+            # Mirror on Y the selected object(s)
+            if key == QtCore.Qt.Key_Y:
+                self.app.on_flipy()
+
+            # Zoom In
+            if key == QtCore.Qt.Key_Equal:
+                self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'], self.app.mouse)
+
+            # Zoom Out
+            if key == QtCore.Qt.Key_Minus:
+                self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'], self.app.mouse)
+
+            # Show shortcut list
+            if key == QtCore.Qt.Key_Ampersand:
+                self.app.on_shortcut_list()
+
+            if key == QtCore.Qt.Key_QuoteLeft:
+                self.app.on_shortcut_list()
+            return
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls:
