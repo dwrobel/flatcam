@@ -1701,7 +1701,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.dwell = self.options["dwell"]
             job_obj.dwelltime = self.options["dwelltime"]
             job_obj.pp_excellon_name = pp_excellon_name
-            job_obj.toolchange_xy = self.app.defaults["excellon_toolchangexy"]
+
             job_obj.toolchange_xy_type = "excellon"
             job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
             job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])
@@ -1740,6 +1740,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             ret_val = job_obj.generate_from_excellon_by_tool(self, tools_csv,
                                                              drillz=self.options['drillz'],
                                                              toolchange=self.options["toolchange"],
+                                                             toolchangexy=self.app.defaults["excellon_toolchangexy"],
                                                              toolchangez=self.options["toolchangez"],
                                                              startz=self.options["startz"],
                                                              endz=self.options["endz"],

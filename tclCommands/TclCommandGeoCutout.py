@@ -1,6 +1,6 @@
 from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
-
+from copy import deepcopy
 
 class TclCommandGeoCutout(TclCommandSignaled):
     """
@@ -124,21 +124,14 @@ class TclCommandGeoCutout(TclCommandSignaled):
         elif isinstance(cutout_obj, FlatCAMGerber):
 
             def geo_init(geo_obj, app_obj):
-                geo_obj.solid_geometry = obj_exteriors
+                try:
+                    geo_obj.solid_geometry = cutout_obj.isolation_geometry((dia / 2), iso_type=0)
+                except Exception as e:
+                    log.debug("TclCommandGeoCutout.execute() --> %s" % str(e))
+                    return 'fail'
 
             outname = cutout_obj.options["name"] + "_cutout"
-            cutout_obj.isolate(dia=dia, passes=1, overlap=1, combine=False, outname="_temp")
-            ext_obj = self.app.collection.get_by_name("_temp")
-
-            try:
-                obj_exteriors = ext_obj.get_exteriors()
-            except:
-                obj_exteriors = ext_obj.solid_geometry
-
             self.app.new_object('geometry', outname, geo_init)
-            self.app.collection.set_all_inactive()
-            self.app.collection.set_active("_temp")
-            self.app.on_delete()
 
             cutout_obj = self.app.collection.get_by_name(outname)
         else:

@@ -23,6 +23,8 @@ CAD program, and create G-Code for Isolation routing.
 - renamed the theme to layout because it is really a layout change
 - added plot kind for CNC Job in the App Preferences
 - combined the geocutout and cutout_any TCL commands - work in progress
+- added a new function (and shortcut key Escape) that when triggered it deselects all selected objects and delete the selection box(es) 
+- fixed bug in Excellon Gcode generation that made the toolchange X,Y always none regardless of the value in Preferences
 
 5.02.3019
 

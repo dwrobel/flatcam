@@ -988,6 +988,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 			<td height="20"><strong>SPACE</strong></td>
 			<td>&nbsp;En(Dis)able Obj Plot</td>
 		</tr>
+		<tr height="20">
+			<td height="20"><strong>Escape</strong></td>
+			<td>&nbsp;Deselects all objects</td>
+		</tr>
 	</tbody>
 </table>
 
@@ -1539,7 +1543,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 self.app.on_file_saveproject()
 
             # Toggle Plot Area
-            if key == QtCore.Qt.Key_F10:
+            if key == QtCore.Qt.Key_F10 or key == 'F10':
                 self.app.on_toggle_plotarea()
 
             return
@@ -1647,16 +1651,16 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 return
 
             # Toggle Fullscreen
-            if key == QtCore.Qt.Key_F10:
+            if key == QtCore.Qt.Key_F10 or key == 'F10':
                 self.app.on_fullscreen()
                 return
         else:
             # Open Manual
-            if key == QtCore.Qt.Key_F1:
+            if key == QtCore.Qt.Key_F1 or key == 'F1':
                 webbrowser.open(self.app.manual_url)
 
             # Open Video Help
-            if key == QtCore.Qt.Key_F2:
+            if key == QtCore.Qt.Key_F2 or key == 'F2':
                 webbrowser.open(self.app.video_url)
 
             # Switch to Project Tab
@@ -1672,10 +1676,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 self.app.on_select_tab('tool')
 
             # Delete
-            if key == QtCore.Qt.Key_Delete and active:
-                # Delete via the application to
-                # ensure cleanup of the GUI
-                active.app.on_delete()
+            if key == QtCore.Qt.Key_Delete or key == 'Delete':
+                if active:
+                    # Delete via the application to
+                    # ensure cleanup of the GUI
+                    active.app.on_delete()
+
+            # Escape = Deselect All
+            if key == QtCore.Qt.Key_Escape or key == 'Escape':
+                self.app.on_deselect_all()
 
             # Space = Toggle Active/Inactive
             if key == QtCore.Qt.Key_Space:

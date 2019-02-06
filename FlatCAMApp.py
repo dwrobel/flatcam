@@ -3229,6 +3229,10 @@ class App(QtCore.QObject):
         self.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(new_val_sel)
         self.defaults['global_sel_draw_color'] = new_val_sel
 
+    def on_deselect_all(self):
+        self.collection.set_all_inactive()
+        self.delete_selection_shape()
+
     def on_workspace_modified(self):
         self.save_defaults(silent=True)
         self.plotcanvas.draw_workspace()
