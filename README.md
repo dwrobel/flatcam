@@ -20,6 +20,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed FlatCAM crash when trying to make drills GCode out of a file that have only slots.
 - changed the messages for Units Conversion
 - all key shortcuts work across the entire application; moved all the shortcuts definitions in FlatCAMGUI.keyPressEvent()
+- renamed the theme to layout because it is really a layout change
+- combined the geocutout and cutout_any TCL commands - work in progress
 
 5.02.3019
 

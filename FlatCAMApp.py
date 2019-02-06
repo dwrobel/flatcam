@@ -1212,7 +1212,7 @@ class App(QtCore.QObject):
         self.general_defaults_form.general_gui_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
         self.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
 
-        self.general_defaults_form.general_gui_group.theme_combo.activated.connect(self.on_theme)
+        self.general_defaults_form.general_gui_group.layout_combo.activated.connect(self.on_layout)
 
         # Modify G-CODE Plot Area TAB
         self.ui.code_editor.textChanged.connect(self.handleTextChanged)
@@ -1257,7 +1257,7 @@ class App(QtCore.QObject):
         # Auto-complete KEYWORDS
         self.tcl_commands_list = ['add_circle', 'add_poly', 'add_polygon', 'add_polyline', 'add_rectangle',
                                   'aligndrill', 'clear',
-                                  'aligndrillgrid', 'cncjob', 'cutout', 'cutout_any', 'delete', 'drillcncjob',
+                                  'aligndrillgrid', 'cncjob', 'cutout', 'delete', 'drillcncjob',
                                   'export_gcode',
                                   'export_svg', 'ext', 'exteriors', 'follow', 'geo_union', 'geocutout', 'get_names',
                                   'get_sys', 'getsys', 'help', 'import_svg', 'interiors', 'isolate', 'join_excellon',
@@ -3245,13 +3245,13 @@ class App(QtCore.QObject):
             self.general_defaults_form.general_gui_group.workspace_cb.setChecked(True)
         self.on_workspace()
 
-    def on_theme(self):
-        self.report_usage("on_theme()")
+    def on_layout(self):
+        self.report_usage("on_layout()")
 
-        current_theme= self.general_defaults_form.general_gui_group.theme_combo.get_value().lower()
+        current_layout= self.general_defaults_form.general_gui_group.layout_combo.get_value().lower()
 
         settings = QSettings("Open Source", "FlatCAM")
-        settings.setValue('theme', current_theme)
+        settings.setValue('layout', current_layout)
 
         # This will write the setting to the platform specific storage.
         del settings
@@ -3265,7 +3265,7 @@ class App(QtCore.QObject):
         self.ui.removeToolBar(self.ui.geo_edit_toolbar)
         self.ui.removeToolBar(self.ui.snap_toolbar)
 
-        if current_theme == 'standard':
+        if current_layout == 'standard':
             ### TOOLBAR INSTALLATION ###
             self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
             self.ui.toolbarfile.setObjectName('File_TB')
@@ -3300,7 +3300,7 @@ class App(QtCore.QObject):
 
             self.ui.corner_snap_btn.setVisible(False)
             self.ui.snap_magnet.setVisible(False)
-        elif current_theme == 'compact':
+        elif current_layout == 'compact':
             ### TOOLBAR INSTALLATION ###
             self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
             self.ui.toolbarfile.setObjectName('File_TB')

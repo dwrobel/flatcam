@@ -435,11 +435,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.snap_toolbar.setObjectName('Snap_TB')
 
         settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("theme"):
-            theme = settings.value('theme', type=str)
-            if theme == 'standard':
+        if settings.contains("layout"):
+            layout = settings.value('layout', type=str)
+            if layout == 'standard':
                 self.addToolBar(self.snap_toolbar)
-            elif theme == 'compact':
+            elif layout == 'compact':
                 self.snap_toolbar.setMaximumHeight(30)
                 self.splitter_left.addWidget(self.snap_toolbar)
         else:
@@ -1336,9 +1336,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             self.restoreState(saved_gui_state)
             log.debug("FlatCAMGUI.__init__() --> UI state restored.")
 
-        if settings.contains("theme"):
-            theme = settings.value('theme', type=str)
-            if theme == 'standard':
+        if settings.contains("layout"):
+            layout = settings.value('layout', type=str)
+            if layout == 'standard':
                 self.exc_edit_toolbar.setVisible(False)
                 self.exc_edit_toolbar.setDisabled(True)
                 self.geo_edit_toolbar.setVisible(False)
@@ -1346,7 +1346,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 self.corner_snap_btn.setVisible(False)
                 self.snap_magnet.setVisible(False)
-            elif theme == 'compact':
+            elif layout == 'compact':
                 self.exc_edit_toolbar.setDisabled(True)
                 self.geo_edit_toolbar.setDisabled(True)
                 self.snap_magnet.setVisible(True)
@@ -1477,9 +1477,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grid_snap_btn.trigger()
 
         settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("theme"):
-            theme = settings.value('theme', type=str)
-            if theme == 'standard':
+        if settings.contains("layout"):
+            layout = settings.value('layout', type=str)
+            if layout == 'standard':
                 self.exc_edit_toolbar.setVisible(False)
                 self.exc_edit_toolbar.setDisabled(True)
                 self.geo_edit_toolbar.setVisible(False)
@@ -1487,7 +1487,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 self.corner_snap_btn.setVisible(False)
                 self.snap_magnet.setVisible(False)
-            elif theme == 'compact':
+            elif layout == 'compact':
                 self.exc_edit_toolbar.setVisible(True)
                 self.exc_edit_toolbar.setDisabled(True)
                 self.geo_edit_toolbar.setVisible(True)
@@ -2219,14 +2219,15 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_11.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
         # Theme selection
-        self.theme_label = QtWidgets.QLabel('Theme:')
+        self.layout_label = QtWidgets.QLabel('Layout:')
         self.alt_sf_color_label.setToolTip(
-            "Select a theme for FlatCAM."
+            "Select an layout for FlatCAM."
         )
-        self.theme_combo = FCComboBox()
-        self.theme_combo.addItem("Standard")
-        self.theme_combo.addItem("Compact")
-        self.theme_combo.setCurrentIndex(0)
+        self.layout_combo = FCComboBox()
+        self.layout_combo.addItem("Choose ...")
+        self.layout_combo.addItem("Standard")
+        self.layout_combo.addItem("Compact")
+        self.layout_combo.setCurrentIndex(0)
 
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
@@ -2255,7 +2256,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.sel_draw_color_label, self.form_box_child_11)
 
         self.form_box.addRow(self.spacelabel, self.spacelabel)
-        self.form_box.addRow(self.theme_label, self.theme_combo)
+        self.form_box.addRow(self.layout_label, self.layout_combo)
         # Add the QFormLayout that holds the Application general defaults
         # to the main layout of this TAB
         self.layout.addLayout(self.form_box)
