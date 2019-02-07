@@ -1695,6 +1695,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             # Escape = Deselect All
             if key == QtCore.Qt.Key_Escape or key == 'Escape':
                 self.app.on_deselect_all()
+                self.app.inform.emit("")
 
             # Space = Toggle Active/Inactive
             if key == QtCore.Qt.Key_Space:
