@@ -2896,6 +2896,12 @@ class App(QtCore.QObject):
         else:
             self.ui.plot_tab_area.closeTab(0)
 
+    def on_toggle_notebook(self):
+        if self.ui.splitter.sizes()[0] == 0:
+            self.ui.splitter.setSizes([1, 1])
+        else:
+            self.ui.splitter.setSizes([0, 1])
+
     def on_toggle_axis(self):
         self.report_usage("on_toggle_axis()")
 

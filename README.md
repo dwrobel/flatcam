@@ -16,6 +16,9 @@ CAD program, and create G-Code for Isolation routing.
 - imported speedups for shapely
 - added a disable menu entry in the canvas contextual menu
 - small changes in Tools layout
+- added some new icons in the help menu and reorganized this menu
+- added a new function and the shortcut 'leftquote' (left of Key 1) for toggle of the notebook section
+- changed the Shortcut list shortcut key to F3
 
 6.02.2019
 

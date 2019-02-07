@@ -286,12 +286,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Help ###
         self.menuhelp = self.menu.addMenu('&Help')
-        self.menuhelp_about = self.menuhelp.addAction(QtGui.QIcon('share/tv16.png'), 'About FlatCAM')
-        self.menuhelp_home = self.menuhelp.addAction(QtGui.QIcon('share/home16.png'), 'Home')
-        self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), 'Manual\tF1')
+        self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), 'Help\tF1')
+        self.menuhelp_home = self.menuhelp.addAction(QtGui.QIcon('share/home16.png'), 'FlatCAM.org')
         self.menuhelp.addSeparator()
-        self.menuhelp_shortcut_list = self.menuhelp.addAction(QtGui.QIcon('share/shortcuts24.png'), 'Shortcuts List\t`')
-        self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/videohelp24.png'), 'See on YouTube\tF2')
+        self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/youtube32.png'), 'YouTube Channel\tF2')
+        self.menuhelp_shortcut_list = self.menuhelp.addAction(QtGui.QIcon('share/shortcuts24.png'), 'Shortcuts List\tF3')
+        self.menuhelp_about = self.menuhelp.addAction(QtGui.QIcon('share/about32.png'), 'About')
 
 
         ### FlatCAM Editor menu ###
@@ -757,7 +757,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
 	<tbody>
 		<tr height="20">
-			<td height="20" width="89"><strong>~</strong></td>
+			<td height="20" width="89"><strong>F3</strong></td>
 			<td width="194"><span style="color:#006400"><strong>&nbsp;SHOW SHORTCUT LIST</strong></span></td>
 		</tr>
 		<tr height="20">
@@ -983,6 +983,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 		<tr height="20">
 			<td height="20"><strong>Del</strong></td>
 			<td>&nbsp;Delete Obj</td>
+		</tr>
+        <tr height="20">
+			<td height="20"><strong>'`'</strong></td>
+			<td>&nbsp;(left to Key_1)Toogle Notebook Area (Left Side)</td>
 		</tr>
         <tr height="20">
 			<td height="20"><strong>SPACE</strong></td>
@@ -1665,6 +1669,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             if key == QtCore.Qt.Key_F2 or key == 'F2':
                 webbrowser.open(self.app.video_url)
 
+            # Show shortcut list
+            if key == QtCore.Qt.Key_F3 or key == 'F3':
+                self.app.on_shortcut_list()
+
             # Switch to Project Tab
             if key == QtCore.Qt.Key_1:
                 self.app.on_select_tab('project')
@@ -1768,12 +1776,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             if key == QtCore.Qt.Key_Minus:
                 self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'], self.app.mouse)
 
-            # Show shortcut list
-            if key == QtCore.Qt.Key_Ampersand:
-                self.app.on_shortcut_list()
-
+            # toggle display of Notebook area
             if key == QtCore.Qt.Key_QuoteLeft:
-                self.app.on_shortcut_list()
+                self.app.on_toggle_notebook()
+
             return
 
     def dragEnterEvent(self, event):
