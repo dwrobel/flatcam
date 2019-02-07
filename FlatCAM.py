@@ -5,7 +5,6 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from FlatCAMApp import App
 from multiprocessing import freeze_support
 import VisPyPatches
-import qtmodern.styles, qtmodern.windows
 
 if sys.platform == "win32":
     # cx_freeze 'module win32' workaround
@@ -35,6 +34,5 @@ if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     fc = App()
 
-    # qtmodern.styles.dark(app)
     sys.exit(app.exec_())
 

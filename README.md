@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - commented some debug messages
 - imported speedups for shapely
 - added a disable menu entry in the canvas contextual menu
+- small changes in Tools layout
 
 6.02.2019
 

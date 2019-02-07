@@ -1942,13 +1942,13 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.tools_paint_group.setFixedWidth(200)
 
         self.tools_cutout_group = ToolsCutoutPrefGroupUI()
-        self.tools_cutout_group.setFixedWidth(200)
+        self.tools_cutout_group.setFixedWidth(220)
 
         self.tools_2sided_group = Tools2sidedPrefGroupUI()
-        self.tools_2sided_group.setFixedWidth(200)
+        self.tools_2sided_group.setFixedWidth(220)
 
         self.tools_film_group = ToolsFilmPrefGroupUI()
-        self.tools_film_group.setFixedWidth(200)
+        self.tools_film_group.setFixedWidth(220)
 
         self.tools_panelize_group = ToolsPanelizePrefGroupUI()
         self.tools_panelize_group.setFixedWidth(200)
