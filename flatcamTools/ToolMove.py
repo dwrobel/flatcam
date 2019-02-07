@@ -139,12 +139,13 @@ class ToolMove(FlatCAMTool):
                         proc.done()
                         # delete the selection bounding box
                         self.delete_shape()
+                        self.app.inform.emit('[success]%s object was moved ...' %
+                                             str(sel_obj.kind).capitalize())
 
                     self.app.worker_task.emit({'fcn': job_move, 'params': [self]})
 
                     self.clicked_move = 0
                     self.toggle()
-                    self.app.inform.emit("[success]Object was moved ...")
                     return
 
                 except TypeError:

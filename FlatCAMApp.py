@@ -1700,7 +1700,7 @@ class App(QtCore.QObject):
         """
         pass
 
-    def shell_message(self, msg, show=False, error=False, warning=False, success=False):
+    def shell_message(self, msg, show=False, error=False, warning=False, success=False, selected=False):
         """
         Shows a message on the FlatCAM Shell
 
@@ -1720,8 +1720,10 @@ class App(QtCore.QObject):
                 else:
                     if success:
                         self.shell.append_success(msg + "\n")
-                    else:
-                        self.shell.append_output(msg + "\n")
+                        if success:
+                            self.shell.append_selected(msg + "\n")
+                        else:
+                            self.shell.append_output(msg + "\n")
         except AttributeError:
             log.debug("shell_message() is called before Shell Class is instantiated. The message is: %s", str(msg))
 
@@ -1894,13 +1896,19 @@ class App(QtCore.QObject):
 
             elif level.lower() == "error_notcl":
                 self.shell_message(msg, error=True, show=False)
+
             elif level.lower() == "warning_notcl":
                 self.shell_message(msg, warning=True, show=False)
 
             elif level.lower() == "success":
                 self.shell_message(msg, success=True, show=False)
+
+            elif level.lower() == "selected":
+                self.shell_message(msg, selected=True, show=False)
+
             else:
                 self.shell_message(msg, show=False)
+
         else:
             self.ui.fcinfo.set_status(str(msg), level="info")
 
@@ -4440,6 +4448,9 @@ class App(QtCore.QObject):
                 # and as a convenience move the focus to the Project tab because Selected tab is now empty
                 self.ui.notebook.setCurrentWidget(self.ui.project_tab)
 
+                # delete any text in the status bar, implicitly the last object name that was selected
+                self.inform.emit("")
+
             else:
                 # case when there is only an object under the click and we toggle it
                 if len(objects_under_the_click_list) == 1:
@@ -4448,6 +4459,20 @@ class App(QtCore.QObject):
                         # create the selection box around the selected object
                         curr_sel_obj = self.collection.get_active()
                         self.draw_selection_shape(curr_sel_obj)
+
+                        if curr_sel_obj.kind == 'gerber':
+                            self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                             ('green', str(curr_sel_obj.options['name'])))
+                        elif curr_sel_obj.kind == 'excellon':
+                            self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                             ('brown', str(curr_sel_obj.options['name'])))
+                        elif curr_sel_obj.kind == 'cncjob':
+                            self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                             ('blue', str(curr_sel_obj.options['name'])))
+                        elif curr_sel_obj.kind == 'geometry':
+                            self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                             ('red', str(curr_sel_obj.options['name'])))
+
                     elif self.collection.get_active().options['name'] not in objects_under_the_click_list:
                         self.collection.set_all_inactive()
                         self.delete_selection_shape()
@@ -4455,9 +4480,25 @@ class App(QtCore.QObject):
                         # create the selection box around the selected object
                         curr_sel_obj = self.collection.get_active()
                         self.draw_selection_shape(curr_sel_obj)
+
+                        if curr_sel_obj.kind == 'gerber':
+                            self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                             ('green', str(curr_sel_obj.options['name'])))
+                        elif curr_sel_obj.kind == 'excellon':
+                            self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                             ('brown', str(curr_sel_obj.options['name'])))
+                        elif curr_sel_obj.kind == 'cncjob':
+                            self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                             ('blue', str(curr_sel_obj.options['name'])))
+                        elif curr_sel_obj.kind == 'geometry':
+                            self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                             ('red', str(curr_sel_obj.options['name'])))
+
                     else:
                         self.collection.set_all_inactive()
                         self.delete_selection_shape()
+                        self.inform.emit("")
+
                 else:
                     # If there is no selected object
                     # make active the first element of the overlapped objects list
@@ -4481,6 +4522,19 @@ class App(QtCore.QObject):
                     self.delete_selection_shape()
                     # create the selection box around the selected object
                     self.draw_selection_shape(curr_sel_obj)
+
+                    if curr_sel_obj.kind == 'gerber':
+                        self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                         ('green', str(curr_sel_obj.options['name'])))
+                    elif curr_sel_obj.kind == 'excellon':
+                        self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                         ('brown', str(curr_sel_obj.options['name'])))
+                    elif curr_sel_obj.kind == 'cncjob':
+                        self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                         ('blue', str(curr_sel_obj.options['name'])))
+                    elif curr_sel_obj.kind == 'geometry':
+                        self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                         ('red', str(curr_sel_obj.options['name'])))
 
                     # for obj in self.collection.get_list():
                     #     obj.plot()

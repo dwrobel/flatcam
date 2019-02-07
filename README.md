@@ -19,6 +19,12 @@ CAD program, and create G-Code for Isolation routing.
 - added some new icons in the help menu and reorganized this menu
 - added a new function and the shortcut 'leftquote' (left of Key 1) for toggle of the notebook section
 - changed the Shortcut list shortcut key to F3
+- moved some graphical classes out of Tool Shell to GUIElements.py where they belong
+- when selecting an object on canvas by single click, it's name is displayed in status bar. When nothing is selected a blank message (nothing) it's displayed
+- in Move Tool I've added the type of object that was moved in the status bar message
+- color coded the status bar bullet to blue for selection
+- the name of the selected objects are displayed in the status bar color coded: green for Gerber objects, Brown for Excellon, Red for Geometry and Blue for CNCJobs.
+
 
 6.02.2019
 

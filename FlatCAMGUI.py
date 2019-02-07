@@ -4016,9 +4016,11 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
 
         layout.addStretch()
 
-    def set_text_(self, text):
+    def set_text_(self, text, color=None):
         self.text.setText(text)
         self.text.setToolTip(text)
+        if color:
+            self.text.setStyleSheet('color: %s' % str(color))
 
     def set_status(self, text, level="info"):
         level = str(level)
@@ -4029,9 +4031,11 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
             self.pmap = QtGui.QPixmap('share/greenlight12.png')
         elif level == "WARNING" or level == "WARNING_NOTCL":
             self.pmap = QtGui.QPixmap('share/yellowlight12.png')
+        elif level == "selected" or level == "SELECTED":
+            self.pmap = QtGui.QPixmap('share/bluelight12.png')
         else:
             self.pmap = QtGui.QPixmap('share/graylight12.png')
 
-        self.icon.setPixmap(self.pmap)
         self.set_text_(text)
+        self.icon.setPixmap(self.pmap)
 # end of file

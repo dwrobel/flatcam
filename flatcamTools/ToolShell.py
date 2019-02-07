@@ -6,165 +6,12 @@
 # MIT Licence                                              #
 ############################################################
 
+# from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QTextCursor
+from PyQt5.QtWidgets import QVBoxLayout, QWidget
+from GUIElements import _BrowserTextEdit, _ExpandableTextEdit
 import html
-from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtCore import Qt, QStringListModel
-from PyQt5.QtGui import QColor, QKeySequence, QPalette, QTextCursor
-from PyQt5.QtWidgets import QLineEdit, QSizePolicy, QTextEdit, QVBoxLayout, QWidget, QCompleter, QAction
-
-class _BrowserTextEdit(QTextEdit):
-
-    def __init__(self, version):
-        QTextEdit.__init__(self)
-        self.menu = None
-        self.version = version
-
-    def contextMenuEvent(self, event):
-        self.menu = self.createStandardContextMenu(event.pos())
-        clear_action = QAction("Clear", self)
-        clear_action.setShortcut(QKeySequence(Qt.Key_Delete))   # it's not working, the shortcut
-        self.menu.addAction(clear_action)
-        clear_action.triggered.connect(self.clear)
-        self.menu.exec_(event.globalPos())
-
-
-    def clear(self):
-        QTextEdit.clear(self)
-        text = "FlatCAM %s (c)2014-2019 Juan Pablo Caram (Type help to get started)\n\n" % self.version
-        text = html.escape(text)
-        text = text.replace('\n', '<br/>')
-        self.moveCursor(QTextCursor.End)
-        self.insertHtml(text)
-
-class _ExpandableTextEdit(QTextEdit):
-    """
-    Class implements edit line, which expands themselves automatically
-    """
-
-    historyNext = pyqtSignal()
-    historyPrev = pyqtSignal()
-
-    def __init__(self, termwidget, *args):
-        QTextEdit.__init__(self, *args)
-        self.setStyleSheet("font: 9pt \"Courier\";")
-        self._fittedHeight = 1
-        self.textChanged.connect(self._fit_to_document)
-        self._fit_to_document()
-        self._termWidget = termwidget
-
-        self.completer = MyCompleter()
-
-        self.model = QStringListModel()
-        self.completer.setModel(self.model)
-        self.set_model_data(keyword_list=[])
-        self.completer.insertText.connect(self.insertCompletion)
-
-    def set_model_data(self, keyword_list):
-        self.model.setStringList(keyword_list)
-
-    def insertCompletion(self, completion):
-        tc = self.textCursor()
-        extra = (len(completion) - len(self.completer.completionPrefix()))
-        tc.movePosition(QTextCursor.Left)
-        tc.movePosition(QTextCursor.EndOfWord)
-        tc.insertText(completion[-extra:])
-        self.setTextCursor(tc)
-        self.completer.popup().hide()
-
-    def focusInEvent(self, event):
-        if self.completer:
-            self.completer.setWidget(self)
-        QTextEdit.focusInEvent(self, event)
-
-    def keyPressEvent(self, event):
-        """
-        Catch keyboard events. Process Enter, Up, Down
-        """
-        if event.matches(QKeySequence.InsertParagraphSeparator):
-            text = self.toPlainText()
-            if self._termWidget.is_command_complete(text):
-                self._termWidget.exec_current_command()
-                return
-        elif event.matches(QKeySequence.MoveToNextLine):
-            text = self.toPlainText()
-            cursor_pos = self.textCursor().position()
-            textBeforeEnd = text[cursor_pos:]
-
-            if len(textBeforeEnd.split('\n')) <= 1:
-                self.historyNext.emit()
-                return
-        elif event.matches(QKeySequence.MoveToPreviousLine):
-            text = self.toPlainText()
-            cursor_pos = self.textCursor().position()
-            text_before_start = text[:cursor_pos]
-            # lineCount = len(textBeforeStart.splitlines())
-            line_count = len(text_before_start.split('\n'))
-            if len(text_before_start) > 0 and \
-                    (text_before_start[-1] == '\n' or text_before_start[-1] == '\r'):
-                line_count += 1
-            if line_count <= 1:
-                self.historyPrev.emit()
-                return
-        elif event.matches(QKeySequence.MoveToNextPage) or \
-                event.matches(QKeySequence.MoveToPreviousPage):
-            return self._termWidget.browser().keyPressEvent(event)
-
-        tc = self.textCursor()
-        if event.key() == Qt.Key_Tab and self.completer.popup().isVisible():
-            self.completer.insertText.emit(self.completer.getSelected())
-            self.completer.setCompletionMode(QCompleter.PopupCompletion)
-            return
-
-        QTextEdit.keyPressEvent(self, event)
-        tc.select(QTextCursor.WordUnderCursor)
-        cr = self.cursorRect()
-
-        if len(tc.selectedText()) > 0:
-            self.completer.setCompletionPrefix(tc.selectedText())
-            popup = self.completer.popup()
-            popup.setCurrentIndex(self.completer.completionModel().index(0, 0))
-
-            cr.setWidth(self.completer.popup().sizeHintForColumn(0)
-                        + self.completer.popup().verticalScrollBar().sizeHint().width())
-            self.completer.complete(cr)
-        else:
-            self.completer.popup().hide()
-
-    def sizeHint(self):
-        """
-        QWidget sizeHint impelemtation
-        """
-        hint = QTextEdit.sizeHint(self)
-        hint.setHeight(self._fittedHeight)
-        return hint
-
-    def _fit_to_document(self):
-        """
-        Update widget height to fit all text
-        """
-        documentsize = self.document().size().toSize()
-        self._fittedHeight = documentsize.height() + (self.height() - self.viewport().height())
-        self.setMaximumHeight(self._fittedHeight)
-        self.updateGeometry()
-
-    def insertFromMimeData(self, mime_data):
-        # Paste only plain text.
-        self.insertPlainText(mime_data.text())
-
-
-class MyCompleter(QCompleter):
-    insertText = pyqtSignal(str)
-
-    def __init__(self, parent=None):
-        QCompleter.__init__(self)
-        self.setCompletionMode(QCompleter.PopupCompletion)
-        self.highlighted.connect(self.setHighlighted)
-
-    def setHighlighted(self, text):
-        self.lastSelected = text
-
-    def getSelected(self):
-        return self.lastSelected
 
 
 class TermWidget(QWidget):
@@ -234,7 +81,7 @@ class TermWidget(QWidget):
         """
         Convert text to HTML for inserting it to browser
         """
-        assert style in ('in', 'out', 'err', 'warning', 'success')
+        assert style in ('in', 'out', 'err', 'warning', 'success', 'selected')
 
         text = html.escape(text)
         text = text.replace('\n', '<br/>')
@@ -247,6 +94,8 @@ class TermWidget(QWidget):
             text = '<span style="font-weight: bold; color: rgb(244, 182, 66);">%s</span>' % text
         elif style == 'success':
             text = '<span style="font-weight: bold; color: rgb(8, 68, 0);">%s</span>' % text
+        elif style == 'selected':
+            text = '<span style="font-weight: bold; color: rgb(0, 8, 255);">%s</span>' % text
         else:
             text = '<span>%s</span>' % text  # without span <br/> is ignored!!!
 
@@ -313,6 +162,11 @@ class TermWidget(QWidget):
         """
         self._append_to_browser('success', text)
 
+    def append_selected(self, text):
+        """Appent text to output widget
+        """
+        self._append_to_browser('selected', text)
+
     def append_warning(self, text):
         """Appent text to output widget
         """
@@ -351,6 +205,7 @@ class TermWidget(QWidget):
             self._historyIndex -= 1
             self._edit.setPlainText(self._history[self._historyIndex])
             self._edit.moveCursor(QTextCursor.End)
+
 
 class FCShell(TermWidget):
     def __init__(self, sysShell, version, *args):
