@@ -1160,6 +1160,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         ##############################################################
         self.popMenu = QtWidgets.QMenu()
 
+        self.popmenu_disable = self.popMenu.addAction(QtGui.QIcon('share/clear_plot32.png'), "Disable")
+        self.popMenu.addSeparator()
         self.cmenu_newmenu = self.popMenu.addMenu(QtGui.QIcon('share/file32.png'), "New")
         self.popmenu_new_geo = self.cmenu_newmenu.addAction(QtGui.QIcon('share/new_geo32_bis.png'), "Geo Obj")
         self.popmenu_new_exc = self.cmenu_newmenu.addAction(QtGui.QIcon('share/new_exc32.png'), "Exc. Obj")

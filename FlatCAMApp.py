@@ -1132,6 +1132,8 @@ class App(QtCore.QObject):
         self.ui.shell_btn.triggered.connect(self.on_toggle_shell)
 
         # Context Menu
+        self.ui.popmenu_disable.triggered.connect(lambda: self.disable_plots(self.collection.get_selected()))
+
         self.ui.popmenu_new_geo.triggered.connect(lambda: self.new_object('geometry', 'new_g', lambda x, y: None))
         self.ui.popmenu_new_exc.triggered.connect(self.new_excellon_object)
         self.ui.popmenu_new_prj.triggered.connect(self.on_file_new)
