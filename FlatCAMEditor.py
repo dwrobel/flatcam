@@ -1572,14 +1572,14 @@ class FCDrillArray(FCShapeTool):
 
             for item in range(self.drill_array_size):
                 if self.drill_axis == 'X':
-                    geo = self.util_shape(((data[0] + (self.drill_pitch * item)), data[1]))
+                    geo = self.util_shape(((dx + (self.drill_pitch * item)), dy))
                 if self.drill_axis == 'Y':
-                    geo = self.util_shape((data[0], (data[1] + (self.drill_pitch * item))))
+                    geo = self.util_shape((dx, (dy + (self.drill_pitch * item))))
                 if self.drill_axis == 'A':
                     x_adj = self.drill_pitch * math.cos(math.radians(self.drill_linear_angle))
                     y_adj = self.drill_pitch * math.sin(math.radians(self.drill_linear_angle))
                     geo = self.util_shape(
-                        ((data[0] + (x_adj * item)), (data[1] + (y_adj * item)))
+                        ((dx + (x_adj * item)), (dy + (y_adj * item)))
                     )
 
                 if static is None or static is False:

@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+9.02.2019
+
+- 
+
 8.02.2019
 
 - when shortcut keys 1, 2, 3 (tab selection) are activated, if the splitter left side (the notebook) is hidden it will be mae visible

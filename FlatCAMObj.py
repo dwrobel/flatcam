@@ -1697,7 +1697,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.z_move = float(self.options["travelz"])
             job_obj.feedrate = float(self.options["feedrate"])
             job_obj.feedrate_rapid = float(self.options["feedrate_rapid"])
-            job_obj.spindlespeed = float(self.options["spindlespeed"])
+
+            job_obj.spindlespeed = float(self.options["spindlespeed"]) if self.options["spindlespeed"] else None
             job_obj.dwell = self.options["dwell"]
             job_obj.dwelltime = float(self.options["dwelltime"])
             job_obj.pp_excellon_name = pp_excellon_name
@@ -4307,8 +4308,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             _filter_ = "G-Code Files (*.nc);;G-Code Files (*.txt);;G-Code Files (*.tap);;G-Code Files (*.cnc);;" \
                        "G-Code Files (*.g-code);;All Files (*.*)"
 
-        dir_file_to_save = self.app.get_last_save_folder() + '/' + str(name)
         try:
+            dir_file_to_save = self.app.get_last_save_folder() + '/' + str(name)
             filename, _ = QtWidgets.QFileDialog.getSaveFileName(
                 caption="Export Machine Code ...",
                 directory=dir_file_to_save,
