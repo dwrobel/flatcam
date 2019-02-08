@@ -1562,7 +1562,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
             # Toggle axis
             if key == QtCore.Qt.Key_G:
-                if self.toggle_axis is False:
+                if self.app.toggle_axis is False:
                     self.app.plotcanvas.v_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
                     self.app.plotcanvas.h_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
                     self.app.plotcanvas.redraw()
@@ -1571,7 +1571,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.plotcanvas.v_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
 
                     self.app.plotcanvas.h_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
-                    self.appplotcanvas.redraw()
+                    self.app.plotcanvas.redraw()
                     self.app.toggle_axis = False
 
             # Open Preferences Window

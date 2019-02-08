@@ -36,7 +36,7 @@ class KeySensitiveListView(QtWidgets.QTreeView):
     keyPressed = QtCore.pyqtSignal(int)
 
     def keyPressEvent(self, event):
-        super(KeySensitiveListView, self).keyPressEvent(event)
+        # super(KeySensitiveListView, self).keyPressEvent(event)
         self.keyPressed.emit(event.key())
 
     def dragEnterEvent(self, event):

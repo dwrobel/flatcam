@@ -13,7 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - when shortcut keys 1, 2, 3 (tab selection) are activated, if the splitter left side (the notebook) is hidden it will be mae visible
 - changed the menu entry Toggle Grid name to Toggle Grid Snap
-
+- fixed errors in Toggle Axis
+- fixed error with shortcut key triggering twice the keyPressEvent when in the Project List View
 
 7.02.2019
 
