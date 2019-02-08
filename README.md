@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - changed the menu entry Toggle Grid name to Toggle Grid Snap
 - fixed errors in Toggle Axis
 - fixed error with shortcut key triggering twice the keyPressEvent when in the Project List View
+- moved all shortcut keys handlers from Editors to the keyPressEvent() handler from FLatCAMGUI
 
 7.02.2019
 
