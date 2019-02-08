@@ -233,7 +233,6 @@ class FloatEntry(QtWidgets.QLineEdit):
         else:
             self.setText("")
 
-
     def sizeHint(self):
         default_hint_size = super(FloatEntry, self).sizeHint()
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
@@ -351,7 +350,7 @@ class FCEntry2(FCEntry):
         self.readyToEdit = True
 
     def set_value(self, val):
-        self.setText('%.5f' % float(val))
+        self.setText('%.4f' % float(val))
 
 
 class EvalEntry(QtWidgets.QLineEdit):
@@ -474,6 +473,7 @@ class FCTextAreaRich(QtWidgets.QTextEdit):
         default_hint_size = super(FCTextAreaRich, self).sizeHint()
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
+
 class FCComboBox(QtWidgets.QComboBox):
     def __init__(self, parent=None):
         super(FCComboBox, self).__init__(parent)
@@ -494,6 +494,10 @@ class FCInputDialog(QtWidgets.QInputDialog):
         super(FCInputDialog, self).__init__(parent)
         self.allow_empty = ok
         self.empty_val = val
+
+        self.val = 0.0
+        self.ok = ''
+
         if title is None:
             self.title = 'title'
         else:
@@ -515,9 +519,8 @@ class FCInputDialog(QtWidgets.QInputDialog):
         else:
             self.decimals = decimals
 
-
     def get_value(self):
-        self.val,self.ok = self.getDouble(self, self.title, self.text, min=self.min,
+        self.val, self.ok = self.getDouble(self, self.title, self.text, min=self.min,
                                                       max=self.max, decimals=self.decimals)
         return [self.val, self.ok]
 

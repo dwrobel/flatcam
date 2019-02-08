@@ -783,7 +783,8 @@ class GeometryObjectUI(ObjectUI):
             "cut and negative for 'inside' cut."
         )
         self.grid1.addWidget(self.tool_offset_lbl, 0, 0)
-        self.tool_offset_entry = FCEntry()
+        self.tool_offset_entry = FloatEntry()
+        self.tool_offset_entry.setValidator(QtGui.QDoubleValidator(-9999.9999, 9999.9999, 4))
         spacer_lbl = QtWidgets.QLabel(" ")
         spacer_lbl.setFixedWidth(80)
 

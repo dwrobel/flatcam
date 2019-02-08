@@ -1714,16 +1714,14 @@ class App(QtCore.QObject):
         try:
             if error:
                 self.shell.append_error(msg + "\n")
+            elif warning:
+                self.shell.append_warning(msg + "\n")
+            elif success:
+                self.shell.append_success(msg + "\n")
+            elif selected:
+                self.shell.append_selected(msg + "\n")
             else:
-                if warning:
-                    self.shell.append_warning(msg + "\n")
-                else:
-                    if success:
-                        self.shell.append_success(msg + "\n")
-                        if success:
-                            self.shell.append_selected(msg + "\n")
-                        else:
-                            self.shell.append_output(msg + "\n")
+                self.shell.append_output(msg + "\n")
         except AttributeError:
             log.debug("shell_message() is called before Shell Class is instantiated. The message is: %s", str(msg))
 
@@ -2298,6 +2296,7 @@ class App(QtCore.QObject):
             self.collection.set_all_inactive()
             self.collection.set_active(obj.options["name"])
 
+        # here it is done the object plotting
         def worker_task(obj):
             with self.proc_container.new("Plotting"):
                 if isinstance(obj, FlatCAMCNCjob):
@@ -2739,6 +2738,60 @@ class App(QtCore.QObject):
         obj.plot()
 
         self.inform.emit("[success] A Geometry object was converted to SingleGeo type.")
+
+    def on_skey_tool_add(self):
+        ## Current application units in Upper Case
+        self.units = self.general_options_form.general_app_group.units_radio.get_value().upper()
+
+        # work only if the notebook tab on focus is the Selected_Tab and only if the object is Geometry
+        if self.ui.notebook.currentWidget().objectName() == 'selected_tab':
+            if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
+                tool_add_popup = FCInputDialog(title="New Tool ...",
+                                               text='Enter a Tool Diameter:',
+                                               min=0.0000, max=99.9999, decimals=4)
+                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+                val, ok = tool_add_popup.get_value()
+                if ok:
+                    self.collection.get_active().on_tool_add(dia=float(val))
+                    self.inform.emit(
+                        "[success]Added new tool with dia: %s %s" % ('%.4f' % float(val), str(self.units)))
+                else:
+                    self.inform.emit(
+                        "[WARNING_NOTCL] Adding Tool cancelled ...")
+
+        # work only if the notebook tab on focus is the Tools_Tab
+        if self.ui.notebook.currentWidget().objectName() == 'tool_tab':
+            # and only if the tool is NCC Tool
+            if self.ui.tool_scroll_area.widget().objectName() == self.ncclear_tool.toolName:
+                tool_add_popup = FCInputDialog(title="New Tool ...",
+                                               text='Enter a Tool Diameter:',
+                                               min=0.0000, max=99.9999, decimals=4)
+                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+                val, ok = tool_add_popup.get_value()
+                if ok:
+                    self.ncclear_tool.on_tool_add(dia=float(val))
+                    self.inform.emit(
+                        "[success]Added new tool with dia: %s %s" % ('%.4f' % float(val), str(self.units)))
+                else:
+                    self.inform.emit(
+                        "[WARNING_NOTCL] Adding Tool cancelled ...")
+            # and only if the tool is Paint Area Tool
+            if self.ui.tool_scroll_area.widget().objectName() == self.paint_tool.toolName:
+                tool_add_popup = FCInputDialog(title="New Tool ...",
+                                               text='Enter a Tool Diameter:',
+                                               min=0.0000, max=99.9999, decimals=4)
+                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+                val, ok = tool_add_popup.get_value()
+                if ok:
+                    self.paint_tool.on_tool_add(dia=float(val))
+                    self.inform.emit(
+                        "[success]Added new tool with dia: %s %s" % ('%.4f' % float(val), str(self.units)))
+                else:
+                    self.inform.emit(
+                        "[WARNING_NOTCL] Adding Tool cancelled ...")
 
     def on_options_dict_change(self, field):
         self.options_write_form_field(field)

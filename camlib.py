@@ -4939,25 +4939,25 @@ class CNCjob(Geometry):
         flat_geometry = self.flatten(temp_solid_geometry, pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
 
-        self.tooldia = tooldia
-        self.z_cut = z_cut
-        self.z_move = z_move
+        self.tooldia = float(tooldia) if tooldia else None
+        self.z_cut = float(z_cut) if z_cut else None
+        self.z_move = float(z_move) if z_move else None
 
-        self.feedrate = feedrate
-        self.feedrate_z = feedrate_z
-        self.feedrate_rapid = feedrate_rapid
+        self.feedrate = float(feedrate) if feedrate else None
+        self.feedrate_z = float(feedrate_z) if feedrate_z else None
+        self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
 
-        self.spindlespeed = spindlespeed
+        self.spindlespeed = int(spindlespeed) if spindlespeed else None
         self.dwell = dwell
-        self.dwelltime = dwelltime
+        self.dwelltime = float(dwelltime) if dwelltime else None
 
-        self.startz = startz
-        self.endz = endz
+        self.startz = float(startz) if startz else None
+        self.endz = float(endz) if endz else None
 
-        self.depthpercut = depthpercut
+        self.depthpercut = float(depthpercut) if depthpercut else None
         self.multidepth = multidepth
 
-        self.toolchangez = toolchangez
+        self.toolchangez = float(toolchangez) if toolchangez else None
 
         try:
             if toolchangexy == '':
@@ -5120,14 +5120,57 @@ class CNCjob(Geometry):
                                  "from a Geometry object without solid_geometry.")
 
         temp_solid_geometry = []
+
+        def bounds_rec(obj):
+            if type(obj) is list:
+                minx = Inf
+                miny = Inf
+                maxx = -Inf
+                maxy = -Inf
+
+                for k in obj:
+                    if type(k) is dict:
+                        for key in k:
+                            minx_, miny_, maxx_, maxy_ = bounds_rec(k[key])
+                            minx = min(minx, minx_)
+                            miny = min(miny, miny_)
+                            maxx = max(maxx, maxx_)
+                            maxy = max(maxy, maxy_)
+                    else:
+                        minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                        minx = min(minx, minx_)
+                        miny = min(miny, miny_)
+                        maxx = max(maxx, maxx_)
+                        maxy = max(maxy, maxy_)
+                return minx, miny, maxx, maxy
+            else:
+                # it's a Shapely object, return it's bounds
+                return obj.bounds
+
         if offset != 0.0:
+            offset_for_use = offset
+
+            if offset <0:
+                a, b, c, d = bounds_rec(geometry.solid_geometry)
+                # if the offset is less than half of the total length or less than half of the total width of the
+                # solid geometry it's obvious we can't do the offset
+                if -offset > ((c - a) / 2) or -offset > ((d - b) / 2):
+                    self.app.inform.emit("[ERROR_NOTCL]The Tool Offset value is too negative to use "
+                                         "for the current_geometry.\n"
+                                         "Raise the value (in module) and try again.")
+                    return 'fail'
+                # hack: make offset smaller by 0.0000000001 which is insignificant difference but allow the job
+                # to continue
+                elif  -offset == ((c - a) / 2) or -offset == ((d - b) / 2):
+                    offset_for_use = offset - 0.0000000001
+
             for it in geometry.solid_geometry:
                 # if the geometry is a closed shape then create a Polygon out of it
                 if isinstance(it, LineString):
                     c = it.coords
                     if c[0] == c[-1]:
                         it = Polygon(it)
-                temp_solid_geometry.append(it.buffer(offset, join_style=2))
+                temp_solid_geometry.append(it.buffer(offset_for_use, join_style=2))
         else:
             temp_solid_geometry = geometry.solid_geometry
 
@@ -5135,25 +5178,33 @@ class CNCjob(Geometry):
         flat_geometry = self.flatten(temp_solid_geometry, pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
 
-        self.tooldia = tooldia
-        self.z_cut = z_cut
-        self.z_move = z_move
+        self.tooldia = float(tooldia) if tooldia else None
 
-        self.feedrate = feedrate
-        self.feedrate_z = feedrate_z
-        self.feedrate_rapid = feedrate_rapid
+        self.z_cut = float(z_cut) if z_cut else None
 
-        self.spindlespeed = spindlespeed
+        self.z_move = float(z_move) if z_move else None
+
+        self.feedrate = float(feedrate) if feedrate else None
+
+        self.feedrate_z = float(feedrate_z) if feedrate_z else None
+
+        self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
+
+        self.spindlespeed = int(spindlespeed) if spindlespeed else None
+
         self.dwell = dwell
-        self.dwelltime = dwelltime
 
-        self.startz = startz
-        self.endz = endz
+        self.dwelltime = float(dwelltime) if dwelltime else None
 
-        self.depthpercut = depthpercut
+        self.startz = float(startz) if startz else None
+
+        self.endz = float(endz) if endz else None
+
+        self.depthpercut = float(depthpercut) if depthpercut else None
+
         self.multidepth = multidepth
 
-        self.toolchangez = toolchangez
+        self.toolchangez = float(toolchangez) if toolchangez else None
 
         try:
             if toolchangexy == '':

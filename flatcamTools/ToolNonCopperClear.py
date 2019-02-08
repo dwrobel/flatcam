@@ -5,6 +5,7 @@ from copy import copy,deepcopy
 from ObjectCollection import *
 import time
 
+
 class NonCopperClear(FlatCAMTool, Gerber):
 
     toolName = "Non-Copper Clearing"

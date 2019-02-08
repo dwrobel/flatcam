@@ -3255,7 +3255,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         grid1.addWidget(addtool_entry_lbl, 0, 0)
 
         hlay = QtWidgets.QHBoxLayout()
-        self.addtool_entry = LengthEntry()
+        self.addtool_entry = FCEntry()
+        self.addtool_entry.setValidator(QtGui.QDoubleValidator(0.0001, 99.9999, 4))
         hlay.addWidget(self.addtool_entry)
 
         self.addtool_btn = QtWidgets.QPushButton('Add Tool')
@@ -3663,7 +3664,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         if self.units == "IN":
             self.addtool_entry.set_value(0.039)
         else:
-            self.addtool_entry.set_value(1)
+            self.addtool_entry.set_value(1.00)
 
         sort_temp = []
 
@@ -3847,9 +3848,21 @@ class FlatCAMExcEditor(QtCore.QObject):
         # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
         self.tools_table_exc.itemChanged.connect(self.on_tool_edit)
 
-    def on_tool_add(self):
+    def on_tool_add(self, tooldia=None):
         self.is_modified = True
-        tool_dia = float(self.addtool_entry.get_value())
+        if tooldia:
+            tool_dia = tooldia
+        else:
+            try:
+                tool_dia = float(self.addtool_entry.get_value())
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    tool_dia = float(self.addtool_entry.get_value().replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
+                                         "use a number.")
+                    return
 
         if tool_dia not in self.olddia_newdia:
             storage_elem = FlatCAMGeoEditor.make_storage()
@@ -4155,6 +4168,9 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.storage_dict[tool_dia] = storage_elem
 
         self.replot()
+
+        # add a first tool in the Tool Table
+        self.on_tool_add(tooldia=1.00)
 
     def update_fcexcellon(self, exc_obj):
         """

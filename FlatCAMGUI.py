@@ -563,6 +563,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Project ###
         self.project_tab = QtWidgets.QWidget()
+        self.project_tab.setObjectName("project_tab")
         # project_tab.setMinimumWidth(250)  # Hack
         self.project_tab_layout = QtWidgets.QVBoxLayout(self.project_tab)
         self.project_tab_layout.setContentsMargins(2, 2, 2, 2)
@@ -570,6 +571,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Selected ###
         self.selected_tab = QtWidgets.QWidget()
+        self.selected_tab.setObjectName("selected_tab")
         self.selected_tab_layout = QtWidgets.QVBoxLayout(self.selected_tab)
         self.selected_tab_layout.setContentsMargins(2, 2, 2, 2)
         self.selected_scroll_area = VerticalScrollArea()
@@ -578,6 +580,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Tool ###
         self.tool_tab = QtWidgets.QWidget()
+        self.tool_tab.setObjectName("tool_tab")
         self.tool_tab_layout = QtWidgets.QVBoxLayout(self.tool_tab)
         self.tool_tab_layout.setContentsMargins(2, 2, 2, 2)
         self.notebook.addTab(self.tool_tab, "Tool")
@@ -826,6 +829,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 			<td height="20"><strong>S</strong></td>
 			<td>&nbsp;Shell Toggle</td>
 		</tr>
+        <tr height="20">
+			<td height="20"><strong>T</strong></td>
+			<td>&nbsp;Add a Tool (when in Geometry Selected Tab)</td>
+		</tr>
 		<tr height="20">
 			<td height="20"><strong>V</strong></td>
 			<td>&nbsp;Zoom Fit</td>
@@ -948,7 +955,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 		</tr>
 		<tr height="20">
 			<td height="20"><strong>ALT+R</strong></td>
-			<td>&nbsp;Transformation Tool</td>
+			<td>&nbsp;Transformations Tool</td>
 		</tr>
 		<tr height="20">
 			<td height="20"><strong>ALT+U</strong></td>
@@ -1130,6 +1137,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 		<tr height="20">
 			<td height="20"><strong>R</strong></td>
 			<td>&nbsp;Resize Drill(s)</td>
+		</tr>
+        <tr height="20">
+			<td height="20"><strong>T</strong></td>
+			<td>&nbsp;Add a new Tool</td>
 		</tr>
 		<tr height="20">
 			<td height="20">&nbsp;</td>
@@ -1755,9 +1766,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_S:
                     self.app.on_toggle_shell()
 
-                # Transform Tool
+                # Add a Tool from shortcut
                 if key == QtCore.Qt.Key_T:
-                    self.app.transform_tool.run()
+                    self.app.on_skey_tool_add()
 
                 # Zoom Fit
                 if key == QtCore.Qt.Key_V:
@@ -1801,6 +1812,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             elif modifiers == QtCore.Qt.AltModifier:
                 pass
             else:
+                # toggle display of Notebook area
+                if key == QtCore.Qt.Key_QuoteLeft or key == '`':
+                    self.app.on_toggle_notebook()
+
                 # Finish the current action. Use with tools that do not
                 # complete automatically, like a polygon or path.
                 if key == QtCore.Qt.Key_Enter or key == 'Enter':
@@ -1840,14 +1855,25 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.geo_editor.active_tool.set_origin(
                         self.app.geo_editor.snap(self.app.geo_editor.x, self.app.geo_editor.y))
 
-                if key == QtCore.Qt.Key_1 or key== '1':
-                    self.app.on_zoom_fit(None)
+                if key == QtCore.Qt.Key_Minus or key == '-':
+                    self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'],
+                                             [self.app.geo_editor.snap_x, self.app.geo_editor.snap_y])
 
+                if key == QtCore.Qt.Key_Equal or key == '=':
+                    self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'],
+                                             [self.app.geo_editor.snap_x, self.app.geo_editor.snap_y])
+
+                # Switch to Project Tab
+                if key == QtCore.Qt.Key_1 or key == '1':
+                    self.app.on_select_tab('project')
+
+                # Switch to Selected Tab
                 if key == QtCore.Qt.Key_2 or key == '2':
-                    self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'], [self.snap_x, self.snap_y])
+                    self.app.on_select_tab('selected')
 
+                # Switch to Tool Tab
                 if key == QtCore.Qt.Key_3 or key == '3':
-                    self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'], [self.snap_x, self.snap_y])
+                    self.app.on_select_tab('tool')
 
                 # Arc Tool
                 if key == QtCore.Qt.Key_A or key == 'A':
@@ -1954,6 +1980,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
                         messagebox.exec_()
 
+                if key == QtCore.Qt.Key_V or key == 'V':
+                    self.app.on_zoom_fit(None)
+
                 # Cut Action Tool
                 if key == QtCore.Qt.Key_X or key == 'X':
                     if self.app.geo_editor.get_selected() is not None:
@@ -1975,7 +2004,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Propagate to tool
                 response = None
                 if self.app.geo_editor.active_tool is not None:
-                    response = self.app.geo_editor.active_tool.on_key(event.key)
+                    response = self.app.geo_editor.active_tool.on_key(event)
                 if response is not None:
                     self.app.inform.emit(response)
 
@@ -2024,17 +2053,41 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.inform.emit("[WARNING_NOTCL]Cancelled. Nothing selected to delete.")
                     return
 
+                if key == QtCore.Qt.Key_Minus or key == '-':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'],
+                                             [self.app.exc_editor.snap_x, self.app.exc_editor.snap_y])
+                    return
+
+                if key == QtCore.Qt.Key_Equal or key == '=':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'],
+                                             [self.app.exc_editor.snap_x, self.app.exc_editor.snap_y])
+                    return
+
+                # toggle display of Notebook area
+                if key == QtCore.Qt.Key_QuoteLeft or key == '`':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    self.app.on_toggle_notebook()
+                    return
+
+                # Switch to Project Tab
                 if key == QtCore.Qt.Key_1 or key == '1':
                     self.app.exc_editor.launched_from_shortcuts = True
-                    self.app.on_zoom_fit(None)
+                    self.app.on_select_tab('project')
+                    return
 
+                # Switch to Selected Tab
                 if key == QtCore.Qt.Key_2 or key == '2':
                     self.app.exc_editor.launched_from_shortcuts = True
-                    self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'], [self.snap_x, self.snap_y])
+                    self.app.on_select_tab('selected')
+                    return
 
+                # Switch to Tool Tab
                 if key == QtCore.Qt.Key_3 or key == '3':
                     self.app.exc_editor.launched_from_shortcuts = True
-                    self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'], [self.snap_x, self.snap_y])
+                    self.app.on_select_tab('tool')
+                    return
 
                 # Add Array of Drill Hole Tool
                 if key == QtCore.Qt.Key_A or key == 'A':
@@ -2100,10 +2153,36 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.exc_editor.select_tool('resize')
                     return
 
+                # Add Tool
+                if key == QtCore.Qt.Key_T or key == 'T':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    ## Current application units in Upper Case
+                    self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
+                    tool_add_popup = FCInputDialog(title="New Tool ...",
+                                                   text='Enter a Tool Diameter:',
+                                                   min=0.0000, max=99.9999, decimals=4)
+                    tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+                    val, ok = tool_add_popup.get_value()
+                    if ok:
+                        self.app.exc_editor.on_tool_add(tooldia=val)
+                        self.app.inform.emit(
+                            "[success]Added new tool with dia: %s %s" % ('%.4f' % float(val), str(self.units)))
+                    else:
+                        self.app.inform.emit(
+                            "[WARNING_NOTCL] Adding Tool cancelled ...")
+                    return
+
+                # Zoom Fit
+                if key == QtCore.Qt.Key_V or key == 'V':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    self.app.on_zoom_fit(None)
+                    return
+
                 # Propagate to tool
                 response = None
                 if self.app.exc_editor.active_tool is not None:
-                    response = self.app.exc_editor.active_tool.on_key(event.key)
+                    response = self.app.exc_editor.active_tool.on_key(event)
                 if response is not None:
                     self.app.inform.emit(response)
 
