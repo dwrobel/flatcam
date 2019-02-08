@@ -4199,6 +4199,10 @@ class App(QtCore.QObject):
         elif name == 'tool':
             self.ui.notebook.setCurrentWidget(self.ui.tool_tab)
 
+        # if the splitter us hidden, display it
+        if self.ui.splitter.sizes()[0] == 0:
+            self.ui.splitter.setSizes([1, 1])
+
     def on_copy_name(self):
         self.report_usage("on_copy_name()")
 

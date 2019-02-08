@@ -273,7 +273,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon('share/plot32.png'), "&Toggle Plot Area\tCTRL+F10")
 
         self.menuview.addSeparator()
-        self.menuview_toggle_grid = self.menuview.addAction(QtGui.QIcon('share/grid32.png'), "&Toggle Grid\tG")
+        self.menuview_toggle_grid = self.menuview.addAction(QtGui.QIcon('share/grid32.png'), "&Toggle Grid Snap\tG")
         self.menuview_toggle_axis = self.menuview.addAction(QtGui.QIcon('share/axis32.png'), "&Toggle Axis\tSHIFT+G")
         self.menuview_toggle_workspace = self.menuview.addAction(QtGui.QIcon('share/workspace24.png'),
                                                                  "Toggle Workspace\tSHIFT+W")

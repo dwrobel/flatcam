@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+8.02.2019
+
+- when shortcut keys 1, 2, 3 (tab selection) are activated, if the splitter left side (the notebook) is hidden it will be mae visible
+- changed the menu entry Toggle Grid name to Toggle Grid Snap
+
+
 7.02.2019
 
 - in Paint Tool, when painting single polygon, when clicking on canvas for the polygon there is no longer a selection of the entire object
@@ -24,7 +30,6 @@ CAD program, and create G-Code for Isolation routing.
 - in Move Tool I've added the type of object that was moved in the status bar message
 - color coded the status bar bullet to blue for selection
 - the name of the selected objects are displayed in the status bar color coded: green for Gerber objects, Brown for Excellon, Red for Geometry and Blue for CNCJobs.
-
 
 6.02.2019
 
