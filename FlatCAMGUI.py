@@ -831,7 +831,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 		</tr>
         <tr height="20">
 			<td height="20"><strong>T</strong></td>
-			<td>&nbsp;Add a Tool (when in Geometry Selected Tab)</td>
+			<td>&nbsp;Add a Tool (when in Geometry Selected Tab or in Tools NCC or Tools Paint)</td>
 		</tr>
 		<tr height="20">
 			<td height="20"><strong>V</strong></td>

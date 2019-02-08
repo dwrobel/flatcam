@@ -93,7 +93,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.908
-    version_date = "2019/02/7"
+    version_date = "2019/02/9"
     beta = True
 
     # current date now
@@ -2753,9 +2753,11 @@ class App(QtCore.QObject):
 
                 val, ok = tool_add_popup.get_value()
                 if ok:
+                    if float(val) == 0:
+                        self.inform.emit(
+                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
+                        return
                     self.collection.get_active().on_tool_add(dia=float(val))
-                    self.inform.emit(
-                        "[success]Added new tool with dia: %s %s" % ('%.4f' % float(val), str(self.units)))
                 else:
                     self.inform.emit(
                         "[WARNING_NOTCL] Adding Tool cancelled ...")
@@ -2771,9 +2773,11 @@ class App(QtCore.QObject):
 
                 val, ok = tool_add_popup.get_value()
                 if ok:
+                    if float(val) == 0:
+                        self.inform.emit(
+                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
+                        return
                     self.ncclear_tool.on_tool_add(dia=float(val))
-                    self.inform.emit(
-                        "[success]Added new tool with dia: %s %s" % ('%.4f' % float(val), str(self.units)))
                 else:
                     self.inform.emit(
                         "[WARNING_NOTCL] Adding Tool cancelled ...")
@@ -2786,9 +2790,11 @@ class App(QtCore.QObject):
 
                 val, ok = tool_add_popup.get_value()
                 if ok:
+                    if float(val) == 0:
+                        self.inform.emit(
+                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
+                        return
                     self.paint_tool.on_tool_add(dia=float(val))
-                    self.inform.emit(
-                        "[success]Added new tool with dia: %s %s" % ('%.4f' % float(val), str(self.units)))
                 else:
                     self.inform.emit(
                         "[WARNING_NOTCL] Adding Tool cancelled ...")

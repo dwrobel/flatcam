@@ -23,6 +23,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed bug in Geometry Selected tab that generated error when used tool offset was less than half of either total length or half of total width. Now the app signal the issue with a status bar message
 - added Double Validator for the Offset value so only float numbers can be entered.
 - in App added a shortcut key 'T' that popup a windows allowing to enter a new Tool with set diameter only when the Tool tab is on focus and only if a NCC Tool or Paint Area Tool object is installed in the Tool Tab
+- if trying to add a tool using shortcut key 'T' with value zero the app will react with a message telling to use a non-zero value.
 
 7.02.2019
 
