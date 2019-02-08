@@ -1665,6 +1665,8 @@ class App(QtCore.QObject):
         loc = self.defaults["global_last_save_folder"]
         if loc is None:
             loc = self.defaults["global_last_folder"]
+        if loc is None:
+            loc = os.path.dirname(__file__)
         return loc
 
     def report_usage(self, resource):
