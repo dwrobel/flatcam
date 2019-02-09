@@ -91,11 +91,11 @@ class TermWidget(QWidget):
         elif style == 'err':
             text = '<span style="font-weight: bold; color: red;">%s</span>' % text
         elif style == 'warning':
-            text = '<span style="font-weight: bold; color: rgb(244, 182, 66);">%s</span>' % text
+            text = '<span style="font-weight: bold; color: #f4b642;">%s</span>' % text
         elif style == 'success':
-            text = '<span style="font-weight: bold; color: rgb(8, 68, 0);">%s</span>' % text
+            text = '<span style="font-weight: bold; color: #084400;">%s</span>' % text
         elif style == 'selected':
-            text = '<span style="font-weight: bold; color: rgb(0, 8, 255);">%s</span>' % text
+            text = ''
         else:
             text = '<span>%s</span>' % text  # without span <br/> is ignored!!!
 

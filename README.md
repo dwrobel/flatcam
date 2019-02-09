@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+10.02.2019
+
+- the SELECTED type of messages are no longer printed to shell from 2 reasons: first, too much spam and second, issue with displaying html
+- on set_zero function and creation of new geometry or new excellon there is no longer a zoom fit 
+
 9.02.2019
 
 - added a protection for when saving a file first time, it require a saved path and if none then it use the current working directory

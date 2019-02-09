@@ -92,8 +92,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.908
-    version_date = "2019/02/9"
+    version = 8.909
+    version_date = "2019/02/10"
     beta = True
 
     # current date now
@@ -2314,7 +2314,8 @@ class App(QtCore.QObject):
         # after adding the object to the collection always update the list of objects that are in the collection
         self.all_objects_list = self.collection.get_list()
 
-
+        # self.inform.emit('[selected] %s created & selected: %s' %
+        #                  (str(obj.kind).capitalize(), str(obj.options['name'])))
         if obj.kind == 'gerber':
             self.inform.emit('[selected]%s created/selected: <span style="color:%s;">%s</span>' %
                              (obj.kind.capitalize(), 'green', str(obj.options['name'])))
@@ -3779,7 +3780,7 @@ class App(QtCore.QObject):
                 obj.offset((x,y))
                 self.object_changed.emit(obj)
                 # obj.plot()
-            self.plot_all()
+            self.plot_all(zoom=False)
             self.inform.emit('[success] Origin set ...')
             self.plotcanvas.vis_disconnect('mouse_press', self.on_set_zero_click)
 
@@ -4554,6 +4555,8 @@ class App(QtCore.QObject):
                         curr_sel_obj = self.collection.get_active()
                         self.draw_selection_shape(curr_sel_obj)
 
+                        # self.inform.emit('[selected] %s: %s selected' %
+                        #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
                         if curr_sel_obj.kind == 'gerber':
                             self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
                                              ('green', str(curr_sel_obj.options['name'])))
@@ -4575,6 +4578,8 @@ class App(QtCore.QObject):
                         curr_sel_obj = self.collection.get_active()
                         self.draw_selection_shape(curr_sel_obj)
 
+                        # self.inform.emit('[selected] %s: %s selected' %
+                        #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
                         if curr_sel_obj.kind == 'gerber':
                             self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
                                              ('green', str(curr_sel_obj.options['name'])))
@@ -4609,7 +4614,8 @@ class App(QtCore.QObject):
                     else:
                         name_sel_obj_idx = objects_under_the_click_list.index(name_sel_obj)
                         self.collection.set_all_inactive()
-                        self.collection.set_active(objects_under_the_click_list[(name_sel_obj_idx + 1) % len(objects_under_the_click_list)])
+                        self.collection.set_active(objects_under_the_click_list[(name_sel_obj_idx + 1) %
+                                                                                len(objects_under_the_click_list)])
 
                     curr_sel_obj = self.collection.get_active()
                     # delete the possible selection box around a possible selected object
@@ -4617,6 +4623,8 @@ class App(QtCore.QObject):
                     # create the selection box around the selected object
                     self.draw_selection_shape(curr_sel_obj)
 
+                    # self.inform.emit('[selected] %s: %s selected' %
+                    #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
                     if curr_sel_obj.kind == 'gerber':
                         self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
                                          ('green', str(curr_sel_obj.options['name'])))
@@ -6168,7 +6176,7 @@ class App(QtCore.QObject):
         except KeyError:
             pass
 
-    def plot_all(self):
+    def plot_all(self, zoom=True):
         """
         Re-generates all plots from all objects.
 
@@ -6180,7 +6188,8 @@ class App(QtCore.QObject):
             def worker_task(obj):
                 with self.proc_container.new("Plotting"):
                     obj.plot()
-                    self.object_plotted.emit(obj)
+                    if zoom:
+                        self.object_plotted.emit(obj)
 
             # Send to worker
             self.worker_task.emit({'fcn': worker_task, 'params': [obj]})
