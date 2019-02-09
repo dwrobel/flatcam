@@ -644,7 +644,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.options_combo.setVisible(False)
         self.hlay1.addStretch()
 
-        self.general_scroll_area = VerticalScrollArea()
+        self.general_scroll_area = QtWidgets.QScrollArea()
         self.general_tab_lay.addWidget(self.general_scroll_area)
 
         self.gerber_tab = QtWidgets.QWidget()
@@ -653,7 +653,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.gerber_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.gerber_tab.setLayout(self.gerber_tab_lay)
 
-        self.gerber_scroll_area = VerticalScrollArea()
+        self.gerber_scroll_area = QtWidgets.QScrollArea()
         self.gerber_tab_lay.addWidget(self.gerber_scroll_area)
 
         self.excellon_tab = QtWidgets.QWidget()
@@ -662,7 +662,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.excellon_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.excellon_tab.setLayout(self.excellon_tab_lay)
 
-        self.excellon_scroll_area = VerticalScrollArea()
+        self.excellon_scroll_area = QtWidgets.QScrollArea()
         self.excellon_tab_lay.addWidget(self.excellon_scroll_area)
 
         self.geometry_tab = QtWidgets.QWidget()
@@ -671,7 +671,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geometry_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.geometry_tab.setLayout(self.geometry_tab_lay)
 
-        self.geometry_scroll_area = VerticalScrollArea()
+        self.geometry_scroll_area = QtWidgets.QScrollArea()
         self.geometry_tab_lay.addWidget(self.geometry_scroll_area)
 
         self.cncjob_tab = QtWidgets.QWidget()
@@ -680,7 +680,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.cncjob_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.cncjob_tab.setLayout(self.cncjob_tab_lay)
 
-        self.cncjob_scroll_area = VerticalScrollArea()
+        self.cncjob_scroll_area = QtWidgets.QScrollArea()
         self.cncjob_tab_lay.addWidget(self.cncjob_scroll_area)
 
         self.tools_tab = QtWidgets.QWidget()
@@ -689,7 +689,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.tools_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.tools_tab.setLayout(self.tools_tab_lay)
 
-        self.tools_scroll_area = VerticalScrollArea()
+        self.tools_scroll_area = QtWidgets.QScrollArea()
         self.tools_tab_lay.addWidget(self.tools_scroll_area)
 
         self.pref_tab_bottom_layout = QtWidgets.QHBoxLayout()
@@ -2352,21 +2352,24 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.tools_ncc_group = ToolsNCCPrefGroupUI()
-        self.tools_ncc_group.setFixedWidth(200)
+        self.tools_ncc_group.setMinimumWidth(200)
         self.tools_paint_group = ToolsPaintPrefGroupUI()
-        self.tools_paint_group.setFixedWidth(200)
+        self.tools_paint_group.setMinimumWidth(200)
 
         self.tools_cutout_group = ToolsCutoutPrefGroupUI()
-        self.tools_cutout_group.setFixedWidth(220)
+        self.tools_cutout_group.setMinimumWidth(220)
 
         self.tools_2sided_group = Tools2sidedPrefGroupUI()
-        self.tools_2sided_group.setFixedWidth(220)
+        self.tools_2sided_group.setMinimumWidth(220)
 
         self.tools_film_group = ToolsFilmPrefGroupUI()
-        self.tools_film_group.setFixedWidth(220)
+        self.tools_film_group.setMinimumWidth(220)
 
         self.tools_panelize_group = ToolsPanelizePrefGroupUI()
-        self.tools_panelize_group.setFixedWidth(200)
+        self.tools_panelize_group.setMinimumWidth(220)
+
+        self.tools_calculators_group = ToolsCalculatorsPrefGroupUI()
+        self.tools_calculators_group.setMinimumWidth(220)
 
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.tools_ncc_group)
@@ -2379,12 +2382,14 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
 
         self.vlay2 = QtWidgets.QVBoxLayout()
         self.vlay2.addWidget(self.tools_panelize_group)
+        self.vlay2.addWidget(self.tools_calculators_group)
 
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)
         self.layout.addLayout(self.vlay2)
 
         self.layout.addStretch()
+
 
 class CNCJobPreferencesUI(QtWidgets.QWidget):
 
@@ -3409,8 +3414,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(self.excellon_gcode_type_radio, 16, 1)
 
         # until I decide to implement this feature those remain disabled
-        excellon_gcode_type_label.setDisabled(True)
-        self.excellon_gcode_type_radio.setDisabled(True)
+        excellon_gcode_type_label.hide()
+        self.excellon_gcode_type_radio.setVisible(False)
 
         #### Milling Holes ####
         self.mill_hole_label = QtWidgets.QLabel('<b>Mill Holes</b>')
@@ -4364,6 +4369,103 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(self.y_height_lbl, 6, 0)
         grid0.addWidget(self.py_height_entry, 6, 1)
+
+        self.layout.addStretch()
+
+
+class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Calculators Tool Options", parent=parent)
+        super(ToolsCalculatorsPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("Calculators Tool Options"))
+
+        ## V-shape Calculator Tool
+        self.vshape_tool_label = QtWidgets.QLabel("<b>V-Shape Tool Calculator:</b>")
+        self.vshape_tool_label.setToolTip(
+            "Calculate the tool diameter for a given V-shape tool,\n"
+            "having the tip diameter, tip angle and\n"
+            "depth-of-cut as parameters."
+        )
+        self.layout.addWidget(self.vshape_tool_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        ## Tip Diameter
+        self.tip_dia_entry = FCEntry()
+        self.tip_dia_label = QtWidgets.QLabel("Tip Diameter:")
+        self.tip_dia_label.setToolTip(
+            "This is the tool tip diameter.\n"
+            "It is specified by manufacturer."
+        )
+        grid0.addWidget(self.tip_dia_label, 0, 0)
+        grid0.addWidget(self.tip_dia_entry, 0, 1)
+
+        ## Tip angle
+        self.tip_angle_entry = FCEntry()
+        self.tip_angle_label = QtWidgets.QLabel("Tip angle:")
+        self.tip_angle_label.setToolTip(
+            "This is the angle on the tip of the tool.\n"
+            "It is specified by manufacturer."
+        )
+        grid0.addWidget(self.tip_angle_label, 1, 0)
+        grid0.addWidget(self.tip_angle_entry, 1, 1)
+
+        ## Depth-of-cut Cut Z
+        self.cut_z_entry = FCEntry()
+        self.cut_z_label = QtWidgets.QLabel("Cut Z:")
+        self.cut_z_label.setToolTip(
+            "This is depth to cut into material.\n"
+            "In the CNCJob object it is the CutZ parameter."
+        )
+        grid0.addWidget(self.cut_z_label, 2, 0)
+        grid0.addWidget(self.cut_z_entry, 2, 1)
+
+        ## Electroplating Calculator Tool
+        self.plate_title_label = QtWidgets.QLabel("<b>ElectroPlating Calculator:</b>")
+        self.plate_title_label.setToolTip(
+            "This calculator is useful for those who plate the via/pad/drill holes,\n"
+            "using a method like grahite ink or calcium hypophosphite ink or palladium chloride."
+        )
+        self.layout.addWidget(self.plate_title_label)
+
+        grid1 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid1)
+
+        ## PCB Length
+        self.pcblength_entry = FCEntry()
+        self.pcblengthlabel = QtWidgets.QLabel("Board Length:")
+
+        self.pcblengthlabel.setToolTip('This is the board length. In centimeters.')
+        grid1.addWidget(self.pcblengthlabel, 0, 0)
+        grid1.addWidget(self.pcblength_entry, 0, 1)
+
+        ## PCB Width
+        self.pcbwidth_entry = FCEntry()
+        self.pcbwidthlabel = QtWidgets.QLabel("Board Width:")
+
+        self.pcbwidthlabel.setToolTip('This is the board width.In centimeters.')
+        grid1.addWidget(self.pcbwidthlabel, 1, 0)
+        grid1.addWidget(self.pcbwidth_entry, 1, 1)
+
+        ## Current Density
+        self.cdensity_label = QtWidgets.QLabel("Current Density:")
+        self.cdensity_entry = FCEntry()
+
+        self.cdensity_label.setToolTip("Current density to pass through the board. \n"
+                                       "In Amps per Square Feet ASF.")
+        grid1.addWidget(self.cdensity_label, 2, 0)
+        grid1.addWidget(self.cdensity_entry, 2, 1)
+
+        ## PCB Copper Growth
+        self.growth_label = QtWidgets.QLabel("Copper Growth:")
+        self.growth_entry = FCEntry()
+
+        self.growth_label.setToolTip("How thick the copper growth is intended to be.\n"
+                                     "In microns.")
+        grid1.addWidget(self.growth_label, 3, 0)
+        grid1.addWidget(self.growth_entry, 3, 1)
 
         self.layout.addStretch()
 

@@ -611,7 +611,8 @@ class ExcellonObjectUI(ObjectUI):
         self.tools_box.addLayout(gcode_box)
 
         # temporary action until I finish the feature
-        self.excellon_gcode_type_radio.setEnabled(False)
+        self.excellon_gcode_type_radio.setVisible(False)
+        gcode_type_label.hide()
 
         self.generate_cnc_button = QtWidgets.QPushButton('Create GCode')
         self.generate_cnc_button.setToolTip(

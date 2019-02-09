@@ -439,7 +439,15 @@ class App(QtCore.QObject):
             "tools_panelize_rows": self.tools_defaults_form.tools_panelize_group.prows,
             "tools_panelize_constrain": self.tools_defaults_form.tools_panelize_group.pconstrain_cb,
             "tools_panelize_constrainx": self.tools_defaults_form.tools_panelize_group.px_width_entry,
-            "tools_panelize_constrainy": self.tools_defaults_form.tools_panelize_group.py_height_entry
+            "tools_panelize_constrainy": self.tools_defaults_form.tools_panelize_group.py_height_entry,
+
+            "tools_calc_vshape_tip_dia": self.tools_defaults_form.tools_calculators_group.tip_dia_entry,
+            "tools_calc_vshape_tip_angle": self.tools_defaults_form.tools_calculators_group.tip_angle_entry,
+            "tools_calc_vshape_cut_z": self.tools_defaults_form.tools_calculators_group.cut_z_entry,
+            "tools_calc_electro_length": self.tools_defaults_form.tools_calculators_group.pcblength_entry,
+            "tools_calc_electro_width": self.tools_defaults_form.tools_calculators_group.pcbwidth_entry,
+            "tools_calc_electro_cdensity": self.tools_defaults_form.tools_calculators_group.cdensity_entry,
+            "tools_calc_electro_growth": self.tools_defaults_form.tools_calculators_group.growth_entry
         }
         # loads postprocessors
         self.postprocessors = load_postprocessors(self)
@@ -625,7 +633,15 @@ class App(QtCore.QObject):
             "tools_panelize_rows": 1,
             "tools_panelize_constrain": False,
             "tools_panelize_constrainx": 0.0,
-            "tools_panelize_constrainy": 0.0
+            "tools_panelize_constrainy": 0.0,
+
+            "tools_calc_vshape_tip_dia": 0.007874,
+            "tools_calc_vshape_tip_angle": 30,
+            "tools_calc_vshape_cut_z": 0.000787,
+            "tools_calc_electro_length": 10.0,
+            "tools_calc_electro_width": 10.0,
+            "tools_calc_electro_cdensity":13.0,
+            "tools_calc_electro_growth": 10.0
         })
 
         ###############################

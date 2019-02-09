@@ -224,27 +224,31 @@ class ToolCalculator(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+C', **kwargs)
 
     def set_tool_ui(self):
+        self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
+
         ## Initialize form
         self.mm_entry.set_value('0')
         self.inch_entry.set_value('0')
 
-        self.pcblength_entry.set_value('10')
-        self.pcbwidth_entry.set_value('10')
-        self.cdensity_entry.set_value('13')
-        self.growth_entry.set_value('10')
-        self.cvalue_entry.set_value(2.80)
-        self.time_entry.set_value(33.0)
+        length = self.app.defaults["tools_calc_electro_length"]
+        width = self.app.defaults["tools_calc_electro_width"]
+        density = self.app.defaults["tools_calc_electro_cdensity"]
+        growth = self.app.defaults["tools_calc_electro_growth"]
+        self.pcblength_entry.set_value(length)
+        self.pcbwidth_entry.set_value(width)
+        self.cdensity_entry.set_value(density)
+        self.growth_entry.set_value(growth)
+        self.cvalue_entry.set_value(0.00)
+        self.time_entry.set_value(0.0)
 
-        if self.app.defaults["units"] == 'MM':
-            self.tipDia_entry.set_value('0.2')
-            self.tipAngle_entry.set_value('45')
-            self.cutDepth_entry.set_value('0.25')
-            self.effectiveToolDia_entry.set_value('0.39')
-        else:
-            self.tipDia_entry.set_value('7.87402')
-            self.tipAngle_entry.set_value('45')
-            self.cutDepth_entry.set_value('9.84252')
-            self.effectiveToolDia_entry.set_value('15.35433')
+        tip_dia = self.app.defaults["tools_calc_vshape_tip_dia"]
+        tip_angle = self.app.defaults["tools_calc_vshape_tip_angle"]
+        cut_z = self.app.defaults["tools_calc_vshape_cut_z"]
+
+        self.tipDia_entry.set_value(tip_dia)
+        self.tipAngle_entry.set_value(tip_angle)
+        self.cutDepth_entry.set_value(cut_z)
+        self.effectiveToolDia_entry.set_value('0.0000')
 
     def on_calculate_tool_dia(self):
         # Calculation:
