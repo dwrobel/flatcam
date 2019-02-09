@@ -5,6 +5,7 @@ from copy import copy,deepcopy
 from ObjectCollection import *
 import time
 
+
 class NonCopperClear(FlatCAMTool, Gerber):
 
     toolName = "Non-Copper Clearing"
@@ -446,6 +447,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.app.inform.emit("[WARNING_NOTCL] Please enter a tool diameter to add, in Float format.")
                 return
 
+        if tool_dia == 0:
+            self.app.inform.emit("[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
+            return
+
         # construct a list of all 'tooluid' in the self.tools
         tool_uid_list = []
         for tooluid_key in self.ncc_tools:
@@ -618,7 +623,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.app.inform.emit("[ERROR_NOTCL]Could not retrieve object: %s" % self.obj_name)
             return "Could not retrieve object: %s" % self.obj_name
 
-
         # Prepare non-copper polygons
         try:
             bounding_box = self.ncc_obj.solid_geometry.envelope.buffer(distance=margin, join_style=JOIN_STYLE.mitre)
@@ -626,7 +630,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.app.inform.emit("[ERROR_NOTCL]No Gerber file available.")
             return
 
-        # calculate the empty area by substracting the solid_geometry from the object bounding box geometry
+        # calculate the empty area by subtracting the solid_geometry from the object bounding box geometry
         empty = self.ncc_obj.get_empty_area(bounding_box)
         if type(empty) is Polygon:
             empty = MultiPolygon([empty])

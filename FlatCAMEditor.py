@@ -106,21 +106,21 @@ class BufferSelectionTool(FlatCAMTool):
     def on_buffer(self):
         buffer_distance = self.buffer_distance_entry.get_value()
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
-        # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
+        # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
         join_style = self.buffer_corner_cb.currentIndex() + 1
         self.draw_app.buffer(buffer_distance, join_style)
 
     def on_buffer_int(self):
         buffer_distance = self.buffer_distance_entry.get_value()
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
-        # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
+        # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
         join_style = self.buffer_corner_cb.currentIndex() + 1
         self.draw_app.buffer_int(buffer_distance, join_style)
 
     def on_buffer_ext(self):
         buffer_distance = self.buffer_distance_entry.get_value()
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
-        # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
+        # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
         join_style = self.buffer_corner_cb.currentIndex() + 1
         self.draw_app.buffer_ext(buffer_distance, join_style)
 
@@ -583,6 +583,8 @@ class FCCircle(FCShapeTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = 'fc_circle'
+
         self.start_msg = "Click on CENTER ..."
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
@@ -620,6 +622,8 @@ class FCCircle(FCShapeTool):
 class FCArc(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = 'fc_arc'
+
         self.start_msg = "Click on CENTER ..."
 
         # Direction of rotation between point 1 and 2.
@@ -808,6 +812,8 @@ class FCRectangle(FCShapeTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = 'fc_rectangle'
+
         self.start_msg = "Click on 1st corner ..."
 
     def click(self, point):
@@ -846,6 +852,8 @@ class FCPolygon(FCShapeTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = 'fc_polygon'
+
         self.start_msg = "Click on 1st point ..."
 
     def click(self, point):
@@ -891,6 +899,8 @@ class FCPath(FCPolygon):
 
     def make(self):
         self.geometry = DrawToolShape(LineString(self.points))
+        self.name = 'fc_path'
+
         self.draw_app.in_action = False
         self.complete = True
         self.draw_app.app.inform.emit("[success]Done. Path completed.")
@@ -912,6 +922,8 @@ class FCPath(FCPolygon):
 class FCSelect(DrawTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = 'fc_select'
+
         self.storage = self.draw_app.storage
         # self.shape_buffer = self.draw_app.shape_buffer
         # self.selected = self.draw_app.selected
@@ -989,6 +1001,7 @@ class FCSelect(DrawTool):
 class FCDrillSelect(DrawTool):
     def __init__(self, exc_editor_app):
         DrawTool.__init__(self, exc_editor_app)
+        self.name = 'fc_drill_select'
 
         self.exc_editor_app = exc_editor_app
         self.storage = self.exc_editor_app.storage_dict
@@ -1146,6 +1159,8 @@ class FCDrillSelect(DrawTool):
 class FCMove(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
+        self.name = 'fc_move'
+
         # self.shape_buffer = self.draw_app.shape_buffer
         self.origin = None
         self.destination = None
@@ -1211,6 +1226,9 @@ class FCMove(FCShapeTool):
 
 
 class FCCopy(FCMove):
+    def __init__(self, draw_app):
+        FCMove.__init__(self, draw_app)
+        self.name = 'fc_copy'
 
     def make(self):
         # Create new geometry
@@ -1225,6 +1243,8 @@ class FCCopy(FCMove):
 class FCText(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
+        self.name = 'fc_text'
+
         # self.shape_buffer = self.draw_app.shape_buffer
         self.draw_app = draw_app
         self.app = draw_app.app
@@ -1275,6 +1295,8 @@ class FCText(FCShapeTool):
 class FCBuffer(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
+        self.name = 'fc_buffer'
+
         # self.shape_buffer = self.draw_app.shape_buffer
         self.draw_app = draw_app
         self.app = draw_app.app
@@ -1341,6 +1363,8 @@ class FCBuffer(FCShapeTool):
 class FCPaint(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
+        self.name = 'fc_paint'
+
         # self.shape_buffer = self.draw_app.shape_buffer
         self.draw_app = draw_app
         self.app = draw_app.app
@@ -1355,6 +1379,7 @@ class FCPaint(FCShapeTool):
 class FCRotate(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
+        self.name = 'fc_rotate'
 
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
 
@@ -1365,7 +1390,6 @@ class FCRotate(FCShapeTool):
 
     def set_origin(self, origin):
         self.origin = origin
-
 
     def make(self):
         # Create new geometry
@@ -1382,9 +1406,9 @@ class FCRotate(FCShapeTool):
         #self.draw_app.select_tool("select")
 
     def on_key(self, key):
-        if key == 'Enter':
-            if self.complete == True:
-                self.make()
+        if key == 'Enter' or key == QtCore.Qt.Key_Enter:
+            self.make()
+            return "Done"
 
     def click(self, point):
         self.make()
@@ -1408,6 +1432,7 @@ class FCDrillAdd(FCShapeTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = 'fc_drill_add'
 
         self.selected_dia = None
         try:
@@ -1443,11 +1468,17 @@ class FCDrillAdd(FCShapeTool):
         return DrawToolUtilityShape(self.util_shape(data))
 
     def util_shape(self, point):
+        if point[0] is None and point[1] is None:
+            point_x = self.draw_app.x
+            point_y = self.draw_app.y
+        else:
+            point_x = point[0]
+            point_y = point[1]
 
-        start_hor_line = ((point[0] - (self.selected_dia / 2)), point[1])
-        stop_hor_line = ((point[0] + (self.selected_dia / 2)), point[1])
-        start_vert_line = (point[0], (point[1] - (self.selected_dia / 2)))
-        stop_vert_line = (point[0], (point[1] + (self.selected_dia / 2)))
+        start_hor_line = ((point_x - (self.selected_dia / 2)), point_y)
+        stop_hor_line = ((point_x + (self.selected_dia / 2)), point_y)
+        start_vert_line = (point_x, (point_y - (self.selected_dia / 2)))
+        stop_vert_line = (point_x, (point_y + (self.selected_dia / 2)))
 
         return MultiLineString([(start_hor_line, stop_hor_line), (start_vert_line, stop_vert_line)])
 
@@ -1473,6 +1504,7 @@ class FCDrillArray(FCShapeTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = 'fc_drill_array'
 
         self.draw_app.array_frame.show()
 
@@ -1558,28 +1590,27 @@ class FCDrillArray(FCShapeTool):
             return
 
         if self.drill_array == 'Linear':
-            # if self.origin is None:
-            #     self.origin = (0, 0)
-            #
-            # dx = data[0] - self.origin[0]
-            # dy = data[1] - self.origin[1]
-            dx = data[0]
-            dy = data[1]
+            if data[0] is None and data[1] is None:
+                dx = self.draw_app.x
+                dy = self.draw_app.y
+            else:
+                dx = data[0]
+                dy = data[1]
 
             geo_list = []
             geo = None
-            self.points = data
+            self.points = [dx, dy]
 
             for item in range(self.drill_array_size):
                 if self.drill_axis == 'X':
-                    geo = self.util_shape(((data[0] + (self.drill_pitch * item)), data[1]))
+                    geo = self.util_shape(((dx + (self.drill_pitch * item)), dy))
                 if self.drill_axis == 'Y':
-                    geo = self.util_shape((data[0], (data[1] + (self.drill_pitch * item))))
+                    geo = self.util_shape((dx, (dy + (self.drill_pitch * item))))
                 if self.drill_axis == 'A':
                     x_adj = self.drill_pitch * math.cos(math.radians(self.drill_linear_angle))
                     y_adj = self.drill_pitch * math.sin(math.radians(self.drill_linear_angle))
                     geo = self.util_shape(
-                        ((data[0] + (x_adj * item)), (data[1] + (y_adj * item)))
+                        ((dx + (x_adj * item)), (dy + (y_adj * item)))
                     )
 
                 if static is None or static is False:
@@ -1592,16 +1623,30 @@ class FCDrillArray(FCShapeTool):
             self.last_dy = dy
             return DrawToolUtilityShape(geo_list)
         else:
+            if data[0] is None and data[1] is None:
+                cdx = self.draw_app.x
+                cdy = self.draw_app.y
+            else:
+                cdx = data[0]
+                cdy = data[1]
+
             if len(self.pt) > 0:
                 temp_points = [x for x in self.pt]
-                temp_points.append(data)
+                temp_points.append([cdx, cdy])
                 return DrawToolUtilityShape(LineString(temp_points))
 
     def util_shape(self, point):
-        start_hor_line = ((point[0] - (self.selected_dia / 2)), point[1])
-        stop_hor_line = ((point[0] + (self.selected_dia / 2)), point[1])
-        start_vert_line = (point[0], (point[1] - (self.selected_dia / 2)))
-        stop_vert_line = (point[0], (point[1] + (self.selected_dia / 2)))
+        if point[0] is None and point[1] is None:
+            point_x = self.draw_app.x
+            point_y = self.draw_app.y
+        else:
+            point_x = point[0]
+            point_y = point[1]
+
+        start_hor_line = ((point_x - (self.selected_dia / 2)), point_y)
+        stop_hor_line = ((point_x + (self.selected_dia / 2)), point_y)
+        start_vert_line = (point_x, (point_y - (self.selected_dia / 2)))
+        stop_vert_line = (point_x, (point_y + (self.selected_dia / 2)))
 
         return MultiLineString([(start_hor_line, stop_hor_line), (start_vert_line, stop_vert_line)])
 
@@ -1656,10 +1701,12 @@ class FCDrillArray(FCShapeTool):
         self.draw_app.array_frame.hide()
         return
 
-class FCDrillResize(FCShapeTool):
 
+class FCDrillResize(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = 'fc_drill_resize'
+
         self.draw_app.app.inform.emit("Click on the Drill(s) to resize ...")
         self.resize_dia = None
         self.draw_app.resize_frame.show()
@@ -1761,6 +1808,8 @@ class FCDrillResize(FCShapeTool):
 class FCDrillMove(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = 'fc_drill_move'
+
         # self.shape_buffer = self.draw_app.shape_buffer
         self.origin = None
         self.destination = None
@@ -1850,6 +1899,9 @@ class FCDrillMove(FCShapeTool):
 
 
 class FCDrillCopy(FCDrillMove):
+    def __init__(self, draw_app):
+        FCDrillMove.__init__(self, draw_app)
+        self.name = 'fc_drill_copy'
 
     def make(self):
         # Create new geometry
@@ -1977,6 +2029,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.geo_key_modifiers = None
         self.x = None  # Current mouse cursor pos
         self.y = None
+
         # Current snapped mouse pos
         self.snap_x = None
         self.snap_y = None
@@ -2083,16 +2136,16 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.geo_edit_toolbar.setDisabled(True)
 
         settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("theme"):
-            theme = settings.value('theme', type=str)
-            if theme == 'standard':
+        if settings.contains("layout"):
+            layout = settings.value('layout', type=str)
+            if layout == 'standard':
                 # self.app.ui.geo_edit_toolbar.setVisible(False)
 
                 self.app.ui.snap_max_dist_entry.setEnabled(False)
                 self.app.ui.corner_snap_btn.setEnabled(False)
                 self.app.ui.snap_magnet.setVisible(False)
                 self.app.ui.corner_snap_btn.setVisible(False)
-            elif theme == 'compact':
+            elif layout == 'compact':
                 # self.app.ui.geo_edit_toolbar.setVisible(True)
 
                 self.app.ui.snap_max_dist_entry.setEnabled(False)
@@ -2134,35 +2187,30 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
         # but those from FlatCAMGeoEditor
-        self.app.plotcanvas.vis_disconnect('key_press', self.app.on_key_over_plot)
+
         self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
-        self.app.collection.view.keyPressed.disconnect()
+
         self.app.collection.view.clicked.disconnect()
 
         self.canvas.vis_connect('mouse_press', self.on_canvas_click)
         self.canvas.vis_connect('mouse_move', self.on_canvas_move)
         self.canvas.vis_connect('mouse_release', self.on_canvas_click_release)
-        self.canvas.vis_connect('key_press', self.on_canvas_key)
-        self.canvas.vis_connect('key_release', self.on_canvas_key_release)
+
 
     def disconnect_canvas_event_handlers(self):
 
         self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
         self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
         self.canvas.vis_disconnect('mouse_release', self.on_canvas_click_release)
-        self.canvas.vis_disconnect('key_press', self.on_canvas_key)
-        self.canvas.vis_disconnect('key_release', self.on_canvas_key_release)
 
         # we restore the key and mouse control to FlatCAMApp method
-        self.app.plotcanvas.vis_connect('key_press', self.app.on_key_over_plot)
         self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
         self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
         self.app.plotcanvas.vis_connect('mouse_double_click', self.app.on_double_click_over_plot)
-        self.app.collection.view.keyPressed.connect(self.app.collection.on_key)
         self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
 
     def add_shape(self, shape):
@@ -2571,211 +2619,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
                     update=False, layer=0, tolerance=None)
 
             self.tool_shape.redraw()
-
-    def on_canvas_key(self, event):
-        """
-        event.key has the key.
-
-        :param event:
-        :return:
-        """
-        self.key = event.key.name
-        self.geo_key_modifiers = QtWidgets.QApplication.keyboardModifiers()
-
-        if self.geo_key_modifiers == Qt.ControlModifier:
-            # save (update) the current geometry and return to the App
-            if self.key == 'S':
-                self.app.editor2object()
-                return
-
-            # toggle the measurement tool
-            if self.key == 'M':
-                self.app.measurement_tool.run()
-                return
-
-        # Finish the current action. Use with tools that do not
-        # complete automatically, like a polygon or path.
-        if event.key.name == 'Enter':
-            if isinstance(self.active_tool, FCShapeTool):
-                self.active_tool.click(self.snap(self.x, self.y))
-                self.active_tool.make()
-                if self.active_tool.complete:
-                    self.on_shape_complete()
-                    self.app.inform.emit("[success]Done.")
-                # automatically make the selection tool active after completing current action
-                self.select_tool('select')
-            return
-
-        # Abort the current action
-        if event.key.name == 'Escape':
-            # TODO: ...?
-            # self.on_tool_select("select")
-            self.app.inform.emit("[WARNING_NOTCL]Cancelled.")
-
-            self.delete_utility_geometry()
-
-            self.replot()
-            # self.select_btn.setChecked(True)
-            # self.on_tool_select('select')
-            self.select_tool('select')
-            return
-
-        # Delete selected object
-        if event.key.name == 'Delete':
-            self.delete_selected()
-            self.replot()
-
-        # Move
-        if event.key.name == 'Space':
-            self.app.ui.geo_rotate_btn.setChecked(True)
-            self.on_tool_select('rotate')
-            self.active_tool.set_origin(self.snap(self.x, self.y))
-
-        if event.key == '1':
-            self.app.on_zoom_fit(None)
-
-        if event.key == '2':
-            self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'], [self.snap_x, self.snap_y])
-
-        if event.key == '3':
-            self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'], [self.snap_x, self.snap_y])
-
-        # Arc Tool
-        if event.key.name == 'A':
-            self.select_tool('arc')
-
-        # Buffer
-        if event.key.name == 'B':
-            self.select_tool('buffer')
-
-        # Copy
-        if event.key.name == 'C':
-            self.app.ui.geo_copy_btn.setChecked(True)
-            self.on_tool_select('copy')
-            self.active_tool.set_origin(self.snap(self.x, self.y))
-            self.app.inform.emit("Click on target point.")
-
-        # Substract Tool
-        if event.key.name == 'E':
-            if self.get_selected() is not None:
-                self.intersection()
-            else:
-                msg = "Please select geometry items \n" \
-                      "on which to perform Intersection Tool."
-
-                messagebox =QtWidgets.QMessageBox()
-                messagebox.setText(msg)
-                messagebox.setWindowTitle("Warning")
-                messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-                messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-                messagebox.exec_()
-
-        # Grid Snap
-        if event.key.name == 'G':
-            self.app.ui.grid_snap_btn.trigger()
-
-            # make sure that the cursor shape is enabled/disabled, too
-            if self.options['grid_snap'] is True:
-                self.app.app_cursor.enabled = True
-            else:
-                self.app.app_cursor.enabled = False
-
-        # Paint
-        if event.key.name == 'I':
-            self.select_tool('paint')
-
-        # Corner Snap
-        if event.key.name == 'K':
-            self.on_corner_snap()
-
-        # Move
-        if event.key.name == 'M':
-            self.on_move_click()
-
-        # Polygon Tool
-        if event.key.name == 'N':
-            self.select_tool('polygon')
-
-        # Circle Tool
-        if event.key.name == 'O':
-            self.select_tool('circle')
-
-        # Path Tool
-        if event.key.name == 'P':
-            self.select_tool('path')
-
-        # Rectangle Tool
-        if event.key.name == 'R':
-            self.select_tool('rectangle')
-
-        # Substract Tool
-        if event.key.name == 'S':
-            if self.get_selected() is not None:
-                self.subtract()
-            else:
-                msg = "Please select geometry items \n" \
-                      "on which to perform Substraction Tool."
-
-                messagebox =QtWidgets.QMessageBox()
-                messagebox.setText(msg)
-                messagebox.setWindowTitle("Warning")
-                messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-                messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-                messagebox.exec_()
-
-        # Add Text Tool
-        if event.key.name == 'T':
-            self.select_tool('text')
-
-        # Substract Tool
-        if event.key.name == 'U':
-            if self.get_selected() is not None:
-                self.union()
-            else:
-                msg = "Please select geometry items \n" \
-                      "on which to perform union."
-
-                messagebox =QtWidgets.QMessageBox()
-                messagebox.setText(msg)
-                messagebox.setWindowTitle("Warning")
-                messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-                messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-                messagebox.exec_()
-
-        # Cut Action Tool
-        if event.key.name == 'X':
-            if self.get_selected() is not None:
-                self.cutpath()
-            else:
-                msg = 'Please first select a geometry item to be cutted\n' \
-                      'then select the geometry item that will be cutted\n' \
-                      'out of the first item. In the end press ~X~ key or\n' \
-                      'the toolbar button.' \
-
-                messagebox =QtWidgets.QMessageBox()
-                messagebox.setText(msg)
-                messagebox.setWindowTitle("Warning")
-                messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-                messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-                messagebox.exec_()
-
-        # Propagate to tool
-        response = None
-        if self.active_tool is not None:
-            response = self.active_tool.on_key(event.key)
-        if response is not None:
-            self.app.inform.emit(response)
-
-        # Show Shortcut list
-        if event.key.name == '`':
-            self.app.on_shortcut_list()
-
-    def on_canvas_key_release(self, event):
-        self.key = None
 
     def on_delete_btn(self):
         self.delete_selected()
@@ -3465,7 +3308,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         grid1.addWidget(addtool_entry_lbl, 0, 0)
 
         hlay = QtWidgets.QHBoxLayout()
-        self.addtool_entry = LengthEntry()
+        self.addtool_entry = FCEntry()
+        self.addtool_entry.setValidator(QtGui.QDoubleValidator(0.0001, 99.9999, 4))
         hlay.addWidget(self.addtool_entry)
 
         self.addtool_btn = QtWidgets.QPushButton('Add Tool')
@@ -3873,7 +3717,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         if self.units == "IN":
             self.addtool_entry.set_value(0.039)
         else:
-            self.addtool_entry.set_value(1)
+            self.addtool_entry.set_value(1.00)
 
         sort_temp = []
 
@@ -4057,9 +3901,21 @@ class FlatCAMExcEditor(QtCore.QObject):
         # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
         self.tools_table_exc.itemChanged.connect(self.on_tool_edit)
 
-    def on_tool_add(self):
+    def on_tool_add(self, tooldia=None):
         self.is_modified = True
-        tool_dia = float(self.addtool_entry.get_value())
+        if tooldia:
+            tool_dia = tooldia
+        else:
+            try:
+                tool_dia = float(self.addtool_entry.get_value())
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    tool_dia = float(self.addtool_entry.get_value().replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
+                                         "use a number.")
+                    return
 
         if tool_dia not in self.olddia_newdia:
             storage_elem = FlatCAMGeoEditor.make_storage()
@@ -4224,16 +4080,16 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app.ui.exc_edit_toolbar.setDisabled(True)
 
         settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("theme"):
-            theme = settings.value('theme', type=str)
-            if theme == 'standard':
+        if settings.contains("layout"):
+            layout = settings.value('layout', type=str)
+            if layout == 'standard':
                 # self.app.ui.exc_edit_toolbar.setVisible(False)
 
                 self.app.ui.snap_max_dist_entry.setEnabled(False)
                 self.app.ui.corner_snap_btn.setEnabled(False)
                 self.app.ui.snap_magnet.setVisible(False)
                 self.app.ui.corner_snap_btn.setVisible(False)
-            elif theme == 'compact':
+            elif layout == 'compact':
                 # self.app.ui.exc_edit_toolbar.setVisible(True)
 
                 self.app.ui.snap_max_dist_entry.setEnabled(False)
@@ -4277,35 +4133,27 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
         # but those from FlatCAMGeoEditor
-        self.app.plotcanvas.vis_disconnect('key_press', self.app.on_key_over_plot)
+
         self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
-        self.app.collection.view.keyPressed.disconnect()
         self.app.collection.view.clicked.disconnect()
 
         self.canvas.vis_connect('mouse_press', self.on_canvas_click)
         self.canvas.vis_connect('mouse_move', self.on_canvas_move)
         self.canvas.vis_connect('mouse_release', self.on_canvas_click_release)
-        self.canvas.vis_connect('key_press', self.on_canvas_key)
-        self.canvas.vis_connect('key_release', self.on_canvas_key_release)
 
     def disconnect_canvas_event_handlers(self):
-
         self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
         self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
         self.canvas.vis_disconnect('mouse_release', self.on_canvas_click_release)
-        self.canvas.vis_disconnect('key_press', self.on_canvas_key)
-        self.canvas.vis_disconnect('key_release', self.on_canvas_key_release)
 
         # we restore the key and mouse control to FlatCAMApp method
-        self.app.plotcanvas.vis_connect('key_press', self.app.on_key_over_plot)
         self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
         self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
         self.app.plotcanvas.vis_connect('mouse_double_click', self.app.on_double_click_over_plot)
-        self.app.collection.view.keyPressed.connect(self.app.collection.on_key)
         self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
 
     def clear(self):
@@ -4373,6 +4221,9 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.storage_dict[tool_dia] = storage_elem
 
         self.replot()
+
+        # add a first tool in the Tool Table
+        self.on_tool_add(tooldia=1.00)
 
     def update_fcexcellon(self, exc_obj):
         """
@@ -4870,145 +4721,6 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # Update cursor
         self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
-
-
-    def on_canvas_key(self, event):
-        """
-        event.key has the key.
-
-        :param event:
-        :return:
-        """
-        self.key = event.key.name
-        self.modifiers = QtWidgets.QApplication.keyboardModifiers()
-
-        if self.modifiers == Qt.ControlModifier:
-            # save (update) the current geometry and return to the App
-            if self.key == 'S':
-                self.app.editor2object()
-                return
-
-            # toggle the measurement tool
-            if self.key == 'M':
-                self.app.measurement_tool.run()
-                return
-
-        # Abort the current action
-        if event.key.name == 'Escape':
-            # TODO: ...?
-            # self.on_tool_select("select")
-            self.app.inform.emit("[WARNING_NOTCL]Cancelled.")
-
-            self.delete_utility_geometry()
-
-            self.replot()
-            # self.select_btn.setChecked(True)
-            # self.on_tool_select('select')
-            self.select_tool('select')
-            return
-
-        # Delete selected object
-        if event.key.name == 'Delete':
-            self.launched_from_shortcuts = True
-            if self.selected:
-                self.delete_selected()
-                self.replot()
-            else:
-                self.app.inform.emit("[WARNING_NOTCL]Cancelled. Nothing selected to delete.")
-            return
-
-        if event.key == '1':
-            self.launched_from_shortcuts = True
-            self.app.on_zoom_fit(None)
-
-        if event.key == '2':
-            self.launched_from_shortcuts = True
-            self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'], [self.snap_x, self.snap_y])
-
-        if event.key == '3':
-            self.launched_from_shortcuts = True
-            self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'], [self.snap_x, self.snap_y])
-
-        # Add Array of Drill Hole Tool
-        if event.key.name == 'A':
-            self.launched_from_shortcuts = True
-            self.app.inform.emit("Click on target point.")
-            self.app.ui.add_drill_array_btn.setChecked(True)
-            self.select_tool('add_array')
-            return
-
-        # Copy
-        if event.key.name == 'C':
-            self.launched_from_shortcuts = True
-            if self.selected:
-                self.app.inform.emit("Click on target point.")
-                self.app.ui.copy_drill_btn.setChecked(True)
-                self.on_tool_select('copy')
-                self.active_tool.set_origin((self.snap_x, self.snap_y))
-            else:
-                self.app.inform.emit("[WARNING_NOTCL]Cancelled. Nothing selected to copy.")
-            return
-
-        # Add Drill Hole Tool
-        if event.key.name == 'D':
-            self.launched_from_shortcuts = True
-            self.app.inform.emit("Click on target point.")
-            self.app.ui.add_drill_btn.setChecked(True)
-            self.select_tool('add')
-            return
-
-        # Grid Snap
-        if event.key.name == 'G':
-            self.launched_from_shortcuts = True
-            # make sure that the cursor shape is enabled/disabled, too
-            if self.options['grid_snap'] is True:
-                self.app.app_cursor.enabled = False
-            else:
-                self.app.app_cursor.enabled = True
-            self.app.ui.grid_snap_btn.trigger()
-            return
-
-        # Corner Snap
-        if event.key.name == 'K':
-            self.launched_from_shortcuts = True
-            self.app.ui.corner_snap_btn.trigger()
-            return
-
-        # Move
-        if event.key.name == 'M':
-            self.launched_from_shortcuts = True
-            if self.selected:
-                self.app.inform.emit("Click on target point.")
-                self.app.ui.move_drill_btn.setChecked(True)
-                self.on_tool_select('move')
-                self.active_tool.set_origin((self.snap_x, self.snap_y))
-            else:
-                self.app.inform.emit("[WARNING_NOTCL]Cancelled. Nothing selected to move.")
-            return
-
-        # Resize Tool
-        if event.key.name == 'R':
-            self.launched_from_shortcuts = True
-            self.select_tool('resize')
-            return
-
-        # Select Tool
-        if event.key.name == 'S':
-            self.launched_from_shortcuts = True
-            self.select_tool('select')
-            return
-
-        # Propagate to tool
-        response = None
-        if self.active_tool is not None:
-            response = self.active_tool.on_key(event.key)
-        if response is not None:
-            self.app.inform.emit(response)
-
-        # Show Shortcut list
-        if event.key.name == '`':
-            self.app.on_shortcut_list()
-            return
 
     def on_canvas_key_release(self, event):
         self.key = None

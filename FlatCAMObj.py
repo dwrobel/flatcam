@@ -388,7 +388,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         grb_final.solid_geometry = MultiPolygon(grb_final.solid_geometry)
 
     def __init__(self, name):
-        Gerber.__init__(self, steps_per_circle=self.app.defaults["gerber_circle_steps"])
+        Gerber.__init__(self, steps_per_circle=int(self.app.defaults["gerber_circle_steps"]))
         FlatCAMObj.__init__(self, name)
 
         self.kind = "gerber"
@@ -480,7 +480,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         def geo_init(geo_obj, app_obj):
             assert isinstance(geo_obj, FlatCAMGeometry)
-            bounding_box = self.solid_geometry.envelope.buffer(self.options["noncoppermargin"])
+            bounding_box = self.solid_geometry.envelope.buffer(float(self.options["noncoppermargin"]))
             if not self.options["noncopperrounded"]:
                 bounding_box = bounding_box.envelope
             non_copper = bounding_box.difference(self.solid_geometry)
@@ -497,7 +497,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         def geo_init(geo_obj, app_obj):
             assert isinstance(geo_obj, FlatCAMGeometry)
             # Bounding box with rounded corners
-            bounding_box = self.solid_geometry.envelope.buffer(self.options["bboxmargin"])
+            bounding_box = self.solid_geometry.envelope.buffer(float(self.options["bboxmargin"]))
             if not self.options["bboxrounded"]:  # Remove rounded corners
                 bounding_box = bounding_box.envelope
             geo_obj.solid_geometry = bounding_box
@@ -557,7 +557,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         def follow_init(follow_obj, app):
             # Propagate options
-            follow_obj.options["cnctooldia"] = self.options["isotooldia"]
+            follow_obj.options["cnctooldia"] = float(self.options["isotooldia"])
             follow_obj.solid_geometry = self.solid_geometry
 
         # TODO: Do something if this is None. Offer changing name?
@@ -579,11 +579,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :return: None
         """
         if dia is None:
-            dia = self.options["isotooldia"]
+            dia = float(self.options["isotooldia"])
         if passes is None:
             passes = int(self.options["isopasses"])
         if overlap is None:
-            overlap = self.options["isooverlap"]
+            overlap = float(self.options["isooverlap"])
         if combine is None:
             combine = self.options["combine_passes"]
         else:
@@ -638,7 +638,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             # TODO: This is ugly. Create way to pass data into init function.
             def iso_init(geo_obj, app_obj):
                 # Propagate options
-                geo_obj.options["cnctooldia"] = self.options["isotooldia"]
+                geo_obj.options["cnctooldia"] = float(self.options["isotooldia"])
                 geo_obj.solid_geometry = []
                 for i in range(passes):
                     iso_offset = (((2 * i + 1) / 2.0) * dia) - (i * overlap * dia)
@@ -693,7 +693,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 # TODO: This is ugly. Create way to pass data into init function.
                 def iso_init(geo_obj, app_obj):
                     # Propagate options
-                    geo_obj.options["cnctooldia"] = self.options["isotooldia"]
+                    geo_obj.options["cnctooldia"] = float(self.options["isotooldia"])
 
                     # if milling type is climb then the move is counter-clockwise around features
                     if milling_type == 'cl':
@@ -753,8 +753,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         factor = Gerber.convert_units(self, units)
 
-        self.options['isotooldia'] *= factor
-        self.options['bboxmargin'] *= factor
+        self.options['isotooldia'] = float(self.options['isotooldia']) * factor
+        self.options['bboxmargin'] = float(self.options['bboxmargin']) * factor
 
     def plot(self, **kwargs):
         """
@@ -833,7 +833,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
     optionChanged = QtCore.pyqtSignal(str)
 
     def __init__(self, name):
-        Excellon.__init__(self, geo_steps_per_circle=self.app.defaults["geometry_circle_steps"])
+        Excellon.__init__(self, geo_steps_per_circle=int(self.app.defaults["geometry_circle_steps"]))
         FlatCAMObj.__init__(self, name)
 
         self.kind = "excellon"
@@ -1458,7 +1458,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             outname = self.options["name"] + "_mill"
 
         if tooldia is None:
-            tooldia = self.options["tooldia"]
+            tooldia = float(self.options["tooldia"])
 
         # Sort tools by diameter. items() -> [('name', diameter), ...]
         # sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1]) # no longer works in Python3
@@ -1545,7 +1545,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             outname = self.options["name"] + "_mill"
 
         if tooldia is None:
-            tooldia = self.options["slot_tooldia"]
+            tooldia = float(self.options["slot_tooldia"])
 
         # Sort tools by diameter. items() -> [('name', diameter), ...]
         # sorted_tools = sorted(list(self.tools.items()), key=lambda tl: tl[1]) # no longer works in Python3
@@ -1564,7 +1564,10 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             return False, "Error: No tools."
 
         for tool in tools:
-            if tooldia > self.tools[tool]["C"]:
+            # I add the 0.0001 value to account for the rounding error in converting from IN to MM and reverse
+            adj_toolstable_tooldia = float('%.4f' % float(tooldia))
+            adj_file_tooldia = float('%.4f' % float(self.tools[tool]["C"]))
+            if adj_toolstable_tooldia > adj_file_tooldia + 0.0001:
                 self.app.inform.emit("[ERROR_NOTCL] Milling tool for SLOTS is larger than hole size. Cancelled.")
                 return False, "Error: Milling tool is larger than hole."
 
@@ -1590,20 +1593,25 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # we add a tenth of the minimum value, meaning 0.0000001, which from our point of view is "almost zero"
             for slot in self.slots:
                 if slot['tool'] in tools:
-                    buffer_value = self.tools[slot['tool']]["C"] / 2 - tooldia / 2
+                    toolstable_tool = float('%.4f' % float(tooldia))
+                    file_tool = float('%.4f' % float(self.tools[tool]["C"]))
+
+                    # I add the 0.0001 value to account for the rounding error in converting from IN to MM and reverse
+                    # for the file_tool (tooldia actually)
+                    buffer_value = float(file_tool / 2) - float(toolstable_tool / 2) + 0.0001
                     if buffer_value == 0:
                         start = slot['start']
                         stop = slot['stop']
 
                         lines_string = LineString([start, stop])
-                        poly = lines_string.buffer(0.0000001, self.geo_steps_per_circle).exterior
+                        poly = lines_string.buffer(0.0000001, int(self.geo_steps_per_circle)).exterior
                         geo_obj.solid_geometry.append(poly)
                     else:
                         start = slot['start']
                         stop = slot['stop']
 
                         lines_string = LineString([start, stop])
-                        poly = lines_string.buffer(buffer_value, self.geo_steps_per_circle).exterior
+                        poly = lines_string.buffer(buffer_value, int(self.geo_steps_per_circle)).exterior
                         geo_obj.solid_geometry.append(poly)
 
         if use_thread:
@@ -1685,15 +1693,16 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.options['ppname_e'] = pp_excellon_name
 
             app_obj.progress.emit(20)
-            job_obj.z_cut = self.options["drillz"]
-            job_obj.z_move = self.options["travelz"]
-            job_obj.feedrate = self.options["feedrate"]
-            job_obj.feedrate_rapid = self.options["feedrate_rapid"]
-            job_obj.spindlespeed = self.options["spindlespeed"]
+            job_obj.z_cut = float(self.options["drillz"])
+            job_obj.z_move = float(self.options["travelz"])
+            job_obj.feedrate = float(self.options["feedrate"])
+            job_obj.feedrate_rapid = float(self.options["feedrate_rapid"])
+
+            job_obj.spindlespeed = float(self.options["spindlespeed"]) if self.options["spindlespeed"] else None
             job_obj.dwell = self.options["dwell"]
-            job_obj.dwelltime = self.options["dwelltime"]
+            job_obj.dwelltime = float(self.options["dwelltime"])
             job_obj.pp_excellon_name = pp_excellon_name
-            job_obj.toolchange_xy = self.app.defaults["excellon_toolchangexy"]
+
             job_obj.toolchange_xy_type = "excellon"
             job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
             job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])
@@ -1729,14 +1738,18 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # job_obj.options["tooldia"] =
 
             tools_csv = ','.join(tools)
-            job_obj.generate_from_excellon_by_tool(self, tools_csv,
-                                                   drillz=self.options['drillz'],
-                                                   toolchange=self.options["toolchange"],
-                                                   toolchangez=self.options["toolchangez"],
-                                                   startz=self.options["startz"],
-                                                   endz=self.options["endz"],
-                                                   excellon_optimization_type=self.options["optimization_type"])
-
+            ret_val = job_obj.generate_from_excellon_by_tool(self, tools_csv,
+                                                             drillz=float(self.options['drillz']),
+                                                             toolchange=float(self.options["toolchange"]),
+                                                             toolchangexy=self.app.defaults["excellon_toolchangexy"],
+                                                             toolchangez=float(self.options["toolchangez"]),
+                                                             startz=float(self.options["startz"]) if
+                                                             self.options["startz"] else None,
+                                                             endz=float(self.options["endz"]),
+                                                             excellon_optimization_type=self.app.defaults[
+                                                                 "excellon_optimization_type"])
+            if ret_val == 'fail':
+                return 'fail'
             app_obj.progress.emit(50)
             job_obj.gcode_parse()
 
@@ -1772,11 +1785,11 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
     def convert_units(self, units):
         factor = Excellon.convert_units(self, units)
 
-        self.options['drillz'] *= factor
-        self.options['travelz'] *= factor
-        self.options['feedrate'] *= factor
-        self.options['feedrate_rapid'] *= factor
-        self.options['toolchangez'] *= factor
+        self.options['drillz'] = float(self.options['drillz']) * factor
+        self.options['travelz'] = float(self.options['travelz']) * factor
+        self.options['feedrate'] = float(self.options['feedrate']) * factor
+        self.options['feedrate_rapid'] = float(self.options['feedrate_rapid']) * factor
+        self.options['toolchangez'] = float(self.options['toolchangez']) * factor
 
         if self.app.defaults["excellon_toolchangexy"] == '':
             self.options['toolchangexy'] = "0.0, 0.0"
@@ -1791,8 +1804,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.options['toolchangexy'] = "%f, %f" % (coords_xy[0], coords_xy[1])
 
         if self.options['startz'] is not None:
-            self.options['startz'] *= factor
-        self.options['endz'] *= factor
+            self.options['startz'] = float(self.options['startz']) * factor
+        self.options['endz'] = float(self.options['endz']) * factor
 
     def plot(self):
 
@@ -1967,7 +1980,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
     def __init__(self, name):
         FlatCAMObj.__init__(self, name)
-        Geometry.__init__(self, geo_steps_per_circle=self.app.defaults["geometry_circle_steps"])
+        Geometry.__init__(self, geo_steps_per_circle=int(self.app.defaults["geometry_circle_steps"]))
 
         self.kind = "geometry"
 
@@ -2260,7 +2273,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         if not self.tools:
             self.tools.update({
                 self.tooluid: {
-                    'tooldia': self.options["cnctooldia"],
+                    'tooldia': float(self.options["cnctooldia"]),
                     'offset': 'Path',
                     'offset_value': 0.0,
                     'type': 'Rough',
@@ -2805,8 +2818,28 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.cutz_entry.setDisabled(False)
 
     def update_cutz(self):
-        vdia = float(self.ui.tipdia_entry.get_value())
-        half_vangle = float(self.ui.tipangle_entry.get_value()) / 2
+        try:
+            vdia = float(self.ui.tipdia_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                vdia = float(self.ui.tipdia_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number.")
+                return
+
+        try:
+            half_vangle = float(self.ui.tipangle_entry.get_value()) / 2
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                half_vangle = float(self.ui.tipangle_entry.get_value().replace(',', '.')) / 2
+            except ValueError:
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number.")
+                return
+
 
         row = self.ui.geo_tools_table.currentRow()
         tool_uid = int(self.ui.geo_tools_table.item(row, 5).text())
@@ -3125,10 +3158,18 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         segx = segx if segx is not None else float(self.app.defaults['geometry_segx'])
         segy = segy if segy is not None else float(self.app.defaults['geometry_segy'])
 
-        xmin = self.options['xmin']
-        ymin = self.options['ymin']
-        xmax = self.options['xmax']
-        ymax = self.options['ymax']
+        try:
+            xmin = self.options['xmin']
+            ymin = self.options['ymin']
+            xmax = self.options['xmax']
+            ymax = self.options['ymax']
+        except Exception as e:
+            log.debug("FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s\n" % str(e))
+            msg = "[ERROR] An internal error has ocurred. See shell.\n"
+            msg += 'FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s' % str(e)
+            msg += traceback.format_exc()
+            self.app.inform.emit(msg)
+            return
 
         # Object initialization function for app.new_object()
         # RUNNING ON SEPARATE THREAD!
@@ -3348,6 +3389,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             job_obj.multitool = True
             job_obj.multigeo = True
             job_obj.cnc_tools.clear()
+
+            job_obj.options['xmin'] = xmin
+            job_obj.options['ymin'] = ymin
+            job_obj.options['xmax'] = xmax
+            job_obj.options['ymax'] = ymax
 
             try:
                 job_obj.z_pdepth = float(self.options["z_pdepth"])
@@ -3591,36 +3637,36 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :return: None
         """
 
-        tooldia = tooldia if tooldia else self.options["cnctooldia"]
-        outname = outname if outname is not None else self.options["name"]
+        tooldia = tooldia if tooldia else float(self.options["cnctooldia"])
+        outname = outname if outname is not None else float(self.options["name"])
 
-        z_cut = z_cut if z_cut is not None else self.options["cutz"]
-        z_move = z_move if z_move is not None else self.options["travelz"]
+        z_cut = z_cut if z_cut is not None else float(self.options["cutz"])
+        z_move = z_move if z_move is not None else float(self.options["travelz"])
 
-        feedrate = feedrate if feedrate is not None else self.options["feedrate"]
-        feedrate_z = feedrate_z if feedrate_z is not None else self.options["feedrate_z"]
-        feedrate_rapid = feedrate_rapid if feedrate_rapid is not None else self.options["feedrate_rapid"]
+        feedrate = feedrate if feedrate is not None else float(self.options["feedrate"])
+        feedrate_z = feedrate_z if feedrate_z is not None else float(self.options["feedrate_z"])
+        feedrate_rapid = feedrate_rapid if feedrate_rapid is not None else float(self.options["feedrate_rapid"])
 
         multidepth = multidepth if multidepth is not None else self.options["multidepth"]
-        depthperpass = depthperpass if depthperpass is not None else self.options["depthperpass"]
+        depthperpass = depthperpass if depthperpass is not None else float(self.options["depthperpass"])
 
         segx = segx if segx is not None else float(self.app.defaults['geometry_segx'])
         segy = segy if segy is not None else float(self.app.defaults['geometry_segy'])
 
-        extracut = extracut if extracut is not None else self.options["extracut"]
-        startz = startz if startz is not None else self.options["startz"]
-        endz = endz if endz is not None else self.options["endz"]
+        extracut = extracut if extracut is not None else float(self.options["extracut"])
+        startz = startz if startz is not None else float(self.options["startz"])
+        endz = endz if endz is not None else float(self.options["endz"])
 
-        toolchangez = toolchangez if toolchangez else self.options["toolchangez"]
+        toolchangez = toolchangez if toolchangez else float(self.options["toolchangez"])
         toolchangexy = toolchangexy if toolchangexy else self.options["toolchangexy"]
         toolchange = toolchange if toolchange else self.options["toolchange"]
 
         offset = offset if offset else 0.0
 
         # int or None.
-        spindlespeed = spindlespeed if spindlespeed else self.options['spindlespeed']
+        spindlespeed = spindlespeed if spindlespeed else int(self.options['spindlespeed'])
         dwell = dwell if dwell else self.options["dwell"]
-        dwelltime = dwelltime if dwelltime else self.options["dwelltime"]
+        dwelltime = dwelltime if dwelltime else float(self.options["dwelltime"])
 
         ppname_g = ppname_g if ppname_g else self.options["ppname_g"]
 
@@ -3803,19 +3849,19 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         factor = Geometry.convert_units(self, units)
 
-        self.options['cutz'] *= factor
-        self.options['depthperpass'] *= factor
-        self.options['travelz'] *= factor
-        self.options['feedrate'] *= factor
-        self.options['feedrate_z'] *= factor
-        self.options['feedrate_rapid'] *= factor
-        self.options['endz'] *= factor
+        self.options['cutz'] = float(self.options['cutz']) * factor
+        self.options['depthperpass'] = float(self.options['depthperpass']) * factor
+        self.options['travelz'] = float(self.options['travelz']) * factor
+        self.options['feedrate'] = float(self.options['feedrate']) * factor
+        self.options['feedrate_z'] = float(self.options['feedrate_z']) * factor
+        self.options['feedrate_rapid'] = float(self.options['feedrate_rapid']) * factor
+        self.options['endz'] = float(self.options['endz']) * factor
         # self.options['cnctooldia'] *= factor
         # self.options['painttooldia'] *= factor
         # self.options['paintmargin'] *= factor
         # self.options['paintoverlap'] *= factor
 
-        self.options["toolchangez"] *= factor
+        self.options["toolchangez"] = float(self.options["toolchangez"]) * factor
 
         if self.app.defaults["geometry_toolchangexy"] == '':
             self.options['toolchangexy'] = "0.0, 0.0"
@@ -3830,7 +3876,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.options['toolchangexy'] = "%f, %f" % (coords_xy[0], coords_xy[1])
 
         if self.options['startz'] is not None:
-            self.options['startz'] *= factor
+            self.options['startz'] = float(self.options['startz']) * factor
 
         param_list = ['cutz', 'depthperpass', 'travelz', 'feedrate', 'feedrate_z', 'feedrate_rapid',
                       'endz', 'toolchangez']
@@ -4015,7 +4061,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         CNCjob.__init__(self, units=units, kind=kind, z_move=z_move,
                         feedrate=feedrate, feedrate_rapid=feedrate_rapid, z_cut=z_cut, tooldia=tooldia,
-                        spindlespeed=spindlespeed, steps_per_circle=self.app.defaults["cncjob_steps_per_circle"])
+                        spindlespeed=spindlespeed, steps_per_circle=int(self.app.defaults["cncjob_steps_per_circle"]))
 
         FlatCAMObj.__init__(self, name)
 
@@ -4212,7 +4258,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.to_form()
 
         # set the kind of geometries are plotted by default with plot2() from camlib.CNCJob
-        self.ui.cncplot_method_combo.set_value('all')
+        self.ui.cncplot_method_combo.set_value(self.app.defaults["cncjob_plot_kind"])
 
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)
@@ -4263,13 +4309,16 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                        "G-Code Files (*.g-code);;All Files (*.*)"
 
         try:
-            filename = str(QtWidgets.QFileDialog.getSaveFileName(
+            dir_file_to_save = self.app.get_last_save_folder() + '/' + str(name)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
                 caption="Export Machine Code ...",
-                directory=self.app.get_last_save_folder() + '/' + name,
+                directory=dir_file_to_save,
                 filter=_filter_
-            )[0])
+            )
         except TypeError:
-            filename = str(QtWidgets.QFileDialog.getSaveFileName(caption="Export Machine Code ...", filter=_filter_)[0])
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export Machine Code ...", filter=_filter_)
+
+        filename = str(filename)
 
         if filename == '':
             self.app.inform.emit("[WARNING_NOTCL]Export Machine Code cancelled ...")
@@ -4301,9 +4350,14 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.app.ui.code_editor.clear()
 
         # then append the text from GCode to the text editor
-        for line in self.app.gcode_edited:
-            proc_line = str(line).strip('\n')
-            self.app.ui.code_editor.append(proc_line)
+        try:
+            for line in self.app.gcode_edited:
+                proc_line = str(line).strip('\n')
+                self.app.ui.code_editor.append(proc_line)
+        except Exception as e:
+            log.debug('FlatCAMCNNJob.on_modifygcode_button_click() -->%s' % str(e))
+            self.app.inform.emit('[ERROR]FlatCAMCNNJob.on_modifygcode_button_click() -->%s' % str(e))
+            return
 
         self.app.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
 
@@ -4472,6 +4526,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         elif to_file is False:
             # Just for adding it to the recent files list.
             self.app.file_opened.emit("cncjob", filename)
+            self.app.file_saved.emit("cncjob", filename)
 
             self.app.inform.emit("[success] Saved to: " + filename)
         else:
@@ -4549,7 +4604,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         try:
             if self.multitool is False: # single tool usage
-                self.plot2(tooldia=self.options["tooldia"], obj=self, visible=visible, kind=kind)
+                self.plot2(tooldia=float(self.options["tooldia"]), obj=self, visible=visible, kind=kind)
             else:
                 # multiple tools usage
                 for tooluid_key in self.cnc_tools:
@@ -4564,7 +4619,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
     def convert_units(self, units):
         factor = CNCjob.convert_units(self, units)
         FlatCAMApp.App.log.debug("FlatCAMCNCjob.convert_units()")
-        self.options["tooldia"] *= factor
+        self.options["tooldia"] = float(self.options["tooldia"]) * factor
 
         param_list = ['cutz', 'depthperpass', 'travelz', 'feedrate', 'feedrate_z', 'feedrate_rapid',
                       'endz', 'toolchangez']

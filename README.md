@@ -9,9 +9,64 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+9.02.2019
+
+- added a protection for when saving a file first time, it require a saved path and if none then it use the current working directory
+- added into Preferences the Calculator Tools
+- made the Preferences window scrollable on the horizontal side (it was only vertically scrollable before)
+- fixed an error in Excellon Editor -> add drill array that could appear by starting the function to add a drill array by shortcut before any mouse move is registered while in Editor
+- changed the messages from status bar on new object creation/selection
+- in Geometry Editor fixed the handler for the Rotate shortcut key ('R')
+
+8.02.2019
+
+- when shortcut keys 1, 2, 3 (tab selection) are activated, if the splitter left side (the notebook) is hidden it will be mae visible
+- changed the menu entry Toggle Grid name to Toggle Grid Snap
+- fixed errors in Toggle Axis
+- fixed error with shortcut key triggering twice the keyPressEvent when in the Project List View
+- moved all shortcut keys handlers from Editors to the keyPressEvent() handler from FLatCAMGUI
+- in Excellon Editor added a protection for Tool_dia field in case numbers using comma as decimal separator are used. Also added a QDoubleValidator forcing a number with max 4 decimals and from 0.0000 to 9.9999
+- in Excellon Editor added a shortcut key 'T' that popup a window allowing to enter a new Tool with the set diameter
+- in App added a shortcut key 'T' that popup a windows allowing to enter a new Tool with set diameter only when the Selected tab is on focus and only if a Geometry object is selected
+- changed the shortcut key for Transform Tool from 'T' to 'ALT+T'
+- fixed bug in Geometry Selected tab that generated error when used tool offset was less than half of either total length or half of total width. Now the app signal the issue with a status bar message
+- added Double Validator for the Offset value so only float numbers can be entered.
+- in App added a shortcut key 'T' that popup a windows allowing to enter a new Tool with set diameter only when the Tool tab is on focus and only if a NCC Tool or Paint Area Tool object is installed in the Tool Tab
+- if trying to add a tool using shortcut key 'T' with value zero the app will react with a message telling to use a non-zero value.
+
+7.02.2019
+
+- in Paint Tool, when painting single polygon, when clicking on canvas for the polygon there is no longer a selection of the entire object
+- commented some debug messages
+- imported speedups for shapely
+- added a disable menu entry in the canvas contextual menu
+- small changes in Tools layout
+- added some new icons in the help menu and reorganized this menu
+- added a new function and the shortcut 'leftquote' (left of Key 1) for toggle of the notebook section
+- changed the Shortcut list shortcut key to F3
+- moved some graphical classes out of Tool Shell to GUIElements.py where they belong
+- when selecting an object on canvas by single click, it's name is displayed in status bar. When nothing is selected a blank message (nothing) it's displayed
+- in Move Tool I've added the type of object that was moved in the status bar message
+- color coded the status bar bullet to blue for selection
+- the name of the selected objects are displayed in the status bar color coded: green for Gerber objects, Brown for Excellon, Red for Geometry and Blue for CNCJobs.
+
 6.02.2019
 
 - fixed the units calculators crash FlatCAM when using comma as decimal separator
+- done a regression on Tool Tab default text. It somehow delete Tools in certain scenarios so I got rid of it
+- fixed bug in multigeometry geometry not having the bounds in self.options and crashing the GCode generation
+- fixed bug that crashed whole application in case that the GCode editor is activated on a Tool gcode that is defective. 
+- fixed bug in Excellon Slots milling: a value of a dict key was a string instead to be an int. A cast to integer solved it.
+- fixed the name self-insert in save dialog file for GCode; added protection in case the save path is None
+- fixed FlatCAM crash when trying to make drills GCode out of a file that have only slots.
+- changed the messages for Units Conversion
+- all key shortcuts work across the entire application; moved all the shortcuts definitions in FlatCAMGUI.keyPressEvent()
+- renamed the theme to layout because it is really a layout change
+- added plot kind for CNC Job in the App Preferences
+- combined the geocutout and cutout_any TCL commands - work in progress
+- added a new function (and shortcut key Escape) that when triggered it deselects all selected objects and delete the selection box(es) 
+- fixed bug in Excellon Gcode generation that made the toolchange X,Y always none regardless of the value in Preferences
+- fixed the Tcl Command Geocutout to work with Gerber objects too (besides Geometry objects)
 
 5.02.3019
 

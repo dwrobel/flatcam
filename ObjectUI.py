@@ -611,7 +611,8 @@ class ExcellonObjectUI(ObjectUI):
         self.tools_box.addLayout(gcode_box)
 
         # temporary action until I finish the feature
-        self.excellon_gcode_type_radio.setEnabled(False)
+        self.excellon_gcode_type_radio.setVisible(False)
+        gcode_type_label.hide()
 
         self.generate_cnc_button = QtWidgets.QPushButton('Create GCode')
         self.generate_cnc_button.setToolTip(
@@ -783,7 +784,8 @@ class GeometryObjectUI(ObjectUI):
             "cut and negative for 'inside' cut."
         )
         self.grid1.addWidget(self.tool_offset_lbl, 0, 0)
-        self.tool_offset_entry = FCEntry()
+        self.tool_offset_entry = FloatEntry()
+        self.tool_offset_entry.setValidator(QtGui.QDoubleValidator(-9999.9999, 9999.9999, 4))
         spacer_lbl = QtWidgets.QLabel(" ")
         spacer_lbl.setFixedWidth(80)
 
@@ -1129,9 +1131,14 @@ class CNCObjectUI(ObjectUI):
             {"label": "Cut", "value": "cut"}
         ], stretch=False)
 
-        f_lay = QtWidgets.QFormLayout()
+        f_lay = QtWidgets.QGridLayout()
+        f_lay.setColumnStretch(1, 1)
+        f_lay.setColumnStretch(2, 1)
+
         self.custom_box.addLayout(f_lay)
-        f_lay.addRow(self.cncplot_method_label, self.cncplot_method_combo)
+        f_lay.addWidget(self.cncplot_method_label, 0, 0)
+        f_lay.addWidget(self.cncplot_method_combo, 0, 1)
+        f_lay.addWidget(QtWidgets.QLabel(''), 0, 2)
 
         e1_lbl = QtWidgets.QLabel('')
         self.custom_box.addWidget(e1_lbl)

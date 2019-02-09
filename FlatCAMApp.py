@@ -92,8 +92,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.907
-    version_date = "2019/02/6"
+    version = 8.908
+    version_date = "2019/02/9"
     beta = True
 
     # current date now
@@ -257,6 +257,8 @@ class App(QtCore.QObject):
         # Create multiprocessing pool
         self.pool = Pool()
 
+        # variable to store mouse coordinates
+        self.mouse = [0, 0]
 
         ####################
         ## Initialize GUI ##
@@ -394,6 +396,7 @@ class App(QtCore.QObject):
             "geometry_extracut": self.geometry_defaults_form.geometry_opt_group.extracut_cb,
 
             "cncjob_plot": self.cncjob_defaults_form.cncjob_gen_group.plot_cb,
+            "cncjob_plot_kind": self.cncjob_defaults_form.cncjob_gen_group.cncplot_method_radio,
             "cncjob_tooldia": self.cncjob_defaults_form.cncjob_gen_group.tooldia_entry,
             "cncjob_coords_decimals": self.cncjob_defaults_form.cncjob_gen_group.coords_dec_entry,
             "cncjob_fr_decimals": self.cncjob_defaults_form.cncjob_gen_group.fr_dec_entry,
@@ -438,7 +441,15 @@ class App(QtCore.QObject):
             "tools_panelize_rows": self.tools_defaults_form.tools_panelize_group.prows,
             "tools_panelize_constrain": self.tools_defaults_form.tools_panelize_group.pconstrain_cb,
             "tools_panelize_constrainx": self.tools_defaults_form.tools_panelize_group.px_width_entry,
-            "tools_panelize_constrainy": self.tools_defaults_form.tools_panelize_group.py_height_entry
+            "tools_panelize_constrainy": self.tools_defaults_form.tools_panelize_group.py_height_entry,
+
+            "tools_calc_vshape_tip_dia": self.tools_defaults_form.tools_calculators_group.tip_dia_entry,
+            "tools_calc_vshape_tip_angle": self.tools_defaults_form.tools_calculators_group.tip_angle_entry,
+            "tools_calc_vshape_cut_z": self.tools_defaults_form.tools_calculators_group.cut_z_entry,
+            "tools_calc_electro_length": self.tools_defaults_form.tools_calculators_group.pcblength_entry,
+            "tools_calc_electro_width": self.tools_defaults_form.tools_calculators_group.pcbwidth_entry,
+            "tools_calc_electro_cdensity": self.tools_defaults_form.tools_calculators_group.cdensity_entry,
+            "tools_calc_electro_growth": self.tools_defaults_form.tools_calculators_group.growth_entry
         }
         # loads postprocessors
         self.postprocessors = load_postprocessors(self)
@@ -580,6 +591,7 @@ class App(QtCore.QObject):
             "geometry_circle_steps": 64,
 
             "cncjob_plot": True,
+            "cncjob_plot_kind": 'all',
             "cncjob_tooldia": 0.0393701,
             "cncjob_coords_decimals": 4,
             "cncjob_fr_decimals": 2,
@@ -623,7 +635,15 @@ class App(QtCore.QObject):
             "tools_panelize_rows": 1,
             "tools_panelize_constrain": False,
             "tools_panelize_constrainx": 0.0,
-            "tools_panelize_constrainy": 0.0
+            "tools_panelize_constrainy": 0.0,
+
+            "tools_calc_vshape_tip_dia": 0.007874,
+            "tools_calc_vshape_tip_angle": 30,
+            "tools_calc_vshape_cut_z": 0.000787,
+            "tools_calc_electro_length": 10.0,
+            "tools_calc_electro_width": 10.0,
+            "tools_calc_electro_cdensity":13.0,
+            "tools_calc_electro_growth": 10.0
         })
 
         ###############################
@@ -964,8 +984,7 @@ class App(QtCore.QObject):
         self.plotcanvas.vis_connect('mouse_double_click', self.on_double_click_over_plot)
 
         # Keys over plot enabled
-        self.plotcanvas.vis_connect('key_press', self.on_key_over_plot)
-        self.plotcanvas.vis_connect('key_release', self.on_key_release_over_plot)
+        self.plotcanvas.vis_connect('key_press', self.ui.keyPressEvent)
 
         self.ui.splitter.setStretchFactor(1, 2)
 
@@ -1042,7 +1061,7 @@ class App(QtCore.QObject):
         self.ui.menufilesavedefaults.triggered.connect(self.on_file_savedefaults)
         self.ui.menufile_exit.triggered.connect(self.on_app_exit)
 
-        self.ui.menueditnew.triggered.connect(lambda: self.new_object('geometry', 'new_g', lambda x, y: None))
+        self.ui.menueditnew.triggered.connect(self.new_geometry_object)
         self.ui.menueditnewexc.triggered.connect(self.new_excellon_object)
         self.ui.menueditedit.triggered.connect(self.object2editor)
         self.ui.menueditok.triggered.connect(self.editor2object)
@@ -1123,7 +1142,7 @@ class App(QtCore.QObject):
         self.ui.zoom_in_btn.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
         self.ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
 
-        self.ui.newgeo_btn.triggered.connect(lambda: self.new_object('geometry', 'new_g', lambda x, y: None))
+        self.ui.newgeo_btn.triggered.connect(self.new_geometry_object)
         self.ui.newexc_btn.triggered.connect(self.new_excellon_object)
         self.ui.editgeo_btn.triggered.connect(self.object2editor)
         self.ui.update_obj_btn.triggered.connect(self.editor2object)
@@ -1131,7 +1150,9 @@ class App(QtCore.QObject):
         self.ui.shell_btn.triggered.connect(self.on_toggle_shell)
 
         # Context Menu
-        self.ui.popmenu_new_geo.triggered.connect(lambda: self.new_object('geometry', 'new_g', lambda x, y: None))
+        self.ui.popmenu_disable.triggered.connect(lambda: self.disable_plots(self.collection.get_selected()))
+
+        self.ui.popmenu_new_geo.triggered.connect(self.new_geometry_object)
         self.ui.popmenu_new_exc.triggered.connect(self.new_excellon_object)
         self.ui.popmenu_new_prj.triggered.connect(self.on_file_new)
 
@@ -1213,7 +1234,7 @@ class App(QtCore.QObject):
         self.general_defaults_form.general_gui_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
         self.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
 
-        self.general_defaults_form.general_gui_group.theme_combo.activated.connect(self.on_theme)
+        self.general_defaults_form.general_gui_group.layout_combo.activated.connect(self.on_layout)
 
         # Modify G-CODE Plot Area TAB
         self.ui.code_editor.textChanged.connect(self.handleTextChanged)
@@ -1258,7 +1279,7 @@ class App(QtCore.QObject):
         # Auto-complete KEYWORDS
         self.tcl_commands_list = ['add_circle', 'add_poly', 'add_polygon', 'add_polyline', 'add_rectangle',
                                   'aligndrill', 'clear',
-                                  'aligndrillgrid', 'cncjob', 'cutout', 'cutout_any', 'delete', 'drillcncjob',
+                                  'aligndrillgrid', 'cncjob', 'cutout', 'delete', 'drillcncjob',
                                   'export_gcode',
                                   'export_svg', 'ext', 'exteriors', 'follow', 'geo_union', 'geocutout', 'get_names',
                                   'get_sys', 'getsys', 'help', 'import_svg', 'interiors', 'isolate', 'join_excellon',
@@ -1646,7 +1667,7 @@ class App(QtCore.QObject):
         edited_obj.plot()
         self.ui.plot_tab_area.setTabText(0, "Plot Area")
         self.ui.plot_tab_area.protectTab(0)
-        self.inform.emit("[success] %s is updated, returning to App..." % obj_type)
+        self.inform.emit("[selected] %s is updated, returning to App..." % obj_type)
 
         # reset the Object UI to original settings
         # edited_obj.set_ui(edited_obj.ui_type())
@@ -1659,7 +1680,12 @@ class App(QtCore.QObject):
         return self.defaults["global_last_folder"]
 
     def get_last_save_folder(self):
-        return self.defaults["global_last_save_folder"]
+        loc = self.defaults["global_last_save_folder"]
+        if loc is None:
+            loc = self.defaults["global_last_folder"]
+        if loc is None:
+            loc = os.path.dirname(__file__)
+        return loc
 
     def report_usage(self, resource):
         """
@@ -1694,7 +1720,7 @@ class App(QtCore.QObject):
         """
         pass
 
-    def shell_message(self, msg, show=False, error=False, warning=False, success=False):
+    def shell_message(self, msg, show=False, error=False, warning=False, success=False, selected=False):
         """
         Shows a message on the FlatCAM Shell
 
@@ -1708,14 +1734,14 @@ class App(QtCore.QObject):
         try:
             if error:
                 self.shell.append_error(msg + "\n")
+            elif warning:
+                self.shell.append_warning(msg + "\n")
+            elif success:
+                self.shell.append_success(msg + "\n")
+            elif selected:
+                self.shell.append_selected(msg + "\n")
             else:
-                if warning:
-                    self.shell.append_warning(msg + "\n")
-                else:
-                    if success:
-                        self.shell.append_success(msg + "\n")
-                    else:
-                        self.shell.append_output(msg + "\n")
+                self.shell.append_output(msg + "\n")
         except AttributeError:
             log.debug("shell_message() is called before Shell Class is instantiated. The message is: %s", str(msg))
 
@@ -1888,13 +1914,19 @@ class App(QtCore.QObject):
 
             elif level.lower() == "error_notcl":
                 self.shell_message(msg, error=True, show=False)
+
             elif level.lower() == "warning_notcl":
                 self.shell_message(msg, warning=True, show=False)
 
             elif level.lower() == "success":
                 self.shell_message(msg, success=True, show=False)
+
+            elif level.lower() == "selected":
+                self.shell_message(msg, selected=True, show=False)
+
             else:
                 self.shell_message(msg, show=False)
+
         else:
             self.ui.fcinfo.set_status(str(msg), level="info")
 
@@ -2070,6 +2102,8 @@ class App(QtCore.QObject):
             except:
                 self.inform.emit("[ERROR_NOTCL] Failed to write defaults to file.")
                 return
+
+        self.file_saved.emit("preferences", filename)
         self.inform.emit("[success]Exported Defaults to %s" % filename)
 
     def on_preferences_open_folder(self):
@@ -2239,6 +2273,8 @@ class App(QtCore.QObject):
             obj.options['ymax'] = ymax
         except:
             log.warning("The object has no bounds properties.")
+            # don't plot objects with no bounds, there is nothing to plot
+            self.plot = False
             pass
 
         FlatCAMApp.App.log.debug("Moving new object back to main thread.")
@@ -2252,7 +2288,15 @@ class App(QtCore.QObject):
     def new_excellon_object(self):
         self.report_usage("new_excellon_object()")
 
-        self.new_object('excellon', 'new_e', lambda x, y: None)
+        self.new_object('excellon', 'new_e', lambda x, y: None, plot=False)
+
+    def new_geometry_object(self):
+        self.report_usage("new_geometry_object()")
+
+        def initialize(obj, self):
+            obj.multitool = False
+
+        self.new_object('geometry', 'new_g', initialize, plot=False)
 
     def on_object_created(self, obj, plot, autoselect):
         """
@@ -2270,8 +2314,20 @@ class App(QtCore.QObject):
         # after adding the object to the collection always update the list of objects that are in the collection
         self.all_objects_list = self.collection.get_list()
 
-        self.inform.emit("[success]Object (%s) created: %s" % (obj.kind, obj.options['name']))
-        self.new_object_available.emit(obj)
+
+        if obj.kind == 'gerber':
+            self.inform.emit('[selected]%s created/selected: <span style="color:%s;">%s</span>' %
+                             (obj.kind.capitalize(), 'green', str(obj.options['name'])))
+        elif obj.kind == 'excellon':
+            self.inform.emit('[selected]%s created/selected: <span style="color:%s;">%s</span>' %
+                             (obj.kind.capitalize(), 'brown', str(obj.options['name'])))
+        elif obj.kind == 'cncjob':
+            self.inform.emit('[selected]%s created/selected: <span style="color:%s;">%s</span>' %
+                             (obj.kind.capitalize(), 'blue', str(obj.options['name'])))
+        elif obj.kind == 'geometry':
+            self.inform.emit('[selected]%s created/selected: <span style="color:%s;">%s</span>' %
+                             (obj.kind.capitalize(), 'red', str(obj.options['name'])))
+        # self.new_object_available.emit(obj)
 
         # update the SHELL auto-completer model with the name of the new object
         self.myKeywords.append(obj.options['name'])
@@ -2282,16 +2338,20 @@ class App(QtCore.QObject):
             self.collection.set_all_inactive()
             self.collection.set_active(obj.options["name"])
 
+        # here it is done the object plotting
         def worker_task(obj):
             with self.proc_container.new("Plotting"):
-                obj.plot()
+                if isinstance(obj, FlatCAMCNCjob):
+                    obj.plot(kind=self.defaults["cncjob_plot_kind"])
+                else:
+                    obj.plot()
                 t1 = time.time()  # DEBUG
                 self.log.debug("%f seconds adding object and plotting." % (t1 - t0))
                 self.object_plotted.emit(obj)
 
         # Send to worker
         # self.worker.add_task(worker_task, [self])
-        if plot:
+        if plot is True:
             self.worker_task.emit({'fcn': worker_task, 'params': [obj]})
 
     def on_object_changed(self, obj):
@@ -2721,6 +2781,66 @@ class App(QtCore.QObject):
 
         self.inform.emit("[success] A Geometry object was converted to SingleGeo type.")
 
+    def on_skey_tool_add(self):
+        ## Current application units in Upper Case
+        self.units = self.general_options_form.general_app_group.units_radio.get_value().upper()
+
+        # work only if the notebook tab on focus is the Selected_Tab and only if the object is Geometry
+        if self.ui.notebook.currentWidget().objectName() == 'selected_tab':
+            if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
+                tool_add_popup = FCInputDialog(title="New Tool ...",
+                                               text='Enter a Tool Diameter:',
+                                               min=0.0000, max=99.9999, decimals=4)
+                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+                val, ok = tool_add_popup.get_value()
+                if ok:
+                    if float(val) == 0:
+                        self.inform.emit(
+                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
+                        return
+                    self.collection.get_active().on_tool_add(dia=float(val))
+                else:
+                    self.inform.emit(
+                        "[WARNING_NOTCL] Adding Tool cancelled ...")
+
+        # work only if the notebook tab on focus is the Tools_Tab
+        if self.ui.notebook.currentWidget().objectName() == 'tool_tab':
+            # and only if the tool is NCC Tool
+            if self.ui.tool_scroll_area.widget().objectName() == self.ncclear_tool.toolName:
+                tool_add_popup = FCInputDialog(title="New Tool ...",
+                                               text='Enter a Tool Diameter:',
+                                               min=0.0000, max=99.9999, decimals=4)
+                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+                val, ok = tool_add_popup.get_value()
+                if ok:
+                    if float(val) == 0:
+                        self.inform.emit(
+                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
+                        return
+                    self.ncclear_tool.on_tool_add(dia=float(val))
+                else:
+                    self.inform.emit(
+                        "[WARNING_NOTCL] Adding Tool cancelled ...")
+            # and only if the tool is Paint Area Tool
+            if self.ui.tool_scroll_area.widget().objectName() == self.paint_tool.toolName:
+                tool_add_popup = FCInputDialog(title="New Tool ...",
+                                               text='Enter a Tool Diameter:',
+                                               min=0.0000, max=99.9999, decimals=4)
+                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+                val, ok = tool_add_popup.get_value()
+                if ok:
+                    if float(val) == 0:
+                        self.inform.emit(
+                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
+                        return
+                    self.paint_tool.on_tool_add(dia=float(val))
+                else:
+                    self.inform.emit(
+                        "[WARNING_NOTCL] Adding Tool cancelled ...")
+
     def on_options_dict_change(self, field):
         self.options_write_form_field(field)
 
@@ -2825,6 +2945,9 @@ class App(QtCore.QObject):
                     current.to_form()
 
             self.plot_all()
+            self.inform.emit("[success]Converted units to %s" % self.options["units"])
+            # self.ui.units_label.setText("[" + self.options["units"] + "]")
+            self.set_screen_units(self.options["units"])
         else:
             # Undo toggling
             self.toggle_units_ignore = True
@@ -2833,11 +2956,9 @@ class App(QtCore.QObject):
             else:
                 self.general_options_form.general_app_group.units_radio.set_value('MM')
             self.toggle_units_ignore = False
+            self.inform.emit("[WARNING_NOTCL]Units conversion cancelled.")
 
         self.options_read_form()
-        self.inform.emit("Converted units to %s" % self.options["units"])
-        #self.ui.units_label.setText("[" + self.options["units"] + "]")
-        self.set_screen_units(self.options["units"])
 
     def on_toggle_units_click(self):
         if self.options["units"] == 'MM':
@@ -2883,6 +3004,12 @@ class App(QtCore.QObject):
             self.ui.plot_tab_area.protectTab(0)
         else:
             self.ui.plot_tab_area.closeTab(0)
+
+    def on_toggle_notebook(self):
+        if self.ui.splitter.sizes()[0] == 0:
+            self.ui.splitter.setSizes([1, 1])
+        else:
+            self.ui.splitter.setSizes([0, 1])
 
     def on_toggle_axis(self):
         self.report_usage("on_toggle_axis()")
@@ -3219,6 +3346,10 @@ class App(QtCore.QObject):
         self.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(new_val_sel)
         self.defaults['global_sel_draw_color'] = new_val_sel
 
+    def on_deselect_all(self):
+        self.collection.set_all_inactive()
+        self.delete_selection_shape()
+
     def on_workspace_modified(self):
         self.save_defaults(silent=True)
         self.plotcanvas.draw_workspace()
@@ -3240,13 +3371,13 @@ class App(QtCore.QObject):
             self.general_defaults_form.general_gui_group.workspace_cb.setChecked(True)
         self.on_workspace()
 
-    def on_theme(self):
-        self.report_usage("on_theme()")
+    def on_layout(self):
+        self.report_usage("on_layout()")
 
-        current_theme= self.general_defaults_form.general_gui_group.theme_combo.get_value().lower()
+        current_layout= self.general_defaults_form.general_gui_group.layout_combo.get_value().lower()
 
         settings = QSettings("Open Source", "FlatCAM")
-        settings.setValue('theme', current_theme)
+        settings.setValue('layout', current_layout)
 
         # This will write the setting to the platform specific storage.
         del settings
@@ -3260,7 +3391,7 @@ class App(QtCore.QObject):
         self.ui.removeToolBar(self.ui.geo_edit_toolbar)
         self.ui.removeToolBar(self.ui.snap_toolbar)
 
-        if current_theme == 'standard':
+        if current_layout == 'standard':
             ### TOOLBAR INSTALLATION ###
             self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
             self.ui.toolbarfile.setObjectName('File_TB')
@@ -3295,7 +3426,7 @@ class App(QtCore.QObject):
 
             self.ui.corner_snap_btn.setVisible(False)
             self.ui.snap_magnet.setVisible(False)
-        elif current_theme == 'compact':
+        elif current_layout == 'compact':
             ### TOOLBAR INSTALLATION ###
             self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
             self.ui.toolbarfile.setObjectName('File_TB')
@@ -3452,15 +3583,6 @@ class App(QtCore.QObject):
                 qc.insertText(new)
             # Mark end of undo block
             cursor.endEditBlock()
-
-    def on_new_geometry(self):
-        self.report_usage("on_new_geometry()")
-
-        def initialize(obj, self):
-            obj.multitool = False
-
-        self.new_object('geometry', 'new_g', initialize)
-        self.plot_all()
 
     def on_delete(self):
         """
@@ -3928,223 +4050,224 @@ class App(QtCore.QObject):
         else:
             return 0
 
-    def on_key_over_plot(self, event):
-        """
-        Callback for the key pressed event when the canvas is focused. Keyboard
-        shortcuts are handled here. So far, these are the shortcuts:
-
-        ==========  ============================================
-        Key         Action
-        ==========  ============================================
-        '1'         Zoom-fit. Fits the axes limits to the data.
-        '2'         Zoom-out.
-        '3'         Zoom-in.
-        'ctrl+m'         Toggle on-off the measuring tool.
-        ==========  ============================================
-
-        :param event: Ignored.
-        :return: None
-        """
-
-        self.key_modifiers = QtWidgets.QApplication.keyboardModifiers()
-
-        if self.key_modifiers == QtCore.Qt.ControlModifier:
-            if event.key == 'A':
-                self.on_selectall()
-
-            if event.key == 'C':
-                self.on_copy_object()
-
-            if event.key == 'E':
-                self.on_fileopenexcellon()
-            if event.key == 'G':
-                self.on_fileopengerber()
-
-            if event.key == 'N':
-                self.on_file_new_click()
-
-            if event.key == 'M':
-                self.measurement_tool.run()
-
-            if event.key == 'O':
-                self.on_file_openproject()
-
-            if event.key == 'S':
-                self.on_file_saveproject()
-
-            # Toggle Plot Area
-            if event.key == 'F10':
-                self.on_toggle_plotarea()
-
-            return
-        elif self.key_modifiers == QtCore.Qt.AltModifier:
-            # place holder for further shortcut key
-
-            if event.key == '1':
-                self.enable_all_plots()
-
-            if event.key == '2':
-                self.disable_all_plots()
-
-            if event.key == '3':
-                self.disable_other_plots()
-
-            if event.key == 'C':
-                self.calculator_tool.run()
-
-            if event.key == 'D':
-                self.dblsidedtool.run()
-
-            if event.key == 'L':
-                self.film_tool.run()
-
-            if event.key == 'N':
-                self.ncclear_tool.run()
-
-            if event.key == 'P':
-                self.paint_tool.run()
-
-            if event.key == 'R':
-                self.transform_tool.run()
-
-            if event.key == 'U':
-                self.cutout_tool.run()
-
-            if event.key == 'Z':
-                self.panelize_tool.run()
-
-            if event.key == 'F10':
-                self.on_fullscreen()
-
-            return
-        elif self.key_modifiers == QtCore.Qt.ShiftModifier:
-            # place holder for further shortcut key
-
-            if event.key == 'C':
-                self.on_copy_name()
-
-            # Toggle axis
-            if event.key == 'G':
-                self.on_toggle_axis()
-
-            # Open Preferences Window
-            if event.key == 'P':
-                self.on_preferences()
-
-            # Rotate Object by 90 degree CCW
-            if event.key == 'R':
-                self.on_rotate(silent=True, preset=-90)
-
-            # Run a Script
-            if event.key == 'S':
-                self.on_filerunscript()
-
-            # Toggle Workspace
-            if event.key == 'W':
-                self.on_workspace_menu()
-
-            # Skew on X axis
-            if event.key == 'X':
-                self.on_skewx()
-
-            # Skew on Y axis
-            if event.key == 'Y':
-                self.on_skewy()
-
-        else:
-            if event.key == 'F1':
-                webbrowser.open(self.manual_url)
-                return
-
-            if event.key == 'F2':
-                webbrowser.open(self.video_url)
-                return
-
-            if event.key == self.defaults['zoom_out_key']:  # '-'
-                self.plotcanvas.zoom(1 / self.defaults['zoom_ratio'], self.mouse)
-                return
-
-            if event.key == self.defaults['zoom_in_key']:  # '='
-                self.plotcanvas.zoom(self.defaults['zoom_ratio'], self.mouse)
-                return
-
-            if event.key == 'Delete':
-                self.on_delete()
-                return
-
-            if event.key == 'Space':
-                if self.collection.get_active() is not None:
-                    self.collection.get_active().ui.plot_cb.toggle()
-                    self.delete_selection_shape()
-
-            if event.key == '1':
-                self.on_select_tab('project')
-
-            if event.key == '2':
-                self.on_select_tab('selected')
-
-            if event.key == '3':
-                self.on_select_tab('tool')
-
-            if event.key == 'E':
-                self.object2editor()
-
-            if event.key == self.defaults['grid_toggle_key']:  # G
-                self.ui.grid_snap_btn.trigger()
-
-            if event.key == 'J':
-                self.on_jump_to()
-
-            if event.key == 'L':
-                self.new_excellon_object()
-
-            if event.key == 'M':
-                self.move_tool.toggle()
-                return
-
-            if event.key == 'N':
-                self.on_new_geometry()
-
-            if event.key == 'O':
-                self.on_set_origin()
-
-            if event.key == 'P':
-                self.properties_tool.run()
-
-            if event.key == 'Q':
-                self.on_toggle_units_click()
-
-            if event.key == 'R':
-                self.on_rotate(silent=True, preset=90)
-
-            if event.key == 'S':
-                self.on_toggle_shell()
-
-            if event.key == 'V':
-                self.on_zoom_fit(None)
-
-            if event.key == 'X':
-                self.on_flipx()
-
-            if event.key == 'Y':
-                self.on_flipy()
-
-            if event.key == '`':
-                self.on_shortcut_list()
-
-    def on_key_release_over_plot(self, event):
-        modifiers = QtWidgets.QApplication.keyboardModifiers()
-
-        if modifiers == QtCore.Qt.ControlModifier:
-            return
-        elif modifiers == QtCore.Qt.AltModifier:
-            # place holder for further shortcut key
-            return
-        elif modifiers == QtCore.Qt.ShiftModifier:
-            # place holder for further shortcut key
-            return
-        else:
-            return
+    # def on_key_over_plot(self, event):
+    #     """
+    #     Callback for the key pressed event when the canvas is focused. Keyboard
+    #     shortcuts are handled here. So far, these are the shortcuts:
+    #
+    #     ==========  ============================================
+    #     Key         Action
+    #     ==========  ============================================
+    #     '1'         Zoom-fit. Fits the axes limits to the data.
+    #     '2'         Zoom-out.
+    #     '3'         Zoom-in.
+    #     'ctrl+m'         Toggle on-off the measuring tool.
+    #     ==========  ============================================
+    #
+    #     :param event: Ignored.
+    #     :return: None
+    #     """
+    #     print(type(event.key), event.key)
+    #     self.key_modifiers = QtWidgets.QApplication.keyboardModifiers()
+    #
+    #     if self.key_modifiers == QtCore.Qt.ControlModifier:
+    #         if event.key == 'A':
+    #             self.on_selectall()
+    #
+    #         if event.key == 'C':
+    #             self.on_copy_object()
+    #
+    #         if event.key == 'E':
+    #             self.on_fileopenexcellon()
+    #
+    #         if event.key == 'G':
+    #             self.on_fileopengerber()
+    #
+    #         if event.key == 'N':
+    #             self.on_file_new_click()
+    #
+    #         if event.key == 'M':
+    #             self.measurement_tool.run()
+    #
+    #         if event.key == 'O':
+    #             self.on_file_openproject()
+    #
+    #         if event.key == 'S':
+    #             self.on_file_saveproject()
+    #
+    #         # Toggle Plot Area
+    #         if event.key == 'F10':
+    #             self.on_toggle_plotarea()
+    #
+    #         return
+    #     elif self.key_modifiers == QtCore.Qt.AltModifier:
+    #         # place holder for further shortcut key
+    #
+    #         if event.key == '1':
+    #             self.enable_all_plots()
+    #
+    #         if event.key == '2':
+    #             self.disable_all_plots()
+    #
+    #         if event.key == '3':
+    #             self.disable_other_plots()
+    #
+    #         if event.key == 'C':
+    #             self.calculator_tool.run()
+    #
+    #         if event.key == 'D':
+    #             self.dblsidedtool.run()
+    #
+    #         if event.key == 'L':
+    #             self.film_tool.run()
+    #
+    #         if event.key == 'N':
+    #             self.ncclear_tool.run()
+    #
+    #         if event.key == 'P':
+    #             self.paint_tool.run()
+    #
+    #         if event.key == 'R':
+    #             self.transform_tool.run()
+    #
+    #         if event.key == 'U':
+    #             self.cutout_tool.run()
+    #
+    #         if event.key == 'Z':
+    #             self.panelize_tool.run()
+    #
+    #         if event.key == 'F10':
+    #             self.on_fullscreen()
+    #
+    #         return
+    #     elif self.key_modifiers == QtCore.Qt.ShiftModifier:
+    #         # place holder for further shortcut key
+    #
+    #         if event.key == 'C':
+    #             self.on_copy_name()
+    #
+    #         # Toggle axis
+    #         if event.key == 'G':
+    #             self.on_toggle_axis()
+    #
+    #         # Open Preferences Window
+    #         if event.key == 'P':
+    #             self.on_preferences()
+    #
+    #         # Rotate Object by 90 degree CCW
+    #         if event.key == 'R':
+    #             self.on_rotate(silent=True, preset=-90)
+    #
+    #         # Run a Script
+    #         if event.key == 'S':
+    #             self.on_filerunscript()
+    #
+    #         # Toggle Workspace
+    #         if event.key == 'W':
+    #             self.on_workspace_menu()
+    #
+    #         # Skew on X axis
+    #         if event.key == 'X':
+    #             self.on_skewx()
+    #
+    #         # Skew on Y axis
+    #         if event.key == 'Y':
+    #             self.on_skewy()
+    #
+    #     else:
+    #         if event.key == 'F1':
+    #             webbrowser.open(self.manual_url)
+    #             return
+    #
+    #         if event.key == 'F2':
+    #             webbrowser.open(self.video_url)
+    #             return
+    #
+    #         if event.key == self.defaults['zoom_out_key']:  # '-'
+    #             self.plotcanvas.zoom(1 / self.defaults['zoom_ratio'], self.mouse)
+    #             return
+    #
+    #         if event.key == self.defaults['zoom_in_key']:  # '='
+    #             self.plotcanvas.zoom(self.defaults['zoom_ratio'], self.mouse)
+    #             return
+    #
+    #         if event.key == 'Delete':
+    #             self.on_delete()
+    #             return
+    #
+    #         if event.key == 'Space':
+    #             if self.collection.get_active() is not None:
+    #                 self.collection.get_active().ui.plot_cb.toggle()
+    #                 self.delete_selection_shape()
+    #
+    #         if event.key == '1':
+    #             self.on_select_tab('project')
+    #
+    #         if event.key == '2':
+    #             self.on_select_tab('selected')
+    #
+    #         if event.key == '3':
+    #             self.on_select_tab('tool')
+    #
+    #         if event.key == 'E':
+    #             self.object2editor()
+    #
+    #         if event.key == self.defaults['grid_toggle_key']:  # G
+    #             self.ui.grid_snap_btn.trigger()
+    #
+    #         if event.key == 'J':
+    #             self.on_jump_to()
+    #
+    #         if event.key == 'L':
+    #             self.new_excellon_object()
+    #
+    #         if event.key == 'M':
+    #             self.move_tool.toggle()
+    #             return
+    #
+    #         if event.key == 'N':
+    #             self.on_new_geometry()
+    #
+    #         if event.key == 'O':
+    #             self.on_set_origin()
+    #
+    #         if event.key == 'P':
+    #             self.properties_tool.run()
+    #
+    #         if event.key == 'Q':
+    #             self.on_toggle_units_click()
+    #
+    #         if event.key == 'R':
+    #             self.on_rotate(silent=True, preset=90)
+    #
+    #         if event.key == 'S':
+    #             self.on_toggle_shell()
+    #
+    #         if event.key == 'V':
+    #             self.on_zoom_fit(None)
+    #
+    #         if event.key == 'X':
+    #             self.on_flipx()
+    #
+    #         if event.key == 'Y':
+    #             self.on_flipy()
+    #
+    #         if event.key == '`':
+    #             self.on_shortcut_list()
+    #
+    # def on_key_release_over_plot(self, event):
+    #     modifiers = QtWidgets.QApplication.keyboardModifiers()
+    #
+    #     if modifiers == QtCore.Qt.ControlModifier:
+    #         return
+    #     elif modifiers == QtCore.Qt.AltModifier:
+    #         # place holder for further shortcut key
+    #         return
+    #     elif modifiers == QtCore.Qt.ShiftModifier:
+    #         # place holder for further shortcut key
+    #         return
+    #     else:
+    #         return
 
     def on_shortcut_list(self):
         self.report_usage("on_shortcut_list()")
@@ -4167,6 +4290,10 @@ class App(QtCore.QObject):
             self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
         elif name == 'tool':
             self.ui.notebook.setCurrentWidget(self.ui.tool_tab)
+
+        # if the splitter us hidden, display it
+        if self.ui.splitter.sizes()[0] == 0:
+            self.ui.splitter.setSizes([1, 1])
 
     def on_copy_name(self):
         self.report_usage("on_copy_name()")
@@ -4213,8 +4340,8 @@ class App(QtCore.QObject):
             self.app_cursor.enabled = False
 
         try:
-            App.log.debug('button=%d, x=%d, y=%d, xdata=%f, ydata=%f' % (
-            event.button, event.pos[0], event.pos[1], self.pos[0], self.pos[1]))
+            # App.log.debug('button=%d, x=%d, y=%d, xdata=%f, ydata=%f' % (
+            # event.button, event.pos[0], event.pos[1], self.pos[0], self.pos[1]))
             modifiers = QtWidgets.QApplication.keyboardModifiers()
 
             if event.button == 1:
@@ -4250,11 +4377,9 @@ class App(QtCore.QObject):
     def on_double_click_over_plot(self, event):
         # make double click work only for the LMB
         if event.button == 1:
-            if not self.collection.get_selected():
-                pass
-            else:
+            if self.collection.get_selected():
                 self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
-                #delete the selection shape(S) as it may be in the way
+                # delete the selection shape(S) as it may be in the way
                 self.delete_selection_shape()
 
     def on_mouse_move_over_plot(self, event, origin_click=None):
@@ -4417,6 +4542,9 @@ class App(QtCore.QObject):
                 # and as a convenience move the focus to the Project tab because Selected tab is now empty
                 self.ui.notebook.setCurrentWidget(self.ui.project_tab)
 
+                # delete any text in the status bar, implicitly the last object name that was selected
+                self.inform.emit("")
+
             else:
                 # case when there is only an object under the click and we toggle it
                 if len(objects_under_the_click_list) == 1:
@@ -4425,6 +4553,20 @@ class App(QtCore.QObject):
                         # create the selection box around the selected object
                         curr_sel_obj = self.collection.get_active()
                         self.draw_selection_shape(curr_sel_obj)
+
+                        if curr_sel_obj.kind == 'gerber':
+                            self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                             ('green', str(curr_sel_obj.options['name'])))
+                        elif curr_sel_obj.kind == 'excellon':
+                            self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                             ('brown', str(curr_sel_obj.options['name'])))
+                        elif curr_sel_obj.kind == 'cncjob':
+                            self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                             ('blue', str(curr_sel_obj.options['name'])))
+                        elif curr_sel_obj.kind == 'geometry':
+                            self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                             ('red', str(curr_sel_obj.options['name'])))
+
                     elif self.collection.get_active().options['name'] not in objects_under_the_click_list:
                         self.collection.set_all_inactive()
                         self.delete_selection_shape()
@@ -4432,9 +4574,25 @@ class App(QtCore.QObject):
                         # create the selection box around the selected object
                         curr_sel_obj = self.collection.get_active()
                         self.draw_selection_shape(curr_sel_obj)
+
+                        if curr_sel_obj.kind == 'gerber':
+                            self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                             ('green', str(curr_sel_obj.options['name'])))
+                        elif curr_sel_obj.kind == 'excellon':
+                            self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                             ('brown', str(curr_sel_obj.options['name'])))
+                        elif curr_sel_obj.kind == 'cncjob':
+                            self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                             ('blue', str(curr_sel_obj.options['name'])))
+                        elif curr_sel_obj.kind == 'geometry':
+                            self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                             ('red', str(curr_sel_obj.options['name'])))
+
                     else:
                         self.collection.set_all_inactive()
                         self.delete_selection_shape()
+                        self.inform.emit("")
+
                 else:
                     # If there is no selected object
                     # make active the first element of the overlapped objects list
@@ -4458,6 +4616,19 @@ class App(QtCore.QObject):
                     self.delete_selection_shape()
                     # create the selection box around the selected object
                     self.draw_selection_shape(curr_sel_obj)
+
+                    if curr_sel_obj.kind == 'gerber':
+                        self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                         ('green', str(curr_sel_obj.options['name'])))
+                    elif curr_sel_obj.kind == 'excellon':
+                        self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                         ('brown', str(curr_sel_obj.options['name'])))
+                    elif curr_sel_obj.kind == 'cncjob':
+                        self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                         ('blue', str(curr_sel_obj.options['name'])))
+                    elif curr_sel_obj.kind == 'geometry':
+                        self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                         ('red', str(curr_sel_obj.options['name'])))
 
                     # for obj in self.collection.get_list():
                     #     obj.plot()
@@ -6044,7 +6215,7 @@ class App(QtCore.QObject):
         self.defaults["global_last_folder"] = os.path.split(str(filename))[0]
 
     def register_save_folder(self, filename):
-        self.defaults['global_last_save_folder'] = os.path.split(str(filename))[0]
+        self.defaults["global_last_save_folder"] = os.path.split(str(filename))[0]
 
     def set_progress_bar(self, percentage, text=""):
         self.ui.progress_bar.setValue(int(percentage))
@@ -6345,11 +6516,11 @@ class App(QtCore.QObject):
 The normal flow when working in FlatCAM is the following:</span></p>
 
 <ol>
-	<li><span style="font-size:10px">Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM using either the menu&#39;s, toolbars or key shortcuts.<br />
+	<li><span style="font-size:10px">Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM using either the menu&#39;s, toolbars, key shortcuts or even dragging and dropping the files on the GUI.<br />
 	<br />
 	You can also load a <strong>FlatCAM project</strong> by double clicking on the project file, drag &amp; drop of the file into the FLATCAM GUI or through the menu/toolbar links offered within the app.</span><br />
 	&nbsp;</li>
-	<li><span style="font-size:10px">Once an object is available in the Project Tab, by selecting it and then selecting <strong>SELECTED TAB </strong>(more simpler is to double click the object name in the Project Tab), <strong>SELECTED TAB </strong>will be updated with the object properties according to it&#39;s kind: Gerber, Excellon, Geometry or CNCJob object.<br />
+	<li><span style="font-size:10px">Once an object is available in the Project Tab, by selecting it and then focusing on <strong>SELECTED TAB </strong>(more simpler is to double click the object name in the Project Tab), <strong>SELECTED TAB </strong>will be updated with the object properties according to it&#39;s kind: Gerber, Excellon, Geometry or CNCJob object.<br />
 	<br />
 	If the selection of the object is done on the canvas by single click instead, and the <strong>SELECTED TAB</strong> is in focus, again the object properties will be displayed into the Selected Tab. Alternatively, double clicking on the object on the canvas will bring the <strong>SELECTED TAB</strong> and populate it even if it was out of focus.<br />
 	<br />
@@ -6358,7 +6529,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
 	<strong>Gerber/Excellon Object</strong> -&gt; Change Param -&gt; Generate Geometry -&gt;<strong> Geometry Object </strong>-&gt; Add tools (change param in Selected Tab) -&gt; Generate CNCJob -&gt;<strong> CNCJob Object </strong>-&gt; Verify GCode (through Edit CNC Code) and/or append/prepend to GCode (again, done in <strong>SELECTED TAB)&nbsp;</strong>-&gt; Save GCode</span></li>
 </ol>
 
-<p><span style="font-size:10px">A list of key shortcuts is available through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut: &#39;`&#39; (key left to 1).</span></p>
+<p><span style="font-size:10px">A list of key shortcuts is available through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut: <strng>F3</strong>.</span></p>
 
         '''
 
@@ -6367,34 +6538,34 @@ The normal flow when working in FlatCAM is the following:</span></p>
 
         self.ui.selected_scroll_area.setWidget(sel_title)
 
-        tool_title = QtWidgets.QTextEdit(
-            '<b>Shortcut Key List</b>')
-        tool_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
-        tool_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
-        # font = self.sel_title.font()
-        # font.setPointSize(12)
-        # self.sel_title.setFont(font)
-
-        tool_text = '''
-<p><span style="font-size:14px"><strong>Tool Tab - Choose an Item in Tools Menu</strong></span></p>
-
-<p><span style="font-size:10px"><strong>Details</strong>:<br />
-Some of the functionality of FlatCAM have been implemented as tools (a sort of plugins). </span></p>
-
-<p><span style="font-size:10px">Most of the tools are accessible through&nbsp;the Tools menu or by using the associated shortcut keys.<br />
-Each such a tool, if it needs an object to be used as a source it will provide the way to select this object(s) through a series of comboboxes. The result of using a tool is either a Geometry, an information that can be used in the app or it can be a file that can be saved.</span></p>
-
-<ol>
-</ol>
-
-<p><span style="font-size:10px">A list of key shortcuts is available through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut: &#39;`&#39; (key left to 1).</span></p>
-
-                '''
-
-        tool_title.setText(tool_text)
-        tool_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-
-        self.ui.tool_scroll_area.setWidget(tool_title)
+#         tool_title = QtWidgets.QTextEdit(
+#             '<b>Shortcut Key List</b>')
+#         tool_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
+#         tool_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
+#         # font = self.sel_title.font()
+#         # font.setPointSize(12)
+#         # self.sel_title.setFont(font)
+#
+#         tool_text = '''
+# <p><span style="font-size:14px"><strong>Tool Tab - Choose an Item in Tools Menu</strong></span></p>
+#
+# <p><span style="font-size:10px"><strong>Details</strong>:<br />
+# Some of the functionality of FlatCAM have been implemented as tools (a sort of plugins). </span></p>
+#
+# <p><span style="font-size:10px">Most of the tools are accessible through&nbsp;the Tools menu or by using the associated shortcut keys.<br />
+# Each such a tool, if it needs an object to be used as a source it will provide the way to select this object(s) through a series of comboboxes. The result of using a tool is either a Geometry, an information that can be used in the app or it can be a file that can be saved.</span></p>
+#
+# <ol>
+# </ol>
+#
+# <p><span style="font-size:10px">A list of key shortcuts is available through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut: &#39;`&#39; (key left to 1).</span></p>
+#
+#                 '''
+#
+#         tool_title.setText(tool_text)
+#         tool_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+#
+#         self.ui.tool_scroll_area.setWidget(tool_title)
 
     def setup_obj_classes(self):
         """

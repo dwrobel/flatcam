@@ -21,6 +21,40 @@ class ToolCalculator(FlatCAMTool):
         title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % self.toolName)
         self.layout.addWidget(title_label)
 
+        ######################
+        ## Units Calculator ##
+        ######################
+
+        self.unists_spacer_label = QtWidgets.QLabel(" ")
+        self.layout.addWidget(self.unists_spacer_label)
+
+        ## Title of the Units Calculator
+        units_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.unitsName)
+        self.layout.addWidget(units_label)
+
+        #Grid Layout
+        grid_units_layout = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid_units_layout)
+
+        inch_label = QtWidgets.QLabel("INCH")
+        mm_label = QtWidgets.QLabel("MM")
+        grid_units_layout.addWidget(mm_label, 0, 0)
+        grid_units_layout.addWidget( inch_label, 0, 1)
+
+        self.inch_entry = FCEntry()
+        # self.inch_entry.setFixedWidth(70)
+        self.inch_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.inch_entry.setToolTip("Here you enter the value to be converted from INCH to MM")
+
+        self.mm_entry = FCEntry()
+        # self.mm_entry.setFixedWidth(130)
+        self.mm_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.mm_entry.setToolTip("Here you enter the value to be converted from MM to INCH")
+
+        grid_units_layout.addWidget(self.mm_entry, 1, 0)
+        grid_units_layout.addWidget(self.inch_entry, 1, 1)
+
+
         ############################
         ## V-shape Tool Calculator ##
         ############################
@@ -83,38 +117,6 @@ class ToolCalculator(FlatCAMTool):
 
         form_layout.addRow(self.empty_label, self.calculate_vshape_button)
 
-        ######################
-        ## Units Calculator ##
-        ######################
-
-        self.unists_spacer_label = QtWidgets.QLabel(" ")
-        self.layout.addWidget(self.unists_spacer_label)
-
-        ## Title of the Units Calculator
-        units_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.unitsName)
-        self.layout.addWidget(units_label)
-
-        #Grid Layout
-        grid_units_layout = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid_units_layout)
-
-        inch_label = QtWidgets.QLabel("INCH")
-        mm_label = QtWidgets.QLabel("MM")
-        grid_units_layout.addWidget(mm_label, 0, 0)
-        grid_units_layout.addWidget( inch_label, 0, 1)
-
-        self.inch_entry = FCEntry()
-        # self.inch_entry.setFixedWidth(70)
-        self.inch_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.inch_entry.setToolTip("Here you enter the value to be converted from INCH to MM")
-
-        self.mm_entry = FCEntry()
-        # self.mm_entry.setFixedWidth(130)
-        self.mm_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.mm_entry.setToolTip("Here you enter the value to be converted from MM to INCH")
-
-        grid_units_layout.addWidget(self.mm_entry, 1, 0)
-        grid_units_layout.addWidget(self.inch_entry, 1, 1)
 
         ####################################
         ## ElectroPlating Tool Calculator ##
@@ -224,27 +226,31 @@ class ToolCalculator(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+C', **kwargs)
 
     def set_tool_ui(self):
+        self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
+
         ## Initialize form
         self.mm_entry.set_value('0')
         self.inch_entry.set_value('0')
 
-        self.pcblength_entry.set_value('10')
-        self.pcbwidth_entry.set_value('10')
-        self.cdensity_entry.set_value('13')
-        self.growth_entry.set_value('10')
-        self.cvalue_entry.set_value(2.80)
-        self.time_entry.set_value(33.0)
+        length = self.app.defaults["tools_calc_electro_length"]
+        width = self.app.defaults["tools_calc_electro_width"]
+        density = self.app.defaults["tools_calc_electro_cdensity"]
+        growth = self.app.defaults["tools_calc_electro_growth"]
+        self.pcblength_entry.set_value(length)
+        self.pcbwidth_entry.set_value(width)
+        self.cdensity_entry.set_value(density)
+        self.growth_entry.set_value(growth)
+        self.cvalue_entry.set_value(0.00)
+        self.time_entry.set_value(0.0)
 
-        if self.app.defaults["units"] == 'MM':
-            self.tipDia_entry.set_value('0.2')
-            self.tipAngle_entry.set_value('45')
-            self.cutDepth_entry.set_value('0.25')
-            self.effectiveToolDia_entry.set_value('0.39')
-        else:
-            self.tipDia_entry.set_value('7.87402')
-            self.tipAngle_entry.set_value('45')
-            self.cutDepth_entry.set_value('9.84252')
-            self.effectiveToolDia_entry.set_value('15.35433')
+        tip_dia = self.app.defaults["tools_calc_vshape_tip_dia"]
+        tip_angle = self.app.defaults["tools_calc_vshape_tip_angle"]
+        cut_z = self.app.defaults["tools_calc_vshape_cut_z"]
+
+        self.tipDia_entry.set_value(tip_dia)
+        self.tipAngle_entry.set_value(tip_angle)
+        self.cutDepth_entry.set_value(cut_z)
+        self.effectiveToolDia_entry.set_value('0.0000')
 
     def on_calculate_tool_dia(self):
         # Calculation:

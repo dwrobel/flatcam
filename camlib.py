@@ -31,6 +31,7 @@ from shapely.wkt import loads as sloads
 from shapely.wkt import dumps as sdumps
 from shapely.geometry.base import BaseGeometry
 from shapely.geometry import shape
+from shapely import speedups
 
 from collections import Iterable
 
@@ -101,7 +102,7 @@ class Geometry(object):
         self.geo_steps_per_circle = geo_steps_per_circle
 
         if geo_steps_per_circle is None:
-            geo_steps_per_circle = Geometry.defaults["geo_steps_per_circle"]
+            geo_steps_per_circle = int(Geometry.defaults["geo_steps_per_circle"])
         self.geo_steps_per_circle = geo_steps_per_circle
 
     def make_index(self):
@@ -494,7 +495,7 @@ class Geometry(object):
     #
     #     return self.flat_geometry, self.flat_geometry_rtree
 
-    def isolation_geometry(self, offset, iso_type=2):
+    def isolation_geometry(self, offset, iso_type=2, corner=None):
         """
         Creates contours around geometry at a given
         offset distance.
@@ -503,6 +504,7 @@ class Geometry(object):
         :type offset: float
         :param iso_type: type of isolation, can be 0 = exteriors or 1 = interiors or 2 = both (complete)
         :type integer
+        :param corner: type of corner for the isolation: 0 = round; 1 = square; 2= beveled (line that connects the ends)
         :return: The buffered geometry.
         :rtype: Shapely.MultiPolygon or Shapely.Polygon
         """
@@ -537,7 +539,11 @@ class Geometry(object):
         if offset == 0:
             geo_iso = self.solid_geometry
         else:
-            geo_iso = self.solid_geometry.buffer(offset, int(self.geo_steps_per_circle / 4))
+            if corner is None:
+                geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
+            else:
+                geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4), join_style=corner)
+
         # end of replaced block
 
         if iso_type == 2:
@@ -790,7 +796,7 @@ class Geometry(object):
 
         # Can only result in a Polygon or MultiPolygon
         # NOTE: The resulting polygon can be "empty".
-        current = polygon.buffer((-tooldia / 1.999999), int(steps_per_circle / 4))
+        current = polygon.buffer((-tooldia / 1.999999), int(int(steps_per_circle) / 4))
         if current.area == 0:
             # Otherwise, trying to to insert current.exterior == None
             # into the FlatCAMStorage will fail.
@@ -813,7 +819,7 @@ class Geometry(object):
         while True:
 
             # Can only result in a Polygon or MultiPolygon
-            current = current.buffer(-tooldia * (1 - overlap), int(steps_per_circle / 4))
+            current = current.buffer(-tooldia * (1 - overlap), int(int(steps_per_circle) / 4))
             if current.area > 0:
 
                 # current can be a MultiPolygon
@@ -829,13 +835,13 @@ class Geometry(object):
                     for i in current.interiors:
                         geoms.insert(i)
             else:
-                print("Current Area is zero")
+                log.debug("camlib.Geometry.clear_polygon() --> Current Area is zero")
                 break
 
         # Optimization: Reduce lifts
         if connect:
             # log.debug("Reducing tool lifts...")
-            geoms = Geometry.paint_connect(geoms, polygon, tooldia, steps_per_circle)
+            geoms = Geometry.paint_connect(geoms, polygon, tooldia, int(steps_per_circle))
 
         return geoms
 
@@ -1873,11 +1879,11 @@ class Gerber (Geometry):
 
         # How to discretize a circle.
         if steps_per_circle is None:
-            steps_per_circle = Gerber.defaults['steps_per_circle']
-        self.steps_per_circle = steps_per_circle
+            steps_per_circle = int(Gerber.defaults['steps_per_circle'])
+        self.steps_per_circle = int(steps_per_circle)
 
         # Initialize parent
-        Geometry.__init__(self, geo_steps_per_circle=steps_per_circle)
+        Geometry.__init__(self, geo_steps_per_circle=int(steps_per_circle))
 
         self.solid_geometry = Polygon()
 
@@ -3268,10 +3274,10 @@ class Excellon(Geometry):
         """
 
         if geo_steps_per_circle is None:
-            geo_steps_per_circle = Excellon.defaults['geo_steps_per_circle']
-        self.geo_steps_per_circle = geo_steps_per_circle
+            geo_steps_per_circle = int(Excellon.defaults['geo_steps_per_circle'])
+        self.geo_steps_per_circle = int(geo_steps_per_circle)
 
-        Geometry.__init__(self, geo_steps_per_circle=geo_steps_per_circle)
+        Geometry.__init__(self, geo_steps_per_circle=int(geo_steps_per_circle))
 
         # dictionary to store tools, see above for description
         self.tools = {}
@@ -4382,10 +4388,10 @@ class CNCjob(Geometry):
 
         # Used when parsing G-code arcs
         if steps_per_circle is None:
-            steps_per_circle = CNCjob.defaults["steps_per_circle"]
-        self.steps_per_circle = steps_per_circle
+            steps_per_circle = int(CNCjob.defaults["steps_per_circle"])
+        self.steps_per_circle = int(steps_per_circle)
 
-        Geometry.__init__(self, geo_steps_per_circle=steps_per_circle)
+        Geometry.__init__(self, geo_steps_per_circle=int(steps_per_circle))
 
         self.kind = kind
         self.units = units
@@ -4549,7 +4555,7 @@ class CNCjob(Geometry):
         elif drillz == 0:
             self.app.inform.emit("[WARNING] The Cut Z parameter is zero. "
                                  "There will be no cut, skipping %s file" % exobj.options['name'])
-            return
+            return 'fail'
         else:
             self.z_cut = drillz
 
@@ -4670,139 +4676,188 @@ class CNCjob(Geometry):
         if current_platform == '64bit':
             if excellon_optimization_type == 'M':
                 log.debug("Using OR-Tools Metaheuristic Guided Local Search drill path optimization.")
-                for tool in tools:
-                    self.tool=tool
-                    self.postdata['toolC']=exobj.tools[tool]["C"]
+                if exobj.drills:
+                    for tool in tools:
+                        self.tool=tool
+                        self.postdata['toolC']=exobj.tools[tool]["C"]
 
-                    ################################################
-                    # Create the data.
-                    node_list = []
-                    locations = create_data_array()
-                    tsp_size = len(locations)
-                    num_routes = 1  # The number of routes, which is 1 in the TSP.
-                    # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
-                    depot = 0
-                    # Create routing model.
-                    if tsp_size > 0:
-                        routing = pywrapcp.RoutingModel(tsp_size, num_routes, depot)
-                        search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
-                        search_parameters.local_search_metaheuristic = (
-                            routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
+                        ################################################
+                        # Create the data.
+                        node_list = []
+                        locations = create_data_array()
+                        tsp_size = len(locations)
+                        num_routes = 1  # The number of routes, which is 1 in the TSP.
+                        # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
+                        depot = 0
+                        # Create routing model.
+                        if tsp_size > 0:
+                            routing = pywrapcp.RoutingModel(tsp_size, num_routes, depot)
+                            search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
+                            search_parameters.local_search_metaheuristic = (
+                                routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
 
-                        # Set search time limit in milliseconds.
-                        if float(self.app.defaults["excellon_search_time"]) != 0:
-                            search_parameters.time_limit_ms = int(
-                                float(self.app.defaults["excellon_search_time"]) * 1000)
+                            # Set search time limit in milliseconds.
+                            if float(self.app.defaults["excellon_search_time"]) != 0:
+                                search_parameters.time_limit_ms = int(
+                                    float(self.app.defaults["excellon_search_time"]) * 1000)
+                            else:
+                                search_parameters.time_limit_ms = 3000
+
+                            # Callback to the distance function. The callback takes two
+                            # arguments (the from and to node indices) and returns the distance between them.
+                            dist_between_locations = CreateDistanceCallback()
+                            dist_callback = dist_between_locations.Distance
+                            routing.SetArcCostEvaluatorOfAllVehicles(dist_callback)
+
+                            # Solve, returns a solution if any.
+                            assignment = routing.SolveWithParameters(search_parameters)
+
+                            if assignment:
+                                # Solution cost.
+                                log.info("Total distance: " + str(assignment.ObjectiveValue()))
+
+                                # Inspect solution.
+                                # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
+                                route_number = 0
+                                node = routing.Start(route_number)
+                                start_node = node
+
+                                while not routing.IsEnd(node):
+                                    node_list.append(node)
+                                    node = assignment.Value(routing.NextVar(node))
+                            else:
+                                log.warning('No solution found.')
                         else:
-                            search_parameters.time_limit_ms = 3000
+                            log.warning('Specify an instance greater than 0.')
+                        ################################################
 
-                        # Callback to the distance function. The callback takes two
-                        # arguments (the from and to node indices) and returns the distance between them.
-                        dist_between_locations = CreateDistanceCallback()
-                        dist_callback = dist_between_locations.Distance
-                        routing.SetArcCostEvaluatorOfAllVehicles(dist_callback)
+                        # Only if tool has points.
+                        if tool in points:
+                            # Tool change sequence (optional)
+                            if toolchange:
+                                gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
+                                gcode += self.doformat(p.spindle_code)  # Spindle start
+                                if self.dwell is True:
+                                    gcode += self.doformat(p.dwell_code)  # Dwell time
+                            else:
+                                gcode += self.doformat(p.spindle_code)
+                                if self.dwell is True:
+                                    gcode += self.doformat(p.dwell_code)  # Dwell time
 
-                        # Solve, returns a solution if any.
-                        assignment = routing.SolveWithParameters(search_parameters)
+                            # Drillling!
+                            for k in node_list:
+                                locx = locations[k][0]
+                                locy = locations[k][1]
 
-                        if assignment:
-                            # Solution cost.
-                            log.info("Total distance: " + str(assignment.ObjectiveValue()))
+                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+                                gcode += self.doformat(p.down_code, x=locx, y=locy)
+                                gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                                self.oldx = locx
+                                self.oldy = locy
+                else:
+                    log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
+                              "The loaded Excellon file has no drills ...")
+                    self.app.inform.emit('[ERROR_NOTCL]The loaded Excellon file has no drills ...')
+                    return 'fail'
 
-                            # Inspect solution.
-                            # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
-                            route_number = 0
-                            node = routing.Start(route_number)
-                            start_node = node
-
-                            while not routing.IsEnd(node):
-                                node_list.append(node)
-                                node = assignment.Value(routing.NextVar(node))
-                        else:
-                            log.warning('No solution found.')
-                    else:
-                        log.warning('Specify an instance greater than 0.')
-                    ################################################
-
-                    # Only if tool has points.
-                    if tool in points:
-                        # Tool change sequence (optional)
-                        if toolchange:
-                            gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
-                            gcode += self.doformat(p.spindle_code)  # Spindle start
-                            if self.dwell is True:
-                                gcode += self.doformat(p.dwell_code)  # Dwell time
-                        else:
-                            gcode += self.doformat(p.spindle_code)
-                            if self.dwell is True:
-                                gcode += self.doformat(p.dwell_code)  # Dwell time
-
-                        # Drillling!
-                        for k in node_list:
-                            locx = locations[k][0]
-                            locy = locations[k][1]
-
-                            gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-                            gcode += self.doformat(p.down_code, x=locx, y=locy)
-                            gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
-                            measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
-                            self.oldx = locx
-                            self.oldy = locy
                 log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))
             elif excellon_optimization_type == 'B':
                 log.debug("Using OR-Tools Basic drill path optimization.")
-                for tool in tools:
-                    self.tool=tool
-                    self.postdata['toolC']=exobj.tools[tool]["C"]
+                if exobj.drills:
+                    for tool in tools:
+                        self.tool=tool
+                        self.postdata['toolC']=exobj.tools[tool]["C"]
 
-                    ################################################
-                    node_list = []
-                    locations = create_data_array()
-                    tsp_size = len(locations)
-                    num_routes = 1  # The number of routes, which is 1 in the TSP.
+                        ################################################
+                        node_list = []
+                        locations = create_data_array()
+                        tsp_size = len(locations)
+                        num_routes = 1  # The number of routes, which is 1 in the TSP.
 
-                    # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
-                    depot = 0
+                        # Nodes are indexed from 0 to tsp_size - 1. The depot is the starting node of the route.
+                        depot = 0
 
-                    # Create routing model.
-                    if tsp_size > 0:
-                        routing = pywrapcp.RoutingModel(tsp_size, num_routes, depot)
-                        search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
+                        # Create routing model.
+                        if tsp_size > 0:
+                            routing = pywrapcp.RoutingModel(tsp_size, num_routes, depot)
+                            search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
 
-                        # Callback to the distance function. The callback takes two
-                        # arguments (the from and to node indices) and returns the distance between them.
-                        dist_between_locations = CreateDistanceCallback()
-                        dist_callback = dist_between_locations.Distance
-                        routing.SetArcCostEvaluatorOfAllVehicles(dist_callback)
+                            # Callback to the distance function. The callback takes two
+                            # arguments (the from and to node indices) and returns the distance between them.
+                            dist_between_locations = CreateDistanceCallback()
+                            dist_callback = dist_between_locations.Distance
+                            routing.SetArcCostEvaluatorOfAllVehicles(dist_callback)
 
-                        # Solve, returns a solution if any.
-                        assignment = routing.SolveWithParameters(search_parameters)
+                            # Solve, returns a solution if any.
+                            assignment = routing.SolveWithParameters(search_parameters)
 
-                        if assignment:
-                            # Solution cost.
-                            log.info("Total distance: " + str(assignment.ObjectiveValue()))
+                            if assignment:
+                                # Solution cost.
+                                log.info("Total distance: " + str(assignment.ObjectiveValue()))
 
-                            # Inspect solution.
-                            # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
-                            route_number = 0
-                            node = routing.Start(route_number)
-                            start_node = node
+                                # Inspect solution.
+                                # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1.
+                                route_number = 0
+                                node = routing.Start(route_number)
+                                start_node = node
 
-                            while not routing.IsEnd(node):
-                                node_list.append(node)
-                                node = assignment.Value(routing.NextVar(node))
+                                while not routing.IsEnd(node):
+                                    node_list.append(node)
+                                    node = assignment.Value(routing.NextVar(node))
+                            else:
+                                log.warning('No solution found.')
                         else:
-                            log.warning('No solution found.')
-                    else:
-                        log.warning('Specify an instance greater than 0.')
-                    ################################################
+                            log.warning('Specify an instance greater than 0.')
+                        ################################################
+
+                        # Only if tool has points.
+                        if tool in points:
+                            # Tool change sequence (optional)
+                            if toolchange:
+                                gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
+                                gcode += self.doformat(p.spindle_code)  # Spindle start)
+                                if self.dwell is True:
+                                    gcode += self.doformat(p.dwell_code)  # Dwell time
+                            else:
+                                gcode += self.doformat(p.spindle_code)
+                                if self.dwell is True:
+                                    gcode += self.doformat(p.dwell_code)  # Dwell time
+
+                            # Drillling!
+                            for k in node_list:
+                                locx = locations[k][0]
+                                locy = locations[k][1]
+                                gcode += self.doformat(p.rapid_code, x=locx, y=locy)
+                                gcode += self.doformat(p.down_code, x=locx, y=locy)
+                                gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                gcode += self.doformat(p.lift_code, x=locx, y=locy)
+                                measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
+                                self.oldx = locx
+                                self.oldy = locy
+                else:
+                    log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
+                              "The loaded Excellon file has no drills ...")
+                    self.app.inform.emit('[ERROR_NOTCL]The loaded Excellon file has no drills ...')
+                    return 'fail'
+
+                log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" % str(measured_distance))
+            else:
+                self.app.inform.emit("[ERROR_NOTCL] Wrong optimization type selected.")
+                return 'fail'
+        else:
+            log.debug("Using Travelling Salesman drill path optimization.")
+            for tool in tools:
+                if exobj.drills:
+                    self.tool = tool
+                    self.postdata['toolC'] = exobj.tools[tool]["C"]
 
                     # Only if tool has points.
                     if tool in points:
                         # Tool change sequence (optional)
                         if toolchange:
-                            gcode += self.doformat(p.toolchange_code,toolchangexy=(self.oldx, self.oldy))
+                            gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
                             gcode += self.doformat(p.spindle_code)  # Spindle start)
                             if self.dwell is True:
                                 gcode += self.doformat(p.dwell_code)  # Dwell time
@@ -4812,52 +4867,23 @@ class CNCjob(Geometry):
                                 gcode += self.doformat(p.dwell_code)  # Dwell time
 
                         # Drillling!
-                        for k in node_list:
-                            locx = locations[k][0]
-                            locy = locations[k][1]
-                            gcode += self.doformat(p.rapid_code, x=locx, y=locy)
-                            gcode += self.doformat(p.down_code, x=locx, y=locy)
-                            gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
-                            gcode += self.doformat(p.lift_code, x=locx, y=locy)
-                            measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
-                            self.oldx = locx
-                            self.oldy = locy
-                log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" % str(measured_distance))
-            else:
-                self.app.inform.emit("[ERROR_NOTCL] Wrong optimization type selected.")
-                return
-        else:
-            log.debug("Using Travelling Salesman drill path optimization.")
-            for tool in tools:
-                self.tool = tool
-                self.postdata['toolC'] = exobj.tools[tool]["C"]
+                        altPoints = []
+                        for point in points[tool]:
+                            altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
 
-                # Only if tool has points.
-                if tool in points:
-                    # Tool change sequence (optional)
-                    if toolchange:
-                        gcode += self.doformat(p.toolchange_code, toolchangexy=(self.oldx, self.oldy))
-                        gcode += self.doformat(p.spindle_code)  # Spindle start)
-                        if self.dwell is True:
-                            gcode += self.doformat(p.dwell_code)  # Dwell time
+                        for point in self.optimized_travelling_salesman(altPoints):
+                            gcode += self.doformat(p.rapid_code, x=point[0], y=point[1])
+                            gcode += self.doformat(p.down_code, x=point[0], y=point[1])
+                            gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
+                            gcode += self.doformat(p.lift_code, x=point[0], y=point[1])
+                            measured_distance += abs(distance_euclidian(point[0], point[1], self.oldx, self.oldy))
+                            self.oldx = point[0]
+                            self.oldy = point[1]
                     else:
-                        gcode += self.doformat(p.spindle_code)
-                        if self.dwell is True:
-                            gcode += self.doformat(p.dwell_code)  # Dwell time
-
-                    # Drillling!
-                    altPoints = []
-                    for point in points[tool]:
-                        altPoints.append((point.coords.xy[0][0], point.coords.xy[1][0]))
-
-                    for point in self.optimized_travelling_salesman(altPoints):
-                        gcode += self.doformat(p.rapid_code, x=point[0], y=point[1])
-                        gcode += self.doformat(p.down_code, x=point[0], y=point[1])
-                        gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
-                        gcode += self.doformat(p.lift_code, x=point[0], y=point[1])
-                        measured_distance += abs(distance_euclidian(point[0], point[1], self.oldx, self.oldy))
-                        self.oldx = point[0]
-                        self.oldy = point[1]
+                        log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
+                                  "The loaded Excellon file has no drills ...")
+                        self.app.inform.emit('[ERROR_NOTCL]The loaded Excellon file has no drills ...')
+                        return 'fail'
             log.debug("The total travel distance with Travelling Salesman Algorithm is: %s" % str(measured_distance))
 
         gcode += self.doformat(p.spindle_stop_code)  # Spindle stop
@@ -4867,6 +4893,7 @@ class CNCjob(Geometry):
         log.debug("The total travel distance including travel to end position is: %s" %
                   str(measured_distance) + '\n')
         self.gcode = gcode
+        return 'OK'
 
     def generate_from_multitool_geometry(self, geometry, append=True,
                                          tooldia=None, offset=0.0, tolerance=0, z_cut=1.0, z_move=2.0,
@@ -4912,25 +4939,25 @@ class CNCjob(Geometry):
         flat_geometry = self.flatten(temp_solid_geometry, pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
 
-        self.tooldia = tooldia
-        self.z_cut = z_cut
-        self.z_move = z_move
+        self.tooldia = float(tooldia) if tooldia else None
+        self.z_cut = float(z_cut) if z_cut else None
+        self.z_move = float(z_move) if z_move else None
 
-        self.feedrate = feedrate
-        self.feedrate_z = feedrate_z
-        self.feedrate_rapid = feedrate_rapid
+        self.feedrate = float(feedrate) if feedrate else None
+        self.feedrate_z = float(feedrate_z) if feedrate_z else None
+        self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
 
-        self.spindlespeed = spindlespeed
+        self.spindlespeed = int(spindlespeed) if spindlespeed else None
         self.dwell = dwell
-        self.dwelltime = dwelltime
+        self.dwelltime = float(dwelltime) if dwelltime else None
 
-        self.startz = startz
-        self.endz = endz
+        self.startz = float(startz) if startz else None
+        self.endz = float(endz) if endz else None
 
-        self.depthpercut = depthpercut
+        self.depthpercut = float(depthpercut) if depthpercut else None
         self.multidepth = multidepth
 
-        self.toolchangez = toolchangez
+        self.toolchangez = float(toolchangez) if toolchangez else None
 
         try:
             if toolchangexy == '':
@@ -5093,14 +5120,57 @@ class CNCjob(Geometry):
                                  "from a Geometry object without solid_geometry.")
 
         temp_solid_geometry = []
+
+        def bounds_rec(obj):
+            if type(obj) is list:
+                minx = Inf
+                miny = Inf
+                maxx = -Inf
+                maxy = -Inf
+
+                for k in obj:
+                    if type(k) is dict:
+                        for key in k:
+                            minx_, miny_, maxx_, maxy_ = bounds_rec(k[key])
+                            minx = min(minx, minx_)
+                            miny = min(miny, miny_)
+                            maxx = max(maxx, maxx_)
+                            maxy = max(maxy, maxy_)
+                    else:
+                        minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                        minx = min(minx, minx_)
+                        miny = min(miny, miny_)
+                        maxx = max(maxx, maxx_)
+                        maxy = max(maxy, maxy_)
+                return minx, miny, maxx, maxy
+            else:
+                # it's a Shapely object, return it's bounds
+                return obj.bounds
+
         if offset != 0.0:
+            offset_for_use = offset
+
+            if offset <0:
+                a, b, c, d = bounds_rec(geometry.solid_geometry)
+                # if the offset is less than half of the total length or less than half of the total width of the
+                # solid geometry it's obvious we can't do the offset
+                if -offset > ((c - a) / 2) or -offset > ((d - b) / 2):
+                    self.app.inform.emit("[ERROR_NOTCL]The Tool Offset value is too negative to use "
+                                         "for the current_geometry.\n"
+                                         "Raise the value (in module) and try again.")
+                    return 'fail'
+                # hack: make offset smaller by 0.0000000001 which is insignificant difference but allow the job
+                # to continue
+                elif  -offset == ((c - a) / 2) or -offset == ((d - b) / 2):
+                    offset_for_use = offset - 0.0000000001
+
             for it in geometry.solid_geometry:
                 # if the geometry is a closed shape then create a Polygon out of it
                 if isinstance(it, LineString):
                     c = it.coords
                     if c[0] == c[-1]:
                         it = Polygon(it)
-                temp_solid_geometry.append(it.buffer(offset, join_style=2))
+                temp_solid_geometry.append(it.buffer(offset_for_use, join_style=2))
         else:
             temp_solid_geometry = geometry.solid_geometry
 
@@ -5108,25 +5178,33 @@ class CNCjob(Geometry):
         flat_geometry = self.flatten(temp_solid_geometry, pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
 
-        self.tooldia = tooldia
-        self.z_cut = z_cut
-        self.z_move = z_move
+        self.tooldia = float(tooldia) if tooldia else None
 
-        self.feedrate = feedrate
-        self.feedrate_z = feedrate_z
-        self.feedrate_rapid = feedrate_rapid
+        self.z_cut = float(z_cut) if z_cut else None
 
-        self.spindlespeed = spindlespeed
+        self.z_move = float(z_move) if z_move else None
+
+        self.feedrate = float(feedrate) if feedrate else None
+
+        self.feedrate_z = float(feedrate_z) if feedrate_z else None
+
+        self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
+
+        self.spindlespeed = int(spindlespeed) if spindlespeed else None
+
         self.dwell = dwell
-        self.dwelltime = dwelltime
 
-        self.startz = startz
-        self.endz = endz
+        self.dwelltime = float(dwelltime) if dwelltime else None
 
-        self.depthpercut = depthpercut
+        self.startz = float(startz) if startz else None
+
+        self.endz = float(endz) if endz else None
+
+        self.depthpercut = float(depthpercut) if depthpercut else None
+
         self.multidepth = multidepth
 
-        self.toolchangez = toolchangez
+        self.toolchangez = float(toolchangez) if toolchangez else None
 
         try:
             if toolchangexy == '':

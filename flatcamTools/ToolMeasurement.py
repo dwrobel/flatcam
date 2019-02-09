@@ -184,25 +184,22 @@ class Measurement(FlatCAMTool):
             # disconnect the mouse/key events from functions of measurement tool
             self.app.plotcanvas.vis_disconnect('mouse_move', self.on_mouse_move_meas)
             self.app.plotcanvas.vis_disconnect('mouse_press', self.on_click_meas)
-            self.app.plotcanvas.vis_disconnect('key_release', self.on_key_release_meas)
 
             # reconnect the mouse/key events to the functions from where the tool was called
             if self.app.call_source == 'app':
                 self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
                 self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
-                self.app.plotcanvas.vis_connect('key_press', self.app.on_key_over_plot)
+                self.app.plotcanvas.vis_connect('key_press', self.app.ui.keyPressEvent)
                 self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
             elif self.app.call_source == 'geo_editor':
                 self.app.geo_editor.canvas.vis_connect('mouse_move', self.app.geo_editor.on_canvas_move)
                 self.app.geo_editor.canvas.vis_connect('mouse_press', self.app.geo_editor.on_canvas_click)
                 self.app.geo_editor.canvas.vis_connect('key_press', self.app.geo_editor.on_canvas_key)
-                self.app.geo_editor.canvas.vis_connect('key_release', self.app.geo_editor.on_canvas_key_release)
                 self.app.geo_editor.canvas.vis_connect('mouse_release', self.app.geo_editor.on_canvas_click_release)
             elif self.app.call_source == 'exc_editor':
                 self.app.exc_editor.canvas.vis_connect('mouse_move', self.app.exc_editor.on_canvas_move)
                 self.app.exc_editor.canvas.vis_connect('mouse_press', self.app.exc_editor.on_canvas_click)
                 self.app.exc_editor.canvas.vis_connect('key_press', self.app.exc_editor.on_canvas_key)
-                self.app.exc_editor.canvas.vis_connect('key_release', self.app.exc_editor.on_canvas_key_release)
                 self.app.exc_editor.canvas.vis_connect('mouse_release', self.app.exc_editor.on_canvas_click_release)
 
             self.clicked_meas = 0
@@ -219,19 +216,17 @@ class Measurement(FlatCAMTool):
             if self.app.call_source == 'app':
                 self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
                 self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
-                self.app.plotcanvas.vis_disconnect('key_press', self.app.on_key_over_plot)
+                self.app.plotcanvas.vis_disconnect('key_press', self.app.ui.keyPressEvent)
                 self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
             elif self.app.call_source == 'geo_editor':
                 self.app.geo_editor.canvas.vis_disconnect('mouse_move', self.app.geo_editor.on_canvas_move)
                 self.app.geo_editor.canvas.vis_disconnect('mouse_press', self.app.geo_editor.on_canvas_click)
                 self.app.geo_editor.canvas.vis_disconnect('key_press', self.app.geo_editor.on_canvas_key)
-                self.app.geo_editor.canvas.vis_disconnect('key_release', self.app.geo_editor.on_canvas_key_release)
                 self.app.geo_editor.canvas.vis_disconnect('mouse_release', self.app.geo_editor.on_canvas_click_release)
             elif self.app.call_source == 'exc_editor':
                 self.app.exc_editor.canvas.vis_disconnect('mouse_move', self.app.exc_editor.on_canvas_move)
                 self.app.exc_editor.canvas.vis_disconnect('mouse_press', self.app.exc_editor.on_canvas_click)
                 self.app.exc_editor.canvas.vis_disconnect('key_press', self.app.exc_editor.on_canvas_key)
-                self.app.exc_editor.canvas.vis_disconnect('key_release', self.app.exc_editor.on_canvas_key_release)
                 self.app.exc_editor.canvas.vis_disconnect('mouse_release', self.app.exc_editor.on_canvas_click_release)
 
             # we can safely connect the app mouse events to the measurement tool

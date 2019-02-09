@@ -6,7 +6,6 @@ from FlatCAMApp import App
 from multiprocessing import freeze_support
 import VisPyPatches
 
-
 if sys.platform == "win32":
     # cx_freeze 'module win32' workaround
     import OpenGL.platform.win32
@@ -34,5 +33,6 @@ if __name__ == '__main__':
 
     app = QtWidgets.QApplication(sys.argv)
     fc = App()
+
     sys.exit(app.exec_())
 

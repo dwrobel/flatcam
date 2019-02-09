@@ -47,7 +47,7 @@ class ToolMove(FlatCAMTool):
             self.app.plotcanvas.vis_disconnect('mouse_move', self.on_move)
             self.app.plotcanvas.vis_disconnect('mouse_press', self.on_left_click)
             self.app.plotcanvas.vis_disconnect('key_release', self.on_key_press)
-            self.app.plotcanvas.vis_connect('key_press', self.app.on_key_over_plot)
+            self.app.plotcanvas.vis_connect('key_press', self.app.ui.keyPressEvent)
 
             self.clicked_move = 0
 
@@ -139,12 +139,13 @@ class ToolMove(FlatCAMTool):
                         proc.done()
                         # delete the selection bounding box
                         self.delete_shape()
+                        self.app.inform.emit('[success]%s object was moved ...' %
+                                             str(sel_obj.kind).capitalize())
 
                     self.app.worker_task.emit({'fcn': job_move, 'params': [self]})
 
                     self.clicked_move = 0
                     self.toggle()
-                    self.app.inform.emit("[success]Object was moved ...")
                     return
 
                 except TypeError:

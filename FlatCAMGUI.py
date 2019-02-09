@@ -10,6 +10,9 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
 from GUIElements import *
 import platform
+import webbrowser
+
+from FlatCAMEditor import FCShapeTool
 
 
 class FlatCAMGUI(QtWidgets.QMainWindow):
@@ -272,7 +275,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon('share/plot32.png'), "&Toggle Plot Area\tCTRL+F10")
 
         self.menuview.addSeparator()
-        self.menuview_toggle_grid = self.menuview.addAction(QtGui.QIcon('share/grid32.png'), "&Toggle Grid\tG")
+        self.menuview_toggle_grid = self.menuview.addAction(QtGui.QIcon('share/grid32.png'), "&Toggle Grid Snap\tG")
         self.menuview_toggle_axis = self.menuview.addAction(QtGui.QIcon('share/axis32.png'), "&Toggle Axis\tSHIFT+G")
         self.menuview_toggle_workspace = self.menuview.addAction(QtGui.QIcon('share/workspace24.png'),
                                                                  "Toggle Workspace\tSHIFT+W")
@@ -285,12 +288,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Help ###
         self.menuhelp = self.menu.addMenu('&Help')
-        self.menuhelp_about = self.menuhelp.addAction(QtGui.QIcon('share/tv16.png'), 'About FlatCAM')
-        self.menuhelp_home = self.menuhelp.addAction(QtGui.QIcon('share/home16.png'), 'Home')
-        self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), 'Manual\tF1')
+        self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), 'Help\tF1')
+        self.menuhelp_home = self.menuhelp.addAction(QtGui.QIcon('share/home16.png'), 'FlatCAM.org')
         self.menuhelp.addSeparator()
-        self.menuhelp_shortcut_list = self.menuhelp.addAction(QtGui.QIcon('share/shortcuts24.png'), 'Shortcuts List\t`')
-        self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/videohelp24.png'), 'See on YouTube\tF2')
+        self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/youtube32.png'), 'YouTube Channel\tF2')
+        self.menuhelp_shortcut_list = self.menuhelp.addAction(QtGui.QIcon('share/shortcuts24.png'), 'Shortcuts List\tF3')
+        self.menuhelp_about = self.menuhelp.addAction(QtGui.QIcon('share/about32.png'), 'About')
 
 
         ### FlatCAM Editor menu ###
@@ -434,11 +437,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.snap_toolbar.setObjectName('Snap_TB')
 
         settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("theme"):
-            theme = settings.value('theme', type=str)
-            if theme == 'standard':
+        if settings.contains("layout"):
+            layout = settings.value('layout', type=str)
+            if layout == 'standard':
                 self.addToolBar(self.snap_toolbar)
-            elif theme == 'compact':
+            elif layout == 'compact':
                 self.snap_toolbar.setMaximumHeight(30)
                 self.splitter_left.addWidget(self.snap_toolbar)
         else:
@@ -560,6 +563,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Project ###
         self.project_tab = QtWidgets.QWidget()
+        self.project_tab.setObjectName("project_tab")
         # project_tab.setMinimumWidth(250)  # Hack
         self.project_tab_layout = QtWidgets.QVBoxLayout(self.project_tab)
         self.project_tab_layout.setContentsMargins(2, 2, 2, 2)
@@ -567,6 +571,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Selected ###
         self.selected_tab = QtWidgets.QWidget()
+        self.selected_tab.setObjectName("selected_tab")
         self.selected_tab_layout = QtWidgets.QVBoxLayout(self.selected_tab)
         self.selected_tab_layout.setContentsMargins(2, 2, 2, 2)
         self.selected_scroll_area = VerticalScrollArea()
@@ -575,6 +580,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Tool ###
         self.tool_tab = QtWidgets.QWidget()
+        self.tool_tab.setObjectName("tool_tab")
         self.tool_tab_layout = QtWidgets.QVBoxLayout(self.tool_tab)
         self.tool_tab_layout.setContentsMargins(2, 2, 2, 2)
         self.notebook.addTab(self.tool_tab, "Tool")
@@ -638,7 +644,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.options_combo.setVisible(False)
         self.hlay1.addStretch()
 
-        self.general_scroll_area = VerticalScrollArea()
+        self.general_scroll_area = QtWidgets.QScrollArea()
         self.general_tab_lay.addWidget(self.general_scroll_area)
 
         self.gerber_tab = QtWidgets.QWidget()
@@ -647,7 +653,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.gerber_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.gerber_tab.setLayout(self.gerber_tab_lay)
 
-        self.gerber_scroll_area = VerticalScrollArea()
+        self.gerber_scroll_area = QtWidgets.QScrollArea()
         self.gerber_tab_lay.addWidget(self.gerber_scroll_area)
 
         self.excellon_tab = QtWidgets.QWidget()
@@ -656,7 +662,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.excellon_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.excellon_tab.setLayout(self.excellon_tab_lay)
 
-        self.excellon_scroll_area = VerticalScrollArea()
+        self.excellon_scroll_area = QtWidgets.QScrollArea()
         self.excellon_tab_lay.addWidget(self.excellon_scroll_area)
 
         self.geometry_tab = QtWidgets.QWidget()
@@ -665,7 +671,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geometry_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.geometry_tab.setLayout(self.geometry_tab_lay)
 
-        self.geometry_scroll_area = VerticalScrollArea()
+        self.geometry_scroll_area = QtWidgets.QScrollArea()
         self.geometry_tab_lay.addWidget(self.geometry_scroll_area)
 
         self.cncjob_tab = QtWidgets.QWidget()
@@ -674,7 +680,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.cncjob_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.cncjob_tab.setLayout(self.cncjob_tab_lay)
 
-        self.cncjob_scroll_area = VerticalScrollArea()
+        self.cncjob_scroll_area = QtWidgets.QScrollArea()
         self.cncjob_tab_lay.addWidget(self.cncjob_scroll_area)
 
         self.tools_tab = QtWidgets.QWidget()
@@ -683,7 +689,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.tools_tab_lay.setContentsMargins(2, 2, 2, 2)
         self.tools_tab.setLayout(self.tools_tab_lay)
 
-        self.tools_scroll_area = VerticalScrollArea()
+        self.tools_scroll_area = QtWidgets.QScrollArea()
         self.tools_tab_lay.addWidget(self.tools_scroll_area)
 
         self.pref_tab_bottom_layout = QtWidgets.QHBoxLayout()
@@ -756,7 +762,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
 	<tbody>
 		<tr height="20">
-			<td height="20" width="89"><strong>~</strong></td>
+			<td height="20" width="89"><strong>F3</strong></td>
 			<td width="194"><span style="color:#006400"><strong>&nbsp;SHOW SHORTCUT LIST</strong></span></td>
 		</tr>
 		<tr height="20">
@@ -822,6 +828,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 		<tr height="20">
 			<td height="20"><strong>S</strong></td>
 			<td>&nbsp;Shell Toggle</td>
+		</tr>
+        <tr height="20">
+			<td height="20"><strong>T</strong></td>
+			<td>&nbsp;Add a Tool (when in Geometry Selected Tab or in Tools NCC or Tools Paint)</td>
 		</tr>
 		<tr height="20">
 			<td height="20"><strong>V</strong></td>
@@ -945,7 +955,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 		</tr>
 		<tr height="20">
 			<td height="20"><strong>ALT+R</strong></td>
-			<td>&nbsp;Transformation Tool</td>
+			<td>&nbsp;Transformations Tool</td>
 		</tr>
 		<tr height="20">
 			<td height="20"><strong>ALT+U</strong></td>
@@ -984,8 +994,16 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 			<td>&nbsp;Delete Obj</td>
 		</tr>
         <tr height="20">
+			<td height="20"><strong>'`'</strong></td>
+			<td>&nbsp;(left to Key_1)Toogle Notebook Area (Left Side)</td>
+		</tr>
+        <tr height="20">
 			<td height="20"><strong>SPACE</strong></td>
 			<td>&nbsp;En(Dis)able Obj Plot</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>Escape</strong></td>
+			<td>&nbsp;Deselects all objects</td>
 		</tr>
 	</tbody>
 </table>
@@ -1120,6 +1138,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 			<td height="20"><strong>R</strong></td>
 			<td>&nbsp;Resize Drill(s)</td>
 		</tr>
+        <tr height="20">
+			<td height="20"><strong>T</strong></td>
+			<td>&nbsp;Add a new Tool</td>
+		</tr>
 		<tr height="20">
 			<td height="20">&nbsp;</td>
 			<td>&nbsp;</td>
@@ -1155,6 +1177,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         ##############################################################
         self.popMenu = QtWidgets.QMenu()
 
+        self.popmenu_disable = self.popMenu.addAction(QtGui.QIcon('share/clear_plot32.png'), "Disable")
+        self.popMenu.addSeparator()
         self.cmenu_newmenu = self.popMenu.addMenu(QtGui.QIcon('share/file32.png'), "New")
         self.popmenu_new_geo = self.cmenu_newmenu.addAction(QtGui.QIcon('share/new_geo32_bis.png'), "Geo Obj")
         self.popmenu_new_exc = self.cmenu_newmenu.addAction(QtGui.QIcon('share/new_exc32.png'), "Exc. Obj")
@@ -1335,9 +1359,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             self.restoreState(saved_gui_state)
             log.debug("FlatCAMGUI.__init__() --> UI state restored.")
 
-        if settings.contains("theme"):
-            theme = settings.value('theme', type=str)
-            if theme == 'standard':
+        if settings.contains("layout"):
+            layout = settings.value('layout', type=str)
+            if layout == 'standard':
                 self.exc_edit_toolbar.setVisible(False)
                 self.exc_edit_toolbar.setDisabled(True)
                 self.geo_edit_toolbar.setVisible(False)
@@ -1345,7 +1369,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 self.corner_snap_btn.setVisible(False)
                 self.snap_magnet.setVisible(False)
-            elif theme == 'compact':
+            elif layout == 'compact':
                 self.exc_edit_toolbar.setDisabled(True)
                 self.geo_edit_toolbar.setDisabled(True)
                 self.snap_magnet.setVisible(True)
@@ -1476,9 +1500,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grid_snap_btn.trigger()
 
         settings = QSettings("Open Source", "FlatCAM")
-        if settings.contains("theme"):
-            theme = settings.value('theme', type=str)
-            if theme == 'standard':
+        if settings.contains("layout"):
+            layout = settings.value('layout', type=str)
+            if layout == 'standard':
                 self.exc_edit_toolbar.setVisible(False)
                 self.exc_edit_toolbar.setDisabled(True)
                 self.geo_edit_toolbar.setVisible(False)
@@ -1486,7 +1510,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 self.corner_snap_btn.setVisible(False)
                 self.snap_magnet.setVisible(False)
-            elif theme == 'compact':
+            elif layout == 'compact':
                 self.exc_edit_toolbar.setVisible(True)
                 self.exc_edit_toolbar.setDisabled(True)
                 self.geo_edit_toolbar.setVisible(True)
@@ -1498,22 +1522,695 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 self.snap_magnet.setDisabled(True)
 
     def keyPressEvent(self, event):
+        modifiers = QtWidgets.QApplication.keyboardModifiers()
+        active = self.app.collection.get_active()
+        selected = self.app.collection.get_selected()
 
-        if event.key() == QtCore.Qt.Key_1:
-            self.app.on_select_tab('project')
+        # events out of the self.app.collection view (it's about Project Tab) are of type int
+        if type(event) is int:
+            key = event
+        # events from the GUI are of type QKeyEvent
+        elif type(event) == QtGui.QKeyEvent:
+            key = event.key()
+        # events from Vispy are of type KeyEvent
+        else:
+            key = event.key
+        if self.app.call_source == 'app':
+            if modifiers == QtCore.Qt.ControlModifier:
+                if key == QtCore.Qt.Key_A:
+                    self.app.on_selectall()
 
-        if event.key() == QtCore.Qt.Key_2:
-            self.app.on_select_tab('selected')
+                if key == QtCore.Qt.Key_C:
+                    self.app.on_copy_object()
 
-        if event.key() == QtCore.Qt.Key_3:
-            self.app.on_select_tab('tool')
+                if key == QtCore.Qt.Key_E:
+                    self.app.on_fileopenexcellon()
 
-        # Show shortcut list
-        if event.key() == QtCore.Qt.Key_Ampersand:
-            self.app.on_shortcut_list()
+                if key == QtCore.Qt.Key_G:
+                    self.app.on_fileopengerber()
 
-        if event.key() == QtCore.Qt.Key_QuoteLeft:
-            self.app.on_shortcut_list()
+                if key == QtCore.Qt.Key_N:
+                    self.app.on_file_new_click()
+
+                if key == QtCore.Qt.Key_M:
+                    self.app.measurement_tool.run()
+
+                if key == QtCore.Qt.Key_O:
+                    self.app.on_file_openproject()
+
+                if key == QtCore.Qt.Key_S:
+                    self.app.on_file_saveproject()
+
+                # Toggle Plot Area
+                if key == QtCore.Qt.Key_F10 or key == 'F10':
+                    self.app.on_toggle_plotarea()
+
+                return
+            elif modifiers == QtCore.Qt.ShiftModifier:
+
+                # Copy Object Name
+                # Copy Object Name
+                if key == QtCore.Qt.Key_C:
+                    self.app.on_copy_name()
+
+                # Toggle axis
+                if key == QtCore.Qt.Key_G:
+                    if self.app.toggle_axis is False:
+                        self.app.plotcanvas.v_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
+                        self.app.plotcanvas.h_line.set_data(color=(0.70, 0.3, 0.3, 1.0))
+                        self.app.plotcanvas.redraw()
+                        self.app.toggle_axis = True
+                    else:
+                        self.app.plotcanvas.v_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
+
+                        self.app.plotcanvas.h_line.set_data(color=(0.0, 0.0, 0.0, 0.0))
+                        self.app.plotcanvas.redraw()
+                        self.app.toggle_axis = False
+
+                # Open Preferences Window
+                if key == QtCore.Qt.Key_P:
+                    self.app.on_preferences()
+                    return
+
+                # Rotate Object by 90 degree CCW
+                if key == QtCore.Qt.Key_R:
+                    self.app.on_rotate(silent=True, preset=-90)
+                    return
+
+                # Run a Script
+                if key == QtCore.Qt.Key_S:
+                    self.app.on_filerunscript()
+                    return
+
+                # Toggle Workspace
+                if key == QtCore.Qt.Key_W:
+                    self.app.on_workspace_menu()
+                    return
+
+                # Skew on X axis
+                if key == QtCore.Qt.Key_X:
+                    self.app.on_skewx()
+                    return
+
+                # Skew on Y axis
+                if key == QtCore.Qt.Key_Y:
+                    self.app.on_skewy()
+                    return
+
+            elif modifiers == QtCore.Qt.AltModifier:
+                # Eanble all plots
+                if key == Qt.Key_1:
+                    self.app.enable_all_plots()
+
+                # Disable all plots
+                if key == Qt.Key_2:
+                    self.app.disable_all_plots()
+
+                # Disable all other plots
+                if key == Qt.Key_3:
+                    self.app.disable_other_plots()
+
+                # Calculator Tool
+                if key == QtCore.Qt.Key_C:
+                    self.app.calculator_tool.run()
+
+                # 2-Sided PCB Tool
+                if key == QtCore.Qt.Key_D:
+                    self.app.dblsidedtool.run()
+                    return
+
+                # Film Tool
+                if key == QtCore.Qt.Key_L:
+                    self.app.film_tool.run()
+                    return
+
+                # Non-Copper Clear Tool
+                if key == QtCore.Qt.Key_N:
+                    self.app.ncclear_tool.run()
+                    return
+
+                # Paint Tool
+                if key == QtCore.Qt.Key_P:
+                    self.app.paint_tool.run()
+                    return
+
+                # Transformation Tool
+                if key == QtCore.Qt.Key_R:
+                    self.app.transform_tool.run()
+                    return
+
+                # Cutout Tool
+                if key == QtCore.Qt.Key_U:
+                    self.app.cutout_tool.run()
+                    return
+
+                # Panelize Tool
+                if key == QtCore.Qt.Key_Z:
+                    self.app.panelize_tool.run()
+                    return
+
+                # Toggle Fullscreen
+                if key == QtCore.Qt.Key_F10 or key == 'F10':
+                    self.app.on_fullscreen()
+                    return
+            else:
+                # Open Manual
+                if key == QtCore.Qt.Key_F1 or key == 'F1':
+                    webbrowser.open(self.app.manual_url)
+
+                # Open Video Help
+                if key == QtCore.Qt.Key_F2 or key == 'F2':
+                    webbrowser.open(self.app.video_url)
+
+                # Show shortcut list
+                if key == QtCore.Qt.Key_F3 or key == 'F3':
+                    self.app.on_shortcut_list()
+
+                # Switch to Project Tab
+                if key == QtCore.Qt.Key_1:
+                    self.app.on_select_tab('project')
+
+                # Switch to Selected Tab
+                if key == QtCore.Qt.Key_2:
+                    self.app.on_select_tab('selected')
+
+                # Switch to Tool Tab
+                if key == QtCore.Qt.Key_3:
+                    self.app.on_select_tab('tool')
+
+                # Delete
+                if key == QtCore.Qt.Key_Delete or key == 'Delete':
+                    if active:
+                        # Delete via the application to
+                        # ensure cleanup of the GUI
+                        active.app.on_delete()
+
+                # Escape = Deselect All
+                if key == QtCore.Qt.Key_Escape or key == 'Escape':
+                    self.app.on_deselect_all()
+                    self.app.inform.emit("")
+
+                # Space = Toggle Active/Inactive
+                if key == QtCore.Qt.Key_Space:
+                    for select in selected:
+                        select.ui.plot_cb.toggle()
+                    self.app.delete_selection_shape()
+
+                # Copy Object Name
+                if key == QtCore.Qt.Key_E:
+                    self.app.object2editor()
+
+                # Grid toggle
+                if key == QtCore.Qt.Key_G:
+                    self.app.ui.grid_snap_btn.trigger()
+
+                # Jump to coords
+                if key == QtCore.Qt.Key_J:
+                    self.app.on_jump_to()
+
+                # New Excellon
+                if key == QtCore.Qt.Key_L:
+                    self.app.new_excellon_object()
+
+                # Move tool toggle
+                if key == QtCore.Qt.Key_M:
+                    self.app.move_tool.toggle()
+
+                # New Geometry
+                if key == QtCore.Qt.Key_N:
+                    self.app.new_geometry_object()
+
+                # Set Origin
+                if key == QtCore.Qt.Key_O:
+                    self.app.on_set_origin()
+                    return
+
+                # Set Origin
+                if key == QtCore.Qt.Key_P:
+                    self.app.properties_tool.run()
+                    return
+
+                # Change Units
+                if key == QtCore.Qt.Key_Q:
+                    if self.app.options["units"] == 'MM':
+                        self.app.general_options_form.general_app_group.units_radio.set_value("IN")
+                    else:
+                        self.app.general_options_form.general_app_group.units_radio.set_value("MM")
+                    self.app.on_toggle_units()
+
+                # Rotate Object by 90 degree CW
+                if key == QtCore.Qt.Key_R:
+                    self.app.on_rotate(silent=True, preset=90)
+
+                # Shell toggle
+                if key == QtCore.Qt.Key_S:
+                    self.app.on_toggle_shell()
+
+                # Add a Tool from shortcut
+                if key == QtCore.Qt.Key_T:
+                    self.app.on_skey_tool_add()
+
+                # Zoom Fit
+                if key == QtCore.Qt.Key_V:
+                    self.app.on_zoom_fit(None)
+
+                # Mirror on X the selected object(s)
+                if key == QtCore.Qt.Key_X:
+                    self.app.on_flipx()
+
+                # Mirror on Y the selected object(s)
+                if key == QtCore.Qt.Key_Y:
+                    self.app.on_flipy()
+
+                # Zoom In
+                if key == QtCore.Qt.Key_Equal:
+                    self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'], self.app.mouse)
+
+                # Zoom Out
+                if key == QtCore.Qt.Key_Minus:
+                    self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'], self.app.mouse)
+
+                # toggle display of Notebook area
+                if key == QtCore.Qt.Key_QuoteLeft:
+                    self.app.on_toggle_notebook()
+
+                return
+        elif self.app.call_source == 'geo_editor':
+            if modifiers == QtCore.Qt.ControlModifier:
+                # save (update) the current geometry and return to the App
+                if key == QtCore.Qt.Key_S or key == 'S':
+                    self.app.editor2object()
+                    return
+
+                # toggle the measurement tool
+                if key == QtCore.Qt.Key_M or key == 'M':
+                    self.app.measurement_tool.run()
+                    return
+
+            elif modifiers == QtCore.Qt.ShiftModifier:
+                pass
+            elif modifiers == QtCore.Qt.AltModifier:
+                pass
+            else:
+                # toggle display of Notebook area
+                if key == QtCore.Qt.Key_QuoteLeft or key == '`':
+                    self.app.on_toggle_notebook()
+
+                # Finish the current action. Use with tools that do not
+                # complete automatically, like a polygon or path.
+                if key == QtCore.Qt.Key_Enter or key == 'Enter':
+                    if isinstance(self.app.geo_editor.active_tool, FCShapeTool):
+                        if self.app.geo_editor.active_tool.name == 'fc_rotate':
+                            self.app.geo_editor.active_tool.make()
+
+                            if self.app.geo_editor.active_tool.complete:
+                                self.app.geo_editor.on_shape_complete()
+                                self.app.inform.emit("[success]Done.")
+                            # automatically make the selection tool active after completing current action
+                            self.app.geo_editor.select_tool('select')
+                            return
+                        else:
+                            self.app.geo_editor.active_tool.click(
+                                self.app.geo_editor.snap(self.app.geo_editor.x, self.app.geo_editor.y))
+
+                            self.app.geo_editor.active_tool.make()
+
+                            if self.app.geo_editor.active_tool.complete:
+                                self.app.geo_editor.on_shape_complete()
+                                self.app.inform.emit("[success]Done.")
+                            # automatically make the selection tool active after completing current action
+                            self.app.geo_editor.select_tool('select')
+
+                # Abort the current action
+                if key == QtCore.Qt.Key_Escape or key == 'Escape':
+                    # TODO: ...?
+                    # self.on_tool_select("select")
+                    self.app.inform.emit("[WARNING_NOTCL]Cancelled.")
+
+                    self.app.geo_editor.delete_utility_geometry()
+                    self.app.geo_editor.replot()
+                    # self.select_btn.setChecked(True)
+                    # self.on_tool_select('select')
+                    self.app.geo_editor.select_tool('select')
+                    return
+
+                # Delete selected object
+                if key == QtCore.Qt.Key_Delete or key == 'Delete':
+                    self.app.geo_editor.delete_selected()
+                    self.app.geo_editor.replot()
+
+                # Move
+                if key == QtCore.Qt.Key_Space or key == 'Space':
+                    self.app.ui.geo_rotate_btn.setChecked(True)
+                    self.app.geo_editor.on_tool_select('rotate')
+                    self.app.geo_editor.active_tool.set_origin(
+                        self.app.geo_editor.snap(self.app.geo_editor.x, self.app.geo_editor.y))
+
+                if key == QtCore.Qt.Key_Minus or key == '-':
+                    self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'],
+                                             [self.app.geo_editor.snap_x, self.app.geo_editor.snap_y])
+
+                if key == QtCore.Qt.Key_Equal or key == '=':
+                    self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'],
+                                             [self.app.geo_editor.snap_x, self.app.geo_editor.snap_y])
+
+                # Switch to Project Tab
+                if key == QtCore.Qt.Key_1 or key == '1':
+                    self.app.on_select_tab('project')
+
+                # Switch to Selected Tab
+                if key == QtCore.Qt.Key_2 or key == '2':
+                    self.app.on_select_tab('selected')
+
+                # Switch to Tool Tab
+                if key == QtCore.Qt.Key_3 or key == '3':
+                    self.app.on_select_tab('tool')
+
+                # Arc Tool
+                if key == QtCore.Qt.Key_A or key == 'A':
+                    self.app.geo_editor.select_tool('arc')
+
+                # Buffer
+                if key == QtCore.Qt.Key_B or key == 'B':
+                    self.app.geo_editor.select_tool('buffer')
+
+                # Copy
+                if key == QtCore.Qt.Key_C or key == 'C':
+                    self.app.ui.geo_copy_btn.setChecked(True)
+                    self.app.geo_editor.on_tool_select('copy')
+                    self.app.geo_editor.active_tool.set_origin(self.app.geo_editor.snap(
+                        self.app.geo_editor.x, self.app.geo_editor.y))
+                    self.app.inform.emit("Click on target point.")
+
+                # Substract Tool
+                if key == QtCore.Qt.Key_E or key == 'E':
+                    if self.app.geo_editor.get_selected() is not None:
+                        self.app.geo_editor.intersection()
+                    else:
+                        msg = "Please select geometry items \n" \
+                              "on which to perform Intersection Tool."
+
+                        messagebox = QtWidgets.QMessageBox()
+                        messagebox.setText(msg)
+                        messagebox.setWindowTitle("Warning")
+                        messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                        messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                        messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                        messagebox.exec_()
+
+                # Grid Snap
+                if key == QtCore.Qt.Key_G or key == 'G':
+                    self.app.ui.grid_snap_btn.trigger()
+
+                    # make sure that the cursor shape is enabled/disabled, too
+                    if self.app.geo_editor.options['grid_snap'] is True:
+                        self.app.app_cursor.enabled = True
+                    else:
+                        self.app.app_cursor.enabled = False
+
+                # Paint
+                if key == QtCore.Qt.Key_I or key == 'I':
+                    self.app.geo_editor.select_tool('paint')
+
+                # Corner Snap
+                if key == QtCore.Qt.Key_K or key == 'K':
+                    self.app.geo_editor.on_corner_snap()
+
+                # Move
+                if key == QtCore.Qt.Key_M or key == 'M':
+                    self.app.geo_editor.on_move_click()
+
+                # Polygon Tool
+                if key == QtCore.Qt.Key_N or key == 'N':
+                    self.app.geo_editor.select_tool('polygon')
+
+                # Circle Tool
+                if key == QtCore.Qt.Key_O or key == 'O':
+                    self.app.geo_editor.select_tool('circle')
+
+                # Path Tool
+                if key == QtCore.Qt.Key_P or key == 'P':
+                    self.app.geo_editor.select_tool('path')
+
+                # Rectangle Tool
+                if key == QtCore.Qt.Key_R or key == 'R':
+                    self.app.geo_editor.select_tool('rectangle')
+
+                # Substract Tool
+                if key == QtCore.Qt.Key_S or key == 'S':
+                    if self.app.geo_editor.get_selected() is not None:
+                        self.app.geo_editor.subtract()
+                    else:
+                        msg = "Please select geometry items \n" \
+                              "on which to perform Substraction Tool."
+
+                        messagebox = QtWidgets.QMessageBox()
+                        messagebox.setText(msg)
+                        messagebox.setWindowTitle("Warning")
+                        messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                        messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                        messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                        messagebox.exec_()
+
+                # Add Text Tool
+                if key == QtCore.Qt.Key_T or key == 'T':
+                    self.app.geo_editor.select_tool('text')
+
+                # Substract Tool
+                if key == QtCore.Qt.Key_U or key == 'U':
+                    if self.app.geo_editor.get_selected() is not None:
+                        self.app.geo_editor.union()
+                    else:
+                        msg = "Please select geometry items \n" \
+                              "on which to perform union."
+
+                        messagebox = QtWidgets.QMessageBox()
+                        messagebox.setText(msg)
+                        messagebox.setWindowTitle("Warning")
+                        messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                        messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                        messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                        messagebox.exec_()
+
+                if key == QtCore.Qt.Key_V or key == 'V':
+                    self.app.on_zoom_fit(None)
+
+                # Cut Action Tool
+                if key == QtCore.Qt.Key_X or key == 'X':
+                    if self.app.geo_editor.get_selected() is not None:
+                        self.app.geo_editor.cutpath()
+                    else:
+                        msg = 'Please first select a geometry item to be cutted\n' \
+                              'then select the geometry item that will be cutted\n' \
+                              'out of the first item. In the end press ~X~ key or\n' \
+                              'the toolbar button.' \
+
+                        messagebox = QtWidgets.QMessageBox()
+                        messagebox.setText(msg)
+                        messagebox.setWindowTitle("Warning")
+                        messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                        messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                        messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                        messagebox.exec_()
+
+                # Propagate to tool
+                response = None
+                if self.app.geo_editor.active_tool is not None:
+                    response = self.app.geo_editor.active_tool.on_key(key=key)
+                if response is not None:
+                    self.app.inform.emit(response)
+
+                # Show Shortcut list
+                if key == 'F3':
+                    self.app.on_shortcut_list()
+
+        elif self.app.call_source == 'exc_editor':
+            if modifiers == QtCore.Qt.ControlModifier:
+                # save (update) the current geometry and return to the App
+                if key == QtCore.Qt.Key_S or key == 'S':
+                    self.app.editor2object()
+                    return
+
+                # toggle the measurement tool
+                if key == QtCore.Qt.Key_M or key == 'M':
+                    self.app.measurement_tool.run()
+                    return
+
+            elif modifiers == QtCore.Qt.ShiftModifier:
+                pass
+            elif modifiers == QtCore.Qt.AltModifier:
+                pass
+            else:
+                # Abort the current action
+                if key == QtCore.Qt.Key_Escape or key == 'Escape':
+                    # TODO: ...?
+                    # self.on_tool_select("select")
+                    self.app.inform.emit("[WARNING_NOTCL]Cancelled.")
+
+                    self.app.exc_editor.delete_utility_geometry()
+
+                    self.app.exc_editor.replot()
+                    # self.select_btn.setChecked(True)
+                    # self.on_tool_select('select')
+                    self.app.exc_editor.select_tool('select')
+                    return
+
+                # Delete selected object
+                if key == QtCore.Qt.Key_Delete or key == 'Delete':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    if self.app.exc_editor.selected:
+                        self.app.exc_editor.delete_selected()
+                        self.app.exc_editor.replot()
+                    else:
+                        self.app.inform.emit("[WARNING_NOTCL]Cancelled. Nothing selected to delete.")
+                    return
+
+                if key == QtCore.Qt.Key_Minus or key == '-':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'],
+                                             [self.app.exc_editor.snap_x, self.app.exc_editor.snap_y])
+                    return
+
+                if key == QtCore.Qt.Key_Equal or key == '=':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'],
+                                             [self.app.exc_editor.snap_x, self.app.exc_editor.snap_y])
+                    return
+
+                # toggle display of Notebook area
+                if key == QtCore.Qt.Key_QuoteLeft or key == '`':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    self.app.on_toggle_notebook()
+                    return
+
+                # Switch to Project Tab
+                if key == QtCore.Qt.Key_1 or key == '1':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    self.app.on_select_tab('project')
+                    return
+
+                # Switch to Selected Tab
+                if key == QtCore.Qt.Key_2 or key == '2':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    self.app.on_select_tab('selected')
+                    return
+
+                # Switch to Tool Tab
+                if key == QtCore.Qt.Key_3 or key == '3':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    self.app.on_select_tab('tool')
+                    return
+
+                # Add Array of Drill Hole Tool
+                if key == QtCore.Qt.Key_A or key == 'A':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    self.app.inform.emit("Click on target point.")
+                    self.app.ui.add_drill_array_btn.setChecked(True)
+
+                    self.app.exc_editor.x = self.app.mouse[0]
+                    self.app.exc_editor.y = self.app.mouse[1]
+
+                    self.app.exc_editor.select_tool('add_array')
+                    return
+
+                # Copy
+                if key == QtCore.Qt.Key_C or key == 'C':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    if self.app.exc_editor.selected:
+                        self.app.inform.emit("Click on target point.")
+                        self.app.ui.copy_drill_btn.setChecked(True)
+                        self.app.exc_editor.on_tool_select('copy')
+                        self.app.exc_editor.active_tool.set_origin(
+                            (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
+                    else:
+                        self.app.inform.emit("[WARNING_NOTCL]Cancelled. Nothing selected to copy.")
+                    return
+
+                # Add Drill Hole Tool
+                if key == QtCore.Qt.Key_D or key == 'D':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    self.app.inform.emit("Click on target point.")
+                    self.app.ui.add_drill_btn.setChecked(True)
+
+                    self.app.exc_editor.x = self.app.mouse[0]
+                    self.app.exc_editor.y = self.app.mouse[1]
+
+                    self.app.exc_editor.select_tool('add')
+                    return
+
+                # Grid Snap
+                if key == QtCore.Qt.Key_G or key == 'G':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    # make sure that the cursor shape is enabled/disabled, too
+                    if self.app.exc_editor.options['grid_snap'] is True:
+                        self.app.app_cursor.enabled = False
+                    else:
+                        self.app.app_cursor.enabled = True
+                    self.app.ui.grid_snap_btn.trigger()
+                    return
+
+                # Corner Snap
+                if key == QtCore.Qt.Key_K or key == 'K':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    self.app.ui.corner_snap_btn.trigger()
+                    return
+
+                # Move
+                if key == QtCore.Qt.Key_M or key == 'M':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    if self.app.exc_editor.selected:
+                        self.app.inform.emit("Click on target point.")
+                        self.app.ui.move_drill_btn.setChecked(True)
+                        self.app.exc_editor.on_tool_select('move')
+                        self.app.exc_editor.active_tool.set_origin(
+                            (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
+                    else:
+                        self.app.inform.emit("[WARNING_NOTCL]Cancelled. Nothing selected to move.")
+                    return
+
+                # Resize Tool
+                if key == QtCore.Qt.Key_R or key == 'R':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    self.app.exc_editor.select_tool('resize')
+                    return
+
+                # Add Tool
+                if key == QtCore.Qt.Key_T or key == 'T':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    ## Current application units in Upper Case
+                    self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
+                    tool_add_popup = FCInputDialog(title="New Tool ...",
+                                                   text='Enter a Tool Diameter:',
+                                                   min=0.0000, max=99.9999, decimals=4)
+                    tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+                    val, ok = tool_add_popup.get_value()
+                    if ok:
+                        self.app.exc_editor.on_tool_add(tooldia=val)
+                        self.app.inform.emit(
+                            "[success]Added new tool with dia: %s %s" % ('%.4f' % float(val), str(self.units)))
+                    else:
+                        self.app.inform.emit(
+                            "[WARNING_NOTCL] Adding Tool cancelled ...")
+                    return
+
+                # Zoom Fit
+                if key == QtCore.Qt.Key_V or key == 'V':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    self.app.on_zoom_fit(None)
+                    return
+
+                # Propagate to tool
+                response = None
+                if self.app.exc_editor.active_tool is not None:
+                    response = self.app.exc_editor.active_tool.on_key(key=key)
+                if response is not None:
+                    self.app.inform.emit(response)
+
+                # Show Shortcut list
+                if key == QtCore.Qt.Key_F3 or key == 'F3':
+                    self.app.on_shortcut_list()
+                    return
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls:
@@ -1676,21 +2373,24 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.tools_ncc_group = ToolsNCCPrefGroupUI()
-        self.tools_ncc_group.setFixedWidth(200)
+        self.tools_ncc_group.setMinimumWidth(200)
         self.tools_paint_group = ToolsPaintPrefGroupUI()
-        self.tools_paint_group.setFixedWidth(200)
+        self.tools_paint_group.setMinimumWidth(200)
 
         self.tools_cutout_group = ToolsCutoutPrefGroupUI()
-        self.tools_cutout_group.setFixedWidth(200)
+        self.tools_cutout_group.setMinimumWidth(220)
 
         self.tools_2sided_group = Tools2sidedPrefGroupUI()
-        self.tools_2sided_group.setFixedWidth(200)
+        self.tools_2sided_group.setMinimumWidth(220)
 
         self.tools_film_group = ToolsFilmPrefGroupUI()
-        self.tools_film_group.setFixedWidth(200)
+        self.tools_film_group.setMinimumWidth(220)
 
         self.tools_panelize_group = ToolsPanelizePrefGroupUI()
-        self.tools_panelize_group.setFixedWidth(200)
+        self.tools_panelize_group.setMinimumWidth(220)
+
+        self.tools_calculators_group = ToolsCalculatorsPrefGroupUI()
+        self.tools_calculators_group.setMinimumWidth(220)
 
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.tools_ncc_group)
@@ -1703,12 +2403,14 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
 
         self.vlay2 = QtWidgets.QVBoxLayout()
         self.vlay2.addWidget(self.tools_panelize_group)
+        self.vlay2.addWidget(self.tools_calculators_group)
 
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)
         self.layout.addLayout(self.vlay2)
 
         self.layout.addStretch()
+
 
 class CNCJobPreferencesUI(QtWidgets.QWidget):
 
@@ -1718,7 +2420,7 @@ class CNCJobPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.cncjob_gen_group = CNCJobGenPrefGroupUI()
-        self.cncjob_gen_group.setFixedWidth(260)
+        self.cncjob_gen_group.setFixedWidth(270)
         self.cncjob_opt_group = CNCJobOptPrefGroupUI()
         self.cncjob_opt_group.setFixedWidth(260)
 
@@ -1969,14 +2671,15 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_11.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
         # Theme selection
-        self.theme_label = QtWidgets.QLabel('Theme:')
+        self.layout_label = QtWidgets.QLabel('Layout:')
         self.alt_sf_color_label.setToolTip(
-            "Select a theme for FlatCAM."
+            "Select an layout for FlatCAM."
         )
-        self.theme_combo = FCComboBox()
-        self.theme_combo.addItem("Standard")
-        self.theme_combo.addItem("Compact")
-        self.theme_combo.setCurrentIndex(0)
+        self.layout_combo = FCComboBox()
+        self.layout_combo.addItem("Choose ...")
+        self.layout_combo.addItem("Standard")
+        self.layout_combo.addItem("Compact")
+        self.layout_combo.setCurrentIndex(0)
 
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
@@ -2005,7 +2708,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.sel_draw_color_label, self.form_box_child_11)
 
         self.form_box.addRow(self.spacelabel, self.spacelabel)
-        self.form_box.addRow(self.theme_label, self.theme_combo)
+        self.form_box.addRow(self.layout_label, self.layout_combo)
         # Add the QFormLayout that holds the Application general defaults
         # to the main layout of this TAB
         self.layout.addLayout(self.form_box)
@@ -2732,8 +3435,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         grid2.addWidget(self.excellon_gcode_type_radio, 16, 1)
 
         # until I decide to implement this feature those remain disabled
-        excellon_gcode_type_label.setDisabled(True)
-        self.excellon_gcode_type_radio.setDisabled(True)
+        excellon_gcode_type_label.hide()
+        self.excellon_gcode_type_radio.setVisible(False)
 
         #### Milling Holes ####
         self.mill_hole_label = QtWidgets.QLabel('<b>Mill Holes</b>')
@@ -3064,7 +3767,7 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         )
         grid1.addWidget(segy_label, 21, 0)
         self.segy_entry = FCEntry()
-        grid1.addWidget(self.segy_entry, 22, 1)
+        grid1.addWidget(self.segy_entry, 21, 1)
 
         self.layout.addStretch()
 
@@ -3082,14 +3785,35 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
 
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
+        grid0.setColumnStretch(1, 1)
+        grid0.setColumnStretch(2, 1)
 
         # Plot CB
         # self.plot_cb = QtWidgets.QCheckBox('Plot')
-        self.plot_cb = FCCheckBox('Plot')
+        self.plot_cb = FCCheckBox('Plot Object')
         self.plot_cb.setToolTip(
             "Plot (show) this object."
         )
         grid0.addWidget(self.plot_cb, 0, 0)
+
+        # Plot Kind
+        self.cncplot_method_label = QtWidgets.QLabel("Plot kind:")
+        self.cncplot_method_label.setToolTip(
+            "This selects the kind of geometries on the canvas to plot.\n"
+            "Those can be either of type 'Travel' which means the moves\n"
+            "above the work piece or it can be of type 'Cut',\n"
+            "which means the moves that cut into the material."
+        )
+
+        self.cncplot_method_radio = RadioSet([
+            {"label": "All", "value": "all"},
+            {"label": "Travel", "value": "travel"},
+            {"label": "Cut", "value": "cut"}
+        ], stretch=False)
+
+        grid0.addWidget(self.cncplot_method_label, 1, 0)
+        grid0.addWidget(self.cncplot_method_radio, 1, 1)
+        grid0.addWidget(QtWidgets.QLabel(''), 1, 2)
 
         # Number of circle steps for circular aperture linear approximation
         self.steps_per_circle_label = QtWidgets.QLabel("Circle Steps:")
@@ -3097,9 +3821,9 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
             "The number of circle steps for <b>GCode</b> \n"
             "circle and arc shapes linear approximation."
         )
-        grid0.addWidget(self.steps_per_circle_label, 1, 0)
+        grid0.addWidget(self.steps_per_circle_label, 2, 0)
         self.steps_per_circle_entry = IntEntry()
-        grid0.addWidget(self.steps_per_circle_entry, 1, 1)
+        grid0.addWidget(self.steps_per_circle_entry, 2, 1)
 
         # Tool dia for plot
         tdlabel = QtWidgets.QLabel('Tool dia:')
@@ -3107,29 +3831,29 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
             "Diameter of the tool to be\n"
             "rendered in the plot."
         )
-        grid0.addWidget(tdlabel, 2, 0)
+        grid0.addWidget(tdlabel, 3, 0)
         self.tooldia_entry = LengthEntry()
-        grid0.addWidget(self.tooldia_entry, 2, 1)
+        grid0.addWidget(self.tooldia_entry, 3, 1)
 
         # Number of decimals to use in GCODE coordinates
-        cdeclabel = QtWidgets.QLabel('Coords decimals:')
+        cdeclabel = QtWidgets.QLabel('Coords dec.:')
         cdeclabel.setToolTip(
             "The number of decimals to be used for \n"
             "the X, Y, Z coordinates in CNC code (GCODE, etc.)"
         )
-        grid0.addWidget(cdeclabel, 3, 0)
+        grid0.addWidget(cdeclabel, 4, 0)
         self.coords_dec_entry = IntEntry()
-        grid0.addWidget(self.coords_dec_entry, 3, 1)
+        grid0.addWidget(self.coords_dec_entry, 4, 1)
 
         # Number of decimals to use in GCODE feedrate
-        frdeclabel = QtWidgets.QLabel('Feedrate decimals:')
+        frdeclabel = QtWidgets.QLabel('Feedrate dec.:')
         frdeclabel.setToolTip(
             "The number of decimals to be used for \n"
-            "the feedrate in CNC code (GCODE, etc.)"
+            "the Feedrate parameter in CNC code (GCODE, etc.)"
         )
-        grid0.addWidget(frdeclabel, 4, 0)
+        grid0.addWidget(frdeclabel, 5, 0)
         self.fr_dec_entry = IntEntry()
-        grid0.addWidget(self.fr_dec_entry, 4, 1)
+        grid0.addWidget(self.fr_dec_entry, 5, 1)
 
         self.layout.addStretch()
 
@@ -3670,6 +4394,103 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         self.layout.addStretch()
 
 
+class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Calculators Tool Options", parent=parent)
+        super(ToolsCalculatorsPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("Calculators Tool Options"))
+
+        ## V-shape Calculator Tool
+        self.vshape_tool_label = QtWidgets.QLabel("<b>V-Shape Tool Calculator:</b>")
+        self.vshape_tool_label.setToolTip(
+            "Calculate the tool diameter for a given V-shape tool,\n"
+            "having the tip diameter, tip angle and\n"
+            "depth-of-cut as parameters."
+        )
+        self.layout.addWidget(self.vshape_tool_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        ## Tip Diameter
+        self.tip_dia_entry = FCEntry()
+        self.tip_dia_label = QtWidgets.QLabel("Tip Diameter:")
+        self.tip_dia_label.setToolTip(
+            "This is the tool tip diameter.\n"
+            "It is specified by manufacturer."
+        )
+        grid0.addWidget(self.tip_dia_label, 0, 0)
+        grid0.addWidget(self.tip_dia_entry, 0, 1)
+
+        ## Tip angle
+        self.tip_angle_entry = FCEntry()
+        self.tip_angle_label = QtWidgets.QLabel("Tip angle:")
+        self.tip_angle_label.setToolTip(
+            "This is the angle on the tip of the tool.\n"
+            "It is specified by manufacturer."
+        )
+        grid0.addWidget(self.tip_angle_label, 1, 0)
+        grid0.addWidget(self.tip_angle_entry, 1, 1)
+
+        ## Depth-of-cut Cut Z
+        self.cut_z_entry = FCEntry()
+        self.cut_z_label = QtWidgets.QLabel("Cut Z:")
+        self.cut_z_label.setToolTip(
+            "This is depth to cut into material.\n"
+            "In the CNCJob object it is the CutZ parameter."
+        )
+        grid0.addWidget(self.cut_z_label, 2, 0)
+        grid0.addWidget(self.cut_z_entry, 2, 1)
+
+        ## Electroplating Calculator Tool
+        self.plate_title_label = QtWidgets.QLabel("<b>ElectroPlating Calculator:</b>")
+        self.plate_title_label.setToolTip(
+            "This calculator is useful for those who plate the via/pad/drill holes,\n"
+            "using a method like grahite ink or calcium hypophosphite ink or palladium chloride."
+        )
+        self.layout.addWidget(self.plate_title_label)
+
+        grid1 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid1)
+
+        ## PCB Length
+        self.pcblength_entry = FCEntry()
+        self.pcblengthlabel = QtWidgets.QLabel("Board Length:")
+
+        self.pcblengthlabel.setToolTip('This is the board length. In centimeters.')
+        grid1.addWidget(self.pcblengthlabel, 0, 0)
+        grid1.addWidget(self.pcblength_entry, 0, 1)
+
+        ## PCB Width
+        self.pcbwidth_entry = FCEntry()
+        self.pcbwidthlabel = QtWidgets.QLabel("Board Width:")
+
+        self.pcbwidthlabel.setToolTip('This is the board width.In centimeters.')
+        grid1.addWidget(self.pcbwidthlabel, 1, 0)
+        grid1.addWidget(self.pcbwidth_entry, 1, 1)
+
+        ## Current Density
+        self.cdensity_label = QtWidgets.QLabel("Current Density:")
+        self.cdensity_entry = FCEntry()
+
+        self.cdensity_label.setToolTip("Current density to pass through the board. \n"
+                                       "In Amps per Square Feet ASF.")
+        grid1.addWidget(self.cdensity_label, 2, 0)
+        grid1.addWidget(self.cdensity_entry, 2, 1)
+
+        ## PCB Copper Growth
+        self.growth_label = QtWidgets.QLabel("Copper Growth:")
+        self.growth_entry = FCEntry()
+
+        self.growth_label.setToolTip("How thick the copper growth is intended to be.\n"
+                                     "In microns.")
+        grid1.addWidget(self.growth_label, 3, 0)
+        grid1.addWidget(self.growth_entry, 3, 1)
+
+        self.layout.addStretch()
+
+
 class FlatCAMActivityView(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
@@ -3720,29 +4541,33 @@ class FlatCAMInfoBar(QtWidgets.QWidget):
         layout.addWidget(self.icon)
 
         self.text = QtWidgets.QLabel(self)
-        self.text.setText("Hello!")
+        self.text.setText("Application started ...")
         self.text.setToolTip("Hello!")
 
         layout.addWidget(self.text)
 
         layout.addStretch()
 
-    def set_text_(self, text):
+    def set_text_(self, text, color=None):
         self.text.setText(text)
         self.text.setToolTip(text)
+        if color:
+            self.text.setStyleSheet('color: %s' % str(color))
 
     def set_status(self, text, level="info"):
         level = str(level)
         self.pmap.fill()
         if level == "ERROR" or level == "ERROR_NOTCL":
             self.pmap = QtGui.QPixmap('share/redlight12.png')
-        elif level == "success":
+        elif level == "success" or level == "SUCCESS":
             self.pmap = QtGui.QPixmap('share/greenlight12.png')
         elif level == "WARNING" or level == "WARNING_NOTCL":
             self.pmap = QtGui.QPixmap('share/yellowlight12.png')
+        elif level == "selected" or level == "SELECTED":
+            self.pmap = QtGui.QPixmap('share/bluelight12.png')
         else:
             self.pmap = QtGui.QPixmap('share/graylight12.png')
 
-        self.icon.setPixmap(self.pmap)
         self.set_text_(text)
+        self.icon.setPixmap(self.pmap)
 # end of file
