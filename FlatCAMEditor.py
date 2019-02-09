@@ -583,6 +583,8 @@ class FCCircle(FCShapeTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = 'fc_circle'
+
         self.start_msg = "Click on CENTER ..."
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
@@ -620,6 +622,8 @@ class FCCircle(FCShapeTool):
 class FCArc(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = 'fc_arc'
+
         self.start_msg = "Click on CENTER ..."
 
         # Direction of rotation between point 1 and 2.
@@ -808,6 +812,8 @@ class FCRectangle(FCShapeTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = 'fc_rectangle'
+
         self.start_msg = "Click on 1st corner ..."
 
     def click(self, point):
@@ -846,6 +852,8 @@ class FCPolygon(FCShapeTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = 'fc_polygon'
+
         self.start_msg = "Click on 1st point ..."
 
     def click(self, point):
@@ -891,6 +899,8 @@ class FCPath(FCPolygon):
 
     def make(self):
         self.geometry = DrawToolShape(LineString(self.points))
+        self.name = 'fc_path'
+
         self.draw_app.in_action = False
         self.complete = True
         self.draw_app.app.inform.emit("[success]Done. Path completed.")
@@ -912,6 +922,8 @@ class FCPath(FCPolygon):
 class FCSelect(DrawTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = 'fc_select'
+
         self.storage = self.draw_app.storage
         # self.shape_buffer = self.draw_app.shape_buffer
         # self.selected = self.draw_app.selected
@@ -989,6 +1001,7 @@ class FCSelect(DrawTool):
 class FCDrillSelect(DrawTool):
     def __init__(self, exc_editor_app):
         DrawTool.__init__(self, exc_editor_app)
+        self.name = 'fc_drill_select'
 
         self.exc_editor_app = exc_editor_app
         self.storage = self.exc_editor_app.storage_dict
@@ -1146,6 +1159,8 @@ class FCDrillSelect(DrawTool):
 class FCMove(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
+        self.name = 'fc_move'
+
         # self.shape_buffer = self.draw_app.shape_buffer
         self.origin = None
         self.destination = None
@@ -1211,6 +1226,9 @@ class FCMove(FCShapeTool):
 
 
 class FCCopy(FCMove):
+    def __init__(self, draw_app):
+        FCMove.__init__(self, draw_app)
+        self.name = 'fc_copy'
 
     def make(self):
         # Create new geometry
@@ -1225,6 +1243,8 @@ class FCCopy(FCMove):
 class FCText(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
+        self.name = 'fc_text'
+
         # self.shape_buffer = self.draw_app.shape_buffer
         self.draw_app = draw_app
         self.app = draw_app.app
@@ -1275,6 +1295,8 @@ class FCText(FCShapeTool):
 class FCBuffer(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
+        self.name = 'fc_buffer'
+
         # self.shape_buffer = self.draw_app.shape_buffer
         self.draw_app = draw_app
         self.app = draw_app.app
@@ -1341,6 +1363,8 @@ class FCBuffer(FCShapeTool):
 class FCPaint(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
+        self.name = 'fc_paint'
+
         # self.shape_buffer = self.draw_app.shape_buffer
         self.draw_app = draw_app
         self.app = draw_app.app
@@ -1355,6 +1379,7 @@ class FCPaint(FCShapeTool):
 class FCRotate(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
+        self.name = 'fc_rotate'
 
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
 
@@ -1365,7 +1390,6 @@ class FCRotate(FCShapeTool):
 
     def set_origin(self, origin):
         self.origin = origin
-
 
     def make(self):
         # Create new geometry
@@ -1382,9 +1406,9 @@ class FCRotate(FCShapeTool):
         #self.draw_app.select_tool("select")
 
     def on_key(self, key):
-        if key == 'Enter':
-            if self.complete == True:
-                self.make()
+        if key == 'Enter' or key == QtCore.Qt.Key_Enter:
+            self.make()
+            return "Done"
 
     def click(self, point):
         self.make()
@@ -1408,6 +1432,7 @@ class FCDrillAdd(FCShapeTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = 'fc_drill_add'
 
         self.selected_dia = None
         try:
@@ -1443,11 +1468,17 @@ class FCDrillAdd(FCShapeTool):
         return DrawToolUtilityShape(self.util_shape(data))
 
     def util_shape(self, point):
+        if point[0] is None and point[1] is None:
+            point_x = self.draw_app.x
+            point_y = self.draw_app.y
+        else:
+            point_x = point[0]
+            point_y = point[1]
 
-        start_hor_line = ((point[0] - (self.selected_dia / 2)), point[1])
-        stop_hor_line = ((point[0] + (self.selected_dia / 2)), point[1])
-        start_vert_line = (point[0], (point[1] - (self.selected_dia / 2)))
-        stop_vert_line = (point[0], (point[1] + (self.selected_dia / 2)))
+        start_hor_line = ((point_x - (self.selected_dia / 2)), point_y)
+        stop_hor_line = ((point_x + (self.selected_dia / 2)), point_y)
+        start_vert_line = (point_x, (point_y - (self.selected_dia / 2)))
+        stop_vert_line = (point_x, (point_y + (self.selected_dia / 2)))
 
         return MultiLineString([(start_hor_line, stop_hor_line), (start_vert_line, stop_vert_line)])
 
@@ -1473,6 +1504,7 @@ class FCDrillArray(FCShapeTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = 'fc_drill_array'
 
         self.draw_app.array_frame.show()
 
@@ -1558,17 +1590,16 @@ class FCDrillArray(FCShapeTool):
             return
 
         if self.drill_array == 'Linear':
-            # if self.origin is None:
-            #     self.origin = (0, 0)
-            #
-            # dx = data[0] - self.origin[0]
-            # dy = data[1] - self.origin[1]
-            dx = data[0]
-            dy = data[1]
+            if data[0] is None and data[1] is None:
+                dx = self.draw_app.x
+                dy = self.draw_app.y
+            else:
+                dx = data[0]
+                dy = data[1]
 
             geo_list = []
             geo = None
-            self.points = data
+            self.points = [dx, dy]
 
             for item in range(self.drill_array_size):
                 if self.drill_axis == 'X':
@@ -1592,16 +1623,30 @@ class FCDrillArray(FCShapeTool):
             self.last_dy = dy
             return DrawToolUtilityShape(geo_list)
         else:
+            if data[0] is None and data[1] is None:
+                cdx = self.draw_app.x
+                cdy = self.draw_app.y
+            else:
+                cdx = data[0]
+                cdy = data[1]
+
             if len(self.pt) > 0:
                 temp_points = [x for x in self.pt]
-                temp_points.append(data)
+                temp_points.append([cdx, cdy])
                 return DrawToolUtilityShape(LineString(temp_points))
 
     def util_shape(self, point):
-        start_hor_line = ((point[0] - (self.selected_dia / 2)), point[1])
-        stop_hor_line = ((point[0] + (self.selected_dia / 2)), point[1])
-        start_vert_line = (point[0], (point[1] - (self.selected_dia / 2)))
-        stop_vert_line = (point[0], (point[1] + (self.selected_dia / 2)))
+        if point[0] is None and point[1] is None:
+            point_x = self.draw_app.x
+            point_y = self.draw_app.y
+        else:
+            point_x = point[0]
+            point_y = point[1]
+
+        start_hor_line = ((point_x - (self.selected_dia / 2)), point_y)
+        stop_hor_line = ((point_x + (self.selected_dia / 2)), point_y)
+        start_vert_line = (point_x, (point_y - (self.selected_dia / 2)))
+        stop_vert_line = (point_x, (point_y + (self.selected_dia / 2)))
 
         return MultiLineString([(start_hor_line, stop_hor_line), (start_vert_line, stop_vert_line)])
 
@@ -1656,10 +1701,12 @@ class FCDrillArray(FCShapeTool):
         self.draw_app.array_frame.hide()
         return
 
-class FCDrillResize(FCShapeTool):
 
+class FCDrillResize(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = 'fc_drill_resize'
+
         self.draw_app.app.inform.emit("Click on the Drill(s) to resize ...")
         self.resize_dia = None
         self.draw_app.resize_frame.show()
@@ -1761,6 +1808,8 @@ class FCDrillResize(FCShapeTool):
 class FCDrillMove(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
+        self.name = 'fc_drill_move'
+
         # self.shape_buffer = self.draw_app.shape_buffer
         self.origin = None
         self.destination = None
@@ -1850,6 +1899,9 @@ class FCDrillMove(FCShapeTool):
 
 
 class FCDrillCopy(FCDrillMove):
+    def __init__(self, draw_app):
+        FCDrillMove.__init__(self, draw_app)
+        self.name = 'fc_drill_copy'
 
     def make(self):
         # Create new geometry
@@ -1977,6 +2029,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.geo_key_modifiers = None
         self.x = None  # Current mouse cursor pos
         self.y = None
+
         # Current snapped mouse pos
         self.snap_x = None
         self.snap_y = None

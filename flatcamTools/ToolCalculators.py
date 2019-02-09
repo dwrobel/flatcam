@@ -21,6 +21,40 @@ class ToolCalculator(FlatCAMTool):
         title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % self.toolName)
         self.layout.addWidget(title_label)
 
+        ######################
+        ## Units Calculator ##
+        ######################
+
+        self.unists_spacer_label = QtWidgets.QLabel(" ")
+        self.layout.addWidget(self.unists_spacer_label)
+
+        ## Title of the Units Calculator
+        units_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.unitsName)
+        self.layout.addWidget(units_label)
+
+        #Grid Layout
+        grid_units_layout = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid_units_layout)
+
+        inch_label = QtWidgets.QLabel("INCH")
+        mm_label = QtWidgets.QLabel("MM")
+        grid_units_layout.addWidget(mm_label, 0, 0)
+        grid_units_layout.addWidget( inch_label, 0, 1)
+
+        self.inch_entry = FCEntry()
+        # self.inch_entry.setFixedWidth(70)
+        self.inch_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.inch_entry.setToolTip("Here you enter the value to be converted from INCH to MM")
+
+        self.mm_entry = FCEntry()
+        # self.mm_entry.setFixedWidth(130)
+        self.mm_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.mm_entry.setToolTip("Here you enter the value to be converted from MM to INCH")
+
+        grid_units_layout.addWidget(self.mm_entry, 1, 0)
+        grid_units_layout.addWidget(self.inch_entry, 1, 1)
+
+
         ############################
         ## V-shape Tool Calculator ##
         ############################
@@ -83,38 +117,6 @@ class ToolCalculator(FlatCAMTool):
 
         form_layout.addRow(self.empty_label, self.calculate_vshape_button)
 
-        ######################
-        ## Units Calculator ##
-        ######################
-
-        self.unists_spacer_label = QtWidgets.QLabel(" ")
-        self.layout.addWidget(self.unists_spacer_label)
-
-        ## Title of the Units Calculator
-        units_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.unitsName)
-        self.layout.addWidget(units_label)
-
-        #Grid Layout
-        grid_units_layout = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid_units_layout)
-
-        inch_label = QtWidgets.QLabel("INCH")
-        mm_label = QtWidgets.QLabel("MM")
-        grid_units_layout.addWidget(mm_label, 0, 0)
-        grid_units_layout.addWidget( inch_label, 0, 1)
-
-        self.inch_entry = FCEntry()
-        # self.inch_entry.setFixedWidth(70)
-        self.inch_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.inch_entry.setToolTip("Here you enter the value to be converted from INCH to MM")
-
-        self.mm_entry = FCEntry()
-        # self.mm_entry.setFixedWidth(130)
-        self.mm_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.mm_entry.setToolTip("Here you enter the value to be converted from MM to INCH")
-
-        grid_units_layout.addWidget(self.mm_entry, 1, 0)
-        grid_units_layout.addWidget(self.inch_entry, 1, 1)
 
         ####################################
         ## ElectroPlating Tool Calculator ##

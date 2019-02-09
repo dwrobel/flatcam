@@ -14,6 +14,9 @@ CAD program, and create G-Code for Isolation routing.
 - added a protection for when saving a file first time, it require a saved path and if none then it use the current working directory
 - added into Preferences the Calculator Tools
 - made the Preferences window scrollable on the horizontal side (it was only vertically scrollable before)
+- fixed an error in Excellon Editor -> add drill array that could appear by starting the function to add a drill array by shortcut before any mouse move is registered while in Editor
+- changed the messages from status bar on new object creation/selection
+- in Geometry Editor fixed the handler for the Rotate shortcut key ('R')
 
 8.02.2019
 

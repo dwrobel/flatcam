@@ -1738,7 +1738,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # New Geometry
                 if key == QtCore.Qt.Key_N:
-                    self.app.on_new_geometry()
+                    self.app.new_geometry_object()
 
                 # Set Origin
                 if key == QtCore.Qt.Key_O:
@@ -1820,15 +1820,26 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # complete automatically, like a polygon or path.
                 if key == QtCore.Qt.Key_Enter or key == 'Enter':
                     if isinstance(self.app.geo_editor.active_tool, FCShapeTool):
-                        self.app.geo_editor.active_tool.click(
-                            self.app.geo_editor.snap(self.app.geo_editor.x, self.app.geo_editor.y))
-                        self.app.geo_editor.active_tool.make()
-                        if self.app.geo_editor.active_tool.complete:
-                            self.app.geo_editor.on_shape_complete()
-                            self.app.inform.emit("[success]Done.")
-                        # automatically make the selection tool active after completing current action
-                        self.app.geo_editor.select_tool('select')
-                    return
+                        if self.app.geo_editor.active_tool.name == 'fc_rotate':
+                            self.app.geo_editor.active_tool.make()
+
+                            if self.app.geo_editor.active_tool.complete:
+                                self.app.geo_editor.on_shape_complete()
+                                self.app.inform.emit("[success]Done.")
+                            # automatically make the selection tool active after completing current action
+                            self.app.geo_editor.select_tool('select')
+                            return
+                        else:
+                            self.app.geo_editor.active_tool.click(
+                                self.app.geo_editor.snap(self.app.geo_editor.x, self.app.geo_editor.y))
+
+                            self.app.geo_editor.active_tool.make()
+
+                            if self.app.geo_editor.active_tool.complete:
+                                self.app.geo_editor.on_shape_complete()
+                                self.app.inform.emit("[success]Done.")
+                            # automatically make the selection tool active after completing current action
+                            self.app.geo_editor.select_tool('select')
 
                 # Abort the current action
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
@@ -1887,7 +1898,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_C or key == 'C':
                     self.app.ui.geo_copy_btn.setChecked(True)
                     self.app.geo_editor.on_tool_select('copy')
-                    self.app.geo_editor.active_tool.set_origin(self.snap(self.x, self.y))
+                    self.app.geo_editor.active_tool.set_origin(self.app.geo_editor.snap(
+                        self.app.geo_editor.x, self.app.geo_editor.y))
                     self.app.inform.emit("Click on target point.")
 
                 # Substract Tool
@@ -2004,7 +2016,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Propagate to tool
                 response = None
                 if self.app.geo_editor.active_tool is not None:
-                    response = self.app.geo_editor.active_tool.on_key(event)
+                    response = self.app.geo_editor.active_tool.on_key(key=key)
                 if response is not None:
                     self.app.inform.emit(response)
 
@@ -2094,6 +2106,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.exc_editor.launched_from_shortcuts = True
                     self.app.inform.emit("Click on target point.")
                     self.app.ui.add_drill_array_btn.setChecked(True)
+
+                    self.app.exc_editor.x = self.app.mouse[0]
+                    self.app.exc_editor.y = self.app.mouse[1]
+
                     self.app.exc_editor.select_tool('add_array')
                     return
 
@@ -2115,6 +2131,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.exc_editor.launched_from_shortcuts = True
                     self.app.inform.emit("Click on target point.")
                     self.app.ui.add_drill_btn.setChecked(True)
+
+                    self.app.exc_editor.x = self.app.mouse[0]
+                    self.app.exc_editor.y = self.app.mouse[1]
+
                     self.app.exc_editor.select_tool('add')
                     return
 
@@ -2142,7 +2162,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.inform.emit("Click on target point.")
                         self.app.ui.move_drill_btn.setChecked(True)
                         self.app.exc_editor.on_tool_select('move')
-                        self.app.exc_editor.active_tool.set_origin((self.snap_x, self.snap_y))
+                        self.app.exc_editor.active_tool.set_origin(
+                            (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
                     else:
                         self.app.inform.emit("[WARNING_NOTCL]Cancelled. Nothing selected to move.")
                     return
@@ -2182,7 +2203,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Propagate to tool
                 response = None
                 if self.app.exc_editor.active_tool is not None:
-                    response = self.app.exc_editor.active_tool.on_key(event)
+                    response = self.app.exc_editor.active_tool.on_key(key=key)
                 if response is not None:
                     self.app.inform.emit(response)
 

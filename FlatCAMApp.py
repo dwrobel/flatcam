@@ -257,6 +257,8 @@ class App(QtCore.QObject):
         # Create multiprocessing pool
         self.pool = Pool()
 
+        # variable to store mouse coordinates
+        self.mouse = [0, 0]
 
         ####################
         ## Initialize GUI ##
@@ -1059,7 +1061,7 @@ class App(QtCore.QObject):
         self.ui.menufilesavedefaults.triggered.connect(self.on_file_savedefaults)
         self.ui.menufile_exit.triggered.connect(self.on_app_exit)
 
-        self.ui.menueditnew.triggered.connect(lambda: self.new_object('geometry', 'new_g', lambda x, y: None))
+        self.ui.menueditnew.triggered.connect(self.new_geometry_object)
         self.ui.menueditnewexc.triggered.connect(self.new_excellon_object)
         self.ui.menueditedit.triggered.connect(self.object2editor)
         self.ui.menueditok.triggered.connect(self.editor2object)
@@ -1140,7 +1142,7 @@ class App(QtCore.QObject):
         self.ui.zoom_in_btn.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
         self.ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
 
-        self.ui.newgeo_btn.triggered.connect(lambda: self.new_object('geometry', 'new_g', lambda x, y: None))
+        self.ui.newgeo_btn.triggered.connect(self.new_geometry_object)
         self.ui.newexc_btn.triggered.connect(self.new_excellon_object)
         self.ui.editgeo_btn.triggered.connect(self.object2editor)
         self.ui.update_obj_btn.triggered.connect(self.editor2object)
@@ -1150,7 +1152,7 @@ class App(QtCore.QObject):
         # Context Menu
         self.ui.popmenu_disable.triggered.connect(lambda: self.disable_plots(self.collection.get_selected()))
 
-        self.ui.popmenu_new_geo.triggered.connect(lambda: self.new_object('geometry', 'new_g', lambda x, y: None))
+        self.ui.popmenu_new_geo.triggered.connect(self.new_geometry_object)
         self.ui.popmenu_new_exc.triggered.connect(self.new_excellon_object)
         self.ui.popmenu_new_prj.triggered.connect(self.on_file_new)
 
@@ -1665,7 +1667,7 @@ class App(QtCore.QObject):
         edited_obj.plot()
         self.ui.plot_tab_area.setTabText(0, "Plot Area")
         self.ui.plot_tab_area.protectTab(0)
-        self.inform.emit("[success] %s is updated, returning to App..." % obj_type)
+        self.inform.emit("[selected] %s is updated, returning to App..." % obj_type)
 
         # reset the Object UI to original settings
         # edited_obj.set_ui(edited_obj.ui_type())
@@ -2271,6 +2273,8 @@ class App(QtCore.QObject):
             obj.options['ymax'] = ymax
         except:
             log.warning("The object has no bounds properties.")
+            # don't plot objects with no bounds, there is nothing to plot
+            self.plot = False
             pass
 
         FlatCAMApp.App.log.debug("Moving new object back to main thread.")
@@ -2284,7 +2288,15 @@ class App(QtCore.QObject):
     def new_excellon_object(self):
         self.report_usage("new_excellon_object()")
 
-        self.new_object('excellon', 'new_e', lambda x, y: None)
+        self.new_object('excellon', 'new_e', lambda x, y: None, plot=False)
+
+    def new_geometry_object(self):
+        self.report_usage("new_geometry_object()")
+
+        def initialize(obj, self):
+            obj.multitool = False
+
+        self.new_object('geometry', 'new_g', initialize, plot=False)
 
     def on_object_created(self, obj, plot, autoselect):
         """
@@ -2302,8 +2314,20 @@ class App(QtCore.QObject):
         # after adding the object to the collection always update the list of objects that are in the collection
         self.all_objects_list = self.collection.get_list()
 
-        self.inform.emit("[success]Object (%s) created: %s" % (obj.kind, obj.options['name']))
-        self.new_object_available.emit(obj)
+
+        if obj.kind == 'gerber':
+            self.inform.emit('[selected]%s created/selected: <span style="color:%s;">%s</span>' %
+                             (obj.kind.capitalize(), 'green', str(obj.options['name'])))
+        elif obj.kind == 'excellon':
+            self.inform.emit('[selected]%s created/selected: <span style="color:%s;">%s</span>' %
+                             (obj.kind.capitalize(), 'brown', str(obj.options['name'])))
+        elif obj.kind == 'cncjob':
+            self.inform.emit('[selected]%s created/selected: <span style="color:%s;">%s</span>' %
+                             (obj.kind.capitalize(), 'blue', str(obj.options['name'])))
+        elif obj.kind == 'geometry':
+            self.inform.emit('[selected]%s created/selected: <span style="color:%s;">%s</span>' %
+                             (obj.kind.capitalize(), 'red', str(obj.options['name'])))
+        # self.new_object_available.emit(obj)
 
         # update the SHELL auto-completer model with the name of the new object
         self.myKeywords.append(obj.options['name'])
@@ -2327,7 +2351,7 @@ class App(QtCore.QObject):
 
         # Send to worker
         # self.worker.add_task(worker_task, [self])
-        if plot:
+        if plot is True:
             self.worker_task.emit({'fcn': worker_task, 'params': [obj]})
 
     def on_object_changed(self, obj):
@@ -3560,15 +3584,6 @@ class App(QtCore.QObject):
             # Mark end of undo block
             cursor.endEditBlock()
 
-    def on_new_geometry(self):
-        self.report_usage("on_new_geometry()")
-
-        def initialize(obj, self):
-            obj.multitool = False
-
-        self.new_object('geometry', 'new_g', initialize)
-        self.plot_all()
-
     def on_delete(self):
         """
         Delete the currently selected FlatCAMObjs.
@@ -4362,11 +4377,9 @@ class App(QtCore.QObject):
     def on_double_click_over_plot(self, event):
         # make double click work only for the LMB
         if event.button == 1:
-            if not self.collection.get_selected():
-                pass
-            else:
+            if self.collection.get_selected():
                 self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
-                #delete the selection shape(S) as it may be in the way
+                # delete the selection shape(S) as it may be in the way
                 self.delete_selection_shape()
 
     def on_mouse_move_over_plot(self, event, origin_click=None):
