@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - added a strong focus to the object_name entry in the Selected tab
 - the keypad keyPressed are now detected correctly
 - added a pause and message/warning to do a rough zero for the Z axis, in case of Toolchange_Probe_MACH3 postprocessor file
+- changes in Toolchange_Probe_MACH3 postprocessor file
 
 9.02.2019
 
