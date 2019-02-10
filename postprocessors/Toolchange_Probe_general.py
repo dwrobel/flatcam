@@ -97,9 +97,9 @@ class Toolchange_Probe_general(FlatCAMPostProc):
 
             if toolchangexy is not None:
                 gcode = """
+M5
 G00 X{toolchangex} Y{toolchangey}                
 T{tool}
-M5
 M6
 (MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
 M0
@@ -111,8 +111,8 @@ M0
 
             else:
                 gcode = """
-T{tool}
 M5
+T{tool}
 M6
 (MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
 M0
@@ -127,9 +127,9 @@ M0
         else:
             if toolchangexy is not None:
                 gcode = """
+M5
 G00 X{toolchangex} Y{toolchangey}
 T{tool}
-M5
 M6    
 (MSG, Change to Tool Dia = {toolC})
 M0
@@ -139,8 +139,8 @@ M0
              toolC=toolC_formatted)
             else:
                 gcode = """
-T{tool}
 M5
+T{tool}
 M6    
 (MSG, Change to Tool Dia = {toolC})
 M0""".format(tool=int(p.tool),

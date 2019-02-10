@@ -100,15 +100,18 @@ class Toolchange_manual(FlatCAMPostProc):
                     no_drills = i[2]
 
             if toolchangexy is not None:
-                gcode =  """G00 Z{toolchangez}
-T{tool}
-M5   
+                gcode = """
+M5
+G00 Z{toolchangez}
+T{tool} 
 G00 X{toolchangex} Y{toolchangey} 
 (MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
 M0
 G01 Z0
+(MSG, Adjust the tool T{tool} to touch the material and then tighten it slightly.)
 M0
 G00 Z{toolchangez}
+(MSG, Now the tool can be tightened more securely.)
 M0
 """.format(toolchangex=self.coordinate_format%(p.coords_decimals, toolchangex),
            toolchangey=self.coordinate_format%(p.coords_decimals, toolchangey),
@@ -118,14 +121,17 @@ M0
            toolC=toolC_formatted)
 
             else:
-                gcode =  """G00 Z{toolchangez}
-T{tool}
-M5  
+                gcode = """
+M5 
+G00 Z{toolchangez}
+T{tool} 
 (MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
 M0
 G01 Z0
+(MSG, Adjust the tool T{tool} to touch the material and then tighten it slightly.)
 M0
 G00 Z{toolchangez}
+(MSG, Now the tool can be tightened more securely.)
 M0
 """.format(
            toolchangez=self.coordinate_format%(p.coords_decimals, toolchangez),
@@ -139,15 +145,18 @@ M0
 
         else:
             if toolchangexy is not None:
-                gcode =  """G00 Z{toolchangez}
-T{tool}
+                gcode = """
 M5
+G00 Z{toolchangez}
+T{tool}
 G00 X{toolchangex}Y{toolchangey}    
 (MSG, Change to Tool Dia = {toolC})
 M0
 G01 Z0
+(MSG, Adjust the tool T{tool} to touch the material and then tighten it slightly.)
 M0
 G00 Z{toolchangez}
+(MSG, Now the tool can be tightened more securely.)
 M0
 """.format(toolchangex=self.coordinate_format%(p.coords_decimals, toolchangex),
            toolchangey=self.coordinate_format%(p.coords_decimals, toolchangey),
@@ -155,14 +164,17 @@ M0
            tool=int(p.tool),
            toolC=toolC_formatted)
             else:
-                gcode =  """G00 Z{toolchangez}
-T{tool}
+                gcode = """
 M5  
+G00 Z{toolchangez}
+T{tool}
 (MSG, Change to Tool Dia = {toolC})
 M0
 G01 Z0
+(MSG, Adjust the tool T{tool} to touch the material and then tighten it slightly.)
 M0
 G00 Z{toolchangez}
+(MSG, Now the tool can be tightened more securely.)
 M0
 """.format(toolchangez=self.coordinate_format%(p.coords_decimals, toolchangez),
            tool=int(p.tool),

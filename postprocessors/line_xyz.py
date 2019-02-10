@@ -110,9 +110,10 @@ class line_xyz(FlatCAMPostProc):
             for i in p['options']['Tools_in_use']:
                 if i[0] == p.tool:
                     no_drills = i[2]
-            gcode =  """G00 X{toolchangex} Y{toolchangey} Z{toolchangez}
+            gcode = """
+M5      
+G00 X{toolchangex} Y{toolchangey} Z{toolchangez}
 T{tool}
-M5
 M6
 (MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
 M0""".format(toolchangex=self.coordinate_format%(p.coords_decimals, toolchangex),
@@ -129,9 +130,10 @@ M0""".format(toolchangex=self.coordinate_format%(p.coords_decimals, toolchangex)
                     z_move=self.coordinate_format % (p.coords_decimals, p.z_move))
             return gcode
         else:
-            gcode =  """G00 X{toolchangex} Y{toolchangey} Z{toolchangez}
-T{tool}
+            gcode = """
 M5
+G00 X{toolchangex} Y{toolchangey} Z{toolchangez}
+T{tool}
 M6    
 (MSG, Change to Tool Dia = {toolC})
 M0""".format(toolchangex=self.coordinate_format%(p.coords_decimals, toolchangex),

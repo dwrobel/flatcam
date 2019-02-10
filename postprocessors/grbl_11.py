@@ -97,10 +97,11 @@ class grbl_11(FlatCAMPostProc):
                     no_drills = i[2]
 
             if toolchangexy is not None:
-                gcode = """G00 Z{toolchangez}
+                gcode = """
+M5             
+G00 Z{toolchangez}
 G00 X{toolchangex} Y{toolchangey}                
 T{tool}
-M5
 M6
 (MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
 M0""".format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchangex),
@@ -110,9 +111,10 @@ M0""".format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchange
              t_drills=no_drills,
              toolC=toolC_formatted)
             else:
-                gcode = """G00 Z{toolchangez}
+                gcode = """
+M5             
+G00 Z{toolchangez}               
 T{tool}
-M5
 M6
 (MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
 M0""".format(toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
@@ -126,11 +128,12 @@ M0""".format(toolchangez=self.coordinate_format % (p.coords_decimals, toolchange
 
         else:
             if toolchangexy is not None:
-                gcode = """G00 Z{toolchangez}
-G00 X{toolchangex} Y{toolchangey}
+                gcode = """
+M5             
+G00 Z{toolchangez}
+G00 X{toolchangex} Y{toolchangey}                
 T{tool}
-M5
-M6    
+M6
 (MSG, Change to Tool Dia = {toolC})
 M0""".format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchangex),
              toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
@@ -138,10 +141,11 @@ M0""".format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchange
              tool=int(p.tool),
              toolC=toolC_formatted)
             else:
-                gcode = """G00 Z{toolchangez}
+                gcode = """
+M5             
+G00 Z{toolchangez}              
 T{tool}
-M5
-M6    
+M6
 (MSG, Change to Tool Dia = {toolC})
 M0""".format(toolchangez=self.coordinate_format%(p.coords_decimals, toolchangez),
              tool=int(p.tool),

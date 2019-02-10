@@ -98,9 +98,9 @@ class Toolchange_Probe_MACH3(FlatCAMPostProc):
                     no_drills = i[2]
 
             if toolchangexy is not None:
-                gcode = """               
+                gcode = """  
+M5             
 T{tool}
-M5
 M6
 G00 Z{toolchangez}
 G00 X{toolchangex} Y{toolchangey}
@@ -129,8 +129,8 @@ G00 Z{z_move}
            toolC=toolC_formatted)
             else:
                 gcode = """
-T{tool}
 M5
+T{tool}
 M6
 G00 Z{toolchangez}
 (MSG, Change to Tool Dia = {toolC} ||| Drills for this tool = {t_drills} ||| Tool Probing MACH3)
@@ -162,8 +162,8 @@ G00 Z{z_move}
         else:
             if toolchangexy is not None:
                 gcode = """
-T{tool}
 M5
+T{tool}
 M6
 G00 Z{toolchangez}
 G00 X{toolchangex} Y{toolchangey}
@@ -191,8 +191,8 @@ G00 Z{z_move}
            toolC=toolC_formatted)
             else:
                 gcode = """
-T{tool}
 M5
+T{tool}
 M6
 G00 Z{toolchangez}
 (MSG, Change to Tool Dia = {toolC} ||| Tool Probing MACH3)
