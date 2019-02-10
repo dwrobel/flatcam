@@ -2782,66 +2782,6 @@ class App(QtCore.QObject):
 
         self.inform.emit("[success] A Geometry object was converted to SingleGeo type.")
 
-    def on_skey_tool_add(self):
-        ## Current application units in Upper Case
-        self.units = self.general_options_form.general_app_group.units_radio.get_value().upper()
-
-        # work only if the notebook tab on focus is the Selected_Tab and only if the object is Geometry
-        if self.ui.notebook.currentWidget().objectName() == 'selected_tab':
-            if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
-                tool_add_popup = FCInputDialog(title="New Tool ...",
-                                               text='Enter a Tool Diameter:',
-                                               min=0.0000, max=99.9999, decimals=4)
-                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
-
-                val, ok = tool_add_popup.get_value()
-                if ok:
-                    if float(val) == 0:
-                        self.inform.emit(
-                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
-                        return
-                    self.collection.get_active().on_tool_add(dia=float(val))
-                else:
-                    self.inform.emit(
-                        "[WARNING_NOTCL] Adding Tool cancelled ...")
-
-        # work only if the notebook tab on focus is the Tools_Tab
-        if self.ui.notebook.currentWidget().objectName() == 'tool_tab':
-            # and only if the tool is NCC Tool
-            if self.ui.tool_scroll_area.widget().objectName() == self.ncclear_tool.toolName:
-                tool_add_popup = FCInputDialog(title="New Tool ...",
-                                               text='Enter a Tool Diameter:',
-                                               min=0.0000, max=99.9999, decimals=4)
-                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
-
-                val, ok = tool_add_popup.get_value()
-                if ok:
-                    if float(val) == 0:
-                        self.inform.emit(
-                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
-                        return
-                    self.ncclear_tool.on_tool_add(dia=float(val))
-                else:
-                    self.inform.emit(
-                        "[WARNING_NOTCL] Adding Tool cancelled ...")
-            # and only if the tool is Paint Area Tool
-            if self.ui.tool_scroll_area.widget().objectName() == self.paint_tool.toolName:
-                tool_add_popup = FCInputDialog(title="New Tool ...",
-                                               text='Enter a Tool Diameter:',
-                                               min=0.0000, max=99.9999, decimals=4)
-                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
-
-                val, ok = tool_add_popup.get_value()
-                if ok:
-                    if float(val) == 0:
-                        self.inform.emit(
-                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
-                        return
-                    self.paint_tool.on_tool_add(dia=float(val))
-                else:
-                    self.inform.emit(
-                        "[WARNING_NOTCL] Adding Tool cancelled ...")
-
     def on_options_dict_change(self, field):
         self.options_write_form_field(field)
 
@@ -3585,6 +3525,100 @@ class App(QtCore.QObject):
             # Mark end of undo block
             cursor.endEditBlock()
 
+    def on_tool_add_keypress(self):
+        ## Current application units in Upper Case
+        self.units = self.general_options_form.general_app_group.units_radio.get_value().upper()
+
+        notebook_widget_name = self.ui.notebook.currentWidget().objectName()
+
+        # work only if the notebook tab on focus is the Selected_Tab and only if the object is Geometry
+        if notebook_widget_name == 'selected_tab':
+            if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
+                tool_add_popup = FCInputDialog(title="New Tool ...",
+                                               text='Enter a Tool Diameter:',
+                                               min=0.0000, max=99.9999, decimals=4)
+                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+                val, ok = tool_add_popup.get_value()
+                if ok:
+                    if float(val) == 0:
+                        self.inform.emit(
+                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
+                        return
+                    self.collection.get_active().on_tool_add(dia=float(val))
+                else:
+                    self.inform.emit(
+                        "[WARNING_NOTCL] Adding Tool cancelled ...")
+
+        # work only if the notebook tab on focus is the Tools_Tab
+        if notebook_widget_name == 'tool_tab':
+            tool_widget = self.ui.tool_scroll_area.widget().objectName()
+
+            # and only if the tool is NCC Tool
+            if tool_widget == self.ncclear_tool.toolName:
+                tool_add_popup = FCInputDialog(title="New Tool ...",
+                                               text='Enter a Tool Diameter:',
+                                               min=0.0000, max=99.9999, decimals=4)
+                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+                val, ok = tool_add_popup.get_value()
+                if ok:
+                    if float(val) == 0:
+                        self.inform.emit(
+                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
+                        return
+                    self.ncclear_tool.on_tool_add(dia=float(val))
+                else:
+                    self.inform.emit(
+                        "[WARNING_NOTCL] Adding Tool cancelled ...")
+            # and only if the tool is Paint Area Tool
+            elif tool_widget == self.paint_tool.toolName:
+                tool_add_popup = FCInputDialog(title="New Tool ...",
+                                               text='Enter a Tool Diameter:',
+                                               min=0.0000, max=99.9999, decimals=4)
+                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+                val, ok = tool_add_popup.get_value()
+                if ok:
+                    if float(val) == 0:
+                        self.inform.emit(
+                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
+                        return
+                    self.paint_tool.on_tool_add(dia=float(val))
+                else:
+                    self.inform.emit(
+                        "[WARNING_NOTCL] Adding Tool cancelled ...")
+
+    # It's meant to delete tools in tool tables via a 'Delete' shortcut key but only if certain conditions are met
+    # See description bellow.
+    def on_delete_keypress(self):
+        notebook_widget_name = self.ui.notebook.currentWidget().objectName()
+
+        # work only if the notebook tab on focus is the Selected_Tab and only if the object is Geometry
+        if notebook_widget_name == 'selected_tab':
+            if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
+                self.collection.get_active().on_tool_delete()
+
+        # work only if the notebook tab on focus is the Tools_Tab
+        elif notebook_widget_name == 'tool_tab':
+            tool_widget = self.ui.tool_scroll_area.widget().objectName()
+
+            # and only if the tool is NCC Tool
+            if tool_widget == self.ncclear_tool.toolName:
+                self.ncclear_tool.on_tool_delete()
+
+            # and only if the tool is Paint Tool
+            elif tool_widget == self.paint_tool.toolName:
+                self.paint_tool.on_tool_delete()
+
+        else:
+            self.on_delete()
+
+    # It's meant to delete selected objects. It work also activated by a shortcut key 'Delete' same as above so in
+    # some screens you have to be careful where you hover with your mouse.
+    # Hovering over Selected tab, if the selected tab is a Geometry it will delete tools in tool table. But even if
+    # there is a Selected tab in focus with a Geometry inside, if you hover over canvas it will delete an object.
+    # Complicated, I know :)
     def on_delete(self):
         """
         Delete the currently selected FlatCAMObjs.

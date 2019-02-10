@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - the SELECTED type of messages are no longer printed to shell from 2 reasons: first, too much spam and second, issue with displaying html
 - on set_zero function and creation of new geometry or new excellon there is no longer a zoom fit 
+- repurposed shortcut key 'Delete' to delete tools in tooltable when the mouse is over the Seleted tab (with Geometry inside) or in Tools tab (when NCC Tool or Paint Tool is inside). Or in Excellon Editor when mouse is hovering the Selected tab selecting a tool, 'Delete' key will delete that tool, if on canvas 'Delete' key will delete a selected shape (drill). In rest, will delete selected objects.
+
 
 9.02.2019
 

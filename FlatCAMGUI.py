@@ -991,7 +991,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 		</tr>
 		<tr height="20">
 			<td height="20"><strong>Del</strong></td>
-			<td>&nbsp;Delete Obj</td>
+			<td>&nbsp;Delete Object</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>Del</strong></td>
+			<td>&nbsp;Alternate: Delete Tool</td>
 		</tr>
         <tr height="20">
 			<td height="20"><strong>'`'</strong></td>
@@ -1149,6 +1153,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 		<tr height="20">
 			<td height="20"><strong>Del</strong></td>
 			<td>&nbsp;Delete Drill(s)</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>Del</strong></td>
+			<td>&nbsp;Alternate: Delete Tool(s)</td>
 		</tr>
 		<tr height="20">
 			<td height="20">&nbsp;</td>
@@ -1616,7 +1624,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_Y:
                     self.app.on_skewy()
                     return
-
             elif modifiers == QtCore.Qt.AltModifier:
                 # Eanble all plots
                 if key == Qt.Key_1:
@@ -1698,11 +1705,17 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_3:
                     self.app.on_select_tab('tool')
 
-                # Delete
-                if key == QtCore.Qt.Key_Delete or key == 'Delete':
+                # Delete from PyQt
+                # It's meant to make a difference between delete objects and delete tools in
+                # Geometry Selected tool table
+                if key == QtCore.Qt.Key_Delete:
+                    self.app.on_delete_keypress()
+
+                # Delete from canvas
+                if key == 'Delete':
+                    # Delete via the application to
+                    # ensure cleanup of the GUI
                     if active:
-                        # Delete via the application to
-                        # ensure cleanup of the GUI
                         active.app.on_delete()
 
                 # Escape = Deselect All
@@ -1768,7 +1781,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Add a Tool from shortcut
                 if key == QtCore.Qt.Key_T:
-                    self.app.on_skey_tool_add()
+                    self.app.on_tool_add_keypress()
 
                 # Zoom Fit
                 if key == QtCore.Qt.Key_V:
@@ -2055,14 +2068,20 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.exc_editor.select_tool('select')
                     return
 
-                # Delete selected object
-                if key == QtCore.Qt.Key_Delete or key == 'Delete':
+                # Delete selected object if delete key event comes out of canvas
+                if key == 'Delete':
                     self.app.exc_editor.launched_from_shortcuts = True
                     if self.app.exc_editor.selected:
                         self.app.exc_editor.delete_selected()
                         self.app.exc_editor.replot()
                     else:
                         self.app.inform.emit("[WARNING_NOTCL]Cancelled. Nothing selected to delete.")
+                    return
+
+                # Delete tools in tools table if delete key event comes from the Selected Tab
+                if key == QtCore.Qt.Key_Delete:
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    self.app.exc_editor.on_tool_delete()
                     return
 
                 if key == QtCore.Qt.Key_Minus or key == '-':

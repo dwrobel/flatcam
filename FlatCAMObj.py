@@ -2688,6 +2688,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         temp_tools = copy.deepcopy(self.tools)
                         for tooluid_key in self.tools:
                             if int(tooluid_key) == tooluid_del:
+                                # if the self.tools has only one tool and we delete it then we move the solid_geometry
+                                # as a property of the object otherwise there will be nothing to hold it
+                                if len(self.tools) == 1:
+                                    self.solid_geometry = copy.deepcopy(self.tools[tooluid_key]['solid_geometry'])
                                 temp_tools.pop(tooluid_del, None)
                         self.tools = copy.deepcopy(temp_tools)
                         temp_tools.clear()
