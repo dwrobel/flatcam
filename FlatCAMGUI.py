@@ -1680,7 +1680,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_F10 or key == 'F10':
                     self.app.on_fullscreen()
                     return
-            else:
+            elif modifiers == QtCore.Qt.NoModifier:
                 # Open Manual
                 if key == QtCore.Qt.Key_F1 or key == 'F1':
                     webbrowser.open(self.app.manual_url)
@@ -1824,7 +1824,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 pass
             elif modifiers == QtCore.Qt.AltModifier:
                 pass
-            else:
+            elif modifiers == QtCore.Qt.NoModifier:
                 # toggle display of Notebook area
                 if key == QtCore.Qt.Key_QuoteLeft or key == '`':
                     self.app.on_toggle_notebook()
@@ -2036,7 +2036,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Show Shortcut list
                 if key == 'F3':
                     self.app.on_shortcut_list()
-
         elif self.app.call_source == 'exc_editor':
             if modifiers == QtCore.Qt.ControlModifier:
                 # save (update) the current geometry and return to the App
@@ -2053,7 +2052,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 pass
             elif modifiers == QtCore.Qt.AltModifier:
                 pass
-            else:
+            elif modifiers == QtCore.Qt.NoModifier:
                 # Abort the current action
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
                     # TODO: ...?

@@ -16,6 +16,8 @@ CAD program, and create G-Code for Isolation routing.
 - repurposed shortcut key 'Delete' to delete tools in tooltable when the mouse is over the Seleted tab (with Geometry inside) or in Tools tab (when NCC Tool or Paint Tool is inside). Or in Excellon Editor when mouse is hovering the Selected tab selecting a tool, 'Delete' key will delete that tool, if on canvas 'Delete' key will delete a selected shape (drill). In rest, will delete selected objects.
 - adjusted the postprocessor files so the Spindle Off command (M5) is done before the move to Toolchange Z
 - adjusted the Toolchange Manual postprocessor file to have more descriptive messages on the toolchange event
+- added a strong focus to the object_name entry in the Selected tab
+- the keypad keyPressed are now detected correctly
 
 9.02.2019
 

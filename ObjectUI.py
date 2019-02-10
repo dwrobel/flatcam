@@ -4,6 +4,7 @@ from GUIElements import FCEntry, FloatEntry, EvalEntry, FCCheckBox, FCTable, \
     LengthEntry, FCTextArea, IntEntry, RadioSet, OptionalInputSection, FCComboBox, FloatEntry2, EvalEntry2
 from camlib import Excellon
 
+
 class ObjectUI(QtWidgets.QWidget):
     """
     Base class for the UI of FlatCAM objects. Deriving classes should
@@ -38,6 +39,7 @@ class ObjectUI(QtWidgets.QWidget):
         self.name_box.addWidget(name_label)
         self.name_entry = FCEntry()
         self.name_box.addWidget(self.name_entry)
+        self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
 
         ## Box box for custom widgets
         # This gets populated in offspring implementations.
