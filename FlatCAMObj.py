@@ -865,6 +865,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # TODO: Document this.
         self.tool_cbs = {}
 
+        # dict to hold the tool number as key and tool offset as value
+        self.tool_offset ={}
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -1058,6 +1061,12 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
     def build_ui(self):
         FlatCAMObj.build_ui(self)
 
+        try:
+            # if connected, disconnect the signal from the slot on item_changed as it creates issues
+            self.ui.tools_table.itemChanged.disconnect()
+        except:
+            pass
+
         n = len(self.tools)
         # we have (n+2) rows because there are 'n' tools, each a row, plus the last 2 rows for totals.
         self.ui.tools_table.setRowCount(n + 2)
@@ -1116,9 +1125,20 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 slot_count = QtWidgets.QTableWidgetItem('')
             slot_count.setFlags(QtCore.Qt.ItemIsEnabled)
 
+            try:
+                if self.units == 'MM':
+                    t_offset = self.tool_offset[float('%.2f' % float(self.tools[tool_no]['C']))]
+                else:
+                    t_offset = self.tool_offset[float('%.3f' % float(self.tools[tool_no]['C']))]
+            except KeyError:
+                    t_offset = self.app.defaults['excellon_offset']
+            tool_offset_item = QtWidgets.QTableWidgetItem('%s' % str(t_offset))
+
             self.ui.tools_table.setItem(self.tool_row, 1, dia)  # Diameter
             self.ui.tools_table.setItem(self.tool_row, 2, drill_count)  # Number of drills per tool
             self.ui.tools_table.setItem(self.tool_row, 3, slot_count)  # Number of drills per tool
+            self.ui.tools_table.setItem(self.tool_row, 4, tool_offset_item)  # Tool offset
+
             self.tool_row += 1
 
         # add a last row with the Total number of drills
@@ -1210,6 +1230,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.slot_tooldia_entry.show()
             self.ui.generate_milling_slots_button.show()
 
+        # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
+        self.ui.tools_table.itemChanged.connect(self.on_tool_offset_edit)
+
     def set_ui(self, ui):
         """
         Configures the user interface for this object.
@@ -1254,6 +1277,16 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # Fill form fields
         self.to_form()
 
+        # initialize the dict that holds the tools offset
+        t_default_offset = self.app.defaults["excellon_offset"]
+        if not self.tool_offset:
+            for value in self.tools.values():
+                if self.units == 'MM':
+                    dia = float('%.2f' % float(value['C']))
+                else:
+                    dia = float('%.3f' % float(value['C']))
+                self.tool_offset[dia] = t_default_offset
+
         assert isinstance(self.ui, ExcellonObjectUI), \
             "Expected a ExcellonObjectUI, got %s" % type(self.ui)
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
@@ -1263,6 +1296,42 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.ui.generate_milling_slots_button.clicked.connect(self.on_generate_milling_slots_button_click)
 
         self.ui.pp_excellon_name_cb.activated.connect(self.on_pp_changed)
+
+    def on_tool_offset_edit(self):
+        # if connected, disconnect the signal from the slot on item_changed as it creates issues
+        self.ui.tools_table.itemChanged.disconnect()
+        # self.tools_table_exc.selectionModel().currentChanged.disconnect()
+
+        self.is_modified = True
+
+        row_of_item_changed = self.ui.tools_table.currentRow()
+        if self.units == 'MM':
+            dia = float('%.2f' % float(self.ui.tools_table.item(row_of_item_changed, 1).text()))
+        else:
+            dia = float('%.3f' % float(self.ui.tools_table.item(row_of_item_changed, 1).text()))
+
+        current_table_offset_edited = None
+        if self.ui.tools_table.currentItem() is not None:
+            try:
+                current_table_offset_edited = float(self.ui.tools_table.currentItem().text())
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    current_table_offset_edited = float(self.ui.tools_table.currentItem().text().replace(',', '.'))
+                    self.ui.tools_table.currentItem().setText(
+                        self.ui.tools_table.currentItem().text().replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
+                                         "use a number.")
+                    self.ui.tools_table.currentItem().setText(str(self.tool_offset[dia]))
+                    return
+
+        self.tool_offset[dia] = current_table_offset_edited
+
+        print(self.tool_offset)
+
+        # we reactivate the signals after the after the tool editing
+        self.ui.tools_table.itemChanged.connect(self.on_tool_offset_edit)
 
     def get_selected_tools_list(self):
         """

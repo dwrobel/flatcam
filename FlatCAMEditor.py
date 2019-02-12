@@ -3532,6 +3532,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.new_drills = []
         self.new_tools = {}
         self.new_slots = {}
+        self.new_tool_offset = {}
 
         # dictionary to store the tool_row and diameters in Tool_table
         # it will be updated everytime self.build_ui() is called
@@ -3872,7 +3873,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
         # horizontal_header.setStretchLastSection(True)
 
-        self.tools_table_exc.setSortingEnabled(True)
+        # self.tools_table_exc.setSortingEnabled(True)
         # sort by tool diameter
         self.tools_table_exc.sortItems(1)
 
@@ -3949,6 +3950,7 @@ class FlatCAMExcEditor(QtCore.QObject):
     def on_tool_delete(self, dia=None):
         self.is_modified = True
         deleted_tool_dia_list = []
+        deleted_tool_offset_list = []
 
         try:
             if dia is None or dia is False:
@@ -3984,6 +3986,8 @@ class FlatCAMExcEditor(QtCore.QObject):
             if flag_del:
                 for tool_to_be_deleted in flag_del:
                     self.tool2tooldia.pop(tool_to_be_deleted, None)
+                    self.exc_obj.tool_offset.pop(tool_to_be_deleted, None)
+
                     # delete also the drills from points_edit dict just in case we add the tool again, we don't want to show the
                     # number of drills from before was deleter
                     self.points_edit[deleted_tool_dia] = []
@@ -4315,6 +4319,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         if self.exc_obj.slots:
             self.new_slots = self.exc_obj.slots
 
+        self.new_tool_offset = self.exc_obj.tool_offset
+
         # reset the tool table
         self.tools_table_exc.clear()
         self.tools_table_exc.setHorizontalHeaderLabels(['#', 'Diameter', 'D', 'S'])
@@ -4364,6 +4370,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             excellon_obj.drills = self.new_drills
             excellon_obj.tools = self.new_tools
             excellon_obj.slots = self.new_slots
+            excellon_obj.tool_offset = self.new_tool_offset
             excellon_obj.options['name'] = outname
 
             try:

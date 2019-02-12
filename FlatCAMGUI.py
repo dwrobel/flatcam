@@ -3296,14 +3296,23 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.cutz_entry = LengthEntry()
         grid2.addWidget(self.cutz_entry, 0, 1)
 
+        offsetlabel = QtWidgets.QLabel('Offset:')
+        offsetlabel.setToolTip(
+            "Some drill bits (the larger ones) need to drill deeper\n"
+            "to create the desired exit hole diameter due of the tip shape.\n"
+            "The value here can compensate the Cut Z parameter.")
+        grid2.addWidget(offsetlabel, 1, 0)
+        self.offset_entry = LengthEntry()
+        grid2.addWidget(self.offset_entry, 1, 1)
+
         travelzlabel = QtWidgets.QLabel('Travel Z:')
         travelzlabel.setToolTip(
             "Tool height when travelling\n"
             "across the XY plane."
         )
-        grid2.addWidget(travelzlabel, 1, 0)
+        grid2.addWidget(travelzlabel, 2, 0)
         self.travelz_entry = LengthEntry()
-        grid2.addWidget(self.travelz_entry, 1, 1)
+        grid2.addWidget(self.travelz_entry, 2, 1)
 
         # Tool change:
         toolchlabel = QtWidgets.QLabel("Tool change:")
@@ -3312,51 +3321,51 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             "in G-Code (Pause for tool change)."
         )
         self.toolchange_cb = FCCheckBox()
-        grid2.addWidget(toolchlabel, 2, 0)
-        grid2.addWidget(self.toolchange_cb, 2, 1)
+        grid2.addWidget(toolchlabel, 3, 0)
+        grid2.addWidget(self.toolchange_cb, 3, 1)
 
         toolchangezlabel = QtWidgets.QLabel('Toolchange Z:')
         toolchangezlabel.setToolTip(
             "Toolchange Z position."
         )
-        grid2.addWidget(toolchangezlabel, 3, 0)
+        grid2.addWidget(toolchangezlabel, 4, 0)
         self.toolchangez_entry = LengthEntry()
-        grid2.addWidget(self.toolchangez_entry, 3, 1)
+        grid2.addWidget(self.toolchangez_entry, 4, 1)
 
         toolchange_xy_label = QtWidgets.QLabel('Toolchange X,Y:')
         toolchange_xy_label.setToolTip(
             "Toolchange X,Y position."
         )
-        grid2.addWidget(toolchange_xy_label, 4, 0)
+        grid2.addWidget(toolchange_xy_label, 5, 0)
         self.toolchangexy_entry = FCEntry()
-        grid2.addWidget(self.toolchangexy_entry, 4, 1)
+        grid2.addWidget(self.toolchangexy_entry, 5, 1)
 
         startzlabel = QtWidgets.QLabel('Start move Z:')
         startzlabel.setToolTip(
             "Height of the tool just after start.\n"
             "Delete the value if you don't need this feature."
         )
-        grid2.addWidget(startzlabel, 5, 0)
+        grid2.addWidget(startzlabel, 6, 0)
         self.estartz_entry = FloatEntry()
-        grid2.addWidget(self.estartz_entry, 5, 1)
+        grid2.addWidget(self.estartz_entry, 6, 1)
 
         endzlabel = QtWidgets.QLabel('End move Z:')
         endzlabel.setToolTip(
             "Height of the tool after\n"
             "the last move at the end of the job."
         )
-        grid2.addWidget(endzlabel, 6, 0)
+        grid2.addWidget(endzlabel, 7, 0)
         self.eendz_entry = LengthEntry()
-        grid2.addWidget(self.eendz_entry, 6, 1)
+        grid2.addWidget(self.eendz_entry, 7, 1)
 
         frlabel = QtWidgets.QLabel('Feedrate:')
         frlabel.setToolTip(
             "Tool speed while drilling\n"
             "(in units per minute)."
         )
-        grid2.addWidget(frlabel, 7, 0)
+        grid2.addWidget(frlabel, 8, 0)
         self.feedrate_entry = LengthEntry()
-        grid2.addWidget(self.feedrate_entry, 7, 1)
+        grid2.addWidget(self.feedrate_entry, 8, 1)
 
         fr_rapid_label = QtWidgets.QLabel('Feedrate Rapids:')
         fr_rapid_label.setToolTip(
@@ -3364,9 +3373,9 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             "with rapid move\n"
             "(in units per minute)."
         )
-        grid2.addWidget(fr_rapid_label, 8, 0)
+        grid2.addWidget(fr_rapid_label, 9, 0)
         self.feedrate_rapid_entry = LengthEntry()
-        grid2.addWidget(self.feedrate_rapid_entry, 8, 1)
+        grid2.addWidget(self.feedrate_rapid_entry, 9, 1)
 
         # Spindle speed
         spdlabel = QtWidgets.QLabel('Spindle speed:')
@@ -3374,9 +3383,9 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             "Speed of the spindle\n"
             "in RPM (optional)"
         )
-        grid2.addWidget(spdlabel, 9, 0)
+        grid2.addWidget(spdlabel, 10, 0)
         self.spindlespeed_entry = IntEntry(allow_empty=True)
-        grid2.addWidget(self.spindlespeed_entry, 9, 1)
+        grid2.addWidget(self.spindlespeed_entry, 10, 1)
 
         # Dwell
         dwelllabel = QtWidgets.QLabel('Dwell:')
@@ -3390,10 +3399,10 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         )
         self.dwell_cb = FCCheckBox()
         self.dwelltime_entry = FCEntry()
-        grid2.addWidget(dwelllabel, 10, 0)
-        grid2.addWidget(self.dwell_cb, 10, 1)
-        grid2.addWidget(dwelltime, 11, 0)
-        grid2.addWidget(self.dwelltime_entry, 11, 1)
+        grid2.addWidget(dwelllabel, 11, 0)
+        grid2.addWidget(self.dwell_cb, 11, 1)
+        grid2.addWidget(dwelltime, 12, 0)
+        grid2.addWidget(self.dwelltime_entry, 12, 1)
 
         self.ois_dwell_exc = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
@@ -3403,10 +3412,10 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             "The postprocessor file that dictates\n"
             "gcode output."
         )
-        grid2.addWidget(pp_excellon_label, 12, 0)
+        grid2.addWidget(pp_excellon_label, 13, 0)
         self.pp_excellon_name_cb = FCComboBox()
         self.pp_excellon_name_cb.setFocusPolicy(Qt.StrongFocus)
-        grid2.addWidget(self.pp_excellon_name_cb, 12, 1)
+        grid2.addWidget(self.pp_excellon_name_cb, 13, 1)
 
         # Probe depth
         self.pdepth_label = QtWidgets.QLabel("Probe Z depth:")
@@ -3414,18 +3423,18 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             "The maximum depth that the probe is allowed\n"
             "to probe. Negative value, in current units."
         )
-        grid2.addWidget(self.pdepth_label, 13, 0)
+        grid2.addWidget(self.pdepth_label, 14, 0)
         self.pdepth_entry = FCEntry()
-        grid2.addWidget(self.pdepth_entry, 13, 1)
+        grid2.addWidget(self.pdepth_entry, 14, 1)
 
         # Probe feedrate
         self.feedrate_probe_label = QtWidgets.QLabel("Feedrate Probe:")
         self.feedrate_probe_label.setToolTip(
             "The feedrate used while the probe is probing."
         )
-        grid2.addWidget(self.feedrate_probe_label, 14, 0)
+        grid2.addWidget(self.feedrate_probe_label, 15, 0)
         self.feedrate_probe_entry = FCEntry()
-        grid2.addWidget(self.feedrate_probe_entry, 14, 1)
+        grid2.addWidget(self.feedrate_probe_entry, 15, 1)
 
         fplungelabel = QtWidgets.QLabel('Fast Plunge:')
         fplungelabel.setToolTip(
@@ -3435,8 +3444,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             "WARNING: the move is done at Toolchange X,Y coords."
         )
         self.fplunge_cb = FCCheckBox()
-        grid2.addWidget(fplungelabel, 15, 0)
-        grid2.addWidget(self.fplunge_cb, 15, 1)
+        grid2.addWidget(fplungelabel, 16, 0)
+        grid2.addWidget(self.fplunge_cb, 16, 1)
 
         #### Choose what to use for Gcode creation: Drills, Slots or Both
         excellon_gcode_type_label = QtWidgets.QLabel('<b>Gcode:    </b>')
@@ -3449,8 +3458,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.excellon_gcode_type_radio = RadioSet([{'label': 'Drills', 'value': 'drills'},
                                           {'label': 'Slots', 'value': 'slots'},
                                           {'label': 'Both', 'value': 'both'}])
-        grid2.addWidget(excellon_gcode_type_label, 16, 0)
-        grid2.addWidget(self.excellon_gcode_type_radio, 16, 1)
+        grid2.addWidget(excellon_gcode_type_label, 17, 0)
+        grid2.addWidget(self.excellon_gcode_type_radio, 17, 1)
 
         # until I decide to implement this feature those remain disabled
         excellon_gcode_type_label.hide()

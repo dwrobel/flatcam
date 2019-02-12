@@ -419,8 +419,8 @@ class ExcellonObjectUI(ObjectUI):
         self.tools_table = FCTable()
         self.tools_box.addWidget(self.tools_table)
 
-        self.tools_table.setColumnCount(4)
-        self.tools_table.setHorizontalHeaderLabels(['#', 'Diameter', 'D', 'S'])
+        self.tools_table.setColumnCount(5)
+        self.tools_table.setHorizontalHeaderLabels(['#', 'Diameter', 'D', 'S', 'Offset'])
         self.tools_table.setSortingEnabled(False)
 
         self.tools_table.horizontalHeaderItem(0).setToolTip(
@@ -436,6 +436,10 @@ class ExcellonObjectUI(ObjectUI):
         self.tools_table.horizontalHeaderItem(3).setToolTip(
             "The number of Slot holes. Holes that are created by\n"
             "milling them with an endmill bit.")
+        self.tools_table.horizontalHeaderItem(4).setToolTip(
+            "Some drill bits (the larger ones) need to drill deeper\n"
+            "to create the desired exit hole diameter due of the tip shape.\n"
+            "The value here can compensate the Cut Z parameter.")
 
         self.empty_label = QtWidgets.QLabel('')
         self.tools_box.addWidget(self.empty_label)

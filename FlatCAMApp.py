@@ -93,7 +93,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.909
-    version_date = "2019/02/12"
+    version_date = "2019/02/13"
     beta = True
 
     # current date now
@@ -365,6 +365,7 @@ class App(QtCore.QObject):
             "excellon_startz": self.excellon_defaults_form.excellon_opt_group.estartz_entry,
             "excellon_endz": self.excellon_defaults_form.excellon_opt_group.eendz_entry,
             "excellon_tooldia": self.excellon_defaults_form.excellon_opt_group.tooldia_entry,
+            "excellon_offset": self.excellon_defaults_form.excellon_opt_group.offset_entry,
             "excellon_slot_tooldia": self.excellon_defaults_form.excellon_opt_group.slot_tooldia_entry,
             "excellon_gcode_type": self.excellon_defaults_form.excellon_opt_group.excellon_gcode_type_radio,
 
@@ -556,6 +557,7 @@ class App(QtCore.QObject):
             "excellon_toolchangez": 1.0,
             "excellon_toolchangexy": "0.0, 0.0",
             "excellon_tooldia": 0.016,
+            "excellon_offset": 0.0,
             "excellon_slot_tooldia": 0.016,
             "excellon_startz": None,
             "excellon_endz": 2.0,

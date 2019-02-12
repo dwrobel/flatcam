@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+12.02.2019
+
+- whenever a FlatCAM tool is activated, if the notebook side is hidden it will be unhidden
+- reactivated the Voronoi classed
+- added a new parameter named Offset in the Excellon tool table - work in progress
+
 10.02.2019
 
 - the SELECTED type of messages are no longer printed to shell from 2 reasons: first, too much spam and second, issue with displaying html
