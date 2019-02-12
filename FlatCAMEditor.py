@@ -3970,6 +3970,9 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         for deleted_tool_dia in deleted_tool_dia_list:
 
+            # delete de tool offset
+            self.exc_obj.tool_offset.pop(float(deleted_tool_dia), None)
+
             # delete the storage used for that tool
             storage_elem = FlatCAMGeoEditor.make_storage()
             self.storage_dict[deleted_tool_dia] = storage_elem
@@ -3985,8 +3988,8 @@ class FlatCAMExcEditor(QtCore.QObject):
 
             if flag_del:
                 for tool_to_be_deleted in flag_del:
+                    # delete the tool
                     self.tool2tooldia.pop(tool_to_be_deleted, None)
-                    self.exc_obj.tool_offset.pop(tool_to_be_deleted, None)
 
                     # delete also the drills from points_edit dict just in case we add the tool again, we don't want to show the
                     # number of drills from before was deleter
@@ -4027,6 +4030,11 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.olddia_newdia[dia_changed] = current_table_dia_edited
             # update the dict that holds tool_no as key and tool_dia as value
             self.tool2tooldia[key_in_tool2tooldia] = current_table_dia_edited
+
+            # update the tool offset
+            modified_offset = self.exc_obj.tool_offset.pop(dia_changed)
+            self.exc_obj.tool_offset[current_table_dia_edited] = modified_offset
+
             self.replot()
         else:
             # tool diameter is already in use so we move the drills from the prior tool to the new tool
@@ -4039,6 +4047,9 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.add_exc_shape(geometry, self.storage_dict[current_table_dia_edited])
 
             self.on_tool_delete(dia=dia_changed)
+
+            # delete the tool offset
+            self.exc_obj.tool_offset.pop(dia_changed, None)
 
         # we reactivate the signals after the after the tool editing
         self.tools_table_exc.itemChanged.connect(self.on_tool_edit)
@@ -4226,8 +4237,9 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.replot()
 
-        # add a first tool in the Tool Table
-        self.on_tool_add(tooldia=1.00)
+        # add a first tool in the Tool Table but only if the Excellon Object is empty
+        if not self.tool2tooldia:
+            self.on_tool_add(tooldia=1.00)
 
     def update_fcexcellon(self, exc_obj):
         """

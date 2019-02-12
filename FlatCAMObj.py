@@ -1328,8 +1328,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         self.tool_offset[dia] = current_table_offset_edited
 
-        print(self.tool_offset)
-
         # we reactivate the signals after the after the tool editing
         self.ui.tools_table.itemChanged.connect(self.on_tool_offset_edit)
 
@@ -1763,6 +1761,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
             app_obj.progress.emit(20)
             job_obj.z_cut = float(self.options["drillz"])
+            job_obj.tool_offset = self.tool_offset
             job_obj.z_move = float(self.options["travelz"])
             job_obj.feedrate = float(self.options["feedrate"])
             job_obj.feedrate_rapid = float(self.options["feedrate_rapid"])

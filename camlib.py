@@ -4399,6 +4399,8 @@ class CNCjob(Geometry):
         self.units = units
 
         self.z_cut = z_cut
+        self.tool_offset = {}
+
         self.z_move = z_move
 
         self.feedrate = feedrate
@@ -4746,6 +4748,13 @@ class CNCjob(Geometry):
                                 if self.dwell is True:
                                     gcode += self.doformat(p.dwell_code)  # Dwell time
 
+                            if self.units == 'MM':
+                                current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
+                            else:
+                                current_tooldia = float('%.3f' % float(exobj.tools[tool]["C"]))
+                            z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+                            self.z_cut += z_offset
+
                             # Drillling!
                             for k in node_list:
                                 locx = locations[k][0]
@@ -4827,6 +4836,14 @@ class CNCjob(Geometry):
                                 if self.dwell is True:
                                     gcode += self.doformat(p.dwell_code)  # Dwell time
 
+                            if self.units == 'MM':
+                                current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
+                            else:
+                                current_tooldia = float('%.3f' % float(exobj.tools[tool]["C"]))
+
+                            z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+                            self.z_cut += z_offset
+
                             # Drillling!
                             for k in node_list:
                                 locx = locations[k][0]
@@ -4868,6 +4885,12 @@ class CNCjob(Geometry):
                             if self.dwell is True:
                                 gcode += self.doformat(p.dwell_code)  # Dwell time
 
+                        if self.units == 'MM':
+                            current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
+                        else:
+                            current_tooldia = float('%.3f' % float(exobj.tools[tool]["C"]))
+                        z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+                        self.z_cut += z_offset
                         # Drillling!
                         altPoints = []
                         for point in points[tool]:

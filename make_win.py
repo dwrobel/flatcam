@@ -79,12 +79,12 @@ else:
 
 print("INCLUDE_FILES", include_files)
 
-#execfile('clean.py')
+# execfile('clean.py')
 
 setup(
     name="FlatCAM",
     author="Juan Pablo Caram",
-    version="3000",
+    version="Beta",
     description="FlatCAM: 2D Computer Aided PCB Manufacturing",
     options=dict(build_exe=buildOptions),
     executables=[Executable("FlatCAM.py", icon='share/flatcam_icon48.ico', base=base)]
