@@ -4306,6 +4306,9 @@ class FlatCAMExcEditor(QtCore.QObject):
             spec = {"C": float(tool_dia[0])}
             self.new_tools[name] = spec
 
+            # add in self.tools the 'solid_geometry' key, the value (a list) is populated bellow
+            self.new_tools[name]['solid_geometry'] = []
+
             # create the self.drills for the new Excellon object (the one with edited content)
             for point in tool_dia[1]:
                 self.new_drills.append(
@@ -4314,6 +4317,9 @@ class FlatCAMExcEditor(QtCore.QObject):
                         'tool': str(current_tool)
                     }
                 )
+                # repopulate the 'solid_geometry' for each tool
+                poly = Point(point).buffer(float(tool_dia[0]) / 2.0, int(int(exc_obj.geo_steps_per_circle) / 4))
+                self.new_tools[name]['solid_geometry'].append(poly)
 
         if self.is_modified is True:
             if "_edit" in self.edited_obj_name:

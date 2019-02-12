@@ -388,16 +388,12 @@ class ExcellonObjectUI(ObjectUI):
 
         grid0 = QtWidgets.QGridLayout()
         self.custom_box.addLayout(grid0)
-        self.plot_cb = FCCheckBox(label='Plot')
-        self.plot_cb.setToolTip(
-            "Plot (show) this object."
-        )
-        grid0.addWidget(self.plot_cb, 0, 0)
+
         self.solid_cb = FCCheckBox(label='Solid')
         self.solid_cb.setToolTip(
             "Solid circles."
         )
-        grid0.addWidget(self.solid_cb, 0, 1)
+        grid0.addWidget(self.solid_cb, 0, 0)
 
         # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Drills widgets
         # this way I can hide/show the frame
@@ -408,19 +404,31 @@ class ExcellonObjectUI(ObjectUI):
         self.tools_box.setContentsMargins(0, 0, 0, 0)
         self.drills_frame.setLayout(self.tools_box)
 
+        hlay_plot = QtWidgets.QHBoxLayout()
+        self.tools_box.addLayout(hlay_plot)
+
         #### Tools Drills ####
         self.tools_table_label = QtWidgets.QLabel('<b>Tools Table</b>')
         self.tools_table_label.setToolTip(
             "Tools in this Excellon object\n"
             "when are used for drilling."
         )
-        self.tools_box.addWidget(self.tools_table_label)
+        hlay_plot.addWidget(self.tools_table_label)
+
+        # Plot CB
+        self.plot_cb = FCCheckBox('Plot Object')
+        self.plot_cb.setToolTip(
+            "Plot (show) this object."
+        )
+        self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        hlay_plot.addStretch()
+        hlay_plot.addWidget(self.plot_cb)
 
         self.tools_table = FCTable()
         self.tools_box.addWidget(self.tools_table)
 
-        self.tools_table.setColumnCount(5)
-        self.tools_table.setHorizontalHeaderLabels(['#', 'Diameter', 'D', 'S', 'Offset'])
+        self.tools_table.setColumnCount(6)
+        self.tools_table.setHorizontalHeaderLabels(['#', 'Diameter', 'D', 'S', 'Offset', 'P'])
         self.tools_table.setSortingEnabled(False)
 
         self.tools_table.horizontalHeaderItem(0).setToolTip(
@@ -440,6 +448,8 @@ class ExcellonObjectUI(ObjectUI):
             "Some drill bits (the larger ones) need to drill deeper\n"
             "to create the desired exit hole diameter due of the tip shape.\n"
             "The value here can compensate the Cut Z parameter.")
+        self.tools_table.horizontalHeaderItem(5).setToolTip(
+            "Toggle display of the drills for the current tool.")
 
         self.empty_label = QtWidgets.QLabel('')
         self.tools_box.addWidget(self.empty_label)

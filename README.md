@@ -12,11 +12,16 @@ CAD program, and create G-Code for Isolation routing.
 12.02.2019
 
 - whenever a FlatCAM tool is activated, if the notebook side is hidden it will be unhidden
-- reactivated the Voronoi classed
+- reactivated the Voronoi classes
 - added a new parameter named Offset in the Excellon tool table - work in progress
 - finished work on Offset parameter in Excellon Object (Excellon Editor, camlib, FlatCAMObj updated to take this param in consideration)
 - fixed a bug where in Excellon editor when editing a file, a tool was automatically added. That is supposed to happen only for empty newly created Excellon Objects.
 - starting to work on storing the solid_geometry for each tool in part in Excellon Object
+- stored solid_geometry of Excellon object in the self.tools dictionary
+- finished the solid_geometry restore after edit in Excellon Editor
+- finished plotting selection for each tool in the Excellon Tool Table
+- fixed the camlib.Excellon.bounds() function for the new type of Excellon geometry therefore fixed the canvas selection, too
+
 
 10.02.2019
 

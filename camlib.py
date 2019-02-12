@@ -4073,7 +4073,12 @@ class Excellon(Geometry):
         :return: None
         """
         self.solid_geometry = []
+
         try:
+            # clear the solid_geometry in self.tools
+            for tool in self.tools:
+                self.tools[tool]['solid_geometry'][:] = []
+
             for drill in self.drills:
                 # poly = drill['point'].buffer(self.tools[drill['tool']]["C"]/2.0)
                 if drill['tool'] is '':
@@ -4096,7 +4101,7 @@ class Excellon(Geometry):
                 lines_string = LineString([start, stop])
                 poly = lines_string.buffer(slot_tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
                 # self.solid_geometry.append(poly)
-                self.tools[drill['tool']]['solid_geometry'].append(poly)
+                self.tools[slot['tool']]['solid_geometry'].append(poly)
 
         except Exception as e:
             log.debug("Excellon geometry creation failed due of ERROR: %s" % str(e))
@@ -4139,9 +4144,9 @@ class Excellon(Geometry):
         # now it can get bounds for nested lists of objects
 
         log.debug("Excellon() -> bounds()")
-        if self.solid_geometry is None:
-            log.debug("solid_geometry is None")
-            return 0, 0, 0, 0
+        # if self.solid_geometry is None:
+        #     log.debug("solid_geometry is None")
+        #     return 0, 0, 0, 0
 
         def bounds_rec(obj):
             if type(obj) is list:
@@ -4169,8 +4174,19 @@ class Excellon(Geometry):
                 # it's a Shapely object, return it's bounds
                 return obj.bounds
 
-        bounds_coords = bounds_rec(self.solid_geometry)
-        return bounds_coords
+        minx_list = []
+        miny_list = []
+        maxx_list = []
+        maxy_list = []
+
+        for tool in self.tools:
+            minx, miny, maxx, maxy = bounds_rec(self.tools[tool]['solid_geometry'])
+            minx_list.append(minx)
+            miny_list.append(miny)
+            maxx_list.append(maxx)
+            maxy_list.append(maxy)
+
+        return (min(minx_list), min(miny_list), max(maxx_list), max(maxy_list))
 
     def convert_units(self, units):
         """
@@ -5535,7 +5551,7 @@ class CNCjob(Geometry):
                 return "fail"
 
             gobj = self.codes_split(line)
-
+            print(gobj)
             ## Units
             if 'G' in gobj and (gobj['G'] == 20.0 or gobj['G'] == 21.0):
                 self.units = {20.0: "IN", 21.0: "MM"}[gobj['G']]

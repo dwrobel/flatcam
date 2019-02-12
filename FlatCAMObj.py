@@ -1134,10 +1134,16 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                     t_offset = self.app.defaults['excellon_offset']
             tool_offset_item = QtWidgets.QTableWidgetItem('%s' % str(t_offset))
 
+            plot_item = FCCheckBox()
+            plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            if self.ui.plot_cb.isChecked():
+                plot_item.setChecked(True)
+
             self.ui.tools_table.setItem(self.tool_row, 1, dia)  # Diameter
             self.ui.tools_table.setItem(self.tool_row, 2, drill_count)  # Number of drills per tool
             self.ui.tools_table.setItem(self.tool_row, 3, slot_count)  # Number of drills per tool
             self.ui.tools_table.setItem(self.tool_row, 4, tool_offset_item)  # Tool offset
+            self.ui.tools_table.setCellWidget(self.tool_row, 5, plot_item)
 
             self.tool_row += 1
 
@@ -1201,11 +1207,27 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.ui.tools_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
         horizontal_header = self.ui.tools_table.horizontalHeader()
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setMinimumSectionSize(10)
+        horizontal_header.setDefaultSectionSize(70)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.resizeSection(0, 20)
         horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
         horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.resizeSection(5, 17)
+        self.ui.tools_table.setColumnWidth(5, 17)
+
         # horizontal_header.setStretchLastSection(True)
+
+
+
+
+        # horizontal_header.setColumnWidth(2, QtWidgets.QHeaderView.ResizeToContents)
+
+        # horizontal_header.setStretchLastSection(True)
+        self.ui.tools_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
         self.ui.tools_table.setSortingEnabled(False)
 
@@ -1232,6 +1254,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
         self.ui.tools_table.itemChanged.connect(self.on_tool_offset_edit)
+
+        self.ui_connect()
 
     def set_ui(self, ui):
         """
@@ -1297,6 +1321,24 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         self.ui.pp_excellon_name_cb.activated.connect(self.on_pp_changed)
 
+    def ui_connect(self):
+
+        for row in range(self.ui.tools_table.rowCount() - 2):
+            self.ui.tools_table.cellWidget(row, 5).clicked.connect(self.on_plot_cb_click_table)
+        self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
+
+    def ui_disconnect(self):
+        for row in range(self.ui.tools_table.rowCount()):
+            try:
+                self.ui.tools_table.cellWidget(row, 5).clicked.disconnect()
+            except:
+                pass
+
+        try:
+            self.ui.plot_cb.stateChanged.disconnect()
+        except:
+            pass
+
     def on_tool_offset_edit(self):
         # if connected, disconnect the signal from the slot on item_changed as it creates issues
         self.ui.tools_table.itemChanged.disconnect()
@@ -1351,8 +1393,10 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         """
         table_tools_items = []
         for x in self.ui.tools_table.selectedItems():
+            # from the columnCount we subtract a value of 1 which represent the last column (plot column)
+            # which does not have text
             table_tools_items.append([self.ui.tools_table.item(x.row(), column).text()
-                                      for column in range(0, self.ui.tools_table.columnCount())])
+                                      for column in range(0, self.ui.tools_table.columnCount() - 1)])
         for item in table_tools_items:
             item[0] = str(item[0])
         return table_tools_items
@@ -1839,17 +1883,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # self.app.worker.add_task(job_thread, [self.app])
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
-    def on_plot_cb_click(self, *args):
-        if self.muted_ui:
-            return
-        self.read_form_item('plot')
-
-    def on_solid_cb_click(self, *args):
-        if self.muted_ui:
-            return
-        self.read_form_item('solid')
-        self.plot()
-
     def convert_units(self, units):
         factor = Excellon.convert_units(self, units)
 
@@ -1874,6 +1907,89 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         if self.options['startz'] is not None:
             self.options['startz'] = float(self.options['startz']) * factor
         self.options['endz'] = float(self.options['endz']) * factor
+
+    def on_solid_cb_click(self, *args):
+        if self.muted_ui:
+            return
+        self.read_form_item('solid')
+        self.plot()
+
+    def on_plot_cb_click(self, *args):
+        if self.muted_ui:
+            return
+        self.plot()
+        self.read_form_item('plot')
+
+        self.ui_disconnect()
+        cb_flag = self.ui.plot_cb.isChecked()
+        for row in range(self.ui.tools_table.rowCount() - 2):
+            table_cb = self.ui.tools_table.cellWidget(row, 5)
+            if cb_flag:
+                table_cb.setChecked(True)
+            else:
+                table_cb.setChecked(False)
+
+        self.ui_connect()
+
+    def on_plot_cb_click_table(self):
+        # self.ui.cnc_tools_table.cellWidget(row, 2).widget().setCheckState(QtCore.Qt.Unchecked)
+        self.ui_disconnect()
+        # cw = self.sender()
+        # cw_index = self.ui.tools_table.indexAt(cw.pos())
+        # cw_row = cw_index.row()
+        check_row = 0
+
+        self.shapes.clear(update=True)
+        for tool_key in self.tools:
+            solid_geometry = self.tools[tool_key]['solid_geometry']
+
+            # find the geo_tool_table row associated with the tool_key
+            for row in range(self.ui.tools_table.rowCount()):
+                tool_item = int(self.ui.tools_table.item(row, 0).text())
+                if tool_item == int(tool_key):
+                    check_row = row
+                    break
+            if self.ui.tools_table.cellWidget(check_row, 5).isChecked():
+                self.options['plot'] = True
+                # self.plot_element(element=solid_geometry, visible=True)
+                # Plot excellon (All polygons?)
+                if self.options["solid"]:
+                    for geo in solid_geometry:
+                        self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF',
+                                       visible=self.options['plot'],
+                                       layer=2)
+                else:
+                    for geo in solid_geometry:
+                        self.add_shape(shape=geo.exterior, color='red', visible=self.options['plot'])
+                        for ints in geo.interiors:
+                            self.add_shape(shape=ints, color='green', visible=self.options['plot'])
+        self.shapes.redraw()
+
+        # make sure that the general plot is disabled if one of the row plot's are disabled and
+        # if all the row plot's are enabled also enable the general plot checkbox
+        cb_cnt = 0
+        total_row = self.ui.tools_table.rowCount()
+        for row in range(total_row - 2):
+            if self.ui.tools_table.cellWidget(row, 5).isChecked():
+                cb_cnt += 1
+            else:
+                cb_cnt -= 1
+        if cb_cnt < total_row - 2:
+            self.ui.plot_cb.setChecked(False)
+        else:
+            self.ui.plot_cb.setChecked(True)
+        self.ui_connect()
+
+    # def plot_element(self, element, color='red', visible=None, layer=None):
+    #
+    #     visible = visible if visible else self.options['plot']
+    #
+    #     try:
+    #         for sub_el in element:
+    #             self.plot_element(sub_el)
+    #
+    #     except TypeError:  # Element is not iterable...
+    #         self.add_shape(shape=element, color=color, visible=visible, layer=0)
 
     def plot(self):
 
@@ -3971,62 +4087,65 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         param_list = ['cutz', 'depthperpass', 'travelz', 'feedrate', 'feedrate_z', 'feedrate_rapid',
                       'endz', 'toolchangez']
 
-        temp_tools_dict = {}
-        tool_dia_copy = {}
-        data_copy = {}
-        for tooluid_key, tooluid_value in self.tools.items():
-            for dia_key, dia_value in tooluid_value.items():
-                if dia_key == 'tooldia':
-                    dia_value *= factor
-                    dia_value = float('%.4f' % dia_value)
-                    tool_dia_copy[dia_key] = dia_value
-                if dia_key == 'offset':
-                    tool_dia_copy[dia_key] = dia_value
-                if dia_key == 'offset_value':
-                    dia_value *= factor
-                    tool_dia_copy[dia_key] = dia_value
+        if isinstance(self, FlatCAMGeometry):
+            temp_tools_dict = {}
+            tool_dia_copy = {}
+            data_copy = {}
+            for tooluid_key, tooluid_value in self.tools.items():
+                for dia_key, dia_value in tooluid_value.items():
+                    if dia_key == 'tooldia':
+                        dia_value *= factor
+                        dia_value = float('%.4f' % dia_value)
+                        tool_dia_copy[dia_key] = dia_value
+                    if dia_key == 'offset':
+                        tool_dia_copy[dia_key] = dia_value
+                    if dia_key == 'offset_value':
+                        dia_value *= factor
+                        tool_dia_copy[dia_key] = dia_value
 
-                    # convert the value in the Custom Tool Offset entry in UI
-                    try:
-                        custom_offset = float(self.ui.tool_offset_entry.get_value())
-                    except ValueError:
-                        # try to convert comma to decimal point. if it's still not working error message and return
+                        # convert the value in the Custom Tool Offset entry in UI
+                        custom_offset = None
                         try:
-                            custom_offset = float(self.ui.tool_offset_entry.get_value().replace(',', '.')
-                            )
+                            custom_offset = float(self.ui.tool_offset_entry.get_value())
                         except ValueError:
-                            self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
-                                                 "use a number.")
-                            return
+                            # try to convert comma to decimal point. if it's still not working error message and return
+                            try:
+                                custom_offset = float(self.ui.tool_offset_entry.get_value().replace(',', '.')
+                                )
+                            except ValueError:
+                                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
+                                                     "use a number.")
+                                return
+                        except TypeError:
+                            pass
 
-                    if custom_offset:
-                        custom_offset *= factor
-                        self.ui.tool_offset_entry.set_value(custom_offset)
+                        if custom_offset:
+                            custom_offset *= factor
+                            self.ui.tool_offset_entry.set_value(custom_offset)
 
-                if dia_key == 'type':
-                    tool_dia_copy[dia_key] = dia_value
-                if dia_key == 'tool_type':
-                    tool_dia_copy[dia_key] = dia_value
-                if dia_key == 'data':
-                    for data_key, data_value in dia_value.items():
-                        # convert the form fields that are convertible
-                        for param in param_list:
-                            if data_key == param and data_value is not None:
-                                data_copy[data_key] = data_value * factor
-                        # copy the other dict entries that are not convertible
-                        if data_key not in param_list:
-                            data_copy[data_key] = data_value
-                    tool_dia_copy[dia_key] = copy.deepcopy(data_copy)
-                    data_copy.clear()
+                    if dia_key == 'type':
+                        tool_dia_copy[dia_key] = dia_value
+                    if dia_key == 'tool_type':
+                        tool_dia_copy[dia_key] = dia_value
+                    if dia_key == 'data':
+                        for data_key, data_value in dia_value.items():
+                            # convert the form fields that are convertible
+                            for param in param_list:
+                                if data_key == param and data_value is not None:
+                                    data_copy[data_key] = data_value * factor
+                            # copy the other dict entries that are not convertible
+                            if data_key not in param_list:
+                                data_copy[data_key] = data_value
+                        tool_dia_copy[dia_key] = copy.deepcopy(data_copy)
+                        data_copy.clear()
 
-            temp_tools_dict.update({
-                tooluid_key: copy.deepcopy(tool_dia_copy)
-            })
-            tool_dia_copy.clear()
+                temp_tools_dict.update({
+                    tooluid_key: copy.deepcopy(tool_dia_copy)
+                })
+                tool_dia_copy.clear()
 
-
-        self.tools.clear()
-        self.tools = copy.deepcopy(temp_tools_dict)
+            self.tools.clear()
+            self.tools = copy.deepcopy(temp_tools_dict)
 
         # if there is a value in the new tool field then convert that one too
         tooldia = self.ui.addtool_entry.get_value()
@@ -4188,6 +4307,27 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         '''
         self.cnc_tools = {}
 
+        '''
+           This is a dict of dictionaries. Each dict is associated with a tool present in the file. The key is the 
+           diameter of the tools and the value is another dict that will hold the data under the following form:
+              {tooldia:   {
+                          'tool': int,
+                          'nr_drills': int,
+                          'nr_slots': int,
+                          'offset': float,
+                          'data': {} # a dict to hold the parameters
+                          'gcode': "" # a string with the actual GCODE
+                          'gcode_parsed': {} # dictionary holding the CNCJob geometry and type of geometry (cut or move)
+                          'solid_geometry': []
+                          },
+                          ...
+              }
+           It is populated in the FlatCAMExcellon.on_create_cncjob_click() but actually 
+           it's done in camlib.Excellon.generate_from_excellon_by_tool()
+           BEWARE: I rely on the ordered nature of the Python 3.7 dictionary. Things might change ...
+       '''
+        self.exc_cnc_tools = {}
+
         # for now it show if the plot will be done for multi-tool CNCJob (True) or for single tool
         # (like the one in the TCL Command), False
         self.multitool = False
@@ -4223,10 +4363,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # if the FlatCAM object is Excellon don't build the CNC Tools Table but hide it
         if self.cnc_tools:
             self.ui.cnc_tools_table.show()
-            self.ui.plot_options_label.show()
         else:
             self.ui.cnc_tools_table.hide()
-            self.ui.plot_options_label.hide()
+
 
         offset = 0
         tool_idx = 0
