@@ -3510,6 +3510,7 @@ class Excellon(Geometry):
                                 spec = {"C": float(match.group(2))}
                                 self.tools[str(name_tool)] = spec
                                 log.debug("  Tool definition: %s %s" % (name_tool, spec))
+                            spec['solid_geometry'] = []
                             continue
                     else:
                         log.warning("Line ignored, it's a comment: %s" % eline)
@@ -3569,6 +3570,7 @@ class Excellon(Geometry):
                                 spec = {
                                     "C": float(match.group(2)),
                                 }
+                                spec['solid_geometry'] = []
                                 self.tools[name] = spec
                                 log.debug("  Tool definition out of header: %s %s" % (name, spec))
 
@@ -3914,6 +3916,7 @@ class Excellon(Geometry):
                             # "H": float(match.group(6)),
                             # "Z": float(match.group(7))
                         }
+                        spec['solid_geometry'] = []
                         self.tools[name] = spec
                         log.debug("  Tool definition: %s %s" % (name, spec))
                         continue
@@ -4082,7 +4085,8 @@ class Excellon(Geometry):
                     continue
                 tooldia = self.tools[drill['tool']]['C']
                 poly = drill['point'].buffer(tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
-                self.solid_geometry.append(poly)
+                # self.solid_geometry.append(poly)
+                self.tools[drill['tool']]['solid_geometry'].append(poly)
 
             for slot in self.slots:
                 slot_tooldia = self.tools[slot['tool']]['C']
@@ -4091,7 +4095,9 @@ class Excellon(Geometry):
 
                 lines_string = LineString([start, stop])
                 poly = lines_string.buffer(slot_tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
-                self.solid_geometry.append(poly)
+                # self.solid_geometry.append(poly)
+                self.tools[drill['tool']]['solid_geometry'].append(poly)
+
         except Exception as e:
             log.debug("Excellon geometry creation failed due of ERROR: %s" % str(e))
             return "fail"

@@ -1883,25 +1883,43 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             return
 
         try:
-            _ = iter(self.solid_geometry)
-        except TypeError:
-            self.solid_geometry = [self.solid_geometry]
-
-        try:
             # Plot excellon (All polygons?)
             if self.options["solid"]:
-                for geo in self.solid_geometry:
-                    self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF', visible=self.options['plot'],
-                                   layer=2)
+                for tool in self.tools:
+                    for geo in self.tools[tool]['solid_geometry']:
+                        self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF', visible=self.options['plot'],
+                                       layer=2)
             else:
-                for geo in self.solid_geometry:
-                    self.add_shape(shape=geo.exterior, color='red', visible=self.options['plot'])
-                    for ints in geo.interiors:
-                        self.add_shape(shape=ints, color='green', visible=self.options['plot'])
+                for tool in self.tools:
+                    for geo in self.tools[tool]['solid_geometry']:
+                        self.add_shape(shape=geo.exterior, color='red', visible=self.options['plot'])
+                        for ints in geo.interiors:
+                            self.add_shape(shape=ints, color='green', visible=self.options['plot'])
 
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
+
+        # try:
+        #     _ = iter(self.solid_geometry)
+        # except TypeError:
+        #     self.solid_geometry = [self.solid_geometry]
+        #
+        # try:
+        #     # Plot excellon (All polygons?)
+        #     if self.options["solid"]:
+        #         for geo in self.solid_geometry:
+        #             self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF', visible=self.options['plot'],
+        #                            layer=2)
+        #     else:
+        #         for geo in self.solid_geometry:
+        #             self.add_shape(shape=geo.exterior, color='red', visible=self.options['plot'])
+        #             for ints in geo.interiors:
+        #                 self.add_shape(shape=ints, color='green', visible=self.options['plot'])
+        #
+        #     self.shapes.redraw()
+        # except (ObjectDeleted, AttributeError):
+        #     self.shapes.clear(update=True)
 
         # try:
         #     # Plot excellon (All polygons?)
@@ -4117,6 +4135,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             self.ui.plot_cb.setChecked(True)
         self.ui_connect()
+
 
 class FlatCAMCNCjob(FlatCAMObj, CNCjob):
     """

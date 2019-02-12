@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - added a new parameter named Offset in the Excellon tool table - work in progress
 - finished work on Offset parameter in Excellon Object (Excellon Editor, camlib, FlatCAMObj updated to take this param in consideration)
 - fixed a bug where in Excellon editor when editing a file, a tool was automatically added. That is supposed to happen only for empty newly created Excellon Objects.
+- starting to work on storing the solid_geometry for each tool in part in Excellon Object
 
 10.02.2019
 

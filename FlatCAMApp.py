@@ -6012,9 +6012,14 @@ class App(QtCore.QObject):
                 log.debug("Could not create geometry for Excellon object.")
                 return "fail"
 
-            if excellon_obj.is_empty():
-                app_obj.inform.emit("[ERROR_NOTCL] No geometry found in file: " + filename)
-                return "fail"
+            # if excellon_obj.is_empty():
+            #     app_obj.inform.emit("[ERROR_NOTCL] No geometry found in file: " + filename)
+            #     return "fail"
+            for tool in excellon_obj.tools:
+                if excellon_obj.tools[tool]['solid_geometry']:
+                    return
+            app_obj.inform.emit("[ERROR_NOTCL] No geometry found in file: " + filename)
+            return "fail"
 
         with self.proc_container.new("Opening Excellon."):
 
