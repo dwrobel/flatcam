@@ -4902,7 +4902,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
     def on_plot_cb_click(self, *args):
         if self.muted_ui:
             return
-        self.plot()
+        kind = self.ui.cncplot_method_combo.get_value()
+        self.plot(kind=kind)
         self.read_form_item('plot')
 
         self.ui_disconnect()

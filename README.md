@@ -17,6 +17,8 @@ CAD program, and create G-Code for Isolation routing.
 - changed the layout in the Selected Tab UI
 - started to add apertures table support
 - finished Gerber aperture table display
+- made the Gerber aperture table not visibile as default and added a checkbox that can toggle the visibility
+- fixed issue with plotting in CNCJob; with Plot kind set to something else than 'all' when toggling Plot, it was defaulting to kind = 'all'
 
 12.02.2019
 
