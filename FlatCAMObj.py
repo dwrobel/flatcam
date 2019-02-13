@@ -473,6 +473,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.generate_cutout_button.clicked.connect(self.app.cutout_tool.run)
         self.ui.generate_bb_button.clicked.connect(self.on_generatebb_button_click)
         self.ui.generate_noncopper_button.clicked.connect(self.on_generatenoncopper_button_click)
+        self.ui.aperture_table_visibility_cb.stateChanged.connect(self.on_aperture_table_visibility_change)
 
         self.build_ui()
 
@@ -861,6 +862,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             return
         self.read_form_item('multicolored')
         self.plot()
+
+    def on_aperture_table_visibility_change(self):
+        if self.ui.aperture_table_visibility_cb.isChecked():
+            self.ui.apertures_table.setVisible(True)
+        else:
+            self.ui.apertures_table.setVisible(False)
 
     def convert_units(self, units):
         """

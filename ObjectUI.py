@@ -151,6 +151,10 @@ class GerberObjectUI(ObjectUI):
         )
         hlay_plot.addWidget(self.apertures_table_label)
 
+        # Aperture Table Visibility CB
+        self.aperture_table_visibility_cb = FCCheckBox()
+        hlay_plot.addWidget(self.aperture_table_visibility_cb)
+
         # Plot CB
         self.plot_cb = FCCheckBox('Plot Object')
         self.plot_cb.setToolTip(
@@ -164,7 +168,7 @@ class GerberObjectUI(ObjectUI):
         self.custom_box.addWidget(self.apertures_table)
 
         self.apertures_table.setColumnCount(6)
-        self.apertures_table.setHorizontalHeaderLabels(['#', 'D', 'Type', 'Size', 'Dim', 'P'])
+        self.apertures_table.setHorizontalHeaderLabels(['#', 'Code', 'Type', 'Size', 'Dim', 'P'])
         self.apertures_table.setSortingEnabled(False)
 
         self.apertures_table.horizontalHeaderItem(0).setToolTip(
@@ -182,8 +186,14 @@ class GerberObjectUI(ObjectUI):
         self.apertures_table.horizontalHeaderItem(5).setToolTip(
             "Toggle display of the aperture instances.")
 
-        self.empty_label = QtWidgets.QLabel('')
-        self.custom_box.addWidget(self.empty_label)
+        # start with apertures table hidden
+        self.apertures_table.setVisible(False)
+
+        # hide the plot column. for now I can't plot individually the apertures without making the plot really ugly
+        self.apertures_table.setColumnHidden(5, True)
+        #
+        # self.empty_label = QtWidgets.QLabel('')
+        # self.custom_box.addWidget(self.empty_label)
 
         # Isolation Routing
         self.isolation_routing_label = QtWidgets.QLabel("<b>Isolation Routing:</b>")
@@ -318,7 +328,7 @@ class GerberObjectUI(ObjectUI):
         )
         grid2.addWidget(self.clearcopper_label, 0, 0)
 
-        self.generate_ncc_button = QtWidgets.QPushButton('Non-Copper Clear Tool')
+        self.generate_ncc_button = QtWidgets.QPushButton('NCC Tool')
         self.generate_ncc_button.setToolTip(
             "Create the Geometry Object\n"
             "for non-copper routing."
