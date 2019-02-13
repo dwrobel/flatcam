@@ -2357,9 +2357,9 @@ class ExcellonPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.excellon_gen_group = ExcellonGenPrefGroupUI()
-        self.excellon_gen_group.setFixedWidth(275)
+        self.excellon_gen_group.setFixedWidth(220)
         self.excellon_opt_group = ExcellonOptPrefGroupUI()
-        self.excellon_opt_group.setFixedWidth(275)
+        self.excellon_opt_group.setFixedWidth(250)
 
         self.layout.addWidget(self.excellon_gen_group)
         self.layout.addWidget(self.excellon_opt_group)
@@ -2374,9 +2374,9 @@ class GeometryPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.geometry_gen_group = GeometryGenPrefGroupUI()
-        self.geometry_gen_group.setFixedWidth(275)
+        self.geometry_gen_group.setFixedWidth(220)
         self.geometry_opt_group = GeometryOptPrefGroupUI()
-        self.geometry_opt_group.setFixedWidth(275)
+        self.geometry_opt_group.setFixedWidth(250)
 
         self.layout.addWidget(self.geometry_gen_group)
         self.layout.addWidget(self.geometry_opt_group)
@@ -3203,7 +3203,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         form_box_excellon = QtWidgets.QFormLayout()
         hlay6.addLayout(form_box_excellon)
 
-        self.excellon_optimization_label = QtWidgets.QLabel('Path Optimization:   ')
+        self.excellon_optimization_label = QtWidgets.QLabel('Algorithm:   ')
         self.excellon_optimization_label.setAlignment(QtCore.Qt.AlignLeft)
         self.excellon_optimization_label.setToolTip(
             "This sets the optimization type for the Excellon drill path.\n"
@@ -3258,6 +3258,106 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
             self.optimization_time_label.setDisabled(True)
             self.optimization_time_entry.setDisabled(True)
 
+        ## Create CNC Job
+        self.cncjob_label = QtWidgets.QLabel('<b>Create CNC Job</b>')
+        self.cncjob_label.setToolTip(
+            "Parameters used to create a CNC Job object\n"
+            "for this drill object that are not changed very often."
+        )
+        self.layout.addWidget(self.cncjob_label)
+
+        grid1 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid1)
+
+        offsetlabel = QtWidgets.QLabel('Offset Z:')
+        offsetlabel.setToolTip(
+            "Some drill bits (the larger ones) need to drill deeper\n"
+            "to create the desired exit hole diameter due of the tip shape.\n"
+            "The value here can compensate the Cut Z parameter.")
+        grid1.addWidget(offsetlabel, 0, 0)
+        self.offset_entry = LengthEntry()
+        grid1.addWidget(self.offset_entry, 0, 1)
+
+        toolchange_xy_label = QtWidgets.QLabel('Toolchange X,Y:')
+        toolchange_xy_label.setToolTip(
+            "Toolchange X,Y position."
+        )
+        grid1.addWidget(toolchange_xy_label, 1, 0)
+        self.toolchangexy_entry = FCEntry()
+        grid1.addWidget(self.toolchangexy_entry, 1, 1)
+
+        startzlabel = QtWidgets.QLabel('Start move Z:')
+        startzlabel.setToolTip(
+            "Height of the tool just after start.\n"
+            "Delete the value if you don't need this feature."
+        )
+        grid1.addWidget(startzlabel, 2, 0)
+        self.estartz_entry = FloatEntry()
+        grid1.addWidget(self.estartz_entry, 2, 1)
+
+        endzlabel = QtWidgets.QLabel('End move Z:')
+        endzlabel.setToolTip(
+            "Height of the tool after\n"
+            "the last move at the end of the job."
+        )
+        grid1.addWidget(endzlabel, 3, 0)
+        self.eendz_entry = LengthEntry()
+        grid1.addWidget(self.eendz_entry, 3, 1)
+
+
+        fr_rapid_label = QtWidgets.QLabel('Feedrate Rapids:')
+        fr_rapid_label.setToolTip(
+            "Tool speed while drilling\n"
+            "with rapid move\n"
+            "(in units per minute)."
+        )
+        grid1.addWidget(fr_rapid_label, 4, 0)
+        self.feedrate_rapid_entry = LengthEntry()
+        grid1.addWidget(self.feedrate_rapid_entry, 4, 1)
+
+        # Probe depth
+        self.pdepth_label = QtWidgets.QLabel("Probe Z depth:")
+        self.pdepth_label.setToolTip(
+            "The maximum depth that the probe is allowed\n"
+            "to probe. Negative value, in current units."
+        )
+        grid1.addWidget(self.pdepth_label, 5, 0)
+        self.pdepth_entry = FCEntry()
+        grid1.addWidget(self.pdepth_entry, 5, 1)
+
+        # Probe feedrate
+        self.feedrate_probe_label = QtWidgets.QLabel("Feedrate Probe:")
+        self.feedrate_probe_label.setToolTip(
+            "The feedrate used while the probe is probing."
+        )
+        grid1.addWidget(self.feedrate_probe_label, 6, 0)
+        self.feedrate_probe_entry = FCEntry()
+        grid1.addWidget(self.feedrate_probe_entry, 6, 1)
+
+        fplungelabel = QtWidgets.QLabel('Fast Plunge:')
+        fplungelabel.setToolTip(
+            "By checking this, the vertical move from\n"
+            "Z_Toolchange to Z_move is done with G0,\n"
+            "meaning the fastest speed available.\n"
+            "WARNING: the move is done at Toolchange X,Y coords."
+        )
+        self.fplunge_cb = FCCheckBox()
+        grid1.addWidget(fplungelabel, 7, 0)
+        grid1.addWidget(self.fplunge_cb, 7, 1)
+
+        fretractlabel = QtWidgets.QLabel('Fast Retract:')
+        fretractlabel.setToolTip(
+            "Exit hole strategy.\n"
+            " - When uncheked, while exiting the drilled hole the drill bit\n"
+            "will travel slow, with set feedrate (G1), up to zero depth and then\n"
+            "travel as fast as possible (G0) to the Z Move (travel height).\n"
+            " - When checked the travel from Z cut (cut depth) to Z_move\n"
+            "(travel height) is done as fast as possible (G0) in one move."
+        )
+        self.fretract_cb = FCCheckBox()
+        grid1.addWidget(fretractlabel, 8, 0)
+        grid1.addWidget(self.fretract_cb, 8, 1)
+
         self.layout.addStretch()
 
     def optimization_selection(self):
@@ -3267,6 +3367,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         else:
             self.optimization_time_label.setDisabled(True)
             self.optimization_time_entry.setDisabled(True)
+
 
 class ExcellonOptPrefGroupUI(OptionsGroupUI):
 
@@ -3279,7 +3380,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         ## Create CNC Job
         self.cncjob_label = QtWidgets.QLabel('<b>Create CNC Job</b>')
         self.cncjob_label.setToolTip(
-            "Create a CNC Job object\n"
+            "Parameters used to create a CNC Job object\n"
             "for this drill object."
         )
         self.layout.addWidget(self.cncjob_label)
@@ -3296,23 +3397,14 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.cutz_entry = LengthEntry()
         grid2.addWidget(self.cutz_entry, 0, 1)
 
-        offsetlabel = QtWidgets.QLabel('Offset:')
-        offsetlabel.setToolTip(
-            "Some drill bits (the larger ones) need to drill deeper\n"
-            "to create the desired exit hole diameter due of the tip shape.\n"
-            "The value here can compensate the Cut Z parameter.")
-        grid2.addWidget(offsetlabel, 1, 0)
-        self.offset_entry = LengthEntry()
-        grid2.addWidget(self.offset_entry, 1, 1)
-
         travelzlabel = QtWidgets.QLabel('Travel Z:')
         travelzlabel.setToolTip(
             "Tool height when travelling\n"
             "across the XY plane."
         )
-        grid2.addWidget(travelzlabel, 2, 0)
+        grid2.addWidget(travelzlabel, 1, 0)
         self.travelz_entry = LengthEntry()
-        grid2.addWidget(self.travelz_entry, 2, 1)
+        grid2.addWidget(self.travelz_entry, 1, 1)
 
         # Tool change:
         toolchlabel = QtWidgets.QLabel("Tool change:")
@@ -3321,71 +3413,35 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             "in G-Code (Pause for tool change)."
         )
         self.toolchange_cb = FCCheckBox()
-        grid2.addWidget(toolchlabel, 3, 0)
-        grid2.addWidget(self.toolchange_cb, 3, 1)
+        grid2.addWidget(toolchlabel, 2, 0)
+        grid2.addWidget(self.toolchange_cb, 2, 1)
 
         toolchangezlabel = QtWidgets.QLabel('Toolchange Z:')
         toolchangezlabel.setToolTip(
             "Toolchange Z position."
         )
-        grid2.addWidget(toolchangezlabel, 4, 0)
+        grid2.addWidget(toolchangezlabel, 3, 0)
         self.toolchangez_entry = LengthEntry()
-        grid2.addWidget(self.toolchangez_entry, 4, 1)
-
-        toolchange_xy_label = QtWidgets.QLabel('Toolchange X,Y:')
-        toolchange_xy_label.setToolTip(
-            "Toolchange X,Y position."
-        )
-        grid2.addWidget(toolchange_xy_label, 5, 0)
-        self.toolchangexy_entry = FCEntry()
-        grid2.addWidget(self.toolchangexy_entry, 5, 1)
-
-        startzlabel = QtWidgets.QLabel('Start move Z:')
-        startzlabel.setToolTip(
-            "Height of the tool just after start.\n"
-            "Delete the value if you don't need this feature."
-        )
-        grid2.addWidget(startzlabel, 6, 0)
-        self.estartz_entry = FloatEntry()
-        grid2.addWidget(self.estartz_entry, 6, 1)
-
-        endzlabel = QtWidgets.QLabel('End move Z:')
-        endzlabel.setToolTip(
-            "Height of the tool after\n"
-            "the last move at the end of the job."
-        )
-        grid2.addWidget(endzlabel, 7, 0)
-        self.eendz_entry = LengthEntry()
-        grid2.addWidget(self.eendz_entry, 7, 1)
+        grid2.addWidget(self.toolchangez_entry, 3, 1)
 
         frlabel = QtWidgets.QLabel('Feedrate:')
         frlabel.setToolTip(
             "Tool speed while drilling\n"
             "(in units per minute)."
         )
-        grid2.addWidget(frlabel, 8, 0)
+        grid2.addWidget(frlabel, 4, 0)
         self.feedrate_entry = LengthEntry()
-        grid2.addWidget(self.feedrate_entry, 8, 1)
-
-        fr_rapid_label = QtWidgets.QLabel('Feedrate Rapids:')
-        fr_rapid_label.setToolTip(
-            "Tool speed while drilling\n"
-            "with rapid move\n"
-            "(in units per minute)."
-        )
-        grid2.addWidget(fr_rapid_label, 9, 0)
-        self.feedrate_rapid_entry = LengthEntry()
-        grid2.addWidget(self.feedrate_rapid_entry, 9, 1)
+        grid2.addWidget(self.feedrate_entry, 4, 1)
 
         # Spindle speed
-        spdlabel = QtWidgets.QLabel('Spindle speed:')
+        spdlabel = QtWidgets.QLabel('Spindle Speed:')
         spdlabel.setToolTip(
             "Speed of the spindle\n"
             "in RPM (optional)"
         )
-        grid2.addWidget(spdlabel, 10, 0)
+        grid2.addWidget(spdlabel, 5, 0)
         self.spindlespeed_entry = IntEntry(allow_empty=True)
-        grid2.addWidget(self.spindlespeed_entry, 10, 1)
+        grid2.addWidget(self.spindlespeed_entry, 5, 1)
 
         # Dwell
         dwelllabel = QtWidgets.QLabel('Dwell:')
@@ -3393,16 +3449,16 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             "Pause to allow the spindle to reach its\n"
             "speed before cutting."
         )
-        dwelltime = QtWidgets.QLabel('Duration [m-sec.]:')
+        dwelltime = QtWidgets.QLabel('Duration:')
         dwelltime.setToolTip(
             "Number of milliseconds for spindle to dwell."
         )
         self.dwell_cb = FCCheckBox()
         self.dwelltime_entry = FCEntry()
-        grid2.addWidget(dwelllabel, 11, 0)
-        grid2.addWidget(self.dwell_cb, 11, 1)
-        grid2.addWidget(dwelltime, 12, 0)
-        grid2.addWidget(self.dwelltime_entry, 12, 1)
+        grid2.addWidget(dwelllabel, 6, 0)
+        grid2.addWidget(self.dwell_cb, 6, 1)
+        grid2.addWidget(dwelltime, 7, 0)
+        grid2.addWidget(self.dwelltime_entry, 7, 1)
 
         self.ois_dwell_exc = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
@@ -3412,40 +3468,11 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             "The postprocessor file that dictates\n"
             "gcode output."
         )
-        grid2.addWidget(pp_excellon_label, 13, 0)
+        grid2.addWidget(pp_excellon_label, 8, 0)
         self.pp_excellon_name_cb = FCComboBox()
         self.pp_excellon_name_cb.setFocusPolicy(Qt.StrongFocus)
-        grid2.addWidget(self.pp_excellon_name_cb, 13, 1)
+        grid2.addWidget(self.pp_excellon_name_cb, 8, 1)
 
-        # Probe depth
-        self.pdepth_label = QtWidgets.QLabel("Probe Z depth:")
-        self.pdepth_label.setToolTip(
-            "The maximum depth that the probe is allowed\n"
-            "to probe. Negative value, in current units."
-        )
-        grid2.addWidget(self.pdepth_label, 14, 0)
-        self.pdepth_entry = FCEntry()
-        grid2.addWidget(self.pdepth_entry, 14, 1)
-
-        # Probe feedrate
-        self.feedrate_probe_label = QtWidgets.QLabel("Feedrate Probe:")
-        self.feedrate_probe_label.setToolTip(
-            "The feedrate used while the probe is probing."
-        )
-        grid2.addWidget(self.feedrate_probe_label, 15, 0)
-        self.feedrate_probe_entry = FCEntry()
-        grid2.addWidget(self.feedrate_probe_entry, 15, 1)
-
-        fplungelabel = QtWidgets.QLabel('Fast Plunge:')
-        fplungelabel.setToolTip(
-            "By checking this, the vertical move from\n"
-            "Z_Toolchange to Z_move is done with G0,\n"
-            "meaning the fastest speed available.\n"
-            "WARNING: the move is done at Toolchange X,Y coords."
-        )
-        self.fplunge_cb = FCCheckBox()
-        grid2.addWidget(fplungelabel, 16, 0)
-        grid2.addWidget(self.fplunge_cb, 16, 1)
 
         #### Choose what to use for Gcode creation: Drills, Slots or Both
         excellon_gcode_type_label = QtWidgets.QLabel('<b>Gcode:    </b>')
@@ -3458,8 +3485,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.excellon_gcode_type_radio = RadioSet([{'label': 'Drills', 'value': 'drills'},
                                           {'label': 'Slots', 'value': 'slots'},
                                           {'label': 'Both', 'value': 'both'}])
-        grid2.addWidget(excellon_gcode_type_label, 17, 0)
-        grid2.addWidget(self.excellon_gcode_type_radio, 17, 1)
+        grid2.addWidget(excellon_gcode_type_label, 9, 0)
+        grid2.addWidget(self.excellon_gcode_type_radio, 9, 1)
 
         # until I decide to implement this feature those remain disabled
         excellon_gcode_type_label.hide()
@@ -3536,18 +3563,134 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         self.tools_label = QtWidgets.QLabel("<b>Tools</b>")
         self.layout.addWidget(self.tools_label)
 
-        grid1 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid1)
+        grid0_b = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0_b)
 
         # Tooldia
         tdlabel = QtWidgets.QLabel('Tool dia:                   ')
         tdlabel.setToolTip(
             "The diameter of the cutting\n"
-            "tool (just for display)."
+            "tool.."
         )
-        grid1.addWidget(tdlabel, 0, 0)
+        grid0_b.addWidget(tdlabel, 0, 0)
         self.cnctooldia_entry = LengthEntry()
-        grid1.addWidget(self.cnctooldia_entry, 0, 1)
+        grid0_b.addWidget(self.cnctooldia_entry, 0, 1)
+
+
+        # ------------------------------
+        ## Create CNC Job
+        # ------------------------------
+        self.cncjob_label = QtWidgets.QLabel('<b>Create CNC Job:</b>')
+        self.cncjob_label.setToolTip(
+            "Parameters to create a CNC Job object\n"
+            "tracing the contours of a Geometry object."
+        )
+        self.layout.addWidget(self.cncjob_label)
+
+        grid1 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid1)
+
+        # Toolchange X,Y
+        toolchange_xy_label = QtWidgets.QLabel('Toolchange X,Y:')
+        toolchange_xy_label.setToolTip(
+            "Toolchange X,Y position."
+        )
+        grid1.addWidget(toolchange_xy_label, 1, 0)
+        self.toolchangexy_entry = FCEntry()
+        grid1.addWidget(self.toolchangexy_entry, 1, 1)
+
+        # Start move Z
+        startzlabel = QtWidgets.QLabel('Start move Z:')
+        startzlabel.setToolTip(
+            "Height of the tool just after starting the work.\n"
+            "Delete the value if you don't need this feature."
+        )
+        grid1.addWidget(startzlabel, 2, 0)
+        self.gstartz_entry = FloatEntry()
+        grid1.addWidget(self.gstartz_entry, 2, 1)
+
+        # End move Z
+        endzlabel = QtWidgets.QLabel('End move Z:')
+        endzlabel.setToolTip(
+            "Height of the tool after\n"
+            "the last move at the end of the job."
+        )
+        grid1.addWidget(endzlabel, 3, 0)
+        self.gendz_entry = LengthEntry()
+        grid1.addWidget(self.gendz_entry, 3, 1)
+
+        # Feedrate rapids
+        fr_rapid_label = QtWidgets.QLabel('Feedrate Rapids:')
+        fr_rapid_label.setToolTip(
+            "Cutting speed in the XY\n"
+            "plane in units per minute"
+        )
+        grid1.addWidget(fr_rapid_label, 4, 0)
+        self.cncfeedrate_rapid_entry = LengthEntry()
+        grid1.addWidget(self.cncfeedrate_rapid_entry, 4, 1)
+
+        # End move extra cut
+        self.extracut_cb = FCCheckBox(label='Re-cut 1st pt.')
+        self.extracut_cb.setToolTip(
+            "In order to remove possible\n"
+            "copper leftovers where first cut\n"
+            "meet with last cut, we generate an\n"
+            "extended cut over the first cut section."
+        )
+        grid1.addWidget(self.extracut_cb, 5, 0)
+
+        # Probe depth
+        self.pdepth_label = QtWidgets.QLabel("Probe Z depth:")
+        self.pdepth_label.setToolTip(
+            "The maximum depth that the probe is allowed\n"
+            "to probe. Negative value, in current units."
+        )
+        grid1.addWidget(self.pdepth_label, 6, 0)
+        self.pdepth_entry = FCEntry()
+        grid1.addWidget(self.pdepth_entry, 6, 1)
+
+        # Probe feedrate
+        self.feedrate_probe_label = QtWidgets.QLabel("Feedrate Probe:")
+        self.feedrate_probe_label.setToolTip(
+            "The feedrate used while the probe is probing."
+        )
+        grid1.addWidget(self.feedrate_probe_label, 7, 0)
+        self.feedrate_probe_entry = FCEntry()
+        grid1.addWidget(self.feedrate_probe_entry, 7, 1)
+
+        # Fast Move from Z Toolchange
+        fplungelabel = QtWidgets.QLabel('Fast Plunge:')
+        fplungelabel.setToolTip(
+            "By checking this, the vertical move from\n"
+            "Z_Toolchange to Z_move is done with G0,\n"
+            "meaning the fastest speed available.\n"
+            "WARNING: the move is done at Toolchange X,Y coords."
+        )
+        self.fplunge_cb = FCCheckBox()
+        grid1.addWidget(fplungelabel, 8, 0)
+        grid1.addWidget(self.fplunge_cb, 8, 1)
+
+        # Size of trace segment on X axis
+        segx_label = QtWidgets.QLabel("Seg. X size:")
+        segx_label.setToolTip(
+            "The size of the trace segment on the X axis.\n"
+            "Useful for auto-leveling.\n"
+            "A value of 0 means no segmentation on the X axis."
+        )
+        grid1.addWidget(segx_label, 9, 0)
+        self.segx_entry = FCEntry()
+        grid1.addWidget(self.segx_entry, 9, 1)
+
+        # Size of trace segment on Y axis
+        segy_label = QtWidgets.QLabel("Seg. Y size:")
+        segy_label.setToolTip(
+            "The size of the trace segment on the Y axis.\n"
+            "Useful for auto-leveling.\n"
+            "A value of 0 means no segmentation on the Y axis."
+        )
+        grid1.addWidget(segy_label, 10, 0)
+        self.segy_entry = FCEntry()
+        grid1.addWidget(self.segy_entry, 10, 1)
 
         self.layout.addStretch()
 
@@ -3635,44 +3778,15 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         self.toolchangez_entry = LengthEntry()
         grid1.addWidget(self.toolchangez_entry, 5, 1)
 
-        # Toolchange X,Y
-        toolchange_xy_label = QtWidgets.QLabel('Toolchange X,Y:')
-        toolchange_xy_label.setToolTip(
-            "Toolchange X,Y position."
-        )
-        grid1.addWidget(toolchange_xy_label, 6, 0)
-        self.toolchangexy_entry = FCEntry()
-        grid1.addWidget(self.toolchangexy_entry, 6, 1)
-
-        # Start move Z
-        startzlabel = QtWidgets.QLabel('Start move Z:')
-        startzlabel.setToolTip(
-            "Height of the tool just after starting the work.\n"
-            "Delete the value if you don't need this feature."
-        )
-        grid1.addWidget(startzlabel, 7, 0)
-        self.gstartz_entry = FloatEntry()
-        grid1.addWidget(self.gstartz_entry, 7, 1)
-
-        # End move Z
-        endzlabel = QtWidgets.QLabel('End move Z:')
-        endzlabel.setToolTip(
-            "Height of the tool after\n"
-            "the last move at the end of the job."
-        )
-        grid1.addWidget(endzlabel, 8, 0)
-        self.gendz_entry = LengthEntry()
-        grid1.addWidget(self.gendz_entry, 8, 1)
-
         # Feedrate X-Y
         frlabel = QtWidgets.QLabel('Feed Rate X-Y:')
         frlabel.setToolTip(
             "Cutting speed in the XY\n"
             "plane in units per minute"
         )
-        grid1.addWidget(frlabel, 9, 0)
+        grid1.addWidget(frlabel, 6, 0)
         self.cncfeedrate_entry = LengthEntry()
-        grid1.addWidget(self.cncfeedrate_entry, 9, 1)
+        grid1.addWidget(self.cncfeedrate_entry, 6, 1)
 
         # Feedrate Z (Plunge)
         frz_label = QtWidgets.QLabel('Feed Rate Z:')
@@ -3681,29 +3795,9 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             "plane in units per minute.\n"
             "It is called also Plunge."
         )
-        grid1.addWidget(frz_label, 10, 0)
+        grid1.addWidget(frz_label, 7, 0)
         self.cncplunge_entry = LengthEntry()
-        grid1.addWidget(self.cncplunge_entry, 10, 1)
-
-        # Feedrate rapids
-        fr_rapid_label = QtWidgets.QLabel('Feed Rate Rapids:')
-        fr_rapid_label.setToolTip(
-            "Cutting speed in the XY\n"
-            "plane in units per minute"
-        )
-        grid1.addWidget(fr_rapid_label, 11, 0)
-        self.cncfeedrate_rapid_entry = LengthEntry()
-        grid1.addWidget(self.cncfeedrate_rapid_entry, 11, 1)
-
-        # End move extra cut
-        self.extracut_cb = FCCheckBox(label='Cut over 1st pt.')
-        self.extracut_cb.setToolTip(
-            "In order to remove possible\n"
-            "copper leftovers where first cut\n"
-            "meet with last cut, we generate an\n"
-            "extended cut over the first cut section."
-        )
-        grid1.addWidget(self.extracut_cb, 12, 0)
+        grid1.addWidget(self.cncplunge_entry, 7, 1)
 
         # Spindle Speed
         spdlabel = QtWidgets.QLabel('Spindle speed:')
@@ -3711,9 +3805,9 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             "Speed of the spindle\n"
             "in RPM (optional)"
         )
-        grid1.addWidget(spdlabel, 13, 0)
+        grid1.addWidget(spdlabel, 8, 0)
         self.cncspindlespeed_entry = IntEntry(allow_empty=True)
-        grid1.addWidget(self.cncspindlespeed_entry, 13, 1)
+        grid1.addWidget(self.cncspindlespeed_entry, 8, 1)
 
         # Dwell
         self.dwell_cb = FCCheckBox(label='Dwell:')
@@ -3721,14 +3815,14 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             "Pause to allow the spindle to reach its\n"
             "speed before cutting."
         )
-        dwelltime = QtWidgets.QLabel('Duration [m-sec.]:')
+        dwelltime = QtWidgets.QLabel('Duration:')
         dwelltime.setToolTip(
             "Number of milliseconds for spindle to dwell."
         )
         self.dwelltime_entry = FCEntry()
-        grid1.addWidget(self.dwell_cb, 14, 0)
-        grid1.addWidget(dwelltime, 15, 0)
-        grid1.addWidget(self.dwelltime_entry, 15, 1)
+        grid1.addWidget(self.dwell_cb, 9, 0)
+        grid1.addWidget(dwelltime, 10, 0)
+        grid1.addWidget(self.dwelltime_entry, 10, 1)
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
@@ -3738,63 +3832,10 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             "The postprocessor file that dictates\n"
             "Machine Code output."
         )
-        grid1.addWidget(pp_label, 16, 0)
+        grid1.addWidget(pp_label, 11, 0)
         self.pp_geometry_name_cb = FCComboBox()
         self.pp_geometry_name_cb.setFocusPolicy(Qt.StrongFocus)
-        grid1.addWidget(self.pp_geometry_name_cb, 16, 1)
-
-        # Probe depth
-        self.pdepth_label = QtWidgets.QLabel("Probe Z depth:")
-        self.pdepth_label.setToolTip(
-            "The maximum depth that the probe is allowed\n"
-            "to probe. Negative value, in current units."
-        )
-        grid1.addWidget(self.pdepth_label, 17, 0)
-        self.pdepth_entry = FCEntry()
-        grid1.addWidget(self.pdepth_entry, 17, 1)
-
-        # Probe feedrate
-        self.feedrate_probe_label = QtWidgets.QLabel("Feedrate Probe:")
-        self.feedrate_probe_label.setToolTip(
-            "The feedrate used while the probe is probing."
-        )
-        grid1.addWidget(self.feedrate_probe_label, 18, 0)
-        self.feedrate_probe_entry = FCEntry()
-        grid1.addWidget(self.feedrate_probe_entry, 18, 1)
-
-        # Fast Move from Z Toolchange
-        fplungelabel = QtWidgets.QLabel('Fast Plunge:')
-        fplungelabel.setToolTip(
-            "By checking this, the vertical move from\n"
-            "Z_Toolchange to Z_move is done with G0,\n"
-            "meaning the fastest speed available.\n"
-            "WARNING: the move is done at Toolchange X,Y coords."
-        )
-        self.fplunge_cb = FCCheckBox()
-        grid1.addWidget(fplungelabel, 19, 0)
-        grid1.addWidget(self.fplunge_cb, 19, 1)
-
-        # Size of trace segment on X axis
-        segx_label = QtWidgets.QLabel("Seg. X size:")
-        segx_label.setToolTip(
-            "The size of the trace segment on the X axis.\n"
-            "Useful for auto-leveling.\n"
-            "A value of 0 means no segmentation on the X axis."
-        )
-        grid1.addWidget(segx_label, 20, 0)
-        self.segx_entry = FCEntry()
-        grid1.addWidget(self.segx_entry, 20, 1)
-
-        # Size of trace segment on Y axis
-        segy_label = QtWidgets.QLabel("Seg. Y size:")
-        segy_label.setToolTip(
-            "The size of the trace segment on the Y axis.\n"
-            "Useful for auto-leveling.\n"
-            "A value of 0 means no segmentation on the Y axis."
-        )
-        grid1.addWidget(segy_label, 21, 0)
-        self.segy_entry = FCEntry()
-        grid1.addWidget(self.segy_entry, 21, 1)
+        grid1.addWidget(self.pp_geometry_name_cb, 11, 1)
 
         self.layout.addStretch()
 

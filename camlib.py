@@ -4454,6 +4454,9 @@ class CNCjob(Geometry):
         # Controls if the move from Z_Toolchange to Z_Move is done fast with G0 or normally with G1
         self.f_plunge = None
 
+        # Controls if the move from Z_Cutto Z_Move is done fast with G0 or G1 until zero and then G0 to Z_move
+        self.f_retract = None
+
         # how much depth the probe can probe before error
         self.z_pdepth = z_pdepth if z_pdepth else None
 
@@ -4644,6 +4647,7 @@ class CNCjob(Geometry):
         self.gcode = []
 
         self.f_plunge = self.app.defaults["excellon_f_plunge"]
+        self.f_retract = self.app.defaults["excellon_f_retract"]
 
         # Initialization
         gcode = self.doformat(p.start_code)
@@ -4784,7 +4788,8 @@ class CNCjob(Geometry):
 
                                 gcode += self.doformat(p.rapid_code, x=locx, y=locy)
                                 gcode += self.doformat(p.down_code, x=locx, y=locy)
-                                gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                if self.f_retract is False:
+                                    gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
                                 measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
                                 self.oldx = locx
@@ -4872,7 +4877,8 @@ class CNCjob(Geometry):
                                 locy = locations[k][1]
                                 gcode += self.doformat(p.rapid_code, x=locx, y=locy)
                                 gcode += self.doformat(p.down_code, x=locx, y=locy)
-                                gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                if self.f_retract is False:
+                                    gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
                                 measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
                                 self.oldx = locx
@@ -4921,7 +4927,8 @@ class CNCjob(Geometry):
                         for point in self.optimized_travelling_salesman(altPoints):
                             gcode += self.doformat(p.rapid_code, x=point[0], y=point[1])
                             gcode += self.doformat(p.down_code, x=point[0], y=point[1])
-                            gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
+                            if self.f_retract is False:
+                                gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
                             gcode += self.doformat(p.lift_code, x=point[0], y=point[1])
                             measured_distance += abs(distance_euclidian(point[0], point[1], self.oldx, self.oldy))
                             self.oldx = point[0]

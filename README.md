@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+13.02.2019
+
+- added new parameter for Excellon Object in Preferences: Fast Retract. If the checkbox is checked then after reaching the drill depth, the drill bit will be raised out of the hole asap.
+- started to work on GUI forms simplification
+- changed the Preferences GUI for Geometry and Excellon Objects to make a difference between parameters that are changed often and those that are not.
+
 12.02.2019
 
 - whenever a FlatCAM tool is activated, if the notebook side is hidden it will be unhidden

@@ -428,7 +428,7 @@ class ExcellonObjectUI(ObjectUI):
         self.tools_box.addWidget(self.tools_table)
 
         self.tools_table.setColumnCount(6)
-        self.tools_table.setHorizontalHeaderLabels(['#', 'Diameter', 'D', 'S', 'Offset', 'P'])
+        self.tools_table.setHorizontalHeaderLabels(['#', 'Diameter', 'Drills', 'Slots', 'Offset', 'P'])
         self.tools_table.setSortingEnabled(False)
 
         self.tools_table.horizontalHeaderItem(0).setToolTip(
