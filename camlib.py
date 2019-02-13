@@ -1845,7 +1845,7 @@ class Gerber (Geometry):
     +-----------+-----------------------------------+
 
     * ``aperture_macros`` (dictionary): Are predefined geometrical structures
-      that can be instanciated with different parameters in an aperture
+      that can be instantiated with different parameters in an aperture
       definition. See ``apertures`` above. The key is the name of the macro,
       and the macro itself, the value, is a ``Aperture_Macro`` object.
 

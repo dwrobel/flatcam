@@ -420,6 +420,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         self.multigeo = False
 
+        self.apertures_row = 0
+
         # assert isinstance(self.ui, GerberObjectUI)
         # self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         # self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
@@ -471,6 +473,126 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.generate_cutout_button.clicked.connect(self.app.cutout_tool.run)
         self.ui.generate_bb_button.clicked.connect(self.on_generatebb_button_click)
         self.ui.generate_noncopper_button.clicked.connect(self.on_generatenoncopper_button_click)
+
+        self.build_ui()
+
+    def build_ui(self):
+        FlatCAMObj.build_ui(self)
+
+        try:
+            # if connected, disconnect the signal from the slot on item_changed as it creates issues
+            self.ui.apertures_table.itemChanged.disconnect()
+        except:
+            pass
+
+        n = len(self.apertures) + len(self.aperture_macros)
+        self.ui.apertures_table.setRowCount(n)
+
+        self.apertures_row = 0
+        aper_no = self.apertures_row + 1
+        sort = []
+        for k, v in list(self.apertures.items()):
+            sort.append(int(k))
+        sorted_apertures = sorted(sort)
+
+        sort = []
+        for k, v in list(self.aperture_macros.items()):
+            sort.append(int(k))
+        sorted_macros = sorted(sort)
+
+        for ap_code in sorted_apertures:
+            ap_code = str(ap_code)
+
+            ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
+            ap_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
+
+            ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
+            ap_code_item.setFlags(QtCore.Qt.ItemIsEnabled)
+
+            ap_type_item = QtWidgets.QTableWidgetItem(str(self.apertures[ap_code]['type']))
+            ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
+
+            if str(self.apertures[ap_code]['type']) == 'R' or str(self.apertures[ap_code]['type']) == 'O':
+                ap_dim_item = QtWidgets.QTableWidgetItem(
+                    '%.4f, %.4f' % (self.apertures[ap_code]['width'], self.apertures[ap_code]['height']))
+                ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            elif str(self.apertures[ap_code]['type']) == 'P':
+                ap_dim_item = QtWidgets.QTableWidgetItem(
+                    '%.4f, %.4f' % (self.apertures[ap_code]['diam'], self.apertures[ap_code]['nVertices']))
+                ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            else:
+                ap_dim_item = QtWidgets.QTableWidgetItem('')
+                ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
+
+            ap_size_item = QtWidgets.QTableWidgetItem('%.4f' % float(self.apertures[ap_code]['size']))
+            ap_size_item.setFlags(QtCore.Qt.ItemIsEnabled)
+
+            plot_item = FCCheckBox()
+            plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            if self.ui.plot_cb.isChecked():
+                plot_item.setChecked(True)
+
+            self.ui.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
+            self.ui.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
+            self.ui.apertures_table.setItem(self.apertures_row, 3, ap_size_item)   # Aperture Dimensions
+            self.ui.apertures_table.setItem(self.apertures_row, 4, ap_dim_item)   # Aperture Dimensions
+
+            self.ui.apertures_table.setCellWidget(self.apertures_row, 5, plot_item)
+
+            self.apertures_row += 1
+
+        for ap_code in sorted_macros:
+            ap_code = str(ap_code)
+
+            ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
+            ap_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.ui.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
+
+            ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
+
+            ap_type_item = QtWidgets.QTableWidgetItem('AM')
+            ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
+
+            plot_item = FCCheckBox()
+            plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            if self.ui.plot_cb.isChecked():
+                plot_item.setChecked(True)
+
+            self.ui.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
+            self.ui.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
+            self.ui.apertures_table.setCellWidget(self.apertures_row, 5, plot_item)
+
+            self.apertures_row += 1
+
+        self.ui.apertures_table.selectColumn(0)
+        #
+        self.ui.apertures_table.resizeColumnsToContents()
+        self.ui.apertures_table.resizeRowsToContents()
+
+        vertical_header = self.ui.apertures_table.verticalHeader()
+        # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        vertical_header.hide()
+        self.ui.apertures_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+
+        horizontal_header = self.ui.apertures_table.horizontalHeader()
+        horizontal_header.setMinimumSectionSize(10)
+        horizontal_header.setDefaultSectionSize(70)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.resizeSection(0, 20)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+        horizontal_header.setSectionResizeMode(4,  QtWidgets.QHeaderView.Stretch)
+        horizontal_header.setSectionResizeMode(5, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.resizeSection(5, 17)
+        self.ui.apertures_table.setColumnWidth(5, 17)
+
+        self.ui.apertures_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.ui.apertures_table.setSortingEnabled(False)
+        self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
+
+        # self.ui_connect()
 
     def on_generatenoncopper_button_click(self, *args):
         self.app.report_usage("gerber_on_generatenoncopper_button")

@@ -32,15 +32,6 @@ class ObjectUI(QtWidgets.QWidget):
         self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.title_box.addWidget(self.title_label, stretch=1)
 
-        ## Object name
-        self.name_box = QtWidgets.QHBoxLayout()
-        layout.addLayout(self.name_box)
-        name_label = QtWidgets.QLabel("Name:")
-        self.name_box.addWidget(name_label)
-        self.name_entry = FCEntry()
-        self.name_box.addWidget(self.name_entry)
-        self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
-
         ## Box box for custom widgets
         # This gets populated in offspring implementations.
         self.custom_box = QtWidgets.QVBoxLayout()
@@ -118,20 +109,12 @@ class GerberObjectUI(ObjectUI):
         ObjectUI.__init__(self, title='Gerber Object', parent=parent)
 
         # Plot options
-        self.plot_options_label = QtWidgets.QLabel("<b>Plot Options:</b>")
-        self.custom_box.addWidget(self.plot_options_label)
-
         grid0 = QtWidgets.QGridLayout()
         grid0.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.custom_box.addLayout(grid0)
 
-        # Plot CB
-        self.plot_cb = FCCheckBox(label='Plot   ')
-        self.plot_options_label.setToolTip(
-            "Plot (show) this object."
-        )
-        self.plot_cb.setFixedWidth(50)
-        grid0.addWidget(self.plot_cb, 0, 0)
+        self.plot_options_label = QtWidgets.QLabel("<b>Plot Options:</b>")
+        grid0.addWidget(self.plot_options_label, 0, 0)
 
         # Solid CB
         self.solid_cb = FCCheckBox(label='Solid   ')
@@ -148,6 +131,59 @@ class GerberObjectUI(ObjectUI):
         )
         self.multicolored_cb.setFixedWidth(55)
         grid0.addWidget(self.multicolored_cb, 0, 2)
+
+        ## Object name
+        self.name_hlay = QtWidgets.QHBoxLayout()
+        self.custom_box.addLayout(self.name_hlay)
+        name_label = QtWidgets.QLabel("<b>Name:</b>")
+        self.name_entry = FCEntry()
+        self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.name_hlay.addWidget(name_label)
+        self.name_hlay.addWidget(self.name_entry)
+
+        hlay_plot = QtWidgets.QHBoxLayout()
+        self.custom_box.addLayout(hlay_plot)
+
+        #### Gerber Apertures ####
+        self.apertures_table_label = QtWidgets.QLabel('<b>Apertures Table</b>')
+        self.apertures_table_label.setToolTip(
+            "Apertures in this Gerber object."
+        )
+        hlay_plot.addWidget(self.apertures_table_label)
+
+        # Plot CB
+        self.plot_cb = FCCheckBox('Plot Object')
+        self.plot_cb.setToolTip(
+            "Plot (show) this object."
+        )
+        self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        hlay_plot.addStretch()
+        hlay_plot.addWidget(self.plot_cb)
+
+        self.apertures_table = FCTable()
+        self.custom_box.addWidget(self.apertures_table)
+
+        self.apertures_table.setColumnCount(6)
+        self.apertures_table.setHorizontalHeaderLabels(['#', 'D', 'Type', 'Size', 'Dim', 'P'])
+        self.apertures_table.setSortingEnabled(False)
+
+        self.apertures_table.horizontalHeaderItem(0).setToolTip(
+            "Index")
+        self.apertures_table.horizontalHeaderItem(1).setToolTip(
+            "Aperture Code")
+        self.apertures_table.horizontalHeaderItem(2).setToolTip(
+            "Type of aperture: circular, rectangle, macros etc")
+        self.apertures_table.horizontalHeaderItem(4).setToolTip(
+            "Aperture Size:")
+        self.apertures_table.horizontalHeaderItem(4).setToolTip(
+            "Aperture Dimensions:\n"
+            " - (width, height) for R, O type.\n"
+            " - (dia, nVertices) for P type")
+        self.apertures_table.horizontalHeaderItem(5).setToolTip(
+            "Toggle display of the aperture instances.")
+
+        self.empty_label = QtWidgets.QLabel('')
+        self.custom_box.addWidget(self.empty_label)
 
         # Isolation Routing
         self.isolation_routing_label = QtWidgets.QLabel("<b>Isolation Routing:</b>")
@@ -271,20 +307,23 @@ class GerberObjectUI(ObjectUI):
         self.ois_iso = OptionalInputSection(self.follow_cb,
                                             [self.generate_int_iso_button, self.generate_ext_iso_button], logic=False)
 
+        grid2 = QtWidgets.QGridLayout()
+        self.custom_box.addLayout(grid2)
+
         ## Clear non-copper regions
         self.clearcopper_label = QtWidgets.QLabel("<b>Clear non-copper:</b>")
         self.clearcopper_label.setToolTip(
             "Create a Geometry object with\n"
             "toolpaths to cut all non-copper regions."
         )
-        self.custom_box.addWidget(self.clearcopper_label)
+        grid2.addWidget(self.clearcopper_label, 0, 0)
 
         self.generate_ncc_button = QtWidgets.QPushButton('Non-Copper Clear Tool')
         self.generate_ncc_button.setToolTip(
             "Create the Geometry Object\n"
             "for non-copper routing."
         )
-        self.custom_box.addWidget(self.generate_ncc_button)
+        grid2.addWidget(self.generate_ncc_button, 0, 1)
 
         ## Board cutout
         self.board_cutout_label = QtWidgets.QLabel("<b>Board cutout:</b>")
@@ -293,14 +332,14 @@ class GerberObjectUI(ObjectUI):
             "the PCB and separate it from\n"
             "the original board."
         )
-        self.custom_box.addWidget(self.board_cutout_label)
+        grid2.addWidget(self.board_cutout_label, 1, 0)
 
         self.generate_cutout_button = QtWidgets.QPushButton('Cutout Tool')
         self.generate_cutout_button.setToolTip(
             "Generate the geometry for\n"
             "the board cutout."
         )
-        self.custom_box.addWidget(self.generate_cutout_button)
+        grid2.addWidget(self.generate_cutout_button, 1, 1)
 
         ## Non-copper regions
         self.noncopper_label = QtWidgets.QLabel("<b>Non-copper regions:</b>")
@@ -382,18 +421,26 @@ class ExcellonObjectUI(ObjectUI):
                           parent=parent)
 
         #### Plot options ####
+        hlay_plot = QtWidgets.QHBoxLayout()
+        self.custom_box.addLayout(hlay_plot)
 
         self.plot_options_label = QtWidgets.QLabel("<b>Plot Options:</b>")
-        self.custom_box.addWidget(self.plot_options_label)
-
-        grid0 = QtWidgets.QGridLayout()
-        self.custom_box.addLayout(grid0)
-
         self.solid_cb = FCCheckBox(label='Solid')
         self.solid_cb.setToolTip(
             "Solid circles."
         )
-        grid0.addWidget(self.solid_cb, 0, 0)
+        hlay_plot.addWidget(self.plot_options_label)
+        hlay_plot.addStretch()
+        hlay_plot.addWidget(self.solid_cb)
+
+        ## Object name
+        self.name_hlay = QtWidgets.QHBoxLayout()
+        self.custom_box.addLayout(self.name_hlay)
+        name_label = QtWidgets.QLabel("<b>Name:</b>")
+        self.name_entry = FCEntry()
+        self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.name_hlay.addWidget(name_label)
+        self.name_hlay.addWidget(self.name_entry)
 
         # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Drills widgets
         # this way I can hide/show the frame
@@ -697,8 +744,17 @@ class GeometryObjectUI(ObjectUI):
         super(GeometryObjectUI, self).__init__(title='Geometry Object', icon_file='share/geometry32.png', parent=parent)
 
         # Plot options
-        # self.plot_options_label = QtWidgets.QLabel("<b>Plot Options:</b>")
-        # self.custom_box.addWidget(self.plot_options_label)
+        self.plot_options_label = QtWidgets.QLabel("<b>Plot Options:</b>")
+        self.custom_box.addWidget(self.plot_options_label)
+
+        ## Object name
+        self.name_hlay = QtWidgets.QHBoxLayout()
+        self.custom_box.addLayout(self.name_hlay)
+        name_label = QtWidgets.QLabel("<b>Name:</b>")
+        self.name_entry = FCEntry()
+        self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.name_hlay.addWidget(name_label)
+        self.name_hlay.addWidget(self.name_entry)
 
         # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Tools widgets
         # this way I can hide/show the frame
@@ -1146,6 +1202,15 @@ class CNCObjectUI(ObjectUI):
             {"label": "Travel", "value": "travel"},
             {"label": "Cut", "value": "cut"}
         ], stretch=False)
+
+        ## Object name
+        self.name_hlay = QtWidgets.QHBoxLayout()
+        self.custom_box.addLayout(self.name_hlay)
+        name_label = QtWidgets.QLabel("<b>Name:</b>")
+        self.name_entry = FCEntry()
+        self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.name_hlay.addWidget(name_label)
+        self.name_hlay.addWidget(self.name_entry)
 
         f_lay = QtWidgets.QGridLayout()
         f_lay.setColumnStretch(1, 1)

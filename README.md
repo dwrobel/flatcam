@@ -14,6 +14,9 @@ CAD program, and create G-Code for Isolation routing.
 - added new parameter for Excellon Object in Preferences: Fast Retract. If the checkbox is checked then after reaching the drill depth, the drill bit will be raised out of the hole asap.
 - started to work on GUI forms simplification
 - changed the Preferences GUI for Geometry and Excellon Objects to make a difference between parameters that are changed often and those that are not.
+- changed the layout in the Selected Tab UI
+- started to add apertures table support
+- finished Gerber aperture table display
 
 12.02.2019
 
