@@ -946,6 +946,72 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
 
+    # experimental plot() when the solid_geometry is stored in the self.apertures
+    # def plot_apertures(self, **kwargs):
+    #     """
+    #
+    #     :param kwargs: color and face_color
+    #     :return:
+    #     """
+    #
+    #     FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMGerber.plot()")
+    #
+    #     # Does all the required setup and returns False
+    #     # if the 'ptint' option is set to False.
+    #     if not FlatCAMObj.plot(self):
+    #         return
+    #
+    #     if 'color' in kwargs:
+    #         color = kwargs['color']
+    #     else:
+    #         color = self.app.defaults['global_plot_line']
+    #     if 'face_color' in kwargs:
+    #         face_color = kwargs['face_color']
+    #     else:
+    #         face_color = self.app.defaults['global_plot_fill']
+    #
+    #     geometry = {}
+    #     for ap in self.apertures:
+    #         geometry[ap] = self.apertures[ap]['solid_geometry']
+    #         try:
+    #             _ = iter(geometry[ap])
+    #         except TypeError:
+    #             geometry[ap] = [geometry[ap]]
+    #
+    #     def random_color():
+    #         color = np.random.rand(4)
+    #         color[3] = 1
+    #         return color
+    #
+    #     try:
+    #         if self.options["solid"]:
+    #             for geo in geometry:
+    #                 for g in geometry[geo]:
+    #                     if type(g) == Polygon or type(g) == LineString:
+    #                         self.add_shape(shape=g, color=color,
+    #                                        face_color=random_color() if self.options['multicolored']
+    #                                        else face_color, visible=self.options['plot'])
+    #                     else:
+    #                         for el in g:
+    #                             self.add_shape(shape=el, color=color,
+    #                                            face_color=random_color() if self.options['multicolored']
+    #                                            else face_color, visible=self.options['plot'])
+    #         else:
+    #             for geo in geometry:
+    #                 for g in geometry[geo]:
+    #                     if type(g) == Polygon or type(g) == LineString:
+    #                         self.add_shape(shape=g,
+    #                                        color=random_color() if self.options['multicolored'] else 'black',
+    #                                        visible=self.options['plot'])
+    #                     else:
+    #                         for el in g:
+    #                             self.add_shape(shape=el,
+    #                                            color=random_color() if self.options['multicolored'] else 'black',
+    #                                            visible=self.options['plot'])
+    #         self.shapes.redraw()
+    #     except (ObjectDeleted, AttributeError):
+    #         self.shapes.clear(update=True)
+
     def serialize(self):
         return {
             "options": self.options,
