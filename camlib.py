@@ -4946,6 +4946,8 @@ class CNCjob(Geometry):
         measured_distance += abs(distance_euclidian(self.oldx, self.oldy, 0, 0))
         log.debug("The total travel distance including travel to end position is: %s" %
                   str(measured_distance) + '\n')
+        self.travel_distance = measured_distance
+
         self.gcode = gcode
         return 'OK'
 
@@ -5558,7 +5560,7 @@ class CNCjob(Geometry):
                 return "fail"
 
             gobj = self.codes_split(line)
-            print(gobj)
+
             ## Units
             if 'G' in gobj and (gobj['G'] == 20.0 or gobj['G'] == 21.0):
                 self.units = {20.0: "IN", 21.0: "MM"}[gobj['G']]

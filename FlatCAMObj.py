@@ -1076,6 +1076,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.tot_slot_cnt = 0
         self.tool_row_slots = 0
 
+        # variable to store the distance travelled
+        self.travel_distance = 0.0
+
         self.multigeo = False
 
     @staticmethod
@@ -4523,6 +4526,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
        '''
         self.exc_cnc_tools = {}
 
+
         # for now it show if the plot will be done for multi-tool CNCJob (True) or for single tool
         # (like the one in the TCL Command), False
         self.multitool = False
@@ -4681,6 +4685,18 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         # Fill form fields only on object create
         self.to_form()
+
+        # this means that the object that created this CNCJob was an Excellon
+        try:
+            if self.travel_distance:
+                self.ui.t_distance_label.show()
+                self.ui.t_distance_entry.setVisible(True)
+                self.ui.t_distance_entry.setDisabled(True)
+                self.ui.t_distance_entry.set_value('%.4f' % float(self.travel_distance))
+                self.ui.units_label.setText(str(self.units).lower())
+                self.ui.units_label.setDisabled(True)
+        except AttributeError:
+            pass
 
         # set the kind of geometries are plotted by default with plot2() from camlib.CNCJob
         self.ui.cncplot_method_combo.set_value(self.app.defaults["cncjob_plot_kind"])

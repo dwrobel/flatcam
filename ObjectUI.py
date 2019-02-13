@@ -1199,7 +1199,7 @@ class CNCObjectUI(ObjectUI):
         self.plot_options_label = QtWidgets.QLabel("<b>Plot Options:</b>")
         self.custom_box.addWidget(self.plot_options_label)
 
-        self.cncplot_method_label = QtWidgets.QLabel("Plot kind:")
+        self.cncplot_method_label = QtWidgets.QLabel("<b>Plot kind:</b>")
         self.cncplot_method_label.setToolTip(
             "This selects the kind of geometries on the canvas to plot.\n"
             "Those can be either of type 'Travel' which means the moves\n"
@@ -1222,6 +1222,18 @@ class CNCObjectUI(ObjectUI):
         self.name_hlay.addWidget(name_label)
         self.name_hlay.addWidget(self.name_entry)
 
+        self.t_distance_label = QtWidgets.QLabel("<b>Travelled dist.:</b>")
+        self.t_distance_label.setToolTip(
+            "This is the total travelled distance on X-Y plane.\n"
+            "In current units."
+        )
+        self.t_distance_entry = FCEntry()
+        self.t_distance_entry.setToolTip(
+            "This is the total travelled distance on X-Y plane.\n"
+            "In current units."
+        )
+        self.units_label = QtWidgets.QLabel()
+
         f_lay = QtWidgets.QGridLayout()
         f_lay.setColumnStretch(1, 1)
         f_lay.setColumnStretch(2, 1)
@@ -1230,6 +1242,12 @@ class CNCObjectUI(ObjectUI):
         f_lay.addWidget(self.cncplot_method_label, 0, 0)
         f_lay.addWidget(self.cncplot_method_combo, 0, 1)
         f_lay.addWidget(QtWidgets.QLabel(''), 0, 2)
+        f_lay.addWidget(self.t_distance_label, 1, 0)
+        f_lay.addWidget(self.t_distance_entry, 1, 1)
+        f_lay.addWidget(self.units_label, 1, 2)
+
+        self.t_distance_label.hide()
+        self.t_distance_entry.setVisible(False)
 
         e1_lbl = QtWidgets.QLabel('')
         self.custom_box.addWidget(e1_lbl)

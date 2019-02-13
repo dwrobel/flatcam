@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+14.02.2019
+
+- added total travel distance for CNCJob object created from Excellon Object in the CNCJob Selected tab
+
 13.02.2019
 
 - added new parameter for Excellon Object in Preferences: Fast Retract. If the checkbox is checked then after reaching the drill depth, the drill bit will be raised out of the hole asap.
