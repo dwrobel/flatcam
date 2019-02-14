@@ -642,8 +642,8 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
         self.old_index = index
 
-        # Get the tab content
-        name = self.tabText(index)
+        # Get the tab content and add name FlatCAM to the tab so we know on which app is this tab linked
+        name = "FlatCAM " + self.tabText(index)
         icon = self.tabIcon(index)
         if icon.isNull():
             icon = self.window().windowIcon()
@@ -684,6 +684,8 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
         # Remove the reference
         del self.detachedTabs[name]
+        # make sure that we strip the 'FlatCAM' part of the detached name otherwise the tab name will be too long
+        name = name.partition(' ')[2]
 
         # helps in restoring the tab to the same index that it was before was detached
         insert_index = self.old_index if self.use_old_index is True else insertAt

@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 14.02.2019
 
 - added total travel distance for CNCJob object created from Excellon Object in the CNCJob Selected tab
+- added 'FlatCAM ' prefix to any detached tab, for easy identification
 
 13.02.2019
 
