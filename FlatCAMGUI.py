@@ -1048,6 +1048,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 			<td>&nbsp;Paint Tool</td>
 		</tr>
 		<tr height="20">
+			<td height="20"><strong>J</strong></td>
+			<td>&nbsp;Jump to Location (x, y)</td>
+		</tr>
+		<tr height="20">
 			<td height="20"><strong>K</strong></td>
 			<td>&nbsp;Toggle Corner Snap</td>
 		</tr>
@@ -1068,7 +1072,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 			<td>&nbsp;Draw a Path</td>
 		</tr>
 		<tr height="20">
-			<td height="20">R</td>
+			<td height="20"><strong>R</strong></td>
 			<td>&nbsp;Draw Rectangle</td>
 		</tr>
 		<tr height="20">
@@ -1133,6 +1137,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 		<tr height="20">
 			<td height="20"><strong>D</strong></td>
 			<td>&nbsp;Add Drill</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>J</strong></td>
+			<td>&nbsp;Jump to Location (x, y)</td>
 		</tr>
 		<tr height="20">
 			<td height="20"><strong>M</strong></td>
@@ -1940,6 +1948,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_I or key == 'I':
                     self.app.geo_editor.select_tool('paint')
 
+                # Jump to coords
+                if key == QtCore.Qt.Key_J or key == 'J':
+                    self.app.on_jump_to()
+
                 # Corner Snap
                 if key == QtCore.Qt.Key_K or key == 'K':
                     self.app.geo_editor.on_corner_snap()
@@ -2161,6 +2173,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.app_cursor.enabled = True
                     self.app.ui.grid_snap_btn.trigger()
                     return
+
+                # Jump to coords
+                if key == QtCore.Qt.Key_J or key == 'J':
+                    self.app.on_jump_to()
 
                 # Corner Snap
                 if key == QtCore.Qt.Key_K or key == 'K':

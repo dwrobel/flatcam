@@ -3670,7 +3670,9 @@ class App(QtCore.QObject):
         """
         self.report_usage("on_jump_to()")
 
-        dia_box = Dialog_box(title="Jump to Coordinates", label="Enter the coordinates in format X,Y:")
+        dia_box = Dialog_box(title="Jump to ...",
+                             label="Enter the coordinates in format X,Y:",
+                             icon=QtGui.QIcon('share/jump_to16.png'))
 
         if dia_box.ok is True:
             try:

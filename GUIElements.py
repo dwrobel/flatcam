@@ -1212,7 +1212,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
 
 class Dialog_box(QtWidgets.QWidget):
-    def __init__(self, title=None, label=None):
+    def __init__(self, title=None, label=None, icon=None):
         """
 
         :param title: string with the window title
@@ -1223,7 +1223,8 @@ class Dialog_box(QtWidgets.QWidget):
         self.ok = False
 
         dialog_box = QtWidgets.QInputDialog()
-        dialog_box.setFixedWidth(270)
+        dialog_box.setFixedWidth(290)
+        self.setWindowIcon(icon)
 
         self.location, self.ok = dialog_box.getText(self, title, label)
 

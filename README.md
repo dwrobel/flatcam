@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+15.02.2019
+
+- 
+
 14.02.2019
 
 - added total travel distance for CNCJob object created from Excellon Object in the CNCJob Selected tab
@@ -17,6 +21,7 @@ CAD program, and create G-Code for Isolation routing.
 - updated the function for the project context menu 'Generate CNC' menu entry (Action) to use the modernized function FlatCAMObj.FlatCAMGeometry.on_generatecnc_button_click()
 - when linked, the grid snap on Y will copy the value in grid snap on X in real time
 - in Gerber aperture table now the values are displayed in the current units set in FlatCAM
+- added shortcut key 'J' (jump to location) in Editors and added an icon to the dialog popup window
 
 13.02.2019
 
