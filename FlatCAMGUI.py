@@ -273,6 +273,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             QtGui.QIcon('share/fscreen32.png'), "&Toggle FullScreen\tALT+F10")
         self.menuview_toggle_parea = self.menuview.addAction(
             QtGui.QIcon('share/plot32.png'), "&Toggle Plot Area\tCTRL+F10")
+        self.menuview_toggle_notebook = self.menuview.addAction(
+            QtGui.QIcon('share/notebook32.png'), "&Toggle Project/Sel/Tool\t`")
 
         self.menuview.addSeparator()
         self.menuview_toggle_grid = self.menuview.addAction(QtGui.QIcon('share/grid32.png'), "&Toggle Grid Snap\tG")
@@ -2819,18 +2821,31 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.mselect_radio = RadioSet([{'label': 'CTRL', 'value': 'Control'},
                                      {'label': 'SHIFT', 'value': 'Shift'}])
 
-        # # Mouse panning with "Space" key, CB
-        # self.pan_with_space_label = QtWidgets.QLabel('Pan w/ Space:')
-        # self.pan_with_space_label.setToolTip(
-        #     "Check this box if you want to pan when mouse is moved,\n"
-        #     "and key 'Space' is pressed."
-        # )
-        # self.pan_with_space_cb = FCCheckBox(label='')
-        # self.pan_with_space_cb.setToolTip(
-        #     "Check this box if you want to pan when mouse is moved,\n"
-        #     "and key 'Space' is pressed."
-        # )
+        # Project at StartUp CB
+        self.project_startup_label = QtWidgets.QLabel('Project at StartUp:')
+        self.project_startup_label.setToolTip(
+            "Check this box if you want the project/selected/tool tab area to\n"
+            "to be shown automatically at startup."
+        )
+        self.project_startup_cb = FCCheckBox(label='')
+        self.project_startup_cb.setToolTip(
+            "Check this box if you want the project/selected/tool tab area to\n"
+            "to be shown automatically at startup."
+        )
 
+        # Project autohide CB
+        self.project_autohide_label = QtWidgets.QLabel('Project AutoHide:')
+        self.project_autohide_label.setToolTip(
+            "Check this box if you want the project/selected/tool tab area to\n"
+            "hide automatically when there are no objects loaded and\n"
+            "to show whenever a new object is created."
+        )
+        self.project_autohide_cb = FCCheckBox(label='')
+        self.project_autohide_cb.setToolTip(
+            "Check this box if you want the project/selected/tool tab area to\n"
+            "hide automatically when there are no objects loaded and\n"
+            "to show whenever a new object is created."
+        )
 
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
@@ -2847,7 +2862,9 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         self.form_box.addRow(self.panbuttonlabel, self.pan_button_radio)
         self.form_box.addRow(self.mselectlabel, self.mselect_radio)
-        # self.form_box.addRow(self.pan_with_space_label, self.pan_with_space_cb)
+        self.form_box.addRow(self.project_startup_label, self.project_startup_cb)
+        self.form_box.addRow(self.project_autohide_label, self.project_autohide_cb)
+
         self.form_box.addRow(self.spacelabel, self.spacelabel)
 
         # Add the QFormLayout that holds the Application general defaults

@@ -676,6 +676,11 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         if group.child_count() is 1:
             self.view.setExpanded(group_index, True)
 
+        # decide if to show or hide the Notebook side of the screen
+        if self.app.defaults["global_project_autohide"] is True:
+            # always open the notebook on object added to collection
+            self.app.ui.splitter.setSizes([1, 1])
+
     def get_names(self):
         """
         Gets a list of the names of all objects in the collection.
@@ -767,6 +772,12 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         # always go to the Project Tab after object deletion as it may be done with a shortcut key
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+
+        # decide if to show or hide the Notebook side of the screen
+        if self.app.defaults["global_project_autohide"] is True:
+            # hide the notebook if there are no objects in the collection
+            if not self.get_list():
+                self.app.ui.splitter.setSizes([0, 1])
 
     def delete_all(self):
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.delete_all()")

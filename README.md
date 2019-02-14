@@ -22,6 +22,8 @@ CAD program, and create G-Code for Isolation routing.
 - when linked, the grid snap on Y will copy the value in grid snap on X in real time
 - in Gerber aperture table now the values are displayed in the current units set in FlatCAM
 - added shortcut key 'J' (jump to location) in Editors and added an icon to the dialog popup window
+- the notebook is automatically collapsed when there are no objects in the collection and it is showed when adding an object
+- added new options in Edit -> Preferences -> General -> App Preferences to control if the Notebook is showed at startup and if the notebook is closed when there are no objects in the collection and showed when the collection has objects.
 
 13.02.2019
 

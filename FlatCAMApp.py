@@ -305,6 +305,9 @@ class App(QtCore.QObject):
             "global_shell_at_startup": self.general_defaults_form.general_app_group.shell_startup_cb,
             "global_version_check": self.general_defaults_form.general_app_group.version_check_cb,
             "global_send_stats": self.general_defaults_form.general_app_group.send_stats_cb,
+            "global_project_at_startup": self.general_defaults_form.general_app_group.project_startup_cb,
+            "global_project_autohide": self.general_defaults_form.general_app_group.project_autohide_cb,
+
             "global_gridx": self.general_defaults_form.general_gui_group.gridx_entry,
             "global_gridy": self.general_defaults_form.general_gui_group.gridy_entry,
             "global_snap_max": self.general_defaults_form.general_gui_group.snap_max_dist_entry,
@@ -471,6 +474,9 @@ class App(QtCore.QObject):
             "units": "IN",
             "global_version_check": True,
             "global_send_stats": True,
+            "global_project_at_startup": False,
+            "global_project_autohide": True,
+
             "global_gridx": 1.0,
             "global_gridy": 1.0,
             "global_snap_max": 0.05,
@@ -1116,6 +1122,8 @@ class App(QtCore.QObject):
         self.ui.menuview_zoom_out.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
         self.ui.menuview_toggle_fscreen.triggered.connect(self.on_fullscreen)
         self.ui.menuview_toggle_parea.triggered.connect(self.on_toggle_plotarea)
+        self.ui.menuview_toggle_notebook.triggered.connect(self.on_toggle_notebook)
+
         self.ui.menuview_toggle_grid.triggered.connect(self.on_toggle_grid)
         self.ui.menuview_toggle_axis.triggered.connect(self.on_toggle_axis)
         self.ui.menuview_toggle_workspace.triggered.connect(self.on_workspace_menu)
@@ -1263,6 +1271,13 @@ class App(QtCore.QObject):
 
         # this is a flag to signal to other tools that the ui tooltab is locked and not accessible
         self.tool_tab_locked = False
+
+        # decide if to show or hide the Notebook side of the screen at startup
+        if self.defaults["global_project_at_startup"] is True:
+            self.ui.splitter.setSizes([1, 1])
+        else:
+            self.ui.splitter.setSizes([0, 1])
+
 
         ####################
         ### Other setups ###
