@@ -93,7 +93,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.909
-    version_date = "2019/02/13"
+    version_date = "2019/02/15"
     beta = True
 
     # current date now
@@ -4105,6 +4105,7 @@ class App(QtCore.QObject):
 
     def set_grid(self):
         self.ui.grid_gap_x_entry.setText(self.sender().text())
+        self.ui.grid_gap_y_entry.setText(self.sender().text())
 
     def on_grid_add(self):
         ## Current application units in lower Case
@@ -4159,7 +4160,7 @@ class App(QtCore.QObject):
                     "[success] Grid Value deleted ...")
         else:
             self.inform.emit(
-                "[WARNING_NOTCL] Adding New Grid cancelled ...")
+                "[WARNING_NOTCL] Delete Grid value cancelled ...")
 
     def on_shortcut_list(self):
         self.report_usage("on_shortcut_list()")
