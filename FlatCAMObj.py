@@ -498,7 +498,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         sort = []
         for k, v in list(self.aperture_macros.items()):
-            sort.append(int(k))
+            sort.append(k)
         sorted_macros = sorted(sort)
 
         for ap_code in sorted_apertures:
@@ -516,17 +516,25 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             if str(self.apertures[ap_code]['type']) == 'R' or str(self.apertures[ap_code]['type']) == 'O':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
-                    '%.4f, %.4f' % (self.apertures[ap_code]['width'], self.apertures[ap_code]['height']))
+                    '%.4f, %.4f' % (self.apertures[ap_code]['width'] * self.file_units_factor,
+                                    self.apertures[ap_code]['height'] * self.file_units_factor
+                                    )
+                )
                 ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
             elif str(self.apertures[ap_code]['type']) == 'P':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
-                    '%.4f, %.4f' % (self.apertures[ap_code]['diam'], self.apertures[ap_code]['nVertices']))
+                    '%.4f, %.4f' % (self.apertures[ap_code]['diam'] * self.file_units_factor,
+                                    self.apertures[ap_code]['nVertices'] * self.file_units_factor)
+                )
                 ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
             else:
                 ap_dim_item = QtWidgets.QTableWidgetItem('')
                 ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-            ap_size_item = QtWidgets.QTableWidgetItem('%.4f' % float(self.apertures[ap_code]['size']))
+            if self.apertures[ap_code]['size'] is not None:
+                ap_size_item = QtWidgets.QTableWidgetItem('%.4f' %
+                                                          float(self.apertures[ap_code]['size'] *
+                                                                self.file_units_factor))
             ap_size_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
             plot_item = FCCheckBox()

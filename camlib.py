@@ -98,6 +98,9 @@ class Geometry(object):
         # Flattened geometry (list of paths only)
         self.flat_geometry = []
 
+        # this is the calculated conversion factor when the file units are different than the ones in the app
+        self.file_units_factor = 1
+
         # Index
         self.index = None
 
@@ -1264,6 +1267,7 @@ class Geometry(object):
 
         self.units = units
         self.scale(factor)
+        self.file_units_factor = factor
         return factor
 
     def to_dict(self):
@@ -1899,7 +1903,7 @@ class Gerber (Geometry):
         self.gerber_zeros = 'L'
         """Zeros in Gerber numbers. If 'L' then remove leading zeros, if 'T' remove trailing zeros. Used during parsing.
         """
-        
+
         ## Gerber elements ##
         # Apertures {'id':{'type':chr, 
         #             ['size':float], ['width':float],
