@@ -535,7 +535,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 ap_size_item = QtWidgets.QTableWidgetItem('%.4f' %
                                                           float(self.apertures[ap_code]['size'] *
                                                                 self.file_units_factor))
-            ap_size_item.setFlags(QtCore.Qt.ItemIsEnabled)
+                ap_size_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            else:
+                ap_size_item = QtWidgets.QTableWidgetItem('')
 
             plot_item = FCCheckBox()
             plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
