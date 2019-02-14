@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - added total travel distance for CNCJob object created from Excellon Object in the CNCJob Selected tab
 - added 'FlatCAM ' prefix to any detached tab, for easy identification
 - remade the Grids context menu (right mouse button click on canvas). Now it has values linked to the units type (inch or mm). Added ability to add or delete grid values and they are persistent.
+- updated the function for the project context menu 'Generate CNC' menu entry (Action) to use the modernized function FlatCAMObj.FlatCAMGeometry.on_generatecnc_button_click()
 
 13.02.2019
 

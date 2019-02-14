@@ -3467,9 +3467,27 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :rtype: list
         """
         table_tools_items = []
-        for x in self.ui.geo_tools_table.selectedItems():
-            table_tools_items.append([self.ui.geo_tools_table.item(x.row(), column).text()
-                                      for column in range(0, self.ui.geo_tools_table.columnCount())])
+        if self.multigeo:
+            for x in self.ui.geo_tools_table.selectedItems():
+                table_tools_items.append([self.ui.geo_tools_table.item(x.row(), column).text()
+                                          for column in range(0, self.ui.geo_tools_table.columnCount())])
+        else:
+            for x in self.ui.geo_tools_table.selectedItems():
+                r = []
+                # the last 2 columns for single-geo geometry are irrelevant and create problems reading
+                # so we don't read them
+                for column in range(0, self.ui.geo_tools_table.columnCount() - 2):
+                    # the columns have items that have text but also have items that are widgets
+                    # for which the text they hold has to be read differently
+                    try:
+                        txt = self.ui.geo_tools_table.item(x.row(), column).text()
+                    except AttributeError:
+                        txt = self.ui.geo_tools_table.cellWidget(x.row(), column).currentText()
+                    except:
+                        pass
+                    r.append(txt)
+                table_tools_items.append(r)
+
         for item in table_tools_items:
             item[0] = str(item[0])
         return table_tools_items
@@ -4042,7 +4060,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         """
 
         tooldia = tooldia if tooldia else float(self.options["cnctooldia"])
-        outname = outname if outname is not None else float(self.options["name"])
+        outname = outname if outname is not None else self.options["name"]
 
         z_cut = z_cut if z_cut is not None else float(self.options["cutz"])
         z_move = z_move if z_move is not None else float(self.options["travelz"])
@@ -4058,7 +4076,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         segy = segy if segy is not None else float(self.app.defaults['geometry_segy'])
 
         extracut = extracut if extracut is not None else float(self.options["extracut"])
-        startz = startz if startz is not None else float(self.options["startz"])
+        startz = startz if startz is not None else self.options["startz"]
         endz = endz if endz is not None else float(self.options["endz"])
 
         toolchangez = toolchangez if toolchangez else float(self.options["toolchangez"])
@@ -4068,7 +4086,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         offset = offset if offset else 0.0
 
         # int or None.
-        spindlespeed = spindlespeed if spindlespeed else int(self.options['spindlespeed'])
+        spindlespeed = spindlespeed if spindlespeed else self.options['spindlespeed']
         dwell = dwell if dwell else self.options["dwell"]
         dwelltime = dwelltime if dwelltime else float(self.options["dwelltime"])
 

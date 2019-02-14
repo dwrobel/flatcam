@@ -6672,8 +6672,10 @@ The normal flow when working in FlatCAM is the following:</span></p>
     def generate_cnc_job(self, objects):
         self.report_usage("generate_cnc_job()")
 
+        # for obj in objects:
+        #     obj.generatecncjob()
         for obj in objects:
-            obj.generatecncjob()
+            obj.on_generatecnc_button_click()
 
     def save_project(self, filename):
         """
