@@ -1195,11 +1195,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.popMenu.addSeparator()
 
         self.cmenu_gridmenu = self.popMenu.addMenu(QtGui.QIcon('share/grid32_menu.png'), "Grids")
-        self.gridmenu_1 = self.cmenu_gridmenu.addAction(QtGui.QIcon('share/grid32_menu.png'), "0.05")
-        self.gridmenu_2 = self.cmenu_gridmenu.addAction(QtGui.QIcon('share/grid32_menu.png'), "0.10")
-        self.gridmenu_3 = self.cmenu_gridmenu.addAction(QtGui.QIcon('share/grid32_menu.png'), "0.20")
-        self.gridmenu_4 = self.cmenu_gridmenu.addAction(QtGui.QIcon('share/grid32_menu.png'), "0.50")
-        self.gridmenu_5 = self.cmenu_gridmenu.addAction(QtGui.QIcon('share/grid32_menu.png'), "1.00")
 
         self.cmenu_viewmenu = self.popMenu.addMenu(QtGui.QIcon('share/view64.png'), "View")
         self.zoomfit = self.cmenu_viewmenu.addAction(QtGui.QIcon('share/zoom_fit32.png'), "Zoom Fit")

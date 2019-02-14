@@ -474,6 +474,10 @@ class App(QtCore.QObject):
             "global_gridx": 1.0,
             "global_gridy": 1.0,
             "global_snap_max": 0.05,
+            "global_grid_context_menu": {
+                'in': [0.01, 0.02, 0.025, 0.05, 0.1],
+                'mm': [0.1, 0.2, 0.5, 1, 2.54]
+            },
 
             "global_plot_fill": '#BBF268BF',
             "global_plot_line": '#006E20BF',
@@ -1159,12 +1163,6 @@ class App(QtCore.QObject):
         self.ui.popmenu_new_geo.triggered.connect(self.new_geometry_object)
         self.ui.popmenu_new_exc.triggered.connect(self.new_excellon_object)
         self.ui.popmenu_new_prj.triggered.connect(self.on_file_new)
-
-        self.ui.gridmenu_1.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("0.05"))
-        self.ui.gridmenu_2.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("0.1"))
-        self.ui.gridmenu_3.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("0.2"))
-        self.ui.gridmenu_4.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("0.5"))
-        self.ui.gridmenu_5.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("1.0"))
 
         self.ui.draw_line.triggered.connect(self.geo_editor.draw_tool_path)
         self.ui.draw_rect.triggered.connect(self.geo_editor.draw_tool_rectangle)
@@ -4089,224 +4087,79 @@ class App(QtCore.QObject):
         else:
             return 0
 
-    # def on_key_over_plot(self, event):
-    #     """
-    #     Callback for the key pressed event when the canvas is focused. Keyboard
-    #     shortcuts are handled here. So far, these are the shortcuts:
-    #
-    #     ==========  ============================================
-    #     Key         Action
-    #     ==========  ============================================
-    #     '1'         Zoom-fit. Fits the axes limits to the data.
-    #     '2'         Zoom-out.
-    #     '3'         Zoom-in.
-    #     'ctrl+m'         Toggle on-off the measuring tool.
-    #     ==========  ============================================
-    #
-    #     :param event: Ignored.
-    #     :return: None
-    #     """
-    #     print(type(event.key), event.key)
-    #     self.key_modifiers = QtWidgets.QApplication.keyboardModifiers()
-    #
-    #     if self.key_modifiers == QtCore.Qt.ControlModifier:
-    #         if event.key == 'A':
-    #             self.on_selectall()
-    #
-    #         if event.key == 'C':
-    #             self.on_copy_object()
-    #
-    #         if event.key == 'E':
-    #             self.on_fileopenexcellon()
-    #
-    #         if event.key == 'G':
-    #             self.on_fileopengerber()
-    #
-    #         if event.key == 'N':
-    #             self.on_file_new_click()
-    #
-    #         if event.key == 'M':
-    #             self.measurement_tool.run()
-    #
-    #         if event.key == 'O':
-    #             self.on_file_openproject()
-    #
-    #         if event.key == 'S':
-    #             self.on_file_saveproject()
-    #
-    #         # Toggle Plot Area
-    #         if event.key == 'F10':
-    #             self.on_toggle_plotarea()
-    #
-    #         return
-    #     elif self.key_modifiers == QtCore.Qt.AltModifier:
-    #         # place holder for further shortcut key
-    #
-    #         if event.key == '1':
-    #             self.enable_all_plots()
-    #
-    #         if event.key == '2':
-    #             self.disable_all_plots()
-    #
-    #         if event.key == '3':
-    #             self.disable_other_plots()
-    #
-    #         if event.key == 'C':
-    #             self.calculator_tool.run()
-    #
-    #         if event.key == 'D':
-    #             self.dblsidedtool.run()
-    #
-    #         if event.key == 'L':
-    #             self.film_tool.run()
-    #
-    #         if event.key == 'N':
-    #             self.ncclear_tool.run()
-    #
-    #         if event.key == 'P':
-    #             self.paint_tool.run()
-    #
-    #         if event.key == 'R':
-    #             self.transform_tool.run()
-    #
-    #         if event.key == 'U':
-    #             self.cutout_tool.run()
-    #
-    #         if event.key == 'Z':
-    #             self.panelize_tool.run()
-    #
-    #         if event.key == 'F10':
-    #             self.on_fullscreen()
-    #
-    #         return
-    #     elif self.key_modifiers == QtCore.Qt.ShiftModifier:
-    #         # place holder for further shortcut key
-    #
-    #         if event.key == 'C':
-    #             self.on_copy_name()
-    #
-    #         # Toggle axis
-    #         if event.key == 'G':
-    #             self.on_toggle_axis()
-    #
-    #         # Open Preferences Window
-    #         if event.key == 'P':
-    #             self.on_preferences()
-    #
-    #         # Rotate Object by 90 degree CCW
-    #         if event.key == 'R':
-    #             self.on_rotate(silent=True, preset=-90)
-    #
-    #         # Run a Script
-    #         if event.key == 'S':
-    #             self.on_filerunscript()
-    #
-    #         # Toggle Workspace
-    #         if event.key == 'W':
-    #             self.on_workspace_menu()
-    #
-    #         # Skew on X axis
-    #         if event.key == 'X':
-    #             self.on_skewx()
-    #
-    #         # Skew on Y axis
-    #         if event.key == 'Y':
-    #             self.on_skewy()
-    #
-    #     else:
-    #         if event.key == 'F1':
-    #             webbrowser.open(self.manual_url)
-    #             return
-    #
-    #         if event.key == 'F2':
-    #             webbrowser.open(self.video_url)
-    #             return
-    #
-    #         if event.key == self.defaults['zoom_out_key']:  # '-'
-    #             self.plotcanvas.zoom(1 / self.defaults['zoom_ratio'], self.mouse)
-    #             return
-    #
-    #         if event.key == self.defaults['zoom_in_key']:  # '='
-    #             self.plotcanvas.zoom(self.defaults['zoom_ratio'], self.mouse)
-    #             return
-    #
-    #         if event.key == 'Delete':
-    #             self.on_delete()
-    #             return
-    #
-    #         if event.key == 'Space':
-    #             if self.collection.get_active() is not None:
-    #                 self.collection.get_active().ui.plot_cb.toggle()
-    #                 self.delete_selection_shape()
-    #
-    #         if event.key == '1':
-    #             self.on_select_tab('project')
-    #
-    #         if event.key == '2':
-    #             self.on_select_tab('selected')
-    #
-    #         if event.key == '3':
-    #             self.on_select_tab('tool')
-    #
-    #         if event.key == 'E':
-    #             self.object2editor()
-    #
-    #         if event.key == self.defaults['grid_toggle_key']:  # G
-    #             self.ui.grid_snap_btn.trigger()
-    #
-    #         if event.key == 'J':
-    #             self.on_jump_to()
-    #
-    #         if event.key == 'L':
-    #             self.new_excellon_object()
-    #
-    #         if event.key == 'M':
-    #             self.move_tool.toggle()
-    #             return
-    #
-    #         if event.key == 'N':
-    #             self.on_new_geometry()
-    #
-    #         if event.key == 'O':
-    #             self.on_set_origin()
-    #
-    #         if event.key == 'P':
-    #             self.properties_tool.run()
-    #
-    #         if event.key == 'Q':
-    #             self.on_toggle_units_click()
-    #
-    #         if event.key == 'R':
-    #             self.on_rotate(silent=True, preset=90)
-    #
-    #         if event.key == 'S':
-    #             self.on_toggle_shell()
-    #
-    #         if event.key == 'V':
-    #             self.on_zoom_fit(None)
-    #
-    #         if event.key == 'X':
-    #             self.on_flipx()
-    #
-    #         if event.key == 'Y':
-    #             self.on_flipy()
-    #
-    #         if event.key == '`':
-    #             self.on_shortcut_list()
-    #
-    # def on_key_release_over_plot(self, event):
-    #     modifiers = QtWidgets.QApplication.keyboardModifiers()
-    #
-    #     if modifiers == QtCore.Qt.ControlModifier:
-    #         return
-    #     elif modifiers == QtCore.Qt.AltModifier:
-    #         # place holder for further shortcut key
-    #         return
-    #     elif modifiers == QtCore.Qt.ShiftModifier:
-    #         # place holder for further shortcut key
-    #         return
-    #     else:
-    #         return
+    def populate_cmenu_grids(self):
+        units = self.general_options_form.general_app_group.units_radio.get_value().lower()
+
+        self.ui.cmenu_gridmenu.clear()
+        sorted_list = sorted(self.defaults["global_grid_context_menu"][str(units)])
+
+        for grid in sorted_list:
+            action = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/grid32_menu.png'), "%s" % str(grid))
+            action.triggered.connect(self.set_grid)
+
+        self.ui.cmenu_gridmenu.addSeparator()
+        grid_add = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/plus32.png'), "Add")
+        grid_add.triggered.connect(self.on_grid_add)
+        grid_delete = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/delete32.png'), "Delete")
+        grid_delete.triggered.connect(self.on_grid_delete)
+
+    def set_grid(self):
+        self.ui.grid_gap_x_entry.setText(self.sender().text())
+
+    def on_grid_add(self):
+        ## Current application units in lower Case
+        units = self.general_options_form.general_app_group.units_radio.get_value().lower()
+
+        grid_add_popup = FCInputDialog(title="New Grid ...",
+                                       text='Enter a Grid VAlue:',
+                                       min=0.0000, max=99.9999, decimals=4)
+        grid_add_popup.setWindowIcon(QtGui.QIcon('share/plus32.png'))
+
+        val, ok = grid_add_popup.get_value()
+        if ok:
+            if float(val) == 0:
+                self.inform.emit(
+                    "[WARNING_NOTCL] Please enter a grid value with non-zero value, in Float format.")
+                return
+            else:
+                if val not in self.defaults["global_grid_context_menu"][str(units)]:
+                    self.defaults["global_grid_context_menu"][str(units)].append(val)
+                    self.inform.emit(
+                        "[success] New Grid added ...")
+                else:
+                    self.inform.emit(
+                        "[WARNING_NOTCL] Grid already exists ...")
+        else:
+            self.inform.emit(
+                "[WARNING_NOTCL] Adding New Grid cancelled ...")
+
+    def on_grid_delete(self):
+        ## Current application units in lower Case
+        units = self.general_options_form.general_app_group.units_radio.get_value().lower()
+
+        grid_del_popup = FCInputDialog(title="Delete Grid ...",
+                                       text='Enter a Grid Value:',
+                                       min=0.0000, max=99.9999, decimals=4)
+        grid_del_popup.setWindowIcon(QtGui.QIcon('share/delete32.png'))
+
+        val, ok = grid_del_popup.get_value()
+        if ok:
+            if float(val) == 0:
+                self.inform.emit(
+                    "[WARNING_NOTCL] Please enter a grid value with non-zero value, in Float format.")
+                return
+            else:
+                try:
+                    self.defaults["global_grid_context_menu"][str(units)].remove(val)
+                except ValueError:
+                    self.inform.emit(
+                        "[ERROR_NOTCL] Grid Value does not exist ...")
+                    return
+                self.inform.emit(
+                    "[success] Grid Value deleted ...")
+        else:
+            self.inform.emit(
+                "[WARNING_NOTCL] Adding New Grid cancelled ...")
 
     def on_shortcut_list(self):
         self.report_usage("on_shortcut_list()")
@@ -4508,6 +4361,7 @@ class App(QtCore.QObject):
                     self.panning_action = False
                 else:
                     self.cursor = QtGui.QCursor()
+                    self.populate_cmenu_grids()
                     self.ui.popMenu.popup(self.cursor.pos())
         except Exception as e:
             log.warning("Error: %s" % str(e))
