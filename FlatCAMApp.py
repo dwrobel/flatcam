@@ -373,6 +373,12 @@ class App(QtCore.QObject):
             "excellon_slot_tooldia": self.excellon_defaults_form.excellon_opt_group.slot_tooldia_entry,
             "excellon_gcode_type": self.excellon_defaults_form.excellon_opt_group.excellon_gcode_type_radio,
 
+            "excellon_exp_units": self.excellon_defaults_form.excellon_exp_group.excellon_units_radio,
+            "excellon_exp_format": self.excellon_defaults_form.excellon_exp_group.format_radio,
+            "excellon_exp_integer": self.excellon_defaults_form.excellon_exp_group.format_whole_entry,
+            "excellon_exp_decimals": self.excellon_defaults_form.excellon_exp_group.format_dec_entry,
+            "excellon_exp_zeros": self.excellon_defaults_form.excellon_exp_group.zeros_radio,
+
             "geometry_plot": self.geometry_defaults_form.geometry_gen_group.plot_cb,
             "geometry_cnctooldia": self.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
             "geometry_circle_steps": self.geometry_defaults_form.geometry_gen_group.circle_steps_entry,
@@ -577,6 +583,12 @@ class App(QtCore.QObject):
             "excellon_f_plunge": False,
             "excellon_f_retract": False,
             "excellon_gcode_type": "drills",
+
+            "excellon_exp_units": 'INCH',
+            "excellon_exp_format": 'ndec',
+            "excellon_exp_integer": 2,
+            "excellon_exp_decimals": 4,
+            "excellon_exp_zeros": 'LZ',
 
             "geometry_plot": True,
             "geometry_segx": 0.0,
@@ -1048,7 +1060,10 @@ class App(QtCore.QObject):
 
         ## Standard signals
         # Menu
-        self.ui.menufilenew.triggered.connect(self.on_file_new_click)
+        self.ui.menufilenewproject.triggered.connect(self.on_file_new_click)
+        self.ui.menufilenewgeo.triggered.connect(self.new_geometry_object)
+        self.ui.menufilenewexc.triggered.connect(self.new_excellon_object)
+
         self.ui.menufileopengerber.triggered.connect(self.on_fileopengerber)
         self.ui.menufileopengerber_follow.triggered.connect(self.on_fileopengerber_follow)
         self.ui.menufileopenexcellon.triggered.connect(self.on_fileopenexcellon)
@@ -1075,8 +1090,6 @@ class App(QtCore.QObject):
         self.ui.menufilesavedefaults.triggered.connect(self.on_file_savedefaults)
         self.ui.menufile_exit.triggered.connect(self.on_app_exit)
 
-        self.ui.menueditnew.triggered.connect(self.new_geometry_object)
-        self.ui.menueditnewexc.triggered.connect(self.new_excellon_object)
         self.ui.menueditedit.triggered.connect(self.object2editor)
         self.ui.menueditok.triggered.connect(self.editor2object)
 
@@ -5489,7 +5502,7 @@ class App(QtCore.QObject):
         else:
             make_black_film()
 
-    def export_excellon(self, obj_name, filename, altium_format=None, use_thread=True):
+    def export_excellon(self, obj_name, filename, use_thread=True):
         """
         Exports a Geometry Object to an Excellon file.
 
@@ -5503,7 +5516,9 @@ class App(QtCore.QObject):
 
         self.log.debug("export_excellon()")
 
-        format_exc = ';FILE_FORMAT=2:4\n'
+        format_exc = ';FILE_FORMAT=%d:%d\n' % (self.defaults["excellon_exp_integer"],
+                                               self.defaults["excellon_exp_decimals"]
+                                               )
         units = ''
 
         try:
@@ -5513,12 +5528,9 @@ class App(QtCore.QObject):
             return "Could not retrieve object: %s" % obj_name
 
         # updated units
-        units = self.general_options_form.general_app_group.units_radio.get_value().upper()
-        if units == 'IN' or units == 'INCH':
-            units = 'INCH'
-
-        elif units == 'MM' or units == 'METRIC':
-            units ='METRIC'
+        units = self.defaults["excellon_exp_units"]
+        whole = self.defaults["excellon_exp_integer"]
+        fract = self.defaults["excellon_exp_decimals"]
 
         def make_excellon():
             try:
@@ -5531,8 +5543,8 @@ class App(QtCore.QObject):
                 header += ';Filename: %s' % str(obj_name) + '\n'
                 header += ';Created on : %s' % time_str + '\n'
 
-                if altium_format == None:
-                    has_slots, excellon_code = obj.export_excellon()
+                if self.defaults["excellon_exp_format"] == 'dec':
+                    has_slots, excellon_code = obj.export_excellon_decimals(whole, fract, units)
                     header += units + '\n'
 
                     for tool in obj.tools:
@@ -5541,14 +5553,14 @@ class App(QtCore.QObject):
                         else:
                             header += 'T' + str(tool) + 'F00S00' + 'C' + '%.4f' % float(obj.tools[tool]['C']) + '\n'
                 else:
-                    has_slots, excellon_code = obj.export_excellon_altium()
-                    header += 'INCH,LZ\n'
+                    has_slots, excellon_code = obj.export_excellon_ndecimals(whole, fract, units)
+                    header += '%s,%s\n' % (units, self.defaults["excellon_exp_zeros"])
                     header += format_exc
 
                     for tool in obj.tools:
                         if units == 'METRIC':
                             header += 'T' + str(tool) + 'F00S00' + 'C' + \
-                                      '%.4f' % (float(obj.tools[tool]['C']) / 25.4) + '\n'
+                                      '%.2f' % (float(obj.tools[tool]['C']) / 25.4) + '\n'
                         else:
                             header += 'T' + str(tool) + 'F00S00' + 'C' + '%.4f' % float(obj.tools[tool]['C']) + '\n'
 

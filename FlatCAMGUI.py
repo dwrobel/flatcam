@@ -37,12 +37,31 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### File ###
         self.menufile = self.menu.addMenu('&File')
+        self.menufile.setToolTipsVisible(True)
 
-        # New
-        self.menufilenew = QtWidgets.QAction(QtGui.QIcon('share/file16.png'), '&New Project ...\tCTRL+N', self)
-        self.menufile.addAction(self.menufilenew)
+        # New Project
+        self.menufilenewproject = QtWidgets.QAction(QtGui.QIcon('share/file16.png'), '&New Project ...\tCTRL+N', self)
+        self.menufilenewproject.setToolTip(
+            "Will create a new, blank project"
+        )
+        self.menufile.addAction(self.menufilenewproject)
+
+        # New Category (Excellon, Geometry)
+        self.menufilenew = self.menufile.addMenu(QtGui.QIcon('share/file16.png'), '&New')
+        self.menufilenew.setToolTipsVisible(True)
+
+        self.menufilenewgeo = self.menufilenew.addAction(QtGui.QIcon('share/new_geo16.png'), '&New Geometry\tN')
+        self.menufilenewgeo.setToolTip(
+            "Will create a new, empty Geometry Object."
+        )
+        self.menufilenewexc = self.menufilenew.addAction(QtGui.QIcon('share/new_geo16.png'), 'New Excellon\tL')
+        self.menufilenewexc.setToolTip(
+            "Will create a new, empty Excellon Object."
+        )
 
         self.menufile_open = self.menufile.addMenu(QtGui.QIcon('share/folder32_bis.png'), 'Open')
+        self.menufile_open.setToolTipsVisible(True)
+
         # Open gerber ...
         self.menufileopengerber = QtWidgets.QAction(QtGui.QIcon('share/flatcam_icon24.png'),
                                                     'Open &Gerber ...\tCTRL+G', self)
@@ -51,6 +70,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # Open gerber with follow...
         self.menufileopengerber_follow = QtWidgets.QAction(QtGui.QIcon('share/flatcam_icon24.png'),
                                                        'Open &Gerber (w/ Follow) ...', self)
+        self.menufileopengerber_follow.setToolTip(
+            "Will open a Gerber file with the 'follow' attribute.\n"
+            "This will actually 'trace' the features of a Gerber file and\n"
+            "the resulting Gerber geometry will have no volume, it will be\n"
+            "made out of lines."
+        )
         self.menufile_open.addAction(self.menufileopengerber_follow)
         self.menufile_open.addSeparator()
 
@@ -76,6 +101,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # Run Scripts
         self.menufilerunscript = QtWidgets.QAction(QtGui.QIcon('share/script16.png'), 'Run Script ...\tSHIFT+S', self)
+        self.menufilerunscript.setToolTip(
+            "Will run the opened Tcl Script thus\n"
+            "enabling the automation of certain\n"
+            "functions of FlatCAM."
+        )
         self.menufile.addAction(self.menufilerunscript)
 
         # Separator
@@ -101,6 +131,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # Export ...
         self.menufileexport = self.menufile.addMenu(QtGui.QIcon('share/export.png'), 'Export')
+        self.menufileexport.setToolTipsVisible(True)
+
         self.menufileexportsvg = QtWidgets.QAction(QtGui.QIcon('share/export.png'), 'Export &SVG ...', self)
         self.menufileexport.addAction(self.menufileexportsvg)
 
@@ -110,15 +142,30 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufileexport.addSeparator()
 
         self.menufileexportpng = QtWidgets.QAction(QtGui.QIcon('share/export_png32.png'), 'Export &PNG ...', self)
+        self.menufileexportpng.setToolTip(
+            "Will export an image in PNG format,\n"
+            "the saved image will contain the visual \n"
+            "information currently in FlatCAM Plot Area."
+        )
         self.menufileexport.addAction(self.menufileexportpng)
 
         self.menufileexport.addSeparator()
 
         self.menufileexportexcellon = QtWidgets.QAction(QtGui.QIcon('share/drill32.png'), 'Export &Excellon ...', self)
+        self.menufileexportexcellon.setToolTip(
+            "Will export an Excellon Object as Excellon file,\n"
+            "the coordinates format is decimal and the file units\n"
+            "are the current units set in FlatCAM."
+        )
         self.menufileexport.addAction(self.menufileexportexcellon)
 
         self.menufileexportexcellon_altium = QtWidgets.QAction(QtGui.QIcon('share/drill32.png'),
                                                            'Export Excellon 2:4 LZ INCH ...', self)
+        self.menufileexportexcellon_altium.setToolTip(
+            "Will export an Excellon Object as Excellon file,\n"
+            "the coordinates format is 2:4, excellon zeros are LZ \n"
+            "and the file units are INCH."
+        )
         self.menufileexport.addAction(self.menufileexportexcellon_altium)
 
         # Separator
@@ -157,8 +204,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Edit ###
         self.menuedit = self.menu.addMenu('&Edit')
-        self.menueditnew = self.menuedit.addAction(QtGui.QIcon('share/new_geo16.png'), '&New Geometry\tN')
-        self.menueditnewexc = self.menuedit.addAction(QtGui.QIcon('share/new_geo16.png'), 'New Excellon\tL')
         # Separator
         self.menuedit.addSeparator()
         self.menueditedit = self.menuedit.addAction(QtGui.QIcon('share/edit16.png'), 'Edit Object\tE')
@@ -2373,9 +2418,13 @@ class ExcellonPreferencesUI(QtWidgets.QWidget):
         self.excellon_gen_group.setFixedWidth(220)
         self.excellon_opt_group = ExcellonOptPrefGroupUI()
         self.excellon_opt_group.setFixedWidth(250)
+        self.excellon_exp_group = ExcellonExpPrefGroupUI()
+        self.excellon_exp_group.setFixedWidth(250)
 
         self.layout.addWidget(self.excellon_gen_group)
         self.layout.addWidget(self.excellon_opt_group)
+        self.layout.addWidget(self.excellon_exp_group)
+
         self.layout.addStretch()
 
 
@@ -3555,6 +3604,136 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         grid4.addWidget(self.excellon_defaults_button, 0, 0, QtCore.Qt.AlignRight)
 
         self.layout.addStretch()
+
+
+class ExcellonExpPrefGroupUI(OptionsGroupUI):
+
+    def __init__(self, parent=None):
+        super(ExcellonExpPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("Excellon Export"))
+
+        # Plot options
+        self.export_options_label = QtWidgets.QLabel("<b>Export Options:</b>")
+        self.export_options_label.setToolTip(
+            "The parameters set here are used in the file exported<cr>"
+            "when using the <b>File -> Export -> Export Excellon</b> menu entry."
+        )
+        self.layout.addWidget(self.export_options_label)
+
+        form = QtWidgets.QFormLayout()
+        self.layout.addLayout(form)
+
+        # Excellon Units
+        self.excellon_units_label = QtWidgets.QLabel('<b>Units</b>:')
+        self.excellon_units_label.setToolTip(
+            "The units used in the Excellon file."
+        )
+
+        self.excellon_units_radio = RadioSet([{'label': 'INCH', 'value': 'INCH'}, {'label': 'MM', 'value': 'METRIC'}])
+        self.excellon_units_radio.setToolTip(
+            "The units used in the Excellon file."
+        )
+
+        form.addRow(self.excellon_units_label, self.excellon_units_radio)
+
+        # Select the Excellon Format
+        self.format_label = QtWidgets.QLabel("<b>Format:</b>")
+        self.format_label.setToolTip(
+            "Select the kind of coordinates format used.\n"
+            "Coordinates can be saved with decimal point or without.\n"
+            "When there is no decimal point, it is required to specify\n"
+            "the number of digits for integer part and the number of decimals.\n"
+            "Also it will have to be specified if LZ = leading zeros are kept\n"
+            "or TZ = trailing zeros are kept."
+        )
+        self.format_radio = RadioSet([{'label': 'Decimal', 'value': 'dec'}, {'label': 'No-Decimal', 'value': 'ndec'}])
+        self.format_radio.setToolTip(
+            "Select the kind of coordinates format used.\n"
+            "Coordinates can be saved with decimal point or without.\n"
+            "When there is no decimal point, it is required to specify\n"
+            "the number of digits for integer part and the number of decimals.\n"
+            "Also it will have to be specified if LZ = leading zeros are kept\n"
+            "or TZ = trailing zeros are kept."
+        )
+
+        form.addRow(self.format_label, self.format_radio)
+
+        # Excellon non-decimal format
+        self.digits_label = QtWidgets.QLabel("<b>Int/Decimals:</b>")
+        self.digits_label.setToolTip(
+            "The NC drill files, usually named Excellon files\n"
+            "are files that can be found in different formats.\n"
+            "Here we set the format used when the provided\n"
+            "coordinates are not using period."
+        )
+
+        hlay1 = QtWidgets.QHBoxLayout()
+
+        self.format_whole_entry = IntEntry()
+        self.format_whole_entry.setMaxLength(1)
+        self.format_whole_entry.setAlignment(QtCore.Qt.AlignRight)
+        self.format_whole_entry.setFixedWidth(30)
+        self.format_whole_entry.setToolTip(
+            "This numbers signify the number of digits in\n"
+            "the whole part of Excellon coordinates."
+        )
+        hlay1.addWidget(self.format_whole_entry, QtCore.Qt.AlignLeft)
+
+        excellon_separator_label= QtWidgets.QLabel(':')
+        excellon_separator_label.setFixedWidth(5)
+        hlay1.addWidget(excellon_separator_label, QtCore.Qt.AlignLeft)
+
+        self.format_dec_entry = IntEntry()
+        self.format_dec_entry.setMaxLength(1)
+        self.format_dec_entry.setAlignment(QtCore.Qt.AlignRight)
+        self.format_dec_entry.setFixedWidth(30)
+        self.format_dec_entry.setToolTip(
+            "This numbers signify the number of digits in\n"
+            "the decimal part of Excellon coordinates."
+        )
+        hlay1.addWidget(self.format_dec_entry, QtCore.Qt.AlignLeft)
+        hlay1.addStretch()
+
+        form.addRow(self.digits_label, hlay1)
+
+        # Excellon Zeros
+        self.zeros_label = QtWidgets.QLabel('<b>Zeros</b>:')
+        self.zeros_label.setAlignment(QtCore.Qt.AlignLeft)
+        self.zeros_label.setToolTip(
+            "This sets the type of Excellon zeros.\n"
+            "If LZ then Leading Zeros are kept and\n"
+            "Trailing Zeros are removed.\n"
+            "If TZ is checked then Trailing Zeros are kept\n"
+            "and Leading Zeros are removed."
+        )
+
+        self.zeros_radio = RadioSet([{'label': 'LZ', 'value': 'LZ'},
+                                     {'label': 'TZ', 'value': 'TZ'}])
+        self.zeros_radio.setToolTip(
+            "This sets the default type of Excellon zeros.\n"
+            "If LZ then Leading Zeros are kept and\n"
+            "Trailing Zeros are removed.\n"
+            "If TZ is checked then Trailing Zeros are kept\n"
+            "and Leading Zeros are removed."
+        )
+
+        form.addRow(self.zeros_label, self.zeros_radio)
+
+        self.layout.addStretch()
+        self.format_radio.activated_custom.connect(self.optimization_selection)
+
+    def optimization_selection(self):
+        if self.format_radio.get_value() == 'dec':
+            self.digits_label.setDisabled(True)
+
+            self.zeros_label.setDisabled(True)
+            self.zeros_radio.setDisabled(True)
+        else:
+            self.digits_label.setDisabled(False)
+
+            self.zeros_label.setDisabled(False)
+            self.zeros_radio.setDisabled(False)
 
 
 class GeometryGenPrefGroupUI(OptionsGroupUI):

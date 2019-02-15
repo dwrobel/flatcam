@@ -11,7 +11,9 @@ CAD program, and create G-Code for Isolation routing.
 
 15.02.2019
 
-- 
+- rearranged the FIle and Edit menu's and added some explanatory tooltips on certain menu items that could be seen as cryptic
+- added Excellon Export Options in Edit -> Preferences
+- started to work in using the Excellon Export parameters
 
 14.02.2019
 

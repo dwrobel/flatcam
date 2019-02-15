@@ -1612,14 +1612,14 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             item[0] = str(item[0])
         return table_tools_items
 
-    def export_excellon(self):
+    def export_excellon_decimals(self, whole, fract, units):
         """
         Returns two values, first is a boolean , if 1 then the file has slots and second contain the Excellon code
         :return: has_slots and Excellon_code
         """
 
         excellon_code = ''
-        units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
+        units = units
 
         # store here if the file has slots, return 1 if any slots, 0 if only drills
         has_slots = 0
@@ -1672,14 +1672,14 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         return has_slots, excellon_code
 
-    def export_excellon_altium(self):
+    def export_excellon_ndecimals(self, whole, fract, units):
         """
         Returns two values, first is a boolean , if 1 then the file has slots and second contain the Excellon code
         :return: has_slots and Excellon_code
         """
 
         excellon_code = ''
-        units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
+        units = units
 
         # store here if the file has slots, return 1 if any slots, 0 if only drills
         has_slots = 0
