@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - started to work in using the Excellon Export parameters
 - remade the Excellon export function to work with parameters entered in Edit -> Preferences -> Excellon Export
 - added a new entry in the Project Context Menu named 'Save'. It will actually work for Geometry and it will do Export DXF and for Excellon and it will do Export Excellon
+- reworked the offer to save a project so it is done only if there are objects in the project but those objects are new and/or are modified since last project load (if an old project was loaded.)
 
 14.02.2019
 

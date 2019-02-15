@@ -3632,28 +3632,6 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
 
         form.addRow(self.excellon_units_label, self.excellon_units_radio)
 
-        # Select the Excellon Format
-        self.format_label = QtWidgets.QLabel("<b>Format:</b>")
-        self.format_label.setToolTip(
-            "Select the kind of coordinates format used.\n"
-            "Coordinates can be saved with decimal point or without.\n"
-            "When there is no decimal point, it is required to specify\n"
-            "the number of digits for integer part and the number of decimals.\n"
-            "Also it will have to be specified if LZ = leading zeros are kept\n"
-            "or TZ = trailing zeros are kept."
-        )
-        self.format_radio = RadioSet([{'label': 'Decimal', 'value': 'dec'}, {'label': 'No-Decimal', 'value': 'ndec'}])
-        self.format_radio.setToolTip(
-            "Select the kind of coordinates format used.\n"
-            "Coordinates can be saved with decimal point or without.\n"
-            "When there is no decimal point, it is required to specify\n"
-            "the number of digits for integer part and the number of decimals.\n"
-            "Also it will have to be specified if LZ = leading zeros are kept\n"
-            "or TZ = trailing zeros are kept."
-        )
-
-        form.addRow(self.format_label, self.format_radio)
-
         # Excellon non-decimal format
         self.digits_label = QtWidgets.QLabel("<b>Int/Decimals:</b>")
         self.digits_label.setToolTip(
@@ -3692,6 +3670,28 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
 
         form.addRow(self.digits_label, hlay1)
 
+        # Select the Excellon Format
+        self.format_label = QtWidgets.QLabel("<b>Format:</b>")
+        self.format_label.setToolTip(
+            "Select the kind of coordinates format used.\n"
+            "Coordinates can be saved with decimal point or without.\n"
+            "When there is no decimal point, it is required to specify\n"
+            "the number of digits for integer part and the number of decimals.\n"
+            "Also it will have to be specified if LZ = leading zeros are kept\n"
+            "or TZ = trailing zeros are kept."
+        )
+        self.format_radio = RadioSet([{'label': 'Decimal', 'value': 'dec'}, {'label': 'No-Decimal', 'value': 'ndec'}])
+        self.format_radio.setToolTip(
+            "Select the kind of coordinates format used.\n"
+            "Coordinates can be saved with decimal point or without.\n"
+            "When there is no decimal point, it is required to specify\n"
+            "the number of digits for integer part and the number of decimals.\n"
+            "Also it will have to be specified if LZ = leading zeros are kept\n"
+            "or TZ = trailing zeros are kept."
+        )
+
+        form.addRow(self.format_label, self.format_radio)
+
         # Excellon Zeros
         self.zeros_label = QtWidgets.QLabel('<b>Zeros</b>:')
         self.zeros_label.setAlignment(QtCore.Qt.AlignLeft)
@@ -3720,13 +3720,9 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
 
     def optimization_selection(self):
         if self.format_radio.get_value() == 'dec':
-            self.digits_label.setDisabled(True)
-
             self.zeros_label.setDisabled(True)
             self.zeros_radio.setDisabled(True)
         else:
-            self.digits_label.setDisabled(False)
-
             self.zeros_label.setDisabled(False)
             self.zeros_radio.setDisabled(False)
 

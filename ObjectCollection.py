@@ -679,6 +679,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         if group.child_count() is 1:
             self.view.setExpanded(group_index, True)
 
+        self.app.should_we_save = True
+
         # decide if to show or hide the Notebook side of the screen
         if self.app.defaults["global_project_autohide"] is True:
             # always open the notebook on object added to collection
@@ -775,6 +777,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         # always go to the Project Tab after object deletion as it may be done with a shortcut key
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+
+        self.app.should_we_save = True
 
         # decide if to show or hide the Notebook side of the screen
         if self.app.defaults["global_project_autohide"] is True:

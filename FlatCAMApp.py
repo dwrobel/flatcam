@@ -111,6 +111,10 @@ class App(QtCore.QObject):
 
     should_we_quit = True
 
+    # this variable will hold the project status
+    # if True it will mean that the project was modified and not saved
+    should_we_save = False
+
     ##################
     ##    Signals   ##
     ##################
@@ -1651,6 +1655,8 @@ class App(QtCore.QObject):
         self.ui.plot_tab_area.protectTab(0)
         self.inform.emit("[WARNING_NOTCL]Editor is activated ...")
 
+        self.should_we_save = True
+
     def editor2object(self):
         """
         Transfers the Geometry or Excellon from the editor to the current object.
@@ -2643,10 +2649,10 @@ class App(QtCore.QObject):
             self.inform.emit("Factory defaults saved.")
 
     def final_save(self):
-        if self.collection.get_list():
+        if self.should_we_save and self.collection.get_list():
             msgbox = QtWidgets.QMessageBox()
             # msgbox.setText("<B>Save changes ...</B>")
-            msgbox.setText("There are files/objects opened in FlatCAM. "
+            msgbox.setText("There are files/objects modified in FlatCAM. "
                            "\n"
                            "Do you want to Save the project?")
             msgbox.setWindowTitle("Save changes")
@@ -4626,7 +4632,7 @@ class App(QtCore.QObject):
                                       layer=0, tolerance=None)
 
     def on_file_new_click(self):
-        if self.collection.get_list():
+        if self.collection.get_list() and self.should_we_save:
             msgbox = QtWidgets.QMessageBox()
             # msgbox.setText("<B>Save changes ...</B>")
             msgbox.setText("There are files/objects opened in FlatCAM.\n"
@@ -5161,6 +5167,8 @@ class App(QtCore.QObject):
 
             self.file_saved.emit("project", self.project_filename)
 
+        self.should_we_save = False
+
     def on_file_saveprojectas(self, make_copy=False, thread=True):
         """
         Callback for menu item File->Save Project As... Opens a file
@@ -5194,7 +5202,7 @@ class App(QtCore.QObject):
         except IOError:
             exists = False
 
-        msg = "File exists. Overwrite?"
+        msg = "Project file exists. Overwrite?"
         if exists:
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
@@ -5216,6 +5224,8 @@ class App(QtCore.QObject):
         self.file_saved.emit("project", filename)
         if not make_copy:
             self.project_filename = filename
+
+        self.should_we_save = False
 
     def export_svg(self, obj_name, filename, scale_factor=0.00):
         """
@@ -6083,6 +6093,9 @@ class App(QtCore.QObject):
 
         # self.plot_all()
         self.inform.emit("[success] Project loaded from: " + filename)
+
+        self.should_we_save = False
+
         App.log.debug("Project loaded")
 
     def propagate_defaults(self, silent=False):
