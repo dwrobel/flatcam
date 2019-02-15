@@ -507,17 +507,20 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.app.ui.menuprojectcopy.setEnabled(sel)
         self.app.ui.menuprojectedit.setEnabled(sel)
         self.app.ui.menuprojectdelete.setEnabled(sel)
+        self.app.ui.menuprojectsave.setEnabled(sel)
         self.app.ui.menuprojectproperties.setEnabled(sel)
 
         if sel:
             self.app.ui.menuprojectgeneratecnc.setVisible(True)
             self.app.ui.menuprojectedit.setVisible(True)
+            self.app.ui.menuprojectsave.setVisible(True)
 
             for obj in self.get_selected():
                 if type(obj) != FlatCAMGeometry:
                     self.app.ui.menuprojectgeneratecnc.setVisible(False)
                 if type(obj) != FlatCAMGeometry and type(obj) != FlatCAMExcellon:
                     self.app.ui.menuprojectedit.setVisible(False)
+                    self.app.ui.menuprojectsavet.setVisible(False)
         else:
             self.app.ui.menuprojectgeneratecnc.setVisible(False)
 

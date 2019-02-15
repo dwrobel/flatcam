@@ -1612,32 +1612,64 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             item[0] = str(item[0])
         return table_tools_items
 
-    def export_excellon_decimals(self, whole, fract, units):
+    def export_excellon(self, whole, fract, e_zeros=None, form='dec', factor=1):
         """
         Returns two values, first is a boolean , if 1 then the file has slots and second contain the Excellon code
         :return: has_slots and Excellon_code
         """
 
         excellon_code = ''
-        units = units
 
         # store here if the file has slots, return 1 if any slots, 0 if only drills
         has_slots = 0
 
         # drills processing
         try:
-            for tool in self.tools:
-                if int(tool) < 10:
-                    excellon_code += 'T0' + str(tool) + '\n'
-                else:
-                    excellon_code += 'T' + str(tool) + '\n'
+            if self.drills:
+                length = whole + fract
+                for tool in self.tools:
+                    excellon_code += 'T0%s\n' % str(tool) if int(tool) < 10 else 'T%s\n' % str(tool)
 
-                for drill in self.drills:
-                    if tool == drill['tool']:
-                        if units == 'MM':
-                            excellon_code += 'X' + '%.3f' % drill['point'].x + 'Y' + '%.3f' % drill['point'].y + '\n'
-                        else:
-                            excellon_code += 'X' + '%.4f' % drill['point'].x + 'Y' + '%.4f' % drill['point'].y + '\n'
+                    for drill in self.drills:
+                        if form == 'dec' and tool == drill['tool']:
+                            drill_x = drill['point'].x * factor
+                            drill_y = drill['point'].y * factor
+                            excellon_code += "X{:.{dec}f}Y{:.{dec}f}\n".format(drill_x, drill_y, dec=fract)
+                        elif e_zeros == 'LZ' and tool == drill['tool']:
+                            drill_x = drill['point'].x * factor
+                            drill_y = drill['point'].y * factor
+
+                            exc_x_formatted = "{:.{dec}f}".format(drill_x, dec=fract)
+                            exc_y_formatted = "{:.{dec}f}".format(drill_y, dec=fract)
+
+                            # extract whole part and decimal part
+                            exc_x_formatted = exc_x_formatted.partition('.')
+                            exc_y_formatted = exc_y_formatted.partition('.')
+
+                            # left padd the 'whole' part with zeros
+                            x_whole = exc_x_formatted[0].rjust(whole, '0')
+                            y_whole = exc_y_formatted[0].rjust(whole, '0')
+
+                            # restore the coordinate padded in the left with 0 and added the decimal part
+                            # without the decinal dot
+                            exc_x_formatted = x_whole + exc_x_formatted[2]
+                            exc_y_formatted = y_whole + exc_y_formatted[2]
+
+                            excellon_code += "X{xform}Y{yform}\n".format(xform=exc_x_formatted,
+                                                                         yform=exc_y_formatted)
+                        elif tool == drill['tool']:
+                            drill_x = drill['point'].x * factor
+                            drill_y = drill['point'].y * factor
+
+                            exc_x_formatted = "{:.{dec}f}".format(drill_x, dec=fract).replace('.', '')
+                            exc_y_formatted = "{:.{dec}f}".format(drill_y, dec=fract).replace('.', '')
+
+                            # pad with rear zeros
+                            exc_x_formatted.ljust(length, '0')
+                            exc_y_formatted.ljust(length, '0')
+
+                            excellon_code += "X{xform}Y{yform}\n".format(xform=exc_x_formatted,
+                                                                         yform=exc_y_formatted)
         except Exception as e:
             log.debug(str(e))
 
@@ -1652,111 +1684,81 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                         excellon_code += 'T' + str(tool) + '\n'
 
                     for slot in self.slots:
-                        if tool == slot['tool']:
-                            if units == 'MM':
-                                excellon_code += 'G00' + 'X' + '%.3f' % slot['start'].x + 'Y' + \
-                                                 '%.3f' % slot['start'].y + '\n'
-                                excellon_code += 'M15\n'
-                                excellon_code += 'G01' + 'X' + '%.3f' % slot['stop'].x + 'Y' + \
-                                                 '%.3f' % slot['stop'].y + '\n'
-                                excellon_code += 'M16\n'
-                            else:
-                                excellon_code += 'G00' + 'X' + '%.4f' % slot['start'].x + 'Y' + \
-                                                 '%.4f' % slot['start'].y + '\n'
-                                excellon_code += 'M15\n'
-                                excellon_code += 'G01' + 'X' + '%.4f' % slot['stop'].x + 'Y' + \
-                                                 '%.4f' % slot['stop'].y + '\n'
-                                excellon_code += 'M16\n'
+                        if form == 'dec' and tool == slot['tool']:
+                            start_slot_x = slot['start'].x * factor
+                            start_slot_y = slot['start'].y * factor
+                            stop_slot_x = slot['stop'].x * factor
+                            stop_slot_y = slot['stop'].y * factor
+
+                            excellon_code += "G00X{:.{dec}f}Y{:.{dec}f}\nM15\n".format(start_slot_x,
+                                                                                       start_slot_y,
+                                                                                       dec=fract)
+                            excellon_code += "G00X{:.{dec}f}Y{:.{dec}f}\nM16\n".format(stop_slot_x,
+                                                                                       stop_slot_y,
+                                                                                       dec=fract)
+
+                        elif e_zeros == 'LZ' and tool == slot['tool']:
+                            start_slot_x = slot['start'].x * factor
+                            start_slot_y = slot['start'].y * factor
+                            stop_slot_x = slot['stop'].x * factor
+                            stop_slot_y = slot['stop'].y * factor
+
+                            start_slot_x_formatted = "{:.{dec}f}".format(start_slot_x, dec=fract).replace('.', '')
+                            start_slot_y_formatted = "{:.{dec}f}".format(start_slot_y, dec=fract).replace('.', '')
+                            stop_slot_x_formatted = "{:.{dec}f}".format(stop_slot_x, dec=fract).replace('.', '')
+                            stop_slot_y_formatted = "{:.{dec}f}".format(stop_slot_y, dec=fract).replace('.', '')
+
+                            # extract whole part and decimal part
+                            start_slot_x_formatted = start_slot_x_formatted.partition('.')
+                            start_slot_y_formatted = start_slot_y_formatted.partition('.')
+                            stop_slot_x_formatted = stop_slot_x_formatted.partition('.')
+                            stop_slot_y_formatted = stop_slot_y_formatted.partition('.')
+
+                            # left padd the 'whole' part with zeros
+                            start_x_whole = start_slot_x_formatted[0].rjust(whole, '0')
+                            start_y_whole = start_slot_y_formatted[0].rjust(whole, '0')
+                            stop_x_whole = stop_slot_x_formatted[0].rjust(whole, '0')
+                            stop_y_whole = stop_slot_y_formatted[0].rjust(whole, '0')
+
+                            # restore the coordinate padded in the left with 0 and added the decimal part
+                            # without the decinal dot
+                            start_slot_x_formatted = start_x_whole + start_slot_x_formatted[2]
+                            start_slot_y_formatted = start_y_whole + start_slot_y_formatted[2]
+                            stop_slot_x_formatted = stop_x_whole + stop_slot_x_formatted[2]
+                            stop_slot_y_formatted = stop_y_whole + stop_slot_y_formatted[2]
+
+                            excellon_code += "G00X{xstart}Y{ystart}\nM15\n".format(xstart=start_slot_x_formatted,
+                                                                                   ystart=start_slot_y_formatted)
+                            excellon_code += "G00X{xstop}Y{ystop}\nM16\n".format(xstop=stop_slot_x_formatted,
+                                                                                 ystop=stop_slot_y_formatted)
+                        elif tool == slot['tool']:
+                            start_slot_x = slot['start'].x * factor
+                            start_slot_y = slot['start'].y * factor
+                            stop_slot_x = slot['stop'].x * factor
+                            stop_slot_y = slot['stop'].y * factor
+                            length = whole + fract
+
+                            start_slot_x_formatted = "{:.{dec}f}".format(start_slot_x, dec=fract).replace('.', '')
+                            start_slot_y_formatted = "{:.{dec}f}".format(start_slot_y, dec=fract).replace('.', '')
+                            stop_slot_x_formatted = "{:.{dec}f}".format(stop_slot_x, dec=fract).replace('.', '')
+                            stop_slot_y_formatted = "{:.{dec}f}".format(stop_slot_y, dec=fract).replace('.', '')
+
+                            # pad with rear zeros
+                            start_slot_x_formatted.ljust(length, '0')
+                            start_slot_y_formatted.ljust(length, '0')
+                            stop_slot_x_formatted.ljust(length, '0')
+                            stop_slot_y_formatted.ljust(length, '0')
+
+                            excellon_code += "G00X{xstart}Y{ystart}\nM15\n".format(xstart=start_slot_x_formatted,
+                                                                                   ystart=start_slot_y_formatted)
+                            excellon_code += "G00X{xstop}Y{ystop}\nM16\n".format(xstop=stop_slot_x_formatted,
+                                                                                 ystop=stop_slot_y_formatted)
         except Exception as e:
             log.debug(str(e))
 
-        return has_slots, excellon_code
-
-    def export_excellon_ndecimals(self, whole, fract, units):
-        """
-        Returns two values, first is a boolean , if 1 then the file has slots and second contain the Excellon code
-        :return: has_slots and Excellon_code
-        """
-
-        excellon_code = ''
-        units = units
-
-        # store here if the file has slots, return 1 if any slots, 0 if only drills
-        has_slots = 0
-
-        # drills processing
-        try:
-            for tool in self.tools:
-                if int(tool) < 10:
-                    excellon_code += 'T0' + str(tool) + '\n'
-                else:
-                    excellon_code += 'T' + str(tool) + '\n'
-
-                for drill in self.drills:
-                    if tool == drill['tool']:
-                        drill_x = drill['point'].x
-                        drill_y = drill['point'].y
-                        if units == 'MM':
-                            drill_x /= 25.4
-                            drill_y /= 25.4
-                        exc_x_formatted = ('%.4f' % drill_x).replace('.', '')
-                        if drill_x < 10:
-                            exc_x_formatted = '0' + exc_x_formatted
-
-                        exc_y_formatted = ('%.4f' % drill_y).replace('.', '')
-                        if drill_y < 10:
-                            exc_y_formatted = '0' + exc_y_formatted
-
-                        excellon_code += 'X' + exc_x_formatted + 'Y' + exc_y_formatted + '\n'
-        except Exception as e:
-            log.debug(str(e))
-
-        # slots processing
-        try:
-            if self.slots:
-                has_slots = 1
-                for tool in self.tools:
-                    if int(tool) < 10:
-                        excellon_code += 'T0' + str(tool) + '\n'
-                    else:
-                        excellon_code += 'T' + str(tool) + '\n'
-
-                    for slot in self.slots:
-                        if tool == slot['tool']:
-                            start_slot_x = slot['start'].x
-                            start_slot_y = slot['start'].y
-                            stop_slot_x = slot['stop'].x
-                            stop_slot_y = slot['stop'].y
-                            if units == 'MM':
-                                start_slot_x /= 25.4
-                                start_slot_y /= 25.4
-                                stop_slot_x /= 25.4
-                                stop_slot_y /= 25.4
-
-                            start_slot_x_formatted = ('%.4f' % start_slot_x).replace('.', '')
-                            if start_slot_x < 10:
-                                start_slot_x_formatted = '0' + start_slot_x_formatted
-
-                            start_slot_y_formatted = ('%.4f' % start_slot_y).replace('.', '')
-                            if start_slot_y < 10:
-                                start_slot_y_formatted = '0' + start_slot_y_formatted
-
-                            stop_slot_x_formatted = ('%.4f' % stop_slot_x).replace('.', '')
-                            if stop_slot_x < 10:
-                                stop_slot_x_formatted = '0' + stop_slot_x_formatted
-
-                            stop_slot_y_formatted = ('%.4f' % stop_slot_y).replace('.', '')
-                            if stop_slot_y < 10:
-                                stop_slot_y_formatted = '0' + stop_slot_y_formatted
-
-                            excellon_code += 'G00' + 'X' + start_slot_x_formatted + 'Y' + \
-                                             start_slot_y_formatted + '\n'
-                            excellon_code += 'M15\n'
-                            excellon_code += 'G01' + 'X' + stop_slot_x_formatted + 'Y' + \
-                                             stop_slot_y_formatted + '\n'
-                            excellon_code += 'M16\n'
-        except Exception as e:
-            log.debug(str(e))
+        if not self.drills and not self.slots:
+            log.debug("FlatCAMObj.FlatCAMExcellon.export_excellon() --> Excellon Object is empty: no drills, no slots.")
+            return 'fail'
 
         return has_slots, excellon_code
 

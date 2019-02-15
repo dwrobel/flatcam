@@ -11,9 +11,11 @@ CAD program, and create G-Code for Isolation routing.
 
 15.02.2019
 
-- rearranged the FIle and Edit menu's and added some explanatory tooltips on certain menu items that could be seen as cryptic
+- rearranged the File and Edit menu's and added some explanatory tooltips on certain menu items that could be seen as cryptic
 - added Excellon Export Options in Edit -> Preferences
 - started to work in using the Excellon Export parameters
+- remade the Excellon export function to work with parameters entered in Edit -> Preferences -> Excellon Export
+- added a new entry in the Project Context Menu named 'Save'. It will actually work for Geometry and it will do Export DXF and for Excellon and it will do Export Excellon
 
 14.02.2019
 

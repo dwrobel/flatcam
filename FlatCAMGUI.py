@@ -154,19 +154,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufileexportexcellon = QtWidgets.QAction(QtGui.QIcon('share/drill32.png'), 'Export &Excellon ...', self)
         self.menufileexportexcellon.setToolTip(
             "Will export an Excellon Object as Excellon file,\n"
-            "the coordinates format is decimal and the file units\n"
-            "are the current units set in FlatCAM."
+            "the coordinates format, the file units and zeros\n"
+            "are set in Preferences -> Excellon Export."
         )
         self.menufileexport.addAction(self.menufileexportexcellon)
 
-        self.menufileexportexcellon_altium = QtWidgets.QAction(QtGui.QIcon('share/drill32.png'),
-                                                           'Export Excellon 2:4 LZ INCH ...', self)
-        self.menufileexportexcellon_altium.setToolTip(
-            "Will export an Excellon Object as Excellon file,\n"
-            "the coordinates format is 2:4, excellon zeros are LZ \n"
-            "and the file units are INCH."
-        )
-        self.menufileexport.addAction(self.menufileexportexcellon_altium)
 
         # Separator
         self.menufile.addSeparator()
@@ -428,10 +420,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuproject.addSeparator()
         self.menuprojectgeneratecnc = self.menuproject.addAction(QtGui.QIcon('share/cnc32.png'), 'Generate CNC')
         self.menuproject.addSeparator()
+
+        self.menuprojectedit = self.menuproject.addAction(QtGui.QIcon('share/edit_ok32.png'), 'Edit')
         self.menuprojectcopy = self.menuproject.addAction(QtGui.QIcon('share/copy32.png'), 'Copy')
         self.menuprojectdelete = self.menuproject.addAction(QtGui.QIcon('share/delete32.png'), 'Delete')
-        self.menuprojectedit = self.menuproject.addAction(QtGui.QIcon('share/edit_ok32.png'), 'Edit')
+        self.menuprojectsave= self.menuproject.addAction(QtGui.QIcon('share/save_as.png'), 'Save')
         self.menuproject.addSeparator()
+
         self.menuprojectproperties = self.menuproject.addAction(QtGui.QIcon('share/properties32.png'), 'Properties')
 
         ################
