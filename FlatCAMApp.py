@@ -2403,6 +2403,7 @@ class App(QtCore.QObject):
         log.debug("Object changed, updating the bounding box data on self.options")
         # delete the old selection shape
         self.delete_selection_shape()
+        self.should_we_save = True
 
     def on_object_plotted(self, obj):
         self.on_zoom_fit(None)
@@ -2730,6 +2731,8 @@ class App(QtCore.QObject):
                     v['data']['name'] = obj_name_single
             self.new_object("geometry", obj_name_single, initialize)
 
+        self.should_we_save = True
+
     def on_edit_join_exc(self):
         """
         Callback for Edit->Join Excellon. Joins the selected excellon objects into
@@ -2750,6 +2753,7 @@ class App(QtCore.QObject):
             FlatCAMExcellon.merge(objs, obj)
 
         self.new_object("excellon", 'Combo_Excellon', initialize)
+        self.should_we_save = True
 
     def on_edit_join_grb(self):
         """
@@ -2771,6 +2775,7 @@ class App(QtCore.QObject):
             FlatCAMGerber.merge(objs, obj)
 
         self.new_object("gerber", 'Combo_Gerber', initialize)
+        self.should_we_save = True
 
     def on_convert_singlegeo_to_multigeo(self):
         self.report_usage("on_convert_singlegeo_to_multigeo()")
@@ -2792,6 +2797,8 @@ class App(QtCore.QObject):
             obj.solid_geometry = [obj.solid_geometry]
         obj.solid_geometry[:] = []
         obj.plot()
+
+        self.should_we_save = True
 
         self.inform.emit("[success] A Geometry object was converted to MultiGeo type.")
 
@@ -2816,6 +2823,8 @@ class App(QtCore.QObject):
             dict_value['solid_geometry'][:] = []
         obj.solid_geometry = deepcopy(total_solid_geometry)
         obj.plot()
+
+        self.should_we_save = True
 
         self.inform.emit("[success] A Geometry object was converted to SingleGeo type.")
 
@@ -2899,6 +2908,8 @@ class App(QtCore.QObject):
             self.options_read_form()
             scale_options(factor)
             self.options_write_form()
+
+            self.should_we_save = True
 
             # change this only if the workspace is active
             if self.defaults['global_workspace'] is True:
@@ -3856,6 +3867,7 @@ class App(QtCore.QObject):
             self.plot_all(zoom=False)
             self.inform.emit('[success] Origin set ...')
             self.plotcanvas.vis_disconnect('mouse_press', self.on_set_zero_click)
+            self.should_we_save = True
 
     def on_selectall(self):
         self.report_usage("on_selectall()")
@@ -3916,6 +3928,7 @@ class App(QtCore.QObject):
                     obj.mirror('X', [px, py])
                     obj.plot()
                     self.object_changed.emit(obj)
+
             except Exception as e:
                 self.inform.emit("[ERROR_NOTCL] Due of %s, Flip action was not executed." % str(e))
                 return
@@ -3955,6 +3968,7 @@ class App(QtCore.QObject):
                     obj.mirror('Y', [px, py])
                     obj.plot()
                     self.object_changed.emit(obj)
+
             except Exception as e:
                 self.inform.emit("[ERROR_NOTCL] Due of %s, Flip action was not executed." % str(e))
                 return

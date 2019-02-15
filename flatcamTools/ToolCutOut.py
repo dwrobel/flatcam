@@ -359,6 +359,7 @@ class ToolCutOut(FlatCAMTool):
         cutout_obj.plot()
         self.app.inform.emit("[success] Any form CutOut operation finished.")
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+        self.should_we_save = True
 
     def on_rectangular_cutout(self):
         name = self.obj_combo.currentText()
