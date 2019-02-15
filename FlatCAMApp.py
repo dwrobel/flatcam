@@ -4978,23 +4978,12 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit("[WARNING_NOTCL] No object selected.")
-            msg = "Please Select an Excellon object to export"
-            msgbox = QtWidgets.QMessageBox()
-            msgbox.setInformativeText(msg)
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-            msgbox.exec_()
+            self.inform.emit("[WARNING_NOTCL] No object selected. Please Select an Excellon object to export.")
             return
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMExcellon):
-            msg = "[WARNING_NOTCL] Only Excellon objects can be used."
-            msgbox = QtWidgets.QMessageBox()
-            msgbox.setInformativeText(msg)
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-            msgbox.exec_()
+            self.inform.emit("[ERROR_NOTCL] Failed. Only Excellon objects can be saved as Excellon files...")
             return
 
         name = self.collection.get_active().options["name"]
@@ -6105,7 +6094,7 @@ class App(QtCore.QObject):
             App.log.debug(obj['kind'] + ":  " + obj['options']['name'])
             self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=True)
 
-        # self.plot_all()
+        self.plot_all()
         self.inform.emit("[success] Project loaded from: " + filename)
 
         self.should_we_save = False
@@ -6807,7 +6796,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
             json.dump(d, f, default=to_dict, indent=2, sort_keys=True)
             f.close()
 
-        # verification of the saved project
+            # verification of the saved project
             # Open and parse
             try:
                 saved_f = open(filename, 'r')

@@ -2226,29 +2226,31 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                             self.add_shape(shape=ints, color='green', visible=self.options['plot'])
 
             self.shapes.redraw()
-        except (ObjectDeleted, AttributeError):
+            return
+        except (ObjectDeleted, AttributeError, KeyError):
             self.shapes.clear(update=True)
 
-        # try:
-        #     _ = iter(self.solid_geometry)
-        # except TypeError:
-        #     self.solid_geometry = [self.solid_geometry]
-        #
-        # try:
-        #     # Plot excellon (All polygons?)
-        #     if self.options["solid"]:
-        #         for geo in self.solid_geometry:
-        #             self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF', visible=self.options['plot'],
-        #                            layer=2)
-        #     else:
-        #         for geo in self.solid_geometry:
-        #             self.add_shape(shape=geo.exterior, color='red', visible=self.options['plot'])
-        #             for ints in geo.interiors:
-        #                 self.add_shape(shape=ints, color='green', visible=self.options['plot'])
-        #
-        #     self.shapes.redraw()
-        # except (ObjectDeleted, AttributeError):
-        #     self.shapes.clear(update=True)
+        # this stays for compatibility reasons, in case we try to open old projects
+        try:
+            _ = iter(self.solid_geometry)
+        except TypeError:
+            self.solid_geometry = [self.solid_geometry]
+
+        try:
+            # Plot excellon (All polygons?)
+            if self.options["solid"]:
+                for geo in self.solid_geometry:
+                    self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF', visible=self.options['plot'],
+                                   layer=2)
+            else:
+                for geo in self.solid_geometry:
+                    self.add_shape(shape=geo.exterior, color='red', visible=self.options['plot'])
+                    for ints in geo.interiors:
+                        self.add_shape(shape=ints, color='green', visible=self.options['plot'])
+
+            self.shapes.redraw()
+        except (ObjectDeleted, AttributeError):
+            self.shapes.clear(update=True)
 
         # try:
         #     # Plot excellon (All polygons?)
