@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - reworked the offer to save a project so it is done only if there are objects in the project but those objects are new and/or are modified since last project load (if an old project was loaded.)
 - updated the Excellon plot function so it can plot the Excellon's from old projects
 - removed the message boxes that popup on Excellon Export errors and replaced them with status bar messages
+- small change in tab width so the tabs looks good in Linux, too.
 
 14.02.2019
 

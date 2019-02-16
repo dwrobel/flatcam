@@ -664,7 +664,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.pref_tab_area = FCTab()
         self.pref_tab_area.setTabsClosable(False)
         self.pref_tab_area_tabBar = self.pref_tab_area.tabBar()
-        self.pref_tab_area_tabBar.setStyleSheet("QTabBar::tab{width:80px;}")
+        self.pref_tab_area_tabBar.setStyleSheet("QTabBar::tab{width:90px;}")
         self.pref_tab_area_tabBar.setExpanding(True)
         self.pref_tab_layout.addWidget(self.pref_tab_area)
 
