@@ -63,8 +63,8 @@ if platform.architecture()[0] == '64bit':
         include_files=include_files,
         excludes=['scipy','pytz'],
         # packages=['OpenGL','numpy','vispy','ortools','google']
-        packages=['numpy','google', 'rasterio'] # works for Python 3.7
-        # packages = ['opengl', 'numpy', 'google', 'rasterio'] # works for Python 3.6.5
+        # packages=['numpy','google', 'rasterio'] # works for Python 3.7
+        packages = ['opengl', 'numpy', 'google', 'rasterio'] # works for Python 3.6.5 and Python 3.7.1
 
     )
 else:
@@ -72,8 +72,8 @@ else:
         include_files=include_files,
         excludes=['scipy', 'pytz'],
         # packages=['OpenGL','numpy','vispy','ortools','google']
-        packages=['numpy', 'rasterio']  # works for Python 3.7
-        # packages = ['opengl', 'numpy', 'google', 'rasterio'] # works for Python 3.6.5
+        # packages=['numpy', 'rasterio']  # works for Python 3.7
+        packages = ['opengl', 'numpy', 'google', 'rasterio'] # works for Python 3.6.5 and Python 3.7.1
 
     )
 
@@ -84,7 +84,7 @@ print("INCLUDE_FILES", include_files)
 setup(
     name="FlatCAM",
     author="Juan Pablo Caram",
-    version="Beta",
+    version="8.9",
     description="FlatCAM: 2D Computer Aided PCB Manufacturing",
     options=dict(build_exe=buildOptions),
     executables=[Executable("FlatCAM.py", icon='share/flatcam_icon48.ico', base=base)]

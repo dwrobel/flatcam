@@ -40,7 +40,7 @@ class VisPyCanvas(scene.SceneCanvas):
         right_padding.width_max = 0
 
         view = self.grid_widget.add_view(row=1, col=1, border_color='black', bgcolor='white')
-        view.camera = Camera(aspect=1, rect=(-100,-100,500,500))
+        view.camera = Camera(aspect=1, rect=(-25,-25,150,150))
 
         # Following function was removed from 'prepare_draw()' of 'Grid' class by patch,
         # it is necessary to call manually
