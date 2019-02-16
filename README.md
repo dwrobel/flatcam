@@ -12,7 +12,10 @@ CAD program, and create G-Code for Isolation routing.
 17.02.2019
 
 - changed some status bar messages
-- New feature: added the capability to view the source code of the Gerber/Excellon file that was loaded into the app. The file is also stored as an object attribute for later use. THe view option is in the project context menu and in Menu -> Options -> View Source
+- New feature: added the capability to view the source code of the Gerber/Excellon file that was loaded into the app. The file is also stored as an object attribute for later use. The view option is in the project context menu and in Menu -> Options -> View Source
+- Serialized the source_file of the Objects so it is saved in the FlatCAM project and restored.
+- if there is a single tool in the tool list (Geometry , Excellon) and the user click the Generate GCode, use that tool even if it is not selected
+- 
 
 16.02.2019
 

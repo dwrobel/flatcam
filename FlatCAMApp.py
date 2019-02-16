@@ -5253,15 +5253,15 @@ class App(QtCore.QObject):
         except IOError:
             exists = False
 
-        msg = "Project file exists. Overwrite?"
-        if exists:
-            msgbox = QtWidgets.QMessageBox()
-            msgbox.setInformativeText(msg)
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel |QtWidgets.QMessageBox.Ok)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Cancel)
-            result = msgbox.exec_()
-            if result ==QtWidgets.QMessageBox.Cancel:
-                return
+        # msg = "Project file exists. Overwrite?"
+        # if exists:
+        #     msgbox = QtWidgets.QMessageBox()
+        #     msgbox.setInformativeText(msg)
+        #     msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel |QtWidgets.QMessageBox.Ok)
+        #     msgbox.setDefaultButton(QtWidgets.QMessageBox.Cancel)
+        #     result = msgbox.exec_()
+        #     if result ==QtWidgets.QMessageBox.Cancel:
+        #         return
 
         if thread is True:
             self.worker_task.emit({'fcn': self.save_project,

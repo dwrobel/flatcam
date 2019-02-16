@@ -1913,11 +1913,13 @@ class Gerber (Geometry):
         # Aperture Macros
         self.aperture_macros = {}
 
+        self.source_file = ''
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from Geometry.
         self.ser_attrs += ['int_digits', 'frac_digits', 'apertures',
-                           'aperture_macros', 'solid_geometry']
+                           'aperture_macros', 'solid_geometry', 'source_file']
 
         #### Parser patterns ####
         # FS - Format Specification
@@ -3295,6 +3297,8 @@ class Excellon(Geometry):
         # self.slots (list) to store the slots; each is a dictionary
         self.slots = []
 
+        self.source_file = ''
+
         # it serve to flag if a start routing or a stop routing was encountered
         # if a stop is encounter and this flag is still 0 (so there is no stop for a previous start) issue error
         self.routing_flag = 1
@@ -3325,7 +3329,8 @@ class Excellon(Geometry):
         # Always append to it because it carries contents
         # from Geometry.
         self.ser_attrs += ['tools', 'drills', 'zeros', 'excellon_format_upper_mm', 'excellon_format_lower_mm',
-                           'excellon_format_upper_in', 'excellon_format_lower_in', 'excellon_units', 'slots']
+                           'excellon_format_upper_in', 'excellon_format_lower_in', 'excellon_units', 'slots',
+                           'source_file']
 
         #### Patterns ####
         # Regex basics:

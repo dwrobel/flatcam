@@ -413,11 +413,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # type of isolation: 0 = exteriors, 1 = interiors, 2 = complete isolation (both interiors and exteriors)
         self.iso_type = 2
 
-        # Attributes to be included in serialization
-        # Always append to it because it carries contents
-        # from predecessors.
-        self.ser_attrs += ['options', 'kind']
-
         self.multigeo = False
 
         self.apertures_row = 0
@@ -433,6 +428,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # self.ui.generate_cutout_button.clicked.connect(self.on_generatecutout_button_click)
         # self.ui.generate_bb_button.clicked.connect(self.on_generatebb_button_click)
         # self.ui.generate_noncopper_button.clicked.connect(self.on_generatenoncopper_button_click)
+
+        # Attributes to be included in serialization
+        # Always append to it because it carries contents
+        # from predecessors.
+        self.ser_attrs += ['options', 'kind']
 
     def set_ui(self, ui):
         """
@@ -1079,11 +1079,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # dict to hold the tool number as key and tool offset as value
         self.tool_offset ={}
 
-        # Attributes to be included in serialization
-        # Always append to it because it carries contents
-        # from predecessors.
-        self.ser_attrs += ['options', 'kind']
-
         # variable to store the total amount of drills per job
         self.tot_drill_cnt = 0
         self.tool_row = 0
@@ -1099,6 +1094,11 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.source_file = ""
 
         self.multigeo = False
+
+        # Attributes to be included in serialization
+        # Always append to it because it carries contents
+        # from predecessors.
+        self.ser_attrs += ['options', 'kind']
 
     @staticmethod
     def merge(exc_list, exc_final):
@@ -1995,8 +1995,14 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         tools = self.get_selected_tools_list()
 
         if len(tools) == 0:
-            self.app.inform.emit("[ERROR_NOTCL]Please select one or more tools from the list and try again.")
-            return
+            # if there is a single tool in the table (remember that the last 2 rows are for totals and do not count in
+            # tool number) it means that there are 3 rows (1 tool and 2 totals).
+            # in this case regardless of the selection status of that tool, use it.
+            if self.ui.tools_table.rowCount() == 3:
+                tools.append(self.ui.tools_table.item(0, 0).text())
+            else:
+                self.app.inform.emit("[ERROR_NOTCL]Please select one or more tools from the list and try again.")
+                return
 
         xmin = self.options['xmin']
         ymin = self.options['ymin']
@@ -3550,6 +3556,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         self.app.report_usage("geometry_on_generatecnc_button")
         self.read_form()
+
+        self.sel_tools = {}
+
         # test to see if we have tools available in the tool table
         if self.ui.geo_tools_table.selectedItems():
             for x in self.ui.geo_tools_table.selectedItems():
@@ -3571,8 +3580,19 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                             tooluid: copy.deepcopy(tooluid_value)
                         })
             self.mtool_gen_cncjob()
-
             self.ui.geo_tools_table.clearSelection()
+
+        elif self.ui.geo_tools_table.rowCount() == 1:
+            tooluid = int(self.ui.geo_tools_table.item(0, 5).text())
+
+            for tooluid_key, tooluid_value in self.tools.items():
+                if int(tooluid_key) == tooluid:
+                    self.sel_tools.update({
+                        tooluid: copy.deepcopy(tooluid_value)
+                    })
+            self.mtool_gen_cncjob()
+            self.ui.geo_tools_table.clearSelection()
+
         else:
             self.app.inform.emit("[ERROR_NOTCL] Failed. No tool selected in the tool table ...")
 
