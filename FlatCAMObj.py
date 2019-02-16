@@ -422,6 +422,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         self.apertures_row = 0
 
+        # store the source file here
+        self.source_file = ""
+
         # assert isinstance(self.ui, GerberObjectUI)
         # self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         # self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
@@ -1091,6 +1094,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         # variable to store the distance travelled
         self.travel_distance = 0.0
+
+        # store the source file here
+        self.source_file = ""
 
         self.multigeo = False
 
@@ -4809,7 +4815,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
     def on_modifygcode_button_click(self, *args):
         # add the tab if it was closed
-        self.app.ui.plot_tab_area.addTab(self.app.ui.cncjob_tab, "CNC Code Editor")
+        self.app.ui.plot_tab_area.addTab(self.app.ui.cncjob_tab, "Code Editor")
 
         # delete the absolute and relative position and messages in the infobar
         self.app.ui.position_label.setText("")
@@ -4821,7 +4827,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
         self.app.gcode_edited = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
-        # print(self.app.gcode_edited)
+
         # first clear previous text in text editor (if any)
         self.app.ui.code_editor.clear()
 

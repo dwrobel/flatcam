@@ -1338,9 +1338,9 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addLayout(h_lay)
 
         # Edit GCode Button
-        self.modify_gcode_button = QtWidgets.QPushButton('Edit CNC Code')
+        self.modify_gcode_button = QtWidgets.QPushButton('View CNC Code')
         self.modify_gcode_button.setToolTip(
-            "Opens TAB to modify/print G-Code\n"
+            "Opens TAB to view/modify/print G-Code\n"
             "file."
         )
 

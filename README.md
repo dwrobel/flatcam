@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+17.02.2019
+
+- changed some status bar messages
+- New feature: added the capability to view the source code of the Gerber/Excellon file that was loaded into the app. The file is also stored as an object attribute for later use. THe view option is in the project context menu and in Menu -> Options -> View Source
+
 16.02.2019
 
 - added the 'Save' menu entry to the Project context menu, for CNCJob: it will export the GCode.

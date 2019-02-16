@@ -292,6 +292,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # Separator
         self.menuoptions.addSeparator()
 
+        self.menuoptions_view_source = self.menuoptions.addAction(QtGui.QIcon('share/source32.png'),
+                                                                                "View source\tALT+S")
+        # Separator
+        self.menuoptions.addSeparator()
+
         ### View ###
         self.menuview = self.menu.addMenu('&View')
         self.menuviewenable = self.menuview.addAction(QtGui.QIcon('share/replot16.png'), 'Enable all plots\tALT+1')
@@ -419,7 +424,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuprojectdisable = self.menuproject.addAction(QtGui.QIcon('share/clear_plot32.png'), 'Disable Plot')
         self.menuproject.addSeparator()
         self.menuprojectgeneratecnc = self.menuproject.addAction(QtGui.QIcon('share/cnc32.png'), 'Generate CNC')
-        self.menuproject.addSeparator()
+        self.menuprojectviewsource = self.menuproject.addAction(QtGui.QIcon('share/source32.png'), 'View Source')
 
         self.menuprojectedit = self.menuproject.addAction(QtGui.QIcon('share/edit_ok32.png'), 'Edit')
         self.menuprojectcopy = self.menuproject.addAction(QtGui.QIcon('share/copy32.png'), 'Copy')
@@ -999,6 +1004,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 			<td height="20"><strong>ALT+R</strong></td>
 			<td>&nbsp;Transformations Tool</td>
 		</tr>
+        <tr height="20">
+			<td height="20"><strong>ALT+S</strong></td>
+			<td>&nbsp;View File Source</td>
+		</tr>
 		<tr height="20">
 			<td height="20"><strong>ALT+U</strong></td>
 			<td>&nbsp;Cutout PCB Tool</td>
@@ -1294,8 +1303,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.code_editor.setStyleSheet(stylesheet)
 
         self.buttonPreview = QtWidgets.QPushButton('Print Preview')
-        self.buttonPrint = QtWidgets.QPushButton('Print CNC Code')
-        self.buttonFind = QtWidgets.QPushButton('Find in CNC Code')
+        self.buttonPrint = QtWidgets.QPushButton('Print Code')
+        self.buttonFind = QtWidgets.QPushButton('Find in Code')
         self.buttonFind.setFixedWidth(100)
         self.buttonPreview.setFixedWidth(100)
         self.entryFind = FCEntry()
@@ -1309,8 +1318,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             "When checked it will replace all instances in the 'Find' box\n"
             "with the text in the 'Replace' box.."
         )
-        self.buttonOpen = QtWidgets.QPushButton('Open CNC Code')
-        self.buttonSave = QtWidgets.QPushButton('Save CNC Code')
+        self.buttonOpen = QtWidgets.QPushButton('Open Code')
+        self.buttonSave = QtWidgets.QPushButton('Save Code')
 
         self.cncjob_tab_layout.addWidget(self.code_editor, 0, 0, 1, 5)
 
@@ -1709,6 +1718,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Transformation Tool
                 if key == QtCore.Qt.Key_R:
                     self.app.transform_tool.run()
+                    return
+
+                # Transformation Tool
+                if key == QtCore.Qt.Key_S:
+                    self.app.on_view_source()
                     return
 
                 # Cutout Tool

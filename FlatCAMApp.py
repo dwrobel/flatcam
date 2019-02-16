@@ -92,8 +92,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.909
-    version_date = "2019/02/16"
+    version = 8.910
+    version_date = "2019/02/23"
     beta = True
 
     # current date now
@@ -1129,7 +1129,7 @@ class App(QtCore.QObject):
 
         self.ui.menuoptions_transform_flipx.triggered.connect(self.on_flipx)
         self.ui.menuoptions_transform_flipy.triggered.connect(self.on_flipy)
-
+        self.ui.menuoptions_view_source.triggered.connect(self.on_view_source)
 
         self.ui.menuviewdisableall.triggered.connect(self.disable_all_plots)
         self.ui.menuviewdisableother.triggered.connect(self.disable_other_plots)
@@ -1156,6 +1156,8 @@ class App(QtCore.QObject):
         self.ui.menuprojectenable.triggered.connect(lambda: self.enable_plots(self.collection.get_selected()))
         self.ui.menuprojectdisable.triggered.connect(lambda: self.disable_plots(self.collection.get_selected()))
         self.ui.menuprojectgeneratecnc.triggered.connect(lambda: self.generate_cnc_job(self.collection.get_selected()))
+        self.ui.menuprojectviewsource.triggered.connect(self.on_view_source)
+
         self.ui.menuprojectcopy.triggered.connect(self.on_copy_object)
         self.ui.menuprojectedit.triggered.connect(self.object2editor)
 
@@ -3934,7 +3936,7 @@ class App(QtCore.QObject):
                     obj.mirror('X', [px, py])
                     obj.plot()
                     self.object_changed.emit(obj)
-
+                self.inform.emit("[success] Flip on Y axis done.")
             except Exception as e:
                 self.inform.emit("[ERROR_NOTCL] Due of %s, Flip action was not executed." % str(e))
                 return
@@ -3974,7 +3976,7 @@ class App(QtCore.QObject):
                     obj.mirror('Y', [px, py])
                     obj.plot()
                     self.object_changed.emit(obj)
-
+                self.inform.emit("[success] Flip on X axis done.")
             except Exception as e:
                 self.inform.emit("[ERROR_NOTCL] Due of %s, Flip action was not executed." % str(e))
                 return
@@ -4021,6 +4023,7 @@ class App(QtCore.QObject):
                         sel_obj.rotate(-num, point=(px, py))
                         sel_obj.plot()
                         self.object_changed.emit(sel_obj)
+                    self.inform.emit("[success] Rotation done.")
                 except Exception as e:
                     self.inform.emit("[ERROR_NOTCL] Due of %s, rotation movement was not executed." % str(e))
                     return
@@ -4053,6 +4056,7 @@ class App(QtCore.QObject):
                     obj.skew(num, 0, point=(xminimal, yminimal))
                     obj.plot()
                     self.object_changed.emit(obj)
+                self.inform.emit("[success] Skew on X axis done.")
 
     def on_skewy(self):
         self.report_usage("on_skewy()")
@@ -4082,6 +4086,7 @@ class App(QtCore.QObject):
                     obj.skew(0, num, point=(xminimal, yminimal))
                     obj.plot()
                     self.object_changed.emit(obj)
+                self.inform.emit("[success] Skew on Y axis done.")
 
     def delete_first_selected(self):
         # Keep this for later
@@ -4729,9 +4734,44 @@ class App(QtCore.QObject):
         elif type(obj) == FlatCAMCNCjob:
             obj.on_exportgcode_button_click()
 
+    def on_view_source(self):
+
+        try:
+            obj = self.collection.get_active()
+        except:
+            self.inform.emit("[WARNING_NOTCL] Select an Gerber or Excellon file to view it's source.")
+
+        # add the tab if it was closed
+        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, "Code Editor")
+        # first clear previous text in text editor (if any)
+        self.ui.code_editor.clear()
+
+        # Switch plot_area to CNCJob tab
+        self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
+
+        # then append the text from GCode to the text editor
+        file = StringIO(obj.source_file)
+        try:
+            for line in file:
+                proc_line = str(line).strip('\n')
+                self.ui.code_editor.append(proc_line)
+        except Exception as e:
+            log.debug('App.on_view_source() -->%s' % str(e))
+            self.inform.emit('[ERROR]App.on_view_source() -->%s' % str(e))
+            return
+
+        self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
+
+        self.handleTextChanged()
+        self.ui.show()
+
+        # if type(obj) == FlatCAMGerber:
+        #     self.on_file_exportdxf()
+        # elif type(obj) == FlatCAMExcellon:
+        #     self.on_file_exportexcellon()
+
     def obj_move(self):
         self.report_usage("obj_move()")
-
         self.move_tool.run()
 
     def on_fileopengerber(self):

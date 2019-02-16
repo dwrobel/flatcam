@@ -595,7 +595,7 @@ class ToolTransform(FlatCAMTool):
                         # add information to the object that it was changed and how much
                         sel_obj.options['rotate'] = num
 
-                    self.app.inform.emit('Object(s) were rotated ...')
+                    self.app.inform.emit('[success]Rotate done ...')
                     self.app.progress.emit(100)
 
                 except Exception as e:
@@ -656,7 +656,7 @@ class ToolTransform(FlatCAMTool):
                                 else:
                                     obj.options['mirror_y'] = True
                                 obj.plot()
-                                self.app.inform.emit('Flipped on the Y axis ...')
+                                self.app.inform.emit('[success]Flip on the Y axis done ...')
                             elif axis is 'Y':
                                 obj.mirror('Y', (px, py))
                                 # add information to the object that it was changed and how much
@@ -666,9 +666,8 @@ class ToolTransform(FlatCAMTool):
                                 else:
                                     obj.options['mirror_x'] = True
                                 obj.plot()
-                                self.app.inform.emit('Flipped on the X axis ...')
+                                self.app.inform.emit('[success]Flip on the X axis done ...')
                             self.app.object_changed.emit(obj)
-
                     self.app.progress.emit(100)
 
                 except Exception as e:
@@ -715,7 +714,7 @@ class ToolTransform(FlatCAMTool):
                                 obj.options['skew_y'] = num
                             obj.plot()
                             self.app.object_changed.emit(obj)
-                    self.app.inform.emit('Object(s) were skewed on %s axis ...' % str(axis))
+                    self.app.inform.emit('[success]Skew on the %s axis done ...' % str(axis))
                     self.app.progress.emit(100)
 
                 except Exception as e:
@@ -771,7 +770,7 @@ class ToolTransform(FlatCAMTool):
                             obj.options['scale_y'] = yfactor
                             obj.plot()
                             self.app.object_changed.emit(obj)
-                    self.app.inform.emit('Object(s) were scaled on %s axis ...' % str(axis))
+                    self.app.inform.emit('[success]Scale on the %s axis done ...' % str(axis))
                     self.app.progress.emit(100)
                 except Exception as e:
                     self.app.inform.emit("[ERROR_NOTCL] Due of %s, Scale action was not executed." % str(e))
@@ -816,7 +815,7 @@ class ToolTransform(FlatCAMTool):
                                 obj.options['offset_y'] = num
                             obj.plot()
                             self.app.object_changed.emit(obj)
-                    self.app.inform.emit('Object(s) were offseted on %s axis ...' % str(axis))
+                    self.app.inform.emit('[success]Offset on the %s axis done ...' % str(axis))
                     self.app.progress.emit(100)
 
                 except Exception as e:

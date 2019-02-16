@@ -73,7 +73,7 @@ else:
         excludes=['scipy', 'pytz'],
         # packages=['OpenGL','numpy','vispy','ortools','google']
         # packages=['numpy', 'rasterio']  # works for Python 3.7
-        packages = ['opengl', 'numpy', 'google', 'rasterio'] # works for Python 3.6.5 and Python 3.7.1
+        packages = ['opengl', 'numpy', 'rasterio'] # works for Python 3.6.5 and Python 3.7.1
 
     )
 

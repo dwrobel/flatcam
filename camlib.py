@@ -2185,6 +2185,8 @@ class Gerber (Geometry):
             for gline in glines:
                 line_num += 1
 
+                self.source_file += gline + '\n'
+
                 ### Cleanup
                 gline = gline.strip(' \r\n')
                 # log.debug("Line=%3s %s" % (line_num, gline))
@@ -3469,6 +3471,8 @@ class Excellon(Geometry):
                 line_num += 1
                 # log.debug("%3d %s" % (line_num, str(eline)))
 
+                self.source_file += eline
+
                 # Cleanup lines
                 eline = eline.strip(' \r\n')
 
@@ -3819,7 +3823,7 @@ class Excellon(Geometry):
                                     self.drills.append({'point': Point((coordx, coordy)), 'tool': current_tool})
                                     repeat -= 1
                             repeating_x = repeating_y = 0
-                            log.debug("{:15} {:8} {:8}".format(eline, x, y))
+                            # log.debug("{:15} {:8} {:8}".format(eline, x, y))
                             continue
 
                     ## Coordinates with period: Use literally. ##
@@ -3901,7 +3905,7 @@ class Excellon(Geometry):
                                     self.drills.append({'point': Point((coordx, coordy)), 'tool': current_tool})
                                     repeat -= 1
                             repeating_x = repeating_y = 0
-                            log.debug("{:15} {:8} {:8}".format(eline, x, y))
+                            # log.debug("{:15} {:8} {:8}".format(eline, x, y))
                             continue
 
                 #### Header ####
@@ -4004,7 +4008,6 @@ class Excellon(Geometry):
             # is finished since the tools definitions are spread in the Excellon body. We use as units the value
             # from self.defaults['excellon_units']
             log.info("Zeros: %s, Units %s." % (self.zeros, self.units))
-
         except Exception as e:
             log.error("Excellon PARSING FAILED. Line %d: %s" % (line_num, eline))
             msg = "[ERROR_NOTCL] An internal error has ocurred. See shell.\n"
