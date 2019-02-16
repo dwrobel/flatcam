@@ -4720,6 +4720,8 @@ class App(QtCore.QObject):
             self.on_file_exportdxf()
         elif type(obj) == FlatCAMExcellon:
             self.on_file_exportexcellon()
+        elif type(obj) == FlatCAMCNCjob:
+            obj.on_exportgcode_button_click()
 
     def obj_move(self):
         self.report_usage("obj_move()")

@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+16.02.2019
+
+- added the 'Save' menu entry to the Project context menu, for CNCJob: it will export the GCode.
+
 15.02.2019
 
 - rearranged the File and Edit menu's and added some explanatory tooltips on certain menu items that could be seen as cryptic
