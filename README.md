@@ -12,6 +12,12 @@ CAD program, and create G-Code for Isolation routing.
 16.02.2019
 
 - added the 'Save' menu entry to the Project context menu, for CNCJob: it will export the GCode.
+- added messages in info bar when selecting objects in the Project View list
+- fixed DblSided Tool so it correctly creates the Alignment Drills Excellon file using the new structure
+- fixed DblSided Tool so it will not crash the app if the user tries to make a mirror using no coordinates
+- added some relevant status bar messages in DblSided Tool
+- fixed DblSided Tool to correctly use the Box object (until now it used as reference only Gerber object in spite of Excellon or Geometry objects being available)
+- fixed DblSided Tool crash when trying to create Alignment Drills object without a Tool diameter specified
 
 15.02.2019
 

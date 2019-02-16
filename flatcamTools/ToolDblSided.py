@@ -128,7 +128,7 @@ class DblSidedTool(FlatCAMTool):
 
         ## Point/Box
         self.point_box_container = QtWidgets.QVBoxLayout()
-        self.pb_label = QtWidgets.QLabel("<b>Point/Box:</b>")
+        self.pb_label = QtWidgets.QLabel("<b>Point/Box Reference:</b>")
         self.pb_label.setToolTip(
             "If 'Point' is selected above it store the coordinates (x, y) through which\n"
             "the mirroring axis passes.\n"
@@ -210,7 +210,7 @@ class DblSidedTool(FlatCAMTool):
         grid_lay2 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid_lay2)
 
-        self.drill_dia = LengthEntry()
+        self.drill_dia = FCEntry()
         self.dd_label = QtWidgets.QLabel("Drill diam.:")
         self.dd_label.setToolTip(
             "Diameter of the drill for the "
@@ -295,7 +295,22 @@ class DblSidedTool(FlatCAMTool):
         else:
             selection_index = self.box_combo.currentIndex()
             model_index = self.app.collection.index(selection_index, 0, self.gerber_object_combo.rootModelIndex())
-            bb_obj = model_index.internalPointer().obj
+            try:
+                bb_obj = model_index.internalPointer().obj
+            except AttributeError:
+                model_index = self.app.collection.index(selection_index, 0, self.exc_object_combo.rootModelIndex())
+                try:
+                    bb_obj = model_index.internalPointer().obj
+                except AttributeError:
+                    model_index = self.app.collection.index(selection_index, 0,
+                                                            self.geo_object_combo.rootModelIndex())
+                    try:
+                        bb_obj = model_index.internalPointer().obj
+                    except AttributeError:
+                        self.app.inform.emit(
+                            "[WARNING_NOTCL] There is no Box reference object loaded. Load one and retry.")
+                        return
+
             xmin, ymin, xmax, ymax = bb_obj.bounds()
             px = 0.5 * (xmin + xmax)
             py = 0.5 * (ymin + ymax)
@@ -303,7 +318,7 @@ class DblSidedTool(FlatCAMTool):
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
         dia = self.drill_dia.get_value()
-        if dia is None:
+        if dia is '':
             self.app.inform.emit("[WARNING_NOTCL]No value or wrong format in Drill Dia entry. Add it and retry.")
             return
         tools = {"1": {"C": dia}}
@@ -321,6 +336,10 @@ class DblSidedTool(FlatCAMTool):
             point_mirror = affinity.scale(point, xscale, yscale, origin=(px, py))
             drills.append({"point": point, "tool": "1"})
             drills.append({"point": point_mirror, "tool": "1"})
+            if 'solid_geometry' not in tools:
+                tools["1"]['solid_geometry'] = []
+            else:
+                tools["1"]['solid_geometry'].append(point_mirror)
 
         def obj_init(obj_inst, app_inst):
             obj_inst.tools = tools
@@ -329,6 +348,7 @@ class DblSidedTool(FlatCAMTool):
 
         self.app.new_object("excellon", "Alignment Drills", obj_init)
         self.drill_values = ''
+        self.app.inform.emit("[success] Excellon object with alignment drills created...")
 
     def on_mirror_gerber(self):
         selection_index = self.gerber_object_combo.currentIndex()
@@ -371,6 +391,7 @@ class DblSidedTool(FlatCAMTool):
         fcobj.mirror(axis, [px, py])
         self.app.object_changed.emit(fcobj)
         fcobj.plot()
+        self.app.inform.emit("[success] Gerber %s was mirrored..." % str(fcobj.options['name']))
 
     def on_mirror_exc(self):
         selection_index = self.exc_object_combo.currentIndex()
@@ -390,13 +411,20 @@ class DblSidedTool(FlatCAMTool):
         mode = self.axis_location.get_value()
 
         if mode == "point":
-            px, py = self.point_entry.get_value()
+            try:
+                px, py = self.point_entry.get_value()
+            except Exception as e:
+                log.debug("DblSidedTool.on_mirror_geo() --> %s" % str(e))
+                self.app.inform.emit("[WARNING_NOTCL] There are no Point coordinates in the Point field. "
+                                     "Add coords and try again ...")
+                return
         else:
             selection_index_box = self.box_combo.currentIndex()
             model_index_box = self.app.collection.index(selection_index_box, 0, self.box_combo.rootModelIndex())
             try:
                 bb_obj = model_index_box.internalPointer().obj
             except Exception as e:
+                log.debug("DblSidedTool.on_mirror_geo() --> %s" % str(e))
                 self.app.inform.emit("[WARNING_NOTCL] There is no Box object loaded ...")
                 return
 
@@ -407,6 +435,7 @@ class DblSidedTool(FlatCAMTool):
         fcobj.mirror(axis, [px, py])
         self.app.object_changed.emit(fcobj)
         fcobj.plot()
+        self.app.inform.emit("[success] Excellon %s was mirrored..." % str(fcobj.options['name']))
 
     def on_mirror_geo(self):
         selection_index = self.geo_object_combo.currentIndex()
@@ -443,6 +472,7 @@ class DblSidedTool(FlatCAMTool):
         fcobj.mirror(axis, [px, py])
         self.app.object_changed.emit(fcobj)
         fcobj.plot()
+        self.app.inform.emit("[success] Geometry %s was mirrored..." % str(fcobj.options['name']))
 
     def on_point_add(self):
         val = self.app.defaults["global_point_clipboard_format"] % (self.app.pos[0], self.app.pos[1])
