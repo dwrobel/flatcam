@@ -47,6 +47,11 @@ class Properties(FlatCAMTool):
         if self.app.tool_tab_locked is True:
             return
         self.set_tool_ui()
+
+        # if the splitter us hidden, display it
+        if self.app.ui.splitter.sizes()[0] == 0:
+            self.app.ui.splitter.setSizes([1, 1])
+
         FlatCAMTool.run(self)
         self.properties()
 

@@ -43,6 +43,8 @@ from rasterio.features import shapes
 
 from xml.dom.minidom import parseString as parse_xml_string
 
+# from scipy.spatial import KDTree, Delaunay
+
 from ParseSVG import *
 from ParseDXF import *
 
@@ -95,6 +97,9 @@ class Geometry(object):
 
         # Flattened geometry (list of paths only)
         self.flat_geometry = []
+
+        # this is the calculated conversion factor when the file units are different than the ones in the app
+        self.file_units_factor = 1
 
         # Index
         self.index = None
@@ -1262,6 +1267,7 @@ class Geometry(object):
 
         self.units = units
         self.scale(factor)
+        self.file_units_factor = factor
         return factor
 
     def to_dict(self):
@@ -1843,7 +1849,7 @@ class Gerber (Geometry):
     +-----------+-----------------------------------+
 
     * ``aperture_macros`` (dictionary): Are predefined geometrical structures
-      that can be instanciated with different parameters in an aperture
+      that can be instantiated with different parameters in an aperture
       definition. See ``apertures`` above. The key is the name of the macro,
       and the macro itself, the value, is a ``Aperture_Macro`` object.
 
@@ -1897,7 +1903,7 @@ class Gerber (Geometry):
         self.gerber_zeros = 'L'
         """Zeros in Gerber numbers. If 'L' then remove leading zeros, if 'T' remove trailing zeros. Used during parsing.
         """
-        
+
         ## Gerber elements ##
         # Apertures {'id':{'type':chr, 
         #             ['size':float], ['width':float],
@@ -3342,7 +3348,7 @@ class Excellon(Geometry):
         # Number format and units
         # INCH uses 6 digits
         # METRIC uses 5/6
-        self.units_re = re.compile(r'^(INCH|METRIC)(?:,([TL])Z)?$')
+        self.units_re = re.compile(r'^(INCH|METRIC)(?:,([TL])Z)?.*$')
 
         # Tool definition/parameters (?= is look-ahead
         # NOTE: This might be an overkill!
@@ -3508,6 +3514,7 @@ class Excellon(Geometry):
                                 spec = {"C": float(match.group(2))}
                                 self.tools[str(name_tool)] = spec
                                 log.debug("  Tool definition: %s %s" % (name_tool, spec))
+                            spec['solid_geometry'] = []
                             continue
                     else:
                         log.warning("Line ignored, it's a comment: %s" % eline)
@@ -3567,6 +3574,7 @@ class Excellon(Geometry):
                                 spec = {
                                     "C": float(match.group(2)),
                                 }
+                                spec['solid_geometry'] = []
                                 self.tools[name] = spec
                                 log.debug("  Tool definition out of header: %s %s" % (name, spec))
 
@@ -3912,6 +3920,7 @@ class Excellon(Geometry):
                             # "H": float(match.group(6)),
                             # "Z": float(match.group(7))
                         }
+                        spec['solid_geometry'] = []
                         self.tools[name] = spec
                         log.debug("  Tool definition: %s %s" % (name, spec))
                         continue
@@ -3958,7 +3967,6 @@ class Excellon(Geometry):
                         # TODO: not working
                         #FlatCAMApp.App.inform.emit("Detected INLINE: %s" % str(eline))
                         continue
-
 
                     # Search for zeros type again because it might be alone on the line
                     match = re.search(r'[LT]Z',eline)
@@ -4068,7 +4076,12 @@ class Excellon(Geometry):
         :return: None
         """
         self.solid_geometry = []
+
         try:
+            # clear the solid_geometry in self.tools
+            for tool in self.tools:
+                self.tools[tool]['solid_geometry'][:] = []
+
             for drill in self.drills:
                 # poly = drill['point'].buffer(self.tools[drill['tool']]["C"]/2.0)
                 if drill['tool'] is '':
@@ -4080,7 +4093,8 @@ class Excellon(Geometry):
                     continue
                 tooldia = self.tools[drill['tool']]['C']
                 poly = drill['point'].buffer(tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
-                self.solid_geometry.append(poly)
+                # self.solid_geometry.append(poly)
+                self.tools[drill['tool']]['solid_geometry'].append(poly)
 
             for slot in self.slots:
                 slot_tooldia = self.tools[slot['tool']]['C']
@@ -4089,7 +4103,9 @@ class Excellon(Geometry):
 
                 lines_string = LineString([start, stop])
                 poly = lines_string.buffer(slot_tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
-                self.solid_geometry.append(poly)
+                # self.solid_geometry.append(poly)
+                self.tools[slot['tool']]['solid_geometry'].append(poly)
+
         except Exception as e:
             log.debug("Excellon geometry creation failed due of ERROR: %s" % str(e))
             return "fail"
@@ -4131,9 +4147,9 @@ class Excellon(Geometry):
         # now it can get bounds for nested lists of objects
 
         log.debug("Excellon() -> bounds()")
-        if self.solid_geometry is None:
-            log.debug("solid_geometry is None")
-            return 0, 0, 0, 0
+        # if self.solid_geometry is None:
+        #     log.debug("solid_geometry is None")
+        #     return 0, 0, 0, 0
 
         def bounds_rec(obj):
             if type(obj) is list:
@@ -4161,8 +4177,19 @@ class Excellon(Geometry):
                 # it's a Shapely object, return it's bounds
                 return obj.bounds
 
-        bounds_coords = bounds_rec(self.solid_geometry)
-        return bounds_coords
+        minx_list = []
+        miny_list = []
+        maxx_list = []
+        maxy_list = []
+
+        for tool in self.tools:
+            minx, miny, maxx, maxy = bounds_rec(self.tools[tool]['solid_geometry'])
+            minx_list.append(minx)
+            miny_list.append(miny)
+            maxx_list.append(maxx)
+            maxy_list.append(maxy)
+
+        return (min(minx_list), min(miny_list), max(maxx_list), max(maxy_list))
 
     def convert_units(self, units):
         """
@@ -4397,6 +4424,8 @@ class CNCjob(Geometry):
         self.units = units
 
         self.z_cut = z_cut
+        self.tool_offset = {}
+
         self.z_move = z_move
 
         self.feedrate = feedrate
@@ -4427,6 +4456,9 @@ class CNCjob(Geometry):
 
         # Controls if the move from Z_Toolchange to Z_Move is done fast with G0 or normally with G1
         self.f_plunge = None
+
+        # Controls if the move from Z_Cutto Z_Move is done fast with G0 or G1 until zero and then G0 to Z_move
+        self.f_retract = None
 
         # how much depth the probe can probe before error
         self.z_pdepth = z_pdepth if z_pdepth else None
@@ -4618,6 +4650,7 @@ class CNCjob(Geometry):
         self.gcode = []
 
         self.f_plunge = self.app.defaults["excellon_f_plunge"]
+        self.f_retract = self.app.defaults["excellon_f_retract"]
 
         # Initialization
         gcode = self.doformat(p.start_code)
@@ -4744,6 +4777,13 @@ class CNCjob(Geometry):
                                 if self.dwell is True:
                                     gcode += self.doformat(p.dwell_code)  # Dwell time
 
+                            if self.units == 'MM':
+                                current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
+                            else:
+                                current_tooldia = float('%.3f' % float(exobj.tools[tool]["C"]))
+                            z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+                            self.z_cut += z_offset
+
                             # Drillling!
                             for k in node_list:
                                 locx = locations[k][0]
@@ -4751,7 +4791,8 @@ class CNCjob(Geometry):
 
                                 gcode += self.doformat(p.rapid_code, x=locx, y=locy)
                                 gcode += self.doformat(p.down_code, x=locx, y=locy)
-                                gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                if self.f_retract is False:
+                                    gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
                                 measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
                                 self.oldx = locx
@@ -4825,13 +4866,22 @@ class CNCjob(Geometry):
                                 if self.dwell is True:
                                     gcode += self.doformat(p.dwell_code)  # Dwell time
 
+                            if self.units == 'MM':
+                                current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
+                            else:
+                                current_tooldia = float('%.3f' % float(exobj.tools[tool]["C"]))
+
+                            z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+                            self.z_cut += z_offset
+
                             # Drillling!
                             for k in node_list:
                                 locx = locations[k][0]
                                 locy = locations[k][1]
                                 gcode += self.doformat(p.rapid_code, x=locx, y=locy)
                                 gcode += self.doformat(p.down_code, x=locx, y=locy)
-                                gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                if self.f_retract is False:
+                                    gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
                                 measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
                                 self.oldx = locx
@@ -4866,6 +4916,12 @@ class CNCjob(Geometry):
                             if self.dwell is True:
                                 gcode += self.doformat(p.dwell_code)  # Dwell time
 
+                        if self.units == 'MM':
+                            current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
+                        else:
+                            current_tooldia = float('%.3f' % float(exobj.tools[tool]["C"]))
+                        z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+                        self.z_cut += z_offset
                         # Drillling!
                         altPoints = []
                         for point in points[tool]:
@@ -4874,7 +4930,8 @@ class CNCjob(Geometry):
                         for point in self.optimized_travelling_salesman(altPoints):
                             gcode += self.doformat(p.rapid_code, x=point[0], y=point[1])
                             gcode += self.doformat(p.down_code, x=point[0], y=point[1])
-                            gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
+                            if self.f_retract is False:
+                                gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
                             gcode += self.doformat(p.lift_code, x=point[0], y=point[1])
                             measured_distance += abs(distance_euclidian(point[0], point[1], self.oldx, self.oldy))
                             self.oldx = point[0]
@@ -4892,6 +4949,8 @@ class CNCjob(Geometry):
         measured_distance += abs(distance_euclidian(self.oldx, self.oldy, 0, 0))
         log.debug("The total travel distance including travel to end position is: %s" %
                   str(measured_distance) + '\n')
+        self.travel_distance = measured_distance
+
         self.gcode = gcode
         return 'OK'
 
@@ -6581,19 +6640,25 @@ def parse_gerber_number(strnumber, int_digits, frac_digits, zeros):
 #     for pIdx, lineIndices_ in cells.items():
 #         dangling_lines = []
 #         for i1, i2 in lineIndices_:
-#             connections = filter(lambda (i1_, i2_): (i1, i2) != (i1_, i2_) and (i1 == i1_ or i1 == i2_ or i2 == i1_ or i2 == i2_), lineIndices_)
+#             p = (i1, i2)
+#             connections = filter(lambda k: p != k and (p[0] == k[0] or p[0] == k[1] or p[1] == k[0] or p[1] == k[1]), lineIndices_)
+#             # connections = filter(lambda (i1_, i2_): (i1, i2) != (i1_, i2_) and (i1 == i1_ or i1 == i2_ or i2 == i1_ or i2 == i2_), lineIndices_)
 #             assert 1 <= len(connections) <= 2
 #             if len(connections) == 1:
 #                 dangling_lines.append((i1, i2))
 #         assert len(dangling_lines) in [0, 2]
 #         if len(dangling_lines) == 2:
 #             (i11, i12), (i21, i22) = dangling_lines
+#             s = (i11, i12)
+#             t = (i21, i22)
 #
 #             # determine which line ends are unconnected
-#             connected = filter(lambda (i1,i2): (i1,i2) != (i11,i12) and (i1 == i11 or i2 == i11), lineIndices_)
+#             connected = filter(lambda k: k != s and (k[0] == s[0] or k[1] == s[0]), lineIndices_)
+#             # connected = filter(lambda (i1,i2): (i1,i2) != (i11,i12) and (i1 == i11 or i2 == i11), lineIndices_)
 #             i11Unconnected = len(connected) == 0
 #
-#             connected = filter(lambda (i1,i2): (i1,i2) != (i21,i22) and (i1 == i21 or i2 == i21), lineIndices_)
+#             connected = filter(lambda k: k != t and (k[0] == t[0] or k[1] == t[0]), lineIndices_)
+#             # connected = filter(lambda (i1,i2): (i1,i2) != (i21,i22) and (i1 == i21 or i2 == i21), lineIndices_)
 #             i21Unconnected = len(connected) == 0
 #
 #             startIdx = i11 if i11Unconnected else i12
@@ -6634,7 +6699,7 @@ def parse_gerber_number(strnumber, int_digits, frac_digits, zeros):
 #     cells = voronoi_cell_lines(points, vertices, lineIndices)
 #     polys = voronoi_edges2polygons(cells)
 #     polylist = []
-#     for i in xrange(len(points)):
+#     for i in range(len(points)):
 #         poly = vertices[np.asarray(polys[i])]
 #         polylist.append(poly)
 #     return polylist
@@ -6650,14 +6715,14 @@ def parse_gerber_number(strnumber, int_digits, frac_digits, zeros):
 #         self.polygons = []
 #         pass
 #
-#     def plot_polygons(self):
-#         axes = plt.subplot(1, 1, 1)
-#
-#         plt.axis([-0.05, 1.05, -0.05, 1.05])
-#
-#         for poly in self.polygons:
-#             p = PolygonPatch(poly, facecolor=np.random.rand(3, 1), alpha=0.3)
-#             axes.add_patch(p)
+#     # def plot_polygons(self):
+#     #     axes = plt.subplot(1, 1, 1)
+#     #
+#     #     plt.axis([-0.05, 1.05, -0.05, 1.05])
+#     #
+#     #     for poly in self.polygons:
+#     #         p = PolygonPatch(poly, facecolor=np.random.rand(3, 1), alpha=0.3)
+#     #         axes.add_patch(p)
 #
 #     def init_from_csv(self, filename):
 #         pass

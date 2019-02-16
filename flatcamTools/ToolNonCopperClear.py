@@ -243,6 +243,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         FlatCAMTool.run(self)
         self.set_tool_ui()
+
+        # if the splitter us hidden, display it
+        if self.app.ui.splitter.sizes()[0] == 0:
+            self.app.ui.splitter.setSizes([1, 1])
+
         self.build_ui()
         self.app.ui.notebook.setTabText(2, "NCC Tool")
 

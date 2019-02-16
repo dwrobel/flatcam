@@ -184,6 +184,11 @@ class Panelize(FlatCAMTool):
 
         FlatCAMTool.run(self)
         self.set_tool_ui()
+
+        # if the splitter us hidden, display it
+        if self.app.ui.splitter.sizes()[0] == 0:
+            self.app.ui.splitter.setSizes([1, 1])
+
         self.app.ui.notebook.setTabText(2, "Panel. Tool")
 
     def install(self, icon=None, separator=None, **kwargs):

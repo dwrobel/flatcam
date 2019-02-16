@@ -507,17 +507,21 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         self.app.ui.menuprojectcopy.setEnabled(sel)
         self.app.ui.menuprojectedit.setEnabled(sel)
         self.app.ui.menuprojectdelete.setEnabled(sel)
+        self.app.ui.menuprojectsave.setEnabled(sel)
         self.app.ui.menuprojectproperties.setEnabled(sel)
 
         if sel:
             self.app.ui.menuprojectgeneratecnc.setVisible(True)
             self.app.ui.menuprojectedit.setVisible(True)
+            self.app.ui.menuprojectsave.setVisible(True)
 
             for obj in self.get_selected():
                 if type(obj) != FlatCAMGeometry:
                     self.app.ui.menuprojectgeneratecnc.setVisible(False)
                 if type(obj) != FlatCAMGeometry and type(obj) != FlatCAMExcellon:
                     self.app.ui.menuprojectedit.setVisible(False)
+                if type(obj) != FlatCAMGeometry and type(obj) != FlatCAMExcellon and type(obj) != FlatCAMCNCjob:
+                    self.app.ui.menuprojectsave.setVisible(False)
         else:
             self.app.ui.menuprojectgeneratecnc.setVisible(False)
 
@@ -676,6 +680,13 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         if group.child_count() is 1:
             self.view.setExpanded(group_index, True)
 
+        self.app.should_we_save = True
+
+        # decide if to show or hide the Notebook side of the screen
+        if self.app.defaults["global_project_autohide"] is True:
+            # always open the notebook on object added to collection
+            self.app.ui.splitter.setSizes([1, 1])
+
     def get_names(self):
         """
         Gets a list of the names of all objects in the collection.
@@ -767,6 +778,14 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         # always go to the Project Tab after object deletion as it may be done with a shortcut key
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+
+        self.app.should_we_save = True
+
+        # decide if to show or hide the Notebook side of the screen
+        if self.app.defaults["global_project_autohide"] is True:
+            # hide the notebook if there are no objects in the collection
+            if not self.get_list():
+                self.app.ui.splitter.setSizes([0, 1])
 
     def delete_all(self):
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.delete_all()")
@@ -883,6 +902,20 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         try:
             obj = current.indexes()[0].internalPointer().obj
+
+            if obj.kind == 'gerber':
+                self.app.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                 ('green', str(obj.options['name'])))
+            elif obj.kind == 'excellon':
+                self.app.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                 ('brown', str(obj.options['name'])))
+            elif obj.kind == 'cncjob':
+                self.app.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                 ('blue', str(obj.options['name'])))
+            elif obj.kind == 'geometry':
+                self.app.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                                 ('red', str(obj.options['name'])))
+
         except IndexError:
             FlatCAMApp.App.log.debug("on_list_selection_change(): Index Error (Nothing selected?)")
 

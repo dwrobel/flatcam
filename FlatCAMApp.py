@@ -92,8 +92,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.908
-    version_date = "2019/02/9"
+    version = 8.909
+    version_date = "2019/02/16"
     beta = True
 
     # current date now
@@ -110,6 +110,10 @@ class App(QtCore.QObject):
     video_url = "https://www.youtube.com/playlist?list=PLVvP2SYRpx-AQgNlfoxw93tXUXon7G94_"
 
     should_we_quit = True
+
+    # this variable will hold the project status
+    # if True it will mean that the project was modified and not saved
+    should_we_save = False
 
     ##################
     ##    Signals   ##
@@ -305,6 +309,9 @@ class App(QtCore.QObject):
             "global_shell_at_startup": self.general_defaults_form.general_app_group.shell_startup_cb,
             "global_version_check": self.general_defaults_form.general_app_group.version_check_cb,
             "global_send_stats": self.general_defaults_form.general_app_group.send_stats_cb,
+            "global_project_at_startup": self.general_defaults_form.general_app_group.project_startup_cb,
+            "global_project_autohide": self.general_defaults_form.general_app_group.project_autohide_cb,
+
             "global_gridx": self.general_defaults_form.general_gui_group.gridx_entry,
             "global_gridy": self.general_defaults_form.general_gui_group.gridy_entry,
             "global_snap_max": self.general_defaults_form.general_gui_group.snap_max_dist_entry,
@@ -347,53 +354,61 @@ class App(QtCore.QObject):
             "excellon_units": self.excellon_defaults_form.excellon_gen_group.excellon_units_radio,
             "excellon_optimization_type": self.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio,
             "excellon_search_time": self.excellon_defaults_form.excellon_gen_group.optimization_time_entry,
+            "excellon_offset": self.excellon_defaults_form.excellon_gen_group.offset_entry,
+            "excellon_toolchangexy": self.excellon_defaults_form.excellon_gen_group.toolchangexy_entry,
+            "excellon_startz": self.excellon_defaults_form.excellon_gen_group.estartz_entry,
+            "excellon_endz": self.excellon_defaults_form.excellon_gen_group.eendz_entry,
+            "excellon_feedrate_rapid": self.excellon_defaults_form.excellon_gen_group.feedrate_rapid_entry,
+            "excellon_z_pdepth": self.excellon_defaults_form.excellon_gen_group.pdepth_entry,
+            "excellon_feedrate_probe": self.excellon_defaults_form.excellon_gen_group.feedrate_probe_entry,
+            "excellon_f_plunge": self.excellon_defaults_form.excellon_gen_group.fplunge_cb,
+            "excellon_f_retract": self.excellon_defaults_form.excellon_gen_group.fretract_cb,
 
             "excellon_drillz": self.excellon_defaults_form.excellon_opt_group.cutz_entry,
             "excellon_travelz": self.excellon_defaults_form.excellon_opt_group.travelz_entry,
             "excellon_feedrate": self.excellon_defaults_form.excellon_opt_group.feedrate_entry,
-            "excellon_feedrate_rapid": self.excellon_defaults_form.excellon_opt_group.feedrate_rapid_entry,
-            "excellon_feedrate_probe": self.excellon_defaults_form.excellon_opt_group.feedrate_probe_entry,
             "excellon_spindlespeed": self.excellon_defaults_form.excellon_opt_group.spindlespeed_entry,
             "excellon_dwell": self.excellon_defaults_form.excellon_opt_group.dwell_cb,
             "excellon_dwelltime": self.excellon_defaults_form.excellon_opt_group.dwelltime_entry,
             "excellon_toolchange": self.excellon_defaults_form.excellon_opt_group.toolchange_cb,
             "excellon_toolchangez": self.excellon_defaults_form.excellon_opt_group.toolchangez_entry,
-            "excellon_toolchangexy": self.excellon_defaults_form.excellon_opt_group.toolchangexy_entry,
             "excellon_ppname_e": self.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb,
-            "excellon_z_pdepth": self.excellon_defaults_form.excellon_opt_group.pdepth_entry,
-            "excellon_f_plunge": self.excellon_defaults_form.excellon_opt_group.fplunge_cb,
-            "excellon_startz": self.excellon_defaults_form.excellon_opt_group.estartz_entry,
-            "excellon_endz": self.excellon_defaults_form.excellon_opt_group.eendz_entry,
             "excellon_tooldia": self.excellon_defaults_form.excellon_opt_group.tooldia_entry,
             "excellon_slot_tooldia": self.excellon_defaults_form.excellon_opt_group.slot_tooldia_entry,
             "excellon_gcode_type": self.excellon_defaults_form.excellon_opt_group.excellon_gcode_type_radio,
 
+            "excellon_exp_units": self.excellon_defaults_form.excellon_exp_group.excellon_units_radio,
+            "excellon_exp_format": self.excellon_defaults_form.excellon_exp_group.format_radio,
+            "excellon_exp_integer": self.excellon_defaults_form.excellon_exp_group.format_whole_entry,
+            "excellon_exp_decimals": self.excellon_defaults_form.excellon_exp_group.format_dec_entry,
+            "excellon_exp_zeros": self.excellon_defaults_form.excellon_exp_group.zeros_radio,
+
             "geometry_plot": self.geometry_defaults_form.geometry_gen_group.plot_cb,
             "geometry_cnctooldia": self.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
             "geometry_circle_steps": self.geometry_defaults_form.geometry_gen_group.circle_steps_entry,
+            "geometry_segx": self.geometry_defaults_form.geometry_gen_group.segx_entry,
+            "geometry_segy": self.geometry_defaults_form.geometry_gen_group.segy_entry,
+            "geometry_feedrate_rapid": self.geometry_defaults_form.geometry_gen_group.cncfeedrate_rapid_entry,
+            "geometry_feedrate_probe": self.geometry_defaults_form.geometry_gen_group.feedrate_probe_entry,
+            "geometry_z_pdepth": self.geometry_defaults_form.geometry_gen_group.pdepth_entry,
+            "geometry_f_plunge": self.geometry_defaults_form.geometry_gen_group.fplunge_cb,
+            "geometry_toolchangexy": self.geometry_defaults_form.geometry_gen_group.toolchangexy_entry,
+            "geometry_startz": self.geometry_defaults_form.geometry_gen_group.gstartz_entry,
+            "geometry_endz": self.geometry_defaults_form.geometry_gen_group.gendz_entry,
+            "geometry_extracut": self.geometry_defaults_form.geometry_gen_group.extracut_cb,
 
-            "geometry_segx": self.geometry_defaults_form.geometry_opt_group.segx_entry,
-            "geometry_segy": self.geometry_defaults_form.geometry_opt_group.segy_entry,
             "geometry_cutz": self.geometry_defaults_form.geometry_opt_group.cutz_entry,
             "geometry_travelz": self.geometry_defaults_form.geometry_opt_group.travelz_entry,
             "geometry_feedrate": self.geometry_defaults_form.geometry_opt_group.cncfeedrate_entry,
             "geometry_feedrate_z": self.geometry_defaults_form.geometry_opt_group.cncplunge_entry,
-            "geometry_feedrate_rapid": self.geometry_defaults_form.geometry_opt_group.cncfeedrate_rapid_entry,
-            "geometry_feedrate_probe": self.geometry_defaults_form.geometry_opt_group.feedrate_probe_entry,
             "geometry_spindlespeed": self.geometry_defaults_form.geometry_opt_group.cncspindlespeed_entry,
             "geometry_dwell": self.geometry_defaults_form.geometry_opt_group.dwell_cb,
             "geometry_dwelltime": self.geometry_defaults_form.geometry_opt_group.dwelltime_entry,
             "geometry_ppname_g": self.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb,
-            "geometry_z_pdepth": self.geometry_defaults_form.geometry_opt_group.pdepth_entry,
-            "geometry_f_plunge": self.geometry_defaults_form.geometry_opt_group.fplunge_cb,
             "geometry_toolchange": self.geometry_defaults_form.geometry_opt_group.toolchange_cb,
             "geometry_toolchangez": self.geometry_defaults_form.geometry_opt_group.toolchangez_entry,
-            "geometry_toolchangexy": self.geometry_defaults_form.geometry_opt_group.toolchangexy_entry,
-            "geometry_startz": self.geometry_defaults_form.geometry_opt_group.gstartz_entry,
-            "geometry_endz": self.geometry_defaults_form.geometry_opt_group.gendz_entry,
-            "geometry_multidepth": self.geometry_defaults_form.geometry_opt_group.multidepth_cb,
             "geometry_depthperpass": self.geometry_defaults_form.geometry_opt_group.depthperpass_entry,
-            "geometry_extracut": self.geometry_defaults_form.geometry_opt_group.extracut_cb,
+            "geometry_multidepth": self.geometry_defaults_form.geometry_opt_group.multidepth_cb,
 
             "cncjob_plot": self.cncjob_defaults_form.cncjob_gen_group.plot_cb,
             "cncjob_plot_kind": self.cncjob_defaults_form.cncjob_gen_group.cncplot_method_radio,
@@ -469,9 +484,16 @@ class App(QtCore.QObject):
             "units": "IN",
             "global_version_check": True,
             "global_send_stats": True,
+            "global_project_at_startup": False,
+            "global_project_autohide": True,
+
             "global_gridx": 1.0,
             "global_gridy": 1.0,
             "global_snap_max": 0.05,
+            "global_grid_context_menu": {
+                'in': [0.01, 0.02, 0.025, 0.05, 0.1],
+                'mm': [0.1, 0.2, 0.5, 1, 2.54]
+            },
 
             "global_plot_fill": '#BBF268BF',
             "global_plot_line": '#006E20BF',
@@ -556,13 +578,21 @@ class App(QtCore.QObject):
             "excellon_toolchangez": 1.0,
             "excellon_toolchangexy": "0.0, 0.0",
             "excellon_tooldia": 0.016,
+            "excellon_offset": 0.0,
             "excellon_slot_tooldia": 0.016,
             "excellon_startz": None,
             "excellon_endz": 2.0,
             "excellon_ppname_e": 'default',
             "excellon_z_pdepth": -0.02,
             "excellon_f_plunge": False,
+            "excellon_f_retract": False,
             "excellon_gcode_type": "drills",
+
+            "excellon_exp_units": 'INCH',
+            "excellon_exp_format": 'ndec',
+            "excellon_exp_integer": 2,
+            "excellon_exp_decimals": 4,
+            "excellon_exp_zeros": 'LZ',
 
             "geometry_plot": True,
             "geometry_segx": 0.0,
@@ -706,46 +736,46 @@ class App(QtCore.QObject):
             "excellon_zeros": self.excellon_options_form.excellon_gen_group.excellon_zeros_radio,
             "excellon_units": self.excellon_options_form.excellon_gen_group.excellon_units_radio,
             "excellon_optimization_type": self.excellon_options_form.excellon_gen_group.excellon_optimization_radio,
+            "excellon_feedrate_rapid": self.excellon_options_form.excellon_gen_group.feedrate_rapid_entry,
+            "excellon_toolchangexy": self.excellon_options_form.excellon_gen_group.toolchangexy_entry,
+            "excellon_f_plunge": self.excellon_options_form.excellon_gen_group.fplunge_cb,
+            "excellon_startz": self.excellon_options_form.excellon_gen_group.estartz_entry,
+            "excellon_endz": self.excellon_options_form.excellon_gen_group.eendz_entry,
 
             "excellon_drillz": self.excellon_options_form.excellon_opt_group.cutz_entry,
             "excellon_travelz": self.excellon_options_form.excellon_opt_group.travelz_entry,
             "excellon_feedrate": self.excellon_options_form.excellon_opt_group.feedrate_entry,
-            "excellon_feedrate_rapid": self.excellon_options_form.excellon_opt_group.feedrate_rapid_entry,
             "excellon_spindlespeed": self.excellon_options_form.excellon_opt_group.spindlespeed_entry,
             "excellon_dwell": self.excellon_options_form.excellon_opt_group.dwell_cb,
             "excellon_dwelltime": self.excellon_options_form.excellon_opt_group.dwelltime_entry,
             "excellon_toolchange": self.excellon_options_form.excellon_opt_group.toolchange_cb,
             "excellon_toolchangez": self.excellon_options_form.excellon_opt_group.toolchangez_entry,
-            "excellon_toolchangexy": self.excellon_options_form.excellon_opt_group.toolchangexy_entry,
             "excellon_tooldia": self.excellon_options_form.excellon_opt_group.tooldia_entry,
             "excellon_ppname_e": self.excellon_options_form.excellon_opt_group.pp_excellon_name_cb,
-            "excellon_f_plunge": self.excellon_options_form.excellon_opt_group.fplunge_cb,
-            "excellon_startz": self.excellon_options_form.excellon_opt_group.estartz_entry,
-            "excellon_endz": self.excellon_options_form.excellon_opt_group.eendz_entry,
 
             "geometry_plot": self.geometry_options_form.geometry_gen_group.plot_cb,
             "geometry_cnctooldia": self.geometry_options_form.geometry_gen_group.cnctooldia_entry,
+            "geometry_segx": self.geometry_options_form.geometry_gen_group.segx_entry,
+            "geometry_segy": self.geometry_options_form.geometry_gen_group.segy_entry,
+            "geometry_feedrate_rapid": self.geometry_options_form.geometry_gen_group.cncfeedrate_rapid_entry,
+            "geometry_f_plunge": self.geometry_options_form.geometry_gen_group.fplunge_cb,
+            "geometry_toolchangexy": self.geometry_options_form.geometry_gen_group.toolchangexy_entry,
+            "geometry_startz": self.geometry_options_form.geometry_gen_group.gstartz_entry,
+            "geometry_endz": self.geometry_options_form.geometry_gen_group.gendz_entry,
+            "geometry_extracut": self.geometry_options_form.geometry_gen_group.extracut_cb,
 
-            "geometry_segx": self.geometry_options_form.geometry_opt_group.segx_entry,
-            "geometry_segy": self.geometry_options_form.geometry_opt_group.segy_entry,
             "geometry_cutz": self.geometry_options_form.geometry_opt_group.cutz_entry,
             "geometry_travelz": self.geometry_options_form.geometry_opt_group.travelz_entry,
             "geometry_feedrate": self.geometry_options_form.geometry_opt_group.cncfeedrate_entry,
             "geometry_feedrate_z": self.geometry_options_form.geometry_opt_group.cncplunge_entry,
-            "geometry_feedrate_rapid": self.geometry_options_form.geometry_opt_group.cncfeedrate_rapid_entry,
             "geometry_spindlespeed": self.geometry_options_form.geometry_opt_group.cncspindlespeed_entry,
             "geometry_dwell": self.geometry_options_form.geometry_opt_group.dwell_cb,
             "geometry_dwelltime": self.geometry_options_form.geometry_opt_group.dwelltime_entry,
             "geometry_ppname_g": self.geometry_options_form.geometry_opt_group.pp_geometry_name_cb,
-            "geometry_f_plunge": self.geometry_options_form.geometry_opt_group.fplunge_cb,
             "geometry_toolchange": self.geometry_options_form.geometry_opt_group.toolchange_cb,
             "geometry_toolchangez": self.geometry_options_form.geometry_opt_group.toolchangez_entry,
-            "geometry_toolchangexy": self.geometry_options_form.geometry_opt_group.toolchangexy_entry,
-            "geometry_startz": self.geometry_options_form.geometry_opt_group.gstartz_entry,
-            "geometry_endz": self.geometry_options_form.geometry_opt_group.gendz_entry,
             "geometry_depthperpass": self.geometry_options_form.geometry_opt_group.depthperpass_entry,
             "geometry_multidepth": self.geometry_options_form.geometry_opt_group.multidepth_cb,
-            "geometry_extracut": self.geometry_options_form.geometry_opt_group.extracut_cb,
 
             "cncjob_plot": self.cncjob_options_form.cncjob_gen_group.plot_cb,
             "cncjob_tooldia": self.cncjob_options_form.cncjob_gen_group.tooldia_entry,
@@ -1034,7 +1064,10 @@ class App(QtCore.QObject):
 
         ## Standard signals
         # Menu
-        self.ui.menufilenew.triggered.connect(self.on_file_new_click)
+        self.ui.menufilenewproject.triggered.connect(self.on_file_new_click)
+        self.ui.menufilenewgeo.triggered.connect(self.new_geometry_object)
+        self.ui.menufilenewexc.triggered.connect(self.new_excellon_object)
+
         self.ui.menufileopengerber.triggered.connect(self.on_fileopengerber)
         self.ui.menufileopengerber_follow.triggered.connect(self.on_fileopengerber_follow)
         self.ui.menufileopenexcellon.triggered.connect(self.on_fileopenexcellon)
@@ -1050,8 +1083,8 @@ class App(QtCore.QObject):
 
         self.ui.menufileexportsvg.triggered.connect(self.on_file_exportsvg)
         self.ui.menufileexportpng.triggered.connect(self.on_file_exportpng)
-        self.ui.menufileexportexcellon.triggered.connect(lambda: self.on_file_exportexcellon(altium_format=None))
-        self.ui.menufileexportexcellon_altium.triggered.connect(lambda: self.on_file_exportexcellon(altium_format=True))
+        self.ui.menufileexportexcellon.triggered.connect(self.on_file_exportexcellon)
+
 
         self.ui.menufileexportdxf.triggered.connect(self.on_file_exportdxf)
 
@@ -1061,8 +1094,6 @@ class App(QtCore.QObject):
         self.ui.menufilesavedefaults.triggered.connect(self.on_file_savedefaults)
         self.ui.menufile_exit.triggered.connect(self.on_app_exit)
 
-        self.ui.menueditnew.triggered.connect(self.new_geometry_object)
-        self.ui.menueditnewexc.triggered.connect(self.new_excellon_object)
         self.ui.menueditedit.triggered.connect(self.object2editor)
         self.ui.menueditok.triggered.connect(self.editor2object)
 
@@ -1108,6 +1139,8 @@ class App(QtCore.QObject):
         self.ui.menuview_zoom_out.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
         self.ui.menuview_toggle_fscreen.triggered.connect(self.on_fullscreen)
         self.ui.menuview_toggle_parea.triggered.connect(self.on_toggle_plotarea)
+        self.ui.menuview_toggle_notebook.triggered.connect(self.on_toggle_notebook)
+
         self.ui.menuview_toggle_grid.triggered.connect(self.on_toggle_grid)
         self.ui.menuview_toggle_axis.triggered.connect(self.on_toggle_axis)
         self.ui.menuview_toggle_workspace.triggered.connect(self.on_workspace_menu)
@@ -1127,6 +1160,7 @@ class App(QtCore.QObject):
         self.ui.menuprojectedit.triggered.connect(self.object2editor)
 
         self.ui.menuprojectdelete.triggered.connect(self.on_delete)
+        self.ui.menuprojectsave.triggered.connect(self.on_project_context_save)
         self.ui.menuprojectproperties.triggered.connect(self.obj_properties)
 
         # Toolbar
@@ -1155,12 +1189,6 @@ class App(QtCore.QObject):
         self.ui.popmenu_new_geo.triggered.connect(self.new_geometry_object)
         self.ui.popmenu_new_exc.triggered.connect(self.new_excellon_object)
         self.ui.popmenu_new_prj.triggered.connect(self.on_file_new)
-
-        self.ui.gridmenu_1.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("0.05"))
-        self.ui.gridmenu_2.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("0.1"))
-        self.ui.gridmenu_3.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("0.2"))
-        self.ui.gridmenu_4.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("0.5"))
-        self.ui.gridmenu_5.triggered.connect(lambda: self.ui.grid_gap_x_entry.setText("1.0"))
 
         self.ui.draw_line.triggered.connect(self.geo_editor.draw_tool_path)
         self.ui.draw_rect.triggered.connect(self.geo_editor.draw_tool_rectangle)
@@ -1261,6 +1289,13 @@ class App(QtCore.QObject):
 
         # this is a flag to signal to other tools that the ui tooltab is locked and not accessible
         self.tool_tab_locked = False
+
+        # decide if to show or hide the Notebook side of the screen at startup
+        if self.defaults["global_project_at_startup"] is True:
+            self.ui.splitter.setSizes([1, 1])
+        else:
+            self.ui.splitter.setSizes([0, 1])
+
 
         ####################
         ### Other setups ###
@@ -1432,7 +1467,10 @@ class App(QtCore.QObject):
         # if the file contain an empty dictionary then save the factory defaults into the file
         if not factory_defaults:
             self.save_factory_defaults(silent=False)
+            # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
+            self.on_layout(layout='compact')
         factory_file.close()
+
         # and then make the  factory_defaults.FlatConfig file read_only os it can't be modified after creation.
         filename_factory = self.data_path + '/factory_defaults.FlatConfig'
         os.chmod(filename_factory, S_IREAD | S_IRGRP | S_IROTH)
@@ -1619,6 +1657,8 @@ class App(QtCore.QObject):
         self.ui.plot_tab_area.setTabText(0, "EDITOR Area")
         self.ui.plot_tab_area.protectTab(0)
         self.inform.emit("[WARNING_NOTCL]Editor is activated ...")
+
+        self.should_we_save = True
 
     def editor2object(self):
         """
@@ -2314,7 +2354,8 @@ class App(QtCore.QObject):
         # after adding the object to the collection always update the list of objects that are in the collection
         self.all_objects_list = self.collection.get_list()
 
-
+        # self.inform.emit('[selected] %s created & selected: %s' %
+        #                  (str(obj.kind).capitalize(), str(obj.options['name'])))
         if obj.kind == 'gerber':
             self.inform.emit('[selected]%s created/selected: <span style="color:%s;">%s</span>' %
                              (obj.kind.capitalize(), 'green', str(obj.options['name'])))
@@ -2365,6 +2406,7 @@ class App(QtCore.QObject):
         log.debug("Object changed, updating the bounding box data on self.options")
         # delete the old selection shape
         self.delete_selection_shape()
+        self.should_we_save = True
 
     def on_object_plotted(self, obj):
         self.on_zoom_fit(None)
@@ -2611,10 +2653,10 @@ class App(QtCore.QObject):
             self.inform.emit("Factory defaults saved.")
 
     def final_save(self):
-        if self.collection.get_list():
+        if self.should_we_save and self.collection.get_list():
             msgbox = QtWidgets.QMessageBox()
             # msgbox.setText("<B>Save changes ...</B>")
-            msgbox.setText("There are files/objects opened in FlatCAM. "
+            msgbox.setText("There are files/objects modified in FlatCAM. "
                            "\n"
                            "Do you want to Save the project?")
             msgbox.setWindowTitle("Save changes")
@@ -2692,6 +2734,8 @@ class App(QtCore.QObject):
                     v['data']['name'] = obj_name_single
             self.new_object("geometry", obj_name_single, initialize)
 
+        self.should_we_save = True
+
     def on_edit_join_exc(self):
         """
         Callback for Edit->Join Excellon. Joins the selected excellon objects into
@@ -2712,6 +2756,7 @@ class App(QtCore.QObject):
             FlatCAMExcellon.merge(objs, obj)
 
         self.new_object("excellon", 'Combo_Excellon', initialize)
+        self.should_we_save = True
 
     def on_edit_join_grb(self):
         """
@@ -2733,6 +2778,7 @@ class App(QtCore.QObject):
             FlatCAMGerber.merge(objs, obj)
 
         self.new_object("gerber", 'Combo_Gerber', initialize)
+        self.should_we_save = True
 
     def on_convert_singlegeo_to_multigeo(self):
         self.report_usage("on_convert_singlegeo_to_multigeo()")
@@ -2754,6 +2800,8 @@ class App(QtCore.QObject):
             obj.solid_geometry = [obj.solid_geometry]
         obj.solid_geometry[:] = []
         obj.plot()
+
+        self.should_we_save = True
 
         self.inform.emit("[success] A Geometry object was converted to MultiGeo type.")
 
@@ -2779,67 +2827,9 @@ class App(QtCore.QObject):
         obj.solid_geometry = deepcopy(total_solid_geometry)
         obj.plot()
 
+        self.should_we_save = True
+
         self.inform.emit("[success] A Geometry object was converted to SingleGeo type.")
-
-    def on_skey_tool_add(self):
-        ## Current application units in Upper Case
-        self.units = self.general_options_form.general_app_group.units_radio.get_value().upper()
-
-        # work only if the notebook tab on focus is the Selected_Tab and only if the object is Geometry
-        if self.ui.notebook.currentWidget().objectName() == 'selected_tab':
-            if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
-                tool_add_popup = FCInputDialog(title="New Tool ...",
-                                               text='Enter a Tool Diameter:',
-                                               min=0.0000, max=99.9999, decimals=4)
-                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
-
-                val, ok = tool_add_popup.get_value()
-                if ok:
-                    if float(val) == 0:
-                        self.inform.emit(
-                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
-                        return
-                    self.collection.get_active().on_tool_add(dia=float(val))
-                else:
-                    self.inform.emit(
-                        "[WARNING_NOTCL] Adding Tool cancelled ...")
-
-        # work only if the notebook tab on focus is the Tools_Tab
-        if self.ui.notebook.currentWidget().objectName() == 'tool_tab':
-            # and only if the tool is NCC Tool
-            if self.ui.tool_scroll_area.widget().objectName() == self.ncclear_tool.toolName:
-                tool_add_popup = FCInputDialog(title="New Tool ...",
-                                               text='Enter a Tool Diameter:',
-                                               min=0.0000, max=99.9999, decimals=4)
-                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
-
-                val, ok = tool_add_popup.get_value()
-                if ok:
-                    if float(val) == 0:
-                        self.inform.emit(
-                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
-                        return
-                    self.ncclear_tool.on_tool_add(dia=float(val))
-                else:
-                    self.inform.emit(
-                        "[WARNING_NOTCL] Adding Tool cancelled ...")
-            # and only if the tool is Paint Area Tool
-            if self.ui.tool_scroll_area.widget().objectName() == self.paint_tool.toolName:
-                tool_add_popup = FCInputDialog(title="New Tool ...",
-                                               text='Enter a Tool Diameter:',
-                                               min=0.0000, max=99.9999, decimals=4)
-                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
-
-                val, ok = tool_add_popup.get_value()
-                if ok:
-                    if float(val) == 0:
-                        self.inform.emit(
-                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
-                        return
-                    self.paint_tool.on_tool_add(dia=float(val))
-                else:
-                    self.inform.emit(
-                        "[WARNING_NOTCL] Adding Tool cancelled ...")
 
     def on_options_dict_change(self, field):
         self.options_write_form_field(field)
@@ -2921,6 +2911,8 @@ class App(QtCore.QObject):
             self.options_read_form()
             scale_options(factor)
             self.options_write_form()
+
+            self.should_we_save = True
 
             # change this only if the workspace is active
             if self.defaults['global_workspace'] is True:
@@ -3371,10 +3363,13 @@ class App(QtCore.QObject):
             self.general_defaults_form.general_gui_group.workspace_cb.setChecked(True)
         self.on_workspace()
 
-    def on_layout(self):
+    def on_layout(self, layout=None):
         self.report_usage("on_layout()")
 
-        current_layout= self.general_defaults_form.general_gui_group.layout_combo.get_value().lower()
+        if layout is None:
+            current_layout= self.general_defaults_form.general_gui_group.layout_combo.get_value().lower()
+        else:
+            current_layout = layout
 
         settings = QSettings("Open Source", "FlatCAM")
         settings.setValue('layout', current_layout)
@@ -3584,6 +3579,100 @@ class App(QtCore.QObject):
             # Mark end of undo block
             cursor.endEditBlock()
 
+    def on_tool_add_keypress(self):
+        ## Current application units in Upper Case
+        self.units = self.general_options_form.general_app_group.units_radio.get_value().upper()
+
+        notebook_widget_name = self.ui.notebook.currentWidget().objectName()
+
+        # work only if the notebook tab on focus is the Selected_Tab and only if the object is Geometry
+        if notebook_widget_name == 'selected_tab':
+            if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
+                tool_add_popup = FCInputDialog(title="New Tool ...",
+                                               text='Enter a Tool Diameter:',
+                                               min=0.0000, max=99.9999, decimals=4)
+                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+                val, ok = tool_add_popup.get_value()
+                if ok:
+                    if float(val) == 0:
+                        self.inform.emit(
+                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
+                        return
+                    self.collection.get_active().on_tool_add(dia=float(val))
+                else:
+                    self.inform.emit(
+                        "[WARNING_NOTCL] Adding Tool cancelled ...")
+
+        # work only if the notebook tab on focus is the Tools_Tab
+        if notebook_widget_name == 'tool_tab':
+            tool_widget = self.ui.tool_scroll_area.widget().objectName()
+
+            # and only if the tool is NCC Tool
+            if tool_widget == self.ncclear_tool.toolName:
+                tool_add_popup = FCInputDialog(title="New Tool ...",
+                                               text='Enter a Tool Diameter:',
+                                               min=0.0000, max=99.9999, decimals=4)
+                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+                val, ok = tool_add_popup.get_value()
+                if ok:
+                    if float(val) == 0:
+                        self.inform.emit(
+                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
+                        return
+                    self.ncclear_tool.on_tool_add(dia=float(val))
+                else:
+                    self.inform.emit(
+                        "[WARNING_NOTCL] Adding Tool cancelled ...")
+            # and only if the tool is Paint Area Tool
+            elif tool_widget == self.paint_tool.toolName:
+                tool_add_popup = FCInputDialog(title="New Tool ...",
+                                               text='Enter a Tool Diameter:',
+                                               min=0.0000, max=99.9999, decimals=4)
+                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+                val, ok = tool_add_popup.get_value()
+                if ok:
+                    if float(val) == 0:
+                        self.inform.emit(
+                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
+                        return
+                    self.paint_tool.on_tool_add(dia=float(val))
+                else:
+                    self.inform.emit(
+                        "[WARNING_NOTCL] Adding Tool cancelled ...")
+
+    # It's meant to delete tools in tool tables via a 'Delete' shortcut key but only if certain conditions are met
+    # See description bellow.
+    def on_delete_keypress(self):
+        notebook_widget_name = self.ui.notebook.currentWidget().objectName()
+
+        # work only if the notebook tab on focus is the Selected_Tab and only if the object is Geometry
+        if notebook_widget_name == 'selected_tab':
+            if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
+                self.collection.get_active().on_tool_delete()
+
+        # work only if the notebook tab on focus is the Tools_Tab
+        elif notebook_widget_name == 'tool_tab':
+            tool_widget = self.ui.tool_scroll_area.widget().objectName()
+
+            # and only if the tool is NCC Tool
+            if tool_widget == self.ncclear_tool.toolName:
+                self.ncclear_tool.on_tool_delete()
+
+            # and only if the tool is Paint Tool
+            elif tool_widget == self.paint_tool.toolName:
+                self.paint_tool.on_tool_delete()
+
+        else:
+            self.on_delete()
+
+    # It's meant to delete selected objects. It work also activated by a shortcut key 'Delete' same as above so in
+    # some screens you have to be careful where you hover with your mouse.
+    # Hovering over Selected tab, if the selected tab is a Geometry it will delete tools in tool table. But even if
+    # there is a Selected tab in focus with a Geometry inside, if you hover over canvas it will delete an object.
+    # Complicated, I know :)
     def on_delete(self):
         """
         Delete the currently selected FlatCAMObjs.
@@ -3633,7 +3722,9 @@ class App(QtCore.QObject):
         """
         self.report_usage("on_jump_to()")
 
-        dia_box = Dialog_box(title="Jump to Coordinates", label="Enter the coordinates in format X,Y:")
+        dia_box = Dialog_box(title="Jump to ...",
+                             label="Enter the coordinates in format X,Y:",
+                             icon=QtGui.QIcon('share/jump_to16.png'))
 
         if dia_box.ok is True:
             try:
@@ -3779,9 +3870,10 @@ class App(QtCore.QObject):
                 obj.offset((x,y))
                 self.object_changed.emit(obj)
                 # obj.plot()
-            self.plot_all()
+            self.plot_all(zoom=False)
             self.inform.emit('[success] Origin set ...')
             self.plotcanvas.vis_disconnect('mouse_press', self.on_set_zero_click)
+            self.should_we_save = True
 
     def on_selectall(self):
         self.report_usage("on_selectall()")
@@ -3842,6 +3934,7 @@ class App(QtCore.QObject):
                     obj.mirror('X', [px, py])
                     obj.plot()
                     self.object_changed.emit(obj)
+
             except Exception as e:
                 self.inform.emit("[ERROR_NOTCL] Due of %s, Flip action was not executed." % str(e))
                 return
@@ -3881,6 +3974,7 @@ class App(QtCore.QObject):
                     obj.mirror('Y', [px, py])
                     obj.plot()
                     self.object_changed.emit(obj)
+
             except Exception as e:
                 self.inform.emit("[ERROR_NOTCL] Due of %s, Flip action was not executed." % str(e))
                 return
@@ -4050,224 +4144,80 @@ class App(QtCore.QObject):
         else:
             return 0
 
-    # def on_key_over_plot(self, event):
-    #     """
-    #     Callback for the key pressed event when the canvas is focused. Keyboard
-    #     shortcuts are handled here. So far, these are the shortcuts:
-    #
-    #     ==========  ============================================
-    #     Key         Action
-    #     ==========  ============================================
-    #     '1'         Zoom-fit. Fits the axes limits to the data.
-    #     '2'         Zoom-out.
-    #     '3'         Zoom-in.
-    #     'ctrl+m'         Toggle on-off the measuring tool.
-    #     ==========  ============================================
-    #
-    #     :param event: Ignored.
-    #     :return: None
-    #     """
-    #     print(type(event.key), event.key)
-    #     self.key_modifiers = QtWidgets.QApplication.keyboardModifiers()
-    #
-    #     if self.key_modifiers == QtCore.Qt.ControlModifier:
-    #         if event.key == 'A':
-    #             self.on_selectall()
-    #
-    #         if event.key == 'C':
-    #             self.on_copy_object()
-    #
-    #         if event.key == 'E':
-    #             self.on_fileopenexcellon()
-    #
-    #         if event.key == 'G':
-    #             self.on_fileopengerber()
-    #
-    #         if event.key == 'N':
-    #             self.on_file_new_click()
-    #
-    #         if event.key == 'M':
-    #             self.measurement_tool.run()
-    #
-    #         if event.key == 'O':
-    #             self.on_file_openproject()
-    #
-    #         if event.key == 'S':
-    #             self.on_file_saveproject()
-    #
-    #         # Toggle Plot Area
-    #         if event.key == 'F10':
-    #             self.on_toggle_plotarea()
-    #
-    #         return
-    #     elif self.key_modifiers == QtCore.Qt.AltModifier:
-    #         # place holder for further shortcut key
-    #
-    #         if event.key == '1':
-    #             self.enable_all_plots()
-    #
-    #         if event.key == '2':
-    #             self.disable_all_plots()
-    #
-    #         if event.key == '3':
-    #             self.disable_other_plots()
-    #
-    #         if event.key == 'C':
-    #             self.calculator_tool.run()
-    #
-    #         if event.key == 'D':
-    #             self.dblsidedtool.run()
-    #
-    #         if event.key == 'L':
-    #             self.film_tool.run()
-    #
-    #         if event.key == 'N':
-    #             self.ncclear_tool.run()
-    #
-    #         if event.key == 'P':
-    #             self.paint_tool.run()
-    #
-    #         if event.key == 'R':
-    #             self.transform_tool.run()
-    #
-    #         if event.key == 'U':
-    #             self.cutout_tool.run()
-    #
-    #         if event.key == 'Z':
-    #             self.panelize_tool.run()
-    #
-    #         if event.key == 'F10':
-    #             self.on_fullscreen()
-    #
-    #         return
-    #     elif self.key_modifiers == QtCore.Qt.ShiftModifier:
-    #         # place holder for further shortcut key
-    #
-    #         if event.key == 'C':
-    #             self.on_copy_name()
-    #
-    #         # Toggle axis
-    #         if event.key == 'G':
-    #             self.on_toggle_axis()
-    #
-    #         # Open Preferences Window
-    #         if event.key == 'P':
-    #             self.on_preferences()
-    #
-    #         # Rotate Object by 90 degree CCW
-    #         if event.key == 'R':
-    #             self.on_rotate(silent=True, preset=-90)
-    #
-    #         # Run a Script
-    #         if event.key == 'S':
-    #             self.on_filerunscript()
-    #
-    #         # Toggle Workspace
-    #         if event.key == 'W':
-    #             self.on_workspace_menu()
-    #
-    #         # Skew on X axis
-    #         if event.key == 'X':
-    #             self.on_skewx()
-    #
-    #         # Skew on Y axis
-    #         if event.key == 'Y':
-    #             self.on_skewy()
-    #
-    #     else:
-    #         if event.key == 'F1':
-    #             webbrowser.open(self.manual_url)
-    #             return
-    #
-    #         if event.key == 'F2':
-    #             webbrowser.open(self.video_url)
-    #             return
-    #
-    #         if event.key == self.defaults['zoom_out_key']:  # '-'
-    #             self.plotcanvas.zoom(1 / self.defaults['zoom_ratio'], self.mouse)
-    #             return
-    #
-    #         if event.key == self.defaults['zoom_in_key']:  # '='
-    #             self.plotcanvas.zoom(self.defaults['zoom_ratio'], self.mouse)
-    #             return
-    #
-    #         if event.key == 'Delete':
-    #             self.on_delete()
-    #             return
-    #
-    #         if event.key == 'Space':
-    #             if self.collection.get_active() is not None:
-    #                 self.collection.get_active().ui.plot_cb.toggle()
-    #                 self.delete_selection_shape()
-    #
-    #         if event.key == '1':
-    #             self.on_select_tab('project')
-    #
-    #         if event.key == '2':
-    #             self.on_select_tab('selected')
-    #
-    #         if event.key == '3':
-    #             self.on_select_tab('tool')
-    #
-    #         if event.key == 'E':
-    #             self.object2editor()
-    #
-    #         if event.key == self.defaults['grid_toggle_key']:  # G
-    #             self.ui.grid_snap_btn.trigger()
-    #
-    #         if event.key == 'J':
-    #             self.on_jump_to()
-    #
-    #         if event.key == 'L':
-    #             self.new_excellon_object()
-    #
-    #         if event.key == 'M':
-    #             self.move_tool.toggle()
-    #             return
-    #
-    #         if event.key == 'N':
-    #             self.on_new_geometry()
-    #
-    #         if event.key == 'O':
-    #             self.on_set_origin()
-    #
-    #         if event.key == 'P':
-    #             self.properties_tool.run()
-    #
-    #         if event.key == 'Q':
-    #             self.on_toggle_units_click()
-    #
-    #         if event.key == 'R':
-    #             self.on_rotate(silent=True, preset=90)
-    #
-    #         if event.key == 'S':
-    #             self.on_toggle_shell()
-    #
-    #         if event.key == 'V':
-    #             self.on_zoom_fit(None)
-    #
-    #         if event.key == 'X':
-    #             self.on_flipx()
-    #
-    #         if event.key == 'Y':
-    #             self.on_flipy()
-    #
-    #         if event.key == '`':
-    #             self.on_shortcut_list()
-    #
-    # def on_key_release_over_plot(self, event):
-    #     modifiers = QtWidgets.QApplication.keyboardModifiers()
-    #
-    #     if modifiers == QtCore.Qt.ControlModifier:
-    #         return
-    #     elif modifiers == QtCore.Qt.AltModifier:
-    #         # place holder for further shortcut key
-    #         return
-    #     elif modifiers == QtCore.Qt.ShiftModifier:
-    #         # place holder for further shortcut key
-    #         return
-    #     else:
-    #         return
+    def populate_cmenu_grids(self):
+        units = self.general_options_form.general_app_group.units_radio.get_value().lower()
+
+        self.ui.cmenu_gridmenu.clear()
+        sorted_list = sorted(self.defaults["global_grid_context_menu"][str(units)])
+
+        for grid in sorted_list:
+            action = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/grid32_menu.png'), "%s" % str(grid))
+            action.triggered.connect(self.set_grid)
+
+        self.ui.cmenu_gridmenu.addSeparator()
+        grid_add = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/plus32.png'), "Add")
+        grid_add.triggered.connect(self.on_grid_add)
+        grid_delete = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/delete32.png'), "Delete")
+        grid_delete.triggered.connect(self.on_grid_delete)
+
+    def set_grid(self):
+        self.ui.grid_gap_x_entry.setText(self.sender().text())
+        self.ui.grid_gap_y_entry.setText(self.sender().text())
+
+    def on_grid_add(self):
+        ## Current application units in lower Case
+        units = self.general_options_form.general_app_group.units_radio.get_value().lower()
+
+        grid_add_popup = FCInputDialog(title="New Grid ...",
+                                       text='Enter a Grid VAlue:',
+                                       min=0.0000, max=99.9999, decimals=4)
+        grid_add_popup.setWindowIcon(QtGui.QIcon('share/plus32.png'))
+
+        val, ok = grid_add_popup.get_value()
+        if ok:
+            if float(val) == 0:
+                self.inform.emit(
+                    "[WARNING_NOTCL] Please enter a grid value with non-zero value, in Float format.")
+                return
+            else:
+                if val not in self.defaults["global_grid_context_menu"][str(units)]:
+                    self.defaults["global_grid_context_menu"][str(units)].append(val)
+                    self.inform.emit(
+                        "[success] New Grid added ...")
+                else:
+                    self.inform.emit(
+                        "[WARNING_NOTCL] Grid already exists ...")
+        else:
+            self.inform.emit(
+                "[WARNING_NOTCL] Adding New Grid cancelled ...")
+
+    def on_grid_delete(self):
+        ## Current application units in lower Case
+        units = self.general_options_form.general_app_group.units_radio.get_value().lower()
+
+        grid_del_popup = FCInputDialog(title="Delete Grid ...",
+                                       text='Enter a Grid Value:',
+                                       min=0.0000, max=99.9999, decimals=4)
+        grid_del_popup.setWindowIcon(QtGui.QIcon('share/delete32.png'))
+
+        val, ok = grid_del_popup.get_value()
+        if ok:
+            if float(val) == 0:
+                self.inform.emit(
+                    "[WARNING_NOTCL] Please enter a grid value with non-zero value, in Float format.")
+                return
+            else:
+                try:
+                    self.defaults["global_grid_context_menu"][str(units)].remove(val)
+                except ValueError:
+                    self.inform.emit(
+                        "[ERROR_NOTCL] Grid Value does not exist ...")
+                    return
+                self.inform.emit(
+                    "[success] Grid Value deleted ...")
+        else:
+            self.inform.emit(
+                "[WARNING_NOTCL] Delete Grid value cancelled ...")
 
     def on_shortcut_list(self):
         self.report_usage("on_shortcut_list()")
@@ -4469,6 +4419,7 @@ class App(QtCore.QObject):
                     self.panning_action = False
                 else:
                     self.cursor = QtGui.QCursor()
+                    self.populate_cmenu_grids()
                     self.ui.popMenu.popup(self.cursor.pos())
         except Exception as e:
             log.warning("Error: %s" % str(e))
@@ -4554,6 +4505,8 @@ class App(QtCore.QObject):
                         curr_sel_obj = self.collection.get_active()
                         self.draw_selection_shape(curr_sel_obj)
 
+                        # self.inform.emit('[selected] %s: %s selected' %
+                        #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
                         if curr_sel_obj.kind == 'gerber':
                             self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
                                              ('green', str(curr_sel_obj.options['name'])))
@@ -4575,6 +4528,8 @@ class App(QtCore.QObject):
                         curr_sel_obj = self.collection.get_active()
                         self.draw_selection_shape(curr_sel_obj)
 
+                        # self.inform.emit('[selected] %s: %s selected' %
+                        #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
                         if curr_sel_obj.kind == 'gerber':
                             self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
                                              ('green', str(curr_sel_obj.options['name'])))
@@ -4609,7 +4564,8 @@ class App(QtCore.QObject):
                     else:
                         name_sel_obj_idx = objects_under_the_click_list.index(name_sel_obj)
                         self.collection.set_all_inactive()
-                        self.collection.set_active(objects_under_the_click_list[(name_sel_obj_idx + 1) % len(objects_under_the_click_list)])
+                        self.collection.set_active(objects_under_the_click_list[(name_sel_obj_idx + 1) %
+                                                                                len(objects_under_the_click_list)])
 
                     curr_sel_obj = self.collection.get_active()
                     # delete the possible selection box around a possible selected object
@@ -4617,6 +4573,8 @@ class App(QtCore.QObject):
                     # create the selection box around the selected object
                     self.draw_selection_shape(curr_sel_obj)
 
+                    # self.inform.emit('[selected] %s: %s selected' %
+                    #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
                     if curr_sel_obj.kind == 'gerber':
                         self.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
                                          ('green', str(curr_sel_obj.options['name'])))
@@ -4694,7 +4652,7 @@ class App(QtCore.QObject):
                                       layer=0, tolerance=None)
 
     def on_file_new_click(self):
-        if self.collection.get_list():
+        if self.collection.get_list() and self.should_we_save:
             msgbox = QtWidgets.QMessageBox()
             # msgbox.setText("<B>Save changes ...</B>")
             msgbox.setText("There are files/objects opened in FlatCAM.\n"
@@ -4761,6 +4719,15 @@ class App(QtCore.QObject):
         self.report_usage("obj_properties()")
 
         self.properties_tool.run()
+
+    def on_project_context_save(self):
+        obj = self.collection.get_active()
+        if type(obj) == FlatCAMGeometry:
+            self.on_file_exportdxf()
+        elif type(obj) == FlatCAMExcellon:
+            self.on_file_exportexcellon()
+        elif type(obj) == FlatCAMCNCjob:
+            obj.on_exportgcode_button_click()
 
     def obj_move(self):
         self.report_usage("obj_move()")
@@ -5008,7 +4975,7 @@ class App(QtCore.QObject):
             write_png(filename, data)
             self.file_saved.emit("png", filename)
 
-    def on_file_exportexcellon(self, altium_format=None):
+    def on_file_exportexcellon(self):
         """
         Callback for menu item File->Export SVG.
 
@@ -5019,28 +4986,17 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit("[WARNING_NOTCL] No object selected.")
-            msg = "Please Select an Excellon object to export"
-            msgbox = QtWidgets.QMessageBox()
-            msgbox.setInformativeText(msg)
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-            msgbox.exec_()
+            self.inform.emit("[WARNING_NOTCL] No object selected. Please Select an Excellon object to export.")
             return
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMExcellon):
-            msg = "[WARNING_NOTCL] Only Excellon objects can be used."
-            msgbox = QtWidgets.QMessageBox()
-            msgbox.setInformativeText(msg)
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-            msgbox.exec_()
+            self.inform.emit("[ERROR_NOTCL] Failed. Only Excellon objects can be saved as Excellon files...")
             return
 
         name = self.collection.get_active().options["name"]
 
-        filter = "Excellon File (*.drl);;Excellon File (*.txt);;All Files (*.*)"
+        filter = "Excellon File (*.DRL);;Excellon File (*.TXT);;All Files (*.*)"
         try:
             filename, _ = QtWidgets.QFileDialog.getSaveFileName(
                 caption="Export Excellon",
@@ -5055,12 +5011,8 @@ class App(QtCore.QObject):
             self.inform.emit("[WARNING_NOTCL]Export Excellon cancelled.")
             return
         else:
-            if altium_format is None:
-                self.export_excellon(name, filename)
-                self.file_saved.emit("Excellon", filename)
-            else:
-                self.export_excellon(name, filename, altium_format=True)
-                self.file_saved.emit("Excellon", filename)
+            self.export_excellon(name, filename)
+            self.file_saved.emit("Excellon", filename)
 
     def on_file_exportdxf(self):
         """
@@ -5226,6 +5178,8 @@ class App(QtCore.QObject):
 
             self.file_saved.emit("project", self.project_filename)
 
+        self.should_we_save = False
+
     def on_file_saveprojectas(self, make_copy=False, thread=True):
         """
         Callback for menu item File->Save Project As... Opens a file
@@ -5259,7 +5213,7 @@ class App(QtCore.QObject):
         except IOError:
             exists = False
 
-        msg = "File exists. Overwrite?"
+        msg = "Project file exists. Overwrite?"
         if exists:
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
@@ -5281,6 +5235,8 @@ class App(QtCore.QObject):
         self.file_saved.emit("project", filename)
         if not make_copy:
             self.project_filename = filename
+
+        self.should_we_save = False
 
     def export_svg(self, obj_name, filename, scale_factor=0.00):
         """
@@ -5571,7 +5527,7 @@ class App(QtCore.QObject):
         else:
             make_black_film()
 
-    def export_excellon(self, obj_name, filename, altium_format=None, use_thread=True):
+    def export_excellon(self, obj_name, filename, use_thread=True):
         """
         Exports a Geometry Object to an Excellon file.
 
@@ -5585,7 +5541,9 @@ class App(QtCore.QObject):
 
         self.log.debug("export_excellon()")
 
-        format_exc = ';FILE_FORMAT=2:4\n'
+        format_exc = ';FILE_FORMAT=%d:%d\n' % (self.defaults["excellon_exp_integer"],
+                                               self.defaults["excellon_exp_decimals"]
+                                               )
         units = ''
 
         try:
@@ -5595,12 +5553,17 @@ class App(QtCore.QObject):
             return "Could not retrieve object: %s" % obj_name
 
         # updated units
-        units = self.general_options_form.general_app_group.units_radio.get_value().upper()
-        if units == 'IN' or units == 'INCH':
-            units = 'INCH'
+        eunits = self.defaults["excellon_exp_units"]
+        ewhole = self.defaults["excellon_exp_integer"]
+        efract = self.defaults["excellon_exp_decimals"]
+        ezeros = self.defaults["excellon_exp_zeros"]
+        eformat = self.defaults[ "excellon_exp_format"]
 
-        elif units == 'MM' or units == 'METRIC':
-            units ='METRIC'
+        fc_units = self.general_options_form.general_app_group.units_radio.get_value().upper()
+        if fc_units == 'MM':
+            factor = 1 if eunits == 'METRIC' else 0.03937
+        else:
+            factor = 25.4 if eunits == 'METRIC' else 1
 
         def make_excellon():
             try:
@@ -5608,32 +5571,55 @@ class App(QtCore.QObject):
 
                 header = 'M48\n'
                 header += ';EXCELLON GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s\n' % \
-                          (str(self.app.version), str(self.app.version_date))
+                          (str(self.version), str(self.version_date))
 
                 header += ';Filename: %s' % str(obj_name) + '\n'
                 header += ';Created on : %s' % time_str + '\n'
 
-                if altium_format == None:
-                    has_slots, excellon_code = obj.export_excellon()
-                    header += units + '\n'
+                if eformat == 'dec':
+                    has_slots, excellon_code = obj.export_excellon(ewhole, efract, factor=factor)
+                    header += eunits + '\n'
 
                     for tool in obj.tools:
-                        if units == 'METRIC':
-                            header += 'T' + str(tool) + 'F00S00' + 'C' + '%.2f' % float(obj.tools[tool]['C']) + '\n'
+                        if eunits == 'METRIC':
+                            header += "T{tool}F00S00C{:.{dec}f}\n".format(float(obj.tools[tool]['C']) * factor,
+                                                                          tool=str(tool),
+                                                                          dec=2)
                         else:
-                            header += 'T' + str(tool) + 'F00S00' + 'C' + '%.4f' % float(obj.tools[tool]['C']) + '\n'
+                            header += "T{tool}F00S00C{:.{dec}f}\n".format(float(obj.tools[tool]['C']) * factor,
+                                                                          tool=str(tool),
+                                                                          dec=4)
                 else:
-                    has_slots, excellon_code = obj.export_excellon_altium()
-                    header += 'INCH,LZ\n'
-                    header += format_exc
+                    if ezeros == 'LZ':
+                        has_slots, excellon_code = obj.export_excellon(ewhole, efract,
+                                                                       form='ndec', e_zeros='LZ', factor=factor)
+                        header += '%s,%s\n' % (eunits, 'LZ')
+                        header += format_exc
 
-                    for tool in obj.tools:
-                        if units == 'METRIC':
-                            header += 'T' + str(tool) + 'F00S00' + 'C' + \
-                                      '%.4f' % (float(obj.tools[tool]['C']) / 25.4) + '\n'
-                        else:
-                            header += 'T' + str(tool) + 'F00S00' + 'C' + '%.4f' % float(obj.tools[tool]['C']) + '\n'
+                        for tool in obj.tools:
+                            if eunits == 'METRIC':
+                                header += "T{tool}F00S00C{:.{dec}f}\n".format(float(obj.tools[tool]['C']) * factor,
+                                                                              tool=str(tool),
+                                                                              dec=2)
+                            else:
+                                header += "T{tool}F00S00C{:.{dec}f}\n".format(float(obj.tools[tool]['C']) * factor,
+                                                                              tool=str(tool),
+                                                                              dec=4)
+                    else:
+                        has_slots, excellon_code = obj.export_excellon(ewhole, efract,
+                                                                       form='ndec', e_zeros='TZ', factor=factor)
+                        header += '%s,%s\n' % (eunits, 'TZ')
+                        header += format_exc
 
+                        for tool in obj.tools:
+                            if eunits == 'METRIC':
+                                header += "T{tool}F00S00C{:.{dec}f}\n".format(float(obj.tools[tool]['C']) * factor,
+                                                                              tool=str(tool),
+                                                                              dec=2)
+                            else:
+                                header += "T{tool}F00S00C{:.{dec}f}\n".format(float(obj.tools[tool]['C']) * factor,
+                                                                              tool=str(tool),
+                                                                              dec=4)
                 header += '%\n'
                 footer = 'M30\n'
 
@@ -5646,7 +5632,8 @@ class App(QtCore.QObject):
 
                 self.file_saved.emit("Excellon", filename)
                 self.inform.emit("[success] Excellon file exported to " + filename)
-            except:
+            except Exception as e:
+                log.debug("App.export_excellon.make_excellon() --> %s" % str(e))
                 return 'fail'
 
         if use_thread is True:
@@ -5968,9 +5955,14 @@ class App(QtCore.QObject):
                 log.debug("Could not create geometry for Excellon object.")
                 return "fail"
 
-            if excellon_obj.is_empty():
-                app_obj.inform.emit("[ERROR_NOTCL] No geometry found in file: " + filename)
-                return "fail"
+            # if excellon_obj.is_empty():
+            #     app_obj.inform.emit("[ERROR_NOTCL] No geometry found in file: " + filename)
+            #     return "fail"
+            for tool in excellon_obj.tools:
+                if excellon_obj.tools[tool]['solid_geometry']:
+                    return
+            app_obj.inform.emit("[ERROR_NOTCL] No geometry found in file: " + filename)
+            return "fail"
 
         with self.proc_container.new("Opening Excellon."):
 
@@ -6110,8 +6102,11 @@ class App(QtCore.QObject):
             App.log.debug(obj['kind'] + ":  " + obj['options']['name'])
             self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=True)
 
-        # self.plot_all()
+        self.plot_all()
         self.inform.emit("[success] Project loaded from: " + filename)
+
+        self.should_we_save = False
+
         App.log.debug("Project loaded")
 
     def propagate_defaults(self, silent=False):
@@ -6168,7 +6163,7 @@ class App(QtCore.QObject):
         except KeyError:
             pass
 
-    def plot_all(self):
+    def plot_all(self, zoom=True):
         """
         Re-generates all plots from all objects.
 
@@ -6180,7 +6175,8 @@ class App(QtCore.QObject):
             def worker_task(obj):
                 with self.proc_container.new("Plotting"):
                     obj.plot()
-                    self.object_plotted.emit(obj)
+                    if zoom:
+                        self.object_plotted.emit(obj)
 
             # Send to worker
             self.worker_task.emit({'fcn': worker_task, 'params': [obj]})
@@ -6766,8 +6762,10 @@ The normal flow when working in FlatCAM is the following:</span></p>
     def generate_cnc_job(self, objects):
         self.report_usage("generate_cnc_job()")
 
+        # for obj in objects:
+        #     obj.generatecncjob()
         for obj in objects:
-            obj.generatecncjob()
+            obj.on_generatecnc_button_click()
 
     def save_project(self, filename):
         """
@@ -6806,7 +6804,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
             json.dump(d, f, default=to_dict, indent=2, sort_keys=True)
             f.close()
 
-        # verification of the saved project
+            # verification of the saved project
             # Open and parse
             try:
                 saved_f = open(filename, 'r')

@@ -2079,9 +2079,15 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 log.debug("FlatCAMGeoEditor.__init__().entry2option() --> %s" % str(e))
                 return
 
+        def gridx_changed(goption, gentry):
+            entry2option(option=goption, entry=gentry)
+            # if the grid link is checked copy the value in the GridX field to GridY
+            if self.app.ui.grid_gap_link_cb.isChecked():
+                self.app.ui.grid_gap_y_entry.set_value(self.app.ui.grid_gap_x_entry.get_value())
+
         self.app.ui.grid_gap_x_entry.setValidator(QtGui.QDoubleValidator())
         self.app.ui.grid_gap_x_entry.textChanged.connect(
-            lambda: entry2option("global_gridx", self.app.ui.grid_gap_x_entry))
+            lambda: gridx_changed("global_gridx", self.app.ui.grid_gap_x_entry))
 
         self.app.ui.grid_gap_y_entry.setValidator(QtGui.QDoubleValidator())
         self.app.ui.grid_gap_y_entry.textChanged.connect(
@@ -3532,6 +3538,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.new_drills = []
         self.new_tools = {}
         self.new_slots = {}
+        self.new_tool_offset = {}
 
         # dictionary to store the tool_row and diameters in Tool_table
         # it will be updated everytime self.build_ui() is called
@@ -3872,7 +3879,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
         # horizontal_header.setStretchLastSection(True)
 
-        self.tools_table_exc.setSortingEnabled(True)
+        # self.tools_table_exc.setSortingEnabled(True)
         # sort by tool diameter
         self.tools_table_exc.sortItems(1)
 
@@ -3949,6 +3956,7 @@ class FlatCAMExcEditor(QtCore.QObject):
     def on_tool_delete(self, dia=None):
         self.is_modified = True
         deleted_tool_dia_list = []
+        deleted_tool_offset_list = []
 
         try:
             if dia is None or dia is False:
@@ -3968,6 +3976,9 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         for deleted_tool_dia in deleted_tool_dia_list:
 
+            # delete de tool offset
+            self.exc_obj.tool_offset.pop(float(deleted_tool_dia), None)
+
             # delete the storage used for that tool
             storage_elem = FlatCAMGeoEditor.make_storage()
             self.storage_dict[deleted_tool_dia] = storage_elem
@@ -3983,7 +3994,9 @@ class FlatCAMExcEditor(QtCore.QObject):
 
             if flag_del:
                 for tool_to_be_deleted in flag_del:
+                    # delete the tool
                     self.tool2tooldia.pop(tool_to_be_deleted, None)
+
                     # delete also the drills from points_edit dict just in case we add the tool again, we don't want to show the
                     # number of drills from before was deleter
                     self.points_edit[deleted_tool_dia] = []
@@ -4023,6 +4036,11 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.olddia_newdia[dia_changed] = current_table_dia_edited
             # update the dict that holds tool_no as key and tool_dia as value
             self.tool2tooldia[key_in_tool2tooldia] = current_table_dia_edited
+
+            # update the tool offset
+            modified_offset = self.exc_obj.tool_offset.pop(dia_changed)
+            self.exc_obj.tool_offset[current_table_dia_edited] = modified_offset
+
             self.replot()
         else:
             # tool diameter is already in use so we move the drills from the prior tool to the new tool
@@ -4035,6 +4053,9 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.add_exc_shape(geometry, self.storage_dict[current_table_dia_edited])
 
             self.on_tool_delete(dia=dia_changed)
+
+            # delete the tool offset
+            self.exc_obj.tool_offset.pop(dia_changed, None)
 
         # we reactivate the signals after the after the tool editing
         self.tools_table_exc.itemChanged.connect(self.on_tool_edit)
@@ -4222,8 +4243,9 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.replot()
 
-        # add a first tool in the Tool Table
-        self.on_tool_add(tooldia=1.00)
+        # add a first tool in the Tool Table but only if the Excellon Object is empty
+        if not self.tool2tooldia:
+            self.on_tool_add(tooldia=1.00)
 
     def update_fcexcellon(self, exc_obj):
         """
@@ -4290,6 +4312,9 @@ class FlatCAMExcEditor(QtCore.QObject):
             spec = {"C": float(tool_dia[0])}
             self.new_tools[name] = spec
 
+            # add in self.tools the 'solid_geometry' key, the value (a list) is populated bellow
+            self.new_tools[name]['solid_geometry'] = []
+
             # create the self.drills for the new Excellon object (the one with edited content)
             for point in tool_dia[1]:
                 self.new_drills.append(
@@ -4298,6 +4323,9 @@ class FlatCAMExcEditor(QtCore.QObject):
                         'tool': str(current_tool)
                     }
                 )
+                # repopulate the 'solid_geometry' for each tool
+                poly = Point(point).buffer(float(tool_dia[0]) / 2.0, int(int(exc_obj.geo_steps_per_circle) / 4))
+                self.new_tools[name]['solid_geometry'].append(poly)
 
         if self.is_modified is True:
             if "_edit" in self.edited_obj_name:
@@ -4314,6 +4342,8 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         if self.exc_obj.slots:
             self.new_slots = self.exc_obj.slots
+
+        self.new_tool_offset = self.exc_obj.tool_offset
 
         # reset the tool table
         self.tools_table_exc.clear()
@@ -4364,6 +4394,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             excellon_obj.drills = self.new_drills
             excellon_obj.tools = self.new_tools
             excellon_obj.slots = self.new_slots
+            excellon_obj.tool_offset = self.new_tool_offset
             excellon_obj.options['name'] = outname
 
             try:
