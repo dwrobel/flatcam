@@ -18,6 +18,8 @@ CAD program, and create G-Code for Isolation routing.
 - added some relevant status bar messages in DblSided Tool
 - fixed DblSided Tool to correctly use the Box object (until now it used as reference only Gerber object in spite of Excellon or Geometry objects being available)
 - fixed DblSided Tool crash when trying to create Alignment Drills object without a Tool diameter specified
+- fixed DblSided Tool issue when entering Tool diameter values with comma decimal separator instead of decimal dot separator
+- fixed Cutout Tool Freeform to generate cutouts with options: LR, TB. 2LR, 2TB which didn't worked previously
 
 15.02.2019
 

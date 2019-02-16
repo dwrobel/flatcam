@@ -153,8 +153,8 @@ class ToolCutOut(FlatCAMTool):
             "- one gap Left / one gap Right\n"
             "- one gap on each of the 4 sides."
         )
-        self.gaps_rect_radio = RadioSet([{'label': '2(T/B)', 'value': 'tb'},
-                                    {'label': '2(L/R)', 'value': 'lr'},
+        self.gaps_rect_radio = RadioSet([{'label': '2(T/B)', 'value': 'TB'},
+                                    {'label': '2(L/R)', 'value': 'LR'},
                                     {'label': '4', 'value': '4'}])
         form_layout_3.addRow(gapslabel_rect, self.gaps_rect_radio)
 
@@ -277,7 +277,7 @@ class ToolCutOut(FlatCAMTool):
             self.app.inform.emit("[WARNING_NOTCL]Tool Diameter is zero value. Change it to a positive integer.")
             return "Tool Diameter is zero value. Change it to a positive integer."
 
-        if gaps not in ['lr', 'tb', '2lr', '2tb', '4', '8']:
+        if gaps not in ['LR', 'TB', '2LR', '2TB', '4', '8']:
             self.app.inform.emit("[WARNING_NOTCL] Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
                                  "Fill in a correct value and retry. ")
             return
@@ -318,7 +318,7 @@ class ToolCutOut(FlatCAMTool):
 
             cutout_obj = self.app.collection.get_by_name(outname)
 
-        if int(gaps) == 8 or gaps == '2lr':
+        if gaps == '8' or gaps == '2LR':
             subtract_rectangle(cutout_obj,
                                xmin - gapsize,  # botleft_x
                                py - gapsize + lenghty / 4,  # botleft_y
@@ -330,7 +330,7 @@ class ToolCutOut(FlatCAMTool):
                                xmax + gapsize,
                                py + gapsize - lenghty / 4)
 
-        if int(gaps) == 8 or gaps == '2tb':
+        if gaps == '8' or gaps == '2TB':
             subtract_rectangle(cutout_obj,
                                px - gapsize + lenghtx / 4,
                                ymin - gapsize,
@@ -342,14 +342,14 @@ class ToolCutOut(FlatCAMTool):
                                px + gapsize - lenghtx / 4,
                                ymax + gapsize)
 
-        if int(gaps) == 4 or gaps == 'lr':
+        if gaps == '4' or gaps == 'LR':
             subtract_rectangle(cutout_obj,
                                xmin - gapsize,
                                py - gapsize,
                                xmax + gapsize,
                                py + gapsize)
 
-        if int(gaps) == 4 or gaps == 'tb':
+        if gaps == '4' or gaps == 'TB':
             subtract_rectangle(cutout_obj,
                                px - gapsize,
                                ymin - gapsize,
@@ -447,9 +447,9 @@ class ToolCutOut(FlatCAMTool):
                    [maxx, midy + hgap],
                    [maxx, maxy],
                    [midx + hgap, maxy]]
-            cases = {"tb": [[pts[0], pts[1], pts[4], pts[5]],
+            cases = {"TB": [[pts[0], pts[1], pts[4], pts[5]],
                             [pts[6], pts[7], pts[10], pts[11]]],
-                     "lr": [[pts[9], pts[10], pts[1], pts[2]],
+                     "LR": [[pts[9], pts[10], pts[1], pts[2]],
                             [pts[3], pts[4], pts[7], pts[8]]],
                      "4": [[pts[0], pts[1], pts[2]],
                            [pts[3], pts[4], pts[5]],
