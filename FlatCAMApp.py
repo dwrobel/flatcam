@@ -6214,7 +6214,7 @@ class App(QtCore.QObject):
         for obj in self.collection.get_list():
             def worker_task(obj):
                 with self.proc_container.new("Plotting"):
-                    obj.plot()
+                    obj.plot(kind=self.defaults["cncjob_plot_kind"])
                     if zoom:
                         self.object_plotted.emit(obj)
 
