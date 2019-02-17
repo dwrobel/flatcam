@@ -523,8 +523,6 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                     self.app.ui.menuprojectgeneratecnc.setVisible(False)
                 if type(obj) != FlatCAMGeometry and type(obj) != FlatCAMExcellon:
                     self.app.ui.menuprojectedit.setVisible(False)
-                if type(obj) != FlatCAMGeometry and type(obj) != FlatCAMExcellon and type(obj) != FlatCAMCNCjob:
-                    self.app.ui.menuprojectsave.setVisible(False)
                 if type(obj) != FlatCAMGerber and type(obj) != FlatCAMExcellon:
                     self.app.ui.menuprojectviewsource.setVisible(False)
         else:

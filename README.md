@@ -20,6 +20,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Geometry Editor, on entry the notebook is automatically hidden and restored on Geometry Editor exit.
 - when pressing Escape in Geometry Editor it will automatically deselect any shape not only the currently selected tool.
 - when deselecting an object in Project menu the status bar selection message is deleted
+- added ability to save the Gerber file content that is stored in FlatCAM on Gerber file loading. It's useful to recover from saved FlatCAM projects when the source files are no longer available.
 
 16.02.2019
 
