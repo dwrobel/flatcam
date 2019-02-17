@@ -923,7 +923,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         except IndexError:
             FlatCAMApp.App.log.debug("on_list_selection_change(): Index Error (Nothing selected?)")
-
+            self.app.inform.emit('')
             try:
                 self.app.ui.selected_scroll_area.takeWidget()
             except:

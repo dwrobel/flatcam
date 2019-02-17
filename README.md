@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Editors, if the modifier key set in Preferences (CTRL or SHIFT key) is pressed at the end of one tool operation it will automatically continue to that action until the modifier is no longer pressed when Select tool will be automatically selected.
 - in Geometry Editor, on entry the notebook is automatically hidden and restored on Geometry Editor exit.
 - when pressing Escape in Geometry Editor it will automatically deselect any shape not only the currently selected tool.
+- when deselecting an object in Project menu the status bar selection message is deleted
 
 16.02.2019
 
