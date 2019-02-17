@@ -1920,6 +1920,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.inform.emit("[WARNING_NOTCL]Cancelled.")
 
                     self.app.geo_editor.delete_utility_geometry()
+
+                    # deselect any shape that might be selected
+                    self.app.geo_editor.selected = []
                     self.app.geo_editor.replot()
                     # self.select_btn.setChecked(True)
                     # self.on_tool_select('select')

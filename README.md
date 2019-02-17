@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed issue where after loading a project, if the default kind of CNCjob view is only 'cuts' the plot will revert to the 'all' type
 - in Editors, if the modifier key set in Preferences (CTRL or SHIFT key) is pressed at the end of one tool operation it will automatically continue to that action until the modifier is no longer pressed when Select tool will be automatically selected.
 - in Geometry Editor, on entry the notebook is automatically hidden and restored on Geometry Editor exit.
+- when pressing Escape in Geometry Editor it will automatically deselect any shape not only the currently selected tool.
 
 16.02.2019
 
