@@ -1636,6 +1636,10 @@ class App(QtCore.QObject):
             # store the Geometry Editor Toolbar visibility before entering in the Editor
             self.geo_editor.toolbar_old_state = True if self.ui.geo_edit_toolbar.isVisible() else False
             self.geo_editor.edit_fcgeometry(edited_object)
+
+            # we set the notebook to hidden
+            self.ui.splitter.setSizes([0, 1])
+
             # set call source to the Editor we go into
             self.call_source = 'geo_editor'
 
@@ -1702,6 +1706,10 @@ class App(QtCore.QObject):
         else:
             self.inform.emit("[WARNING_NOTCL]Select a Geometry or Excellon Object to update.")
             return
+
+        # if notebook is hidden we show it
+        if self.ui.splitter.sizes()[0] == 0:
+            self.ui.splitter.setSizes([1, 1])
 
         # restore the call_source to app
         self.call_source = 'app'

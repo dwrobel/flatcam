@@ -583,7 +583,7 @@ class FCCircle(FCShapeTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
-        self.name = 'fc_circle'
+        self.name = 'circle'
 
         self.start_msg = "Click on CENTER ..."
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
@@ -622,7 +622,7 @@ class FCCircle(FCShapeTool):
 class FCArc(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
-        self.name = 'fc_arc'
+        self.name = 'arc'
 
         self.start_msg = "Click on CENTER ..."
 
@@ -812,7 +812,7 @@ class FCRectangle(FCShapeTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
-        self.name = 'fc_rectangle'
+        self.name = 'rectangle'
 
         self.start_msg = "Click on 1st corner ..."
 
@@ -852,7 +852,7 @@ class FCPolygon(FCShapeTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
-        self.name = 'fc_polygon'
+        self.name = 'polygon'
 
         self.start_msg = "Click on 1st point ..."
 
@@ -899,7 +899,7 @@ class FCPath(FCPolygon):
 
     def make(self):
         self.geometry = DrawToolShape(LineString(self.points))
-        self.name = 'fc_path'
+        self.name = 'path'
 
         self.draw_app.in_action = False
         self.complete = True
@@ -922,7 +922,7 @@ class FCPath(FCPolygon):
 class FCSelect(DrawTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
-        self.name = 'fc_select'
+        self.name = 'select'
 
         self.storage = self.draw_app.storage
         # self.shape_buffer = self.draw_app.shape_buffer
@@ -1001,7 +1001,7 @@ class FCSelect(DrawTool):
 class FCDrillSelect(DrawTool):
     def __init__(self, exc_editor_app):
         DrawTool.__init__(self, exc_editor_app)
-        self.name = 'fc_drill_select'
+        self.name = 'drill_select'
 
         self.exc_editor_app = exc_editor_app
         self.storage = self.exc_editor_app.storage_dict
@@ -1159,7 +1159,7 @@ class FCDrillSelect(DrawTool):
 class FCMove(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
-        self.name = 'fc_move'
+        self.name = 'move'
 
         # self.shape_buffer = self.draw_app.shape_buffer
         self.origin = None
@@ -1228,7 +1228,7 @@ class FCMove(FCShapeTool):
 class FCCopy(FCMove):
     def __init__(self, draw_app):
         FCMove.__init__(self, draw_app)
-        self.name = 'fc_copy'
+        self.name = 'copy'
 
     def make(self):
         # Create new geometry
@@ -1243,7 +1243,7 @@ class FCCopy(FCMove):
 class FCText(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
-        self.name = 'fc_text'
+        self.name = 'text'
 
         # self.shape_buffer = self.draw_app.shape_buffer
         self.draw_app = draw_app
@@ -1295,7 +1295,7 @@ class FCText(FCShapeTool):
 class FCBuffer(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
-        self.name = 'fc_buffer'
+        self.name = 'buffer'
 
         # self.shape_buffer = self.draw_app.shape_buffer
         self.draw_app = draw_app
@@ -1363,7 +1363,7 @@ class FCBuffer(FCShapeTool):
 class FCPaint(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
-        self.name = 'fc_paint'
+        self.name = 'paint'
 
         # self.shape_buffer = self.draw_app.shape_buffer
         self.draw_app = draw_app
@@ -1379,7 +1379,12 @@ class FCPaint(FCShapeTool):
 class FCRotate(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
-        self.name = 'fc_rotate'
+        self.name = 'rotate'
+
+        if self.draw_app.launched_from_shortcuts is True:
+            self.draw_app.launched_from_shortcuts = False
+            self.set_origin(
+                self.draw_app.snap(self.draw_app.x, self.draw_app.y))
 
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
 
@@ -1401,9 +1406,6 @@ class FCRotate(FCShapeTool):
         self.draw_app.delete_selected()
         self.complete = True
         self.draw_app.app.inform.emit("[success]Done. Geometry rotate completed.")
-
-        # MS: automatically select the Select Tool after finishing the action but is not working yet :(
-        #self.draw_app.select_tool("select")
 
     def on_key(self, key):
         if key == 'Enter' or key == QtCore.Qt.Key_Enter:
@@ -1432,7 +1434,7 @@ class FCDrillAdd(FCShapeTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
-        self.name = 'fc_drill_add'
+        self.name = 'drill_add'
 
         self.selected_dia = None
         try:
@@ -1504,7 +1506,7 @@ class FCDrillArray(FCShapeTool):
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
-        self.name = 'fc_drill_array'
+        self.name = 'drill_array'
 
         self.draw_app.array_frame.show()
 
@@ -1705,7 +1707,7 @@ class FCDrillArray(FCShapeTool):
 class FCDrillResize(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
-        self.name = 'fc_drill_resize'
+        self.name = 'drill_resize'
 
         self.draw_app.app.inform.emit("Click on the Drill(s) to resize ...")
         self.resize_dia = None
@@ -1808,7 +1810,7 @@ class FCDrillResize(FCShapeTool):
 class FCDrillMove(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
-        self.name = 'fc_drill_move'
+        self.name = 'drill_move'
 
         # self.shape_buffer = self.draw_app.shape_buffer
         self.origin = None
@@ -1901,7 +1903,7 @@ class FCDrillMove(FCShapeTool):
 class FCDrillCopy(FCDrillMove):
     def __init__(self, draw_app):
         FCDrillMove.__init__(self, draw_app)
-        self.name = 'fc_drill_copy'
+        self.name = 'drill_copy'
 
     def make(self):
         # Create new geometry
@@ -2037,6 +2039,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # signal that there is an action active like polygon or path
         self.in_action = False
+
+        # this will flag if the Editor "tools" are launched from key shortcuts (True) or from menu toolbar (False)
+        self.launched_from_shortcuts = False
 
         def make_callback(thetool):
             def f():
@@ -2420,9 +2425,20 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 if isinstance(self.active_tool, FCShapeTool) and self.active_tool.complete:
                     self.on_shape_complete()
 
-                    # MS: always return to the Select Tool
-                    self.select_tool("select")
-                    return
+                    # MS: always return to the Select Tool if modifier key is not pressed
+                    # else return to the current tool
+                    key_modifier = QtWidgets.QApplication.keyboardModifiers()
+                    if self.app.defaults["global_mselect_key"] == 'Control':
+                        modifier_to_use = Qt.ControlModifier
+                    else:
+                        modifier_to_use = Qt.ShiftModifier
+                    # if modifier key is pressed then we add to the selected list the current shape but if
+                    # it's already in the selected list, we removed it. Therefore first click selects, second deselects.
+                    if key_modifier == modifier_to_use:
+                        self.select_tool(self.active_tool.name)
+                    else:
+                        self.select_tool("select")
+                        return
 
                 if isinstance(self.active_tool, FCSelect):
                     # self.app.log.debug("Replotting after click.")
@@ -2540,8 +2556,20 @@ class FlatCAMGeoEditor(QtCore.QObject):
                             if self.active_tool.complete:
                                 self.on_shape_complete()
                                 self.app.inform.emit("[success]Done.")
-                            # automatically make the selection tool active after completing current action
-                            self.select_tool('select')
+
+                                # MS: always return to the Select Tool if modifier key is not pressed
+                                # else return to the current tool
+                                key_modifier = QtWidgets.QApplication.keyboardModifiers()
+                                if self.app.defaults["global_mselect_key"] == 'Control':
+                                    modifier_to_use = Qt.ControlModifier
+                                else:
+                                    modifier_to_use = Qt.ShiftModifier
+
+                                if key_modifier == modifier_to_use:
+                                    self.select_tool(self.active_tool.name)
+                                else:
+                                    self.select_tool("select")
+
         except Exception as e:
             log.warning("Error: %s" % str(e))
             return
@@ -3512,15 +3540,15 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.tools_exc = {
             "select": {"button": self.app.ui.select_drill_btn,
                        "constructor": FCDrillSelect},
-            "add": {"button": self.app.ui.add_drill_btn,
+            "drill_add": {"button": self.app.ui.add_drill_btn,
                     "constructor": FCDrillAdd},
-            "add_array": {"button": self.app.ui.add_drill_array_btn,
+            "drill_array": {"button": self.app.ui.add_drill_array_btn,
                           "constructor": FCDrillArray},
-            "resize": {"button": self.app.ui.resize_drill_btn,
+            "drill_resize": {"button": self.app.ui.resize_drill_btn,
                        "constructor": FCDrillResize},
-            "copy": {"button": self.app.ui.copy_drill_btn,
+            "drill_copy": {"button": self.app.ui.copy_drill_btn,
                      "constructor": FCDrillCopy},
-            "move": {"button": self.app.ui.move_drill_btn,
+            "drill_move": {"button": self.app.ui.move_drill_btn,
                      "constructor": FCDrillMove},
         }
 
@@ -4505,9 +4533,20 @@ class FlatCAMExcEditor(QtCore.QObject):
                     if self.current_storage is not None:
                         self.on_exc_shape_complete(self.current_storage)
                         self.build_ui()
-                    # MS: always return to the Select Tool
-                    self.select_tool("select")
-                    return
+                    # MS: always return to the Select Tool if modifier key is not pressed
+                    # else return to the current tool
+                    key_modifier = QtWidgets.QApplication.keyboardModifiers()
+                    if self.draw_app.app.defaults["global_mselect_key"] == 'Control':
+                        modifier_to_use = Qt.ControlModifier
+                    else:
+                        modifier_to_use = Qt.ShiftModifier
+                    # if modifier key is pressed then we add to the selected list the current shape but if it's already
+                    # in the selected list, we removed it. Therefore first click selects, second deselects.
+                    if key_modifier == modifier_to_use:
+                        self.select_tool(self.active_tool.name)
+                    else:
+                        self.select_tool("select")
+                        return
 
                 if isinstance(self.active_tool, FCDrillSelect):
                     # self.app.log.debug("Replotting after click.")

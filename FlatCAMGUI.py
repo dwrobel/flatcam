@@ -1892,7 +1892,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # complete automatically, like a polygon or path.
                 if key == QtCore.Qt.Key_Enter or key == 'Enter':
                     if isinstance(self.app.geo_editor.active_tool, FCShapeTool):
-                        if self.app.geo_editor.active_tool.name == 'fc_rotate':
+                        if self.app.geo_editor.active_tool.name == 'rotate':
                             self.app.geo_editor.active_tool.make()
 
                             if self.app.geo_editor.active_tool.complete:
@@ -1933,10 +1933,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Move
                 if key == QtCore.Qt.Key_Space or key == 'Space':
+                    self.app.geo_editor.launched_from_shortcuts = True
                     self.app.ui.geo_rotate_btn.setChecked(True)
                     self.app.geo_editor.on_tool_select('rotate')
-                    self.app.geo_editor.active_tool.set_origin(
-                        self.app.geo_editor.snap(self.app.geo_editor.x, self.app.geo_editor.y))
 
                 if key == QtCore.Qt.Key_Minus or key == '-':
                     self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'],
@@ -2191,7 +2190,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.exc_editor.x = self.app.mouse[0]
                     self.app.exc_editor.y = self.app.mouse[1]
 
-                    self.app.exc_editor.select_tool('add_array')
+                    self.app.exc_editor.select_tool('drill_array')
                     return
 
                 # Copy
@@ -2200,7 +2199,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     if self.app.exc_editor.selected:
                         self.app.inform.emit("Click on target point.")
                         self.app.ui.copy_drill_btn.setChecked(True)
-                        self.app.exc_editor.on_tool_select('copy')
+                        self.app.exc_editor.on_tool_select('drill_copy')
                         self.app.exc_editor.active_tool.set_origin(
                             (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
                     else:
@@ -2216,7 +2215,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.exc_editor.x = self.app.mouse[0]
                     self.app.exc_editor.y = self.app.mouse[1]
 
-                    self.app.exc_editor.select_tool('add')
+                    self.app.exc_editor.select_tool('drill_add')
                     return
 
                 # Grid Snap
@@ -2246,7 +2245,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     if self.app.exc_editor.selected:
                         self.app.inform.emit("Click on target point.")
                         self.app.ui.move_drill_btn.setChecked(True)
-                        self.app.exc_editor.on_tool_select('move')
+                        self.app.exc_editor.on_tool_select('drill_move')
                         self.app.exc_editor.active_tool.set_origin(
                             (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
                     else:
@@ -2256,7 +2255,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Resize Tool
                 if key == QtCore.Qt.Key_R or key == 'R':
                     self.app.exc_editor.launched_from_shortcuts = True
-                    self.app.exc_editor.select_tool('resize')
+                    self.app.exc_editor.select_tool('drill_resize')
                     return
 
                 # Add Tool

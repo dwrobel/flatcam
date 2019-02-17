@@ -16,6 +16,8 @@ CAD program, and create G-Code for Isolation routing.
 - Serialized the source_file of the Objects so it is saved in the FlatCAM project and restored.
 - if there is a single tool in the tool list (Geometry , Excellon) and the user click the Generate GCode, use that tool even if it is not selected
 - fixed issue where after loading a project, if the default kind of CNCjob view is only 'cuts' the plot will revert to the 'all' type
+- in Editors, if the modifier key set in Preferences (CTRL or SHIFT key) is pressed at the end of one tool operation it will automatically continue to that action until the modifier is no longer pressed when Select tool will be automatically selected.
+- in Geometry Editor, on entry the notebook is automatically hidden and restored on Geometry Editor exit.
 
 16.02.2019
 
