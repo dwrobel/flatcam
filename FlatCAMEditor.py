@@ -1013,17 +1013,20 @@ class TransformEditorTool(FlatCAMTool):
 
         self.app.ui.splitter.setSizes([0, 1])
 
-    def on_rotate(self):
-        try:
-            value = float(self.rotate_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
+    def on_rotate(self, sig=None, val=None):
+        if val:
+            value = val
+        else:
             try:
-                value = float(self.rotate_entry.get_value().replace(',', '.'))
+                value = float(self.rotate_entry.get_value())
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Rotate, "
-                                     "use a number.")
-                return
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    value = float(self.rotate_entry.get_value().replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Rotate, "
+                                         "use a number.")
+                    return
         self.app.worker_task.emit({'fcn': self.on_rotate_action,
                                        'params': [value]})
         # self.on_rotate_action(value)
@@ -1044,20 +1047,23 @@ class TransformEditorTool(FlatCAMTool):
         return
 
     def on_flip_add_coords(self):
-        val = self.app.defaults["global_point_clipboard_format"] % (self.app.pos[0], self.app.pos[1])
+        val = self.app.clipboard.text()
         self.flip_ref_entry.set_value(val)
 
-    def on_skewx(self):
-        try:
-            value = float(self.skewx_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
+    def on_skewx(self, sig=None, val=None):
+        if val:
+            value = val
+        else:
             try:
-                value = float(self.skewx_entry.get_value().replace(',', '.'))
+                value = float(self.skewx_entry.get_value())
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Skew X, "
-                                     "use a number.")
-                return
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    value = float(self.skewx_entry.get_value().replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Skew X, "
+                                         "use a number.")
+                    return
 
         # self.on_skew("X", value)
         axis = 'X'
@@ -1065,17 +1071,20 @@ class TransformEditorTool(FlatCAMTool):
                                    'params': [axis, value]})
         return
 
-    def on_skewy(self):
-        try:
-            value = float(self.skewy_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
+    def on_skewy(self, sig=None, val=None):
+        if val:
+            value = val
+        else:
             try:
-                value = float(self.skewy_entry.get_value().replace(',', '.'))
+                value = float(self.skewy_entry.get_value())
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Skew Y, "
-                                     "use a number.")
-                return
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    value = float(self.skewy_entry.get_value().replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Skew Y, "
+                                         "use a number.")
+                    return
 
         # self.on_skew("Y", value)
         axis = 'Y'
@@ -1083,17 +1092,20 @@ class TransformEditorTool(FlatCAMTool):
                                    'params': [axis, value]})
         return
 
-    def on_scalex(self):
-        try:
-            xvalue = float(self.scalex_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
+    def on_scalex(self, sig=None, val=None):
+        if val:
+            xvalue = val
+        else:
             try:
-                xvalue = float(self.scalex_entry.get_value().replace(',', '.'))
+                xvalue = float(self.scalex_entry.get_value())
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Scale X, "
-                                     "use a number.")
-                return
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    xvalue = float(self.scalex_entry.get_value().replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Scale X, "
+                                         "use a number.")
+                    return
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
         if xvalue == 0:
@@ -1116,18 +1128,21 @@ class TransformEditorTool(FlatCAMTool):
 
         return
 
-    def on_scaley(self):
+    def on_scaley(self, sig=None, val=None):
         xvalue = 1
-        try:
-            yvalue = float(self.scaley_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
+        if val:
+            yvalue = val
+        else:
             try:
-                yvalue = float(self.scaley_entry.get_value().replace(',', '.'))
+                yvalue = float(self.scaley_entry.get_value())
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Scale Y, "
-                                     "use a number.")
-                return
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    yvalue = float(self.scaley_entry.get_value().replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Scale Y, "
+                                         "use a number.")
+                    return
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
         if yvalue == 0:
@@ -1146,17 +1161,20 @@ class TransformEditorTool(FlatCAMTool):
 
         return
 
-    def on_offx(self):
-        try:
-            value = float(self.offx_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
+    def on_offx(self, sig=None, val=None):
+        if val:
+            value = val
+        else:
             try:
-                value = float(self.offx_entry.get_value().replace(',', '.'))
+                value = float(self.offx_entry.get_value())
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Offset X, "
-                                     "use a number.")
-                return
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    value = float(self.offx_entry.get_value().replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Offset X, "
+                                         "use a number.")
+                    return
 
         # self.on_offset("X", value)
         axis = 'X'
@@ -1164,17 +1182,20 @@ class TransformEditorTool(FlatCAMTool):
                                    'params': [axis, value]})
         return
 
-    def on_offy(self):
-        try:
-            value = float(self.offy_entry.get_value())
-        except ValueError:
-            # try to convert comma to decimal point. if it's still not working error message and return
+    def on_offy(self, sig=None, val=None):
+        if val:
+            value = val
+        else:
             try:
-                value = float(self.offy_entry.get_value().replace(',', '.'))
+                value = float(self.offy_entry.get_value())
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Offset Y, "
-                                     "use a number.")
-                return
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    value = float(self.offy_entry.get_value().replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Offset Y, "
+                                         "use a number.")
+                    return
 
         # self.on_offset("Y", value)
         axis = 'Y'
@@ -2582,8 +2603,7 @@ class FCPaint(FCShapeTool):
 
         self.start_msg = "Create Paint geometry ..."
         self.origin = (0, 0)
-        self.paint_tool = PaintOptionsTool(self.app, self.draw_app)
-        self.paint_tool.run()
+        self.draw_app.paint_tool.run()
 
 
 class FCTransform(FCShapeTool):
@@ -2597,8 +2617,7 @@ class FCTransform(FCShapeTool):
 
         self.start_msg = "Shape transformations ..."
         self.origin = (0, 0)
-        self.transform_tool = TransformEditorTool(self.app, self.draw_app)
-        self.transform_tool.run()
+        self.draw_app.transform_tool.run()
 
 
 class FCRotate(FCShapeTool):
@@ -3341,6 +3360,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # if using Paint store here the tool diameter used
         self.paint_tooldia = None
 
+        self.paint_tool = PaintOptionsTool(self.app, self)
+        self.transform_tool = TransformEditorTool(self.app, self)
+
     def pool_recreated(self, pool):
         self.shapes.pool = pool
         self.tool_shape.pool = pool
@@ -3655,6 +3677,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
             x, y = self.snap(self.pos[0], self.pos[1])
 
             self.pos = (x, y)
+
+            modifiers = QtWidgets.QApplication.keyboardModifiers()
+            # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
+            if modifiers == QtCore.Qt.ShiftModifier:
+                self.app.clipboard.setText(
+                    self.app.defaults["global_point_clipboard_format"] % (self.pos[0], self.pos[1]))
+                return
 
             # Selection with left mouse button
             if self.active_tool is not None and event.button is 1:

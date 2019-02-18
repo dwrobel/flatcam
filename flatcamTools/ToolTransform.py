@@ -419,7 +419,7 @@ class ToolTransform(FlatCAMTool):
         return
 
     def on_flip_add_coords(self):
-        val = self.app.defaults["global_point_clipboard_format"] % (self.app.pos[0], self.app.pos[1])
+        val = self.app.clipboard.text()
         self.flip_ref_entry.set_value(val)
 
     def on_skewx(self):

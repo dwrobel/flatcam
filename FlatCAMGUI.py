@@ -2774,10 +2774,11 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_11.addWidget(self.sel_draw_color_button)
         self.form_box_child_11.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
-        # Theme selection
+        # Layout selection
         self.layout_label = QtWidgets.QLabel('Layout:')
-        self.alt_sf_color_label.setToolTip(
-            "Select an layout for FlatCAM."
+        self.layout_label.setToolTip(
+            "Select an layout for FlatCAM.\n"
+            "It is applied immediately."
         )
         self.layout_combo = FCComboBox()
         self.layout_combo.addItem("Choose ...")
@@ -2785,11 +2786,37 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.layout_combo.addItem("Compact")
         self.layout_combo.setCurrentIndex(0)
 
+        # Style selection
+        self.style_label = QtWidgets.QLabel('Style:')
+        self.style_label.setToolTip(
+            "Select an style for FlatCAM.\n"
+            "It will be applied at the next app start."
+        )
+        self.style_combo = FCComboBox()
+        self.style_combo.addItems(QtWidgets.QStyleFactory.keys())
+        # find current style
+        index = self.style_combo.findText(QtWidgets.qApp.style().objectName(), QtCore.Qt.MatchFixedString)
+        self.style_combo.setCurrentIndex(index)
+        self.style_combo.activated[str].connect(self.handle_style)
+
+        # Enable High DPI Support
+        self.hdpi_label = QtWidgets.QLabel('HDPI Support:')
+        self.hdpi_label.setToolTip(
+            "Enable High DPI support for FlatCAM.\n"
+            "It will be applied at the next app start."
+        )
+        self.hdpi_cb = FCCheckBox()
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("hdpi"):
+            self.hdpi_cb.set_value(settings.value('hdpi', type=int))
+        else:
+            self.hdpi_cb.set_value(False)
+        self.hdpi_cb.stateChanged.connect(self.handle_hdpi)
+
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
         # Add (label - input field) pair to the QFormLayout
-
         self.form_box.addRow(self.spacelabel, self.spacelabel)
 
         self.form_box.addRow(self.gridx_label, self.gridx_entry)
@@ -2813,9 +2840,28 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
 
         self.form_box.addRow(self.spacelabel, self.spacelabel)
         self.form_box.addRow(self.layout_label, self.layout_combo)
+        self.form_box.addRow(self.style_label, self.style_combo)
+        self.form_box.addRow(self.hdpi_label, self.hdpi_cb)
+
         # Add the QFormLayout that holds the Application general defaults
         # to the main layout of this TAB
         self.layout.addLayout(self.form_box)
+
+    def handle_style(self, style):
+        # set current style
+        settings = QSettings("Open Source", "FlatCAM")
+        settings.setValue('style', style)
+
+        # This will write the setting to the platform specific storage.
+        del settings
+
+    def handle_hdpi(self, state):
+        # set current style
+        settings = QSettings("Open Source", "FlatCAM")
+        settings.setValue('hdpi', state)
+
+        # This will write the setting to the platform specific storage.
+        del settings
 
 
 class GeneralAppPrefGroupUI(OptionsGroupUI):

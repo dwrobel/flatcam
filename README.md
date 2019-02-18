@@ -18,6 +18,9 @@ CAD program, and create G-Code for Isolation routing.
 - added in Geometry Editor a new Tool: Transformation Tool. It still has some bugs, though ...
 - in Geometry Editor by selecting a shape with a selection shape, that object was added multiple times (one per each selection) to the selected list, which is not intended. Bug fixed.
 - finished adding Transform Tool in Geometry Editor - everything is working as intended
+- fixed a bug in Tool Transform that made the user to not be able to capture the click coordinates with SHIFT + LMB click combo
+- added the ability to choose an App QStyle out of the offered choices (different for each OS) to be applied at the next app start (Preferences -> General -> Gui Pref -> Style Combobox)
+- added support for FlatCAM usage with High DPI monitors (4k). It is applied on the next app startup after change in Preferences -> General -> Gui Pref -> HDPI Support Checkbox
 
 17.02.2019
 

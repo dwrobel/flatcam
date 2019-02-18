@@ -1,7 +1,8 @@
-import sys
+import sys, os
 from PyQt5 import sip
 
 from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5.QtCore import QSettings, Qt
 from FlatCAMApp import App
 from multiprocessing import freeze_support
 import VisPyPatches
@@ -31,7 +32,31 @@ if __name__ == '__main__':
     debug_trace()
     VisPyPatches.apply_patches()
 
+    # apply High DPI support
+    settings = QSettings("Open Source", "FlatCAM")
+    if settings.contains("hdpi"):
+        hdpi_support = settings.value('hdpi', type=int)
+    else:
+        hdpi_support = 0
+
+    if hdpi_support == 2:
+        os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
+    else:
+        os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "0"
+
     app = QtWidgets.QApplication(sys.argv)
+
+    # apply style
+    settings = QSettings("Open Source", "FlatCAM")
+    if settings.contains("style"):
+        style = settings.value('style', type=str)
+        app.setStyle(style)
+
+    if hdpi_support == 2:
+        app.setAttribute(Qt.AA_EnableHighDpiScaling, True)
+    else:
+        app.setAttribute(Qt.AA_EnableHighDpiScaling, False)
+
     fc = App()
 
     sys.exit(app.exec_())
