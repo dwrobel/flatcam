@@ -108,6 +108,16 @@ class GerberObjectUI(ObjectUI):
     def __init__(self, parent=None):
         ObjectUI.__init__(self, title='Gerber Object', parent=parent)
 
+        self.level = QtWidgets.QLabel("")
+        self.level.setToolTip(
+            "In the BASIC mode certain functionality's\n"
+            "are hidden from the user.\n"
+            "To enable them, go to:\n"
+            "Edit -> Preferences -> General and check:\n"
+            "'Show Advanced Options' checkbox."
+        )
+        self.custom_box.addWidget(self.level)
+
         # Plot options
         grid0 = QtWidgets.QGridLayout()
         grid0.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
@@ -237,13 +247,13 @@ class GerberObjectUI(ObjectUI):
         grid1.addWidget(self.iso_overlap_entry, 2, 1)
 
         # Milling Type Radio Button
-        milling_type_label = QtWidgets.QLabel('Milling Type:')
-        milling_type_label.setToolTip(
+        self.milling_type_label = QtWidgets.QLabel('Milling Type:')
+        self.milling_type_label.setToolTip(
             "Milling type:\n"
             "- climb / best for precision milling and to reduce tool usage\n"
             "- conventional / useful when there is no backlash compensation"
         )
-        grid1.addWidget(milling_type_label, 3, 0)
+        grid1.addWidget(self.milling_type_label, 3, 0)
         self.milling_type_radio = RadioSet([{'label': 'Climb', 'value': 'cl'},
                                     {'label': 'Conv.', 'value': 'cv'}])
         grid1.addWidget(self.milling_type_radio, 3, 1)
@@ -430,6 +440,16 @@ class ExcellonObjectUI(ObjectUI):
                           icon_file='share/drill32.png',
                           parent=parent)
 
+        self.level = QtWidgets.QLabel("")
+        self.level.setToolTip(
+            "In the BASIC mode certain functionality's\n"
+            "are hidden from the user.\n"
+            "To enable them, go to:\n"
+            "Edit -> Preferences -> General and check:\n"
+            "'Show Advanced Options' checkbox."
+        )
+        self.custom_box.addWidget(self.level)
+
         #### Plot options ####
         hlay_plot = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(hlay_plot)
@@ -485,7 +505,7 @@ class ExcellonObjectUI(ObjectUI):
         self.tools_box.addWidget(self.tools_table)
 
         self.tools_table.setColumnCount(6)
-        self.tools_table.setHorizontalHeaderLabels(['#', 'Diameter', 'Drills', 'Slots', 'Offset', 'P'])
+        self.tools_table.setHorizontalHeaderLabels(['#', 'Diameter', 'Drills', 'Slots', 'Offset Z', 'P'])
         self.tools_table.setSortingEnabled(False)
 
         self.tools_table.horizontalHeaderItem(0).setToolTip(
@@ -562,22 +582,22 @@ class ExcellonObjectUI(ObjectUI):
         self.ois_tcz_e = OptionalInputSection(self.toolchange_cb, [self.toolchangez_entry])
 
         # Start move Z:
-        startzlabel = QtWidgets.QLabel("Start move Z:")
-        startzlabel.setToolTip(
+        self.estartz_label = QtWidgets.QLabel("Start move Z:")
+        self.estartz_label.setToolTip(
             "Tool height just before starting the work.\n"
             "Delete the value if you don't need this feature."
         )
-        grid1.addWidget(startzlabel, 4, 0)
+        grid1.addWidget(self.estartz_label, 4, 0)
         self.estartz_entry = FloatEntry()
         grid1.addWidget(self.estartz_entry, 4, 1)
 
         # End move Z:
-        endzlabel = QtWidgets.QLabel("End move Z:")
-        endzlabel.setToolTip(
+        self.eendz_label = QtWidgets.QLabel("End move Z:")
+        self.eendz_label.setToolTip(
             "Z-axis position (height) for\n"
             "the last move."
         )
-        grid1.addWidget(endzlabel, 5, 0)
+        grid1.addWidget(self.eendz_label, 5, 0)
         self.eendz_entry = LengthEntry()
         grid1.addWidget(self.eendz_entry, 5, 1)
 
@@ -593,13 +613,13 @@ class ExcellonObjectUI(ObjectUI):
         grid1.addWidget(self.feedrate_entry, 6, 1)
 
         # Excellon Rapid Feedrate
-        fr_rapid_label = QtWidgets.QLabel('Feedrate Rapids:')
-        fr_rapid_label.setToolTip(
+        self.feedrate_rapid_label = QtWidgets.QLabel('Feedrate Rapids:')
+        self.feedrate_rapid_label.setToolTip(
             "Tool speed while drilling\n"
             "(in units per minute).\n"
             "This is for the rapid move G00."
         )
-        grid1.addWidget(fr_rapid_label, 7, 0)
+        grid1.addWidget(self.feedrate_rapid_label, 7, 0)
         self.feedrate_rapid_entry = LengthEntry()
         grid1.addWidget(self.feedrate_rapid_entry, 7, 1)
 
@@ -752,6 +772,16 @@ class GeometryObjectUI(ObjectUI):
 
     def __init__(self, parent=None):
         super(GeometryObjectUI, self).__init__(title='Geometry Object', icon_file='share/geometry32.png', parent=parent)
+
+        self.level = QtWidgets.QLabel("")
+        self.level.setToolTip(
+            "In the BASIC mode certain functionality's\n"
+            "are hidden from the user.\n"
+            "To enable them, go to:\n"
+            "Edit -> Preferences -> General and check:\n"
+            "'Show Advanced Options' checkbox."
+        )
+        self.custom_box.addWidget(self.level)
 
         # Plot options
         self.plot_options_label = QtWidgets.QLabel("<b>Plot Options:</b>")
@@ -976,7 +1006,6 @@ class GeometryObjectUI(ObjectUI):
         )
         self.grid3.addWidget(self.mpass_cb, 4, 0)
 
-
         self.maxdepth_entry = LengthEntry()
         self.maxdepth_entry.setToolTip(
             "Depth of each pass (positive)."
@@ -1026,12 +1055,12 @@ class GeometryObjectUI(ObjectUI):
         # self.grid3.addWidget(self.gstartz_entry, 8, 1)
 
         # The Z value for the end move
-        endzlabel = QtWidgets.QLabel('End move Z:')
-        endzlabel.setToolTip(
+        self.endzlabel = QtWidgets.QLabel('End move Z:')
+        self.endzlabel.setToolTip(
             "This is the height (Z) at which the CNC\n"
             "will go as the last move."
         )
-        self.grid3.addWidget(endzlabel, 9, 0)
+        self.grid3.addWidget(self.endzlabel, 9, 0)
         self.gendz_entry = LengthEntry()
         self.grid3.addWidget(self.gendz_entry, 9, 1)
 
@@ -1056,13 +1085,13 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(self.cncplunge_entry, 11, 1)
 
         # Feedrate rapids
-        fr_rapidlabel = QtWidgets.QLabel('Feed Rate Rapids:')
-        fr_rapidlabel.setToolTip(
+        self.fr_rapidlabel = QtWidgets.QLabel('Feed Rate Rapids:')
+        self.fr_rapidlabel.setToolTip(
             "Cutting speed in the XY\n"
             "plane in units per minute\n"
             "for the rapid movements"
         )
-        self.grid3.addWidget(fr_rapidlabel, 12, 0)
+        self.grid3.addWidget(self.fr_rapidlabel, 12, 0)
         self.cncfeedrate_rapid_entry = LengthEntry()
         self.grid3.addWidget(self.cncfeedrate_rapid_entry, 12, 1)
 
@@ -1181,6 +1210,16 @@ class CNCObjectUI(ObjectUI):
         """
 
         ObjectUI.__init__(self, title='CNC Job Object', icon_file='share/cnc32.png', parent=parent)
+
+        self.level = QtWidgets.QLabel("")
+        self.level.setToolTip(
+            "In the BASIC mode certain functionality's\n"
+            "are hidden from the user.\n"
+            "To enable them, go to:\n"
+            "Edit -> Preferences -> General and check:\n"
+            "'Show Advanced Options' checkbox."
+        )
+        self.custom_box.addWidget(self.level)
 
         # Scale and offset ans skew are not available for CNCJob objects.
         # Hiding from the GUI.

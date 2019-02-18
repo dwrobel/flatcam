@@ -478,6 +478,19 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.generate_noncopper_button.clicked.connect(self.on_generatenoncopper_button_click)
         self.ui.aperture_table_visibility_cb.stateChanged.connect(self.on_aperture_table_visibility_change)
 
+        # Show/Hide Advanced Options
+        if self.app.defaults["global_advanced"] is False:
+            self.ui.level.setText('<span style="color:green;"><b>BASIC Mode</b></span>')
+            self.ui.apertures_table_label.hide()
+            self.ui.aperture_table_visibility_cb.hide()
+            self.ui.milling_type_label.hide()
+            self.ui.milling_type_radio.hide()
+            self.ui.generate_ext_iso_button.hide()
+            self.ui.generate_int_iso_button.hide()
+
+        else:
+            self.ui.level.setText('<span style="color:red;"><b>ADVANCED Mode</b></span>')
+
         self.build_ui()
 
     def build_ui(self):
@@ -1527,6 +1540,24 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 else:
                     dia = float('%.3f' % float(value['C']))
                 self.tool_offset[dia] = t_default_offset
+
+        # Show/Hide Advanced Options
+        if self.app.defaults["global_advanced"] is False:
+            self.ui.level.setText('<span style="color:green;"><b>BASIC Mode</b></span>')
+
+            self.ui.tools_table.setColumnHidden(4, True)
+            self.ui.estartz_label.hide()
+            self.ui.estartz_entry.hide()
+            self.ui.eendz_label.hide()
+            self.ui.eendz_entry.hide()
+            self.ui.feedrate_rapid_label.hide()
+            self.ui.feedrate_rapid_entry.hide()
+            self.ui.pdepth_label.hide()
+            self.ui.pdepth_entry.hide()
+            self.ui.feedrate_probe_label.hide()
+            self.ui.feedrate_probe_entry.hide()
+        else:
+            self.ui.level.setText('<span style="color:red;"><b>ADVANCED Mode</b></span>')
 
         assert isinstance(self.ui, ExcellonObjectUI), \
             "Expected a ExcellonObjectUI, got %s" % type(self.ui)
@@ -2743,6 +2774,30 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "Copy", self.on_tool_copy, icon=QtGui.QIcon("share/copy16.png"))
         self.ui.geo_tools_table.addContextMenu(
             "Delete", lambda: self.on_tool_delete(all=None), icon=QtGui.QIcon("share/delete32.png"))
+
+        # Show/Hide Advanced Options
+        if self.app.defaults["global_advanced"] is False:
+            self.ui.level.setText('<span style="color:green;"><b>BASIC Mode</b></span>')
+
+            self.ui.geo_tools_table.setColumnHidden(2, True)
+            self.ui.geo_tools_table.setColumnHidden(3, True)
+            self.ui.geo_tools_table.setColumnHidden(4, True)
+            self.ui.addtool_entry_lbl.hide()
+            self.ui.addtool_entry.hide()
+            self.ui.addtool_btn.hide()
+            self.ui.copytool_btn.hide()
+            self.ui.deltool_btn.hide()
+            self.ui.endzlabel.hide()
+            self.ui.gendz_entry.hide()
+            self.ui.fr_rapidlabel.hide()
+            self.ui.cncfeedrate_rapid_entry.hide()
+            self.ui.extracut_cb.hide()
+            self.ui.pdepth_label.hide()
+            self.ui.pdepth_entry.hide()
+            self.ui.feedrate_probe_label.hide()
+            self.ui.feedrate_probe_entry.hide()
+        else:
+            self.ui.level.setText('<span style="color:red;"><b>ADVANCED Mode</b></span>')
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
@@ -4761,6 +4816,13 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         # set the kind of geometries are plotted by default with plot2() from camlib.CNCJob
         self.ui.cncplot_method_combo.set_value(self.app.defaults["cncjob_plot_kind"])
+
+        # Show/Hide Advanced Options
+        if self.app.defaults["global_advanced"] is False:
+            self.ui.level.setText('<span style="color:green;"><b>BASIC Mode</b></span>')
+
+        else:
+            self.ui.level.setText('<span style="color:red;"><b>ADVANCED Mode</b></span>')
 
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)

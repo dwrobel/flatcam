@@ -1166,6 +1166,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 			<td>&nbsp;</td>
 		</tr>
         <tr height="20">
+			<td height="20"><strong>ALT+R</strong></td>
+			<td>&nbsp;Editor Transformation Tool</td>
+		</tr>
+        <tr height="20">
 			<td height="20"><strong>ALT+X</strong></td>
 			<td>&nbsp;Offset shape on X axis</td>
 		</tr>
@@ -3104,6 +3108,25 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # to the main layout of this TAB
         self.layout.addLayout(self.form_box)
 
+        hlay = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay)
+
+        # Advanced CB
+        self.advanced_cb = FCCheckBox('Show Advanced Options')
+        self.advanced_cb.setToolTip(
+            "When checked, Advanced Options will be\n"
+            "displayed in the Selected Tab for all\n"
+            "kind of objects."
+        )
+        # self.advanced_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        hlay.addWidget(self.advanced_cb)
+        hlay.addStretch()
+
+        self.form_box_2 = QtWidgets.QFormLayout()
+        self.layout.addLayout(self.form_box_2)
+
+        self.layout.addStretch()
+
 
 class GerberGenPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):
@@ -3519,8 +3542,11 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
             self.optimization_time_label.setDisabled(True)
             self.optimization_time_entry.setDisabled(True)
 
-        ## Create CNC Job
-        self.cncjob_label = QtWidgets.QLabel('<b>Create CNC Job</b>')
+        ######################
+        ## ADVANCED OPTIONS ##
+        ######################
+
+        self.cncjob_label = QtWidgets.QLabel('<b>Advanced Options:</b>')
         self.cncjob_label.setToolTip(
             "Parameters used to create a CNC Job object\n"
             "for this drill object that are not changed very often."
@@ -3965,9 +3991,9 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
 
 
         # ------------------------------
-        ## Create CNC Job
+        ## Advanced Options
         # ------------------------------
-        self.cncjob_label = QtWidgets.QLabel('<b>Create CNC Job:</b>')
+        self.cncjob_label = QtWidgets.QLabel('<b>Advanced Options:</b>')
         self.cncjob_label.setToolTip(
             "Parameters to create a CNC Job object\n"
             "tracing the contours of a Geometry object."

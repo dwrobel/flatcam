@@ -311,6 +311,7 @@ class App(QtCore.QObject):
             "global_send_stats": self.general_defaults_form.general_app_group.send_stats_cb,
             "global_project_at_startup": self.general_defaults_form.general_app_group.project_startup_cb,
             "global_project_autohide": self.general_defaults_form.general_app_group.project_autohide_cb,
+            "global_advanced": self.general_defaults_form.general_app_group.advanced_cb,
 
             "global_gridx": self.general_defaults_form.general_gui_group.gridx_entry,
             "global_gridy": self.general_defaults_form.general_gui_group.gridy_entry,
@@ -486,6 +487,7 @@ class App(QtCore.QObject):
             "global_send_stats": True,
             "global_project_at_startup": False,
             "global_project_autohide": True,
+            "global_advanced": False,
 
             "global_gridx": 1.0,
             "global_gridy": 1.0,
@@ -3597,21 +3599,32 @@ class App(QtCore.QObject):
         # work only if the notebook tab on focus is the Selected_Tab and only if the object is Geometry
         if notebook_widget_name == 'selected_tab':
             if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
-                tool_add_popup = FCInputDialog(title="New Tool ...",
-                                               text='Enter a Tool Diameter:',
-                                               min=0.0000, max=99.9999, decimals=4)
-                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+                # Tool add works for Geometry only if Advanced is True in Preferences
+                if self.defaults["global_advanced"] is True:
+                    tool_add_popup = FCInputDialog(title="New Tool ...",
+                                                   text='Enter a Tool Diameter:',
+                                                   min=0.0000, max=99.9999, decimals=4)
+                    tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
 
-                val, ok = tool_add_popup.get_value()
-                if ok:
-                    if float(val) == 0:
+                    val, ok = tool_add_popup.get_value()
+                    if ok:
+                        if float(val) == 0:
+                            self.inform.emit(
+                                "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
+                            return
+                        self.collection.get_active().on_tool_add(dia=float(val))
+                    else:
                         self.inform.emit(
-                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
-                        return
-                    self.collection.get_active().on_tool_add(dia=float(val))
+                            "[WARNING_NOTCL] Adding Tool cancelled ...")
                 else:
-                    self.inform.emit(
-                        "[WARNING_NOTCL] Adding Tool cancelled ...")
+                    msgbox = QtWidgets.QMessageBox()
+                    msgbox.setText("Adding Tool works only when Advanced is checked.\n"
+                                   "Go to Preferences -> General - Show Advanced Options.")
+                    msgbox.setWindowTitle("Tool adding ...")
+                    msgbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                    msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                    msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                    msgbox.exec_()
 
         # work only if the notebook tab on focus is the Tools_Tab
         if notebook_widget_name == 'tool_tab':
