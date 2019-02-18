@@ -3129,6 +3129,23 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         hlay.addWidget(self.advanced_cb)
         hlay.addStretch()
 
+        hlay1 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay1)
+
+        # Project LZMA Comppression Level
+        self.compress_combo = FCComboBox()
+        self.compress_label = QtWidgets.QLabel('Compress Level:')
+        self.compress_label.setToolTip(
+            "The level of compression used when saving\n"
+            "a FlatCAM project. Higher value means better compression\n"
+            "but require more RAM and time."
+        )
+        # self.advanced_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.compress_combo.addItems([str(i) for i in range(10)])
+
+        hlay1.addWidget(self.compress_label)
+        hlay1.addWidget(self.compress_combo)
+
         self.form_box_2 = QtWidgets.QFormLayout()
         self.layout.addLayout(self.form_box_2)
 
