@@ -568,12 +568,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_edit_toolbar.addSeparator()
         self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/cutpath32.png'), 'Cut Path')
         self.geo_copy_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), "Copy Shape(s)")
-        self.geo_rotate_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/rotate.png'), "Rotate Shape(s)")
-        self.geo_transform_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/transform.png'), "Transformations'")
 
         self.geo_delete_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'),
                                                               "Delete Shape '-'")
-
+        self.geo_transform_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/transform.png'), "Transformations")
         self.geo_edit_toolbar.addSeparator()
         self.geo_move_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Objects ")
 
@@ -1144,6 +1142,38 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 			<td>&nbsp;Polygon Union Tool</td>
 		</tr>
 		<tr height="20">
+			<td height="20"><strong>X</strong></td>
+			<td>&nbsp;Flip shape on X axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>Y</strong></td>
+			<td>&nbsp;Flip shape on Y axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+        <tr height="20">
+			<td height="20"><strong>SHIFT+X</strong></td>
+			<td>&nbsp;Skew shape on X axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+Y</strong></td>
+			<td>&nbsp;Skew shape on Y axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+        <tr height="20">
+			<td height="20"><strong>ALT+X</strong></td>
+			<td>&nbsp;Offset shape on X axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+Y</strong></td>
+			<td>&nbsp;Offset shape on Y axis</td>
+		</tr>
+		<tr height="20">
 			<td height="20">&nbsp;</td>
 			<td>&nbsp;</td>
 		</tr>
@@ -1491,7 +1521,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.shell_btn = self.toolbartools.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
 
         ### Drill Editor Toolbar ###
-        self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select 'Esc'")
+        self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select")
         self.add_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), 'Add Drill Hole')
         self.add_drill_array_btn = self.exc_edit_toolbar.addAction(
             QtGui.QIcon('share/addarray16.png'), 'Add Drill Hole Array')
@@ -1526,12 +1556,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/cutpath32.png'), 'Cut Path')
-        self.geo_copy_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), "Copy Objects 'c'")
-        self.geo_rotate_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/rotate.png'), "Rotate Objects 'Space'")
-        self.geo_delete_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'), "Delete Shape '-'")
+        self.geo_copy_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), "Copy Objects")
+        self.geo_delete_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'), "Delete Shape")
+        self.geo_transform_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/transform.png'), "Transformations")
 
         self.geo_edit_toolbar.addSeparator()
-        self.geo_move_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Objects 'm'")
+        self.geo_move_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Objects")
 
         ### Snap Toolbar ###
         # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
@@ -1908,7 +1938,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     return
 
             elif modifiers == QtCore.Qt.ShiftModifier:
-                pass
+                # Skew on X axis
+                if key == QtCore.Qt.Key_X or key == 'X':
+                    self.app.geo_editor.transform_tool.on_skewx_key()
+                    return
+
+                # Skew on Y axis
+                if key == QtCore.Qt.Key_Y or key == 'Y':
+                    self.app.geo_editor.transform_tool.on_skewy_key()
+                    return
             elif modifiers == QtCore.Qt.AltModifier:
 
                 # Transformation Tool
@@ -1916,6 +1954,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.geo_editor.select_tool('transform')
                     return
 
+                # Offset on X axis
+                if key == QtCore.Qt.Key_X or key == 'X':
+                    self.app.geo_editor.transform_tool.on_offx_key()
+                    return
+
+                # Offset on Y axis
+                if key == QtCore.Qt.Key_Y or key == 'Y':
+                    self.app.geo_editor.transform_tool.on_offy_key()
+                    return
             elif modifiers == QtCore.Qt.NoModifier:
                 # toggle display of Notebook area
                 if key == QtCore.Qt.Key_QuoteLeft or key == '`':
@@ -1971,9 +2018,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Move
                 if key == QtCore.Qt.Key_Space or key == 'Space':
-                    self.app.geo_editor.launched_from_shortcuts = True
-                    self.app.ui.geo_rotate_btn.setChecked(True)
-                    self.app.geo_editor.on_tool_select('rotate')
+                    self.app.geo_editor.transform_tool.on_rotate_key()
 
                 if key == QtCore.Qt.Key_Minus or key == '-':
                     self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'],
@@ -2103,6 +2148,16 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 if key == QtCore.Qt.Key_V or key == 'V':
                     self.app.on_zoom_fit(None)
+
+                # Flip on X axis
+                if key == QtCore.Qt.Key_X or key == 'X':
+                    self.app.geo_editor.transform_tool.on_flipx()
+                    return
+
+                # Flip on Y axis
+                if key == QtCore.Qt.Key_Y or key == 'Y':
+                    self.app.geo_editor.transform_tool.on_flipy()
+                    return
 
                 # Propagate to tool
                 response = None
@@ -2374,7 +2429,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         grect = self.geometry()
 
         # self.splitter.sizes()[0] is actually the size of the "notebook"
-        self.geom_update.emit(grect.x(), grect.y(), grect.width(), grect.height(), self.splitter.sizes()[0])
+        if not self.isMaximized():
+            self.geom_update.emit(grect.x(), grect.y(), grect.width(), grect.height(), self.splitter.sizes()[0])
+
         self.final_save.emit()
 
         if self.app.should_we_quit is True:
@@ -2387,6 +2444,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             # save toolbar state to file
             settings = QSettings("Open Source", "FlatCAM")
             settings.setValue('saved_gui_state', self.saveState())
+            settings.setValue('maximized_gui', self.isMaximized())
 
             # This will write the setting to the platform specific storage.
             del settings
@@ -2409,8 +2467,13 @@ class GeneralPreferencesUI(QtWidgets.QWidget):
         self.general_gui_group = GeneralGUIPrefGroupUI()
         self.general_gui_group.setFixedWidth(250)
 
+        self.general_gui_set_group = GeneralGUISetGroupUI()
+        self.general_gui_set_group.setFixedWidth(250)
+
         self.layout.addWidget(self.general_app_group)
         self.layout.addWidget(self.general_gui_group)
+        self.layout.addWidget(self.general_gui_set_group)
+
         self.layout.addStretch()
 
 
@@ -2774,6 +2837,48 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_11.addWidget(self.sel_draw_color_button)
         self.form_box_child_11.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
+        # Just to add empty rows
+        self.spacelabel = QtWidgets.QLabel('')
+
+        # Add (label - input field) pair to the QFormLayout
+        self.form_box.addRow(self.spacelabel, self.spacelabel)
+
+        self.form_box.addRow(self.gridx_label, self.gridx_entry)
+        self.form_box.addRow(self.gridy_label, self.gridy_entry)
+        self.form_box.addRow(self.snap_max_label, self.snap_max_dist_entry)
+
+        self.form_box.addRow(self.workspace_lbl, self.workspace_cb)
+        self.form_box.addRow(self.workspace_type_lbl, self.wk_cb)
+        self.form_box.addRow(self.spacelabel, self.spacelabel)
+        self.form_box.addRow(self.pf_color_label, self.form_box_child_1)
+        self.form_box.addRow(self.pf_alpha_label, self.form_box_child_2)
+        self.form_box.addRow(self.pl_color_label, self.form_box_child_3)
+        self.form_box.addRow(self.sf_color_label, self.form_box_child_4)
+        self.form_box.addRow(self.sf_alpha_label, self.form_box_child_5)
+        self.form_box.addRow(self.sl_color_label, self.form_box_child_6)
+        self.form_box.addRow(self.alt_sf_color_label, self.form_box_child_7)
+        self.form_box.addRow(self.alt_sf_alpha_label, self.form_box_child_8)
+        self.form_box.addRow(self.alt_sl_color_label, self.form_box_child_9)
+        self.form_box.addRow(self.draw_color_label, self.form_box_child_10)
+        self.form_box.addRow(self.sel_draw_color_label, self.form_box_child_11)
+
+        self.form_box.addRow(self.spacelabel, self.spacelabel)
+
+        # Add the QFormLayout that holds the Application general defaults
+        # to the main layout of this TAB
+        self.layout.addLayout(self.form_box)
+
+
+class GeneralGUISetGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        super(GeneralGUISetGroupUI, self).__init__(self)
+
+        self.setTitle(str("GUI Settings"))
+
+        # Create a form layout for the Application general settings
+        self.form_box = QtWidgets.QFormLayout()
+
+
         # Layout selection
         self.layout_label = QtWidgets.QLabel('Layout:')
         self.layout_label.setToolTip(
@@ -2813,35 +2918,24 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
             self.hdpi_cb.set_value(False)
         self.hdpi_cb.stateChanged.connect(self.handle_hdpi)
 
+        # Clear Settings
+        self.clear_label = QtWidgets.QLabel('Clear GUI Settings:')
+        self.clear_label.setToolTip(
+            "Clear the GUI settings for FlatCAM,\n"
+            "such as: layout, gui state, style, hdpi support etc."
+        )
+        self.clear_btn = FCButton("Clear")
+        self.clear_btn.clicked.connect(self.handle_clear)
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
         # Add (label - input field) pair to the QFormLayout
         self.form_box.addRow(self.spacelabel, self.spacelabel)
 
-        self.form_box.addRow(self.gridx_label, self.gridx_entry)
-        self.form_box.addRow(self.gridy_label, self.gridy_entry)
-        self.form_box.addRow(self.snap_max_label, self.snap_max_dist_entry)
-
-        self.form_box.addRow(self.workspace_lbl, self.workspace_cb)
-        self.form_box.addRow(self.workspace_type_lbl, self.wk_cb)
-        self.form_box.addRow(self.spacelabel, self.spacelabel)
-        self.form_box.addRow(self.pf_color_label, self.form_box_child_1)
-        self.form_box.addRow(self.pf_alpha_label, self.form_box_child_2)
-        self.form_box.addRow(self.pl_color_label, self.form_box_child_3)
-        self.form_box.addRow(self.sf_color_label, self.form_box_child_4)
-        self.form_box.addRow(self.sf_alpha_label, self.form_box_child_5)
-        self.form_box.addRow(self.sl_color_label, self.form_box_child_6)
-        self.form_box.addRow(self.alt_sf_color_label, self.form_box_child_7)
-        self.form_box.addRow(self.alt_sf_alpha_label, self.form_box_child_8)
-        self.form_box.addRow(self.alt_sl_color_label, self.form_box_child_9)
-        self.form_box.addRow(self.draw_color_label, self.form_box_child_10)
-        self.form_box.addRow(self.sel_draw_color_label, self.form_box_child_11)
-
-        self.form_box.addRow(self.spacelabel, self.spacelabel)
         self.form_box.addRow(self.layout_label, self.layout_combo)
         self.form_box.addRow(self.style_label, self.style_combo)
         self.form_box.addRow(self.hdpi_label, self.hdpi_cb)
+        self.form_box.addRow(self.clear_label, self.clear_btn)
 
         # Add the QFormLayout that holds the Application general defaults
         # to the main layout of this TAB
@@ -2856,13 +2950,33 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         del settings
 
     def handle_hdpi(self, state):
-        # set current style
+        # set current HDPI
         settings = QSettings("Open Source", "FlatCAM")
         settings.setValue('hdpi', state)
 
         # This will write the setting to the platform specific storage.
         del settings
 
+    def handle_clear(self):
+        msgbox = QtWidgets.QMessageBox()
+        # msgbox.setText("<B>Save changes ...</B>")
+        msgbox.setText("Are you sure you want to delete the GUI Settings? "
+                       "\n"
+                       )
+        msgbox.setWindowTitle("Clear GUI Settings")
+        msgbox.setWindowIcon(QtGui.QIcon('share/trash32.png'))
+        msgbox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        msgbox.setDefaultButton(QtWidgets.QMessageBox.No)
+
+        response = msgbox.exec_()
+
+        if response == QtWidgets.QMessageBox.Yes:
+            settings = QSettings("Open Source", "FlatCAM")
+            for key in settings.allKeys():
+                settings.remove(key)
+            # This will write the setting to the platform specific storage.
+            del settings
+            self.app.inform.emit("[success] GUI settings deleted ...")
 
 class GeneralAppPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):

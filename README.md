@@ -20,7 +20,11 @@ CAD program, and create G-Code for Isolation routing.
 - finished adding Transform Tool in Geometry Editor - everything is working as intended
 - fixed a bug in Tool Transform that made the user to not be able to capture the click coordinates with SHIFT + LMB click combo
 - added the ability to choose an App QStyle out of the offered choices (different for each OS) to be applied at the next app start (Preferences -> General -> Gui Pref -> Style Combobox)
-- added support for FlatCAM usage with High DPI monitors (4k). It is applied on the next app startup after change in Preferences -> General -> Gui Pref -> HDPI Support Checkbox
+- added support for FlatCAM usage with High DPI monitors (4k). It is applied on the next app startup after change in Preferences -> General -> Gui Settings -> HDPI Support Checkbox
+- made the app not remember the window size if the app is maximized and remember in QSettings if it was maximized. This way we can restore the maximized state but restore the windows size unmaximized
+- added a button to clear de GUI preferences in Preferences -> General -> Gui Settings -> Clear GUI Settings
+- added key shortcuts for the shape transformations within Geometry Editor: X, Y keys for Flip(mirror), SHIFT+X, SHIFT+Y combo keys for Skew and ALT+X, ALT+Y combo keys for Offset
+- adjusted the plotcanvas.zomm_fit() function so the objects are better fit into view (with a border around) 
 
 17.02.2019
 

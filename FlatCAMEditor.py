@@ -27,7 +27,7 @@ from numpy.linalg import solve
 
 from rtree import index as rtindex
 from GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCEntry2, FCComboBox, FCTextAreaRich, \
-    VerticalScrollArea, FCTable, FCDoubleSpinner, FCButton, EvalEntry2
+    VerticalScrollArea, FCTable, FCDoubleSpinner, FCButton, EvalEntry2, FCInputDialog
 from ParseFont import *
 from vispy.scene.visuals import Markers
 from copy import copy
@@ -109,6 +109,16 @@ class BufferSelectionTool(FlatCAMTool):
 
         # Init GUI
         self.buffer_distance_entry.set_value(0.01)
+
+    def run(self):
+        self.app.report_usage("Geo Editor ToolBuffer()")
+        FlatCAMTool.run(self)
+
+        # if the splitter us hidden, display it
+        if self.app.ui.splitter.sizes()[0] == 0:
+            self.app.ui.splitter.setSizes([1, 1])
+
+        self.app.ui.notebook.setTabText(2, "Buffer Tool")
 
     def on_buffer(self):
         try:
@@ -426,6 +436,7 @@ class PaintOptionsTool(FlatCAMTool):
         )
         grid.addWidget(ovlabel, 1, 0)
         self.paintoverlap_entry = FCEntry()
+        self.paintoverlap_entry.setValidator(QtGui.QDoubleValidator(0.0000, 1.0000, 4))
         grid.addWidget(self.paintoverlap_entry, 1, 1)
 
         # Margin
@@ -1237,9 +1248,10 @@ class TransformEditorTool(FlatCAMTool):
                         py = 0.5 * (yminimal + ymaximal)
 
                         sel_sha.rotate(-num, point=(px, py))
-                        self.draw_app.add_shape(DrawToolShape(sel_sha.geo))
+                        self.draw_app.replot()
+                        # self.draw_app.add_shape(DrawToolShape(sel_sha.geo))
 
-                    self.draw_app.transform_complete.emit()
+                    # self.draw_app.transform_complete.emit()
 
                     self.app.inform.emit("[success] Done. Rotate completed.")
 
@@ -1294,9 +1306,11 @@ class TransformEditorTool(FlatCAMTool):
                         elif axis is 'Y':
                             sha.mirror('Y', (px, py))
                             self.app.inform.emit('[success] Flip on the X axis done ...')
-                        self.draw_app.add_shape(DrawToolShape(sha.geo))
+                        self.draw_app.replot()
 
-                    self.draw_app.transform_complete.emit()
+                    #     self.draw_app.add_shape(DrawToolShape(sha.geo))
+                    #
+                    # self.draw_app.transform_complete.emit()
 
                     self.app.progress.emit(100)
 
@@ -1332,9 +1346,11 @@ class TransformEditorTool(FlatCAMTool):
                             sha.skew(num, 0, point=(xminimal, yminimal))
                         elif axis is 'Y':
                             sha.skew(0, num, point=(xminimal, yminimal))
-                        self.draw_app.add_shape(DrawToolShape(sha.geo))
+                        self.draw_app.replot()
 
-                    self.draw_app.transform_complete.emit()
+                    #     self.draw_app.add_shape(DrawToolShape(sha.geo))
+                    #
+                    # self.draw_app.transform_complete.emit()
 
                     self.app.inform.emit('[success] Skew on the %s axis done ...' % str(axis))
                     self.app.progress.emit(100)
@@ -1381,9 +1397,11 @@ class TransformEditorTool(FlatCAMTool):
 
                     for sha in shape_list:
                         sha.scale(xfactor, yfactor, point=(px, py))
-                        self.draw_app.add_shape(DrawToolShape(sha.geo))
+                        self.draw_app.replot()
 
-                    self.draw_app.transform_complete.emit()
+                    #     self.draw_app.add_shape(DrawToolShape(sha.geo))
+                    #
+                    # self.draw_app.transform_complete.emit()
 
                     self.app.inform.emit('[success] Scale on the %s axis done ...' % str(axis))
                     self.app.progress.emit(100)
@@ -1418,9 +1436,11 @@ class TransformEditorTool(FlatCAMTool):
                             sha.offset((num, 0))
                         elif axis is 'Y':
                             sha.offset((0, num))
-                        self.draw_app.add_shape(DrawToolShape(sha.geo))
+                        self.draw_app.replot()
 
-                    self.draw_app.transform_complete.emit()
+                    #     self.draw_app.add_shape(DrawToolShape(sha.geo))
+                    #
+                    # self.draw_app.transform_complete.emit()
 
                     self.app.inform.emit('[success] Offset on the %s axis done ...' % str(axis))
                     self.app.progress.emit(100)
@@ -1428,6 +1448,90 @@ class TransformEditorTool(FlatCAMTool):
                 except Exception as e:
                     self.app.inform.emit("[ERROR_NOTCL] Due of %s, Offset action was not executed." % str(e))
                     return
+
+    def on_rotate_key(self):
+        val_box = FCInputDialog(title="Rotate ...",
+                                text='Enter an Angle Value (degrees):',
+                                min=-359.9999, max=360.0000, decimals=4)
+        val_box.setWindowIcon(QtGui.QIcon('share/rotate.png'))
+
+        val, ok = val_box.get_value()
+        if ok:
+            self.on_rotate(val=val)
+            self.app.inform.emit(
+                "[success] Geometry shape rotate done...")
+            return
+        else:
+            self.app.inform.emit(
+                "[WARNING_NOTCL] Geometry shape rotate cancelled...")
+
+    def on_offx_key(self):
+        units = self.app.general_options_form.general_app_group.units_radio.get_value().lower()
+
+        val_box = FCInputDialog(title="Offset on X axis ...",
+                                text=('Enter a distance Value (%s):' % str(units)),
+                                min=-9999.9999, max=10000.0000, decimals=4)
+        val_box.setWindowIcon(QtGui.QIcon('share/offsetx32.png'))
+
+        val, ok = val_box.get_value()
+        if ok:
+            self.on_offx(val=val)
+            self.app.inform.emit(
+                "[success] Geometry shape offset on X axis done...")
+            return
+        else:
+            self.app.inform.emit(
+                "[WARNING_NOTCL] Geometry shape offset X cancelled...")
+
+    def on_offy_key(self):
+        units = self.app.general_options_form.general_app_group.units_radio.get_value().lower()
+
+        val_box = FCInputDialog(title="Offset on Y axis ...",
+                                text=('Enter a distance Value (%s):' % str(units)),
+                                min=-9999.9999, max=10000.0000, decimals=4)
+        val_box.setWindowIcon(QtGui.QIcon('share/offsety32.png'))
+
+        val, ok = val_box.get_value()
+        if ok:
+            self.on_offx(val=val)
+            self.app.inform.emit(
+                "[success] Geometry shape offset on Y axis done...")
+            return
+        else:
+            self.app.inform.emit(
+                "[WARNING_NOTCL] Geometry shape offset Y cancelled...")
+
+    def on_skewx_key(self):
+        val_box = FCInputDialog(title="Skew on X axis ...",
+                                text='Enter an Angle Value (degrees):',
+                                min=-359.9999, max=360.0000, decimals=4)
+        val_box.setWindowIcon(QtGui.QIcon('share/skewX.png'))
+
+        val, ok = val_box.get_value()
+        if ok:
+            self.on_skewx(val=val)
+            self.app.inform.emit(
+                "[success] Geometry shape skew on X axis done...")
+            return
+        else:
+            self.app.inform.emit(
+                "[WARNING_NOTCL] Geometry shape skew X cancelled...")
+
+    def on_skewy_key(self):
+        val_box = FCInputDialog(title="Skew on Y axis ...",
+                                text='Enter an Angle Value (degrees):',
+                                min=-359.9999, max=360.0000, decimals=4)
+        val_box.setWindowIcon(QtGui.QIcon('share/skewY.png'))
+
+        val, ok = val_box.get_value()
+        if ok:
+            self.on_skewx(val=val)
+            self.app.inform.emit(
+                "[success] Geometry shape skew on Y axis done...")
+            return
+        else:
+            self.app.inform.emit(
+                "[WARNING_NOTCL] Geometry shape skew Y cancelled...")
 
 
 class DrawToolShape(object):
@@ -2620,57 +2724,6 @@ class FCTransform(FCShapeTool):
         self.draw_app.transform_tool.run()
 
 
-class FCRotate(FCShapeTool):
-    def __init__(self, draw_app):
-        FCShapeTool.__init__(self, draw_app)
-        self.name = 'rotate'
-
-        if self.draw_app.launched_from_shortcuts is True:
-            self.draw_app.launched_from_shortcuts = False
-            self.set_origin(
-                self.draw_app.snap(self.draw_app.x, self.draw_app.y))
-
-        geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
-
-        if isinstance(geo, DrawToolShape) and geo.geo is not None:
-            self.draw_app.draw_utility_geometry(geo=geo)
-
-        self.draw_app.app.inform.emit("Click anywhere to finish the Rotation")
-
-    def set_origin(self, origin):
-        self.origin = origin
-
-    def make(self):
-        # Create new geometry
-        # dx = self.origin[0]
-        # dy = self.origin[1]
-        self.geometry = [DrawToolShape(affinity.rotate(geom.geo, angle = -90, origin='center'))
-                         for geom in self.draw_app.get_selected()]
-        # Delete old
-        self.draw_app.delete_selected()
-        self.complete = True
-        self.draw_app.app.inform.emit("[success]Done. Geometry rotate completed.")
-
-    def on_key(self, key):
-        if key == 'Enter' or key == QtCore.Qt.Key_Enter:
-            self.make()
-            return "Done"
-
-    def click(self, point):
-        self.make()
-        return "Done."
-
-    def utility_geometry(self, data=None):
-        """
-        Temporary geometry on screen while using this tool.
-
-        :param data:
-        :return:
-        """
-        return DrawToolUtilityShape([affinity.rotate(geom.geo, angle = -90, origin='center')
-                                     for geom in self.draw_app.get_selected()])
-
-
 class FCDrillAdd(FCShapeTool):
     """
     Resulting type: MultiLineString
@@ -3244,8 +3297,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
                        "constructor": FCPaint},
             "move": {"button": self.app.ui.geo_move_btn,
                      "constructor": FCMove},
-            "rotate": {"button": self.app.ui.geo_rotate_btn,
-                     "constructor": FCRotate},
             "transform": {"button": self.app.ui.geo_transform_btn,
                       "constructor": FCTransform},
             "copy": {"button": self.app.ui.geo_copy_btn,
@@ -4459,9 +4510,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         results = []
 
-        if tooldia <= overlap:
+        if overlap >= 1:
             self.app.inform.emit(
-                "[ERROR_NOTCL] Could not do Paint. Overlap value has to be less than Tool Dia value.")
+                "[ERROR_NOTCL] Could not do Paint. Overlap value has to be less than 1.00 (100%).")
             return
 
         def recurse(geometry, reset=True):

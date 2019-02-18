@@ -1264,7 +1264,7 @@ class App(QtCore.QObject):
         self.general_defaults_form.general_gui_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
         self.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
 
-        self.general_defaults_form.general_gui_group.layout_combo.activated.connect(self.on_layout)
+        self.general_defaults_form.general_gui_set_group.layout_combo.activated.connect(self.on_layout)
 
         # Modify G-CODE Plot Area TAB
         self.ui.code_editor.textChanged.connect(self.handleTextChanged)
@@ -3378,7 +3378,7 @@ class App(QtCore.QObject):
         if lay:
             current_layout = lay
         else:
-            current_layout = self.general_defaults_form.general_gui_group.layout_combo.get_value().lower()
+            current_layout = self.general_defaults_form.general_gui_set_group.layout_combo.get_value().lower()
 
         settings = QSettings("Open Source", "FlatCAM")
         settings.setValue('layout', current_layout)
@@ -6276,6 +6276,12 @@ class App(QtCore.QObject):
                                 self.defaults["global_def_win_w"],
                                 self.defaults["global_def_win_h"])
             self.ui.splitter.setSizes([self.defaults["def_notebook_width"], 0])
+
+            settings = QSettings("Open Source", "FlatCAM")
+            if settings.contains("maximized_gui"):
+                maximized_ui = settings.value('maximized_gui', type=bool)
+                if maximized_ui is True:
+                    self.ui.showMaximized()
         except KeyError:
             pass
 
