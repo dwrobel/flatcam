@@ -1220,6 +1220,7 @@ class TransformEditorTool(FlatCAMTool):
                     for sha in shape_list:
                         self.draw_app.add_shape(sha)
 
+                    shape_list[:] = []
                     self.draw_app.delete_selected()
                     # self.draw_app.complete = True
                     self.draw_app.replot()
@@ -3860,7 +3861,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
                             # add the object to the selected shapes
                             self.selected.append(obj)
                     else:
-                        self.selected.append(obj)
+                        if obj not in self.selected:
+                            self.selected.append(obj)
         self.replot()
 
     def draw_utility_geometry(self, geo):
