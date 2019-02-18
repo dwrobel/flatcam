@@ -1375,8 +1375,6 @@ class Geometry(object):
         except AttributeError:
             self.app.inform.emit("[ERROR_NOTCL] Failed to mirror. No object selected")
 
-
-
     def rotate(self, angle, point):
         """
         Rotate an object by an angle (in degrees) around the provided coordinates.

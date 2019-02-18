@@ -9,6 +9,14 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+18.02.2019
+
+- added protections again wrong values for the Buffer and Paint Tool in Geometry Editor
+- the Paint Tool in Geometry Editor will load the default values from Tool Paint in Preferences
+- when the Tools in Geometry Editor are activated, the notebook with the Tool Tab will be unhidden. After execution the notebook will hide again for the Buffer Tool.
+- changed the font in Tool names
+- added in Geometry Editor a new Tool: Transformation Tool. It still has some bugs, though ...
+
 17.02.2019
 
 - changed some status bar messages
@@ -21,6 +29,8 @@ CAD program, and create G-Code for Isolation routing.
 - when pressing Escape in Geometry Editor it will automatically deselect any shape not only the currently selected tool.
 - when deselecting an object in Project menu the status bar selection message is deleted
 - added ability to save the Gerber file content that is stored in FlatCAM on Gerber file loading. It's useful to recover from saved FlatCAM projects when the source files are no longer available.
+- fixed an issue where the function handler that changed the layout had a parameter changed accidentally by an index value passed by the 'activate' signal to which was connected
+- fixed bug in paint function in Geometry Editor that didn't allow painting due of overlap value
 
 16.02.2019
 

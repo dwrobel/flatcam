@@ -20,7 +20,14 @@ class ToolTransform(FlatCAMTool):
         self.transform_lay = QtWidgets.QVBoxLayout()
         self.layout.addLayout(self.transform_lay)
         ## Title
-        title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font><br>" % self.toolName)
+        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label.setStyleSheet("""
+                        QLabel
+                        {
+                            font-size: 16px;
+                            font-weight: bold;
+                        }
+                        """)
         self.transform_lay.addWidget(title_label)
 
         self.empty_label = QtWidgets.QLabel("")
@@ -368,7 +375,7 @@ class ToolTransform(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, "Transform Tool")
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+R', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+T', **kwargs)
 
     def set_tool_ui(self):
         ## Initialize form

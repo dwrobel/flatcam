@@ -1470,7 +1470,7 @@ class App(QtCore.QObject):
         if not factory_defaults:
             self.save_factory_defaults(silent=False)
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
-            self.on_layout(layout='compact')
+            self.on_layout(index=None, lay='compact')
         factory_file.close()
 
         # and then make the  factory_defaults.FlatConfig file read_only os it can't be modified after creation.
@@ -3373,13 +3373,12 @@ class App(QtCore.QObject):
             self.general_defaults_form.general_gui_group.workspace_cb.setChecked(True)
         self.on_workspace()
 
-    def on_layout(self, layout=None):
+    def on_layout(self, index, lay=None):
         self.report_usage("on_layout()")
-
-        if layout is None:
-            current_layout= self.general_defaults_form.general_gui_group.layout_combo.get_value().lower()
+        if lay:
+            current_layout = lay
         else:
-            current_layout = layout
+            current_layout = self.general_defaults_form.general_gui_group.layout_combo.get_value().lower()
 
         settings = QSettings("Open Source", "FlatCAM")
         settings.setValue('layout', current_layout)

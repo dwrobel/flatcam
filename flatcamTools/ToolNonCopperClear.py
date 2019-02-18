@@ -24,7 +24,14 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.tools_frame.setLayout(self.tools_box)
 
         ## Title
-        title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % self.toolName)
+        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label.setStyleSheet("""
+                        QLabel
+                        {
+                            font-size: 16px;
+                            font-weight: bold;
+                        }
+                        """)
         self.tools_box.addWidget(title_label)
 
         ## Form Layout

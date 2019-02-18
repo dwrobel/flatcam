@@ -14,7 +14,14 @@ class ToolPaint(FlatCAMTool, Gerber):
         Geometry.__init__(self, geo_steps_per_circle=self.app.defaults["geometry_circle_steps"])
 
         ## Title
-        title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % self.toolName)
+        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label.setStyleSheet("""
+                        QLabel
+                        {
+                            font-size: 16px;
+                            font-weight: bold;
+                        }
+                        """)
         self.layout.addWidget(title_label)
 
         self.tools_frame = QtWidgets.QFrame()

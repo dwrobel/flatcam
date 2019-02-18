@@ -22,7 +22,14 @@ class Properties(FlatCAMTool):
         self.properties_frame.setLayout(self.properties_box)
 
         ## Title
-        title_label = QtWidgets.QLabel("<font size=4><b>&nbsp;%s</b></font>" % self.toolName)
+        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label.setStyleSheet("""
+                        QLabel
+                        {
+                            font-size: 16px;
+                            font-weight: bold;
+                        }
+                        """)
         self.properties_box.addWidget(title_label)
 
         # self.layout.setMargin(0)  # PyQt4

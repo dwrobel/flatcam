@@ -378,10 +378,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_editor_menu.addSeparator()
         self.geo_move_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/move32.png'), "Move\tM")
         self.geo_buffer_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon('share/buffer16.png'), "Buffer Selection\tB"
+            QtGui.QIcon('share/buffer16.png'), "Buffer Tool\tB"
         )
         self.geo_paint_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon('share/paint16.png'), "Paint Selection\tI"
+            QtGui.QIcon('share/paint16.png'), "Paint Tool\tI"
+        )
+        self.geo_transform_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon('share/transform.png'), "Transform Tool\tALT+R"
         )
         self.geo_editor_menu.addSeparator()
         self.geo_cornersnap_menuitem = self.geo_editor_menu.addAction(
@@ -527,7 +530,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.shell_btn = self.toolbartools.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
 
         ### Drill Editor Toolbar ###
-        self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select 'Esc'")
+        self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select")
         self.add_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), 'Add Drill Hole')
         self.add_drill_array_btn = self.exc_edit_toolbar.addAction(
             QtGui.QIcon('share/addarray16.png'), 'Add Drill Hole Array')
@@ -541,7 +544,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.move_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Drill")
 
         ### Geometry Editor Toolbar ###
-        self.geo_select_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select 'Esc'")
+        self.geo_select_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select")
         self.geo_add_circle_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/circle32.png'), 'Add Circle')
         self.geo_add_arc_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/arc32.png'), 'Add Arc')
         self.geo_add_rectangle_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/rectangle32.png'),
@@ -564,13 +567,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/cutpath32.png'), 'Cut Path')
-        self.geo_copy_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), "Copy Objects 'c'")
-        self.geo_rotate_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/rotate.png'), "Rotate Objects 'Space'")
+        self.geo_copy_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), "Copy Shape(s)")
+        self.geo_rotate_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/rotate.png'), "Rotate Shape(s)")
+        self.geo_transform_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/transform.png'), "Transformations'")
+
         self.geo_delete_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'),
                                                               "Delete Shape '-'")
 
         self.geo_edit_toolbar.addSeparator()
-        self.geo_move_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Objects 'm'")
+        self.geo_move_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Objects ")
 
         ### Snap Toolbar ###
         # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
@@ -1139,16 +1144,20 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 			<td>&nbsp;Polygon Union Tool</td>
 		</tr>
 		<tr height="20">
-			<td height="20"><strong>X</strong></td>
-			<td>&nbsp;Polygon Cut Tool</td>
-		</tr>
-		<tr height="20">
 			<td height="20">&nbsp;</td>
 			<td>&nbsp;</td>
+		</tr>
+        <tr height="20">
+			<td height="20"><strong>CTRL+M</strong></td>
+			<td>&nbsp;Measurement Tool</td>
 		</tr>
 		<tr height="20">
 			<td height="20"><strong>CTRL+S</strong></td>
 			<td>&nbsp;Save Object and Exit Editor</td>
+		</tr>
+        <tr height="20">
+			<td height="20"><strong>CTRL+X</strong></td>
+			<td>&nbsp;Polygon Cut Tool</td>
 		</tr>
 		<tr height="20">
 			<td height="20">&nbsp;</td>
@@ -1720,7 +1729,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.transform_tool.run()
                     return
 
-                # Transformation Tool
+                # View Source Object Content
                 if key == QtCore.Qt.Key_S:
                     self.app.on_view_source()
                     return
@@ -1879,10 +1888,34 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.measurement_tool.run()
                     return
 
+                # Cut Action Tool
+                if key == QtCore.Qt.Key_X or key == 'X':
+                    if self.app.geo_editor.get_selected() is not None:
+                        self.app.geo_editor.cutpath()
+                    else:
+                        msg = 'Please first select a geometry item to be cutted\n' \
+                              'then select the geometry item that will be cutted\n' \
+                              'out of the first item. In the end press ~X~ key or\n' \
+                              'the toolbar button.'
+
+                        messagebox = QtWidgets.QMessageBox()
+                        messagebox.setText(msg)
+                        messagebox.setWindowTitle("Warning")
+                        messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                        messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                        messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                        messagebox.exec_()
+                    return
+
             elif modifiers == QtCore.Qt.ShiftModifier:
                 pass
             elif modifiers == QtCore.Qt.AltModifier:
-                pass
+
+                # Transformation Tool
+                if key == QtCore.Qt.Key_R or key == 'R':
+                    self.app.geo_editor.select_tool('transform')
+                    return
+
             elif modifiers == QtCore.Qt.NoModifier:
                 # toggle display of Notebook area
                 if key == QtCore.Qt.Key_QuoteLeft or key == '`':
@@ -1923,10 +1956,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                     # deselect any shape that might be selected
                     self.app.geo_editor.selected = []
+
                     self.app.geo_editor.replot()
-                    # self.select_btn.setChecked(True)
-                    # self.on_tool_select('select')
                     self.app.geo_editor.select_tool('select')
+
+                    # hide the notebook
+                    self.app.ui.splitter.setSizes([0, 1])
                     return
 
                 # Delete selected object
@@ -1970,11 +2005,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Copy
                 if key == QtCore.Qt.Key_C or key == 'C':
-                    self.app.ui.geo_copy_btn.setChecked(True)
-                    self.app.geo_editor.on_tool_select('copy')
-                    self.app.geo_editor.active_tool.set_origin(self.app.geo_editor.snap(
-                        self.app.geo_editor.x, self.app.geo_editor.y))
-                    self.app.inform.emit("Click on target point.")
+                    self.app.geo_editor.on_copy_click()
 
                 # Substract Tool
                 if key == QtCore.Qt.Key_E or key == 'E':
@@ -2072,24 +2103,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 if key == QtCore.Qt.Key_V or key == 'V':
                     self.app.on_zoom_fit(None)
-
-                # Cut Action Tool
-                if key == QtCore.Qt.Key_X or key == 'X':
-                    if self.app.geo_editor.get_selected() is not None:
-                        self.app.geo_editor.cutpath()
-                    else:
-                        msg = 'Please first select a geometry item to be cutted\n' \
-                              'then select the geometry item that will be cutted\n' \
-                              'out of the first item. In the end press ~X~ key or\n' \
-                              'the toolbar button.' \
-
-                        messagebox = QtWidgets.QMessageBox()
-                        messagebox.setText(msg)
-                        messagebox.setWindowTitle("Warning")
-                        messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-                        messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                        messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-                        messagebox.exec_()
 
                 # Propagate to tool
                 response = None

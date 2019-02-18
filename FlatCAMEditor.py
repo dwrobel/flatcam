@@ -27,7 +27,7 @@ from numpy.linalg import solve
 
 from rtree import index as rtindex
 from GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCEntry2, FCComboBox, FCTextAreaRich, \
-    VerticalScrollArea, FCTable, FCDoubleSpinner
+    VerticalScrollArea, FCTable, FCDoubleSpinner, FCButton, EvalEntry2
 from ParseFont import *
 from vispy.scene.visuals import Markers
 from copy import copy
@@ -47,7 +47,14 @@ class BufferSelectionTool(FlatCAMTool):
         self.draw_app = draw_app
 
         # Title
-        title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % self.toolName)
+        title_label = QtWidgets.QLabel("%s" % ('Editor ' + self.toolName))
+        title_label.setStyleSheet("""
+                        QLabel
+                        {
+                            font-size: 16px;
+                            font-weight: bold;
+                        }
+                        """)
         self.layout.addWidget(title_label)
 
         # this way I can hide/show the frame
@@ -63,7 +70,7 @@ class BufferSelectionTool(FlatCAMTool):
         self.buffer_tools_box.addLayout(form_layout)
 
         # Buffer distance
-        self.buffer_distance_entry = LengthEntry()
+        self.buffer_distance_entry = FCEntry()
         form_layout.addRow("Buffer distance:", self.buffer_distance_entry)
         self.buffer_corner_lbl = QtWidgets.QLabel("Buffer corner:")
         self.buffer_corner_lbl.setToolTip(
@@ -104,21 +111,51 @@ class BufferSelectionTool(FlatCAMTool):
         self.buffer_distance_entry.set_value(0.01)
 
     def on_buffer(self):
-        buffer_distance = self.buffer_distance_entry.get_value()
+        try:
+            buffer_distance = float(self.buffer_distance_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                buffer_distance = float(self.buffer_distance_entry.get_value().replace(',', '.'))
+                self.buffer_distance_entry.set_value(buffer_distance)
+            except ValueError:
+                self.app.inform.emit("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
+                                     "Add it and retry.")
+                return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
         join_style = self.buffer_corner_cb.currentIndex() + 1
         self.draw_app.buffer(buffer_distance, join_style)
 
     def on_buffer_int(self):
-        buffer_distance = self.buffer_distance_entry.get_value()
+        try:
+            buffer_distance = float(self.buffer_distance_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                buffer_distance = float(self.buffer_distance_entry.get_value().replace(',', '.'))
+                self.buffer_distance_entry.set_value(buffer_distance)
+            except ValueError:
+                self.app.inform.emit("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
+                                     "Add it and retry.")
+                return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
         join_style = self.buffer_corner_cb.currentIndex() + 1
         self.draw_app.buffer_int(buffer_distance, join_style)
 
     def on_buffer_ext(self):
-        buffer_distance = self.buffer_distance_entry.get_value()
+        try:
+            buffer_distance = float(self.buffer_distance_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                buffer_distance = float(self.buffer_distance_entry.get_value().replace(',', '.'))
+                self.buffer_distance_entry.set_value(buffer_distance)
+            except ValueError:
+                self.app.inform.emit("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
+                                     "Add it and retry.")
+                return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
         join_style = self.buffer_corner_cb.currentIndex() + 1
@@ -127,6 +164,7 @@ class BufferSelectionTool(FlatCAMTool):
     def hide_tool(self):
         self.buffer_tool_frame.hide()
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+
 
 class TextInputTool(FlatCAMTool):
     """
@@ -153,7 +191,14 @@ class TextInputTool(FlatCAMTool):
         self.text_tool_frame.setLayout(self.text_tools_box)
 
         # Title
-        title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % self.toolName)
+        title_label = QtWidgets.QLabel("%s" % ('Editor ' + self.toolName))
+        title_label.setStyleSheet("""
+                        QLabel
+                        {
+                            font-size: 16px;
+                            font-weight: bold;
+                        }
+                        """)
         self.text_tools_box.addWidget(title_label)
 
         # Form Layout
@@ -333,7 +378,7 @@ class PaintOptionsTool(FlatCAMTool):
     Inputs to specify how to paint the selected polygons.
     """
 
-    toolName = "Paint Options"
+    toolName = "Paint Tool"
 
     def __init__(self, app, fcdraw):
         FlatCAMTool.__init__(self, app)
@@ -342,7 +387,14 @@ class PaintOptionsTool(FlatCAMTool):
         self.fcdraw = fcdraw
 
         ## Title
-        title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % self.toolName)
+        title_label = QtWidgets.QLabel("%s" % ('Editor ' + self.toolName))
+        title_label.setStyleSheet("""
+                        QLabel
+                        {
+                            font-size: 16px;
+                            font-weight: bold;
+                        }
+                        """)
         self.layout.addWidget(title_label)
 
         grid = QtWidgets.QGridLayout()
@@ -356,7 +408,7 @@ class PaintOptionsTool(FlatCAMTool):
         )
         grid.addWidget(ptdlabel, 0, 0)
 
-        self.painttooldia_entry = LengthEntry()
+        self.painttooldia_entry = FCEntry()
         grid.addWidget(self.painttooldia_entry, 0, 1)
 
         # Overlap
@@ -373,7 +425,7 @@ class PaintOptionsTool(FlatCAMTool):
             "due of too many paths."
         )
         grid.addWidget(ovlabel, 1, 0)
-        self.paintoverlap_entry = LengthEntry()
+        self.paintoverlap_entry = FCEntry()
         grid.addWidget(self.paintoverlap_entry, 1, 1)
 
         # Margin
@@ -384,7 +436,7 @@ class PaintOptionsTool(FlatCAMTool):
             "be painted."
         )
         grid.addWidget(marginlabel, 2, 0)
-        self.paintmargin_entry = LengthEntry()
+        self.paintmargin_entry = FCEntry()
         grid.addWidget(self.paintmargin_entry, 2, 1)
 
         # Method
@@ -434,18 +486,89 @@ class PaintOptionsTool(FlatCAMTool):
         ## Signals
         self.paint_button.clicked.connect(self.on_paint)
 
-        ## Init GUI
-        self.painttooldia_entry.set_value(0)
-        self.paintoverlap_entry.set_value(0)
-        self.paintmargin_entry.set_value(0)
-        self.paintmethod_combo.set_value("seed")
+        self.set_tool_ui()
 
+    def run(self):
+        self.app.report_usage("Geo Editor ToolPaint()")
+        FlatCAMTool.run(self)
+
+        # if the splitter us hidden, display it
+        if self.app.ui.splitter.sizes()[0] == 0:
+            self.app.ui.splitter.setSizes([1, 1])
+
+        self.app.ui.notebook.setTabText(2, "Paint Tool")
+
+    def set_tool_ui(self):
+        ## Init GUI
+        if self.app.defaults["tools_painttooldia"]:
+            self.painttooldia_entry.set_value(self.app.defaults["tools_painttooldia"])
+        else:
+            self.painttooldia_entry.set_value(0.0)
+
+        if self.app.defaults["tools_paintoverlap"]:
+            self.paintoverlap_entry.set_value(self.app.defaults["tools_paintoverlap"])
+        else:
+            self.paintoverlap_entry.set_value(0.0)
+
+        if self.app.defaults["tools_paintmargin"]:
+            self.paintmargin_entry.set_value(self.app.defaults["tools_paintmargin"])
+        else:
+            self.paintmargin_entry.set_value(0.0)
+
+        if self.app.defaults["tools_paintmethod"]:
+            self.paintmethod_combo.set_value(self.app.defaults["tools_paintmethod"])
+        else:
+            self.paintmethod_combo.set_value("seed")
+
+        if self.app.defaults["tools_pathconnect"]:
+            self.pathconnect_cb.set_value(self.app.defaults["tools_pathconnect"])
+        else:
+            self.pathconnect_cb.set_value(False)
+
+        if self.app.defaults["tools_paintcontour"]:
+            self.paintcontour_cb.set_value(self.app.defaults["tools_paintcontour"])
+        else:
+            self.paintcontour_cb.set_value(False)
 
     def on_paint(self):
+        if not self.fcdraw.selected:
+            self.app.inform.emit("[WARNING_NOTCL] Paint cancelled. No shape selected.")
+            return
 
-        tooldia = self.painttooldia_entry.get_value()
-        overlap = self.paintoverlap_entry.get_value()
-        margin = self.paintmargin_entry.get_value()
+        try:
+            tooldia = float(self.painttooldia_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                tooldia = float(self.painttooldia_entry.get_value().replace(',', '.'))
+                self.painttooldia_entry.set_value(tooldia)
+            except ValueError:
+                self.app.inform.emit("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
+                                     "Add it and retry.")
+                return
+        try:
+            overlap = float(self.paintoverlap_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                overlap = float(self.paintoverlap_entry.get_value().replace(',', '.'))
+                self.paintoverlap_entry.set_value(overlap)
+            except ValueError:
+                self.app.inform.emit("[WARNING_NOTCL] Overlap value is missing or wrong format. "
+                                     "Add it and retry.")
+                return
+
+        try:
+            margin = float(self.paintmargin_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                margin = float(self.paintmargin_entry.get_value().replace(',', '.'))
+                self.paintmargin_entry.set_value(margin)
+            except ValueError:
+                self.app.inform.emit("[WARNING_NOTCL] Margin distance value is missing or wrong format. "
+                                     "Add it and retry.")
+                return
         method = self.paintmethod_combo.get_value()
         contour = self.paintcontour_cb.get_value()
         connect = self.pathconnect_cb.get_value()
@@ -454,6 +577,856 @@ class PaintOptionsTool(FlatCAMTool):
         self.fcdraw.select_tool("select")
         self.app.ui.notebook.setTabText(2, "Tools")
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+
+        self.app.ui.splitter.setSizes([0, 1])
+
+
+class TransformEditorTool(FlatCAMTool):
+    """
+    Inputs to specify how to paint the selected polygons.
+    """
+
+    toolName = "Transform Tool"
+    rotateName = "Rotate"
+    skewName = "Skew/Shear"
+    scaleName = "Scale"
+    flipName = "Mirror (Flip)"
+    offsetName = "Offset"
+
+    def __init__(self, app, draw_app):
+        FlatCAMTool.__init__(self, app)
+
+        self.app = app
+        self.draw_app = draw_app
+
+        self.transform_lay = QtWidgets.QVBoxLayout()
+        self.layout.addLayout(self.transform_lay)
+        ## Title
+        title_label = QtWidgets.QLabel("%s" % ('Editor ' + self.toolName))
+        title_label.setStyleSheet("""
+                QLabel
+                {
+                    font-size: 16px;
+                    font-weight: bold;
+                }
+                """)
+        self.transform_lay.addWidget(title_label)
+
+        self.empty_label = QtWidgets.QLabel("")
+        self.empty_label.setFixedWidth(50)
+
+        self.empty_label1 = QtWidgets.QLabel("")
+        self.empty_label1.setFixedWidth(70)
+        self.empty_label2 = QtWidgets.QLabel("")
+        self.empty_label2.setFixedWidth(70)
+        self.empty_label3 = QtWidgets.QLabel("")
+        self.empty_label3.setFixedWidth(70)
+        self.empty_label4 = QtWidgets.QLabel("")
+        self.empty_label4.setFixedWidth(70)
+        self.transform_lay.addWidget(self.empty_label)
+
+        ## Rotate Title
+        rotate_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.rotateName)
+        self.transform_lay.addWidget(rotate_title_label)
+
+        ## Layout
+        form_layout = QtWidgets.QFormLayout()
+        self.transform_lay.addLayout(form_layout)
+        form_child = QtWidgets.QHBoxLayout()
+
+        self.rotate_label = QtWidgets.QLabel("Angle:")
+        self.rotate_label.setToolTip(
+            "Angle for Rotation action, in degrees.\n"
+            "Float number between -360 and 359.\n"
+            "Positive numbers for CW motion.\n"
+            "Negative numbers for CCW motion."
+        )
+        self.rotate_label.setFixedWidth(50)
+
+        self.rotate_entry = FCEntry()
+        # self.rotate_entry.setFixedWidth(60)
+        self.rotate_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+
+        self.rotate_button = FCButton()
+        self.rotate_button.set_value("Rotate")
+        self.rotate_button.setToolTip(
+            "Rotate the selected shape(s).\n"
+            "The point of reference is the middle of\n"
+            "the bounding box for all selected shapes."
+        )
+        self.rotate_button.setFixedWidth(60)
+
+        form_child.addWidget(self.rotate_entry)
+        form_child.addWidget(self.rotate_button)
+
+        form_layout.addRow(self.rotate_label, form_child)
+
+        self.transform_lay.addWidget(self.empty_label1)
+
+        ## Skew Title
+        skew_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.skewName)
+        self.transform_lay.addWidget(skew_title_label)
+
+        ## Form Layout
+        form1_layout = QtWidgets.QFormLayout()
+        self.transform_lay.addLayout(form1_layout)
+        form1_child_1 = QtWidgets.QHBoxLayout()
+        form1_child_2 = QtWidgets.QHBoxLayout()
+
+        self.skewx_label = QtWidgets.QLabel("Angle X:")
+        self.skewx_label.setToolTip(
+            "Angle for Skew action, in degrees.\n"
+            "Float number between -360 and 359."
+        )
+        self.skewx_label.setFixedWidth(50)
+        self.skewx_entry = FCEntry()
+        self.skewx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.skewx_entry.setFixedWidth(60)
+
+        self.skewx_button = FCButton()
+        self.skewx_button.set_value("Skew X")
+        self.skewx_button.setToolTip(
+            "Skew/shear the selected shape(s).\n"
+            "The point of reference is the middle of\n"
+            "the bounding box for all selected shapes.")
+        self.skewx_button.setFixedWidth(60)
+
+        self.skewy_label = QtWidgets.QLabel("Angle Y:")
+        self.skewy_label.setToolTip(
+            "Angle for Skew action, in degrees.\n"
+            "Float number between -360 and 359."
+        )
+        self.skewy_label.setFixedWidth(50)
+        self.skewy_entry = FCEntry()
+        self.skewy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.skewy_entry.setFixedWidth(60)
+
+        self.skewy_button = FCButton()
+        self.skewy_button.set_value("Skew Y")
+        self.skewy_button.setToolTip(
+            "Skew/shear the selected shape(s).\n"
+            "The point of reference is the middle of\n"
+            "the bounding box for all selected shapes.")
+        self.skewy_button.setFixedWidth(60)
+
+        form1_child_1.addWidget(self.skewx_entry)
+        form1_child_1.addWidget(self.skewx_button)
+
+        form1_child_2.addWidget(self.skewy_entry)
+        form1_child_2.addWidget(self.skewy_button)
+
+        form1_layout.addRow(self.skewx_label, form1_child_1)
+        form1_layout.addRow(self.skewy_label, form1_child_2)
+
+        self.transform_lay.addWidget(self.empty_label2)
+
+        ## Scale Title
+        scale_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.scaleName)
+        self.transform_lay.addWidget(scale_title_label)
+
+        ## Form Layout
+        form2_layout = QtWidgets.QFormLayout()
+        self.transform_lay.addLayout(form2_layout)
+        form2_child_1 = QtWidgets.QHBoxLayout()
+        form2_child_2 = QtWidgets.QHBoxLayout()
+
+        self.scalex_label = QtWidgets.QLabel("Factor X:")
+        self.scalex_label.setToolTip(
+            "Factor for Scale action over X axis."
+        )
+        self.scalex_label.setFixedWidth(50)
+        self.scalex_entry = FCEntry()
+        self.scalex_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.scalex_entry.setFixedWidth(60)
+
+        self.scalex_button = FCButton()
+        self.scalex_button.set_value("Scale X")
+        self.scalex_button.setToolTip(
+            "Scale the selected shape(s).\n"
+            "The point of reference depends on \n"
+            "the Scale reference checkbox state.")
+        self.scalex_button.setFixedWidth(60)
+
+        self.scaley_label = QtWidgets.QLabel("Factor Y:")
+        self.scaley_label.setToolTip(
+            "Factor for Scale action over Y axis."
+        )
+        self.scaley_label.setFixedWidth(50)
+        self.scaley_entry = FCEntry()
+        self.scaley_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.scaley_entry.setFixedWidth(60)
+
+        self.scaley_button = FCButton()
+        self.scaley_button.set_value("Scale Y")
+        self.scaley_button.setToolTip(
+            "Scale the selected shape(s).\n"
+            "The point of reference depends on \n"
+            "the Scale reference checkbox state.")
+        self.scaley_button.setFixedWidth(60)
+
+        self.scale_link_cb = FCCheckBox()
+        self.scale_link_cb.set_value(True)
+        self.scale_link_cb.setText("Link")
+        self.scale_link_cb.setToolTip(
+            "Scale the selected shape(s)\n"
+            "using the Scale Factor X for both axis.")
+        self.scale_link_cb.setFixedWidth(50)
+
+        self.scale_zero_ref_cb = FCCheckBox()
+        self.scale_zero_ref_cb.set_value(True)
+        self.scale_zero_ref_cb.setText("Scale Reference")
+        self.scale_zero_ref_cb.setToolTip(
+            "Scale the selected shape(s)\n"
+            "using the origin reference when checked,\n"
+            "and the center of the biggest bounding box\n"
+            "of the selected shapes when unchecked.")
+
+        form2_child_1.addWidget(self.scalex_entry)
+        form2_child_1.addWidget(self.scalex_button)
+
+        form2_child_2.addWidget(self.scaley_entry)
+        form2_child_2.addWidget(self.scaley_button)
+
+        form2_layout.addRow(self.scalex_label, form2_child_1)
+        form2_layout.addRow(self.scaley_label, form2_child_2)
+        form2_layout.addRow(self.scale_link_cb, self.scale_zero_ref_cb)
+        self.ois_scale = OptionalInputSection(self.scale_link_cb, [self.scaley_entry, self.scaley_button], logic=False)
+
+        self.transform_lay.addWidget(self.empty_label3)
+
+        ## Offset Title
+        offset_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.offsetName)
+        self.transform_lay.addWidget(offset_title_label)
+
+        ## Form Layout
+        form3_layout = QtWidgets.QFormLayout()
+        self.transform_lay.addLayout(form3_layout)
+        form3_child_1 = QtWidgets.QHBoxLayout()
+        form3_child_2 = QtWidgets.QHBoxLayout()
+
+        self.offx_label = QtWidgets.QLabel("Value X:")
+        self.offx_label.setToolTip(
+            "Value for Offset action on X axis."
+        )
+        self.offx_label.setFixedWidth(50)
+        self.offx_entry = FCEntry()
+        self.offx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.offx_entry.setFixedWidth(60)
+
+        self.offx_button = FCButton()
+        self.offx_button.set_value("Offset X")
+        self.offx_button.setToolTip(
+            "Offset the selected shape(s).\n"
+            "The point of reference is the middle of\n"
+            "the bounding box for all selected shapes.\n")
+        self.offx_button.setFixedWidth(60)
+
+        self.offy_label = QtWidgets.QLabel("Value Y:")
+        self.offy_label.setToolTip(
+            "Value for Offset action on Y axis."
+        )
+        self.offy_label.setFixedWidth(50)
+        self.offy_entry = FCEntry()
+        self.offy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.offy_entry.setFixedWidth(60)
+
+        self.offy_button = FCButton()
+        self.offy_button.set_value("Offset Y")
+        self.offy_button.setToolTip(
+            "Offset the selected shape(s).\n"
+            "The point of reference is the middle of\n"
+            "the bounding box for all selected shapes.\n")
+        self.offy_button.setFixedWidth(60)
+
+        form3_child_1.addWidget(self.offx_entry)
+        form3_child_1.addWidget(self.offx_button)
+
+        form3_child_2.addWidget(self.offy_entry)
+        form3_child_2.addWidget(self.offy_button)
+
+        form3_layout.addRow(self.offx_label, form3_child_1)
+        form3_layout.addRow(self.offy_label, form3_child_2)
+
+        self.transform_lay.addWidget(self.empty_label4)
+
+        ## Flip Title
+        flip_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.flipName)
+        self.transform_lay.addWidget(flip_title_label)
+
+        ## Form Layout
+        form4_layout = QtWidgets.QFormLayout()
+        form4_child_hlay = QtWidgets.QHBoxLayout()
+        self.transform_lay.addLayout(form4_child_hlay)
+        self.transform_lay.addLayout(form4_layout)
+        form4_child_1 = QtWidgets.QHBoxLayout()
+
+        self.flipx_button = FCButton()
+        self.flipx_button.set_value("Flip on X")
+        self.flipx_button.setToolTip(
+            "Flip the selected shape(s) over the X axis.\n"
+            "Does not create a new shape.\n "
+        )
+        self.flipx_button.setFixedWidth(60)
+
+        self.flipy_button = FCButton()
+        self.flipy_button.set_value("Flip on Y")
+        self.flipy_button.setToolTip(
+            "Flip the selected shape(s) over the X axis.\n"
+            "Does not create a new shape.\n "
+        )
+        self.flipy_button.setFixedWidth(60)
+
+        self.flip_ref_cb = FCCheckBox()
+        self.flip_ref_cb.set_value(True)
+        self.flip_ref_cb.setText("Ref Pt")
+        self.flip_ref_cb.setToolTip(
+            "Flip the selected shape(s)\n"
+            "around the point in Point Entry Field.\n"
+            "\n"
+            "The point coordinates can be captured by\n"
+            "left click on canvas together with pressing\n"
+            "SHIFT key. \n"
+            "Then click Add button to insert coordinates.\n"
+            "Or enter the coords in format (x, y) in the\n"
+            "Point Entry field and click Flip on X(Y)")
+        self.flip_ref_cb.setFixedWidth(50)
+
+        self.flip_ref_label = QtWidgets.QLabel("Point:")
+        self.flip_ref_label.setToolTip(
+            "Coordinates in format (x, y) used as reference for mirroring.\n"
+            "The 'x' in (x, y) will be used when using Flip on X and\n"
+            "the 'y' in (x, y) will be used when using Flip on Y and"
+        )
+        self.flip_ref_label.setFixedWidth(50)
+        self.flip_ref_entry = EvalEntry2("(0, 0)")
+        self.flip_ref_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        # self.flip_ref_entry.setFixedWidth(60)
+
+        self.flip_ref_button = FCButton()
+        self.flip_ref_button.set_value("Add")
+        self.flip_ref_button.setToolTip(
+            "The point coordinates can be captured by\n"
+            "left click on canvas together with pressing\n"
+            "SHIFT key. Then click Add button to insert.")
+        self.flip_ref_button.setFixedWidth(60)
+
+        form4_child_hlay.addStretch()
+        form4_child_hlay.addWidget(self.flipx_button)
+        form4_child_hlay.addWidget(self.flipy_button)
+
+        form4_child_1.addWidget(self.flip_ref_entry)
+        form4_child_1.addWidget(self.flip_ref_button)
+
+        form4_layout.addRow(self.flip_ref_cb)
+        form4_layout.addRow(self.flip_ref_label, form4_child_1)
+        self.ois_flip = OptionalInputSection(self.flip_ref_cb,
+                                             [self.flip_ref_entry, self.flip_ref_button], logic=True)
+
+        self.transform_lay.addStretch()
+
+        ## Signals
+        self.rotate_button.clicked.connect(self.on_rotate)
+        self.skewx_button.clicked.connect(self.on_skewx)
+        self.skewy_button.clicked.connect(self.on_skewy)
+        self.scalex_button.clicked.connect(self.on_scalex)
+        self.scaley_button.clicked.connect(self.on_scaley)
+        self.offx_button.clicked.connect(self.on_offx)
+        self.offy_button.clicked.connect(self.on_offy)
+        self.flipx_button.clicked.connect(self.on_flipx)
+        self.flipy_button.clicked.connect(self.on_flipy)
+        self.flip_ref_button.clicked.connect(self.on_flip_add_coords)
+
+        self.rotate_entry.returnPressed.connect(self.on_rotate)
+        self.skewx_entry.returnPressed.connect(self.on_skewx)
+        self.skewy_entry.returnPressed.connect(self.on_skewy)
+        self.scalex_entry.returnPressed.connect(self.on_scalex)
+        self.scaley_entry.returnPressed.connect(self.on_scaley)
+        self.offx_entry.returnPressed.connect(self.on_offx)
+        self.offy_entry.returnPressed.connect(self.on_offy)
+
+        self.set_tool_ui()
+
+    def run(self):
+        self.app.report_usage("Geo Editor Transform Tool()")
+        FlatCAMTool.run(self)
+        self.set_tool_ui()
+
+        # if the splitter us hidden, display it
+        if self.app.ui.splitter.sizes()[0] == 0:
+            self.app.ui.splitter.setSizes([1, 1])
+
+        self.app.ui.notebook.setTabText(2, "Transform Tool")
+
+    def install(self, icon=None, separator=None, **kwargs):
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+T', **kwargs)
+
+    def set_tool_ui(self):
+        ## Init GUI
+        # if self.app.defaults["tools_painttooldia"]:
+        #     self.painttooldia_entry.set_value(self.app.defaults["tools_painttooldia"])
+        # else:
+        #     self.painttooldia_entry.set_value(0.0)
+        #
+        # if self.app.defaults["tools_paintoverlap"]:
+        #     self.paintoverlap_entry.set_value(self.app.defaults["tools_paintoverlap"])
+        # else:
+        #     self.paintoverlap_entry.set_value(0.0)
+        #
+        # if self.app.defaults["tools_paintmargin"]:
+        #     self.paintmargin_entry.set_value(self.app.defaults["tools_paintmargin"])
+        # else:
+        #     self.paintmargin_entry.set_value(0.0)
+        #
+        # if self.app.defaults["tools_paintmethod"]:
+        #     self.paintmethod_combo.set_value(self.app.defaults["tools_paintmethod"])
+        # else:
+        #     self.paintmethod_combo.set_value("seed")
+        #
+        # if self.app.defaults["tools_pathconnect"]:
+        #     self.pathconnect_cb.set_value(self.app.defaults["tools_pathconnect"])
+        # else:
+        #     self.pathconnect_cb.set_value(False)
+        #
+        # if self.app.defaults["tools_paintcontour"]:
+        #     self.paintcontour_cb.set_value(self.app.defaults["tools_paintcontour"])
+        # else:
+        #     self.paintcontour_cb.set_value(False)
+        ## Initialize form
+        self.rotate_entry.set_value('0')
+        self.skewx_entry.set_value('0')
+        self.skewy_entry.set_value('0')
+        self.scalex_entry.set_value('1')
+        self.scaley_entry.set_value('1')
+        self.offx_entry.set_value('0')
+        self.offy_entry.set_value('0')
+        self.flip_ref_cb.setChecked(False)
+
+    def template(self):
+        if not self.fcdraw.selected:
+            self.app.inform.emit("[WARNING_NOTCL] Transformation cancelled. No shape selected.")
+            return
+
+
+        self.draw_app.select_tool("select")
+        self.app.ui.notebook.setTabText(2, "Tools")
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+
+        self.app.ui.splitter.setSizes([0, 1])
+
+    def on_rotate(self):
+        try:
+            value = float(self.rotate_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                value = float(self.rotate_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Rotate, "
+                                     "use a number.")
+                return
+        self.app.worker_task.emit({'fcn': self.on_rotate_action,
+                                       'params': [value]})
+        # self.on_rotate_action(value)
+        return
+
+    def on_flipx(self):
+        # self.on_flip("Y")
+        axis = 'Y'
+        self.app.worker_task.emit({'fcn': self.on_flip,
+                                   'params': [axis]})
+        return
+
+    def on_flipy(self):
+        # self.on_flip("X")
+        axis = 'X'
+        self.app.worker_task.emit({'fcn': self.on_flip,
+                                   'params': [axis]})
+        return
+
+    def on_flip_add_coords(self):
+        val = self.app.defaults["global_point_clipboard_format"] % (self.app.pos[0], self.app.pos[1])
+        self.flip_ref_entry.set_value(val)
+
+    def on_skewx(self):
+        try:
+            value = float(self.skewx_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                value = float(self.skewx_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Skew X, "
+                                     "use a number.")
+                return
+
+        # self.on_skew("X", value)
+        axis = 'X'
+        self.app.worker_task.emit({'fcn': self.on_skew,
+                                   'params': [axis, value]})
+        return
+
+    def on_skewy(self):
+        try:
+            value = float(self.skewy_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                value = float(self.skewy_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Skew Y, "
+                                     "use a number.")
+                return
+
+        # self.on_skew("Y", value)
+        axis = 'Y'
+        self.app.worker_task.emit({'fcn': self.on_skew,
+                                   'params': [axis, value]})
+        return
+
+    def on_scalex(self):
+        try:
+            xvalue = float(self.scalex_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                xvalue = float(self.scalex_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Scale X, "
+                                     "use a number.")
+                return
+
+        # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
+        if xvalue == 0:
+            xvalue = 1
+        if self.scale_link_cb.get_value():
+            yvalue = xvalue
+        else:
+            yvalue = 1
+
+        axis = 'X'
+        point = (0, 0)
+        if self.scale_zero_ref_cb.get_value():
+            self.app.worker_task.emit({'fcn': self.on_scale,
+                                       'params': [axis, xvalue, yvalue, point]})
+            # self.on_scale("X", xvalue, yvalue, point=(0,0))
+        else:
+            # self.on_scale("X", xvalue, yvalue)
+            self.app.worker_task.emit({'fcn': self.on_scale,
+                                       'params': [axis, xvalue, yvalue]})
+
+        return
+
+    def on_scaley(self):
+        xvalue = 1
+        try:
+            yvalue = float(self.scaley_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                yvalue = float(self.scaley_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Scale Y, "
+                                     "use a number.")
+                return
+
+        # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
+        if yvalue == 0:
+            yvalue = 1
+
+        axis = 'Y'
+        point = (0, 0)
+        if self.scale_zero_ref_cb.get_value():
+            self.app.worker_task.emit({'fcn': self.on_scale,
+                                       'params': [axis, xvalue, yvalue, point]})
+            # self.on_scale("Y", xvalue, yvalue, point=(0,0))
+        else:
+            # self.on_scale("Y", xvalue, yvalue)
+            self.app.worker_task.emit({'fcn': self.on_scale,
+                                       'params': [axis, xvalue, yvalue]})
+
+        return
+
+    def on_offx(self):
+        try:
+            value = float(self.offx_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                value = float(self.offx_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Offset X, "
+                                     "use a number.")
+                return
+
+        # self.on_offset("X", value)
+        axis = 'X'
+        self.app.worker_task.emit({'fcn': self.on_offset,
+                                   'params': [axis, value]})
+        return
+
+    def on_offy(self):
+        try:
+            value = float(self.offy_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                value = float(self.offy_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered for Offset Y, "
+                                     "use a number.")
+                return
+
+        # self.on_offset("Y", value)
+        axis = 'Y'
+        self.app.worker_task.emit({'fcn': self.on_offset,
+                                   'params': [axis, value]})
+        return
+
+    def on_rotate_action(self, num):
+        shape_list = self.draw_app.selected
+        xminlist = []
+        yminlist = []
+        xmaxlist = []
+        ymaxlist = []
+
+        if not shape_list:
+            self.app.inform.emit("[WARNING_NOTCL] No shape selected. Please Select a shape to rotate!")
+            return
+        else:
+            with self.app.proc_container.new("Appying Rotate"):
+                try:
+                    # first get a bounding box to fit all
+                    for sha in shape_list:
+                        xmin, ymin, xmax, ymax = sha.bounds()
+                        xminlist.append(xmin)
+                        yminlist.append(ymin)
+                        xmaxlist.append(xmax)
+                        ymaxlist.append(ymax)
+
+                    # get the minimum x,y and maximum x,y for all objects selected
+                    xminimal = min(xminlist)
+                    yminimal = min(yminlist)
+                    xmaximal = max(xmaxlist)
+                    ymaximal = max(ymaxlist)
+
+                    self.app.progress.emit(20)
+
+                    for sel_sha in shape_list:
+                        px = 0.5 * (xminimal + xmaximal)
+                        py = 0.5 * (yminimal + ymaximal)
+
+                        sel_sha.rotate(-num, point=(px, py))
+
+                    for sha in shape_list:
+                        self.draw_app.add_shape(sha)
+
+                    self.draw_app.delete_selected()
+                    # self.draw_app.complete = True
+                    self.draw_app.replot()
+
+                    self.app.inform.emit("[success] Done. Rotate completed.")
+
+                    self.app.progress.emit(100)
+
+                except Exception as e:
+                    self.app.inform.emit("[ERROR_NOTCL] Due of %s, rotation movement was not executed." % str(e))
+                    return
+
+    def on_flip(self, axis):
+        shape_list = self.draw_app.selected
+        xminlist = []
+        yminlist = []
+        xmaxlist = []
+        ymaxlist = []
+
+        if not shape_list:
+            self.app.inform.emit("[WARNING_NOTCL] No shape selected. Please Select a shape to flip!")
+            return
+        else:
+            with self.app.proc_container.new("Applying Flip"):
+                try:
+                    # get mirroring coords from the point entry
+                    if self.flip_ref_cb.isChecked():
+                        px, py = eval('{}'.format(self.flip_ref_entry.text()))
+                    # get mirroing coords from the center of an all-enclosing bounding box
+                    else:
+                        # first get a bounding box to fit all
+                        for sha in shape_list:
+                            xmin, ymin, xmax, ymax = sha.bounds()
+                            xminlist.append(xmin)
+                            yminlist.append(ymin)
+                            xmaxlist.append(xmax)
+                            ymaxlist.append(ymax)
+
+                        # get the minimum x,y and maximum x,y for all objects selected
+                        xminimal = min(xminlist)
+                        yminimal = min(yminlist)
+                        xmaximal = max(xmaxlist)
+                        ymaximal = max(ymaxlist)
+
+                        px = 0.5 * (xminimal + xmaximal)
+                        py = 0.5 * (yminimal + ymaximal)
+
+                    self.app.progress.emit(20)
+
+                    # execute mirroring
+                    for sha in shape_list:
+                        if axis is 'X':
+                            sha.mirror('X', (px, py))
+                            self.app.inform.emit('[success] Flip on the Y axis done ...')
+                        elif axis is 'Y':
+                            sha.mirror('Y', (px, py))
+                            self.app.inform.emit('[success] Flip on the X axis done ...')
+
+                    for sha in shape_list:
+                        self.draw_app.add_shape(sha)
+
+                    self.draw_app.delete_selected()
+                    self.draw_app.complete = True
+                    self.draw_app.replot()
+
+                    self.app.progress.emit(100)
+
+                except Exception as e:
+                    self.app.inform.emit("[ERROR_NOTCL] Due of %s, Flip action was not executed." % str(e))
+                    return
+
+    def on_skew(self, axis, num):
+        shape_list = self.draw_app.selected
+        xminlist = []
+        yminlist = []
+
+        if not shape_list:
+            self.app.inform.emit("[WARNING_NOTCL] No shape selected. Please Select a shape to shear/skew!")
+            return
+        else:
+            with self.app.proc_container.new("Applying Skew"):
+                try:
+                    # first get a bounding box to fit all
+                    for sha in shape_list:
+                        xmin, ymin, xmax, ymax = sha.bounds()
+                        xminlist.append(xmin)
+                        yminlist.append(ymin)
+
+                    # get the minimum x,y and maximum x,y for all objects selected
+                    xminimal = min(xminlist)
+                    yminimal = min(yminlist)
+
+                    self.app.progress.emit(20)
+
+                    for sha in shape_list:
+                        if axis is 'X':
+                            sha.skew(num, 0, point=(xminimal, yminimal))
+                        elif axis is 'Y':
+                            sha.skew(0, num, point=(xminimal, yminimal))
+
+                    for sha in shape_list:
+                        self.draw_app.add_shape(sha)
+
+                    self.draw_app.delete_selected()
+                    self.draw_app.complete = True
+                    self.draw_app.replot()
+
+                    self.app.inform.emit('[success] Skew on the %s axis done ...' % str(axis))
+                    self.app.progress.emit(100)
+
+                except Exception as e:
+                    self.app.inform.emit("[ERROR_NOTCL] Due of %s, Skew action was not executed." % str(e))
+                    return
+
+    def on_scale(self, axis, xfactor, yfactor, point=None):
+        shape_list = self.draw_app.selected
+        xminlist = []
+        yminlist = []
+        xmaxlist = []
+        ymaxlist = []
+
+        if not shape_list:
+            self.app.inform.emit("[WARNING_NOTCL] No shape selected. Please Select a shape to scale!")
+            return
+        else:
+            with self.app.proc_container.new("Applying Scale"):
+                try:
+                    # first get a bounding box to fit all
+                    for sha in shape_list:
+                        xmin, ymin, xmax, ymax = sha.bounds()
+                        xminlist.append(xmin)
+                        yminlist.append(ymin)
+                        xmaxlist.append(xmax)
+                        ymaxlist.append(ymax)
+
+                    # get the minimum x,y and maximum x,y for all objects selected
+                    xminimal = min(xminlist)
+                    yminimal = min(yminlist)
+                    xmaximal = max(xmaxlist)
+                    ymaximal = max(ymaxlist)
+
+                    self.app.progress.emit(20)
+
+                    if point is None:
+                        px = 0.5 * (xminimal + xmaximal)
+                        py = 0.5 * (yminimal + ymaximal)
+                    else:
+                        px = 0
+                        py = 0
+
+                    for sha in shape_list:
+                        sha.scale(xfactor, yfactor, point=(px, py))
+
+                    for sha in shape_list:
+                        self.draw_app.add_shape(sha)
+
+                    self.draw_app.delete_selected()
+                    self.draw_app.complete = True
+                    self.draw_app.replot()
+
+                    self.app.inform.emit('[success] Scale on the %s axis done ...' % str(axis))
+                    self.app.progress.emit(100)
+                except Exception as e:
+                    self.app.inform.emit("[ERROR_NOTCL] Due of %s, Scale action was not executed." % str(e))
+                    return
+
+    def on_offset(self, axis, num):
+        shape_list = self.draw_app.selected
+        xminlist = []
+        yminlist = []
+
+        if not shape_list:
+            self.app.inform.emit("[WARNING_NOTCL] No shape selected. Please Select a shape to offset!")
+            return
+        else:
+            with self.app.proc_container.new("Applying Offset"):
+                try:
+                    # first get a bounding box to fit all
+                    for sha in shape_list:
+                        xmin, ymin, xmax, ymax = sha.bounds()
+                        xminlist.append(xmin)
+                        yminlist.append(ymin)
+
+                    # get the minimum x,y and maximum x,y for all objects selected
+                    xminimal = min(xminlist)
+                    yminimal = min(yminlist)
+                    self.app.progress.emit(20)
+
+                    for sha in shape_list:
+                        if axis is 'X':
+                            sha.offset((num, 0))
+                        elif axis is 'Y':
+                            sha.offset((0, num))
+
+                    for sha in shape_list:
+                        self.draw_app.add_shape(sha)
+
+                    self.draw_app.delete_selected()
+                    self.draw_app.complete = True
+                    self.draw_app.replot()
+
+                    self.app.inform.emit('[success] Offset on the %s axis done ...' % str(axis))
+                    self.app.progress.emit(100)
+
+                except Exception as e:
+                    self.app.inform.emit("[ERROR_NOTCL] Due of %s, Offset action was not executed." % str(e))
+                    return
 
 
 class DrawToolShape(object):
@@ -514,6 +1487,205 @@ class DrawToolShape(object):
 
     def get_all_points(self):
         return DrawToolShape.get_pts(self)
+
+    def bounds(self):
+        """
+                Returns coordinates of rectangular bounds
+                of geometry: (xmin, ymin, xmax, ymax).
+                """
+        # fixed issue of getting bounds only for one level lists of objects
+        # now it can get bounds for nested lists of objects
+        def bounds_rec(shape):
+            if type(shape) is list:
+                minx = Inf
+                miny = Inf
+                maxx = -Inf
+                maxy = -Inf
+
+                for k in shape:
+                    minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                    minx = min(minx, minx_)
+                    miny = min(miny, miny_)
+                    maxx = max(maxx, maxx_)
+                    maxy = max(maxy, maxy_)
+                return minx, miny, maxx, maxy
+            else:
+                # it's a Shapely object, return it's bounds
+                return shape.bounds
+
+        bounds_coords = bounds_rec(self.geo)
+        return bounds_coords
+
+    def mirror(self, axis, point):
+        """
+        Mirrors the shape around a specified axis passing through
+        the given point.
+
+        :param axis: "X" or "Y" indicates around which axis to mirror.
+        :type axis: str
+        :param point: [x, y] point belonging to the mirror axis.
+        :type point: list
+        :return: None
+        """
+
+        px, py = point
+        xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
+
+        def mirror_geom(shape):
+            if type(shape) is list:
+                new_obj = []
+                for g in shape:
+                    new_obj.append(mirror_geom(g))
+                return new_obj
+            else:
+                return affinity.scale(shape, xscale, yscale, origin=(px,py))
+
+        try:
+            self.geo = mirror_geom(self.geo)
+        except AttributeError:
+            log.debug("DrawToolShape.mirror() --> Failed to mirror. No shape selected")
+
+    def rotate(self, angle, point):
+        """
+        Rotate a shape by an angle (in degrees) around the provided coordinates.
+
+        Parameters
+        ----------
+        The angle of rotation are specified in degrees (default). Positive angles are
+        counter-clockwise and negative are clockwise rotations.
+
+        The point of origin can be a keyword 'center' for the bounding box
+        center (default), 'centroid' for the geometry's centroid, a Point object
+        or a coordinate tuple (x0, y0).
+
+        See shapely manual for more information:
+        http://toblerity.org/shapely/manual.html#affine-transformations
+        """
+
+        px, py = point
+
+        def rotate_geom(shape):
+            if type(shape) is list:
+                new_obj = []
+                for g in shape:
+                    new_obj.append(rotate_geom(g))
+                return new_obj
+            else:
+                return affinity.rotate(shape, angle, origin=(px, py))
+
+        try:
+            self.geo = rotate_geom(self.geo)
+        except AttributeError:
+            log.debug("DrawToolShape.rotate() --> Failed to rotate. No shape selected")
+
+    def skew(self, angle_x, angle_y, point):
+        """
+        Shear/Skew a shape by angles along x and y dimensions.
+
+        Parameters
+        ----------
+        angle_x, angle_y : float, float
+            The shear angle(s) for the x and y axes respectively. These can be
+            specified in either degrees (default) or radians by setting
+            use_radians=True.
+        point: tuple of coordinates (x,y)
+
+        See shapely manual for more information:
+        http://toblerity.org/shapely/manual.html#affine-transformations
+        """
+        px, py = point
+
+        def skew_geom(shape):
+            if type(shape) is list:
+                new_obj = []
+                for g in shape:
+                    new_obj.append(skew_geom(g))
+                return new_obj
+            else:
+                return affinity.skew(shape, angle_x, angle_y, origin=(px, py))
+
+        try:
+            self.geo = skew_geom(self.geo)
+        except AttributeError:
+            log.debug("DrawToolShape.skew() --> Failed to skew. No shape selected")
+
+    def offset(self, vect):
+        """
+        Offsets all shapes by a given vector/
+
+        :param vect: (x, y) vector by which to offset the shape geometry
+        :type vect: tuple
+        :return: None
+        :rtype: None
+        """
+
+        try:
+            dx, dy = vect
+        except TypeError:
+            log.debug("DrawToolShape.offset() --> An (x,y) pair of values are needed. "
+                      "Probable you entered only one value in the Offset field.")
+            return
+
+        def translate_recursion(geom):
+            if type(geom) == list:
+                geoms=list()
+                for local_geom in geom:
+                    geoms.append(translate_recursion(local_geom))
+                return geoms
+            else:
+                return  affinity.translate(geom, xoff=dx, yoff=dy)
+
+        try:
+            self.geo = translate_recursion(self.geo)
+        except AttributeError:
+            log.debug("DrawToolShape.offset() --> Failed to offset. No shape selected")
+
+    def scale(self, xfactor, yfactor=None, point=None):
+        """
+        Scales all shape geometry by a given factor.
+
+        :param xfactor: Factor by which to scale the shape's geometry/
+        :type xfactor: float
+        :param yfactor: Factor by which to scale the shape's geometry/
+        :type yfactor: float
+        :return: None
+        :rtype: None
+        """
+
+        try:
+            xfactor = float(xfactor)
+        except:
+            log.debug("DrawToolShape.offset() -->  Scale factor has to be a number: integer or float.")
+            return
+
+        if yfactor is None:
+            yfactor = xfactor
+        else:
+            try:
+                yfactor = float(yfactor)
+            except:
+                log.debug("DrawToolShape.offset() -->  Scale factor has to be a number: integer or float.")
+                return
+
+        if point is None:
+            px = 0
+            py = 0
+        else:
+            px, py = point
+
+        def scale_recursion(geom):
+            if type(geom) == list:
+                geoms=list()
+                for local_geom in geom:
+                    geoms.append(scale_recursion(local_geom))
+                return geoms
+            else:
+                return  affinity.scale(geom, xfactor, yfactor, origin=(px, py))
+
+        try:
+            self.geo = scale_recursion(self.geo)
+        except AttributeError:
+            log.debug("DrawToolShape.scale() --> Failed to scale. No shape selected")
 
 
 class DrawToolUtilityShape(DrawToolShape):
@@ -1162,6 +2334,9 @@ class FCMove(FCShapeTool):
         self.name = 'move'
 
         # self.shape_buffer = self.draw_app.shape_buffer
+        if not self.draw_app.selected:
+            self.draw_app.app.inform.emit("[WARNING_NOTCL] Move cancelled. No shape selected.")
+            return
         self.origin = None
         self.destination = None
         self.start_msg = "Click on reference point."
@@ -1306,35 +2481,85 @@ class FCBuffer(FCShapeTool):
         self.buff_tool = BufferSelectionTool(self.app, self.draw_app)
         self.buff_tool.run()
         self.app.ui.notebook.setTabText(2, "Buffer Tool")
+        if self.draw_app.app.ui.splitter.sizes()[0] == 0:
+            self.draw_app.app.ui.splitter.setSizes([1, 1])
         self.activate()
 
     def on_buffer(self):
-        buffer_distance = self.buff_tool.buffer_distance_entry.get_value()
+        if not self.draw_app.selected:
+            self.app.inform.emit("[WARNING_NOTCL] Buffer cancelled. No shape selected.")
+            return
+
+        try:
+            buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value().replace(',', '.'))
+                self.buff_tool.buffer_distance_entry.set_value(buffer_distance)
+            except ValueError:
+                self.app.inform.emit("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
+                                     "Add it and retry.")
+                return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
         self.draw_app.buffer(buffer_distance, join_style)
         self.app.ui.notebook.setTabText(2, "Tools")
+        self.draw_app.app.ui.splitter.setSizes([0, 1])
+
         self.disactivate()
         self.draw_app.app.inform.emit("[success]Done. Buffer Tool completed.")
 
     def on_buffer_int(self):
-        buffer_distance = self.buff_tool.buffer_distance_entry.get_value()
+        if not self.draw_app.selected:
+            self.app.inform.emit("[WARNING_NOTCL] Buffer cancelled. No shape selected.")
+            return
+
+        try:
+            buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value().replace(',', '.'))
+                self.buff_tool.buffer_distance_entry.set_value(buffer_distance)
+            except ValueError:
+                self.app.inform.emit("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
+                                     "Add it and retry.")
+                return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
         self.draw_app.buffer_int(buffer_distance, join_style)
         self.app.ui.notebook.setTabText(2, "Tools")
+        self.draw_app.app.ui.splitter.setSizes([0, 1])
+
         self.disactivate()
         self.draw_app.app.inform.emit("[success]Done. Buffer Int Tool completed.")
 
     def on_buffer_ext(self):
-        buffer_distance = self.buff_tool.buffer_distance_entry.get_value()
+        if not self.draw_app.selected:
+            self.app.inform.emit("[WARNING_NOTCL] Buffer cancelled. No shape selected.")
+            return
+
+        try:
+            buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value().replace(',', '.'))
+                self.buff_tool.buffer_distance_entry.set_value(buffer_distance)
+            except ValueError:
+                self.app.inform.emit("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
+                                     "Add it and retry.")
+                return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
         self.draw_app.buffer_ext(buffer_distance, join_style)
         self.app.ui.notebook.setTabText(2, "Tools")
+        self.draw_app.app.ui.splitter.setSizes([0, 1])
+
         self.disactivate()
         self.draw_app.app.inform.emit("[success]Done. Buffer Ext Tool completed.")
 
@@ -1373,7 +2598,21 @@ class FCPaint(FCShapeTool):
         self.origin = (0, 0)
         self.paint_tool = PaintOptionsTool(self.app, self.draw_app)
         self.paint_tool.run()
-        self.app.ui.notebook.setTabText(2, "Paint Tool")
+
+
+class FCTransform(FCShapeTool):
+    def __init__(self, draw_app):
+        FCShapeTool.__init__(self, draw_app)
+        self.name = 'transformation'
+
+        # self.shape_buffer = self.draw_app.shape_buffer
+        self.draw_app = draw_app
+        self.app = draw_app.app
+
+        self.start_msg = "Shape transformations ..."
+        self.origin = (0, 0)
+        self.transform_tool = TransformEditorTool(self.app, self.draw_app)
+        self.transform_tool.run()
 
 
 class FCRotate(FCShapeTool):
@@ -1956,6 +3195,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.geo_add_text_menuitem.triggered.connect(lambda: self.select_tool('text'))
         self.app.ui.geo_paint_menuitem.triggered.connect(self.on_paint_tool)
         self.app.ui.geo_buffer_menuitem.triggered.connect(self.on_buffer_tool)
+        self.app.ui.geo_transform_menuitem.triggered.connect(self.on_transform_tool)
+
         self.app.ui.geo_delete_menuitem.triggered.connect(self.on_delete_btn)
         self.app.ui.geo_union_menuitem.triggered.connect(self.union)
         self.app.ui.geo_intersection_menuitem.triggered.connect(self.intersection)
@@ -1996,6 +3237,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
                      "constructor": FCMove},
             "rotate": {"button": self.app.ui.geo_rotate_btn,
                      "constructor": FCRotate},
+            "transform": {"button": self.app.ui.geo_transform_btn,
+                      "constructor": FCTransform},
             "copy": {"button": self.app.ui.geo_copy_btn,
                      "constructor": FCCopy}
         }
@@ -2354,6 +3597,10 @@ class FlatCAMGeoEditor(QtCore.QObject):
         paint_tool = PaintOptionsTool(self.app, self)
         paint_tool.run()
 
+    def on_transform_tool(self):
+        transform_tool = TransformEditorTool(self.app, self)
+        transform_tool.run()
+
     def on_tool_select(self, tool):
         """
         Behavior of the toolbar. Tool initialization.
@@ -2585,7 +3832,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                     # Dispatch event to active_tool
                     # msg = self.active_tool.click(self.snap(event.xdata, event.ydata))
                     msg = self.active_tool.click_release((self.pos[0], self.pos[1]))
-                    self.app.inform.emit(msg)
+                    # self.app.inform.emit(msg)
                     self.replot()
         except Exception as e:
             log.warning("Error: %s" % str(e))
@@ -2681,8 +3928,22 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.on_tool_select('move')
 
     def on_move_click(self):
+        if not self.selected:
+            self.app.inform.emit("[WARNING_NOTCL] Move cancelled. No shape selected.")
+            return
         self.on_move()
         self.active_tool.set_origin(self.snap(self.x, self.y))
+
+    def on_copy_click(self):
+        if not self.selected:
+            self.app.inform.emit("[WARNING_NOTCL] Copy cancelled. No shape selected.")
+            return
+
+        self.app.ui.geo_copy_btn.setChecked(True)
+        self.app.geo_editor.on_tool_select('copy')
+        self.app.geo_editor.active_tool.set_origin(self.app.geo_editor.snap(
+            self.app.geo_editor.x, self.app.geo_editor.y))
+        self.app.inform.emit("Click on target point.")
 
     def on_corner_snap(self):
         self.app.ui.corner_snap_btn.trigger()
@@ -3175,7 +4436,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         results = []
 
-        if tooldia >= overlap:
+        if tooldia <= overlap:
             self.app.inform.emit(
                 "[ERROR_NOTCL] Could not do Paint. Overlap value has to be less than Tool Dia value.")
             return
