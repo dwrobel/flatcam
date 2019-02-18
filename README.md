@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - changed the font in Tool names
 - added in Geometry Editor a new Tool: Transformation Tool. It still has some bugs, though ...
 - in Geometry Editor by selecting a shape with a selection shape, that object was added multiple times (one per each selection) to the selected list, which is not intended. Bug fixed.
+- finished adding Transform Tool in Geometry Editor - everything is working as intended
 
 17.02.2019
 

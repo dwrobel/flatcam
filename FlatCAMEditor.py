@@ -1216,14 +1216,9 @@ class TransformEditorTool(FlatCAMTool):
                         py = 0.5 * (yminimal + ymaximal)
 
                         sel_sha.rotate(-num, point=(px, py))
+                        self.draw_app.add_shape(DrawToolShape(sel_sha.geo))
 
-                    for sha in shape_list:
-                        self.draw_app.add_shape(sha)
-
-                    shape_list[:] = []
-                    self.draw_app.delete_selected()
-                    # self.draw_app.complete = True
-                    self.draw_app.replot()
+                    self.draw_app.transform_complete.emit()
 
                     self.app.inform.emit("[success] Done. Rotate completed.")
 
@@ -1281,10 +1276,9 @@ class TransformEditorTool(FlatCAMTool):
 
                     for sha in shape_list:
                         self.draw_app.add_shape(sha)
+                        self.draw_app.add_shape(DrawToolShape(sha.geo))
 
-                    self.draw_app.delete_selected()
-                    self.draw_app.complete = True
-                    self.draw_app.replot()
+                    self.draw_app.transform_complete.emit()
 
                     self.app.progress.emit(100)
 
@@ -1323,10 +1317,9 @@ class TransformEditorTool(FlatCAMTool):
 
                     for sha in shape_list:
                         self.draw_app.add_shape(sha)
+                        self.draw_app.add_shape(DrawToolShape(sha.geo))
 
-                    self.draw_app.delete_selected()
-                    self.draw_app.complete = True
-                    self.draw_app.replot()
+                    self.draw_app.transform_complete.emit()
 
                     self.app.inform.emit('[success] Skew on the %s axis done ...' % str(axis))
                     self.app.progress.emit(100)
@@ -1376,10 +1369,9 @@ class TransformEditorTool(FlatCAMTool):
 
                     for sha in shape_list:
                         self.draw_app.add_shape(sha)
+                        self.draw_app.add_shape(DrawToolShape(sha.geo))
 
-                    self.draw_app.delete_selected()
-                    self.draw_app.complete = True
-                    self.draw_app.replot()
+                    self.draw_app.transform_complete.emit()
 
                     self.app.inform.emit('[success] Scale on the %s axis done ...' % str(axis))
                     self.app.progress.emit(100)
@@ -1417,10 +1409,9 @@ class TransformEditorTool(FlatCAMTool):
 
                     for sha in shape_list:
                         self.draw_app.add_shape(sha)
+                        self.draw_app.add_shape(DrawToolShape(sha.geo))
 
-                    self.draw_app.delete_selected()
-                    self.draw_app.complete = True
-                    self.draw_app.replot()
+                    self.draw_app.transform_complete.emit()
 
                     self.app.inform.emit('[success] Offset on the %s axis done ...' % str(axis))
                     self.app.progress.emit(100)
@@ -3177,6 +3168,8 @@ class FCDrillCopy(FCDrillMove):
 ########################
 class FlatCAMGeoEditor(QtCore.QObject):
 
+    transform_complete = QtCore.pyqtSignal()
+
     draw_shape_idx = -1
 
     def __init__(self, app, disabled=False):
@@ -3213,6 +3206,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.app.ui.geo_move_menuitem.triggered.connect(self.on_move)
         self.app.ui.geo_cornersnap_menuitem.triggered.connect(self.on_corner_snap)
+
+        self.transform_complete.connect(self.on_transform_complete)
 
         ## Toolbar events and properties
         self.tools = {
@@ -3355,6 +3350,10 @@ class FlatCAMGeoEditor(QtCore.QObject):
     def pool_recreated(self, pool):
         self.shapes.pool = pool
         self.tool_shape.pool = pool
+
+    def on_transform_complete(self):
+        self.delete_selected()
+        self.replot()
 
     def activate(self):
         self.connect_canvas_event_handlers()
@@ -3680,6 +3679,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                         modifier_to_use = Qt.ControlModifier
                     else:
                         modifier_to_use = Qt.ShiftModifier
+
                     # if modifier key is pressed then we add to the selected list the current shape but if
                     # it's already in the selected list, we removed it. Therefore first click selects, second deselects.
                     if key_modifier == modifier_to_use:
@@ -3911,7 +3911,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
         tempref = [s for s in self.selected]
         for shape in tempref:
             self.delete_shape(shape)
-
         self.selected = []
 
     def delete_shape(self, shape):
@@ -3921,7 +3920,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
             return
 
         self.storage.remove(shape)
-
         if shape in self.selected:
             self.selected.remove(shape)  # TODO: Check performance
 
