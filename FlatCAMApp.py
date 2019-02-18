@@ -458,6 +458,7 @@ class App(QtCore.QObject):
             "tools_panelize_constrain": self.tools_defaults_form.tools_panelize_group.pconstrain_cb,
             "tools_panelize_constrainx": self.tools_defaults_form.tools_panelize_group.px_width_entry,
             "tools_panelize_constrainy": self.tools_defaults_form.tools_panelize_group.py_height_entry,
+            "tools_panelize_panel_type": self.tools_defaults_form.tools_panelize_group.panel_type_radio,
 
             "tools_calc_vshape_tip_dia": self.tools_defaults_form.tools_calculators_group.tip_dia_entry,
             "tools_calc_vshape_tip_angle": self.tools_defaults_form.tools_calculators_group.tip_angle_entry,
@@ -681,6 +682,7 @@ class App(QtCore.QObject):
             "tools_panelize_constrain": False,
             "tools_panelize_constrainx": 0.0,
             "tools_panelize_constrainy": 0.0,
+            "tools_panelize_panel_type": 'gerber',
 
             "tools_calc_vshape_tip_dia": 0.007874,
             "tools_calc_vshape_tip_angle": 30,

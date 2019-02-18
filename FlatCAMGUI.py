@@ -3833,8 +3833,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         # Plot options
         self.export_options_label = QtWidgets.QLabel("<b>Export Options:</b>")
         self.export_options_label.setToolTip(
-            "The parameters set here are used in the file exported<cr>"
-            "when using the <b>File -> Export -> Export Excellon</b> menu entry."
+            "The parameters set here are used in the file exported\n"
+            "when using the File -> Export -> Export Excellon menu entry."
         )
         self.layout.addWidget(self.export_options_label)
 
@@ -4878,6 +4878,19 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(self.y_height_lbl, 6, 0)
         grid0.addWidget(self.py_height_entry, 6, 1)
+
+        ## Type of resulting Panel object
+        self.panel_type_radio = RadioSet([{'label': 'Gerber', 'value': 'gerber'},
+                                     {'label': 'Geometry', 'value': 'geometry'}])
+        self.panel_type_label = QtWidgets.QLabel("Panel Type:")
+        self.panel_type_label.setToolTip(
+            "Choose the type of object for the panel object:\n"
+            "- Geometry\n"
+            "- Gerber"
+        )
+
+        grid0.addWidget(self.panel_type_label, 7, 0)
+        grid0.addWidget(self.panel_type_radio, 7, 1)
 
         self.layout.addStretch()
 

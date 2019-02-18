@@ -156,6 +156,17 @@ class Panelize(FlatCAMTool):
         self.constrain_sel = OptionalInputSection(
             self.constrain_cb, [self.x_width_lbl, self.x_width_entry, self.y_height_lbl, self.y_height_entry])
 
+        ## Type of resulting Panel object
+        self.panel_type_radio = RadioSet([{'label': 'Gerber', 'value': 'gerber'},
+                                     {'label': 'Geo', 'value': 'geometry'}])
+        self.panel_type_label = QtWidgets.QLabel("Panel Type:")
+        self.panel_type_label.setToolTip(
+            "Choose the type of object for the panel object:\n"
+            "- Geometry\n"
+            "- Gerber"
+        )
+        form_layout.addRow(self.panel_type_label)
+        form_layout.addRow(self.panel_type_radio)
 
         ## Buttons
         hlay_2 = QtWidgets.QHBoxLayout()
@@ -231,6 +242,10 @@ class Panelize(FlatCAMTool):
         y_w = self.app.defaults["tools_panelize_constrainy"] if \
             self.app.defaults["tools_panelize_constrainy"] else 0.0
         self.y_height_entry.set_value(float(y_w))
+
+        panel_type = self.app.defaults["tools_panelize_panel_type"] if \
+            self.app.defaults["tools_panelize_panel_type"] else 'gerber'
+        self.panel_type_radio.set_value(panel_type)
 
     def on_type_obj_index_changed(self):
         obj_type = self.type_obj_combo.currentIndex()
@@ -343,6 +358,9 @@ class Panelize(FlatCAMTool):
                 self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number.")
                 return
+
+        panel_type = str(self.panel_type_radio.get_value())
+
 
         if 0 in {columns, rows}:
             self.app.inform.emit("[ERROR_NOTCL]Columns or Rows are zero value. Change them to a positive integer.")
@@ -548,7 +566,8 @@ class Panelize(FlatCAMTool):
                     self.app.new_object("excellon", self.outname, job_init_excellon, plot=True, autoselected=True)
                 else:
                     self.app.progress.emit(50)
-                    self.app.new_object("geometry", self.outname, job_init_geometry, plot=True, autoselected=True)
+                    self.app.new_object(panel_type, self.outname, job_init_geometry,
+                                        plot=True, autoselected=True)
 
         if self.constrain_flag is False:
             self.app.inform.emit("[success]Panel done...")

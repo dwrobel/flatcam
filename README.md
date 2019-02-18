@@ -27,6 +27,7 @@ CAD program, and create G-Code for Isolation routing.
 - adjusted the plotcanvas.zomm_fit() function so the objects are better fit into view (with a border around) 
 - modified the GUI in Objects Selected Tab to accommodate 2 different modes: basic and Advanced. In Basic mode, some of the functionality's are hidden from the user.
 - added Tool Transform preferences in Edit -> Preferences and used them through out the app
+- made the output of Panelization Tool a choice out of Gerber and Geometry type of objects. Useful for those who want to engrave multiple copies of the same design.
 
 17.02.2019
 
