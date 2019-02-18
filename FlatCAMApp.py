@@ -465,7 +465,20 @@ class App(QtCore.QObject):
             "tools_calc_electro_length": self.tools_defaults_form.tools_calculators_group.pcblength_entry,
             "tools_calc_electro_width": self.tools_defaults_form.tools_calculators_group.pcbwidth_entry,
             "tools_calc_electro_cdensity": self.tools_defaults_form.tools_calculators_group.cdensity_entry,
-            "tools_calc_electro_growth": self.tools_defaults_form.tools_calculators_group.growth_entry
+            "tools_calc_electro_growth": self.tools_defaults_form.tools_calculators_group.growth_entry,
+
+            "tools_transform_rotate": self.tools_defaults_form.tools_transform_group.rotate_entry,
+            "tools_transform_skew_x": self.tools_defaults_form.tools_transform_group.skewx_entry,
+            "tools_transform_skew_y": self.tools_defaults_form.tools_transform_group.skewy_entry,
+            "tools_transform_scale_x": self.tools_defaults_form.tools_transform_group.scalex_entry,
+            "tools_transform_scale_y": self.tools_defaults_form.tools_transform_group.scaley_entry,
+            "tools_transform_scale_link": self.tools_defaults_form.tools_transform_group.link_cb,
+            "tools_transform_scale_reference": self.tools_defaults_form.tools_transform_group.reference_cb,
+            "tools_transform_offset_x": self.tools_defaults_form.tools_transform_group.offx_entry,
+            "tools_transform_offset_y": self.tools_defaults_form.tools_transform_group.offy_entry,
+            "tools_transform_mirror_reference": self.tools_defaults_form.tools_transform_group.mirror_reference_cb,
+            "tools_transform_mirror_point": self.tools_defaults_form.tools_transform_group.flip_ref_entry
+
         }
         # loads postprocessors
         self.postprocessors = load_postprocessors(self)
@@ -675,7 +688,19 @@ class App(QtCore.QObject):
             "tools_calc_electro_length": 10.0,
             "tools_calc_electro_width": 10.0,
             "tools_calc_electro_cdensity":13.0,
-            "tools_calc_electro_growth": 10.0
+            "tools_calc_electro_growth": 10.0,
+
+            "tools_transform_rotate": 90,
+            "tools_transform_skew_x": 0.0,
+            "tools_transform_skew_y": 0.0,
+            "tools_transform_scale_x": 1.0,
+            "tools_transform_scale_y": 1.0,
+            "tools_transform_scale_link": True,
+            "tools_transform_scale_reference": True,
+            "tools_transform_offset_x": 0.0,
+            "tools_transform_offset_y": 0.0,
+            "tools_transform_mirror_reference": False,
+            "tools_transform_mirror_point": (0, 0)
         })
 
         ###############################
@@ -4015,7 +4040,8 @@ class App(QtCore.QObject):
         else:
             if silent is False:
                 rotatebox = FCInputDialog(title="Transform", text="Enter the Angle value:",
-                                          min=-360, max=360, decimals=3)
+                                          min=-360, max=360, decimals=4,
+                                          init_val=float(self.defaults['tools_transform_rotate']))
                 num, ok = rotatebox.get_value()
             else:
                 num = preset
@@ -4059,7 +4085,8 @@ class App(QtCore.QObject):
             self.inform.emit("[WARNING_NOTCL] No object selected to Skew/Shear on X axis.")
         else:
             skewxbox = FCInputDialog(title="Transform", text="Enter the Angle value:",
-                                          min=-360, max=360, decimals=3)
+                                     min=-360, max=360, decimals=4,
+                                     init_val=float(self.defaults['tools_transform_skew_x']))
             num, ok = skewxbox.get_value()
             if ok:
                 # first get a bounding box to fit all
@@ -4089,7 +4116,8 @@ class App(QtCore.QObject):
             self.inform.emit("[WARNING_NOTCL] No object selected to Skew/Shear on Y axis.")
         else:
             skewybox = FCInputDialog(title="Transform", text="Enter the Angle value:",
-                                          min=-360, max=360, decimals=3)
+                                     min=-360, max=360, decimals=4,
+                                     init_val=float(self.defaults['tools_transform_skew_y']))
             num, ok = skewybox.get_value()
             if ok:
                 # first get a bounding box to fit all

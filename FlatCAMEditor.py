@@ -972,45 +972,61 @@ class TransformEditorTool(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+T', **kwargs)
 
     def set_tool_ui(self):
-        ## Init GUI
-        # if self.app.defaults["tools_painttooldia"]:
-        #     self.painttooldia_entry.set_value(self.app.defaults["tools_painttooldia"])
-        # else:
-        #     self.painttooldia_entry.set_value(0.0)
-        #
-        # if self.app.defaults["tools_paintoverlap"]:
-        #     self.paintoverlap_entry.set_value(self.app.defaults["tools_paintoverlap"])
-        # else:
-        #     self.paintoverlap_entry.set_value(0.0)
-        #
-        # if self.app.defaults["tools_paintmargin"]:
-        #     self.paintmargin_entry.set_value(self.app.defaults["tools_paintmargin"])
-        # else:
-        #     self.paintmargin_entry.set_value(0.0)
-        #
-        # if self.app.defaults["tools_paintmethod"]:
-        #     self.paintmethod_combo.set_value(self.app.defaults["tools_paintmethod"])
-        # else:
-        #     self.paintmethod_combo.set_value("seed")
-        #
-        # if self.app.defaults["tools_pathconnect"]:
-        #     self.pathconnect_cb.set_value(self.app.defaults["tools_pathconnect"])
-        # else:
-        #     self.pathconnect_cb.set_value(False)
-        #
-        # if self.app.defaults["tools_paintcontour"]:
-        #     self.paintcontour_cb.set_value(self.app.defaults["tools_paintcontour"])
-        # else:
-        #     self.paintcontour_cb.set_value(False)
         ## Initialize form
-        self.rotate_entry.set_value('0')
-        self.skewx_entry.set_value('0')
-        self.skewy_entry.set_value('0')
-        self.scalex_entry.set_value('1')
-        self.scaley_entry.set_value('1')
-        self.offx_entry.set_value('0')
-        self.offy_entry.set_value('0')
-        self.flip_ref_cb.setChecked(False)
+        if self.app.defaults["tools_transform_rotate"]:
+            self.rotate_entry.set_value(self.app.defaults["tools_transform_rotate"])
+        else:
+            self.rotate_entry.set_value(0.0)
+
+        if self.app.defaults["tools_transform_skew_x"]:
+            self.skewx_entry.set_value(self.app.defaults["tools_transform_skew_x"])
+        else:
+            self.skewx_entry.set_value(0.0)
+
+        if self.app.defaults["tools_transform_skew_y"]:
+            self.skewy_entry.set_value(self.app.defaults["tools_transform_skew_y"])
+        else:
+            self.skewy_entry.set_value(0.0)
+
+        if self.app.defaults["tools_transform_scale_x"]:
+            self.scalex_entry.set_value(self.app.defaults["tools_transform_scale_x"])
+        else:
+            self.scalex_entry.set_value(1.0)
+
+        if self.app.defaults["tools_transform_scale_y"]:
+            self.scaley_entry.set_value(self.app.defaults["tools_transform_scale_y"])
+        else:
+            self.scaley_entry.set_value(1.0)
+
+        if self.app.defaults["tools_transform_scale_link"]:
+            self.scale_link_cb.set_value(self.app.defaults["tools_transform_scale_link"])
+        else:
+            self.scale_link_cb.set_value(True)
+
+        if self.app.defaults["tools_transform_scale_reference"]:
+            self.scale_zero_ref_cb.set_value(self.app.defaults["tools_transform_scale_reference"])
+        else:
+            self.scale_zero_ref_cb.set_value(True)
+
+        if self.app.defaults["tools_transform_offset_x"]:
+            self.offx_entry.set_value(self.app.defaults["tools_transform_offset_x"])
+        else:
+            self.offx_entry.set_value(0.0)
+
+        if self.app.defaults["tools_transform_offset_y"]:
+            self.offy_entry.set_value(self.app.defaults["tools_transform_offset_y"])
+        else:
+            self.offy_entry.set_value(0.0)
+
+        if self.app.defaults["tools_transform_mirror_reference"]:
+            self.flip_ref_cb.set_value(self.app.defaults["tools_transform_mirror_reference"])
+        else:
+            self.flip_ref_cb.set_value(False)
+
+        if self.app.defaults["tools_transform_mirror_point"]:
+            self.flip_ref_entry.set_value(self.app.defaults["tools_transform_mirror_point"])
+        else:
+            self.flip_ref_entry.set_value((0, 0))
 
     def template(self):
         if not self.fcdraw.selected:
@@ -1452,7 +1468,8 @@ class TransformEditorTool(FlatCAMTool):
     def on_rotate_key(self):
         val_box = FCInputDialog(title="Rotate ...",
                                 text='Enter an Angle Value (degrees):',
-                                min=-359.9999, max=360.0000, decimals=4)
+                                min=-359.9999, max=360.0000, decimals=4,
+                                init_val=float(self.app.defaults['tools_transform_rotate']))
         val_box.setWindowIcon(QtGui.QIcon('share/rotate.png'))
 
         val, ok = val_box.get_value()
@@ -1470,7 +1487,8 @@ class TransformEditorTool(FlatCAMTool):
 
         val_box = FCInputDialog(title="Offset on X axis ...",
                                 text=('Enter a distance Value (%s):' % str(units)),
-                                min=-9999.9999, max=10000.0000, decimals=4)
+                                min=-9999.9999, max=10000.0000, decimals=4,
+                                init_val=float(self.app.defaults['tools_transform_offset_x']))
         val_box.setWindowIcon(QtGui.QIcon('share/offsetx32.png'))
 
         val, ok = val_box.get_value()
@@ -1488,7 +1506,8 @@ class TransformEditorTool(FlatCAMTool):
 
         val_box = FCInputDialog(title="Offset on Y axis ...",
                                 text=('Enter a distance Value (%s):' % str(units)),
-                                min=-9999.9999, max=10000.0000, decimals=4)
+                                min=-9999.9999, max=10000.0000, decimals=4,
+                                init_val=float(self.app.defaults['tools_transform_offset_y']))
         val_box.setWindowIcon(QtGui.QIcon('share/offsety32.png'))
 
         val, ok = val_box.get_value()
@@ -1504,7 +1523,8 @@ class TransformEditorTool(FlatCAMTool):
     def on_skewx_key(self):
         val_box = FCInputDialog(title="Skew on X axis ...",
                                 text='Enter an Angle Value (degrees):',
-                                min=-359.9999, max=360.0000, decimals=4)
+                                min=-359.9999, max=360.0000, decimals=4,
+                                init_val=float(self.app.defaults['tools_transform_skew_x']))
         val_box.setWindowIcon(QtGui.QIcon('share/skewX.png'))
 
         val, ok = val_box.get_value()
@@ -1520,7 +1540,8 @@ class TransformEditorTool(FlatCAMTool):
     def on_skewy_key(self):
         val_box = FCInputDialog(title="Skew on Y axis ...",
                                 text='Enter an Angle Value (degrees):',
-                                min=-359.9999, max=360.0000, decimals=4)
+                                min=-359.9999, max=360.0000, decimals=4,
+                                init_val=float(self.app.defaults['tools_transform_skew_y']))
         val_box.setWindowIcon(QtGui.QIcon('share/skewY.png'))
 
         val, ok = val_box.get_value()

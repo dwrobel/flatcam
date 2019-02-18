@@ -1699,7 +1699,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Rotate Object by 90 degree CCW
                 if key == QtCore.Qt.Key_R:
-                    self.app.on_rotate(silent=True, preset=-90)
+                    self.app.on_rotate(silent=True, preset=-self.app.defaults['tools_transform_rotate'])
                     return
 
                 # Run a Script
@@ -1875,7 +1875,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Rotate Object by 90 degree CW
                 if key == QtCore.Qt.Key_R:
-                    self.app.on_rotate(silent=True, preset=90)
+                    self.app.on_rotate(silent=True, preset=self.app.defaults['tools_transform_rotate'])
 
                 # Shell toggle
                 if key == QtCore.Qt.Key_S:
@@ -2563,6 +2563,9 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.tools_calculators_group = ToolsCalculatorsPrefGroupUI()
         self.tools_calculators_group.setMinimumWidth(220)
 
+        self.tools_transform_group = ToolsTransformPrefGroupUI()
+        self.tools_transform_group.setMinimumWidth(200)
+
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.tools_ncc_group)
         self.vlay.addWidget(self.tools_paint_group)
@@ -2576,9 +2579,13 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.vlay2.addWidget(self.tools_panelize_group)
         self.vlay2.addWidget(self.tools_calculators_group)
 
+        self.vlay3 = QtWidgets.QVBoxLayout()
+        self.vlay3.addWidget(self.tools_transform_group)
+
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)
         self.layout.addLayout(self.vlay2)
+        self.layout.addLayout(self.vlay3)
 
         self.layout.addStretch()
 
@@ -4968,6 +4975,133 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
                                      "In microns.")
         grid1.addWidget(self.growth_label, 3, 0)
         grid1.addWidget(self.growth_entry, 3, 1)
+
+        self.layout.addStretch()
+
+
+class ToolsTransformPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+
+        super(ToolsTransformPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("Transform Tool Options"))
+
+        ## Transformations
+        self.transform_label = QtWidgets.QLabel("<b>Parameters:</b>")
+        self.transform_label.setToolTip(
+            "Various transformations that can be applied\n"
+            "on a FlatCAM object."
+        )
+        self.layout.addWidget(self.transform_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        ## Rotate Angle
+        self.rotate_entry = FCEntry()
+        self.rotate_label = QtWidgets.QLabel("Rotate Angle:")
+        self.rotate_label.setToolTip(
+            "Angle for rotation. In degrees."
+        )
+        grid0.addWidget(self.rotate_label, 0, 0)
+        grid0.addWidget(self.rotate_entry, 0, 1)
+
+        ## Skew/Shear Angle on X axis
+        self.skewx_entry = FCEntry()
+        self.skewx_label = QtWidgets.QLabel("Skew_X angle:")
+        self.skewx_label.setToolTip(
+             "Angle for Skew/Shear on X axis. In degrees."
+        )
+        grid0.addWidget(self.skewx_label, 1, 0)
+        grid0.addWidget(self.skewx_entry, 1, 1)
+
+        ## Skew/Shear Angle on Y axis
+        self.skewy_entry = FCEntry()
+        self.skewy_label = QtWidgets.QLabel("Skew_Y angle:")
+        self.skewy_label.setToolTip(
+             "Angle for Skew/Shear on Y axis. In degrees."
+        )
+        grid0.addWidget(self.skewy_label, 2, 0)
+        grid0.addWidget(self.skewy_entry, 2, 1)
+
+        ## Scale factor on X axis
+        self.scalex_entry = FCEntry()
+        self.scalex_label = QtWidgets.QLabel("Scale_X factor:")
+        self.scalex_label.setToolTip(
+            "Factor for scaling on X axis."
+        )
+        grid0.addWidget(self.scalex_label, 3, 0)
+        grid0.addWidget(self.scalex_entry, 3, 1)
+
+        ## Scale factor on X axis
+        self.scaley_entry = FCEntry()
+        self.scaley_label = QtWidgets.QLabel("Scale_Y factor:")
+        self.scaley_label.setToolTip(
+            "Factor for scaling on Y axis."
+        )
+        grid0.addWidget(self.scaley_label, 4, 0)
+        grid0.addWidget(self.scaley_entry, 4, 1)
+
+        ## Link Scale factors
+        self.link_cb = FCCheckBox("Link")
+        self.link_cb.setToolTip(
+            "Scale the selected object(s)\n"
+            "using the Scale_X factor for both axis."
+        )
+        grid0.addWidget(self.link_cb, 5, 0)
+
+        ## Scale Reference
+        self.reference_cb = FCCheckBox("Scale Reference")
+        self.reference_cb.setToolTip(
+            "Scale the selected object(s)\n"
+            "using the origin reference when checked,\n"
+            "and the center of the biggest bounding box\n"
+            "of the selected objects when unchecked."
+        )
+        grid0.addWidget(self.reference_cb, 5, 1)
+
+        ## Offset distance on X axis
+        self.offx_entry = FCEntry()
+        self.offx_label = QtWidgets.QLabel("Offset_X val:")
+        self.offx_label.setToolTip(
+            "Distance to offset on X axis. In current units."
+        )
+        grid0.addWidget(self.offx_label, 6, 0)
+        grid0.addWidget(self.offx_entry, 6, 1)
+
+        ## Offset distance on Y axis
+        self.offy_entry = FCEntry()
+        self.offy_label = QtWidgets.QLabel("Offset_Y val:")
+        self.offy_label.setToolTip(
+            "Distance to offset on Y axis. In current units."
+        )
+        grid0.addWidget(self.offy_label, 7, 0)
+        grid0.addWidget(self.offy_entry, 7, 1)
+
+        ## Mirror (Flip) Reference Point
+        self.mirror_reference_cb = FCCheckBox("Mirror Reference")
+        self.mirror_reference_cb.setToolTip(
+            "Flip the selected object(s)\n"
+            "around the point in Point Entry Field.\n"
+            "\n"
+            "The point coordinates can be captured by\n"
+            "left click on canvas together with pressing\n"
+            "SHIFT key. \n"
+            "Then click Add button to insert coordinates.\n"
+            "Or enter the coords in format (x, y) in the\n"
+            "Point Entry field and click Flip on X(Y)")
+        grid0.addWidget(self.mirror_reference_cb, 8, 1)
+
+        self.flip_ref_label = QtWidgets.QLabel(" Mirror Ref. Point:")
+        self.flip_ref_label.setToolTip(
+            "Coordinates in format (x, y) used as reference for mirroring.\n"
+            "The 'x' in (x, y) will be used when using Flip on X and\n"
+            "the 'y' in (x, y) will be used when using Flip on Y and"
+        )
+        self.flip_ref_entry = EvalEntry2("(0, 0)")
+
+        grid0.addWidget(self.flip_ref_label, 9, 0)
+        grid0.addWidget(self.flip_ref_entry, 9, 1)
 
         self.layout.addStretch()
 

@@ -490,13 +490,16 @@ class FCComboBox(QtWidgets.QComboBox):
 
 
 class FCInputDialog(QtWidgets.QInputDialog):
-    def __init__(self, parent=None, ok=False, val=None, title=None, text=None, min=None, max=None, decimals=None):
+    def __init__(self, parent=None, ok=False, val=None, title=None, text=None, min=None, max=None, decimals=None,
+                 init_val=None):
         super(FCInputDialog, self).__init__(parent)
         self.allow_empty = ok
         self.empty_val = val
 
         self.val = 0.0
         self.ok = ''
+
+        self.init_value = init_val if init_val else 0.0
 
         if title is None:
             self.title = 'title'
@@ -521,7 +524,7 @@ class FCInputDialog(QtWidgets.QInputDialog):
 
     def get_value(self):
         self.val, self.ok = self.getDouble(self, self.title, self.text, min=self.min,
-                                                      max=self.max, decimals=self.decimals)
+                                                      max=self.max, decimals=self.decimals, value=self.init_value)
         return [self.val, self.ok]
 
     # "Transform", "Enter the Angle value:"

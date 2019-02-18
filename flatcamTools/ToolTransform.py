@@ -379,14 +379,60 @@ class ToolTransform(FlatCAMTool):
 
     def set_tool_ui(self):
         ## Initialize form
-        self.rotate_entry.set_value('0')
-        self.skewx_entry.set_value('0')
-        self.skewy_entry.set_value('0')
-        self.scalex_entry.set_value('1')
-        self.scaley_entry.set_value('1')
-        self.offx_entry.set_value('0')
-        self.offy_entry.set_value('0')
-        self.flip_ref_cb.setChecked(False)
+        if self.app.defaults["tools_transform_rotate"]:
+            self.rotate_entry.set_value(self.app.defaults["tools_transform_rotate"])
+        else:
+            self.rotate_entry.set_value(0.0)
+
+        if self.app.defaults["tools_transform_skew_x"]:
+            self.skewx_entry.set_value(self.app.defaults["tools_transform_skew_x"])
+        else:
+            self.skewx_entry.set_value(0.0)
+
+        if self.app.defaults["tools_transform_skew_y"]:
+            self.skewy_entry.set_value(self.app.defaults["tools_transform_skew_y"])
+        else:
+            self.skewy_entry.set_value(0.0)
+
+        if self.app.defaults["tools_transform_scale_x"]:
+            self.scalex_entry.set_value(self.app.defaults["tools_transform_scale_x"])
+        else:
+            self.scalex_entry.set_value(1.0)
+
+        if self.app.defaults["tools_transform_scale_y"]:
+            self.scaley_entry.set_value(self.app.defaults["tools_transform_scale_y"])
+        else:
+            self.scaley_entry.set_value(1.0)
+
+        if self.app.defaults["tools_transform_scale_link"]:
+            self.scale_link_cb.set_value(self.app.defaults["tools_transform_scale_link"])
+        else:
+            self.scale_link_cb.set_value(True)
+
+        if self.app.defaults["tools_transform_scale_reference"]:
+            self.scale_zero_ref_cb.set_value(self.app.defaults["tools_transform_scale_reference"])
+        else:
+            self.scale_zero_ref_cb.set_value(True)
+
+        if self.app.defaults["tools_transform_offset_x"]:
+            self.offx_entry.set_value(self.app.defaults["tools_transform_offset_x"])
+        else:
+            self.offx_entry.set_value(0.0)
+
+        if self.app.defaults["tools_transform_offset_y"]:
+            self.offy_entry.set_value(self.app.defaults["tools_transform_offset_y"])
+        else:
+            self.offy_entry.set_value(0.0)
+
+        if self.app.defaults["tools_transform_mirror_reference"]:
+            self.flip_ref_cb.set_value(self.app.defaults["tools_transform_mirror_reference"])
+        else:
+            self.flip_ref_cb.set_value(False)
+
+        if self.app.defaults["tools_transform_mirror_point"]:
+            self.flip_ref_entry.set_value(self.app.defaults["tools_transform_mirror_point"])
+        else:
+            self.flip_ref_entry.set_value((0,0))
 
     def on_rotate(self):
         try:

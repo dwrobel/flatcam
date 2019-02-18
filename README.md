@@ -26,6 +26,7 @@ CAD program, and create G-Code for Isolation routing.
 - added key shortcuts for the shape transformations within Geometry Editor: X, Y keys for Flip(mirror), SHIFT+X, SHIFT+Y combo keys for Skew and ALT+X, ALT+Y combo keys for Offset
 - adjusted the plotcanvas.zomm_fit() function so the objects are better fit into view (with a border around) 
 - modified the GUI in Objects Selected Tab to accommodate 2 different modes: basic and Advanced. In Basic mode, some of the functionality's are hidden from the user.
+- added Tool Transform preferences in Edit -> Preferences and used them through out the app
 
 17.02.2019
 
