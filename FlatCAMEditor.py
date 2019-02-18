@@ -1273,9 +1273,6 @@ class TransformEditorTool(FlatCAMTool):
                         elif axis is 'Y':
                             sha.mirror('Y', (px, py))
                             self.app.inform.emit('[success] Flip on the X axis done ...')
-
-                    for sha in shape_list:
-                        self.draw_app.add_shape(sha)
                         self.draw_app.add_shape(DrawToolShape(sha.geo))
 
                     self.draw_app.transform_complete.emit()
@@ -1314,9 +1311,6 @@ class TransformEditorTool(FlatCAMTool):
                             sha.skew(num, 0, point=(xminimal, yminimal))
                         elif axis is 'Y':
                             sha.skew(0, num, point=(xminimal, yminimal))
-
-                    for sha in shape_list:
-                        self.draw_app.add_shape(sha)
                         self.draw_app.add_shape(DrawToolShape(sha.geo))
 
                     self.draw_app.transform_complete.emit()
@@ -1366,9 +1360,6 @@ class TransformEditorTool(FlatCAMTool):
 
                     for sha in shape_list:
                         sha.scale(xfactor, yfactor, point=(px, py))
-
-                    for sha in shape_list:
-                        self.draw_app.add_shape(sha)
                         self.draw_app.add_shape(DrawToolShape(sha.geo))
 
                     self.draw_app.transform_complete.emit()
@@ -1406,9 +1397,6 @@ class TransformEditorTool(FlatCAMTool):
                             sha.offset((num, 0))
                         elif axis is 'Y':
                             sha.offset((0, num))
-
-                    for sha in shape_list:
-                        self.draw_app.add_shape(sha)
                         self.draw_app.add_shape(DrawToolShape(sha.geo))
 
                     self.draw_app.transform_complete.emit()
@@ -2384,8 +2372,14 @@ class FCMove(FCShapeTool):
 
         dx = data[0] - self.origin[0]
         dy = data[1] - self.origin[1]
-        for geom in self.draw_app.get_selected():
-            geo_list.append(affinity.translate(geom.geo, xoff=dx, yoff=dy))
+
+        try:
+            for geom in self.draw_app.get_selected():
+                geo_list.append(affinity.translate(geom.geo, xoff=dx, yoff=dy))
+        except AttributeError:
+            self.draw_app.select_tool('select')
+            self.draw_app.selected = []
+            return
 
         return DrawToolUtilityShape(geo_list)
         # return DrawToolUtilityShape([affinity.translate(geom.geo, xoff=dx, yoff=dy)
