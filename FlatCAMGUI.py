@@ -4850,6 +4850,19 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.rows_label, 3, 0)
         grid0.addWidget(self.prows, 3, 1)
 
+        ## Type of resulting Panel object
+        self.panel_type_radio = RadioSet([{'label': 'Gerber', 'value': 'gerber'},
+                                     {'label': 'Geo', 'value': 'geometry'}])
+        self.panel_type_label = QtWidgets.QLabel("Panel Type:")
+        self.panel_type_label.setToolTip(
+            "Choose the type of object for the panel object:\n"
+            "- Gerber\n"
+            "- Geometry"
+        )
+
+        grid0.addWidget(self.panel_type_label, 4, 0)
+        grid0.addWidget(self.panel_type_radio, 4, 1)
+
         ## Constrains
         self.pconstrain_cb = FCCheckBox("Constrain within:")
         self.pconstrain_cb.setToolTip(
@@ -4859,7 +4872,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
             "the final panel will have as many columns and rows as\n"
             "they fit completely within selected area."
         )
-        grid0.addWidget(self.pconstrain_cb, 4, 0)
+        grid0.addWidget(self.pconstrain_cb, 5, 0)
 
         self.px_width_entry = FCEntry()
         self.x_width_lbl = QtWidgets.QLabel("Width (DX):")
@@ -4867,8 +4880,8 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
             "The width (DX) within which the panel must fit.\n"
             "In current units."
         )
-        grid0.addWidget(self.x_width_lbl, 5, 0)
-        grid0.addWidget(self.px_width_entry, 5, 1)
+        grid0.addWidget(self.x_width_lbl, 6, 0)
+        grid0.addWidget(self.px_width_entry, 6, 1)
 
         self.py_height_entry = FCEntry()
         self.y_height_lbl = QtWidgets.QLabel("Height (DY):")
@@ -4876,21 +4889,8 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
             "The height (DY)within which the panel must fit.\n"
             "In current units."
         )
-        grid0.addWidget(self.y_height_lbl, 6, 0)
-        grid0.addWidget(self.py_height_entry, 6, 1)
-
-        ## Type of resulting Panel object
-        self.panel_type_radio = RadioSet([{'label': 'Gerber', 'value': 'gerber'},
-                                     {'label': 'Geometry', 'value': 'geometry'}])
-        self.panel_type_label = QtWidgets.QLabel("Panel Type:")
-        self.panel_type_label.setToolTip(
-            "Choose the type of object for the panel object:\n"
-            "- Geometry\n"
-            "- Gerber"
-        )
-
-        grid0.addWidget(self.panel_type_label, 7, 0)
-        grid0.addWidget(self.panel_type_radio, 7, 1)
+        grid0.addWidget(self.y_height_lbl, 7, 0)
+        grid0.addWidget(self.py_height_entry, 7, 1)
 
         self.layout.addStretch()
 

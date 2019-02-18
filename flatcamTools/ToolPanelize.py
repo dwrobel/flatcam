@@ -126,6 +126,18 @@ class Panelize(FlatCAMTool):
         )
         form_layout.addRow(self.rows_label, self.rows)
 
+        ## Type of resulting Panel object
+        self.panel_type_radio = RadioSet([{'label': 'Gerber', 'value': 'gerber'},
+                                     {'label': 'Geometry', 'value': 'geometry'}])
+        self.panel_type_label = QtWidgets.QLabel("Panel Type:")
+        self.panel_type_label.setToolTip(
+            "Choose the type of object for the panel object:\n"
+            "- Geometry\n"
+            "- Gerber"
+        )
+        form_layout.addRow(self.panel_type_label)
+        form_layout.addRow(self.panel_type_radio)
+
         ## Constrains
         self.constrain_cb = FCCheckBox("Constrain panel within:")
         self.constrain_cb.setToolTip(
@@ -155,18 +167,6 @@ class Panelize(FlatCAMTool):
 
         self.constrain_sel = OptionalInputSection(
             self.constrain_cb, [self.x_width_lbl, self.x_width_entry, self.y_height_lbl, self.y_height_entry])
-
-        ## Type of resulting Panel object
-        self.panel_type_radio = RadioSet([{'label': 'Gerber', 'value': 'gerber'},
-                                     {'label': 'Geo', 'value': 'geometry'}])
-        self.panel_type_label = QtWidgets.QLabel("Panel Type:")
-        self.panel_type_label.setToolTip(
-            "Choose the type of object for the panel object:\n"
-            "- Geometry\n"
-            "- Gerber"
-        )
-        form_layout.addRow(self.panel_type_label)
-        form_layout.addRow(self.panel_type_radio)
 
         ## Buttons
         hlay_2 = QtWidgets.QHBoxLayout()
