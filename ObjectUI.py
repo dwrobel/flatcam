@@ -390,16 +390,19 @@ class GerberObjectUI(ObjectUI):
         # Rounded corners
         self.noncopper_rounded_cb = FCCheckBox(label="Rounded corners")
         self.noncopper_rounded_cb.setToolTip(
-            "Creates a Geometry objects with polygons\n"
-            "covering the copper-free areas of the PCB."
+            "Resulting geometry will have rounded corners."
         )
-        grid4.addWidget(self.noncopper_rounded_cb, 1, 0, 1, 2)
+        grid4.addWidget(self.noncopper_rounded_cb, 1, 0)
 
-        self.generate_noncopper_button = QtWidgets.QPushButton('Generate Geometry')
-        self.custom_box.addWidget(self.generate_noncopper_button)
+        self.generate_noncopper_button = QtWidgets.QPushButton('Generate Geo')
+        grid4.addWidget(self.generate_noncopper_button, 1, 1)
 
         ## Bounding box
         self.boundingbox_label = QtWidgets.QLabel('<b>Bounding Box:</b>')
+        self.boundingbox_label.setToolTip(
+            "Create a geometry surrounding the Gerber object.\n"
+            "Square shape."
+        )
         self.custom_box.addWidget(self.boundingbox_label)
 
         grid5 = QtWidgets.QGridLayout()
@@ -421,13 +424,13 @@ class GerberObjectUI(ObjectUI):
             "their radius is equal to\n"
             "the margin."
         )
-        grid5.addWidget(self.bbrounded_cb, 1, 0, 1, 2)
+        grid5.addWidget(self.bbrounded_cb, 1, 0)
 
-        self.generate_bb_button = QtWidgets.QPushButton('Generate Geometry')
+        self.generate_bb_button = QtWidgets.QPushButton('Generate Geo')
         self.generate_bb_button.setToolTip(
-            "Genrate the Geometry object."
+            "Generate the Geometry object."
         )
-        self.custom_box.addWidget(self.generate_bb_button)
+        grid5.addWidget(self.generate_bb_button, 1, 1)
 
 
 class ExcellonObjectUI(ObjectUI):

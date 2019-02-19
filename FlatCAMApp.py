@@ -6272,7 +6272,6 @@ class App(QtCore.QObject):
                 obj_inst.from_dict(obj)
             App.log.debug(obj['kind'] + ":  " + obj['options']['name'])
             self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=True)
-
         self.plot_all()
         self.inform.emit("[success] Project loaded from: " + filename)
 

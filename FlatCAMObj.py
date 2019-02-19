@@ -106,7 +106,12 @@ class FlatCAMObj(QtCore.QObject):
             if attr == 'options':
                 self.options.update(d[attr])
             else:
-                setattr(self, attr, d[attr])
+                try:
+                    setattr(self, attr, d[attr])
+                except KeyError:
+                    log.debug("FlatCAMObj.from_dict() --> KeyError: %s. Means that we are loading an old project that don't"
+                              "have all attributes in the latest FlatCAM." % str(attr))
+                    pass
 
     def on_options_change(self, key):
         # Update form on programmatically options change
