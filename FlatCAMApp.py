@@ -1101,7 +1101,6 @@ class App(QtCore.QObject):
         self.ui.menufilenewexc.triggered.connect(self.new_excellon_object)
 
         self.ui.menufileopengerber.triggered.connect(self.on_fileopengerber)
-        self.ui.menufileopengerber_follow.triggered.connect(self.on_fileopengerber_follow)
         self.ui.menufileopenexcellon.triggered.connect(self.on_fileopenexcellon)
         self.ui.menufileopengcode.triggered.connect(self.on_fileopengcode)
         self.ui.menufileopenproject.triggered.connect(self.on_file_openproject)
@@ -4864,42 +4863,6 @@ class App(QtCore.QObject):
                     self.worker_task.emit({'fcn': self.open_gerber,
                                            'params': [filename]})
 
-    def on_fileopengerber_follow(self):
-        """
-        File menu callback for opening a Gerber.
-
-        :return: None
-        """
-
-        self.report_usage("on_fileopengerber_follow")
-        App.log.debug("on_fileopengerber_follow()")
-        _filter_ = "Gerber Files (*.gbr *.ger *.gtl *.gbl *.gts *.gbs *.gtp *.gbp *.gto *.gbo *.gm1 *.gml *.gm3 *.gko " \
-                   "*.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim *.mil *.grb" \
-                   "*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb *.pho *.gdo *.art *.gbd);;" \
-                   "Protel Files (*.gtl *.gbl *.gts *.gbs *.gto *.gbo *.gtp *.gbp *.gml *.gm1 *.gm3 *.gko);;" \
-                   "Eagle Files (*.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim *.mil);;" \
-                   "OrCAD Files (*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb);;" \
-                   "Allegro Files (*.art);;" \
-                   "Mentor Files (*.pho *.gdo);;" \
-                   "All Files (*.*)"
-        try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Gerber with Follow",
-                                                         directory=self.get_last_folder(), filter=_filter_)
-        except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Gerber with Follow", filter=_filter_)
-
-        # The Qt methods above will return a QString which can cause problems later.
-        # So far json.dump() will fail to serialize it.
-        # TODO: Improve the serialization methods and remove this fix.
-        filename = str(filename)
-        follow = True
-
-        if filename == "":
-            self.inform.emit("[WARNING_NOTCL]Open Gerber-Follow cancelled.")
-        else:
-            self.worker_task.emit({'fcn': self.open_gerber,
-                                   'params': [filename, follow]})
-
     def on_fileopenexcellon(self):
         """
         File menu callback for opening an Excellon file.
@@ -5996,7 +5959,7 @@ class App(QtCore.QObject):
             self.inform.emit("[success] Opened: " + filename)
             self.progress.emit(100)
 
-    def open_gerber(self, filename, follow=False, outname=None):
+    def open_gerber(self, filename, outname=None):
         """
         Opens a Gerber file, parses it and creates a new object for
         it in the program. Thread-safe.
@@ -6020,7 +5983,7 @@ class App(QtCore.QObject):
             # Opening the file happens here
             self.progress.emit(30)
             try:
-                gerber_obj.parse_file(filename, follow=follow)
+                gerber_obj.parse_file(filename)
             except IOError:
                 app_obj.inform.emit("[ERROR_NOTCL] Failed to open file: " + filename)
                 app_obj.progress.emit(0)
@@ -6048,10 +6011,7 @@ class App(QtCore.QObject):
             # Further parsing
             self.progress.emit(70)  # TODO: Note the mixture of self and app_obj used here
 
-        if follow is False:
-            App.log.debug("open_gerber()")
-        else:
-            App.log.debug("open_gerber() with 'follow' attribute")
+        App.log.debug("open_gerber()")
 
         with self.proc_container.new("Opening Gerber") as proc:
 

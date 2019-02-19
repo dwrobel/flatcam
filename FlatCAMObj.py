@@ -371,9 +371,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         if grb_final.solid_geometry is None:
             grb_final.solid_geometry = []
+            grb_final.follow_geometry = []
 
         if type(grb_final.solid_geometry) is not list:
             grb_final.solid_geometry = [grb_final.solid_geometry]
+            grb_final.follow_geometry = [grb_final.follow_geometry]
 
         for grb in grb_list:
             for option in grb.options:
@@ -389,8 +391,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             else:   # If not list, just append
                 for geos in grb.solid_geometry:
                     grb_final.solid_geometry.append(geos)
+                    grb_final.follow_geometry.append(geos)
 
         grb_final.solid_geometry = MultiPolygon(grb_final.solid_geometry)
+        grb_final.follow_geometry = MultiPolygon(grb_final.follow_geometry)
 
     def __init__(self, name):
         Gerber.__init__(self, steps_per_circle=int(self.app.defaults["gerber_circle_steps"]))
@@ -419,6 +423,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.iso_type = 2
 
         self.multigeo = False
+
+        self.follow = False
 
         self.apertures_row = 0
 
@@ -482,6 +488,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.generate_bb_button.clicked.connect(self.on_generatebb_button_click)
         self.ui.generate_noncopper_button.clicked.connect(self.on_generatenoncopper_button_click)
         self.ui.aperture_table_visibility_cb.stateChanged.connect(self.on_aperture_table_visibility_change)
+        self.ui.follow_cb.stateChanged.connect(self.on_follow_cb_click)
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_advanced"] is False:
@@ -675,7 +682,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
     def on_int_iso_button_click(self, *args):
 
-        if self.ui.follow_cb.get_value() == True:
+        if self.ui.follow_cb.get_value() is True:
             obj = self.app.collection.get_active()
             obj.follow()
             # in the end toggle the visibility of the origin object so we can see the generated Geometry
@@ -687,9 +694,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
     def on_iso_button_click(self, *args):
 
-        if self.ui.follow_cb.get_value() == True:
+        if self.ui.follow_cb.get_value() is True:
             obj = self.app.collection.get_active()
-            obj.follow()
+            obj.follow_geo()
             # in the end toggle the visibility of the origin object so we can see the generated Geometry
             obj.ui.plot_cb.toggle()
         else:
@@ -697,7 +704,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.read_form()
             self.isolate()
 
-    def follow(self, outname=None):
+    def follow_geo(self, outname=None):
         """
         Creates a geometry object "following" the gerber paths.
 
@@ -715,7 +722,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         def follow_init(follow_obj, app):
             # Propagate options
             follow_obj.options["cnctooldia"] = float(self.options["isotooldia"])
-            follow_obj.solid_geometry = self.solid_geometry
+            follow_obj.solid_geometry = self.follow_geometry
 
         # TODO: Do something if this is None. Offer changing name?
         try:
@@ -724,7 +731,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             return "Operation failed: %s" % str(e)
 
     def isolate(self, iso_type=None, dia=None, passes=None, overlap=None,
-                outname=None, combine=None, milling_type=None):
+                outname=None, combine=None, milling_type=None, follow=None):
         """
         Creates an isolation routing geometry object in the project.
 
@@ -735,6 +742,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :param outname: Base name of the output object
         :return: None
         """
+
+
         if dia is None:
             dia = float(self.options["isotooldia"])
         if passes is None:
@@ -755,7 +764,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         base_name = self.options["name"] + "_iso"
         base_name = outname or base_name
 
-        def generate_envelope(offset, invert, envelope_iso_type=2):
+        def generate_envelope(offset, invert, envelope_iso_type=2, follow=None):
             # isolation_geometry produces an envelope that is going on the left of the geometry
             # (the copper features). To leave the least amount of burrs on the features
             # the tool needs to travel on the right side of the features (this is called conventional milling)
@@ -763,7 +772,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             # the other passes overlap preceding ones and cut the left over copper. It is better for them
             # to cut on the right side of the left over copper i.e on the left side of the features.
             try:
-                geom = self.isolation_geometry(offset, iso_type=envelope_iso_type)
+                geom = self.isolation_geometry(offset, iso_type=envelope_iso_type, follow=follow)
             except Exception as e:
                 log.debug(str(e))
                 return 'fail'
@@ -803,9 +812,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     # if milling type is climb then the move is counter-clockwise around features
                     if milling_type == 'cl':
                         # geom = generate_envelope (offset, i == 0)
-                        geom = generate_envelope(iso_offset, 1, envelope_iso_type=self.iso_type)
+                        geom = generate_envelope(iso_offset, 1, envelope_iso_type=self.iso_type, follow=follow)
                     else:
-                        geom = generate_envelope(iso_offset, 0, envelope_iso_type=self.iso_type)
+                        geom = generate_envelope(iso_offset, 0, envelope_iso_type=self.iso_type, follow=follow)
                     geo_obj.solid_geometry.append(geom)
 
                 # detect if solid_geometry is empty and this require list flattening which is "heavy"
@@ -855,9 +864,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     # if milling type is climb then the move is counter-clockwise around features
                     if milling_type == 'cl':
                         # geo_obj.solid_geometry = generate_envelope(offset, i == 0)
-                        geo_obj.solid_geometry = generate_envelope(offset, 1, envelope_iso_type=self.iso_type)
+                        geo_obj.solid_geometry = generate_envelope(offset, 1, envelope_iso_type=self.iso_type,
+                                                                   follow=follow)
                     else:
-                        geo_obj.solid_geometry = generate_envelope(offset, 0, envelope_iso_type=self.iso_type)
+                        geo_obj.solid_geometry = generate_envelope(offset, 0, envelope_iso_type=self.iso_type,
+                                                                   follow=follow)
 
                     # detect if solid_geometry is empty and this require list flattening which is "heavy"
                     # or just looking in the lists (they are one level depth) and if any is not empty
@@ -895,6 +906,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if self.muted_ui:
             return
         self.read_form_item('multicolored')
+        self.plot()
+
+    def on_follow_cb_click(self):
+        if self.muted_ui:
+            return
         self.plot()
 
     def on_aperture_table_visibility_change(self):
@@ -942,7 +958,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         else:
             face_color = self.app.defaults['global_plot_fill']
 
-        geometry = self.solid_geometry
+        # if the Follow Geometry checkbox is checked then plot only the follow geometry
+        if self.ui.follow_cb.get_value():
+            geometry = self.follow_geometry
+        else:
+            geometry = self.solid_geometry
 
         # Make sure geometry is iterable.
         try:
@@ -962,6 +982,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         self.add_shape(shape=g, color=color,
                                        face_color=random_color() if self.options['multicolored']
                                        else face_color, visible=self.options['plot'])
+                    elif type(g) == Point:
+                        pass
                     else:
                         for el in g:
                             self.add_shape(shape=el, color=color,
@@ -972,6 +994,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     if type(g) == Polygon or type(g) == LineString:
                         self.add_shape(shape=g, color=random_color() if self.options['multicolored'] else 'black',
                                        visible=self.options['plot'])
+                    elif type(g) == Point:
+                        pass
                     else:
                         for el in g:
                             self.add_shape(shape=el, color=random_color() if self.options['multicolored'] else 'black',

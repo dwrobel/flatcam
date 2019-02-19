@@ -92,8 +92,11 @@ class Geometry(object):
         # Final geometry: MultiPolygon or list (of geometry constructs)
         self.solid_geometry = None
 
+        # Final geometry: MultiLineString or list (of LineString or Points)
+        self.follow_geometry = None
+
         # Attributes to be included in serialization
-        self.ser_attrs = ["units", 'solid_geometry']
+        self.ser_attrs = ["units", 'solid_geometry', 'follow_geometry']
 
         # Flattened geometry (list of paths only)
         self.flat_geometry = []
@@ -500,7 +503,7 @@ class Geometry(object):
     #
     #     return self.flat_geometry, self.flat_geometry_rtree
 
-    def isolation_geometry(self, offset, iso_type=2, corner=None):
+    def isolation_geometry(self, offset, iso_type=2, corner=None, follow=None):
         """
         Creates contours around geometry at a given
         offset distance.
@@ -542,16 +545,24 @@ class Geometry(object):
         # the previously commented block is replaced with this block - regression - to solve the bug with multiple
         # isolation passes cutting from the copper features
         if offset == 0:
-            geo_iso = self.solid_geometry
-        else:
-            if corner is None:
-                geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
+            if follow:
+                geo_iso = self.follow_geometry
             else:
-                geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4), join_style=corner)
+                geo_iso = self.solid_geometry
+        else:
+            if follow:
+                geo_iso = self.follow_geometry
+            else:
+                if corner is None:
+                    geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
+                else:
+                    geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
+                                                         join_style=corner)
 
         # end of replaced block
-
-        if iso_type == 2:
+        if follow:
+            return geo_iso
+        elif iso_type == 2:
             return geo_iso
         elif iso_type == 0:
             return self.get_exteriors(geo_iso)
@@ -1889,7 +1900,11 @@ class Gerber (Geometry):
         # Initialize parent
         Geometry.__init__(self, geo_steps_per_circle=int(steps_per_circle))
 
+        # will store the Gerber geometry's as solids
         self.solid_geometry = Polygon()
+
+        # will store the Gerber geometry's as paths
+        self.follow_geometry = []
 
         # Number format
         self.int_digits = 3
@@ -2113,10 +2128,10 @@ class Gerber (Geometry):
                             yield line
                             break
 
-            self.parse_lines(line_generator(), follow=follow)
+            self.parse_lines(line_generator())
 
     #@profile
-    def parse_lines(self, glines, follow=False):
+    def parse_lines(self, glines):
         """
         Main Gerber parser. Reads Gerber and populates ``self.paths``, ``self.apertures``,
         ``self.flashes``, ``self.regions`` and ``self.units``.
@@ -2142,6 +2157,9 @@ class Gerber (Geometry):
         # subtracted from solid_geometry. This is ~100 times faster than
         # applying a union for every new polygon.
         poly_buffer = []
+
+        # store here the follow geometry
+        follow_buffer = []
 
         last_path_aperture = None
         current_aperture = None
@@ -2208,10 +2226,11 @@ class Gerber (Geometry):
                         # --- Buffered ----
                         width = self.apertures[last_path_aperture]["size"]
 
-                        if follow:
-                            geo = LineString(path)
-                        else:
-                            geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+                        geo = LineString(path)
+                        if not geo.is_empty:
+                            follow_buffer.append(geo)
+
+                        geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                         if not geo.is_empty:
                             poly_buffer.append(geo)
 
@@ -2222,9 +2241,14 @@ class Gerber (Geometry):
                     # TODO: Remove when bug fixed
                     if len(poly_buffer) > 0:
                         if current_polarity == 'D':
+                            self.follow_geometry = self.solid_geometry.union(cascaded_union(follow_buffer))
                             self.solid_geometry = self.solid_geometry.union(cascaded_union(poly_buffer))
+
                         else:
-                            self.solid_geometry = self.solid_geometry.difference(cascaded_union(poly_buffer))
+                            self.follow_geometry = self.solid_geometry.difference(cascaded_union(follow_buffer))
+                            self.solid_geometry = self.solid_geometry.union(cascaded_union(poly_buffer))
+
+                        follow_buffer = []
                         poly_buffer = []
 
                     current_polarity = match.group(1)
@@ -2405,10 +2429,11 @@ class Gerber (Geometry):
                             # --- Buffered ----
                             width = self.apertures[last_path_aperture]["size"]
 
-                            if follow:
-                                geo = LineString(path)
-                            else:
-                                geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+                            geo = LineString(path)
+                            if not geo.is_empty:
+                                follow_buffer.append(geo)
+
+                            geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                             if not geo.is_empty:
                                 poly_buffer.append(geo)
 
@@ -2424,10 +2449,11 @@ class Gerber (Geometry):
                         ## --- Buffered ---
                         width = self.apertures[last_path_aperture]["size"]
 
-                        if follow:
-                            geo = LineString(path)
-                        else:
-                            geo = LineString(path).buffer(width/1.999, int(self.steps_per_circle / 4))
+                        geo = LineString(path)
+                        if not geo.is_empty:
+                            follow_buffer.append(geo)
+
+                        geo = LineString(path).buffer(width/1.999, int(self.steps_per_circle / 4))
                         if not geo.is_empty:
                             poly_buffer.append(geo)
 
@@ -2445,6 +2471,7 @@ class Gerber (Geometry):
                     if current_operation_code == 2:
                         if geo:
                             if not geo.is_empty:
+                                follow_buffer.append(geo)
                                 poly_buffer.append(geo)
                             continue
 
@@ -2464,15 +2491,14 @@ class Gerber (Geometry):
                     #                      "aperture": last_path_aperture})
 
                     # --- Buffered ---
-                    if follow:
-                        region = Polygon()
-                    else:
-                        region = Polygon(path)
 
+                    region = Polygon()
+                    if not region.is_empty:
+                        follow_buffer.append(region)
+
+                    region = Polygon(path)
                     if not region.is_valid:
-                        if not follow:
-                            region = region.buffer(0, int(self.steps_per_circle / 4))
-
+                        region = region.buffer(0, int(self.steps_per_circle / 4))
                     if not region.is_empty:
                         poly_buffer.append(region)
 
@@ -2529,7 +2555,7 @@ class Gerber (Geometry):
                             if path[-1] != [linear_x, linear_y]:
                                 path.append([linear_x, linear_y])
 
-                            if follow == 0 and making_region is False:
+                            if  making_region is False:
                                 # if the aperture is rectangle then add a rectangular shape having as parameters the
                                 # coordinates of the start and end point and also the width and height
                                 # of the 'R' aperture
@@ -2555,29 +2581,35 @@ class Gerber (Geometry):
                             geo = None
 
                             ## --- BUFFERED ---
+                            # this treats the case when we are storing geometry as paths only
                             if making_region:
-                                if follow:
-                                    geo = Polygon()
-                                else:
-                                    elem = [linear_x, linear_y]
-                                    if elem != path[-1]:
-                                        path.append([linear_x, linear_y])
-                                    try:
-                                        geo = Polygon(path)
-                                    except ValueError:
-                                        log.warning("Problem %s %s" % (gline, line_num))
-                                        self.app.inform.emit("[ERROR] Region does not have enough points. "
-                                                             "File will be processed but there are parser errors. "
-                                                             "Line number: %s" % str(line_num))
+                                geo = Polygon()
+                            else:
+                                geo = LineString(path)
+                            try:
+                                if self.apertures[last_path_aperture]["type"] != 'R':
+                                    if not geo.is_empty:
+                                        follow_buffer.append(geo)
+                            except:
+                                follow_buffer.append(geo)
+
+                            # this treats the case when we are storing geometry as solids
+                            if making_region:
+                                elem = [linear_x, linear_y]
+                                if elem != path[-1]:
+                                    path.append([linear_x, linear_y])
+                                try:
+                                    geo = Polygon(path)
+                                except ValueError:
+                                    log.warning("Problem %s %s" % (gline, line_num))
+                                    self.app.inform.emit("[ERROR] Region does not have enough points. "
+                                                         "File will be processed but there are parser errors. "
+                                                         "Line number: %s" % str(line_num))
                             else:
                                 if last_path_aperture is None:
                                     log.warning("No aperture defined for curent path. (%d)" % line_num)
                                 width = self.apertures[last_path_aperture]["size"]  # TODO: WARNING this should fail!
-                                #log.debug("Line %d: Setting aperture to %s before buffering." % (line_num, last_path_aperture))
-                                if follow:
-                                    geo = LineString(path)
-                                else:
-                                    geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+                                geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
 
                             try:
                                 if self.apertures[last_path_aperture]["type"] != 'R':
@@ -2600,19 +2632,23 @@ class Gerber (Geometry):
                         # Create path draw so far.
                         if len(path) > 1:
                             # --- Buffered ----
+
+                            # this treats the case when we are storing geometry as paths
+                            geo = LineString(path)
+                            if not geo.is_empty:
+                                try:
+                                    if self.apertures[current_aperture]["type"] != 'R':
+                                        follow_buffer.append(geo)
+                                except:
+                                    follow_buffer.append(geo)
+
+                            # this treats the case when we are storing geometry as solids
                             width = self.apertures[last_path_aperture]["size"]
-
-                            if follow:
-                                geo = LineString(path)
-                            else:
-                                geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
-
+                            geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                             if not geo.is_empty:
                                 try:
                                     if self.apertures[current_aperture]["type"] != 'R':
                                         poly_buffer.append(geo)
-                                    else:
-                                        pass
                                 except:
                                     poly_buffer.append(geo)
 
@@ -2621,11 +2657,12 @@ class Gerber (Geometry):
 
                         # --- BUFFERED ---
                         # Draw the flash
-                        if follow:
-                            continue
+                        # this treats the case when we are storing geometry as paths
+                        follow_buffer.append(Point([linear_x, linear_y]))
+
+                        # this treats the case when we are storing geometry as solids
                         flash = Gerber.create_flash_geometry(
-                            Point(
-                                [linear_x, linear_y]),
+                            Point( [linear_x, linear_y]),
                             self.apertures[current_aperture],
                             int(self.steps_per_circle)
                         )
@@ -2711,10 +2748,13 @@ class Gerber (Geometry):
                             # --- BUFFERED ---
                             width = self.apertures[last_path_aperture]["size"]
 
-                            if follow:
-                                buffered = LineString(path)
-                            else:
-                                buffered = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
+                            # this treats the case when we are storing geometry as paths
+                            geo = LineString(path)
+                            if not geo.is_empty:
+                                follow_buffer.append(geo)
+
+                            # this treats the case when we are storing geometry as solids
+                            buffered = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
                             if not buffered.is_empty:
                                 poly_buffer.append(buffered)
 
@@ -2833,19 +2873,24 @@ class Gerber (Geometry):
                 else:
                     # EOF, create shapely LineString if something still in path
                     ## --- Buffered ---
+
+                    # this treats the case when we are storing geometry as paths
+                    geo = LineString(path)
+                    if not geo.is_empty:
+                        follow_buffer.append(geo)
+
+                    # this treats the case when we are storing geometry as solids
                     width = self.apertures[last_path_aperture]["size"]
-                    if follow:
-                        geo = LineString(path)
-                    else:
-                        geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+                    geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                     if not geo.is_empty:
                         poly_buffer.append(geo)
 
             # --- Apply buffer ---
-            if follow:
-                self.solid_geometry = poly_buffer
-                return
 
+            # this treats the case when we are storing geometry as paths
+            self.follow_geometry = follow_buffer
+
+            # this treats the case when we are storing geometry as solids
             log.warning("Joining %d polygons." % len(poly_buffer))
 
             if len(poly_buffer) == 0:

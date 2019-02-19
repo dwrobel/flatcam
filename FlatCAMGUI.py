@@ -67,16 +67,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                     'Open &Gerber ...\tCTRL+G', self)
         self.menufile_open.addAction(self.menufileopengerber)
 
-        # Open gerber with follow...
-        self.menufileopengerber_follow = QtWidgets.QAction(QtGui.QIcon('share/flatcam_icon24.png'),
-                                                       'Open &Gerber (w/ Follow) ...', self)
-        self.menufileopengerber_follow.setToolTip(
-            "Will open a Gerber file with the 'follow' attribute.\n"
-            "This will actually 'trace' the features of a Gerber file and\n"
-            "the resulting Gerber geometry will have no volume, it will be\n"
-            "made out of lines."
-        )
-        self.menufile_open.addAction(self.menufileopengerber_follow)
         self.menufile_open.addSeparator()
 
         # Open Excellon ...

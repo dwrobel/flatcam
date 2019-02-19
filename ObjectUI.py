@@ -266,13 +266,12 @@ class GerberObjectUI(ObjectUI):
         grid1.addWidget(self.combine_passes_cb, 4, 0)
 
         # generate follow
-        self.follow_cb = FCCheckBox(label='"Follow" Geo')
+        self.follow_cb = FCCheckBox(label='"Follow"')
         self.follow_cb.setToolTip(
             "Generate a 'Follow' geometry.\n"
             "This means that it will cut through\n"
-            "the middle of the trace.\n"
-            "Requires that the Gerber file to be\n"
-            "loaded with 'follow' parameter."
+            "the middle of the trace."
+
         )
         grid1.addWidget(self.follow_cb, 4, 1)
 
