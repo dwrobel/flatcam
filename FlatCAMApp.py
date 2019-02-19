@@ -1583,7 +1583,7 @@ class App(QtCore.QObject):
         self.film_tool.install(icon=QtGui.QIcon('share/film16.png'))
 
         self.paste_tool = ToolSolderPaste(self)
-        self.paste_tool.install(icon=QtGui.QIcon('share/film16.png'), separator=True)
+        self.paste_tool.install(icon=QtGui.QIcon('share/solderpastebis32.png'), separator=True)
 
         self.move_tool = ToolMove(self)
         self.move_tool.install(icon=QtGui.QIcon('share/move16.png'), pos=self.ui.menuedit,
