@@ -3,7 +3,7 @@ from copy import copy,deepcopy
 from ObjectCollection import *
 from FlatCAMApp import *
 from PyQt5 import QtGui, QtCore, QtWidgets
-from GUIElements import IntEntry, RadioSet, LengthEntry
+from GUIElements import IntEntry, RadioSet, LengthEntry, FloatEntry
 
 from FlatCAMObj import FlatCAMGeometry, FlatCAMExcellon, FlatCAMGerber
 
@@ -472,3 +472,4 @@ class ToolCutOut(FlatCAMTool):
 
     def reset_fields(self):
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+

@@ -1580,7 +1580,10 @@ class App(QtCore.QObject):
         self.panelize_tool.install(icon=QtGui.QIcon('share/panel16.png'))
 
         self.film_tool = Film(self)
-        self.film_tool.install(icon=QtGui.QIcon('share/film16.png'), separator=True)
+        self.film_tool.install(icon=QtGui.QIcon('share/film16.png'))
+
+        self.paste_tool = ToolSolderPaste(self)
+        self.paste_tool.install(icon=QtGui.QIcon('share/film16.png'), separator=True)
 
         self.move_tool = ToolMove(self)
         self.move_tool.install(icon=QtGui.QIcon('share/move16.png'), pos=self.ui.menuedit,
