@@ -3105,8 +3105,9 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # to the main layout of this TAB
         self.layout.addLayout(self.form_box)
 
-        hlay = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(hlay)
+        # hlay = QtWidgets.QHBoxLayout()
+        # self.layout.addLayout(hlay)
+        # hlay.addStretch()
 
         # Advanced CB
         self.advanced_cb = FCCheckBox('Show Advanced Options')
@@ -3116,8 +3117,16 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             "kind of objects."
         )
         # self.advanced_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
-        hlay.addWidget(self.advanced_cb)
-        hlay.addStretch()
+        self.layout.addWidget(self.advanced_cb)
+
+        # Save compressed project CB
+        self.save_type_cb = FCCheckBox('Save Compressed Project')
+        self.save_type_cb.setToolTip(
+            "Whether to save a compressed or uncompressed project.\n"
+            "When checked it will save a compressed FlatCAM project."
+        )
+        # self.advanced_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.layout.addWidget(self.save_type_cb)
 
         hlay1 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay1)
@@ -3135,6 +3144,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         hlay1.addWidget(self.compress_label)
         hlay1.addWidget(self.compress_combo)
+
+        self.proj_ois = OptionalInputSection(self.save_type_cb, [self.compress_label, self.compress_combo], True)
 
         self.form_box_2 = QtWidgets.QFormLayout()
         self.layout.addLayout(self.form_box_2)

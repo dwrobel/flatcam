@@ -314,6 +314,7 @@ class App(QtCore.QObject):
             "global_project_autohide": self.general_defaults_form.general_app_group.project_autohide_cb,
             "global_advanced": self.general_defaults_form.general_app_group.advanced_cb,
             "global_compression_level": self.general_defaults_form.general_app_group.compress_combo,
+            "global_save_compressed": self.general_defaults_form.general_app_group.save_type_cb,
 
             "global_gridx": self.general_defaults_form.general_gui_group.gridx_entry,
             "global_gridy": self.general_defaults_form.general_gui_group.gridy_entry,
@@ -550,6 +551,8 @@ class App(QtCore.QObject):
             "global_shell_at_startup": False,  # Show the shell at startup.
             "global_recent_limit": 10,  # Max. items in recent list.
             "global_compression_level": 3,
+            "global_save_compressed": True,
+
             "fit_key": 'V',
             "zoom_out_key": '-',
             "zoom_in_key": '=',
@@ -6929,42 +6932,45 @@ The normal flow when working in FlatCAM is the following:</span></p>
                  "options": self.options,
                  "version": self.version}
 
-            with lzma.open(filename, "w", preset=int(self.defaults['global_compression_level'])) as f:
-                g = json.dumps(d, default=to_dict, indent=2, sort_keys=True).encode('utf-8')
-                # # Write
-                f.write(g)
-            self.inform.emit("[success] Project saved to: %s" % filename)
-            # Open file
-            # try:
-            #     f = open(filename, 'w')
-            # except IOError:
-            #     App.log.error("[ERROR] Failed to open file for saving: %s", filename)
-            #     return
-            #
-            # # Write
-            # json.dump(d, f, default=to_dict, indent=2, sort_keys=True)
-            # f.close()
-            #
-            # # verification of the saved project
-            # # Open and parse
-            # try:
-            #     saved_f = open(filename, 'r')
-            # except IOError:
-            #     self.inform.emit("[ERROR_NOTCL] Failed to verify project file: %s. Retry to save it." % filename)
-            #     return
-            #
-            # try:
-            #     saved_d = json.load(saved_f, object_hook=dict2obj)
-            # except:
-            #     self.inform.emit("[ERROR_NOTCL] Failed to parse saved project file: %s. Retry to save it." % filename)
-            #     f.close()
-            #     return
-            # saved_f.close()
-            #
-            # if 'version' in saved_d:
-            #     self.inform.emit("[success] Project saved to: %s" % filename)
-            # else:
-            #     self.inform.emit("[ERROR_NOTCL] Failed to save project file: %s. Retry to save it." % filename)
+            if self.defaults["global_save_compressed"] is True:
+                with lzma.open(filename, "w", preset=int(self.defaults['global_compression_level'])) as f:
+                    g = json.dumps(d, default=to_dict, indent=2, sort_keys=True).encode('utf-8')
+                    # # Write
+                    f.write(g)
+                self.inform.emit("[success] Project saved to: %s" % filename)
+            else:
+                # Open file
+                try:
+                    f = open(filename, 'w')
+                except IOError:
+                    App.log.error("[ERROR] Failed to open file for saving: %s", filename)
+                    return
+
+                # Write
+                json.dump(d, f, default=to_dict, indent=2, sort_keys=True)
+                f.close()
+
+                # verification of the saved project
+                # Open and parse
+                try:
+                    saved_f = open(filename, 'r')
+                except IOError:
+                    self.inform.emit("[ERROR_NOTCL] Failed to verify project file: %s. Retry to save it." % filename)
+                    return
+
+                try:
+                    saved_d = json.load(saved_f, object_hook=dict2obj)
+                except:
+                    self.inform.emit(
+                        "[ERROR_NOTCL] Failed to parse saved project file: %s. Retry to save it." % filename)
+                    f.close()
+                    return
+                saved_f.close()
+
+                if 'version' in saved_d:
+                    self.inform.emit("[success] Project saved to: %s" % filename)
+                else:
+                    self.inform.emit("[ERROR_NOTCL] Failed to save project file: %s. Retry to save it." % filename)
 
     def on_options_app2project(self):
         """
