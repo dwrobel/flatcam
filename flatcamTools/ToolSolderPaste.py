@@ -673,6 +673,12 @@ class ToolSolderPaste(FlatCAMTool):
                                     geo_obj.tools[tooluid] = {}
                                     geo_obj.tools[tooluid]['solid_geometry'] = []
                                     geo_obj.tools[tooluid]['solid_geometry'].append(geom)
+                                geo_obj.tools[tooluid]['tooldia'] = tool
+                                geo_obj.tools[tooluid]['offset'] = 'Path'
+                                geo_obj.tools[tooluid]['offset_value'] = 0.0
+                                geo_obj.tools[tooluid]['type'] = ' '
+                                geo_obj.tools[tooluid]['tool_type'] = ' '
+                                geo_obj.tools[tooluid]['data'] = {}
                             else:
                                 rest_geo.append(poly)
                     elif type(g) == Polygon:
@@ -684,6 +690,12 @@ class ToolSolderPaste(FlatCAMTool):
                                 geo_obj.tools[tooluid] = {}
                                 geo_obj.tools[tooluid]['solid_geometry'] = []
                                 geo_obj.tools[tooluid]['solid_geometry'].append(geom)
+                            geo_obj.tools[tooluid]['tooldia'] = tool
+                            geo_obj.tools[tooluid]['offset'] = 'Path'
+                            geo_obj.tools[tooluid]['offset_value'] = 0.0
+                            geo_obj.tools[tooluid]['type'] = ' '
+                            geo_obj.tools[tooluid]['tool_type'] = ' '
+                            geo_obj.tools[tooluid]['data'] = {}
                         else:
                             rest_geo.append(g)
 
