@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+20.02.2019
+
+- finished added a Tool Table for Tool SolderPaste
+- working on multi tool soder paste dispensing
+
 19.02.2019
 
 - added the ability to compress the FlatCAM project on save with LZMA compression. There is a setting in Edit -> Preferences -> Compression Level between 0 and 9. 9 level yields best compression at the price of RAM usage and time spent.

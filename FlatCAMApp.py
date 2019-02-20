@@ -708,7 +708,9 @@ class App(QtCore.QObject):
             "tools_transform_offset_x": 0.0,
             "tools_transform_offset_y": 0.0,
             "tools_transform_mirror_reference": False,
-            "tools_transform_mirror_point": (0, 0)
+            "tools_transform_mirror_point": (0, 0),
+
+            "tools_solderpaste_tools": "1.0, 0.3",
         })
 
         ###############################
