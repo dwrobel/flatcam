@@ -481,17 +481,44 @@ class App(QtCore.QObject):
             "tools_transform_offset_x": self.tools_defaults_form.tools_transform_group.offx_entry,
             "tools_transform_offset_y": self.tools_defaults_form.tools_transform_group.offy_entry,
             "tools_transform_mirror_reference": self.tools_defaults_form.tools_transform_group.mirror_reference_cb,
-            "tools_transform_mirror_point": self.tools_defaults_form.tools_transform_group.flip_ref_entry
+            "tools_transform_mirror_point": self.tools_defaults_form.tools_transform_group.flip_ref_entry,
+
+            "tools_solderpaste_tools": self.tools_defaults_form.tools_solderpaste_group.nozzle_tool_dia_entry,
+            "tools_solderpaste_new": self.tools_defaults_form.tools_solderpaste_group.addtool_entry,
+            "tools_solderpaste_z_start": self.tools_defaults_form.tools_solderpaste_group.z_start_entry,
+            "tools_solderpaste_z_dispense": self.tools_defaults_form.tools_solderpaste_group.z_dispense_entry,
+            "tools_solderpaste_z_stop": self.tools_defaults_form.tools_solderpaste_group.z_stop_entry,
+            "tools_solderpaste_z_travel": self.tools_defaults_form.tools_solderpaste_group.z_travel_entry,
+            "tools_solderpaste_frxy": self.tools_defaults_form.tools_solderpaste_group.frxy_entry,
+            "tools_solderpaste_frz": self.tools_defaults_form.tools_solderpaste_group.frz_entry,
+            "tools_solderpaste_speedfwd": self.tools_defaults_form.tools_solderpaste_group.speedfwd_entry,
+            "tools_solderpaste_dwellfwd": self.tools_defaults_form.tools_solderpaste_group.dwellfwd_entry,
+            "tools_solderpaste_speedrev": self.tools_defaults_form.tools_solderpaste_group.speedrev_entry,
+            "tools_solderpaste_dwellrev": self.tools_defaults_form.tools_solderpaste_group.dwellrev_entry,
+            "tools_solderpaste_pp": self.tools_defaults_form.tools_solderpaste_group.pp_combo
 
         }
-        # loads postprocessors
+
+
+        #############################
+        #### LOAD POSTPROCESSORS ####
+        #############################
+
+
         self.postprocessors = load_postprocessors(self)
 
         for name in list(self.postprocessors.keys()):
+
+            # 'Paste' postprocessors are to be used only in the Solder Paste Dispensing Tool
+            if name.partition('_')[0] == 'Paste':
+                self.tools_defaults_form.tools_solderpaste_group.pp_combo.addItem(name)
+                continue
+
             self.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.addItem(name)
             # HPGL postprocessor is only for Geometry objects therefore it should not be in the Excellon Preferences
             if name == 'hpgl':
                 continue
+
             self.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb.addItem(name)
 
         self.defaults = LoudDict()
@@ -711,6 +738,17 @@ class App(QtCore.QObject):
             "tools_transform_mirror_point": (0, 0),
 
             "tools_solderpaste_tools": "1.0, 0.3",
+            "tools_solderpaste_new": 0.3,
+            "tools_solderpaste_z_start": 0.005,
+            "tools_solderpaste_z_dispense": 0.01,
+            "tools_solderpaste_z_stop": 0.005,
+            "tools_solderpaste_z_travel": 0.1,
+            "tools_solderpaste_frxy": 3.0,
+            "tools_solderpaste_frz": 3.0,
+            "tools_solderpaste_speedfwd": 20,
+            "tools_solderpaste_dwellfwd": 1,
+            "tools_solderpaste_speedrev": 10,
+            "tools_solderpaste_dwellrev": 1
         })
 
         ###############################
@@ -3667,14 +3705,15 @@ class App(QtCore.QObject):
         if notebook_widget_name == 'tool_tab':
             tool_widget = self.ui.tool_scroll_area.widget().objectName()
 
+            tool_add_popup = FCInputDialog(title="New Tool ...",
+                                           text='Enter a Tool Diameter:',
+                                           min=0.0000, max=99.9999, decimals=4)
+            tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+            val, ok = tool_add_popup.get_value()
+
             # and only if the tool is NCC Tool
             if tool_widget == self.ncclear_tool.toolName:
-                tool_add_popup = FCInputDialog(title="New Tool ...",
-                                               text='Enter a Tool Diameter:',
-                                               min=0.0000, max=99.9999, decimals=4)
-                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
-
-                val, ok = tool_add_popup.get_value()
                 if ok:
                     if float(val) == 0:
                         self.inform.emit(
@@ -3686,12 +3725,6 @@ class App(QtCore.QObject):
                         "[WARNING_NOTCL] Adding Tool cancelled ...")
             # and only if the tool is Paint Area Tool
             elif tool_widget == self.paint_tool.toolName:
-                tool_add_popup = FCInputDialog(title="New Tool ...",
-                                               text='Enter a Tool Diameter:',
-                                               min=0.0000, max=99.9999, decimals=4)
-                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
-
-                val, ok = tool_add_popup.get_value()
                 if ok:
                     if float(val) == 0:
                         self.inform.emit(
@@ -3701,6 +3734,18 @@ class App(QtCore.QObject):
                 else:
                     self.inform.emit(
                         "[WARNING_NOTCL] Adding Tool cancelled ...")
+            # and only if the tool is Solder Paste Dispensing Tool
+            elif tool_widget == self.paste_tool.toolName:
+                if ok:
+                    if float(val) == 0:
+                        self.inform.emit(
+                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
+                        return
+                    self.paste_tool.on_tool_add(dia=float(val))
+                else:
+                    self.inform.emit(
+                        "[WARNING_NOTCL] Adding Tool cancelled ...")
+
 
     # It's meant to delete tools in tool tables via a 'Delete' shortcut key but only if certain conditions are met
     # See description bellow.
@@ -3724,6 +3769,9 @@ class App(QtCore.QObject):
             elif tool_widget == self.paint_tool.toolName:
                 self.paint_tool.on_tool_delete()
 
+            # and only if the tool is Solder Paste Dispensing Tool
+            elif tool_widget == self.paste_tool.toolName:
+                self.paste_tool.on_tool_delete()
         else:
             self.on_delete()
 

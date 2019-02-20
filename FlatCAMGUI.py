@@ -981,6 +981,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 			<td height="20"><strong>ALT+D</strong></td>
 			<td>&nbsp;2-Sided PCB Tool</td>
 		</tr>
+        <tr height="20">
+			<td height="20"><strong>ALT+K</strong></td>
+			<td>&nbsp;Solder Paste Dispensing Tool</td>
+		</tr>
 		<tr height="20">
 			<td height="20"><strong>ALT+L</strong></td>
 			<td>&nbsp;Film PCB Tool</td>
@@ -1731,6 +1735,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # 2-Sided PCB Tool
                 if key == QtCore.Qt.Key_D:
                     self.app.dblsidedtool.run()
+                    return
+
+                # Solder Paste Dispensing Tool
+                if key == QtCore.Qt.Key_K:
+                    self.app.paste_tool.run()
                     return
 
                 # Film Tool
@@ -2556,21 +2565,25 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.tools_transform_group = ToolsTransformPrefGroupUI()
         self.tools_transform_group.setMinimumWidth(200)
 
+        self.tools_solderpaste_group = ToolsSolderpastePrefGroupUI()
+        self.tools_solderpaste_group.setMinimumWidth(200)
+
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.tools_ncc_group)
         self.vlay.addWidget(self.tools_paint_group)
+        self.vlay.addWidget(self.tools_film_group)
 
         self.vlay1 = QtWidgets.QVBoxLayout()
         self.vlay1.addWidget(self.tools_cutout_group)
+        self.vlay1.addWidget(self.tools_transform_group)
         self.vlay1.addWidget(self.tools_2sided_group)
-        self.vlay1.addWidget(self.tools_film_group)
 
         self.vlay2 = QtWidgets.QVBoxLayout()
         self.vlay2.addWidget(self.tools_panelize_group)
         self.vlay2.addWidget(self.tools_calculators_group)
 
         self.vlay3 = QtWidgets.QVBoxLayout()
-        self.vlay3.addWidget(self.tools_transform_group)
+        self.vlay3.addWidget(self.tools_solderpaste_group)
 
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)
@@ -5133,6 +5146,150 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
 
         grid0.addWidget(self.flip_ref_label, 9, 0)
         grid0.addWidget(self.flip_ref_entry, 9, 1)
+
+        self.layout.addStretch()
+
+
+class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+
+        super(ToolsSolderpastePrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("SolderPaste Tool Options"))
+
+        ## Solder Paste Dispensing
+        self.solderpastelabel = QtWidgets.QLabel("<b>Parameters:</b>")
+        self.solderpastelabel.setToolTip(
+            "A tool to create GCode for dispensing\n"
+            "solder paste onto a PCB."
+        )
+        self.layout.addWidget(self.solderpastelabel)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        # Nozzle Tool Diameters
+        nozzletdlabel = QtWidgets.QLabel('Tools dia:')
+        nozzletdlabel.setToolTip(
+            "Diameters of nozzle tools, separated by ','"
+        )
+        self.nozzle_tool_dia_entry = FCEntry()
+        grid0.addWidget(nozzletdlabel, 0, 0)
+        grid0.addWidget(self.nozzle_tool_dia_entry, 0, 1)
+
+        # New Nozzle Tool Dia
+        self.addtool_entry_lbl = QtWidgets.QLabel('<b>New Nozzle Dia:</b>')
+        self.addtool_entry_lbl.setToolTip(
+            "Diameter for the new Nozzle tool to add in the Tool Table"
+        )
+        self.addtool_entry = FCEntry()
+        grid0.addWidget(self.addtool_entry_lbl, 1, 0)
+        grid0.addWidget(self.addtool_entry, 1, 1)
+
+        # Z dispense start
+        self.z_start_entry = FCEntry()
+        self.z_start_label = QtWidgets.QLabel("Z Dispense Start:")
+        self.z_start_label.setToolTip(
+            "The height (Z) when solder paste dispensing starts."
+        )
+        grid0.addWidget(self.z_start_label, 2, 0)
+        grid0.addWidget(self.z_start_entry, 2, 1)
+
+        # Z dispense
+        self.z_dispense_entry = FCEntry()
+        self.z_dispense_label = QtWidgets.QLabel("Z Dispense:")
+        self.z_dispense_label.setToolTip(
+            "The height (Z) when doing solder paste dispensing."
+        )
+        grid0.addWidget(self.z_dispense_label, 3, 0)
+        grid0.addWidget(self.z_dispense_entry, 3, 1)
+
+        # Z dispense stop
+        self.z_stop_entry = FCEntry()
+        self.z_stop_label = QtWidgets.QLabel("Z Dispense Stop:")
+        self.z_stop_label.setToolTip(
+            "The height (Z) when solder paste dispensing stops."
+        )
+        grid0.addWidget(self.z_stop_label, 4, 0)
+        grid0.addWidget(self.z_stop_entry, 4, 1)
+
+        # Z travel
+        self.z_travel_entry = FCEntry()
+        self.z_travel_label = QtWidgets.QLabel("Z Travel:")
+        self.z_travel_label.setToolTip(
+            "The height (Z) for travel between pads\n"
+            "(without dispensing solder paste)."
+        )
+        grid0.addWidget(self.z_travel_label, 5, 0)
+        grid0.addWidget(self.z_travel_entry, 5, 1)
+
+        # Feedrate X-Y
+        self.frxy_entry = FCEntry()
+        self.frxy_label = QtWidgets.QLabel("Feedrate X-Y:")
+        self.frxy_label.setToolTip(
+            "Feedrate (speed) while moving on the X-Y plane."
+        )
+        grid0.addWidget(self.frxy_label, 6, 0)
+        grid0.addWidget(self.frxy_entry, 6, 1)
+
+        # Feedrate Z
+        self.frz_entry = FCEntry()
+        self.frz_label = QtWidgets.QLabel("Feedrate Z:")
+        self.frz_label.setToolTip(
+            "Feedrate (speed) while moving vertically\n"
+            "(on Z plane)."
+        )
+        grid0.addWidget(self.frz_label, 7, 0)
+        grid0.addWidget(self.frz_entry, 7, 1)
+
+        # Spindle Speed Forward
+        self.speedfwd_entry = FCEntry()
+        self.speedfwd_label = QtWidgets.QLabel("Spindle Speed FWD:")
+        self.speedfwd_label.setToolTip(
+            "The dispenser speed while pushing solder paste\n"
+            "through the dispenser nozzle."
+        )
+        grid0.addWidget(self.speedfwd_label, 8, 0)
+        grid0.addWidget(self.speedfwd_entry, 8, 1)
+
+        # Dwell Forward
+        self.dwellfwd_entry = FCEntry()
+        self.dwellfwd_label = QtWidgets.QLabel("Dwell FWD:")
+        self.dwellfwd_label.setToolTip(
+            "Pause after solder dispensing."
+        )
+        grid0.addWidget(self.dwellfwd_label, 9, 0)
+        grid0.addWidget(self.dwellfwd_entry, 9, 1)
+
+        # Spindle Speed Reverse
+        self.speedrev_entry = FCEntry()
+        self.speedrev_label = QtWidgets.QLabel("Spindle Speed REV:")
+        self.speedrev_label.setToolTip(
+            "The dispenser speed while retracting solder paste\n"
+            "through the dispenser nozzle."
+        )
+        grid0.addWidget(self.speedrev_label, 10, 0)
+        grid0.addWidget(self.speedrev_entry, 10, 1)
+
+        # Dwell Reverse
+        self.dwellrev_entry = FCEntry()
+        self.dwellrev_label = QtWidgets.QLabel("Dwell REV:")
+        self.dwellrev_label.setToolTip(
+            "Pause after solder paste dispenser retracted,\n"
+            "to allow pressure equilibrium."
+        )
+        grid0.addWidget(self.dwellrev_label, 11, 0)
+        grid0.addWidget(self.dwellrev_entry, 11, 1)
+
+        # Postprocessors
+        pp_label = QtWidgets.QLabel('PostProcessors:')
+        pp_label.setToolTip(
+            "Files that control the GCode generation."
+        )
+
+        self.pp_combo = FCComboBox()
+        grid0.addWidget(pp_label, 12, 0)
+        grid0.addWidget(self.pp_combo, 12, 1)
 
         self.layout.addStretch()
 

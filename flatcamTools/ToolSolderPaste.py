@@ -77,7 +77,7 @@ class ToolSolderPaste(FlatCAMTool):
         hlay_tools = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay_tools)
 
-        self.addtool_entry_lbl = QtWidgets.QLabel('<b>Nozzle Dia:</b>')
+        self.addtool_entry_lbl = QtWidgets.QLabel('<b>New Nozzle Tool:</b>')
         self.addtool_entry_lbl.setToolTip(
             "Diameter for the new Nozzle tool to add in the Tool Table"
         )
@@ -108,16 +108,25 @@ class ToolSolderPaste(FlatCAMTool):
             "Generate solder paste dispensing geometry."
         )
 
+        step1_lbl = QtWidgets.QLabel("<b>STEP 1:</b>")
+        step1_lbl.setToolTip(
+            "First step is to select a number of nozzle tools for usage\n"
+            "and then create a solder paste dispensing geometry out of an\n"
+            "Solder Paste Mask Gerber file."
+        )
+
         grid0.addWidget(self.addtool_btn, 0, 0)
         # grid2.addWidget(self.copytool_btn, 0, 1)
         grid0.addWidget(self.deltool_btn, 0, 2)
+
+        grid0.addWidget(step1_lbl, 2, 0)
         grid0.addWidget(self.soldergeo_btn, 2, 2)
 
         ## Form Layout
         geo_form_layout = QtWidgets.QFormLayout()
         self.layout.addLayout(geo_form_layout)
 
-        ## Gerber Object to be used for solderpaste dispensing
+        ## Geometry Object to be used for solderpaste dispensing
         self.geo_obj_combo = QtWidgets.QComboBox()
         self.geo_obj_combo.setModel(self.app.collection)
         self.geo_obj_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
@@ -147,10 +156,7 @@ class ToolSolderPaste(FlatCAMTool):
         self.z_start_entry = FCEntry()
         self.z_start_label = QtWidgets.QLabel("Z Dispense Start:")
         self.z_start_label.setToolTip(
-            "The size of the gaps in the cutout\n"
-            "used to keep the board connected to\n"
-            "the surrounding material (the one \n"
-            "from which the PCB is cutout)."
+            "The height (Z) when solder paste dispensing starts."
         )
         form_layout.addRow(self.z_start_label, self.z_start_entry)
 
@@ -158,9 +164,8 @@ class ToolSolderPaste(FlatCAMTool):
         self.z_dispense_entry = FCEntry()
         self.z_dispense_label = QtWidgets.QLabel("Z Dispense:")
         self.z_dispense_label.setToolTip(
-            "Margin over bounds. A positive value here\n"
-            "will make the cutout of the PCB further from\n"
-            "the actual PCB border"
+            "The height (Z) when doing solder paste dispensing."
+
         )
         form_layout.addRow(self.z_dispense_label, self.z_dispense_entry)
 
@@ -168,10 +173,7 @@ class ToolSolderPaste(FlatCAMTool):
         self.z_stop_entry = FCEntry()
         self.z_stop_label = QtWidgets.QLabel("Z Dispense Stop:")
         self.z_stop_label.setToolTip(
-            "The size of the gaps in the cutout\n"
-            "used to keep the board connected to\n"
-            "the surrounding material (the one \n"
-            "from which the PCB is cutout)."
+            "The height (Z) when solder paste dispensing stops."
         )
         form_layout.addRow(self.z_stop_label, self.z_stop_entry)
 
@@ -179,10 +181,8 @@ class ToolSolderPaste(FlatCAMTool):
         self.z_travel_entry = FCEntry()
         self.z_travel_label = QtWidgets.QLabel("Z Travel:")
         self.z_travel_label.setToolTip(
-            "The size of the gaps in the cutout\n"
-            "used to keep the board connected to\n"
-            "the surrounding material (the one \n"
-            "from which the PCB is cutout)."
+            "The height (Z) for travel between pads\n"
+            "(without dispensing solder paste)."
         )
         form_layout.addRow(self.z_travel_label, self.z_travel_entry)
 
@@ -190,10 +190,7 @@ class ToolSolderPaste(FlatCAMTool):
         self.frxy_entry = FCEntry()
         self.frxy_label = QtWidgets.QLabel("Feedrate X-Y:")
         self.frxy_label.setToolTip(
-            "The size of the gaps in the cutout\n"
-            "used to keep the board connected to\n"
-            "the surrounding material (the one \n"
-            "from which the PCB is cutout)."
+            "Feedrate (speed) while moving on the X-Y plane."
         )
         form_layout.addRow(self.frxy_label, self.frxy_entry)
 
@@ -201,10 +198,8 @@ class ToolSolderPaste(FlatCAMTool):
         self.frz_entry = FCEntry()
         self.frz_label = QtWidgets.QLabel("Feedrate Z:")
         self.frz_label.setToolTip(
-            "The size of the gaps in the cutout\n"
-            "used to keep the board connected to\n"
-            "the surrounding material (the one \n"
-            "from which the PCB is cutout)."
+            "Feedrate (speed) while moving vertically\n"
+            "(on Z plane)."
         )
         form_layout.addRow(self.frz_label, self.frz_entry)
 
@@ -212,10 +207,8 @@ class ToolSolderPaste(FlatCAMTool):
         self.speedfwd_entry = FCEntry()
         self.speedfwd_label = QtWidgets.QLabel("Spindle Speed FWD:")
         self.speedfwd_label.setToolTip(
-            "The size of the gaps in the cutout\n"
-            "used to keep the board connected to\n"
-            "the surrounding material (the one \n"
-            "from which the PCB is cutout)."
+            "The dispenser speed while pushing solder paste\n"
+            "through the dispenser nozzle."
         )
         form_layout.addRow(self.speedfwd_label, self.speedfwd_entry)
 
@@ -223,10 +216,7 @@ class ToolSolderPaste(FlatCAMTool):
         self.dwellfwd_entry = FCEntry()
         self.dwellfwd_label = QtWidgets.QLabel("Dwell FWD:")
         self.dwellfwd_label.setToolTip(
-            "The size of the gaps in the cutout\n"
-            "used to keep the board connected to\n"
-            "the surrounding material (the one \n"
-            "from which the PCB is cutout)."
+            "Pause after solder dispensing."
         )
         form_layout.addRow(self.dwellfwd_label, self.dwellfwd_entry)
 
@@ -234,10 +224,8 @@ class ToolSolderPaste(FlatCAMTool):
         self.speedrev_entry = FCEntry()
         self.speedrev_label = QtWidgets.QLabel("Spindle Speed REV:")
         self.speedrev_label.setToolTip(
-            "The size of the gaps in the cutout\n"
-            "used to keep the board connected to\n"
-            "the surrounding material (the one \n"
-            "from which the PCB is cutout)."
+            "The dispenser speed while retracting solder paste\n"
+            "through the dispenser nozzle."
         )
         form_layout.addRow(self.speedrev_label, self.speedrev_entry)
 
@@ -245,42 +233,98 @@ class ToolSolderPaste(FlatCAMTool):
         self.dwellrev_entry = FCEntry()
         self.dwellrev_label = QtWidgets.QLabel("Dwell REV:")
         self.dwellrev_label.setToolTip(
-            "The size of the gaps in the cutout\n"
-            "used to keep the board connected to\n"
-            "the surrounding material (the one \n"
-            "from which the PCB is cutout)."
+            "Pause after solder paste dispenser retracted,\n"
+            "to allow pressure equilibrium."
         )
         form_layout.addRow(self.dwellrev_label, self.dwellrev_entry)
 
         # Postprocessors
         pp_label = QtWidgets.QLabel('PostProcessors:')
         pp_label.setToolTip(
-            "Files that control the GCoe generation."
+            "Files that control the GCode generation."
         )
 
         self.pp_combo = FCComboBox()
-        pp_items = [1, 2, 3, 4, 5]
-        for it in pp_items:
-            self.pp_combo.addItem(str(it))
-            self.pp_combo.setStyleSheet('background-color: rgb(255,255,255)')
+        self.pp_combo.setStyleSheet('background-color: rgb(255,255,255)')
         form_layout.addRow(pp_label, self.pp_combo)
 
         ## Buttons
-        hlay = QtWidgets.QHBoxLayout()
-        self.gcode_box.addLayout(hlay)
+        grid1 = QtWidgets.QGridLayout()
+        self.gcode_box.addLayout(grid1)
 
-        hlay.addStretch()
-
-        self.solder_gcode = QtWidgets.QPushButton("Generate GCode")
-        self.solder_gcode.setToolTip(
-            "Generate GCode to dispense Solder Paste\n"
+        self.solder_gcode_btn = QtWidgets.QPushButton("Generate GCode")
+        self.solder_gcode_btn.setToolTip(
+            "Generate GCode for Solder Paste dispensing\n"
             "on PCB pads."
         )
-        hlay.addWidget(self.solder_gcode)
+
+        step2_lbl = QtWidgets.QLabel("<b>STEP 2:</b>")
+        step2_lbl.setToolTip(
+            "Second step is to select a solder paste dispensing geometry,\n"
+            "set the CAM parameters and then generate a CNCJob object which\n"
+            "will pe painted on canvas in blue color."
+        )
+
+        grid1.addWidget(step2_lbl, 0, 0)
+        grid1.addWidget(self.solder_gcode_btn, 0, 2)
+
+        ## Form Layout
+        cnc_form_layout = QtWidgets.QFormLayout()
+        self.gcode_box.addLayout(cnc_form_layout)
+
+        ## Gerber Object to be used for solderpaste dispensing
+        self.cnc_obj_combo = QtWidgets.QComboBox()
+        self.cnc_obj_combo.setModel(self.app.collection)
+        self.cnc_obj_combo.setRootModelIndex(self.app.collection.index(3, 0, QtCore.QModelIndex()))
+        self.cnc_obj_combo.setCurrentIndex(1)
+
+        self.cnc_object_label = QtWidgets.QLabel("CNCJob:    ")
+        self.cnc_object_label.setToolTip(
+            "CNCJob Solder paste object.\n"
+            "In order to enable the GCode save section,\n"
+            "the name of the object has to end in:\n"
+            "'_solderpaste' as a protection."
+        )
+        cnc_form_layout.addRow(self.cnc_object_label, self.cnc_obj_combo)
+
+        self.save_gcode_frame = QtWidgets.QFrame()
+        self.save_gcode_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.save_gcode_frame)
+        self.save_gcode_box = QtWidgets.QVBoxLayout()
+        self.save_gcode_box.setContentsMargins(0, 0, 0, 0)
+        self.save_gcode_frame.setLayout(self.save_gcode_box)
+
+
+        ## Buttons
+        grid2 = QtWidgets.QGridLayout()
+        self.save_gcode_box.addLayout(grid2)
+
+        self.solder_gcode_view_btn = QtWidgets.QPushButton("View GCode")
+        self.solder_gcode_view_btn.setToolTip(
+            "View the generated GCode for Solder Paste dispensing\n"
+            "on PCB pads."
+        )
+
+        self.solder_gcode_save_btn = QtWidgets.QPushButton("Save GCode")
+        self.solder_gcode_save_btn.setToolTip(
+            "Save the generated GCode for Solder Paste dispensing\n"
+            "on PCB pads, to a file."
+        )
+
+        step3_lbl = QtWidgets.QLabel("<b>STEP 3:</b>")
+        step3_lbl.setToolTip(
+            "Third step (and last) is to select a CNCJob made from \n"
+            "a solder paste dispensing geometry, and then view/save it's GCode."
+        )
+
+        grid2.addWidget(step3_lbl, 0, 0)
+        grid2.addWidget(self.solder_gcode_view_btn, 0, 2)
+        grid2.addWidget(self.solder_gcode_save_btn, 1, 2)
 
         self.layout.addStretch()
 
         self.gcode_frame.setDisabled(True)
+        self.save_gcode_frame.setDisabled(True)
 
         self.tools = {}
         self.tooluid = 0
@@ -289,8 +333,13 @@ class ToolSolderPaste(FlatCAMTool):
         self.addtool_btn.clicked.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
         self.soldergeo_btn.clicked.connect(self.on_create_geo)
-        self.solder_gcode.clicked.connect(self.on_create_gcode)
+        self.solder_gcode_btn.clicked.connect(self.on_create_gcode)
+        self.solder_gcode_view_btn.clicked.connect(self.on_view_gcode)
+        self.solder_gcode_save_btn.clicked.connect(self.on_save_gcode)
+
         self.geo_obj_combo.currentIndexChanged.connect(self.on_geo_select)
+
+        self.cnc_obj_combo.currentIndexChanged.connect(self.on_cncjob_select)
 
     def run(self):
         self.app.report_usage("ToolSolderPaste()")
@@ -310,12 +359,65 @@ class ToolSolderPaste(FlatCAMTool):
 
     def set_tool_ui(self):
 
-        # self.ncc_overlap_entry.set_value(self.app.defaults["tools_nccoverlap"])
-        # self.ncc_margin_entry.set_value(self.app.defaults["tools_nccmargin"])
-        # self.ncc_method_radio.set_value(self.app.defaults["tools_nccmethod"])
-        # self.ncc_connect_cb.set_value(self.app.defaults["tools_nccconnect"])
-        # self.ncc_contour_cb.set_value(self.app.defaults["tools_ncccontour"])
-        # self.ncc_rest_cb.set_value(self.app.defaults["tools_nccrest"])
+        if self.app.defaults["tools_solderpaste_new"]:
+            self.addtool_entry.set_value(self.app.defaults["tools_solderpaste_new"])
+        else:
+            self.addtool_entry.set_value(0.0)
+
+        if self.app.defaults["tools_solderpaste_z_start"]:
+            self.z_start_entry.set_value(self.app.defaults["tools_solderpaste_z_start"])
+        else:
+            self.z_start_entry.set_value(0.0)
+
+        if self.app.defaults["tools_solderpaste_z_dispense"]:
+            self.z_dispense_entry.set_value(self.app.defaults["tools_solderpaste_z_dispense"])
+        else:
+            self.z_dispense_entry.set_value(0.0)
+
+        if self.app.defaults["tools_solderpaste_z_stop"]:
+            self.z_stop_entry.set_value(self.app.defaults["tools_solderpaste_z_stop"])
+        else:
+            self.z_stop_entry.set_value(1.0)
+
+        if self.app.defaults["tools_solderpaste_z_travel"]:
+            self.z_travel_entry.set_value(self.app.defaults["tools_solderpaste_z_travel"])
+        else:
+            self.z_travel_entry.set_value(1.0)
+
+        if self.app.defaults["tools_solderpaste_frxy"]:
+            self.frxy_entry.set_value(self.app.defaults["tools_solderpaste_frxy"])
+        else:
+            self.frxy_entry.set_value(True)
+
+        if self.app.defaults["tools_solderpaste_frz"]:
+            self.frz_entry.set_value(self.app.defaults["tools_solderpaste_frz"])
+        else:
+            self.frz_entry.set_value(True)
+
+        if self.app.defaults["tools_solderpaste_speedfwd"]:
+            self.speedfwd_entry.set_value(self.app.defaults["tools_solderpaste_speedfwd"])
+        else:
+            self.speedfwd_entry.set_value(0.0)
+
+        if self.app.defaults["tools_solderpaste_dwellfwd"]:
+            self.dwellfwd_entry.set_value(self.app.defaults["tools_solderpaste_dwellfwd"])
+        else:
+            self.dwellfwd_entry.set_value(0.0)
+
+        if self.app.defaults["tools_solderpaste_speedrev"]:
+            self.speedrev_entry.set_value(self.app.defaults["tools_solderpaste_speedrev"])
+        else:
+            self.speedrev_entry.set_value(False)
+
+        if self.app.defaults["tools_solderpaste_dwellrev"]:
+            self.dwellrev_entry.set_value(self.app.defaults["tools_solderpaste_dwellrev"])
+        else:
+            self.dwellrev_entry.set_value((0, 0))
+
+        if self.app.defaults["tools_solderpaste_pp"]:
+            self.pp_combo.set_value(self.app.defaults["tools_solderpaste_pp"])
+        else:
+            self.pp_combo.set_value('Paste_1')
 
         self.tools_table.setupContextMenu()
         self.tools_table.addContextMenu(
@@ -347,6 +449,13 @@ class ToolSolderPaste(FlatCAMTool):
         self.obj = None
 
         self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
+
+        for name in list(self.app.postprocessors.keys()):
+            # populate only with postprocessor files that start with 'Paste_'
+            if name.partition('_')[0] != 'Paste':
+                continue
+            self.pp_combo.addItem(name)
+
         self.reset_fields()
 
     def build_ui(self):
@@ -354,11 +463,6 @@ class ToolSolderPaste(FlatCAMTool):
 
         # updated units
         self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
-
-        if self.units == "IN":
-            self.addtool_entry.set_value(0.039)
-        else:
-            self.addtool_entry.set_value(1)
 
         sorted_tools = []
         for k, v in self.tools.items():
@@ -573,7 +677,7 @@ class ToolSolderPaste(FlatCAMTool):
                     self.tools.pop(t, None)
 
         except AttributeError:
-            self.app.inform.emit("[WARNING_NOTCL]Delete failed. Select a Nozzle tool to delete.")
+            self.app.inform.emit("[WARNING_NOTCL] Delete failed. Select a Nozzle tool to delete.")
             return
         except Exception as e:
             log.debug(str(e))
@@ -587,6 +691,12 @@ class ToolSolderPaste(FlatCAMTool):
         else:
             self.gcode_frame.setDisabled(True)
 
+    def on_cncjob_select(self):
+        if self.cnc_obj_combo.currentText().rpartition('_')[2] == 'solderpaste':
+            self.save_gcode_frame.setDisabled(False)
+        else:
+            self.save_gcode_frame.setDisabled(True)
+
     @staticmethod
     def distance(pt1, pt2):
         return sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2)
@@ -595,15 +705,21 @@ class ToolSolderPaste(FlatCAMTool):
         proc = self.app.proc_container.new("Creating Solder Paste dispensing geometry.")
 
         name = self.obj_combo.currentText()
+        if name == '':
+            self.app.inform.emit("[WARNING_NOTCL] No SolderPaste mask Gerber object loaded.")
+            return
+
         obj = self.app.collection.get_by_name(name)
 
-        if type(obj.solid_geometry) is not list:
+        if type(obj.solid_geometry) is not list and type(obj.solid_geometry) is not MultiPolygon:
             obj.solid_geometry = [obj.solid_geometry]
 
         # Sort tools in descending order
         sorted_tools = []
         for k, v in self.tools.items():
-            sorted_tools.append(float('%.4f' % float(v['tooldia'])))
+            # make sure that the tools diameter is more than zero and not zero
+            if float(v['tooldia']) > 0:
+                sorted_tools.append(float('%.4f' % float(v['tooldia'])))
         sorted_tools.sort(reverse=True)
 
         def geo_init(geo_obj, app_obj):
@@ -624,8 +740,8 @@ class ToolSolderPaste(FlatCAMTool):
 
                 diagonal_1 = LineString([min, max])
                 diagonal_2 = LineString([min_r, max_r])
-                round_diag_1 = round(diagonal_1.intersection(p).length, 4)
-                round_diag_2 = round(diagonal_2.intersection(p).length, 4)
+                round_diag_1 = round(diagonal_1.intersection(p).length, 2)
+                round_diag_2 = round(diagonal_2.intersection(p).length, 2)
 
                 if round_diag_1 == round_diag_2:
                     l = distance((xmin, ymin), (xmax, ymin))
@@ -654,7 +770,12 @@ class ToolSolderPaste(FlatCAMTool):
             rest_geo = []
             tooluid = 1
 
+            if not sorted_tools:
+                self.app.inform.emit("[WARNING_NOTCL] No Nozzle tools in the tool table.")
+                return 'fail'
+
             for tool in sorted_tools:
+
                 offset = tool / 2
 
                 for uid, v in self.tools.items():
@@ -699,7 +820,9 @@ class ToolSolderPaste(FlatCAMTool):
                         else:
                             rest_geo.append(g)
 
-                work_geo = rest_geo
+                work_geo = deepcopy(rest_geo)
+                rest_geo[:] = []
+
                 if not work_geo:
                     app_obj.inform.emit("[success] Solder Paste geometry generated successfully...")
                     return
@@ -728,6 +851,26 @@ class ToolSolderPaste(FlatCAMTool):
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
 
+    def on_view_gcode(self):
+        name = self.obj_combo.currentText()
+
+        def geo_init(geo_obj, app_obj):
+           pass
+
+        # self.app.new_object("geometry", name + "_cutout", geo_init)
+        # self.app.inform.emit("[success] Rectangular CutOut operation finished.")
+        # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+
+    def on_save_gcode(self):
+        name = self.obj_combo.currentText()
+
+        def geo_init(geo_obj, app_obj):
+           pass
+
+        # self.app.new_object("geometry", name + "_cutout", geo_init)
+        # self.app.inform.emit("[success] Rectangular CutOut operation finished.")
+        # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+
     def on_create_gcode(self):
         name = self.obj_combo.currentText()
 
@@ -740,3 +883,5 @@ class ToolSolderPaste(FlatCAMTool):
 
     def reset_fields(self):
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.geo_obj_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
+        self.cnc_obj_combo.setRootModelIndex(self.app.collection.index(3, 0, QtCore.QModelIndex()))

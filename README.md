@@ -12,7 +12,10 @@ CAD program, and create G-Code for Isolation routing.
 20.02.2019
 
 - finished added a Tool Table for Tool SolderPaste
-- working on multi tool soder paste dispensing
+- working on multi tool solder paste dispensing
+- finished the Edit -> Preferences defaults section
+- finished the UI, created the postprocessor file template
+- finished the multi-tool solder paste dispensing: it will start using the biggest nozzle, fill the pads it can, and then go to the next smaller nozzle until there are no pads without solder.
 
 19.02.2019
 
