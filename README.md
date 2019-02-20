@@ -19,6 +19,8 @@ CAD program, and create G-Code for Isolation routing.
 - added a new parameter for the Tcl CommandIsolate, named: 'follow'. When follow = 1 (True) the resulting geometry will follow the Gerber paths.
 - added a new setting in Edit -> Preferences -> General that allow to select the type of saving for the FlatCAM project: either compressed or uncompressed. Compression introduce an time overhead to the saving/restoring of a FlatCAM project.
 - started to work on Solder Paste Dispensing Tool
+- fixed a bug in rotate from shortcut function
+- finished generating the solder paste dispense geometry
 
 18.02.2019
 

@@ -4076,7 +4076,7 @@ class App(QtCore.QObject):
                     py = 0.5 * (yminimal + ymaximal)
 
                     for sel_obj in obj_list:
-                        sel_obj.rotate(-num, point=(px, py))
+                        sel_obj.rotate(-float(num), point=(px, py))
                         sel_obj.plot()
                         self.object_changed.emit(sel_obj)
                     self.inform.emit("[success] Rotation done.")

@@ -63,16 +63,15 @@ class ToolSolderPaste(FlatCAMTool):
         form_layout.addRow(self.object_label, self.obj_combo)
 
         # Offset distance
-        self.offset_entry = FloatEntry()
-        self.offset_entry.setValidator(QtGui.QDoubleValidator(-99.9999, 0.0000, 4))
-        self.offset_label = QtWidgets.QLabel(" Solder Offset:")
-        self.offset_label.setToolTip(
+        self.nozzle_dia_entry = FloatEntry()
+        self.nozzle_dia_entry.setValidator(QtGui.QDoubleValidator(0.0000, 9.9999, 4))
+        self.nozzle_dia_label = QtWidgets.QLabel("Nozzle Diameter:")
+        self.nozzle_dia_label.setToolTip(
             "The offset for the solder paste.\n"
             "Due of the diameter of the solder paste dispenser\n"
-            "we need to adjust the quantity of solder paste\n"
-            "so it will not overflow over the pad."
+            "we need to adjust the quantity of solder paste."
         )
-        form_layout.addRow(self.offset_label, self.offset_entry)
+        form_layout.addRow(self.nozzle_dia_label, self.nozzle_dia_entry)
 
         # Z dispense start
         self.z_start_entry = FCEntry()
@@ -248,14 +247,104 @@ class ToolSolderPaste(FlatCAMTool):
         self.reset_fields()
         pass
 
+    @staticmethod
+    def distance(pt1, pt2):
+        return sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2)
+
     def on_create_geo(self):
+        proc = self.app.proc_container.new("Creating Solder Paste dispensing geometry.")
+
         name = self.obj_combo.currentText()
+        obj = self.app.collection.get_by_name(name)
+
+        if type(obj.solid_geometry) is not list:
+            obj.solid_geometry = [obj.solid_geometry]
+
+        try:
+            offset = self.nozzle_dia_entry.get_value() / 2
+        except Exception as e:
+            log.debug("ToolSoderPaste.on_create_geo() --> %s" % str(e))
+            self.app.inform.emit("[ERROR_NOTCL] Failed. Offset value is missing ...")
+            return
+
+        if offset is None:
+            self.app.inform.emit("[ERROR_NOTCL] Failed. Offset value is missing ...")
+            return
 
         def geo_init(geo_obj, app_obj):
-           pass
+            geo_obj.solid_geometry = []
+            geo_obj.multigeo = False
+            geo_obj.multitool = False
+            geo_obj.tools = {}
 
-        # self.app.new_object("geometry", name + "_cutout", geo_init)
-        # self.app.inform.emit("[success] Rectangular CutOut operation finished.")
+            def solder_line(p, offset):
+                xmin, ymin, xmax, ymax = p.bounds
+
+                min = [xmin, ymin]
+                max = [xmax, ymax]
+                min_r = [xmin, ymax]
+                max_r = [xmax, ymin]
+
+                diagonal_1 = LineString([min, max])
+                diagonal_2 = LineString([min_r, max_r])
+                round_diag_1 = round(diagonal_1.intersection(p).length, 4)
+                round_diag_2 = round(diagonal_2.intersection(p).length, 4)
+
+                if round_diag_1 == round_diag_2:
+                    l = distance((xmin, ymin), (xmax, ymin))
+                    h = distance((xmin, ymin), (xmin, ymax))
+                    if offset >= l /2 or offset >= h / 2:
+                        return "fail"
+                    if l > h:
+                        h_half = h / 2
+                        start = [xmin, (ymin + h_half)]
+                        stop = [(xmin + l), (ymin + h_half)]
+                    else:
+                        l_half = l / 2
+                        start = [(xmin + l_half), ymin]
+                        stop = [(xmin + l_half), (ymin + h)]
+                    geo = LineString([start, stop])
+                elif round_diag_1 > round_diag_2:
+                    geo = diagonal_1.intersection(p)
+                else:
+                    geo = diagonal_2.intersection(p)
+
+                offseted_poly = p.buffer(-offset)
+                geo = geo.intersection(offseted_poly)
+                return geo
+
+            for g in obj.solid_geometry:
+                if type(g) == MultiPolygon:
+                    for poly in g:
+                        geom = solder_line(poly, offset=offset)
+                        if geom == 'fail':
+                            app_obj.inform.emit("[ERROR_NOTCL] The Nozzle diameter is too big for certain features.")
+                            return 'fail'
+                        if not geom.is_empty:
+                            geo_obj.solid_geometry.append(geom)
+                elif type(g) == Polygon:
+                    geom = solder_line(g, offset=offset)
+                    if geom == 'fail':
+                        app_obj.inform.emit("[ERROR_NOTCL] The Nozzle diameter is too big for certain features.")
+                        return 'fail'
+                    if not geom.is_empty:
+                        geo_obj.solid_geometry.append(geom)
+
+        def job_thread(app_obj):
+            try:
+                app_obj.new_object("geometry", name + "_temp_solderpaste", geo_init)
+            except Exception as e:
+                proc.done()
+                traceback.print_stack()
+                return
+            proc.done()
+
+        self.app.inform.emit("Generating Solder Paste dispensing geometry...")
+        # Promise object with the new name
+        self.app.collection.promise(name)
+
+        # Background
+        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
 
     def on_create_gcode(self):

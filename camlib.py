@@ -2392,8 +2392,6 @@ class Gerber (Geometry):
                             log.debug("Bare op-code %d." % current_operation_code)
                             # flash = Gerber.create_flash_geometry(Point(path[-1]),
                             #                                      self.apertures[current_aperture])
-                            if follow:
-                                continue
                             flash = Gerber.create_flash_geometry(
                                 Point(current_x, current_y), self.apertures[current_aperture],
                                 int(self.steps_per_circle))
