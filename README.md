@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+21.02.2019
+
+- added protection against creating CNCJob from an empty Geometry object (with no geometry inside)
+- changed the shortcut key for YOuTube channel from F2 to key F4
+
 20.02.2019
 
 - finished added a Tool Table for Tool SolderPaste

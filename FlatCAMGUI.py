@@ -325,8 +325,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), 'Help\tF1')
         self.menuhelp_home = self.menuhelp.addAction(QtGui.QIcon('share/home16.png'), 'FlatCAM.org')
         self.menuhelp.addSeparator()
-        self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/youtube32.png'), 'YouTube Channel\tF2')
         self.menuhelp_shortcut_list = self.menuhelp.addAction(QtGui.QIcon('share/shortcuts24.png'), 'Shortcuts List\tF3')
+        self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/youtube32.png'), 'YouTube Channel\tF4')
         self.menuhelp_about = self.menuhelp.addAction(QtGui.QIcon('share/about32.png'), 'About')
 
 
@@ -1034,7 +1034,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 			<td>&nbsp;Open Online Manual</td>
 		</tr>
 		<tr height="20">
-			<td height="20"><strong>F2</strong></td>
+			<td height="20"><strong>F4</strong></td>
 			<td>&nbsp;Open Online Tutorials</td>
 		</tr>
 		<tr height="20">
@@ -1786,13 +1786,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_F1 or key == 'F1':
                     webbrowser.open(self.app.manual_url)
 
-                # Open Video Help
-                if key == QtCore.Qt.Key_F2 or key == 'F2':
-                    webbrowser.open(self.app.video_url)
-
                 # Show shortcut list
                 if key == QtCore.Qt.Key_F3 or key == 'F3':
                     self.app.on_shortcut_list()
+
+                # Open Video Help
+                if key == QtCore.Qt.Key_F4 or key == 'F4':
+                    webbrowser.open(self.app.video_url)
 
                 # Switch to Project Tab
                 if key == QtCore.Qt.Key_1:

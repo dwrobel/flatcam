@@ -5152,7 +5152,9 @@ class CNCjob(Geometry):
         log.debug("Starting G-Code...")
         path_count = 0
         current_pt = (0, 0)
+
         pt, geo = storage.nearest(current_pt)
+
         try:
             while True:
                 path_count += 1

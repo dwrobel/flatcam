@@ -3965,6 +3965,16 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         '[ERROR_NOTCL]Wrong value format for self.defaults["feedrate_probe"] '
                         'or self.options["feedrate_probe"]')
 
+            # make sure that trying to make a CNCJob from an empty file is not creating an app crash
+            if not self.solid_geometry:
+                a = 0
+                for tooluid_key in self.tools:
+                    if self.tools[tooluid_key]['solid_geometry'] is None:
+                        a += 1
+                if a == len(self.tools):
+                    self.app.inform.emit('[ERROR_NOTCL]Cancelled. Empty file, it has no geometry...')
+                    return 'fail'
+
             for tooluid_key in self.sel_tools:
                 tool_cnt += 1
                 app_obj.progress.emit(20)

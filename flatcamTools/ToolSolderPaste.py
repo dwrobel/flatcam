@@ -323,8 +323,8 @@ class ToolSolderPaste(FlatCAMTool):
 
         self.layout.addStretch()
 
-        self.gcode_frame.setDisabled(True)
-        self.save_gcode_frame.setDisabled(True)
+        # self.gcode_frame.setDisabled(True)
+        # self.save_gcode_frame.setDisabled(True)
 
         self.tools = {}
         self.tooluid = 0
@@ -686,16 +686,18 @@ class ToolSolderPaste(FlatCAMTool):
         self.build_ui()
 
     def on_geo_select(self):
-        if self.geo_obj_combo.currentText().rpartition('_')[2] == 'solderpaste':
-            self.gcode_frame.setDisabled(False)
-        else:
-            self.gcode_frame.setDisabled(True)
+        # if self.geo_obj_combo.currentText().rpartition('_')[2] == 'solderpaste':
+        #     self.gcode_frame.setDisabled(False)
+        # else:
+        #     self.gcode_frame.setDisabled(True)
+        pass
 
     def on_cncjob_select(self):
-        if self.cnc_obj_combo.currentText().rpartition('_')[2] == 'solderpaste':
-            self.save_gcode_frame.setDisabled(False)
-        else:
-            self.save_gcode_frame.setDisabled(True)
+        # if self.cnc_obj_combo.currentText().rpartition('_')[2] == 'solderpaste':
+        #     self.save_gcode_frame.setDisabled(False)
+        # else:
+        #     self.save_gcode_frame.setDisabled(True)
+        pass
 
     @staticmethod
     def distance(pt1, pt2):
@@ -853,13 +855,28 @@ class ToolSolderPaste(FlatCAMTool):
 
     def on_view_gcode(self):
         name = self.obj_combo.currentText()
+        obj = self.app.collection.get_by_name(name)
 
-        def geo_init(geo_obj, app_obj):
-           pass
+        # then append the text from GCode to the text editor
+        try:
+            file = StringIO(obj.gcode)
+        except:
+            pass
 
-        # self.app.new_object("geometry", name + "_cutout", geo_init)
-        # self.app.inform.emit("[success] Rectangular CutOut operation finished.")
-        # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+        try:
+            for line in file:
+                print(line)
+                proc_line = str(line).strip('\n')
+                self.app.ui.code_editor.append(proc_line)
+        except Exception as e:
+            log.debug('ToolSolderPaste.on_view_gcode() -->%s' % str(e))
+            self.app.inform.emit('[ERROR]ToolSolderPaste.on_view_gcode() -->%s' % str(e))
+            return
+
+        self.app.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
+
+        self.app.handleTextChanged()
+        self.app.ui.show()
 
     def on_save_gcode(self):
         name = self.obj_combo.currentText()
@@ -871,15 +888,280 @@ class ToolSolderPaste(FlatCAMTool):
         # self.app.inform.emit("[success] Rectangular CutOut operation finished.")
         # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
 
-    def on_create_gcode(self):
+    def on_create_gcode(self, use_thread=True):
+        """
+                Creates a multi-tool CNCJob out of this Geometry object.
+                The actual work is done by the target FlatCAMCNCjob object's
+                `generate_from_geometry_2()` method.
+
+                :param z_cut: Cut depth (negative)
+                :param z_move: Hight of the tool when travelling (not cutting)
+                :param feedrate: Feed rate while cutting on X - Y plane
+                :param feedrate_z: Feed rate while cutting on Z plane
+                :param feedrate_rapid: Feed rate while moving with rapids
+                :param tooldia: Tool diameter
+                :param outname: Name of the new object
+                :param spindlespeed: Spindle speed (RPM)
+                :param ppname_g Name of the postprocessor
+                :return: None
+                """
+
         name = self.obj_combo.currentText()
+        obj = self.app.collection.get_by_name(name)
 
-        def geo_init(geo_obj, app_obj):
-           pass
+        offset_str = ''
+        multitool_gcode = ''
 
-        # self.app.new_object("geometry", name + "_cutout", geo_init)
-        # self.app.inform.emit("[success] Rectangular CutOut operation finished.")
-        # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+        # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia
+        outname = "%s_%s" % (name, 'cnc_solderpaste')
+
+        try:
+            xmin = obj.options['xmin']
+            ymin = obj.options['ymin']
+            xmax = obj.options['xmax']
+            ymax = obj.options['ymax']
+        except Exception as e:
+            log.debug("FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s\n" % str(e))
+            msg = "[ERROR] An internal error has ocurred. See shell.\n"
+            msg += 'FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s' % str(e)
+            msg += traceback.format_exc()
+            self.app.inform.emit(msg)
+            return
+
+
+        # Object initialization function for app.new_object()
+        # RUNNING ON SEPARATE THREAD!
+        def job_init_multi_geometry(job_obj, app_obj):
+            assert isinstance(job_obj, FlatCAMCNCjob), \
+                "Initializer expected a FlatCAMCNCjob, got %s" % type(job_obj)
+
+            # count the tools
+            tool_cnt = 0
+            dia_cnc_dict = {}
+            current_uid = int(1)
+
+            # this turn on the FlatCAMCNCJob plot for multiple tools
+            job_obj.multitool = True
+            job_obj.multigeo = True
+            job_obj.cnc_tools.clear()
+
+            job_obj.options['xmin'] = xmin
+            job_obj.options['ymin'] = ymin
+            job_obj.options['xmax'] = xmax
+            job_obj.options['ymax'] = ymax
+
+            try:
+                job_obj.z_pdepth = float(self.options["z_pdepth"])
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    job_obj.z_pdepth = float(self.options["z_pdepth"].replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit(
+                        '[ERROR_NOTCL]Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]')
+
+            try:
+                job_obj.feedrate_probe = float(self.options["feedrate_probe"])
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    job_obj.feedrate_rapid = float(self.options["feedrate_probe"].replace(',', '.'))
+                except ValueError:
+                    self.app.inform.emit(
+                        '[ERROR_NOTCL]Wrong value format for self.defaults["feedrate_probe"] '
+                        'or self.options["feedrate_probe"]')
+
+            # make sure that trying to make a CNCJob from an empty file is not creating an app crash
+            if not self.solid_geometry:
+                a = 0
+                for tooluid_key in self.tools:
+                    if self.tools[tooluid_key]['solid_geometry'] is None:
+                        a += 1
+                if a == len(self.tools):
+                    self.app.inform.emit('[ERROR_NOTCL]Cancelled. Empty file, it has no geometry...')
+                    return 'fail'
+
+            for tooluid_key in self.sel_tools:
+                tool_cnt += 1
+                app_obj.progress.emit(20)
+
+                # find the tool_dia associated with the tooluid_key
+                sel_tool_dia = self.sel_tools[tooluid_key]['tooldia']
+
+                # search in the self.tools for the sel_tool_dia and when found see what tooluid has
+                # on the found tooluid in self.tools we also have the solid_geometry that interest us
+                for k, v in self.tools.items():
+                    if float('%.4f' % float(v['tooldia'])) == float('%.4f' % float(sel_tool_dia)):
+                        current_uid = int(k)
+                        break
+
+                for diadict_key, diadict_value in self.sel_tools[tooluid_key].items():
+                    if diadict_key == 'tooldia':
+                        tooldia_val = float('%.4f' % float(diadict_value))
+                        dia_cnc_dict.update({
+                            diadict_key: tooldia_val
+                        })
+                    if diadict_key == 'offset':
+                        o_val = diadict_value.lower()
+                        dia_cnc_dict.update({
+                            diadict_key: o_val
+                        })
+
+                    if diadict_key == 'type':
+                        t_val = diadict_value
+                        dia_cnc_dict.update({
+                            diadict_key: t_val
+                        })
+
+                    if diadict_key == 'tool_type':
+                        tt_val = diadict_value
+                        dia_cnc_dict.update({
+                            diadict_key: tt_val
+                        })
+
+                    if diadict_key == 'data':
+                        for data_key, data_value in diadict_value.items():
+                            if data_key == "multidepth":
+                                multidepth = data_value
+                            if data_key == "depthperpass":
+                                depthpercut = data_value
+
+                            if data_key == "extracut":
+                                extracut = data_value
+                            if data_key == "startz":
+                                startz = data_value
+                            if data_key == "endz":
+                                endz = data_value
+
+                            if data_key == "toolchangez":
+                                toolchangez = data_value
+                            if data_key == "toolchangexy":
+                                toolchangexy = data_value
+                            if data_key == "toolchange":
+                                toolchange = data_value
+
+                            if data_key == "cutz":
+                                z_cut = data_value
+                            if data_key == "travelz":
+                                z_move = data_value
+
+                            if data_key == "feedrate":
+                                feedrate = data_value
+                            if data_key == "feedrate_z":
+                                feedrate_z = data_value
+                            if data_key == "feedrate_rapid":
+                                feedrate_rapid = data_value
+
+                            if data_key == "ppname_g":
+                                pp_geometry_name = data_value
+
+                            if data_key == "spindlespeed":
+                                spindlespeed = data_value
+                            if data_key == "dwell":
+                                dwell = data_value
+                            if data_key == "dwelltime":
+                                dwelltime = data_value
+
+                        datadict = copy.deepcopy(diadict_value)
+                        dia_cnc_dict.update({
+                            diadict_key: datadict
+                        })
+
+                if dia_cnc_dict['offset'] == 'in':
+                    tool_offset = -dia_cnc_dict['tooldia'] / 2
+                    offset_str = 'inside'
+                elif dia_cnc_dict['offset'].lower() == 'out':
+                    tool_offset = dia_cnc_dict['tooldia'] / 2
+                    offset_str = 'outside'
+                elif dia_cnc_dict['offset'].lower() == 'path':
+                    offset_str = 'onpath'
+                    tool_offset = 0.0
+                else:
+                    offset_str = 'custom'
+                    try:
+                        offset_value = float(self.ui.tool_offset_entry.get_value())
+                    except ValueError:
+                        # try to convert comma to decimal point. if it's still not working error message and return
+                        try:
+                            offset_value = float(self.ui.tool_offset_entry.get_value().replace(',', '.')
+                                                 )
+                        except ValueError:
+                            self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
+                                                 "use a number.")
+                            return
+                    if offset_value:
+                        tool_offset = float(offset_value)
+                    else:
+                        self.app.inform.emit(
+                            "[WARNING] Tool Offset is selected in Tool Table but no value is provided.\n"
+                            "Add a Tool Offset or change the Offset Type."
+                        )
+                        return
+                dia_cnc_dict.update({
+                    'offset_value': tool_offset
+                })
+
+                job_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
+                job_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
+
+                # Propagate options
+                job_obj.options["tooldia"] = tooldia_val
+                job_obj.options['type'] = 'Geometry'
+                job_obj.options['tool_dia'] = tooldia_val
+
+                app_obj.progress.emit(40)
+
+                tool_solid_geometry = self.tools[current_uid]['solid_geometry']
+                res = job_obj.generate_from_multitool_geometry(
+                    tool_solid_geometry, tooldia=tooldia_val, offset=tool_offset,
+                    tolerance=0.0005, z_cut=z_cut, z_move=z_move,
+                    feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
+                    spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
+                    multidepth=multidepth, depthpercut=depthpercut,
+                    extracut=extracut, startz=startz, endz=endz,
+                    toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
+                    pp_geometry_name=pp_geometry_name,
+                    tool_no=tool_cnt)
+
+                if res == 'fail':
+                    log.debug("FlatCAMGeometry.mtool_gen_cncjob() --> generate_from_geometry2() failed")
+                    return 'fail'
+                else:
+                    dia_cnc_dict['gcode'] = res
+
+                dia_cnc_dict['gcode_parsed'] = job_obj.gcode_parse()
+
+                # TODO this serve for bounding box creation only; should be optimized
+                dia_cnc_dict['solid_geometry'] = cascaded_union([geo['geom'] for geo in dia_cnc_dict['gcode_parsed']])
+
+                # tell gcode_parse from which point to start drawing the lines depending on what kind of
+                # object is the source of gcode
+                job_obj.toolchange_xy_type = "geometry"
+
+                app_obj.progress.emit(80)
+
+                job_obj.cnc_tools.update({
+                    tooluid_key: copy.deepcopy(dia_cnc_dict)
+                })
+                dia_cnc_dict.clear()
+
+        if use_thread:
+            # To be run in separate thread
+            # The idea is that if there is a solid_geometry in the file "root" then most likely thare are no
+            # separate solid_geometry in the self.tools dictionary
+            def job_thread(app_obj):
+                with self.app.proc_container.new("Generating CNC Code"):
+                    if app_obj.new_object("cncjob", outname, job_init_multi_geometry) != 'fail':
+                        app_obj.inform.emit("[success]ToolSolderPaste CNCjob created: %s" % outname)
+                        app_obj.progress.emit(100)
+
+            # Create a promise with the name
+            self.app.collection.promise(outname)
+            # Send to worker
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+        else:
+            self.app.new_object("cncjob", outname, job_init_multi_geometry)
+
 
     def reset_fields(self):
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
