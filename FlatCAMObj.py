@@ -491,8 +491,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.follow_cb.stateChanged.connect(self.on_follow_cb_click)
 
         # Show/Hide Advanced Options
-        if self.app.defaults["global_advanced"] is False:
-            self.ui.level.setText('<span style="color:green;"><b>BASIC Mode</b></span>')
+        if self.app.defaults["global_app_level"] == 'b':
+            self.ui.level.setText('<span style="color:green;"><b>Basic</b></span>')
             self.ui.apertures_table_label.hide()
             self.ui.aperture_table_visibility_cb.hide()
             self.ui.milling_type_label.hide()
@@ -501,7 +501,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.generate_int_iso_button.hide()
 
         else:
-            self.ui.level.setText('<span style="color:red;"><b>ADVANCED Mode</b></span>')
+            self.ui.level.setText('<span style="color:red;"><b>Advanced</b></span>')
 
         self.build_ui()
 
@@ -1571,8 +1571,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 self.tool_offset[dia] = t_default_offset
 
         # Show/Hide Advanced Options
-        if self.app.defaults["global_advanced"] is False:
-            self.ui.level.setText('<span style="color:green;"><b>BASIC Mode</b></span>')
+        if self.app.defaults["global_app_level"] == 'b':
+            self.ui.level.setText('<span style="color:green;"><b>Basic</b></span>')
 
             self.ui.tools_table.setColumnHidden(4, True)
             self.ui.estartz_label.hide()
@@ -1586,7 +1586,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.feedrate_probe_label.hide()
             self.ui.feedrate_probe_entry.hide()
         else:
-            self.ui.level.setText('<span style="color:red;"><b>ADVANCED Mode</b></span>')
+            self.ui.level.setText('<span style="color:red;"><b>Advanced</b></span>')
 
         assert isinstance(self.ui, ExcellonObjectUI), \
             "Expected a ExcellonObjectUI, got %s" % type(self.ui)
@@ -2805,8 +2805,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             "Delete", lambda: self.on_tool_delete(all=None), icon=QtGui.QIcon("share/delete32.png"))
 
         # Show/Hide Advanced Options
-        if self.app.defaults["global_advanced"] is False:
-            self.ui.level.setText('<span style="color:green;"><b>BASIC Mode</b></span>')
+        if self.app.defaults["global_app_level"] == 'b':
+            self.ui.level.setText('<span style="color:green;"><b>Basic</b></span>')
 
             self.ui.geo_tools_table.setColumnHidden(2, True)
             self.ui.geo_tools_table.setColumnHidden(3, True)
@@ -2826,7 +2826,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.feedrate_probe_label.hide()
             self.ui.feedrate_probe_entry.hide()
         else:
-            self.ui.level.setText('<span style="color:red;"><b>ADVANCED Mode</b></span>')
+            self.ui.level.setText('<span style="color:red;"><b>Advanced</b></span>')
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
@@ -4857,11 +4857,11 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.ui.cncplot_method_combo.set_value(self.app.defaults["cncjob_plot_kind"])
 
         # Show/Hide Advanced Options
-        if self.app.defaults["global_advanced"] is False:
-            self.ui.level.setText('<span style="color:green;"><b>BASIC Mode</b></span>')
+        if self.app.defaults["global_app_level"] == 'b':
+            self.ui.level.setText('<span style="color:green;"><b>Basic</b></span>')
 
         else:
-            self.ui.level.setText('<span style="color:red;"><b>ADVANCED Mode</b></span>')
+            self.ui.level.setText('<span style="color:red;"><b>Advanced</b></span>')
 
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)

@@ -312,7 +312,7 @@ class App(QtCore.QObject):
             "global_send_stats": self.general_defaults_form.general_app_group.send_stats_cb,
             "global_project_at_startup": self.general_defaults_form.general_app_group.project_startup_cb,
             "global_project_autohide": self.general_defaults_form.general_app_group.project_autohide_cb,
-            "global_advanced": self.general_defaults_form.general_app_group.advanced_cb,
+            "global_app_level": self.general_defaults_form.general_app_group.app_level_radio,
             "global_compression_level": self.general_defaults_form.general_app_group.compress_combo,
             "global_save_compressed": self.general_defaults_form.general_app_group.save_type_cb,
 
@@ -531,7 +531,7 @@ class App(QtCore.QObject):
             "global_send_stats": True,
             "global_project_at_startup": False,
             "global_project_autohide": True,
-            "global_advanced": False,
+            "global_app_level": 'b',
 
             "global_gridx": 1.0,
             "global_gridy": 1.0,

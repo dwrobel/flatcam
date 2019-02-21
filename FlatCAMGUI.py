@@ -3009,6 +3009,16 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.units_radio = RadioSet([{'label': 'IN', 'value': 'IN'},
                                      {'label': 'MM', 'value': 'MM'}])
 
+        # Application Level for FlatCAM
+        self.app_level_label = QtWidgets.QLabel('<b>APP. LEVEL:</b>')
+        self.app_level_label.setToolTip("Choose the default level of usage for FlatCAM.\n"
+                                        "BASIC level -> reduced functionality, best for beginner's.\n"
+                                        "ADVANCED level -> full functionality.\n\n"
+                                        "The choice here will influence the parameters in\n"
+                                        "the Selected Tab for all kinds of FlatCAM objects.")
+        self.app_level_radio = RadioSet([{'label': 'Basic', 'value': 'b'},
+                                         {'label': 'Advanced', 'value': 'a'}])
+
         # Languages for FlatCAM
         self.languagelabel = QtWidgets.QLabel('<b>Languages:</b>')
         self.languagelabel.setToolTip("Set the language used throughout FlatCAM.")
@@ -3099,6 +3109,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         # Add (label - input field) pair to the QFormLayout
         self.form_box.addRow(self.unitslabel, self.units_radio)
+        self.form_box.addRow(self.app_level_label, self.app_level_radio)
         self.form_box.addRow(self.languagelabel, self.language_cb)
         self.form_box.addRow(self.languagespace, self.language_apply_btn)
 
@@ -3121,16 +3132,6 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # hlay = QtWidgets.QHBoxLayout()
         # self.layout.addLayout(hlay)
         # hlay.addStretch()
-
-        # Advanced CB
-        self.advanced_cb = FCCheckBox('Show Advanced Options')
-        self.advanced_cb.setToolTip(
-            "When checked, Advanced Options will be\n"
-            "displayed in the Selected Tab for all\n"
-            "kind of objects."
-        )
-        # self.advanced_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
-        self.layout.addWidget(self.advanced_cb)
 
         # Save compressed project CB
         self.save_type_cb = FCCheckBox('Save Compressed Project')

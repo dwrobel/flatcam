@@ -32,6 +32,19 @@ class ObjectUI(QtWidgets.QWidget):
         self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.title_box.addWidget(self.title_label, stretch=1)
 
+        ## App Level label
+        self.level = QtWidgets.QLabel("")
+        self.level.setToolTip(
+            "BASIC is suitable for a beginner. Many parameters\n"
+            "are hidden from the user in this mode.\n"
+            "ADVANCED mode will make available all parameters.\n\n"
+            "To change the application LEVEL, go to:\n"
+            "Edit -> Preferences -> General and check:\n"
+            "'APP. LEVEL' radio button."
+        )
+        self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.title_box.addWidget(self.level)
+
         ## Box box for custom widgets
         # This gets populated in offspring implementations.
         self.custom_box = QtWidgets.QVBoxLayout()
@@ -107,16 +120,6 @@ class GerberObjectUI(ObjectUI):
 
     def __init__(self, parent=None):
         ObjectUI.__init__(self, title='Gerber Object', parent=parent)
-
-        self.level = QtWidgets.QLabel("")
-        self.level.setToolTip(
-            "In the BASIC mode certain functionality's\n"
-            "are hidden from the user.\n"
-            "To enable them, go to:\n"
-            "Edit -> Preferences -> General and check:\n"
-            "'Show Advanced Options' checkbox."
-        )
-        self.custom_box.addWidget(self.level)
 
         # Plot options
         grid0 = QtWidgets.QGridLayout()
@@ -442,16 +445,6 @@ class ExcellonObjectUI(ObjectUI):
                           icon_file='share/drill32.png',
                           parent=parent)
 
-        self.level = QtWidgets.QLabel("")
-        self.level.setToolTip(
-            "In the BASIC mode certain functionality's\n"
-            "are hidden from the user.\n"
-            "To enable them, go to:\n"
-            "Edit -> Preferences -> General and check:\n"
-            "'Show Advanced Options' checkbox."
-        )
-        self.custom_box.addWidget(self.level)
-
         #### Plot options ####
         hlay_plot = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(hlay_plot)
@@ -774,16 +767,6 @@ class GeometryObjectUI(ObjectUI):
 
     def __init__(self, parent=None):
         super(GeometryObjectUI, self).__init__(title='Geometry Object', icon_file='share/geometry32.png', parent=parent)
-
-        self.level = QtWidgets.QLabel("")
-        self.level.setToolTip(
-            "In the BASIC mode certain functionality's\n"
-            "are hidden from the user.\n"
-            "To enable them, go to:\n"
-            "Edit -> Preferences -> General and check:\n"
-            "'Show Advanced Options' checkbox."
-        )
-        self.custom_box.addWidget(self.level)
 
         # Plot options
         self.plot_options_label = QtWidgets.QLabel("<b>Plot Options:</b>")
@@ -1212,16 +1195,6 @@ class CNCObjectUI(ObjectUI):
         """
 
         ObjectUI.__init__(self, title='CNC Job Object', icon_file='share/cnc32.png', parent=parent)
-
-        self.level = QtWidgets.QLabel("")
-        self.level.setToolTip(
-            "In the BASIC mode certain functionality's\n"
-            "are hidden from the user.\n"
-            "To enable them, go to:\n"
-            "Edit -> Preferences -> General and check:\n"
-            "'Show Advanced Options' checkbox."
-        )
-        self.custom_box.addWidget(self.level)
 
         # Scale and offset ans skew are not available for CNCJob objects.
         # Hiding from the GUI.
