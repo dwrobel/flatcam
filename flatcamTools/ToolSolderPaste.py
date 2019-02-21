@@ -954,6 +954,9 @@ class SolderPaste(FlatCAMTool):
         # add the tab if it was closed
         self.app.ui.plot_tab_area.addTab(self.app.ui.cncjob_tab, "Code Editor")
 
+        # first clear previous text in text editor (if any)
+        self.app.ui.code_editor.clear()
+
         # Switch plot_area to CNCJob tab
         self.app.ui.plot_tab_area.setCurrentWidget(self.app.ui.cncjob_tab)
 

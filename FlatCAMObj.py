@@ -5199,6 +5199,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         cw_index = self.ui.cnc_tools_table.indexAt(cw.pos())
         cw_row = cw_index.row()
 
+        kind = self.ui.cncplot_method_combo.get_value()
+
         self.shapes.clear(update=True)
 
         for tooluid_key in self.cnc_tools:
@@ -5209,7 +5211,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             for r in range(self.ui.cnc_tools_table.rowCount()):
                 if int(self.ui.cnc_tools_table.item(r, 5).text()) == int(tooluid_key):
                     if self.ui.cnc_tools_table.cellWidget(r, 6).isChecked():
-                        self.plot2(tooldia=tooldia, obj=self, visible=True, gcode_parsed=gcode_parsed)
+                        self.plot2(tooldia=tooldia, obj=self, visible=True, gcode_parsed=gcode_parsed, kind=kind)
 
         self.shapes.redraw()
 

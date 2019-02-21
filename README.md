@@ -20,6 +20,9 @@ CAD program, and create G-Code for Isolation routing.
 - ToolSolderPaste tools (nozzles) now have each it's own settings
 - creating the camlib functions for the ToolSolderPaste gcode generation functions
 - finished work in ToolSolderPaste
+- fixed issue with not updating correctly the plot kind (all, cut, travel) when clicking in the CNC Tools Table plot buttons
+- made the GCode Editor for ToolSolderPaste clear the text before updating the Code Editor tab
+- all the Tabs in Plot Area are closed (except Plot Area itself) on New Project creation
 
 20.02.2019
 

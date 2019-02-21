@@ -4829,6 +4829,16 @@ class App(QtCore.QObject):
         # Init Tools
         self.init_tools()
 
+        # Close any Tabs opened in the Plot Tab Area section
+        for index in range(self.ui.plot_tab_area.count()):
+            self.ui.plot_tab_area.closeTab(index)
+            # for whatever reason previous command does not close the last tab so I do it manually
+        self.ui.plot_tab_area.closeTab(0)
+
+        # # And then add again the Plot Area
+        self.ui.plot_tab_area.addTab(self.ui.plot_tab, "Plot Area")
+        self.ui.plot_tab_area.protectTab(0)
+
         # take the focus of the Notebook on Project Tab.
         self.ui.notebook.setCurrentWidget(self.ui.project_tab)
 
