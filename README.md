@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - changed the shortcut key for YouTube channel from F2 to key F4
 - changed the way APP LEVEL is showed both in Edit -> Preferences -> General tab and in each Selected Tab. Changed the ToolTips content for this.
 - added the functions for GCode View and GCode Save in Tool SolderPaste
+- some work in the Gcode generation function in Tool SolderPaste
 
 20.02.2019
 

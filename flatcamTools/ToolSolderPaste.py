@@ -996,15 +996,6 @@ class ToolSolderPaste(FlatCAMTool):
             job_obj.options['xmax'] = xmax
             job_obj.options['ymax'] = ymax
 
-            try:
-                job_obj.z_pdepth = float(self.options["z_pdepth"])
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    job_obj.z_pdepth = float(self.options["z_pdepth"].replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit(
-                        '[ERROR_NOTCL]Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]')
 
             try:
                 job_obj.feedrate_probe = float(self.options["feedrate_probe"])
@@ -1027,17 +1018,17 @@ class ToolSolderPaste(FlatCAMTool):
                     self.app.inform.emit('[ERROR_NOTCL]Cancelled. Empty file, it has no geometry...')
                     return 'fail'
 
-            for tooluid_key in self.sel_tools:
+            for tooluid_key in self.tools:
                 tool_cnt += 1
                 app_obj.progress.emit(20)
 
                 # find the tool_dia associated with the tooluid_key
-                sel_tool_dia = self.sel_tools[tooluid_key]['tooldia']
+                tool_dia = self.sel_tools[tooluid_key]['tooldia']
 
                 # search in the self.tools for the sel_tool_dia and when found see what tooluid has
                 # on the found tooluid in self.tools we also have the solid_geometry that interest us
                 for k, v in self.tools.items():
-                    if float('%.4f' % float(v['tooldia'])) == float('%.4f' % float(sel_tool_dia)):
+                    if float('%.4f' % float(v['tooldia'])) == float('%.4f' % float(tool_dia)):
                         current_uid = int(k)
                         break
 
@@ -1048,21 +1039,18 @@ class ToolSolderPaste(FlatCAMTool):
                             diadict_key: tooldia_val
                         })
                     if diadict_key == 'offset':
-                        o_val = diadict_value.lower()
                         dia_cnc_dict.update({
-                            diadict_key: o_val
+                            diadict_key: ''
                         })
 
                     if diadict_key == 'type':
-                        t_val = diadict_value
                         dia_cnc_dict.update({
-                            diadict_key: t_val
+                            diadict_key: ''
                         })
 
                     if diadict_key == 'tool_type':
-                        tt_val = diadict_value
                         dia_cnc_dict.update({
-                            diadict_key: tt_val
+                            diadict_key: ''
                         })
 
                     if diadict_key == 'data':
@@ -1113,40 +1101,6 @@ class ToolSolderPaste(FlatCAMTool):
                             diadict_key: datadict
                         })
 
-                if dia_cnc_dict['offset'] == 'in':
-                    tool_offset = -dia_cnc_dict['tooldia'] / 2
-                    offset_str = 'inside'
-                elif dia_cnc_dict['offset'].lower() == 'out':
-                    tool_offset = dia_cnc_dict['tooldia'] / 2
-                    offset_str = 'outside'
-                elif dia_cnc_dict['offset'].lower() == 'path':
-                    offset_str = 'onpath'
-                    tool_offset = 0.0
-                else:
-                    offset_str = 'custom'
-                    try:
-                        offset_value = float(self.ui.tool_offset_entry.get_value())
-                    except ValueError:
-                        # try to convert comma to decimal point. if it's still not working error message and return
-                        try:
-                            offset_value = float(self.ui.tool_offset_entry.get_value().replace(',', '.')
-                                                 )
-                        except ValueError:
-                            self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
-                                                 "use a number.")
-                            return
-                    if offset_value:
-                        tool_offset = float(offset_value)
-                    else:
-                        self.app.inform.emit(
-                            "[WARNING] Tool Offset is selected in Tool Table but no value is provided.\n"
-                            "Add a Tool Offset or change the Offset Type."
-                        )
-                        return
-                dia_cnc_dict.update({
-                    'offset_value': tool_offset
-                })
-
                 job_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
                 job_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
 
@@ -1159,7 +1113,7 @@ class ToolSolderPaste(FlatCAMTool):
 
                 tool_solid_geometry = self.tools[current_uid]['solid_geometry']
                 res = job_obj.generate_from_multitool_geometry(
-                    tool_solid_geometry, tooldia=tooldia_val, offset=tool_offset,
+                    tool_solid_geometry, tooldia=tooldia_val, offset=0.0,
                     tolerance=0.0005, z_cut=z_cut, z_move=z_move,
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                     spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
@@ -1207,7 +1161,6 @@ class ToolSolderPaste(FlatCAMTool):
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
             self.app.new_object("cncjob", outname, job_init_multi_geometry)
-
 
     def reset_fields(self):
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
