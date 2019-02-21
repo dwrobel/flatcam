@@ -1,14 +1,15 @@
 from FlatCAMPostProc import *
 
 
-class Paste_1(FlatCAMPostProc):
+class Paste_1(FlatCAMPostProc_Tools):
 
     coordinate_format = "%.*f"
     feedrate_format = '%.*f'
 
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
-        coords_xy = p['toolchange_xy']
+        coords_xy = [float(eval(a)) for a in p['xy_toolchange'].split(",")]
+
         gcode = ''
 
         xmin = '%.*f' % (p.coords_decimals, p['options']['xmin'])
@@ -16,181 +17,135 @@ class Paste_1(FlatCAMPostProc):
         ymin = '%.*f' % (p.coords_decimals, p['options']['ymin'])
         ymax = '%.*f' % (p.coords_decimals, p['options']['ymax'])
 
-        if str(p['options']['type']) == 'Geometry':
-            gcode += '(TOOL DIAMETER: ' + str(p['options']['tool_dia']) + units + ')\n'
+        gcode += '(TOOL DIAMETER: ' + str(p['options']['tool_dia']) + units + ')\n'
+        gcode += '(Feedrate_XY: ' + str(p['frxy']) + units + '/min' + ')\n'
+        gcode += '(Feedrate_Z: ' + str(p['frz']) + units + '/min' + ')\n'
+        gcode += '(Feedrate_Z_Dispense: ' + str(p['frz_dispense']) + units + '/min' + ')\n'
 
-        gcode += '(Feedrate: ' + str(p['feedrate']) + units + '/min' + ')\n'
+        gcode += '(Z_Dispense_Start: ' + str(p['z_start']) + units + ')\n'
+        gcode += '(Z_Dispense: ' + str(p['z_dispense']) + units + ')\n'
+        gcode += '(Z_Dispense_Stop: ' + str(p['z_stop']) + units + ')\n'
+        gcode += '(Z_Travel: ' + str(p['z_travel']) + units + ')\n'
+        gcode += '(Z Toolchange: ' + str(p['z_toolchange']) + units + ')\n'
 
-        if str(p['options']['type']) == 'Geometry':
-            gcode += '(Feedrate_Z: ' + str(p['feedrate_z']) + units + '/min' + ')\n'
+        gcode += '(X,Y Toolchange: ' + "%.4f, %.4f" % (coords_xy[0], coords_xy[1]) + units + ')\n'
 
-        gcode += '(Feedrate rapids ' + str(p['feedrate_rapid']) + units + '/min' + ')\n' + '\n'
-        gcode += '(Z_Cut: ' + str(p['z_cut']) + units + ')\n'
-
-        if str(p['options']['type']) == 'Geometry':
-            if p['multidepth'] is True:
-                gcode += '(DepthPerCut: ' + str(p['depthpercut']) + units + ' <=>' + \
-                         str(math.ceil(abs(p['z_cut']) / p['depthpercut'])) + ' passes' + ')\n'
-
-        gcode += '(Z_Move: ' + str(p['z_move']) + units + ')\n'
-        gcode += '(Z Toolchange: ' + str(p['toolchangez']) + units + ')\n'
-
-        if coords_xy is not None:
-            gcode += '(X,Y Toolchange: ' + "%.4f, %.4f" % (coords_xy[0], coords_xy[1]) + units + ')\n'
-        else:
-            gcode += '(X,Y Toolchange: ' + "None" + units + ')\n'
-
-        gcode += '(Z Start: ' + str(p['startz']) + units + ')\n'
-        gcode += '(Z End: ' + str(p['endz']) + units + ')\n'
-        gcode += '(Steps per circle: ' + str(p['steps_per_circle']) + ')\n'
-
-        if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
-            gcode += '(Postprocessor Excellon: ' + str(p['pp_excellon_name']) + ')\n' + '\n'
-        else:
-            gcode += '(Postprocessor Geometry: ' + str(p['pp_geometry_name']) + ')\n' + '\n'
+        if 'Paste' in p.pp_solderpaste_name:
+            gcode += '(Postprocessor SolderPaste Dispensing Geometry: ' + str(p.pp_solderpaste_name) + ')\n' + '\n'
 
         gcode += '(X range: ' + '{: >9s}'.format(xmin) + ' ... ' + '{: >9s}'.format(xmax) + ' ' + units + ')\n'
         gcode += '(Y range: ' + '{: >9s}'.format(ymin) + ' ... ' + '{: >9s}'.format(ymax) + ' ' + units + ')\n\n'
 
-        gcode += '(Spindle Speed: %s RPM)\n' % str(p['spindlespeed'])
+        gcode += '(Spindle Speed FWD: %s RPM)\n' % str(p['speedfwd'])
+        gcode += '(Spindle Speed REV: %s RPM)\n' % str(p['speedrev'])
+        gcode += '(Dwell FWD: %s RPM)\n' % str(p['dwellfwd'])
+        gcode += '(Dwell REV: %s RPM)\n' % str(p['dwellrev'])
 
         gcode += ('G20\n' if p.units.upper() == 'IN' else 'G21\n')
         gcode += 'G90\n'
         gcode += 'G94\n'
-
         return gcode
 
-    def startz_code(self, p):
-        if p.startz is not None:
-            return 'G00 Z' + self.coordinate_format%(p.coords_decimals, p.startz)
-        else:
-            return ''
-
     def lift_code(self, p):
-        return 'G00 Z' + self.coordinate_format%(p.coords_decimals, p.z_move)
+        return 'G00 Z' + self.coordinate_format%(p.coords_decimals, float(p['z_travel']))
 
-    def down_code(self, p):
-        return 'G01 Z' + self.coordinate_format%(p.coords_decimals, p.z_cut)
+    def down_z_start_code(self, p):
+        return 'G01 Z' + self.coordinate_format%(p.coords_decimals, float(p['z_start']))
+
+    def lift_z_dispense_code(self, p):
+        return 'G01 Z' + self.coordinate_format%(p.coords_decimals, float(p['z_dispense']))
+
+    def down_z_stop_code(self, p):
+        return 'G01 Z' + self.coordinate_format%(p.coords_decimals, float(p['z_stop']))
 
     def toolchange_code(self, p):
-        toolchangez = p.toolchangez
-        toolchangexy = p.toolchange_xy
-        f_plunge = p.f_plunge
+        toolchangez = float(p['z_toolchange'])
+        toolchangexy = [float(eval(a)) for a in p['xy_toolchange'].split(",")]
         gcode = ''
 
         if toolchangexy is not None:
             toolchangex = toolchangexy[0]
             toolchangey = toolchangexy[1]
 
-        no_drills = 1
-
-        if int(p.tool) == 1 and p.startz is not None:
-            toolchangez = p.startz
-
         if p.units.upper() == 'MM':
-            toolC_formatted = format(p.toolC, '.2f')
+            toolC_formatted = format(float(p['toolC']), '.2f')
         else:
-            toolC_formatted = format(p.toolC, '.4f')
+            toolC_formatted = format(float(p['toolC']), '.4f')
 
-        if str(p['options']['type']) == 'Excellon':
-            for i in p['options']['Tools_in_use']:
-                if i[0] == p.tool:
-                    no_drills = i[2]
-
-            if toolchangexy is not None:
-                gcode = """
-M5
-G00 Z{toolchangez}
-G00 X{toolchangex} Y{toolchangey}                
-T{tool}
-M6
-(MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
-M0""".format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchangex),
-             toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
-             toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
-             tool=int(p.tool),
-             t_drills=no_drills,
-             toolC=toolC_formatted)
-            else:
-                gcode = """
-M5       
-G00 Z{toolchangez}
-T{tool}
-M6
-(MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
-M0""".format(toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
-             tool=int(p.tool),
-             t_drills=no_drills,
-             toolC=toolC_formatted)
-            if f_plunge is True:
-                gcode += '\nG00 Z%.*f' % (p.coords_decimals, p.z_move)
-            return gcode
-
-        else:
-            if toolchangexy is not None:
-                gcode = """
-M5
+        if toolchangexy is not None:
+            gcode = """
 G00 Z{toolchangez}
 G00 X{toolchangex} Y{toolchangey}
 T{tool}
 M6    
-(MSG, Change to Tool Dia = {toolC})
-M0""".format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchangex),
-             toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
-             toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
-             tool=int(p.tool),
-             toolC=toolC_formatted)
-            else:
-                gcode = """
-M5
+(MSG, Change to Tool with Nozzle Dia = {toolC})
+M0
+""".format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchangex),
+           toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
+           toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
+           tool=int(int(p.tool)),
+           toolC=toolC_formatted)
+
+        else:
+            gcode = """
 G00 Z{toolchangez}
 T{tool}
 M6    
-(MSG, Change to Tool Dia = {toolC})
-M0""".format(toolchangez=self.coordinate_format%(p.coords_decimals, toolchangez),
-             tool=int(p.tool),
-             toolC=toolC_formatted)
+(MSG, Change to Tool with Nozzle Dia = {toolC})
+M0
+""".format(toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
+           tool=int(int(p.tool)),
+           toolC=toolC_formatted)
 
-            if f_plunge is True:
-                gcode += '\nG00 Z%.*f' % (p.coords_decimals, p.z_move)
-            return gcode
-
-    def up_to_zero_code(self, p):
-        return 'G01 Z0'
+        return gcode
 
     def position_code(self, p):
         return ('X' + self.coordinate_format + ' Y' + self.coordinate_format) % \
                (p.coords_decimals, p.x, p.coords_decimals, p.y)
 
     def rapid_code(self, p):
-        return ('G00 ' + self.position_code(p)).format(**p)
+        return ('G00 ' + self.position_code(p)).format(**p) + '\nG00 Z' + \
+               self.coordinate_format%(p.coords_decimals, float(p['z_travel']))
 
     def linear_code(self, p):
         return ('G01 ' + self.position_code(p)).format(**p)
 
     def end_code(self, p):
-        coords_xy = p['toolchange_xy']
-        gcode = ('G00 Z' + self.feedrate_format %(p.fr_decimals, p.endz) + "\n")
+        coords_xy = [float(eval(a)) for a in p['xy_toolchange'].split(",")]
+        gcode = ('G00 Z' + self.feedrate_format %(p.fr_decimals, float(p['z_toolchange'])) + "\n")
 
         if coords_xy is not None:
             gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
         return gcode
 
-    def feedrate_code(self, p):
-        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate))
+    def feedrate_xy_code(self, p):
+        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, float(p['frxy'])))
 
     def feedrate_z_code(self, p):
-        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate_z))
+        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, float(p['frz'])))
 
-    def spindle_code(self, p):
+    def feedrate_z_dispense_code(self, p):
+        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, float(p['frz_dispense'])))
+
+    def spindle_fwd_code(self, p):
         if p.spindlespeed:
-            return 'M03 S' + str(p.spindlespeed)
+            return 'M03 S' + str(float(p['speedfwd']))
         else:
             return 'M03'
 
-    def dwell_code(self, p):
-        if p.dwelltime:
-            return 'G4 P' + str(p.dwelltime)
+    def spindle_rev_code(self, p):
+        if p.spindlespeed:
+            return 'M04 S' + str(float(p['speedrev']))
+        else:
+            return 'M04'
 
-    def spindle_stop_code(self,p):
+    def spindle_off_code(self,p):
         return 'M05'
+
+    def dwell_fwd_code(self, p):
+        if p.dwelltime:
+            return 'G4 P' + str(float(p['dwellfwd']))
+
+    def dwell_rev_code(self, p):
+        if p.dwelltime:
+            return 'G4 P' + str(float(p['dwellrev']))

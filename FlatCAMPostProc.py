@@ -20,6 +20,7 @@ class ABCPostProcRegister(ABCMeta):
             postprocessors[newclass.__name__] = newclass()  # here is your register function
         return newclass
 
+
 class FlatCAMPostProc(object, metaclass=ABCPostProcRegister):
     @abstractmethod
     def start_code(self, p):
@@ -64,6 +65,77 @@ class FlatCAMPostProc(object, metaclass=ABCPostProcRegister):
     @abstractmethod
     def spindle_stop_code(self,p):
         pass
+
+
+class FlatCAMPostProc_Tools(object, metaclass=ABCPostProcRegister):
+    @abstractmethod
+    def start_code(self, p):
+        pass
+
+    @abstractmethod
+    def lift_code(self, p):
+        pass
+
+    @abstractmethod
+    def down_z_start_code(self, p):
+        pass
+
+    @abstractmethod
+    def lift_z_dispense_code(self, p):
+        pass
+
+    @abstractmethod
+    def down_z_stop_code(self, p):
+        pass
+
+    @abstractmethod
+    def toolchange_code(self, p):
+        pass
+
+    @abstractmethod
+    def rapid_code(self, p):
+        pass
+
+    @abstractmethod
+    def linear_code(self, p):
+        pass
+
+    @abstractmethod
+    def end_code(self, p):
+        pass
+
+    @abstractmethod
+    def feedrate_xy_code(self, p):
+        pass
+
+    @abstractmethod
+    def feedrate_z_code(self, p):
+        pass
+
+    @abstractmethod
+    def feedrate_z_dispense_code(self,p):
+        pass
+
+    @abstractmethod
+    def spindle_fwd_code(self,p):
+        pass
+
+    @abstractmethod
+    def spindle_rev_code(self,p):
+        pass
+
+    @abstractmethod
+    def spindle_off_code(self,p):
+        pass
+
+    @abstractmethod
+    def dwell_fwd_code(self,p):
+        pass
+
+    @abstractmethod
+    def dwell_rev_code(self,p):
+        pass
+
 
 def load_postprocessors(app):
     postprocessors_path_search = [os.path.join(app.data_path,'postprocessors','*.py'),

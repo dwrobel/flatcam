@@ -5224,14 +5224,33 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.z_travel_label, 5, 0)
         grid0.addWidget(self.z_travel_entry, 5, 1)
 
+        # Z toolchange location
+        self.z_toolchange_entry = FCEntry()
+        self.z_toolchange_label = QtWidgets.QLabel("Z Toolchange:")
+        self.z_toolchange_label.setToolTip(
+            "The height (Z) for tool (nozzle) change."
+        )
+        grid0.addWidget(self.z_toolchange_label, 6, 0)
+        grid0.addWidget(self.z_toolchange_entry, 6, 1)
+
+        # X,Y Toolchange location
+        self.xy_toolchange_entry = FCEntry()
+        self.xy_toolchange_label = QtWidgets.QLabel("XY Toolchange:")
+        self.xy_toolchange_label.setToolTip(
+            "The X,Y location for tool (nozzle) change.\n"
+            "The format is (x, y) where x and y are real numbers."
+        )
+        grid0.addWidget(self.xy_toolchange_label, 7, 0)
+        grid0.addWidget(self.xy_toolchange_entry, 7, 1)
+
         # Feedrate X-Y
         self.frxy_entry = FCEntry()
         self.frxy_label = QtWidgets.QLabel("Feedrate X-Y:")
         self.frxy_label.setToolTip(
             "Feedrate (speed) while moving on the X-Y plane."
         )
-        grid0.addWidget(self.frxy_label, 6, 0)
-        grid0.addWidget(self.frxy_entry, 6, 1)
+        grid0.addWidget(self.frxy_label, 8, 0)
+        grid0.addWidget(self.frxy_entry, 8, 1)
 
         # Feedrate Z
         self.frz_entry = FCEntry()
@@ -5240,8 +5259,18 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
             "Feedrate (speed) while moving vertically\n"
             "(on Z plane)."
         )
-        grid0.addWidget(self.frz_label, 7, 0)
-        grid0.addWidget(self.frz_entry, 7, 1)
+        grid0.addWidget(self.frz_label, 9, 0)
+        grid0.addWidget(self.frz_entry, 9, 1)
+
+        # Feedrate Z Dispense
+        self.frz_dispense_entry = FCEntry()
+        self.frz_dispense_label = QtWidgets.QLabel("Feedrate Z Dispense:")
+        self.frz_dispense_label.setToolTip(
+            "Feedrate (speed) while moving up vertically\n"
+            " to Dispense position (on Z plane)."
+        )
+        grid0.addWidget(self.frz_dispense_label, 10, 0)
+        grid0.addWidget(self.frz_dispense_entry, 10, 1)
 
         # Spindle Speed Forward
         self.speedfwd_entry = FCEntry()
@@ -5250,8 +5279,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
             "The dispenser speed while pushing solder paste\n"
             "through the dispenser nozzle."
         )
-        grid0.addWidget(self.speedfwd_label, 8, 0)
-        grid0.addWidget(self.speedfwd_entry, 8, 1)
+        grid0.addWidget(self.speedfwd_label, 11, 0)
+        grid0.addWidget(self.speedfwd_entry, 11, 1)
 
         # Dwell Forward
         self.dwellfwd_entry = FCEntry()
@@ -5259,8 +5288,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         self.dwellfwd_label.setToolTip(
             "Pause after solder dispensing."
         )
-        grid0.addWidget(self.dwellfwd_label, 9, 0)
-        grid0.addWidget(self.dwellfwd_entry, 9, 1)
+        grid0.addWidget(self.dwellfwd_label, 12, 0)
+        grid0.addWidget(self.dwellfwd_entry, 12, 1)
 
         # Spindle Speed Reverse
         self.speedrev_entry = FCEntry()
@@ -5269,8 +5298,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
             "The dispenser speed while retracting solder paste\n"
             "through the dispenser nozzle."
         )
-        grid0.addWidget(self.speedrev_label, 10, 0)
-        grid0.addWidget(self.speedrev_entry, 10, 1)
+        grid0.addWidget(self.speedrev_label, 13, 0)
+        grid0.addWidget(self.speedrev_entry, 13, 1)
 
         # Dwell Reverse
         self.dwellrev_entry = FCEntry()
@@ -5279,8 +5308,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
             "Pause after solder paste dispenser retracted,\n"
             "to allow pressure equilibrium."
         )
-        grid0.addWidget(self.dwellrev_label, 11, 0)
-        grid0.addWidget(self.dwellrev_entry, 11, 1)
+        grid0.addWidget(self.dwellrev_label, 14, 0)
+        grid0.addWidget(self.dwellrev_entry, 14, 1)
 
         # Postprocessors
         pp_label = QtWidgets.QLabel('PostProcessors:')
@@ -5289,8 +5318,8 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         )
 
         self.pp_combo = FCComboBox()
-        grid0.addWidget(pp_label, 12, 0)
-        grid0.addWidget(self.pp_combo, 12, 1)
+        grid0.addWidget(pp_label, 15, 0)
+        grid0.addWidget(self.pp_combo, 15, 1)
 
         self.layout.addStretch()
 

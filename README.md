@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - added protection against trying to create a CNCJob from a solder_paste dispenser geometry. This one is different than the default Geometry and can be handled only by SolderPaste Tool.
 - ToolSolderPaste tools (nozzles) now have each it's own settings
 - creating the camlib functions for the ToolSolderPaste gcode generation functions
+- finished work in ToolSolderPaste
 
 20.02.2019
 

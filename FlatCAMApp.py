@@ -489,8 +489,11 @@ class App(QtCore.QObject):
             "tools_solderpaste_z_dispense": self.tools_defaults_form.tools_solderpaste_group.z_dispense_entry,
             "tools_solderpaste_z_stop": self.tools_defaults_form.tools_solderpaste_group.z_stop_entry,
             "tools_solderpaste_z_travel": self.tools_defaults_form.tools_solderpaste_group.z_travel_entry,
+            "tools_solderpaste_z_toolchange": self.tools_defaults_form.tools_solderpaste_group.z_toolchange_entry,
+            "tools_solderpaste_xy_toolchange": self.tools_defaults_form.tools_solderpaste_group.xy_toolchange_entry,
             "tools_solderpaste_frxy": self.tools_defaults_form.tools_solderpaste_group.frxy_entry,
             "tools_solderpaste_frz": self.tools_defaults_form.tools_solderpaste_group.frz_entry,
+            "tools_solderpaste_frz_dispense": self.tools_defaults_form.tools_solderpaste_group.frz_dispense_entry,
             "tools_solderpaste_speedfwd": self.tools_defaults_form.tools_solderpaste_group.speedfwd_entry,
             "tools_solderpaste_dwellfwd": self.tools_defaults_form.tools_solderpaste_group.dwellfwd_entry,
             "tools_solderpaste_speedrev": self.tools_defaults_form.tools_solderpaste_group.speedrev_entry,
@@ -499,16 +502,13 @@ class App(QtCore.QObject):
 
         }
 
-
         #############################
         #### LOAD POSTPROCESSORS ####
         #############################
 
-
         self.postprocessors = load_postprocessors(self)
 
         for name in list(self.postprocessors.keys()):
-
             # 'Paste' postprocessors are to be used only in the Solder Paste Dispensing Tool
             if name.partition('_')[0] == 'Paste':
                 self.tools_defaults_form.tools_solderpaste_group.pp_combo.addItem(name)
@@ -743,13 +743,16 @@ class App(QtCore.QObject):
             "tools_solderpaste_z_dispense": 0.01,
             "tools_solderpaste_z_stop": 0.005,
             "tools_solderpaste_z_travel": 0.1,
+            "tools_solderpaste_z_toolchange": 1.0,
+            "tools_solderpaste_xy_toolchange": "0.0, 0.0",
             "tools_solderpaste_frxy": 3.0,
             "tools_solderpaste_frz": 3.0,
+            "tools_solderpaste_frz_dispense": 1.0,
             "tools_solderpaste_speedfwd": 20,
             "tools_solderpaste_dwellfwd": 1,
             "tools_solderpaste_speedrev": 10,
             "tools_solderpaste_dwellrev": 1,
-            "tools_solderpaste_pp": ''
+            "tools_solderpaste_pp": 'Paste_1'
         })
 
         ###############################
@@ -1623,14 +1626,14 @@ class App(QtCore.QObject):
         self.film_tool = Film(self)
         self.film_tool.install(icon=QtGui.QIcon('share/film16.png'))
 
-        self.paste_tool = ToolSolderPaste(self)
+        self.paste_tool = SolderPaste(self)
         self.paste_tool.install(icon=QtGui.QIcon('share/solderpastebis32.png'), separator=True)
 
         self.move_tool = ToolMove(self)
         self.move_tool.install(icon=QtGui.QIcon('share/move16.png'), pos=self.ui.menuedit,
                                before=self.ui.menueditorigin)
 
-        self.cutout_tool = ToolCutOut(self)
+        self.cutout_tool = CutOut(self)
         self.cutout_tool.install(icon=QtGui.QIcon('share/cut16.png'), pos=self.ui.menutool,
                                  before=self.measurement_tool.menuAction)
 

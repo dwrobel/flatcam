@@ -1,7 +1,5 @@
 from FlatCAMTool import FlatCAMTool
 from copy import copy,deepcopy
-# from GUIElements import IntEntry, RadioSet, FCEntry
-# from FlatCAMObj import FlatCAMGeometry, FlatCAMExcellon, FlatCAMGerber
 from ObjectCollection import *
 import time
 

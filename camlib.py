@@ -4503,6 +4503,9 @@ class CNCjob(Geometry):
         self.pp_excellon_name = pp_excellon_name
         self.pp_excellon = self.app.postprocessors[self.pp_excellon_name]
 
+        self.pp_solderpaste_name = None
+
+
         # Controls if the move from Z_Toolchange to Z_Move is done fast with G0 or normally with G1
         self.f_plunge = None
 
@@ -4526,6 +4529,8 @@ class CNCjob(Geometry):
 
         self.oldx = None
         self.oldy = None
+
+        self.tool = 0.0
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -5191,99 +5196,6 @@ class CNCjob(Geometry):
 
         return self.gcode
 
-    def generate_gcode_from_solderpaste_geo(self, **kwargs):
-        """
-               Algorithm to generate from multitool Geometry.
-
-               Algorithm description:
-               ----------------------
-               Uses RTree to find the nearest path to follow.
-
-               :return: Gcode string
-               """
-
-        log.debug("Generate_from_solderpaste_geometry()")
-
-        ## Index first and last points in paths
-        # What points to index.
-        def get_pts(o):
-            return [o.coords[0], o.coords[-1]]
-
-        self.gcode = ""
-
-        if not kwargs:
-            log.debug("camlib.generate_from_solderpaste_geo() --> No tool in the solderpaste geometry.")
-            self.app.inform.emit("[ERROR_NOTCL] There is no tool data in the SolderPaste geometry.")
-
-
-        # this is the tool diameter, it is used as such to accommodate the postprocessor who need the tool diameter
-        # given under the name 'toolC'
-
-        self.postdata['toolC'] = kwargs['tooldia']
-
-        # Initial G-Code
-        pp_solderpaste_name = kwargs['data']['tools_solderpaste_pp'] if kwargs['data']['tools_solderpaste_pp'] else \
-            self.app.defaults['tools_solderpaste_pp']
-        p = self.app.postprocessors[pp_solderpaste_name]
-
-        self.gcode = self.doformat(p.start_code)
-
-        ## Flatten the geometry. Only linear elements (no polygons) remain.
-        flat_geometry = self.flatten(kwargs['solid_geometry'], pathonly=True)
-        log.debug("%d paths" % len(flat_geometry))
-
-        # Create the indexed storage.
-        storage = FlatCAMRTreeStorage()
-        storage.get_points = get_pts
-
-        # Store the geometry
-        log.debug("Indexing geometry before generating G-Code...")
-        for shape in flat_geometry:
-            if shape is not None:
-                storage.insert(shape)
-
-        # kwargs length will tell actually the number of tools used so if we have more than one tools then
-        # we have toolchange event
-        if len(kwargs) > 1:
-            self.gcode += self.doformat(p.toolchange_code)
-        else:
-            self.gcode += self.doformat(p.lift_code, x=0, y=0)  # Move (up) to travel height
-
-        ## Iterate over geometry paths getting the nearest each time.
-        log.debug("Starting SolderPaste G-Code...")
-        path_count = 0
-        current_pt = (0, 0)
-
-        pt, geo = storage.nearest(current_pt)
-
-        try:
-            while True:
-                path_count += 1
-
-                # Remove before modifying, otherwise deletion will fail.
-                storage.remove(geo)
-
-                # If last point in geometry is the nearest but prefer the first one if last point == first point
-                # then reverse coordinates.
-                if pt != geo.coords[0] and pt == geo.coords[-1]:
-                    geo.coords = list(geo.coords)[::-1]
-
-                self.gcode += self.create_soldepaste_gcode(geo, p=p)
-                current_pt = geo.coords[-1]
-                pt, geo = storage.nearest(current_pt)  # Next
-
-        except StopIteration:  # Nothing found in storage.
-            pass
-
-        log.debug("Finishing SolderPste G-Code... %s paths traced." % path_count)
-
-        # Finish
-        self.gcode += self.doformat(p.lift_code)
-        self.gcode += self.doformat(p.end_code)
-
-        return self.gcode
-
-
     def generate_from_geometry_2(self, geometry, append=True,
                                  tooldia=None, offset=0.0, tolerance=0,
                                  z_cut=1.0, z_move=2.0,
@@ -5536,41 +5448,152 @@ class CNCjob(Geometry):
 
         return self.gcode
 
+    def generate_gcode_from_solderpaste_geo(self, **kwargs):
+        """
+               Algorithm to generate from multitool Geometry.
+
+               Algorithm description:
+               ----------------------
+               Uses RTree to find the nearest path to follow.
+
+               :return: Gcode string
+               """
+
+        log.debug("Generate_from_solderpaste_geometry()")
+
+        ## Index first and last points in paths
+        # What points to index.
+        def get_pts(o):
+            return [o.coords[0], o.coords[-1]]
+
+        self.gcode = ""
+
+        if not kwargs:
+            log.debug("camlib.generate_from_solderpaste_geo() --> No tool in the solderpaste geometry.")
+            self.app.inform.emit("[ERROR_NOTCL] There is no tool data in the SolderPaste geometry.")
+
+
+        # this is the tool diameter, it is used as such to accommodate the postprocessor who need the tool diameter
+        # given under the name 'toolC'
+
+        self.postdata['z_start'] = kwargs['data']['tools_solderpaste_z_start']
+        self.postdata['z_dispense'] = kwargs['data']['tools_solderpaste_z_dispense']
+        self.postdata['z_stop'] = kwargs['data']['tools_solderpaste_z_stop']
+        self.postdata['z_travel'] = kwargs['data']['tools_solderpaste_z_travel']
+        self.postdata['z_toolchange'] = kwargs['data']['tools_solderpaste_z_toolchange']
+        self.postdata['xy_toolchange'] = kwargs['data']['tools_solderpaste_xy_toolchange']
+        self.postdata['frxy'] = kwargs['data']['tools_solderpaste_frxy']
+        self.postdata['frz'] = kwargs['data']['tools_solderpaste_frz']
+        self.postdata['frz_dispense'] = kwargs['data']['tools_solderpaste_frz_dispense']
+        self.postdata['speedfwd'] = kwargs['data']['tools_solderpaste_speedfwd']
+        self.postdata['dwellfwd'] = kwargs['data']['tools_solderpaste_dwellfwd']
+        self.postdata['speedrev'] = kwargs['data']['tools_solderpaste_speedrev']
+        self.postdata['dwellrev'] = kwargs['data']['tools_solderpaste_dwellrev']
+        self.postdata['pp_solderpaste_name'] = kwargs['data']['tools_solderpaste_pp']
+
+        self.postdata['toolC'] = kwargs['tooldia']
+
+        self.pp_solderpaste_name = kwargs['data']['tools_solderpaste_pp'] if kwargs['data']['tools_solderpaste_pp'] \
+            else self.app.defaults['tools_solderpaste_pp']
+        p = self.app.postprocessors[self.pp_solderpaste_name]
+
+        ## Flatten the geometry. Only linear elements (no polygons) remain.
+        flat_geometry = self.flatten(kwargs['solid_geometry'], pathonly=True)
+        log.debug("%d paths" % len(flat_geometry))
+
+        # Create the indexed storage.
+        storage = FlatCAMRTreeStorage()
+        storage.get_points = get_pts
+
+        # Store the geometry
+        log.debug("Indexing geometry before generating G-Code...")
+        for shape in flat_geometry:
+            if shape is not None:
+                storage.insert(shape)
+
+        # Initial G-Code
+        self.gcode = self.doformat(p.start_code)
+        self.gcode += self.doformat(p.spindle_off_code)
+        self.gcode += self.doformat(p.toolchange_code)
+
+        ## Iterate over geometry paths getting the nearest each time.
+        log.debug("Starting SolderPaste G-Code...")
+        path_count = 0
+        current_pt = (0, 0)
+
+        pt, geo = storage.nearest(current_pt)
+
+        try:
+            while True:
+                path_count += 1
+
+                # Remove before modifying, otherwise deletion will fail.
+                storage.remove(geo)
+
+                # If last point in geometry is the nearest but prefer the first one if last point == first point
+                # then reverse coordinates.
+                if pt != geo.coords[0] and pt == geo.coords[-1]:
+                    geo.coords = list(geo.coords)[::-1]
+
+                self.gcode += self.create_soldepaste_gcode(geo, p=p)
+                current_pt = geo.coords[-1]
+                pt, geo = storage.nearest(current_pt)  # Next
+
+        except StopIteration:  # Nothing found in storage.
+            pass
+
+        log.debug("Finishing SolderPste G-Code... %s paths traced." % path_count)
+
+        # Finish
+        self.gcode += self.doformat(p.lift_code)
+        self.gcode += self.doformat(p.end_code)
+
+        return self.gcode
+
     def create_soldepaste_gcode(self, geometry, p):
         gcode = ''
-        path = self.segment(geometry.coords)
+        path = geometry.coords
 
         if type(geometry) == LineString or type(geometry) == LinearRing:
             # Move fast to 1st point
-            gcode += self.doformat(p.rapid_code)  # Move to first point
+            gcode += self.doformat(p.rapid_code, x=path[0][0], y=path[0][1])  # Move to first point
 
             # Move down to cutting depth
             gcode += self.doformat(p.feedrate_z_code)
             gcode += self.doformat(p.down_z_start_code)
-            gcode += self.doformat(p.spindle_on_fwd_code) # Start dispensing
+            gcode += self.doformat(p.spindle_fwd_code) # Start dispensing
+            gcode += self.doformat(p.dwell_fwd_code)
+            gcode += self.doformat(p.feedrate_z_dispense_code)
+            gcode += self.doformat(p.lift_z_dispense_code)
             gcode += self.doformat(p.feedrate_xy_code)
 
             # Cutting...
             for pt in path[1:]:
-                gcode += self.doformat(p.linear_code)  # Linear motion to point
+                gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])  # Linear motion to point
 
             # Up to travelling height.
             gcode += self.doformat(p.spindle_off_code) # Stop dispensing
-            gcode += self.doformat(p.spindle_on_rev_code)
+            gcode += self.doformat(p.spindle_rev_code)
             gcode += self.doformat(p.down_z_stop_code)
             gcode += self.doformat(p.spindle_off_code)
+            gcode += self.doformat(p.dwell_rev_code)
+            gcode += self.doformat(p.feedrate_z_code)
             gcode += self.doformat(p.lift_code)
         elif type(geometry) == Point:
-            gcode += self.doformat(p.linear_code)  # Move to first point
+            gcode += self.doformat(p.linear_code, x=path[0][0], y=path[0][1])  # Move to first point
 
-            gcode += self.doformat(p.feedrate_z_code)
+            gcode += self.doformat(p.feedrate_z_dispense_code)
             gcode += self.doformat(p.down_z_start_code)
-            gcode += self.doformat(p.spindle_on_fwd_code) # Start dispensing
-            # TODO A dwell time for dispensing?
+            gcode += self.doformat(p.spindle_fwd_code) # Start dispensing
+            gcode += self.doformat(p.dwell_fwd_code)
+            gcode += self.doformat(p.lift_z_dispense_code)
+
             gcode += self.doformat(p.spindle_off_code)  # Stop dispensing
-            gcode += self.doformat(p.spindle_on_rev_code)
-            gcode += self.doformat(p.down_z_stop_code)
+            gcode += self.doformat(p.spindle_rev_code)
             gcode += self.doformat(p.spindle_off_code)
+            gcode += self.doformat(p.down_z_stop_code)
+            gcode += self.doformat(p.dwell_rev_code)
+            gcode += self.doformat(p.feedrate_z_code)
             gcode += self.doformat(p.lift_code)
         return gcode
 
@@ -5685,7 +5708,8 @@ class CNCjob(Geometry):
                 else:
                     command['Z'] = 0
 
-        elif 'grbl_laser' in self.pp_excellon_name or 'grbl_laser' in self.pp_geometry_name:
+        elif 'grbl_laser' in self.pp_excellon_name or 'grbl_laser' in self.pp_geometry_name or \
+                (self.pp_solderpaste_name is not None and 'Paste' in self.pp_solderpaste_name):
             match_lsr = re.search(r"X([\+-]?\d+.[\+-]?\d+)\s*Y([\+-]?\d+.[\+-]?\d+)", gline)
             if match_lsr:
                 command['X'] = float(match_lsr.group(1).replace(" ", ""))
@@ -5699,7 +5723,12 @@ class CNCjob(Geometry):
                     command['Z'] = 1
                 else:
                     command['Z'] = 0
-
+        elif self.pp_solderpaste is not None:
+            if 'Paste' in self.pp_solderpaste:
+                match_paste = re.search(r"X([\+-]?\d+.[\+-]?\d+)\s*Y([\+-]?\d+.[\+-]?\d+)", gline)
+                if match_paste:
+                    command['X'] = float(match_paste.group(1).replace(" ", ""))
+                    command['Y'] = float(match_paste.group(2).replace(" ", ""))
         else:
             match = re.search(r'^\s*([A-Z])\s*([\+\-\.\d\s]+)', gline)
             while match:

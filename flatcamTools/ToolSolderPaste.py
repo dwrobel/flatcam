@@ -9,7 +9,7 @@ from FlatCAMCommon import LoudDict
 from FlatCAMObj import FlatCAMGeometry, FlatCAMExcellon, FlatCAMGerber
 
 
-class ToolSolderPaste(FlatCAMTool):
+class SolderPaste(FlatCAMTool):
 
     toolName = "Solder Paste Tool"
 
@@ -177,6 +177,23 @@ class ToolSolderPaste(FlatCAMTool):
         )
         self.gcode_form_layout.addRow(self.z_travel_label, self.z_travel_entry)
 
+        # Z toolchange location
+        self.z_toolchange_entry = FCEntry()
+        self.z_toolchange_label = QtWidgets.QLabel("Z Toolchange:")
+        self.z_toolchange_label.setToolTip(
+            "The height (Z) for tool (nozzle) change."
+        )
+        self.gcode_form_layout.addRow(self.z_toolchange_label, self.z_toolchange_entry)
+
+        # X,Y Toolchange location
+        self.xy_toolchange_entry = FCEntry()
+        self.xy_toolchange_label = QtWidgets.QLabel("XY Toolchange:")
+        self.xy_toolchange_label.setToolTip(
+            "The X,Y location for tool (nozzle) change.\n"
+            "The format is (x, y) where x and y are real numbers."
+        )
+        self.gcode_form_layout.addRow(self.xy_toolchange_label, self.xy_toolchange_entry)
+
         # Feedrate X-Y
         self.frxy_entry = FCEntry()
         self.frxy_label = QtWidgets.QLabel("Feedrate X-Y:")
@@ -193,6 +210,15 @@ class ToolSolderPaste(FlatCAMTool):
             "(on Z plane)."
         )
         self.gcode_form_layout.addRow(self.frz_label, self.frz_entry)
+
+        # Feedrate Z Dispense
+        self.frz_dispense_entry = FCEntry()
+        self.frz_dispense_label = QtWidgets.QLabel("Feedrate Z Dispense:")
+        self.frz_dispense_label.setToolTip(
+            "Feedrate (speed) while moving up vertically\n"
+            " to Dispense position (on Z plane)."
+        )
+        self.gcode_form_layout.addRow(self.frz_dispense_label, self.frz_dispense_entry)
 
         # Spindle Speed Forward
         self.speedfwd_entry = FCEntry()
@@ -332,6 +358,8 @@ class ToolSolderPaste(FlatCAMTool):
         self.options = LoudDict()
         self.form_fields = {}
 
+        self.units = ''
+
         ## Signals
         self.addtool_btn.clicked.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
@@ -366,8 +394,11 @@ class ToolSolderPaste(FlatCAMTool):
             "tools_solderpaste_z_dispense": self.z_dispense_entry,
             "tools_solderpaste_z_stop": self.z_stop_entry,
             "tools_solderpaste_z_travel":  self.z_travel_entry,
+            "tools_solderpaste_z_toolchange": self.z_toolchange_entry,
+            "tools_solderpaste_xy_toolchange": self.xy_toolchange_entry,
             "tools_solderpaste_frxy":  self.frxy_entry,
             "tools_solderpaste_frz":  self.frz_entry,
+            "tools_solderpaste_frz_dispense": self.frz_dispense_entry,
             "tools_solderpaste_speedfwd": self.speedfwd_entry,
             "tools_solderpaste_dwellfwd": self.dwellfwd_entry,
             "tools_solderpaste_speedrev": self.speedrev_entry,
@@ -707,7 +738,6 @@ class ToolSolderPaste(FlatCAMTool):
         self.ui_disconnect()
 
         deleted_tools_list = []
-
         if all:
             self.tools.clear()
             self.build_ui()
@@ -810,12 +840,17 @@ class ToolSolderPaste(FlatCAMTool):
 
                 diagonal_1 = LineString([min, max])
                 diagonal_2 = LineString([min_r, max_r])
-                round_diag_1 = round(diagonal_1.intersection(p).length, 2)
-                round_diag_2 = round(diagonal_2.intersection(p).length, 2)
+                if self.units == 'MM':
+                    round_diag_1 = round(diagonal_1.intersection(p).length, 1)
+                    round_diag_2 = round(diagonal_2.intersection(p).length, 1)
+                else:
+                    round_diag_1 = round(diagonal_1.intersection(p).length, 2)
+                    round_diag_2 = round(diagonal_2.intersection(p).length, 2)
 
                 if round_diag_1 == round_diag_2:
                     l = distance((xmin, ymin), (xmax, ymin))
                     h = distance((xmin, ymin), (xmin, ymax))
+
                     if offset >= l /2 or offset >= h / 2:
                         return "fail"
                     if l > h:
@@ -859,7 +894,7 @@ class ToolSolderPaste(FlatCAMTool):
                 geo_obj.tools[tooluid]['offset'] = 'Path'
                 geo_obj.tools[tooluid]['offset_value'] = 0.0
                 geo_obj.tools[tooluid]['type'] = 'SolderPaste'
-                geo_obj.tools[tooluid]['tool_type'] = 'Dispenser Nozzle'
+                geo_obj.tools[tooluid]['tool_type'] = 'DN'
 
                 for g in work_geo:
                     if type(g) == MultiPolygon:
@@ -914,6 +949,8 @@ class ToolSolderPaste(FlatCAMTool):
         # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
 
     def on_view_gcode(self):
+        time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
+
         # add the tab if it was closed
         self.app.ui.plot_tab_area.addTab(self.app.ui.cncjob_tab, "Code Editor")
 
@@ -923,15 +960,40 @@ class ToolSolderPaste(FlatCAMTool):
         name = self.cnc_obj_combo.currentText()
         obj = self.app.collection.get_by_name(name)
 
+        try:
+            if obj.special_group != 'solder_paste_tool':
+                self.app.inform.emit("[WARNING_NOTCL]This CNCJob object can't be processed. "
+                                     "NOT a solder_paste_tool CNCJob object.")
+                return
+        except AttributeError:
+            self.app.inform.emit("[WARNING_NOTCL]This CNCJob object can't be processed. "
+                                 "NOT a solder_paste_tool CNCJob object.")
+            return
+
+        gcode = '(G-CODE GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s)\n' % \
+                (str(self.app.version), str(self.app.version_date)) + '\n'
+
+        gcode += '(Name: ' + str(name) + ')\n'
+        gcode += '(Type: ' + "G-code from " + str(obj.options['type']) + " for Solder Paste dispenser" + ')\n'
+
+        # if str(p['options']['type']) == 'Excellon' or str(p['options']['type']) == 'Excellon Geometry':
+        #     gcode += '(Tools in use: ' + str(p['options']['Tools_in_use']) + ')\n'
+
+        gcode += '(Units: ' + self.units.upper() + ')\n' + "\n"
+        gcode += '(Created on ' + time_str + ')\n' + '\n'
+
+        for tool in obj.cnc_tools:
+            gcode += obj.cnc_tools[tool]['gcode']
+
         # then append the text from GCode to the text editor
         try:
-            file = StringIO(obj.gcode)
+            lines = StringIO(gcode)
         except:
             self.app.inform.emit("[ERROR_NOTCL] No Gcode in the object...")
             return
 
         try:
-            for line in file:
+            for line in lines:
                 proc_line = str(line).strip('\n')
                 self.app.ui.code_editor.append(proc_line)
         except Exception as e:
@@ -948,6 +1010,11 @@ class ToolSolderPaste(FlatCAMTool):
         time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
         name = self.cnc_obj_combo.currentText()
         obj = self.app.collection.get_by_name(name)
+
+        if obj.special_group != 'solder_paste_tool':
+            self.app.inform.emit("[WARNING_NOTCL]This CNCJob object can't be processed. "
+                                 "NOT a solder_paste_tool CNCJob object.")
+            return
 
         _filter_ = "G-Code Files (*.nc);;G-Code Files (*.txt);;G-Code Files (*.tap);;G-Code Files (*.cnc);;" \
                    "G-Code Files (*.g-code);;All Files (*.*)"
@@ -978,7 +1045,8 @@ class ToolSolderPaste(FlatCAMTool):
         gcode += '(Units: ' + self.units.upper() + ')\n' + "\n"
         gcode += '(Created on ' + time_str + ')\n' + '\n'
 
-        gcode += obj.gcode
+        for tool in obj.cnc_tools:
+            gcode += obj.cnc_tools[tool]['gcode']
         lines = StringIO(gcode)
 
         ## Write
@@ -1040,6 +1108,7 @@ class ToolSolderPaste(FlatCAMTool):
             job_obj.multitool = True
             job_obj.multigeo = True
             job_obj.cnc_tools.clear()
+            job_obj.special_group = 'solder_paste_tool'
 
             job_obj.options['xmin'] = xmin
             job_obj.options['ymin'] = ymin
@@ -1063,13 +1132,14 @@ class ToolSolderPaste(FlatCAMTool):
 
                 job_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
                 job_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
+                job_obj.tool = int(tooluid_key)
 
                 # Propagate options
                 job_obj.options["tooldia"] = tool_dia
                 job_obj.options['tool_dia'] = tool_dia
 
                 ### CREATE GCODE ###
-                res = job_obj.generate_gcode_from_solderpaste_geo(**tool_cnc_dict)
+                res = job_obj.generate_gcode_from_solderpaste_geo(**tooluid_value)
 
                 if res == 'fail':
                     log.debug("FlatCAMGeometry.mtool_gen_cncjob() --> generate_from_geometry2() failed")
@@ -1089,7 +1159,7 @@ class ToolSolderPaste(FlatCAMTool):
                 app_obj.progress.emit(80)
 
                 job_obj.cnc_tools.update({
-                    tooluid_key: copy.deepcopy(tool_cnc_dict)
+                    tooluid_key: deepcopy(tool_cnc_dict)
                 })
                 tool_cnc_dict.clear()
 
