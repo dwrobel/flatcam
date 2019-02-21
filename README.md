@@ -16,6 +16,8 @@ CAD program, and create G-Code for Isolation routing.
 - changed the way APP LEVEL is showed both in Edit -> Preferences -> General tab and in each Selected Tab. Changed the ToolTips content for this.
 - added the functions for GCode View and GCode Save in Tool SolderPaste
 - some work in the Gcode generation function in Tool SolderPaste
+- added protection against trying to create a CNCJob from a solder_paste dispenser geometry. This one is different than the default Geometry and can be handled only by SolderPaste Tool.
+- ToolSoderPaste tools (nozzles) now have each it's own settings
 
 20.02.2019
 
