@@ -28,7 +28,9 @@ class TclCommandIsolate(TclCommandSignaled):
         ('passes', int),
         ('overlap', float),
         ('combine', int),
-        ('outname', str)
+        ('outname', str),
+        ('follow', str)
+
     ])
 
     # array of mandatory options for current Tcl command: required = {'name','outname'}
@@ -43,7 +45,8 @@ class TclCommandIsolate(TclCommandSignaled):
             ('passes', 'Passes of tool width.'),
             ('overlap', 'Fraction of tool diameter to overlap passes.'),
             ('combine', 'Combine all passes into one geometry.'),
-            ('outname', 'Name of the resulting Geometry object.')
+            ('outname', 'Name of the resulting Geometry object.'),
+            ('follow', 'Create a Geometry that follows the Gerber path.')
         ]),
         'examples': []
     }
@@ -67,6 +70,9 @@ class TclCommandIsolate(TclCommandSignaled):
             timeout = args['timeout']
         else:
             timeout = 10000
+
+        if 'follow' not in args:
+            args['follow'] = None
 
         obj = self.app.collection.get_by_name(name)
         if obj is None:

@@ -106,7 +106,12 @@ class FlatCAMObj(QtCore.QObject):
             if attr == 'options':
                 self.options.update(d[attr])
             else:
-                setattr(self, attr, d[attr])
+                try:
+                    setattr(self, attr, d[attr])
+                except KeyError:
+                    log.debug("FlatCAMObj.from_dict() --> KeyError: %s. Means that we are loading an old project that don't"
+                              "have all attributes in the latest FlatCAM." % str(attr))
+                    pass
 
     def on_options_change(self, key):
         # Update form on programmatically options change
@@ -366,9 +371,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         if grb_final.solid_geometry is None:
             grb_final.solid_geometry = []
+            grb_final.follow_geometry = []
 
         if type(grb_final.solid_geometry) is not list:
             grb_final.solid_geometry = [grb_final.solid_geometry]
+            grb_final.follow_geometry = [grb_final.follow_geometry]
 
         for grb in grb_list:
             for option in grb.options:
@@ -384,8 +391,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             else:   # If not list, just append
                 for geos in grb.solid_geometry:
                     grb_final.solid_geometry.append(geos)
+                    grb_final.follow_geometry.append(geos)
 
         grb_final.solid_geometry = MultiPolygon(grb_final.solid_geometry)
+        grb_final.follow_geometry = MultiPolygon(grb_final.follow_geometry)
 
     def __init__(self, name):
         Gerber.__init__(self, steps_per_circle=int(self.app.defaults["gerber_circle_steps"]))
@@ -413,14 +422,14 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # type of isolation: 0 = exteriors, 1 = interiors, 2 = complete isolation (both interiors and exteriors)
         self.iso_type = 2
 
-        # Attributes to be included in serialization
-        # Always append to it because it carries contents
-        # from predecessors.
-        self.ser_attrs += ['options', 'kind']
-
         self.multigeo = False
 
+        self.follow = False
+
         self.apertures_row = 0
+
+        # store the source file here
+        self.source_file = ""
 
         # assert isinstance(self.ui, GerberObjectUI)
         # self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
@@ -430,6 +439,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # self.ui.generate_cutout_button.clicked.connect(self.on_generatecutout_button_click)
         # self.ui.generate_bb_button.clicked.connect(self.on_generatebb_button_click)
         # self.ui.generate_noncopper_button.clicked.connect(self.on_generatenoncopper_button_click)
+
+        # Attributes to be included in serialization
+        # Always append to it because it carries contents
+        # from predecessors.
+        self.ser_attrs += ['options', 'kind']
 
     def set_ui(self, ui):
         """
@@ -474,6 +488,20 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.generate_bb_button.clicked.connect(self.on_generatebb_button_click)
         self.ui.generate_noncopper_button.clicked.connect(self.on_generatenoncopper_button_click)
         self.ui.aperture_table_visibility_cb.stateChanged.connect(self.on_aperture_table_visibility_change)
+        self.ui.follow_cb.stateChanged.connect(self.on_follow_cb_click)
+
+        # Show/Hide Advanced Options
+        if self.app.defaults["global_app_level"] == 'b':
+            self.ui.level.setText('<span style="color:green;"><b>Basic</b></span>')
+            self.ui.apertures_table_label.hide()
+            self.ui.aperture_table_visibility_cb.hide()
+            self.ui.milling_type_label.hide()
+            self.ui.milling_type_radio.hide()
+            self.ui.generate_ext_iso_button.hide()
+            self.ui.generate_int_iso_button.hide()
+
+        else:
+            self.ui.level.setText('<span style="color:red;"><b>Advanced</b></span>')
 
         self.build_ui()
 
@@ -654,7 +682,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
     def on_int_iso_button_click(self, *args):
 
-        if self.ui.follow_cb.get_value() == True:
+        if self.ui.follow_cb.get_value() is True:
             obj = self.app.collection.get_active()
             obj.follow()
             # in the end toggle the visibility of the origin object so we can see the generated Geometry
@@ -666,9 +694,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
     def on_iso_button_click(self, *args):
 
-        if self.ui.follow_cb.get_value() == True:
+        if self.ui.follow_cb.get_value() is True:
             obj = self.app.collection.get_active()
-            obj.follow()
+            obj.follow_geo()
             # in the end toggle the visibility of the origin object so we can see the generated Geometry
             obj.ui.plot_cb.toggle()
         else:
@@ -676,7 +704,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.read_form()
             self.isolate()
 
-    def follow(self, outname=None):
+    def follow_geo(self, outname=None):
         """
         Creates a geometry object "following" the gerber paths.
 
@@ -694,7 +722,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         def follow_init(follow_obj, app):
             # Propagate options
             follow_obj.options["cnctooldia"] = float(self.options["isotooldia"])
-            follow_obj.solid_geometry = self.solid_geometry
+            follow_obj.solid_geometry = self.follow_geometry
 
         # TODO: Do something if this is None. Offer changing name?
         try:
@@ -703,7 +731,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             return "Operation failed: %s" % str(e)
 
     def isolate(self, iso_type=None, dia=None, passes=None, overlap=None,
-                outname=None, combine=None, milling_type=None):
+                outname=None, combine=None, milling_type=None, follow=None):
         """
         Creates an isolation routing geometry object in the project.
 
@@ -714,6 +742,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :param outname: Base name of the output object
         :return: None
         """
+
+
         if dia is None:
             dia = float(self.options["isotooldia"])
         if passes is None:
@@ -734,7 +764,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         base_name = self.options["name"] + "_iso"
         base_name = outname or base_name
 
-        def generate_envelope(offset, invert, envelope_iso_type=2):
+        def generate_envelope(offset, invert, envelope_iso_type=2, follow=None):
             # isolation_geometry produces an envelope that is going on the left of the geometry
             # (the copper features). To leave the least amount of burrs on the features
             # the tool needs to travel on the right side of the features (this is called conventional milling)
@@ -742,7 +772,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             # the other passes overlap preceding ones and cut the left over copper. It is better for them
             # to cut on the right side of the left over copper i.e on the left side of the features.
             try:
-                geom = self.isolation_geometry(offset, iso_type=envelope_iso_type)
+                geom = self.isolation_geometry(offset, iso_type=envelope_iso_type, follow=follow)
             except Exception as e:
                 log.debug(str(e))
                 return 'fail'
@@ -782,9 +812,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     # if milling type is climb then the move is counter-clockwise around features
                     if milling_type == 'cl':
                         # geom = generate_envelope (offset, i == 0)
-                        geom = generate_envelope(iso_offset, 1, envelope_iso_type=self.iso_type)
+                        geom = generate_envelope(iso_offset, 1, envelope_iso_type=self.iso_type, follow=follow)
                     else:
-                        geom = generate_envelope(iso_offset, 0, envelope_iso_type=self.iso_type)
+                        geom = generate_envelope(iso_offset, 0, envelope_iso_type=self.iso_type, follow=follow)
                     geo_obj.solid_geometry.append(geom)
 
                 # detect if solid_geometry is empty and this require list flattening which is "heavy"
@@ -834,9 +864,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     # if milling type is climb then the move is counter-clockwise around features
                     if milling_type == 'cl':
                         # geo_obj.solid_geometry = generate_envelope(offset, i == 0)
-                        geo_obj.solid_geometry = generate_envelope(offset, 1, envelope_iso_type=self.iso_type)
+                        geo_obj.solid_geometry = generate_envelope(offset, 1, envelope_iso_type=self.iso_type,
+                                                                   follow=follow)
                     else:
-                        geo_obj.solid_geometry = generate_envelope(offset, 0, envelope_iso_type=self.iso_type)
+                        geo_obj.solid_geometry = generate_envelope(offset, 0, envelope_iso_type=self.iso_type,
+                                                                   follow=follow)
 
                     # detect if solid_geometry is empty and this require list flattening which is "heavy"
                     # or just looking in the lists (they are one level depth) and if any is not empty
@@ -874,6 +906,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if self.muted_ui:
             return
         self.read_form_item('multicolored')
+        self.plot()
+
+    def on_follow_cb_click(self):
+        if self.muted_ui:
+            return
         self.plot()
 
     def on_aperture_table_visibility_change(self):
@@ -921,7 +958,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         else:
             face_color = self.app.defaults['global_plot_fill']
 
-        geometry = self.solid_geometry
+        # if the Follow Geometry checkbox is checked then plot only the follow geometry
+        if self.ui.follow_cb.get_value():
+            geometry = self.follow_geometry
+        else:
+            geometry = self.solid_geometry
 
         # Make sure geometry is iterable.
         try:
@@ -941,6 +982,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         self.add_shape(shape=g, color=color,
                                        face_color=random_color() if self.options['multicolored']
                                        else face_color, visible=self.options['plot'])
+                    elif type(g) == Point:
+                        pass
                     else:
                         for el in g:
                             self.add_shape(shape=el, color=color,
@@ -951,6 +994,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     if type(g) == Polygon or type(g) == LineString:
                         self.add_shape(shape=g, color=random_color() if self.options['multicolored'] else 'black',
                                        visible=self.options['plot'])
+                    elif type(g) == Point:
+                        pass
                     else:
                         for el in g:
                             self.add_shape(shape=el, color=random_color() if self.options['multicolored'] else 'black',
@@ -1076,11 +1121,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # dict to hold the tool number as key and tool offset as value
         self.tool_offset ={}
 
-        # Attributes to be included in serialization
-        # Always append to it because it carries contents
-        # from predecessors.
-        self.ser_attrs += ['options', 'kind']
-
         # variable to store the total amount of drills per job
         self.tot_drill_cnt = 0
         self.tool_row = 0
@@ -1092,7 +1132,15 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # variable to store the distance travelled
         self.travel_distance = 0.0
 
+        # store the source file here
+        self.source_file = ""
+
         self.multigeo = False
+
+        # Attributes to be included in serialization
+        # Always append to it because it carries contents
+        # from predecessors.
+        self.ser_attrs += ['options', 'kind']
 
     @staticmethod
     def merge(exc_list, exc_final):
@@ -1521,6 +1569,24 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 else:
                     dia = float('%.3f' % float(value['C']))
                 self.tool_offset[dia] = t_default_offset
+
+        # Show/Hide Advanced Options
+        if self.app.defaults["global_app_level"] == 'b':
+            self.ui.level.setText('<span style="color:green;"><b>Basic</b></span>')
+
+            self.ui.tools_table.setColumnHidden(4, True)
+            self.ui.estartz_label.hide()
+            self.ui.estartz_entry.hide()
+            self.ui.eendz_label.hide()
+            self.ui.eendz_entry.hide()
+            self.ui.feedrate_rapid_label.hide()
+            self.ui.feedrate_rapid_entry.hide()
+            self.ui.pdepth_label.hide()
+            self.ui.pdepth_entry.hide()
+            self.ui.feedrate_probe_label.hide()
+            self.ui.feedrate_probe_entry.hide()
+        else:
+            self.ui.level.setText('<span style="color:red;"><b>Advanced</b></span>')
 
         assert isinstance(self.ui, ExcellonObjectUI), \
             "Expected a ExcellonObjectUI, got %s" % type(self.ui)
@@ -1989,8 +2055,14 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         tools = self.get_selected_tools_list()
 
         if len(tools) == 0:
-            self.app.inform.emit("[ERROR_NOTCL]Please select one or more tools from the list and try again.")
-            return
+            # if there is a single tool in the table (remember that the last 2 rows are for totals and do not count in
+            # tool number) it means that there are 3 rows (1 tool and 2 totals).
+            # in this case regardless of the selection status of that tool, use it.
+            if self.ui.tools_table.rowCount() == 3:
+                tools.append(self.ui.tools_table.item(0, 0).text())
+            else:
+                self.app.inform.emit("[ERROR_NOTCL]Please select one or more tools from the list and try again.")
+                return
 
         xmin = self.options['xmin']
         ymin = self.options['ymin']
@@ -2462,7 +2534,13 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # flag to store if the V-Shape tool is selected in self.ui.geo_tools_table
         self.v_tool_type = None
 
+        # flag to store if the Geometry is type 'multi-geometry' meaning that each tool has it's own geometry
+        # the default value is False
         self.multigeo = False
+
+        # flag to store if the geometry is part of a special group of geometries that can't be processed by the default
+        # engine of FlatCAM. Most likely are generated by some of tools and are special cases of geometries.
+        self. special_group = None
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -2732,6 +2810,30 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.geo_tools_table.addContextMenu(
             "Delete", lambda: self.on_tool_delete(all=None), icon=QtGui.QIcon("share/delete32.png"))
 
+        # Show/Hide Advanced Options
+        if self.app.defaults["global_app_level"] == 'b':
+            self.ui.level.setText('<span style="color:green;"><b>Basic</b></span>')
+
+            self.ui.geo_tools_table.setColumnHidden(2, True)
+            self.ui.geo_tools_table.setColumnHidden(3, True)
+            self.ui.geo_tools_table.setColumnHidden(4, True)
+            self.ui.addtool_entry_lbl.hide()
+            self.ui.addtool_entry.hide()
+            self.ui.addtool_btn.hide()
+            self.ui.copytool_btn.hide()
+            self.ui.deltool_btn.hide()
+            self.ui.endzlabel.hide()
+            self.ui.gendz_entry.hide()
+            self.ui.fr_rapidlabel.hide()
+            self.ui.cncfeedrate_rapid_entry.hide()
+            self.ui.extracut_cb.hide()
+            self.ui.pdepth_label.hide()
+            self.ui.pdepth_entry.hide()
+            self.ui.feedrate_probe_label.hide()
+            self.ui.feedrate_probe_entry.hide()
+        else:
+            self.ui.level.setText('<span style="color:red;"><b>Advanced</b></span>')
+
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(self.app.paint_tool.run)
@@ -2832,8 +2934,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     self.ui.grid3.itemAt(i).widget().currentIndexChanged.disconnect()
 
                 if isinstance(self.ui.grid3.itemAt(i).widget(), LengthEntry) or \
-                        isinstance(self.ui.grid3.itemAt(i), IntEntry) or \
-                        isinstance(self.ui.grid3.itemAt(i), FCEntry):
+                        isinstance(self.ui.grid3.itemAt(i).widget(), IntEntry) or \
+                        isinstance(self.ui.grid3.itemAt(i).widget(), FCEntry):
                     self.ui.grid3.itemAt(i).widget().editingFinished.disconnect()
         except:
             pass
@@ -3544,6 +3646,17 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         self.app.report_usage("geometry_on_generatecnc_button")
         self.read_form()
+
+        self.sel_tools = {}
+
+        try:
+            if self.special_group:
+                self.app.inform.emit("[WARNING_NOTCL]This Geometry can't be processed because it is %s geometry." %
+                                     str(self.special_group))
+                return
+        except AttributeError:
+            pass
+
         # test to see if we have tools available in the tool table
         if self.ui.geo_tools_table.selectedItems():
             for x in self.ui.geo_tools_table.selectedItems():
@@ -3565,8 +3678,19 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                             tooluid: copy.deepcopy(tooluid_value)
                         })
             self.mtool_gen_cncjob()
-
             self.ui.geo_tools_table.clearSelection()
+
+        elif self.ui.geo_tools_table.rowCount() == 1:
+            tooluid = int(self.ui.geo_tools_table.item(0, 5).text())
+
+            for tooluid_key, tooluid_value in self.tools.items():
+                if int(tooluid_key) == tooluid:
+                    self.sel_tools.update({
+                        tooluid: copy.deepcopy(tooluid_value)
+                    })
+            self.mtool_gen_cncjob()
+            self.ui.geo_tools_table.clearSelection()
+
         else:
             self.app.inform.emit("[ERROR_NOTCL] Failed. No tool selected in the tool table ...")
 
@@ -3854,6 +3978,16 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     self.app.inform.emit(
                         '[ERROR_NOTCL]Wrong value format for self.defaults["feedrate_probe"] '
                         'or self.options["feedrate_probe"]')
+
+            # make sure that trying to make a CNCJob from an empty file is not creating an app crash
+            if not self.solid_geometry:
+                a = 0
+                for tooluid_key in self.tools:
+                    if self.tools[tooluid_key]['solid_geometry'] is None:
+                        a += 1
+                if a == len(self.tools):
+                    self.app.inform.emit('[ERROR_NOTCL]Cancelled. Empty file, it has no geometry...')
+                    return 'fail'
 
             for tooluid_key in self.sel_tools:
                 tool_cnt += 1
@@ -4561,6 +4695,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
        '''
         self.exc_cnc_tools = {}
 
+        # flag to store if the CNCJob is part of a special group of CNCJob objects that can't be processed by the
+        # default engine of FlatCAM. They generated by some of tools and are special cases of CNCJob objects.
+        self. special_group = None
 
         # for now it show if the plot will be done for multi-tool CNCJob (True) or for single tool
         # (like the one in the TCL Command), False
@@ -4736,6 +4873,13 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # set the kind of geometries are plotted by default with plot2() from camlib.CNCJob
         self.ui.cncplot_method_combo.set_value(self.app.defaults["cncjob_plot_kind"])
 
+        # Show/Hide Advanced Options
+        if self.app.defaults["global_app_level"] == 'b':
+            self.ui.level.setText('<span style="color:green;"><b>Basic</b></span>')
+
+        else:
+            self.ui.level.setText('<span style="color:red;"><b>Advanced</b></span>')
+
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)
         self.ui.modify_gcode_button.clicked.connect(self.on_modifygcode_button_click)
@@ -4803,13 +4947,24 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
 
-        self.export_gcode(filename, preamble=preamble, postamble=postamble)
+        gc = self.export_gcode(filename, preamble=preamble, postamble=postamble)
+        if gc == 'fail':
+            return
+
         self.app.file_saved.emit("gcode", filename)
         self.app.inform.emit("[success] Machine Code file saved to: %s" % filename)
 
     def on_modifygcode_button_click(self, *args):
+        preamble = str(self.ui.prepend_text.get_value())
+        postamble = str(self.ui.append_text.get_value())
+        gc = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
+        if gc == 'fail':
+            return
+        else:
+            self.app.gcode_edited = gc
+
         # add the tab if it was closed
-        self.app.ui.plot_tab_area.addTab(self.app.ui.cncjob_tab, "CNC Code Editor")
+        self.app.ui.plot_tab_area.addTab(self.app.ui.cncjob_tab, "Code Editor")
 
         # delete the absolute and relative position and messages in the infobar
         self.app.ui.position_label.setText("")
@@ -4818,10 +4973,6 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # Switch plot_area to CNCJob tab
         self.app.ui.plot_tab_area.setCurrentWidget(self.app.ui.cncjob_tab)
 
-        preamble = str(self.ui.prepend_text.get_value())
-        postamble = str(self.ui.append_text.get_value())
-        self.app.gcode_edited = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
-        # print(self.app.gcode_edited)
         # first clear previous text in text editor (if any)
         self.app.ui.code_editor.clear()
 
@@ -4934,6 +5085,14 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         gcode = ''
         roland = False
         hpgl = False
+
+        try:
+            if self.special_group:
+                self.app.inform.emit("[WARNING_NOTCL]This CNCJob object can't be processed because "
+                                     "it is a %s CNCJob object." % str(self.special_group))
+                return 'fail'
+        except AttributeError:
+            pass
 
         # detect if using Roland postprocessor
         try:

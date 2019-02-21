@@ -9,6 +9,74 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+21.02.2019
+
+- added protection against creating CNCJob from an empty Geometry object (with no geometry inside)
+- changed the shortcut key for YouTube channel from F2 to key F4
+- changed the way APP LEVEL is showed both in Edit -> Preferences -> General tab and in each Selected Tab. Changed the ToolTips content for this.
+- added the functions for GCode View and GCode Save in Tool SolderPaste
+- some work in the Gcode generation function in Tool SolderPaste
+- added protection against trying to create a CNCJob from a solder_paste dispenser geometry. This one is different than the default Geometry and can be handled only by SolderPaste Tool.
+- ToolSolderPaste tools (nozzles) now have each it's own settings
+- creating the camlib functions for the ToolSolderPaste gcode generation functions
+- finished work in ToolSolderPaste
+
+20.02.2019
+
+- finished added a Tool Table for Tool SolderPaste
+- working on multi tool solder paste dispensing
+- finished the Edit -> Preferences defaults section
+- finished the UI, created the postprocessor file template
+- finished the multi-tool solder paste dispensing: it will start using the biggest nozzle, fill the pads it can, and then go to the next smaller nozzle until there are no pads without solder.
+
+19.02.2019
+
+- added the ability to compress the FlatCAM project on save with LZMA compression. There is a setting in Edit -> Preferences -> Compression Level between 0 and 9. 9 level yields best compression at the price of RAM usage and time spent.
+- made FlatCAM able to load old type (uncompressed) FlatCAM projects
+- fixed issue with not loading old projects that do not have certain information's required by the new versions of FlatCAM
+- compacted a bit more the GUI for Gerber Object
+- removed the Open Gerber with 'follow' menu entry and also the open_gerber Tcl Command attribute 'follow'. This is no longer required because now the follow_geometry is stored by default in a Gerber object attribute gerber_obj.follow_geometry
+- added a new parameter for the Tcl CommandIsolate, named: 'follow'. When follow = 1 (True) the resulting geometry will follow the Gerber paths.
+- added a new setting in Edit -> Preferences -> General that allow to select the type of saving for the FlatCAM project: either compressed or uncompressed. Compression introduce an time overhead to the saving/restoring of a FlatCAM project.
+- started to work on Solder Paste Dispensing Tool
+- fixed a bug in rotate from shortcut function
+- finished generating the solder paste dispense geometry
+
+18.02.2019
+
+- added protections again wrong values for the Buffer and Paint Tool in Geometry Editor
+- the Paint Tool in Geometry Editor will load the default values from Tool Paint in Preferences
+- when the Tools in Geometry Editor are activated, the notebook with the Tool Tab will be unhidden. After execution the notebook will hide again for the Buffer Tool.
+- changed the font in Tool names
+- added in Geometry Editor a new Tool: Transformation Tool.
+- in Geometry Editor by selecting a shape with a selection shape, that object was added multiple times (one per each selection) to the selected list, which is not intended. Bug fixed.
+- finished adding Transform Tool in Geometry Editor - everything is working as intended
+- fixed a bug in Tool Transform that made the user to not be able to capture the click coordinates with SHIFT + LMB click combo
+- added the ability to choose an App QStyle out of the offered choices (different for each OS) to be applied at the next app start (Preferences -> General -> Gui Pref -> Style Combobox)
+- added support for FlatCAM usage with High DPI monitors (4k). It is applied on the next app startup after change in Preferences -> General -> Gui Settings -> HDPI Support Checkbox
+- made the app not remember the window size if the app is maximized and remember in QSettings if it was maximized. This way we can restore the maximized state but restore the windows size unmaximized
+- added a button to clear the GUI preferences in Preferences -> General -> Gui Settings -> Clear GUI Settings
+- added key shortcuts for the shape transformations within Geometry Editor: X, Y keys for Flip(mirror), SHIFT+X, SHIFT+Y combo keys for Skew and ALT+X, ALT+Y combo keys for Offset
+- adjusted the plotcanvas.zomm_fit() function so the objects are better fit into view (with a border around) 
+- modified the GUI in Objects Selected Tab to accommodate 2 different modes: basic and Advanced. In Basic mode, some of the functionality's are hidden from the user.
+- added Tool Transform preferences in Edit -> Preferences and used them through out the app
+- made the output of Panelization Tool a choice out of Gerber and Geometry type of objects. Useful for those who want to engrave multiple copies of the same design.
+
+17.02.2019
+
+- changed some status bar messages
+- New feature: added the capability to view the source code of the Gerber/Excellon file that was loaded into the app. The file is also stored as an object attribute for later use. The view option is in the project context menu and in Menu -> Options -> View Source
+- Serialized the source_file of the Objects so it is saved in the FlatCAM project and restored.
+- if there is a single tool in the tool list (Geometry , Excellon) and the user click the Generate GCode, use that tool even if it is not selected
+- fixed issue where after loading a project, if the default kind of CNCjob view is only 'cuts' the plot will revert to the 'all' type
+- in Editors, if the modifier key set in Preferences (CTRL or SHIFT key) is pressed at the end of one tool operation it will automatically continue to that action until the modifier is no longer pressed when Select tool will be automatically selected.
+- in Geometry Editor, on entry the notebook is automatically hidden and restored on Geometry Editor exit.
+- when pressing Escape in Geometry Editor it will automatically deselect any shape not only the currently selected tool.
+- when deselecting an object in Project menu the status bar selection message is deleted
+- added ability to save the Gerber file content that is stored in FlatCAM on Gerber file loading. It's useful to recover from saved FlatCAM projects when the source files are no longer available.
+- fixed an issue where the function handler that changed the layout had a parameter changed accidentally by an index value passed by the 'activate' signal to which was connected
+- fixed bug in paint function in Geometry Editor that didn't allow painting due of overlap value
+
 16.02.2019
 
 - added the 'Save' menu entry to the Project context menu, for CNCJob: it will export the GCode.

@@ -20,7 +20,14 @@ class ToolTransform(FlatCAMTool):
         self.transform_lay = QtWidgets.QVBoxLayout()
         self.layout.addLayout(self.transform_lay)
         ## Title
-        title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font><br>" % self.toolName)
+        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label.setStyleSheet("""
+                        QLabel
+                        {
+                            font-size: 16px;
+                            font-weight: bold;
+                        }
+                        """)
         self.transform_lay.addWidget(title_label)
 
         self.empty_label = QtWidgets.QLabel("")
@@ -368,18 +375,64 @@ class ToolTransform(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, "Transform Tool")
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+R', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+T', **kwargs)
 
     def set_tool_ui(self):
         ## Initialize form
-        self.rotate_entry.set_value('0')
-        self.skewx_entry.set_value('0')
-        self.skewy_entry.set_value('0')
-        self.scalex_entry.set_value('1')
-        self.scaley_entry.set_value('1')
-        self.offx_entry.set_value('0')
-        self.offy_entry.set_value('0')
-        self.flip_ref_cb.setChecked(False)
+        if self.app.defaults["tools_transform_rotate"]:
+            self.rotate_entry.set_value(self.app.defaults["tools_transform_rotate"])
+        else:
+            self.rotate_entry.set_value(0.0)
+
+        if self.app.defaults["tools_transform_skew_x"]:
+            self.skewx_entry.set_value(self.app.defaults["tools_transform_skew_x"])
+        else:
+            self.skewx_entry.set_value(0.0)
+
+        if self.app.defaults["tools_transform_skew_y"]:
+            self.skewy_entry.set_value(self.app.defaults["tools_transform_skew_y"])
+        else:
+            self.skewy_entry.set_value(0.0)
+
+        if self.app.defaults["tools_transform_scale_x"]:
+            self.scalex_entry.set_value(self.app.defaults["tools_transform_scale_x"])
+        else:
+            self.scalex_entry.set_value(1.0)
+
+        if self.app.defaults["tools_transform_scale_y"]:
+            self.scaley_entry.set_value(self.app.defaults["tools_transform_scale_y"])
+        else:
+            self.scaley_entry.set_value(1.0)
+
+        if self.app.defaults["tools_transform_scale_link"]:
+            self.scale_link_cb.set_value(self.app.defaults["tools_transform_scale_link"])
+        else:
+            self.scale_link_cb.set_value(True)
+
+        if self.app.defaults["tools_transform_scale_reference"]:
+            self.scale_zero_ref_cb.set_value(self.app.defaults["tools_transform_scale_reference"])
+        else:
+            self.scale_zero_ref_cb.set_value(True)
+
+        if self.app.defaults["tools_transform_offset_x"]:
+            self.offx_entry.set_value(self.app.defaults["tools_transform_offset_x"])
+        else:
+            self.offx_entry.set_value(0.0)
+
+        if self.app.defaults["tools_transform_offset_y"]:
+            self.offy_entry.set_value(self.app.defaults["tools_transform_offset_y"])
+        else:
+            self.offy_entry.set_value(0.0)
+
+        if self.app.defaults["tools_transform_mirror_reference"]:
+            self.flip_ref_cb.set_value(self.app.defaults["tools_transform_mirror_reference"])
+        else:
+            self.flip_ref_cb.set_value(False)
+
+        if self.app.defaults["tools_transform_mirror_point"]:
+            self.flip_ref_entry.set_value(self.app.defaults["tools_transform_mirror_point"])
+        else:
+            self.flip_ref_entry.set_value((0,0))
 
     def on_rotate(self):
         try:
@@ -412,7 +465,7 @@ class ToolTransform(FlatCAMTool):
         return
 
     def on_flip_add_coords(self):
-        val = self.app.defaults["global_point_clipboard_format"] % (self.app.pos[0], self.app.pos[1])
+        val = self.app.clipboard.text()
         self.flip_ref_entry.set_value(val)
 
     def on_skewx(self):
@@ -595,7 +648,7 @@ class ToolTransform(FlatCAMTool):
                         # add information to the object that it was changed and how much
                         sel_obj.options['rotate'] = num
 
-                    self.app.inform.emit('Object(s) were rotated ...')
+                    self.app.inform.emit('[success]Rotate done ...')
                     self.app.progress.emit(100)
 
                 except Exception as e:
@@ -656,7 +709,7 @@ class ToolTransform(FlatCAMTool):
                                 else:
                                     obj.options['mirror_y'] = True
                                 obj.plot()
-                                self.app.inform.emit('Flipped on the Y axis ...')
+                                self.app.inform.emit('[success]Flip on the Y axis done ...')
                             elif axis is 'Y':
                                 obj.mirror('Y', (px, py))
                                 # add information to the object that it was changed and how much
@@ -666,9 +719,8 @@ class ToolTransform(FlatCAMTool):
                                 else:
                                     obj.options['mirror_x'] = True
                                 obj.plot()
-                                self.app.inform.emit('Flipped on the X axis ...')
+                                self.app.inform.emit('[success]Flip on the X axis done ...')
                             self.app.object_changed.emit(obj)
-
                     self.app.progress.emit(100)
 
                 except Exception as e:
@@ -715,7 +767,7 @@ class ToolTransform(FlatCAMTool):
                                 obj.options['skew_y'] = num
                             obj.plot()
                             self.app.object_changed.emit(obj)
-                    self.app.inform.emit('Object(s) were skewed on %s axis ...' % str(axis))
+                    self.app.inform.emit('[success]Skew on the %s axis done ...' % str(axis))
                     self.app.progress.emit(100)
 
                 except Exception as e:
@@ -771,7 +823,7 @@ class ToolTransform(FlatCAMTool):
                             obj.options['scale_y'] = yfactor
                             obj.plot()
                             self.app.object_changed.emit(obj)
-                    self.app.inform.emit('Object(s) were scaled on %s axis ...' % str(axis))
+                    self.app.inform.emit('[success]Scale on the %s axis done ...' % str(axis))
                     self.app.progress.emit(100)
                 except Exception as e:
                     self.app.inform.emit("[ERROR_NOTCL] Due of %s, Scale action was not executed." % str(e))
@@ -816,7 +868,7 @@ class ToolTransform(FlatCAMTool):
                                 obj.options['offset_y'] = num
                             obj.plot()
                             self.app.object_changed.emit(obj)
-                    self.app.inform.emit('Object(s) were offseted on %s axis ...' % str(axis))
+                    self.app.inform.emit('[success]Offset on the %s axis done ...' % str(axis))
                     self.app.progress.emit(100)
 
                 except Exception as e:

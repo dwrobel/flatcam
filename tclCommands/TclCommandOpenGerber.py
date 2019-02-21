@@ -17,7 +17,6 @@ class TclCommandOpenGerber(TclCommandSignaled):
 
     # dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
     option_types = collections.OrderedDict([
-        ('follow', str),
         ('outname', str)
     ])
 
@@ -29,7 +28,6 @@ class TclCommandOpenGerber(TclCommandSignaled):
         'main': "Opens a Gerber file.",
         'args': collections.OrderedDict([
             ('filename', 'Path to file to open.'),
-            ('follow', 'N If 1, does not create polygons, just follows the gerber path.'),
             ('outname', 'Name of the resulting Gerber object.')
         ]),
         'examples': []
@@ -54,7 +52,7 @@ class TclCommandOpenGerber(TclCommandSignaled):
             # Opening the file happens here
             self.app.progress.emit(30)
             try:
-                gerber_obj.parse_file(filename, follow=follow)
+                gerber_obj.parse_file(filename)
 
             except IOError:
                 app_obj.inform.emit("[ERROR_NOTCL] Failed to open file: %s " % filename)
@@ -77,9 +75,8 @@ class TclCommandOpenGerber(TclCommandSignaled):
         else:
             outname = filename.split('/')[-1].split('\\')[-1]
 
-        follow = None
         if 'follow' in args:
-            follow = args['follow']
+            self.raise_tcl_error("The 'follow' parameter is obsolete. To create 'follow' geometry use the 'follow' parameter for the Tcl Command isolate()")
 
         with self.app.proc_container.new("Opening Gerber"):
 

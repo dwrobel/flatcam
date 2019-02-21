@@ -14,6 +14,7 @@ import os
 import random
 import logging
 import simplejson as json
+import lzma
 
 import re
 import os
@@ -92,8 +93,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.909
-    version_date = "2019/02/16"
+    version = 8.910
+    version_date = "2019/02/23"
     beta = True
 
     # current date now
@@ -311,6 +312,9 @@ class App(QtCore.QObject):
             "global_send_stats": self.general_defaults_form.general_app_group.send_stats_cb,
             "global_project_at_startup": self.general_defaults_form.general_app_group.project_startup_cb,
             "global_project_autohide": self.general_defaults_form.general_app_group.project_autohide_cb,
+            "global_app_level": self.general_defaults_form.general_app_group.app_level_radio,
+            "global_compression_level": self.general_defaults_form.general_app_group.compress_combo,
+            "global_save_compressed": self.general_defaults_form.general_app_group.save_type_cb,
 
             "global_gridx": self.general_defaults_form.general_gui_group.gridx_entry,
             "global_gridy": self.general_defaults_form.general_gui_group.gridy_entry,
@@ -457,6 +461,7 @@ class App(QtCore.QObject):
             "tools_panelize_constrain": self.tools_defaults_form.tools_panelize_group.pconstrain_cb,
             "tools_panelize_constrainx": self.tools_defaults_form.tools_panelize_group.px_width_entry,
             "tools_panelize_constrainy": self.tools_defaults_form.tools_panelize_group.py_height_entry,
+            "tools_panelize_panel_type": self.tools_defaults_form.tools_panelize_group.panel_type_radio,
 
             "tools_calc_vshape_tip_dia": self.tools_defaults_form.tools_calculators_group.tip_dia_entry,
             "tools_calc_vshape_tip_angle": self.tools_defaults_form.tools_calculators_group.tip_angle_entry,
@@ -464,16 +469,56 @@ class App(QtCore.QObject):
             "tools_calc_electro_length": self.tools_defaults_form.tools_calculators_group.pcblength_entry,
             "tools_calc_electro_width": self.tools_defaults_form.tools_calculators_group.pcbwidth_entry,
             "tools_calc_electro_cdensity": self.tools_defaults_form.tools_calculators_group.cdensity_entry,
-            "tools_calc_electro_growth": self.tools_defaults_form.tools_calculators_group.growth_entry
+            "tools_calc_electro_growth": self.tools_defaults_form.tools_calculators_group.growth_entry,
+
+            "tools_transform_rotate": self.tools_defaults_form.tools_transform_group.rotate_entry,
+            "tools_transform_skew_x": self.tools_defaults_form.tools_transform_group.skewx_entry,
+            "tools_transform_skew_y": self.tools_defaults_form.tools_transform_group.skewy_entry,
+            "tools_transform_scale_x": self.tools_defaults_form.tools_transform_group.scalex_entry,
+            "tools_transform_scale_y": self.tools_defaults_form.tools_transform_group.scaley_entry,
+            "tools_transform_scale_link": self.tools_defaults_form.tools_transform_group.link_cb,
+            "tools_transform_scale_reference": self.tools_defaults_form.tools_transform_group.reference_cb,
+            "tools_transform_offset_x": self.tools_defaults_form.tools_transform_group.offx_entry,
+            "tools_transform_offset_y": self.tools_defaults_form.tools_transform_group.offy_entry,
+            "tools_transform_mirror_reference": self.tools_defaults_form.tools_transform_group.mirror_reference_cb,
+            "tools_transform_mirror_point": self.tools_defaults_form.tools_transform_group.flip_ref_entry,
+
+            "tools_solderpaste_tools": self.tools_defaults_form.tools_solderpaste_group.nozzle_tool_dia_entry,
+            "tools_solderpaste_new": self.tools_defaults_form.tools_solderpaste_group.addtool_entry,
+            "tools_solderpaste_z_start": self.tools_defaults_form.tools_solderpaste_group.z_start_entry,
+            "tools_solderpaste_z_dispense": self.tools_defaults_form.tools_solderpaste_group.z_dispense_entry,
+            "tools_solderpaste_z_stop": self.tools_defaults_form.tools_solderpaste_group.z_stop_entry,
+            "tools_solderpaste_z_travel": self.tools_defaults_form.tools_solderpaste_group.z_travel_entry,
+            "tools_solderpaste_z_toolchange": self.tools_defaults_form.tools_solderpaste_group.z_toolchange_entry,
+            "tools_solderpaste_xy_toolchange": self.tools_defaults_form.tools_solderpaste_group.xy_toolchange_entry,
+            "tools_solderpaste_frxy": self.tools_defaults_form.tools_solderpaste_group.frxy_entry,
+            "tools_solderpaste_frz": self.tools_defaults_form.tools_solderpaste_group.frz_entry,
+            "tools_solderpaste_frz_dispense": self.tools_defaults_form.tools_solderpaste_group.frz_dispense_entry,
+            "tools_solderpaste_speedfwd": self.tools_defaults_form.tools_solderpaste_group.speedfwd_entry,
+            "tools_solderpaste_dwellfwd": self.tools_defaults_form.tools_solderpaste_group.dwellfwd_entry,
+            "tools_solderpaste_speedrev": self.tools_defaults_form.tools_solderpaste_group.speedrev_entry,
+            "tools_solderpaste_dwellrev": self.tools_defaults_form.tools_solderpaste_group.dwellrev_entry,
+            "tools_solderpaste_pp": self.tools_defaults_form.tools_solderpaste_group.pp_combo
+
         }
-        # loads postprocessors
+
+        #############################
+        #### LOAD POSTPROCESSORS ####
+        #############################
+
         self.postprocessors = load_postprocessors(self)
 
         for name in list(self.postprocessors.keys()):
+            # 'Paste' postprocessors are to be used only in the Solder Paste Dispensing Tool
+            if name.partition('_')[0] == 'Paste':
+                self.tools_defaults_form.tools_solderpaste_group.pp_combo.addItem(name)
+                continue
+
             self.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.addItem(name)
             # HPGL postprocessor is only for Geometry objects therefore it should not be in the Excellon Preferences
             if name == 'hpgl':
                 continue
+
             self.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb.addItem(name)
 
         self.defaults = LoudDict()
@@ -486,6 +531,7 @@ class App(QtCore.QObject):
             "global_send_stats": True,
             "global_project_at_startup": False,
             "global_project_autohide": True,
+            "global_app_level": 'b',
 
             "global_gridx": 1.0,
             "global_gridy": 1.0,
@@ -531,6 +577,9 @@ class App(QtCore.QObject):
             "global_shell_shape": [500, 300],  # Shape of the shell in pixels.
             "global_shell_at_startup": False,  # Show the shell at startup.
             "global_recent_limit": 10,  # Max. items in recent list.
+            "global_compression_level": 3,
+            "global_save_compressed": True,
+
             "fit_key": 'V',
             "zoom_out_key": '-',
             "zoom_in_key": '=',
@@ -666,6 +715,7 @@ class App(QtCore.QObject):
             "tools_panelize_constrain": False,
             "tools_panelize_constrainx": 0.0,
             "tools_panelize_constrainy": 0.0,
+            "tools_panelize_panel_type": 'gerber',
 
             "tools_calc_vshape_tip_dia": 0.007874,
             "tools_calc_vshape_tip_angle": 30,
@@ -673,7 +723,36 @@ class App(QtCore.QObject):
             "tools_calc_electro_length": 10.0,
             "tools_calc_electro_width": 10.0,
             "tools_calc_electro_cdensity":13.0,
-            "tools_calc_electro_growth": 10.0
+            "tools_calc_electro_growth": 10.0,
+
+            "tools_transform_rotate": 90,
+            "tools_transform_skew_x": 0.0,
+            "tools_transform_skew_y": 0.0,
+            "tools_transform_scale_x": 1.0,
+            "tools_transform_scale_y": 1.0,
+            "tools_transform_scale_link": True,
+            "tools_transform_scale_reference": True,
+            "tools_transform_offset_x": 0.0,
+            "tools_transform_offset_y": 0.0,
+            "tools_transform_mirror_reference": False,
+            "tools_transform_mirror_point": (0, 0),
+
+            "tools_solderpaste_tools": "1.0, 0.3",
+            "tools_solderpaste_new": 0.3,
+            "tools_solderpaste_z_start": 0.005,
+            "tools_solderpaste_z_dispense": 0.01,
+            "tools_solderpaste_z_stop": 0.005,
+            "tools_solderpaste_z_travel": 0.1,
+            "tools_solderpaste_z_toolchange": 1.0,
+            "tools_solderpaste_xy_toolchange": "0.0, 0.0",
+            "tools_solderpaste_frxy": 3.0,
+            "tools_solderpaste_frz": 3.0,
+            "tools_solderpaste_frz_dispense": 1.0,
+            "tools_solderpaste_speedfwd": 20,
+            "tools_solderpaste_dwellfwd": 1,
+            "tools_solderpaste_speedrev": 10,
+            "tools_solderpaste_dwellrev": 1,
+            "tools_solderpaste_pp": 'Paste_1'
         })
 
         ###############################
@@ -1069,7 +1148,6 @@ class App(QtCore.QObject):
         self.ui.menufilenewexc.triggered.connect(self.new_excellon_object)
 
         self.ui.menufileopengerber.triggered.connect(self.on_fileopengerber)
-        self.ui.menufileopengerber_follow.triggered.connect(self.on_fileopengerber_follow)
         self.ui.menufileopenexcellon.triggered.connect(self.on_fileopenexcellon)
         self.ui.menufileopengcode.triggered.connect(self.on_fileopengcode)
         self.ui.menufileopenproject.triggered.connect(self.on_file_openproject)
@@ -1129,7 +1207,7 @@ class App(QtCore.QObject):
 
         self.ui.menuoptions_transform_flipx.triggered.connect(self.on_flipx)
         self.ui.menuoptions_transform_flipy.triggered.connect(self.on_flipy)
-
+        self.ui.menuoptions_view_source.triggered.connect(self.on_view_source)
 
         self.ui.menuviewdisableall.triggered.connect(self.disable_all_plots)
         self.ui.menuviewdisableother.triggered.connect(self.disable_other_plots)
@@ -1156,6 +1234,8 @@ class App(QtCore.QObject):
         self.ui.menuprojectenable.triggered.connect(lambda: self.enable_plots(self.collection.get_selected()))
         self.ui.menuprojectdisable.triggered.connect(lambda: self.disable_plots(self.collection.get_selected()))
         self.ui.menuprojectgeneratecnc.triggered.connect(lambda: self.generate_cnc_job(self.collection.get_selected()))
+        self.ui.menuprojectviewsource.triggered.connect(self.on_view_source)
+
         self.ui.menuprojectcopy.triggered.connect(self.on_copy_object)
         self.ui.menuprojectedit.triggered.connect(self.object2editor)
 
@@ -1262,7 +1342,7 @@ class App(QtCore.QObject):
         self.general_defaults_form.general_gui_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
         self.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
 
-        self.general_defaults_form.general_gui_group.layout_combo.activated.connect(self.on_layout)
+        self.general_defaults_form.general_gui_set_group.layout_combo.activated.connect(self.on_layout)
 
         # Modify G-CODE Plot Area TAB
         self.ui.code_editor.textChanged.connect(self.handleTextChanged)
@@ -1468,7 +1548,7 @@ class App(QtCore.QObject):
         if not factory_defaults:
             self.save_factory_defaults(silent=False)
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
-            self.on_layout(layout='compact')
+            self.on_layout(index=None, lay='compact')
         factory_file.close()
 
         # and then make the  factory_defaults.FlatConfig file read_only os it can't be modified after creation.
@@ -1544,13 +1624,16 @@ class App(QtCore.QObject):
         self.panelize_tool.install(icon=QtGui.QIcon('share/panel16.png'))
 
         self.film_tool = Film(self)
-        self.film_tool.install(icon=QtGui.QIcon('share/film16.png'), separator=True)
+        self.film_tool.install(icon=QtGui.QIcon('share/film16.png'))
+
+        self.paste_tool = SolderPaste(self)
+        self.paste_tool.install(icon=QtGui.QIcon('share/solderpastebis32.png'), separator=True)
 
         self.move_tool = ToolMove(self)
         self.move_tool.install(icon=QtGui.QIcon('share/move16.png'), pos=self.ui.menuedit,
                                before=self.ui.menueditorigin)
 
-        self.cutout_tool = ToolCutOut(self)
+        self.cutout_tool = CutOut(self)
         self.cutout_tool.install(icon=QtGui.QIcon('share/cut16.png'), pos=self.ui.menutool,
                                  before=self.measurement_tool.menuAction)
 
@@ -1634,6 +1717,10 @@ class App(QtCore.QObject):
             # store the Geometry Editor Toolbar visibility before entering in the Editor
             self.geo_editor.toolbar_old_state = True if self.ui.geo_edit_toolbar.isVisible() else False
             self.geo_editor.edit_fcgeometry(edited_object)
+
+            # we set the notebook to hidden
+            self.ui.splitter.setSizes([0, 1])
+
             # set call source to the Editor we go into
             self.call_source = 'geo_editor'
 
@@ -1700,6 +1787,10 @@ class App(QtCore.QObject):
         else:
             self.inform.emit("[WARNING_NOTCL]Select a Geometry or Excellon Object to update.")
             return
+
+        # if notebook is hidden we show it
+        if self.ui.splitter.sizes()[0] == 0:
+            self.ui.splitter.setSizes([1, 1])
 
         # restore the call_source to app
         self.call_source = 'app'
@@ -3363,13 +3454,12 @@ class App(QtCore.QObject):
             self.general_defaults_form.general_gui_group.workspace_cb.setChecked(True)
         self.on_workspace()
 
-    def on_layout(self, layout=None):
+    def on_layout(self, index, lay=None):
         self.report_usage("on_layout()")
-
-        if layout is None:
-            current_layout= self.general_defaults_form.general_gui_group.layout_combo.get_value().lower()
+        if lay:
+            current_layout = lay
         else:
-            current_layout = layout
+            current_layout = self.general_defaults_form.general_gui_set_group.layout_combo.get_value().lower()
 
         settings = QSettings("Open Source", "FlatCAM")
         settings.setValue('layout', current_layout)
@@ -3588,34 +3678,46 @@ class App(QtCore.QObject):
         # work only if the notebook tab on focus is the Selected_Tab and only if the object is Geometry
         if notebook_widget_name == 'selected_tab':
             if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
-                tool_add_popup = FCInputDialog(title="New Tool ...",
-                                               text='Enter a Tool Diameter:',
-                                               min=0.0000, max=99.9999, decimals=4)
-                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+                # Tool add works for Geometry only if Advanced is True in Preferences
+                if self.defaults["global_advanced"] is True:
+                    tool_add_popup = FCInputDialog(title="New Tool ...",
+                                                   text='Enter a Tool Diameter:',
+                                                   min=0.0000, max=99.9999, decimals=4)
+                    tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
 
-                val, ok = tool_add_popup.get_value()
-                if ok:
-                    if float(val) == 0:
+                    val, ok = tool_add_popup.get_value()
+                    if ok:
+                        if float(val) == 0:
+                            self.inform.emit(
+                                "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
+                            return
+                        self.collection.get_active().on_tool_add(dia=float(val))
+                    else:
                         self.inform.emit(
-                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
-                        return
-                    self.collection.get_active().on_tool_add(dia=float(val))
+                            "[WARNING_NOTCL] Adding Tool cancelled ...")
                 else:
-                    self.inform.emit(
-                        "[WARNING_NOTCL] Adding Tool cancelled ...")
+                    msgbox = QtWidgets.QMessageBox()
+                    msgbox.setText("Adding Tool works only when Advanced is checked.\n"
+                                   "Go to Preferences -> General - Show Advanced Options.")
+                    msgbox.setWindowTitle("Tool adding ...")
+                    msgbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                    msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                    msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                    msgbox.exec_()
 
         # work only if the notebook tab on focus is the Tools_Tab
         if notebook_widget_name == 'tool_tab':
             tool_widget = self.ui.tool_scroll_area.widget().objectName()
 
+            tool_add_popup = FCInputDialog(title="New Tool ...",
+                                           text='Enter a Tool Diameter:',
+                                           min=0.0000, max=99.9999, decimals=4)
+            tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
+
+            val, ok = tool_add_popup.get_value()
+
             # and only if the tool is NCC Tool
             if tool_widget == self.ncclear_tool.toolName:
-                tool_add_popup = FCInputDialog(title="New Tool ...",
-                                               text='Enter a Tool Diameter:',
-                                               min=0.0000, max=99.9999, decimals=4)
-                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
-
-                val, ok = tool_add_popup.get_value()
                 if ok:
                     if float(val) == 0:
                         self.inform.emit(
@@ -3627,12 +3729,6 @@ class App(QtCore.QObject):
                         "[WARNING_NOTCL] Adding Tool cancelled ...")
             # and only if the tool is Paint Area Tool
             elif tool_widget == self.paint_tool.toolName:
-                tool_add_popup = FCInputDialog(title="New Tool ...",
-                                               text='Enter a Tool Diameter:',
-                                               min=0.0000, max=99.9999, decimals=4)
-                tool_add_popup.setWindowIcon(QtGui.QIcon('share/letter_t_32.png'))
-
-                val, ok = tool_add_popup.get_value()
                 if ok:
                     if float(val) == 0:
                         self.inform.emit(
@@ -3642,6 +3738,18 @@ class App(QtCore.QObject):
                 else:
                     self.inform.emit(
                         "[WARNING_NOTCL] Adding Tool cancelled ...")
+            # and only if the tool is Solder Paste Dispensing Tool
+            elif tool_widget == self.paste_tool.toolName:
+                if ok:
+                    if float(val) == 0:
+                        self.inform.emit(
+                            "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
+                        return
+                    self.paste_tool.on_tool_add(dia=float(val))
+                else:
+                    self.inform.emit(
+                        "[WARNING_NOTCL] Adding Tool cancelled ...")
+
 
     # It's meant to delete tools in tool tables via a 'Delete' shortcut key but only if certain conditions are met
     # See description bellow.
@@ -3665,6 +3773,9 @@ class App(QtCore.QObject):
             elif tool_widget == self.paint_tool.toolName:
                 self.paint_tool.on_tool_delete()
 
+            # and only if the tool is Solder Paste Dispensing Tool
+            elif tool_widget == self.paste_tool.toolName:
+                self.paste_tool.on_tool_delete()
         else:
             self.on_delete()
 
@@ -3934,7 +4045,7 @@ class App(QtCore.QObject):
                     obj.mirror('X', [px, py])
                     obj.plot()
                     self.object_changed.emit(obj)
-
+                self.inform.emit("[success] Flip on Y axis done.")
             except Exception as e:
                 self.inform.emit("[ERROR_NOTCL] Due of %s, Flip action was not executed." % str(e))
                 return
@@ -3974,7 +4085,7 @@ class App(QtCore.QObject):
                     obj.mirror('Y', [px, py])
                     obj.plot()
                     self.object_changed.emit(obj)
-
+                self.inform.emit("[success] Flip on X axis done.")
             except Exception as e:
                 self.inform.emit("[ERROR_NOTCL] Due of %s, Flip action was not executed." % str(e))
                 return
@@ -3993,7 +4104,8 @@ class App(QtCore.QObject):
         else:
             if silent is False:
                 rotatebox = FCInputDialog(title="Transform", text="Enter the Angle value:",
-                                          min=-360, max=360, decimals=3)
+                                          min=-360, max=360, decimals=4,
+                                          init_val=float(self.defaults['tools_transform_rotate']))
                 num, ok = rotatebox.get_value()
             else:
                 num = preset
@@ -4018,9 +4130,10 @@ class App(QtCore.QObject):
                     py = 0.5 * (yminimal + ymaximal)
 
                     for sel_obj in obj_list:
-                        sel_obj.rotate(-num, point=(px, py))
+                        sel_obj.rotate(-float(num), point=(px, py))
                         sel_obj.plot()
                         self.object_changed.emit(sel_obj)
+                    self.inform.emit("[success] Rotation done.")
                 except Exception as e:
                     self.inform.emit("[ERROR_NOTCL] Due of %s, rotation movement was not executed." % str(e))
                     return
@@ -4036,7 +4149,8 @@ class App(QtCore.QObject):
             self.inform.emit("[WARNING_NOTCL] No object selected to Skew/Shear on X axis.")
         else:
             skewxbox = FCInputDialog(title="Transform", text="Enter the Angle value:",
-                                          min=-360, max=360, decimals=3)
+                                     min=-360, max=360, decimals=4,
+                                     init_val=float(self.defaults['tools_transform_skew_x']))
             num, ok = skewxbox.get_value()
             if ok:
                 # first get a bounding box to fit all
@@ -4053,6 +4167,7 @@ class App(QtCore.QObject):
                     obj.skew(num, 0, point=(xminimal, yminimal))
                     obj.plot()
                     self.object_changed.emit(obj)
+                self.inform.emit("[success] Skew on X axis done.")
 
     def on_skewy(self):
         self.report_usage("on_skewy()")
@@ -4065,7 +4180,8 @@ class App(QtCore.QObject):
             self.inform.emit("[WARNING_NOTCL] No object selected to Skew/Shear on Y axis.")
         else:
             skewybox = FCInputDialog(title="Transform", text="Enter the Angle value:",
-                                          min=-360, max=360, decimals=3)
+                                     min=-360, max=360, decimals=4,
+                                     init_val=float(self.defaults['tools_transform_skew_y']))
             num, ok = skewybox.get_value()
             if ok:
                 # first get a bounding box to fit all
@@ -4082,6 +4198,7 @@ class App(QtCore.QObject):
                     obj.skew(0, num, point=(xminimal, yminimal))
                     obj.plot()
                     self.object_changed.emit(obj)
+                self.inform.emit("[success] Skew on Y axis done.")
 
     def delete_first_selected(self):
         # Keep this for later
@@ -4728,10 +4845,46 @@ class App(QtCore.QObject):
             self.on_file_exportexcellon()
         elif type(obj) == FlatCAMCNCjob:
             obj.on_exportgcode_button_click()
+        elif type(obj) == FlatCAMGerber:
+            self.on_file_exportgerber()
+    def on_view_source(self):
+
+        try:
+            obj = self.collection.get_active()
+        except:
+            self.inform.emit("[WARNING_NOTCL] Select an Gerber or Excellon file to view it's source.")
+
+        # add the tab if it was closed
+        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, "Code Editor")
+        # first clear previous text in text editor (if any)
+        self.ui.code_editor.clear()
+
+        # Switch plot_area to CNCJob tab
+        self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
+
+        # then append the text from GCode to the text editor
+        file = StringIO(obj.source_file)
+        try:
+            for line in file:
+                proc_line = str(line).strip('\n')
+                self.ui.code_editor.append(proc_line)
+        except Exception as e:
+            log.debug('App.on_view_source() -->%s' % str(e))
+            self.inform.emit('[ERROR]App.on_view_source() -->%s' % str(e))
+            return
+
+        self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
+
+        self.handleTextChanged()
+        self.ui.show()
+
+        # if type(obj) == FlatCAMGerber:
+        #     self.on_file_exportdxf()
+        # elif type(obj) == FlatCAMExcellon:
+        #     self.on_file_exportexcellon()
 
     def obj_move(self):
         self.report_usage("obj_move()")
-
         self.move_tool.run()
 
     def on_fileopengerber(self):
@@ -4769,42 +4922,6 @@ class App(QtCore.QObject):
                 if filename != '':
                     self.worker_task.emit({'fcn': self.open_gerber,
                                            'params': [filename]})
-
-    def on_fileopengerber_follow(self):
-        """
-        File menu callback for opening a Gerber.
-
-        :return: None
-        """
-
-        self.report_usage("on_fileopengerber_follow")
-        App.log.debug("on_fileopengerber_follow()")
-        _filter_ = "Gerber Files (*.gbr *.ger *.gtl *.gbl *.gts *.gbs *.gtp *.gbp *.gto *.gbo *.gm1 *.gml *.gm3 *.gko " \
-                   "*.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim *.mil *.grb" \
-                   "*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb *.pho *.gdo *.art *.gbd);;" \
-                   "Protel Files (*.gtl *.gbl *.gts *.gbs *.gto *.gbo *.gtp *.gbp *.gml *.gm1 *.gm3 *.gko);;" \
-                   "Eagle Files (*.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim *.mil);;" \
-                   "OrCAD Files (*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb);;" \
-                   "Allegro Files (*.art);;" \
-                   "Mentor Files (*.pho *.gdo);;" \
-                   "All Files (*.*)"
-        try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Gerber with Follow",
-                                                         directory=self.get_last_folder(), filter=_filter_)
-        except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Gerber with Follow", filter=_filter_)
-
-        # The Qt methods above will return a QString which can cause problems later.
-        # So far json.dump() will fail to serialize it.
-        # TODO: Improve the serialization methods and remove this fix.
-        filename = str(filename)
-        follow = True
-
-        if filename == "":
-            self.inform.emit("[WARNING_NOTCL]Open Gerber-Follow cancelled.")
-        else:
-            self.worker_task.emit({'fcn': self.open_gerber,
-                                   'params': [filename, follow]})
 
     def on_fileopenexcellon(self):
         """
@@ -4974,6 +5091,45 @@ class App(QtCore.QObject):
         else:
             write_png(filename, data)
             self.file_saved.emit("png", filename)
+
+    def on_file_exportgerber(self):
+        """
+        Callback for menu item File->Export SVG.
+
+        :return: None
+        """
+        self.report_usage("on_file_exportgerber")
+        App.log.debug("on_file_exportgerber()")
+
+        obj = self.collection.get_active()
+        if obj is None:
+            self.inform.emit("[WARNING_NOTCL] No object selected. Please Select an Gerber object to export.")
+            return
+
+        # Check for more compatible types and add as required
+        if not isinstance(obj, FlatCAMGerber):
+            self.inform.emit("[ERROR_NOTCL] Failed. Only Gerber objects can be saved as Gerber files...")
+            return
+
+        name = self.collection.get_active().options["name"]
+
+        filter = "Gerber File (*.GBR);;Gerber File (*.GRB);;All Files (*.*)"
+        try:
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                caption="Export Gerber",
+                directory=self.get_last_save_folder() + '/' + name,
+                filter=filter)
+        except TypeError:
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export Gerber", filter=filter)
+
+        filename = str(filename)
+
+        if filename == "":
+            self.inform.emit("[WARNING_NOTCL]Export Gerber cancelled.")
+            return
+        else:
+            self.export_gerber(name, filename)
+            self.file_saved.emit("Gerber", filename)
 
     def on_file_exportexcellon(self):
         """
@@ -5213,15 +5369,15 @@ class App(QtCore.QObject):
         except IOError:
             exists = False
 
-        msg = "Project file exists. Overwrite?"
-        if exists:
-            msgbox = QtWidgets.QMessageBox()
-            msgbox.setInformativeText(msg)
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel |QtWidgets.QMessageBox.Ok)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Cancel)
-            result = msgbox.exec_()
-            if result ==QtWidgets.QMessageBox.Cancel:
-                return
+        # msg = "Project file exists. Overwrite?"
+        # if exists:
+        #     msgbox = QtWidgets.QMessageBox()
+        #     msgbox.setInformativeText(msg)
+        #     msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel |QtWidgets.QMessageBox.Ok)
+        #     msgbox.setDefaultButton(QtWidgets.QMessageBox.Cancel)
+        #     result = msgbox.exec_()
+        #     if result ==QtWidgets.QMessageBox.Cancel:
+        #         return
 
         if thread is True:
             self.worker_task.emit({'fcn': self.save_project,
@@ -5527,9 +5683,38 @@ class App(QtCore.QObject):
         else:
             make_black_film()
 
+    def export_gerber(self, obj_name, filename, use_thread=True):
+        """
+        Exports a Gerber Object to an Gerber file.
+
+        :param filename: Path to the Gerber file to save to.
+        :return:
+        """
+        self.report_usage("export_gerber()")
+
+        if filename is None:
+            filename = self.defaults["global_last_save_folder"]
+
+        self.log.debug("export_gerber()")
+
+        obj = self.collection.get_by_name(obj_name)
+
+        file_string = StringIO(obj.source_file)
+        time_string = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
+
+        with open(filename, 'w') as file:
+            file.writelines('G04*\n')
+            file.writelines('G04 GERBER (RE)GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s*\n' %
+                            (str(self.version), str(self.version_date)))
+            file.writelines('G04 Filename: %s*\n' % str(obj_name))
+            file.writelines('G04 Created on : %s*\n' % time_string)
+
+            for line in file_string:
+                file.writelines(line)
+
     def export_excellon(self, obj_name, filename, use_thread=True):
         """
-        Exports a Geometry Object to an Excellon file.
+        Exports a Excellon Object to an Excellon file.
 
         :param filename: Path to the Excellon file to save to.
         :return:
@@ -5834,7 +6019,7 @@ class App(QtCore.QObject):
             self.inform.emit("[success] Opened: " + filename)
             self.progress.emit(100)
 
-    def open_gerber(self, filename, follow=False, outname=None):
+    def open_gerber(self, filename, outname=None):
         """
         Opens a Gerber file, parses it and creates a new object for
         it in the program. Thread-safe.
@@ -5858,7 +6043,7 @@ class App(QtCore.QObject):
             # Opening the file happens here
             self.progress.emit(30)
             try:
-                gerber_obj.parse_file(filename, follow=follow)
+                gerber_obj.parse_file(filename)
             except IOError:
                 app_obj.inform.emit("[ERROR_NOTCL] Failed to open file: " + filename)
                 app_obj.progress.emit(0)
@@ -5886,10 +6071,7 @@ class App(QtCore.QObject):
             # Further parsing
             self.progress.emit(70)  # TODO: Note the mixture of self and app_obj used here
 
-        if follow is False:
-            App.log.debug("open_gerber()")
-        else:
-            App.log.debug("open_gerber() with 'follow' attribute")
+        App.log.debug("open_gerber()")
 
         with self.proc_container.new("Opening Gerber") as proc:
 
@@ -6063,7 +6245,7 @@ class App(QtCore.QObject):
         """
         App.log.debug("Opening project: " + filename)
 
-        # Open and parse
+        # Open and parse an uncompressed Project file
         try:
             f = open(filename, 'r')
         except IOError:
@@ -6077,7 +6259,16 @@ class App(QtCore.QObject):
             App.log.error("Failed to parse project file: %s" % filename)
             self.inform.emit("[ERROR_NOTCL] Failed to parse project file: %s" % filename)
             f.close()
-            return
+
+            # Open and parse a compressed Project file
+            try:
+                with lzma.open(filename) as f:
+                    file_content = f.read().decode('utf-8')
+                    d = json.loads(file_content, object_hook=dict2obj)
+            except IOError:
+                App.log.error("Failed to open project file: %s" % filename)
+                self.inform.emit("[ERROR_NOTCL] Failed to open project file: %s" % filename)
+                return
 
         self.file_opened.emit("project", filename)
 
@@ -6101,7 +6292,6 @@ class App(QtCore.QObject):
                 obj_inst.from_dict(obj)
             App.log.debug(obj['kind'] + ":  " + obj['options']['name'])
             self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=True)
-
         self.plot_all()
         self.inform.emit("[success] Project loaded from: " + filename)
 
@@ -6160,6 +6350,12 @@ class App(QtCore.QObject):
                                 self.defaults["global_def_win_w"],
                                 self.defaults["global_def_win_h"])
             self.ui.splitter.setSizes([self.defaults["def_notebook_width"], 0])
+
+            settings = QSettings("Open Source", "FlatCAM")
+            if settings.contains("maximized_gui"):
+                maximized_ui = settings.value('maximized_gui', type=bool)
+                if maximized_ui is True:
+                    self.ui.showMaximized()
         except KeyError:
             pass
 
@@ -6174,7 +6370,7 @@ class App(QtCore.QObject):
         for obj in self.collection.get_list():
             def worker_task(obj):
                 with self.proc_container.new("Plotting"):
-                    obj.plot()
+                    obj.plot(kind=self.defaults["cncjob_plot_kind"])
                     if zoom:
                         self.object_plotted.emit(obj)
 
@@ -6793,37 +6989,45 @@ The normal flow when working in FlatCAM is the following:</span></p>
                  "options": self.options,
                  "version": self.version}
 
-            # Open file
-            try:
-                f = open(filename, 'w')
-            except IOError:
-                App.log.error("[ERROR] Failed to open file for saving: %s", filename)
-                return
-
-            # Write
-            json.dump(d, f, default=to_dict, indent=2, sort_keys=True)
-            f.close()
-
-            # verification of the saved project
-            # Open and parse
-            try:
-                saved_f = open(filename, 'r')
-            except IOError:
-                self.inform.emit("[ERROR_NOTCL] Failed to verify project file: %s. Retry to save it." % filename)
-                return
-
-            try:
-                saved_d = json.load(saved_f, object_hook=dict2obj)
-            except:
-                self.inform.emit("[ERROR_NOTCL] Failed to parse saved project file: %s. Retry to save it." % filename)
-                f.close()
-                return
-            saved_f.close()
-
-            if 'version' in saved_d:
+            if self.defaults["global_save_compressed"] is True:
+                with lzma.open(filename, "w", preset=int(self.defaults['global_compression_level'])) as f:
+                    g = json.dumps(d, default=to_dict, indent=2, sort_keys=True).encode('utf-8')
+                    # # Write
+                    f.write(g)
                 self.inform.emit("[success] Project saved to: %s" % filename)
             else:
-                self.inform.emit("[ERROR_NOTCL] Failed to save project file: %s. Retry to save it." % filename)
+                # Open file
+                try:
+                    f = open(filename, 'w')
+                except IOError:
+                    App.log.error("[ERROR] Failed to open file for saving: %s", filename)
+                    return
+
+                # Write
+                json.dump(d, f, default=to_dict, indent=2, sort_keys=True)
+                f.close()
+
+                # verification of the saved project
+                # Open and parse
+                try:
+                    saved_f = open(filename, 'r')
+                except IOError:
+                    self.inform.emit("[ERROR_NOTCL] Failed to verify project file: %s. Retry to save it." % filename)
+                    return
+
+                try:
+                    saved_d = json.load(saved_f, object_hook=dict2obj)
+                except:
+                    self.inform.emit(
+                        "[ERROR_NOTCL] Failed to parse saved project file: %s. Retry to save it." % filename)
+                    f.close()
+                    return
+                saved_f.close()
+
+                if 'version' in saved_d:
+                    self.inform.emit("[success] Project saved to: %s" % filename)
+                else:
+                    self.inform.emit("[ERROR_NOTCL] Failed to save project file: %s. Retry to save it." % filename)
 
     def on_options_app2project(self):
         """

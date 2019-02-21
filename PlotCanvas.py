@@ -198,6 +198,13 @@ class PlotCanvas(QtCore.QObject):
             except TypeError:
                 pass
 
+        # adjust the view camera to be slightly bigger than the bounds so the shape colleaction can be seen clearly
+        # otherwise the shape collection boundary will have no border
+        rect.left *= 0.96
+        rect.bottom *= 0.96
+        rect.right *= 1.01
+        rect.top *= 1.01
+
         self.vispy_canvas.view.camera.rect = rect
 
         self.shape_collection.unlock_updates()

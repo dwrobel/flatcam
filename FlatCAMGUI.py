@@ -67,16 +67,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                     'Open &Gerber ...\tCTRL+G', self)
         self.menufile_open.addAction(self.menufileopengerber)
 
-        # Open gerber with follow...
-        self.menufileopengerber_follow = QtWidgets.QAction(QtGui.QIcon('share/flatcam_icon24.png'),
-                                                       'Open &Gerber (w/ Follow) ...', self)
-        self.menufileopengerber_follow.setToolTip(
-            "Will open a Gerber file with the 'follow' attribute.\n"
-            "This will actually 'trace' the features of a Gerber file and\n"
-            "the resulting Gerber geometry will have no volume, it will be\n"
-            "made out of lines."
-        )
-        self.menufile_open.addAction(self.menufileopengerber_follow)
         self.menufile_open.addSeparator()
 
         # Open Excellon ...
@@ -292,6 +282,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # Separator
         self.menuoptions.addSeparator()
 
+        self.menuoptions_view_source = self.menuoptions.addAction(QtGui.QIcon('share/source32.png'),
+                                                                                "View source\tALT+S")
+        # Separator
+        self.menuoptions.addSeparator()
+
         ### View ###
         self.menuview = self.menu.addMenu('&View')
         self.menuviewenable = self.menuview.addAction(QtGui.QIcon('share/replot16.png'), 'Enable all plots\tALT+1')
@@ -330,8 +325,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), 'Help\tF1')
         self.menuhelp_home = self.menuhelp.addAction(QtGui.QIcon('share/home16.png'), 'FlatCAM.org')
         self.menuhelp.addSeparator()
-        self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/youtube32.png'), 'YouTube Channel\tF2')
         self.menuhelp_shortcut_list = self.menuhelp.addAction(QtGui.QIcon('share/shortcuts24.png'), 'Shortcuts List\tF3')
+        self.menuhelp_videohelp = self.menuhelp.addAction(QtGui.QIcon('share/youtube32.png'), 'YouTube Channel\tF4')
         self.menuhelp_about = self.menuhelp.addAction(QtGui.QIcon('share/about32.png'), 'About')
 
 
@@ -373,10 +368,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_editor_menu.addSeparator()
         self.geo_move_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/move32.png'), "Move\tM")
         self.geo_buffer_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon('share/buffer16.png'), "Buffer Selection\tB"
+            QtGui.QIcon('share/buffer16.png'), "Buffer Tool\tB"
         )
         self.geo_paint_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon('share/paint16.png'), "Paint Selection\tI"
+            QtGui.QIcon('share/paint16.png'), "Paint Tool\tI"
+        )
+        self.geo_transform_menuitem = self.geo_editor_menu.addAction(
+            QtGui.QIcon('share/transform.png'), "Transform Tool\tALT+R"
         )
         self.geo_editor_menu.addSeparator()
         self.geo_cornersnap_menuitem = self.geo_editor_menu.addAction(
@@ -419,7 +417,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuprojectdisable = self.menuproject.addAction(QtGui.QIcon('share/clear_plot32.png'), 'Disable Plot')
         self.menuproject.addSeparator()
         self.menuprojectgeneratecnc = self.menuproject.addAction(QtGui.QIcon('share/cnc32.png'), 'Generate CNC')
-        self.menuproject.addSeparator()
+        self.menuprojectviewsource = self.menuproject.addAction(QtGui.QIcon('share/source32.png'), 'View Source')
 
         self.menuprojectedit = self.menuproject.addAction(QtGui.QIcon('share/edit_ok32.png'), 'Edit')
         self.menuprojectcopy = self.menuproject.addAction(QtGui.QIcon('share/copy32.png'), 'Copy')
@@ -522,7 +520,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.shell_btn = self.toolbartools.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
 
         ### Drill Editor Toolbar ###
-        self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select 'Esc'")
+        self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select")
         self.add_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), 'Add Drill Hole')
         self.add_drill_array_btn = self.exc_edit_toolbar.addAction(
             QtGui.QIcon('share/addarray16.png'), 'Add Drill Hole Array')
@@ -536,7 +534,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.move_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Drill")
 
         ### Geometry Editor Toolbar ###
-        self.geo_select_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select 'Esc'")
+        self.geo_select_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select")
         self.geo_add_circle_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/circle32.png'), 'Add Circle')
         self.geo_add_arc_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/arc32.png'), 'Add Arc')
         self.geo_add_rectangle_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/rectangle32.png'),
@@ -559,13 +557,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/cutpath32.png'), 'Cut Path')
-        self.geo_copy_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), "Copy Objects 'c'")
-        self.geo_rotate_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/rotate.png'), "Rotate Objects 'Space'")
+        self.geo_copy_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), "Copy Shape(s)")
+
         self.geo_delete_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'),
                                                               "Delete Shape '-'")
-
+        self.geo_transform_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/transform.png'), "Transformations")
         self.geo_edit_toolbar.addSeparator()
-        self.geo_move_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Objects 'm'")
+        self.geo_move_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Objects ")
 
         ### Snap Toolbar ###
         # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
@@ -983,6 +981,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 			<td height="20"><strong>ALT+D</strong></td>
 			<td>&nbsp;2-Sided PCB Tool</td>
 		</tr>
+        <tr height="20">
+			<td height="20"><strong>ALT+K</strong></td>
+			<td>&nbsp;Solder Paste Dispensing Tool</td>
+		</tr>
 		<tr height="20">
 			<td height="20"><strong>ALT+L</strong></td>
 			<td>&nbsp;Film PCB Tool</td>
@@ -998,6 +1000,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 		<tr height="20">
 			<td height="20"><strong>ALT+R</strong></td>
 			<td>&nbsp;Transformations Tool</td>
+		</tr>
+        <tr height="20">
+			<td height="20"><strong>ALT+S</strong></td>
+			<td>&nbsp;View File Source</td>
 		</tr>
 		<tr height="20">
 			<td height="20"><strong>ALT+U</strong></td>
@@ -1028,7 +1034,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 			<td>&nbsp;Open Online Manual</td>
 		</tr>
 		<tr height="20">
-			<td height="20"><strong>F2</strong></td>
+			<td height="20"><strong>F4</strong></td>
 			<td>&nbsp;Open Online Tutorials</td>
 		</tr>
 		<tr height="20">
@@ -1131,15 +1137,55 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 		</tr>
 		<tr height="20">
 			<td height="20"><strong>X</strong></td>
-			<td>&nbsp;Polygon Cut Tool</td>
+			<td>&nbsp;Flip shape on X axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>Y</strong></td>
+			<td>&nbsp;Flip shape on Y axis</td>
 		</tr>
 		<tr height="20">
 			<td height="20">&nbsp;</td>
 			<td>&nbsp;</td>
 		</tr>
+        <tr height="20">
+			<td height="20"><strong>SHIFT+X</strong></td>
+			<td>&nbsp;Skew shape on X axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+Y</strong></td>
+			<td>&nbsp;Skew shape on Y axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+        <tr height="20">
+			<td height="20"><strong>ALT+R</strong></td>
+			<td>&nbsp;Editor Transformation Tool</td>
+		</tr>
+        <tr height="20">
+			<td height="20"><strong>ALT+X</strong></td>
+			<td>&nbsp;Offset shape on X axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>ALT+Y</strong></td>
+			<td>&nbsp;Offset shape on Y axis</td>
+		</tr>
+		<tr height="20">
+			<td height="20">&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+        <tr height="20">
+			<td height="20"><strong>CTRL+M</strong></td>
+			<td>&nbsp;Measurement Tool</td>
+		</tr>
 		<tr height="20">
 			<td height="20"><strong>CTRL+S</strong></td>
 			<td>&nbsp;Save Object and Exit Editor</td>
+		</tr>
+        <tr height="20">
+			<td height="20"><strong>CTRL+X</strong></td>
+			<td>&nbsp;Polygon Cut Tool</td>
 		</tr>
 		<tr height="20">
 			<td height="20">&nbsp;</td>
@@ -1294,8 +1340,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.code_editor.setStyleSheet(stylesheet)
 
         self.buttonPreview = QtWidgets.QPushButton('Print Preview')
-        self.buttonPrint = QtWidgets.QPushButton('Print CNC Code')
-        self.buttonFind = QtWidgets.QPushButton('Find in CNC Code')
+        self.buttonPrint = QtWidgets.QPushButton('Print Code')
+        self.buttonFind = QtWidgets.QPushButton('Find in Code')
         self.buttonFind.setFixedWidth(100)
         self.buttonPreview.setFixedWidth(100)
         self.entryFind = FCEntry()
@@ -1309,8 +1355,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             "When checked it will replace all instances in the 'Find' box\n"
             "with the text in the 'Replace' box.."
         )
-        self.buttonOpen = QtWidgets.QPushButton('Open CNC Code')
-        self.buttonSave = QtWidgets.QPushButton('Save CNC Code')
+        self.buttonOpen = QtWidgets.QPushButton('Open Code')
+        self.buttonSave = QtWidgets.QPushButton('Save Code')
 
         self.cncjob_tab_layout.addWidget(self.code_editor, 0, 0, 1, 5)
 
@@ -1473,7 +1519,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.shell_btn = self.toolbartools.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
 
         ### Drill Editor Toolbar ###
-        self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select 'Esc'")
+        self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select")
         self.add_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), 'Add Drill Hole')
         self.add_drill_array_btn = self.exc_edit_toolbar.addAction(
             QtGui.QIcon('share/addarray16.png'), 'Add Drill Hole Array')
@@ -1508,12 +1554,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/cutpath32.png'), 'Cut Path')
-        self.geo_copy_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), "Copy Objects 'c'")
-        self.geo_rotate_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/rotate.png'), "Rotate Objects 'Space'")
-        self.geo_delete_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'), "Delete Shape '-'")
+        self.geo_copy_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), "Copy Objects")
+        self.geo_delete_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'), "Delete Shape")
+        self.geo_transform_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/transform.png'), "Transformations")
 
         self.geo_edit_toolbar.addSeparator()
-        self.geo_move_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Objects 'm'")
+        self.geo_move_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), "Move Objects")
 
         ### Snap Toolbar ###
         # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
@@ -1647,7 +1693,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Rotate Object by 90 degree CCW
                 if key == QtCore.Qt.Key_R:
-                    self.app.on_rotate(silent=True, preset=-90)
+                    self.app.on_rotate(silent=True, preset=-self.app.defaults['tools_transform_rotate'])
                     return
 
                 # Run a Script
@@ -1691,6 +1737,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.dblsidedtool.run()
                     return
 
+                # Solder Paste Dispensing Tool
+                if key == QtCore.Qt.Key_K:
+                    self.app.paste_tool.run()
+                    return
+
                 # Film Tool
                 if key == QtCore.Qt.Key_L:
                     self.app.film_tool.run()
@@ -1709,6 +1760,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Transformation Tool
                 if key == QtCore.Qt.Key_R:
                     self.app.transform_tool.run()
+                    return
+
+                # View Source Object Content
+                if key == QtCore.Qt.Key_S:
+                    self.app.on_view_source()
                     return
 
                 # Cutout Tool
@@ -1730,13 +1786,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_F1 or key == 'F1':
                     webbrowser.open(self.app.manual_url)
 
-                # Open Video Help
-                if key == QtCore.Qt.Key_F2 or key == 'F2':
-                    webbrowser.open(self.app.video_url)
-
                 # Show shortcut list
                 if key == QtCore.Qt.Key_F3 or key == 'F3':
                     self.app.on_shortcut_list()
+
+                # Open Video Help
+                if key == QtCore.Qt.Key_F4 or key == 'F4':
+                    webbrowser.open(self.app.video_url)
 
                 # Switch to Project Tab
                 if key == QtCore.Qt.Key_1:
@@ -1818,7 +1874,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Rotate Object by 90 degree CW
                 if key == QtCore.Qt.Key_R:
-                    self.app.on_rotate(silent=True, preset=90)
+                    self.app.on_rotate(silent=True, preset=self.app.defaults['tools_transform_rotate'])
 
                 # Shell toggle
                 if key == QtCore.Qt.Key_S:
@@ -1865,10 +1921,51 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.measurement_tool.run()
                     return
 
+                # Cut Action Tool
+                if key == QtCore.Qt.Key_X or key == 'X':
+                    if self.app.geo_editor.get_selected() is not None:
+                        self.app.geo_editor.cutpath()
+                    else:
+                        msg = 'Please first select a geometry item to be cutted\n' \
+                              'then select the geometry item that will be cutted\n' \
+                              'out of the first item. In the end press ~X~ key or\n' \
+                              'the toolbar button.'
+
+                        messagebox = QtWidgets.QMessageBox()
+                        messagebox.setText(msg)
+                        messagebox.setWindowTitle("Warning")
+                        messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                        messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                        messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                        messagebox.exec_()
+                    return
+
             elif modifiers == QtCore.Qt.ShiftModifier:
-                pass
+                # Skew on X axis
+                if key == QtCore.Qt.Key_X or key == 'X':
+                    self.app.geo_editor.transform_tool.on_skewx_key()
+                    return
+
+                # Skew on Y axis
+                if key == QtCore.Qt.Key_Y or key == 'Y':
+                    self.app.geo_editor.transform_tool.on_skewy_key()
+                    return
             elif modifiers == QtCore.Qt.AltModifier:
-                pass
+
+                # Transformation Tool
+                if key == QtCore.Qt.Key_R or key == 'R':
+                    self.app.geo_editor.select_tool('transform')
+                    return
+
+                # Offset on X axis
+                if key == QtCore.Qt.Key_X or key == 'X':
+                    self.app.geo_editor.transform_tool.on_offx_key()
+                    return
+
+                # Offset on Y axis
+                if key == QtCore.Qt.Key_Y or key == 'Y':
+                    self.app.geo_editor.transform_tool.on_offy_key()
+                    return
             elif modifiers == QtCore.Qt.NoModifier:
                 # toggle display of Notebook area
                 if key == QtCore.Qt.Key_QuoteLeft or key == '`':
@@ -1878,7 +1975,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # complete automatically, like a polygon or path.
                 if key == QtCore.Qt.Key_Enter or key == 'Enter':
                     if isinstance(self.app.geo_editor.active_tool, FCShapeTool):
-                        if self.app.geo_editor.active_tool.name == 'fc_rotate':
+                        if self.app.geo_editor.active_tool.name == 'rotate':
                             self.app.geo_editor.active_tool.make()
 
                             if self.app.geo_editor.active_tool.complete:
@@ -1906,10 +2003,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.inform.emit("[WARNING_NOTCL]Cancelled.")
 
                     self.app.geo_editor.delete_utility_geometry()
+
+                    # deselect any shape that might be selected
+                    self.app.geo_editor.selected = []
+
                     self.app.geo_editor.replot()
-                    # self.select_btn.setChecked(True)
-                    # self.on_tool_select('select')
                     self.app.geo_editor.select_tool('select')
+
+                    # hide the notebook
+                    self.app.ui.splitter.setSizes([0, 1])
                     return
 
                 # Delete selected object
@@ -1919,10 +2021,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Move
                 if key == QtCore.Qt.Key_Space or key == 'Space':
-                    self.app.ui.geo_rotate_btn.setChecked(True)
-                    self.app.geo_editor.on_tool_select('rotate')
-                    self.app.geo_editor.active_tool.set_origin(
-                        self.app.geo_editor.snap(self.app.geo_editor.x, self.app.geo_editor.y))
+                    self.app.geo_editor.transform_tool.on_rotate_key()
 
                 if key == QtCore.Qt.Key_Minus or key == '-':
                     self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'],
@@ -1954,11 +2053,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Copy
                 if key == QtCore.Qt.Key_C or key == 'C':
-                    self.app.ui.geo_copy_btn.setChecked(True)
-                    self.app.geo_editor.on_tool_select('copy')
-                    self.app.geo_editor.active_tool.set_origin(self.app.geo_editor.snap(
-                        self.app.geo_editor.x, self.app.geo_editor.y))
-                    self.app.inform.emit("Click on target point.")
+                    self.app.geo_editor.on_copy_click()
 
                 # Substract Tool
                 if key == QtCore.Qt.Key_E or key == 'E':
@@ -2057,23 +2152,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_V or key == 'V':
                     self.app.on_zoom_fit(None)
 
-                # Cut Action Tool
+                # Flip on X axis
                 if key == QtCore.Qt.Key_X or key == 'X':
-                    if self.app.geo_editor.get_selected() is not None:
-                        self.app.geo_editor.cutpath()
-                    else:
-                        msg = 'Please first select a geometry item to be cutted\n' \
-                              'then select the geometry item that will be cutted\n' \
-                              'out of the first item. In the end press ~X~ key or\n' \
-                              'the toolbar button.' \
+                    self.app.geo_editor.transform_tool.on_flipx()
+                    return
 
-                        messagebox = QtWidgets.QMessageBox()
-                        messagebox.setText(msg)
-                        messagebox.setWindowTitle("Warning")
-                        messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-                        messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                        messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-                        messagebox.exec_()
+                # Flip on Y axis
+                if key == QtCore.Qt.Key_Y or key == 'Y':
+                    self.app.geo_editor.transform_tool.on_flipy()
+                    return
 
                 # Propagate to tool
                 response = None
@@ -2177,7 +2264,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.exc_editor.x = self.app.mouse[0]
                     self.app.exc_editor.y = self.app.mouse[1]
 
-                    self.app.exc_editor.select_tool('add_array')
+                    self.app.exc_editor.select_tool('drill_array')
                     return
 
                 # Copy
@@ -2186,7 +2273,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     if self.app.exc_editor.selected:
                         self.app.inform.emit("Click on target point.")
                         self.app.ui.copy_drill_btn.setChecked(True)
-                        self.app.exc_editor.on_tool_select('copy')
+                        self.app.exc_editor.on_tool_select('drill_copy')
                         self.app.exc_editor.active_tool.set_origin(
                             (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
                     else:
@@ -2202,7 +2289,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.exc_editor.x = self.app.mouse[0]
                     self.app.exc_editor.y = self.app.mouse[1]
 
-                    self.app.exc_editor.select_tool('add')
+                    self.app.exc_editor.select_tool('drill_add')
                     return
 
                 # Grid Snap
@@ -2232,7 +2319,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     if self.app.exc_editor.selected:
                         self.app.inform.emit("Click on target point.")
                         self.app.ui.move_drill_btn.setChecked(True)
-                        self.app.exc_editor.on_tool_select('move')
+                        self.app.exc_editor.on_tool_select('drill_move')
                         self.app.exc_editor.active_tool.set_origin(
                             (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
                     else:
@@ -2242,7 +2329,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Resize Tool
                 if key == QtCore.Qt.Key_R or key == 'R':
                     self.app.exc_editor.launched_from_shortcuts = True
-                    self.app.exc_editor.select_tool('resize')
+                    self.app.exc_editor.select_tool('drill_resize')
                     return
 
                 # Add Tool
@@ -2345,7 +2432,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         grect = self.geometry()
 
         # self.splitter.sizes()[0] is actually the size of the "notebook"
-        self.geom_update.emit(grect.x(), grect.y(), grect.width(), grect.height(), self.splitter.sizes()[0])
+        if not self.isMaximized():
+            self.geom_update.emit(grect.x(), grect.y(), grect.width(), grect.height(), self.splitter.sizes()[0])
+
         self.final_save.emit()
 
         if self.app.should_we_quit is True:
@@ -2358,6 +2447,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             # save toolbar state to file
             settings = QSettings("Open Source", "FlatCAM")
             settings.setValue('saved_gui_state', self.saveState())
+            settings.setValue('maximized_gui', self.isMaximized())
 
             # This will write the setting to the platform specific storage.
             del settings
@@ -2380,8 +2470,13 @@ class GeneralPreferencesUI(QtWidgets.QWidget):
         self.general_gui_group = GeneralGUIPrefGroupUI()
         self.general_gui_group.setFixedWidth(250)
 
+        self.general_gui_set_group = GeneralGUISetGroupUI()
+        self.general_gui_set_group.setFixedWidth(250)
+
         self.layout.addWidget(self.general_app_group)
         self.layout.addWidget(self.general_gui_group)
+        self.layout.addWidget(self.general_gui_set_group)
+
         self.layout.addStretch()
 
 
@@ -2467,22 +2562,33 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.tools_calculators_group = ToolsCalculatorsPrefGroupUI()
         self.tools_calculators_group.setMinimumWidth(220)
 
+        self.tools_transform_group = ToolsTransformPrefGroupUI()
+        self.tools_transform_group.setMinimumWidth(200)
+
+        self.tools_solderpaste_group = ToolsSolderpastePrefGroupUI()
+        self.tools_solderpaste_group.setMinimumWidth(200)
+
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.tools_ncc_group)
         self.vlay.addWidget(self.tools_paint_group)
+        self.vlay.addWidget(self.tools_film_group)
 
         self.vlay1 = QtWidgets.QVBoxLayout()
         self.vlay1.addWidget(self.tools_cutout_group)
+        self.vlay1.addWidget(self.tools_transform_group)
         self.vlay1.addWidget(self.tools_2sided_group)
-        self.vlay1.addWidget(self.tools_film_group)
 
         self.vlay2 = QtWidgets.QVBoxLayout()
         self.vlay2.addWidget(self.tools_panelize_group)
         self.vlay2.addWidget(self.tools_calculators_group)
 
+        self.vlay3 = QtWidgets.QVBoxLayout()
+        self.vlay3.addWidget(self.tools_solderpaste_group)
+
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)
         self.layout.addLayout(self.vlay2)
+        self.layout.addLayout(self.vlay3)
 
         self.layout.addStretch()
 
@@ -2745,22 +2851,10 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_11.addWidget(self.sel_draw_color_button)
         self.form_box_child_11.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
-        # Theme selection
-        self.layout_label = QtWidgets.QLabel('Layout:')
-        self.alt_sf_color_label.setToolTip(
-            "Select an layout for FlatCAM."
-        )
-        self.layout_combo = FCComboBox()
-        self.layout_combo.addItem("Choose ...")
-        self.layout_combo.addItem("Standard")
-        self.layout_combo.addItem("Compact")
-        self.layout_combo.setCurrentIndex(0)
-
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
         # Add (label - input field) pair to the QFormLayout
-
         self.form_box.addRow(self.spacelabel, self.spacelabel)
 
         self.form_box.addRow(self.gridx_label, self.gridx_entry)
@@ -2783,11 +2877,120 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.sel_draw_color_label, self.form_box_child_11)
 
         self.form_box.addRow(self.spacelabel, self.spacelabel)
-        self.form_box.addRow(self.layout_label, self.layout_combo)
+
         # Add the QFormLayout that holds the Application general defaults
         # to the main layout of this TAB
         self.layout.addLayout(self.form_box)
 
+
+class GeneralGUISetGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        super(GeneralGUISetGroupUI, self).__init__(self)
+
+        self.setTitle(str("GUI Settings"))
+
+        # Create a form layout for the Application general settings
+        self.form_box = QtWidgets.QFormLayout()
+
+
+        # Layout selection
+        self.layout_label = QtWidgets.QLabel('Layout:')
+        self.layout_label.setToolTip(
+            "Select an layout for FlatCAM.\n"
+            "It is applied immediately."
+        )
+        self.layout_combo = FCComboBox()
+        self.layout_combo.addItem("Choose ...")
+        self.layout_combo.addItem("Standard")
+        self.layout_combo.addItem("Compact")
+        self.layout_combo.setCurrentIndex(0)
+
+        # Style selection
+        self.style_label = QtWidgets.QLabel('Style:')
+        self.style_label.setToolTip(
+            "Select an style for FlatCAM.\n"
+            "It will be applied at the next app start."
+        )
+        self.style_combo = FCComboBox()
+        self.style_combo.addItems(QtWidgets.QStyleFactory.keys())
+        # find current style
+        index = self.style_combo.findText(QtWidgets.qApp.style().objectName(), QtCore.Qt.MatchFixedString)
+        self.style_combo.setCurrentIndex(index)
+        self.style_combo.activated[str].connect(self.handle_style)
+
+        # Enable High DPI Support
+        self.hdpi_label = QtWidgets.QLabel('HDPI Support:')
+        self.hdpi_label.setToolTip(
+            "Enable High DPI support for FlatCAM.\n"
+            "It will be applied at the next app start."
+        )
+        self.hdpi_cb = FCCheckBox()
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("hdpi"):
+            self.hdpi_cb.set_value(settings.value('hdpi', type=int))
+        else:
+            self.hdpi_cb.set_value(False)
+        self.hdpi_cb.stateChanged.connect(self.handle_hdpi)
+
+        # Clear Settings
+        self.clear_label = QtWidgets.QLabel('Clear GUI Settings:')
+        self.clear_label.setToolTip(
+            "Clear the GUI settings for FlatCAM,\n"
+            "such as: layout, gui state, style, hdpi support etc."
+        )
+        self.clear_btn = FCButton("Clear")
+        self.clear_btn.clicked.connect(self.handle_clear)
+        # Just to add empty rows
+        self.spacelabel = QtWidgets.QLabel('')
+
+        # Add (label - input field) pair to the QFormLayout
+        self.form_box.addRow(self.spacelabel, self.spacelabel)
+
+        self.form_box.addRow(self.layout_label, self.layout_combo)
+        self.form_box.addRow(self.style_label, self.style_combo)
+        self.form_box.addRow(self.hdpi_label, self.hdpi_cb)
+        self.form_box.addRow(self.clear_label, self.clear_btn)
+
+        # Add the QFormLayout that holds the Application general defaults
+        # to the main layout of this TAB
+        self.layout.addLayout(self.form_box)
+
+    def handle_style(self, style):
+        # set current style
+        settings = QSettings("Open Source", "FlatCAM")
+        settings.setValue('style', style)
+
+        # This will write the setting to the platform specific storage.
+        del settings
+
+    def handle_hdpi(self, state):
+        # set current HDPI
+        settings = QSettings("Open Source", "FlatCAM")
+        settings.setValue('hdpi', state)
+
+        # This will write the setting to the platform specific storage.
+        del settings
+
+    def handle_clear(self):
+        msgbox = QtWidgets.QMessageBox()
+        # msgbox.setText("<B>Save changes ...</B>")
+        msgbox.setText("Are you sure you want to delete the GUI Settings? "
+                       "\n"
+                       )
+        msgbox.setWindowTitle("Clear GUI Settings")
+        msgbox.setWindowIcon(QtGui.QIcon('share/trash32.png'))
+        msgbox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+        msgbox.setDefaultButton(QtWidgets.QMessageBox.No)
+
+        response = msgbox.exec_()
+
+        if response == QtWidgets.QMessageBox.Yes:
+            settings = QSettings("Open Source", "FlatCAM")
+            for key in settings.allKeys():
+                settings.remove(key)
+            # This will write the setting to the platform specific storage.
+            del settings
+            self.app.inform.emit("[success] GUI settings deleted ...")
 
 class GeneralAppPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):
@@ -2805,6 +3008,16 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                    "FLatCAM is started.")
         self.units_radio = RadioSet([{'label': 'IN', 'value': 'IN'},
                                      {'label': 'MM', 'value': 'MM'}])
+
+        # Application Level for FlatCAM
+        self.app_level_label = QtWidgets.QLabel('<b>APP. LEVEL:</b>')
+        self.app_level_label.setToolTip("Choose the default level of usage for FlatCAM.\n"
+                                        "BASIC level -> reduced functionality, best for beginner's.\n"
+                                        "ADVANCED level -> full functionality.\n\n"
+                                        "The choice here will influence the parameters in\n"
+                                        "the Selected Tab for all kinds of FlatCAM objects.")
+        self.app_level_radio = RadioSet([{'label': 'Basic', 'value': 'b'},
+                                         {'label': 'Advanced', 'value': 'a'}])
 
         # Languages for FlatCAM
         self.languagelabel = QtWidgets.QLabel('<b>Languages:</b>')
@@ -2896,6 +3109,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         # Add (label - input field) pair to the QFormLayout
         self.form_box.addRow(self.unitslabel, self.units_radio)
+        self.form_box.addRow(self.app_level_label, self.app_level_radio)
         self.form_box.addRow(self.languagelabel, self.language_cb)
         self.form_box.addRow(self.languagespace, self.language_apply_btn)
 
@@ -2914,6 +3128,43 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Add the QFormLayout that holds the Application general defaults
         # to the main layout of this TAB
         self.layout.addLayout(self.form_box)
+
+        # hlay = QtWidgets.QHBoxLayout()
+        # self.layout.addLayout(hlay)
+        # hlay.addStretch()
+
+        # Save compressed project CB
+        self.save_type_cb = FCCheckBox('Save Compressed Project')
+        self.save_type_cb.setToolTip(
+            "Whether to save a compressed or uncompressed project.\n"
+            "When checked it will save a compressed FlatCAM project."
+        )
+        # self.advanced_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.layout.addWidget(self.save_type_cb)
+
+        hlay1 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay1)
+
+        # Project LZMA Comppression Level
+        self.compress_combo = FCComboBox()
+        self.compress_label = QtWidgets.QLabel('Compress Level:')
+        self.compress_label.setToolTip(
+            "The level of compression used when saving\n"
+            "a FlatCAM project. Higher value means better compression\n"
+            "but require more RAM and time."
+        )
+        # self.advanced_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.compress_combo.addItems([str(i) for i in range(10)])
+
+        hlay1.addWidget(self.compress_label)
+        hlay1.addWidget(self.compress_combo)
+
+        self.proj_ois = OptionalInputSection(self.save_type_cb, [self.compress_label, self.compress_combo], True)
+
+        self.form_box_2 = QtWidgets.QFormLayout()
+        self.layout.addLayout(self.form_box_2)
+
+        self.layout.addStretch()
 
 
 class GerberGenPrefGroupUI(OptionsGroupUI):
@@ -3330,8 +3581,11 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
             self.optimization_time_label.setDisabled(True)
             self.optimization_time_entry.setDisabled(True)
 
-        ## Create CNC Job
-        self.cncjob_label = QtWidgets.QLabel('<b>Create CNC Job</b>')
+        ######################
+        ## ADVANCED OPTIONS ##
+        ######################
+
+        self.cncjob_label = QtWidgets.QLabel('<b>Advanced Options:</b>')
         self.cncjob_label.setToolTip(
             "Parameters used to create a CNC Job object\n"
             "for this drill object that are not changed very often."
@@ -3611,8 +3865,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         # Plot options
         self.export_options_label = QtWidgets.QLabel("<b>Export Options:</b>")
         self.export_options_label.setToolTip(
-            "The parameters set here are used in the file exported<cr>"
-            "when using the <b>File -> Export -> Export Excellon</b> menu entry."
+            "The parameters set here are used in the file exported\n"
+            "when using the File -> Export -> Export Excellon menu entry."
         )
         self.layout.addWidget(self.export_options_label)
 
@@ -3776,9 +4030,9 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
 
 
         # ------------------------------
-        ## Create CNC Job
+        ## Advanced Options
         # ------------------------------
-        self.cncjob_label = QtWidgets.QLabel('<b>Create CNC Job:</b>')
+        self.cncjob_label = QtWidgets.QLabel('<b>Advanced Options:</b>')
         self.cncjob_label.setToolTip(
             "Parameters to create a CNC Job object\n"
             "tracing the contours of a Geometry object."
@@ -4628,6 +4882,19 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.rows_label, 3, 0)
         grid0.addWidget(self.prows, 3, 1)
 
+        ## Type of resulting Panel object
+        self.panel_type_radio = RadioSet([{'label': 'Gerber', 'value': 'gerber'},
+                                     {'label': 'Geo', 'value': 'geometry'}])
+        self.panel_type_label = QtWidgets.QLabel("Panel Type:")
+        self.panel_type_label.setToolTip(
+            "Choose the type of object for the panel object:\n"
+            "- Gerber\n"
+            "- Geometry"
+        )
+
+        grid0.addWidget(self.panel_type_label, 4, 0)
+        grid0.addWidget(self.panel_type_radio, 4, 1)
+
         ## Constrains
         self.pconstrain_cb = FCCheckBox("Constrain within:")
         self.pconstrain_cb.setToolTip(
@@ -4637,7 +4904,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
             "the final panel will have as many columns and rows as\n"
             "they fit completely within selected area."
         )
-        grid0.addWidget(self.pconstrain_cb, 4, 0)
+        grid0.addWidget(self.pconstrain_cb, 5, 0)
 
         self.px_width_entry = FCEntry()
         self.x_width_lbl = QtWidgets.QLabel("Width (DX):")
@@ -4645,8 +4912,8 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
             "The width (DX) within which the panel must fit.\n"
             "In current units."
         )
-        grid0.addWidget(self.x_width_lbl, 5, 0)
-        grid0.addWidget(self.px_width_entry, 5, 1)
+        grid0.addWidget(self.x_width_lbl, 6, 0)
+        grid0.addWidget(self.px_width_entry, 6, 1)
 
         self.py_height_entry = FCEntry()
         self.y_height_lbl = QtWidgets.QLabel("Height (DY):")
@@ -4654,8 +4921,8 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
             "The height (DY)within which the panel must fit.\n"
             "In current units."
         )
-        grid0.addWidget(self.y_height_lbl, 6, 0)
-        grid0.addWidget(self.py_height_entry, 6, 1)
+        grid0.addWidget(self.y_height_lbl, 7, 0)
+        grid0.addWidget(self.py_height_entry, 7, 1)
 
         self.layout.addStretch()
 
@@ -4753,6 +5020,306 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
                                      "In microns.")
         grid1.addWidget(self.growth_label, 3, 0)
         grid1.addWidget(self.growth_entry, 3, 1)
+
+        self.layout.addStretch()
+
+
+class ToolsTransformPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+
+        super(ToolsTransformPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("Transform Tool Options"))
+
+        ## Transformations
+        self.transform_label = QtWidgets.QLabel("<b>Parameters:</b>")
+        self.transform_label.setToolTip(
+            "Various transformations that can be applied\n"
+            "on a FlatCAM object."
+        )
+        self.layout.addWidget(self.transform_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        ## Rotate Angle
+        self.rotate_entry = FCEntry()
+        self.rotate_label = QtWidgets.QLabel("Rotate Angle:")
+        self.rotate_label.setToolTip(
+            "Angle for rotation. In degrees."
+        )
+        grid0.addWidget(self.rotate_label, 0, 0)
+        grid0.addWidget(self.rotate_entry, 0, 1)
+
+        ## Skew/Shear Angle on X axis
+        self.skewx_entry = FCEntry()
+        self.skewx_label = QtWidgets.QLabel("Skew_X angle:")
+        self.skewx_label.setToolTip(
+             "Angle for Skew/Shear on X axis. In degrees."
+        )
+        grid0.addWidget(self.skewx_label, 1, 0)
+        grid0.addWidget(self.skewx_entry, 1, 1)
+
+        ## Skew/Shear Angle on Y axis
+        self.skewy_entry = FCEntry()
+        self.skewy_label = QtWidgets.QLabel("Skew_Y angle:")
+        self.skewy_label.setToolTip(
+             "Angle for Skew/Shear on Y axis. In degrees."
+        )
+        grid0.addWidget(self.skewy_label, 2, 0)
+        grid0.addWidget(self.skewy_entry, 2, 1)
+
+        ## Scale factor on X axis
+        self.scalex_entry = FCEntry()
+        self.scalex_label = QtWidgets.QLabel("Scale_X factor:")
+        self.scalex_label.setToolTip(
+            "Factor for scaling on X axis."
+        )
+        grid0.addWidget(self.scalex_label, 3, 0)
+        grid0.addWidget(self.scalex_entry, 3, 1)
+
+        ## Scale factor on X axis
+        self.scaley_entry = FCEntry()
+        self.scaley_label = QtWidgets.QLabel("Scale_Y factor:")
+        self.scaley_label.setToolTip(
+            "Factor for scaling on Y axis."
+        )
+        grid0.addWidget(self.scaley_label, 4, 0)
+        grid0.addWidget(self.scaley_entry, 4, 1)
+
+        ## Link Scale factors
+        self.link_cb = FCCheckBox("Link")
+        self.link_cb.setToolTip(
+            "Scale the selected object(s)\n"
+            "using the Scale_X factor for both axis."
+        )
+        grid0.addWidget(self.link_cb, 5, 0)
+
+        ## Scale Reference
+        self.reference_cb = FCCheckBox("Scale Reference")
+        self.reference_cb.setToolTip(
+            "Scale the selected object(s)\n"
+            "using the origin reference when checked,\n"
+            "and the center of the biggest bounding box\n"
+            "of the selected objects when unchecked."
+        )
+        grid0.addWidget(self.reference_cb, 5, 1)
+
+        ## Offset distance on X axis
+        self.offx_entry = FCEntry()
+        self.offx_label = QtWidgets.QLabel("Offset_X val:")
+        self.offx_label.setToolTip(
+            "Distance to offset on X axis. In current units."
+        )
+        grid0.addWidget(self.offx_label, 6, 0)
+        grid0.addWidget(self.offx_entry, 6, 1)
+
+        ## Offset distance on Y axis
+        self.offy_entry = FCEntry()
+        self.offy_label = QtWidgets.QLabel("Offset_Y val:")
+        self.offy_label.setToolTip(
+            "Distance to offset on Y axis. In current units."
+        )
+        grid0.addWidget(self.offy_label, 7, 0)
+        grid0.addWidget(self.offy_entry, 7, 1)
+
+        ## Mirror (Flip) Reference Point
+        self.mirror_reference_cb = FCCheckBox("Mirror Reference")
+        self.mirror_reference_cb.setToolTip(
+            "Flip the selected object(s)\n"
+            "around the point in Point Entry Field.\n"
+            "\n"
+            "The point coordinates can be captured by\n"
+            "left click on canvas together with pressing\n"
+            "SHIFT key. \n"
+            "Then click Add button to insert coordinates.\n"
+            "Or enter the coords in format (x, y) in the\n"
+            "Point Entry field and click Flip on X(Y)")
+        grid0.addWidget(self.mirror_reference_cb, 8, 1)
+
+        self.flip_ref_label = QtWidgets.QLabel(" Mirror Ref. Point:")
+        self.flip_ref_label.setToolTip(
+            "Coordinates in format (x, y) used as reference for mirroring.\n"
+            "The 'x' in (x, y) will be used when using Flip on X and\n"
+            "the 'y' in (x, y) will be used when using Flip on Y and"
+        )
+        self.flip_ref_entry = EvalEntry2("(0, 0)")
+
+        grid0.addWidget(self.flip_ref_label, 9, 0)
+        grid0.addWidget(self.flip_ref_entry, 9, 1)
+
+        self.layout.addStretch()
+
+
+class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+
+        super(ToolsSolderpastePrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("SolderPaste Tool Options"))
+
+        ## Solder Paste Dispensing
+        self.solderpastelabel = QtWidgets.QLabel("<b>Parameters:</b>")
+        self.solderpastelabel.setToolTip(
+            "A tool to create GCode for dispensing\n"
+            "solder paste onto a PCB."
+        )
+        self.layout.addWidget(self.solderpastelabel)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        # Nozzle Tool Diameters
+        nozzletdlabel = QtWidgets.QLabel('Tools dia:')
+        nozzletdlabel.setToolTip(
+            "Diameters of nozzle tools, separated by ','"
+        )
+        self.nozzle_tool_dia_entry = FCEntry()
+        grid0.addWidget(nozzletdlabel, 0, 0)
+        grid0.addWidget(self.nozzle_tool_dia_entry, 0, 1)
+
+        # New Nozzle Tool Dia
+        self.addtool_entry_lbl = QtWidgets.QLabel('<b>New Nozzle Dia:</b>')
+        self.addtool_entry_lbl.setToolTip(
+            "Diameter for the new Nozzle tool to add in the Tool Table"
+        )
+        self.addtool_entry = FCEntry()
+        grid0.addWidget(self.addtool_entry_lbl, 1, 0)
+        grid0.addWidget(self.addtool_entry, 1, 1)
+
+        # Z dispense start
+        self.z_start_entry = FCEntry()
+        self.z_start_label = QtWidgets.QLabel("Z Dispense Start:")
+        self.z_start_label.setToolTip(
+            "The height (Z) when solder paste dispensing starts."
+        )
+        grid0.addWidget(self.z_start_label, 2, 0)
+        grid0.addWidget(self.z_start_entry, 2, 1)
+
+        # Z dispense
+        self.z_dispense_entry = FCEntry()
+        self.z_dispense_label = QtWidgets.QLabel("Z Dispense:")
+        self.z_dispense_label.setToolTip(
+            "The height (Z) when doing solder paste dispensing."
+        )
+        grid0.addWidget(self.z_dispense_label, 3, 0)
+        grid0.addWidget(self.z_dispense_entry, 3, 1)
+
+        # Z dispense stop
+        self.z_stop_entry = FCEntry()
+        self.z_stop_label = QtWidgets.QLabel("Z Dispense Stop:")
+        self.z_stop_label.setToolTip(
+            "The height (Z) when solder paste dispensing stops."
+        )
+        grid0.addWidget(self.z_stop_label, 4, 0)
+        grid0.addWidget(self.z_stop_entry, 4, 1)
+
+        # Z travel
+        self.z_travel_entry = FCEntry()
+        self.z_travel_label = QtWidgets.QLabel("Z Travel:")
+        self.z_travel_label.setToolTip(
+            "The height (Z) for travel between pads\n"
+            "(without dispensing solder paste)."
+        )
+        grid0.addWidget(self.z_travel_label, 5, 0)
+        grid0.addWidget(self.z_travel_entry, 5, 1)
+
+        # Z toolchange location
+        self.z_toolchange_entry = FCEntry()
+        self.z_toolchange_label = QtWidgets.QLabel("Z Toolchange:")
+        self.z_toolchange_label.setToolTip(
+            "The height (Z) for tool (nozzle) change."
+        )
+        grid0.addWidget(self.z_toolchange_label, 6, 0)
+        grid0.addWidget(self.z_toolchange_entry, 6, 1)
+
+        # X,Y Toolchange location
+        self.xy_toolchange_entry = FCEntry()
+        self.xy_toolchange_label = QtWidgets.QLabel("XY Toolchange:")
+        self.xy_toolchange_label.setToolTip(
+            "The X,Y location for tool (nozzle) change.\n"
+            "The format is (x, y) where x and y are real numbers."
+        )
+        grid0.addWidget(self.xy_toolchange_label, 7, 0)
+        grid0.addWidget(self.xy_toolchange_entry, 7, 1)
+
+        # Feedrate X-Y
+        self.frxy_entry = FCEntry()
+        self.frxy_label = QtWidgets.QLabel("Feedrate X-Y:")
+        self.frxy_label.setToolTip(
+            "Feedrate (speed) while moving on the X-Y plane."
+        )
+        grid0.addWidget(self.frxy_label, 8, 0)
+        grid0.addWidget(self.frxy_entry, 8, 1)
+
+        # Feedrate Z
+        self.frz_entry = FCEntry()
+        self.frz_label = QtWidgets.QLabel("Feedrate Z:")
+        self.frz_label.setToolTip(
+            "Feedrate (speed) while moving vertically\n"
+            "(on Z plane)."
+        )
+        grid0.addWidget(self.frz_label, 9, 0)
+        grid0.addWidget(self.frz_entry, 9, 1)
+
+        # Feedrate Z Dispense
+        self.frz_dispense_entry = FCEntry()
+        self.frz_dispense_label = QtWidgets.QLabel("Feedrate Z Dispense:")
+        self.frz_dispense_label.setToolTip(
+            "Feedrate (speed) while moving up vertically\n"
+            " to Dispense position (on Z plane)."
+        )
+        grid0.addWidget(self.frz_dispense_label, 10, 0)
+        grid0.addWidget(self.frz_dispense_entry, 10, 1)
+
+        # Spindle Speed Forward
+        self.speedfwd_entry = FCEntry()
+        self.speedfwd_label = QtWidgets.QLabel("Spindle Speed FWD:")
+        self.speedfwd_label.setToolTip(
+            "The dispenser speed while pushing solder paste\n"
+            "through the dispenser nozzle."
+        )
+        grid0.addWidget(self.speedfwd_label, 11, 0)
+        grid0.addWidget(self.speedfwd_entry, 11, 1)
+
+        # Dwell Forward
+        self.dwellfwd_entry = FCEntry()
+        self.dwellfwd_label = QtWidgets.QLabel("Dwell FWD:")
+        self.dwellfwd_label.setToolTip(
+            "Pause after solder dispensing."
+        )
+        grid0.addWidget(self.dwellfwd_label, 12, 0)
+        grid0.addWidget(self.dwellfwd_entry, 12, 1)
+
+        # Spindle Speed Reverse
+        self.speedrev_entry = FCEntry()
+        self.speedrev_label = QtWidgets.QLabel("Spindle Speed REV:")
+        self.speedrev_label.setToolTip(
+            "The dispenser speed while retracting solder paste\n"
+            "through the dispenser nozzle."
+        )
+        grid0.addWidget(self.speedrev_label, 13, 0)
+        grid0.addWidget(self.speedrev_entry, 13, 1)
+
+        # Dwell Reverse
+        self.dwellrev_entry = FCEntry()
+        self.dwellrev_label = QtWidgets.QLabel("Dwell REV:")
+        self.dwellrev_label.setToolTip(
+            "Pause after solder paste dispenser retracted,\n"
+            "to allow pressure equilibrium."
+        )
+        grid0.addWidget(self.dwellrev_label, 14, 0)
+        grid0.addWidget(self.dwellrev_entry, 14, 1)
+
+        # Postprocessors
+        pp_label = QtWidgets.QLabel('PostProcessors:')
+        pp_label.setToolTip(
+            "Files that control the GCode generation."
+        )
+
+        self.pp_combo = FCComboBox()
+        grid0.addWidget(pp_label, 15, 0)
+        grid0.addWidget(self.pp_combo, 15, 1)
 
         self.layout.addStretch()
 

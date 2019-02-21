@@ -1,14 +1,9 @@
 from FlatCAMTool import FlatCAMTool
-from copy import copy,deepcopy
 from ObjectCollection import *
 from FlatCAMApp import *
-from PyQt5 import QtGui, QtCore, QtWidgets
-from GUIElements import IntEntry, RadioSet, LengthEntry
-
-from FlatCAMObj import FlatCAMGeometry, FlatCAMExcellon, FlatCAMGerber
 
 
-class ToolCutOut(FlatCAMTool):
+class CutOut(FlatCAMTool):
 
     toolName = "Cutout PCB"
 
@@ -16,7 +11,14 @@ class ToolCutOut(FlatCAMTool):
         FlatCAMTool.__init__(self, app)
 
         ## Title
-        title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % self.toolName)
+        title_label = QtWidgets.QLabel("%s" % self.toolName)
+        title_label.setStyleSheet("""
+                        QLabel
+                        {
+                            font-size: 16px;
+                            font-weight: bold;
+                        }
+                        """)
         self.layout.addWidget(title_label)
 
         ## Form Layout

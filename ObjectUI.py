@@ -32,6 +32,19 @@ class ObjectUI(QtWidgets.QWidget):
         self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.title_box.addWidget(self.title_label, stretch=1)
 
+        ## App Level label
+        self.level = QtWidgets.QLabel("")
+        self.level.setToolTip(
+            "BASIC is suitable for a beginner. Many parameters\n"
+            "are hidden from the user in this mode.\n"
+            "ADVANCED mode will make available all parameters.\n\n"
+            "To change the application LEVEL, go to:\n"
+            "Edit -> Preferences -> General and check:\n"
+            "'APP. LEVEL' radio button."
+        )
+        self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.title_box.addWidget(self.level)
+
         ## Box box for custom widgets
         # This gets populated in offspring implementations.
         self.custom_box = QtWidgets.QVBoxLayout()
@@ -237,13 +250,13 @@ class GerberObjectUI(ObjectUI):
         grid1.addWidget(self.iso_overlap_entry, 2, 1)
 
         # Milling Type Radio Button
-        milling_type_label = QtWidgets.QLabel('Milling Type:')
-        milling_type_label.setToolTip(
+        self.milling_type_label = QtWidgets.QLabel('Milling Type:')
+        self.milling_type_label.setToolTip(
             "Milling type:\n"
             "- climb / best for precision milling and to reduce tool usage\n"
             "- conventional / useful when there is no backlash compensation"
         )
-        grid1.addWidget(milling_type_label, 3, 0)
+        grid1.addWidget(self.milling_type_label, 3, 0)
         self.milling_type_radio = RadioSet([{'label': 'Climb', 'value': 'cl'},
                                     {'label': 'Conv.', 'value': 'cv'}])
         grid1.addWidget(self.milling_type_radio, 3, 1)
@@ -256,13 +269,12 @@ class GerberObjectUI(ObjectUI):
         grid1.addWidget(self.combine_passes_cb, 4, 0)
 
         # generate follow
-        self.follow_cb = FCCheckBox(label='"Follow" Geo')
+        self.follow_cb = FCCheckBox(label='"Follow"')
         self.follow_cb.setToolTip(
             "Generate a 'Follow' geometry.\n"
             "This means that it will cut through\n"
-            "the middle of the trace.\n"
-            "Requires that the Gerber file to be\n"
-            "loaded with 'follow' parameter."
+            "the middle of the trace."
+
         )
         grid1.addWidget(self.follow_cb, 4, 1)
 
@@ -380,16 +392,19 @@ class GerberObjectUI(ObjectUI):
         # Rounded corners
         self.noncopper_rounded_cb = FCCheckBox(label="Rounded corners")
         self.noncopper_rounded_cb.setToolTip(
-            "Creates a Geometry objects with polygons\n"
-            "covering the copper-free areas of the PCB."
+            "Resulting geometry will have rounded corners."
         )
-        grid4.addWidget(self.noncopper_rounded_cb, 1, 0, 1, 2)
+        grid4.addWidget(self.noncopper_rounded_cb, 1, 0)
 
-        self.generate_noncopper_button = QtWidgets.QPushButton('Generate Geometry')
-        self.custom_box.addWidget(self.generate_noncopper_button)
+        self.generate_noncopper_button = QtWidgets.QPushButton('Generate Geo')
+        grid4.addWidget(self.generate_noncopper_button, 1, 1)
 
         ## Bounding box
         self.boundingbox_label = QtWidgets.QLabel('<b>Bounding Box:</b>')
+        self.boundingbox_label.setToolTip(
+            "Create a geometry surrounding the Gerber object.\n"
+            "Square shape."
+        )
         self.custom_box.addWidget(self.boundingbox_label)
 
         grid5 = QtWidgets.QGridLayout()
@@ -411,13 +426,13 @@ class GerberObjectUI(ObjectUI):
             "their radius is equal to\n"
             "the margin."
         )
-        grid5.addWidget(self.bbrounded_cb, 1, 0, 1, 2)
+        grid5.addWidget(self.bbrounded_cb, 1, 0)
 
-        self.generate_bb_button = QtWidgets.QPushButton('Generate Geometry')
+        self.generate_bb_button = QtWidgets.QPushButton('Generate Geo')
         self.generate_bb_button.setToolTip(
-            "Genrate the Geometry object."
+            "Generate the Geometry object."
         )
-        self.custom_box.addWidget(self.generate_bb_button)
+        grid5.addWidget(self.generate_bb_button, 1, 1)
 
 
 class ExcellonObjectUI(ObjectUI):
@@ -485,7 +500,7 @@ class ExcellonObjectUI(ObjectUI):
         self.tools_box.addWidget(self.tools_table)
 
         self.tools_table.setColumnCount(6)
-        self.tools_table.setHorizontalHeaderLabels(['#', 'Diameter', 'Drills', 'Slots', 'Offset', 'P'])
+        self.tools_table.setHorizontalHeaderLabels(['#', 'Diameter', 'Drills', 'Slots', 'Offset Z', 'P'])
         self.tools_table.setSortingEnabled(False)
 
         self.tools_table.horizontalHeaderItem(0).setToolTip(
@@ -562,22 +577,22 @@ class ExcellonObjectUI(ObjectUI):
         self.ois_tcz_e = OptionalInputSection(self.toolchange_cb, [self.toolchangez_entry])
 
         # Start move Z:
-        startzlabel = QtWidgets.QLabel("Start move Z:")
-        startzlabel.setToolTip(
+        self.estartz_label = QtWidgets.QLabel("Start move Z:")
+        self.estartz_label.setToolTip(
             "Tool height just before starting the work.\n"
             "Delete the value if you don't need this feature."
         )
-        grid1.addWidget(startzlabel, 4, 0)
+        grid1.addWidget(self.estartz_label, 4, 0)
         self.estartz_entry = FloatEntry()
         grid1.addWidget(self.estartz_entry, 4, 1)
 
         # End move Z:
-        endzlabel = QtWidgets.QLabel("End move Z:")
-        endzlabel.setToolTip(
+        self.eendz_label = QtWidgets.QLabel("End move Z:")
+        self.eendz_label.setToolTip(
             "Z-axis position (height) for\n"
             "the last move."
         )
-        grid1.addWidget(endzlabel, 5, 0)
+        grid1.addWidget(self.eendz_label, 5, 0)
         self.eendz_entry = LengthEntry()
         grid1.addWidget(self.eendz_entry, 5, 1)
 
@@ -593,13 +608,13 @@ class ExcellonObjectUI(ObjectUI):
         grid1.addWidget(self.feedrate_entry, 6, 1)
 
         # Excellon Rapid Feedrate
-        fr_rapid_label = QtWidgets.QLabel('Feedrate Rapids:')
-        fr_rapid_label.setToolTip(
+        self.feedrate_rapid_label = QtWidgets.QLabel('Feedrate Rapids:')
+        self.feedrate_rapid_label.setToolTip(
             "Tool speed while drilling\n"
             "(in units per minute).\n"
             "This is for the rapid move G00."
         )
-        grid1.addWidget(fr_rapid_label, 7, 0)
+        grid1.addWidget(self.feedrate_rapid_label, 7, 0)
         self.feedrate_rapid_entry = LengthEntry()
         grid1.addWidget(self.feedrate_rapid_entry, 7, 1)
 
@@ -976,7 +991,6 @@ class GeometryObjectUI(ObjectUI):
         )
         self.grid3.addWidget(self.mpass_cb, 4, 0)
 
-
         self.maxdepth_entry = LengthEntry()
         self.maxdepth_entry.setToolTip(
             "Depth of each pass (positive)."
@@ -1026,12 +1040,12 @@ class GeometryObjectUI(ObjectUI):
         # self.grid3.addWidget(self.gstartz_entry, 8, 1)
 
         # The Z value for the end move
-        endzlabel = QtWidgets.QLabel('End move Z:')
-        endzlabel.setToolTip(
+        self.endzlabel = QtWidgets.QLabel('End move Z:')
+        self.endzlabel.setToolTip(
             "This is the height (Z) at which the CNC\n"
             "will go as the last move."
         )
-        self.grid3.addWidget(endzlabel, 9, 0)
+        self.grid3.addWidget(self.endzlabel, 9, 0)
         self.gendz_entry = LengthEntry()
         self.grid3.addWidget(self.gendz_entry, 9, 1)
 
@@ -1056,13 +1070,13 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(self.cncplunge_entry, 11, 1)
 
         # Feedrate rapids
-        fr_rapidlabel = QtWidgets.QLabel('Feed Rate Rapids:')
-        fr_rapidlabel.setToolTip(
+        self.fr_rapidlabel = QtWidgets.QLabel('Feed Rate Rapids:')
+        self.fr_rapidlabel.setToolTip(
             "Cutting speed in the XY\n"
             "plane in units per minute\n"
             "for the rapid movements"
         )
-        self.grid3.addWidget(fr_rapidlabel, 12, 0)
+        self.grid3.addWidget(self.fr_rapidlabel, 12, 0)
         self.cncfeedrate_rapid_entry = LengthEntry()
         self.grid3.addWidget(self.cncfeedrate_rapid_entry, 12, 1)
 
@@ -1338,9 +1352,9 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addLayout(h_lay)
 
         # Edit GCode Button
-        self.modify_gcode_button = QtWidgets.QPushButton('Edit CNC Code')
+        self.modify_gcode_button = QtWidgets.QPushButton('View CNC Code')
         self.modify_gcode_button.setToolTip(
-            "Opens TAB to modify/print G-Code\n"
+            "Opens TAB to view/modify/print G-Code\n"
             "file."
         )
 

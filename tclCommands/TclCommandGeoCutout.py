@@ -225,7 +225,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
 
             def geo_init(geo_obj, app_obj):
                 try:
-                    geo = cutout_obj.isolation_geometry((dia / 2), iso_type=0, corner=2)
+                    geo = cutout_obj.isolation_geometry((dia / 2), iso_type=0, corner=2, follow=None)
                 except Exception as e:
                     log.debug("TclCommandGeoCutout.execute() --> %s" % str(e))
                     return 'fail'

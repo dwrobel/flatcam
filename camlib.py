@@ -92,8 +92,11 @@ class Geometry(object):
         # Final geometry: MultiPolygon or list (of geometry constructs)
         self.solid_geometry = None
 
+        # Final geometry: MultiLineString or list (of LineString or Points)
+        self.follow_geometry = None
+
         # Attributes to be included in serialization
-        self.ser_attrs = ["units", 'solid_geometry']
+        self.ser_attrs = ["units", 'solid_geometry', 'follow_geometry']
 
         # Flattened geometry (list of paths only)
         self.flat_geometry = []
@@ -500,7 +503,7 @@ class Geometry(object):
     #
     #     return self.flat_geometry, self.flat_geometry_rtree
 
-    def isolation_geometry(self, offset, iso_type=2, corner=None):
+    def isolation_geometry(self, offset, iso_type=2, corner=None, follow=None):
         """
         Creates contours around geometry at a given
         offset distance.
@@ -542,16 +545,24 @@ class Geometry(object):
         # the previously commented block is replaced with this block - regression - to solve the bug with multiple
         # isolation passes cutting from the copper features
         if offset == 0:
-            geo_iso = self.solid_geometry
-        else:
-            if corner is None:
-                geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
+            if follow:
+                geo_iso = self.follow_geometry
             else:
-                geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4), join_style=corner)
+                geo_iso = self.solid_geometry
+        else:
+            if follow:
+                geo_iso = self.follow_geometry
+            else:
+                if corner is None:
+                    geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
+                else:
+                    geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
+                                                         join_style=corner)
 
         # end of replaced block
-
-        if iso_type == 2:
+        if follow:
+            return geo_iso
+        elif iso_type == 2:
             return geo_iso
         elif iso_type == 0:
             return self.get_exteriors(geo_iso)
@@ -1375,8 +1386,6 @@ class Geometry(object):
         except AttributeError:
             self.app.inform.emit("[ERROR_NOTCL] Failed to mirror. No object selected")
 
-
-
     def rotate(self, angle, point):
         """
         Rotate an object by an angle (in degrees) around the provided coordinates.
@@ -1891,7 +1900,11 @@ class Gerber (Geometry):
         # Initialize parent
         Geometry.__init__(self, geo_steps_per_circle=int(steps_per_circle))
 
+        # will store the Gerber geometry's as solids
         self.solid_geometry = Polygon()
+
+        # will store the Gerber geometry's as paths
+        self.follow_geometry = []
 
         # Number format
         self.int_digits = 3
@@ -1913,11 +1926,13 @@ class Gerber (Geometry):
         # Aperture Macros
         self.aperture_macros = {}
 
+        self.source_file = ''
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from Geometry.
         self.ser_attrs += ['int_digits', 'frac_digits', 'apertures',
-                           'aperture_macros', 'solid_geometry']
+                           'aperture_macros', 'solid_geometry', 'source_file']
 
         #### Parser patterns ####
         # FS - Format Specification
@@ -2113,10 +2128,10 @@ class Gerber (Geometry):
                             yield line
                             break
 
-            self.parse_lines(line_generator(), follow=follow)
+            self.parse_lines(line_generator())
 
     #@profile
-    def parse_lines(self, glines, follow=False):
+    def parse_lines(self, glines):
         """
         Main Gerber parser. Reads Gerber and populates ``self.paths``, ``self.apertures``,
         ``self.flashes``, ``self.regions`` and ``self.units``.
@@ -2142,6 +2157,9 @@ class Gerber (Geometry):
         # subtracted from solid_geometry. This is ~100 times faster than
         # applying a union for every new polygon.
         poly_buffer = []
+
+        # store here the follow geometry
+        follow_buffer = []
 
         last_path_aperture = None
         current_aperture = None
@@ -2185,6 +2203,8 @@ class Gerber (Geometry):
             for gline in glines:
                 line_num += 1
 
+                self.source_file += gline + '\n'
+
                 ### Cleanup
                 gline = gline.strip(' \r\n')
                 # log.debug("Line=%3s %s" % (line_num, gline))
@@ -2206,10 +2226,11 @@ class Gerber (Geometry):
                         # --- Buffered ----
                         width = self.apertures[last_path_aperture]["size"]
 
-                        if follow:
-                            geo = LineString(path)
-                        else:
-                            geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+                        geo = LineString(path)
+                        if not geo.is_empty:
+                            follow_buffer.append(geo)
+
+                        geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                         if not geo.is_empty:
                             poly_buffer.append(geo)
 
@@ -2220,9 +2241,14 @@ class Gerber (Geometry):
                     # TODO: Remove when bug fixed
                     if len(poly_buffer) > 0:
                         if current_polarity == 'D':
+                            self.follow_geometry = self.solid_geometry.union(cascaded_union(follow_buffer))
                             self.solid_geometry = self.solid_geometry.union(cascaded_union(poly_buffer))
+
                         else:
-                            self.solid_geometry = self.solid_geometry.difference(cascaded_union(poly_buffer))
+                            self.follow_geometry = self.solid_geometry.difference(cascaded_union(follow_buffer))
+                            self.solid_geometry = self.solid_geometry.union(cascaded_union(poly_buffer))
+
+                        follow_buffer = []
                         poly_buffer = []
 
                     current_polarity = match.group(1)
@@ -2366,8 +2392,6 @@ class Gerber (Geometry):
                             log.debug("Bare op-code %d." % current_operation_code)
                             # flash = Gerber.create_flash_geometry(Point(path[-1]),
                             #                                      self.apertures[current_aperture])
-                            if follow:
-                                continue
                             flash = Gerber.create_flash_geometry(
                                 Point(current_x, current_y), self.apertures[current_aperture],
                                 int(self.steps_per_circle))
@@ -2403,10 +2427,11 @@ class Gerber (Geometry):
                             # --- Buffered ----
                             width = self.apertures[last_path_aperture]["size"]
 
-                            if follow:
-                                geo = LineString(path)
-                            else:
-                                geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+                            geo = LineString(path)
+                            if not geo.is_empty:
+                                follow_buffer.append(geo)
+
+                            geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                             if not geo.is_empty:
                                 poly_buffer.append(geo)
 
@@ -2422,10 +2447,11 @@ class Gerber (Geometry):
                         ## --- Buffered ---
                         width = self.apertures[last_path_aperture]["size"]
 
-                        if follow:
-                            geo = LineString(path)
-                        else:
-                            geo = LineString(path).buffer(width/1.999, int(self.steps_per_circle / 4))
+                        geo = LineString(path)
+                        if not geo.is_empty:
+                            follow_buffer.append(geo)
+
+                        geo = LineString(path).buffer(width/1.999, int(self.steps_per_circle / 4))
                         if not geo.is_empty:
                             poly_buffer.append(geo)
 
@@ -2443,6 +2469,7 @@ class Gerber (Geometry):
                     if current_operation_code == 2:
                         if geo:
                             if not geo.is_empty:
+                                follow_buffer.append(geo)
                                 poly_buffer.append(geo)
                             continue
 
@@ -2462,15 +2489,14 @@ class Gerber (Geometry):
                     #                      "aperture": last_path_aperture})
 
                     # --- Buffered ---
-                    if follow:
-                        region = Polygon()
-                    else:
-                        region = Polygon(path)
 
+                    region = Polygon()
+                    if not region.is_empty:
+                        follow_buffer.append(region)
+
+                    region = Polygon(path)
                     if not region.is_valid:
-                        if not follow:
-                            region = region.buffer(0, int(self.steps_per_circle / 4))
-
+                        region = region.buffer(0, int(self.steps_per_circle / 4))
                     if not region.is_empty:
                         poly_buffer.append(region)
 
@@ -2527,7 +2553,7 @@ class Gerber (Geometry):
                             if path[-1] != [linear_x, linear_y]:
                                 path.append([linear_x, linear_y])
 
-                            if follow == 0 and making_region is False:
+                            if  making_region is False:
                                 # if the aperture is rectangle then add a rectangular shape having as parameters the
                                 # coordinates of the start and end point and also the width and height
                                 # of the 'R' aperture
@@ -2553,29 +2579,35 @@ class Gerber (Geometry):
                             geo = None
 
                             ## --- BUFFERED ---
+                            # this treats the case when we are storing geometry as paths only
                             if making_region:
-                                if follow:
-                                    geo = Polygon()
-                                else:
-                                    elem = [linear_x, linear_y]
-                                    if elem != path[-1]:
-                                        path.append([linear_x, linear_y])
-                                    try:
-                                        geo = Polygon(path)
-                                    except ValueError:
-                                        log.warning("Problem %s %s" % (gline, line_num))
-                                        self.app.inform.emit("[ERROR] Region does not have enough points. "
-                                                             "File will be processed but there are parser errors. "
-                                                             "Line number: %s" % str(line_num))
+                                geo = Polygon()
+                            else:
+                                geo = LineString(path)
+                            try:
+                                if self.apertures[last_path_aperture]["type"] != 'R':
+                                    if not geo.is_empty:
+                                        follow_buffer.append(geo)
+                            except:
+                                follow_buffer.append(geo)
+
+                            # this treats the case when we are storing geometry as solids
+                            if making_region:
+                                elem = [linear_x, linear_y]
+                                if elem != path[-1]:
+                                    path.append([linear_x, linear_y])
+                                try:
+                                    geo = Polygon(path)
+                                except ValueError:
+                                    log.warning("Problem %s %s" % (gline, line_num))
+                                    self.app.inform.emit("[ERROR] Region does not have enough points. "
+                                                         "File will be processed but there are parser errors. "
+                                                         "Line number: %s" % str(line_num))
                             else:
                                 if last_path_aperture is None:
                                     log.warning("No aperture defined for curent path. (%d)" % line_num)
                                 width = self.apertures[last_path_aperture]["size"]  # TODO: WARNING this should fail!
-                                #log.debug("Line %d: Setting aperture to %s before buffering." % (line_num, last_path_aperture))
-                                if follow:
-                                    geo = LineString(path)
-                                else:
-                                    geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+                                geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
 
                             try:
                                 if self.apertures[last_path_aperture]["type"] != 'R':
@@ -2598,19 +2630,23 @@ class Gerber (Geometry):
                         # Create path draw so far.
                         if len(path) > 1:
                             # --- Buffered ----
+
+                            # this treats the case when we are storing geometry as paths
+                            geo = LineString(path)
+                            if not geo.is_empty:
+                                try:
+                                    if self.apertures[current_aperture]["type"] != 'R':
+                                        follow_buffer.append(geo)
+                                except:
+                                    follow_buffer.append(geo)
+
+                            # this treats the case when we are storing geometry as solids
                             width = self.apertures[last_path_aperture]["size"]
-
-                            if follow:
-                                geo = LineString(path)
-                            else:
-                                geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
-
+                            geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                             if not geo.is_empty:
                                 try:
                                     if self.apertures[current_aperture]["type"] != 'R':
                                         poly_buffer.append(geo)
-                                    else:
-                                        pass
                                 except:
                                     poly_buffer.append(geo)
 
@@ -2619,11 +2655,12 @@ class Gerber (Geometry):
 
                         # --- BUFFERED ---
                         # Draw the flash
-                        if follow:
-                            continue
+                        # this treats the case when we are storing geometry as paths
+                        follow_buffer.append(Point([linear_x, linear_y]))
+
+                        # this treats the case when we are storing geometry as solids
                         flash = Gerber.create_flash_geometry(
-                            Point(
-                                [linear_x, linear_y]),
+                            Point( [linear_x, linear_y]),
                             self.apertures[current_aperture],
                             int(self.steps_per_circle)
                         )
@@ -2709,10 +2746,13 @@ class Gerber (Geometry):
                             # --- BUFFERED ---
                             width = self.apertures[last_path_aperture]["size"]
 
-                            if follow:
-                                buffered = LineString(path)
-                            else:
-                                buffered = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
+                            # this treats the case when we are storing geometry as paths
+                            geo = LineString(path)
+                            if not geo.is_empty:
+                                follow_buffer.append(geo)
+
+                            # this treats the case when we are storing geometry as solids
+                            buffered = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
                             if not buffered.is_empty:
                                 poly_buffer.append(buffered)
 
@@ -2831,19 +2871,24 @@ class Gerber (Geometry):
                 else:
                     # EOF, create shapely LineString if something still in path
                     ## --- Buffered ---
+
+                    # this treats the case when we are storing geometry as paths
+                    geo = LineString(path)
+                    if not geo.is_empty:
+                        follow_buffer.append(geo)
+
+                    # this treats the case when we are storing geometry as solids
                     width = self.apertures[last_path_aperture]["size"]
-                    if follow:
-                        geo = LineString(path)
-                    else:
-                        geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+                    geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                     if not geo.is_empty:
                         poly_buffer.append(geo)
 
             # --- Apply buffer ---
-            if follow:
-                self.solid_geometry = poly_buffer
-                return
 
+            # this treats the case when we are storing geometry as paths
+            self.follow_geometry = follow_buffer
+
+            # this treats the case when we are storing geometry as solids
             log.warning("Joining %d polygons." % len(poly_buffer))
 
             if len(poly_buffer) == 0:
@@ -3293,6 +3338,8 @@ class Excellon(Geometry):
         # self.slots (list) to store the slots; each is a dictionary
         self.slots = []
 
+        self.source_file = ''
+
         # it serve to flag if a start routing or a stop routing was encountered
         # if a stop is encounter and this flag is still 0 (so there is no stop for a previous start) issue error
         self.routing_flag = 1
@@ -3323,7 +3370,8 @@ class Excellon(Geometry):
         # Always append to it because it carries contents
         # from Geometry.
         self.ser_attrs += ['tools', 'drills', 'zeros', 'excellon_format_upper_mm', 'excellon_format_lower_mm',
-                           'excellon_format_upper_in', 'excellon_format_lower_in', 'excellon_units', 'slots']
+                           'excellon_format_upper_in', 'excellon_format_lower_in', 'excellon_units', 'slots',
+                           'source_file']
 
         #### Patterns ####
         # Regex basics:
@@ -3468,6 +3516,8 @@ class Excellon(Geometry):
             for eline in elines:
                 line_num += 1
                 # log.debug("%3d %s" % (line_num, str(eline)))
+
+                self.source_file += eline
 
                 # Cleanup lines
                 eline = eline.strip(' \r\n')
@@ -3819,7 +3869,7 @@ class Excellon(Geometry):
                                     self.drills.append({'point': Point((coordx, coordy)), 'tool': current_tool})
                                     repeat -= 1
                             repeating_x = repeating_y = 0
-                            log.debug("{:15} {:8} {:8}".format(eline, x, y))
+                            # log.debug("{:15} {:8} {:8}".format(eline, x, y))
                             continue
 
                     ## Coordinates with period: Use literally. ##
@@ -3901,7 +3951,7 @@ class Excellon(Geometry):
                                     self.drills.append({'point': Point((coordx, coordy)), 'tool': current_tool})
                                     repeat -= 1
                             repeating_x = repeating_y = 0
-                            log.debug("{:15} {:8} {:8}".format(eline, x, y))
+                            # log.debug("{:15} {:8} {:8}".format(eline, x, y))
                             continue
 
                 #### Header ####
@@ -4004,7 +4054,6 @@ class Excellon(Geometry):
             # is finished since the tools definitions are spread in the Excellon body. We use as units the value
             # from self.defaults['excellon_units']
             log.info("Zeros: %s, Units %s." % (self.zeros, self.units))
-
         except Exception as e:
             log.error("Excellon PARSING FAILED. Line %d: %s" % (line_num, eline))
             msg = "[ERROR_NOTCL] An internal error has ocurred. See shell.\n"
@@ -4454,6 +4503,9 @@ class CNCjob(Geometry):
         self.pp_excellon_name = pp_excellon_name
         self.pp_excellon = self.app.postprocessors[self.pp_excellon_name]
 
+        self.pp_solderpaste_name = None
+
+
         # Controls if the move from Z_Toolchange to Z_Move is done fast with G0 or normally with G1
         self.f_plunge = None
 
@@ -4477,6 +4529,8 @@ class CNCjob(Geometry):
 
         self.oldx = None
         self.oldy = None
+
+        self.tool = 0.0
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -4977,7 +5031,7 @@ class CNCjob(Geometry):
         :param depthpercut: Maximum depth in each pass.
         :param extracut: Adds (or not) an extra cut at the end of each path
             overlapping the first point in path to ensure complete copper removal
-        :return: None
+        :return: GCode - string
         """
 
         log.debug("Generate_from_multitool_geometry()")
@@ -5103,7 +5157,9 @@ class CNCjob(Geometry):
         log.debug("Starting G-Code...")
         path_count = 0
         current_pt = (0, 0)
+
         pt, geo = storage.nearest(current_pt)
+
         try:
             while True:
                 path_count += 1
@@ -5392,13 +5448,162 @@ class CNCjob(Geometry):
 
         return self.gcode
 
+    def generate_gcode_from_solderpaste_geo(self, **kwargs):
+        """
+               Algorithm to generate from multitool Geometry.
+
+               Algorithm description:
+               ----------------------
+               Uses RTree to find the nearest path to follow.
+
+               :return: Gcode string
+               """
+
+        log.debug("Generate_from_solderpaste_geometry()")
+
+        ## Index first and last points in paths
+        # What points to index.
+        def get_pts(o):
+            return [o.coords[0], o.coords[-1]]
+
+        self.gcode = ""
+
+        if not kwargs:
+            log.debug("camlib.generate_from_solderpaste_geo() --> No tool in the solderpaste geometry.")
+            self.app.inform.emit("[ERROR_NOTCL] There is no tool data in the SolderPaste geometry.")
+
+
+        # this is the tool diameter, it is used as such to accommodate the postprocessor who need the tool diameter
+        # given under the name 'toolC'
+
+        self.postdata['z_start'] = kwargs['data']['tools_solderpaste_z_start']
+        self.postdata['z_dispense'] = kwargs['data']['tools_solderpaste_z_dispense']
+        self.postdata['z_stop'] = kwargs['data']['tools_solderpaste_z_stop']
+        self.postdata['z_travel'] = kwargs['data']['tools_solderpaste_z_travel']
+        self.postdata['z_toolchange'] = kwargs['data']['tools_solderpaste_z_toolchange']
+        self.postdata['xy_toolchange'] = kwargs['data']['tools_solderpaste_xy_toolchange']
+        self.postdata['frxy'] = kwargs['data']['tools_solderpaste_frxy']
+        self.postdata['frz'] = kwargs['data']['tools_solderpaste_frz']
+        self.postdata['frz_dispense'] = kwargs['data']['tools_solderpaste_frz_dispense']
+        self.postdata['speedfwd'] = kwargs['data']['tools_solderpaste_speedfwd']
+        self.postdata['dwellfwd'] = kwargs['data']['tools_solderpaste_dwellfwd']
+        self.postdata['speedrev'] = kwargs['data']['tools_solderpaste_speedrev']
+        self.postdata['dwellrev'] = kwargs['data']['tools_solderpaste_dwellrev']
+        self.postdata['pp_solderpaste_name'] = kwargs['data']['tools_solderpaste_pp']
+
+        self.postdata['toolC'] = kwargs['tooldia']
+
+        self.pp_solderpaste_name = kwargs['data']['tools_solderpaste_pp'] if kwargs['data']['tools_solderpaste_pp'] \
+            else self.app.defaults['tools_solderpaste_pp']
+        p = self.app.postprocessors[self.pp_solderpaste_name]
+
+        ## Flatten the geometry. Only linear elements (no polygons) remain.
+        flat_geometry = self.flatten(kwargs['solid_geometry'], pathonly=True)
+        log.debug("%d paths" % len(flat_geometry))
+
+        # Create the indexed storage.
+        storage = FlatCAMRTreeStorage()
+        storage.get_points = get_pts
+
+        # Store the geometry
+        log.debug("Indexing geometry before generating G-Code...")
+        for shape in flat_geometry:
+            if shape is not None:
+                storage.insert(shape)
+
+        # Initial G-Code
+        self.gcode = self.doformat(p.start_code)
+        self.gcode += self.doformat(p.spindle_off_code)
+        self.gcode += self.doformat(p.toolchange_code)
+
+        ## Iterate over geometry paths getting the nearest each time.
+        log.debug("Starting SolderPaste G-Code...")
+        path_count = 0
+        current_pt = (0, 0)
+
+        pt, geo = storage.nearest(current_pt)
+
+        try:
+            while True:
+                path_count += 1
+
+                # Remove before modifying, otherwise deletion will fail.
+                storage.remove(geo)
+
+                # If last point in geometry is the nearest but prefer the first one if last point == first point
+                # then reverse coordinates.
+                if pt != geo.coords[0] and pt == geo.coords[-1]:
+                    geo.coords = list(geo.coords)[::-1]
+
+                self.gcode += self.create_soldepaste_gcode(geo, p=p)
+                current_pt = geo.coords[-1]
+                pt, geo = storage.nearest(current_pt)  # Next
+
+        except StopIteration:  # Nothing found in storage.
+            pass
+
+        log.debug("Finishing SolderPste G-Code... %s paths traced." % path_count)
+
+        # Finish
+        self.gcode += self.doformat(p.lift_code)
+        self.gcode += self.doformat(p.end_code)
+
+        return self.gcode
+
+    def create_soldepaste_gcode(self, geometry, p):
+        gcode = ''
+        path = geometry.coords
+
+        if type(geometry) == LineString or type(geometry) == LinearRing:
+            # Move fast to 1st point
+            gcode += self.doformat(p.rapid_code, x=path[0][0], y=path[0][1])  # Move to first point
+
+            # Move down to cutting depth
+            gcode += self.doformat(p.feedrate_z_code)
+            gcode += self.doformat(p.down_z_start_code)
+            gcode += self.doformat(p.spindle_fwd_code) # Start dispensing
+            gcode += self.doformat(p.dwell_fwd_code)
+            gcode += self.doformat(p.feedrate_z_dispense_code)
+            gcode += self.doformat(p.lift_z_dispense_code)
+            gcode += self.doformat(p.feedrate_xy_code)
+
+            # Cutting...
+            for pt in path[1:]:
+                gcode += self.doformat(p.linear_code, x=pt[0], y=pt[1])  # Linear motion to point
+
+            # Up to travelling height.
+            gcode += self.doformat(p.spindle_off_code) # Stop dispensing
+            gcode += self.doformat(p.spindle_rev_code)
+            gcode += self.doformat(p.down_z_stop_code)
+            gcode += self.doformat(p.spindle_off_code)
+            gcode += self.doformat(p.dwell_rev_code)
+            gcode += self.doformat(p.feedrate_z_code)
+            gcode += self.doformat(p.lift_code)
+        elif type(geometry) == Point:
+            gcode += self.doformat(p.linear_code, x=path[0][0], y=path[0][1])  # Move to first point
+
+            gcode += self.doformat(p.feedrate_z_dispense_code)
+            gcode += self.doformat(p.down_z_start_code)
+            gcode += self.doformat(p.spindle_fwd_code) # Start dispensing
+            gcode += self.doformat(p.dwell_fwd_code)
+            gcode += self.doformat(p.lift_z_dispense_code)
+
+            gcode += self.doformat(p.spindle_off_code)  # Stop dispensing
+            gcode += self.doformat(p.spindle_rev_code)
+            gcode += self.doformat(p.spindle_off_code)
+            gcode += self.doformat(p.down_z_stop_code)
+            gcode += self.doformat(p.dwell_rev_code)
+            gcode += self.doformat(p.feedrate_z_code)
+            gcode += self.doformat(p.lift_code)
+        return gcode
+
     def create_gcode_single_pass(self, geometry, extracut, tolerance):
         # G-code. Note: self.linear2gcode() and self.point2gcode() will lower and raise the tool every time.
         gcode_single_pass = ''
 
         if type(geometry) == LineString or type(geometry) == LinearRing:
             if extracut is False:
-                gcode_single_pass = self.linear2gcode(geometry, tolerance=tolerance, )
+                gcode_single_pass = self.linear2gcode(geometry, tolerance=tolerance)
             else:
                 if geometry.is_ring:
                     gcode_single_pass = self.linear2gcode_extra(geometry, tolerance=tolerance)
@@ -5503,7 +5708,8 @@ class CNCjob(Geometry):
                 else:
                     command['Z'] = 0
 
-        elif 'grbl_laser' in self.pp_excellon_name or 'grbl_laser' in self.pp_geometry_name:
+        elif 'grbl_laser' in self.pp_excellon_name or 'grbl_laser' in self.pp_geometry_name or \
+                (self.pp_solderpaste_name is not None and 'Paste' in self.pp_solderpaste_name):
             match_lsr = re.search(r"X([\+-]?\d+.[\+-]?\d+)\s*Y([\+-]?\d+.[\+-]?\d+)", gline)
             if match_lsr:
                 command['X'] = float(match_lsr.group(1).replace(" ", ""))
@@ -5517,7 +5723,12 @@ class CNCjob(Geometry):
                     command['Z'] = 1
                 else:
                     command['Z'] = 0
-
+        elif self.pp_solderpaste is not None:
+            if 'Paste' in self.pp_solderpaste:
+                match_paste = re.search(r"X([\+-]?\d+.[\+-]?\d+)\s*Y([\+-]?\d+.[\+-]?\d+)", gline)
+                if match_paste:
+                    command['X'] = float(match_paste.group(1).replace(" ", ""))
+                    command['Y'] = float(match_paste.group(2).replace(" ", ""))
         else:
             match = re.search(r'^\s*([A-Z])\s*([\+\-\.\d\s]+)', gline)
             while match:

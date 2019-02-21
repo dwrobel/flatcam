@@ -12,7 +12,14 @@ class ToolImage(FlatCAMTool):
         FlatCAMTool.__init__(self, app)
 
         # Title
-        title_label = QtWidgets.QLabel("<font size=4><b>IMAGE to PCB</b></font>")
+        title_label = QtWidgets.QLabel("%s" % 'Image to PCB')
+        title_label.setStyleSheet("""
+                        QLabel
+                        {
+                            font-size: 16px;
+                            font-weight: bold;
+                        }
+                        """)
         self.layout.addWidget(title_label)
 
         # Form Layout
