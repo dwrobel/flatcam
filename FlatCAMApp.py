@@ -748,7 +748,8 @@ class App(QtCore.QObject):
             "tools_solderpaste_speedfwd": 20,
             "tools_solderpaste_dwellfwd": 1,
             "tools_solderpaste_speedrev": 10,
-            "tools_solderpaste_dwellrev": 1
+            "tools_solderpaste_dwellrev": 1,
+            "tools_solderpaste_pp": ''
         })
 
         ###############################

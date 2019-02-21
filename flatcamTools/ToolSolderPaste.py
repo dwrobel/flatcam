@@ -109,19 +109,9 @@ class ToolSolderPaste(FlatCAMTool):
             "Generate solder paste dispensing geometry."
         )
 
-        step1_lbl = QtWidgets.QLabel("<b>STEP 1:</b>")
-        step1_lbl.setToolTip(
-            "First step is to select a number of nozzle tools for usage\n"
-            "and then create a solder paste dispensing geometry out of an\n"
-            "Solder Paste Mask Gerber file."
-        )
-
         grid0.addWidget(self.addtool_btn, 0, 0)
         # grid2.addWidget(self.copytool_btn, 0, 1)
         grid0.addWidget(self.deltool_btn, 0, 2)
-
-        grid0.addWidget(step1_lbl, 2, 0)
-        grid0.addWidget(self.soldergeo_btn, 2, 2)
 
         ## Form Layout
         geo_form_layout = QtWidgets.QFormLayout()
@@ -259,16 +249,6 @@ class ToolSolderPaste(FlatCAMTool):
             "on PCB pads."
         )
 
-        step2_lbl = QtWidgets.QLabel("<b>STEP 2:</b>")
-        step2_lbl.setToolTip(
-            "Second step is to select a solder paste dispensing geometry,\n"
-            "set the CAM parameters and then generate a CNCJob object which\n"
-            "will pe painted on canvas in blue color."
-        )
-
-        grid1.addWidget(step2_lbl, 0, 0)
-        grid1.addWidget(self.solder_gcode_btn, 0, 2)
-
         ## Form Layout
         cnc_form_layout = QtWidgets.QFormLayout()
         self.gcode_box.addLayout(cnc_form_layout)
@@ -300,6 +280,25 @@ class ToolSolderPaste(FlatCAMTool):
         grid2 = QtWidgets.QGridLayout()
         self.save_gcode_box.addLayout(grid2)
 
+        step1_lbl = QtWidgets.QLabel("<b>STEP 1:</b>")
+        step1_lbl.setToolTip(
+            "First step is to select a number of nozzle tools for usage\n"
+            "and then create a solder paste dispensing geometry out of an\n"
+            "Solder Paste Mask Gerber file."
+        )
+        grid2.addWidget(step1_lbl, 0, 0)
+        grid2.addWidget(self.soldergeo_btn, 0, 2)
+
+        step2_lbl = QtWidgets.QLabel("<b>STEP 2:</b>")
+        step2_lbl.setToolTip(
+            "Second step is to select a solder paste dispensing geometry,\n"
+            "set the CAM parameters and then generate a CNCJob object which\n"
+            "will pe painted on canvas in blue color."
+        )
+
+        grid2.addWidget(step2_lbl, 1, 0)
+        grid2.addWidget(self.solder_gcode_btn, 1, 2)
+
         self.solder_gcode_view_btn = QtWidgets.QPushButton("View GCode")
         self.solder_gcode_view_btn.setToolTip(
             "View the generated GCode for Solder Paste dispensing\n"
@@ -318,9 +317,9 @@ class ToolSolderPaste(FlatCAMTool):
             "a solder paste dispensing geometry, and then view/save it's GCode."
         )
 
-        grid2.addWidget(step3_lbl, 0, 0)
-        grid2.addWidget(self.solder_gcode_view_btn, 0, 2)
-        grid2.addWidget(self.solder_gcode_save_btn, 1, 2)
+        grid2.addWidget(step3_lbl, 2, 0)
+        grid2.addWidget(self.solder_gcode_view_btn, 2, 2)
+        grid2.addWidget(self.solder_gcode_save_btn, 3, 2)
 
         self.layout.addStretch()
 
@@ -853,6 +852,15 @@ class ToolSolderPaste(FlatCAMTool):
                         tooluid = int(uid)
                         break
 
+                geo_obj.tools[tooluid] = {}
+                geo_obj.tools[tooluid]['tooldia'] = tool
+                geo_obj.tools[tooluid]['data'] = self.tools[tooluid]['data']
+                geo_obj.tools[tooluid]['solid_geometry'] = []
+                geo_obj.tools[tooluid]['offset'] = 'Path'
+                geo_obj.tools[tooluid]['offset_value'] = 0.0
+                geo_obj.tools[tooluid]['type'] = 'SolderPaste'
+                geo_obj.tools[tooluid]['tool_type'] = 'Dispenser Nozzle'
+
                 for g in work_geo:
                     if type(g) == MultiPolygon:
                         for poly in g:
@@ -860,16 +868,8 @@ class ToolSolderPaste(FlatCAMTool):
                             if geom != 'fail':
                                 try:
                                     geo_obj.tools[tooluid]['solid_geometry'].append(geom)
-                                except KeyError:
-                                    geo_obj.tools[tooluid] = {}
-                                    geo_obj.tools[tooluid]['solid_geometry'] = []
-                                    geo_obj.tools[tooluid]['solid_geometry'].append(geom)
-                                geo_obj.tools[tooluid]['tooldia'] = tool
-                                geo_obj.tools[tooluid]['offset'] = 'Path'
-                                geo_obj.tools[tooluid]['offset_value'] = 0.0
-                                geo_obj.tools[tooluid]['type'] = ' '
-                                geo_obj.tools[tooluid]['tool_type'] = ' '
-                                geo_obj.tools[tooluid]['data'] = {}
+                                except Exception as e:
+                                    log.debug('ToolSoderPaste.on_create_geo() --> %s' % str(e))
                             else:
                                 rest_geo.append(poly)
                     elif type(g) == Polygon:
@@ -877,16 +877,8 @@ class ToolSolderPaste(FlatCAMTool):
                         if geom != 'fail':
                             try:
                                 geo_obj.tools[tooluid]['solid_geometry'].append(geom)
-                            except KeyError:
-                                geo_obj.tools[tooluid] = {}
-                                geo_obj.tools[tooluid]['solid_geometry'] = []
-                                geo_obj.tools[tooluid]['solid_geometry'].append(geom)
-                            geo_obj.tools[tooluid]['tooldia'] = tool
-                            geo_obj.tools[tooluid]['offset'] = 'Path'
-                            geo_obj.tools[tooluid]['offset_value'] = 0.0
-                            geo_obj.tools[tooluid]['type'] = ' '
-                            geo_obj.tools[tooluid]['tool_type'] = ' '
-                            geo_obj.tools[tooluid]['data'] = {}
+                            except Exception as e:
+                                log.debug('ToolSoderPaste.on_create_geo() --> %s' % str(e))
                         else:
                             rest_geo.append(g)
 
@@ -1004,23 +996,11 @@ class ToolSolderPaste(FlatCAMTool):
 
     def on_create_gcode(self, use_thread=True):
         """
-                Creates a multi-tool CNCJob out of this Geometry object.
-                The actual work is done by the target FlatCAMCNCjob object's
-                `generate_from_geometry_2()` method.
+        Creates a multi-tool CNCJob out of this Geometry object.
+        :return: None
+        """
 
-                :param z_cut: Cut depth (negative)
-                :param z_move: Hight of the tool when travelling (not cutting)
-                :param feedrate: Feed rate while cutting on X - Y plane
-                :param feedrate_z: Feed rate while cutting on Z plane
-                :param feedrate_rapid: Feed rate while moving with rapids
-                :param tooldia: Tool diameter
-                :param outname: Name of the new object
-                :param spindlespeed: Spindle speed (RPM)
-                :param ppname_g Name of the postprocessor
-                :return: None
-                """
-
-        name = self.obj_combo.currentText()
+        name = self.geo_obj_combo.currentText()
         obj = self.app.collection.get_by_name(name)
 
         if obj.special_group != 'solder_paste_tool':
@@ -1031,7 +1011,8 @@ class ToolSolderPaste(FlatCAMTool):
         multitool_gcode = ''
 
         # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia
-        outname = "%s_%s" % (name, 'cnc_solderpaste')
+        originar_name = obj.options['name'].rpartition('_')[0]
+        outname = "%s_%s" % (originar_name, '_cnc_solderpaste')
 
         try:
             xmin = obj.options['xmin']
@@ -1053,9 +1034,7 @@ class ToolSolderPaste(FlatCAMTool):
             assert isinstance(job_obj, FlatCAMCNCjob), \
                 "Initializer expected a FlatCAMCNCjob, got %s" % type(job_obj)
 
-            # count the tools
-            tool_cnt = 0
-            dia_cnc_dict = {}
+            tool_cnc_dict = {}
 
             # this turn on the FlatCAMCNCJob plot for multiple tools
             job_obj.multitool = True
@@ -1067,146 +1046,52 @@ class ToolSolderPaste(FlatCAMTool):
             job_obj.options['xmax'] = xmax
             job_obj.options['ymax'] = ymax
 
-
-            # try:
-            #     job_obj.feedrate_probe = float(self.options["feedrate_probe"])
-            # except ValueError:
-            #     # try to convert comma to decimal point. if it's still not working error message and return
-            #     try:
-            #         job_obj.feedrate_rapid = float(self.options["feedrate_probe"].replace(',', '.'))
-            #     except ValueError:
-            #         self.app.inform.emit(
-            #             '[ERROR_NOTCL]Wrong value format for self.defaults["feedrate_probe"] '
-            #             'or self.options["feedrate_probe"]')
-
-            # make sure that trying to make a CNCJob from an empty file is not creating an app crash
             a = 0
-            for tooluid_key in self.tools:
-                if self.tools[tooluid_key]['solid_geometry'] is None:
+            for tooluid_key in obj.tools:
+                if obj.tools[tooluid_key]['solid_geometry'] is None:
                     a += 1
-            if a == len(self.tools):
+            if a == len(obj.tools):
                 self.app.inform.emit('[ERROR_NOTCL]Cancelled. Empty file, it has no geometry...')
                 return 'fail'
 
-            for tooluid_key in self.tools:
-                tool_cnt += 1
+            for tooluid_key, tooluid_value in obj.tools.items():
                 app_obj.progress.emit(20)
 
                 # find the tool_dia associated with the tooluid_key
-                tool_dia = self.sel_tools[tooluid_key]['tooldia']
-                tool_solid_geometry = self.tools[tooluid_key]['solid_geometry']
-
-                for diadict_key, diadict_value in self.sel_tools[tooluid_key].items():
-                    if diadict_key == 'tooldia':
-                        tooldia_val = float('%.4f' % float(diadict_value))
-                        dia_cnc_dict.update({
-                            diadict_key: tooldia_val
-                        })
-                    if diadict_key == 'offset':
-                        dia_cnc_dict.update({
-                            diadict_key: ''
-                        })
-
-                    if diadict_key == 'type':
-                        dia_cnc_dict.update({
-                            diadict_key: ''
-                        })
-
-                    if diadict_key == 'tool_type':
-                        dia_cnc_dict.update({
-                            diadict_key: ''
-                        })
-
-                    if diadict_key == 'data':
-                        for data_key, data_value in diadict_value.items():
-                            if data_key == "multidepth":
-                                multidepth = data_value
-                            if data_key == "depthperpass":
-                                depthpercut = data_value
-
-                            if data_key == "extracut":
-                                extracut = data_value
-                            if data_key == "startz":
-                                startz = data_value
-                            if data_key == "endz":
-                                endz = data_value
-
-                            if data_key == "toolchangez":
-                                toolchangez = data_value
-                            if data_key == "toolchangexy":
-                                toolchangexy = data_value
-                            if data_key == "toolchange":
-                                toolchange = data_value
-
-                            if data_key == "cutz":
-                                z_cut = data_value
-                            if data_key == "travelz":
-                                z_move = data_value
-
-                            if data_key == "feedrate":
-                                feedrate = data_value
-                            if data_key == "feedrate_z":
-                                feedrate_z = data_value
-                            if data_key == "feedrate_rapid":
-                                feedrate_rapid = data_value
-
-                            if data_key == "ppname_g":
-                                pp_geometry_name = data_value
-
-                            if data_key == "spindlespeed":
-                                spindlespeed = data_value
-                            if data_key == "dwell":
-                                dwell = data_value
-                            if data_key == "dwelltime":
-                                dwelltime = data_value
-
-                        datadict = copy.deepcopy(diadict_value)
-                        dia_cnc_dict.update({
-                            diadict_key: datadict
-                        })
+                tool_dia = tooluid_value['tooldia']
+                tool_cnc_dict = deepcopy(tooluid_value)
 
                 job_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
                 job_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
 
                 # Propagate options
-                job_obj.options["tooldia"] = tooldia_val
-                job_obj.options['type'] = 'Geometry'
-                job_obj.options['tool_dia'] = tooldia_val
+                job_obj.options["tooldia"] = tool_dia
+                job_obj.options['tool_dia'] = tool_dia
 
-                app_obj.progress.emit(40)
-
-                res = job_obj.generate_from_multitool_geometry(
-                    tool_solid_geometry, tooldia=tooldia_val, offset=0.0,
-                    tolerance=0.0005, z_cut=z_cut, z_move=z_move,
-                    feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
-                    spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
-                    multidepth=multidepth, depthpercut=depthpercut,
-                    extracut=extracut, startz=startz, endz=endz,
-                    toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
-                    pp_geometry_name=pp_geometry_name,
-                    tool_no=tool_cnt)
+                ### CREATE GCODE ###
+                res = job_obj.generate_gcode_from_solderpaste_geo(**tool_cnc_dict)
 
                 if res == 'fail':
                     log.debug("FlatCAMGeometry.mtool_gen_cncjob() --> generate_from_geometry2() failed")
                     return 'fail'
                 else:
-                    dia_cnc_dict['gcode'] = res
+                    tool_cnc_dict['gcode'] = res
 
-                dia_cnc_dict['gcode_parsed'] = job_obj.gcode_parse()
+                ### PARSE GCODE ###
+                tool_cnc_dict['gcode_parsed'] = job_obj.gcode_parse()
 
                 # TODO this serve for bounding box creation only; should be optimized
-                dia_cnc_dict['solid_geometry'] = cascaded_union([geo['geom'] for geo in dia_cnc_dict['gcode_parsed']])
+                tool_cnc_dict['solid_geometry'] = cascaded_union([geo['geom'] for geo in tool_cnc_dict['gcode_parsed']])
 
                 # tell gcode_parse from which point to start drawing the lines depending on what kind of
                 # object is the source of gcode
                 job_obj.toolchange_xy_type = "geometry"
-
                 app_obj.progress.emit(80)
 
                 job_obj.cnc_tools.update({
-                    tooluid_key: copy.deepcopy(dia_cnc_dict)
+                    tooluid_key: copy.deepcopy(tool_cnc_dict)
                 })
-                dia_cnc_dict.clear()
+                tool_cnc_dict.clear()
 
         if use_thread:
             # To be run in separate thread

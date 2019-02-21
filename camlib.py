@@ -5026,7 +5026,7 @@ class CNCjob(Geometry):
         :param depthpercut: Maximum depth in each pass.
         :param extracut: Adds (or not) an extra cut at the end of each path
             overlapping the first point in path to ensure complete copper removal
-        :return: None
+        :return: GCode - string
         """
 
         log.debug("Generate_from_multitool_geometry()")
@@ -5190,6 +5190,99 @@ class CNCjob(Geometry):
         self.gcode += self.doformat(p.end_code, x=0, y=0)
 
         return self.gcode
+
+    def generate_gcode_from_solderpaste_geo(self, **kwargs):
+        """
+               Algorithm to generate from multitool Geometry.
+
+               Algorithm description:
+               ----------------------
+               Uses RTree to find the nearest path to follow.
+
+               :return: Gcode string
+               """
+
+        log.debug("Generate_from_solderpaste_geometry()")
+
+        ## Index first and last points in paths
+        # What points to index.
+        def get_pts(o):
+            return [o.coords[0], o.coords[-1]]
+
+        self.gcode = ""
+
+        if not kwargs:
+            log.debug("camlib.generate_from_solderpaste_geo() --> No tool in the solderpaste geometry.")
+            self.app.inform.emit("[ERROR_NOTCL] There is no tool data in the SolderPaste geometry.")
+
+
+        # this is the tool diameter, it is used as such to accommodate the postprocessor who need the tool diameter
+        # given under the name 'toolC'
+
+        self.postdata['toolC'] = kwargs['tooldia']
+
+        # Initial G-Code
+        pp_solderpaste_name = kwargs['data']['tools_solderpaste_pp'] if kwargs['data']['tools_solderpaste_pp'] else \
+            self.app.defaults['tools_solderpaste_pp']
+        p = self.app.postprocessors[pp_solderpaste_name]
+
+        self.gcode = self.doformat(p.start_code)
+
+        ## Flatten the geometry. Only linear elements (no polygons) remain.
+        flat_geometry = self.flatten(kwargs['solid_geometry'], pathonly=True)
+        log.debug("%d paths" % len(flat_geometry))
+
+        # Create the indexed storage.
+        storage = FlatCAMRTreeStorage()
+        storage.get_points = get_pts
+
+        # Store the geometry
+        log.debug("Indexing geometry before generating G-Code...")
+        for shape in flat_geometry:
+            if shape is not None:
+                storage.insert(shape)
+
+        # kwargs length will tell actually the number of tools used so if we have more than one tools then
+        # we have toolchange event
+        if len(kwargs) > 1:
+            self.gcode += self.doformat(p.toolchange_code)
+        else:
+            self.gcode += self.doformat(p.lift_code, x=0, y=0)  # Move (up) to travel height
+
+        ## Iterate over geometry paths getting the nearest each time.
+        log.debug("Starting SolderPaste G-Code...")
+        path_count = 0
+        current_pt = (0, 0)
+
+        pt, geo = storage.nearest(current_pt)
+
+        try:
+            while True:
+                path_count += 1
+
+                # Remove before modifying, otherwise deletion will fail.
+                storage.remove(geo)
+
+                # If last point in geometry is the nearest but prefer the first one if last point == first point
+                # then reverse coordinates.
+                if pt != geo.coords[0] and pt == geo.coords[-1]:
+                    geo.coords = list(geo.coords)[::-1]
+
+                self.gcode += self.create_soldepaste_gcode(geo, p=p)
+                current_pt = geo.coords[-1]
+                pt, geo = storage.nearest(current_pt)  # Next
+
+        except StopIteration:  # Nothing found in storage.
+            pass
+
+        log.debug("Finishing SolderPste G-Code... %s paths traced." % path_count)
+
+        # Finish
+        self.gcode += self.doformat(p.lift_code)
+        self.gcode += self.doformat(p.end_code)
+
+        return self.gcode
+
 
     def generate_from_geometry_2(self, geometry, append=True,
                                  tooldia=None, offset=0.0, tolerance=0,
@@ -5443,13 +5536,51 @@ class CNCjob(Geometry):
 
         return self.gcode
 
+    def create_soldepaste_gcode(self, geometry, p):
+        gcode = ''
+        path = self.segment(geometry.coords)
+
+        if type(geometry) == LineString or type(geometry) == LinearRing:
+            # Move fast to 1st point
+            gcode += self.doformat(p.rapid_code)  # Move to first point
+
+            # Move down to cutting depth
+            gcode += self.doformat(p.feedrate_z_code)
+            gcode += self.doformat(p.down_z_start_code)
+            gcode += self.doformat(p.spindle_on_fwd_code) # Start dispensing
+            gcode += self.doformat(p.feedrate_xy_code)
+
+            # Cutting...
+            for pt in path[1:]:
+                gcode += self.doformat(p.linear_code)  # Linear motion to point
+
+            # Up to travelling height.
+            gcode += self.doformat(p.spindle_off_code) # Stop dispensing
+            gcode += self.doformat(p.spindle_on_rev_code)
+            gcode += self.doformat(p.down_z_stop_code)
+            gcode += self.doformat(p.spindle_off_code)
+            gcode += self.doformat(p.lift_code)
+        elif type(geometry) == Point:
+            gcode += self.doformat(p.linear_code)  # Move to first point
+
+            gcode += self.doformat(p.feedrate_z_code)
+            gcode += self.doformat(p.down_z_start_code)
+            gcode += self.doformat(p.spindle_on_fwd_code) # Start dispensing
+            # TODO A dwell time for dispensing?
+            gcode += self.doformat(p.spindle_off_code)  # Stop dispensing
+            gcode += self.doformat(p.spindle_on_rev_code)
+            gcode += self.doformat(p.down_z_stop_code)
+            gcode += self.doformat(p.spindle_off_code)
+            gcode += self.doformat(p.lift_code)
+        return gcode
+
     def create_gcode_single_pass(self, geometry, extracut, tolerance):
         # G-code. Note: self.linear2gcode() and self.point2gcode() will lower and raise the tool every time.
         gcode_single_pass = ''
 
         if type(geometry) == LineString or type(geometry) == LinearRing:
             if extracut is False:
-                gcode_single_pass = self.linear2gcode(geometry, tolerance=tolerance, )
+                gcode_single_pass = self.linear2gcode(geometry, tolerance=tolerance)
             else:
                 if geometry.is_ring:
                     gcode_single_pass = self.linear2gcode_extra(geometry, tolerance=tolerance)
