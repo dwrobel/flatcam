@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+22.02.2019
+
+- 
+
 21.02.2019
 
 - added protection against creating CNCJob from an empty Geometry object (with no geometry inside)
