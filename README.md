@@ -11,7 +11,9 @@ CAD program, and create G-Code for Isolation routing.
 
 22.02.2019
 
-- 
+- added Repetier postprocessor file
+- removed "added ability to regenerate objects (it's actually deletion followed by recreation)" because of the way Python pass parameters to functions by reference instead of copy
+-
 
 21.02.2019
 

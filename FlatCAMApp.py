@@ -149,7 +149,7 @@ class App(QtCore.QObject):
     # Emitted by new_object() and passes the new object as argument, plot flag.
     # on_object_created() adds the object to the collection, plots on appropriate flag
     # and emits new_object_available.
-    object_created = QtCore.pyqtSignal(object, bool, bool, bool)
+    object_created = QtCore.pyqtSignal(object, bool, bool)
 
     # Emitted when a object has been changed (like scaled, mirrored)
     object_changed = QtCore.pyqtSignal(object)
@@ -2298,7 +2298,7 @@ class App(QtCore.QObject):
         # Re-buid the recent items menu
         self.setup_recent_items()
 
-    def new_object(self, kind, name, initialize, active=True, fit=True, plot=True, autoselected=True, overwrite=False):
+    def new_object(self, kind, name, initialize, active=True, fit=True, plot=True, autoselected=True):
         """
         Creates a new specalized FlatCAMObj and attaches it to the application,
         this is, updates the GUI accordingly, any other records and plots it.
@@ -2325,7 +2325,6 @@ class App(QtCore.QObject):
         App.log.debug("new_object()")
         obj_plot = plot
         obj_autoselected = autoselected
-        obj_overwrite = overwrite
 
         t0 = time.time()  # Debug
 
@@ -2414,7 +2413,7 @@ class App(QtCore.QObject):
 
         # Move the object to the main thread and let the app know that it is available.
         obj.moveToThread(QtWidgets.QApplication.instance().thread())
-        self.object_created.emit(obj, obj_plot, obj_autoselected, obj_overwrite)
+        self.object_created.emit(obj, obj_plot, obj_autoselected)
 
         return obj
 
@@ -2431,7 +2430,7 @@ class App(QtCore.QObject):
 
         self.new_object('geometry', 'new_g', initialize, plot=False)
 
-    def on_object_created(self, obj, plot, autoselect, overwrite):
+    def on_object_created(self, obj, plot, autoselect):
         """
         Event callback for object creation.
 
@@ -2442,7 +2441,7 @@ class App(QtCore.QObject):
         self.log.debug("on_object_created()")
 
         # The Collection might change the name if there is a collision
-        self.collection.append(obj, overwrite=overwrite)
+        self.collection.append(obj)
 
         # after adding the object to the collection always update the list of objects that are in the collection
         self.all_objects_list = self.collection.get_list()

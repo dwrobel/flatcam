@@ -5723,8 +5723,8 @@ class CNCjob(Geometry):
                     command['Z'] = 1
                 else:
                     command['Z'] = 0
-        elif self.pp_solderpaste is not None:
-            if 'Paste' in self.pp_solderpaste:
+        elif self.pp_solderpaste_name is not None:
+            if 'Paste' in self.pp_solderpaste_name:
                 match_paste = re.search(r"X([\+-]?\d+.[\+-]?\d+)\s*Y([\+-]?\d+.[\+-]?\d+)", gline)
                 if match_paste:
                     command['X'] = float(match_paste.group(1).replace(" ", ""))

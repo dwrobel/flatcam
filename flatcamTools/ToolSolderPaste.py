@@ -352,7 +352,7 @@ class SolderPaste(FlatCAMTool):
         # self.gcode_frame.setDisabled(True)
         # self.save_gcode_frame.setDisabled(True)
 
-        self.tools = {}
+        self.tooltable_tools = {}
         self.tooluid = 0
 
         self.options = LoudDict()
@@ -363,8 +363,8 @@ class SolderPaste(FlatCAMTool):
         ## Signals
         self.addtool_btn.clicked.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
-        self.soldergeo_btn.clicked.connect(self.on_create_geo)
-        self.solder_gcode_btn.clicked.connect(self.on_create_gcode)
+        self.soldergeo_btn.clicked.connect(self.on_create_geo_click)
+        self.solder_gcode_btn.clicked.connect(self.on_create_gcode_click)
         self.solder_gcode_view_btn.clicked.connect(self.on_view_gcode)
         self.solder_gcode_save_btn.clicked.connect(self.on_save_gcode)
 
@@ -424,10 +424,10 @@ class SolderPaste(FlatCAMTool):
 
         self.tooluid = 0
 
-        self.tools.clear()
+        self.tooltable_tools.clear()
         for tool_dia in dias:
             self.tooluid += 1
-            self.tools.update({
+            self.tooltable_tools.update({
                 int(self.tooluid): {
                     'tooldia': float('%.4f' % tool_dia),
                     'data': deepcopy(self.options),
@@ -455,7 +455,7 @@ class SolderPaste(FlatCAMTool):
         self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
 
         sorted_tools = []
-        for k, v in self.tools.items():
+        for k, v in self.tooltable_tools.items():
             sorted_tools.append(float('%.4f' % float(v['tooldia'])))
         sorted_tools.sort(reverse=True)
 
@@ -464,7 +464,7 @@ class SolderPaste(FlatCAMTool):
         tool_id = 0
 
         for tool_sorted in sorted_tools:
-            for tooluid_key, tooluid_value in self.tools.items():
+            for tooluid_key, tooluid_value in self.tooltable_tools.items():
                 if float('%.4f' % tooluid_value['tooldia']) == tool_sorted:
                     tool_id += 1
                     id = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
@@ -543,7 +543,7 @@ class SolderPaste(FlatCAMTool):
         # update the form
         try:
             # set the form with data from the newly selected tool
-            for tooluid_key, tooluid_value in self.tools.items():
+            for tooluid_key, tooluid_value in self.tooltable_tools.items():
                 if int(tooluid_key) == tooluid:
                     self.set_form(deepcopy(tooluid_value['data']))
         except Exception as e:
@@ -601,7 +601,7 @@ class SolderPaste(FlatCAMTool):
         current_row = self.tools_table.currentRow()
         uid = tooluid if tooluid else int(self.tools_table.item(current_row, 2).text())
         for key in self.form_fields:
-            self.tools[uid]['data'].update({
+            self.tooltable_tools[uid]['data'].update({
                 key: self.form_fields[key].get_value()
             })
 
@@ -618,7 +618,7 @@ class SolderPaste(FlatCAMTool):
         """
         Will read all the parameters of Solder Paste Tool from the provided val parameter and update the UI
         :param val: dictionary with values to store in the form
-        :param_type: dictionary
+        param_type: dictionary
         :return:
         """
 
@@ -656,9 +656,9 @@ class SolderPaste(FlatCAMTool):
             self.app.inform.emit("[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format.")
             return
 
-        # construct a list of all 'tooluid' in the self.tools
+        # construct a list of all 'tooluid' in the self.tooltable_tools
         tool_uid_list = []
-        for tooluid_key in self.tools:
+        for tooluid_key in self.tooltable_tools:
             tool_uid_item = int(tooluid_key)
             tool_uid_list.append(tool_uid_item)
 
@@ -670,7 +670,7 @@ class SolderPaste(FlatCAMTool):
         self.tooluid = int(max_uid + 1)
 
         tool_dias = []
-        for k, v in self.tools.items():
+        for k, v in self.tooltable_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
                     tool_dias.append(float('%.4f' % v[tool_v]))
@@ -683,7 +683,7 @@ class SolderPaste(FlatCAMTool):
         else:
             if muted is None:
                 self.app.inform.emit("[success] New Nozzle tool added to Tool Table.")
-            self.tools.update({
+            self.tooltable_tools.update({
                 int(self.tooluid): {
                     'tooldia': float('%.4f' % tool_dia),
                     'data': deepcopy(self.options),
@@ -697,7 +697,7 @@ class SolderPaste(FlatCAMTool):
         self.ui_disconnect()
 
         tool_dias = []
-        for k, v in self.tools.items():
+        for k, v in self.tooltable_tools.items():
             for tool_v in v.keys():
                 if tool_v == 'tooldia':
                     tool_dias.append(float('%.4f' % v[tool_v]))
@@ -719,13 +719,13 @@ class SolderPaste(FlatCAMTool):
 
             # identify the tool that was edited and get it's tooluid
             if new_tool_dia not in tool_dias:
-                self.tools[tooluid]['tooldia'] = new_tool_dia
+                self.tooltable_tools[tooluid]['tooldia'] = new_tool_dia
                 self.app.inform.emit("[success] Nozzle tool from Tool Table was edited.")
                 self.build_ui()
                 return
             else:
                 # identify the old tool_dia and restore the text in tool table
-                for k, v in self.tools.items():
+                for k, v in self.tooltable_tools.items():
                     if k == tooluid:
                         old_tool_dia = v['tooldia']
                         break
@@ -739,7 +739,7 @@ class SolderPaste(FlatCAMTool):
 
         deleted_tools_list = []
         if all:
-            self.tools.clear()
+            self.tooltable_tools.clear()
             self.build_ui()
             return
 
@@ -752,7 +752,7 @@ class SolderPaste(FlatCAMTool):
                 deleted_tools_list.append(rows_to_delete)
 
             for t in deleted_tools_list:
-                self.tools.pop(t, None)
+                self.tooltable_tools.pop(t, None)
             self.build_ui()
             return
 
@@ -766,7 +766,7 @@ class SolderPaste(FlatCAMTool):
                     deleted_tools_list.append(tooluid_del)
 
                 for t in deleted_tools_list:
-                    self.tools.pop(t, None)
+                    self.tooltable_tools.pop(t, None)
 
         except AttributeError:
             self.app.inform.emit("[WARNING_NOTCL] Delete failed. Select a Nozzle tool to delete.")
@@ -795,30 +795,33 @@ class SolderPaste(FlatCAMTool):
     def distance(pt1, pt2):
         return sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2)
 
-    def on_create_geo(self):
-
-        proc = self.app.proc_container.new("Creating Solder Paste dispensing geometry.")
+    def on_create_geo_click(self, signal):
         name = self.obj_combo.currentText()
-
         if name == '':
             self.app.inform.emit("[WARNING_NOTCL] No SolderPaste mask Gerber object loaded.")
             return
 
+        obj = self.app.collection.get_by_name(name)
         # update the self.options
         self.read_form_to_options()
 
-        obj = self.app.collection.get_by_name(name)
+        self.on_create_geo(name=name, work_object=obj)
 
-        if type(obj.solid_geometry) is not list and type(obj.solid_geometry) is not MultiPolygon:
-            obj.solid_geometry = [obj.solid_geometry]
+    def on_create_geo(self, name, work_object):
+        proc = self.app.proc_container.new("Creating Solder Paste dispensing geometry.")
+        obj = work_object
 
         # Sort tools in descending order
         sorted_tools = []
-        for k, v in self.tools.items():
+        for k, v in self.tooltable_tools.items():
             # make sure that the tools diameter is more than zero and not zero
             if float(v['tooldia']) > 0:
                 sorted_tools.append(float('%.4f' % float(v['tooldia'])))
         sorted_tools.sort(reverse=True)
+
+        if not sorted_tools:
+            self.app.inform.emit("[WARNING_NOTCL] No Nozzle tools in the tool table.")
+            return 'fail'
 
         def geo_init(geo_obj, app_obj):
             geo_obj.options.update(self.options)
@@ -830,7 +833,6 @@ class SolderPaste(FlatCAMTool):
             geo_obj.special_group = 'solder_paste_tool'
 
             def solder_line(p, offset):
-
                 xmin, ymin, xmax, ymax = p.bounds
 
                 min = [xmin, ymin]
@@ -875,21 +877,16 @@ class SolderPaste(FlatCAMTool):
             rest_geo = []
             tooluid = 1
 
-            if not sorted_tools:
-                self.app.inform.emit("[WARNING_NOTCL] No Nozzle tools in the tool table.")
-                return 'fail'
-
             for tool in sorted_tools:
                 offset = tool / 2
-
-                for uid, v in self.tools.items():
+                for uid, v in self.tooltable_tools.items():
                     if float('%.4f' % float(v['tooldia'])) == tool:
                         tooluid = int(uid)
                         break
 
                 geo_obj.tools[tooluid] = {}
                 geo_obj.tools[tooluid]['tooldia'] = tool
-                geo_obj.tools[tooluid]['data'] = self.tools[tooluid]['data']
+                geo_obj.tools[tooluid]['data'] = deepcopy(self.tooltable_tools[tooluid]['data'])
                 geo_obj.tools[tooluid]['solid_geometry'] = []
                 geo_obj.tools[tooluid]['offset'] = 'Path'
                 geo_obj.tools[tooluid]['offset_value'] = 0.0
@@ -933,7 +930,7 @@ class SolderPaste(FlatCAMTool):
 
         def job_thread(app_obj):
             try:
-                app_obj.new_object("geometry", name + "_solderpaste", geo_init, overwrite=True)
+                app_obj.new_object("geometry", name + "_solderpaste", geo_init)
             except Exception as e:
                 proc.done()
                 traceback.print_stack()
@@ -945,8 +942,125 @@ class SolderPaste(FlatCAMTool):
         self.app.collection.promise(name)
 
         # Background
-        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app.paste_tool]})
         # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+
+    def on_create_gcode_click(self, signal):
+        name = self.geo_obj_combo.currentText()
+        obj = self.app.collection.get_by_name(name)
+
+        if obj.special_group != 'solder_paste_tool':
+            self.app.inform.emit("[WARNING_NOTCL]This Geometry can't be processed. NOT a solder_paste_tool geometry.")
+            return 'fail'
+
+        a = 0
+        for tooluid_key in obj.tools:
+            if obj.tools[tooluid_key]['solid_geometry'] is None:
+                a += 1
+        if a == len(obj.tools):
+            self.app.inform.emit('[ERROR_NOTCL]Cancelled. Empty file, it has no geometry...')
+            return 'fail'
+
+        # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia
+        originar_name = obj.options['name'].rpartition('_')[0]
+        outname = "%s_%s" % (originar_name, 'cnc_solderpaste')
+
+        self.on_create_gcode(name=outname, workobject=obj)
+
+    def on_create_gcode(self, name, workobject, use_thread=True):
+        """
+        Creates a multi-tool CNCJob out of this Geometry object.
+        :return: None
+        """
+
+        obj = workobject
+
+        try:
+            xmin = obj.options['xmin']
+            ymin = obj.options['ymin']
+            xmax = obj.options['xmax']
+            ymax = obj.options['ymax']
+        except Exception as e:
+            log.debug("FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s\n" % str(e))
+            msg = "[ERROR] An internal error has ocurred. See shell.\n"
+            msg += 'FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s' % str(e)
+            msg += traceback.format_exc()
+            self.app.inform.emit(msg)
+            return
+
+        # Object initialization function for app.new_object()
+        # RUNNING ON SEPARATE THREAD!
+        def job_init(job_obj, app_obj):
+            assert isinstance(job_obj, FlatCAMCNCjob), \
+                "Initializer expected a FlatCAMCNCjob, got %s" % type(job_obj)
+
+            tool_cnc_dict = {}
+
+            # this turn on the FlatCAMCNCJob plot for multiple tools
+            job_obj.multitool = True
+            job_obj.multigeo = True
+            job_obj.cnc_tools.clear()
+            job_obj.special_group = 'solder_paste_tool'
+
+            job_obj.options['xmin'] = xmin
+            job_obj.options['ymin'] = ymin
+            job_obj.options['xmax'] = xmax
+            job_obj.options['ymax'] = ymax
+
+            for tooluid_key, tooluid_value in obj.tools.items():
+                app_obj.progress.emit(20)
+
+                # find the tool_dia associated with the tooluid_key
+                tool_dia = tooluid_value['tooldia']
+                tool_cnc_dict = deepcopy(tooluid_value)
+
+                job_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
+                job_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
+                job_obj.tool = int(tooluid_key)
+
+                # Propagate options
+                job_obj.options["tooldia"] = tool_dia
+                job_obj.options['tool_dia'] = tool_dia
+
+                ### CREATE GCODE ###
+                res = job_obj.generate_gcode_from_solderpaste_geo(**tooluid_value)
+
+                if res == 'fail':
+                    log.debug("FlatCAMGeometry.mtool_gen_cncjob() --> generate_from_geometry2() failed")
+                    return 'fail'
+                else:
+                    tool_cnc_dict['gcode'] = res
+
+                ### PARSE GCODE ###
+                tool_cnc_dict['gcode_parsed'] = job_obj.gcode_parse()
+
+                # TODO this serve for bounding box creation only; should be optimized
+                tool_cnc_dict['solid_geometry'] = cascaded_union([geo['geom'] for geo in tool_cnc_dict['gcode_parsed']])
+
+                # tell gcode_parse from which point to start drawing the lines depending on what kind of
+                # object is the source of gcode
+                job_obj.toolchange_xy_type = "geometry"
+                app_obj.progress.emit(80)
+
+                job_obj.cnc_tools.update({
+                    tooluid_key: deepcopy(tool_cnc_dict)
+                })
+                tool_cnc_dict.clear()
+
+        if use_thread:
+            # To be run in separate thread
+            def job_thread(app_obj):
+                with self.app.proc_container.new("Generating CNC Code"):
+                    if app_obj.new_object("cncjob", name, job_init) != 'fail':
+                        app_obj.inform.emit("[success]ToolSolderPaste CNCjob created: %s" % name)
+                        app_obj.progress.emit(100)
+
+            # Create a promise with the name
+            self.app.collection.promise(name)
+            # Send to worker
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+        else:
+            self.app.new_object("cncjob", name, job_init)
 
     def on_view_gcode(self):
         time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
@@ -1064,122 +1178,6 @@ class SolderPaste(FlatCAMTool):
 
         self.app.file_saved.emit("gcode", filename)
         self.app.inform.emit("[success] Solder paste dispenser GCode file saved to: %s" % filename)
-
-    def on_create_gcode(self, signal, use_thread=True):
-        """
-        Creates a multi-tool CNCJob out of this Geometry object.
-        :return: None
-        """
-
-        name = self.geo_obj_combo.currentText()
-        obj = self.app.collection.get_by_name(name)
-
-        if obj.special_group != 'solder_paste_tool':
-            self.app.inform.emit("[WARNING_NOTCL]This Geometry can't be processed. NOT a solder_paste_tool geometry.")
-            return
-
-        offset_str = ''
-        multitool_gcode = ''
-
-        # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia
-        originar_name = obj.options['name'].rpartition('_')[0]
-        outname = "%s_%s" % (originar_name, '_cnc_solderpaste')
-
-        try:
-            xmin = obj.options['xmin']
-            ymin = obj.options['ymin']
-            xmax = obj.options['xmax']
-            ymax = obj.options['ymax']
-        except Exception as e:
-            log.debug("FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s\n" % str(e))
-            msg = "[ERROR] An internal error has ocurred. See shell.\n"
-            msg += 'FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s' % str(e)
-            msg += traceback.format_exc()
-            self.app.inform.emit(msg)
-            return
-
-
-        # Object initialization function for app.new_object()
-        # RUNNING ON SEPARATE THREAD!
-        def job_init(job_obj, app_obj):
-            assert isinstance(job_obj, FlatCAMCNCjob), \
-                "Initializer expected a FlatCAMCNCjob, got %s" % type(job_obj)
-
-            tool_cnc_dict = {}
-
-            # this turn on the FlatCAMCNCJob plot for multiple tools
-            job_obj.multitool = True
-            job_obj.multigeo = True
-            job_obj.cnc_tools.clear()
-            job_obj.special_group = 'solder_paste_tool'
-
-            job_obj.options['xmin'] = xmin
-            job_obj.options['ymin'] = ymin
-            job_obj.options['xmax'] = xmax
-            job_obj.options['ymax'] = ymax
-
-            a = 0
-            for tooluid_key in obj.tools:
-                if obj.tools[tooluid_key]['solid_geometry'] is None:
-                    a += 1
-            if a == len(obj.tools):
-                self.app.inform.emit('[ERROR_NOTCL]Cancelled. Empty file, it has no geometry...')
-                return 'fail'
-
-            for tooluid_key, tooluid_value in obj.tools.items():
-                app_obj.progress.emit(20)
-
-                # find the tool_dia associated with the tooluid_key
-                tool_dia = tooluid_value['tooldia']
-                tool_cnc_dict = deepcopy(tooluid_value)
-
-                job_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
-                job_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
-                job_obj.tool = int(tooluid_key)
-
-                # Propagate options
-                job_obj.options["tooldia"] = tool_dia
-                job_obj.options['tool_dia'] = tool_dia
-
-                ### CREATE GCODE ###
-                res = job_obj.generate_gcode_from_solderpaste_geo(**tooluid_value)
-
-                if res == 'fail':
-                    log.debug("FlatCAMGeometry.mtool_gen_cncjob() --> generate_from_geometry2() failed")
-                    return 'fail'
-                else:
-                    tool_cnc_dict['gcode'] = res
-
-                ### PARSE GCODE ###
-                tool_cnc_dict['gcode_parsed'] = job_obj.gcode_parse()
-
-                # TODO this serve for bounding box creation only; should be optimized
-                tool_cnc_dict['solid_geometry'] = cascaded_union([geo['geom'] for geo in tool_cnc_dict['gcode_parsed']])
-
-                # tell gcode_parse from which point to start drawing the lines depending on what kind of
-                # object is the source of gcode
-                job_obj.toolchange_xy_type = "geometry"
-                app_obj.progress.emit(80)
-
-                job_obj.cnc_tools.update({
-                    tooluid_key: deepcopy(tool_cnc_dict)
-                })
-                tool_cnc_dict.clear()
-
-        if use_thread:
-            # To be run in separate thread
-            def job_thread(app_obj):
-                with self.app.proc_container.new("Generating CNC Code"):
-                    if app_obj.new_object("cncjob", outname, job_init, overwrite=True) != 'fail':
-                        app_obj.inform.emit("[success]ToolSolderPaste CNCjob created: %s" % outname)
-                        app_obj.progress.emit(100)
-
-            # Create a promise with the name
-            self.app.collection.promise(outname)
-            # Send to worker
-            self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
-        else:
-            self.app.new_object("cncjob", outname, job_init, overwrite=True)
 
     def reset_fields(self):
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
