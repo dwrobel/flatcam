@@ -475,17 +475,17 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
         self.snap_toolbar.setObjectName('Snap_TB')
+        self.addToolBar(self.snap_toolbar)
 
         settings = QSettings("Open Source", "FlatCAM")
         if settings.contains("layout"):
             layout = settings.value('layout', type=str)
             if layout == 'standard':
-                self.addToolBar(self.snap_toolbar)
+                pass
             elif layout == 'compact':
+                self.removeToolBar(self.snap_toolbar)
                 self.snap_toolbar.setMaximumHeight(30)
                 self.splitter_left.addWidget(self.snap_toolbar)
-        else:
-            self.addToolBar(self.snap_toolbar)
 
         ### File Toolbar ###
         self.file_open_gerber_btn = self.toolbarfile.addAction(QtGui.QIcon('share/flatcam_icon32.png'),
@@ -1451,6 +1451,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.g_editor_cmenu.setEnabled(False)
         self.e_editor_cmenu.setEnabled(False)
 
+        self.general_defaults_form = GeneralPreferencesUI()
+        self.gerber_defaults_form = GerberPreferencesUI()
+        self.excellon_defaults_form = ExcellonPreferencesUI()
+        self.geometry_defaults_form = GeometryPreferencesUI()
+        self.cncjob_defaults_form = CNCJobPreferencesUI()
+        self.tools_defaults_form = ToolsPreferencesUI()
+
+        QtWidgets.qApp.installEventFilter(self)
+
         # restore the Toolbar State from file
         settings = QSettings("Open Source", "FlatCAM")
         if settings.contains("saved_gui_state"):
@@ -1483,6 +1492,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
             self.corner_snap_btn.setVisible(False)
             self.snap_magnet.setVisible(False)
+
+    def eventFilter(self, obj, event):
+        if self.general_defaults_form.general_app_group.toggle_tooltips_cb.get_value() is False:
+            if event.type() == QtCore.QEvent.ToolTip:
+                return True
+            else:
+                return False
+
+        return False
 
     def populate_toolbars(self):
 
@@ -2638,14 +2656,14 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         # Grid X Entry
         self.gridx_label = QtWidgets.QLabel('Grid X value:')
         self.gridx_label.setToolTip(
-            "This is the Grid value on X axis\n"
+            "This is the Grid snap value on X axis."
         )
         self.gridx_entry = LengthEntry()
 
         # Grid Y Entry
         self.gridy_label = QtWidgets.QLabel('Grid Y value:')
         self.gridy_label.setToolTip(
-            "This is the Grid value on Y axis\n"
+            "This is the Grid snap value on Y axis."
         )
         self.gridy_entry = LengthEntry()
 
@@ -3104,6 +3122,18 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
             "to show whenever a new object is created."
         )
 
+        # Enable/Disable ToolTips globally
+        self.toggle_tooltips_label = QtWidgets.QLabel('<b>Enable ToolTips:</b>')
+        self.toggle_tooltips_label.setToolTip(
+            "Check this box if you want to have toolTips displayed\n"
+            "when hovering with mouse over items throughout the App."
+        )
+        self.toggle_tooltips_cb = FCCheckBox(label='')
+        self.toggle_tooltips_cb.setToolTip(
+            "Check this box if you want to have toolTips displayed\n"
+            "when hovering with mouse over items throughout the App."
+        )
+
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
@@ -3122,7 +3152,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.mselectlabel, self.mselect_radio)
         self.form_box.addRow(self.project_startup_label, self.project_startup_cb)
         self.form_box.addRow(self.project_autohide_label, self.project_autohide_cb)
-
+        self.form_box.addRow(self.toggle_tooltips_label, self.toggle_tooltips_cb)
         self.form_box.addRow(self.spacelabel, self.spacelabel)
 
         # Add the QFormLayout that holds the Application general defaults

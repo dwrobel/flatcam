@@ -296,209 +296,204 @@ class App(QtCore.QObject):
         self.toggle_units_ignore = False
 
         # self.defaults_form = PreferencesUI()
-        self.general_defaults_form = GeneralPreferencesUI()
-        self.gerber_defaults_form = GerberPreferencesUI()
-        self.excellon_defaults_form = ExcellonPreferencesUI()
-        self.geometry_defaults_form = GeometryPreferencesUI()
-        self.cncjob_defaults_form = CNCJobPreferencesUI()
-        self.tools_defaults_form = ToolsPreferencesUI()
 
         # when adding entries here read the comments in the  method found bellow named:
         # def new_object(self, kind, name, initialize, active=True, fit=True, plot=True)
         self.defaults_form_fields = {
-            "units": self.general_defaults_form.general_app_group.units_radio,
-            "global_shell_at_startup": self.general_defaults_form.general_app_group.shell_startup_cb,
-            "global_version_check": self.general_defaults_form.general_app_group.version_check_cb,
-            "global_send_stats": self.general_defaults_form.general_app_group.send_stats_cb,
-            "global_project_at_startup": self.general_defaults_form.general_app_group.project_startup_cb,
-            "global_project_autohide": self.general_defaults_form.general_app_group.project_autohide_cb,
-            "global_app_level": self.general_defaults_form.general_app_group.app_level_radio,
-            "global_compression_level": self.general_defaults_form.general_app_group.compress_combo,
-            "global_save_compressed": self.general_defaults_form.general_app_group.save_type_cb,
+            "units": self.ui.general_defaults_form.general_app_group.units_radio,
+            "global_shell_at_startup": self.ui.general_defaults_form.general_app_group.shell_startup_cb,
+            "global_version_check": self.ui.general_defaults_form.general_app_group.version_check_cb,
+            "global_send_stats": self.ui.general_defaults_form.general_app_group.send_stats_cb,
+            "global_project_at_startup": self.ui.general_defaults_form.general_app_group.project_startup_cb,
+            "global_project_autohide": self.ui.general_defaults_form.general_app_group.project_autohide_cb,
+            "global_app_level": self.ui.general_defaults_form.general_app_group.app_level_radio,
+            "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_combo,
+            "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
+            "global_toggle_tooltips": self.ui.general_defaults_form.general_app_group.toggle_tooltips_cb,
 
-            "global_gridx": self.general_defaults_form.general_gui_group.gridx_entry,
-            "global_gridy": self.general_defaults_form.general_gui_group.gridy_entry,
-            "global_snap_max": self.general_defaults_form.general_gui_group.snap_max_dist_entry,
-            "global_plot_fill": self.general_defaults_form.general_gui_group.pf_color_entry,
-            "global_plot_line": self.general_defaults_form.general_gui_group.pl_color_entry,
-            "global_sel_fill": self.general_defaults_form.general_gui_group.sf_color_entry,
-            "global_sel_line": self.general_defaults_form.general_gui_group.sl_color_entry,
-            "global_alt_sel_fill": self.general_defaults_form.general_gui_group.alt_sf_color_entry,
-            "global_alt_sel_line": self.general_defaults_form.general_gui_group.alt_sl_color_entry,
-            "global_draw_color": self.general_defaults_form.general_gui_group.draw_color_entry,
-            "global_sel_draw_color": self.general_defaults_form.general_gui_group.sel_draw_color_entry,
-            "global_pan_button": self.general_defaults_form.general_app_group.pan_button_radio,
-            "global_mselect_key": self.general_defaults_form.general_app_group.mselect_radio,
-            # "global_pan_with_space_key": self.general_defaults_form.general_gui_group.pan_with_space_cb,
-            "global_workspace": self.general_defaults_form.general_gui_group.workspace_cb,
-            "global_workspaceT": self.general_defaults_form.general_gui_group.wk_cb,
+            "global_gridx": self.ui.general_defaults_form.general_gui_group.gridx_entry,
+            "global_gridy": self.ui.general_defaults_form.general_gui_group.gridy_entry,
+            "global_snap_max": self.ui.general_defaults_form.general_gui_group.snap_max_dist_entry,
+            "global_plot_fill": self.ui.general_defaults_form.general_gui_group.pf_color_entry,
+            "global_plot_line": self.ui.general_defaults_form.general_gui_group.pl_color_entry,
+            "global_sel_fill": self.ui.general_defaults_form.general_gui_group.sf_color_entry,
+            "global_sel_line": self.ui.general_defaults_form.general_gui_group.sl_color_entry,
+            "global_alt_sel_fill": self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry,
+            "global_alt_sel_line": self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry,
+            "global_draw_color": self.ui.general_defaults_form.general_gui_group.draw_color_entry,
+            "global_sel_draw_color": self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry,
+            "global_pan_button": self.ui.general_defaults_form.general_app_group.pan_button_radio,
+            "global_mselect_key": self.ui.general_defaults_form.general_app_group.mselect_radio,
+            # "global_pan_with_space_key": self.ui.general_defaults_form.general_gui_group.pan_with_space_cb,
+            "global_workspace": self.ui.general_defaults_form.general_gui_group.workspace_cb,
+            "global_workspaceT": self.ui.general_defaults_form.general_gui_group.wk_cb,
 
-            "gerber_plot": self.gerber_defaults_form.gerber_gen_group.plot_cb,
-            "gerber_solid": self.gerber_defaults_form.gerber_gen_group.solid_cb,
-            "gerber_multicolored": self.gerber_defaults_form.gerber_gen_group.multicolored_cb,
-            "gerber_circle_steps": self.gerber_defaults_form.gerber_gen_group.circle_steps_entry,
+            "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
+            "gerber_solid": self.ui.gerber_defaults_form.gerber_gen_group.solid_cb,
+            "gerber_multicolored": self.ui.gerber_defaults_form.gerber_gen_group.multicolored_cb,
+            "gerber_circle_steps": self.ui.gerber_defaults_form.gerber_gen_group.circle_steps_entry,
 
-            "gerber_isotooldia": self.gerber_defaults_form.gerber_opt_group.iso_tool_dia_entry,
-            "gerber_isopasses": self.gerber_defaults_form.gerber_opt_group.iso_width_entry,
-            "gerber_isooverlap": self.gerber_defaults_form.gerber_opt_group.iso_overlap_entry,
-            "gerber_combine_passes": self.gerber_defaults_form.gerber_opt_group.combine_passes_cb,
-            "gerber_milling_type": self.gerber_defaults_form.gerber_opt_group.milling_type_radio,
-            "gerber_noncoppermargin": self.gerber_defaults_form.gerber_opt_group.noncopper_margin_entry,
-            "gerber_noncopperrounded": self.gerber_defaults_form.gerber_opt_group.noncopper_rounded_cb,
-            "gerber_bboxmargin": self.gerber_defaults_form.gerber_opt_group.bbmargin_entry,
-            "gerber_bboxrounded": self.gerber_defaults_form.gerber_opt_group.bbrounded_cb,
+            "gerber_isotooldia": self.ui.gerber_defaults_form.gerber_opt_group.iso_tool_dia_entry,
+            "gerber_isopasses": self.ui.gerber_defaults_form.gerber_opt_group.iso_width_entry,
+            "gerber_isooverlap": self.ui.gerber_defaults_form.gerber_opt_group.iso_overlap_entry,
+            "gerber_combine_passes": self.ui.gerber_defaults_form.gerber_opt_group.combine_passes_cb,
+            "gerber_milling_type": self.ui.gerber_defaults_form.gerber_opt_group.milling_type_radio,
+            "gerber_noncoppermargin": self.ui.gerber_defaults_form.gerber_opt_group.noncopper_margin_entry,
+            "gerber_noncopperrounded": self.ui.gerber_defaults_form.gerber_opt_group.noncopper_rounded_cb,
+            "gerber_bboxmargin": self.ui.gerber_defaults_form.gerber_opt_group.bbmargin_entry,
+            "gerber_bboxrounded": self.ui.gerber_defaults_form.gerber_opt_group.bbrounded_cb,
 
-            "excellon_plot": self.excellon_defaults_form.excellon_gen_group.plot_cb,
-            "excellon_solid": self.excellon_defaults_form.excellon_gen_group.solid_cb,
-            "excellon_format_upper_in": self.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry,
-            "excellon_format_lower_in": self.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry,
-            "excellon_format_upper_mm": self.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry,
-            "excellon_format_lower_mm": self.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry,
-            "excellon_zeros": self.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio,
-            "excellon_units": self.excellon_defaults_form.excellon_gen_group.excellon_units_radio,
-            "excellon_optimization_type": self.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio,
-            "excellon_search_time": self.excellon_defaults_form.excellon_gen_group.optimization_time_entry,
-            "excellon_offset": self.excellon_defaults_form.excellon_gen_group.offset_entry,
-            "excellon_toolchangexy": self.excellon_defaults_form.excellon_gen_group.toolchangexy_entry,
-            "excellon_startz": self.excellon_defaults_form.excellon_gen_group.estartz_entry,
-            "excellon_endz": self.excellon_defaults_form.excellon_gen_group.eendz_entry,
-            "excellon_feedrate_rapid": self.excellon_defaults_form.excellon_gen_group.feedrate_rapid_entry,
-            "excellon_z_pdepth": self.excellon_defaults_form.excellon_gen_group.pdepth_entry,
-            "excellon_feedrate_probe": self.excellon_defaults_form.excellon_gen_group.feedrate_probe_entry,
-            "excellon_f_plunge": self.excellon_defaults_form.excellon_gen_group.fplunge_cb,
-            "excellon_f_retract": self.excellon_defaults_form.excellon_gen_group.fretract_cb,
+            "excellon_plot": self.ui.excellon_defaults_form.excellon_gen_group.plot_cb,
+            "excellon_solid": self.ui.excellon_defaults_form.excellon_gen_group.solid_cb,
+            "excellon_format_upper_in": self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry,
+            "excellon_format_lower_in": self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry,
+            "excellon_format_upper_mm": self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry,
+            "excellon_format_lower_mm": self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry,
+            "excellon_zeros": self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio,
+            "excellon_units": self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio,
+            "excellon_optimization_type": self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio,
+            "excellon_search_time": self.ui.excellon_defaults_form.excellon_gen_group.optimization_time_entry,
+            "excellon_offset": self.ui.excellon_defaults_form.excellon_gen_group.offset_entry,
+            "excellon_toolchangexy": self.ui.excellon_defaults_form.excellon_gen_group.toolchangexy_entry,
+            "excellon_startz": self.ui.excellon_defaults_form.excellon_gen_group.estartz_entry,
+            "excellon_endz": self.ui.excellon_defaults_form.excellon_gen_group.eendz_entry,
+            "excellon_feedrate_rapid": self.ui.excellon_defaults_form.excellon_gen_group.feedrate_rapid_entry,
+            "excellon_z_pdepth": self.ui.excellon_defaults_form.excellon_gen_group.pdepth_entry,
+            "excellon_feedrate_probe": self.ui.excellon_defaults_form.excellon_gen_group.feedrate_probe_entry,
+            "excellon_f_plunge": self.ui.excellon_defaults_form.excellon_gen_group.fplunge_cb,
+            "excellon_f_retract": self.ui.excellon_defaults_form.excellon_gen_group.fretract_cb,
 
-            "excellon_drillz": self.excellon_defaults_form.excellon_opt_group.cutz_entry,
-            "excellon_travelz": self.excellon_defaults_form.excellon_opt_group.travelz_entry,
-            "excellon_feedrate": self.excellon_defaults_form.excellon_opt_group.feedrate_entry,
-            "excellon_spindlespeed": self.excellon_defaults_form.excellon_opt_group.spindlespeed_entry,
-            "excellon_dwell": self.excellon_defaults_form.excellon_opt_group.dwell_cb,
-            "excellon_dwelltime": self.excellon_defaults_form.excellon_opt_group.dwelltime_entry,
-            "excellon_toolchange": self.excellon_defaults_form.excellon_opt_group.toolchange_cb,
-            "excellon_toolchangez": self.excellon_defaults_form.excellon_opt_group.toolchangez_entry,
-            "excellon_ppname_e": self.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb,
-            "excellon_tooldia": self.excellon_defaults_form.excellon_opt_group.tooldia_entry,
-            "excellon_slot_tooldia": self.excellon_defaults_form.excellon_opt_group.slot_tooldia_entry,
-            "excellon_gcode_type": self.excellon_defaults_form.excellon_opt_group.excellon_gcode_type_radio,
+            "excellon_drillz": self.ui.excellon_defaults_form.excellon_opt_group.cutz_entry,
+            "excellon_travelz": self.ui.excellon_defaults_form.excellon_opt_group.travelz_entry,
+            "excellon_feedrate": self.ui.excellon_defaults_form.excellon_opt_group.feedrate_entry,
+            "excellon_spindlespeed": self.ui.excellon_defaults_form.excellon_opt_group.spindlespeed_entry,
+            "excellon_dwell": self.ui.excellon_defaults_form.excellon_opt_group.dwell_cb,
+            "excellon_dwelltime": self.ui.excellon_defaults_form.excellon_opt_group.dwelltime_entry,
+            "excellon_toolchange": self.ui.excellon_defaults_form.excellon_opt_group.toolchange_cb,
+            "excellon_toolchangez": self.ui.excellon_defaults_form.excellon_opt_group.toolchangez_entry,
+            "excellon_ppname_e": self.ui.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb,
+            "excellon_tooldia": self.ui.excellon_defaults_form.excellon_opt_group.tooldia_entry,
+            "excellon_slot_tooldia": self.ui.excellon_defaults_form.excellon_opt_group.slot_tooldia_entry,
+            "excellon_gcode_type": self.ui.excellon_defaults_form.excellon_opt_group.excellon_gcode_type_radio,
 
-            "excellon_exp_units": self.excellon_defaults_form.excellon_exp_group.excellon_units_radio,
-            "excellon_exp_format": self.excellon_defaults_form.excellon_exp_group.format_radio,
-            "excellon_exp_integer": self.excellon_defaults_form.excellon_exp_group.format_whole_entry,
-            "excellon_exp_decimals": self.excellon_defaults_form.excellon_exp_group.format_dec_entry,
-            "excellon_exp_zeros": self.excellon_defaults_form.excellon_exp_group.zeros_radio,
+            "excellon_exp_units": self.ui.excellon_defaults_form.excellon_exp_group.excellon_units_radio,
+            "excellon_exp_format": self.ui.excellon_defaults_form.excellon_exp_group.format_radio,
+            "excellon_exp_integer": self.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry,
+            "excellon_exp_decimals": self.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry,
+            "excellon_exp_zeros": self.ui.excellon_defaults_form.excellon_exp_group.zeros_radio,
 
-            "geometry_plot": self.geometry_defaults_form.geometry_gen_group.plot_cb,
-            "geometry_cnctooldia": self.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
-            "geometry_circle_steps": self.geometry_defaults_form.geometry_gen_group.circle_steps_entry,
-            "geometry_segx": self.geometry_defaults_form.geometry_gen_group.segx_entry,
-            "geometry_segy": self.geometry_defaults_form.geometry_gen_group.segy_entry,
-            "geometry_feedrate_rapid": self.geometry_defaults_form.geometry_gen_group.cncfeedrate_rapid_entry,
-            "geometry_feedrate_probe": self.geometry_defaults_form.geometry_gen_group.feedrate_probe_entry,
-            "geometry_z_pdepth": self.geometry_defaults_form.geometry_gen_group.pdepth_entry,
-            "geometry_f_plunge": self.geometry_defaults_form.geometry_gen_group.fplunge_cb,
-            "geometry_toolchangexy": self.geometry_defaults_form.geometry_gen_group.toolchangexy_entry,
-            "geometry_startz": self.geometry_defaults_form.geometry_gen_group.gstartz_entry,
-            "geometry_endz": self.geometry_defaults_form.geometry_gen_group.gendz_entry,
-            "geometry_extracut": self.geometry_defaults_form.geometry_gen_group.extracut_cb,
+            "geometry_plot": self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,
+            "geometry_cnctooldia": self.ui.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
+            "geometry_circle_steps": self.ui.geometry_defaults_form.geometry_gen_group.circle_steps_entry,
+            "geometry_segx": self.ui.geometry_defaults_form.geometry_gen_group.segx_entry,
+            "geometry_segy": self.ui.geometry_defaults_form.geometry_gen_group.segy_entry,
+            "geometry_feedrate_rapid": self.ui.geometry_defaults_form.geometry_gen_group.cncfeedrate_rapid_entry,
+            "geometry_feedrate_probe": self.ui.geometry_defaults_form.geometry_gen_group.feedrate_probe_entry,
+            "geometry_z_pdepth": self.ui.geometry_defaults_form.geometry_gen_group.pdepth_entry,
+            "geometry_f_plunge": self.ui.geometry_defaults_form.geometry_gen_group.fplunge_cb,
+            "geometry_toolchangexy": self.ui.geometry_defaults_form.geometry_gen_group.toolchangexy_entry,
+            "geometry_startz": self.ui.geometry_defaults_form.geometry_gen_group.gstartz_entry,
+            "geometry_endz": self.ui.geometry_defaults_form.geometry_gen_group.gendz_entry,
+            "geometry_extracut": self.ui.geometry_defaults_form.geometry_gen_group.extracut_cb,
 
-            "geometry_cutz": self.geometry_defaults_form.geometry_opt_group.cutz_entry,
-            "geometry_travelz": self.geometry_defaults_form.geometry_opt_group.travelz_entry,
-            "geometry_feedrate": self.geometry_defaults_form.geometry_opt_group.cncfeedrate_entry,
-            "geometry_feedrate_z": self.geometry_defaults_form.geometry_opt_group.cncplunge_entry,
-            "geometry_spindlespeed": self.geometry_defaults_form.geometry_opt_group.cncspindlespeed_entry,
-            "geometry_dwell": self.geometry_defaults_form.geometry_opt_group.dwell_cb,
-            "geometry_dwelltime": self.geometry_defaults_form.geometry_opt_group.dwelltime_entry,
-            "geometry_ppname_g": self.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb,
-            "geometry_toolchange": self.geometry_defaults_form.geometry_opt_group.toolchange_cb,
-            "geometry_toolchangez": self.geometry_defaults_form.geometry_opt_group.toolchangez_entry,
-            "geometry_depthperpass": self.geometry_defaults_form.geometry_opt_group.depthperpass_entry,
-            "geometry_multidepth": self.geometry_defaults_form.geometry_opt_group.multidepth_cb,
+            "geometry_cutz": self.ui.geometry_defaults_form.geometry_opt_group.cutz_entry,
+            "geometry_travelz": self.ui.geometry_defaults_form.geometry_opt_group.travelz_entry,
+            "geometry_feedrate": self.ui.geometry_defaults_form.geometry_opt_group.cncfeedrate_entry,
+            "geometry_feedrate_z": self.ui.geometry_defaults_form.geometry_opt_group.cncplunge_entry,
+            "geometry_spindlespeed": self.ui.geometry_defaults_form.geometry_opt_group.cncspindlespeed_entry,
+            "geometry_dwell": self.ui.geometry_defaults_form.geometry_opt_group.dwell_cb,
+            "geometry_dwelltime": self.ui.geometry_defaults_form.geometry_opt_group.dwelltime_entry,
+            "geometry_ppname_g": self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb,
+            "geometry_toolchange": self.ui.geometry_defaults_form.geometry_opt_group.toolchange_cb,
+            "geometry_toolchangez": self.ui.geometry_defaults_form.geometry_opt_group.toolchangez_entry,
+            "geometry_depthperpass": self.ui.geometry_defaults_form.geometry_opt_group.depthperpass_entry,
+            "geometry_multidepth": self.ui.geometry_defaults_form.geometry_opt_group.multidepth_cb,
 
-            "cncjob_plot": self.cncjob_defaults_form.cncjob_gen_group.plot_cb,
-            "cncjob_plot_kind": self.cncjob_defaults_form.cncjob_gen_group.cncplot_method_radio,
-            "cncjob_tooldia": self.cncjob_defaults_form.cncjob_gen_group.tooldia_entry,
-            "cncjob_coords_decimals": self.cncjob_defaults_form.cncjob_gen_group.coords_dec_entry,
-            "cncjob_fr_decimals": self.cncjob_defaults_form.cncjob_gen_group.fr_dec_entry,
-            "cncjob_steps_per_circle": self.cncjob_defaults_form.cncjob_gen_group.steps_per_circle_entry,
+            "cncjob_plot": self.ui.cncjob_defaults_form.cncjob_gen_group.plot_cb,
+            "cncjob_plot_kind": self.ui.cncjob_defaults_form.cncjob_gen_group.cncplot_method_radio,
+            "cncjob_tooldia": self.ui.cncjob_defaults_form.cncjob_gen_group.tooldia_entry,
+            "cncjob_coords_decimals": self.ui.cncjob_defaults_form.cncjob_gen_group.coords_dec_entry,
+            "cncjob_fr_decimals": self.ui.cncjob_defaults_form.cncjob_gen_group.fr_dec_entry,
+            "cncjob_steps_per_circle": self.ui.cncjob_defaults_form.cncjob_gen_group.steps_per_circle_entry,
 
-            "cncjob_prepend": self.cncjob_defaults_form.cncjob_opt_group.prepend_text,
-            "cncjob_append": self.cncjob_defaults_form.cncjob_opt_group.append_text,
+            "cncjob_prepend": self.ui.cncjob_defaults_form.cncjob_opt_group.prepend_text,
+            "cncjob_append": self.ui.cncjob_defaults_form.cncjob_opt_group.append_text,
 
-            "tools_ncctools": self.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
-            "tools_nccoverlap": self.tools_defaults_form.tools_ncc_group.ncc_overlap_entry,
-            "tools_nccmargin": self.tools_defaults_form.tools_ncc_group.ncc_margin_entry,
-            "tools_nccmethod": self.tools_defaults_form.tools_ncc_group.ncc_method_radio,
-            "tools_nccconnect": self.tools_defaults_form.tools_ncc_group.ncc_connect_cb,
-            "tools_ncccontour": self.tools_defaults_form.tools_ncc_group.ncc_contour_cb,
-            "tools_nccrest": self.tools_defaults_form.tools_ncc_group.ncc_rest_cb,
+            "tools_ncctools": self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
+            "tools_nccoverlap": self.ui.tools_defaults_form.tools_ncc_group.ncc_overlap_entry,
+            "tools_nccmargin": self.ui.tools_defaults_form.tools_ncc_group.ncc_margin_entry,
+            "tools_nccmethod": self.ui.tools_defaults_form.tools_ncc_group.ncc_method_radio,
+            "tools_nccconnect": self.ui.tools_defaults_form.tools_ncc_group.ncc_connect_cb,
+            "tools_ncccontour": self.ui.tools_defaults_form.tools_ncc_group.ncc_contour_cb,
+            "tools_nccrest": self.ui.tools_defaults_form.tools_ncc_group.ncc_rest_cb,
 
-            "tools_cutouttooldia": self.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
-            "tools_cutoutmargin": self.tools_defaults_form.tools_cutout_group.cutout_margin_entry,
-            "tools_cutoutgapsize": self.tools_defaults_form.tools_cutout_group.cutout_gap_entry,
-            "tools_gaps_rect": self.tools_defaults_form.tools_cutout_group.gaps_radio,
-            "tools_gaps_ff": self.tools_defaults_form.tools_cutout_group.gaps_combo,
+            "tools_cutouttooldia": self.ui.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
+            "tools_cutoutmargin": self.ui.tools_defaults_form.tools_cutout_group.cutout_margin_entry,
+            "tools_cutoutgapsize": self.ui.tools_defaults_form.tools_cutout_group.cutout_gap_entry,
+            "tools_gaps_rect": self.ui.tools_defaults_form.tools_cutout_group.gaps_radio,
+            "tools_gaps_ff": self.ui.tools_defaults_form.tools_cutout_group.gaps_combo,
 
-            "tools_painttooldia": self.tools_defaults_form.tools_paint_group.painttooldia_entry,
-            "tools_paintoverlap": self.tools_defaults_form.tools_paint_group.paintoverlap_entry,
-            "tools_paintmargin": self.tools_defaults_form.tools_paint_group.paintmargin_entry,
-            "tools_paintmethod": self.tools_defaults_form.tools_paint_group.paintmethod_combo,
-            "tools_selectmethod": self.tools_defaults_form.tools_paint_group.selectmethod_combo,
-            "tools_pathconnect": self.tools_defaults_form.tools_paint_group.pathconnect_cb,
-            "tools_paintcontour": self.tools_defaults_form.tools_paint_group.contour_cb,
+            "tools_painttooldia": self.ui.tools_defaults_form.tools_paint_group.painttooldia_entry,
+            "tools_paintoverlap": self.ui.tools_defaults_form.tools_paint_group.paintoverlap_entry,
+            "tools_paintmargin": self.ui.tools_defaults_form.tools_paint_group.paintmargin_entry,
+            "tools_paintmethod": self.ui.tools_defaults_form.tools_paint_group.paintmethod_combo,
+            "tools_selectmethod": self.ui.tools_defaults_form.tools_paint_group.selectmethod_combo,
+            "tools_pathconnect": self.ui.tools_defaults_form.tools_paint_group.pathconnect_cb,
+            "tools_paintcontour": self.ui.tools_defaults_form.tools_paint_group.contour_cb,
 
-            "tools_2sided_mirror_axis": self.tools_defaults_form.tools_2sided_group.mirror_axis_radio,
-            "tools_2sided_axis_loc": self.tools_defaults_form.tools_2sided_group.axis_location_radio,
-            "tools_2sided_drilldia": self.tools_defaults_form.tools_2sided_group.drill_dia_entry,
+            "tools_2sided_mirror_axis": self.ui.tools_defaults_form.tools_2sided_group.mirror_axis_radio,
+            "tools_2sided_axis_loc": self.ui.tools_defaults_form.tools_2sided_group.axis_location_radio,
+            "tools_2sided_drilldia": self.ui.tools_defaults_form.tools_2sided_group.drill_dia_entry,
 
-            "tools_film_type": self.tools_defaults_form.tools_film_group.film_type_radio,
-            "tools_film_boundary": self.tools_defaults_form.tools_film_group.film_boundary_entry,
-            "tools_film_scale": self.tools_defaults_form.tools_film_group.film_scale_entry,
+            "tools_film_type": self.ui.tools_defaults_form.tools_film_group.film_type_radio,
+            "tools_film_boundary": self.ui.tools_defaults_form.tools_film_group.film_boundary_entry,
+            "tools_film_scale": self.ui.tools_defaults_form.tools_film_group.film_scale_entry,
 
-            "tools_panelize_spacing_columns": self.tools_defaults_form.tools_panelize_group.pspacing_columns,
-            "tools_panelize_spacing_rows": self.tools_defaults_form.tools_panelize_group.pspacing_rows,
-            "tools_panelize_columns": self.tools_defaults_form.tools_panelize_group.pcolumns,
-            "tools_panelize_rows": self.tools_defaults_form.tools_panelize_group.prows,
-            "tools_panelize_constrain": self.tools_defaults_form.tools_panelize_group.pconstrain_cb,
-            "tools_panelize_constrainx": self.tools_defaults_form.tools_panelize_group.px_width_entry,
-            "tools_panelize_constrainy": self.tools_defaults_form.tools_panelize_group.py_height_entry,
-            "tools_panelize_panel_type": self.tools_defaults_form.tools_panelize_group.panel_type_radio,
+            "tools_panelize_spacing_columns": self.ui.tools_defaults_form.tools_panelize_group.pspacing_columns,
+            "tools_panelize_spacing_rows": self.ui.tools_defaults_form.tools_panelize_group.pspacing_rows,
+            "tools_panelize_columns": self.ui.tools_defaults_form.tools_panelize_group.pcolumns,
+            "tools_panelize_rows": self.ui.tools_defaults_form.tools_panelize_group.prows,
+            "tools_panelize_constrain": self.ui.tools_defaults_form.tools_panelize_group.pconstrain_cb,
+            "tools_panelize_constrainx": self.ui.tools_defaults_form.tools_panelize_group.px_width_entry,
+            "tools_panelize_constrainy": self.ui.tools_defaults_form.tools_panelize_group.py_height_entry,
+            "tools_panelize_panel_type": self.ui.tools_defaults_form.tools_panelize_group.panel_type_radio,
 
-            "tools_calc_vshape_tip_dia": self.tools_defaults_form.tools_calculators_group.tip_dia_entry,
-            "tools_calc_vshape_tip_angle": self.tools_defaults_form.tools_calculators_group.tip_angle_entry,
-            "tools_calc_vshape_cut_z": self.tools_defaults_form.tools_calculators_group.cut_z_entry,
-            "tools_calc_electro_length": self.tools_defaults_form.tools_calculators_group.pcblength_entry,
-            "tools_calc_electro_width": self.tools_defaults_form.tools_calculators_group.pcbwidth_entry,
-            "tools_calc_electro_cdensity": self.tools_defaults_form.tools_calculators_group.cdensity_entry,
-            "tools_calc_electro_growth": self.tools_defaults_form.tools_calculators_group.growth_entry,
+            "tools_calc_vshape_tip_dia": self.ui.tools_defaults_form.tools_calculators_group.tip_dia_entry,
+            "tools_calc_vshape_tip_angle": self.ui.tools_defaults_form.tools_calculators_group.tip_angle_entry,
+            "tools_calc_vshape_cut_z": self.ui.tools_defaults_form.tools_calculators_group.cut_z_entry,
+            "tools_calc_electro_length": self.ui.tools_defaults_form.tools_calculators_group.pcblength_entry,
+            "tools_calc_electro_width": self.ui.tools_defaults_form.tools_calculators_group.pcbwidth_entry,
+            "tools_calc_electro_cdensity": self.ui.tools_defaults_form.tools_calculators_group.cdensity_entry,
+            "tools_calc_electro_growth": self.ui.tools_defaults_form.tools_calculators_group.growth_entry,
 
-            "tools_transform_rotate": self.tools_defaults_form.tools_transform_group.rotate_entry,
-            "tools_transform_skew_x": self.tools_defaults_form.tools_transform_group.skewx_entry,
-            "tools_transform_skew_y": self.tools_defaults_form.tools_transform_group.skewy_entry,
-            "tools_transform_scale_x": self.tools_defaults_form.tools_transform_group.scalex_entry,
-            "tools_transform_scale_y": self.tools_defaults_form.tools_transform_group.scaley_entry,
-            "tools_transform_scale_link": self.tools_defaults_form.tools_transform_group.link_cb,
-            "tools_transform_scale_reference": self.tools_defaults_form.tools_transform_group.reference_cb,
-            "tools_transform_offset_x": self.tools_defaults_form.tools_transform_group.offx_entry,
-            "tools_transform_offset_y": self.tools_defaults_form.tools_transform_group.offy_entry,
-            "tools_transform_mirror_reference": self.tools_defaults_form.tools_transform_group.mirror_reference_cb,
-            "tools_transform_mirror_point": self.tools_defaults_form.tools_transform_group.flip_ref_entry,
+            "tools_transform_rotate": self.ui.tools_defaults_form.tools_transform_group.rotate_entry,
+            "tools_transform_skew_x": self.ui.tools_defaults_form.tools_transform_group.skewx_entry,
+            "tools_transform_skew_y": self.ui.tools_defaults_form.tools_transform_group.skewy_entry,
+            "tools_transform_scale_x": self.ui.tools_defaults_form.tools_transform_group.scalex_entry,
+            "tools_transform_scale_y": self.ui.tools_defaults_form.tools_transform_group.scaley_entry,
+            "tools_transform_scale_link": self.ui.tools_defaults_form.tools_transform_group.link_cb,
+            "tools_transform_scale_reference": self.ui.tools_defaults_form.tools_transform_group.reference_cb,
+            "tools_transform_offset_x": self.ui.tools_defaults_form.tools_transform_group.offx_entry,
+            "tools_transform_offset_y": self.ui.tools_defaults_form.tools_transform_group.offy_entry,
+            "tools_transform_mirror_reference": self.ui.tools_defaults_form.tools_transform_group.mirror_reference_cb,
+            "tools_transform_mirror_point": self.ui.tools_defaults_form.tools_transform_group.flip_ref_entry,
 
-            "tools_solderpaste_tools": self.tools_defaults_form.tools_solderpaste_group.nozzle_tool_dia_entry,
-            "tools_solderpaste_new": self.tools_defaults_form.tools_solderpaste_group.addtool_entry,
-            "tools_solderpaste_z_start": self.tools_defaults_form.tools_solderpaste_group.z_start_entry,
-            "tools_solderpaste_z_dispense": self.tools_defaults_form.tools_solderpaste_group.z_dispense_entry,
-            "tools_solderpaste_z_stop": self.tools_defaults_form.tools_solderpaste_group.z_stop_entry,
-            "tools_solderpaste_z_travel": self.tools_defaults_form.tools_solderpaste_group.z_travel_entry,
-            "tools_solderpaste_z_toolchange": self.tools_defaults_form.tools_solderpaste_group.z_toolchange_entry,
-            "tools_solderpaste_xy_toolchange": self.tools_defaults_form.tools_solderpaste_group.xy_toolchange_entry,
-            "tools_solderpaste_frxy": self.tools_defaults_form.tools_solderpaste_group.frxy_entry,
-            "tools_solderpaste_frz": self.tools_defaults_form.tools_solderpaste_group.frz_entry,
-            "tools_solderpaste_frz_dispense": self.tools_defaults_form.tools_solderpaste_group.frz_dispense_entry,
-            "tools_solderpaste_speedfwd": self.tools_defaults_form.tools_solderpaste_group.speedfwd_entry,
-            "tools_solderpaste_dwellfwd": self.tools_defaults_form.tools_solderpaste_group.dwellfwd_entry,
-            "tools_solderpaste_speedrev": self.tools_defaults_form.tools_solderpaste_group.speedrev_entry,
-            "tools_solderpaste_dwellrev": self.tools_defaults_form.tools_solderpaste_group.dwellrev_entry,
-            "tools_solderpaste_pp": self.tools_defaults_form.tools_solderpaste_group.pp_combo
+            "tools_solderpaste_tools": self.ui.tools_defaults_form.tools_solderpaste_group.nozzle_tool_dia_entry,
+            "tools_solderpaste_new": self.ui.tools_defaults_form.tools_solderpaste_group.addtool_entry,
+            "tools_solderpaste_z_start": self.ui.tools_defaults_form.tools_solderpaste_group.z_start_entry,
+            "tools_solderpaste_z_dispense": self.ui.tools_defaults_form.tools_solderpaste_group.z_dispense_entry,
+            "tools_solderpaste_z_stop": self.ui.tools_defaults_form.tools_solderpaste_group.z_stop_entry,
+            "tools_solderpaste_z_travel": self.ui.tools_defaults_form.tools_solderpaste_group.z_travel_entry,
+            "tools_solderpaste_z_toolchange": self.ui.tools_defaults_form.tools_solderpaste_group.z_toolchange_entry,
+            "tools_solderpaste_xy_toolchange": self.ui.tools_defaults_form.tools_solderpaste_group.xy_toolchange_entry,
+            "tools_solderpaste_frxy": self.ui.tools_defaults_form.tools_solderpaste_group.frxy_entry,
+            "tools_solderpaste_frz": self.ui.tools_defaults_form.tools_solderpaste_group.frz_entry,
+            "tools_solderpaste_frz_dispense": self.ui.tools_defaults_form.tools_solderpaste_group.frz_dispense_entry,
+            "tools_solderpaste_speedfwd": self.ui.tools_defaults_form.tools_solderpaste_group.speedfwd_entry,
+            "tools_solderpaste_dwellfwd": self.ui.tools_defaults_form.tools_solderpaste_group.dwellfwd_entry,
+            "tools_solderpaste_speedrev": self.ui.tools_defaults_form.tools_solderpaste_group.speedrev_entry,
+            "tools_solderpaste_dwellrev": self.ui.tools_defaults_form.tools_solderpaste_group.dwellrev_entry,
+            "tools_solderpaste_pp": self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo
 
         }
 
@@ -511,15 +506,15 @@ class App(QtCore.QObject):
         for name in list(self.postprocessors.keys()):
             # 'Paste' postprocessors are to be used only in the Solder Paste Dispensing Tool
             if name.partition('_')[0] == 'Paste':
-                self.tools_defaults_form.tools_solderpaste_group.pp_combo.addItem(name)
+                self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo.addItem(name)
                 continue
 
-            self.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.addItem(name)
+            self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb.addItem(name)
             # HPGL postprocessor is only for Geometry objects therefore it should not be in the Excellon Preferences
             if name == 'hpgl':
                 continue
 
-            self.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb.addItem(name)
+            self.ui.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb.addItem(name)
 
         self.defaults = LoudDict()
         self.defaults.set_change_callback(self.on_defaults_dict_change)  # When the dictionary changes.
@@ -579,6 +574,7 @@ class App(QtCore.QObject):
             "global_recent_limit": 10,  # Max. items in recent list.
             "global_compression_level": 3,
             "global_save_compressed": True,
+            "global_toggle_tooltips": True,
 
             "fit_key": 'V',
             "zoom_out_key": '-',
@@ -1035,51 +1031,51 @@ class App(QtCore.QObject):
 
         ### Initialize the color box's color in Preferences -> Global -> Color
         # Init Plot Colors
-        self.general_defaults_form.general_gui_group.pf_color_entry.set_value(self.defaults['global_plot_fill'])
-        self.general_defaults_form.general_gui_group.pf_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.pf_color_entry.set_value(self.defaults['global_plot_fill'])
+        self.ui.general_defaults_form.general_gui_group.pf_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_plot_fill'])[:7])
-        self.general_defaults_form.general_gui_group.pf_color_alpha_spinner.set_value(
+        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_spinner.set_value(
             int(self.defaults['global_plot_fill'][7:9], 16))
-        self.general_defaults_form.general_gui_group.pf_color_alpha_slider.setValue(
+        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.setValue(
             int(self.defaults['global_plot_fill'][7:9], 16))
 
-        self.general_defaults_form.general_gui_group.pl_color_entry.set_value(self.defaults['global_plot_line'])
-        self.general_defaults_form.general_gui_group.pl_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.pl_color_entry.set_value(self.defaults['global_plot_line'])
+        self.ui.general_defaults_form.general_gui_group.pl_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_plot_line'])[:7])
 
         # Init Left-Right Selection colors
-        self.general_defaults_form.general_gui_group.sf_color_entry.set_value(self.defaults['global_sel_fill'])
-        self.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.sf_color_entry.set_value(self.defaults['global_sel_fill'])
+        self.ui.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_sel_fill'])[:7])
-        self.general_defaults_form.general_gui_group.sf_color_alpha_spinner.set_value(
+        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.set_value(
             int(self.defaults['global_sel_fill'][7:9], 16))
-        self.general_defaults_form.general_gui_group.sf_color_alpha_slider.setValue(
+        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.setValue(
             int(self.defaults['global_sel_fill'][7:9], 16))
 
-        self.general_defaults_form.general_gui_group.sl_color_entry.set_value(self.defaults['global_sel_line'])
-        self.general_defaults_form.general_gui_group.sl_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.sl_color_entry.set_value(self.defaults['global_sel_line'])
+        self.ui.general_defaults_form.general_gui_group.sl_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_sel_line'])[:7])
 
         # Init Right-Left Selection colors
-        self.general_defaults_form.general_gui_group.alt_sf_color_entry.set_value(self.defaults['global_alt_sel_fill'])
-        self.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.set_value(self.defaults['global_alt_sel_fill'])
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_alt_sel_fill'])[:7])
-        self.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.set_value(
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.set_value(
             int(self.defaults['global_sel_fill'][7:9], 16))
-        self.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.setValue(
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.setValue(
             int(self.defaults['global_sel_fill'][7:9], 16))
 
-        self.general_defaults_form.general_gui_group.alt_sl_color_entry.set_value(self.defaults['global_alt_sel_line'])
-        self.general_defaults_form.general_gui_group.alt_sl_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.set_value(self.defaults['global_alt_sel_line'])
+        self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_alt_sel_line'])[:7])
 
         # Init Draw color and Selection Draw Color
-        self.general_defaults_form.general_gui_group.draw_color_entry.set_value(self.defaults['global_draw_color'])
-        self.general_defaults_form.general_gui_group.draw_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.draw_color_entry.set_value(self.defaults['global_draw_color'])
+        self.ui.general_defaults_form.general_gui_group.draw_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_draw_color'])[:7])
 
-        self.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(self.defaults['global_sel_draw_color'])
-        self.general_defaults_form.general_gui_group.sel_draw_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(self.defaults['global_sel_draw_color'])
+        self.ui.general_defaults_form.general_gui_group.sel_draw_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_sel_draw_color'])[:7])
         #### End of Data ####
 
@@ -1303,46 +1299,46 @@ class App(QtCore.QObject):
         ### GUI PREFERENCES SIGNALS ###
         ###############################
         self.general_options_form.general_app_group.units_radio.group_toggle_fn = self.on_toggle_units
-        self.general_defaults_form.general_app_group.language_apply_btn.clicked.connect(self.on_language_apply)
+        self.ui.general_defaults_form.general_app_group.language_apply_btn.clicked.connect(self.on_language_apply)
 
         ###############################
         ### GUI PREFERENCES SIGNALS ###
         ###############################
 
         # Setting plot colors signals
-        self.general_defaults_form.general_gui_group.pf_color_entry.editingFinished.connect(self.on_pf_color_entry)
-        self.general_defaults_form.general_gui_group.pf_color_button.clicked.connect(self.on_pf_color_button)
-        self.general_defaults_form.general_gui_group.pf_color_alpha_spinner.valueChanged.connect(self.on_pf_color_spinner)
-        self.general_defaults_form.general_gui_group.pf_color_alpha_slider.valueChanged.connect(self.on_pf_color_slider)
-        self.general_defaults_form.general_gui_group.pl_color_entry.editingFinished.connect(self.on_pl_color_entry)
-        self.general_defaults_form.general_gui_group.pl_color_button.clicked.connect(self.on_pl_color_button)
+        self.ui.general_defaults_form.general_gui_group.pf_color_entry.editingFinished.connect(self.on_pf_color_entry)
+        self.ui.general_defaults_form.general_gui_group.pf_color_button.clicked.connect(self.on_pf_color_button)
+        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_spinner.valueChanged.connect(self.on_pf_color_spinner)
+        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.valueChanged.connect(self.on_pf_color_slider)
+        self.ui.general_defaults_form.general_gui_group.pl_color_entry.editingFinished.connect(self.on_pl_color_entry)
+        self.ui.general_defaults_form.general_gui_group.pl_color_button.clicked.connect(self.on_pl_color_button)
         # Setting selection (left - right) colors signals
-        self.general_defaults_form.general_gui_group.sf_color_entry.editingFinished.connect(self.on_sf_color_entry)
-        self.general_defaults_form.general_gui_group.sf_color_button.clicked.connect(self.on_sf_color_button)
-        self.general_defaults_form.general_gui_group.sf_color_alpha_spinner.valueChanged.connect(self.on_sf_color_spinner)
-        self.general_defaults_form.general_gui_group.sf_color_alpha_slider.valueChanged.connect(self.on_sf_color_slider)
-        self.general_defaults_form.general_gui_group.sl_color_entry.editingFinished.connect(self.on_sl_color_entry)
-        self.general_defaults_form.general_gui_group.sl_color_button.clicked.connect(self.on_sl_color_button)
+        self.ui.general_defaults_form.general_gui_group.sf_color_entry.editingFinished.connect(self.on_sf_color_entry)
+        self.ui.general_defaults_form.general_gui_group.sf_color_button.clicked.connect(self.on_sf_color_button)
+        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.valueChanged.connect(self.on_sf_color_spinner)
+        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.valueChanged.connect(self.on_sf_color_slider)
+        self.ui.general_defaults_form.general_gui_group.sl_color_entry.editingFinished.connect(self.on_sl_color_entry)
+        self.ui.general_defaults_form.general_gui_group.sl_color_button.clicked.connect(self.on_sl_color_button)
         # Setting selection (right - left) colors signals
-        self.general_defaults_form.general_gui_group.alt_sf_color_entry.editingFinished.connect(self.on_alt_sf_color_entry)
-        self.general_defaults_form.general_gui_group.alt_sf_color_button.clicked.connect(self.on_alt_sf_color_button)
-        self.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.valueChanged.connect(
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.editingFinished.connect(self.on_alt_sf_color_entry)
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.clicked.connect(self.on_alt_sf_color_button)
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.valueChanged.connect(
             self.on_alt_sf_color_spinner)
-        self.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.valueChanged.connect(
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.valueChanged.connect(
             self.on_alt_sf_color_slider)
-        self.general_defaults_form.general_gui_group.alt_sl_color_entry.editingFinished.connect(self.on_alt_sl_color_entry)
-        self.general_defaults_form.general_gui_group.alt_sl_color_button.clicked.connect(self.on_alt_sl_color_button)
+        self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.editingFinished.connect(self.on_alt_sl_color_entry)
+        self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.clicked.connect(self.on_alt_sl_color_button)
         # Setting Editor Draw colors signals
-        self.general_defaults_form.general_gui_group.draw_color_entry.editingFinished.connect(self.on_draw_color_entry)
-        self.general_defaults_form.general_gui_group.draw_color_button.clicked.connect(self.on_draw_color_button)
+        self.ui.general_defaults_form.general_gui_group.draw_color_entry.editingFinished.connect(self.on_draw_color_entry)
+        self.ui.general_defaults_form.general_gui_group.draw_color_button.clicked.connect(self.on_draw_color_button)
 
-        self.general_defaults_form.general_gui_group.sel_draw_color_entry.editingFinished.connect(self.on_sel_draw_color_entry)
-        self.general_defaults_form.general_gui_group.sel_draw_color_button.clicked.connect(self.on_sel_draw_color_button)
+        self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.editingFinished.connect(self.on_sel_draw_color_entry)
+        self.ui.general_defaults_form.general_gui_group.sel_draw_color_button.clicked.connect(self.on_sel_draw_color_button)
 
-        self.general_defaults_form.general_gui_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
-        self.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
+        self.ui.general_defaults_form.general_gui_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
+        self.ui.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
 
-        self.general_defaults_form.general_gui_set_group.layout_combo.activated.connect(self.on_layout)
+        self.ui.general_defaults_form.general_gui_set_group.layout_combo.activated.connect(self.on_layout)
 
         # Modify G-CODE Plot Area TAB
         self.ui.code_editor.textChanged.connect(self.handleTextChanged)
@@ -1357,10 +1353,10 @@ class App(QtCore.QObject):
         self.collection.view.activated.connect(self.on_row_activated)
 
         # Monitor the checkbox from the Application Defaults Tab and show the TCL shell or not depending on it's value
-        self.general_defaults_form.general_app_group.shell_startup_cb.clicked.connect(self.on_toggle_shell)
+        self.ui.general_defaults_form.general_app_group.shell_startup_cb.clicked.connect(self.on_toggle_shell)
 
         # Load the defaults values into the Excellon Format and Excellon Zeros fields
-        self.excellon_defaults_form.excellon_opt_group.excellon_defaults_button.clicked.connect(
+        self.ui.excellon_defaults_form.excellon_opt_group.excellon_defaults_button.clicked.connect(
             self.on_excellon_defaults_button)
 
         # Load the defaults values into the Excellon Format and Excellon Zeros fields
@@ -1471,7 +1467,7 @@ class App(QtCore.QObject):
         # Separate thread (Not worker)
         # Check for updates on startup but only if the user consent and the app is not in Beta version
         if (self.beta is False or self.beta is None) and \
-                self.general_defaults_form.general_gui_group.version_check_cb.get_value() is True:
+                self.ui.general_defaults_form.general_gui_group.version_check_cb.get_value() is True:
             App.log.info("Checking for updates in backgroud (this is version %s)." % str(self.version))
 
             self.thr2 = QtCore.QThread()
@@ -3062,11 +3058,15 @@ class App(QtCore.QObject):
         self.report_usage("on_fullscreen()")
 
         if self.toggle_fscreen is False:
+            if sys.platform == 'win32':
+                self.ui.showFullScreen()
             for tb in self.ui.findChildren(QtWidgets.QToolBar):
                 tb.setVisible(False)
             self.ui.splitter_left.setVisible(False)
             self.toggle_fscreen = True
         else:
+            if sys.platform == 'win32':
+                self.ui.showNormal()
             self.restore_toolbar_view()
             self.ui.splitter_left.setVisible(True)
             self.toggle_fscreen = False
@@ -3132,12 +3132,12 @@ class App(QtCore.QObject):
         # self.ui.notebook.options_contents.pack_start(form, False, False, 1)
 
         if sel == 0:
-            self.gen_form = self.general_defaults_form
-            self.ger_form = self.gerber_defaults_form
-            self.exc_form = self.excellon_defaults_form
-            self.geo_form = self.geometry_defaults_form
-            self.cnc_form = self.cncjob_defaults_form
-            self.tools_form = self.tools_defaults_form
+            self.gen_form = self.ui.general_defaults_form
+            self.ger_form = self.ui.gerber_defaults_form
+            self.exc_form = self.ui.excellon_defaults_form
+            self.geo_form = self.ui.geometry_defaults_form
+            self.cnc_form = self.ui.cncjob_defaults_form
+            self.tools_form = self.ui.tools_defaults_form
         elif sel == 1:
             self.gen_form = self.general_options_form
             self.ger_form = self.gerber_options_form
@@ -3215,9 +3215,9 @@ class App(QtCore.QObject):
 
     # Setting plot colors handlers
     def on_pf_color_entry(self):
-        self.defaults['global_plot_fill'] = self.general_defaults_form.general_gui_group.pf_color_entry.get_value()[:7] + \
+        self.defaults['global_plot_fill'] = self.ui.general_defaults_form.general_gui_group.pf_color_entry.get_value()[:7] + \
                                             self.defaults['global_plot_fill'][7:9]
-        self.general_defaults_form.general_gui_group.pf_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.pf_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_plot_fill'])[:7])
 
     def on_pf_color_button(self):
@@ -3229,29 +3229,29 @@ class App(QtCore.QObject):
         if plot_fill_color.isValid() is False:
             return
 
-        self.general_defaults_form.general_gui_group.pf_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.pf_color_button.setStyleSheet(
             "background-color:%s" % str(plot_fill_color.name()))
 
         new_val = str(plot_fill_color.name()) + str(self.defaults['global_plot_fill'][7:9])
-        self.general_defaults_form.general_gui_group.pf_color_entry.set_value(new_val)
+        self.ui.general_defaults_form.general_gui_group.pf_color_entry.set_value(new_val)
         self.defaults['global_plot_fill'] = new_val
 
     def on_pf_color_spinner(self):
-        spinner_value = self.general_defaults_form.general_gui_group.pf_color_alpha_spinner.value()
-        self.general_defaults_form.general_gui_group.pf_color_alpha_slider.setValue(spinner_value)
+        spinner_value = self.ui.general_defaults_form.general_gui_group.pf_color_alpha_spinner.value()
+        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.setValue(spinner_value)
         self.defaults['global_plot_fill'] = self.defaults['global_plot_fill'][:7] + \
                                             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
         self.defaults['global_plot_line'] = self.defaults['global_plot_line'][:7] + \
                                             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
     def on_pf_color_slider(self):
-        slider_value = self.general_defaults_form.general_gui_group.pf_color_alpha_slider.value()
-        self.general_defaults_form.general_gui_group.pf_color_alpha_spinner.setValue(slider_value)
+        slider_value = self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value()
+        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_spinner.setValue(slider_value)
 
     def on_pl_color_entry(self):
-        self.defaults['global_plot_line'] = self.general_defaults_form.general_gui_group.pl_color_entry.get_value()[:7] + \
+        self.defaults['global_plot_line'] = self.ui.general_defaults_form.general_gui_group.pl_color_entry.get_value()[:7] + \
                                             self.defaults['global_plot_line'][7:9]
-        self.general_defaults_form.general_gui_group.pl_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.pl_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_plot_line'])[:7])
 
     def on_pl_color_button(self):
@@ -3264,18 +3264,18 @@ class App(QtCore.QObject):
         if plot_line_color.isValid() is False:
             return
 
-        self.general_defaults_form.general_gui_group.pl_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.pl_color_button.setStyleSheet(
             "background-color:%s" % str(plot_line_color.name()))
 
         new_val_line = str(plot_line_color.name()) + str(self.defaults['global_plot_line'][7:9])
-        self.general_defaults_form.general_gui_group.pl_color_entry.set_value(new_val_line)
+        self.ui.general_defaults_form.general_gui_group.pl_color_entry.set_value(new_val_line)
         self.defaults['global_plot_line'] = new_val_line
 
     # Setting selection colors (left - right) handlers
     def on_sf_color_entry(self):
-        self.defaults['global_sel_fill'] = self.general_defaults_form.general_gui_group.sf_color_entry.get_value()[:7] + \
+        self.defaults['global_sel_fill'] = self.ui.general_defaults_form.general_gui_group.sf_color_entry.get_value()[:7] + \
                                             self.defaults['global_sel_fill'][7:9]
-        self.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_sel_fill'])[:7])
 
     def on_sf_color_button(self):
@@ -3287,29 +3287,29 @@ class App(QtCore.QObject):
         if plot_fill_color.isValid() is False:
             return
 
-        self.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
             "background-color:%s" % str(plot_fill_color.name()))
 
         new_val = str(plot_fill_color.name()) + str(self.defaults['global_sel_fill'][7:9])
-        self.general_defaults_form.general_gui_group.sf_color_entry.set_value(new_val)
+        self.ui.general_defaults_form.general_gui_group.sf_color_entry.set_value(new_val)
         self.defaults['global_sel_fill'] = new_val
 
     def on_sf_color_spinner(self):
-        spinner_value = self.general_defaults_form.general_gui_group.sf_color_alpha_spinner.value()
-        self.general_defaults_form.general_gui_group.sf_color_alpha_slider.setValue(spinner_value)
+        spinner_value = self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.value()
+        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.setValue(spinner_value)
         self.defaults['global_sel_fill'] = self.defaults['global_sel_fill'][:7] + \
                                             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
         self.defaults['global_sel_line'] = self.defaults['global_sel_line'][:7] + \
                                             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
     def on_sf_color_slider(self):
-        slider_value = self.general_defaults_form.general_gui_group.sf_color_alpha_slider.value()
-        self.general_defaults_form.general_gui_group.sf_color_alpha_spinner.setValue(slider_value)
+        slider_value = self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.value()
+        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.setValue(slider_value)
 
     def on_sl_color_entry(self):
-        self.defaults['global_sel_line'] = self.general_defaults_form.general_gui_group.sl_color_entry.get_value()[:7] + \
+        self.defaults['global_sel_line'] = self.ui.general_defaults_form.general_gui_group.sl_color_entry.get_value()[:7] + \
                                             self.defaults['global_sel_line'][7:9]
-        self.general_defaults_form.general_gui_group.sl_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.sl_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_sel_line'])[:7])
 
     def on_sl_color_button(self):
@@ -3321,18 +3321,18 @@ class App(QtCore.QObject):
         if plot_line_color.isValid() is False:
             return
 
-        self.general_defaults_form.general_gui_group.sl_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.sl_color_button.setStyleSheet(
             "background-color:%s" % str(plot_line_color.name()))
 
         new_val_line = str(plot_line_color.name()) + str(self.defaults['global_sel_line'][7:9])
-        self.general_defaults_form.general_gui_group.sl_color_entry.set_value(new_val_line)
+        self.ui.general_defaults_form.general_gui_group.sl_color_entry.set_value(new_val_line)
         self.defaults['global_sel_line'] = new_val_line
 
     # Setting selection colors (right - left) handlers
     def on_alt_sf_color_entry(self):
-        self.defaults['global_alt_sel_fill'] = self.general_defaults_form.general_gui_group \
+        self.defaults['global_alt_sel_fill'] = self.ui.general_defaults_form.general_gui_group \
                                    .alt_sf_color_entry.get_value()[:7] + self.defaults['global_alt_sel_fill'][7:9]
-        self.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_alt_sel_fill'])[:7])
 
     def on_alt_sf_color_button(self):
@@ -3344,29 +3344,29 @@ class App(QtCore.QObject):
         if plot_fill_color.isValid() is False:
             return
 
-        self.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
             "background-color:%s" % str(plot_fill_color.name()))
 
         new_val = str(plot_fill_color.name()) + str(self.defaults['global_alt_sel_fill'][7:9])
-        self.general_defaults_form.general_gui_group.alt_sf_color_entry.set_value(new_val)
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.set_value(new_val)
         self.defaults['global_alt_sel_fill'] = new_val
 
     def on_alt_sf_color_spinner(self):
-        spinner_value = self.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.value()
-        self.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.setValue(spinner_value)
+        spinner_value = self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.value()
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.setValue(spinner_value)
         self.defaults['global_alt_sel_fill'] = self.defaults['global_alt_sel_fill'][:7] + \
                                             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
         self.defaults['global_alt_sel_line'] = self.defaults['global_alt_sel_line'][:7] + \
                                             (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
     def on_alt_sf_color_slider(self):
-        slider_value = self.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.value()
-        self.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.setValue(slider_value)
+        slider_value = self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.value()
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.setValue(slider_value)
 
     def on_alt_sl_color_entry(self):
-        self.defaults['global_alt_sel_line'] = self.general_defaults_form.general_gui_group \
+        self.defaults['global_alt_sel_line'] = self.ui.general_defaults_form.general_gui_group \
                                    .alt_sl_color_entry.get_value()[:7] + self.defaults['global_alt_sel_line'][7:9]
-        self.general_defaults_form.general_gui_group.alt_sl_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_alt_sel_line'])[:7])
 
     def on_alt_sl_color_button(self):
@@ -3378,18 +3378,18 @@ class App(QtCore.QObject):
         if plot_line_color.isValid() is False:
             return
 
-        self.general_defaults_form.general_gui_group.alt_sl_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.setStyleSheet(
             "background-color:%s" % str(plot_line_color.name()))
 
         new_val_line = str(plot_line_color.name()) + str(self.defaults['global_alt_sel_line'][7:9])
-        self.general_defaults_form.general_gui_group.alt_sl_color_entry.set_value(new_val_line)
+        self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.set_value(new_val_line)
         self.defaults['global_alt_sel_line'] = new_val_line
 
     # Setting Editor colors
     def on_draw_color_entry(self):
-        self.defaults['global_draw_color'] = self.general_defaults_form.general_gui_group \
+        self.defaults['global_draw_color'] = self.ui.general_defaults_form.general_gui_group \
                                                    .draw_color_entry.get_value()
-        self.general_defaults_form.general_gui_group.draw_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.draw_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_draw_color']))
 
     def on_draw_color_button(self):
@@ -3401,17 +3401,17 @@ class App(QtCore.QObject):
         if draw_color.isValid() is False:
             return
 
-        self.general_defaults_form.general_gui_group.draw_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.draw_color_button.setStyleSheet(
             "background-color:%s" % str(draw_color.name()))
 
         new_val = str(draw_color.name())
-        self.general_defaults_form.general_gui_group.draw_color_entry.set_value(new_val)
+        self.ui.general_defaults_form.general_gui_group.draw_color_entry.set_value(new_val)
         self.defaults['global_draw_color'] = new_val
 
     def on_sel_draw_color_entry(self):
-        self.defaults['global_sel_draw_color'] = self.general_defaults_form.general_gui_group \
+        self.defaults['global_sel_draw_color'] = self.ui.general_defaults_form.general_gui_group \
                                                    .sel_draw_color_entry.get_value()
-        self.general_defaults_form.general_gui_group.sel_draw_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.sel_draw_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_sel_draw_color']))
 
     def on_sel_draw_color_button(self):
@@ -3423,11 +3423,11 @@ class App(QtCore.QObject):
         if sel_draw_color.isValid() is False:
             return
 
-        self.general_defaults_form.general_gui_group.sel_draw_color_button.setStyleSheet(
+        self.ui.general_defaults_form.general_gui_group.sel_draw_color_button.setStyleSheet(
             "background-color:%s" % str(sel_draw_color.name()))
 
         new_val_sel = str(sel_draw_color.name())
-        self.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(new_val_sel)
+        self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(new_val_sel)
         self.defaults['global_sel_draw_color'] = new_val_sel
 
     def on_deselect_all(self):
@@ -3441,7 +3441,7 @@ class App(QtCore.QObject):
     def on_workspace(self):
         self.report_usage("on_workspace()")
 
-        if self.general_defaults_form.general_gui_group.workspace_cb.isChecked():
+        if self.ui.general_defaults_form.general_gui_group.workspace_cb.isChecked():
             self.plotcanvas.restore_workspace()
         else:
             self.plotcanvas.delete_workspace()
@@ -3449,10 +3449,10 @@ class App(QtCore.QObject):
         self.save_defaults(silent=True)
 
     def on_workspace_menu(self):
-        if self.general_defaults_form.general_gui_group.workspace_cb.isChecked():
-            self.general_defaults_form.general_gui_group.workspace_cb.setChecked(False)
+        if self.ui.general_defaults_form.general_gui_group.workspace_cb.isChecked():
+            self.ui.general_defaults_form.general_gui_group.workspace_cb.setChecked(False)
         else:
-            self.general_defaults_form.general_gui_group.workspace_cb.setChecked(True)
+            self.ui.general_defaults_form.general_gui_group.workspace_cb.setChecked(True)
         self.on_workspace()
 
     def on_layout(self, index, lay=None):
@@ -3460,7 +3460,7 @@ class App(QtCore.QObject):
         if lay:
             current_layout = lay
         else:
-            current_layout = self.general_defaults_form.general_gui_set_group.layout_combo.get_value().lower()
+            current_layout = self.ui.general_defaults_form.general_gui_set_group.layout_combo.get_value().lower()
 
         settings = QSettings("Open Source", "FlatCAM")
         settings.setValue('layout', current_layout)
@@ -6793,7 +6793,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
 
         self.log.debug("version_check()")
 
-        if self.general_defaults_form.general_gui_group.send_stats_cb.get_value() is True:
+        if self.ui.general_defaults_form.general_gui_group.send_stats_cb.get_value() is True:
             full_url = App.version_url + \
                        "?s=" + str(self.defaults['global_serial']) + \
                        "&v=" + str(self.version) + \

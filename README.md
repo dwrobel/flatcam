@@ -13,7 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - added Repetier postprocessor file
 - removed "added ability to regenerate objects (it's actually deletion followed by recreation)" because of the way Python pass parameters to functions by reference instead of copy
--
+- added ability to toggle globally the display of ToolTips. Edit -> Preferences -> General -> Enable ToolTips checkbox.
+- added true fullscreen support (for Windows OS)
 
 21.02.2019
 
