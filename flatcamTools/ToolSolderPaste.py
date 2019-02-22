@@ -933,7 +933,7 @@ class SolderPaste(FlatCAMTool):
 
         def job_thread(app_obj):
             try:
-                app_obj.new_object("geometry", name + "_solderpaste", geo_init)
+                app_obj.new_object("geometry", name + "_solderpaste", geo_init, overwrite=True)
             except Exception as e:
                 proc.done()
                 traceback.print_stack()
@@ -1065,7 +1065,7 @@ class SolderPaste(FlatCAMTool):
         self.app.file_saved.emit("gcode", filename)
         self.app.inform.emit("[success] Solder paste dispenser GCode file saved to: %s" % filename)
 
-    def on_create_gcode(self, use_thread=True):
+    def on_create_gcode(self, signal, use_thread=True):
         """
         Creates a multi-tool CNCJob out of this Geometry object.
         :return: None
@@ -1168,11 +1168,9 @@ class SolderPaste(FlatCAMTool):
 
         if use_thread:
             # To be run in separate thread
-            # The idea is that if there is a solid_geometry in the file "root" then most likely thare are no
-            # separate solid_geometry in the self.tools dictionary
             def job_thread(app_obj):
                 with self.app.proc_container.new("Generating CNC Code"):
-                    if app_obj.new_object("cncjob", outname, job_init) != 'fail':
+                    if app_obj.new_object("cncjob", outname, job_init, overwrite=True) != 'fail':
                         app_obj.inform.emit("[success]ToolSolderPaste CNCjob created: %s" % outname)
                         app_obj.progress.emit(100)
 
@@ -1181,7 +1179,7 @@ class SolderPaste(FlatCAMTool):
             # Send to worker
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         else:
-            self.app.new_object("cncjob", outname, job_init)
+            self.app.new_object("cncjob", outname, job_init, overwrite=True)
 
     def reset_fields(self):
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

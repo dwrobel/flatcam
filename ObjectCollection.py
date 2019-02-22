@@ -642,7 +642,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         # return QtWidgets.QAbstractItemModel.flags(self, index)
 
-    def append(self, obj, active=False):
+    def append(self, obj, active=False, overwrite=False):
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> OC.append()")
 
         name = obj.options["name"]
@@ -652,6 +652,13 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.promises.remove(name)
             # FlatCAMApp.App.log.debug("Promised object %s became available." % name)
             # FlatCAMApp.App.log.debug("%d promised objects remaining." % len(self.promises))
+
+        # first delete the old object
+        if overwrite:
+            if name in self.get_names():
+                self.set_active(name)
+                self.delete_active(select_project=False)
+
         # Prevent same name
         while name in self.get_names():
             ## Create a new name
@@ -752,7 +759,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                     return obj
         return None
 
-    def delete_active(self):
+    def delete_active(self, select_project=True):
         selections = self.view.selectedIndexes()
         if len(selections) == 0:
             return
@@ -779,8 +786,9 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         self.endRemoveRows()
 
-        # always go to the Project Tab after object deletion as it may be done with a shortcut key
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+        if select_project:
+            # always go to the Project Tab after object deletion as it may be done with a shortcut key
+            self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
 
         self.app.should_we_save = True
 
