@@ -1,18 +1,24 @@
 from FlatCAMTool import FlatCAMTool
-from ObjectCollection import *
-from FlatCAMApp import *
-from GUIElements import IntEntry, RadioSet, LengthEntry
 from FlatCAMCommon import LoudDict
-from FlatCAMObj import FlatCAMGeometry, FlatCAMExcellon, FlatCAMGerber
+from GUIElements import FCComboBox, FCEntry, FCTable
+from FlatCAMApp import log
+from camlib import distance, CNCjob
+from FlatCAMObj import FlatCAMCNCjob
 
 from PyQt5 import QtGui, QtCore, QtWidgets
-from copy import copy,deepcopy
+from PyQt5.QtCore import Qt
+from copy import deepcopy
+from datetime import datetime
 
 from shapely.geometry import MultiPolygon, Polygon, LineString
+from shapely.geometry.base import BaseGeometry
+from shapely.ops import cascaded_union
+
+import traceback
+from io import StringIO
 
 
 class SolderPaste(FlatCAMTool):
-
     toolName = "Solder Paste Tool"
 
     def __init__(self, app):
@@ -905,8 +911,42 @@ class SolderPaste(FlatCAMTool):
         pass
 
     @staticmethod
-    def distance(pt1, pt2):
-        return sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2)
+    def solder_line(p, offset, units):
+        x_min, y_min, x_max, y_max = p.bounds
+
+        diag_1_intersect = LineString([(x_min, y_min), (x_max, y_max)]).intersection(p)
+        diag_2_intersect = LineString([(x_min, y_max), (x_max, y_min)]).intersection(p)
+
+        if units == 'MM':
+            round_diag_1 = round(diag_1_intersect.length, 1)
+            round_diag_2 = round(diag_2_intersect.length, 1)
+        else:
+            round_diag_1 = round(diag_1_intersect.length, 2)
+            round_diag_2 = round(diag_2_intersect.length, 2)
+
+        if round_diag_1 == round_diag_2:
+            l = distance((x_min, y_min), (x_max, y_min))
+            h = distance((x_min, y_min), (x_min, y_max))
+
+            if offset >= l / 2 or offset >= h / 2:
+                return "fail"
+            if l > h:
+                h_half = h / 2
+                start = [x_min, (y_min + h_half)]
+                stop = [(x_min + l), (y_min + h_half)]
+            else:
+                l_half = l / 2
+                start = [(x_min + l_half), y_min]
+                stop = [(x_min + l_half), (y_min + h)]
+            geo = LineString([start, stop])
+        elif round_diag_1 > round_diag_2:
+            geo = round_diag_1
+        else:
+            geo = round_diag_2
+
+        offseted_poly = p.buffer(-offset)
+        geo = geo.intersection(offseted_poly)
+        return geo
 
     def on_create_geo_click(self, signal):
         """
@@ -958,43 +998,6 @@ class SolderPaste(FlatCAMTool):
             geo_obj.multitool = True
             geo_obj.special_group = 'solder_paste_tool'
 
-            def solder_line(p, offset):
-                x_min, y_min, x_max, y_max = p.bounds
-
-                diag_1_intersect = LineString([(x_min, y_min), (x_max, y_max)]).intersection(p)
-                diag_2_intersect = LineString([(x_min, y_max), (x_max, y_min)]).intersection(p)
-
-                if self.units == 'MM':
-                    round_diag_1 = round(diag_1_intersect.length, 1)
-                    round_diag_2 = round(diag_2_intersect.length, 1)
-                else:
-                    round_diag_1 = round(diag_1_intersect.length, 2)
-                    round_diag_2 = round(diag_2_intersect.length, 2)
-
-                if round_diag_1 == round_diag_2:
-                    l = distance((x_min, y_min), (x_max, y_min))
-                    h = distance((x_min, y_min), (x_min, y_max))
-
-                    if offset >= l /2 or offset >= h / 2:
-                        return "fail"
-                    if l > h:
-                        h_half = h / 2
-                        start = [x_min, (y_min + h_half)]
-                        stop = [(x_min + l), (y_min + h_half)]
-                    else:
-                        l_half = l / 2
-                        start = [(x_min + l_half), y_min]
-                        stop = [(x_min + l_half), (y_min + h)]
-                    geo = LineString([start, stop])
-                elif round_diag_1 > round_diag_2:
-                    geo = round_diag_1
-                else:
-                    geo = round_diag_2
-
-                offseted_poly = p.buffer(-offset)
-                geo = geo.intersection(offseted_poly)
-                return geo
-
             work_geo = obj.solid_geometry
             try:
                 _ = iter(work_geo)
@@ -1023,7 +1026,7 @@ class SolderPaste(FlatCAMTool):
                 for g in work_geo:
                     if type(g) == MultiPolygon:
                         for poly in g:
-                            geom = solder_line(poly, offset=offset)
+                            geom = self.solder_line(poly, offset=offset, units=self.units)
                             if geom != 'fail':
                                 try:
                                     geo_obj.tools[tooluid]['solid_geometry'].append(geom)
@@ -1032,7 +1035,7 @@ class SolderPaste(FlatCAMTool):
                             else:
                                 rest_geo.append(poly)
                     elif type(g) == Polygon:
-                        geom = solder_line(g, offset=offset)
+                        geom =  self.solder_line(g, offset=offset, units=self.units)
                         if geom != 'fail':
                             try:
                                 geo_obj.tools[tooluid]['solid_geometry'].append(geom)
