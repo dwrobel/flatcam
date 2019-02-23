@@ -3661,6 +3661,13 @@ class App(QtCore.QObject):
 
     def handleSaveGCode(self, signal, name=None, filt=None):
         self.report_usage("handleSaveGCode()")
+
+        if filt:
+            _filter_ = filt
+        else:
+            _filter_ = "G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
+                       "All Files (*.*)"
+
         if name:
             obj_name = name
         else:
@@ -3668,12 +3675,8 @@ class App(QtCore.QObject):
                 obj_name = self.collection.get_active().options['name']
             except AttributeError:
                 obj_name = 'file'
+                _filter_ = "FlatConfig Files (*.FlatConfig);;All Files (*.*)"
 
-        if filt:
-            _filter_ = filt
-        else:
-            _filter_ = " G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
-                   "All Files (*.*)"
         try:
             filename = str(QtWidgets.QFileDialog.getSaveFileName(
                 caption="Export G-Code ...",
@@ -3684,7 +3687,7 @@ class App(QtCore.QObject):
             filename = str(QtWidgets.QFileDialog.getSaveFileName(caption="Export G-Code ...", filter=_filter_)[0])
 
         if filename == "":
-            self.inform.emit("[WARNING_NOTCL]Export CNC Code cancelled.")
+            self.inform.emit("[WARNING_NOTCL]Export Code cancelled.")
             return
         else:
             try:
