@@ -2288,7 +2288,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             if self.options["solid"]:
                 for tool in self.tools:
                     for geo in self.tools[tool]['solid_geometry']:
-                        self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF', visible=self.options['plot'],
+                        self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF',
+                                       visible=self.options['plot'],
                                        layer=2)
             else:
                 for tool in self.tools:

@@ -1864,6 +1864,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Escape = Deselect All
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
                     self.app.on_deselect_all()
+                    # try to disconnect the slot from Set Origin
+                    try:
+                        self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_set_zero_click)
+                    except:
+                        pass
                     self.app.inform.emit("")
 
                 # Space = Toggle Active/Inactive
