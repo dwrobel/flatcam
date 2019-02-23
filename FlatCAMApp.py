@@ -2310,7 +2310,7 @@ class App(QtCore.QObject):
             return
 
         #try:
-        json.dump(self.recent, f)
+        json.dump(self.recent, f, default=to_dict, indent=2, sort_keys=True)
         # except:
         #     App.log.error("Failed to write to recent items file.")
         #     self.inform.emit('ERROR: Failed to write to recent items file.')
@@ -2684,7 +2684,7 @@ class App(QtCore.QObject):
         # Save update options
         try:
             f = open(self.data_path + "/current_defaults.FlatConfig", "w")
-            json.dump(defaults, f)
+            json.dump(defaults, f, default=to_dict, indent=2, sort_keys=True)
             f.close()
         except:
             self.inform.emit("[ERROR_NOTCL] Failed to write defaults to file.")
@@ -2757,7 +2757,7 @@ class App(QtCore.QObject):
         # Save update options
         try:
             f_f_def_s = open(self.data_path + "/factory_defaults.FlatConfig", "w")
-            json.dump(factory_defaults, f_f_def_s)
+            json.dump(factory_defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
             f_f_def_s.close()
         except:
             self.inform.emit("[ERROR_NOTCL] Failed to write factory defaults to file.")
