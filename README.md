@@ -15,6 +15,8 @@ CAD program, and create G-Code for Isolation routing.
 - removed "added ability to regenerate objects (it's actually deletion followed by recreation)" because of the way Python pass parameters to functions by reference instead of copy
 - added ability to toggle globally the display of ToolTips. Edit -> Preferences -> General -> Enable ToolTips checkbox.
 - added true fullscreen support (for Windows OS)
+- added the ability of context menu inside the GuiElements.FCCombobox() object.
+- remade the UI for ToolSolderPaste. The object comboboxes now have context menu's that allow object deletion. Also the last object created is set as current item in comboboxes.
 
 21.02.2019
 

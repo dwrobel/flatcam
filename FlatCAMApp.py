@@ -94,7 +94,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.910
-    version_date = "2019/02/22"
+    version_date = "2019/02/23"
     beta = True
 
     # current date now
@@ -158,9 +158,9 @@ class App(QtCore.QObject):
     # Calls 'on_zoom_fit' method to fit object in scene view in main thread to prevent drawing glitches.
     object_plotted = QtCore.pyqtSignal(object)
 
-    # Emitted when a new object has been added to the collection
-    # and is ready to be used.
-    new_object_available = QtCore.pyqtSignal(object)
+    # Emitted when a new object has been added or deleted from/to the collection
+    object_status_changed = QtCore.pyqtSignal(object, str)
+
     message = QtCore.pyqtSignal(str, str, str)
 
     # Emmited when shell command is finished(one command only)
@@ -2456,7 +2456,6 @@ class App(QtCore.QObject):
         elif obj.kind == 'geometry':
             self.inform.emit('[selected]%s created/selected: <span style="color:%s;">%s</span>' %
                              (obj.kind.capitalize(), 'red', str(obj.options['name'])))
-        # self.new_object_available.emit(obj)
 
         # update the SHELL auto-completer model with the name of the new object
         self.myKeywords.append(obj.options['name'])

@@ -475,9 +475,25 @@ class FCTextAreaRich(QtWidgets.QTextEdit):
 
 
 class FCComboBox(QtWidgets.QComboBox):
-    def __init__(self, parent=None):
+
+    def __init__(self, parent=None, callback=None):
         super(FCComboBox, self).__init__(parent)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.view = self.view()
+        self.view.viewport().installEventFilter(self)
+        self.view.setContextMenuPolicy(Qt.CustomContextMenu)
+
+        # the callback() will be called on customcontextmenu event and will be be passed 2 parameters:
+        # pos = mouse right click click position
+        # self = is the combobox object itself
+        if callback:
+            self.view.customContextMenuRequested.connect(lambda pos: callback(pos, self))
+
+    def eventFilter(self, obj, event):
+        if event.type() == QtCore.QEvent.MouseButtonRelease:
+            if event.button() == Qt.RightButton:
+                return True
+        return False
 
     def wheelEvent(self, *args, **kwargs):
         pass

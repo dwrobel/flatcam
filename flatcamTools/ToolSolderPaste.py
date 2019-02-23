@@ -1,12 +1,12 @@
 from FlatCAMTool import FlatCAMTool
-from copy import copy,deepcopy
 from ObjectCollection import *
 from FlatCAMApp import *
-from PyQt5 import QtGui, QtCore, QtWidgets
 from GUIElements import IntEntry, RadioSet, LengthEntry
 from FlatCAMCommon import LoudDict
-
 from FlatCAMObj import FlatCAMGeometry, FlatCAMExcellon, FlatCAMGerber
+
+from PyQt5 import QtGui, QtCore, QtWidgets
+from copy import copy,deepcopy
 
 
 class SolderPaste(FlatCAMTool):
@@ -32,7 +32,7 @@ class SolderPaste(FlatCAMTool):
         self.layout.addLayout(obj_form_layout)
 
         ## Gerber Object to be used for solderpaste dispensing
-        self.obj_combo = QtWidgets.QComboBox()
+        self.obj_combo = FCComboBox(callback=self.on_rmb_combo)
         self.obj_combo.setModel(self.app.collection)
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.obj_combo.setCurrentIndex(1)
@@ -70,9 +70,6 @@ class SolderPaste(FlatCAMTool):
         self.tools_table.horizontalHeaderItem(1).setToolTip(
             "Nozzle tool Diameter. It's value (in current FlatCAM units)\n"
             "is the width of the solder paste dispensed.")
-
-        self.empty_label = QtWidgets.QLabel('')
-        self.layout.addWidget(self.empty_label)
 
         #### Add a new Tool ####
         hlay_tools = QtWidgets.QHBoxLayout()
@@ -113,24 +110,22 @@ class SolderPaste(FlatCAMTool):
         # grid2.addWidget(self.copytool_btn, 0, 1)
         grid0.addWidget(self.deltool_btn, 0, 2)
 
-        ## Form Layout
-        geo_form_layout = QtWidgets.QFormLayout()
-        self.layout.addLayout(geo_form_layout)
+        self.layout.addSpacing(10)
 
-        ## Geometry Object to be used for solderpaste dispensing
-        self.geo_obj_combo = QtWidgets.QComboBox()
-        self.geo_obj_combo.setModel(self.app.collection)
-        self.geo_obj_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        self.geo_obj_combo.setCurrentIndex(1)
+        ## Buttons
+        grid0_1 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0_1)
 
-        self.geo_object_label = QtWidgets.QLabel("Geometry:")
-        self.geo_object_label.setToolTip(
-            "Geometry Solder paste object.\n"
-            "In order to enable the GCode generation section,\n"
-            "the name of the object has to end in:\n"
-            "'_solderpaste' as a protection."
+        step1_lbl = QtWidgets.QLabel("<b>STEP 1:</b>")
+        step1_lbl.setToolTip(
+            "First step is to select a number of nozzle tools for usage\n"
+            "and then optionally modify the GCode parameters bellow."
         )
-        geo_form_layout.addRow(self.geo_object_label, self.geo_obj_combo)
+        step1_description_lbl = QtWidgets.QLabel("Select tools.\n"
+                                                 "Modify parameters.")
+
+        grid0_1.addWidget(step1_lbl, 0, 0, alignment=Qt.AlignTop)
+        grid0_1.addWidget(step1_description_lbl, 0, 2, alignment=Qt.AlignBottom)
 
         self.gcode_frame = QtWidgets.QFrame()
         self.gcode_frame.setContentsMargins(0, 0, 0, 0)
@@ -275,17 +270,70 @@ class SolderPaste(FlatCAMTool):
             "on PCB pads."
         )
 
+        self.generation_frame = QtWidgets.QFrame()
+        self.generation_frame.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.generation_frame)
+        self.generation_box = QtWidgets.QVBoxLayout()
+        self.generation_box.setContentsMargins(0, 0, 0, 0)
+        self.generation_frame.setLayout(self.generation_box)
+
+
+        ## Buttons
+        grid2 = QtWidgets.QGridLayout()
+        self.generation_box.addLayout(grid2)
+
+        step2_lbl = QtWidgets.QLabel("<b>STEP 2:</b>")
+        step2_lbl.setToolTip(
+            "Second step is to create a solder paste dispensing\n"
+            "geometry out of an Solder Paste Mask Gerber file."
+        )
+        grid2.addWidget(step2_lbl, 0, 0)
+        grid2.addWidget(self.soldergeo_btn, 0, 2)
+
+        ## Form Layout
+        geo_form_layout = QtWidgets.QFormLayout()
+        self.generation_box.addLayout(geo_form_layout)
+
+        ## Geometry Object to be used for solderpaste dispensing
+        self.geo_obj_combo = FCComboBox(callback=self.on_rmb_combo)
+        self.geo_obj_combo.setModel(self.app.collection)
+        self.geo_obj_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
+        self.geo_obj_combo.setCurrentIndex(1)
+
+        self.geo_object_label = QtWidgets.QLabel("Geo Result:")
+        self.geo_object_label.setToolTip(
+            "Geometry Solder Paste object.\n"
+            "The name of the object has to end in:\n"
+            "'_solderpaste' as a protection."
+        )
+        geo_form_layout.addRow(self.geo_object_label, self.geo_obj_combo)
+
+        grid3 = QtWidgets.QGridLayout()
+        self.generation_box.addLayout(grid3)
+
+        step3_lbl = QtWidgets.QLabel("<b>STEP 3:</b>")
+        step3_lbl.setToolTip(
+            "Third step is to select a solder paste dispensing geometry,\n"
+            "and then generate a CNCJob object.\n\n"
+            "REMEMBER: if you want to create a CNCJob with new parameters,\n"
+            "first you need to generate a geometry with those new params,\n"
+            "and only after that you can generate an updated CNCJob."
+        )
+
+        grid3.addWidget(step3_lbl, 0, 0)
+        grid3.addWidget(self.solder_gcode_btn, 0, 2)
+
         ## Form Layout
         cnc_form_layout = QtWidgets.QFormLayout()
-        self.gcode_box.addLayout(cnc_form_layout)
+        self.generation_box.addLayout(cnc_form_layout)
 
         ## Gerber Object to be used for solderpaste dispensing
-        self.cnc_obj_combo = QtWidgets.QComboBox()
+        self.cnc_obj_combo = FCComboBox(callback=self.on_rmb_combo)
         self.cnc_obj_combo.setModel(self.app.collection)
         self.cnc_obj_combo.setRootModelIndex(self.app.collection.index(3, 0, QtCore.QModelIndex()))
         self.cnc_obj_combo.setCurrentIndex(1)
 
-        self.cnc_object_label = QtWidgets.QLabel("CNCJob:    ")
+        self.cnc_object_label = QtWidgets.QLabel("CNC Result:")
         self.cnc_object_label.setToolTip(
             "CNCJob Solder paste object.\n"
             "In order to enable the GCode save section,\n"
@@ -294,36 +342,8 @@ class SolderPaste(FlatCAMTool):
         )
         cnc_form_layout.addRow(self.cnc_object_label, self.cnc_obj_combo)
 
-        self.save_gcode_frame = QtWidgets.QFrame()
-        self.save_gcode_frame.setContentsMargins(0, 0, 0, 0)
-        self.layout.addWidget(self.save_gcode_frame)
-        self.save_gcode_box = QtWidgets.QVBoxLayout()
-        self.save_gcode_box.setContentsMargins(0, 0, 0, 0)
-        self.save_gcode_frame.setLayout(self.save_gcode_box)
-
-
-        ## Buttons
-        grid2 = QtWidgets.QGridLayout()
-        self.save_gcode_box.addLayout(grid2)
-
-        step1_lbl = QtWidgets.QLabel("<b>STEP 1:</b>")
-        step1_lbl.setToolTip(
-            "First step is to select a number of nozzle tools for usage\n"
-            "and then create a solder paste dispensing geometry out of an\n"
-            "Solder Paste Mask Gerber file."
-        )
-        grid2.addWidget(step1_lbl, 0, 0)
-        grid2.addWidget(self.soldergeo_btn, 0, 2)
-
-        step2_lbl = QtWidgets.QLabel("<b>STEP 2:</b>")
-        step2_lbl.setToolTip(
-            "Second step is to select a solder paste dispensing geometry,\n"
-            "set the CAM parameters and then generate a CNCJob object which\n"
-            "will pe painted on canvas in blue color."
-        )
-
-        grid2.addWidget(step2_lbl, 1, 0)
-        grid2.addWidget(self.solder_gcode_btn, 1, 2)
+        grid4 = QtWidgets.QGridLayout()
+        self.generation_box.addLayout(grid4)
 
         self.solder_gcode_view_btn = QtWidgets.QPushButton("View GCode")
         self.solder_gcode_view_btn.setToolTip(
@@ -337,15 +357,15 @@ class SolderPaste(FlatCAMTool):
             "on PCB pads, to a file."
         )
 
-        step3_lbl = QtWidgets.QLabel("<b>STEP 3:</b>")
-        step3_lbl.setToolTip(
-            "Third step (and last) is to select a CNCJob made from \n"
+        step4_lbl = QtWidgets.QLabel("<b>STEP 4:</b>")
+        step4_lbl.setToolTip(
+            "Fourth step (and last) is to select a CNCJob made from \n"
             "a solder paste dispensing geometry, and then view/save it's GCode."
         )
 
-        grid2.addWidget(step3_lbl, 2, 0)
-        grid2.addWidget(self.solder_gcode_view_btn, 2, 2)
-        grid2.addWidget(self.solder_gcode_save_btn, 3, 2)
+        grid4.addWidget(step4_lbl, 0, 0)
+        grid4.addWidget(self.solder_gcode_view_btn, 0, 2)
+        grid4.addWidget(self.solder_gcode_save_btn, 1, 2)
 
         self.layout.addStretch()
 
@@ -360,7 +380,14 @@ class SolderPaste(FlatCAMTool):
 
         self.units = ''
 
+        # this will be used in the combobox context menu, for delete entry
+        self.obj_to_be_deleted_name = ''
+
+        # action to be added in the combobox context menu
+        self.combo_context_del_action = QtWidgets.QAction(QtGui.QIcon('share/trash16.png'), "Delete Object")
+
         ## Signals
+        self.combo_context_del_action.triggered.connect(self.on_delete_object)
         self.addtool_btn.clicked.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
         self.soldergeo_btn.clicked.connect(self.on_create_geo_click)
@@ -369,8 +396,9 @@ class SolderPaste(FlatCAMTool):
         self.solder_gcode_save_btn.clicked.connect(self.on_save_gcode)
 
         self.geo_obj_combo.currentIndexChanged.connect(self.on_geo_select)
-
         self.cnc_obj_combo.currentIndexChanged.connect(self.on_cncjob_select)
+
+        self.app.object_status_changed.connect(self.update_comboboxes)
 
     def run(self):
         self.app.report_usage("ToolSolderPaste()")
@@ -449,6 +477,10 @@ class SolderPaste(FlatCAMTool):
         self.reset_fields()
 
     def build_ui(self):
+        """
+        Will rebuild the UI populating it (tools table)
+        :return:
+        """
         self.ui_disconnect()
 
         # updated units
@@ -519,6 +551,11 @@ class SolderPaste(FlatCAMTool):
         self.ui_connect()
 
     def update_ui(self, row=None):
+        """
+        Will update the UI form with the data from obj.tools
+        :param row: the row (tool) from which to extract information's used to populate the form
+        :return:
+        """
         self.ui_disconnect()
 
         if row is None:
@@ -587,6 +624,31 @@ class SolderPaste(FlatCAMTool):
         except:
             pass
 
+    def update_comboboxes(self, obj, status):
+        """
+        Modify the current text of the comboboxes to show the last object
+        that was created.
+
+        :param obj: object that was changed and called this PyQt slot
+        :param status: what kind of change happened: 'append' or 'delete'
+        :return:
+        """
+        obj_name = obj.options['name']
+
+        if status == 'append':
+            idx = self.obj_combo.findText(obj_name)
+            if idx != -1:
+                self.obj_combo.setCurrentIndex(idx)
+
+            idx = self.geo_obj_combo.findText(obj_name)
+            if idx != -1:
+                self.geo_obj_combo.setCurrentIndex(idx)
+
+            idx = self.cnc_obj_combo.findText(obj_name)
+            if idx != -1:
+                self.cnc_obj_combo.setCurrentIndex(idx)
+            print(obj_name)
+
     def read_form_to_options(self):
         """
         Will read all the parameters from Solder Paste Tool UI and update the self.options dictionary
@@ -597,7 +659,11 @@ class SolderPaste(FlatCAMTool):
             self.options[key] = self.form_fields[key].get_value()
 
     def read_form_to_tooldata(self, tooluid=None):
-
+        """
+        Will read all the items in the UI form and set the self.tools data accordingly
+        :param tooluid: the uid of the tool to be updated in the obj.tools
+        :return:
+        """
         current_row = self.tools_table.currentRow()
         uid = tooluid if tooluid else int(self.tools_table.item(current_row, 2).text())
         for key in self.form_fields:
@@ -631,7 +697,13 @@ class SolderPaste(FlatCAMTool):
                 self.form_fields[key].set_value(val[key])
 
     def on_tool_add(self, dia=None, muted=None):
+        """
+        Add a Tool in the Tool Table
 
+        :param dia: diameter of the tool to be added
+        :param muted: if True will not send status bar messages about adding tools
+        :return:
+        """
         self.ui_disconnect()
 
         if dia:
@@ -694,6 +766,10 @@ class SolderPaste(FlatCAMTool):
         self.build_ui()
 
     def on_tool_edit(self):
+        """
+        Edit a tool in the Tool Table
+        :return:
+        """
         self.ui_disconnect()
 
         tool_dias = []
@@ -735,6 +811,13 @@ class SolderPaste(FlatCAMTool):
         self.build_ui()
 
     def on_tool_delete(self, rows_to_delete=None, all=None):
+        """
+        Will delete tool(s) in the Tool Table
+
+        :param rows_to_delete: tell which row (tool) to delete
+        :param all: to delete all tools at once
+        :return:
+        """
         self.ui_disconnect()
 
         deleted_tools_list = []
@@ -777,6 +860,35 @@ class SolderPaste(FlatCAMTool):
         self.app.inform.emit("[success] Nozzle tool(s) deleted from Tool Table.")
         self.build_ui()
 
+    def on_rmb_combo(self, pos, combo):
+        """
+        Will create a context menu on the combobox items
+        :param pos: mouse click position passed by the signal that called this slot
+        :param combo: the actual combo from where the signal was triggered
+        :return:
+        """
+        view = combo.view
+        idx = view.indexAt(pos)
+        if not idx.isValid():
+            return
+
+        self.obj_to_be_deleted_name = combo.model().itemData(idx)[0]
+
+        menu = QtWidgets.QMenu()
+        menu.addAction(self.combo_context_del_action)
+        menu.exec(view.mapToGlobal(pos))
+
+    def on_delete_object(self):
+        """
+        Slot for the 'delete' action triggered in the combobox context menu.
+        The name of the object to be deleted is collected when the combobox context menu is created.
+        :return:
+        """
+        if self.obj_to_be_deleted_name != '':
+            self.app.collection.set_active(self.obj_to_be_deleted_name)
+            self.app.collection.delete_active(select_project=False)
+            self.obj_to_be_deleted_name = ''
+
     def on_geo_select(self):
         # if self.geo_obj_combo.currentText().rpartition('_')[2] == 'solderpaste':
         #     self.gcode_frame.setDisabled(False)
@@ -796,6 +908,12 @@ class SolderPaste(FlatCAMTool):
         return sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2)
 
     def on_create_geo_click(self, signal):
+        """
+        Will create a solderpaste dispensing geometry.
+
+        :param signal: passed by the signal that called this slot
+        :return:
+        """
         name = self.obj_combo.currentText()
         if name == '':
             self.app.inform.emit("[WARNING_NOTCL] No SolderPaste mask Gerber object loaded.")
@@ -808,6 +926,13 @@ class SolderPaste(FlatCAMTool):
         self.on_create_geo(name=name, work_object=obj)
 
     def on_create_geo(self, name, work_object):
+        """
+        The actual work for creating solderpaste dispensing geometry is done here.
+
+        :param name: the outname for the resulting geometry object
+        :param work_object: the source Gerber object from which the geometry is created
+        :return: a Geometry type object
+        """
         proc = self.app.proc_container.new("Creating Solder Paste dispensing geometry.")
         obj = work_object
 
@@ -932,8 +1057,8 @@ class SolderPaste(FlatCAMTool):
             try:
                 app_obj.new_object("geometry", name + "_solderpaste", geo_init)
             except Exception as e:
+                log.error("SolderPaste.on_create_geo() --> %s" % str(e))
                 proc.done()
-                traceback.print_stack()
                 return
             proc.done()
 
@@ -942,10 +1067,16 @@ class SolderPaste(FlatCAMTool):
         self.app.collection.promise(name)
 
         # Background
-        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app.paste_tool]})
+        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
         # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
 
     def on_create_gcode_click(self, signal):
+        """
+        Will create a CNCJob object from the solderpaste dispensing geometry.
+
+        :param signal: parameter passed by the signal that called this slot
+        :return:
+        """
         name = self.geo_obj_combo.currentText()
         obj = self.app.collection.get_by_name(name)
 
@@ -962,16 +1093,21 @@ class SolderPaste(FlatCAMTool):
             return 'fail'
 
         # use the name of the first tool selected in self.geo_tools_table which has the diameter passed as tool_dia
-        originar_name = obj.options['name'].rpartition('_')[0]
+        originar_name = obj.options['name'].partition('_')[0]
         outname = "%s_%s" % (originar_name, 'cnc_solderpaste')
 
         self.on_create_gcode(name=outname, workobject=obj)
 
     def on_create_gcode(self, name, workobject, use_thread=True):
         """
-        Creates a multi-tool CNCJob out of this Geometry object.
-        :return: None
+        Creates a multi-tool CNCJob. The actual work is done here.
+
+        :param name: outname for the resulting CNCJob object
+        :param workobject: the solderpaste dispensing Geometry object that is the source
+        :param use_thread: True if threaded execution is desired
+        :return:
         """
+
 
         obj = workobject
 
@@ -1063,6 +1199,11 @@ class SolderPaste(FlatCAMTool):
             self.app.new_object("cncjob", name, job_init)
 
     def on_view_gcode(self):
+        """
+        View GCode in the Editor Tab.
+
+        :return:
+        """
         time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
 
         # add the tab if it was closed
@@ -1124,6 +1265,11 @@ class SolderPaste(FlatCAMTool):
         self.app.ui.show()
 
     def on_save_gcode(self):
+        """
+        Save sodlerpaste dispensing GCode to a file on HDD.
+
+        :return:
+        """
         time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
         name = self.cnc_obj_combo.currentText()
         obj = self.app.collection.get_by_name(name)

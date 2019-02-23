@@ -686,6 +686,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         self.app.should_we_save = True
 
+        self.app.object_status_changed.emit(obj, 'append')
+
         # decide if to show or hide the Notebook side of the screen
         if self.app.defaults["global_project_autohide"] is True:
             # always open the notebook on object added to collection
@@ -760,6 +762,9 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         active = selections[0].internalPointer()
         group = active.parent_item
+
+        # send signal with the object that is deleted
+        # self.app.object_status_changed.emit(active.obj, 'delete')
 
         # update the SHELL auto-completer model data
         name = active.obj.options['name']
