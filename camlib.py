@@ -2246,7 +2246,7 @@ class Gerber (Geometry):
 
                         else:
                             self.follow_geometry = self.solid_geometry.difference(cascaded_union(follow_buffer))
-                            self.solid_geometry = self.solid_geometry.union(cascaded_union(poly_buffer))
+                            self.solid_geometry = self.solid_geometry.difference(cascaded_union(poly_buffer))
 
                         follow_buffer = []
                         poly_buffer = []
