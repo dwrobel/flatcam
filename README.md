@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+24.02.2019
+
+- fixed a small bug in the Tool Solder Paste: the App don't take into consideration pads already filled with solder paste.
+
 23.02.2019
 
 - remade the SolderPaste geometry generation function in ToolSoderPaste to work in certain scenarios where the Gerber pads in the SolderPaste mask Gerber may be just pads outlines

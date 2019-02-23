@@ -997,7 +997,7 @@ class SolderPaste(FlatCAMTool):
             geo_obj.special_group = 'solder_paste_tool'
 
             geo = LineString()
-            work_geo = []
+            work_geo = self.flat_geometry
             rest_geo = []
             tooluid = 1
 
@@ -1021,7 +1021,7 @@ class SolderPaste(FlatCAMTool):
                 # We get possible issues if we try to directly use the Polygons, due of possible the interiors,
                 # so we do a hack: get first the exterior in a form of LinearRings and then convert back to Polygon
                 # because intersection does not work on LinearRings
-                for g in self.flat_geometry:
+                for g in work_geo:
                     # for whatever reason intersection on LinearRings does not work so we convert back to Polygons
                     poly = Polygon(g)
                     x_min, y_min, x_max, y_max = poly.bounds
