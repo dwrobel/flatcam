@@ -734,6 +734,12 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.app.inform.emit("[ERROR_NOTCL]Object not found: %s" % self.paint_obj)
             return
 
+        # test if the Geometry Object is multigeo and return Fail if True because
+        # for now Paint don't work on MultiGeo
+        if self.paint_obj.multigeo is True:
+            self.app.inform.emit("[ERROR_NOTCL] Can't do Paint on MultiGeo geometries ...")
+            return 'Fail'
+
         o_name = '%s_multitool_paint' % (self.obj_name)
 
         if select_method == "all":
@@ -787,6 +793,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         # Which polygon.
         # poly = find_polygon(self.solid_geometry, inside_pt)
+
         poly = obj.find_polygon(inside_pt)
         paint_method = self.paintmethod_combo.get_value()
 
