@@ -83,6 +83,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufileopenproject = QtWidgets.QAction(QtGui.QIcon('share/folder16.png'), 'Open &Project ...', self)
         self.menufile_open.addAction(self.menufileopenproject)
 
+        self.menufile_open.addSeparator()
+
+        # Open Config File...
+        self.menufileopenconfig = QtWidgets.QAction(QtGui.QIcon('share/folder16.png'), 'Open Config ...', self)
+        self.menufile_open.addAction(self.menufileopenconfig)
+
         # Recent
         self.recent = self.menufile.addMenu(QtGui.QIcon('share/recent_files.png'), "Recent files")
 
@@ -299,7 +305,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuview_zoom_fit = self.menuview.addAction(QtGui.QIcon('share/zoom_fit32.png'), "&Zoom Fit\tV")
         self.menuview_zoom_in = self.menuview.addAction(QtGui.QIcon('share/zoom_in32.png'), "&Zoom In\t-")
         self.menuview_zoom_out = self.menuview.addAction(QtGui.QIcon('share/zoom_out32.png'), "&Zoom Out\t=")
+        self.menuview.addSeparator()
 
+        self.menuview_toggle_code_editor = self.menuview.addAction(QtGui.QIcon('share/code_editor32.png'),
+                                                                   'Toggle Code Editor\tCTRL+E')
         self.menuview.addSeparator()
         self.menuview_toggle_fscreen = self.menuview.addAction(
             QtGui.QIcon('share/fscreen32.png'), "&Toggle FullScreen\tALT+F10")
@@ -715,6 +724,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geometry_tab_lay.addWidget(self.geometry_scroll_area)
 
         self.cncjob_tab = QtWidgets.QWidget()
+        self.cncjob_tab.setObjectName("cncjob_tab")
         self.pref_tab_area.addTab(self.cncjob_tab, "CNC-JOB")
         self.cncjob_tab_lay = QtWidgets.QVBoxLayout()
         self.cncjob_tab_lay.setContentsMargins(2, 2, 2, 2)
@@ -940,6 +950,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 		<tr height="20">
 			<td height="20"><strong>SHIFT+C</strong></td>
 			<td>&nbsp;Copy Obj_Name</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+E</strong></td>
+			<td>&nbsp;Toggle Code Editor</td>
 		</tr>
 		<tr height="20">
 			<td height="20"><strong>SHIFT+G</strong></td>
@@ -1693,9 +1707,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             elif modifiers == QtCore.Qt.ShiftModifier:
 
                 # Copy Object Name
-                # Copy Object Name
                 if key == QtCore.Qt.Key_C:
                     self.app.on_copy_name()
+
+                # Toggle Code Editor
+                if key == QtCore.Qt.Key_E:
+                    self.app.on_toggle_code_editor()
 
                 # Toggle axis
                 if key == QtCore.Qt.Key_G:

@@ -1174,6 +1174,8 @@ class App(QtCore.QObject):
         self.ui.menufileopenexcellon.triggered.connect(self.on_fileopenexcellon)
         self.ui.menufileopengcode.triggered.connect(self.on_fileopengcode)
         self.ui.menufileopenproject.triggered.connect(self.on_file_openproject)
+        self.ui.menufileopenconfig.triggered.connect(self.on_file_openconfig)
+
         self.ui.menufilerunscript.triggered.connect(self.on_filerunscript)
 
         self.ui.menufileimportsvg.triggered.connect(lambda: self.on_file_importsvg("geometry"))
@@ -1238,6 +1240,7 @@ class App(QtCore.QObject):
         self.ui.menuview_zoom_fit.triggered.connect(self.on_zoom_fit)
         self.ui.menuview_zoom_in.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
         self.ui.menuview_zoom_out.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
+        self.ui.menuview_toggle_code_editor.triggered.connect(self.on_toggle_code_editor)
         self.ui.menuview_toggle_fscreen.triggered.connect(self.on_fullscreen)
         self.ui.menuview_toggle_parea.triggered.connect(self.on_toggle_plotarea)
         self.ui.menuview_toggle_notebook.triggered.connect(self.on_toggle_notebook)
@@ -1541,6 +1544,9 @@ class App(QtCore.QObject):
         # Variable to store the status of the fullscreen event
         self.toggle_fscreen = False
 
+        # Variable to store the status of the code editor
+        self.toggle_codeeditor = False
+
         self.cursor = None
 
         # Variable to store the GCODE that was edited
@@ -1601,6 +1607,19 @@ class App(QtCore.QObject):
                                                'params': [project_name, run_from_arg]})
                 except Exception as e:
                     log.debug("Could not open FlatCAM project file as App parameter due: %s" % str(e))
+
+            if '.FlatConfig' in argument:
+                try:
+                    file_name = str(argument)
+
+                    if file_name == "":
+                        self.inform.emit("Open Config file failed.")
+                    else:
+                        run_from_arg = True
+                        self.worker_task.emit({'fcn': self.open_config_file,
+                                               'params': [file_name, run_from_arg]})
+                except Exception as e:
+                    log.debug("Could not open FlatCAM Config file as App parameter due: %s" % str(e))
 
     def defaults_read_form(self):
         for option in self.defaults_form_fields:
@@ -3141,6 +3160,27 @@ class App(QtCore.QObject):
 
         self.ui.grid_snap_btn.trigger()
 
+    def on_toggle_code_editor(self):
+        self.report_usage("on_toggle_code_editor()")
+
+        if self.toggle_codeeditor is False:
+            # add the tab if it was closed
+            self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, "Code Editor")
+            self.ui.cncjob_tab.setObjectName('cncjob_tab')
+            # first clear previous text in text editor (if any)
+            self.ui.code_editor.clear()
+
+            # Switch plot_area to CNCJob tab
+            self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
+
+            self.toggle_codeeditor = True
+        else:
+            for idx in range(self.ui.plot_tab_area.count()):
+                if self.ui.plot_tab_area.widget(idx).objectName() == "cncjob_tab":
+                    self.ui.plot_tab_area.closeTab(idx)
+                    break
+            self.toggle_codeeditor = False
+
     def on_options_combo_change(self, sel):
         """
         Called when the combo box to choose between application defaults and
@@ -3619,12 +3659,20 @@ class App(QtCore.QObject):
         # self.ui.buttonPreview.setEnabled(enable)
         pass
 
-    def handleSaveGCode(self):
+    def handleSaveGCode(self, signal, name=None, filt=None):
         self.report_usage("handleSaveGCode()")
+        if name:
+            obj_name = name
+        else:
+            try:
+                obj_name = self.collection.get_active().options['name']
+            except AttributeError:
+                obj_name = 'file'
 
-        obj_name = self.collection.get_active().options['name']
-
-        _filter_ = " G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
+        if filt:
+            _filter_ = filt
+        else:
+            _filter_ = " G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
                    "All Files (*.*)"
         try:
             filename = str(QtWidgets.QFileDialog.getSaveFileName(
@@ -4884,6 +4932,7 @@ class App(QtCore.QObject):
             obj.on_exportgcode_button_click()
         elif type(obj) == FlatCAMGerber:
             self.on_file_exportgerber()
+
     def on_view_source(self):
 
         try:
@@ -5048,6 +5097,27 @@ class App(QtCore.QObject):
             # The above was failing because open_project() is not
             # thread safe. The new_project()
             self.open_project(filename)
+
+    def on_file_openconfig(self):
+        """
+        File menu callback for opening a config file.
+
+        :return: None
+        """
+
+        self.report_usage("on_file_openconfig")
+        App.log.debug("on_file_openconfig()")
+        _filter_ = "FlatCAM Config (*.FlatConfig);;FlatCAM Config (*.json);;All Files (*.*)"
+        try:
+            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Configuration File",
+                                                         directory=self.data_path, filter=_filter_)
+        except TypeError:
+            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Configuration File", filter = _filter_)
+
+        if filename == "":
+            self.inform.emit("[WARNING_NOTCL]Open COnfig cancelled.")
+        else:
+            self.open_config_file(filename)
 
     def on_file_exportsvg(self):
         """
@@ -6264,6 +6334,37 @@ class App(QtCore.QObject):
             # GUI feedback
             self.inform.emit("[success] Opened: " + filename)
             self.progress.emit(100)
+
+    def open_config_file(self, filename, run_from_arg=None):
+        """
+        Loads a config file from the specified file.
+
+        :param filename:  Name of the file from which to load.
+        :type filename: str
+        :return: None
+        """
+        App.log.debug("Opening config file: " + filename)
+
+        # add the tab if it was closed
+        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, "Code Editor")
+        # first clear previous text in text editor (if any)
+        self.ui.code_editor.clear()
+
+        # Switch plot_area to CNCJob tab
+        self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
+
+        try:
+            if filename:
+                f = QtCore.QFile(filename)
+                if f.open(QtCore.QIODevice.ReadOnly):
+                    stream = QtCore.QTextStream(f)
+                    gcode_edited = stream.readAll()
+                    self.ui.code_editor.setPlainText(gcode_edited)
+                    f.close()
+        except IOError:
+            App.log.error("Failed to open config file: %s" % filename)
+            self.inform.emit("[ERROR_NOTCL] Failed to open config file: %s" % filename)
+            return
 
     def open_project(self, filename, run_from_arg=None):
         """

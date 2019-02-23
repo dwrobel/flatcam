@@ -13,6 +13,9 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed a small bug in the Tool Solder Paste: the App don't take into consideration pads already filled with solder paste.
 - prettified the defaults files and the recent file. Now they are ordered and human readable
+- added a Toggle Code Editor Menu and key shortcut
+- added the ability to open FlatConfig configuration files in COde Editor, Modify them and then save them.
+- added ability to double click the FlatConfig files and open them in the FlatCAM Code Editor (to be verified)
 
 23.02.2019
 
