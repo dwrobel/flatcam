@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - added ability to double click the FlatConfig files and open them in the FlatCAM Code Editor (to be verified)
 - when saving a file from Code Editor and there is no object active then the OpenFileDialog filters are reset to FlatConfig files.
 - reverted a change in GCode that might affect Gerber polarity change in Gerber parser
+- ability to double click the FlatConfig files and open them in the FlatCAM Code Editor - fixed and verified
 
 23.02.2019
 

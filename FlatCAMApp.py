@@ -1615,9 +1615,10 @@ class App(QtCore.QObject):
                     if file_name == "":
                         self.inform.emit("Open Config file failed.")
                     else:
-                        run_from_arg = True
-                        self.worker_task.emit({'fcn': self.open_config_file,
-                                               'params': [file_name, run_from_arg]})
+                        # run_from_arg = True
+                        # self.worker_task.emit({'fcn': self.open_config_file,
+                        #                        'params': [file_name, run_from_arg]})
+                        self.open_config_file(file_name, run_from_arg=True)
                 except Exception as e:
                     log.debug("Could not open FlatCAM Config file as App parameter due: %s" % str(e))
 
