@@ -391,6 +391,9 @@ class SolderPaste(FlatCAMTool):
         # this will be used in the combobox context menu, for delete entry
         self.obj_to_be_deleted_name = ''
 
+        # stpre here the flattened geometry
+        self.flat_geometry = []
+
         # action to be added in the combobox context menu
         self.combo_context_del_action = QtWidgets.QAction(QtGui.QIcon('share/trash16.png'), "Delete Object")
 
@@ -910,44 +913,6 @@ class SolderPaste(FlatCAMTool):
         #     self.save_gcode_frame.setDisabled(True)
         pass
 
-    @staticmethod
-    def solder_line(p, offset, units):
-        x_min, y_min, x_max, y_max = p.bounds
-
-        diag_1_intersect = LineString([(x_min, y_min), (x_max, y_max)]).intersection(p)
-        diag_2_intersect = LineString([(x_min, y_max), (x_max, y_min)]).intersection(p)
-
-        if units == 'MM':
-            round_diag_1 = round(diag_1_intersect.length, 1)
-            round_diag_2 = round(diag_2_intersect.length, 1)
-        else:
-            round_diag_1 = round(diag_1_intersect.length, 2)
-            round_diag_2 = round(diag_2_intersect.length, 2)
-
-        if round_diag_1 == round_diag_2:
-            l = distance((x_min, y_min), (x_max, y_min))
-            h = distance((x_min, y_min), (x_min, y_max))
-
-            if offset >= l / 2 or offset >= h / 2:
-                return "fail"
-            if l > h:
-                h_half = h / 2
-                start = [x_min, (y_min + h_half)]
-                stop = [(x_min + l), (y_min + h_half)]
-            else:
-                l_half = l / 2
-                start = [(x_min + l_half), y_min]
-                stop = [(x_min + l_half), (y_min + h)]
-            geo = LineString([start, stop])
-        elif round_diag_1 > round_diag_2:
-            geo = round_diag_1
-        else:
-            geo = round_diag_2
-
-        offseted_poly = p.buffer(-offset)
-        geo = geo.intersection(offseted_poly)
-        return geo
-
     def on_create_geo_click(self, signal):
         """
         Will create a solderpaste dispensing geometry.
@@ -989,6 +954,39 @@ class SolderPaste(FlatCAMTool):
             self.app.inform.emit("[WARNING_NOTCL] No Nozzle tools in the tool table.")
             return 'fail'
 
+        def flatten(geometry=None, reset=True, pathonly=False):
+            """
+            Creates a list of non-iterable linear geometry objects.
+            Polygons are expanded into its exterior pathonly param if specified.
+
+            Results are placed in flat_geometry
+
+            :param geometry: Shapely type or list or list of list of such.
+            :param reset: Clears the contents of self.flat_geometry.
+            :param pathonly: Expands polygons into linear elements from the exterior attribute.
+            """
+
+            if reset:
+                self.flat_geometry = []
+            ## If iterable, expand recursively.
+            try:
+                for geo in geometry:
+                    if geo is not None:
+                        flatten(geometry=geo,
+                                reset=False,
+                                pathonly=pathonly)
+
+            ## Not iterable, do the actual indexing and add.
+            except TypeError:
+                if pathonly and type(geometry) == Polygon:
+                    self.flat_geometry.append(geometry.exterior)
+                else:
+                    self.flat_geometry.append(geometry)
+            return self.flat_geometry
+
+        # TODO when/if the Gerber files will have solid_geometry in the self.apertures I will have to take care here
+        flatten(geometry=obj.solid_geometry, pathonly=True)
+
         def geo_init(geo_obj, app_obj):
             geo_obj.options.update(self.options)
             geo_obj.solid_geometry = []
@@ -998,12 +996,8 @@ class SolderPaste(FlatCAMTool):
             geo_obj.multitool = True
             geo_obj.special_group = 'solder_paste_tool'
 
-            work_geo = obj.solid_geometry
-            try:
-                _ = iter(work_geo)
-            except TypeError:
-                work_geo = [work_geo]
-
+            geo = LineString()
+            work_geo = []
             rest_geo = []
             tooluid = 1
 
@@ -1023,37 +1017,75 @@ class SolderPaste(FlatCAMTool):
                 geo_obj.tools[tooluid]['type'] = 'SolderPaste'
                 geo_obj.tools[tooluid]['tool_type'] = 'DN'
 
-                for g in work_geo:
-                    if type(g) == MultiPolygon:
-                        for poly in g:
-                            geom = self.solder_line(poly, offset=offset, units=self.units)
-                            if geom != 'fail':
-                                try:
-                                    geo_obj.tools[tooluid]['solid_geometry'].append(geom)
-                                except Exception as e:
-                                    log.debug('ToolSoderPaste.on_create_geo() --> %s' % str(e))
-                            else:
-                                rest_geo.append(poly)
-                    elif type(g) == Polygon:
-                        geom =  self.solder_line(g, offset=offset, units=self.units)
-                        if geom != 'fail':
-                            try:
-                                geo_obj.tools[tooluid]['solid_geometry'].append(geom)
-                            except Exception as e:
-                                log.debug('ToolSoderPaste.on_create_geo() --> %s' % str(e))
+                # self.flat_geometry is a list of LinearRings produced by flatten() from the exteriors of the Polygons
+                # We get possible issues if we try to directly use the Polygons, due of possible the interiors,
+                # so we do a hack: get first the exterior in a form of LinearRings and then convert back to Polygon
+                # because intersection does not work on LinearRings
+                for g in self.flat_geometry:
+                    # for whatever reason intersection on LinearRings does not work so we convert back to Polygons
+                    poly = Polygon(g)
+                    x_min, y_min, x_max, y_max = poly.bounds
+
+                    diag_1_intersect = LineString([(x_min, y_min), (x_max, y_max)]).intersection(poly)
+                    diag_2_intersect = LineString([(x_min, y_max), (x_max, y_min)]).intersection(poly)
+
+                    if self.units == 'MM':
+                        round_diag_1 = round(diag_1_intersect.length, 1)
+                        round_diag_2 = round(diag_2_intersect.length, 1)
+                    else:
+                        round_diag_1 = round(diag_1_intersect.length, 2)
+                        round_diag_2 = round(diag_2_intersect.length, 2)
+
+                    if round_diag_1 == round_diag_2:
+                        l = distance((x_min, y_min), (x_max, y_min))
+                        h = distance((x_min, y_min), (x_min, y_max))
+
+                        if offset >= l / 2 or offset >= h / 2:
+                            pass
                         else:
-                            rest_geo.append(g)
+                            if l > h:
+                                h_half = h / 2
+                                start = [x_min, (y_min + h_half)]
+                                stop = [(x_min + l), (y_min + h_half)]
+                                geo = LineString([start, stop])
+                            else:
+                                l_half = l / 2
+                                start = [(x_min + l_half), y_min]
+                                stop = [(x_min + l_half), (y_min + h)]
+                                geo = LineString([start, stop])
+                    elif round_diag_1 > round_diag_2:
+                        geo = diag_1_intersect
+                    else:
+                        geo = diag_2_intersect
+
+                    offseted_poly = poly.buffer(-offset)
+                    geo = geo.intersection(offseted_poly)
+                    if not geo.is_empty:
+                        try:
+                            geo_obj.tools[tooluid]['solid_geometry'].append(geo)
+                        except Exception as e:
+                            log.debug('ToolSolderPaste.on_create_geo() --> %s' % str(e))
+                    else:
+                        rest_geo.append(g)
 
                 work_geo = deepcopy(rest_geo)
                 rest_geo[:] = []
 
                 if not work_geo:
+                    a = 0
+                    for tooluid_key in geo_obj.tools:
+                        if not geo_obj.tools[tooluid_key]['solid_geometry']:
+                            a += 1
+                    if a == len(geo_obj.tools):
+                        self.app.inform.emit('[ERROR_NOTCL]Cancelled. Empty file, it has no geometry...')
+                        return 'fail'
+
                     app_obj.inform.emit("[success] Solder Paste geometry generated successfully...")
                     return
 
             # if we still have geometry not processed at the end of the tools then we failed
             # some or all the pads are not covered with solder paste
-            if rest_geo:
+            if work_geo:
                 app_obj.inform.emit("[WARNING_NOTCL] Some or all pads have no solder "
                                     "due of inadequate nozzle diameters...")
                 return 'fail'
@@ -1087,6 +1119,10 @@ class SolderPaste(FlatCAMTool):
         name = self.geo_obj_combo.currentText()
         obj = self.app.collection.get_by_name(name)
 
+        if name == '':
+            self.app.inform.emit("[WARNING_NOTCL]There is no Geometry object available.")
+            return 'fail'
+
         if obj.special_group != 'solder_paste_tool':
             self.app.inform.emit("[WARNING_NOTCL]This Geometry can't be processed. NOT a solder_paste_tool geometry.")
             return 'fail'
@@ -1114,8 +1150,6 @@ class SolderPaste(FlatCAMTool):
         :param use_thread: True if threaded execution is desired
         :return:
         """
-
-
         obj = workobject
 
         try:

@@ -11,6 +11,7 @@ CAD program, and create G-Code for Isolation routing.
 
 23.02.2019
 
+- remade the SolderPaste geometry generation function in ToolSoderPaste to work in certain scenarios where the Gerber pads in the SolderPaste mask Gerber may be just pads outlines
 - 
 
 22.02.2019
