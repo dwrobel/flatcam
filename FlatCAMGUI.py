@@ -1458,6 +1458,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.cncjob_defaults_form = CNCJobPreferencesUI()
         self.tools_defaults_form = ToolsPreferencesUI()
 
+        self.general_options_form = GeneralPreferencesUI()
+        self.gerber_options_form = GerberPreferencesUI()
+        self.excellon_options_form = ExcellonPreferencesUI()
+        self.geometry_options_form = GeometryPreferencesUI()
+        self.cncjob_options_form = CNCJobPreferencesUI()
+        self.tools_options_form = ToolsPreferencesUI()
+
         QtWidgets.qApp.installEventFilter(self)
 
         # restore the Toolbar State from file
@@ -1885,9 +1892,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Change Units
                 if key == QtCore.Qt.Key_Q:
                     if self.app.options["units"] == 'MM':
-                        self.app.general_options_form.general_app_group.units_radio.set_value("IN")
+                        self.app.ui.general_options_form.general_app_group.units_radio.set_value("IN")
                     else:
-                        self.app.general_options_form.general_app_group.units_radio.set_value("MM")
+                        self.app.ui.general_options_form.general_app_group.units_radio.set_value("MM")
                     self.app.on_toggle_units()
 
                 # Rotate Object by 90 degree CW
@@ -2354,7 +2361,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_T or key == 'T':
                     self.app.exc_editor.launched_from_shortcuts = True
                     ## Current application units in Upper Case
-                    self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
+                    self.units = self.general_defaults_group.general_app_group.units_radio.get_value().upper()
                     tool_add_popup = FCInputDialog(title="New Tool ...",
                                                    text='Enter a Tool Diameter:',
                                                    min=0.0000, max=99.9999, decimals=4)

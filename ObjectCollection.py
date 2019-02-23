@@ -451,9 +451,9 @@ class ObjectCollection(QtCore.QAbstractItemModel):
     #         # Change Units
     #         if key == QtCore.Qt.Key_Q:
     #             if self.app.options["units"] == 'MM':
-    #                 self.app.general_options_form.general_app_group.units_radio.set_value("IN")
+    #                 self.app.ui.general_options_form.general_app_group.units_radio.set_value("IN")
     #             else:
-    #                 self.app.general_options_form.general_app_group.units_radio.set_value("MM")
+    #                 self.app.ui.general_options_form.general_app_group.units_radio.set_value("MM")
     #             self.app.on_toggle_units()
     #
     #         # Rotate Object by 90 degree CW

@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - added true fullscreen support (for Windows OS)
 - added the ability of context menu inside the GuiElements.FCCombobox() object.
 - remade the UI for ToolSolderPaste. The object comboboxes now have context menu's that allow object deletion. Also the last object created is set as current item in comboboxes.
+- some GUI elements changes
 
 21.02.2019
 

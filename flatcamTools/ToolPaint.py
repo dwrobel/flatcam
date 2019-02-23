@@ -347,7 +347,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.paintoverlap_entry.set_value(self.default_data["paintoverlap"])
 
         # updated units
-        self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
 
         if self.units == "IN":
             self.addtool_entry.set_value(0.039)
@@ -415,7 +415,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             pass
 
         # updated units
-        self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
 
         sorted_tools = []
         for k, v in self.paint_tools.items():

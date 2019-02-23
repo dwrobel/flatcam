@@ -8,6 +8,8 @@ from FlatCAMObj import FlatCAMGeometry, FlatCAMExcellon, FlatCAMGerber
 from PyQt5 import QtGui, QtCore, QtWidgets
 from copy import copy,deepcopy
 
+from shapely.geometry import MultiPolygon, Polygon, LineString
+
 
 class SolderPaste(FlatCAMTool):
 
@@ -466,7 +468,7 @@ class SolderPaste(FlatCAMTool):
         self.name = ""
         self.obj = None
 
-        self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
 
         for name in list(self.app.postprocessors.keys()):
             # populate only with postprocessor files that start with 'Paste_'
@@ -484,7 +486,7 @@ class SolderPaste(FlatCAMTool):
         self.ui_disconnect()
 
         # updated units
-        self.units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
 
         sorted_tools = []
         for k, v in self.tooltable_tools.items():
@@ -647,7 +649,6 @@ class SolderPaste(FlatCAMTool):
             idx = self.cnc_obj_combo.findText(obj_name)
             if idx != -1:
                 self.cnc_obj_combo.setCurrentIndex(idx)
-            print(obj_name)
 
     def read_form_to_options(self):
         """
@@ -925,7 +926,7 @@ class SolderPaste(FlatCAMTool):
 
         self.on_create_geo(name=name, work_object=obj)
 
-    def on_create_geo(self, name, work_object):
+    def on_create_geo(self, name, work_object, use_thread=True):
         """
         The actual work for creating solderpaste dispensing geometry is done here.
 
@@ -958,47 +959,48 @@ class SolderPaste(FlatCAMTool):
             geo_obj.special_group = 'solder_paste_tool'
 
             def solder_line(p, offset):
-                xmin, ymin, xmax, ymax = p.bounds
+                x_min, y_min, x_max, y_max = p.bounds
 
-                min = [xmin, ymin]
-                max = [xmax, ymax]
-                min_r = [xmin, ymax]
-                max_r = [xmax, ymin]
+                diag_1_intersect = LineString([(x_min, y_min), (x_max, y_max)]).intersection(p)
+                diag_2_intersect = LineString([(x_min, y_max), (x_max, y_min)]).intersection(p)
 
-                diagonal_1 = LineString([min, max])
-                diagonal_2 = LineString([min_r, max_r])
                 if self.units == 'MM':
-                    round_diag_1 = round(diagonal_1.intersection(p).length, 1)
-                    round_diag_2 = round(diagonal_2.intersection(p).length, 1)
+                    round_diag_1 = round(diag_1_intersect.length, 1)
+                    round_diag_2 = round(diag_2_intersect.length, 1)
                 else:
-                    round_diag_1 = round(diagonal_1.intersection(p).length, 2)
-                    round_diag_2 = round(diagonal_2.intersection(p).length, 2)
+                    round_diag_1 = round(diag_1_intersect.length, 2)
+                    round_diag_2 = round(diag_2_intersect.length, 2)
 
                 if round_diag_1 == round_diag_2:
-                    l = distance((xmin, ymin), (xmax, ymin))
-                    h = distance((xmin, ymin), (xmin, ymax))
+                    l = distance((x_min, y_min), (x_max, y_min))
+                    h = distance((x_min, y_min), (x_min, y_max))
 
                     if offset >= l /2 or offset >= h / 2:
                         return "fail"
                     if l > h:
                         h_half = h / 2
-                        start = [xmin, (ymin + h_half)]
-                        stop = [(xmin + l), (ymin + h_half)]
+                        start = [x_min, (y_min + h_half)]
+                        stop = [(x_min + l), (y_min + h_half)]
                     else:
                         l_half = l / 2
-                        start = [(xmin + l_half), ymin]
-                        stop = [(xmin + l_half), (ymin + h)]
+                        start = [(x_min + l_half), y_min]
+                        stop = [(x_min + l_half), (y_min + h)]
                     geo = LineString([start, stop])
                 elif round_diag_1 > round_diag_2:
-                    geo = diagonal_1.intersection(p)
+                    geo = round_diag_1
                 else:
-                    geo = diagonal_2.intersection(p)
+                    geo = round_diag_2
 
                 offseted_poly = p.buffer(-offset)
                 geo = geo.intersection(offseted_poly)
                 return geo
 
             work_geo = obj.solid_geometry
+            try:
+                _ = iter(work_geo)
+            except TypeError:
+                work_geo = [work_geo]
+
             rest_geo = []
             tooluid = 1
 
@@ -1053,22 +1055,24 @@ class SolderPaste(FlatCAMTool):
                                     "due of inadequate nozzle diameters...")
                 return 'fail'
 
-        def job_thread(app_obj):
-            try:
-                app_obj.new_object("geometry", name + "_solderpaste", geo_init)
-            except Exception as e:
-                log.error("SolderPaste.on_create_geo() --> %s" % str(e))
+        if use_thread:
+            def job_thread(app_obj):
+                try:
+                    app_obj.new_object("geometry", name + "_solderpaste", geo_init)
+                except Exception as e:
+                    log.error("SolderPaste.on_create_geo() --> %s" % str(e))
+                    proc.done()
+                    return
                 proc.done()
-                return
-            proc.done()
 
-        self.app.inform.emit("Generating Solder Paste dispensing geometry...")
-        # Promise object with the new name
-        self.app.collection.promise(name)
+            self.app.inform.emit("Generating Solder Paste dispensing geometry...")
+            # Promise object with the new name
+            self.app.collection.promise(name)
 
-        # Background
-        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
-        # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+            # Background
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+        else:
+            self.app.new_object("geometry", name + "_solderpaste", geo_init)
 
     def on_create_gcode_click(self, signal):
         """

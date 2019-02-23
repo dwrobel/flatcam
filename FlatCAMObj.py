@@ -3533,7 +3533,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.setCurrentItem(self.ui.geo_tools_table.item(row, 0))
 
     def export_dxf(self):
-        units = self.app.general_options_form.general_app_group.units_radio.get_value().upper()
+        units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
         dwg = None
         try:
             dwg = ezdxf.new('R2010')

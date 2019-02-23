@@ -776,127 +776,121 @@ class App(QtCore.QObject):
         #     QtCore.QTimer.singleShot(self.defaults["global_defaults_save_period_ms"], auto_save_defaults)
 
         # self.options_form = PreferencesUI()
-        self.general_options_form = GeneralPreferencesUI()
-        self.gerber_options_form = GerberPreferencesUI()
-        self.excellon_options_form = ExcellonPreferencesUI()
-        self.geometry_options_form = GeometryPreferencesUI()
-        self.cncjob_options_form = CNCJobPreferencesUI()
-        self.tools_options_form = ToolsPreferencesUI()
 
         self.options_form_fields = {
-            "units": self.general_options_form.general_app_group.units_radio,
-            "global_gridx": self.general_options_form.general_gui_group.gridx_entry,
-            "global_gridy": self.general_options_form.general_gui_group.gridy_entry,
-            "global_snap_max": self.general_options_form.general_gui_group.snap_max_dist_entry,
+            "units": self.ui.general_options_form.general_app_group.units_radio,
+            "global_gridx": self.ui.general_options_form.general_gui_group.gridx_entry,
+            "global_gridy": self.ui.general_options_form.general_gui_group.gridy_entry,
+            "global_snap_max": self.ui.general_options_form.general_gui_group.snap_max_dist_entry,
 
-            "gerber_plot": self.gerber_options_form.gerber_gen_group.plot_cb,
-            "gerber_solid": self.gerber_options_form.gerber_gen_group.solid_cb,
-            "gerber_multicolored": self.gerber_options_form.gerber_gen_group.multicolored_cb,
+            "gerber_plot": self.ui.gerber_options_form.gerber_gen_group.plot_cb,
+            "gerber_solid": self.ui.gerber_options_form.gerber_gen_group.solid_cb,
+            "gerber_multicolored": self.ui.gerber_options_form.gerber_gen_group.multicolored_cb,
 
-            "gerber_isotooldia": self.gerber_options_form.gerber_opt_group.iso_tool_dia_entry,
-            "gerber_isopasses": self.gerber_options_form.gerber_opt_group.iso_width_entry,
-            "gerber_isooverlap": self.gerber_options_form.gerber_opt_group.iso_overlap_entry,
-            "gerber_combine_passes": self.gerber_options_form.gerber_opt_group.combine_passes_cb,
-            "gerber_noncoppermargin": self.gerber_options_form.gerber_opt_group.noncopper_margin_entry,
-            "gerber_noncopperrounded": self.gerber_options_form.gerber_opt_group.noncopper_rounded_cb,
-            "gerber_bboxmargin": self.gerber_options_form.gerber_opt_group.bbmargin_entry,
-            "gerber_bboxrounded": self.gerber_options_form.gerber_opt_group.bbrounded_cb,
+            "gerber_isotooldia": self.ui.gerber_options_form.gerber_opt_group.iso_tool_dia_entry,
+            "gerber_isopasses": self.ui.gerber_options_form.gerber_opt_group.iso_width_entry,
+            "gerber_isooverlap": self.ui.gerber_options_form.gerber_opt_group.iso_overlap_entry,
+            "gerber_combine_passes": self.ui.gerber_options_form.gerber_opt_group.combine_passes_cb,
+            "gerber_noncoppermargin": self.ui.gerber_options_form.gerber_opt_group.noncopper_margin_entry,
+            "gerber_noncopperrounded": self.ui.gerber_options_form.gerber_opt_group.noncopper_rounded_cb,
+            "gerber_bboxmargin": self.ui.gerber_options_form.gerber_opt_group.bbmargin_entry,
+            "gerber_bboxrounded": self.ui.gerber_options_form.gerber_opt_group.bbrounded_cb,
 
-            "excellon_plot": self.excellon_options_form.excellon_gen_group.plot_cb,
-            "excellon_solid": self.excellon_options_form.excellon_gen_group.solid_cb,
-            "excellon_format_upper_in": self.excellon_options_form.excellon_gen_group.excellon_format_upper_in_entry,
-            "excellon_format_lower_in": self.excellon_options_form.excellon_gen_group.excellon_format_lower_in_entry,
-            "excellon_format_upper_mm": self.excellon_options_form.excellon_gen_group.excellon_format_upper_mm_entry,
-            "excellon_format_lower_mm": self.excellon_options_form.excellon_gen_group.excellon_format_lower_mm_entry,
-            "excellon_zeros": self.excellon_options_form.excellon_gen_group.excellon_zeros_radio,
-            "excellon_units": self.excellon_options_form.excellon_gen_group.excellon_units_radio,
-            "excellon_optimization_type": self.excellon_options_form.excellon_gen_group.excellon_optimization_radio,
-            "excellon_feedrate_rapid": self.excellon_options_form.excellon_gen_group.feedrate_rapid_entry,
-            "excellon_toolchangexy": self.excellon_options_form.excellon_gen_group.toolchangexy_entry,
-            "excellon_f_plunge": self.excellon_options_form.excellon_gen_group.fplunge_cb,
-            "excellon_startz": self.excellon_options_form.excellon_gen_group.estartz_entry,
-            "excellon_endz": self.excellon_options_form.excellon_gen_group.eendz_entry,
+            "excellon_plot": self.ui.excellon_options_form.excellon_gen_group.plot_cb,
+            "excellon_solid": self.ui.excellon_options_form.excellon_gen_group.solid_cb,
+            "excellon_format_upper_in": self.ui.excellon_options_form.excellon_gen_group.excellon_format_upper_in_entry,
+            "excellon_format_lower_in": self.ui.excellon_options_form.excellon_gen_group.excellon_format_lower_in_entry,
+            "excellon_format_upper_mm": self.ui.excellon_options_form.excellon_gen_group.excellon_format_upper_mm_entry,
+            "excellon_format_lower_mm": self.ui.excellon_options_form.excellon_gen_group.excellon_format_lower_mm_entry,
+            "excellon_zeros": self.ui.excellon_options_form.excellon_gen_group.excellon_zeros_radio,
+            "excellon_units": self.ui.excellon_options_form.excellon_gen_group.excellon_units_radio,
+            "excellon_optimization_type": self.ui.excellon_options_form.excellon_gen_group.excellon_optimization_radio,
+            "excellon_feedrate_rapid": self.ui.excellon_options_form.excellon_gen_group.feedrate_rapid_entry,
+            "excellon_toolchangexy": self.ui.excellon_options_form.excellon_gen_group.toolchangexy_entry,
+            "excellon_f_plunge": self.ui.excellon_options_form.excellon_gen_group.fplunge_cb,
+            "excellon_startz": self.ui.excellon_options_form.excellon_gen_group.estartz_entry,
+            "excellon_endz": self.ui.excellon_options_form.excellon_gen_group.eendz_entry,
 
-            "excellon_drillz": self.excellon_options_form.excellon_opt_group.cutz_entry,
-            "excellon_travelz": self.excellon_options_form.excellon_opt_group.travelz_entry,
-            "excellon_feedrate": self.excellon_options_form.excellon_opt_group.feedrate_entry,
-            "excellon_spindlespeed": self.excellon_options_form.excellon_opt_group.spindlespeed_entry,
-            "excellon_dwell": self.excellon_options_form.excellon_opt_group.dwell_cb,
-            "excellon_dwelltime": self.excellon_options_form.excellon_opt_group.dwelltime_entry,
-            "excellon_toolchange": self.excellon_options_form.excellon_opt_group.toolchange_cb,
-            "excellon_toolchangez": self.excellon_options_form.excellon_opt_group.toolchangez_entry,
-            "excellon_tooldia": self.excellon_options_form.excellon_opt_group.tooldia_entry,
-            "excellon_ppname_e": self.excellon_options_form.excellon_opt_group.pp_excellon_name_cb,
+            "excellon_drillz": self.ui.excellon_options_form.excellon_opt_group.cutz_entry,
+            "excellon_travelz": self.ui.excellon_options_form.excellon_opt_group.travelz_entry,
+            "excellon_feedrate": self.ui.excellon_options_form.excellon_opt_group.feedrate_entry,
+            "excellon_spindlespeed": self.ui.excellon_options_form.excellon_opt_group.spindlespeed_entry,
+            "excellon_dwell": self.ui.excellon_options_form.excellon_opt_group.dwell_cb,
+            "excellon_dwelltime": self.ui.excellon_options_form.excellon_opt_group.dwelltime_entry,
+            "excellon_toolchange": self.ui.excellon_options_form.excellon_opt_group.toolchange_cb,
+            "excellon_toolchangez": self.ui.excellon_options_form.excellon_opt_group.toolchangez_entry,
+            "excellon_tooldia": self.ui.excellon_options_form.excellon_opt_group.tooldia_entry,
+            "excellon_ppname_e": self.ui.excellon_options_form.excellon_opt_group.pp_excellon_name_cb,
 
-            "geometry_plot": self.geometry_options_form.geometry_gen_group.plot_cb,
-            "geometry_cnctooldia": self.geometry_options_form.geometry_gen_group.cnctooldia_entry,
-            "geometry_segx": self.geometry_options_form.geometry_gen_group.segx_entry,
-            "geometry_segy": self.geometry_options_form.geometry_gen_group.segy_entry,
-            "geometry_feedrate_rapid": self.geometry_options_form.geometry_gen_group.cncfeedrate_rapid_entry,
-            "geometry_f_plunge": self.geometry_options_form.geometry_gen_group.fplunge_cb,
-            "geometry_toolchangexy": self.geometry_options_form.geometry_gen_group.toolchangexy_entry,
-            "geometry_startz": self.geometry_options_form.geometry_gen_group.gstartz_entry,
-            "geometry_endz": self.geometry_options_form.geometry_gen_group.gendz_entry,
-            "geometry_extracut": self.geometry_options_form.geometry_gen_group.extracut_cb,
+            "geometry_plot": self.ui.geometry_options_form.geometry_gen_group.plot_cb,
+            "geometry_cnctooldia": self.ui.geometry_options_form.geometry_gen_group.cnctooldia_entry,
+            "geometry_segx": self.ui.geometry_options_form.geometry_gen_group.segx_entry,
+            "geometry_segy": self.ui.geometry_options_form.geometry_gen_group.segy_entry,
+            "geometry_feedrate_rapid": self.ui.geometry_options_form.geometry_gen_group.cncfeedrate_rapid_entry,
+            "geometry_f_plunge": self.ui.geometry_options_form.geometry_gen_group.fplunge_cb,
+            "geometry_toolchangexy": self.ui.geometry_options_form.geometry_gen_group.toolchangexy_entry,
+            "geometry_startz": self.ui.geometry_options_form.geometry_gen_group.gstartz_entry,
+            "geometry_endz": self.ui.geometry_options_form.geometry_gen_group.gendz_entry,
+            "geometry_extracut": self.ui.geometry_options_form.geometry_gen_group.extracut_cb,
 
-            "geometry_cutz": self.geometry_options_form.geometry_opt_group.cutz_entry,
-            "geometry_travelz": self.geometry_options_form.geometry_opt_group.travelz_entry,
-            "geometry_feedrate": self.geometry_options_form.geometry_opt_group.cncfeedrate_entry,
-            "geometry_feedrate_z": self.geometry_options_form.geometry_opt_group.cncplunge_entry,
-            "geometry_spindlespeed": self.geometry_options_form.geometry_opt_group.cncspindlespeed_entry,
-            "geometry_dwell": self.geometry_options_form.geometry_opt_group.dwell_cb,
-            "geometry_dwelltime": self.geometry_options_form.geometry_opt_group.dwelltime_entry,
-            "geometry_ppname_g": self.geometry_options_form.geometry_opt_group.pp_geometry_name_cb,
-            "geometry_toolchange": self.geometry_options_form.geometry_opt_group.toolchange_cb,
-            "geometry_toolchangez": self.geometry_options_form.geometry_opt_group.toolchangez_entry,
-            "geometry_depthperpass": self.geometry_options_form.geometry_opt_group.depthperpass_entry,
-            "geometry_multidepth": self.geometry_options_form.geometry_opt_group.multidepth_cb,
+            "geometry_cutz": self.ui.geometry_options_form.geometry_opt_group.cutz_entry,
+            "geometry_travelz": self.ui.geometry_options_form.geometry_opt_group.travelz_entry,
+            "geometry_feedrate": self.ui.geometry_options_form.geometry_opt_group.cncfeedrate_entry,
+            "geometry_feedrate_z": self.ui.geometry_options_form.geometry_opt_group.cncplunge_entry,
+            "geometry_spindlespeed": self.ui.geometry_options_form.geometry_opt_group.cncspindlespeed_entry,
+            "geometry_dwell": self.ui.geometry_options_form.geometry_opt_group.dwell_cb,
+            "geometry_dwelltime": self.ui.geometry_options_form.geometry_opt_group.dwelltime_entry,
+            "geometry_ppname_g": self.ui.geometry_options_form.geometry_opt_group.pp_geometry_name_cb,
+            "geometry_toolchange": self.ui.geometry_options_form.geometry_opt_group.toolchange_cb,
+            "geometry_toolchangez": self.ui.geometry_options_form.geometry_opt_group.toolchangez_entry,
+            "geometry_depthperpass": self.ui.geometry_options_form.geometry_opt_group.depthperpass_entry,
+            "geometry_multidepth": self.ui.geometry_options_form.geometry_opt_group.multidepth_cb,
 
-            "cncjob_plot": self.cncjob_options_form.cncjob_gen_group.plot_cb,
-            "cncjob_tooldia": self.cncjob_options_form.cncjob_gen_group.tooldia_entry,
+            "cncjob_plot": self.ui.cncjob_options_form.cncjob_gen_group.plot_cb,
+            "cncjob_tooldia": self.ui.cncjob_options_form.cncjob_gen_group.tooldia_entry,
 
-            "cncjob_prepend": self.cncjob_options_form.cncjob_opt_group.prepend_text,
-            "cncjob_append": self.cncjob_options_form.cncjob_opt_group.append_text,
+            "cncjob_prepend": self.ui.cncjob_options_form.cncjob_opt_group.prepend_text,
+            "cncjob_append": self.ui.cncjob_options_form.cncjob_opt_group.append_text,
 
-            "tools_ncctools": self.tools_options_form.tools_ncc_group.ncc_tool_dia_entry,
-            "tools_nccoverlap": self.tools_options_form.tools_ncc_group.ncc_overlap_entry,
-            "tools_nccmargin": self.tools_options_form.tools_ncc_group.ncc_margin_entry,
+            "tools_ncctools": self.ui.tools_options_form.tools_ncc_group.ncc_tool_dia_entry,
+            "tools_nccoverlap": self.ui.tools_options_form.tools_ncc_group.ncc_overlap_entry,
+            "tools_nccmargin": self.ui.tools_options_form.tools_ncc_group.ncc_margin_entry,
 
-            "tools_cutouttooldia": self.tools_options_form.tools_cutout_group.cutout_tooldia_entry,
-            "tools_cutoutmargin": self.tools_options_form.tools_cutout_group.cutout_margin_entry,
-            "tools_cutoutgapsize": self.tools_options_form.tools_cutout_group.cutout_gap_entry,
-            "tools_gaps_rect": self.tools_options_form.tools_cutout_group.gaps_radio,
-            "tools_gaps_ff": self.tools_options_form.tools_cutout_group.gaps_combo,
+            "tools_cutouttooldia": self.ui.tools_options_form.tools_cutout_group.cutout_tooldia_entry,
+            "tools_cutoutmargin": self.ui.tools_options_form.tools_cutout_group.cutout_margin_entry,
+            "tools_cutoutgapsize": self.ui.tools_options_form.tools_cutout_group.cutout_gap_entry,
+            "tools_gaps_rect": self.ui.tools_options_form.tools_cutout_group.gaps_radio,
+            "tools_gaps_ff": self.ui.tools_options_form.tools_cutout_group.gaps_combo,
 
-            "tools_painttooldia": self.tools_options_form.tools_paint_group.painttooldia_entry,
-            "tools_paintoverlap": self.tools_options_form.tools_paint_group.paintoverlap_entry,
-            "tools_paintmargin": self.tools_options_form.tools_paint_group.paintmargin_entry,
-            "tools_paintmethod": self.tools_options_form.tools_paint_group.paintmethod_combo,
-            "tools_selectmethod": self.tools_options_form.tools_paint_group.selectmethod_combo,
-            "tools_pathconnect": self.tools_options_form.tools_paint_group.pathconnect_cb,
-            "tools_paintcontour": self.tools_options_form.tools_paint_group.contour_cb,
+            "tools_painttooldia": self.ui.tools_options_form.tools_paint_group.painttooldia_entry,
+            "tools_paintoverlap": self.ui.tools_options_form.tools_paint_group.paintoverlap_entry,
+            "tools_paintmargin": self.ui.tools_options_form.tools_paint_group.paintmargin_entry,
+            "tools_paintmethod": self.ui.tools_options_form.tools_paint_group.paintmethod_combo,
+            "tools_selectmethod": self.ui.tools_options_form.tools_paint_group.selectmethod_combo,
+            "tools_pathconnect": self.ui.tools_options_form.tools_paint_group.pathconnect_cb,
+            "tools_paintcontour": self.ui.tools_options_form.tools_paint_group.contour_cb,
 
-            "tools_2sided_mirror_axis": self.tools_options_form.tools_2sided_group.mirror_axis_radio,
-            "tools_2sided_axis_loc": self.tools_options_form.tools_2sided_group.axis_location_radio,
-            "tools_2sided_drilldia": self.tools_options_form.tools_2sided_group.drill_dia_entry,
+            "tools_2sided_mirror_axis": self.ui.tools_options_form.tools_2sided_group.mirror_axis_radio,
+            "tools_2sided_axis_loc": self.ui.tools_options_form.tools_2sided_group.axis_location_radio,
+            "tools_2sided_drilldia": self.ui.tools_options_form.tools_2sided_group.drill_dia_entry,
 
-            "tools_film_type": self.tools_options_form.tools_film_group.film_type_radio,
-            "tools_film_boundary": self.tools_options_form.tools_film_group.film_boundary_entry,
-            "tools_film_scale": self.tools_options_form.tools_film_group.film_scale_entry,
+            "tools_film_type": self.ui.tools_options_form.tools_film_group.film_type_radio,
+            "tools_film_boundary": self.ui.tools_options_form.tools_film_group.film_boundary_entry,
+            "tools_film_scale": self.ui.tools_options_form.tools_film_group.film_scale_entry,
 
-            "tools_panelize_spacing_columns": self.tools_options_form.tools_panelize_group.pspacing_columns,
-            "tools_panelize_spacing_rows": self.tools_options_form.tools_panelize_group.pspacing_rows,
-            "tools_panelize_columns": self.tools_options_form.tools_panelize_group.pcolumns,
-            "tools_panelize_rows": self.tools_options_form.tools_panelize_group.prows,
-            "tools_panelize_constrain": self.tools_options_form.tools_panelize_group.pconstrain_cb,
-            "tools_panelize_constrainx": self.tools_options_form.tools_panelize_group.px_width_entry,
-            "tools_panelize_constrainy": self.tools_options_form.tools_panelize_group.py_height_entry
+            "tools_panelize_spacing_columns": self.ui.tools_options_form.tools_panelize_group.pspacing_columns,
+            "tools_panelize_spacing_rows": self.ui.tools_options_form.tools_panelize_group.pspacing_rows,
+            "tools_panelize_columns": self.ui.tools_options_form.tools_panelize_group.pcolumns,
+            "tools_panelize_rows": self.ui.tools_options_form.tools_panelize_group.prows,
+            "tools_panelize_constrain": self.ui.tools_options_form.tools_panelize_group.pconstrain_cb,
+            "tools_panelize_constrainx": self.ui.tools_options_form.tools_panelize_group.px_width_entry,
+            "tools_panelize_constrainy": self.ui.tools_options_form.tools_panelize_group.py_height_entry
 
         }
 
         for name in list(self.postprocessors.keys()):
-            self.geometry_options_form.geometry_opt_group.pp_geometry_name_cb.addItem(name)
-            self.excellon_options_form.excellon_opt_group.pp_excellon_name_cb.addItem(name)
+            self.ui.geometry_options_form.geometry_opt_group.pp_geometry_name_cb.addItem(name)
+            self.ui.excellon_options_form.excellon_opt_group.pp_excellon_name_cb.addItem(name)
 
         self.options = LoudDict()
         self.options.set_change_callback(self.on_options_dict_change)
@@ -1298,7 +1292,7 @@ class App(QtCore.QObject):
         ###############################
         ### GUI PREFERENCES SIGNALS ###
         ###############################
-        self.general_options_form.general_app_group.units_radio.group_toggle_fn = self.on_toggle_units
+        self.ui.general_options_form.general_app_group.units_radio.group_toggle_fn = self.on_toggle_units
         self.ui.general_defaults_form.general_app_group.language_apply_btn.clicked.connect(self.on_language_apply)
 
         ###############################
@@ -1360,7 +1354,7 @@ class App(QtCore.QObject):
             self.on_excellon_defaults_button)
 
         # Load the defaults values into the Excellon Format and Excellon Zeros fields
-        self.excellon_options_form.excellon_opt_group.excellon_defaults_button.clicked.connect(
+        self.ui.excellon_options_form.excellon_opt_group.excellon_defaults_button.clicked.connect(
             self.on_excellon_options_button)
 
         # this is a flag to signal to other tools that the ui tooltab is locked and not accessible
@@ -2946,7 +2940,7 @@ class App(QtCore.QObject):
             return
 
         # If option is the same, then ignore
-        if self.general_options_form.general_app_group.units_radio.get_value().upper() == self.options["units"].upper():
+        if self.ui.general_options_form.general_app_group.units_radio.get_value().upper() == self.options["units"].upper():
             self.log.debug("on_toggle_units(): Same as options, so ignoring.")
             return
 
@@ -2980,7 +2974,7 @@ class App(QtCore.QObject):
 
         # The scaling factor depending on choice of units.
         factor = 1/25.4
-        if self.general_options_form.general_app_group.units_radio.get_value().upper() == 'MM':
+        if self.ui.general_options_form.general_app_group.units_radio.get_value().upper() == 'MM':
             factor = 25.4
 
 
@@ -3010,7 +3004,7 @@ class App(QtCore.QObject):
             self.ui.grid_gap_y_entry.set_value(float(self.ui.grid_gap_y_entry.get_value()) * factor)
 
             for obj in self.collection.get_list():
-                units = self.general_options_form.general_app_group.units_radio.get_value().upper()
+                units = self.ui.general_options_form.general_app_group.units_radio.get_value().upper()
                 obj.convert_units(units)
 
                 # make that the properties stored in the object are also updated
@@ -3030,10 +3024,10 @@ class App(QtCore.QObject):
         else:
             # Undo toggling
             self.toggle_units_ignore = True
-            if self.general_options_form.general_app_group.units_radio.get_value().upper() == 'MM':
-                self.general_options_form.general_app_group.units_radio.set_value('IN')
+            if self.ui.general_options_form.general_app_group.units_radio.get_value().upper() == 'MM':
+                self.ui.general_options_form.general_app_group.units_radio.set_value('IN')
             else:
-                self.general_options_form.general_app_group.units_radio.set_value('MM')
+                self.ui.general_options_form.general_app_group.units_radio.set_value('MM')
             self.toggle_units_ignore = False
             self.inform.emit("[WARNING_NOTCL]Units conversion cancelled.")
 
@@ -3041,9 +3035,9 @@ class App(QtCore.QObject):
 
     def on_toggle_units_click(self):
         if self.options["units"] == 'MM':
-            self.general_options_form.general_app_group.units_radio.set_value("IN")
+            self.ui.general_options_form.general_app_group.units_radio.set_value("IN")
         else:
-            self.general_options_form.general_app_group.units_radio.set_value("MM")
+            self.ui.general_options_form.general_app_group.units_radio.set_value("MM")
         self.on_toggle_units()
 
     def on_language_apply(self):
@@ -3138,12 +3132,12 @@ class App(QtCore.QObject):
             self.cnc_form = self.ui.cncjob_defaults_form
             self.tools_form = self.ui.tools_defaults_form
         elif sel == 1:
-            self.gen_form = self.general_options_form
-            self.ger_form = self.gerber_options_form
-            self.exc_form = self.excellon_options_form
-            self.geo_form = self.geometry_options_form
-            self.cnc_form = self.cncjob_options_form
-            self.tools_form = self.tools_options_form
+            self.gen_form = self.ui.general_options_form
+            self.ger_form = self.ui.gerber_options_form
+            self.exc_form = self.ui.excellon_options_form
+            self.geo_form = self.ui.geometry_options_form
+            self.cnc_form = self.ui.cncjob_options_form
+            self.tools_form = self.ui.tools_options_form
         else:
             return
 
@@ -3671,7 +3665,7 @@ class App(QtCore.QObject):
 
     def on_tool_add_keypress(self):
         ## Current application units in Upper Case
-        self.units = self.general_options_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.ui.general_options_form.general_app_group.units_radio.get_value().upper()
 
         notebook_widget_name = self.ui.notebook.currentWidget().objectName()
 
@@ -4262,7 +4256,7 @@ class App(QtCore.QObject):
             return 0
 
     def populate_cmenu_grids(self):
-        units = self.general_options_form.general_app_group.units_radio.get_value().lower()
+        units = self.ui.general_options_form.general_app_group.units_radio.get_value().lower()
 
         self.ui.cmenu_gridmenu.clear()
         sorted_list = sorted(self.defaults["global_grid_context_menu"][str(units)])
@@ -4283,7 +4277,7 @@ class App(QtCore.QObject):
 
     def on_grid_add(self):
         ## Current application units in lower Case
-        units = self.general_options_form.general_app_group.units_radio.get_value().lower()
+        units = self.ui.general_options_form.general_app_group.units_radio.get_value().lower()
 
         grid_add_popup = FCInputDialog(title="New Grid ...",
                                        text='Enter a Grid VAlue:',
@@ -4310,7 +4304,7 @@ class App(QtCore.QObject):
 
     def on_grid_delete(self):
         ## Current application units in lower Case
-        units = self.general_options_form.general_app_group.units_radio.get_value().lower()
+        units = self.ui.general_options_form.general_app_group.units_radio.get_value().lower()
 
         grid_del_popup = FCInputDialog(title="Delete Grid ...",
                                        text='Enter a Grid Value:',
@@ -5754,7 +5748,7 @@ class App(QtCore.QObject):
         ezeros = self.defaults["excellon_exp_zeros"]
         eformat = self.defaults[ "excellon_exp_format"]
 
-        fc_units = self.general_options_form.general_app_group.units_radio.get_value().upper()
+        fc_units = self.ui.general_options_form.general_app_group.units_radio.get_value().upper()
         if fc_units == 'MM':
             factor = 1 if eunits == 'METRIC' else 0.03937
         else:
@@ -5872,7 +5866,7 @@ class App(QtCore.QObject):
             return "Could not retrieve object: %s" % obj_name
 
         # updated units
-        units = self.general_options_form.general_app_group.units_radio.get_value().upper()
+        units = self.ui.general_options_form.general_app_group.units_radio.get_value().upper()
         if units == 'IN' or units == 'INCH':
             units = 'INCH'
         elif units == 'MM' or units == 'METIRC':
@@ -5927,7 +5921,7 @@ class App(QtCore.QObject):
                              "Only Geometry and Gerber are supported")
             return
 
-        units = self.general_options_form.general_app_group.units_radio.get_value().upper()
+        units = self.ui.general_options_form.general_app_group.units_radio.get_value().upper()
 
         def obj_init(geo_obj, app_obj):
             geo_obj.import_svg(filename, obj_type, units=units)
@@ -5969,7 +5963,7 @@ class App(QtCore.QObject):
                              "Only Geometry and Gerber are supported")
             return
 
-        units = self.general_options_form.general_app_group.units_radio.get_value().upper()
+        units = self.ui.general_options_form.general_app_group.units_radio.get_value().upper()
 
         def obj_init(geo_obj, app_obj):
             geo_obj.import_dxf(filename, obj_type, units=units)
@@ -6018,7 +6012,7 @@ class App(QtCore.QObject):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
-            units = self.general_options_form.general_app_group.units_radio.get_value()
+            units = self.ui.general_options_form.general_app_group.units_radio.get_value()
 
             self.new_object(obj_type, name, obj_init)
             self.progress.emit(20)
