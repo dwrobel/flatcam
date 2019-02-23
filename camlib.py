@@ -3281,6 +3281,7 @@ class Excellon(Geometry):
     Key               Value
     ================  ====================================
     C                 Diameter of the tool
+    solid_geometry    Geometry list for each tool
     Others            Not supported (Ignored).
     ================  ====================================
 

@@ -300,6 +300,7 @@ class App(QtCore.QObject):
         # when adding entries here read the comments in the  method found bellow named:
         # def new_object(self, kind, name, initialize, active=True, fit=True, plot=True)
         self.defaults_form_fields = {
+            # General App
             "units": self.ui.general_defaults_form.general_app_group.units_radio,
             "global_shell_at_startup": self.ui.general_defaults_form.general_app_group.shell_startup_cb,
             "global_version_check": self.ui.general_defaults_form.general_app_group.version_check_cb,
@@ -311,6 +312,7 @@ class App(QtCore.QObject):
             "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
             "global_toggle_tooltips": self.ui.general_defaults_form.general_app_group.toggle_tooltips_cb,
 
+            # General GUI
             "global_gridx": self.ui.general_defaults_form.general_gui_group.gridx_entry,
             "global_gridy": self.ui.general_defaults_form.general_gui_group.gridy_entry,
             "global_snap_max": self.ui.general_defaults_form.general_gui_group.snap_max_dist_entry,
@@ -343,6 +345,7 @@ class App(QtCore.QObject):
             "gerber_bboxmargin": self.ui.gerber_defaults_form.gerber_opt_group.bbmargin_entry,
             "gerber_bboxrounded": self.ui.gerber_defaults_form.gerber_opt_group.bbrounded_cb,
 
+            # Excellon General
             "excellon_plot": self.ui.excellon_defaults_form.excellon_gen_group.plot_cb,
             "excellon_solid": self.ui.excellon_defaults_form.excellon_gen_group.solid_cb,
             "excellon_format_upper_in": self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry,
@@ -353,16 +356,8 @@ class App(QtCore.QObject):
             "excellon_units": self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio,
             "excellon_optimization_type": self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio,
             "excellon_search_time": self.ui.excellon_defaults_form.excellon_gen_group.optimization_time_entry,
-            "excellon_offset": self.ui.excellon_defaults_form.excellon_gen_group.offset_entry,
-            "excellon_toolchangexy": self.ui.excellon_defaults_form.excellon_gen_group.toolchangexy_entry,
-            "excellon_startz": self.ui.excellon_defaults_form.excellon_gen_group.estartz_entry,
-            "excellon_endz": self.ui.excellon_defaults_form.excellon_gen_group.eendz_entry,
-            "excellon_feedrate_rapid": self.ui.excellon_defaults_form.excellon_gen_group.feedrate_rapid_entry,
-            "excellon_z_pdepth": self.ui.excellon_defaults_form.excellon_gen_group.pdepth_entry,
-            "excellon_feedrate_probe": self.ui.excellon_defaults_form.excellon_gen_group.feedrate_probe_entry,
-            "excellon_f_plunge": self.ui.excellon_defaults_form.excellon_gen_group.fplunge_cb,
-            "excellon_f_retract": self.ui.excellon_defaults_form.excellon_gen_group.fretract_cb,
 
+            # Excellon Options
             "excellon_drillz": self.ui.excellon_defaults_form.excellon_opt_group.cutz_entry,
             "excellon_travelz": self.ui.excellon_defaults_form.excellon_opt_group.travelz_entry,
             "excellon_feedrate": self.ui.excellon_defaults_form.excellon_opt_group.feedrate_entry,
@@ -376,26 +371,30 @@ class App(QtCore.QObject):
             "excellon_slot_tooldia": self.ui.excellon_defaults_form.excellon_opt_group.slot_tooldia_entry,
             "excellon_gcode_type": self.ui.excellon_defaults_form.excellon_opt_group.excellon_gcode_type_radio,
 
+            # Excellon Advanced Options
+            "excellon_offset": self.ui.excellon_defaults_form.excellon_adv_opt_group.offset_entry,
+            "excellon_toolchangexy": self.ui.excellon_defaults_form.excellon_adv_opt_group.toolchangexy_entry,
+            "excellon_startz": self.ui.excellon_defaults_form.excellon_adv_opt_group.estartz_entry,
+            "excellon_endz": self.ui.excellon_defaults_form.excellon_adv_opt_group.eendz_entry,
+            "excellon_feedrate_rapid": self.ui.excellon_defaults_form.excellon_adv_opt_group.feedrate_rapid_entry,
+            "excellon_z_pdepth": self.ui.excellon_defaults_form.excellon_adv_opt_group.pdepth_entry,
+            "excellon_feedrate_probe": self.ui.excellon_defaults_form.excellon_adv_opt_group.feedrate_probe_entry,
+            "excellon_f_plunge": self.ui.excellon_defaults_form.excellon_adv_opt_group.fplunge_cb,
+            "excellon_f_retract": self.ui.excellon_defaults_form.excellon_adv_opt_group.fretract_cb,
+
+            # Excellon Export
             "excellon_exp_units": self.ui.excellon_defaults_form.excellon_exp_group.excellon_units_radio,
             "excellon_exp_format": self.ui.excellon_defaults_form.excellon_exp_group.format_radio,
             "excellon_exp_integer": self.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry,
             "excellon_exp_decimals": self.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry,
             "excellon_exp_zeros": self.ui.excellon_defaults_form.excellon_exp_group.zeros_radio,
 
+            # Geometry General
             "geometry_plot": self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,
-            "geometry_cnctooldia": self.ui.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
             "geometry_circle_steps": self.ui.geometry_defaults_form.geometry_gen_group.circle_steps_entry,
-            "geometry_segx": self.ui.geometry_defaults_form.geometry_gen_group.segx_entry,
-            "geometry_segy": self.ui.geometry_defaults_form.geometry_gen_group.segy_entry,
-            "geometry_feedrate_rapid": self.ui.geometry_defaults_form.geometry_gen_group.cncfeedrate_rapid_entry,
-            "geometry_feedrate_probe": self.ui.geometry_defaults_form.geometry_gen_group.feedrate_probe_entry,
-            "geometry_z_pdepth": self.ui.geometry_defaults_form.geometry_gen_group.pdepth_entry,
-            "geometry_f_plunge": self.ui.geometry_defaults_form.geometry_gen_group.fplunge_cb,
-            "geometry_toolchangexy": self.ui.geometry_defaults_form.geometry_gen_group.toolchangexy_entry,
-            "geometry_startz": self.ui.geometry_defaults_form.geometry_gen_group.gstartz_entry,
-            "geometry_endz": self.ui.geometry_defaults_form.geometry_gen_group.gendz_entry,
-            "geometry_extracut": self.ui.geometry_defaults_form.geometry_gen_group.extracut_cb,
+            "geometry_cnctooldia": self.ui.geometry_defaults_form.geometry_gen_group.cnctooldia_entry,
 
+            # Geometry Options
             "geometry_cutz": self.ui.geometry_defaults_form.geometry_opt_group.cutz_entry,
             "geometry_travelz": self.ui.geometry_defaults_form.geometry_opt_group.travelz_entry,
             "geometry_feedrate": self.ui.geometry_defaults_form.geometry_opt_group.cncfeedrate_entry,
@@ -409,6 +408,19 @@ class App(QtCore.QObject):
             "geometry_depthperpass": self.ui.geometry_defaults_form.geometry_opt_group.depthperpass_entry,
             "geometry_multidepth": self.ui.geometry_defaults_form.geometry_opt_group.multidepth_cb,
 
+            # Geometry Advanced Options
+            "geometry_toolchangexy": self.ui.geometry_defaults_form.geometry_adv_opt_group.toolchangexy_entry,
+            "geometry_startz": self.ui.geometry_defaults_form.geometry_adv_opt_group.gstartz_entry,
+            "geometry_endz": self.ui.geometry_defaults_form.geometry_adv_opt_group.gendz_entry,
+            "geometry_feedrate_rapid": self.ui.geometry_defaults_form.geometry_adv_opt_group.cncfeedrate_rapid_entry,
+            "geometry_extracut": self.ui.geometry_defaults_form.geometry_adv_opt_group.extracut_cb,
+            "geometry_z_pdepth": self.ui.geometry_defaults_form.geometry_adv_opt_group.pdepth_entry,
+            "geometry_feedrate_probe": self.ui.geometry_defaults_form.geometry_adv_opt_group.feedrate_probe_entry,
+            "geometry_f_plunge": self.ui.geometry_defaults_form.geometry_adv_opt_group.fplunge_cb,
+            "geometry_segx": self.ui.geometry_defaults_form.geometry_adv_opt_group.segx_entry,
+            "geometry_segy": self.ui.geometry_defaults_form.geometry_adv_opt_group.segy_entry,
+
+            # CNCJob General
             "cncjob_plot": self.ui.cncjob_defaults_form.cncjob_gen_group.plot_cb,
             "cncjob_plot_kind": self.ui.cncjob_defaults_form.cncjob_gen_group.cncplot_method_radio,
             "cncjob_tooldia": self.ui.cncjob_defaults_form.cncjob_gen_group.tooldia_entry,
@@ -419,6 +431,7 @@ class App(QtCore.QObject):
             "cncjob_prepend": self.ui.cncjob_defaults_form.cncjob_opt_group.prepend_text,
             "cncjob_append": self.ui.cncjob_defaults_form.cncjob_opt_group.append_text,
 
+            # NCC Tool
             "tools_ncctools": self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
             "tools_nccoverlap": self.ui.tools_defaults_form.tools_ncc_group.ncc_overlap_entry,
             "tools_nccmargin": self.ui.tools_defaults_form.tools_ncc_group.ncc_margin_entry,
@@ -427,12 +440,14 @@ class App(QtCore.QObject):
             "tools_ncccontour": self.ui.tools_defaults_form.tools_ncc_group.ncc_contour_cb,
             "tools_nccrest": self.ui.tools_defaults_form.tools_ncc_group.ncc_rest_cb,
 
+            # CutOut Tool
             "tools_cutouttooldia": self.ui.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
             "tools_cutoutmargin": self.ui.tools_defaults_form.tools_cutout_group.cutout_margin_entry,
             "tools_cutoutgapsize": self.ui.tools_defaults_form.tools_cutout_group.cutout_gap_entry,
             "tools_gaps_rect": self.ui.tools_defaults_form.tools_cutout_group.gaps_radio,
             "tools_gaps_ff": self.ui.tools_defaults_form.tools_cutout_group.gaps_combo,
 
+            # Paint Area Tool
             "tools_painttooldia": self.ui.tools_defaults_form.tools_paint_group.painttooldia_entry,
             "tools_paintoverlap": self.ui.tools_defaults_form.tools_paint_group.paintoverlap_entry,
             "tools_paintmargin": self.ui.tools_defaults_form.tools_paint_group.paintmargin_entry,
@@ -441,14 +456,17 @@ class App(QtCore.QObject):
             "tools_pathconnect": self.ui.tools_defaults_form.tools_paint_group.pathconnect_cb,
             "tools_paintcontour": self.ui.tools_defaults_form.tools_paint_group.contour_cb,
 
+            # 2-sided Tool
             "tools_2sided_mirror_axis": self.ui.tools_defaults_form.tools_2sided_group.mirror_axis_radio,
             "tools_2sided_axis_loc": self.ui.tools_defaults_form.tools_2sided_group.axis_location_radio,
             "tools_2sided_drilldia": self.ui.tools_defaults_form.tools_2sided_group.drill_dia_entry,
 
+            # Film Tool
             "tools_film_type": self.ui.tools_defaults_form.tools_film_group.film_type_radio,
             "tools_film_boundary": self.ui.tools_defaults_form.tools_film_group.film_boundary_entry,
             "tools_film_scale": self.ui.tools_defaults_form.tools_film_group.film_scale_entry,
 
+            # Panelize Tool
             "tools_panelize_spacing_columns": self.ui.tools_defaults_form.tools_panelize_group.pspacing_columns,
             "tools_panelize_spacing_rows": self.ui.tools_defaults_form.tools_panelize_group.pspacing_rows,
             "tools_panelize_columns": self.ui.tools_defaults_form.tools_panelize_group.pcolumns,
@@ -458,6 +476,7 @@ class App(QtCore.QObject):
             "tools_panelize_constrainy": self.ui.tools_defaults_form.tools_panelize_group.py_height_entry,
             "tools_panelize_panel_type": self.ui.tools_defaults_form.tools_panelize_group.panel_type_radio,
 
+            # Calculators Tool
             "tools_calc_vshape_tip_dia": self.ui.tools_defaults_form.tools_calculators_group.tip_dia_entry,
             "tools_calc_vshape_tip_angle": self.ui.tools_defaults_form.tools_calculators_group.tip_angle_entry,
             "tools_calc_vshape_cut_z": self.ui.tools_defaults_form.tools_calculators_group.cut_z_entry,
@@ -466,6 +485,7 @@ class App(QtCore.QObject):
             "tools_calc_electro_cdensity": self.ui.tools_defaults_form.tools_calculators_group.cdensity_entry,
             "tools_calc_electro_growth": self.ui.tools_defaults_form.tools_calculators_group.growth_entry,
 
+            # Transformations Tool
             "tools_transform_rotate": self.ui.tools_defaults_form.tools_transform_group.rotate_entry,
             "tools_transform_skew_x": self.ui.tools_defaults_form.tools_transform_group.skewx_entry,
             "tools_transform_skew_y": self.ui.tools_defaults_form.tools_transform_group.skewy_entry,
@@ -478,6 +498,7 @@ class App(QtCore.QObject):
             "tools_transform_mirror_reference": self.ui.tools_defaults_form.tools_transform_group.mirror_reference_cb,
             "tools_transform_mirror_point": self.ui.tools_defaults_form.tools_transform_group.flip_ref_entry,
 
+            # SolderPaste Dispensing Tool
             "tools_solderpaste_tools": self.ui.tools_defaults_form.tools_solderpaste_group.nozzle_tool_dia_entry,
             "tools_solderpaste_new": self.ui.tools_defaults_form.tools_solderpaste_group.addtool_entry,
             "tools_solderpaste_z_start": self.ui.tools_defaults_form.tools_solderpaste_group.z_start_entry,
@@ -600,6 +621,7 @@ class App(QtCore.QObject):
             "gerber_circle_steps": 64,
             "gerber_use_buffer_for_union": True,
 
+            # Excellon General
             "excellon_plot": True,
             "excellon_solid": True,
             "excellon_format_upper_in": 2,
@@ -611,59 +633,68 @@ class App(QtCore.QObject):
             "excellon_optimization_type": 'B',
             "excellon_search_time": 3,
 
+            # Excellon Options
             "excellon_drillz": -0.1,
             "excellon_travelz": 0.1,
             "excellon_feedrate": 3.0,
-            "excellon_feedrate_rapid": 3.0,
             "excellon_feedrate_probe": 3.0,
             "excellon_spindlespeed": None,
             "excellon_dwell": False,
             "excellon_dwelltime": 1,
             "excellon_toolchange": False,
             "excellon_toolchangez": 1.0,
-            "excellon_toolchangexy": "0.0, 0.0",
+            "excellon_ppname_e": 'default',
             "excellon_tooldia": 0.016,
-            "excellon_offset": 0.0,
             "excellon_slot_tooldia": 0.016,
+            "excellon_gcode_type": "drills",
+
+            # Excellon Advanced Options
+            "excellon_offset": 0.0,
+            "excellon_toolchangexy": "0.0, 0.0",
             "excellon_startz": None,
             "excellon_endz": 2.0,
-            "excellon_ppname_e": 'default',
+            "excellon_feedrate_rapid": 3.0,
             "excellon_z_pdepth": -0.02,
             "excellon_f_plunge": False,
             "excellon_f_retract": False,
-            "excellon_gcode_type": "drills",
 
+            # Excellon Export
             "excellon_exp_units": 'INCH',
             "excellon_exp_format": 'ndec',
             "excellon_exp_integer": 2,
             "excellon_exp_decimals": 4,
             "excellon_exp_zeros": 'LZ',
 
+            # Geometry General
             "geometry_plot": True,
-            "geometry_segx": 0.0,
-            "geometry_segy": 0.0,
+            "geometry_circle_steps": 64,
+            "geometry_cnctooldia": 0.016,
+
+            # Geometry Options
             "geometry_cutz": -0.002,
+            "geometry_multidepth": False,
+            "geometry_depthperpass": 0.002,
             "geometry_travelz": 0.1,
             "geometry_toolchange": False,
             "geometry_toolchangez": 1.0,
-            "geometry_toolchangexy": "0.0, 0.0",
-            "geometry_startz": None,
-            "geometry_endz": 2.0,
             "geometry_feedrate": 3.0,
             "geometry_feedrate_z": 3.0,
-            "geometry_feedrate_rapid": 3.0,
-            "geometry_feedrate_probe": 3.0,
-            "geometry_cnctooldia": 0.016,
             "geometry_spindlespeed": None,
             "geometry_dwell": False,
             "geometry_dwelltime": 1,
             "geometry_ppname_g": 'default',
+
+            # Geometry Advanced Options
+            "geometry_toolchangexy": "0.0, 0.0",
+            "geometry_startz": None,
+            "geometry_endz": 2.0,
+            "geometry_feedrate_rapid": 3.0,
+            "geometry_extracut": False,
             "geometry_z_pdepth": -0.02,
             "geometry_f_plunge": False,
-            "geometry_depthperpass": 0.002,
-            "geometry_multidepth": False,
-            "geometry_extracut": False,
-            "geometry_circle_steps": 64,
+            "geometry_feedrate_probe": 3.0,
+            "geometry_segx": 0.0,
+            "geometry_segy": 0.0,
 
             "cncjob_plot": True,
             "cncjob_plot_kind": 'all',
@@ -805,11 +836,6 @@ class App(QtCore.QObject):
             "excellon_zeros": self.ui.excellon_options_form.excellon_gen_group.excellon_zeros_radio,
             "excellon_units": self.ui.excellon_options_form.excellon_gen_group.excellon_units_radio,
             "excellon_optimization_type": self.ui.excellon_options_form.excellon_gen_group.excellon_optimization_radio,
-            "excellon_feedrate_rapid": self.ui.excellon_options_form.excellon_gen_group.feedrate_rapid_entry,
-            "excellon_toolchangexy": self.ui.excellon_options_form.excellon_gen_group.toolchangexy_entry,
-            "excellon_f_plunge": self.ui.excellon_options_form.excellon_gen_group.fplunge_cb,
-            "excellon_startz": self.ui.excellon_options_form.excellon_gen_group.estartz_entry,
-            "excellon_endz": self.ui.excellon_options_form.excellon_gen_group.eendz_entry,
 
             "excellon_drillz": self.ui.excellon_options_form.excellon_opt_group.cutz_entry,
             "excellon_travelz": self.ui.excellon_options_form.excellon_opt_group.travelz_entry,
@@ -822,16 +848,14 @@ class App(QtCore.QObject):
             "excellon_tooldia": self.ui.excellon_options_form.excellon_opt_group.tooldia_entry,
             "excellon_ppname_e": self.ui.excellon_options_form.excellon_opt_group.pp_excellon_name_cb,
 
+            "excellon_feedrate_rapid": self.ui.excellon_options_form.excellon_adv_opt_group.feedrate_rapid_entry,
+            "excellon_toolchangexy": self.ui.excellon_options_form.excellon_adv_opt_group.toolchangexy_entry,
+            "excellon_f_plunge": self.ui.excellon_options_form.excellon_adv_opt_group.fplunge_cb,
+            "excellon_startz": self.ui.excellon_options_form.excellon_adv_opt_group.estartz_entry,
+            "excellon_endz": self.ui.excellon_options_form.excellon_adv_opt_group.eendz_entry,
+
             "geometry_plot": self.ui.geometry_options_form.geometry_gen_group.plot_cb,
             "geometry_cnctooldia": self.ui.geometry_options_form.geometry_gen_group.cnctooldia_entry,
-            "geometry_segx": self.ui.geometry_options_form.geometry_gen_group.segx_entry,
-            "geometry_segy": self.ui.geometry_options_form.geometry_gen_group.segy_entry,
-            "geometry_feedrate_rapid": self.ui.geometry_options_form.geometry_gen_group.cncfeedrate_rapid_entry,
-            "geometry_f_plunge": self.ui.geometry_options_form.geometry_gen_group.fplunge_cb,
-            "geometry_toolchangexy": self.ui.geometry_options_form.geometry_gen_group.toolchangexy_entry,
-            "geometry_startz": self.ui.geometry_options_form.geometry_gen_group.gstartz_entry,
-            "geometry_endz": self.ui.geometry_options_form.geometry_gen_group.gendz_entry,
-            "geometry_extracut": self.ui.geometry_options_form.geometry_gen_group.extracut_cb,
 
             "geometry_cutz": self.ui.geometry_options_form.geometry_opt_group.cutz_entry,
             "geometry_travelz": self.ui.geometry_options_form.geometry_opt_group.travelz_entry,
@@ -845,6 +869,15 @@ class App(QtCore.QObject):
             "geometry_toolchangez": self.ui.geometry_options_form.geometry_opt_group.toolchangez_entry,
             "geometry_depthperpass": self.ui.geometry_options_form.geometry_opt_group.depthperpass_entry,
             "geometry_multidepth": self.ui.geometry_options_form.geometry_opt_group.multidepth_cb,
+
+            "geometry_segx": self.ui.geometry_options_form.geometry_adv_opt_group.segx_entry,
+            "geometry_segy": self.ui.geometry_options_form.geometry_adv_opt_group.segy_entry,
+            "geometry_feedrate_rapid": self.ui.geometry_options_form.geometry_adv_opt_group.cncfeedrate_rapid_entry,
+            "geometry_f_plunge": self.ui.geometry_options_form.geometry_adv_opt_group.fplunge_cb,
+            "geometry_toolchangexy": self.ui.geometry_options_form.geometry_adv_opt_group.toolchangexy_entry,
+            "geometry_startz": self.ui.geometry_options_form.geometry_adv_opt_group.gstartz_entry,
+            "geometry_endz": self.ui.geometry_options_form.geometry_adv_opt_group.gendz_entry,
+            "geometry_extracut": self.ui.geometry_options_form.geometry_adv_opt_group.extracut_cb,
 
             "cncjob_plot": self.ui.cncjob_options_form.cncjob_gen_group.plot_cb,
             "cncjob_tooldia": self.ui.cncjob_options_form.cncjob_gen_group.tooldia_entry,

@@ -12,7 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 23.02.2019
 
 - remade the SolderPaste geometry generation function in ToolSoderPaste to work in certain scenarios where the Gerber pads in the SolderPaste mask Gerber may be just pads outlines
-- 
+- updated the Properties Tool to include more information's, also details if a Geometry is of type MultiGeo or SingleGeo
+- remade the Preferences GUI to include the Advanced Options in a separate way so it is obvious which are displayed when App Level is Advanced.
 
 22.02.2019
 

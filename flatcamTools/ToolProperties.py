@@ -91,14 +91,31 @@ class Properties(FlatCAMTool):
         obj_type = self.addParent(parent, 'TYPE', expanded=True, color=QtGui.QColor("#000000"), font=font)
         obj_name = self.addParent(parent, 'NAME', expanded=True, color=QtGui.QColor("#000000"), font=font)
         dims = self.addParent(parent, 'Dimensions', expanded=True, color=QtGui.QColor("#000000"), font=font)
+        units = self.addParent(parent, 'Units', expanded=True, color=QtGui.QColor("#000000"), font=font)
+
         options = self.addParent(parent, 'Options', color=QtGui.QColor("#000000"), font=font)
+        if obj.kind.lower() == 'gerber':
+            apertures = self.addParent(parent, 'Apertures', expanded=True, color=QtGui.QColor("#000000"), font=font)
+        else:
+            tools = self.addParent(parent, 'Tools', expanded=True, color=QtGui.QColor("#000000"), font=font)
+
         separator = self.addParent(parent, '')
 
-        self.addChild(obj_type, [obj.kind.upper()])
+        self.addChild(obj_type, ['Object Type:', ('%s' % (obj.kind.capitalize()))], True)
+        try:
+            self.addChild(obj_type, ['Geo Type:', ('%s' % ({False: "Single-Geo", True: "Multi-Geo"}[obj.multigeo]))], True)
+        except Exception as e:
+            pass
+
         self.addChild(obj_name, [obj.options['name']])
 
         # calculate physical dimensions
-        xmin, ymin, xmax, ymax = obj.bounds()
+        try:
+            xmin, ymin, xmax, ymax = obj.bounds()
+        except Exception as e:
+            log.debug("PropertiesTool.addItems() --> %s" % str(e))
+            return
+
         length = abs(xmax - xmin)
         width = abs(ymax - ymin)
 
@@ -113,10 +130,59 @@ class Properties(FlatCAMTool):
             area = length * width
             self.addChild(dims, ['Box Area:', '%.4f %s' % (area, 'in2')], True)
 
+        self.addChild(units,
+                      ['FlatCAM units:',
+                       {
+                           'in': 'Inch',
+                           'mm': 'Metric'
+                       }
+                       [str(self.app.ui.general_options_form.general_app_group.units_radio.get_value().lower())]], True)
+
         for option in obj.options:
             if option is 'name':
                 continue
             self.addChild(options, [str(option), str(obj.options[option])], True)
+
+        if obj.kind.lower() == 'gerber':
+            for ap in obj.apertures:
+                self.addChild(apertures, [str(ap), str(obj.apertures[ap])], True)
+        elif obj.kind.lower() == 'excellon':
+            for tool, value in obj.tools.items():
+                self.addChild(tools, [str(tool), str(value['C'])], True)
+        elif obj.kind.lower() == 'geometry':
+            for tool, value in obj.tools.items():
+                geo_tool = self.addParent(tools, str(tool), expanded=True, color=QtGui.QColor("#000000"), font=font)
+                for k, v in value.items():
+                    if k == 'solid_geometry':
+                        printed_value = 'Present' if v else 'None'
+                        self.addChild(geo_tool, [str(k), printed_value], True)
+                    elif k == 'data':
+                        tool_data = self.addParent(geo_tool, str(k).capilalize(),
+                                                   color=QtGui.QColor("#000000"), font=font)
+                        for data_k, data_v in v.items():
+                            self.addChild(tool_data, [str(data_k), str(data_v)], True)
+                    else:
+                        self.addChild(geo_tool, [str(k), str(v)], True)
+        elif obj.kind.lower() == 'cncjob':
+            for tool, value in obj.cnc_tools.items():
+                geo_tool = self.addParent(tools, str(tool), expanded=True, color=QtGui.QColor("#000000"), font=font)
+                for k, v in value.items():
+                    if k == 'solid_geometry':
+                        printed_value = 'Present' if v else 'None'
+                        self.addChild(geo_tool, [str(k), printed_value], True)
+                    elif k == 'gcode':
+                        printed_value = 'Present' if v != '' else 'None'
+                        self.addChild(geo_tool, [str(k), printed_value], True)
+                    elif k == 'gcode_parsed':
+                        printed_value = 'Present' if v else 'None'
+                        self.addChild(geo_tool, [str(k), printed_value], True)
+                    elif k == 'data':
+                        tool_data = self.addParent(geo_tool, str(k).capitalize(),
+                                                   color=QtGui.QColor("#000000"), font=font)
+                        for data_k, data_v in v.items():
+                            self.addChild(tool_data, [str(data_k), str(data_v)], True)
+                    else:
+                        self.addChild(geo_tool, [str(k), str(v)], True)
 
         self.addChild(separator, [''])
 

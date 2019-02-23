@@ -1135,7 +1135,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # store the source file here
         self.source_file = ""
 
-        self.multigeo = False
+        self.multigeo = True
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
