@@ -39,6 +39,8 @@ import numpy as np
 import rasterio
 from rasterio.features import shapes
 
+from copy import deepcopy
+
 # TODO: Commented for FlatCAM packaging with cx_freeze
 
 from xml.dom.minidom import parseString as parse_xml_string
@@ -1900,12 +1902,6 @@ class Gerber (Geometry):
         # Initialize parent
         Geometry.__init__(self, geo_steps_per_circle=int(steps_per_circle))
 
-        # will store the Gerber geometry's as solids
-        self.solid_geometry = Polygon()
-
-        # will store the Gerber geometry's as paths
-        self.follow_geometry = []
-
         # Number format
         self.int_digits = 3
         """Number of integer digits in Gerber numbers. Used during parsing."""
@@ -1918,13 +1914,32 @@ class Gerber (Geometry):
         """
 
         ## Gerber elements ##
-        # Apertures {'id':{'type':chr, 
-        #             ['size':float], ['width':float],
-        #             ['height':float]}, ...}
+        '''
+        apertures = {
+            'id':{
+                'type':chr, 
+                'size':float, 
+                'width':float,
+                'height':float,
+                'light_solid_geometry': [],
+                'dark_solid_geometry': [],
+                'buff_solid_geometry': [],
+                'follow_geometry': [],
+            }
+        }
+        '''
+
+        # aperture storage
         self.apertures = {}
 
         # Aperture Macros
         self.aperture_macros = {}
+
+        # will store the Gerber geometry's as solids
+        self.solid_geometry = Polygon()
+
+        # will store the Gerber geometry's as paths
+        self.follow_geometry = []
 
         self.source_file = ''
 
@@ -2139,9 +2154,6 @@ class Gerber (Geometry):
         :param glines: Gerber code as list of strings, each element being
             one line of the source file.
         :type glines: list
-        :param follow: If true, will not create polygons, just lines
-            following the gerber path.
-        :type follow: bool
         :return: None
         :rtype: None
         """
@@ -2221,8 +2233,10 @@ class Gerber (Geometry):
                 # buffer, then adds or subtracts accordingly.
                 match = self.lpol_re.search(gline)
                 if match:
-                    if len(path) > 1 and current_polarity != match.group(1):
+                    new_polarity = match.group(1)
+                    if len(path) > 1 and current_polarity != new_polarity:
 
+                        # finish the current path and add it to the storage
                         # --- Buffered ----
                         width = self.apertures[last_path_aperture]["size"]
 
@@ -2241,17 +2255,17 @@ class Gerber (Geometry):
                     # TODO: Remove when bug fixed
                     if len(poly_buffer) > 0:
                         if current_polarity == 'D':
-                            self.follow_geometry = self.solid_geometry.union(cascaded_union(follow_buffer))
+                            # self.follow_geometry = self.follow_geometry.union(cascaded_union(follow_buffer))
                             self.solid_geometry = self.solid_geometry.union(cascaded_union(poly_buffer))
 
                         else:
-                            self.follow_geometry = self.solid_geometry.difference(cascaded_union(follow_buffer))
+                            # self.follow_geometry = self.follow_geometry.difference(cascaded_union(follow_buffer))
                             self.solid_geometry = self.solid_geometry.difference(cascaded_union(poly_buffer))
 
-                        follow_buffer = []
+                        # follow_buffer = []
                         poly_buffer = []
 
-                    current_polarity = match.group(1)
+                    current_polarity = new_polarity
                     continue
 
                 ### Number format
@@ -2497,6 +2511,7 @@ class Gerber (Geometry):
                     region = Polygon(path)
                     if not region.is_valid:
                         region = region.buffer(0, int(self.steps_per_circle / 4))
+
                     if not region.is_empty:
                         poly_buffer.append(region)
 
@@ -2566,7 +2581,9 @@ class Gerber (Geometry):
                                         miny = min(path[0][1], path[1][1]) - height / 2
                                         maxy = max(path[0][1], path[1][1]) + height / 2
                                         log.debug("Coords: %s - %s - %s - %s" % (minx, miny, maxx, maxy))
-                                        poly_buffer.append(shply_box(minx, miny, maxx, maxy))
+
+                                        geo = shply_box(minx, miny, maxx, maxy)
+                                        poly_buffer.append(geo)
                                 except:
                                     pass
                             last_path_aperture = current_aperture
@@ -2596,6 +2613,7 @@ class Gerber (Geometry):
                                 elem = [linear_x, linear_y]
                                 if elem != path[-1]:
                                     path.append([linear_x, linear_y])
+
                                 try:
                                     geo = Polygon(path)
                                 except ValueError:
