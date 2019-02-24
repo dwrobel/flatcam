@@ -1269,38 +1269,8 @@ class App(QtCore.QObject):
         self.ui.menuprojectsave.triggered.connect(self.on_project_context_save)
         self.ui.menuprojectproperties.triggered.connect(self.obj_properties)
 
-        # Toolbar
-        #self.ui.file_new_btn.triggered.connect(self.on_file_new)
-        self.ui.file_open_btn.triggered.connect(self.on_file_openproject)
-        self.ui.file_save_btn.triggered.connect(self.on_file_saveproject)
-        self.ui.file_open_gerber_btn.triggered.connect(self.on_fileopengerber)
-        self.ui.file_open_excellon_btn.triggered.connect(self.on_fileopenexcellon)
-
-        self.ui.clear_plot_btn.triggered.connect(self.clear_plots)
-        self.ui.replot_btn.triggered.connect(self.plot_all)
-        self.ui.zoom_fit_btn.triggered.connect(self.on_zoom_fit)
-        self.ui.zoom_in_btn.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
-        self.ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
-
-        self.ui.newgeo_btn.triggered.connect(self.new_geometry_object)
-        self.ui.newexc_btn.triggered.connect(self.new_excellon_object)
-        self.ui.editgeo_btn.triggered.connect(self.object2editor)
-        self.ui.update_obj_btn.triggered.connect(self.editor2object)
-        self.ui.delete_btn.triggered.connect(self.on_delete)
-        self.ui.shell_btn.triggered.connect(self.on_toggle_shell)
-
-        # Tools Toolbar Signals
-        self.ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run())
-        self.ui.cutout_btn.triggered.connect(lambda: self.cutout_tool.run())
-        self.ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run())
-        self.ui.paint_btn.triggered.connect(lambda: self.paint_tool.run())
-
-        self.ui.panelize_btn.triggered.connect(lambda: self.panelize_tool.run())
-        self.ui.film_btn.triggered.connect(lambda: self.film_tool.run())
-        self.ui.solder_btn.triggered.connect(lambda: self.paste_tool.run())
-
-        self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run())
-        self.ui.transform_btn.triggered.connect(lambda: self.transform_tool.run())
+        # ToolBar signals
+        self.connect_toolbar_signals()
 
         # Context Menu
         self.ui.popmenu_disable.triggered.connect(lambda: self.disable_plots(self.collection.get_selected()))
@@ -1749,6 +1719,40 @@ class App(QtCore.QObject):
     # def parse_system_fonts(self):
     #     self.worker_task.emit({'fcn': self.f_parse.get_fonts_by_types,
     #                            'params': []})
+
+    def connect_toolbar_signals(self):
+        # Toolbar
+        # self.ui.file_new_btn.triggered.connect(self.on_file_new)
+        self.ui.file_open_btn.triggered.connect(self.on_file_openproject)
+        self.ui.file_save_btn.triggered.connect(self.on_file_saveproject)
+        self.ui.file_open_gerber_btn.triggered.connect(self.on_fileopengerber)
+        self.ui.file_open_excellon_btn.triggered.connect(self.on_fileopenexcellon)
+
+        self.ui.clear_plot_btn.triggered.connect(self.clear_plots)
+        self.ui.replot_btn.triggered.connect(self.plot_all)
+        self.ui.zoom_fit_btn.triggered.connect(self.on_zoom_fit)
+        self.ui.zoom_in_btn.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
+        self.ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
+
+        self.ui.newgeo_btn.triggered.connect(self.new_geometry_object)
+        self.ui.newexc_btn.triggered.connect(self.new_excellon_object)
+        self.ui.editgeo_btn.triggered.connect(self.object2editor)
+        self.ui.update_obj_btn.triggered.connect(self.editor2object)
+        self.ui.delete_btn.triggered.connect(self.on_delete)
+        self.ui.shell_btn.triggered.connect(self.on_toggle_shell)
+
+        # Tools Toolbar Signals
+        self.ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run())
+        self.ui.cutout_btn.triggered.connect(lambda: self.cutout_tool.run())
+        self.ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run())
+        self.ui.paint_btn.triggered.connect(lambda: self.paint_tool.run())
+
+        self.ui.panelize_btn.triggered.connect(lambda: self.panelize_tool.run())
+        self.ui.film_btn.triggered.connect(lambda: self.film_tool.run())
+        self.ui.solder_btn.triggered.connect(lambda: self.paste_tool.run())
+
+        self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run())
+        self.ui.transform_btn.triggered.connect(lambda: self.transform_tool.run())
 
     def object2editor(self):
         """
@@ -3643,7 +3647,11 @@ class App(QtCore.QObject):
             self.ui.corner_snap_btn.setVisible(True)
             self.ui.snap_magnet.setVisible(True)
 
+        # add all the actions to the toolbars
         self.ui.populate_toolbars()
+
+        # reconnect all the signals to the toolbar actions
+        self.connect_toolbar_signals()
 
         self.ui.grid_snap_btn.setChecked(True)
         self.ui.grid_gap_x_entry.setText(str(self.defaults["global_gridx"]))

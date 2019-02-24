@@ -21,6 +21,7 @@ CAD program, and create G-Code for Isolation routing.
 - ability to double click the FlatConfig files and open them in the FlatCAM Code Editor - fixed and verified
 - fixed the Set To Origin function when Escape was clicked
 - added all the Tools in a new ToolBar
+- fixed bug that after changing the layout all the toolbar actions are no longer working
 
 23.02.2019
 
