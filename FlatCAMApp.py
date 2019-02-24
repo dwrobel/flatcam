@@ -1289,6 +1289,19 @@ class App(QtCore.QObject):
         self.ui.delete_btn.triggered.connect(self.on_delete)
         self.ui.shell_btn.triggered.connect(self.on_toggle_shell)
 
+        # Tools Toolbar Signals
+        self.ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run())
+        self.ui.cutout_btn.triggered.connect(lambda: self.cutout_tool.run())
+        self.ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run())
+        self.ui.paint_btn.triggered.connect(lambda: self.paint_tool.run())
+
+        self.ui.panelize_btn.triggered.connect(lambda: self.panelize_tool.run())
+        self.ui.film_btn.triggered.connect(lambda: self.film_tool.run())
+        self.ui.solder_btn.triggered.connect(lambda: self.paste_tool.run())
+
+        self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run())
+        self.ui.transform_btn.triggered.connect(lambda: self.transform_tool.run())
+
         # Context Menu
         self.ui.popmenu_disable.triggered.connect(lambda: self.disable_plots(self.collection.get_selected()))
 
@@ -2146,6 +2159,11 @@ class App(QtCore.QObject):
         else:
             self.ui.snap_toolbar.setVisible(False)
 
+        if tb & 128:
+            self.ui.toolbarshell.setVisible(True)
+        else:
+            self.ui.toolbarshell.setVisible(False)
+
     def load_defaults(self, filename):
         """
         Loads the aplication's default settings from current_defaults.FlatConfig into
@@ -2161,14 +2179,14 @@ class App(QtCore.QObject):
             self.log.error("Could not load defaults file.")
             self.inform.emit("[ERROR] Could not load defaults file.")
             # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 127
+            self.defaults["global_toolbar_view"] = 255
             return
 
         try:
             defaults = json.loads(options)
         except:
             # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 127
+            self.defaults["global_toolbar_view"] = 255
             e = sys.exc_info()[0]
             App.log.error(str(e))
             self.inform.emit("[ERROR] Failed to parse defaults file.")
@@ -2732,6 +2750,9 @@ class App(QtCore.QObject):
 
         if self.ui.snap_toolbar.isVisible():
             tb_status += 64
+
+        if self.ui.toolbarshell.isVisible():
+            tb_status += 128
 
         self.defaults["global_toolbar_view"] = tb_status
 
@@ -3539,10 +3560,12 @@ class App(QtCore.QObject):
         self.ui.removeToolBar(self.ui.toolbarfile)
         self.ui.removeToolBar(self.ui.toolbargeo)
         self.ui.removeToolBar(self.ui.toolbarview)
+        self.ui.removeToolBar(self.ui.toolbarshell)
         self.ui.removeToolBar(self.ui.toolbartools)
         self.ui.removeToolBar(self.ui.exc_edit_toolbar)
         self.ui.removeToolBar(self.ui.geo_edit_toolbar)
         self.ui.removeToolBar(self.ui.snap_toolbar)
+        self.ui.removeToolBar(self.ui.toolbarshell)
 
         if current_layout == 'standard':
             ### TOOLBAR INSTALLATION ###
@@ -3557,6 +3580,10 @@ class App(QtCore.QObject):
             self.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
             self.ui.toolbarview.setObjectName('View_TB')
             self.ui.addToolBar(self.ui.toolbarview)
+
+            self.ui.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
+            self.ui.toolbarshell.setObjectName('Shell_TB')
+            self.ui.addToolBar(self.ui.toolbarshell)
 
             self.ui.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
             self.ui.toolbartools.setObjectName('Tools_TB')
@@ -3590,16 +3617,24 @@ class App(QtCore.QObject):
             self.ui.toolbarview = QtWidgets.QToolBar('View Toolbar')
             self.ui.toolbarview.setObjectName('View_TB')
             self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarview)
+
+            self.ui.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
+            self.ui.toolbarshell.setObjectName('Shell_TB')
+            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarshell)
+
             self.ui.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
             self.ui.toolbartools.setObjectName('Tools_TB')
             self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbartools)
-            self.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
-            self.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
-            self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.exc_edit_toolbar)
+
             self.ui.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
-            self.ui.geo_edit_toolbar.setVisible(False)
+            # self.ui.geo_edit_toolbar.setVisible(False)
             self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
             self.ui.addToolBar(Qt.RightToolBarArea, self.ui.geo_edit_toolbar)
+
+            self.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
+            self.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
+            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.exc_edit_toolbar)
+
             self.ui.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
             self.ui.snap_toolbar.setObjectName('Snap_TB')
             self.ui.snap_toolbar.setMaximumHeight(30)

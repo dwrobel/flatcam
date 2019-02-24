@@ -20,6 +20,7 @@ CAD program, and create G-Code for Isolation routing.
 - reverted a change in GCode that might affect Gerber polarity change in Gerber parser
 - ability to double click the FlatConfig files and open them in the FlatCAM Code Editor - fixed and verified
 - fixed the Set To Origin function when Escape was clicked
+- added all the Tools in a new ToolBar
 
 23.02.2019
 

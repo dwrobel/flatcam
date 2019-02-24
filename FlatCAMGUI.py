@@ -466,18 +466,27 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.toolbarfile = QtWidgets.QToolBar('File Toolbar')
         self.toolbarfile.setObjectName('File_TB')
         self.addToolBar(self.toolbarfile)
+
         self.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
         self.toolbargeo.setObjectName('Edit_TB')
         self.addToolBar(self.toolbargeo)
+
         self.toolbarview = QtWidgets.QToolBar('View Toolbar')
         self.toolbarview.setObjectName('View_TB')
         self.addToolBar(self.toolbarview)
+
+        self.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
+        self.toolbarshell.setObjectName('Shell_TB')
+        self.addToolBar(self.toolbarshell)
+
         self.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
         self.toolbartools.setObjectName('Tools_TB')
         self.addToolBar(self.toolbartools)
+
         self.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
         self.exc_edit_toolbar.setObjectName('ExcEditor_TB')
         self.addToolBar(self.exc_edit_toolbar)
+
         self.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
         self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
         self.addToolBar(self.geo_edit_toolbar)
@@ -525,8 +534,23 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # self.toolbarview.setVisible(False)
 
+        ### Shell Toolbar ###
+        self.shell_btn = self.toolbarshell.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
+
         ### Tools Toolbar ###
-        self.shell_btn = self.toolbartools.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
+        self.dblsided_btn = self.toolbartools.addAction(QtGui.QIcon('share/doubleside32.png'), "2Sided Tool")
+        self.cutout_btn = self.toolbartools.addAction(QtGui.QIcon('share/cut16.png'), "&Cutout Tool")
+        self.ncc_btn = self.toolbartools.addAction(QtGui.QIcon('share/flatcam_icon32.png'), "NCC Tool")
+        self.paint_btn = self.toolbartools.addAction(QtGui.QIcon('share/paint20_1.png'), "Paint Tool")
+        self.toolbartools.addSeparator()
+
+        self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panel16.png'), "Panel Tool")
+        self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'), "Film Tool")
+        self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'), "SolderPaste Tool")
+        self.toolbartools.addSeparator()
+
+        self.calculators_btn = self.toolbartools.addAction(QtGui.QIcon('share/calculator24.png'), "Calculators Tool")
+        self.transform_btn = self.toolbartools.addAction(QtGui.QIcon('share/transform.png'), "Transform Tool")
 
         ### Drill Editor Toolbar ###
         self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select")
@@ -1554,8 +1578,23 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # self.toolbarview.setVisible(False)
 
+        ### Shell Toolbar ###
+        self.shell_btn = self.toolbarshell.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
+
         ### Tools Toolbar ###
-        self.shell_btn = self.toolbartools.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
+        self.dblsided_btn = self.toolbartools.addAction(QtGui.QIcon('share/doubleside32.png'), "2Sided Tool")
+        self.cutout_btn = self.toolbartools.addAction(QtGui.QIcon('share/cut16.png'), "&Cutout Tool")
+        self.ncc_btn = self.toolbartools.addAction(QtGui.QIcon('share/flatcam_icon32.png'), "NCC Tool")
+        self.paint_btn = self.toolbartools.addAction(QtGui.QIcon('share/paint20_1.png'), "Paint Tool")
+        self.toolbartools.addSeparator()
+
+        self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panel16.png'), "Panel Tool")
+        self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'), "Film Tool")
+        self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'), "SolderPaste Tool")
+        self.toolbartools.addSeparator()
+
+        self.calculators_btn = self.toolbartools.addAction(QtGui.QIcon('share/calculator24.png'), "Calculators Tool")
+        self.transform_btn = self.toolbartools.addAction(QtGui.QIcon('share/transform.png'), "Transform Tool")
 
         ### Drill Editor Toolbar ###
         self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select")
