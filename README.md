@@ -22,6 +22,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the Set To Origin function when Escape was clicked
 - added all the Tools in a new ToolBar
 - fixed bug that after changing the layout all the toolbar actions are no longer working
+- fixed bug in Set Origin function
 
 23.02.2019
 

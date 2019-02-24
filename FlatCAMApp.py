@@ -4102,8 +4102,14 @@ class App(QtCore.QObject):
             for obj in self.collection.get_list():
                 obj.offset((x,y))
                 self.object_changed.emit(obj)
-                # obj.plot()
-            self.plot_all(zoom=False)
+                obj.plot()
+                # Update the object bounding box options
+                a, b, c, d = obj.bounds()
+                obj.options['xmin'] = a
+                obj.options['ymin'] = b
+                obj.options['xmax'] = c
+                obj.options['ymax'] = d
+            # self.plot_all(zoom=False)
             self.inform.emit('[success] Origin set ...')
             self.plotcanvas.vis_disconnect('mouse_press', self.on_set_zero_click)
             self.should_we_save = True

@@ -4329,6 +4329,11 @@ class Excellon(Geometry):
         for drill in self.drills:
             drill['point'] = affinity.translate(drill['point'], xoff=dx, yoff=dy)
 
+        # offset solid_geometry
+        for tool in self.tools:
+            for geo in self.tools[tool]['solid_geometry']:
+                geo = affinity.translate(geo, xoff=dx, yoff=dy)
+
         # Slots
         for slot in self.slots:
             slot['stop'] = affinity.translate(slot['stop'], xoff=dx, yoff=dy)
