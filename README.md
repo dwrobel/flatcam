@@ -13,13 +13,14 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed the Gerber object UI layout
 - added ability to mark individual apertures in Gerber file using the Gerber Aperture Table
+- more modifications for the Gerber UI layout; made 'follow' an advanced Gerber option
 
 24.02.2019
 
 - fixed a small bug in the Tool Solder Paste: the App don't take into consideration pads already filled with solder paste.
 - prettified the defaults files and the recent file. Now they are ordered and human readable
 - added a Toggle Code Editor Menu and key shortcut
-- added the ability to open FlatConfig configuration files in COde Editor, Modify them and then save them.
+- added the ability to open FlatConfig configuration files in Code Editor, Modify them and then save them.
 - added ability to double click the FlatConfig files and open them in the FlatCAM Code Editor (to be verified)
 - when saving a file from Code Editor and there is no object active then the OpenFileDialog filters are reset to FlatConfig files.
 - reverted a change in GCode that might affect Gerber polarity change in Gerber parser
@@ -28,6 +29,7 @@ CAD program, and create G-Code for Isolation routing.
 - added all the Tools in a new ToolBar
 - fixed bug that after changing the layout all the toolbar actions are no longer working
 - fixed bug in Set Origin function
+- fixed a typo in Toolchange_Probe_MACH3 postprocessor
 
 23.02.2019
 

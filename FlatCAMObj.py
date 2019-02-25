@@ -508,6 +508,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.milling_type_radio.hide()
             self.ui.generate_ext_iso_button.hide()
             self.ui.generate_int_iso_button.hide()
+            self.ui.follow_cb.hide()
 
         else:
             self.ui.level.setText('<span style="color:red;"><b>Advanced</b></span>')

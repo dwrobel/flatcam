@@ -61,7 +61,7 @@ class Toolchange_Probe_MACH3(FlatCAMPostProc):
         gcode += 'G17\n'
         gcode += 'G94\n'
         gcode += '(MSG, WARNING: Make sure you do zero on all axis. ' \
-                 'For Z axis, since it will be probed, make a rough estimate and do a zero.)'
+                 'For Z axis, since it will be probed, make a rough estimate and do a zero.)\n'
         gcode += 'M0'
 
         return gcode

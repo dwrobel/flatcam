@@ -147,6 +147,14 @@ class GerberObjectUI(ObjectUI):
         self.multicolored_cb.setFixedWidth(55)
         grid0.addWidget(self.multicolored_cb, 0, 2)
 
+        # Plot CB
+        self.plot_cb = FCCheckBox('Plot')
+        self.plot_cb.setToolTip(
+            "Plot (show) this object."
+        )
+        self.plot_cb.setFixedWidth(55)
+        grid0.addWidget(self.plot_cb, 0, 3)
+
         ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(self.name_hlay)
@@ -160,7 +168,7 @@ class GerberObjectUI(ObjectUI):
         self.custom_box.addLayout(hlay_plot)
 
         #### Gerber Apertures ####
-        self.apertures_table_label = QtWidgets.QLabel('<b>Apertures</b>')
+        self.apertures_table_label = QtWidgets.QLabel('<b>Apertures:</b>')
         self.apertures_table_label.setToolTip(
             "Apertures Table containining this Gerber object apertures."
         )
@@ -168,18 +176,12 @@ class GerberObjectUI(ObjectUI):
 
         hlay_plot.addWidget(self.apertures_table_label)
 
-        # Aperture Table Visibility CB
-        self.aperture_table_visibility_cb = FCCheckBox()
-        hlay_plot.addWidget(self.aperture_table_visibility_cb)
-
-        # Plot CB
-        self.plot_cb = FCCheckBox('Plot Object')
-        self.plot_cb.setToolTip(
-            "Plot (show) this object."
-        )
-        self.plot_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
         hlay_plot.addStretch()
-        hlay_plot.addWidget(self.plot_cb)
+
+        # Aperture Table Visibility CB
+        self.aperture_table_visibility_cb = FCCheckBox('Show/Hide')
+        self.aperture_table_visibility_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        hlay_plot.addWidget(self.aperture_table_visibility_cb)
 
         self.apertures_table = FCTable()
         self.custom_box.addWidget(self.apertures_table)
