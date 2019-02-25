@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+25.02.2019
+
+- fixed the Gerber object UI layout
+- added ability to mark individual apertures in Gerber file using the Gerber Aperture Table
+
 24.02.2019
 
 - fixed a small bug in the Tool Solder Paste: the App don't take into consideration pads already filled with solder paste.

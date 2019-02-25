@@ -70,6 +70,8 @@ class FlatCAMObj(QtCore.QObject):
         # self.shapes = ShapeCollection(parent=self.app.plotcanvas.vispy_canvas.view.scene)
         self.shapes = self.app.plotcanvas.new_shape_group()
 
+        self.mark_shapes = self.app.plotcanvas.new_shape_collection(layers=2)
+
         self.item = None  # Link with project view item
 
         self.muted_ui = False
@@ -309,6 +311,13 @@ class FlatCAMObj(QtCore.QObject):
             raise ObjectDeleted()
         else:
             key = self.shapes.add(tolerance=self.drawing_tolerance, **kwargs)
+        return key
+
+    def add_mark_shape(self, **kwargs):
+        if self.deleted:
+            raise ObjectDeleted()
+        else:
+            key = self.mark_shapes.add(tolerance=self.drawing_tolerance, **kwargs)
         return key
 
     @property
@@ -570,17 +579,17 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 ap_size_item = QtWidgets.QTableWidgetItem('')
             ap_size_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-            plot_item = FCCheckBox()
-            plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
-            if self.ui.plot_cb.isChecked():
-                plot_item.setChecked(True)
+            mark_item = FCCheckBox()
+            mark_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            # if self.ui.aperture_table_visibility_cb.isChecked():
+            #     mark_item.setChecked(True)
 
             self.ui.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
             self.ui.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
             self.ui.apertures_table.setItem(self.apertures_row, 3, ap_size_item)   # Aperture Dimensions
             self.ui.apertures_table.setItem(self.apertures_row, 4, ap_dim_item)   # Aperture Dimensions
 
-            self.ui.apertures_table.setCellWidget(self.apertures_row, 5, plot_item)
+            self.ui.apertures_table.setCellWidget(self.apertures_row, 5, mark_item)
 
             self.apertures_row += 1
 
@@ -596,14 +605,14 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             ap_type_item = QtWidgets.QTableWidgetItem('AM')
             ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-            plot_item = FCCheckBox()
-            plot_item.setLayoutDirection(QtCore.Qt.RightToLeft)
-            if self.ui.plot_cb.isChecked():
-                plot_item.setChecked(True)
+            mark_item = FCCheckBox()
+            mark_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+            # if self.ui.aperture_table_visibility_cb.isChecked():
+            #     mark_item.setChecked(True)
 
             self.ui.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
             self.ui.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
-            self.ui.apertures_table.setCellWidget(self.apertures_row, 5, plot_item)
+            self.ui.apertures_table.setCellWidget(self.apertures_row, 5, mark_item)
 
             self.apertures_row += 1
 
@@ -634,7 +643,40 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.apertures_table.setSortingEnabled(False)
         self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
 
-        # self.ui_connect()
+        self.ui_connect()
+
+    def ui_connect(self):
+        for row in range(self.ui.apertures_table.rowCount()):
+            self.ui.apertures_table.cellWidget(row, 5).clicked.connect(self.on_mark_cb_click_table)
+
+    def ui_disconnect(self):
+        for row in range(self.ui.apertures_table.rowCount()):
+            try:
+                self.ui.apertures_table.cellWidget(row, 5).clicked.disconnect()
+            except:
+                pass
+
+    def on_mark_cb_click_table(self):
+        self.ui_disconnect()
+        cw = self.sender()
+        cw_index = self.ui.apertures_table.indexAt(cw.pos())
+        cw_row = cw_index.row()
+        check_row = 0
+
+        self.mark_shapes.clear(update=True)
+        for aperture in self.apertures:
+            # find the apertures_table row associated with the aperture
+            for row in range(self.ui.apertures_table.rowCount()):
+                if int(self.ui.apertures_table.item(row, 1).text()) == int(aperture):
+                    check_row = row
+                    break
+
+            if self.ui.apertures_table.cellWidget(check_row, 5).isChecked():
+                self.plot_apertures(color = '#2d4606bf', marked_aperture=aperture, visible=True)
+
+        self.mark_shapes.redraw()
+
+        self.ui_connect()
 
     def on_generatenoncopper_button_click(self, *args):
         self.app.report_usage("gerber_on_generatenoncopper_button")
@@ -895,6 +937,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if self.muted_ui:
             return
         self.read_form_item('plot')
+        self.plot()
 
     def on_solid_cb_click(self, *args):
         if self.muted_ui:
@@ -916,8 +959,19 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
     def on_aperture_table_visibility_change(self):
         if self.ui.aperture_table_visibility_cb.isChecked():
             self.ui.apertures_table.setVisible(True)
+            self.ui.scale_aperture_label.setVisible(True)
+            self.ui.scale_aperture_entry.setVisible(True)
+            self.ui.scale_aperture_button.setVisible(True)
         else:
             self.ui.apertures_table.setVisible(False)
+            self.ui.scale_aperture_label.setVisible(False)
+            self.ui.scale_aperture_entry.setVisible(False)
+            self.ui.scale_aperture_button.setVisible(False)
+
+            # on hide disable all mark plots
+            for row in range(self.ui.apertures_table.rowCount()):
+                self.ui.apertures_table.cellWidget(row, 5).set_value(False)
+            self.mark_shapes.clear(update=True)
 
     def convert_units(self, units):
         """
@@ -1005,70 +1059,60 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.shapes.clear(update=True)
 
     # experimental plot() when the solid_geometry is stored in the self.apertures
-    # def plot_apertures(self, **kwargs):
-    #     """
-    #
-    #     :param kwargs: color and face_color
-    #     :return:
-    #     """
-    #
-    #     FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMGerber.plot()")
-    #
-    #     # Does all the required setup and returns False
-    #     # if the 'ptint' option is set to False.
-    #     if not FlatCAMObj.plot(self):
-    #         return
-    #
-    #     if 'color' in kwargs:
-    #         color = kwargs['color']
-    #     else:
-    #         color = self.app.defaults['global_plot_line']
-    #     if 'face_color' in kwargs:
-    #         face_color = kwargs['face_color']
-    #     else:
-    #         face_color = self.app.defaults['global_plot_fill']
-    #
-    #     geometry = {}
-    #     for ap in self.apertures:
-    #         geometry[ap] = self.apertures[ap]['solid_geometry']
-    #         try:
-    #             _ = iter(geometry[ap])
-    #         except TypeError:
-    #             geometry[ap] = [geometry[ap]]
-    #
-    #     def random_color():
-    #         color = np.random.rand(4)
-    #         color[3] = 1
-    #         return color
-    #
-    #     try:
-    #         if self.options["solid"]:
-    #             for geo in geometry:
-    #                 for g in geometry[geo]:
-    #                     if type(g) == Polygon or type(g) == LineString:
-    #                         self.add_shape(shape=g, color=color,
-    #                                        face_color=random_color() if self.options['multicolored']
-    #                                        else face_color, visible=self.options['plot'])
-    #                     else:
-    #                         for el in g:
-    #                             self.add_shape(shape=el, color=color,
-    #                                            face_color=random_color() if self.options['multicolored']
-    #                                            else face_color, visible=self.options['plot'])
-    #         else:
-    #             for geo in geometry:
-    #                 for g in geometry[geo]:
-    #                     if type(g) == Polygon or type(g) == LineString:
-    #                         self.add_shape(shape=g,
-    #                                        color=random_color() if self.options['multicolored'] else 'black',
-    #                                        visible=self.options['plot'])
-    #                     else:
-    #                         for el in g:
-    #                             self.add_shape(shape=el,
-    #                                            color=random_color() if self.options['multicolored'] else 'black',
-    #                                            visible=self.options['plot'])
-    #         self.shapes.redraw()
-    #     except (ObjectDeleted, AttributeError):
-    #         self.shapes.clear(update=True)
+    def plot_apertures(self, **kwargs):
+        """
+
+        :param kwargs: color and face_color
+        :return:
+        """
+
+        FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMGerber.plot_apertures()")
+
+        # Does all the required setup and returns False
+        # if the 'ptint' option is set to False.
+        if not FlatCAMObj.plot(self):
+            return
+
+        # for marking apertures, line color and fill color are the same
+        if 'color' in kwargs:
+            color = kwargs['color']
+        else:
+            color = self.app.defaults['global_plot_fill']
+
+        if 'marked_aperture' not in kwargs:
+            return
+        else:
+            aperture_to_plot_mark = kwargs['marked_aperture']
+            if aperture_to_plot_mark is None:
+                return
+
+        if 'visible' not in kwargs:
+            visibility = True
+        else:
+            visibility = kwargs['visible']
+
+        geometry = {}
+        for ap in self.apertures:
+            geometry[int(ap)] = self.apertures[ap]['solid_geometry']
+            try:
+                _ = iter(geometry[int(ap)])
+            except TypeError:
+                geometry[int(ap)] = [geometry[int(ap)]]
+
+        try:
+            if aperture_to_plot_mark in self.apertures:
+                for geo in geometry[int(aperture_to_plot_mark)]:
+                    if type(geo) == Polygon or type(geo) == LineString:
+                        self.add_mark_shape(shape=geo, color=color,
+                                       face_color=color, visible=visibility)
+                    else:
+                        for el in geo:
+                            self.add_mark_shape(shape=el, color=color,
+                                           face_color=color, visible=visibility)
+
+            self.mark_shapes.redraw()
+        except (ObjectDeleted, AttributeError):
+            self.mark_shapes.clear(update=True)
 
     def serialize(self):
         return {
@@ -4383,6 +4427,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 self.tools[tool]['solid_geometry'] = scale_recursion(self.tools[tool]['solid_geometry'])
         else:
             self.solid_geometry=scale_recursion(self.solid_geometry)
+
         self.app.inform.emit("[success]Geometry Scale done.")
 
     def offset(self, vect):

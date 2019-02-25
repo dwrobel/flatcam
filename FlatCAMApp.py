@@ -4936,6 +4936,14 @@ class App(QtCore.QObject):
         # Clear pool
         self.clear_pool()
 
+        #delete shapes left drawn from mark shape_collections, if any
+        for obj in self.collection.get_list():
+            try:
+                obj.mark_shapes.enabled = False
+                obj.mark_shapes.clear(update=True)
+            except:
+                pass
+
         # tcl needs to be reinitialized, otherwise  old shell variables etc  remains
         self.init_tcl()
 

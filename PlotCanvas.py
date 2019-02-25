@@ -165,7 +165,9 @@ class PlotCanvas(QtCore.QObject):
         """
         self.vispy_canvas.view.camera.zoom(factor, center)
 
-    def new_shape_group(self):
+    def new_shape_group(self, shape_collection=None):
+        if shape_collection:
+            return ShapeGroup(shape_collection)
         return ShapeGroup(self.shape_collection)
 
     def new_shape_collection(self, **kwargs):

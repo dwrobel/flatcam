@@ -1858,7 +1858,8 @@ class Gerber (Geometry):
     +-----------+-----------------------------------+
     | others    | Depend on ``type``                |
     +-----------+-----------------------------------+
-
+    | solid_geometry      | (list)                  |
+    +-----------+-----------------------------------+
     * ``aperture_macros`` (dictionary): Are predefined geometrical structures
       that can be instantiated with different parameters in an aperture
       definition. See ``apertures`` above. The key is the name of the macro,
@@ -1921,9 +1922,7 @@ class Gerber (Geometry):
                 'size':float, 
                 'width':float,
                 'height':float,
-                'light_solid_geometry': [],
-                'dark_solid_geometry': [],
-                'buff_solid_geometry': [],
+                'solid_geometry': [],
                 'follow_geometry': [],
             }
         }
@@ -2247,6 +2246,11 @@ class Gerber (Geometry):
                         geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                         if not geo.is_empty:
                             poly_buffer.append(geo)
+                            try:
+                                self.apertures[current_aperture]['solid_geometry'].append(geo)
+                            except KeyError:
+                                self.apertures[current_aperture]['solid_geometry'] = []
+                                self.apertures[current_aperture]['solid_geometry'].append(geo)
 
                         path = [path[-1]]
 
@@ -2411,6 +2415,11 @@ class Gerber (Geometry):
                                 int(self.steps_per_circle))
                             if not flash.is_empty:
                                 poly_buffer.append(flash)
+                                try:
+                                    self.apertures[current_aperture]['solid_geometry'].append(flash)
+                                except KeyError:
+                                    self.apertures[current_aperture]['solid_geometry'] = []
+                                    self.apertures[current_aperture]['solid_geometry'].append(flash)
                         except IndexError:
                             log.warning("Line %d: %s -> Nothing there to flash!" % (line_num, gline))
 
@@ -2448,6 +2457,11 @@ class Gerber (Geometry):
                             geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                             if not geo.is_empty:
                                 poly_buffer.append(geo)
+                                try:
+                                    self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                                except KeyError:
+                                    self.apertures[last_path_aperture]['solid_geometry'] = []
+                                    self.apertures[last_path_aperture]['solid_geometry'].append(geo)
 
                             path = [path[-1]]
 
@@ -2468,6 +2482,11 @@ class Gerber (Geometry):
                         geo = LineString(path).buffer(width/1.999, int(self.steps_per_circle / 4))
                         if not geo.is_empty:
                             poly_buffer.append(geo)
+                            try:
+                                self.apertures[current_aperture]['solid_geometry'].append(geo)
+                            except KeyError:
+                                self.apertures[current_aperture]['solid_geometry'] = []
+                                self.apertures[current_aperture]['solid_geometry'].append(geo)
 
                         path = [path[-1]]
 
@@ -2485,6 +2504,11 @@ class Gerber (Geometry):
                             if not geo.is_empty:
                                 follow_buffer.append(geo)
                                 poly_buffer.append(geo)
+                                try:
+                                    self.apertures[current_aperture]['solid_geometry'].append(geo)
+                                except KeyError:
+                                    self.apertures[current_aperture]['solid_geometry'] = []
+                                    self.apertures[current_aperture]['solid_geometry'].append(geo)
                             continue
 
                     # Only one path defines region?
@@ -2514,6 +2538,11 @@ class Gerber (Geometry):
 
                     if not region.is_empty:
                         poly_buffer.append(region)
+                        try:
+                            self.apertures[current_aperture]['solid_geometry'].append(region)
+                        except KeyError:
+                            self.apertures[current_aperture]['solid_geometry'] = []
+                            self.apertures[current_aperture]['solid_geometry'].append(region)
 
                     path = [[current_x, current_y]]  # Start new path
                     continue
@@ -2584,6 +2613,11 @@ class Gerber (Geometry):
 
                                         geo = shply_box(minx, miny, maxx, maxy)
                                         poly_buffer.append(geo)
+                                        try:
+                                            self.apertures[current_aperture]['solid_geometry'].append(geo)
+                                        except KeyError:
+                                            self.apertures[current_aperture]['solid_geometry'] = []
+                                            self.apertures[current_aperture]['solid_geometry'].append(geo)
                                 except:
                                     pass
                             last_path_aperture = current_aperture
@@ -2633,6 +2667,11 @@ class Gerber (Geometry):
                                         poly_buffer.append(geo)
                             except:
                                 poly_buffer.append(geo)
+                                try:
+                                    self.apertures[current_aperture]['solid_geometry'].append(geo)
+                                except KeyError:
+                                    self.apertures[current_aperture]['solid_geometry'] = []
+                                    self.apertures[current_aperture]['solid_geometry'].append(geo)
 
                         # if linear_x or linear_y are None, ignore those
                         if linear_x is not None and linear_y is not None:
@@ -2665,8 +2704,18 @@ class Gerber (Geometry):
                                 try:
                                     if self.apertures[current_aperture]["type"] != 'R':
                                         poly_buffer.append(geo)
+                                        try:
+                                            self.apertures[current_aperture]['solid_geometry'].append(geo)
+                                        except KeyError:
+                                            self.apertures[current_aperture]['solid_geometry'] = []
+                                            self.apertures[current_aperture]['solid_geometry'].append(geo)
                                 except:
                                     poly_buffer.append(geo)
+                                    try:
+                                        self.apertures[current_aperture]['solid_geometry'].append(geo)
+                                    except KeyError:
+                                        self.apertures[current_aperture]['solid_geometry'] = []
+                                        self.apertures[current_aperture]['solid_geometry'].append(geo)
 
                         # Reset path starting point
                         path = [[linear_x, linear_y]]
@@ -2684,6 +2733,11 @@ class Gerber (Geometry):
                         )
                         if not flash.is_empty:
                             poly_buffer.append(flash)
+                            try:
+                                self.apertures[current_aperture]['solid_geometry'].append(flash)
+                            except KeyError:
+                                self.apertures[current_aperture]['solid_geometry'] = []
+                                self.apertures[current_aperture]['solid_geometry'].append(flash)
 
                     # maybe those lines are not exactly needed but it is easier to read the program as those coordinates
                     # are used in case that circular interpolation is encountered within the Gerber file
@@ -2773,6 +2827,11 @@ class Gerber (Geometry):
                             buffered = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
                             if not buffered.is_empty:
                                 poly_buffer.append(buffered)
+                                try:
+                                    self.apertures[current_aperture]['solid_geometry'].append(buffered)
+                                except KeyError:
+                                    self.apertures[current_aperture]['solid_geometry'] = []
+                                    self.apertures[current_aperture]['solid_geometry'].append(buffered)
 
                         current_x = circular_x
                         current_y = circular_y
@@ -2900,6 +2959,11 @@ class Gerber (Geometry):
                     geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                     if not geo.is_empty:
                         poly_buffer.append(geo)
+                        try:
+                            self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                        except KeyError:
+                            self.apertures[last_path_aperture]['solid_geometry'] = []
+                            self.apertures[last_path_aperture]['solid_geometry'].append(geo)
 
             # --- Apply buffer ---
 
@@ -3110,6 +3174,7 @@ class Gerber (Geometry):
         :type factor: float
         :rtype : None
         """
+        log.debug("camlib.Gerber.scale()")
 
         try:
             xfactor = float(xfactor)
@@ -3143,6 +3208,14 @@ class Gerber (Geometry):
                                              yfactor, origin=(px, py))
 
         self.solid_geometry = scale_geom(self.solid_geometry)
+
+        # we need to scale the geometry stored in the Gerber apertures, too
+        try:
+            for apid in self.apertures:
+                self.apertures[apid]['solid_geometry'] = scale_geom(self.apertures[apid]['solid_geometry'])
+        except Exception as e:
+            log.debug('FlatCAMGeometry.scale() --> %s' % str(e))
+
         self.app.inform.emit("[success]Gerber Scale done.")
 
         ## solid_geometry ???
