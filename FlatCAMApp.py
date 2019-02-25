@@ -330,11 +330,13 @@ class App(QtCore.QObject):
             "global_workspace": self.ui.general_defaults_form.general_gui_group.workspace_cb,
             "global_workspaceT": self.ui.general_defaults_form.general_gui_group.wk_cb,
 
+            # Gerber General
             "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
             "gerber_solid": self.ui.gerber_defaults_form.gerber_gen_group.solid_cb,
             "gerber_multicolored": self.ui.gerber_defaults_form.gerber_gen_group.multicolored_cb,
             "gerber_circle_steps": self.ui.gerber_defaults_form.gerber_gen_group.circle_steps_entry,
 
+            # Gerber Options
             "gerber_isotooldia": self.ui.gerber_defaults_form.gerber_opt_group.iso_tool_dia_entry,
             "gerber_isopasses": self.ui.gerber_defaults_form.gerber_opt_group.iso_width_entry,
             "gerber_isooverlap": self.ui.gerber_defaults_form.gerber_opt_group.iso_overlap_entry,
@@ -344,6 +346,12 @@ class App(QtCore.QObject):
             "gerber_noncopperrounded": self.ui.gerber_defaults_form.gerber_opt_group.noncopper_rounded_cb,
             "gerber_bboxmargin": self.ui.gerber_defaults_form.gerber_opt_group.bbmargin_entry,
             "gerber_bboxrounded": self.ui.gerber_defaults_form.gerber_opt_group.bbrounded_cb,
+
+            # Gerber Advanced Options
+            "gerber_aperture_display": self.ui.gerber_defaults_form.gerber_adv_opt_group.aperture_table_visibility_cb,
+            "gerber_aperture_scale_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.scale_aperture_entry,
+            "gerber_aperture_buffer_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.buffer_aperture_entry,
+            "gerber_follow": self.ui.gerber_defaults_form.gerber_adv_opt_group.follow_cb,
 
             # Excellon General
             "excellon_plot": self.ui.excellon_defaults_form.excellon_gen_group.plot_cb,
@@ -428,8 +436,13 @@ class App(QtCore.QObject):
             "cncjob_fr_decimals": self.ui.cncjob_defaults_form.cncjob_gen_group.fr_dec_entry,
             "cncjob_steps_per_circle": self.ui.cncjob_defaults_form.cncjob_gen_group.steps_per_circle_entry,
 
+            # CNC Job Options
             "cncjob_prepend": self.ui.cncjob_defaults_form.cncjob_opt_group.prepend_text,
             "cncjob_append": self.ui.cncjob_defaults_form.cncjob_opt_group.append_text,
+
+            # CNC Job Advanced Options
+            "cncjob_toolchange_macro": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_text,
+            "cncjob_toolchange_macro_enable": self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_cb,
 
             # NCC Tool
             "tools_ncctools": self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
@@ -605,6 +618,7 @@ class App(QtCore.QObject):
             "global_point_clipboard_format": "(%.4f, %.4f)",
             "global_zdownrate": None,
 
+            # Gerber General
             "gerber_plot": True,
             "gerber_solid": True,
             "gerber_multicolored": False,
@@ -612,6 +626,7 @@ class App(QtCore.QObject):
             "gerber_isopasses": 1,
             "gerber_isooverlap": 0.15,
 
+            # Gerber Options
             "gerber_combine_passes": False,
             "gerber_milling_type": "cl",
             "gerber_noncoppermargin": 0.1,
@@ -620,6 +635,12 @@ class App(QtCore.QObject):
             "gerber_bboxrounded": False,
             "gerber_circle_steps": 64,
             "gerber_use_buffer_for_union": True,
+
+            # Gerber Advanced Options
+            "gerber_aperture_display": False,
+            "gerber_aperture_scale_factor": 1.0,
+            "gerber_aperture_buffer_factor": 0.0,
+            "gerber_follow": False,
 
             # Excellon General
             "excellon_plot": True,
@@ -696,14 +717,21 @@ class App(QtCore.QObject):
             "geometry_segx": 0.0,
             "geometry_segy": 0.0,
 
+            # CNC Job General
             "cncjob_plot": True,
             "cncjob_plot_kind": 'all',
             "cncjob_tooldia": 0.0393701,
             "cncjob_coords_decimals": 4,
             "cncjob_fr_decimals": 2,
+            "cncjob_steps_per_circle": 64,
+
+            # CNC Job Options
             "cncjob_prepend": "",
             "cncjob_append": "",
-            "cncjob_steps_per_circle": 64,
+
+            # CNC Job Advanced Options
+            "cncjob_toolchange_macro": "",
+            "cncjob_toolchange_macro_enable": False,
 
             "tools_ncctools": "1.0, 0.5",
             "tools_nccoverlap": 0.4,

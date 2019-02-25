@@ -14,6 +14,10 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the Gerber object UI layout
 - added ability to mark individual apertures in Gerber file using the Gerber Aperture Table
 - more modifications for the Gerber UI layout; made 'follow' an advanced Gerber option
+- added in Preferences a new Category: Gerber Advanced Options. For now it controls the display of Gerber Aperture Table and the "follow" attribute4
+- fixed FlatCAMGerber.merge() to merge the self.apertures[ap]['solid_geometry'] too
+- started to work on a new feature that allow adding a ToolChange GCode macro - GUI added both in CNCJob Selected tab and in CNCJob Preferences
+- added a limited 'sort-of' Gerber Editor: it allows buffering and scaling of apertures
 
 24.02.2019
 

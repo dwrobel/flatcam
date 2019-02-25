@@ -1,7 +1,8 @@
 import sys
-from PyQt5 import QtGui, QtCore, QtWidgets, QtWidgets
+from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5.QtCore import Qt
 from GUIElements import FCEntry, FloatEntry, EvalEntry, FCCheckBox, FCTable, \
-    LengthEntry, FCTextArea, IntEntry, RadioSet, OptionalInputSection, FCComboBox, FloatEntry2, EvalEntry2
+    LengthEntry, FCTextArea, IntEntry, RadioSet, OptionalInputSection, FCComboBox, FloatEntry2, EvalEntry2, FCButton
 from camlib import Excellon
 
 
@@ -180,6 +181,12 @@ class GerberObjectUI(ObjectUI):
 
         # Aperture Table Visibility CB
         self.aperture_table_visibility_cb = FCCheckBox('Show/Hide')
+        self.aperture_table_visibility_cb.setToolTip(
+            "Toogle the display of the Gerber Apertures Table.\n"
+            "Also, on hide, it will delete all mark shapes\n"
+            "that are drawn on canvas."
+
+        )
         self.aperture_table_visibility_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
         hlay_plot.addWidget(self.aperture_table_visibility_cb)
 
@@ -207,36 +214,79 @@ class GerberObjectUI(ObjectUI):
         # self.apertures_table.setColumnHidden(5, True)
 
         #### Aperture Scale ####
-        self.scale_aperture_grid = QtWidgets.QGridLayout()
-        self.custom_box.addLayout(self.scale_aperture_grid)
+        self.transform_aperture_grid = QtWidgets.QGridLayout()
+        self.custom_box.addLayout(self.transform_aperture_grid)
 
-        # Factor
-        self.scale_aperture_label = QtWidgets.QLabel('<b>Factor:</b>')
+        # Scale Aperture Factor
+        self.scale_aperture_label = QtWidgets.QLabel('Scale Factor:')
         self.scale_aperture_label.setToolTip(
             "Change the size of the selected apertures.\n"
             "Factor by which to multiply\n"
             "geometric features of this object."
         )
         self.scale_aperture_label.setFixedWidth(90)
-        self.scale_aperture_grid.addWidget(self.scale_aperture_label, 0, 0)
+        self.transform_aperture_grid.addWidget(self.scale_aperture_label, 0, 0)
 
         self.scale_aperture_entry = FloatEntry2()
-        self.scale_aperture_entry.set_value(1.0)
-        self.scale_aperture_grid.addWidget(self.scale_aperture_entry, 0, 1)
+        self.transform_aperture_grid.addWidget(self.scale_aperture_entry, 0, 1)
 
         # Scale Button
         self.scale_aperture_button = QtWidgets.QPushButton('Scale')
         self.scale_aperture_button.setToolTip(
             "Perform scaling operation."
         )
-        self.scale_aperture_button.setFixedWidth(40)
-        self.scale_aperture_grid.addWidget(self.scale_aperture_button, 0, 2)
+        self.scale_aperture_button.setFixedWidth(50)
+        self.transform_aperture_grid.addWidget(self.scale_aperture_button, 0, 2)
+
+        # Buffer Aperture Factor
+        self.buffer_aperture_label = QtWidgets.QLabel('Buffer Factor:')
+        self.buffer_aperture_label.setToolTip(
+            "Change the size of the selected apertures.\n"
+            "Factor by which to expand/shrink\n"
+            "geometric features of this object."
+        )
+        self.buffer_aperture_label.setFixedWidth(90)
+        self.transform_aperture_grid.addWidget(self.buffer_aperture_label, 1, 0)
+
+        self.buffer_aperture_entry = FloatEntry2()
+        self.transform_aperture_grid.addWidget(self.buffer_aperture_entry, 1, 1)
+
+        # Buffer Button
+        self.buffer_aperture_button = QtWidgets.QPushButton('Buffer')
+        self.buffer_aperture_button.setToolTip(
+            "Perform scaling operation."
+        )
+        self.buffer_aperture_button.setFixedWidth(50)
+        self.transform_aperture_grid.addWidget(self.buffer_aperture_button, 1, 2)
+
+        new_hlay = QtWidgets.QHBoxLayout()
+        self.custom_box.addLayout(new_hlay)
+
+        self.new_grb_label = QtWidgets.QLabel("<b>Generate new Gerber Object:</b>")
+        self.new_grb_label.setToolTip(
+            "Will generate a new Gerber object from the changed apertures.\n"
+            "This new object can then be isolated etc."
+        )
+        new_hlay.addWidget(self.new_grb_label)
+
+        new_hlay.addStretch()
+
+        self.new_grb_button = FCButton('Go')
+        self.new_grb_button.setToolTip(
+            "Will generate a new Gerber object from the changed apertures.\n"
+            "This new object can then be isolated etc.")
+        self.new_grb_button.setFixedWidth(50)
+        new_hlay.addWidget(self.new_grb_button)
 
         # start with apertures table hidden
         self.apertures_table.setVisible(False)
         self.scale_aperture_label.setVisible(False)
         self.scale_aperture_entry.setVisible(False)
         self.scale_aperture_button.setVisible(False)
+
+        self.buffer_aperture_label.setVisible(False)
+        self.buffer_aperture_entry.setVisible(False)
+        self.buffer_aperture_button.setVisible(False)
 
         # Isolation Routing
         self.isolation_routing_label = QtWidgets.QLabel("<b>Isolation Routing:</b>")
@@ -1362,7 +1412,7 @@ class CNCObjectUI(ObjectUI):
         )
         self.custom_box.addWidget(self.export_gcode_label)
 
-        # Prepend text to Gerber
+        # Prepend text to GCode
         prependlabel = QtWidgets.QLabel('Prepend to CNC Code:')
         prependlabel.setToolTip(
             "Type here any G-Code commands you would\n"
@@ -1373,7 +1423,7 @@ class CNCObjectUI(ObjectUI):
         self.prepend_text = FCTextArea()
         self.custom_box.addWidget(self.prepend_text)
 
-        # Append text to Gerber
+        # Append text to GCode
         appendlabel = QtWidgets.QLabel('Append to CNC Code')
         appendlabel.setToolTip(
             "Type here any G-Code commands you would\n"
@@ -1384,6 +1434,70 @@ class CNCObjectUI(ObjectUI):
 
         self.append_text = FCTextArea()
         self.custom_box.addWidget(self.append_text)
+
+        self.cnc_frame = QtWidgets.QFrame()
+        self.cnc_frame.setContentsMargins(0, 0, 0, 0)
+        self.custom_box.addWidget(self.cnc_frame)
+        self.cnc_box = QtWidgets.QVBoxLayout()
+        self.cnc_box.setContentsMargins(0, 0, 0, 0)
+        self.cnc_frame.setLayout(self.cnc_box)
+
+        # Prepend to G-Code
+        toolchangelabel = QtWidgets.QLabel('Toolchange G-Code:')
+        toolchangelabel.setToolTip(
+            "Type here any G-Code commands you would\n"
+            "like to be executed when Toolchange event is encountered.\n"
+            "This will constitute a Custom Toolchange GCode,\n"
+            "or a Toolchange Macro."
+        )
+        self.cnc_box.addWidget(toolchangelabel)
+
+        self.toolchange_text = FCTextArea()
+        self.cnc_box.addWidget(self.toolchange_text)
+
+        cnclay = QtWidgets.QHBoxLayout()
+        self.cnc_box.addLayout(cnclay)
+
+        # Toolchange Replacement GCode
+        self.toolchange_cb = FCCheckBox(label='Use Toolchange Macro')
+        self.toolchange_cb.setToolTip(
+            "Check this box if you want to use\n"
+            "a Custom Toolchange GCode (macro)."
+        )
+        cnclay.addWidget(self.toolchange_cb)
+        cnclay.addStretch()
+
+        cnclay1 = QtWidgets.QHBoxLayout()
+        self.cnc_box.addLayout(cnclay1)
+
+        # Variable list
+        self.tc_variable_combo = FCComboBox()
+        self.tc_variable_combo.setToolTip(
+            "A list of the FlatCAM variables that can be used\n"
+            "in the Toolchange event.\n"
+            "They have to be surrounded by the '%' symbol"
+        )
+        cnclay1.addWidget(self.tc_variable_combo)
+
+        # Populate the Combo Box
+        variables = ['tool', 'toolC', 't_drills', 'toolchangex', 'toolchangey', 'toolchangez']
+        self.tc_variable_combo.addItems(variables)
+        self.tc_variable_combo.setItemData(0, "tool = tool number", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(1, "toolC = tool diameter", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(2, "t_drills = for Excellon, total number of drills", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(3, "toolchangex = X coord for Toolchange", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(4, "toolchangey = Y coord for Toolchange", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(5, "toolchangez = Z coord for Toolchange", Qt.ToolTipRole)
+
+        cnclay1.addStretch()
+
+        # Insert Variable into the Toolchange G-Code Text Box
+        self.tc_insert_buton = FCButton("Insert")
+        self.tc_insert_buton.setToolTip(
+            "Insert the variable in the GCode Box\n"
+            "surrounded by the '%' symbol."
+        )
+        cnclay1.addWidget(self.tc_insert_buton)
 
         h_lay = QtWidgets.QHBoxLayout()
         h_lay.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)

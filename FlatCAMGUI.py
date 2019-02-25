@@ -2576,10 +2576,14 @@ class GerberPreferencesUI(QtWidgets.QWidget):
         self.gerber_gen_group = GerberGenPrefGroupUI()
         self.gerber_gen_group.setFixedWidth(250)
         self.gerber_opt_group = GerberOptPrefGroupUI()
-        self.gerber_opt_group.setFixedWidth(250)
+        self.gerber_opt_group.setFixedWidth(200)
+        self.gerber_adv_opt_group = GerberAdvOptPrefGroupUI()
+        self.gerber_adv_opt_group.setFixedWidth(200)
 
         self.layout.addWidget(self.gerber_gen_group)
         self.layout.addWidget(self.gerber_opt_group)
+        self.layout.addWidget(self.gerber_adv_opt_group)
+
         self.layout.addStretch()
 
 
@@ -2700,9 +2704,13 @@ class CNCJobPreferencesUI(QtWidgets.QWidget):
         self.cncjob_gen_group.setFixedWidth(270)
         self.cncjob_opt_group = CNCJobOptPrefGroupUI()
         self.cncjob_opt_group.setFixedWidth(260)
+        self.cncjob_adv_opt_group = CNCJobAdvOptPrefGroupUI()
+        self.cncjob_adv_opt_group.setFixedWidth(260)
 
         self.layout.addWidget(self.cncjob_gen_group)
         self.layout.addWidget(self.cncjob_opt_group)
+        self.layout.addWidget(self.cncjob_adv_opt_group)
+
         self.layout.addStretch()
 
 
@@ -3288,26 +3296,27 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
 
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
-        # Plot CB
-        self.plot_cb = FCCheckBox(label='Plot')
-        self.plot_options_label.setToolTip(
-            "Plot (show) this object."
-        )
-        grid0.addWidget(self.plot_cb, 0, 0)
 
         # Solid CB
         self.solid_cb = FCCheckBox(label='Solid')
         self.solid_cb.setToolTip(
             "Solid color polygons."
         )
-        grid0.addWidget(self.solid_cb, 0, 1)
+        grid0.addWidget(self.solid_cb, 0, 0)
 
         # Multicolored CB
         self.multicolored_cb = FCCheckBox(label='M-Color')
         self.multicolored_cb.setToolTip(
             "Draw polygons in different colors."
         )
-        grid0.addWidget(self.multicolored_cb, 0, 2)
+        grid0.addWidget(self.multicolored_cb, 0, 1)
+
+        # Plot CB
+        self.plot_cb = FCCheckBox(label='Plot')
+        self.plot_options_label.setToolTip(
+            "Plot (show) this object."
+        )
+        grid0.addWidget(self.plot_cb, 0, 2)
 
         # Number of circle steps for circular aperture linear approximation
         self.circle_steps_label = QtWidgets.QLabel("Circle Steps:")
@@ -3444,6 +3453,73 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
             "the margin."
         )
         grid2.addWidget(self.bbrounded_cb, 1, 0, 1, 2)
+        self.layout.addStretch()
+
+
+class GerberAdvOptPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Gerber Adv. Options Preferences", parent=parent)
+        super(GerberAdvOptPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("Gerber Adv. Options"))
+
+
+        ## Advanced Gerber Parameters
+        self.adv_param_label = QtWidgets.QLabel("<b>Advanced Param.:</b>")
+        self.adv_param_label.setToolTip(
+            "A list of Gerber advanced parameters.\n"
+            "Those parameters are available only for\n"
+            "Advanced App. Level."
+        )
+        self.layout.addWidget(self.adv_param_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        # Follow Attribute
+        self.follow_cb = FCCheckBox(label='"Follow"')
+        self.follow_cb.setToolTip(
+            "Generate a 'Follow' geometry.\n"
+            "This means that it will cut through\n"
+            "the middle of the trace."
+
+        )
+        grid0.addWidget(self.follow_cb, 0, 0)
+
+        # Aperture Table Visibility CB
+        self.aperture_table_visibility_cb = FCCheckBox(label='Table Show/Hide')
+        self.aperture_table_visibility_cb.setToolTip(
+            "Toggle the display of the Gerber Apertures Table.\n"
+            "Also, on hide, it will delete all mark shapes\n"
+            "that are drawn on canvas."
+
+        )
+        grid0.addWidget(self.aperture_table_visibility_cb, 1, 0)
+
+        # Scale Aperture Factor
+        self.scale_aperture_label = QtWidgets.QLabel('Ap. Scale Factor:')
+        self.scale_aperture_label.setToolTip(
+            "Change the size of the selected apertures.\n"
+            "Factor by which to multiply\n"
+            "geometric features of this object."
+        )
+        grid0.addWidget(self.scale_aperture_label, 2, 0)
+
+        self.scale_aperture_entry = FloatEntry2()
+        grid0.addWidget(self.scale_aperture_entry, 2, 1)
+
+        # Buffer Aperture Factor
+        self.buffer_aperture_label = QtWidgets.QLabel('Ap. Buffer Factor:')
+        self.buffer_aperture_label.setToolTip(
+            "Change the size of the selected apertures.\n"
+            "Factor by which to expand/shrink\n"
+            "geometric features of this object."
+        )
+        grid0.addWidget(self.buffer_aperture_label, 3, 0)
+
+        self.buffer_aperture_entry = FloatEntry2()
+        grid0.addWidget(self.buffer_aperture_entry, 3, 1)
+
         self.layout.addStretch()
 
 
@@ -4542,6 +4618,81 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
 
         self.append_text = FCTextArea()
         self.layout.addWidget(self.append_text)
+
+        self.layout.addStretch()
+
+
+class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "CNC Job Advanced Options Preferences", parent=None)
+        super(CNCJobAdvOptPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("CNC Job Adv. Options"))
+
+        ## Export G-Code
+        self.export_gcode_label = QtWidgets.QLabel("<b>Export G-Code:</b>")
+        self.export_gcode_label.setToolTip(
+            "Export and save G-Code to\n"
+            "make this object to a file."
+        )
+        self.layout.addWidget(self.export_gcode_label)
+
+        # Prepend to G-Code
+        toolchangelabel = QtWidgets.QLabel('Toolchange G-Code:')
+        toolchangelabel.setToolTip(
+            "Type here any G-Code commands you would\n"
+            "like to be executed when Toolchange event is encountered.\n"
+            "This will constitute a Custom Toolchange GCode,\n"
+            "or a Toolchange Macro."
+        )
+        self.layout.addWidget(toolchangelabel)
+
+        self.toolchange_text = FCTextArea()
+        self.layout.addWidget(self.toolchange_text)
+
+        hlay = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay)
+
+        # Toolchange Replacement GCode
+        self.toolchange_cb = FCCheckBox(label='Use Toolchange Macro')
+        self.toolchange_cb.setToolTip(
+            "Check this box if you want to use\n"
+            "a Custom Toolchange GCode (macro)."
+        )
+        hlay.addWidget(self.toolchange_cb)
+        hlay.addStretch()
+
+        hlay1 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay1)
+
+        # Variable list
+        self.tc_variable_combo = FCComboBox()
+        self.tc_variable_combo.setToolTip(
+            "A list of the FlatCAM variables that can be used\n"
+            "in the Toolchange event.\n"
+            "They have to be surrounded by the '%' symbol"
+        )
+        hlay1.addWidget(self.tc_variable_combo)
+
+        # Populate the Combo Box
+        variables = ['tool', 'toolC', 't_drills', 'toolchangex', 'toolchangey', 'toolchangez']
+        self.tc_variable_combo.addItems(variables)
+        self.tc_variable_combo.setItemData(0, "tool = tool number", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(1, "toolC = tool diameter", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(2, "t_drills = for Excellon, total number of drills", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(3, "toolchangex = X coord for Toolchange", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(4, "toolchangey = Y coord for Toolchange", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(5, "toolchangez = Z coord for Toolchange", Qt.ToolTipRole)
+
+        hlay1.addStretch()
+
+        # Insert Variable into the Toolchange G-Code Text Box
+        self.tc_insert_buton = FCButton("Insert")
+        self.tc_insert_buton.setToolTip(
+            "Insert the variable in the GCode Box\n"
+            "surrounded by the '%' symbol."
+        )
+        hlay1.addWidget(self.tc_insert_buton)
 
         self.layout.addStretch()
 

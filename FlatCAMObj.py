@@ -382,25 +382,38 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             grb_final.solid_geometry = []
             grb_final.follow_geometry = []
 
+        if not grb_final.apertures:
+            grb_final.apertures = {}
+
         if type(grb_final.solid_geometry) is not list:
             grb_final.solid_geometry = [grb_final.solid_geometry]
             grb_final.follow_geometry = [grb_final.follow_geometry]
 
         for grb in grb_list:
-            for option in grb.options:
-                if option is not 'name':
-                    try:
-                        grb_final.options[option] = grb.options[option]
-                    except:
-                        log.warning("Failed to copy option.", option)
 
             # Expand lists
             if type(grb) is list:
                 FlatCAMGerber.merge(grb, grb_final)
             else:   # If not list, just append
+                for option in grb.options:
+                    if option is not 'name':
+                        try:
+                            grb_final.options[option] = grb.options[option]
+                        except:
+                            log.warning("Failed to copy option.", option)
+
                 for geos in grb.solid_geometry:
                     grb_final.solid_geometry.append(geos)
                     grb_final.follow_geometry.append(geos)
+
+                for ap in grb.apertures:
+                    if ap not in grb_final.apertures:
+                        grb_final.apertures[ap] = grb.apertures[ap]
+                    else:
+                        if 'solid_geometry' not in grb_final.apertures[ap]:
+                            grb_final.apertures[ap]['solid_geometry'] = []
+                        for geo in grb.apertures[ap]['solid_geometry']:
+                            grb_final.apertures[ap]['solid_geometry'].append(geo)
 
         grb_final.solid_geometry = MultiPolygon(grb_final.solid_geometry)
         grb_final.follow_geometry = MultiPolygon(grb_final.follow_geometry)
@@ -425,7 +438,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             "noncoppermargin": 0.0,
             "noncopperrounded": False,
             "bboxmargin": 0.0,
-            "bboxrounded": False
+            "bboxrounded": False,
+            "aperture_display": False,
+            "aperture_scale_factor": 1.0,
+            "aperture_buffer_factor": 0.0,
+            "follow": False
         })
 
         # type of isolation: 0 = exteriors, 1 = interiors, 2 = complete isolation (both interiors and exteriors)
@@ -479,7 +496,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             "noncoppermargin": self.ui.noncopper_margin_entry,
             "noncopperrounded": self.ui.noncopper_rounded_cb,
             "bboxmargin": self.ui.bbmargin_entry,
-            "bboxrounded": self.ui.bbrounded_cb
+            "bboxrounded": self.ui.bbrounded_cb,
+            "aperture_display": self.ui.aperture_table_visibility_cb,
+            "aperture_scale_factor": self.ui.scale_aperture_entry,
+            "aperture_buffer_factor": self.ui.buffer_aperture_entry,
+            "follow": self.ui.follow_cb
         })
 
         # Fill form fields only on object create
@@ -498,6 +519,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.generate_noncopper_button.clicked.connect(self.on_generatenoncopper_button_click)
         self.ui.aperture_table_visibility_cb.stateChanged.connect(self.on_aperture_table_visibility_change)
         self.ui.follow_cb.stateChanged.connect(self.on_follow_cb_click)
+        self.ui.scale_aperture_button.clicked.connect(self.on_scale_aperture_click)
+        self.ui.buffer_aperture_button.clicked.connect(self.on_buffer_aperture_click)
+        self.ui.new_grb_button.clicked.connect(self.on_new_modified_gerber)
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
@@ -512,6 +536,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         else:
             self.ui.level.setText('<span style="color:red;"><b>Advanced</b></span>')
+
+        # set initial state of the aperture table and associated widgets
+        self.on_aperture_table_visibility_change()
 
         self.build_ui()
 
@@ -963,16 +990,150 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.scale_aperture_label.setVisible(True)
             self.ui.scale_aperture_entry.setVisible(True)
             self.ui.scale_aperture_button.setVisible(True)
+
+            self.ui.buffer_aperture_label.setVisible(True)
+            self.ui.buffer_aperture_entry.setVisible(True)
+            self.ui.buffer_aperture_button.setVisible(True)
+
+            self.ui.new_grb_label.setVisible(True)
+            self.ui.new_grb_button.setVisible(True)
+
         else:
             self.ui.apertures_table.setVisible(False)
             self.ui.scale_aperture_label.setVisible(False)
             self.ui.scale_aperture_entry.setVisible(False)
             self.ui.scale_aperture_button.setVisible(False)
 
+            self.ui.buffer_aperture_label.setVisible(False)
+            self.ui.buffer_aperture_entry.setVisible(False)
+            self.ui.buffer_aperture_button.setVisible(False)
+
+            self.ui.new_grb_label.setVisible(False)
+            self.ui.new_grb_button.setVisible(False)
+
             # on hide disable all mark plots
             for row in range(self.ui.apertures_table.rowCount()):
                 self.ui.apertures_table.cellWidget(row, 5).set_value(False)
             self.mark_shapes.clear(update=True)
+
+    def on_scale_aperture_click(self, signal):
+        try:
+            factor = self.ui.scale_aperture_entry.get_value()
+        except Exception as e:
+            log.debug("FlatCAMGerber.on_scale_aperture_click() --> %s" % str(e))
+            self.app.inform.emit("[ERROR_NOTCL] The aperture scale factor value is missing or wrong format.")
+            return
+
+        def scale_recursion(geom):
+            if type(geom) == list or type(geom) is MultiPolygon:
+                geoms=list()
+                for local_geom in geom:
+                    geoms.append(scale_recursion(local_geom))
+                return geoms
+            else:
+                return  affinity.scale(geom, factor, factor, origin='center')
+
+        if not self.ui.apertures_table.selectedItems():
+            self.app.inform.emit("[WARNING_NOTCL] No aperture to scale. Select at least one aperture and try again.")
+            return
+
+        for x in self.ui.apertures_table.selectedItems():
+            try:
+                apid = self.ui.apertures_table.item(x.row(), 1).text()
+            except Exception as e:
+                log.debug("FlatCAMGerber.on_scale_aperture_click() --> %s" % str(e))
+
+            self.apertures[apid]['solid_geometry'] = scale_recursion(self.apertures[apid]['solid_geometry'])
+
+        self.on_mark_cb_click_table()
+
+    def on_buffer_aperture_click(self, signal):
+        try:
+            buff_value = self.ui.buffer_aperture_entry.get_value()
+        except Exception as e:
+            log.debug("FlatCAMGerber.on_scale_aperture_click() --> %s" % str(e))
+            self.app.inform.emit("[ERROR_NOTCL] The aperture buffer value is missing or wrong format.")
+            return
+
+        def buffer_recursion(geom):
+            if type(geom) == list or type(geom) is MultiPolygon:
+                geoms=list()
+                for local_geom in geom:
+                    geoms.append(buffer_recursion(local_geom))
+                return geoms
+            else:
+                return  geom.buffer(buff_value, join_style=2)
+
+        if not self.ui.apertures_table.selectedItems():
+            self.app.inform.emit("[WARNING_NOTCL] No aperture to scale. Select at least one aperture and try again.")
+            return
+
+        for x in self.ui.apertures_table.selectedItems():
+            try:
+                apid = self.ui.apertures_table.item(x.row(), 1).text()
+            except Exception as e:
+                log.debug("FlatCAMGerber.on_scale_aperture_click() --> %s" % str(e))
+
+            self.apertures[apid]['solid_geometry'] = buffer_recursion(self.apertures[apid]['solid_geometry'])
+
+        self.on_mark_cb_click_table()
+
+    def on_new_modified_gerber(self, signal):
+
+        name = '%s_ap_mod' % str(self.options['name'])
+        apertures = deepcopy(self.apertures)
+        options = self.options
+
+        # geometry storage
+        poly_buff = []
+
+        # How the object should be initialized
+        def obj_init(gerber_obj, app_obj):
+            assert isinstance(gerber_obj, FlatCAMGerber), \
+                "Expected to initialize a FlatCAMGerber but got %s" % type(gerber_obj)
+
+            gerber_obj.source_file = ''
+            gerber_obj.multigeo = False
+            gerber_obj.follow = False
+
+            gerber_obj.apertures = apertures
+            for option in options:
+                # we don't want to overwrite the new name and we don't want to share the 'plot' state
+                # because the new object should ve visible even if the source is not visible
+                if option != 'name' and option != 'plot':
+                    gerber_obj.options[option] = options[option]
+
+            # regenerate solid_geometry
+            app_obj.log.debug("Creating new Gerber object. Joining %s polygons.")
+            for ap in apertures:
+                for geo in apertures[ap]['solid_geometry']:
+                    poly_buff.append(geo)
+
+            # buffering the poly_buff
+            new_geo = MultiPolygon(poly_buff)
+            new_geo = new_geo.buffer(0.0000001)
+            new_geo = new_geo.buffer(-0.0000001)
+
+            gerber_obj.solid_geometry = new_geo
+
+            app_obj.log.debug("Finished creation of a new Gerber object. Polygons joined.")
+
+        log.debug("on_new_modified_gerber()")
+
+        with self.app.proc_container.new("Generating Gerber") as proc:
+
+            self.app.progress.emit(10)
+
+            ### Object creation ###
+            ret = self.app.new_object("gerber", name, obj_init, autoselected=False)
+            if ret == 'fail':
+                self.app.inform.emit('[ERROR_NOTCL] Cretion of Gerber failed.')
+                return
+
+            self.app.progress.emit(100)
+
+            # GUI feedback
+            self.app.inform.emit("[success] Created: " + name)
 
     def convert_units(self, units):
         """
@@ -4698,7 +4859,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             "prepend": "",
             "dwell": False,
             "dwelltime": 1,
-            "type": 'Geometry'
+            "type": 'Geometry',
+            "toolchange_macro": '',
+            "toolchange_macro_enable": False
         })
 
         '''
@@ -4900,6 +5063,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             # "tooldia": self.ui.tooldia_entry,
             "append": self.ui.append_text,
             "prepend": self.ui.prepend_text,
+            "toolchange_macro": self.ui.toolchange_text,
+            "toolchange_macro_enable": self.ui.toolchange_cb
         })
 
         # Fill form fields only on object create
@@ -4924,8 +5089,10 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         if self.app.defaults["global_app_level"] == 'b':
             self.ui.level.setText('<span style="color:green;"><b>Basic</b></span>')
 
+            self.ui.cnc_frame.hide()
         else:
             self.ui.level.setText('<span style="color:red;"><b>Advanced</b></span>')
+            self.ui.cnc_frame.show()
 
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)
