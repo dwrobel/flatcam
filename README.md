@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 26.02.2019
 
 - added a function to read the parameters from ToolChange macro Text Box (I need to move it from CNCJob to Excellon and Geometry)
+- fixed the geometry adding to the self.apertures in the case when regions are done without declaring any aperture first (Allegro does that). Now, that geometry will be stored in the '0' aperture with type REG
 
 25.02.2019
 

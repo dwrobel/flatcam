@@ -2538,11 +2538,25 @@ class Gerber (Geometry):
 
                     if not region.is_empty:
                         poly_buffer.append(region)
+
+                        # we do this for the case that a region is done without having defined any aperture
+                        # Allegro does that
+                        if current_aperture:
+                            used_aperture = current_aperture
+                        elif last_path_aperture:
+                            used_aperture = last_path_aperture
+                        else:
+                            if '0' not in self.apertures:
+                                self.apertures['0'] = {}
+                                self.apertures['0']['solid_geometry'] = []
+                                self.apertures['0']['type'] = 'REG'
+                            used_aperture = '0'
+
                         try:
-                            self.apertures[current_aperture]['solid_geometry'].append(region)
+                            self.apertures[used_aperture]['solid_geometry'].append(region)
                         except KeyError:
-                            self.apertures[current_aperture]['solid_geometry'] = []
-                            self.apertures[current_aperture]['solid_geometry'].append(region)
+                            self.apertures[used_aperture]['solid_geometry'] = []
+                            self.apertures[used_aperture]['solid_geometry'].append(region)
 
                     path = [[current_x, current_y]]  # Start new path
                     continue
