@@ -5988,7 +5988,7 @@ class CNCjob(Geometry):
     #             ax.add_patch(patch)
     #
     #     return fig
-        
+
     def plot2(self, tooldia=None, dpi=75, margin=0.1, gcode_parsed=None,
               color={"T": ["#F0E24D4C", "#B5AB3A4C"], "C": ["#5E6CFFFF", "#4650BDFF"]},
               alpha={"T": 0.3, "C": 1.0}, tool_tolerance=0.0005, obj=None, visible=False, kind='all'):

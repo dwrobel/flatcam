@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+26.02.2019
+
+- added a function to read the parameters from ToolChange macro Text Box (I need to move it from CNCJob to Excellon and Geometry)
+
 25.02.2019
 
 - fixed the Gerber object UI layout
