@@ -1453,15 +1453,19 @@ class CNCObjectUI(ObjectUI):
         self.cnc_box.setContentsMargins(0, 0, 0, 0)
         self.cnc_frame.setLayout(self.cnc_box)
 
-        # Prepend to G-Code
-        toolchangelabel = QtWidgets.QLabel('Toolchange G-Code:')
-        toolchangelabel.setToolTip(
+        # Toolchange Custom G-Code
+        self.toolchangelabel = QtWidgets.QLabel('Toolchange G-Code:')
+        self.toolchangelabel.setToolTip(
             "Type here any G-Code commands you would\n"
             "like to be executed when Toolchange event is encountered.\n"
             "This will constitute a Custom Toolchange GCode,\n"
-            "or a Toolchange Macro."
+            "or a Toolchange Macro.\n"
+            "The FlatCAM variables are surrounded by '%' symbol.\n\n"
+            "WARNING: it can be used only with a postprocessor file\n"
+            "that has 'toolchange_custom' in it's name and this is built\n"
+            "having as template the 'Toolchange Custom' posprocessor file."
         )
-        self.cnc_box.addWidget(toolchangelabel)
+        self.cnc_box.addWidget(self.toolchangelabel)
 
         self.toolchange_text = FCTextArea()
         self.cnc_box.addWidget(self.toolchange_text)
@@ -1469,13 +1473,15 @@ class CNCObjectUI(ObjectUI):
         cnclay = QtWidgets.QHBoxLayout()
         self.cnc_box.addLayout(cnclay)
 
-        # Toolchange Replacement GCode
+        # Toolchange Replacement Enable
         self.toolchange_cb = FCCheckBox(label='Use Toolchange Macro')
         self.toolchange_cb.setToolTip(
             "Check this box if you want to use\n"
             "a Custom Toolchange GCode (macro)."
         )
         cnclay.addWidget(self.toolchange_cb)
+
+        self.toolch_ois = OptionalInputSection(self.toolchange_cb, [self.toolchangelabel, self.toolchange_text])
         cnclay.addStretch()
 
         cnclay1 = QtWidgets.QHBoxLayout()

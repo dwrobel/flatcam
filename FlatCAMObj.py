@@ -5108,6 +5108,10 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         assert isinstance(self.ui, CNCObjectUI), \
             "Expected a CNCObjectUI, got %s" % type(self.ui)
 
+        # this signal has to be connected to it's slot before the defaults are populated
+        # the decision done in the slot has to override the default value set bellow
+        self.ui.toolchange_cb.toggled.connect(self.on_toolchange_custom_clicked)
+
         self.form_fields.update({
             "plot": self.ui.plot_cb,
             # "tooldia": self.ui.tooldia_entry,
@@ -5154,7 +5158,6 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         for row in range(self.ui.cnc_tools_table.rowCount()):
             self.ui.cnc_tools_table.cellWidget(row, 6).clicked.connect(self.on_plot_cb_click_table)
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
-
 
     def ui_disconnect(self):
         for row in range(self.ui.cnc_tools_table.rowCount()):
@@ -5415,7 +5418,13 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             # match = self.re_toolchange.search(g)
             if 'M6' in g:
                 m6_code = self.parse_custom_toolchange_code(self.ui.toolchange_text.get_value())
+                if m6_code is None or m6_code == '':
+                    self.app.inform.emit("[ERROR_NOTCL] Cancelled. The Toolchange Custom code is enabled "
+                                         "but it's empty.")
+                    return 'fail'
+
                 g = g.replace('M6', m6_code)
+                self.app.inform.emit("[success] Toolchange G-code was replaced by a custom code.")
 
         # lines = StringIO(self.gcode)
         lines = StringIO(g)
@@ -5438,6 +5447,29 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             self.app.inform.emit("[success] Saved to: " + filename)
         else:
             return lines
+
+    def on_toolchange_custom_clicked(self, signal):
+        try:
+            if 'toolchange_custom' not in str(self.options['ppname_e']).lower():
+                print(self.options['ppname_e'])
+                if self.ui.toolchange_cb.get_value():
+                    self.ui.toolchange_cb.set_value(False)
+                    self.app.inform.emit(
+                        "[WARNING_NOTCL] The used postprocessor file has to have in it's name: 'toolchange_custom'")
+        except KeyError:
+            try:
+                for key in self.cnc_tools:
+                    ppg = self.cnc_tools[key]['data']['ppname_g']
+                    if 'toolchange_custom' not in str(ppg).lower():
+                        print(ppg)
+                        if self.ui.toolchange_cb.get_value():
+                            self.ui.toolchange_cb.set_value(False)
+                            self.app.inform.emit(
+                                "[WARNING_NOTCL] The used postprocessor file has to have in it's name: "
+                                "'toolchange_custom'")
+            except KeyError:
+                self.app.inform.emit(
+                    "[ERROR] There is no postprocessor file.")
 
     def get_gcode(self, preamble='', postamble=''):
         #we need this to be able get_gcode separatelly for shell command export_gcode

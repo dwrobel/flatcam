@@ -4906,7 +4906,8 @@ class CNCjob(Geometry):
                 if exobj.drills:
                     for tool in tools:
                         self.tool=tool
-                        self.postdata['toolC']=exobj.tools[tool]["C"]
+                        self.postdata['toolC'] = exobj.tools[tool]["C"]
+                        self.tooldia = exobj.tools[tool]["C"]
 
                         ################################################
                         # Create the data.
@@ -5004,6 +5005,7 @@ class CNCjob(Geometry):
                     for tool in tools:
                         self.tool=tool
                         self.postdata['toolC']=exobj.tools[tool]["C"]
+                        self.tooldia = exobj.tools[tool]["C"]
 
                         ################################################
                         node_list = []
@@ -5096,6 +5098,7 @@ class CNCjob(Geometry):
                 if exobj.drills:
                     self.tool = tool
                     self.postdata['toolC'] = exobj.tools[tool]["C"]
+                    self.tooldia = exobj.tools[tool]["C"]
 
                     # Only if tool has points.
                     if tool in points:
@@ -5211,6 +5214,9 @@ class CNCjob(Geometry):
         self.multidepth = multidepth
 
         self.toolchangez = float(toolchangez) if toolchangez else None
+
+        # it servers in the postprocessor file
+        self.tool = tool_no
 
         try:
             if toolchangexy == '':

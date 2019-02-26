@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+27.02.2019
+
+- made the Custom ToolChange Text area in CNCJob Selected Tab depend on the status of the ToolChange Enable Checkbox even in the init stage.
+- added some parameters throughout camlib gcode generation functions; handled some possible errors (e.g like when attempting to use an empty Custom GCode Toolchange)
+
 26.02.2019
 
 - added a function to read the parameters from ToolChange macro Text Box (I need to move it from CNCJob to Excellon and Geometry)
@@ -20,6 +25,8 @@ CAD program, and create G-Code for Isolation routing.
 - because adding shapes to the shapes collection (when doing Mark or Mark All) is time consuming I made the plot_apertures() threaded.
 - made the polygon fusing in modified Gerber creation, a list comprehension in an attempt for optimization
 - when right clicking the files in Project tab, the Save option for Excellon no longer export it but really save the original. 
+- in ToolChange Custom Code replacement, the Text Box in the CNCJob Selected tab will be active only if there is a 'toolchange_custom' in the name of the postprocessor file. This assume that it is, or was created having as template the Toolchange Custom postprocessor file.
+
 
 25.02.2019
 
