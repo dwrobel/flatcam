@@ -171,24 +171,35 @@ class GerberObjectUI(ObjectUI):
         #### Gerber Apertures ####
         self.apertures_table_label = QtWidgets.QLabel('<b>Apertures:</b>')
         self.apertures_table_label.setToolTip(
-            "Apertures Table containining this Gerber object apertures."
+            "Apertures Table for the Gerber Object."
         )
         self.apertures_table_label.setFixedWidth(90)
 
         hlay_plot.addWidget(self.apertures_table_label)
 
-        hlay_plot.addStretch()
-
         # Aperture Table Visibility CB
-        self.aperture_table_visibility_cb = FCCheckBox('Show/Hide')
+        self.aperture_table_visibility_cb = FCCheckBox()
         self.aperture_table_visibility_cb.setToolTip(
-            "Toogle the display of the Gerber Apertures Table.\n"
-            "Also, on hide, it will delete all mark shapes\n"
+            "Toggle the display of the Gerber Apertures Table.\n"
+            "When unchecked, it will delete all mark shapes\n"
             "that are drawn on canvas."
 
         )
-        self.aperture_table_visibility_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        # self.aperture_table_visibility_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
         hlay_plot.addWidget(self.aperture_table_visibility_cb)
+
+        hlay_plot.addStretch()
+
+        # Aperture Mark all CB
+        self.mark_all_cb = FCCheckBox('Mark All')
+        self.mark_all_cb.setToolTip(
+            "When checked it will display all the apertures.\n"
+            "When unchecked, it will delete all mark shapes\n"
+            "that are drawn on canvas."
+
+        )
+        self.mark_all_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        hlay_plot.addWidget(self.mark_all_cb)
 
         self.apertures_table = FCTable()
         self.custom_box.addWidget(self.apertures_table)

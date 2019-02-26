@@ -551,9 +551,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         except:
             pass
 
-        n = len(self.apertures) + len(self.aperture_macros)
-        self.ui.apertures_table.setRowCount(n)
-
         self.apertures_row = 0
         aper_no = self.apertures_row + 1
         sort = []
@@ -565,6 +562,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         for k, v in list(self.aperture_macros.items()):
             sort.append(k)
         sorted_macros = sorted(sort)
+
+        n = len(sorted_apertures) + len(sorted_macros)
+        self.ui.apertures_table.setRowCount(n)
 
         for ap_code in sorted_apertures:
             ap_code = str(ap_code)
@@ -670,6 +670,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.apertures_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.ui.apertures_table.setSortingEnabled(False)
         self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
+        self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
 
         self.ui_connect()
 
@@ -677,12 +678,19 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         for row in range(self.ui.apertures_table.rowCount()):
             self.ui.apertures_table.cellWidget(row, 5).clicked.connect(self.on_mark_cb_click_table)
 
+        self.ui.mark_all_cb.clicked.connect(self.on_mark_all_click)
+
     def ui_disconnect(self):
         for row in range(self.ui.apertures_table.rowCount()):
             try:
                 self.ui.apertures_table.cellWidget(row, 5).clicked.disconnect()
             except:
                 pass
+
+        try:
+            self.ui.mark_all_cb.clicked.disconnect(self.on_mark_all_click)
+        except:
+            pass
 
     def on_mark_cb_click_table(self):
         self.ui_disconnect()
@@ -703,6 +711,36 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 self.plot_apertures(color = '#2d4606bf', marked_aperture=aperture, visible=True)
 
         self.mark_shapes.redraw()
+
+        # make sure that the Mark All is disabled if one of the row mark's are disabled and
+        # if all the row mark's are enabled also enable the Mark All checkbox
+        cb_cnt = 0
+        total_row = self.ui.apertures_table.rowCount()
+        for row in range(total_row):
+            if self.ui.apertures_table.cellWidget(row, 5).isChecked():
+                cb_cnt += 1
+            else:
+                cb_cnt -= 1
+        if cb_cnt < total_row:
+            self.ui.mark_all_cb.setChecked(False)
+        else:
+            self.ui.mark_all_cb.setChecked(True)
+        self.ui_connect()
+
+    def on_mark_all_click(self, signal):
+        self.ui_disconnect()
+        mark_all = self.ui.mark_all_cb.isChecked()
+        for row in range(self.ui.apertures_table.rowCount()):
+            mark_cb = self.ui.apertures_table.cellWidget(row, 5)
+            if mark_all:
+                mark_cb.setChecked(True)
+            else:
+                mark_cb.setChecked(False)
+        for aperture in self.apertures:
+            if mark_all:
+                self.plot_apertures(color='#2d4606bf', marked_aperture=aperture, visible=True)
+            else:
+                self.mark_shapes.clear(update=True)
 
         self.ui_connect()
 
@@ -997,7 +1035,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             self.ui.new_grb_label.setVisible(True)
             self.ui.new_grb_button.setVisible(True)
-
+            self.ui.mark_all_cb.setVisible(True)
+            self.ui.mark_all_cb.setChecked(False)
         else:
             self.ui.apertures_table.setVisible(False)
             self.ui.scale_aperture_label.setVisible(False)
@@ -1010,6 +1049,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             self.ui.new_grb_label.setVisible(False)
             self.ui.new_grb_button.setVisible(False)
+            self.ui.mark_all_cb.setVisible(False)
 
             # on hide disable all mark plots
             for row in range(self.ui.apertures_table.rowCount()):
@@ -1253,28 +1293,35 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         else:
             visibility = kwargs['visible']
 
-        geometry = {}
-        for ap in self.apertures:
-            geometry[int(ap)] = self.apertures[ap]['solid_geometry']
-            try:
-                _ = iter(geometry[int(ap)])
-            except TypeError:
-                geometry[int(ap)] = [geometry[int(ap)]]
+        with self.app.proc_container.new("Plotting Apertures") as proc:
+            def job_thread(app_obj):
+                geometry = {}
+                for ap in self.apertures:
+                    geometry[int(ap)] = self.apertures[ap]['solid_geometry']
+                    try:
+                        _ = iter(geometry[int(ap)])
+                    except TypeError:
+                        geometry[int(ap)] = [geometry[int(ap)]]
+                self.app.progress.emit(10)
 
-        try:
-            if aperture_to_plot_mark in self.apertures:
-                for geo in geometry[int(aperture_to_plot_mark)]:
-                    if type(geo) == Polygon or type(geo) == LineString:
-                        self.add_mark_shape(shape=geo, color=color,
-                                       face_color=color, visible=visibility)
-                    else:
-                        for el in geo:
-                            self.add_mark_shape(shape=el, color=color,
-                                           face_color=color, visible=visibility)
+                try:
+                    if aperture_to_plot_mark in self.apertures:
+                        for geo in geometry[int(aperture_to_plot_mark)]:
+                            if type(geo) == Polygon or type(geo) == LineString:
+                                self.add_mark_shape(shape=geo, color=color,
+                                               face_color=color, visible=visibility)
+                            else:
+                                for el in geo:
+                                    self.add_mark_shape(shape=el, color=color,
+                                                   face_color=color, visible=visibility)
 
-            self.mark_shapes.redraw()
-        except (ObjectDeleted, AttributeError):
-            self.mark_shapes.clear(update=True)
+                    self.mark_shapes.redraw()
+                    self.app.progress.emit(90)
+
+                except (ObjectDeleted, AttributeError):
+                    self.mark_shapes.clear(update=True)
+
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
     def serialize(self):
         return {

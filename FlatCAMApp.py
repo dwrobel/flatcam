@@ -6070,7 +6070,6 @@ class App(QtCore.QObject):
         elif units == 'MM' or units == 'METIRC':
             units ='METRIC'
 
-
         def make_dxf():
             try:
                 dxf_code = obj.export_dxf()
