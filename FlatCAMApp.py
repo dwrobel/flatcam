@@ -1529,6 +1529,9 @@ class App(QtCore.QObject):
         self.pos = (0, 0)
         self.pos_jump = (0, 0)
 
+        # decide if we have a double click or single click
+        self.doubleclick = False
+
         # variable to store if there was motion before right mouse button click (panning)
         self.panning_action = False
         # variable to store if a command is active (then the var is not None) and which one it is
@@ -4534,14 +4537,7 @@ class App(QtCore.QObject):
 
     def on_mouse_click_over_plot(self, event):
         """
-        Callback for the mouse click event over the plot. This event is generated
-        by the Matplotlib backend and has been registered in ``self.__init__()``.
-        For details, see: http://matplotlib.org/users/event_handling.html
-
         Default actions are:
-
-        * Copy coordinates to clipboard. Ex.: (65.5473, -13.2679)
-
         :param event: Contains information about the event, like which button
             was clicked, the pixel coordinates and the axes coordinates.
         :return: None
@@ -4563,8 +4559,6 @@ class App(QtCore.QObject):
             self.app_cursor.enabled = False
 
         try:
-            # App.log.debug('button=%d, x=%d, y=%d, xdata=%f, ydata=%f' % (
-            # event.button, event.pos[0], event.pos[1], self.pos[0], self.pos[1]))
             modifiers = QtWidgets.QApplication.keyboardModifiers()
 
             if event.button == 1:
@@ -4580,30 +4574,13 @@ class App(QtCore.QObject):
                     self.clipboard.setText(self.defaults["global_point_clipboard_format"] % (self.pos[0], self.pos[1]))
                     return
 
-                # If the CTRL key is pressed when the LMB is clicked then if the object is selected it will deselect,
-                # and if it's not selected then it will be selected
-                if modifiers == QtCore.Qt.ControlModifier:
-                    # If there is no active command (self.command_active is None) then we check if we clicked on
-                    # a object by checking the bounding limits against mouse click position
-                    if self.command_active is None:
-                        self.select_objects(key='CTRL')
-                else:
-                    # If there is no active command (self.command_active is None) then we check if we clicked on a object by
-                    # checking the bounding limits against mouse click position
-                    if self.command_active is None:
-                        self.select_objects()
-
             self.on_mouse_move_over_plot(event, origin_click=True)
         except Exception as e:
             App.log.debug("App.on_mouse_click_over_plot() --> Outside plot? --> %s" % str(e))
 
     def on_double_click_over_plot(self, event):
+        self.doubleclick = True
         # make double click work only for the LMB
-        if event.button == 1:
-            if self.collection.get_selected():
-                self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
-                # delete the selection shape(S) as it may be in the way
-                self.delete_selection_shape()
 
     def on_mouse_move_over_plot(self, event, origin_click=None):
         """
@@ -4702,16 +4679,39 @@ class App(QtCore.QObject):
         # selection and then select a type of selection ("enclosing" or "touching")
         try:
             if event.button == 1:  # left click
-                if self.selection_type is not None:
-                    self.selection_area_handler(self.pos, pos, self.selection_type)
-                    self.selection_type = None
+                if self.doubleclick is True:
+                    self.doubleclick = False
+                    if self.collection.get_selected():
+                        self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
+                        # delete the selection shape(S) as it may be in the way
+                        self.delete_selection_shape()
+
+                else:
+                    if self.selection_type is not None:
+                        self.selection_area_handler(self.pos, pos, self.selection_type)
+                        self.selection_type = None
+                    else:
+                        modifiers = QtWidgets.QApplication.keyboardModifiers()
+
+                        # If the CTRL key is pressed when the LMB is clicked then if the object is selected it will deselect,
+                        # and if it's not selected then it will be selected
+                        if modifiers == QtCore.Qt.ControlModifier:
+                            # If there is no active command (self.command_active is None) then we check if we clicked on
+                            # a object by checking the bounding limits against mouse click position
+                            if self.command_active is None:
+                                self.select_objects(key='CTRL')
+                        else:
+                            # If there is no active command (self.command_active is None) then we check if we clicked on a object by
+                            # checking the bounding limits against mouse click position
+                            if self.command_active is None:
+                                self.select_objects()
+
         except Exception as e:
             log.warning("Error: %s" % str(e))
             return
 
     def selection_area_handler(self, start_pos, end_pos, sel_type):
         """
-
         :param start_pos: mouse position when the selection LMB click was done
         :param end_pos: mouse position when the left mouse button is released
         :param sel_type: if True it's a left to right selection (enclosure), if False it's a 'touch' selection
@@ -5027,7 +5027,15 @@ class App(QtCore.QObject):
         try:
             obj = self.collection.get_active()
         except:
-            self.inform.emit("[WARNING_NOTCL] Select an Gerber or Excellon file to view it's source.")
+            self.inform.emit("[WARNING_NOTCL] Select an Gerber or Excellon file to view it's source file.")
+            return 'fail'
+
+        # then append the text from GCode to the text editor
+        try:
+            file = StringIO(obj.source_file)
+        except AttributeError:
+            self.inform.emit("[WARNING_NOTCL] There is no selected object for which to see it's source file code.")
+            return 'fail'
 
         # add the tab if it was closed
         self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, "Code Editor")
@@ -5037,8 +5045,6 @@ class App(QtCore.QObject):
         # Switch plot_area to CNCJob tab
         self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
 
-        # then append the text from GCode to the text editor
-        file = StringIO(obj.source_file)
         try:
             for line in file:
                 proc_line = str(line).strip('\n')
