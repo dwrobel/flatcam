@@ -5016,11 +5016,11 @@ class App(QtCore.QObject):
         if type(obj) == FlatCAMGeometry:
             self.on_file_exportdxf()
         elif type(obj) == FlatCAMExcellon:
-            self.on_file_exportexcellon()
+            self.on_file_saveexcellon()
         elif type(obj) == FlatCAMCNCjob:
             obj.on_exportgcode_button_click()
         elif type(obj) == FlatCAMGerber:
-            self.on_file_exportgerber()
+            self.on_file_savegerber()
 
     def on_view_source(self):
 
@@ -5294,18 +5294,18 @@ class App(QtCore.QObject):
             write_png(filename, data)
             self.file_saved.emit("png", filename)
 
-    def on_file_exportgerber(self):
+    def on_file_savegerber(self):
         """
-        Callback for menu item File->Export SVG.
+        Callback for menu item File->Export Gerber.
 
         :return: None
         """
-        self.report_usage("on_file_exportgerber")
-        App.log.debug("on_file_exportgerber()")
+        self.report_usage("on_file_savegerber")
+        App.log.debug("on_file_savegerber()")
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit("[WARNING_NOTCL] No object selected. Please Select an Gerber object to export.")
+            self.inform.emit("[WARNING_NOTCL] No object selected. Please select an Gerber object to export.")
             return
 
         # Check for more compatible types and add as required
@@ -5318,20 +5318,59 @@ class App(QtCore.QObject):
         filter = "Gerber File (*.GBR);;Gerber File (*.GRB);;All Files (*.*)"
         try:
             filename, _ = QtWidgets.QFileDialog.getSaveFileName(
-                caption="Export Gerber",
+                caption="Save Gerber source file",
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=filter)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export Gerber", filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Save Gerber source file", filter=filter)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit("[WARNING_NOTCL]Export Gerber cancelled.")
+            self.inform.emit("[WARNING_NOTCL]Save Gerber source file cancelled.")
             return
         else:
-            self.export_gerber(name, filename)
+            self.save_source_file(name, filename)
             self.file_saved.emit("Gerber", filename)
+
+    def on_file_saveexcellon(self):
+        """
+        Callback for menu item File->Export Gerber.
+
+        :return: None
+        """
+        self.report_usage("on_file_saveexcellon")
+        App.log.debug("on_file_saveexcellon()")
+
+        obj = self.collection.get_active()
+        if obj is None:
+            self.inform.emit("[WARNING_NOTCL] No object selected. Please select an Excellon object to export.")
+            return
+
+        # Check for more compatible types and add as required
+        if not isinstance(obj, FlatCAMExcellon):
+            self.inform.emit("[ERROR_NOTCL] Failed. Only Excellon objects can be saved as Excellon files...")
+            return
+
+        name = self.collection.get_active().options["name"]
+
+        filter = "Excellon File (*.DRL);;Excellon File (*.TXT);;All Files (*.*)"
+        try:
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                caption="Save Excellon source file",
+                directory=self.get_last_save_folder() + '/' + name,
+                filter=filter)
+        except TypeError:
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Save Excellon source file", filter=filter)
+
+        filename = str(filename)
+
+        if filename == "":
+            self.inform.emit("[WARNING_NOTCL]Saving Excellon source file cancelled.")
+            return
+        else:
+            self.save_source_file(name, filename)
+            self.file_saved.emit("Excellon", filename)
 
     def on_file_exportexcellon(self):
         """
@@ -5885,19 +5924,19 @@ class App(QtCore.QObject):
         else:
             make_black_film()
 
-    def export_gerber(self, obj_name, filename, use_thread=True):
+    def save_source_file(self, obj_name, filename, use_thread=True):
         """
         Exports a Gerber Object to an Gerber file.
 
         :param filename: Path to the Gerber file to save to.
         :return:
         """
-        self.report_usage("export_gerber()")
+        self.report_usage("save source file()")
 
         if filename is None:
             filename = self.defaults["global_last_save_folder"]
 
-        self.log.debug("export_gerber()")
+        self.log.debug("save source file()")
 
         obj = self.collection.get_by_name(obj_name)
 
@@ -5906,8 +5945,8 @@ class App(QtCore.QObject):
 
         with open(filename, 'w') as file:
             file.writelines('G04*\n')
-            file.writelines('G04 GERBER (RE)GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s*\n' %
-                            (str(self.version), str(self.version_date)))
+            file.writelines('G04 %s (RE)GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s*\n' %
+                            (obj.kind.upper(), str(self.version), str(self.version_date)))
             file.writelines('G04 Filename: %s*\n' % str(obj_name))
             file.writelines('G04 Created on : %s*\n' % time_string)
 

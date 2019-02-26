@@ -18,6 +18,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed Gerber Aperture Table dimensions
 - added a Mark All button in the Gerber aperture table.
 - because adding shapes to the shapes collection (when doing Mark or Mark All) is time consuming I made the plot_apertures() threaded.
+- made the polygon fusing in modified Gerber creation, a list comprehension in an attempt for optimization
+- when right clicking the files in Project tab, the Save option for Excellon no longer export it but really save the original. 
 
 25.02.2019
 

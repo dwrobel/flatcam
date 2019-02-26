@@ -708,7 +708,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     break
 
             if self.ui.apertures_table.cellWidget(check_row, 5).isChecked():
-                self.plot_apertures(color = '#2d4606bf', marked_aperture=aperture, visible=True)
+                # self.plot_apertures(color='#FF0000BF', marked_aperture=aperture, visible=True)
+                self.plot_apertures(color='#2d4606bf', marked_aperture=aperture, visible=True)
 
         self.mark_shapes.redraw()
 
@@ -738,6 +739,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 mark_cb.setChecked(False)
         for aperture in self.apertures:
             if mark_all:
+                # self.plot_apertures(color='#FF0000BF', marked_aperture=aperture, visible=True)
                 self.plot_apertures(color='#2d4606bf', marked_aperture=aperture, visible=True)
             else:
                 self.mark_shapes.clear(update=True)
@@ -1132,7 +1134,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             assert isinstance(gerber_obj, FlatCAMGerber), \
                 "Expected to initialize a FlatCAMGerber but got %s" % type(gerber_obj)
 
-            gerber_obj.source_file = ''
+            gerber_obj.source_file = self.source_file
             gerber_obj.multigeo = False
             gerber_obj.follow = False
 
@@ -1145,9 +1147,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             # regenerate solid_geometry
             app_obj.log.debug("Creating new Gerber object. Joining %s polygons.")
-            for ap in apertures:
-                for geo in apertures[ap]['solid_geometry']:
-                    poly_buff.append(geo)
+            # for ap in apertures:
+                # for geo in apertures[ap]['solid_geometry']:
+                #     poly_buff.append(geo)
+            poly_buff = [geo for ap in apertures for geo in apertures[ap]['solid_geometry']]
 
             # buffering the poly_buff
             new_geo = MultiPolygon(poly_buff)
@@ -1294,6 +1297,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             visibility = kwargs['visible']
 
         with self.app.proc_container.new("Plotting Apertures") as proc:
+            self.app.progress.emit(30)
+
             def job_thread(app_obj):
                 geometry = {}
                 for ap in self.apertures:
@@ -1302,26 +1307,24 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         _ = iter(geometry[int(ap)])
                     except TypeError:
                         geometry[int(ap)] = [geometry[int(ap)]]
-                self.app.progress.emit(10)
+                self.app.progress.emit(30)
 
                 try:
                     if aperture_to_plot_mark in self.apertures:
                         for geo in geometry[int(aperture_to_plot_mark)]:
                             if type(geo) == Polygon or type(geo) == LineString:
-                                self.add_mark_shape(shape=geo, color=color,
-                                               face_color=color, visible=visibility)
+                                self.add_mark_shape(shape=geo, color=color, face_color=color, visible=visibility)
                             else:
                                 for el in geo:
-                                    self.add_mark_shape(shape=el, color=color,
-                                                   face_color=color, visible=visibility)
+                                    self.add_mark_shape(shape=el, color=color, face_color=color, visible=visibility)
 
                     self.mark_shapes.redraw()
-                    self.app.progress.emit(90)
+                    self.app.progress.emit(100)
 
                 except (ObjectDeleted, AttributeError):
                     self.mark_shapes.clear(update=True)
 
-            self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [self]})
 
     def serialize(self):
         return {
