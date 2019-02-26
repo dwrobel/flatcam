@@ -4602,6 +4602,8 @@ class CNCjob(Geometry):
         self.toolchange_xy = toolchange_xy
         self.toolchange_xy_type = None
 
+        self.toolC = tooldia
+
         self.endz = endz
         self.depthpercut = depthpercut
 
@@ -4648,6 +4650,12 @@ class CNCjob(Geometry):
 
         self.tool = 0.0
 
+        # search for toolchange parameters in the Toolchange Custom Code
+        self.re_toolchange_custom = re.compile(r'(%[a-zA-Z0-9\-_]+%)')
+
+        # search for toolchange code: M6
+        self.re_toolchange = re.compile(r'^\s*(M6)$')
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from Geometry.
@@ -4688,6 +4696,22 @@ class CNCjob(Geometry):
         except Exception as e:
             self.app.log.error('Exception occurred within a postprocessor: ' + traceback.format_exc())
             return ''
+
+    def parse_custom_toolchange_code(self, data):
+        text = data
+        match_list = self.re_toolchange_custom.findall(text)
+
+        if match_list:
+            for match in match_list:
+                command = match.strip('%')
+                try:
+                    value = getattr(self, command)
+                except AttributeError:
+                    self.app.inform.emit("[ERROR] There is no such parameter: %s" % str(match))
+                    log.debug("CNCJob.parse_custom_toolchange_code() --> AttributeError ")
+                    return 'fail'
+                text = text.replace(match, str(value))
+            return text
 
     def optimized_travelling_salesman(self, points, start=None):
         """

@@ -3829,7 +3829,7 @@ class App(QtCore.QObject):
         if notebook_widget_name == 'selected_tab':
             if str(type(self.collection.get_active())) == "<class 'FlatCAMObj.FlatCAMGeometry'>":
                 # Tool add works for Geometry only if Advanced is True in Preferences
-                if self.defaults["global_advanced"] is True:
+                if self.defaults["global_app_level"] == 'a':
                     tool_add_popup = FCInputDialog(title="New Tool ...",
                                                    text='Enter a Tool Diameter:',
                                                    min=0.0000, max=99.9999, decimals=4)

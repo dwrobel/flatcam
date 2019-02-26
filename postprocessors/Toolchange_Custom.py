@@ -1,7 +1,7 @@
 from FlatCAMPostProc import *
 
 
-class Toolchange_Probe_general(FlatCAMPostProc):
+class Toolchange_Custom(FlatCAMPostProc):
 
     coordinate_format = "%.*f"
     feedrate_format = '%.*f'
@@ -97,26 +97,10 @@ class Toolchange_Probe_general(FlatCAMPostProc):
 
             if toolchangexy is not None:
                 gcode = """
-M5
-G00 X{toolchangex} Y{toolchangey}                
-T{tool}
 M6
-(MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
-M0
 """.format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchangex),
              toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
              tool=int(p.tool),
-             t_drills=no_drills,
-             toolC=toolC_formatted)
-
-            else:
-                gcode = """
-M5
-T{tool}
-M6
-(MSG, Change to Tool Dia = {toolC} ||| Total drills for tool T{tool} = {t_drills})
-M0
-""".format(tool=int(p.tool),
              t_drills=no_drills,
              toolC=toolC_formatted)
 
@@ -127,23 +111,10 @@ M0
         else:
             if toolchangexy is not None:
                 gcode = """
-M5
-G00 X{toolchangex} Y{toolchangey}
-T{tool}
-M6    
-(MSG, Change to Tool Dia = {toolC})
-M0
+M6
 """.format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchangex),
              toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
              tool=int(p.tool),
-             toolC=toolC_formatted)
-            else:
-                gcode = """
-M5
-T{tool}
-M6    
-(MSG, Change to Tool Dia = {toolC})
-M0""".format(tool=int(p.tool),
              toolC=toolC_formatted)
 
             if f_plunge is True:
