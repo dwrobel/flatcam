@@ -4510,16 +4510,19 @@ class App(QtCore.QObject):
         self.ui.show()
 
     def on_select_tab(self, name):
+        # if the splitter is hidden, display it, else hide it but only if the current widget is the same
+        if self.ui.splitter.sizes()[0] == 0:
+            self.ui.splitter.setSizes([1, 1])
+        else:
+            if self.ui.notebook.currentWidget().objectName() == name + '_tab':
+                self.ui.splitter.setSizes([0, 1])
+
         if name == 'project':
             self.ui.notebook.setCurrentWidget(self.ui.project_tab)
         elif name == 'selected':
             self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
         elif name == 'tool':
             self.ui.notebook.setCurrentWidget(self.ui.tool_tab)
-
-        # if the splitter us hidden, display it
-        if self.ui.splitter.sizes()[0] == 0:
-            self.ui.splitter.setSizes([1, 1])
 
     def on_copy_name(self):
         self.report_usage("on_copy_name()")

@@ -13,6 +13,9 @@ CAD program, and create G-Code for Isolation routing.
 
 - made the Custom ToolChange Text area in CNCJob Selected Tab depend on the status of the ToolChange Enable Checkbox even in the init stage.
 - added some parameters throughout camlib gcode generation functions; handled some possible errors (e.g like when attempting to use an empty Custom GCode Toolchange)
+- added toggle effect for the tools in the toolbar.
+- enhanced the toggle effect for the tools in the Tools Toolbar and also for Notebook Tab selection: if the current tool is activated it will toggle the notebook side but only if the installed widget is itself. If coming from another tool, the notebook will stay visible
+-
 
 26.02.2019
 

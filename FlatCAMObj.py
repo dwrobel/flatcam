@@ -708,8 +708,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     break
 
             if self.ui.apertures_table.cellWidget(check_row, 5).isChecked():
-                # self.plot_apertures(color='#FF0000BF', marked_aperture=aperture, visible=True)
-                self.plot_apertures(color='#2d4606bf', marked_aperture=aperture, visible=True)
+                # self.plot_apertures(color='#2d4606bf', marked_aperture=aperture, visible=True)
+                self.plot_apertures(color='#FD6A02', marked_aperture=aperture, visible=True)
 
         self.mark_shapes.redraw()
 
@@ -739,8 +739,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 mark_cb.setChecked(False)
         for aperture in self.apertures:
             if mark_all:
-                # self.plot_apertures(color='#FF0000BF', marked_aperture=aperture, visible=True)
-                self.plot_apertures(color='#2d4606bf', marked_aperture=aperture, visible=True)
+                # self.plot_apertures(color='#2d4606bf', marked_aperture=aperture, visible=True)
+                self.plot_apertures(color='#FD6A02', marked_aperture=aperture, visible=True)
             else:
                 self.mark_shapes.clear(update=True)
 
