@@ -109,7 +109,7 @@ class FlatCAMPostProc_Tools(object, metaclass=ABCPostProcRegister):
         pass
 
     @abstractmethod
-    def feedrate_z_code(self, p):
+    def z_feedrate_code(self, p):
         pass
 
     @abstractmethod

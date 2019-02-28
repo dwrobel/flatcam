@@ -60,7 +60,7 @@ class hpgl(FlatCAMPostProc):
     def feedrate_code(self, p):
         return ''
 
-    def feedrate_z_code(self, p):
+    def z_feedrate_code(self, p):
         return ''
 
     def feedrate_rapid_code(self, p):

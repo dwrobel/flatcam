@@ -4675,24 +4675,32 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         hlay1.addWidget(self.tc_variable_combo)
 
         # Populate the Combo Box
-        variables = ['tool', 'toolC', 't_drills', 'toolchangex', 'toolchangey', 'toolchangez']
+        variables = ['Parameters', 'tool', 'tooldia', 't_drills', 'x_toolchange', 'y_toolchange', 'z_toolchange',
+                     'z_cut', 'z_move', 'z_depthpercut', 'spindlespeed', 'dwelltime']
         self.tc_variable_combo.addItems(variables)
-        self.tc_variable_combo.setItemData(0, "tool = tool number", Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(1, "toolC = tool diameter", Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(2, "t_drills = for Excellon, total number of drills", Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(3, "toolchangex = X coord for Toolchange", Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(4, "toolchangey = Y coord for Toolchange", Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(5, "toolchangez = Z coord for Toolchange", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(0, "FlatCAM CNC parameters", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(1, "tool = tool number", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(2, "tooldia = tool diameter", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(3, "t_drills = for Excellon, total number of drills", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(4, "x_toolchange = X coord for Toolchange", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(5, "y_toolchange = Y coord for Toolchange", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(6, "z_toolchange = Z coord for Toolchange", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(7, "z_cut = Z coord for Toolchange", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(8, "z_move = Z coord for Toolchange", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(9, "z_depthpercut = the step value for multidepth cut", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(10, "spindlesspeed = the value for the spindle speed", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(11, "dwelltime = time to dwell to allow the spindle to reach it's set RPM",
+                                           Qt.ToolTipRole)
 
         hlay1.addStretch()
 
         # Insert Variable into the Toolchange G-Code Text Box
-        self.tc_insert_buton = FCButton("Insert")
-        self.tc_insert_buton.setToolTip(
-            "Insert the variable in the GCode Box\n"
-            "surrounded by the '%' symbol."
-        )
-        hlay1.addWidget(self.tc_insert_buton)
+        # self.tc_insert_buton = FCButton("Insert")
+        # self.tc_insert_buton.setToolTip(
+        #     "Insert the variable in the GCode Box\n"
+        #     "surrounded by the '%' symbol."
+        # )
+        # hlay1.addWidget(self.tc_insert_buton)
 
         self.layout.addStretch()
 

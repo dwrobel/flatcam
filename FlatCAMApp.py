@@ -1381,6 +1381,8 @@ class App(QtCore.QObject):
 
         self.ui.general_defaults_form.general_gui_set_group.layout_combo.activated.connect(self.on_layout)
 
+        self.ui.cncjob_defaults_form.cncjob_adv_opt_group.tc_variable_combo.currentIndexChanged[str].connect(
+            self.on_cnc_custom_parameters)
         # Modify G-CODE Plot Area TAB
         self.ui.code_editor.textChanged.connect(self.handleTextChanged)
         self.ui.buttonOpen.clicked.connect(self.handleOpen)
@@ -1660,6 +1662,8 @@ class App(QtCore.QObject):
             #self.log.debug("defaults_write_form(): No field for: %s" % option)
             # TODO: Rethink this?
             pass
+        except AttributeError:
+            log.debug(field)
 
     def clear_pool(self):
         self.pool.close()
@@ -3689,6 +3693,12 @@ class App(QtCore.QObject):
         self.ui.grid_gap_y_entry.setText(str(self.defaults["global_gridy"]))
         self.ui.snap_max_dist_entry.setText(str(self.defaults["global_snap_max"]))
         self.ui.grid_gap_link_cb.setChecked(True)
+
+    def on_cnc_custom_parameters(self, signal_text):
+        if signal_text == 'Parameters':
+            return
+        else:
+            self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_text.insertPlainText('%%%s%%' % signal_text)
 
     def on_save_button(self):
         self.save_defaults(silent=False)

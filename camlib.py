@@ -4594,18 +4594,18 @@ class CNCjob(Geometry):
         self.z_move = z_move
 
         self.feedrate = feedrate
-        self.feedrate_z = feedrate_z
+        self.z_feedrate = feedrate_z
         self.feedrate_rapid = feedrate_rapid
 
         self.tooldia = tooldia
-        self.toolchangez = toolchangez
-        self.toolchange_xy = toolchange_xy
+        self.z_toolchange = toolchangez
+        self.xy_toolchange = toolchange_xy
         self.toolchange_xy_type = None
 
         self.toolC = tooldia
 
-        self.endz = endz
-        self.depthpercut = depthpercut
+        self.z_end = endz
+        self.z_depthpercut = depthpercut
 
         self.unitcode = {"IN": "G20", "MM": "G21"}
 
@@ -4659,9 +4659,9 @@ class CNCjob(Geometry):
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from Geometry.
-        self.ser_attrs += ['kind', 'z_cut', 'z_move', 'toolchangez', 'feedrate', 'feedrate_z', 'feedrate_rapid',
+        self.ser_attrs += ['kind', 'z_cut', 'z_move', 'z_toolchange', 'feedrate', 'z_feedrate', 'feedrate_rapid',
                            'tooldia', 'gcode', 'input_geometry_bounds', 'gcode_parsed', 'steps_per_circle',
-                           'depthpercut', 'spindlespeed', 'dwell', 'dwelltime']
+                           'z_depthpercut', 'spindlespeed', 'dwell', 'dwelltime']
 
     @property
     def postdata(self):
@@ -4674,12 +4674,12 @@ class CNCjob(Geometry):
         self.z_cut = float(self.z_cut) * factor
         self.z_move *= factor
         self.feedrate *= factor
-        self.feedrate_z *= factor
+        self.z_feedrate *= factor
         self.feedrate_rapid *= factor
         self.tooldia *= factor
-        self.toolchangez *= factor
-        self.endz *= factor
-        self.depthpercut = float(self.depthpercut) * factor
+        self.z_toolchange *= factor
+        self.z_end *= factor
+        self.z_depthpercut = float(self.z_depthpercut) * factor
 
         return factor
 
@@ -4785,14 +4785,14 @@ class CNCjob(Geometry):
         else:
             self.z_cut = drillz
 
-        self.toolchangez = toolchangez
+        self.z_toolchange = toolchangez
 
         try:
             if toolchangexy == '':
-                self.toolchange_xy = None
+                self.xy_toolchange = None
             else:
-                self.toolchange_xy = [float(eval(a)) for a in toolchangexy.split(",")]
-                if len(self.toolchange_xy) < 2:
+                self.xy_toolchange = [float(eval(a)) for a in toolchangexy.split(",")]
+                if len(self.xy_toolchange) < 2:
                     self.app.inform.emit("[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be "
                                          "in the format (x, y) \nbut now there is only one value, not two. ")
                     return 'fail'
@@ -4801,7 +4801,7 @@ class CNCjob(Geometry):
             pass
 
         self.startz = startz
-        self.endz = endz
+        self.z_end = endz
 
         self.pp_excellon = self.app.postprocessors[self.pp_excellon_name]
         p = self.pp_excellon
@@ -4851,9 +4851,9 @@ class CNCjob(Geometry):
         gcode += self.doformat(p.feedrate_code)
 
         if toolchange is False:
-            if self.toolchange_xy is not None:
-                gcode += self.doformat(p.lift_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
-                gcode += self.doformat(p.startz_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+            if self.xy_toolchange is not None:
+                gcode += self.doformat(p.lift_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
+                gcode += self.doformat(p.startz_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
             else:
                 gcode += self.doformat(p.lift_code, x=0.0, y=0.0)
                 gcode += self.doformat(p.startz_code, x=0.0, y=0.0)
@@ -4890,9 +4890,9 @@ class CNCjob(Geometry):
                 locations.append((point.coords.xy[0][0], point.coords.xy[1][0]))
             return locations
 
-        if self.toolchange_xy is not None:
-            self.oldx = self.toolchange_xy[0]
-            self.oldy = self.toolchange_xy[1]
+        if self.xy_toolchange is not None:
+            self.oldx = self.xy_toolchange[0]
+            self.oldy = self.xy_toolchange[1]
         else:
             self.oldx = 0.0
             self.oldy = 0.0
@@ -5200,7 +5200,7 @@ class CNCjob(Geometry):
         self.z_move = float(z_move) if z_move else None
 
         self.feedrate = float(feedrate) if feedrate else None
-        self.feedrate_z = float(feedrate_z) if feedrate_z else None
+        self.z_feedrate = float(feedrate_z) if feedrate_z else None
         self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
 
         self.spindlespeed = int(spindlespeed) if spindlespeed else None
@@ -5208,22 +5208,22 @@ class CNCjob(Geometry):
         self.dwelltime = float(dwelltime) if dwelltime else None
 
         self.startz = float(startz) if startz else None
-        self.endz = float(endz) if endz else None
+        self.z_end = float(endz) if endz else None
 
-        self.depthpercut = float(depthpercut) if depthpercut else None
+        self.z_depthpercut = float(depthpercut) if depthpercut else None
         self.multidepth = multidepth
 
-        self.toolchangez = float(toolchangez) if toolchangez else None
+        self.z_toolchange = float(toolchangez) if toolchangez else None
 
         # it servers in the postprocessor file
         self.tool = tool_no
 
         try:
             if toolchangexy == '':
-                self.toolchange_xy = None
+                self.xy_toolchange = None
             else:
-                self.toolchange_xy = [float(eval(a)) for a in toolchangexy.split(",")]
-                if len(self.toolchange_xy) < 2:
+                self.xy_toolchange = [float(eval(a)) for a in toolchangexy.split(",")]
+                if len(self.xy_toolchange) < 2:
                     self.app.inform.emit("[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be "
                                          "in the format (x, y) \nbut now there is only one value, not two. ")
                     return 'fail'
@@ -5286,7 +5286,7 @@ class CNCjob(Geometry):
 
         if toolchange:
             # if "line_xyz" in self.pp_geometry_name:
-            #     self.gcode += self.doformat(p.toolchange_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+            #     self.gcode += self.doformat(p.toolchange_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
             # else:
             #     self.gcode += self.doformat(p.toolchange_code)
             self.gcode += self.doformat(p.toolchange_code)
@@ -5447,7 +5447,7 @@ class CNCjob(Geometry):
 
         self.feedrate = float(feedrate) if feedrate else None
 
-        self.feedrate_z = float(feedrate_z) if feedrate_z else None
+        self.z_feedrate = float(feedrate_z) if feedrate_z else None
 
         self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
 
@@ -5459,20 +5459,20 @@ class CNCjob(Geometry):
 
         self.startz = float(startz) if startz else None
 
-        self.endz = float(endz) if endz else None
+        self.z_end = float(endz) if endz else None
 
-        self.depthpercut = float(depthpercut) if depthpercut else None
+        self.z_depthpercut = float(depthpercut) if depthpercut else None
 
         self.multidepth = multidepth
 
-        self.toolchangez = float(toolchangez) if toolchangez else None
+        self.z_toolchange = float(toolchangez) if toolchangez else None
 
         try:
             if toolchangexy == '':
-                self.toolchange_xy = None
+                self.xy_toolchange = None
             else:
-                self.toolchange_xy = [float(eval(a)) for a in toolchangexy.split(",")]
-                if len(self.toolchange_xy) < 2:
+                self.xy_toolchange = [float(eval(a)) for a in toolchangexy.split(",")]
+                if len(self.xy_toolchange) < 2:
                     self.app.inform.emit("[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be "
                                          "in the format (x, y) \nbut now there is only one value, not two. ")
                     return 'fail'
@@ -5538,7 +5538,7 @@ class CNCjob(Geometry):
 
         if toolchange:
             # if "line_xyz" in self.pp_geometry_name:
-            #     self.gcode += self.doformat(p.toolchange_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+            #     self.gcode += self.doformat(p.toolchange_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
             # else:
             #     self.gcode += self.doformat(p.toolchange_code)
             self.gcode += self.doformat(p.toolchange_code)
@@ -5705,11 +5705,11 @@ class CNCjob(Geometry):
             gcode += self.doformat(p.rapid_code, x=path[0][0], y=path[0][1])  # Move to first point
 
             # Move down to cutting depth
-            gcode += self.doformat(p.feedrate_z_code)
+            gcode += self.doformat(p.z_feedrate_code)
             gcode += self.doformat(p.down_z_start_code)
             gcode += self.doformat(p.spindle_fwd_code) # Start dispensing
             gcode += self.doformat(p.dwell_fwd_code)
-            gcode += self.doformat(p.feedrate_z_dispense_code)
+            gcode += self.doformat(p.z_feedrate_dispense_code)
             gcode += self.doformat(p.lift_z_dispense_code)
             gcode += self.doformat(p.feedrate_xy_code)
 
@@ -5723,12 +5723,12 @@ class CNCjob(Geometry):
             gcode += self.doformat(p.down_z_stop_code)
             gcode += self.doformat(p.spindle_off_code)
             gcode += self.doformat(p.dwell_rev_code)
-            gcode += self.doformat(p.feedrate_z_code)
+            gcode += self.doformat(p.z_feedrate_code)
             gcode += self.doformat(p.lift_code)
         elif type(geometry) == Point:
             gcode += self.doformat(p.linear_code, x=path[0][0], y=path[0][1])  # Move to first point
 
-            gcode += self.doformat(p.feedrate_z_dispense_code)
+            gcode += self.doformat(p.z_feedrate_dispense_code)
             gcode += self.doformat(p.down_z_start_code)
             gcode += self.doformat(p.spindle_fwd_code) # Start dispensing
             gcode += self.doformat(p.dwell_fwd_code)
@@ -5739,7 +5739,7 @@ class CNCjob(Geometry):
             gcode += self.doformat(p.spindle_off_code)
             gcode += self.doformat(p.down_z_stop_code)
             gcode += self.doformat(p.dwell_rev_code)
-            gcode += self.doformat(p.feedrate_z_code)
+            gcode += self.doformat(p.z_feedrate_code)
             gcode += self.doformat(p.lift_code)
         return gcode
 
@@ -5772,17 +5772,17 @@ class CNCjob(Geometry):
         else:
             z_cut = Decimal(self.z_cut).quantize(Decimal('0.000000001'))
 
-        if self.depthpercut is None:
-            self.depthpercut = z_cut
-        elif not isinstance(self.depthpercut, Decimal):
-            self.depthpercut = Decimal(self.depthpercut).quantize(Decimal('0.000000001'))
+        if self.z_depthpercut is None:
+            self.z_depthpercut = z_cut
+        elif not isinstance(self.z_depthpercut, Decimal):
+            self.z_depthpercut = Decimal(self.z_depthpercut).quantize(Decimal('0.000000001'))
 
         depth = 0
         reverse = False
         while depth > z_cut:
 
             # Increase depth. Limit to z_cut.
-            depth -= self.depthpercut
+            depth -= self.z_depthpercut
             if depth < z_cut:
                 depth = z_cut
 
@@ -6180,7 +6180,7 @@ class CNCjob(Geometry):
             feedrate = self.feedrate
 
         if feedrate_z is None:
-            feedrate_z = self.feedrate_z
+            feedrate_z = self.z_feedrate
 
         if feedrate_rapid is None:
             feedrate_rapid = self.feedrate_rapid
@@ -6205,7 +6205,7 @@ class CNCjob(Geometry):
         # Move down to cutting depth
         if down:
             # Different feedrate for vertical cut?
-            gcode += self.doformat(p.feedrate_z_code)
+            gcode += self.doformat(p.z_feedrate_code)
             # gcode += self.doformat(p.feedrate_code)
             gcode += self.doformat(p.down_code, x=path[0][0], y=path[0][1], z_cut=z_cut)
             gcode += self.doformat(p.feedrate_code, feedrate=feedrate)
@@ -6250,7 +6250,7 @@ class CNCjob(Geometry):
             feedrate = self.feedrate
 
         if feedrate_z is None:
-            feedrate_z = self.feedrate_z
+            feedrate_z = self.z_feedrate
 
         if feedrate_rapid is None:
             feedrate_rapid = self.feedrate_rapid
@@ -6273,8 +6273,8 @@ class CNCjob(Geometry):
         # Move down to cutting depth
         if down:
             # Different feedrate for vertical cut?
-            if self.feedrate_z is not None:
-                gcode += self.doformat(p.feedrate_z_code)
+            if self.z_feedrate is not None:
+                gcode += self.doformat(p.z_feedrate_code)
                 # gcode += self.doformat(p.feedrate_code)
                 gcode += self.doformat(p.down_code, x=path[0][0], y=path[0][1], z_cut=z_cut)
                 gcode += self.doformat(p.feedrate_code, feedrate=feedrate)
@@ -6302,8 +6302,8 @@ class CNCjob(Geometry):
         p = self.pp_geometry
         gcode += self.doformat(p.linear_code, x=path[0][0], y=path[0][1])  # Move to first point
 
-        if self.feedrate_z is not None:
-            gcode += self.doformat(p.feedrate_z_code)
+        if self.z_feedrate is not None:
+            gcode += self.doformat(p.z_feedrate_code)
             gcode += self.doformat(p.down_code, x=path[0][0], y=path[0][1], z_cut = self.z_cut)
             gcode += self.doformat(p.feedrate_code)
         else:

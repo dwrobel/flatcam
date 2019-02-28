@@ -68,8 +68,8 @@ class grbl_laser(FlatCAMPostProc):
                ' F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate))
 
     def end_code(self, p):
-        coords_xy = p['toolchange_xy']
-        gcode = ('G00 Z' + self.feedrate_format %(p.fr_decimals, p.endz) + "\n")
+        coords_xy = p['xy_toolchange']
+        gcode = ('G00 Z' + self.feedrate_format %(p.fr_decimals, p.z_end) + "\n")
 
         if coords_xy is not None:
             gcode += 'G00 X{x} Y{y}'.format(x=coords_xy[0], y=coords_xy[1]) + "\n"
@@ -78,8 +78,8 @@ class grbl_laser(FlatCAMPostProc):
     def feedrate_code(self, p):
         return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate))
 
-    def feedrate_z_code(self, p):
-        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, p.feedrate_z))
+    def z_feedrate_code(self, p):
+        return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, p.z_feedrate))
 
     def spindle_code(self, p):
         return ''

@@ -5152,7 +5152,15 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)
         self.ui.modify_gcode_button.clicked.connect(self.on_modifygcode_button_click)
 
+        self.ui.tc_variable_combo.currentIndexChanged[str].connect(self.on_cnc_custom_parameters)
+
         self.ui.cncplot_method_combo.activated_custom.connect(self.on_plot_kind_change)
+
+    def on_cnc_custom_parameters(self, signal_text):
+        if signal_text == 'Parameters':
+            return
+        else:
+            self.ui.toolchange_text.insertPlainText('%%%s%%' % signal_text)
 
     def ui_connect(self):
         for row in range(self.ui.cnc_tools_table.rowCount()):

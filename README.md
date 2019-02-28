@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 28.02.2019
 
 - added a change that when a double click is performed in a object on canvas resulting in a selection, if the notebook is hidden then it will be displayed
+- progress in ToolChange Custom commands replacement and rename
 
 27.02.2019
 
