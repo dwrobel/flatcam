@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+28.02.2019
+
+- added a change that when a double click is performed in a object on canvas resulting in a selection, if the notebook is hidden then it will be displayed
+
 27.02.2019
 
 - made the Custom ToolChange Text area in CNCJob Selected Tab depend on the status of the ToolChange Enable Checkbox even in the init stage.

@@ -4583,7 +4583,6 @@ class App(QtCore.QObject):
 
     def on_double_click_over_plot(self, event):
         self.doubleclick = True
-        # make double click work only for the LMB
 
     def on_mouse_move_over_plot(self, event, origin_click=None):
         """
@@ -4686,6 +4685,9 @@ class App(QtCore.QObject):
                     self.doubleclick = False
                     if self.collection.get_selected():
                         self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
+                        if self.ui.splitter.sizes()[0] == 0:
+                            self.ui.splitter.setSizes([1, 1])
+
                         # delete the selection shape(S) as it may be in the way
                         self.delete_selection_shape()
 
