@@ -15,7 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - added some parameters throughout camlib gcode generation functions; handled some possible errors (e.g like when attempting to use an empty Custom GCode Toolchange)
 - added toggle effect for the tools in the toolbar.
 - enhanced the toggle effect for the tools in the Tools Toolbar and also for Notebook Tab selection: if the current tool is activated it will toggle the notebook side but only if the installed widget is itself. If coming from another tool, the notebook will stay visible
--
+- upgraded the Tool Cutout when done from Gerber file to create a convex_hull around the Gerber file rather than trying to isolate it
 
 26.02.2019
 

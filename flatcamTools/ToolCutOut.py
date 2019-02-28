@@ -200,9 +200,11 @@ class CutOut(FlatCAMTool):
         if self.app.ui.splitter.sizes()[0] == 0:
             self.app.ui.splitter.setSizes([1, 1])
         else:
-            if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                self.app.ui.splitter.setSizes([0, 1])
-
+            try:
+                if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
+                    self.app.ui.splitter.setSizes([0, 1])
+            except AttributeError:
+                pass
         FlatCAMTool.run(self)
         self.set_tool_ui()
 
@@ -306,20 +308,12 @@ class CutOut(FlatCAMTool):
             # rename the obj name so it can be identified as cutout
             cutout_obj.options["name"] += "_cutout"
         else:
-            cutout_obj.isolate(dia=dia, passes=1, overlap=1, combine=False, outname="_temp")
-            ext_obj = self.app.collection.get_by_name("_temp")
-
             def geo_init(geo_obj, app_obj):
-                geo_obj.solid_geometry = obj_exteriors
+                geo = cutout_obj.solid_geometry.convex_hull
+                geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
 
             outname = cutout_obj.options["name"] + "_cutout"
-
-            obj_exteriors = ext_obj.get_exteriors()
             self.app.new_object('geometry', outname, geo_init)
-
-            self.app.collection.set_all_inactive()
-            self.app.collection.set_active("_temp")
-            self.app.on_delete()
 
             cutout_obj = self.app.collection.get_by_name(outname)
 
