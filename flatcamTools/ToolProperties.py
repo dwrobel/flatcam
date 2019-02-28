@@ -59,8 +59,11 @@ class Properties(FlatCAMTool):
         if self.app.ui.splitter.sizes()[0] == 0:
             self.app.ui.splitter.setSizes([1, 1])
         else:
-            if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                self.app.ui.splitter.setSizes([0, 1])
+            try:
+                if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
+                    self.app.ui.splitter.setSizes([0, 1])
+            except AttributeError:
+                pass
 
         FlatCAMTool.run(self)
         self.properties()

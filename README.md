@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - added toggle effect for the tools in the toolbar.
 - enhanced the toggle effect for the tools in the Tools Toolbar and also for Notebook Tab selection: if the current tool is activated it will toggle the notebook side but only if the installed widget is itself. If coming from another tool, the notebook will stay visible
 - upgraded the Tool Cutout when done from Gerber file to create a convex_hull around the Gerber file rather than trying to isolate it
+- added some protections for the FlatCAM Tools run after an object was loaded
 
 26.02.2019
 
