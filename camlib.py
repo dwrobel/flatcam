@@ -3227,6 +3227,7 @@ class Gerber (Geometry):
                                              yfactor, origin=(px, py))
 
         self.solid_geometry = scale_geom(self.solid_geometry)
+        self.follow_geometry = scale_geom(self.follow_geometry)
 
         # we need to scale the geometry stored in the Gerber apertures, too
         try:
@@ -3236,6 +3237,7 @@ class Gerber (Geometry):
             log.debug('FlatCAMGeometry.scale() --> %s' % str(e))
 
         self.app.inform.emit("[success]Gerber Scale done.")
+
 
         ## solid_geometry ???
         #  It's a cascaded union of objects.
@@ -3281,8 +3283,16 @@ class Gerber (Geometry):
                 return affinity.translate(obj, xoff=dx, yoff=dy)
 
         ## Solid geometry
-        # self.solid_geometry = affinity.translate(self.solid_geometry, xoff=dx, yoff=dy)
         self.solid_geometry = offset_geom(self.solid_geometry)
+        self.follow_geometry = offset_geom(self.follow_geometry)
+
+        # we need to offset the geometry stored in the Gerber apertures, too
+        try:
+            for apid in self.apertures:
+                self.apertures[apid]['solid_geometry'] = offset_geom(self.apertures[apid]['solid_geometry'])
+        except Exception as e:
+            log.debug('FlatCAMGeometry.offset() --> %s' % str(e))
+
         self.app.inform.emit("[success]Gerber Offset done.")
 
     def mirror(self, axis, point):
@@ -3320,6 +3330,14 @@ class Gerber (Geometry):
                 return affinity.scale(obj, xscale, yscale, origin=(px, py))
 
         self.solid_geometry = mirror_geom(self.solid_geometry)
+        self.follow_geometry = mirror_geom(self.follow_geometry)
+
+        # we need to mirror the geometry stored in the Gerber apertures, too
+        try:
+            for apid in self.apertures:
+                self.apertures[apid]['solid_geometry'] = mirror_geom(self.apertures[apid]['solid_geometry'])
+        except Exception as e:
+            log.debug('FlatCAMGeometry.mirror() --> %s' % str(e))
 
         #  It's a cascaded union of objects.
         # self.solid_geometry = affinity.scale(self.solid_geometry,
@@ -3353,7 +3371,14 @@ class Gerber (Geometry):
                 return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
 
         self.solid_geometry = skew_geom(self.solid_geometry)
+        self.follow_geometry = skew_geom(self.follow_geometry)
 
+        # we need to skew the geometry stored in the Gerber apertures, too
+        try:
+            for apid in self.apertures:
+                self.apertures[apid]['solid_geometry'] = skew_geom(self.apertures[apid]['solid_geometry'])
+        except Exception as e:
+            log.debug('FlatCAMGeometry.skew() --> %s' % str(e))
         # self.solid_geometry = affinity.skew(self.solid_geometry, angle_x, angle_y, origin=(px, py))
 
     def rotate(self, angle, point):
@@ -3376,7 +3401,14 @@ class Gerber (Geometry):
                 return affinity.rotate(obj, angle, origin=(px, py))
 
         self.solid_geometry = rotate_geom(self.solid_geometry)
+        self.follow_geometry = rotate_geom(self.follow_geometry)
 
+        # we need to rotate the geometry stored in the Gerber apertures, too
+        try:
+            for apid in self.apertures:
+                self.apertures[apid]['solid_geometry'] = rotate_geom(self.apertures[apid]['solid_geometry'])
+        except Exception as e:
+            log.debug('FlatCAMGeometry.rotate() --> %s' % str(e))
         # self.solid_geometry = affinity.rotate(self.solid_geometry, angle, origin=(px, py))
 
 

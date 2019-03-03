@@ -9,6 +9,16 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+3.03.2019
+
+- minor UI changes for Gerber UI
+- after an object move, the apertures plotted shapes are deleted from canvas and the mark all button is deselected
+
+02.03.2019
+
+- fixed offset, rotate, scale, skew for follow_geometry. Fixed the move tool also.
+- fixed offset, rotate, scale, skew for 'solid_geometry' inside the self.apertures.
+
 28.02.2019
 
 - added a change that when a double click is performed in a object on canvas resulting in a selection, if the notebook is hidden then it will be displayed

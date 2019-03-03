@@ -163,7 +163,7 @@ class Properties(FlatCAMTool):
                         printed_value = 'Present' if v else 'None'
                         self.addChild(geo_tool, [str(k), printed_value], True)
                     elif k == 'data':
-                        tool_data = self.addParent(geo_tool, str(k).capilalize(),
+                        tool_data = self.addParent(geo_tool, str(k).capitalize(),
                                                    color=QtGui.QColor("#000000"), font=font)
                         for data_k, data_v in v.items():
                             self.addChild(tool_data, [str(data_k), str(data_v)], True)

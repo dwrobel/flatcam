@@ -365,6 +365,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
     Represents Gerber code.
     """
     optionChanged = QtCore.pyqtSignal(str)
+    replotApertures = QtCore.pyqtSignal()
+
     ui_type = GerberObjectUI
 
     @staticmethod
@@ -481,8 +483,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :return: None
         """
         FlatCAMObj.set_ui(self, ui)
-
         FlatCAMApp.App.log.debug("FlatCAMGerber.set_ui()")
+
+        self.replotApertures.connect(self.on_replot_apertures)
 
         self.form_fields.update({
             "plot": self.ui.plot_cb,
@@ -694,12 +697,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
     def on_mark_cb_click_table(self):
         self.ui_disconnect()
-        cw = self.sender()
-        cw_index = self.ui.apertures_table.indexAt(cw.pos())
-        cw_row = cw_index.row()
+        # cw = self.sender()
+        # cw_index = self.ui.apertures_table.indexAt(cw.pos())
+        # cw_row = cw_index.row()
         check_row = 0
 
-        self.mark_shapes.clear(update=True)
+        self.clear_plot_apertures()
         for aperture in self.apertures:
             # find the apertures_table row associated with the aperture
             for row in range(self.ui.apertures_table.rowCount()):
@@ -742,7 +745,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 # self.plot_apertures(color='#2d4606bf', marked_aperture=aperture, visible=True)
                 self.plot_apertures(color='#FD6A02', marked_aperture=aperture, visible=True)
             else:
-                self.mark_shapes.clear(update=True)
+                self.clear_plot_apertures()
 
         self.ui_connect()
 
@@ -1056,7 +1059,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             # on hide disable all mark plots
             for row in range(self.ui.apertures_table.rowCount()):
                 self.ui.apertures_table.cellWidget(row, 5).set_value(False)
-            self.mark_shapes.clear(update=True)
+            self.clear_plot_apertures()
 
     def on_scale_aperture_click(self, signal):
         try:
@@ -1322,9 +1325,18 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     self.app.progress.emit(100)
 
                 except (ObjectDeleted, AttributeError):
-                    self.mark_shapes.clear(update=True)
+                    self.clear_plot_apertures()
 
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self]})
+
+    def clear_plot_apertures(self):
+        self.mark_shapes.clear(update=True)
+
+    def clear_mark_all(self):
+        self.ui.mark_all_cb.set_value(False)
+
+    def on_replot_apertures(self):
+        pass
 
     def serialize(self):
         return {

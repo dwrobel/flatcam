@@ -398,7 +398,7 @@ class GerberObjectUI(ObjectUI):
         self.generate_iso_button.setFixedWidth(90)
         hlay_1.addWidget(self.generate_iso_button)
 
-        hlay_1.addStretch()
+        # hlay_1.addStretch()
 
         self.generate_ext_iso_button = QtWidgets.QPushButton('Ext Geo')
         self.generate_ext_iso_button.setToolTip(
@@ -406,7 +406,7 @@ class GerberObjectUI(ObjectUI):
             "for isolation routing containing\n"
             "only the exteriors geometry."
         )
-        # self.generate_ext_iso_button.setFixedWidth(60)
+        # self.generate_ext_iso_button.setFixedWidth(100)
         hlay_1.addWidget(self.generate_ext_iso_button)
 
         self.generate_int_iso_button = QtWidgets.QPushButton('Int Geo')
@@ -415,7 +415,7 @@ class GerberObjectUI(ObjectUI):
             "for isolation routing containing\n"
             "only the interiors geometry."
         )
-        # self.generate_int_iso_button.setFixedWidth(60)
+        # self.generate_ext_iso_button.setFixedWidth(90)
         hlay_1.addWidget(self.generate_int_iso_button)
 
         # when the follow checkbox is checked then the exteriors and interiors isolation generation buttons

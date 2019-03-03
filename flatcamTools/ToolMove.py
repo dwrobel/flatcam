@@ -122,8 +122,12 @@ class ToolMove(FlatCAMTool):
                             else:
                                 for sel_obj in obj_list:
 
+                                    # offset
                                     sel_obj.offset((dx, dy))
                                     sel_obj.plot()
+                                    sel_obj.clear_plot_apertures()
+                                    sel_obj.clear_mark_all()
+
                                     # Update the object bounding box options
                                     a,b,c,d = sel_obj.bounds()
                                     sel_obj.options['xmin'] = a
