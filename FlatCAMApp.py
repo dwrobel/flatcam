@@ -562,9 +562,9 @@ class App(QtCore.QObject):
             "global_project_autohide": True,
             "global_app_level": 'b',
 
-            "global_gridx": 1.0,
-            "global_gridy": 1.0,
-            "global_snap_max": 0.05,
+            "global_gridx": 0.0393701,
+            "global_gridy": 0.0393701,
+            "global_snap_max": 0.001968504,
             "global_grid_context_menu": {
                 'in': [0.01, 0.02, 0.025, 0.05, 0.1],
                 'mm': [0.1, 0.2, 0.5, 1, 2.54]
@@ -658,7 +658,6 @@ class App(QtCore.QObject):
             "excellon_drillz": -0.1,
             "excellon_travelz": 0.1,
             "excellon_feedrate": 3.0,
-            "excellon_feedrate_probe": 3.0,
             "excellon_spindlespeed": None,
             "excellon_dwell": False,
             "excellon_dwelltime": 1,
@@ -676,6 +675,7 @@ class App(QtCore.QObject):
             "excellon_endz": 2.0,
             "excellon_feedrate_rapid": 3.0,
             "excellon_z_pdepth": -0.02,
+            "excellon_feedrate_probe": 3.0,
             "excellon_f_plunge": False,
             "excellon_f_retract": False,
 
@@ -733,17 +733,17 @@ class App(QtCore.QObject):
             "cncjob_toolchange_macro": "",
             "cncjob_toolchange_macro_enable": False,
 
-            "tools_ncctools": "1.0, 0.5",
-            "tools_nccoverlap": 0.4,
-            "tools_nccmargin": 0.1,
+            "tools_ncctools": "0.0393701, 0.019685",
+            "tools_nccoverlap": 0.015748,
+            "tools_nccmargin": 0.00393701,
             "tools_nccmethod": "seed",
             "tools_nccconnect": True,
             "tools_ncccontour": True,
             "tools_nccrest": False,
 
-            "tools_cutouttooldia": 0.1,
-            "tools_cutoutmargin": 0.1,
-            "tools_cutoutgapsize": 0.15,
+            "tools_cutouttooldia": 0.00393701,
+            "tools_cutoutmargin": 0.00393701,
+            "tools_cutoutgapsize": 0.005905512,
             "tools_gaps_rect": "4",
             "tools_gaps_ff": "8",
 
@@ -757,10 +757,10 @@ class App(QtCore.QObject):
 
             "tools_2sided_mirror_axis": "X",
             "tools_2sided_axis_loc": "point",
-            "tools_2sided_drilldia": 1,
+            "tools_2sided_drilldia": 0.0393701,
 
             "tools_film_type": 'neg',
-            "tools_film_boundary": 1,
+            "tools_film_boundary": 0.0393701,
             "tools_film_scale": 0,
 
             "tools_panelize_spacing_columns": 0,
@@ -792,17 +792,17 @@ class App(QtCore.QObject):
             "tools_transform_mirror_reference": False,
             "tools_transform_mirror_point": (0, 0),
 
-            "tools_solderpaste_tools": "1.0, 0.3",
-            "tools_solderpaste_new": 0.3,
-            "tools_solderpaste_z_start": 0.005,
-            "tools_solderpaste_z_dispense": 0.01,
-            "tools_solderpaste_z_stop": 0.005,
-            "tools_solderpaste_z_travel": 0.1,
-            "tools_solderpaste_z_toolchange": 1.0,
+            "tools_solderpaste_tools": "0.0393701, 0.011811",
+            "tools_solderpaste_new": 0.011811,
+            "tools_solderpaste_z_start": 0.00019685039,
+            "tools_solderpaste_z_dispense": 0.00393701,
+            "tools_solderpaste_z_stop": 0.00019685039,
+            "tools_solderpaste_z_travel": 0.00393701,
+            "tools_solderpaste_z_toolchange": 0.0393701,
             "tools_solderpaste_xy_toolchange": "0.0, 0.0",
             "tools_solderpaste_frxy": 3.0,
             "tools_solderpaste_frz": 3.0,
-            "tools_solderpaste_frz_dispense": 1.0,
+            "tools_solderpaste_frz_dispense": 0.0393701,
             "tools_solderpaste_speedfwd": 20,
             "tools_solderpaste_dwellfwd": 1,
             "tools_solderpaste_speedrev": 10,
@@ -1341,6 +1341,7 @@ class App(QtCore.QObject):
         ###############################
         self.ui.general_options_form.general_app_group.units_radio.group_toggle_fn = self.on_toggle_units
         self.ui.general_defaults_form.general_app_group.language_apply_btn.clicked.connect(self.on_language_apply)
+        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(self.on_toggle_units)
 
         ###############################
         ### GUI PREFERENCES SIGNALS ###
@@ -1583,6 +1584,11 @@ class App(QtCore.QObject):
         # flag for polygons not cleared
         self.poly_not_cleared = False
 
+        # VisPy visuals
+        self.hover_shapes = ShapeCollection(parent=self.plotcanvas.vispy_canvas.view.scene, layers=7)
+        self.isHovering = False
+        self.notHovering = True
+
         ### Save defaults to factory_defaults.FlatConfig file ###
         ### It's done only once after install #############
         factory_file = open(self.data_path + '/factory_defaults.FlatConfig')
@@ -1645,9 +1651,9 @@ class App(QtCore.QObject):
             except:
                 pass
 
-    def defaults_write_form(self):
+    def defaults_write_form(self, factor=None):
         for option in self.defaults:
-            self.defaults_write_form_field(option)
+            self.defaults_write_form_field(option, factor=factor)
             # try:
             #     self.defaults_form_fields[option].set_value(self.defaults[option])
             # except KeyError:
@@ -1655,9 +1661,13 @@ class App(QtCore.QObject):
             #     # TODO: Rethink this?
             #     pass
 
-    def defaults_write_form_field(self, field):
+    def defaults_write_form_field(self, field, factor=None):
         try:
-            self.defaults_form_fields[field].set_value(self.defaults[field])
+            if factor is None:
+                self.defaults_form_fields[field].set_value(self.defaults[field])
+            else:
+                self.defaults_form_fields[field].set_value(self.defaults[field] * factor)
+
         except KeyError:
             #self.log.debug("defaults_write_form(): No field for: %s" % option)
             # TODO: Rethink this?
@@ -2456,10 +2466,7 @@ class App(QtCore.QObject):
                 oname = option[len(kind) + 1:]
                 obj.options[oname] = self.options[option]
 
-        # if kind == 'geometry':
-        #     obj.tools = {}
-        # elif kind == 'cncjob':
-        #     obj.cnc_tools = {}
+        obj.isHovering = False
 
         # Initialize as per user request
         # User must take care to implement initialize
@@ -3034,8 +3041,11 @@ class App(QtCore.QObject):
     def on_defaults_dict_change(self, field):
         self.defaults_write_form_field(field)
 
+        if field == "units":
+            self.set_screen_units(self.defaults['units'])
+
     def set_screen_units(self, units):
-        self.ui.units_label.setText("[" + self.options["units"].lower() + "]")
+        self.ui.units_label.setText("[" + self.defaults["units"].lower() + "]")
 
     def on_toggle_units(self):
         """
@@ -3053,22 +3063,41 @@ class App(QtCore.QObject):
             return
 
         # If option is the same, then ignore
-        if self.ui.general_options_form.general_app_group.units_radio.get_value().upper() == self.options["units"].upper():
-            self.log.debug("on_toggle_units(): Same as options, so ignoring.")
+        if self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == \
+                self.defaults["units"].upper():
+            self.log.debug("on_toggle_units(): Same as defaults, so ignoring.")
             return
 
         # Options to scale
-        dimensions = ['gerber_isotooldia', 'tools_cutoutmargin', 'tools_cutoutgapsize',
-                      'gerber_noncoppermargin', 'gerber_bboxmargin','gerber_isooverlap','tools_nccoverlap',
-                      'tools_nccmargin','tools_cutouttooldia','tools_cutoutgapsize',
-                      'gerber_noncoppermargin','gerber_bboxmargin',
-                      'excellon_drillz', "excellon_toolchangexy",
-                      'excellon_travelz', 'excellon_feedrate', 'excellon_feedrate_rapid', 'excellon_toolchangez',
-                      'excellon_tooldia', 'excellon_endz', 'cncjob_tooldia',
-                      'geometry_cutz', 'geometry_travelz', 'geometry_feedrate', 'geometry_feedrate_rapid',
-                      'geometry_cnctooldia', 'tools_painttooldia', 'tools_paintoverlap', 'geometry_toolchangexy',
-                      'geometry_toolchangez',
-                      'tools_paintmargin', 'geometry_endz', 'geometry_depthperpass', 'global_gridx', 'global_gridy']
+        dimensions = ['gerber_isotooldia', 'gerber_noncoppermargin', 'gerber_bboxmargin',
+
+                      'excellon_drillz',  'excellon_travelz', "excellon_toolchangexy",
+                      'excellon_feedrate', 'excellon_feedrate_rapid', 'excellon_toolchangez',
+                      'excellon_tooldia', 'excellon_slot_tooldia', 'excellon_endz', "excellon_feedrate_probe",
+                      "excellon_z_pdepth",
+
+                      'geometry_cutz',  "geometry_depthperpass", 'geometry_travelz', 'geometry_feedrate',
+                      'geometry_feedrate_rapid', "geometry_toolchangez", "geometry_feedrate_z",
+                      "geometry_toolchangexy", 'geometry_cnctooldia', 'geometry_endz', "geometry_z_pdepth",
+                      "geometry_feedrate_probe",
+
+                      'cncjob_tooldia',
+
+                      'tools_paintmargin', 'tools_painttooldia', 'tools_paintoverlap',
+                      "tools_ncctools", "tools_nccoverlap", "tools_nccmargin",
+                      "tools_2sided_drilldia", "tools_film_boundary",
+                      "tools_cutouttooldia", 'tools_cutoutmargin', 'tools_cutoutgapsize',
+                      "tools_panelize_constrainx", "tools_panelize_constrainy",
+                      "tools_calc_vshape_tip_dia", "tools_calc_vshape_cut_z",
+                      "tools_transform_skew_x", "tools_transform_skew_y", "tools_transform_offset_x",
+                      "tools_transform_offset_y",
+
+                      "tools_solderpaste_tools", "tools_solderpaste_new", "tools_solderpaste_z_start",
+                      "tools_solderpaste_z_dispense", "tools_solderpaste_z_stop", "tools_solderpaste_z_travel",
+                      "tools_solderpaste_z_toolchange", "tools_solderpaste_xy_toolchange", "tools_solderpaste_frxy",
+                      "tools_solderpaste_frz", "tools_solderpaste_frz_dispense",
+
+                      'global_gridx', 'global_gridy', 'global_snap_max']
 
         def scale_options(sfactor):
             for dim in dimensions:
@@ -3082,14 +3111,64 @@ class App(QtCore.QObject):
                     coords_xy[0] *= sfactor
                     coords_xy[1] *= sfactor
                     self.options['geometry_toolchangexy'] = "%f, %f" % (coords_xy[0], coords_xy[1])
+                elif dim == 'tools_ncctools':
+                    ncctols = [float(eval(a)) for a in self.defaults["tools_ncctools"].split(",")]
+                    ncctols[0] *= sfactor
+                    ncctols[1] *= sfactor
+                    self.options['tools_ncctools'] = "%f, %f" % (ncctols[0], ncctols[1])
+                elif dim == 'tools_solderpaste_tools':
+                    sp_tools = [float(eval(a)) for a in self.defaults["tools_solderpaste_tools"].split(",")]
+                    sp_tools[0] *= sfactor
+                    sp_tools[1] *= sfactor
+                    self.options['tools_solderpaste_tools'] = "%f, %f" % (sp_tools[0], sp_tools[1])
+                elif dim == 'tools_solderpaste_xy_toolchange':
+                    sp_coords = [float(eval(a)) for a in self.defaults["tools_solderpaste_xy_toolchange"].split(",")]
+                    sp_coords[0] *= sfactor
+                    sp_coords[1] *= sfactor
+                    self.options['tools_solderpaste_xy_toolchange'] = "%f, %f" % (sp_coords[0], sp_coords[1])
                 else:
-                    self.options[dim] *= sfactor
+                    try:
+                        self.options[dim] = float(self.options[dim]) * sfactor
+                    except Exception as e:
+                        log.debug('App.on_toggle_units().scale_options() --> %s' % str(e))
+
+        def scale_defaults(sfactor):
+            for dim in dimensions:
+                if dim == 'excellon_toolchangexy':
+                    coords_xy = [float(eval(a)) for a in self.defaults["excellon_toolchangexy"].split(",")]
+                    coords_xy[0] *= sfactor
+                    coords_xy[1] *= sfactor
+                    self.defaults['excellon_toolchangexy'] = "%.4f, %.4f" % (coords_xy[0], coords_xy[1])
+                elif dim == 'geometry_toolchangexy':
+                    coords_xy = [float(eval(a)) for a in self.defaults["geometry_toolchangexy"].split(",")]
+                    coords_xy[0] *= sfactor
+                    coords_xy[1] *= sfactor
+                    self.defaults['geometry_toolchangexy'] = "%.4f, %.4f" % (coords_xy[0], coords_xy[1])
+                elif dim == 'tools_ncctools':
+                    ncctols = [float(eval(a)) for a in self.defaults["tools_ncctools"].split(",")]
+                    ncctols[0] *= sfactor
+                    ncctols[1] *= sfactor
+                    self.defaults['tools_ncctools'] = "%.4f, %.4f" % (ncctols[0], ncctols[1])
+                elif dim == 'tools_solderpaste_tools':
+                    sp_tools = [float(eval(a)) for a in self.defaults["tools_solderpaste_tools"].split(",")]
+                    sp_tools[0] *= sfactor
+                    sp_tools[1] *= sfactor
+                    self.defaults['tools_solderpaste_tools'] = "%.4f, %.4f" % (sp_tools[0], sp_tools[1])
+                elif dim == 'tools_solderpaste_xy_toolchange':
+                    sp_coords = [float(eval(a)) for a in self.defaults["tools_solderpaste_xy_toolchange"].split(",")]
+                    sp_coords[0] *= sfactor
+                    sp_coords[1] *= sfactor
+                    self.defaults['tools_solderpaste_xy_toolchange'] = "%.4f, %.4f" % (sp_coords[0], sp_coords[1])
+                else:
+                    try:
+                        self.defaults[dim] = float(self.defaults[dim]) * sfactor
+                    except Exception as e:
+                        log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
 
         # The scaling factor depending on choice of units.
         factor = 1/25.4
-        if self.ui.general_options_form.general_app_group.units_radio.get_value().upper() == 'MM':
+        if self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
             factor = 25.4
-
 
         # Changing project units. Warn user.
         msgbox = QtWidgets.QMessageBox()
@@ -3106,6 +3185,10 @@ class App(QtCore.QObject):
             scale_options(factor)
             self.options_write_form()
 
+            self.defaults_read_form()
+            scale_defaults(factor)
+            self.defaults_write_form()
+
             self.should_we_save = True
 
             # change this only if the workspace is active
@@ -3117,7 +3200,7 @@ class App(QtCore.QObject):
             self.ui.grid_gap_y_entry.set_value(float(self.ui.grid_gap_y_entry.get_value()) * factor)
 
             for obj in self.collection.get_list():
-                units = self.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+                units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
                 obj.convert_units(units)
 
                 # make that the properties stored in the object are also updated
@@ -3131,26 +3214,27 @@ class App(QtCore.QObject):
                     current.to_form()
 
             self.plot_all()
-            self.inform.emit("[success]Converted units to %s" % self.options["units"])
+            self.inform.emit("[success]Converted units to %s" % self.defaults["units"])
             # self.ui.units_label.setText("[" + self.options["units"] + "]")
-            self.set_screen_units(self.options["units"])
+            self.set_screen_units(self.defaults["units"])
         else:
             # Undo toggling
             self.toggle_units_ignore = True
-            if self.ui.general_options_form.general_app_group.units_radio.get_value().upper() == 'MM':
-                self.ui.general_options_form.general_app_group.units_radio.set_value('IN')
+            if self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
+                self.ui.general_defaults_form.general_app_group.units_radio.set_value('IN')
             else:
-                self.ui.general_options_form.general_app_group.units_radio.set_value('MM')
+                self.ui.general_defaults_form.general_app_group.units_radio.set_value('MM')
             self.toggle_units_ignore = False
             self.inform.emit("[WARNING_NOTCL]Units conversion cancelled.")
 
         self.options_read_form()
+        self.defaults_read_form()
 
     def on_toggle_units_click(self):
         if self.options["units"] == 'MM':
-            self.ui.general_options_form.general_app_group.units_radio.set_value("IN")
+            self.ui.general_defaults_form.general_app_group.units_radio.set_value("IN")
         else:
-            self.ui.general_options_form.general_app_group.units_radio.set_value("MM")
+            self.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
         self.on_toggle_units()
 
     def on_language_apply(self):
@@ -3834,7 +3918,7 @@ class App(QtCore.QObject):
 
     def on_tool_add_keypress(self):
         ## Current application units in Upper Case
-        self.units = self.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         notebook_widget_name = self.ui.notebook.currentWidget().objectName()
 
@@ -4431,7 +4515,7 @@ class App(QtCore.QObject):
             return 0
 
     def populate_cmenu_grids(self):
-        units = self.ui.general_options_form.general_app_group.units_radio.get_value().lower()
+        units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
         self.ui.cmenu_gridmenu.clear()
         sorted_list = sorted(self.defaults["global_grid_context_menu"][str(units)])
@@ -4452,7 +4536,7 @@ class App(QtCore.QObject):
 
     def on_grid_add(self):
         ## Current application units in lower Case
-        units = self.ui.general_options_form.general_app_group.units_radio.get_value().lower()
+        units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
         grid_add_popup = FCInputDialog(title="New Grid ...",
                                        text='Enter a Grid VAlue:',
@@ -4479,7 +4563,7 @@ class App(QtCore.QObject):
 
     def on_grid_delete(self):
         ## Current application units in lower Case
-        units = self.ui.general_options_form.general_app_group.units_radio.get_value().lower()
+        units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
         grid_del_popup = FCInputDialog(title="Delete Grid ...",
                                        text='Enter a Grid Value:',
@@ -4651,8 +4735,34 @@ class App(QtCore.QObject):
                         self.draw_moving_selection_shape(self.pos, pos)
                         self.selection_type = True
 
-                # delete the status message on mouse move
-                # self.inform.emit("")
+                # hover effect
+                for obj in self.collection.get_list():
+                    try:
+                        # select the object(s) only if it is enabled (plotted)
+                        if obj.options['plot']:
+                            if obj not in self.collection.get_selected():
+                                poly_obj = Polygon(
+                                    [(obj.options['xmin'], obj.options['ymin']),
+                                     (obj.options['xmax'], obj.options['ymin']),
+                                     (obj.options['xmax'], obj.options['ymax']),
+                                     (obj.options['xmin'], obj.options['ymax'])]
+                                )
+                                if Point(pos).within(poly_obj):
+                                    if self.isHovering is False:
+                                        self.isHovering = True
+                                        self.notHovering = True
+                                        # create the selection box around the selected object
+                                        self.draw_hover_shape(obj, color='#d1e0e0')
+                                else:
+                                    if self.notHovering is True:
+                                        self.notHovering = False
+                                        self.isHovering = False
+                                        self.delete_hover_shape()
+                    except:
+                        # the Exception here will happen if we try to select on screen and we have an newly (and empty)
+                        # just created Geometry or Excellon object that do not have the xmin, xmax, ymin, ymax options.
+                        # In this case poly_obj creation (see above) will fail
+                        pass
 
             except:
                 self.ui.position_label.setText("")
@@ -4700,6 +4810,7 @@ class App(QtCore.QObject):
 
                         # delete the selection shape(S) as it may be in the way
                         self.delete_selection_shape()
+                        self.delete_hover_shape()
 
                 else:
                     if self.selection_type is not None:
@@ -4715,11 +4826,13 @@ class App(QtCore.QObject):
                             # a object by checking the bounding limits against mouse click position
                             if self.command_active is None:
                                 self.select_objects(key='CTRL')
+                                self.delete_hover_shape()
                         else:
                             # If there is no active command (self.command_active is None) then we check if we clicked on a object by
                             # checking the bounding limits against mouse click position
                             if self.command_active is None:
                                 self.select_objects()
+                                self.delete_hover_shape()
 
         except Exception as e:
             log.warning("Error: %s" % str(e))
@@ -4886,11 +4999,47 @@ class App(QtCore.QObject):
             log.error("[ERROR] Something went bad. %s" % str(e))
             return
 
+    def delete_hover_shape(self):
+        self.hover_shapes.clear()
+        self.hover_shapes.redraw()
+
+    def draw_hover_shape(self, sel_obj, color=None):
+        """
+
+        :param sel_obj: the object for which the hover shape must be drawn
+        :return:
+        """
+
+        pt1 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymin']))
+        pt2 = (float(sel_obj.options['xmax']), float(sel_obj.options['ymin']))
+        pt3 = (float(sel_obj.options['xmax']), float(sel_obj.options['ymax']))
+        pt4 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymax']))
+
+        hover_rect = Polygon([pt1, pt2, pt3, pt4])
+        if self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
+            hover_rect = hover_rect.buffer(-0.1)
+            hover_rect = hover_rect.buffer(0.2)
+
+        else:
+            hover_rect = hover_rect.buffer(-0.00393)
+            hover_rect = hover_rect.buffer(0.00787)
+
+        if color:
+            face = Color(color)
+            face.alpha = 0.3
+            outline = Color(color, alpha=0.8)
+        else:
+            face = Color(self.defaults['global_sel_fill'])
+            face.alpha = 0.1
+            outline = self.defaults['global_sel_line']
+
+        self.hover_shapes.add(hover_rect, color=outline, face_color=face, update=True, layer=0, tolerance=None)
+
     def delete_selection_shape(self):
         self.move_tool.sel_shapes.clear()
         self.move_tool.sel_shapes.redraw()
 
-    def draw_selection_shape(self, sel_obj):
+    def draw_selection_shape(self, sel_obj, color=None):
         """
 
         :param sel_obj: the object for which the selection shape must be drawn
@@ -4901,13 +5050,24 @@ class App(QtCore.QObject):
         pt2 = (float(sel_obj.options['xmax']), float(sel_obj.options['ymin']))
         pt3 = (float(sel_obj.options['xmax']), float(sel_obj.options['ymax']))
         pt4 = (float(sel_obj.options['xmin']), float(sel_obj.options['ymax']))
-        sel_rect = Polygon([pt1, pt2, pt3, pt4])
 
-        #blue_t = Color('blue')
-        blue_t = Color(self.defaults['global_sel_fill'])
-        blue_t.alpha = 0.3
-        self.sel_objects_list.append(self.move_tool.sel_shapes.add(sel_rect, color=self.defaults['global_sel_line'],
-                                                               face_color=blue_t, update=True, layer=0, tolerance=None))
+        sel_rect = Polygon([pt1, pt2, pt3, pt4])
+        if self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
+            sel_rect = sel_rect.buffer(-0.1)
+            sel_rect = sel_rect.buffer(0.2)
+        else:
+            sel_rect = sel_rect.buffer(-0.00393)
+            sel_rect = sel_rect.buffer(0.00787)
+
+        if color:
+            face = Color(color, alpha=0.1)
+            outline = Color(color, alpha=0.8)
+        else:
+            face = Color(self.defaults['global_sel_fill'], alpha=0.1)
+            outline = Color(self.defaults['global_sel_line'], alpha=0.8)
+
+        self.sel_objects_list.append(self.move_tool.sel_shapes.add(sel_rect, color=outline,
+                                                               face_color=face, update=True, layer=0, tolerance=None))
 
     def draw_moving_selection_shape(self, old_coords, coords, **kwargs):
         """
@@ -6000,7 +6160,7 @@ class App(QtCore.QObject):
         ezeros = self.defaults["excellon_exp_zeros"]
         eformat = self.defaults[ "excellon_exp_format"]
 
-        fc_units = self.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+        fc_units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
         if fc_units == 'MM':
             factor = 1 if eunits == 'METRIC' else 0.03937
         else:
@@ -6118,7 +6278,7 @@ class App(QtCore.QObject):
             return "Could not retrieve object: %s" % obj_name
 
         # updated units
-        units = self.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+        units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
         if units == 'IN' or units == 'INCH':
             units = 'INCH'
         elif units == 'MM' or units == 'METIRC':
@@ -6172,7 +6332,7 @@ class App(QtCore.QObject):
                              "Only Geometry and Gerber are supported")
             return
 
-        units = self.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+        units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         def obj_init(geo_obj, app_obj):
             geo_obj.import_svg(filename, obj_type, units=units)
@@ -6214,7 +6374,7 @@ class App(QtCore.QObject):
                              "Only Geometry and Gerber are supported")
             return
 
-        units = self.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+        units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         def obj_init(geo_obj, app_obj):
             geo_obj.import_dxf(filename, obj_type, units=units)
@@ -6263,7 +6423,7 @@ class App(QtCore.QObject):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
-            units = self.ui.general_options_form.general_app_group.units_radio.get_value()
+            units = self.ui.general_defaults_form.general_app_group.units_radio.get_value()
 
             self.new_object(obj_type, name, obj_init)
             self.progress.emit(20)

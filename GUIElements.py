@@ -229,7 +229,7 @@ class FloatEntry(QtWidgets.QLineEdit):
 
     def set_value(self, val):
         if val is not None:
-            self.setText("%.6f" % val)
+            self.setText("%.4f" % val)
         else:
             self.setText("")
 
@@ -267,7 +267,7 @@ class FloatEntry2(QtWidgets.QLineEdit):
         return float(evaled)
 
     def set_value(self, val):
-        self.setText("%.6f" % val)
+        self.setText("%.4f" % val)
 
     def sizeHint(self):
         default_hint_size = super(FloatEntry2, self).sizeHint()
@@ -337,7 +337,10 @@ class FCEntry(QtWidgets.QLineEdit):
         return str(self.text())
 
     def set_value(self, val):
-        self.setText(str(val))
+        if type(val) is float:
+            self.setText('%.4f' % val)
+        else:
+            self.setText(str(val))
 
     def sizeHint(self):
         default_hint_size = super(FCEntry, self).sizeHint()

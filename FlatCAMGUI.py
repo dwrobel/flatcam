@@ -1952,10 +1952,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Change Units
                 if key == QtCore.Qt.Key_Q:
-                    if self.app.options["units"] == 'MM':
-                        self.app.ui.general_options_form.general_app_group.units_radio.set_value("IN")
+                    if self.app.defaults["units"] == 'MM':
+                        self.app.ui.general_defaults_form.general_app_group.units_radio.set_value("IN")
                     else:
-                        self.app.ui.general_options_form.general_app_group.units_radio.set_value("MM")
+                        self.app.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
                     self.app.on_toggle_units()
 
                 # Rotate Object by 90 degree CW
@@ -3095,6 +3095,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
             # This will write the setting to the platform specific storage.
             del settings
             self.app.inform.emit("[success] GUI settings deleted ...")
+
 
 class GeneralAppPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):

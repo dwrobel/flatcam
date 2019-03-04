@@ -79,6 +79,8 @@ class FlatCAMObj(QtCore.QObject):
 
         self._drawing_tolerance = 0.01
 
+        self.isHovering = False
+
         # assert isinstance(self.ui, ObjectUI)
         # self.ui.name_entry.returnPressed.connect(self.on_name_activate)
         # self.ui.offset_button.clicked.connect(self.on_offset_button_click)
@@ -459,14 +461,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # store the source file here
         self.source_file = ""
 
-        # assert isinstance(self.ui, GerberObjectUI)
-        # self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
-        # self.ui.solid_cb.stateChanged.connect(self.on_solid_cb_click)
-        # self.ui.multicolored_cb.stateChanged.connect(self.on_multicolored_cb_click)
-        # self.ui.generate_iso_button.clicked.connect(self.on_iso_button_click)
-        # self.ui.generate_cutout_button.clicked.connect(self.on_generatecutout_button_click)
-        # self.ui.generate_bb_button.clicked.connect(self.on_generatebb_button_click)
-        # self.ui.generate_noncopper_button.clicked.connect(self.on_generatenoncopper_button_click)
+        # list of rows with apertures plotted
+        self.marked_rows = []
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -485,7 +481,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         FlatCAMObj.set_ui(self, ui)
         FlatCAMApp.App.log.debug("FlatCAMGerber.set_ui()")
 
-        self.replotApertures.connect(self.on_replot_apertures)
+        self.replotApertures.connect(self.on_mark_cb_click_table)
 
         self.form_fields.update({
             "plot": self.ui.plot_cb,
@@ -648,7 +644,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.apertures_row += 1
 
         self.ui.apertures_table.selectColumn(0)
-        #
         self.ui.apertures_table.resizeColumnsToContents()
         self.ui.apertures_table.resizeRowsToContents()
 
@@ -675,6 +670,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.apertures_table.setMinimumHeight(self.ui.apertures_table.getHeight())
         self.ui.apertures_table.setMaximumHeight(self.ui.apertures_table.getHeight())
 
+        # update the 'mark' checkboxes state according with what is stored in the self.marked_rows list
+        if self.marked_rows:
+            for row in range(self.ui.apertures_table.rowCount()):
+                self.ui.apertures_table.cellWidget(row, 5).set_value(self.marked_rows[row])
+
         self.ui_connect()
 
     def ui_connect(self):
@@ -694,60 +694,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.mark_all_cb.clicked.disconnect(self.on_mark_all_click)
         except:
             pass
-
-    def on_mark_cb_click_table(self):
-        self.ui_disconnect()
-        # cw = self.sender()
-        # cw_index = self.ui.apertures_table.indexAt(cw.pos())
-        # cw_row = cw_index.row()
-        check_row = 0
-
-        self.clear_plot_apertures()
-        for aperture in self.apertures:
-            # find the apertures_table row associated with the aperture
-            for row in range(self.ui.apertures_table.rowCount()):
-                if int(self.ui.apertures_table.item(row, 1).text()) == int(aperture):
-                    check_row = row
-                    break
-
-            if self.ui.apertures_table.cellWidget(check_row, 5).isChecked():
-                # self.plot_apertures(color='#2d4606bf', marked_aperture=aperture, visible=True)
-                self.plot_apertures(color='#FD6A02', marked_aperture=aperture, visible=True)
-
-        self.mark_shapes.redraw()
-
-        # make sure that the Mark All is disabled if one of the row mark's are disabled and
-        # if all the row mark's are enabled also enable the Mark All checkbox
-        cb_cnt = 0
-        total_row = self.ui.apertures_table.rowCount()
-        for row in range(total_row):
-            if self.ui.apertures_table.cellWidget(row, 5).isChecked():
-                cb_cnt += 1
-            else:
-                cb_cnt -= 1
-        if cb_cnt < total_row:
-            self.ui.mark_all_cb.setChecked(False)
-        else:
-            self.ui.mark_all_cb.setChecked(True)
-        self.ui_connect()
-
-    def on_mark_all_click(self, signal):
-        self.ui_disconnect()
-        mark_all = self.ui.mark_all_cb.isChecked()
-        for row in range(self.ui.apertures_table.rowCount()):
-            mark_cb = self.ui.apertures_table.cellWidget(row, 5)
-            if mark_all:
-                mark_cb.setChecked(True)
-            else:
-                mark_cb.setChecked(False)
-        for aperture in self.apertures:
-            if mark_all:
-                # self.plot_apertures(color='#2d4606bf', marked_aperture=aperture, visible=True)
-                self.plot_apertures(color='#FD6A02', marked_aperture=aperture, visible=True)
-            else:
-                self.clear_plot_apertures()
-
-        self.ui_connect()
 
     def on_generatenoncopper_button_click(self, *args):
         self.app.report_usage("gerber_on_generatenoncopper_button")
@@ -1303,18 +1249,14 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.app.progress.emit(30)
 
             def job_thread(app_obj):
-                geometry = {}
-                for ap in self.apertures:
-                    geometry[int(ap)] = self.apertures[ap]['solid_geometry']
-                    try:
-                        _ = iter(geometry[int(ap)])
-                    except TypeError:
-                        geometry[int(ap)] = [geometry[int(ap)]]
                 self.app.progress.emit(30)
 
                 try:
                     if aperture_to_plot_mark in self.apertures:
-                        for geo in geometry[int(aperture_to_plot_mark)]:
+                        if type(self.apertures[aperture_to_plot_mark]['solid_geometry']) is not list:
+                            self.apertures[aperture_to_plot_mark]['solid_geometry'] = \
+                                [self.apertures[aperture_to_plot_mark]['solid_geometry']]
+                        for geo in self.apertures[aperture_to_plot_mark]['solid_geometry']:
                             if type(geo) == Polygon or type(geo) == LineString:
                                 self.add_mark_shape(shape=geo, color=color, face_color=color, visible=visibility)
                             else:
@@ -1334,9 +1276,86 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
     def clear_mark_all(self):
         self.ui.mark_all_cb.set_value(False)
+        self.marked_rows[:] = []
 
-    def on_replot_apertures(self):
-        pass
+    def on_mark_cb_click_table(self):
+        self.ui_disconnect()
+        # cw = self.sender()
+        # cw_index = self.ui.apertures_table.indexAt(cw.pos())
+        # cw_row = cw_index.row()
+        check_row = 0
+
+        self.clear_plot_apertures()
+        self.marked_rows[:] = []
+
+        for row in range(self.ui.apertures_table.rowCount()):
+            if self.ui.apertures_table.cellWidget(row, 5).isChecked():
+                self.marked_rows.append(True)
+
+                aperture = self.ui.apertures_table.item(row, 1).text()
+                # self.plot_apertures(color='#2d4606bf', marked_aperture=aperture, visible=True)
+                self.plot_apertures(color='#FD6A02', marked_aperture=aperture, visible=True)
+            else:
+                self.marked_rows.append(False)
+
+        self.mark_shapes.redraw()
+
+        # make sure that the Mark All is disabled if one of the row mark's are disabled and
+        # if all the row mark's are enabled also enable the Mark All checkbox
+        cb_cnt = 0
+        total_row = self.ui.apertures_table.rowCount()
+        for row in range(total_row):
+            if self.ui.apertures_table.cellWidget(row, 5).isChecked():
+                cb_cnt += 1
+            else:
+                cb_cnt -= 1
+        if cb_cnt < total_row:
+            self.ui.mark_all_cb.setChecked(False)
+        else:
+            self.ui.mark_all_cb.setChecked(True)
+        self.ui_connect()
+
+    def on_mark_all_click(self, signal):
+        self.ui_disconnect()
+        mark_all = self.ui.mark_all_cb.isChecked()
+        for row in range(self.ui.apertures_table.rowCount()):
+            # update the mark_rows list
+            if mark_all:
+                self.marked_rows.append(True)
+            else:
+                self.marked_rows[:] = []
+
+            mark_cb = self.ui.apertures_table.cellWidget(row, 5)
+            mark_cb.setChecked(mark_all)
+
+        if mark_all:
+            for aperture in self.apertures:
+                # self.plot_apertures(color='#2d4606bf', marked_aperture=aperture, visible=True)
+                self.plot_apertures(color='#FD6A02', marked_aperture=aperture, visible=True)
+        else:
+            self.clear_plot_apertures()
+
+        self.ui_connect()
+
+    def mirror(self, axis, point):
+        Gerber.mirror(self, axis=axis, point=point)
+        self.replotApertures.emit()
+
+    def offset(self, vect):
+        Gerber.offset(self, vect=vect)
+        self.replotApertures.emit()
+
+    def rotate(self, angle, point):
+        Gerber.rotate(self, angle=angle, point=point)
+        self.replotApertures.emit()
+
+    def scale(self, xfactor, yfactor=None, point=None):
+        Gerber.scale(self, xfactor=xfactor, yfactor=yfactor, point=point)
+        self.replotApertures.emit()
+
+    def skew(self, angle_x, angle_y, point):
+        Gerber.skew(self, angle_x=angle_x, angle_y=angle_y, point=point)
+        self.replotApertures.emit()
 
     def serialize(self):
         return {
@@ -3802,7 +3821,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.setCurrentItem(self.ui.geo_tools_table.item(row, 0))
 
     def export_dxf(self):
-        units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+        units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
         dwg = None
         try:
             dwg = ezdxf.new('R2010')

@@ -244,7 +244,7 @@ class GerberObjectUI(ObjectUI):
         # Scale Button
         self.scale_aperture_button = QtWidgets.QPushButton('Scale')
         self.scale_aperture_button.setToolTip(
-            "Perform scaling operation."
+            "Perform scaling operation on the selected apertures."
         )
         self.scale_aperture_button.setFixedWidth(50)
         self.transform_aperture_grid.addWidget(self.scale_aperture_button, 0, 2)
@@ -265,7 +265,7 @@ class GerberObjectUI(ObjectUI):
         # Buffer Button
         self.buffer_aperture_button = QtWidgets.QPushButton('Buffer')
         self.buffer_aperture_button.setToolTip(
-            "Perform scaling operation."
+            "Perform buffer operation on the selected apertures."
         )
         self.buffer_aperture_button.setFixedWidth(50)
         self.transform_aperture_grid.addWidget(self.buffer_aperture_button, 1, 2)
@@ -275,8 +275,7 @@ class GerberObjectUI(ObjectUI):
 
         self.new_grb_label = QtWidgets.QLabel("<b>Generate new Gerber Object:</b>")
         self.new_grb_label.setToolTip(
-            "Will generate a new Gerber object from the changed apertures.\n"
-            "This new object can then be isolated etc."
+            "Will generate a new Gerber object from the changed apertures."
         )
         new_hlay.addWidget(self.new_grb_label)
 

@@ -6492,7 +6492,7 @@ class CNCjob(Geometry):
             temp_gcode = ''
             header_start = False
             header_stop = False
-            units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+            units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
             lines = StringIO(g)
             for line in lines:

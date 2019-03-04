@@ -345,13 +345,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.obj_name = ""
         self.ncc_obj = None
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
-        self.units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
     def build_ui(self):
         self.ui_disconnect()
 
         # updated units
-        self.units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         if self.units == "IN":
             self.addtool_entry.set_value(0.039)

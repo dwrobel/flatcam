@@ -126,10 +126,10 @@ class Properties(FlatCAMTool):
         width = abs(ymax - ymin)
 
         self.addChild(dims, ['Length:', '%.4f %s' % (
-            length, self.app.ui.general_options_form.general_app_group.units_radio.get_value().lower())], True)
+            length, self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower())], True)
         self.addChild(dims, ['Width:', '%.4f %s' % (
-            width, self.app.ui.general_options_form.general_app_group.units_radio.get_value().lower())], True)
-        if self.app.ui.general_options_form.general_app_group.units_radio.get_value().lower() == 'mm':
+            width, self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower())], True)
+        if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower() == 'mm':
             area = (length * width) / 100
             self.addChild(dims, ['Box Area:', '%.4f %s' % (area, 'cm2')], True)
         else:
@@ -142,7 +142,7 @@ class Properties(FlatCAMTool):
                            'in': 'Inch',
                            'mm': 'Metric'
                        }
-                       [str(self.app.ui.general_options_form.general_app_group.units_radio.get_value().lower())]], True)
+                       [str(self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower())]], True)
 
         for option in obj.options:
             if option is 'name':

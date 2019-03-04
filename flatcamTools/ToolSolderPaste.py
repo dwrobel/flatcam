@@ -484,7 +484,7 @@ class SolderPaste(FlatCAMTool):
         self.name = ""
         self.obj = None
 
-        self.units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         for name in list(self.app.postprocessors.keys()):
             # populate only with postprocessor files that start with 'Paste_'
@@ -502,7 +502,7 @@ class SolderPaste(FlatCAMTool):
         self.ui_disconnect()
 
         # updated units
-        self.units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         sorted_tools = []
         for k, v in self.tooltable_tools.items():

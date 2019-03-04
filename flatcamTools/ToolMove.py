@@ -125,8 +125,7 @@ class ToolMove(FlatCAMTool):
                                     # offset
                                     sel_obj.offset((dx, dy))
                                     sel_obj.plot()
-                                    sel_obj.clear_plot_apertures()
-                                    sel_obj.clear_mark_all()
+                                    sel_obj.replotApertures.emit()
 
                                     # Update the object bounding box options
                                     a,b,c,d = sel_obj.bounds()
@@ -237,6 +236,12 @@ class ToolMove(FlatCAMTool):
 
     def draw_shape(self, coords):
         self.sel_rect = Polygon(coords)
+        if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
+            self.sel_rect = self.sel_rect.buffer(-0.1)
+            self.sel_rect = self.sel_rect.buffer(0.2)
+        else:
+            self.sel_rect = self.sel_rect.buffer(-0.00393)
+            self.sel_rect = self.sel_rect.buffer(0.00787)
 
         blue_t = Color('blue')
         blue_t.alpha = 0.2

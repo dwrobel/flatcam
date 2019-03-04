@@ -346,7 +346,7 @@ class TextInputTool(FlatCAMTool):
                     font_name=self.font_name,
                     font_size=font_to_geo_size,
                     font_type=font_to_geo_type,
-                    units=self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper())
+                    units=self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper())
 
     def font_family(self, font):
         self.text_input_entry.selectAll()
@@ -1483,7 +1483,7 @@ class TransformEditorTool(FlatCAMTool):
                 "[WARNING_NOTCL] Geometry shape rotate cancelled...")
 
     def on_offx_key(self):
-        units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().lower()
+        units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
         val_box = FCInputDialog(title="Offset on X axis ...",
                                 text=('Enter a distance Value (%s):' % str(units)),
@@ -1502,7 +1502,7 @@ class TransformEditorTool(FlatCAMTool):
                 "[WARNING_NOTCL] Geometry shape offset X cancelled...")
 
     def on_offy_key(self):
-        units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().lower()
+        units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
         val_box = FCInputDialog(title="Offset on Y axis ...",
                                 text=('Enter a distance Value (%s):' % str(units)),
@@ -4985,7 +4985,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.move_timer.setSingleShot(True)
 
         ## Current application units in Upper Case
-        self.units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         self.key = None  # Currently pressed key
         self.modifiers = None
@@ -5059,7 +5059,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
     def set_ui(self):
         # updated units
-        self.units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         self.olddia_newdia.clear()
         self.tool2tooldia.clear()
@@ -5099,7 +5099,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             pass
 
         # updated units
-        self.units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         # make a new name for the new Excellon object (the one with edited content)
         self.edited_obj_name = self.exc_obj.options['name']

@@ -12,7 +12,11 @@ CAD program, and create G-Code for Isolation routing.
 3.03.2019
 
 - minor UI changes for Gerber UI
-- after an object move, the apertures plotted shapes are deleted from canvas and the mark all button is deselected
+- ~~after an object move, the apertures plotted shapes are deleted from canvas and the 'mark all' button is deselected~~
+- after move tool action or any other transform (rotate, skew, scale, mirror, offset), the plotted apertures are kept plotted.
+- changing units now will convert all the default values from one unit type to another
+- prettified the selection shape and the moving shape
+- initial work in object hovering shape
 
 02.03.2019
 
