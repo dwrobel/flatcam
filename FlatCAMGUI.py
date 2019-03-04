@@ -2576,7 +2576,7 @@ class GerberPreferencesUI(QtWidgets.QWidget):
         self.gerber_gen_group = GerberGenPrefGroupUI()
         self.gerber_gen_group.setFixedWidth(250)
         self.gerber_opt_group = GerberOptPrefGroupUI()
-        self.gerber_opt_group.setFixedWidth(200)
+        self.gerber_opt_group.setFixedWidth(230)
         self.gerber_adv_opt_group = GerberAdvOptPrefGroupUI()
         self.gerber_adv_opt_group.setFixedWidth(200)
 
@@ -4853,22 +4853,9 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.cutout_gap_entry = LengthEntry()
         grid0.addWidget(self.cutout_gap_entry, 2, 1)
 
-        gapslabel = QtWidgets.QLabel('Gaps Rect:')
-        gapslabel.setToolTip(
-            "Where to place the gaps when doing a Rectangular Cutout:\n"
-            " - 2 (T/B) --> Top/Bottom\n"
-            " - 2 (L/R) --> Left/Rigt\n"
-            " - 4       --> on each of all 4 sides."
-        )
-        grid0.addWidget(gapslabel, 3, 0)
-        self.gaps_radio = RadioSet([{'label': '2 (T/B)', 'value': 'tb'},
-                                    {'label': '2 (L/R)', 'value': 'lr'},
-                                    {'label': '4', 'value': '4'}])
-        grid0.addWidget(self.gaps_radio, 3, 1)
-
-        gaps_ff_label = QtWidgets.QLabel('Gaps FF:')
-        gaps_ff_label.setToolTip(
-            "Number of gaps used for the FreeForm cutout.\n"
+        gaps_label = QtWidgets.QLabel('Gaps:')
+        gaps_label.setToolTip(
+            "Number of bridge gaps used for the cutout.\n"
             "There can be maximum 8 bridges/gaps.\n"
             "The choices are:\n"
             "- lr    - left + right\n"
@@ -4878,9 +4865,9 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
             "- 2tb  - 2*top + 2*bottom\n"
             "- 8     - 2*left + 2*right +2*top + 2*bottom"
         )
-        grid0.addWidget(gaps_ff_label, 4, 0)
+        grid0.addWidget(gaps_label, 3, 0)
         self.gaps_combo = FCComboBox()
-        grid0.addWidget(self.gaps_combo, 4, 1)
+        grid0.addWidget(self.gaps_combo, 3, 1)
 
         gaps_items = ['LR', 'TB', '4', '2LR', '2TB', '8']
         for it in gaps_items:

@@ -457,7 +457,6 @@ class App(QtCore.QObject):
             "tools_cutouttooldia": self.ui.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
             "tools_cutoutmargin": self.ui.tools_defaults_form.tools_cutout_group.cutout_margin_entry,
             "tools_cutoutgapsize": self.ui.tools_defaults_form.tools_cutout_group.cutout_gap_entry,
-            "tools_gaps_rect": self.ui.tools_defaults_form.tools_cutout_group.gaps_radio,
             "tools_gaps_ff": self.ui.tools_defaults_form.tools_cutout_group.gaps_combo,
 
             # Paint Area Tool
@@ -744,7 +743,6 @@ class App(QtCore.QObject):
             "tools_cutouttooldia": 0.00393701,
             "tools_cutoutmargin": 0.00393701,
             "tools_cutoutgapsize": 0.005905512,
-            "tools_gaps_rect": "4",
             "tools_gaps_ff": "8",
 
             "tools_painttooldia": 0.07,
@@ -920,7 +918,6 @@ class App(QtCore.QObject):
             "tools_cutouttooldia": self.ui.tools_options_form.tools_cutout_group.cutout_tooldia_entry,
             "tools_cutoutmargin": self.ui.tools_options_form.tools_cutout_group.cutout_margin_entry,
             "tools_cutoutgapsize": self.ui.tools_options_form.tools_cutout_group.cutout_gap_entry,
-            "tools_gaps_rect": self.ui.tools_options_form.tools_cutout_group.gaps_radio,
             "tools_gaps_ff": self.ui.tools_options_form.tools_cutout_group.gaps_combo,
 
             "tools_painttooldia": self.ui.tools_options_form.tools_paint_group.painttooldia_entry,
@@ -1035,10 +1032,10 @@ class App(QtCore.QObject):
             "tools_ncctools": "1.0, 0.5",
             "tools_nccoverlap": 0.4,
             "tools_nccmargin": 1,
+
             "tools_cutouttooldia": 0.07,
             "tools_cutoutmargin": 0.1,
             "tools_cutoutgapsize": 0.15,
-            "tools_gaps_rect": "4",
             "tools_gaps_ff": "8",
 
             "tools_painttooldia": 0.07,

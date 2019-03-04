@@ -14,6 +14,10 @@ CAD program, and create G-Code for Isolation routing.
 - finished work on object hovering
 - fixed Excellon object move and all the other transformations
 - starting to work on Manual Cutout Tool
+- remade the CutOut Tool
+- finished Manual Cutout Tool by adding utility geometry to the cutting geometry
+- added CTRL + click behavior for adding manual bridge gaps in Cutout Tool
+- in Tool Cutout added shortcut key 'Escape' to cancel the current adding of bridge gaps
 
 3.03.2019
 

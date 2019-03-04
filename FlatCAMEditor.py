@@ -3849,7 +3849,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
         geo = self.active_tool.utility_geometry(data=(x, y))
 
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
-
             # Remove any previous utility shape
             self.tool_shape.clear(update=True)
             self.draw_utility_geometry(geo=geo)
