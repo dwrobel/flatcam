@@ -55,9 +55,15 @@ class Properties(FlatCAMTool):
             return
         self.set_tool_ui()
 
-        # if the splitter us hidden, display it
+        # if the splitter is hidden, display it, else hide it but only if the current widget is the same
         if self.app.ui.splitter.sizes()[0] == 0:
             self.app.ui.splitter.setSizes([1, 1])
+        else:
+            try:
+                if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
+                    self.app.ui.splitter.setSizes([0, 1])
+            except AttributeError:
+                pass
 
         FlatCAMTool.run(self)
         self.properties()
@@ -120,10 +126,10 @@ class Properties(FlatCAMTool):
         width = abs(ymax - ymin)
 
         self.addChild(dims, ['Length:', '%.4f %s' % (
-            length, self.app.ui.general_options_form.general_app_group.units_radio.get_value().lower())], True)
+            length, self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower())], True)
         self.addChild(dims, ['Width:', '%.4f %s' % (
-            width, self.app.ui.general_options_form.general_app_group.units_radio.get_value().lower())], True)
-        if self.app.ui.general_options_form.general_app_group.units_radio.get_value().lower() == 'mm':
+            width, self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower())], True)
+        if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower() == 'mm':
             area = (length * width) / 100
             self.addChild(dims, ['Box Area:', '%.4f %s' % (area, 'cm2')], True)
         else:
@@ -136,7 +142,7 @@ class Properties(FlatCAMTool):
                            'in': 'Inch',
                            'mm': 'Metric'
                        }
-                       [str(self.app.ui.general_options_form.general_app_group.units_radio.get_value().lower())]], True)
+                       [str(self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower())]], True)
 
         for option in obj.options:
             if option is 'name':
@@ -157,7 +163,7 @@ class Properties(FlatCAMTool):
                         printed_value = 'Present' if v else 'None'
                         self.addChild(geo_tool, [str(k), printed_value], True)
                     elif k == 'data':
-                        tool_data = self.addParent(geo_tool, str(k).capilalize(),
+                        tool_data = self.addParent(geo_tool, str(k).capitalize(),
                                                    color=QtGui.QColor("#000000"), font=font)
                         for data_k, data_v in v.items():
                             self.addChild(tool_data, [str(data_k), str(data_v)], True)

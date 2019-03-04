@@ -39,6 +39,8 @@ import numpy as np
 import rasterio
 from rasterio.features import shapes
 
+from copy import deepcopy
+
 # TODO: Commented for FlatCAM packaging with cx_freeze
 
 from xml.dom.minidom import parseString as parse_xml_string
@@ -1856,7 +1858,8 @@ class Gerber (Geometry):
     +-----------+-----------------------------------+
     | others    | Depend on ``type``                |
     +-----------+-----------------------------------+
-
+    | solid_geometry      | (list)                  |
+    +-----------+-----------------------------------+
     * ``aperture_macros`` (dictionary): Are predefined geometrical structures
       that can be instantiated with different parameters in an aperture
       definition. See ``apertures`` above. The key is the name of the macro,
@@ -1900,12 +1903,6 @@ class Gerber (Geometry):
         # Initialize parent
         Geometry.__init__(self, geo_steps_per_circle=int(steps_per_circle))
 
-        # will store the Gerber geometry's as solids
-        self.solid_geometry = Polygon()
-
-        # will store the Gerber geometry's as paths
-        self.follow_geometry = []
-
         # Number format
         self.int_digits = 3
         """Number of integer digits in Gerber numbers. Used during parsing."""
@@ -1918,13 +1915,30 @@ class Gerber (Geometry):
         """
 
         ## Gerber elements ##
-        # Apertures {'id':{'type':chr, 
-        #             ['size':float], ['width':float],
-        #             ['height':float]}, ...}
+        '''
+        apertures = {
+            'id':{
+                'type':chr, 
+                'size':float, 
+                'width':float,
+                'height':float,
+                'solid_geometry': [],
+                'follow_geometry': [],
+            }
+        }
+        '''
+
+        # aperture storage
         self.apertures = {}
 
         # Aperture Macros
         self.aperture_macros = {}
+
+        # will store the Gerber geometry's as solids
+        self.solid_geometry = Polygon()
+
+        # will store the Gerber geometry's as paths
+        self.follow_geometry = []
 
         self.source_file = ''
 
@@ -2139,9 +2153,6 @@ class Gerber (Geometry):
         :param glines: Gerber code as list of strings, each element being
             one line of the source file.
         :type glines: list
-        :param follow: If true, will not create polygons, just lines
-            following the gerber path.
-        :type follow: bool
         :return: None
         :rtype: None
         """
@@ -2221,8 +2232,10 @@ class Gerber (Geometry):
                 # buffer, then adds or subtracts accordingly.
                 match = self.lpol_re.search(gline)
                 if match:
-                    if len(path) > 1 and current_polarity != match.group(1):
+                    new_polarity = match.group(1)
+                    if len(path) > 1 and current_polarity != new_polarity:
 
+                        # finish the current path and add it to the storage
                         # --- Buffered ----
                         width = self.apertures[last_path_aperture]["size"]
 
@@ -2233,6 +2246,11 @@ class Gerber (Geometry):
                         geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                         if not geo.is_empty:
                             poly_buffer.append(geo)
+                            try:
+                                self.apertures[current_aperture]['solid_geometry'].append(geo)
+                            except KeyError:
+                                self.apertures[current_aperture]['solid_geometry'] = []
+                                self.apertures[current_aperture]['solid_geometry'].append(geo)
 
                         path = [path[-1]]
 
@@ -2241,17 +2259,17 @@ class Gerber (Geometry):
                     # TODO: Remove when bug fixed
                     if len(poly_buffer) > 0:
                         if current_polarity == 'D':
-                            self.follow_geometry = self.solid_geometry.union(cascaded_union(follow_buffer))
+                            # self.follow_geometry = self.follow_geometry.union(cascaded_union(follow_buffer))
                             self.solid_geometry = self.solid_geometry.union(cascaded_union(poly_buffer))
 
                         else:
-                            self.follow_geometry = self.solid_geometry.difference(cascaded_union(follow_buffer))
-                            self.solid_geometry = self.solid_geometry.union(cascaded_union(poly_buffer))
+                            # self.follow_geometry = self.follow_geometry.difference(cascaded_union(follow_buffer))
+                            self.solid_geometry = self.solid_geometry.difference(cascaded_union(poly_buffer))
 
-                        follow_buffer = []
+                        # follow_buffer = []
                         poly_buffer = []
 
-                    current_polarity = match.group(1)
+                    current_polarity = new_polarity
                     continue
 
                 ### Number format
@@ -2397,6 +2415,11 @@ class Gerber (Geometry):
                                 int(self.steps_per_circle))
                             if not flash.is_empty:
                                 poly_buffer.append(flash)
+                                try:
+                                    self.apertures[current_aperture]['solid_geometry'].append(flash)
+                                except KeyError:
+                                    self.apertures[current_aperture]['solid_geometry'] = []
+                                    self.apertures[current_aperture]['solid_geometry'].append(flash)
                         except IndexError:
                             log.warning("Line %d: %s -> Nothing there to flash!" % (line_num, gline))
 
@@ -2434,6 +2457,11 @@ class Gerber (Geometry):
                             geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                             if not geo.is_empty:
                                 poly_buffer.append(geo)
+                                try:
+                                    self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                                except KeyError:
+                                    self.apertures[last_path_aperture]['solid_geometry'] = []
+                                    self.apertures[last_path_aperture]['solid_geometry'].append(geo)
 
                             path = [path[-1]]
 
@@ -2454,6 +2482,11 @@ class Gerber (Geometry):
                         geo = LineString(path).buffer(width/1.999, int(self.steps_per_circle / 4))
                         if not geo.is_empty:
                             poly_buffer.append(geo)
+                            try:
+                                self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                            except KeyError:
+                                self.apertures[last_path_aperture]['solid_geometry'] = []
+                                self.apertures[last_path_aperture]['solid_geometry'].append(geo)
 
                         path = [path[-1]]
 
@@ -2471,6 +2504,11 @@ class Gerber (Geometry):
                             if not geo.is_empty:
                                 follow_buffer.append(geo)
                                 poly_buffer.append(geo)
+                                try:
+                                    self.apertures[current_aperture]['solid_geometry'].append(geo)
+                                except KeyError:
+                                    self.apertures[current_aperture]['solid_geometry'] = []
+                                    self.apertures[current_aperture]['solid_geometry'].append(geo)
                             continue
 
                     # Only one path defines region?
@@ -2497,8 +2535,28 @@ class Gerber (Geometry):
                     region = Polygon(path)
                     if not region.is_valid:
                         region = region.buffer(0, int(self.steps_per_circle / 4))
+
                     if not region.is_empty:
                         poly_buffer.append(region)
+
+                        # we do this for the case that a region is done without having defined any aperture
+                        # Allegro does that
+                        if current_aperture:
+                            used_aperture = current_aperture
+                        elif last_path_aperture:
+                            used_aperture = last_path_aperture
+                        else:
+                            if '0' not in self.apertures:
+                                self.apertures['0'] = {}
+                                self.apertures['0']['solid_geometry'] = []
+                                self.apertures['0']['type'] = 'REG'
+                            used_aperture = '0'
+
+                        try:
+                            self.apertures[used_aperture]['solid_geometry'].append(region)
+                        except KeyError:
+                            self.apertures[used_aperture]['solid_geometry'] = []
+                            self.apertures[used_aperture]['solid_geometry'].append(region)
 
                     path = [[current_x, current_y]]  # Start new path
                     continue
@@ -2566,7 +2624,14 @@ class Gerber (Geometry):
                                         miny = min(path[0][1], path[1][1]) - height / 2
                                         maxy = max(path[0][1], path[1][1]) + height / 2
                                         log.debug("Coords: %s - %s - %s - %s" % (minx, miny, maxx, maxy))
-                                        poly_buffer.append(shply_box(minx, miny, maxx, maxy))
+
+                                        geo = shply_box(minx, miny, maxx, maxy)
+                                        poly_buffer.append(geo)
+                                        try:
+                                            self.apertures[current_aperture]['solid_geometry'].append(geo)
+                                        except KeyError:
+                                            self.apertures[current_aperture]['solid_geometry'] = []
+                                            self.apertures[current_aperture]['solid_geometry'].append(geo)
                                 except:
                                     pass
                             last_path_aperture = current_aperture
@@ -2596,6 +2661,7 @@ class Gerber (Geometry):
                                 elem = [linear_x, linear_y]
                                 if elem != path[-1]:
                                     path.append([linear_x, linear_y])
+
                                 try:
                                     geo = Polygon(path)
                                 except ValueError:
@@ -2613,8 +2679,18 @@ class Gerber (Geometry):
                                 if self.apertures[last_path_aperture]["type"] != 'R':
                                     if not geo.is_empty:
                                         poly_buffer.append(geo)
+                                        try:
+                                            self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                                        except KeyError:
+                                            self.apertures[last_path_aperture]['solid_geometry'] = []
+                                            self.apertures[last_path_aperture]['solid_geometry'].append(geo)
                             except:
                                 poly_buffer.append(geo)
+                                try:
+                                    self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                                except KeyError:
+                                    self.apertures[last_path_aperture]['solid_geometry'] = []
+                                    self.apertures[last_path_aperture]['solid_geometry'].append(geo)
 
                         # if linear_x or linear_y are None, ignore those
                         if linear_x is not None and linear_y is not None:
@@ -2635,7 +2711,7 @@ class Gerber (Geometry):
                             geo = LineString(path)
                             if not geo.is_empty:
                                 try:
-                                    if self.apertures[current_aperture]["type"] != 'R':
+                                    if self.apertures[last_path_aperture]["type"] != 'R':
                                         follow_buffer.append(geo)
                                 except:
                                     follow_buffer.append(geo)
@@ -2645,10 +2721,20 @@ class Gerber (Geometry):
                             geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                             if not geo.is_empty:
                                 try:
-                                    if self.apertures[current_aperture]["type"] != 'R':
+                                    if self.apertures[last_path_aperture]["type"] != 'R':
                                         poly_buffer.append(geo)
+                                        try:
+                                            self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                                        except KeyError:
+                                            self.apertures[last_path_aperture]['solid_geometry'] = []
+                                            self.apertures[last_path_aperture]['solid_geometry'].append(geo)
                                 except:
                                     poly_buffer.append(geo)
+                                    try:
+                                        self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                                    except KeyError:
+                                        self.apertures[last_path_aperture]['solid_geometry'] = []
+                                        self.apertures[last_path_aperture]['solid_geometry'].append(geo)
 
                         # Reset path starting point
                         path = [[linear_x, linear_y]]
@@ -2666,6 +2752,11 @@ class Gerber (Geometry):
                         )
                         if not flash.is_empty:
                             poly_buffer.append(flash)
+                            try:
+                                self.apertures[current_aperture]['solid_geometry'].append(flash)
+                            except KeyError:
+                                self.apertures[current_aperture]['solid_geometry'] = []
+                                self.apertures[current_aperture]['solid_geometry'].append(flash)
 
                     # maybe those lines are not exactly needed but it is easier to read the program as those coordinates
                     # are used in case that circular interpolation is encountered within the Gerber file
@@ -2755,6 +2846,11 @@ class Gerber (Geometry):
                             buffered = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
                             if not buffered.is_empty:
                                 poly_buffer.append(buffered)
+                                try:
+                                    self.apertures[last_path_aperture]['solid_geometry'].append(buffered)
+                                except KeyError:
+                                    self.apertures[last_path_aperture]['solid_geometry'] = []
+                                    self.apertures[last_path_aperture]['solid_geometry'].append(buffered)
 
                         current_x = circular_x
                         current_y = circular_y
@@ -2882,6 +2978,11 @@ class Gerber (Geometry):
                     geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                     if not geo.is_empty:
                         poly_buffer.append(geo)
+                        try:
+                            self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                        except KeyError:
+                            self.apertures[last_path_aperture]['solid_geometry'] = []
+                            self.apertures[last_path_aperture]['solid_geometry'].append(geo)
 
             # --- Apply buffer ---
 
@@ -3092,6 +3193,7 @@ class Gerber (Geometry):
         :type factor: float
         :rtype : None
         """
+        log.debug("camlib.Gerber.scale()")
 
         try:
             xfactor = float(xfactor)
@@ -3125,7 +3227,17 @@ class Gerber (Geometry):
                                              yfactor, origin=(px, py))
 
         self.solid_geometry = scale_geom(self.solid_geometry)
+        self.follow_geometry = scale_geom(self.follow_geometry)
+
+        # we need to scale the geometry stored in the Gerber apertures, too
+        try:
+            for apid in self.apertures:
+                self.apertures[apid]['solid_geometry'] = scale_geom(self.apertures[apid]['solid_geometry'])
+        except Exception as e:
+            log.debug('FlatCAMGeometry.scale() --> %s' % str(e))
+
         self.app.inform.emit("[success]Gerber Scale done.")
+
 
         ## solid_geometry ???
         #  It's a cascaded union of objects.
@@ -3171,8 +3283,16 @@ class Gerber (Geometry):
                 return affinity.translate(obj, xoff=dx, yoff=dy)
 
         ## Solid geometry
-        # self.solid_geometry = affinity.translate(self.solid_geometry, xoff=dx, yoff=dy)
         self.solid_geometry = offset_geom(self.solid_geometry)
+        self.follow_geometry = offset_geom(self.follow_geometry)
+
+        # we need to offset the geometry stored in the Gerber apertures, too
+        try:
+            for apid in self.apertures:
+                self.apertures[apid]['solid_geometry'] = offset_geom(self.apertures[apid]['solid_geometry'])
+        except Exception as e:
+            log.debug('FlatCAMGeometry.offset() --> %s' % str(e))
+
         self.app.inform.emit("[success]Gerber Offset done.")
 
     def mirror(self, axis, point):
@@ -3210,6 +3330,14 @@ class Gerber (Geometry):
                 return affinity.scale(obj, xscale, yscale, origin=(px, py))
 
         self.solid_geometry = mirror_geom(self.solid_geometry)
+        self.follow_geometry = mirror_geom(self.follow_geometry)
+
+        # we need to mirror the geometry stored in the Gerber apertures, too
+        try:
+            for apid in self.apertures:
+                self.apertures[apid]['solid_geometry'] = mirror_geom(self.apertures[apid]['solid_geometry'])
+        except Exception as e:
+            log.debug('FlatCAMGeometry.mirror() --> %s' % str(e))
 
         #  It's a cascaded union of objects.
         # self.solid_geometry = affinity.scale(self.solid_geometry,
@@ -3243,7 +3371,14 @@ class Gerber (Geometry):
                 return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
 
         self.solid_geometry = skew_geom(self.solid_geometry)
+        self.follow_geometry = skew_geom(self.follow_geometry)
 
+        # we need to skew the geometry stored in the Gerber apertures, too
+        try:
+            for apid in self.apertures:
+                self.apertures[apid]['solid_geometry'] = skew_geom(self.apertures[apid]['solid_geometry'])
+        except Exception as e:
+            log.debug('FlatCAMGeometry.skew() --> %s' % str(e))
         # self.solid_geometry = affinity.skew(self.solid_geometry, angle_x, angle_y, origin=(px, py))
 
     def rotate(self, angle, point):
@@ -3266,7 +3401,14 @@ class Gerber (Geometry):
                 return affinity.rotate(obj, angle, origin=(px, py))
 
         self.solid_geometry = rotate_geom(self.solid_geometry)
+        self.follow_geometry = rotate_geom(self.follow_geometry)
 
+        # we need to rotate the geometry stored in the Gerber apertures, too
+        try:
+            for apid in self.apertures:
+                self.apertures[apid]['solid_geometry'] = rotate_geom(self.apertures[apid]['solid_geometry'])
+        except Exception as e:
+            log.debug('FlatCAMGeometry.rotate() --> %s' % str(e))
         # self.solid_geometry = affinity.rotate(self.solid_geometry, angle, origin=(px, py))
 
 
@@ -3579,7 +3721,6 @@ class Excellon(Geometry):
                             headerless = True
                             try:
                                 self.convert_units({"INCH": "IN", "METRIC": "MM"}[self.excellon_units])
-                                print("Units converted .............................. %s" % self.excellon_units)
                             except Exception as e:
                                 log.warning("Units could not be converted: %s" % str(e))
 
@@ -4285,9 +4426,23 @@ class Excellon(Geometry):
         else:
             px, py = point
 
+        def scale_geom(obj):
+            if type(obj) is list:
+                new_obj = []
+                for g in obj:
+                    new_obj.append(scale_geom(g))
+                return new_obj
+            else:
+                return affinity.scale(obj, xfactor,
+                                             yfactor, origin=(px, py))
+
         # Drills
         for drill in self.drills:
             drill['point'] = affinity.scale(drill['point'], xfactor, yfactor, origin=(px, py))
+
+        # scale solid_geometry
+        for tool in self.tools:
+            self.tools[tool]['solid_geometry'] = scale_geom(self.tools[tool]['solid_geometry'])
 
         # Slots
         for slot in self.slots:
@@ -4307,9 +4462,22 @@ class Excellon(Geometry):
 
         dx, dy = vect
 
+        def offset_geom(obj):
+            if type(obj) is list:
+                new_obj = []
+                for g in obj:
+                    new_obj.append(offset_geom(g))
+                return new_obj
+            else:
+                return affinity.translate(obj, xoff=dx, yoff=dy)
+
         # Drills
         for drill in self.drills:
             drill['point'] = affinity.translate(drill['point'], xoff=dx, yoff=dy)
+
+        # offset solid_geometry
+        for tool in self.tools:
+            self.tools[tool]['solid_geometry'] = offset_geom(self.tools[tool]['solid_geometry'])
 
         # Slots
         for slot in self.slots:
@@ -4331,10 +4499,23 @@ class Excellon(Geometry):
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
+        def mirror_geom(obj):
+            if type(obj) is list:
+                new_obj = []
+                for g in obj:
+                    new_obj.append(mirror_geom(g))
+                return new_obj
+            else:
+                return affinity.scale(obj, xscale, yscale, origin=(px, py))
+
         # Modify data
         # Drills
         for drill in self.drills:
             drill['point'] = affinity.scale(drill['point'], xscale, yscale, origin=(px, py))
+
+        # mirror solid_geometry
+        for tool in self.tools:
+            self.tools[tool]['solid_geometry'] = mirror_geom(self.tools[tool]['solid_geometry'])
 
         # Slots
         for slot in self.slots:
@@ -4365,22 +4546,40 @@ class Excellon(Geometry):
         if angle_y is None:
             angle_y = 0.0
 
+        def skew_geom(obj):
+            if type(obj) is list:
+                new_obj = []
+                for g in obj:
+                    new_obj.append(skew_geom(g))
+                return new_obj
+            else:
+                return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+
         if point is None:
+            px, py = 0, 0
+
             # Drills
             for drill in self.drills:
                 drill['point'] = affinity.skew(drill['point'], angle_x, angle_y,
-                                               origin=(0, 0))
+                                               origin=(px, py))
+            # skew solid_geometry
+            for tool in self.tools:
+                self.tools[tool]['solid_geometry'] = skew_geom(self.tools[tool]['solid_geometry'])
 
             # Slots
             for slot in self.slots:
-                slot['stop'] = affinity.skew(slot['stop'], angle_x, angle_y, origin=(0, 0))
-                slot['start'] = affinity.skew(slot['start'], angle_x, angle_y, origin=(0, 0))
+                slot['stop'] = affinity.skew(slot['stop'], angle_x, angle_y, origin=(px, py))
+                slot['start'] = affinity.skew(slot['start'], angle_x, angle_y, origin=(px, py))
         else:
             px, py = point
             # Drills
             for drill in self.drills:
                 drill['point'] = affinity.skew(drill['point'], angle_x, angle_y,
                                                origin=(px, py))
+
+            # skew solid_geometry
+            for tool in self.tools:
+                self.tools[tool]['solid_geometry'] = skew_geom( self.tools[tool]['solid_geometry'])
 
             # Slots
             for slot in self.slots:
@@ -4396,10 +4595,27 @@ class Excellon(Geometry):
         :param point: tuple of coordinates (x, y)
         :return:
         """
+
+        def rotate_geom(obj, origin=None):
+            if type(obj) is list:
+                new_obj = []
+                for g in obj:
+                    new_obj.append(rotate_geom(g))
+                return new_obj
+            else:
+                if origin:
+                    return affinity.rotate(obj, angle, origin=origin)
+                else:
+                    return affinity.rotate(obj, angle, origin=(px, py))
+
         if point is None:
             # Drills
             for drill in self.drills:
                 drill['point'] = affinity.rotate(drill['point'], angle, origin='center')
+
+            # rotate solid_geometry
+            for tool in self.tools:
+                self.tools[tool]['solid_geometry'] = rotate_geom(self.tools[tool]['solid_geometry'], origin='center')
 
             # Slots
             for slot in self.slots:
@@ -4410,6 +4626,10 @@ class Excellon(Geometry):
             # Drills
             for drill in self.drills:
                 drill['point'] = affinity.rotate(drill['point'], angle, origin=(px, py))
+
+            # rotate solid_geometry
+            for tool in self.tools:
+                self.tools[tool]['solid_geometry'] = rotate_geom(self.tools[tool]['solid_geometry'])
 
             # Slots
             for slot in self.slots:
@@ -4479,16 +4699,18 @@ class CNCjob(Geometry):
         self.z_move = z_move
 
         self.feedrate = feedrate
-        self.feedrate_z = feedrate_z
+        self.z_feedrate = feedrate_z
         self.feedrate_rapid = feedrate_rapid
 
         self.tooldia = tooldia
-        self.toolchangez = toolchangez
-        self.toolchange_xy = toolchange_xy
+        self.z_toolchange = toolchangez
+        self.xy_toolchange = toolchange_xy
         self.toolchange_xy_type = None
 
-        self.endz = endz
-        self.depthpercut = depthpercut
+        self.toolC = tooldia
+
+        self.z_end = endz
+        self.z_depthpercut = depthpercut
 
         self.unitcode = {"IN": "G20", "MM": "G21"}
 
@@ -4533,12 +4755,18 @@ class CNCjob(Geometry):
 
         self.tool = 0.0
 
+        # search for toolchange parameters in the Toolchange Custom Code
+        self.re_toolchange_custom = re.compile(r'(%[a-zA-Z0-9\-_]+%)')
+
+        # search for toolchange code: M6
+        self.re_toolchange = re.compile(r'^\s*(M6)$')
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from Geometry.
-        self.ser_attrs += ['kind', 'z_cut', 'z_move', 'toolchangez', 'feedrate', 'feedrate_z', 'feedrate_rapid',
+        self.ser_attrs += ['kind', 'z_cut', 'z_move', 'z_toolchange', 'feedrate', 'z_feedrate', 'feedrate_rapid',
                            'tooldia', 'gcode', 'input_geometry_bounds', 'gcode_parsed', 'steps_per_circle',
-                           'depthpercut', 'spindlespeed', 'dwell', 'dwelltime']
+                           'z_depthpercut', 'spindlespeed', 'dwell', 'dwelltime']
 
     @property
     def postdata(self):
@@ -4551,12 +4779,12 @@ class CNCjob(Geometry):
         self.z_cut = float(self.z_cut) * factor
         self.z_move *= factor
         self.feedrate *= factor
-        self.feedrate_z *= factor
+        self.z_feedrate *= factor
         self.feedrate_rapid *= factor
         self.tooldia *= factor
-        self.toolchangez *= factor
-        self.endz *= factor
-        self.depthpercut = float(self.depthpercut) * factor
+        self.z_toolchange *= factor
+        self.z_end *= factor
+        self.z_depthpercut = float(self.z_depthpercut) * factor
 
         return factor
 
@@ -4573,6 +4801,22 @@ class CNCjob(Geometry):
         except Exception as e:
             self.app.log.error('Exception occurred within a postprocessor: ' + traceback.format_exc())
             return ''
+
+    def parse_custom_toolchange_code(self, data):
+        text = data
+        match_list = self.re_toolchange_custom.findall(text)
+
+        if match_list:
+            for match in match_list:
+                command = match.strip('%')
+                try:
+                    value = getattr(self, command)
+                except AttributeError:
+                    self.app.inform.emit("[ERROR] There is no such parameter: %s" % str(match))
+                    log.debug("CNCJob.parse_custom_toolchange_code() --> AttributeError ")
+                    return 'fail'
+                text = text.replace(match, str(value))
+            return text
 
     def optimized_travelling_salesman(self, points, start=None):
         """
@@ -4646,14 +4890,14 @@ class CNCjob(Geometry):
         else:
             self.z_cut = drillz
 
-        self.toolchangez = toolchangez
+        self.z_toolchange = toolchangez
 
         try:
             if toolchangexy == '':
-                self.toolchange_xy = None
+                self.xy_toolchange = None
             else:
-                self.toolchange_xy = [float(eval(a)) for a in toolchangexy.split(",")]
-                if len(self.toolchange_xy) < 2:
+                self.xy_toolchange = [float(eval(a)) for a in toolchangexy.split(",")]
+                if len(self.xy_toolchange) < 2:
                     self.app.inform.emit("[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be "
                                          "in the format (x, y) \nbut now there is only one value, not two. ")
                     return 'fail'
@@ -4662,7 +4906,7 @@ class CNCjob(Geometry):
             pass
 
         self.startz = startz
-        self.endz = endz
+        self.z_end = endz
 
         self.pp_excellon = self.app.postprocessors[self.pp_excellon_name]
         p = self.pp_excellon
@@ -4712,9 +4956,9 @@ class CNCjob(Geometry):
         gcode += self.doformat(p.feedrate_code)
 
         if toolchange is False:
-            if self.toolchange_xy is not None:
-                gcode += self.doformat(p.lift_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
-                gcode += self.doformat(p.startz_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+            if self.xy_toolchange is not None:
+                gcode += self.doformat(p.lift_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
+                gcode += self.doformat(p.startz_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
             else:
                 gcode += self.doformat(p.lift_code, x=0.0, y=0.0)
                 gcode += self.doformat(p.startz_code, x=0.0, y=0.0)
@@ -4751,9 +4995,9 @@ class CNCjob(Geometry):
                 locations.append((point.coords.xy[0][0], point.coords.xy[1][0]))
             return locations
 
-        if self.toolchange_xy is not None:
-            self.oldx = self.toolchange_xy[0]
-            self.oldy = self.toolchange_xy[1]
+        if self.xy_toolchange is not None:
+            self.oldx = self.xy_toolchange[0]
+            self.oldy = self.xy_toolchange[1]
         else:
             self.oldx = 0.0
             self.oldy = 0.0
@@ -4767,7 +5011,8 @@ class CNCjob(Geometry):
                 if exobj.drills:
                     for tool in tools:
                         self.tool=tool
-                        self.postdata['toolC']=exobj.tools[tool]["C"]
+                        self.postdata['toolC'] = exobj.tools[tool]["C"]
+                        self.tooldia = exobj.tools[tool]["C"]
 
                         ################################################
                         # Create the data.
@@ -4865,6 +5110,7 @@ class CNCjob(Geometry):
                     for tool in tools:
                         self.tool=tool
                         self.postdata['toolC']=exobj.tools[tool]["C"]
+                        self.tooldia = exobj.tools[tool]["C"]
 
                         ################################################
                         node_list = []
@@ -4957,6 +5203,7 @@ class CNCjob(Geometry):
                 if exobj.drills:
                     self.tool = tool
                     self.postdata['toolC'] = exobj.tools[tool]["C"]
+                    self.tooldia = exobj.tools[tool]["C"]
 
                     # Only if tool has points.
                     if tool in points:
@@ -5058,7 +5305,7 @@ class CNCjob(Geometry):
         self.z_move = float(z_move) if z_move else None
 
         self.feedrate = float(feedrate) if feedrate else None
-        self.feedrate_z = float(feedrate_z) if feedrate_z else None
+        self.z_feedrate = float(feedrate_z) if feedrate_z else None
         self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
 
         self.spindlespeed = int(spindlespeed) if spindlespeed else None
@@ -5066,19 +5313,22 @@ class CNCjob(Geometry):
         self.dwelltime = float(dwelltime) if dwelltime else None
 
         self.startz = float(startz) if startz else None
-        self.endz = float(endz) if endz else None
+        self.z_end = float(endz) if endz else None
 
-        self.depthpercut = float(depthpercut) if depthpercut else None
+        self.z_depthpercut = float(depthpercut) if depthpercut else None
         self.multidepth = multidepth
 
-        self.toolchangez = float(toolchangez) if toolchangez else None
+        self.z_toolchange = float(toolchangez) if toolchangez else None
+
+        # it servers in the postprocessor file
+        self.tool = tool_no
 
         try:
             if toolchangexy == '':
-                self.toolchange_xy = None
+                self.xy_toolchange = None
             else:
-                self.toolchange_xy = [float(eval(a)) for a in toolchangexy.split(",")]
-                if len(self.toolchange_xy) < 2:
+                self.xy_toolchange = [float(eval(a)) for a in toolchangexy.split(",")]
+                if len(self.xy_toolchange) < 2:
                     self.app.inform.emit("[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be "
                                          "in the format (x, y) \nbut now there is only one value, not two. ")
                     return 'fail'
@@ -5141,7 +5391,7 @@ class CNCjob(Geometry):
 
         if toolchange:
             # if "line_xyz" in self.pp_geometry_name:
-            #     self.gcode += self.doformat(p.toolchange_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+            #     self.gcode += self.doformat(p.toolchange_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
             # else:
             #     self.gcode += self.doformat(p.toolchange_code)
             self.gcode += self.doformat(p.toolchange_code)
@@ -5302,7 +5552,7 @@ class CNCjob(Geometry):
 
         self.feedrate = float(feedrate) if feedrate else None
 
-        self.feedrate_z = float(feedrate_z) if feedrate_z else None
+        self.z_feedrate = float(feedrate_z) if feedrate_z else None
 
         self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
 
@@ -5314,20 +5564,20 @@ class CNCjob(Geometry):
 
         self.startz = float(startz) if startz else None
 
-        self.endz = float(endz) if endz else None
+        self.z_end = float(endz) if endz else None
 
-        self.depthpercut = float(depthpercut) if depthpercut else None
+        self.z_depthpercut = float(depthpercut) if depthpercut else None
 
         self.multidepth = multidepth
 
-        self.toolchangez = float(toolchangez) if toolchangez else None
+        self.z_toolchange = float(toolchangez) if toolchangez else None
 
         try:
             if toolchangexy == '':
-                self.toolchange_xy = None
+                self.xy_toolchange = None
             else:
-                self.toolchange_xy = [float(eval(a)) for a in toolchangexy.split(",")]
-                if len(self.toolchange_xy) < 2:
+                self.xy_toolchange = [float(eval(a)) for a in toolchangexy.split(",")]
+                if len(self.xy_toolchange) < 2:
                     self.app.inform.emit("[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be "
                                          "in the format (x, y) \nbut now there is only one value, not two. ")
                     return 'fail'
@@ -5393,7 +5643,7 @@ class CNCjob(Geometry):
 
         if toolchange:
             # if "line_xyz" in self.pp_geometry_name:
-            #     self.gcode += self.doformat(p.toolchange_code, x=self.toolchange_xy[0], y=self.toolchange_xy[1])
+            #     self.gcode += self.doformat(p.toolchange_code, x=self.xy_toolchange[0], y=self.xy_toolchange[1])
             # else:
             #     self.gcode += self.doformat(p.toolchange_code)
             self.gcode += self.doformat(p.toolchange_code)
@@ -5560,11 +5810,11 @@ class CNCjob(Geometry):
             gcode += self.doformat(p.rapid_code, x=path[0][0], y=path[0][1])  # Move to first point
 
             # Move down to cutting depth
-            gcode += self.doformat(p.feedrate_z_code)
+            gcode += self.doformat(p.z_feedrate_code)
             gcode += self.doformat(p.down_z_start_code)
             gcode += self.doformat(p.spindle_fwd_code) # Start dispensing
             gcode += self.doformat(p.dwell_fwd_code)
-            gcode += self.doformat(p.feedrate_z_dispense_code)
+            gcode += self.doformat(p.z_feedrate_dispense_code)
             gcode += self.doformat(p.lift_z_dispense_code)
             gcode += self.doformat(p.feedrate_xy_code)
 
@@ -5578,12 +5828,12 @@ class CNCjob(Geometry):
             gcode += self.doformat(p.down_z_stop_code)
             gcode += self.doformat(p.spindle_off_code)
             gcode += self.doformat(p.dwell_rev_code)
-            gcode += self.doformat(p.feedrate_z_code)
+            gcode += self.doformat(p.z_feedrate_code)
             gcode += self.doformat(p.lift_code)
         elif type(geometry) == Point:
             gcode += self.doformat(p.linear_code, x=path[0][0], y=path[0][1])  # Move to first point
 
-            gcode += self.doformat(p.feedrate_z_dispense_code)
+            gcode += self.doformat(p.z_feedrate_dispense_code)
             gcode += self.doformat(p.down_z_start_code)
             gcode += self.doformat(p.spindle_fwd_code) # Start dispensing
             gcode += self.doformat(p.dwell_fwd_code)
@@ -5594,7 +5844,7 @@ class CNCjob(Geometry):
             gcode += self.doformat(p.spindle_off_code)
             gcode += self.doformat(p.down_z_stop_code)
             gcode += self.doformat(p.dwell_rev_code)
-            gcode += self.doformat(p.feedrate_z_code)
+            gcode += self.doformat(p.z_feedrate_code)
             gcode += self.doformat(p.lift_code)
         return gcode
 
@@ -5627,17 +5877,17 @@ class CNCjob(Geometry):
         else:
             z_cut = Decimal(self.z_cut).quantize(Decimal('0.000000001'))
 
-        if self.depthpercut is None:
-            self.depthpercut = z_cut
-        elif not isinstance(self.depthpercut, Decimal):
-            self.depthpercut = Decimal(self.depthpercut).quantize(Decimal('0.000000001'))
+        if self.z_depthpercut is None:
+            self.z_depthpercut = z_cut
+        elif not isinstance(self.z_depthpercut, Decimal):
+            self.z_depthpercut = Decimal(self.z_depthpercut).quantize(Decimal('0.000000001'))
 
         depth = 0
         reverse = False
         while depth > z_cut:
 
             # Increase depth. Limit to z_cut.
-            depth -= self.depthpercut
+            depth -= self.z_depthpercut
             if depth < z_cut:
                 depth = z_cut
 
@@ -5887,7 +6137,7 @@ class CNCjob(Geometry):
     #             ax.add_patch(patch)
     #
     #     return fig
-        
+
     def plot2(self, tooldia=None, dpi=75, margin=0.1, gcode_parsed=None,
               color={"T": ["#F0E24D4C", "#B5AB3A4C"], "C": ["#5E6CFFFF", "#4650BDFF"]},
               alpha={"T": 0.3, "C": 1.0}, tool_tolerance=0.0005, obj=None, visible=False, kind='all'):
@@ -6035,7 +6285,7 @@ class CNCjob(Geometry):
             feedrate = self.feedrate
 
         if feedrate_z is None:
-            feedrate_z = self.feedrate_z
+            feedrate_z = self.z_feedrate
 
         if feedrate_rapid is None:
             feedrate_rapid = self.feedrate_rapid
@@ -6060,7 +6310,7 @@ class CNCjob(Geometry):
         # Move down to cutting depth
         if down:
             # Different feedrate for vertical cut?
-            gcode += self.doformat(p.feedrate_z_code)
+            gcode += self.doformat(p.z_feedrate_code)
             # gcode += self.doformat(p.feedrate_code)
             gcode += self.doformat(p.down_code, x=path[0][0], y=path[0][1], z_cut=z_cut)
             gcode += self.doformat(p.feedrate_code, feedrate=feedrate)
@@ -6105,7 +6355,7 @@ class CNCjob(Geometry):
             feedrate = self.feedrate
 
         if feedrate_z is None:
-            feedrate_z = self.feedrate_z
+            feedrate_z = self.z_feedrate
 
         if feedrate_rapid is None:
             feedrate_rapid = self.feedrate_rapid
@@ -6128,8 +6378,8 @@ class CNCjob(Geometry):
         # Move down to cutting depth
         if down:
             # Different feedrate for vertical cut?
-            if self.feedrate_z is not None:
-                gcode += self.doformat(p.feedrate_z_code)
+            if self.z_feedrate is not None:
+                gcode += self.doformat(p.z_feedrate_code)
                 # gcode += self.doformat(p.feedrate_code)
                 gcode += self.doformat(p.down_code, x=path[0][0], y=path[0][1], z_cut=z_cut)
                 gcode += self.doformat(p.feedrate_code, feedrate=feedrate)
@@ -6157,8 +6407,8 @@ class CNCjob(Geometry):
         p = self.pp_geometry
         gcode += self.doformat(p.linear_code, x=path[0][0], y=path[0][1])  # Move to first point
 
-        if self.feedrate_z is not None:
-            gcode += self.doformat(p.feedrate_z_code)
+        if self.z_feedrate is not None:
+            gcode += self.doformat(p.z_feedrate_code)
             gcode += self.doformat(p.down_code, x=path[0][0], y=path[0][1], z_cut = self.z_cut)
             gcode += self.doformat(p.feedrate_code)
         else:
@@ -6315,7 +6565,7 @@ class CNCjob(Geometry):
             temp_gcode = ''
             header_start = False
             header_stop = False
-            units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+            units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
             lines = StringIO(g)
             for line in lines:

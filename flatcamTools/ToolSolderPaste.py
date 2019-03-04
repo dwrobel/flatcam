@@ -414,13 +414,20 @@ class SolderPaste(FlatCAMTool):
     def run(self):
         self.app.report_usage("ToolSolderPaste()")
 
+        # if the splitter is hidden, display it, else hide it but only if the current widget is the same
+        if self.app.ui.splitter.sizes()[0] == 0:
+            self.app.ui.splitter.setSizes([1, 1])
+        else:
+            try:
+                if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
+                    self.app.ui.splitter.setSizes([0, 1])
+            except AttributeError:
+                pass
+
         FlatCAMTool.run(self)
         self.set_tool_ui()
         self.build_ui()
 
-        # if the splitter us hidden, display it
-        if self.app.ui.splitter.sizes()[0] == 0:
-            self.app.ui.splitter.setSizes([1, 1])
         self.app.ui.notebook.setTabText(2, "SolderPaste Tool")
 
     def install(self, icon=None, separator=None, **kwargs):
@@ -477,7 +484,7 @@ class SolderPaste(FlatCAMTool):
         self.name = ""
         self.obj = None
 
-        self.units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         for name in list(self.app.postprocessors.keys()):
             # populate only with postprocessor files that start with 'Paste_'
@@ -495,7 +502,7 @@ class SolderPaste(FlatCAMTool):
         self.ui_disconnect()
 
         # updated units
-        self.units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         sorted_tools = []
         for k, v in self.tooltable_tools.items():
@@ -997,7 +1004,7 @@ class SolderPaste(FlatCAMTool):
             geo_obj.special_group = 'solder_paste_tool'
 
             geo = LineString()
-            work_geo = []
+            work_geo = self.flat_geometry
             rest_geo = []
             tooluid = 1
 
@@ -1021,7 +1028,7 @@ class SolderPaste(FlatCAMTool):
                 # We get possible issues if we try to directly use the Polygons, due of possible the interiors,
                 # so we do a hack: get first the exterior in a form of LinearRings and then convert back to Polygon
                 # because intersection does not work on LinearRings
-                for g in self.flat_geometry:
+                for g in work_geo:
                     # for whatever reason intersection on LinearRings does not work so we convert back to Polygons
                     poly = Polygon(g)
                     x_min, y_min, x_max, y_max = poly.bounds

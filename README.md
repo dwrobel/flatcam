@@ -9,6 +9,84 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+4.03.2019
+
+- finished work on object hovering
+- fixed Excellon object move and all the other transformations
+- starting to work on Manual Cutout Tool
+- remade the CutOut Tool
+- finished Manual Cutout Tool by adding utility geometry to the cutting geometry
+- added CTRL + click behavior for adding manual bridge gaps in Cutout Tool
+- in Tool Cutout added shortcut key 'Escape' to cancel the current adding of bridge gaps
+
+3.03.2019
+
+- minor UI changes for Gerber UI
+- ~~after an object move, the apertures plotted shapes are deleted from canvas and the 'mark all' button is deselected~~
+- after move tool action or any other transform (rotate, skew, scale, mirror, offset), the plotted apertures are kept plotted.
+- changing units now will convert all the default values from one unit type to another
+- prettified the selection shape and the moving shape
+- initial work in object hovering shape
+
+02.03.2019
+
+- fixed offset, rotate, scale, skew for follow_geometry. Fixed the move tool also.
+- fixed offset, rotate, scale, skew for 'solid_geometry' inside the self.apertures.
+
+28.02.2019
+
+- added a change that when a double click is performed in a object on canvas resulting in a selection, if the notebook is hidden then it will be displayed
+- progress in ToolChange Custom commands replacement and rename
+
+27.02.2019
+
+- made the Custom ToolChange Text area in CNCJob Selected Tab depend on the status of the ToolChange Enable Checkbox even in the init stage.
+- added some parameters throughout camlib gcode generation functions; handled some possible errors (e.g like when attempting to use an empty Custom GCode Toolchange)
+- added toggle effect for the tools in the toolbar.
+- enhanced the toggle effect for the tools in the Tools Toolbar and also for Notebook Tab selection: if the current tool is activated it will toggle the notebook side but only if the installed widget is itself. If coming from another tool, the notebook will stay visible
+- upgraded the Tool Cutout when done from Gerber file to create a convex_hull around the Gerber file rather than trying to isolate it
+- added some protections for the FlatCAM Tools run after an object was loaded
+
+26.02.2019
+
+- added a function to read the parameters from ToolChange macro Text Box (I need to move it from CNCJob to Excellon and Geometry)
+- fixed the geometry adding to the self.apertures in the case when regions are done without declaring any aperture first (Allegro does that). Now, that geometry will be stored in the '0' aperture with type REG
+- work in progress to Toolchange_Custom code replacement -> finished the parse and replace function
+- fixed mouse selection on canvas, mouse drag, mouse click and mouse double click
+- fixed Gerber Aperture Table dimensions
+- added a Mark All button in the Gerber aperture table.
+- because adding shapes to the shapes collection (when doing Mark or Mark All) is time consuming I made the plot_apertures() threaded.
+- made the polygon fusing in modified Gerber creation, a list comprehension in an attempt for optimization
+- when right clicking the files in Project tab, the Save option for Excellon no longer export it but really save the original. 
+- in ToolChange Custom Code replacement, the Text Box in the CNCJob Selected tab will be active only if there is a 'toolchange_custom' in the name of the postprocessor file. This assume that it is, or was created having as template the Toolchange Custom postprocessor file.
+
+
+25.02.2019
+
+- fixed the Gerber object UI layout
+- added ability to mark individual apertures in Gerber file using the Gerber Aperture Table
+- more modifications for the Gerber UI layout; made 'follow' an advanced Gerber option
+- added in Preferences a new Category: Gerber Advanced Options. For now it controls the display of Gerber Aperture Table and the "follow" attribute4
+- fixed FlatCAMGerber.merge() to merge the self.apertures[ap]['solid_geometry'] too
+- started to work on a new feature that allow adding a ToolChange GCode macro - GUI added both in CNCJob Selected tab and in CNCJob Preferences
+- added a limited 'sort-of' Gerber Editor: it allows buffering and scaling of apertures
+
+24.02.2019
+
+- fixed a small bug in the Tool Solder Paste: the App don't take into consideration pads already filled with solder paste.
+- prettified the defaults files and the recent file. Now they are ordered and human readable
+- added a Toggle Code Editor Menu and key shortcut
+- added the ability to open FlatConfig configuration files in Code Editor, Modify them and then save them.
+- added ability to double click the FlatConfig files and open them in the FlatCAM Code Editor (to be verified)
+- when saving a file from Code Editor and there is no object active then the OpenFileDialog filters are reset to FlatConfig files.
+- reverted a change in GCode that might affect Gerber polarity change in Gerber parser
+- ability to double click the FlatConfig files and open them in the FlatCAM Code Editor - fixed and verified
+- fixed the Set To Origin function when Escape was clicked
+- added all the Tools in a new ToolBar
+- fixed bug that after changing the layout all the toolbar actions are no longer working
+- fixed bug in Set Origin function
+- fixed a typo in Toolchange_Probe_MACH3 postprocessor
+
 23.02.2019
 
 - remade the SolderPaste geometry generation function in ToolSoderPaste to work in certain scenarios where the Gerber pads in the SolderPaste mask Gerber may be just pads outlines

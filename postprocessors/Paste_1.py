@@ -59,13 +59,13 @@ class Paste_1(FlatCAMPostProc_Tools):
         return 'G01 Z' + self.coordinate_format%(p.coords_decimals, float(p['z_stop']))
 
     def toolchange_code(self, p):
-        toolchangez = float(p['z_toolchange'])
+        z_toolchange = float(p['z_toolchange'])
         toolchangexy = [float(eval(a)) for a in p['xy_toolchange'].split(",")]
         gcode = ''
 
         if toolchangexy is not None:
-            toolchangex = toolchangexy[0]
-            toolchangey = toolchangexy[1]
+            x_toolchange = toolchangexy[0]
+            y_toolchange = toolchangexy[1]
 
         if p.units.upper() == 'MM':
             toolC_formatted = format(float(p['toolC']), '.2f')
@@ -74,26 +74,26 @@ class Paste_1(FlatCAMPostProc_Tools):
 
         if toolchangexy is not None:
             gcode = """
-G00 Z{toolchangez}
-G00 X{toolchangex} Y{toolchangey}
+G00 Z{z_toolchange}
+G00 X{x_toolchange} Y{y_toolchange}
 T{tool}
 M6    
 (MSG, Change to Tool with Nozzle Dia = {toolC})
 M0
-""".format(toolchangex=self.coordinate_format % (p.coords_decimals, toolchangex),
-           toolchangey=self.coordinate_format % (p.coords_decimals, toolchangey),
-           toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
+""".format(x_toolchange=self.coordinate_format % (p.coords_decimals, x_toolchange),
+           y_toolchange=self.coordinate_format % (p.coords_decimals, y_toolchange),
+           z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
            tool=int(int(p.tool)),
            toolC=toolC_formatted)
 
         else:
             gcode = """
-G00 Z{toolchangez}
+G00 Z{z_toolchange}
 T{tool}
 M6    
 (MSG, Change to Tool with Nozzle Dia = {toolC})
 M0
-""".format(toolchangez=self.coordinate_format % (p.coords_decimals, toolchangez),
+""".format(z_toolchange=self.coordinate_format % (p.coords_decimals, z_toolchange),
            tool=int(int(p.tool)),
            toolC=toolC_formatted)
 
@@ -121,7 +121,7 @@ M0
     def feedrate_xy_code(self, p):
         return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, float(p['frxy'])))
 
-    def feedrate_z_code(self, p):
+    def z_feedrate_code(self, p):
         return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, float(p['frz'])))
 
     def feedrate_z_dispense_code(self, p):

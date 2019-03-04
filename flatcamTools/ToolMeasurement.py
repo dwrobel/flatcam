@@ -12,7 +12,7 @@ class Measurement(FlatCAMTool):
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
 
-        self.units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().lower()
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
         ## Title
         title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font><br>" % self.toolName)
@@ -173,7 +173,7 @@ class Measurement(FlatCAMTool):
 
         # Switch notebook to tool page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
-        self.units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().lower()
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
         self.show()
 
     def toggle(self):
@@ -210,7 +210,7 @@ class Measurement(FlatCAMTool):
         else:
             # ENABLE the Measuring TOOL
             self.active = True
-            self.units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().lower()
+            self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
             # we disconnect the mouse/key handlers from wherever the measurement tool was called
             if self.app.call_source == 'app':

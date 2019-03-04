@@ -83,6 +83,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufileopenproject = QtWidgets.QAction(QtGui.QIcon('share/folder16.png'), 'Open &Project ...', self)
         self.menufile_open.addAction(self.menufileopenproject)
 
+        self.menufile_open.addSeparator()
+
+        # Open Config File...
+        self.menufileopenconfig = QtWidgets.QAction(QtGui.QIcon('share/folder16.png'), 'Open Config ...', self)
+        self.menufile_open.addAction(self.menufileopenconfig)
+
         # Recent
         self.recent = self.menufile.addMenu(QtGui.QIcon('share/recent_files.png'), "Recent files")
 
@@ -299,7 +305,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuview_zoom_fit = self.menuview.addAction(QtGui.QIcon('share/zoom_fit32.png'), "&Zoom Fit\tV")
         self.menuview_zoom_in = self.menuview.addAction(QtGui.QIcon('share/zoom_in32.png'), "&Zoom In\t-")
         self.menuview_zoom_out = self.menuview.addAction(QtGui.QIcon('share/zoom_out32.png'), "&Zoom Out\t=")
+        self.menuview.addSeparator()
 
+        self.menuview_toggle_code_editor = self.menuview.addAction(QtGui.QIcon('share/code_editor32.png'),
+                                                                   'Toggle Code Editor\tCTRL+E')
         self.menuview.addSeparator()
         self.menuview_toggle_fscreen = self.menuview.addAction(
             QtGui.QIcon('share/fscreen32.png'), "&Toggle FullScreen\tALT+F10")
@@ -457,18 +466,27 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.toolbarfile = QtWidgets.QToolBar('File Toolbar')
         self.toolbarfile.setObjectName('File_TB')
         self.addToolBar(self.toolbarfile)
+
         self.toolbargeo = QtWidgets.QToolBar('Edit Toolbar')
         self.toolbargeo.setObjectName('Edit_TB')
         self.addToolBar(self.toolbargeo)
+
         self.toolbarview = QtWidgets.QToolBar('View Toolbar')
         self.toolbarview.setObjectName('View_TB')
         self.addToolBar(self.toolbarview)
+
+        self.toolbarshell = QtWidgets.QToolBar('Shell Toolbar')
+        self.toolbarshell.setObjectName('Shell_TB')
+        self.addToolBar(self.toolbarshell)
+
         self.toolbartools = QtWidgets.QToolBar('Tools Toolbar')
         self.toolbartools.setObjectName('Tools_TB')
         self.addToolBar(self.toolbartools)
+
         self.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
         self.exc_edit_toolbar.setObjectName('ExcEditor_TB')
         self.addToolBar(self.exc_edit_toolbar)
+
         self.geo_edit_toolbar = QtWidgets.QToolBar('Geometry Editor Toolbar')
         self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
         self.addToolBar(self.geo_edit_toolbar)
@@ -516,8 +534,23 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # self.toolbarview.setVisible(False)
 
+        ### Shell Toolbar ###
+        self.shell_btn = self.toolbarshell.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
+
         ### Tools Toolbar ###
-        self.shell_btn = self.toolbartools.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
+        self.dblsided_btn = self.toolbartools.addAction(QtGui.QIcon('share/doubleside32.png'), "2Sided Tool")
+        self.cutout_btn = self.toolbartools.addAction(QtGui.QIcon('share/cut16.png'), "&Cutout Tool")
+        self.ncc_btn = self.toolbartools.addAction(QtGui.QIcon('share/flatcam_icon32.png'), "NCC Tool")
+        self.paint_btn = self.toolbartools.addAction(QtGui.QIcon('share/paint20_1.png'), "Paint Tool")
+        self.toolbartools.addSeparator()
+
+        self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panel16.png'), "Panel Tool")
+        self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'), "Film Tool")
+        self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'), "SolderPaste Tool")
+        self.toolbartools.addSeparator()
+
+        self.calculators_btn = self.toolbartools.addAction(QtGui.QIcon('share/calculator24.png'), "Calculators Tool")
+        self.transform_btn = self.toolbartools.addAction(QtGui.QIcon('share/transform.png'), "Transform Tool")
 
         ### Drill Editor Toolbar ###
         self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select")
@@ -715,6 +748,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geometry_tab_lay.addWidget(self.geometry_scroll_area)
 
         self.cncjob_tab = QtWidgets.QWidget()
+        self.cncjob_tab.setObjectName("cncjob_tab")
         self.pref_tab_area.addTab(self.cncjob_tab, "CNC-JOB")
         self.cncjob_tab_lay = QtWidgets.QVBoxLayout()
         self.cncjob_tab_lay.setContentsMargins(2, 2, 2, 2)
@@ -940,6 +974,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 		<tr height="20">
 			<td height="20"><strong>SHIFT+C</strong></td>
 			<td>&nbsp;Copy Obj_Name</td>
+		</tr>
+		<tr height="20">
+			<td height="20"><strong>SHIFT+E</strong></td>
+			<td>&nbsp;Toggle Code Editor</td>
 		</tr>
 		<tr height="20">
 			<td height="20"><strong>SHIFT+G</strong></td>
@@ -1540,8 +1578,23 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # self.toolbarview.setVisible(False)
 
+        ### Shell Toolbar ###
+        self.shell_btn = self.toolbarshell.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
+
         ### Tools Toolbar ###
-        self.shell_btn = self.toolbartools.addAction(QtGui.QIcon('share/shell32.png'), "&Command Line")
+        self.dblsided_btn = self.toolbartools.addAction(QtGui.QIcon('share/doubleside32.png'), "2Sided Tool")
+        self.cutout_btn = self.toolbartools.addAction(QtGui.QIcon('share/cut16.png'), "&Cutout Tool")
+        self.ncc_btn = self.toolbartools.addAction(QtGui.QIcon('share/flatcam_icon32.png'), "NCC Tool")
+        self.paint_btn = self.toolbartools.addAction(QtGui.QIcon('share/paint20_1.png'), "Paint Tool")
+        self.toolbartools.addSeparator()
+
+        self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panel16.png'), "Panel Tool")
+        self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'), "Film Tool")
+        self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'), "SolderPaste Tool")
+        self.toolbartools.addSeparator()
+
+        self.calculators_btn = self.toolbartools.addAction(QtGui.QIcon('share/calculator24.png'), "Calculators Tool")
+        self.transform_btn = self.toolbartools.addAction(QtGui.QIcon('share/transform.png'), "Transform Tool")
 
         ### Drill Editor Toolbar ###
         self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), "Select")
@@ -1693,9 +1746,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             elif modifiers == QtCore.Qt.ShiftModifier:
 
                 # Copy Object Name
-                # Copy Object Name
                 if key == QtCore.Qt.Key_C:
                     self.app.on_copy_name()
+
+                # Toggle Code Editor
+                if key == QtCore.Qt.Key_E:
+                    self.app.on_toggle_code_editor()
 
                 # Toggle axis
                 if key == QtCore.Qt.Key_G:
@@ -1847,6 +1903,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Escape = Deselect All
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
                     self.app.on_deselect_all()
+                    # try to disconnect the slot from Set Origin
+                    try:
+                        self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_set_zero_click)
+                    except:
+                        pass
                     self.app.inform.emit("")
 
                 # Space = Toggle Active/Inactive
@@ -1891,10 +1952,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Change Units
                 if key == QtCore.Qt.Key_Q:
-                    if self.app.options["units"] == 'MM':
-                        self.app.ui.general_options_form.general_app_group.units_radio.set_value("IN")
+                    if self.app.defaults["units"] == 'MM':
+                        self.app.ui.general_defaults_form.general_app_group.units_radio.set_value("IN")
                     else:
-                        self.app.ui.general_options_form.general_app_group.units_radio.set_value("MM")
+                        self.app.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
                     self.app.on_toggle_units()
 
                 # Rotate Object by 90 degree CW
@@ -2515,10 +2576,14 @@ class GerberPreferencesUI(QtWidgets.QWidget):
         self.gerber_gen_group = GerberGenPrefGroupUI()
         self.gerber_gen_group.setFixedWidth(250)
         self.gerber_opt_group = GerberOptPrefGroupUI()
-        self.gerber_opt_group.setFixedWidth(250)
+        self.gerber_opt_group.setFixedWidth(230)
+        self.gerber_adv_opt_group = GerberAdvOptPrefGroupUI()
+        self.gerber_adv_opt_group.setFixedWidth(200)
 
         self.layout.addWidget(self.gerber_gen_group)
         self.layout.addWidget(self.gerber_opt_group)
+        self.layout.addWidget(self.gerber_adv_opt_group)
+
         self.layout.addStretch()
 
 
@@ -2639,9 +2704,13 @@ class CNCJobPreferencesUI(QtWidgets.QWidget):
         self.cncjob_gen_group.setFixedWidth(270)
         self.cncjob_opt_group = CNCJobOptPrefGroupUI()
         self.cncjob_opt_group.setFixedWidth(260)
+        self.cncjob_adv_opt_group = CNCJobAdvOptPrefGroupUI()
+        self.cncjob_adv_opt_group.setFixedWidth(260)
 
         self.layout.addWidget(self.cncjob_gen_group)
         self.layout.addWidget(self.cncjob_opt_group)
+        self.layout.addWidget(self.cncjob_adv_opt_group)
+
         self.layout.addStretch()
 
 
@@ -3027,6 +3096,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
             del settings
             self.app.inform.emit("[success] GUI settings deleted ...")
 
+
 class GeneralAppPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):
         super(GeneralAppPrefGroupUI, self).__init__(self)
@@ -3227,26 +3297,27 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
 
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
-        # Plot CB
-        self.plot_cb = FCCheckBox(label='Plot')
-        self.plot_options_label.setToolTip(
-            "Plot (show) this object."
-        )
-        grid0.addWidget(self.plot_cb, 0, 0)
 
         # Solid CB
         self.solid_cb = FCCheckBox(label='Solid')
         self.solid_cb.setToolTip(
             "Solid color polygons."
         )
-        grid0.addWidget(self.solid_cb, 0, 1)
+        grid0.addWidget(self.solid_cb, 0, 0)
 
         # Multicolored CB
         self.multicolored_cb = FCCheckBox(label='M-Color')
         self.multicolored_cb.setToolTip(
             "Draw polygons in different colors."
         )
-        grid0.addWidget(self.multicolored_cb, 0, 2)
+        grid0.addWidget(self.multicolored_cb, 0, 1)
+
+        # Plot CB
+        self.plot_cb = FCCheckBox(label='Plot')
+        self.plot_options_label.setToolTip(
+            "Plot (show) this object."
+        )
+        grid0.addWidget(self.plot_cb, 0, 2)
 
         # Number of circle steps for circular aperture linear approximation
         self.circle_steps_label = QtWidgets.QLabel("Circle Steps:")
@@ -3383,6 +3454,73 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
             "the margin."
         )
         grid2.addWidget(self.bbrounded_cb, 1, 0, 1, 2)
+        self.layout.addStretch()
+
+
+class GerberAdvOptPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Gerber Adv. Options Preferences", parent=parent)
+        super(GerberAdvOptPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("Gerber Adv. Options"))
+
+
+        ## Advanced Gerber Parameters
+        self.adv_param_label = QtWidgets.QLabel("<b>Advanced Param.:</b>")
+        self.adv_param_label.setToolTip(
+            "A list of Gerber advanced parameters.\n"
+            "Those parameters are available only for\n"
+            "Advanced App. Level."
+        )
+        self.layout.addWidget(self.adv_param_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        # Follow Attribute
+        self.follow_cb = FCCheckBox(label='"Follow"')
+        self.follow_cb.setToolTip(
+            "Generate a 'Follow' geometry.\n"
+            "This means that it will cut through\n"
+            "the middle of the trace."
+
+        )
+        grid0.addWidget(self.follow_cb, 0, 0)
+
+        # Aperture Table Visibility CB
+        self.aperture_table_visibility_cb = FCCheckBox(label='Table Show/Hide')
+        self.aperture_table_visibility_cb.setToolTip(
+            "Toggle the display of the Gerber Apertures Table.\n"
+            "Also, on hide, it will delete all mark shapes\n"
+            "that are drawn on canvas."
+
+        )
+        grid0.addWidget(self.aperture_table_visibility_cb, 1, 0)
+
+        # Scale Aperture Factor
+        self.scale_aperture_label = QtWidgets.QLabel('Ap. Scale Factor:')
+        self.scale_aperture_label.setToolTip(
+            "Change the size of the selected apertures.\n"
+            "Factor by which to multiply\n"
+            "geometric features of this object."
+        )
+        grid0.addWidget(self.scale_aperture_label, 2, 0)
+
+        self.scale_aperture_entry = FloatEntry2()
+        grid0.addWidget(self.scale_aperture_entry, 2, 1)
+
+        # Buffer Aperture Factor
+        self.buffer_aperture_label = QtWidgets.QLabel('Ap. Buffer Factor:')
+        self.buffer_aperture_label.setToolTip(
+            "Change the size of the selected apertures.\n"
+            "Factor by which to expand/shrink\n"
+            "geometric features of this object."
+        )
+        grid0.addWidget(self.buffer_aperture_label, 3, 0)
+
+        self.buffer_aperture_entry = FloatEntry2()
+        grid0.addWidget(self.buffer_aperture_entry, 3, 1)
+
         self.layout.addStretch()
 
 
@@ -4485,6 +4623,89 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
         self.layout.addStretch()
 
 
+class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "CNC Job Advanced Options Preferences", parent=None)
+        super(CNCJobAdvOptPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str("CNC Job Adv. Options"))
+
+        ## Export G-Code
+        self.export_gcode_label = QtWidgets.QLabel("<b>Export G-Code:</b>")
+        self.export_gcode_label.setToolTip(
+            "Export and save G-Code to\n"
+            "make this object to a file."
+        )
+        self.layout.addWidget(self.export_gcode_label)
+
+        # Prepend to G-Code
+        toolchangelabel = QtWidgets.QLabel('Toolchange G-Code:')
+        toolchangelabel.setToolTip(
+            "Type here any G-Code commands you would\n"
+            "like to be executed when Toolchange event is encountered.\n"
+            "This will constitute a Custom Toolchange GCode,\n"
+            "or a Toolchange Macro."
+        )
+        self.layout.addWidget(toolchangelabel)
+
+        self.toolchange_text = FCTextArea()
+        self.layout.addWidget(self.toolchange_text)
+
+        hlay = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay)
+
+        # Toolchange Replacement GCode
+        self.toolchange_cb = FCCheckBox(label='Use Toolchange Macro')
+        self.toolchange_cb.setToolTip(
+            "Check this box if you want to use\n"
+            "a Custom Toolchange GCode (macro)."
+        )
+        hlay.addWidget(self.toolchange_cb)
+        hlay.addStretch()
+
+        hlay1 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay1)
+
+        # Variable list
+        self.tc_variable_combo = FCComboBox()
+        self.tc_variable_combo.setToolTip(
+            "A list of the FlatCAM variables that can be used\n"
+            "in the Toolchange event.\n"
+            "They have to be surrounded by the '%' symbol"
+        )
+        hlay1.addWidget(self.tc_variable_combo)
+
+        # Populate the Combo Box
+        variables = ['Parameters', 'tool', 'tooldia', 't_drills', 'x_toolchange', 'y_toolchange', 'z_toolchange',
+                     'z_cut', 'z_move', 'z_depthpercut', 'spindlespeed', 'dwelltime']
+        self.tc_variable_combo.addItems(variables)
+        self.tc_variable_combo.setItemData(0, "FlatCAM CNC parameters", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(1, "tool = tool number", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(2, "tooldia = tool diameter", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(3, "t_drills = for Excellon, total number of drills", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(4, "x_toolchange = X coord for Toolchange", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(5, "y_toolchange = Y coord for Toolchange", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(6, "z_toolchange = Z coord for Toolchange", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(7, "z_cut = Z coord for Toolchange", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(8, "z_move = Z coord for Toolchange", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(9, "z_depthpercut = the step value for multidepth cut", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(10, "spindlesspeed = the value for the spindle speed", Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(11, "dwelltime = time to dwell to allow the spindle to reach it's set RPM",
+                                           Qt.ToolTipRole)
+
+        hlay1.addStretch()
+
+        # Insert Variable into the Toolchange G-Code Text Box
+        # self.tc_insert_buton = FCButton("Insert")
+        # self.tc_insert_buton.setToolTip(
+        #     "Insert the variable in the GCode Box\n"
+        #     "surrounded by the '%' symbol."
+        # )
+        # hlay1.addWidget(self.tc_insert_buton)
+
+        self.layout.addStretch()
+
+
 class ToolsNCCPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):
         # OptionsGroupUI.__init__(self, "NCC Tool Options", parent=parent)
@@ -4632,22 +4853,9 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.cutout_gap_entry = LengthEntry()
         grid0.addWidget(self.cutout_gap_entry, 2, 1)
 
-        gapslabel = QtWidgets.QLabel('Gaps Rect:')
-        gapslabel.setToolTip(
-            "Where to place the gaps when doing a Rectangular Cutout:\n"
-            " - 2 (T/B) --> Top/Bottom\n"
-            " - 2 (L/R) --> Left/Rigt\n"
-            " - 4       --> on each of all 4 sides."
-        )
-        grid0.addWidget(gapslabel, 3, 0)
-        self.gaps_radio = RadioSet([{'label': '2 (T/B)', 'value': 'tb'},
-                                    {'label': '2 (L/R)', 'value': 'lr'},
-                                    {'label': '4', 'value': '4'}])
-        grid0.addWidget(self.gaps_radio, 3, 1)
-
-        gaps_ff_label = QtWidgets.QLabel('Gaps FF:')
-        gaps_ff_label.setToolTip(
-            "Number of gaps used for the FreeForm cutout.\n"
+        gaps_label = QtWidgets.QLabel('Gaps:')
+        gaps_label.setToolTip(
+            "Number of bridge gaps used for the cutout.\n"
             "There can be maximum 8 bridges/gaps.\n"
             "The choices are:\n"
             "- lr    - left + right\n"
@@ -4657,9 +4865,9 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
             "- 2tb  - 2*top + 2*bottom\n"
             "- 8     - 2*left + 2*right +2*top + 2*bottom"
         )
-        grid0.addWidget(gaps_ff_label, 4, 0)
+        grid0.addWidget(gaps_label, 3, 0)
         self.gaps_combo = FCComboBox()
-        grid0.addWidget(self.gaps_combo, 4, 1)
+        grid0.addWidget(self.gaps_combo, 3, 1)
 
         gaps_items = ['LR', 'TB', '4', '2LR', '2TB', '8']
         for it in gaps_items:

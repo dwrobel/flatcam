@@ -72,9 +72,9 @@ class Roland_MDX_20(FlatCAMPostProc):
 
     def end_code(self, p):
         if p.units.upper() == 'IN':
-            z = p.endz / 25.4
+            z = p.z_end / 25.4
         else:
-            z = p.endz
+            z = p.z_end
         gcode = self.feedrate_rapid_code(p) + '\n'
         gcode += self.position_code(p).format(**p) + ',' + str(float(z * 40.0)) + ';'
         return gcode
@@ -89,13 +89,13 @@ class Roland_MDX_20(FlatCAMPostProc):
             fr_sec = 6
         return 'V' + str(self.feedrate_format % fr_sec) + ';'
 
-    def feedrate_z_code(self, p):
-        fr_sec = p.feedrate_z / 60
+    def z_feedrate_code(self, p):
+        fr_sec = p.z_feedrate / 60
 
         # valid feedrate for MDX20 is between 0.1mm/sec and 15mm/sec (6mm/min to 900mm/min)
-        if p.feedrate_z >= 900:
+        if p.z_feedrate >= 900:
             fr_sec = 15
-        if p.feedrate_z < 6:
+        if p.z_feedrate < 6:
             fr_sec = 6
         return 'V' + str(self.feedrate_format % fr_sec) + ';'
 

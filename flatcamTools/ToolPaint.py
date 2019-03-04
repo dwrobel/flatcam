@@ -304,12 +304,18 @@ class ToolPaint(FlatCAMTool, Gerber):
     def run(self):
         self.app.report_usage("ToolPaint()")
 
-        FlatCAMTool.run(self)
-        self.set_tool_ui()
-
-        # if the splitter us hidden, display it
+        # if the splitter is hidden, display it, else hide it but only if the current widget is the same
         if self.app.ui.splitter.sizes()[0] == 0:
             self.app.ui.splitter.setSizes([1, 1])
+        else:
+            try:
+                if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
+                    self.app.ui.splitter.setSizes([0, 1])
+            except AttributeError:
+                pass
+
+        FlatCAMTool.run(self)
+        self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, "Paint Tool")
 
@@ -347,7 +353,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.paintoverlap_entry.set_value(self.default_data["paintoverlap"])
 
         # updated units
-        self.units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         if self.units == "IN":
             self.addtool_entry.set_value(0.039)
@@ -415,7 +421,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             pass
 
         # updated units
-        self.units = self.app.ui.general_options_form.general_app_group.units_radio.get_value().upper()
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         sorted_tools = []
         for k, v in self.paint_tools.items():
