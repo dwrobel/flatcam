@@ -3721,7 +3721,6 @@ class Excellon(Geometry):
                             headerless = True
                             try:
                                 self.convert_units({"INCH": "IN", "METRIC": "MM"}[self.excellon_units])
-                                print("Units converted .............................. %s" % self.excellon_units)
                             except Exception as e:
                                 log.warning("Units could not be converted: %s" % str(e))
 
@@ -4427,9 +4426,23 @@ class Excellon(Geometry):
         else:
             px, py = point
 
+        def scale_geom(obj):
+            if type(obj) is list:
+                new_obj = []
+                for g in obj:
+                    new_obj.append(scale_geom(g))
+                return new_obj
+            else:
+                return affinity.scale(obj, xfactor,
+                                             yfactor, origin=(px, py))
+
         # Drills
         for drill in self.drills:
             drill['point'] = affinity.scale(drill['point'], xfactor, yfactor, origin=(px, py))
+
+        # scale solid_geometry
+        for tool in self.tools:
+            self.tools[tool]['solid_geometry'] = scale_geom(self.tools[tool]['solid_geometry'])
 
         # Slots
         for slot in self.slots:
@@ -4449,14 +4462,22 @@ class Excellon(Geometry):
 
         dx, dy = vect
 
+        def offset_geom(obj):
+            if type(obj) is list:
+                new_obj = []
+                for g in obj:
+                    new_obj.append(offset_geom(g))
+                return new_obj
+            else:
+                return affinity.translate(obj, xoff=dx, yoff=dy)
+
         # Drills
         for drill in self.drills:
             drill['point'] = affinity.translate(drill['point'], xoff=dx, yoff=dy)
 
         # offset solid_geometry
         for tool in self.tools:
-            for geo in self.tools[tool]['solid_geometry']:
-                geo = affinity.translate(geo, xoff=dx, yoff=dy)
+            self.tools[tool]['solid_geometry'] = offset_geom(self.tools[tool]['solid_geometry'])
 
         # Slots
         for slot in self.slots:
@@ -4478,10 +4499,23 @@ class Excellon(Geometry):
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
+        def mirror_geom(obj):
+            if type(obj) is list:
+                new_obj = []
+                for g in obj:
+                    new_obj.append(mirror_geom(g))
+                return new_obj
+            else:
+                return affinity.scale(obj, xscale, yscale, origin=(px, py))
+
         # Modify data
         # Drills
         for drill in self.drills:
             drill['point'] = affinity.scale(drill['point'], xscale, yscale, origin=(px, py))
+
+        # mirror solid_geometry
+        for tool in self.tools:
+            self.tools[tool]['solid_geometry'] = mirror_geom(self.tools[tool]['solid_geometry'])
 
         # Slots
         for slot in self.slots:
@@ -4512,22 +4546,40 @@ class Excellon(Geometry):
         if angle_y is None:
             angle_y = 0.0
 
+        def skew_geom(obj):
+            if type(obj) is list:
+                new_obj = []
+                for g in obj:
+                    new_obj.append(skew_geom(g))
+                return new_obj
+            else:
+                return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+
         if point is None:
+            px, py = 0, 0
+
             # Drills
             for drill in self.drills:
                 drill['point'] = affinity.skew(drill['point'], angle_x, angle_y,
-                                               origin=(0, 0))
+                                               origin=(px, py))
+            # skew solid_geometry
+            for tool in self.tools:
+                self.tools[tool]['solid_geometry'] = skew_geom(self.tools[tool]['solid_geometry'])
 
             # Slots
             for slot in self.slots:
-                slot['stop'] = affinity.skew(slot['stop'], angle_x, angle_y, origin=(0, 0))
-                slot['start'] = affinity.skew(slot['start'], angle_x, angle_y, origin=(0, 0))
+                slot['stop'] = affinity.skew(slot['stop'], angle_x, angle_y, origin=(px, py))
+                slot['start'] = affinity.skew(slot['start'], angle_x, angle_y, origin=(px, py))
         else:
             px, py = point
             # Drills
             for drill in self.drills:
                 drill['point'] = affinity.skew(drill['point'], angle_x, angle_y,
                                                origin=(px, py))
+
+            # skew solid_geometry
+            for tool in self.tools:
+                self.tools[tool]['solid_geometry'] = skew_geom( self.tools[tool]['solid_geometry'])
 
             # Slots
             for slot in self.slots:
@@ -4543,10 +4595,27 @@ class Excellon(Geometry):
         :param point: tuple of coordinates (x, y)
         :return:
         """
+
+        def rotate_geom(obj, origin=None):
+            if type(obj) is list:
+                new_obj = []
+                for g in obj:
+                    new_obj.append(rotate_geom(g))
+                return new_obj
+            else:
+                if origin:
+                    return affinity.rotate(obj, angle, origin=origin)
+                else:
+                    return affinity.rotate(obj, angle, origin=(px, py))
+
         if point is None:
             # Drills
             for drill in self.drills:
                 drill['point'] = affinity.rotate(drill['point'], angle, origin='center')
+
+            # rotate solid_geometry
+            for tool in self.tools:
+                self.tools[tool]['solid_geometry'] = rotate_geom(self.tools[tool]['solid_geometry'], origin='center')
 
             # Slots
             for slot in self.slots:
@@ -4557,6 +4626,10 @@ class Excellon(Geometry):
             # Drills
             for drill in self.drills:
                 drill['point'] = affinity.rotate(drill['point'], angle, origin=(px, py))
+
+            # rotate solid_geometry
+            for tool in self.tools:
+                self.tools[tool]['solid_geometry'] = rotate_geom(self.tools[tool]['solid_geometry'])
 
             # Slots
             for slot in self.slots:

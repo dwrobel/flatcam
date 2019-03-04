@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 4.03.2019
 
 - finished work on object hovering
+- fixed Excellon object move and all the other transformations
 
 3.03.2019
 

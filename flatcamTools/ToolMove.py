@@ -125,7 +125,11 @@ class ToolMove(FlatCAMTool):
                                     # offset
                                     sel_obj.offset((dx, dy))
                                     sel_obj.plot()
-                                    sel_obj.replotApertures.emit()
+
+                                    try:
+                                        sel_obj.replotApertures.emit()
+                                    except:
+                                        pass
 
                                     # Update the object bounding box options
                                     a,b,c,d = sel_obj.bounds()
