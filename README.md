@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+5.03.2019
+
+- modified the grbl-laser postprocessor lift_code()
+- treated an error created by Z_Cut parameter being None
+- changed the hover and selection box transparency
+
 4.03.2019
 
 - finished work on object hovering

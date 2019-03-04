@@ -93,8 +93,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.911
-    version_date = "2019/03/4"
+    version = 8.912
+    version_date = "2019/03/11"
     beta = True
 
     # current date now
@@ -1582,7 +1582,7 @@ class App(QtCore.QObject):
         self.poly_not_cleared = False
 
         # VisPy visuals
-        self.hover_shapes = ShapeCollection(parent=self.plotcanvas.vispy_canvas.view.scene, layers=7)
+        self.hover_shapes = ShapeCollection(parent=self.plotcanvas.vispy_canvas.view.scene, layers=1)
         self.isHovering = False
         self.notHovering = True
 
@@ -5024,11 +5024,11 @@ class App(QtCore.QObject):
 
         if color:
             face = Color(color)
-            face.alpha = 0.3
+            face.alpha = 0.2
             outline = Color(color, alpha=0.8)
         else:
             face = Color(self.defaults['global_sel_fill'])
-            face.alpha = 0.1
+            face.alpha = 0.2
             outline = self.defaults['global_sel_line']
 
         self.hover_shapes.add(hover_rect, color=outline, face_color=face, update=True, layer=0, tolerance=None)
@@ -5058,10 +5058,10 @@ class App(QtCore.QObject):
             sel_rect = sel_rect.buffer(0.00787)
 
         if color:
-            face = Color(color, alpha=0.1)
+            face = Color(color, alpha=0.2)
             outline = Color(color, alpha=0.8)
         else:
-            face = Color(self.defaults['global_sel_fill'], alpha=0.1)
+            face = Color(self.defaults['global_sel_fill'], alpha=0.2)
             outline = Color(self.defaults['global_sel_line'], alpha=0.8)
 
         self.sel_objects_list.append(self.move_tool.sel_shapes.add(sel_rect, color=outline,

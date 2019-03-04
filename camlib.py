@@ -5339,6 +5339,11 @@ class CNCjob(Geometry):
         self.pp_geometry_name = pp_geometry_name if pp_geometry_name else 'default'
         self.f_plunge = self.app.defaults["geometry_f_plunge"]
 
+        if self.z_cut is None:
+            self.app.inform.emit("[ERROR_NOTCL] Cut_Z parameter is None. Most likely a bad combinations of "
+                                 "other parameters.")
+            return 'fail'
+
         if self.z_cut > 0:
             self.app.inform.emit("[WARNING] The Cut Z parameter has positive value. "
                                  "It is the depth value to cut into material.\n"
@@ -5587,6 +5592,11 @@ class CNCjob(Geometry):
 
         self.pp_geometry_name = pp_geometry_name if pp_geometry_name else 'default'
         self.f_plunge = self.app.defaults["geometry_f_plunge"]
+
+        if self.z_cut is None:
+            self.app.inform.emit("[ERROR_NOTCL] Cut_Z parameter is None. Most likely a bad combinations of "
+                                 "other parameters.")
+            return 'fail'
 
         if self.z_cut > 0:
             self.app.inform.emit("[WARNING] The Cut Z parameter has positive value. "

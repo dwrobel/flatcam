@@ -42,7 +42,7 @@ class grbl_laser(FlatCAMPostProc):
         return ''
 
     def lift_code(self, p):
-        return 'M05'
+        return 'M05 S0'
 
     def down_code(self, p):
         if p.spindlespeed:
