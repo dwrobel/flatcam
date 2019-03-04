@@ -37,7 +37,7 @@ class CutOut(FlatCAMTool):
         # self.type_obj_combo.setItemIcon(1, QtGui.QIcon("share/drill16.png"))
         self.type_obj_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
 
-        self.type_obj_combo_label = QtWidgets.QLabel("Object Type:")
+        self.type_obj_combo_label = QtWidgets.QLabel("Obj Type:")
         self.type_obj_combo_label.setToolTip(
             "Specify the type of object to be cutout.\n"
             "It can be of type: Gerber or Geometry.\n"
@@ -58,6 +58,14 @@ class CutOut(FlatCAMTool):
         )
         form_layout.addRow(self.object_label, self.obj_combo)
 
+        ## Title2
+        title_param_label = QtWidgets.QLabel("<font size=4><b>A. Automatic Cutout</b></font>")
+        self.layout.addWidget(title_param_label)
+
+        ## Form Layout
+        form_layout_2 = QtWidgets.QFormLayout()
+        self.layout.addLayout(form_layout_2)
+
         # Tool Diameter
         self.dia = FCEntry()
         self.dia_label = QtWidgets.QLabel("Tool Dia:")
@@ -65,7 +73,7 @@ class CutOut(FlatCAMTool):
             "Diameter of the tool used to cutout\n"
             "the PCB shape out of the surrounding material."
         )
-        form_layout.addRow(self.dia_label, self.dia)
+        form_layout_2.addRow(self.dia_label, self.dia)
 
         # Margin
         self.margin = FCEntry()
@@ -75,7 +83,7 @@ class CutOut(FlatCAMTool):
             "will make the cutout of the PCB further from\n"
             "the actual PCB border"
         )
-        form_layout.addRow(self.margin_label, self.margin)
+        form_layout_2.addRow(self.margin_label, self.margin)
 
         # Gapsize
         self.gapsize = FCEntry()
@@ -86,15 +94,15 @@ class CutOut(FlatCAMTool):
             "the surrounding material (the one \n"
             "from which the PCB is cutout)."
         )
-        form_layout.addRow(self.gapsize_label, self.gapsize)
+        form_layout_2.addRow(self.gapsize_label, self.gapsize)
 
-        ## Title2
-        title_ff_label = QtWidgets.QLabel("<font size=4><b>FreeForm Cutout</b></font>")
+        ## Title3
+        title_ff_label = QtWidgets.QLabel("<b>FreeForm Cutout</b>")
         self.layout.addWidget(title_ff_label)
 
         ## Form Layout
-        form_layout_2 = QtWidgets.QFormLayout()
-        self.layout.addLayout(form_layout_2)
+        form_layout_3 = QtWidgets.QFormLayout()
+        self.layout.addLayout(form_layout_3)
 
         # How gaps wil be rendered:
         # lr    - left + right
@@ -123,7 +131,7 @@ class CutOut(FlatCAMTool):
         for it in gaps_items:
             self.gaps.addItem(it)
             self.gaps.setStyleSheet('background-color: rgb(255,255,255)')
-        form_layout_2.addRow(gaps_ff_label, self.gaps)
+        form_layout_3.addRow(gaps_ff_label, self.gaps)
 
         ## Buttons
         hlay = QtWidgets.QHBoxLayout()
@@ -140,13 +148,13 @@ class CutOut(FlatCAMTool):
         )
         hlay.addWidget(self.ff_cutout_object_btn)
 
-        ## Title3
-        title_rct_label = QtWidgets.QLabel("<font size=4><b>Rectangular Cutout</b></font>")
+        ## Title4
+        title_rct_label = QtWidgets.QLabel("<b>Rectangular Cutout</b>")
         self.layout.addWidget(title_rct_label)
 
         ## Form Layout
-        form_layout_3 = QtWidgets.QFormLayout()
-        self.layout.addLayout(form_layout_3)
+        form_layout_4 = QtWidgets.QFormLayout()
+        self.layout.addLayout(form_layout_4)
 
         gapslabel_rect = QtWidgets.QLabel('Type of gaps:')
         gapslabel_rect.setToolTip(
@@ -158,7 +166,7 @@ class CutOut(FlatCAMTool):
         self.gaps_rect_radio = RadioSet([{'label': '2(T/B)', 'value': 'TB'},
                                     {'label': '2(L/R)', 'value': 'LR'},
                                     {'label': '4', 'value': '4'}])
-        form_layout_3.addRow(gapslabel_rect, self.gaps_rect_radio)
+        form_layout_4.addRow(gapslabel_rect, self.gaps_rect_radio)
 
         hlay2 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay2)
@@ -172,6 +180,14 @@ class CutOut(FlatCAMTool):
             "the bounding box of the Object."
         )
         hlay2.addWidget(self.rect_cutout_object_btn)
+
+        ## Title5
+        title_manual_label = QtWidgets.QLabel("<font size=4><b>B. Manual Cutout</b></font>")
+        self.layout.addWidget(title_manual_label)
+
+        ## Form Layout
+        form_layout_5 = QtWidgets.QFormLayout()
+        self.layout.addLayout(form_layout_4)
 
         self.layout.addStretch()
 
