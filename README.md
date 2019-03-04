@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+4.03.2019
+
+- finished work on object hovering
+
 3.03.2019
 
 - minor UI changes for Gerber UI

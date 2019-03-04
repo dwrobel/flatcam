@@ -94,7 +94,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.911
-    version_date = "2019/03/2"
+    version_date = "2019/03/4"
     beta = True
 
     # current date now
@@ -2467,6 +2467,7 @@ class App(QtCore.QObject):
                 obj.options[oname] = self.options[option]
 
         obj.isHovering = False
+        obj.notHovering = True
 
         # Initialize as per user request
         # User must take care to implement initialize
@@ -4748,15 +4749,15 @@ class App(QtCore.QObject):
                                      (obj.options['xmin'], obj.options['ymax'])]
                                 )
                                 if Point(pos).within(poly_obj):
-                                    if self.isHovering is False:
-                                        self.isHovering = True
-                                        self.notHovering = True
+                                    if obj.isHovering is False:
+                                        obj.isHovering = True
+                                        obj.notHovering = True
                                         # create the selection box around the selected object
                                         self.draw_hover_shape(obj, color='#d1e0e0')
                                 else:
-                                    if self.notHovering is True:
-                                        self.notHovering = False
-                                        self.isHovering = False
+                                    if obj.notHovering is True:
+                                        obj.notHovering = False
+                                        obj.isHovering = False
                                         self.delete_hover_shape()
                     except:
                         # the Exception here will happen if we try to select on screen and we have an newly (and empty)

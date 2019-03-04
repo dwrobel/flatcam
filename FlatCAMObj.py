@@ -80,6 +80,7 @@ class FlatCAMObj(QtCore.QObject):
         self._drawing_tolerance = 0.01
 
         self.isHovering = False
+        self.notHovering = True
 
         # assert isinstance(self.ui, ObjectUI)
         # self.ui.name_entry.returnPressed.connect(self.on_name_activate)
