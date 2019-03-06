@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+6.03.2019
+
+- modified the way the FlatCAM Tools are run from toolbar as opposed of running them from other sources
+- some Gerber UI changes
+
+
 5.03.2019
 
 - modified the grbl-laser postprocessor lift_code()

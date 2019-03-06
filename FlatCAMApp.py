@@ -1784,17 +1784,17 @@ class App(QtCore.QObject):
         self.ui.shell_btn.triggered.connect(self.on_toggle_shell)
 
         # Tools Toolbar Signals
-        self.ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run())
-        self.ui.cutout_btn.triggered.connect(lambda: self.cutout_tool.run())
-        self.ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run())
-        self.ui.paint_btn.triggered.connect(lambda: self.paint_tool.run())
+        self.ui.dblsided_btn.triggered.connect(lambda: self.dblsidedtool.run(toggle=True))
+        self.ui.cutout_btn.triggered.connect(lambda: self.cutout_tool.run(toggle=True))
+        self.ui.ncc_btn.triggered.connect(lambda: self.ncclear_tool.run(toggle=True))
+        self.ui.paint_btn.triggered.connect(lambda: self.paint_tool.run(toggle=True))
 
-        self.ui.panelize_btn.triggered.connect(lambda: self.panelize_tool.run())
-        self.ui.film_btn.triggered.connect(lambda: self.film_tool.run())
-        self.ui.solder_btn.triggered.connect(lambda: self.paste_tool.run())
+        self.ui.panelize_btn.triggered.connect(lambda: self.panelize_tool.run(toggle=True))
+        self.ui.film_btn.triggered.connect(lambda: self.film_tool.run(toggle=True))
+        self.ui.solder_btn.triggered.connect(lambda: self.paste_tool.run(toggle=True))
 
-        self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run())
-        self.ui.transform_btn.triggered.connect(lambda: self.transform_tool.run())
+        self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run(toggle=True))
+        self.ui.transform_btn.triggered.connect(lambda: self.transform_tool.run(toggle=True))
 
     def object2editor(self):
         """

@@ -388,6 +388,10 @@ class GerberObjectUI(ObjectUI):
         hlay_1 = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(hlay_1)
 
+        self.padding_area_label = QtWidgets.QLabel('')
+        self.padding_area_label.setFixedWidth(90)
+        hlay_1.addWidget(self.padding_area_label)
+
         self.generate_iso_button = QtWidgets.QPushButton('FULL Geo')
         self.generate_iso_button.setToolTip(
             "Create the Geometry Object\n"
@@ -395,7 +399,7 @@ class GerberObjectUI(ObjectUI):
             "the interiors and exteriors geometry."
         )
         self.generate_iso_button.setFixedWidth(90)
-        hlay_1.addWidget(self.generate_iso_button)
+        hlay_1.addWidget(self.generate_iso_button, alignment=Qt.AlignLeft)
 
         # hlay_1.addStretch()
 
@@ -421,6 +425,8 @@ class GerberObjectUI(ObjectUI):
         # are disabled as is doesn't make sense to have them enabled due of the nature of "follow"
         self.ois_iso = OptionalInputSection(self.follow_cb,
                                             [self.generate_int_iso_button, self.generate_ext_iso_button], logic=False)
+
+
 
         grid2 = QtWidgets.QGridLayout()
         self.custom_box.addLayout(grid2)

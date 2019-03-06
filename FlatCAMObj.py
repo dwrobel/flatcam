@@ -533,9 +533,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.generate_ext_iso_button.hide()
             self.ui.generate_int_iso_button.hide()
             self.ui.follow_cb.hide()
-
+            self.ui.padding_area_label.show()
         else:
             self.ui.level.setText('<span style="color:red;"><b>Advanced</b></span>')
+            self.ui.padding_area_label.hide()
 
         # set initial state of the aperture table and associated widgets
         self.on_aperture_table_visibility_change()
