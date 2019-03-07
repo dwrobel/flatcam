@@ -5,10 +5,10 @@ from FlatCAMObj import *
 from shapely.geometry import Point
 from shapely import affinity
 from PyQt5 import QtCore
-import gettext
 
-def _(text):
-    return text
+import gettext
+import FlatCAMTranslation as fcTranslate
+fcTranslate.apply_language('ToolDblSided')
 
 
 class DblSidedTool(FlatCAMTool):

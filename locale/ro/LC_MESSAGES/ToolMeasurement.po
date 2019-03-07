@@ -1,0 +1,92 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2019-03-07 23:14+0200\n"
+"PO-Revision-Date: 2019-03-07 23:39+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 2.2.1\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n==0 || (n!=1 && n%100>=1 && n%100<=19) ? 1 : 2);\n"
+"Language: ro\n"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:28
+msgid "Measurement"
+msgstr "Măsurare"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:49
+msgid "Start"
+msgstr "Plecare"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:49
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:52
+msgid "Coords"
+msgstr "Coordonatele"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:50
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:101
+msgid "This is measuring Start point coordinates."
+msgstr "Aceasta măsoară coordonatele punctului de start."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:52
+msgid "Stop"
+msgstr "Oprire"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:53
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:106
+msgid "This is the measuring Stop point coordinates."
+msgstr "Acesta masoara coordonatele punctului de stop."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:56
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:111
+msgid "This is the distance measured over the X axis."
+msgstr "Aceasta este distanța măsurată pe axa X."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:59
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:117
+msgid "This is the distance measured over the Y axis."
+msgstr "Aceasta este distanța măsurată pe axa Y."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:61
+msgid "DISTANCE"
+msgstr "DISTANTA"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:62
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:123
+msgid "This is the point to point Euclidian distance."
+msgstr "Aceata este distanta Euclidiana de la punct la punct."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:65
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:72
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:79
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:86
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:93
+msgid "Those are the units in which the distance is measured."
+msgstr "Aestea sunt unitatile in care se masoara distanta."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:126
+msgid "Measure"
+msgstr "Masoara"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:185
+msgid "Meas. Tool"
+msgstr "Unealta de masurare"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:278
+msgid "MEASURING: Click on the Start point ..."
+msgstr "Masurare: Click pe punctul de Start ..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:307
+msgid "MEASURING: Click on the Destination point ..."
+msgstr "Masurare: Click pe punctul Destinatie ..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:328
+msgid "MEASURING: Result D(x) = %.4f | D(y) = %.4f | Distance = %.4f"
+msgstr "Masurare: Rezultat D(x) = %.4f | D(y) = %.4f | Distanta = %.4f"

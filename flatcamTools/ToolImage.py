@@ -2,11 +2,10 @@ from FlatCAMTool import FlatCAMTool
 
 from GUIElements import RadioSet, FloatEntry, FCComboBox, IntEntry
 from PyQt5 import QtGui, QtCore, QtWidgets
+
 import gettext
-
-def _(text):
-    return text
-
+import FlatCAMTranslation as fcTranslate
+fcTranslate.apply_language('ToolImage')
 
 class ToolImage(FlatCAMTool):
 

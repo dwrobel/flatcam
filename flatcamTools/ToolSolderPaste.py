@@ -16,10 +16,10 @@ from shapely.ops import cascaded_union
 
 import traceback
 from io import StringIO
-import gettext
 
-def _(text):
-    return text
+import gettext
+import FlatCAMTranslation as fcTranslate
+fcTranslate.apply_language('ToolSolderPaste')
 
 
 class SolderPaste(FlatCAMTool):

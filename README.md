@@ -14,7 +14,9 @@ CAD program, and create G-Code for Isolation routing.
 - made showing a shape when hovering over objects, optional, by adding a Preferences -> General parameter
 - starting to work in internationalization using gettext()
 - Finished adding _() in FlatCAM Tools
--
+- fixed Measuring Tool - after doing a measurement the Notebook was switching to Project Tab without letting the user see the results
+- more work on the translation engine; the app now restarts after a language is applied
+- added protection against using Travel Z parameter with negative or zero value (in Geometry).
 
 6.03.2019
 

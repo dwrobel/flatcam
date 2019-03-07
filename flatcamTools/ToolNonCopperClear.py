@@ -2,10 +2,10 @@ from FlatCAMTool import FlatCAMTool
 from copy import copy,deepcopy
 from ObjectCollection import *
 import time
-import gettext
 
-def _(text):
-    return text
+import gettext
+import FlatCAMTranslation as fcTranslate
+fcTranslate.apply_language('ToolNonCopperClear')
 
 
 class NonCopperClear(FlatCAMTool, Gerber):

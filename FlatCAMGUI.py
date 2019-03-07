@@ -14,6 +14,10 @@ import webbrowser
 
 from FlatCAMEditor import FCShapeTool
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+fcTranslate.apply_language('FlatCAMGui')
+
 
 class FlatCAMGUI(QtWidgets.QMainWindow):
     # Emitted when persistent window geometry needs to be retained

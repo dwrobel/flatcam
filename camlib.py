@@ -5340,7 +5340,7 @@ class CNCjob(Geometry):
         self.f_plunge = self.app.defaults["geometry_f_plunge"]
 
         if self.z_cut is None:
-            self.app.inform.emit("[ERROR_NOTCL] Cut_Z parameter is None. Most likely a bad combinations of "
+            self.app.inform.emit("[ERROR_NOTCL] Cut_Z parameter is None or zero. Most likely a bad combinations of "
                                  "other parameters.")
             return 'fail'
 
@@ -5354,6 +5354,23 @@ class CNCjob(Geometry):
         elif self.z_cut == 0:
             self.app.inform.emit("[WARNING] The Cut Z parameter is zero. "
                                  "There will be no cut, skipping %s file" % self.options['name'])
+            return 'fail'
+
+        if self.z_move is None:
+            self.app.inform.emit("[ERROR_NOTCL] Travel Z parameter is None or zero.")
+            return 'fail'
+
+        if self.z_move < 0:
+            self.app.inform.emit("[WARNING] The Travel Z parameter has negative value. "
+                                 "It is the height value to travel between cuts.\n"
+                                 "The Z Travel parameter needs to have a positive value, assuming it is a typo "
+                                 "therefore the app will convert the value to positive."
+                                 "Check the resulting CNC code (Gcode etc).")
+            self.z_move = -self.z_move
+        elif self.z_move == 0:
+            self.app.inform.emit("[WARNING] The Z Travel parameter is zero. "
+                                 "This is dangerous, skipping %s file" % self.options['name'])
+            return 'fail'
 
         ## Index first and last points in paths
         # What points to index.
@@ -5594,7 +5611,7 @@ class CNCjob(Geometry):
         self.f_plunge = self.app.defaults["geometry_f_plunge"]
 
         if self.z_cut is None:
-            self.app.inform.emit("[ERROR_NOTCL] Cut_Z parameter is None. Most likely a bad combinations of "
+            self.app.inform.emit("[ERROR_NOTCL] Cut_Z parameter is None or zero. Most likely a bad combinations of "
                                  "other parameters.")
             return 'fail'
 
@@ -5608,6 +5625,23 @@ class CNCjob(Geometry):
         elif self.z_cut == 0:
             self.app.inform.emit("[WARNING] The Cut Z parameter is zero. "
                                  "There will be no cut, skipping %s file" % geometry.options['name'])
+            return 'fail'
+
+        if self.z_move is None:
+            self.app.inform.emit("[ERROR_NOTCL] Travel Z parameter is None or zero.")
+            return 'fail'
+
+        if self.z_move < 0:
+            self.app.inform.emit("[WARNING] The Travel Z parameter has negative value. "
+                                 "It is the height value to travel between cuts.\n"
+                                 "The Z Travel parameter needs to have a positive value, assuming it is a typo "
+                                 "therefore the app will convert the value to positive."
+                                 "Check the resulting CNC code (Gcode etc).")
+            self.z_move = -self.z_move
+        elif self.z_move == 0:
+            self.app.inform.emit("[WARNING] The Z Travel parameter is zero. "
+                                 "This is dangerous, skipping %s file" % self.options['name'])
+            return 'fail'
 
         ## Index first and last points in paths
         # What points to index.

@@ -33,6 +33,10 @@ from vispy.scene.visuals import Markers
 from copy import copy
 import freetype as ft
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+fcTranslate.apply_language('FlatCAMEditor')
+
 
 class BufferSelectionTool(FlatCAMTool):
     """

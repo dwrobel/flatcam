@@ -45,7 +45,7 @@ from PlotCanvas import *
 from FlatCAMGUI import *
 from FlatCAMCommon import LoudDict
 from FlatCAMPostProc import load_postprocessors
-from FlatCAMTranslation import *
+import FlatCAMTranslation as fcTranslate
 
 from FlatCAMEditor import FlatCAMGeoEditor, FlatCAMExcEditor
 from FlatCAMProcess import *
@@ -563,7 +563,7 @@ class App(QtCore.QObject):
         #### LOAD LANGUAGES ####
         #############################
 
-        self.languages = load_languages(self)
+        self.languages = fcTranslate.load_languages()
         for name in list(self.languages.keys()):
             self.ui.general_defaults_form.general_app_group.language_cb.addItem(self.languages[name])
 
@@ -835,15 +835,29 @@ class App(QtCore.QObject):
 
         ###############################
         ### Load defaults from file ###
+        ###############################
+
         if user_defaults:
             self.load_defaults(filename='current_defaults')
 
         ############################
         ##### APPLY APP LANGUAGE ###
-        ###########################
+        ############################
 
-        # apply the default language
-        self.on_language_apply()
+        ret_val = fcTranslate.apply_language('FlatCAMApp')
+
+        if ret_val == "no language":
+            self.inform.emit("[ERROR] Could not find the Language files. The App strings are missing.")
+            log.debug("Could not find the Language files. The App strings are missing.")
+        else:
+            # make the current language the current selection on the language combobox
+            self.ui.general_defaults_form.general_app_group.language_cb.setCurrentText(ret_val)
+            log.debug("App.__init__() --> Applied %s language." % str(ret_val).capitalize())
+
+
+        ###################################
+        ### CREATE UNIQUE SERIAL NUMBER ###
+        ###################################
 
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
         if self.defaults['global_serial'] == 0 or len(str(self.defaults['global_serial'])) < 10:
@@ -1369,7 +1383,9 @@ class App(QtCore.QObject):
         ### GUI PREFERENCES SIGNALS ###
         ###############################
         self.ui.general_options_form.general_app_group.units_radio.group_toggle_fn = self.on_toggle_units
-        self.ui.general_defaults_form.general_app_group.language_apply_btn.clicked.connect(self.on_language_apply)
+        self.ui.general_defaults_form.general_app_group.language_apply_btn.clicked.connect(
+            lambda: fcTranslate.on_language_apply_click(self, restart=True)
+        )
         self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(self.on_toggle_units)
 
         ###############################
@@ -3267,31 +3283,6 @@ class App(QtCore.QObject):
             self.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
         self.on_toggle_units()
 
-    def on_language_apply(self, lang=None):
-        """
-        Using instructions from here:
-        https://inventwithpython.com/blog/2014/12/20/translate-your-python-3-program-with-the-gettext-module/
-
-        :return:
-        """
-        name = ''
-
-        if lang is None:
-            name = self.ui.general_defaults_form.general_app_group.language_cb.currentText()
-        else:
-            name = lang
-
-        for lang_code, lang_usable in self.languages.items():
-            if lang_usable == name:
-                # break and then use the current key as language
-                break
-
-        try:
-            lang = gettext.translation('fc', localedir=str(languages_dir(self)), languages=[lang_code])
-            lang.install()
-        except Exception as e:
-            log.debug("App.on_language_apply() --> %s" % str(e))
-
     def on_fullscreen(self):
         self.report_usage("on_fullscreen()")
 
@@ -4941,8 +4932,13 @@ class App(QtCore.QObject):
                 self.collection.set_all_inactive()
                 # delete the possible selection box around a possible selected object
                 self.delete_selection_shape()
-                # and as a convenience move the focus to the Project tab because Selected tab is now empty
-                self.ui.notebook.setCurrentWidget(self.ui.project_tab)
+                # and as a convenience move the focus to the Project tab because Selected tab is now empty but
+                # only when working on App
+
+                if self.call_source != 'measurement':
+                    self.ui.notebook.setCurrentWidget(self.ui.project_tab)
+                else:
+                    self.call_source = 'app'
 
                 # delete any text in the status bar, implicitly the last object name that was selected
                 self.inform.emit("")

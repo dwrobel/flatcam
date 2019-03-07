@@ -3,10 +3,10 @@ from GUIElements import FCEntry
 from FlatCAMTool import FlatCAMTool
 from FlatCAMObj import *
 import math
-import gettext
 
-def _(text):
-    return text
+import gettext
+import FlatCAMTranslation as fcTranslate
+fcTranslate.apply_language('ToolCalculators')
 
 
 class ToolCalculator(FlatCAMTool):

@@ -5,6 +5,10 @@ from GUIElements import FCEntry, FloatEntry, EvalEntry, FCCheckBox, FCTable, \
     LengthEntry, FCTextArea, IntEntry, RadioSet, OptionalInputSection, FCComboBox, FloatEntry2, EvalEntry2, FCButton
 from camlib import Excellon
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+fcTranslate.apply_language('ObjectUI')
+
 
 class ObjectUI(QtWidgets.QWidget):
     """

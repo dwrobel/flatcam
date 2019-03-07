@@ -22,9 +22,13 @@ from camlib import *
 from VisPyVisuals import ShapeCollectionVisual
 import itertools
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+fcTranslate.apply_language('FlatCAMObj')
 
-# Interrupts plotting process if FlatCAMObj has been deleted
+
 class ObjectDeleted(Exception):
+    # Interrupts plotting process if FlatCAMObj has been deleted
     pass
 
 
@@ -37,6 +41,8 @@ class ValidationError(Exception):
 ########################################
 ##            FlatCAMObj              ##
 ########################################
+
+
 class FlatCAMObj(QtCore.QObject):
     """
     Base type of objects handled in FlatCAM. These become interactive

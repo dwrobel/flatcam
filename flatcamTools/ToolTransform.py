@@ -3,10 +3,10 @@ from PyQt5.QtCore import Qt
 from GUIElements import FCEntry, FCButton, OptionalInputSection
 from FlatCAMTool import FlatCAMTool
 from FlatCAMObj import *
-import gettext
 
-def _(text):
-    return text
+import gettext
+import FlatCAMTranslation as fcTranslate
+fcTranslate.apply_language('ToolTransform')
 
 
 class ToolTransform(FlatCAMTool):

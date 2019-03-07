@@ -1,13 +1,15 @@
 from FlatCAMTool import FlatCAMTool
 from FlatCAMObj import *
 from VisPyVisuals import *
+from PyQt5.QtCore import QSettings
 
 from copy import copy
 from math import sqrt
-import gettext
 
-def _(text):
-    return text
+import gettext
+import FlatCAMTranslation as fcTranslate
+fcTranslate.apply_language('ToolMeasurement')
+
 
 class Measurement(FlatCAMTool):
 
@@ -160,6 +162,11 @@ class Measurement(FlatCAMTool):
 
         if self.app.tool_tab_locked is True:
             return
+
+        # if the splitter is hidden, display it, else hide it but only if the current widget is the same
+        if self.app.ui.splitter.sizes()[0] == 0:
+            self.app.ui.splitter.setSizes([1, 1])
+
         self.toggle()
 
         self.set_tool_ui()
@@ -185,6 +192,7 @@ class Measurement(FlatCAMTool):
         if self.active is True:
             # DISABLE the Measuring TOOL
             self.active = False
+
             # disconnect the mouse/key events from functions of measurement tool
             self.app.plotcanvas.vis_disconnect('mouse_move', self.on_mouse_move_meas)
             self.app.plotcanvas.vis_disconnect('mouse_press', self.on_click_meas)
@@ -206,6 +214,7 @@ class Measurement(FlatCAMTool):
                 self.app.exc_editor.canvas.vis_connect('key_press', self.app.exc_editor.on_canvas_key)
                 self.app.exc_editor.canvas.vis_connect('mouse_release', self.app.exc_editor.on_canvas_click_release)
 
+            self.app.call_source = 'measurement'
             self.clicked_meas = 0
             self.app.command_active = None
             # delete the measuring line
