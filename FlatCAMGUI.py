@@ -3044,6 +3044,16 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         )
         self.clear_btn = FCButton("Clear")
         self.clear_btn.clicked.connect(self.handle_clear)
+
+        # Enable Hover box
+        self.hover_label = QtWidgets.QLabel('Hover Shape:')
+        self.hover_label.setToolTip(
+            "Enable display of a hover shape for FlatCAM objects.\n"
+            "It is displayed whenever the mouse cursor is hovering\n"
+            "over any kind of not-selected object."
+        )
+        self.hover_cb = FCCheckBox()
+
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
@@ -3054,6 +3064,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.style_label, self.style_combo)
         self.form_box.addRow(self.hdpi_label, self.hdpi_cb)
         self.form_box.addRow(self.clear_label, self.clear_btn)
+        self.form_box.addRow(self.hover_label, self.hover_cb)
 
         # Add the QFormLayout that holds the Application general defaults
         # to the main layout of this TAB

@@ -9,11 +9,16 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+7.03.2019
+
+- made showing a shape when hovering over objects, optional, by adding a Preferences -> General parameter
+- starting to work in internationalization using gettext()
+- Finished adding _() in FlatCAM Tools
+
 6.03.2019
 
 - modified the way the FlatCAM Tools are run from toolbar as opposed of running them from other sources
 - some Gerber UI changes
-
 
 5.03.2019
 

@@ -15,6 +15,7 @@ import random
 import logging
 import simplejson as json
 import lzma
+import gettext
 
 import re
 import os
@@ -44,6 +45,8 @@ from PlotCanvas import *
 from FlatCAMGUI import *
 from FlatCAMCommon import LoudDict
 from FlatCAMPostProc import load_postprocessors
+from FlatCAMTranslation import *
+
 from FlatCAMEditor import FlatCAMGeoEditor, FlatCAMExcEditor
 from FlatCAMProcess import *
 from FlatCAMWorkerStack import WorkerStack
@@ -275,6 +278,10 @@ class App(QtCore.QObject):
         self.FC_light_blue = '#a5a5ffbf'
         self.FC_dark_blue = '#0000ffbf'
 
+        # needs to install the app default language before the GUI is initialized otherwise we get errors
+        # because FlatCAM will not understand the _() funtion
+        self.on_language_apply(lang='English')
+
         QtCore.QObject.__init__(self)
         self.ui = FlatCAMGUI(self.version, self.beta, self)
 
@@ -302,20 +309,29 @@ class App(QtCore.QObject):
         self.defaults_form_fields = {
             # General App
             "units": self.ui.general_defaults_form.general_app_group.units_radio,
+            "global_app_level": self.ui.general_defaults_form.general_app_group.app_level_radio,
+            "global_language": self.ui.general_defaults_form.general_app_group.language_cb,
+
             "global_shell_at_startup": self.ui.general_defaults_form.general_app_group.shell_startup_cb,
             "global_version_check": self.ui.general_defaults_form.general_app_group.version_check_cb,
             "global_send_stats": self.ui.general_defaults_form.general_app_group.send_stats_cb,
+            "global_pan_button": self.ui.general_defaults_form.general_app_group.pan_button_radio,
+            "global_mselect_key": self.ui.general_defaults_form.general_app_group.mselect_radio,
+
             "global_project_at_startup": self.ui.general_defaults_form.general_app_group.project_startup_cb,
             "global_project_autohide": self.ui.general_defaults_form.general_app_group.project_autohide_cb,
-            "global_app_level": self.ui.general_defaults_form.general_app_group.app_level_radio,
-            "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_combo,
-            "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
             "global_toggle_tooltips": self.ui.general_defaults_form.general_app_group.toggle_tooltips_cb,
 
-            # General GUI
+            "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_combo,
+            "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
+
+            # General GUI Preferences
             "global_gridx": self.ui.general_defaults_form.general_gui_group.gridx_entry,
             "global_gridy": self.ui.general_defaults_form.general_gui_group.gridy_entry,
             "global_snap_max": self.ui.general_defaults_form.general_gui_group.snap_max_dist_entry,
+            "global_workspace": self.ui.general_defaults_form.general_gui_group.workspace_cb,
+            "global_workspaceT": self.ui.general_defaults_form.general_gui_group.wk_cb,
+
             "global_plot_fill": self.ui.general_defaults_form.general_gui_group.pf_color_entry,
             "global_plot_line": self.ui.general_defaults_form.general_gui_group.pl_color_entry,
             "global_sel_fill": self.ui.general_defaults_form.general_gui_group.sf_color_entry,
@@ -324,11 +340,9 @@ class App(QtCore.QObject):
             "global_alt_sel_line": self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry,
             "global_draw_color": self.ui.general_defaults_form.general_gui_group.draw_color_entry,
             "global_sel_draw_color": self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry,
-            "global_pan_button": self.ui.general_defaults_form.general_app_group.pan_button_radio,
-            "global_mselect_key": self.ui.general_defaults_form.general_app_group.mselect_radio,
-            # "global_pan_with_space_key": self.ui.general_defaults_form.general_gui_group.pan_with_space_cb,
-            "global_workspace": self.ui.general_defaults_form.general_gui_group.workspace_cb,
-            "global_workspaceT": self.ui.general_defaults_form.general_gui_group.wk_cb,
+
+            # General GUI Settings
+            "global_hover": self.ui.general_defaults_form.general_gui_set_group.hover_cb,
 
             # Gerber General
             "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
@@ -549,21 +563,40 @@ class App(QtCore.QObject):
 
             self.ui.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb.addItem(name)
 
+        #############################
+        #### LOAD LANGUAGES ####
+        #############################
+
+        self.languages = load_languages(self)
+        for name in list(self.languages.keys()):
+            self.ui.general_defaults_form.general_app_group.language_cb.addItem(self.languages[name])
+
         self.defaults = LoudDict()
         self.defaults.set_change_callback(self.on_defaults_dict_change)  # When the dictionary changes.
         self.defaults.update({
+            # Global APP Preferences
             "global_serial": 0,
             "global_stats": {},
             "units": "IN",
+            "global_app_level": 'b',
+            "global_language": 'English',
             "global_version_check": True,
             "global_send_stats": True,
+            "global_pan_button": '2',
+            "global_mselect_key": 'Control',
             "global_project_at_startup": False,
             "global_project_autohide": True,
-            "global_app_level": 'b',
+            "global_toggle_tooltips": True,
+            "global_compression_level": 3,
+            "global_save_compressed": True,
 
+            # Global GUI Preferences
             "global_gridx": 0.0393701,
             "global_gridy": 0.0393701,
             "global_snap_max": 0.001968504,
+            "global_workspace": False,
+            "global_workspaceT": "A4P",
+
             "global_grid_context_menu": {
                 'in': [0.01, 0.02, 0.025, 0.05, 0.1],
                 'mm': [0.1, 0.2, 0.5, 1, 2.54]
@@ -577,11 +610,7 @@ class App(QtCore.QObject):
             "global_alt_sel_line": '#006E20BF',
             "global_draw_color": '#FF0000',
             "global_sel_draw_color": '#0000FF',
-            "global_pan_button": '2',
-            "global_mselect_key": 'Control',
-            # "global_pan_with_space_key": False,
-            "global_workspace": False,
-            "global_workspaceT": "A4P",
+
             "global_toolbar_view": 127,
 
             "global_background_timeout": 300000,  # Default value is 5 minutes
@@ -605,9 +634,6 @@ class App(QtCore.QObject):
             "global_shell_shape": [500, 300],  # Shape of the shell in pixels.
             "global_shell_at_startup": False,  # Show the shell at startup.
             "global_recent_limit": 10,  # Max. items in recent list.
-            "global_compression_level": 3,
-            "global_save_compressed": True,
-            "global_toggle_tooltips": True,
 
             "fit_key": 'V',
             "zoom_out_key": '-',
@@ -616,6 +642,9 @@ class App(QtCore.QObject):
             "zoom_ratio": 1.5,
             "global_point_clipboard_format": "(%.4f, %.4f)",
             "global_zdownrate": None,
+
+            # General GUI Settings
+            "global_hover": True,
 
             # Gerber General
             "gerber_plot": True,
@@ -812,6 +841,13 @@ class App(QtCore.QObject):
         ### Load defaults from file ###
         if user_defaults:
             self.load_defaults(filename='current_defaults')
+
+        ############################
+        ##### APPLY APP LANGUAGE ###
+        ###########################
+
+        # apply the default language
+        self.on_language_apply()
 
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
         if self.defaults['global_serial'] == 0 or len(str(self.defaults['global_serial'])) < 10:
@@ -3235,12 +3271,32 @@ class App(QtCore.QObject):
             self.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
         self.on_toggle_units()
 
-    def on_language_apply(self):
+    def on_language_apply(self, lang=None):
+        """
+        Using instructions from here:
+        https://inventwithpython.com/blog/2014/12/20/translate-your-python-3-program-with-the-gettext-module/
+
+        :return:
+        """
         self.report_usage("on_language_apply()")
 
-        # TODO: apply the language
-        # app restart section
-        pass
+        name = ''
+
+        if lang is None:
+            name = self.ui.general_defaults_form.general_app_group.language_cb.currentText()
+        else:
+            name = lang
+
+        for lang_code, lang_usable in self.languages.items():
+            if lang_usable == name:
+                # break and then use the current key as language
+                break
+
+        try:
+            lang = gettext.translation('fc', localedir=str(languages_dir(self)), languages=[lang_code])
+            lang.install()
+        except Exception as e:
+            log.debug("App.on_language_apply() --> %s" % str(e))
 
     def on_fullscreen(self):
         self.report_usage("on_fullscreen()")
@@ -4733,34 +4789,36 @@ class App(QtCore.QObject):
                         self.draw_moving_selection_shape(self.pos, pos)
                         self.selection_type = True
 
-                # hover effect
-                for obj in self.collection.get_list():
-                    try:
-                        # select the object(s) only if it is enabled (plotted)
-                        if obj.options['plot']:
-                            if obj not in self.collection.get_selected():
-                                poly_obj = Polygon(
-                                    [(obj.options['xmin'], obj.options['ymin']),
-                                     (obj.options['xmax'], obj.options['ymin']),
-                                     (obj.options['xmax'], obj.options['ymax']),
-                                     (obj.options['xmin'], obj.options['ymax'])]
-                                )
-                                if Point(pos).within(poly_obj):
-                                    if obj.isHovering is False:
-                                        obj.isHovering = True
-                                        obj.notHovering = True
-                                        # create the selection box around the selected object
-                                        self.draw_hover_shape(obj, color='#d1e0e0')
-                                else:
-                                    if obj.notHovering is True:
-                                        obj.notHovering = False
-                                        obj.isHovering = False
-                                        self.delete_hover_shape()
-                    except:
-                        # the Exception here will happen if we try to select on screen and we have an newly (and empty)
-                        # just created Geometry or Excellon object that do not have the xmin, xmax, ymin, ymax options.
-                        # In this case poly_obj creation (see above) will fail
-                        pass
+                # hover effect - enabled in Preferences -> General -> GUI Settings
+                if self.defaults['global_hover']:
+                    for obj in self.collection.get_list():
+                        try:
+                            # select the object(s) only if it is enabled (plotted)
+                            if obj.options['plot']:
+                                if obj not in self.collection.get_selected():
+                                    poly_obj = Polygon(
+                                        [(obj.options['xmin'], obj.options['ymin']),
+                                         (obj.options['xmax'], obj.options['ymin']),
+                                         (obj.options['xmax'], obj.options['ymax']),
+                                         (obj.options['xmin'], obj.options['ymax'])]
+                                    )
+                                    if Point(pos).within(poly_obj):
+                                        if obj.isHovering is False:
+                                            obj.isHovering = True
+                                            obj.notHovering = True
+                                            # create the selection box around the selected object
+                                            self.draw_hover_shape(obj, color='#d1e0e0')
+                                    else:
+                                        if obj.notHovering is True:
+                                            obj.notHovering = False
+                                            obj.isHovering = False
+                                            self.delete_hover_shape()
+                        except:
+                            # the Exception here will happen if we try to select on screen and we have an
+                            # newly (and empty) just created Geometry or Excellon object that do not have the
+                            # xmin, xmax, ymin, ymax options.
+                            # In this case poly_obj creation (see above) will fail
+                            pass
 
             except:
                 self.ui.position_label.setText("")

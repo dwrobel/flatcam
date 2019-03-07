@@ -6,7 +6,7 @@ import time
 
 class Panelize(FlatCAMTool):
 
-    toolName = "Panelize PCB"
+    toolName = _("Panelize PCB")
 
     def __init__(self, app):
         super(Panelize, self).__init__(self)
@@ -37,12 +37,12 @@ class Panelize(FlatCAMTool):
         self.type_obj_combo.setItemIcon(1, QtGui.QIcon("share/drill16.png"))
         self.type_obj_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
 
-        self.type_obj_combo_label = QtWidgets.QLabel("Object Type:")
+        self.type_obj_combo_label = QtWidgets.QLabel(_("Object Type:"))
         self.type_obj_combo_label.setToolTip(
-            "Specify the type of object to be panelized\n"
+            _("Specify the type of object to be panelized\n"
             "It can be of type: Gerber, Excellon or Geometry.\n"
             "The selection here decide the type of objects that will be\n"
-            "in the Object combobox."
+            "in the Object combobox.")
         )
         form_layout.addRow(self.type_obj_combo_label, self.type_obj_combo)
 
@@ -52,10 +52,10 @@ class Panelize(FlatCAMTool):
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(1)
 
-        self.object_label = QtWidgets.QLabel("Object:")
+        self.object_label = QtWidgets.QLabel(_("Object:"))
         self.object_label.setToolTip(
-            "Object to be panelized. This means that it will\n"
-            "be duplicated in an array of rows and columns."
+            _("Object to be panelized. This means that it will\n"
+            "be duplicated in an array of rows and columns.")
         )
         form_layout.addRow(self.object_label, self.object_combo)
 
@@ -70,12 +70,12 @@ class Panelize(FlatCAMTool):
         self.type_box_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
         self.type_box_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
 
-        self.type_box_combo_label = QtWidgets.QLabel("Box Type:")
+        self.type_box_combo_label = QtWidgets.QLabel(_("Box Type:"))
         self.type_box_combo_label.setToolTip(
-            "Specify the type of object to be used as an container for\n"
+            _("Specify the type of object to be used as an container for\n"
             "panelization. It can be: Gerber or Geometry type.\n"
             "The selection here decide the type of objects that will be\n"
-            "in the Box Object combobox."
+            "in the Box Object combobox.")
         )
         form_layout.addRow(self.type_box_combo_label, self.type_box_combo)
 
@@ -85,83 +85,83 @@ class Panelize(FlatCAMTool):
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.box_combo.setCurrentIndex(1)
 
-        self.box_combo_label = QtWidgets.QLabel("Box Object:")
+        self.box_combo_label = QtWidgets.QLabel(_("Box Object:"))
         self.box_combo_label.setToolTip(
-            "The actual object that is used a container for the\n "
-            "selected object that is to be panelized."
+            _("The actual object that is used a container for the\n "
+            "selected object that is to be panelized.")
         )
         form_layout.addRow(self.box_combo_label, self.box_combo)
 
         ## Spacing Columns
         self.spacing_columns = FCEntry()
-        self.spacing_columns_label = QtWidgets.QLabel("Spacing cols:")
+        self.spacing_columns_label = QtWidgets.QLabel(_("Spacing cols:"))
         self.spacing_columns_label.setToolTip(
-            "Spacing between columns of the desired panel.\n"
-            "In current units."
+            _("Spacing between columns of the desired panel.\n"
+            "In current units.")
         )
         form_layout.addRow(self.spacing_columns_label, self.spacing_columns)
 
         ## Spacing Rows
         self.spacing_rows = FCEntry()
-        self.spacing_rows_label = QtWidgets.QLabel("Spacing rows:")
+        self.spacing_rows_label = QtWidgets.QLabel(_("Spacing rows:"))
         self.spacing_rows_label.setToolTip(
-            "Spacing between rows of the desired panel.\n"
-            "In current units."
+            _("Spacing between rows of the desired panel.\n"
+            "In current units.")
         )
         form_layout.addRow(self.spacing_rows_label, self.spacing_rows)
 
         ## Columns
         self.columns = FCEntry()
-        self.columns_label = QtWidgets.QLabel("Columns:")
+        self.columns_label = QtWidgets.QLabel(_("Columns:"))
         self.columns_label.setToolTip(
-            "Number of columns of the desired panel"
+            _("Number of columns of the desired panel")
         )
         form_layout.addRow(self.columns_label, self.columns)
 
         ## Rows
         self.rows = FCEntry()
-        self.rows_label = QtWidgets.QLabel("Rows:")
+        self.rows_label = QtWidgets.QLabel(_("Rows:"))
         self.rows_label.setToolTip(
-            "Number of rows of the desired panel"
+            _("Number of rows of the desired panel")
         )
         form_layout.addRow(self.rows_label, self.rows)
 
         ## Type of resulting Panel object
         self.panel_type_radio = RadioSet([{'label': 'Gerber', 'value': 'gerber'},
                                      {'label': 'Geometry', 'value': 'geometry'}])
-        self.panel_type_label = QtWidgets.QLabel("Panel Type:")
+        self.panel_type_label = QtWidgets.QLabel(_("Panel Type:"))
         self.panel_type_label.setToolTip(
-            "Choose the type of object for the panel object:\n"
+            _("Choose the type of object for the panel object:\n"
             "- Geometry\n"
-            "- Gerber"
+            "- Gerber")
         )
         form_layout.addRow(self.panel_type_label)
         form_layout.addRow(self.panel_type_radio)
 
         ## Constrains
-        self.constrain_cb = FCCheckBox("Constrain panel within:")
+        self.constrain_cb = FCCheckBox(_("Constrain panel within:"))
         self.constrain_cb.setToolTip(
-            "Area define by DX and DY within to constrain the panel.\n"
+            _("Area define by DX and DY within to constrain the panel.\n"
             "DX and DY values are in current units.\n"
             "Regardless of how many columns and rows are desired,\n"
             "the final panel will have as many columns and rows as\n"
-            "they fit completely within selected area."
+            "they fit completely within selected area.")
         )
         form_layout.addRow(self.constrain_cb)
 
         self.x_width_entry = FCEntry()
-        self.x_width_lbl = QtWidgets.QLabel("Width (DX):")
+        self.x_width_lbl = QtWidgets.QLabel(_("Width (DX):"))
         self.x_width_lbl.setToolTip(
-            "The width (DX) within which the panel must fit.\n"
-            "In current units."
+            _("The width (DX) within which the panel must fit.\n"
+            "In current units.")
         )
         form_layout.addRow(self.x_width_lbl, self.x_width_entry)
 
         self.y_height_entry = FCEntry()
-        self.y_height_lbl = QtWidgets.QLabel("Height (DY):")
+        self.y_height_lbl = QtWidgets.QLabel(_("Height (DY):"))
         self.y_height_lbl.setToolTip(
-            "The height (DY)within which the panel must fit.\n"
-            "In current units."
+            _("The height (DY)within which the panel must fit.\n"
+            "In current units.")
         )
         form_layout.addRow(self.y_height_lbl, self.y_height_entry)
 
@@ -173,11 +173,11 @@ class Panelize(FlatCAMTool):
         self.layout.addLayout(hlay_2)
 
         hlay_2.addStretch()
-        self.panelize_object_button = QtWidgets.QPushButton("Panelize Object")
+        self.panelize_object_button = QtWidgets.QPushButton(_("Panelize Object"))
         self.panelize_object_button.setToolTip(
-            "Panelize the specified object around the specified box.\n"
+            _("Panelize the specified object around the specified box.\n"
             "In other words it creates multiple copies of the source object,\n"
-            "arranged in a 2D array of rows and columns."
+            "arranged in a 2D array of rows and columns.")
         )
         hlay_2.addWidget(self.panelize_object_button)
 
@@ -271,13 +271,13 @@ class Panelize(FlatCAMTool):
         try:
             obj = self.app.collection.get_by_name(str(name))
         except:
-            self.app.inform.emit("[ERROR_NOTCL]Could not retrieve object: %s" % name)
+            self.app.inform.emit(_("[ERROR_NOTCL]Could not retrieve object: %s") % name)
             return "Could not retrieve object: %s" % name
 
         panel_obj = obj
 
         if panel_obj is None:
-            self.app.inform.emit("[ERROR_NOTCL]Object not found: %s" % panel_obj)
+            self.app.inform.emit(_("[ERROR_NOTCL]Object not found: %s") % panel_obj)
             return "Object not found: %s" % panel_obj
 
         boxname = self.box_combo.currentText()
@@ -285,11 +285,11 @@ class Panelize(FlatCAMTool):
         try:
             box = self.app.collection.get_by_name(boxname)
         except:
-            self.app.inform.emit("[ERROR_NOTCL]Could not retrieve object: %s" % boxname)
+            self.app.inform.emit(_("[ERROR_NOTCL]Could not retrieve object: %s") % boxname)
             return "Could not retrieve object: %s" % boxname
 
         if box is None:
-            self.app.inform.emit("[WARNING]No object Box. Using instead %s" % panel_obj)
+            self.app.inform.emit(_("[WARNING]No object Box. Using instead %s") % panel_obj)
             box = panel_obj
 
         self.outname = name + '_panelized'
@@ -301,8 +301,8 @@ class Panelize(FlatCAMTool):
             try:
                 spacing_columns = float(self.spacing_columns.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
-                                     "use a number.")
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number."))
                 return
         spacing_columns = spacing_columns if spacing_columns is not None else 0
 
@@ -313,8 +313,8 @@ class Panelize(FlatCAMTool):
             try:
                 spacing_rows = float(self.spacing_rows.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
-                                     "use a number.")
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number."))
                 return
         spacing_rows = spacing_rows if spacing_rows is not None else 0
 
@@ -326,8 +326,8 @@ class Panelize(FlatCAMTool):
                 rows = float(self.rows.get_value().replace(',', '.'))
                 rows = int(rows)
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
-                                     "use a number.")
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number."))
                 return
         rows = rows if rows is not None else 1
 
@@ -339,8 +339,8 @@ class Panelize(FlatCAMTool):
                 columns = float(self.columns.get_value().replace(',', '.'))
                 columns = int(columns)
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
-                                     "use a number.")
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number."))
                 return
         columns = columns if columns is not None else 1
 
@@ -351,8 +351,8 @@ class Panelize(FlatCAMTool):
             try:
                 constrain_dx = float(self.x_width_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
-                                     "use a number.")
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number."))
                 return
 
         try:
@@ -362,15 +362,15 @@ class Panelize(FlatCAMTool):
             try:
                 constrain_dy = float(self.y_height_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
-                                     "use a number.")
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number."))
                 return
 
         panel_type = str(self.panel_type_radio.get_value())
 
 
         if 0 in {columns, rows}:
-            self.app.inform.emit("[ERROR_NOTCL]Columns or Rows are zero value. Change them to a positive integer.")
+            self.app.inform.emit(_("[ERROR_NOTCL]Columns or Rows are zero value. Change them to a positive integer."))
             return "Columns or Rows are zero value. Change them to a positive integer."
 
         xmin, ymin, xmax, ymax = box.bounds()
@@ -474,7 +474,7 @@ class Panelize(FlatCAMTool):
 
         def panelize_2():
             if panel_obj is not None:
-                self.app.inform.emit("Generating panel ... Please wait.")
+                self.app.inform.emit(_("Generating panel ... Please wait."))
 
                 self.app.progress.emit(0)
 
@@ -577,18 +577,18 @@ class Panelize(FlatCAMTool):
                                         plot=True, autoselected=True)
 
         if self.constrain_flag is False:
-            self.app.inform.emit("[success]Panel done...")
+            self.app.inform.emit(_("[success]Panel done..."))
         else:
             self.constrain_flag = False
-            self.app.inform.emit("[WARNING] Too big for the constrain area. Final panel has %s columns and %s rows" %
+            self.app.inform.emit(_("[WARNING] Too big for the constrain area. Final panel has %s columns and %s rows") %
                                  (columns, rows))
 
-        proc = self.app.proc_container.new("Generating panel ... Please wait.")
+        proc = self.app.proc_container.new(_("Generating panel ... Please wait."))
 
         def job_thread(app_obj):
             try:
                 panelize_2()
-                self.app.inform.emit("[success]Panel created successfully.")
+                self.app.inform.emit(_("[success]Panel created successfully."))
             except Exception as e:
                 proc.done()
                 log.debug(str(e))

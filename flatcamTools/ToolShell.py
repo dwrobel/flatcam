@@ -58,9 +58,9 @@ class TermWidget(QWidget):
         self._edit.setTextColor(Qt.white)
         self._edit.setTextBackgroundColor(Qt.darkGreen)
         if detail is None:
-            self._edit.setPlainText("...proccessing...")
+            self._edit.setPlainText(_("...proccessing..."))
         else:
-            self._edit.setPlainText("...proccessing... [%s]" % detail)
+            self._edit.setPlainText(_("...proccessing... [%s]") % detail)
 
         self._edit.setDisabled(True)
         self._edit.setFocus()
