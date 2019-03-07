@@ -2,6 +2,10 @@ from FlatCAMTool import FlatCAMTool
 
 from GUIElements import RadioSet, FCEntry
 from PyQt5 import QtGui, QtCore, QtWidgets
+import gettext
+
+def _(text):
+    return text
 
 
 class Film(FlatCAMTool):

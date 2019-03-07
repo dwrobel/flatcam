@@ -4,6 +4,10 @@ from VisPyVisuals import *
 
 from copy import copy
 from math import sqrt
+import gettext
+
+def _(text):
+    return text
 
 class Measurement(FlatCAMTool):
 

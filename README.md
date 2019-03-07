@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - made showing a shape when hovering over objects, optional, by adding a Preferences -> General parameter
 - starting to work in internationalization using gettext()
 - Finished adding _() in FlatCAM Tools
+-
 
 6.03.2019
 

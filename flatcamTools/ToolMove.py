@@ -4,6 +4,10 @@ from VisPyVisuals import *
 
 from io import StringIO
 from copy import copy
+import gettext
+
+def _(text):
+    return text
 
 
 class ToolMove(FlatCAMTool):

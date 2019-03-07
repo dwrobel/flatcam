@@ -2,6 +2,11 @@ from FlatCAMTool import FlatCAMTool
 from ObjectCollection import *
 from FlatCAMApp import *
 from shapely.geometry import box
+import gettext
+
+def _(text):
+    return text
+
 
 class CutOut(FlatCAMTool):
 

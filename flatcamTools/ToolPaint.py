@@ -1,6 +1,10 @@
 from FlatCAMTool import FlatCAMTool
 from copy import copy,deepcopy
 from ObjectCollection import *
+import gettext
+
+def _(text):
+    return text
 
 
 class ToolPaint(FlatCAMTool, Gerber):

@@ -3,6 +3,10 @@ from GUIElements import FCEntry
 from FlatCAMTool import FlatCAMTool
 from FlatCAMObj import *
 import math
+import gettext
+
+def _(text):
+    return text
 
 
 class ToolCalculator(FlatCAMTool):

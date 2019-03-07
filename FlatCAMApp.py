@@ -278,10 +278,6 @@ class App(QtCore.QObject):
         self.FC_light_blue = '#a5a5ffbf'
         self.FC_dark_blue = '#0000ffbf'
 
-        # needs to install the app default language before the GUI is initialized otherwise we get errors
-        # because FlatCAM will not understand the _() funtion
-        self.on_language_apply(lang='English')
-
         QtCore.QObject.__init__(self)
         self.ui = FlatCAMGUI(self.version, self.beta, self)
 
@@ -3278,8 +3274,6 @@ class App(QtCore.QObject):
 
         :return:
         """
-        self.report_usage("on_language_apply()")
-
         name = ''
 
         if lang is None:

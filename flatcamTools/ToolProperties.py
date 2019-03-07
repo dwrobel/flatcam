@@ -2,6 +2,10 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt
 from FlatCAMTool import FlatCAMTool
 from FlatCAMObj import *
+import gettext
+
+def _(text):
+    return text
 
 
 class Properties(FlatCAMTool):

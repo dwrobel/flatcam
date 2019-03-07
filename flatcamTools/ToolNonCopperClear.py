@@ -2,6 +2,10 @@ from FlatCAMTool import FlatCAMTool
 from copy import copy,deepcopy
 from ObjectCollection import *
 import time
+import gettext
+
+def _(text):
+    return text
 
 
 class NonCopperClear(FlatCAMTool, Gerber):
