@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed Measuring Tool - after doing a measurement the Notebook was switching to Project Tab without letting the user see the results
 - more work on the translation engine; the app now restarts after a language is applied
 - added protection against using Travel Z parameter with negative or zero value (in Geometry).
+- made sure that when the Measuring Tools is active after last click the Status bar is no longer deleted
 
 6.03.2019
 

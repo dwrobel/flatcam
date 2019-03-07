@@ -4893,8 +4893,10 @@ class App(QtCore.QObject):
             try:
                 # select the object(s) only if it is enabled (plotted)
                 if obj.options['plot']:
-                    poly_obj = Polygon([(obj.options['xmin'], obj.options['ymin']), (obj.options['xmax'], obj.options['ymin']),
-                                        (obj.options['xmax'], obj.options['ymax']), (obj.options['xmin'], obj.options['ymax'])])
+                    poly_obj = Polygon([(obj.options['xmin'], obj.options['ymin']),
+                                        (obj.options['xmax'], obj.options['ymin']),
+                                        (obj.options['xmax'], obj.options['ymax']),
+                                        (obj.options['xmin'], obj.options['ymax'])])
                     if sel_type is True:
                         if poly_obj.within(poly_selection):
                             # create the selection box around the selected object
@@ -4937,11 +4939,10 @@ class App(QtCore.QObject):
 
                 if self.call_source != 'measurement':
                     self.ui.notebook.setCurrentWidget(self.ui.project_tab)
+                    # delete any text in the status bar, implicitly the last object name that was selected
+                    self.inform.emit("")
                 else:
                     self.call_source = 'app'
-
-                # delete any text in the status bar, implicitly the last object name that was selected
-                self.inform.emit("")
 
             else:
                 # case when there is only an object under the click and we toggle it
@@ -4993,7 +4994,11 @@ class App(QtCore.QObject):
                     else:
                         self.collection.set_all_inactive()
                         self.delete_selection_shape()
-                        self.inform.emit("")
+                        if self.call_source != 'measurement':
+                            # delete any text in the status bar, implicitly the last object name that was selected
+                            self.inform.emit("")
+                        else:
+                            self.call_source = 'app'
 
                 else:
                     # If there is no selected object
