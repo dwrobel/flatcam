@@ -574,8 +574,8 @@ class App(QtCore.QObject):
         #############################
 
         self.languages = fcTranslate.load_languages()
-        for name in list(self.languages.keys()):
-            self.ui.general_defaults_form.general_app_group.language_cb.addItem(self.languages[name])
+        for name in sorted(self.languages.values()):
+            self.ui.general_defaults_form.general_app_group.language_cb.addItem(name)
 
         self.defaults = LoudDict()
         self.defaults.set_change_callback(self.on_defaults_dict_change)  # When the dictionary changes.

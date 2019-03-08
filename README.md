@@ -18,7 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed tools shortcuts not working anymore due of the new toogle parameter for the .run().
 - finished preparing for internationalization for the files: FlatCAMEditor, FlatCAMGUI
 - finished preparing for internationalization for the files: FlatCAMObj, ObjectUI
-
+- sorted the languages in the Preferences combobox
 
 7.03.2019
 
