@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - finished preparing for internationalization for the files: camlib and objectCollection
 - fixed tools shortcuts not working anymore due of the new toogle parameter for the .run().
 - finished preparing for internationalization for the files: FlatCAMEditor, FlatCAMGUI
+- finished preparing for internationalization for the files: FlatCAMObj, ObjectUI
 
 
 7.03.2019
