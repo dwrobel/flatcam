@@ -393,7 +393,7 @@ class ToolTransform(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _tr("Transform Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+T', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+R', **kwargs)
 
     def set_tool_ui(self):
         ## Initialize form

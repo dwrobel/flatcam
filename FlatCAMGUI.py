@@ -1822,36 +1822,36 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Calculator Tool
                 if key == QtCore.Qt.Key_C:
-                    self.app.calculator_tool.run()
+                    self.app.calculator_tool.run(toggle=True)
 
                 # 2-Sided PCB Tool
                 if key == QtCore.Qt.Key_D:
-                    self.app.dblsidedtool.run()
+                    self.app.dblsidedtool.run(toggle=True)
                     return
 
                 # Solder Paste Dispensing Tool
                 if key == QtCore.Qt.Key_K:
-                    self.app.paste_tool.run()
+                    self.app.paste_tool.run(toggle=True)
                     return
 
                 # Film Tool
                 if key == QtCore.Qt.Key_L:
-                    self.app.film_tool.run()
+                    self.app.film_tool.run(toggle=True)
                     return
 
                 # Non-Copper Clear Tool
                 if key == QtCore.Qt.Key_N:
-                    self.app.ncclear_tool.run()
+                    self.app.ncclear_tool.run(toggle=True)
                     return
 
                 # Paint Tool
                 if key == QtCore.Qt.Key_P:
-                    self.app.paint_tool.run()
+                    self.app.paint_tool.run(toggle=True)
                     return
 
                 # Transformation Tool
                 if key == QtCore.Qt.Key_R:
-                    self.app.transform_tool.run()
+                    self.app.transform_tool.run(toggle=True)
                     return
 
                 # View Source Object Content
@@ -1861,12 +1861,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Cutout Tool
                 if key == QtCore.Qt.Key_U:
-                    self.app.cutout_tool.run()
+                    self.app.cutout_tool.run(toggle=True)
                     return
 
                 # Panelize Tool
                 if key == QtCore.Qt.Key_Z:
-                    self.app.panelize_tool.run()
+                    self.app.panelize_tool.run(toggle=True)
                     return
 
                 # Toggle Fullscreen
