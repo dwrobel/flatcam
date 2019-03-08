@@ -38,6 +38,13 @@ import FlatCAMTranslation as fcTranslate
 fcTranslate.apply_language('FlatCAMEditor')
 
 
+def _tr(text):
+    try:
+        return _(text)
+    except:
+        return text
+
+
 class BufferSelectionTool(FlatCAMTool):
     """
     Simple input for buffer distance.

@@ -62,15 +62,24 @@ if platform.architecture()[0] == '64bit':
     from ortools.constraint_solver import pywrapcp
     from ortools.constraint_solver import routing_enums_pb2
 
-
 log = logging.getLogger('base2')
 log.setLevel(logging.DEBUG)
-# log.setLevel(logging.WARNING)
-# log.setLevel(logging.INFO)
+
 formatter = logging.Formatter('[%(levelname)s] %(message)s')
 handler = logging.StreamHandler()
 handler.setFormatter(formatter)
 log.addHandler(handler)
+
+import gettext
+import FlatCAMTranslation as fcTranslate
+fcTranslate.apply_language('camlib')
+
+
+def _tr(text):
+    try:
+        return _(text)
+    except:
+        return text
 
 
 class ParseError(Exception):

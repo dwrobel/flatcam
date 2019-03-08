@@ -16,7 +16,14 @@ from FlatCAMEditor import FCShapeTool
 
 import gettext
 import FlatCAMTranslation as fcTranslate
-fcTranslate.apply_language('FlatCAMGui')
+fcTranslate.apply_language('FlatCAMGUI')
+
+
+def _tr(text):
+    try:
+        return _(text)
+    except:
+        return text
 
 
 class FlatCAMGUI(QtWidgets.QMainWindow):

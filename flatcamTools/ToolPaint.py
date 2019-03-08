@@ -6,9 +6,17 @@ import gettext
 import FlatCAMTranslation as fcTranslate
 fcTranslate.apply_language('ToolPaint')
 
+
+def _tr(text):
+    try:
+        return _(text)
+    except:
+        return text
+
+
 class ToolPaint(FlatCAMTool, Gerber):
 
-    toolName = _("Paint Area")
+    toolName = _tr("Paint Area")
 
     def __init__(self, app):
         self.app = app
@@ -44,18 +52,18 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(1)
 
-        self.object_label = QtWidgets.QLabel(_("Geometry:"))
+        self.object_label = QtWidgets.QLabel(_tr("Geometry:"))
         self.object_label.setToolTip(
-            _("Geometry object to be painted.                        ")
+            _tr("Geometry object to be painted.                        ")
         )
         e_lab_0 = QtWidgets.QLabel('')
         form_layout.addRow(self.object_label, self.object_combo)
         form_layout.addRow(e_lab_0)
 
         #### Tools ####
-        self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Tools Table'))
+        self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _tr('Tools Table'))
         self.tools_table_label.setToolTip(
-            _("Tools pool from which the algorithm\n"
+            _tr("Tools pool from which the algorithm\n"
             "will pick the ones used for painting.")
         )
         self.tools_box.addWidget(self.tools_table_label)
@@ -64,13 +72,13 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tools_box.addWidget(self.tools_table)
 
         self.tools_table.setColumnCount(4)
-        self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), 'TT', ''])
+        self.tools_table.setHorizontalHeaderLabels(['#', _tr('Diameter'), 'TT', ''])
         self.tools_table.setColumnHidden(3, True)
         # self.tools_table.setSortingEnabled(False)
         # self.tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
         self.tools_table.horizontalHeaderItem(0).setToolTip(
-            _("This is the Tool Number.\n"
+            _tr("This is the Tool Number.\n"
             "Painting will start with the tool with the biggest diameter,\n"
             "continuing until there are no more tools.\n"
             "Only tools that create painting geometry will still be present\n"
@@ -78,11 +86,11 @@ class ToolPaint(FlatCAMTool, Gerber):
             "this function will not be able to create painting geometry.")
             )
         self.tools_table.horizontalHeaderItem(1).setToolTip(
-            _("Tool Diameter. It's value (in current FlatCAM units) \n"
+            _tr("Tool Diameter. It's value (in current FlatCAM units) \n"
             "is the cut width into the material."))
 
         self.tools_table.horizontalHeaderItem(2).setToolTip(
-            _("The Tool Type (TT) can be:<BR>"
+            _tr("The Tool Type (TT) can be:<BR>"
             "- <B>Circular</B> with 1 ... 4 teeth -> it is informative only. Being circular, <BR>"
             "the cut width in material is exactly the tool diameter.<BR>"
             "- <B>Ball</B> -> informative only and make reference to the Ball type endmill.<BR>"
@@ -101,9 +109,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         hlay = QtWidgets.QHBoxLayout()
         self.tools_box.addLayout(hlay)
 
-        self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Tool Dia'))
+        self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _tr('Tool Dia'))
         self.addtool_entry_lbl.setToolTip(
-            _("Diameter for the new tool.")
+            _tr("Diameter for the new tool.")
         )
         self.addtool_entry = FCEntry()
 
@@ -115,9 +123,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid2 = QtWidgets.QGridLayout()
         self.tools_box.addLayout(grid2)
 
-        self.addtool_btn = QtWidgets.QPushButton(_('Add'))
+        self.addtool_btn = QtWidgets.QPushButton(_tr('Add'))
         self.addtool_btn.setToolTip(
-            _("Add a new tool to the Tool Table\n"
+            _tr("Add a new tool to the Tool Table\n"
             "with the diameter specified above.")
         )
 
@@ -127,9 +135,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         #     "by first selecting a row in the Tool Table."
         # )
 
-        self.deltool_btn = QtWidgets.QPushButton(_('Delete'))
+        self.deltool_btn = QtWidgets.QPushButton(_tr('Delete'))
         self.deltool_btn.setToolTip(
-            _("Delete a selection of tools in the Tool Table\n"
+            _tr("Delete a selection of tools in the Tool Table\n"
             "by first selecting a row(s) in the Tool Table.")
         )
 
@@ -144,9 +152,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tools_box.addLayout(grid3)
 
         # Overlap
-        ovlabel = QtWidgets.QLabel(_('Overlap:'))
+        ovlabel = QtWidgets.QLabel(_tr('Overlap:'))
         ovlabel.setToolTip(
-            _("How much (fraction) of the tool width to overlap each tool pass.\n"
+            _tr("How much (fraction) of the tool width to overlap each tool pass.\n"
             "Example:\n"
             "A value here of 0.25 means 25% from the tool diameter found above.\n\n"
             "Adjust the value starting with lower values\n"
@@ -161,9 +169,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid3.addWidget(self.paintoverlap_entry, 1, 1)
 
         # Margin
-        marginlabel = QtWidgets.QLabel(_('Margin:'))
+        marginlabel = QtWidgets.QLabel(_tr('Margin:'))
         marginlabel.setToolTip(
-            _("Distance by which to avoid\n"
+            _tr("Distance by which to avoid\n"
             "the edges of the polygon to\n"
             "be painted.")
         )
@@ -172,9 +180,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid3.addWidget(self.paintmargin_entry, 2, 1)
 
         # Method
-        methodlabel = QtWidgets.QLabel(_('Method:'))
+        methodlabel = QtWidgets.QLabel(_tr('Method:'))
         methodlabel.setToolTip(
-            _("Algorithm for non-copper clearing:<BR>"
+            _tr("Algorithm for non-copper clearing:<BR>"
             "<B>Standard</B>: Fixed step inwards.<BR>"
             "<B>Seed-based</B>: Outwards from seed.<BR>"
             "<B>Line-based</B>: Parallel lines.")
@@ -188,27 +196,27 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid3.addWidget(self.paintmethod_combo, 3, 1)
 
         # Connect lines
-        pathconnectlabel = QtWidgets.QLabel(_("Connect:"))
+        pathconnectlabel = QtWidgets.QLabel(_tr("Connect:"))
         pathconnectlabel.setToolTip(
-            _("Draw lines between resulting\n"
+            _tr("Draw lines between resulting\n"
             "segments to minimize tool lifts.")
         )
         grid3.addWidget(pathconnectlabel, 4, 0)
         self.pathconnect_cb = FCCheckBox()
         grid3.addWidget(self.pathconnect_cb, 4, 1)
 
-        contourlabel = QtWidgets.QLabel(_("Contour:"))
+        contourlabel = QtWidgets.QLabel(_tr("Contour:"))
         contourlabel.setToolTip(
-            _("Cut around the perimeter of the polygon\n"
+            _tr("Cut around the perimeter of the polygon\n"
             "to trim rough edges.")
         )
         grid3.addWidget(contourlabel, 5, 0)
         self.paintcontour_cb = FCCheckBox()
         grid3.addWidget(self.paintcontour_cb, 5, 1)
 
-        restlabel = QtWidgets.QLabel(_("Rest M.:"))
+        restlabel = QtWidgets.QLabel(_tr("Rest M.:"))
         restlabel.setToolTip(
-            _("If checked, use 'rest machining'.\n"
+            _tr("If checked, use 'rest machining'.\n"
             "Basically it will clear copper outside PCB features,\n"
             "using the biggest tool and continue with the next tools,\n"
             "from bigger to smaller, to clear areas of copper that\n"
@@ -221,9 +229,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid3.addWidget(self.rest_cb, 6, 1)
 
         # Polygon selection
-        selectlabel = QtWidgets.QLabel(_('Selection:'))
+        selectlabel = QtWidgets.QLabel(_tr('Selection:'))
         selectlabel.setToolTip(
-            _("How to select the polygons to paint.<BR>"
+            _tr("How to select the polygons to paint.<BR>"
             "Options:<BR>"
             "- <B>Single</B>: left mouse click on the polygon to be painted.<BR>"
             "- <B>All</B>: paint all polygons.")
@@ -238,9 +246,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid3.addWidget(self.selectmethod_combo, 7, 1)
 
         # GO Button
-        self.generate_paint_button = QtWidgets.QPushButton(_('Create Paint Geometry'))
+        self.generate_paint_button = QtWidgets.QPushButton(_tr('Create Paint Geometry'))
         self.generate_paint_button.setToolTip(
-            _("After clicking here, click inside<BR>"
+            _tr("After clicking here, click inside<BR>"
             "the polygon you wish to be painted if <B>Single</B> is selected.<BR>"
             "If <B>All</B>  is selected then the Paint will start after click.<BR>"
             "A new Geometry object with the tool<BR>"
@@ -321,7 +329,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         FlatCAMTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Paint Tool"))
+        self.app.ui.notebook.setTabText(2, _tr("Paint Tool"))
 
     def on_radio_selection(self):
         if self.selectmethod_combo.get_value() == 'single':
@@ -518,13 +526,13 @@ class ToolPaint(FlatCAMTool, Gerber):
                 try:
                     tool_dia = float(self.addtool_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                    self.app.inform.emit(_tr("[ERROR_NOTCL]Wrong value format entered, "
                                          "use a number."))
                     return
 
             if tool_dia is None:
                 self.build_ui()
-                self.app.inform.emit(_("[WARNING_NOTCL] Please enter a tool diameter to add, in Float format."))
+                self.app.inform.emit(_tr("[WARNING_NOTCL] Please enter a tool diameter to add, in Float format."))
                 return
 
         # construct a list of all 'tooluid' in the self.tools
@@ -548,12 +556,12 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         if float('%.4f' % tool_dia) in tool_dias:
             if muted is None:
-                self.app.inform.emit(_("[WARNING_NOTCL]Adding tool cancelled. Tool already in Tool Table."))
+                self.app.inform.emit(_tr("[WARNING_NOTCL]Adding tool cancelled. Tool already in Tool Table."))
             self.tools_table.itemChanged.connect(self.on_tool_edit)
             return
         else:
             if muted is None:
-                self.app.inform.emit(_("[success] New tool added to Tool Table."))
+                self.app.inform.emit(_tr("[success] New tool added to Tool Table."))
             self.paint_tools.update({
                 int(self.tooluid): {
                     'tooldia': float('%.4f' % tool_dia),
@@ -588,7 +596,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 try:
                     new_tool_dia = float(self.tools_table.item(row, 1).text().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                    self.app.inform.emit(_tr("[ERROR_NOTCL]Wrong value format entered, "
                                          "use a number."))
                     return
             tooluid = int(self.tools_table.item(row, 3).text())
@@ -596,7 +604,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             # identify the tool that was edited and get it's tooluid
             if new_tool_dia not in tool_dias:
                 self.paint_tools[tooluid]['tooldia'] = new_tool_dia
-                self.app.inform.emit(_("[success] Tool from Tool Table was edited."))
+                self.app.inform.emit(_tr("[success] Tool from Tool Table was edited."))
                 self.build_ui()
                 return
             else:
@@ -607,7 +615,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         break
                 restore_dia_item = self.tools_table.item(row, 1)
                 restore_dia_item.setText(str(old_tool_dia))
-                self.app.inform.emit(_("[WARNING_NOTCL] Edit cancelled. New diameter value is already in the Tool Table."))
+                self.app.inform.emit(_tr("[WARNING_NOTCL] Edit cancelled. New diameter value is already in the Tool Table."))
         self.build_ui()
 
     # def on_tool_copy(self, all=None):
@@ -704,18 +712,18 @@ class ToolPaint(FlatCAMTool, Gerber):
                     self.paint_tools.pop(t, None)
 
         except AttributeError:
-            self.app.inform.emit(_("[WARNING_NOTCL]Delete failed. Select a tool to delete."))
+            self.app.inform.emit(_tr("[WARNING_NOTCL]Delete failed. Select a tool to delete."))
             return
         except Exception as e:
             log.debug(str(e))
 
-        self.app.inform.emit(_("[success] Tool(s) deleted from Tool Table."))
+        self.app.inform.emit(_tr("[success] Tool(s) deleted from Tool Table."))
         self.build_ui()
 
     def on_paint_button_click(self):
-        self.app.report_usage(_("geometry_on_paint_button"))
+        self.app.report_usage(_tr("geometry_on_paint_button"))
 
-        self.app.inform.emit(_("[WARNING_NOTCL]Click inside the desired polygon."))
+        self.app.inform.emit(_tr("[WARNING_NOTCL]Click inside the desired polygon."))
         try:
             overlap = float(self.paintoverlap_entry.get_value())
         except ValueError:
@@ -723,7 +731,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             try:
                 overlap = float(self.paintoverlap_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                self.app.inform.emit(_tr("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number."))
                 return
 
@@ -737,17 +745,17 @@ class ToolPaint(FlatCAMTool, Gerber):
         try:
             self.paint_obj = self.app.collection.get_by_name(str(self.obj_name))
         except:
-            self.app.inform.emit(_("[ERROR_NOTCL]Could not retrieve object: %s") % self.obj_name)
+            self.app.inform.emit(_tr("[ERROR_NOTCL]Could not retrieve object: %s") % self.obj_name)
             return
 
         if self.paint_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL]Object not found: %s") % self.paint_obj)
+            self.app.inform.emit(_tr("[ERROR_NOTCL]Object not found: %s") % self.paint_obj)
             return
 
         # test if the Geometry Object is multigeo and return Fail if True because
         # for now Paint don't work on MultiGeo
         if self.paint_obj.multigeo is True:
-            self.app.inform.emit(_("[ERROR_NOTCL] Can't do Paint on MultiGeo geometries ..."))
+            self.app.inform.emit(_tr("[ERROR_NOTCL] Can't do Paint on MultiGeo geometries ..."))
             return 'Fail'
 
         o_name = '%s_multitool_paint' % (self.obj_name)
@@ -760,7 +768,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                 contour=contour)
 
         if select_method == "single":
-            self.app.inform.emit(_("[WARNING_NOTCL]Click inside the desired polygon."))
+            self.app.inform.emit(_tr("[WARNING_NOTCL]Click inside the desired polygon."))
 
             # use the first tool in the tool table; get the diameter
             tooldia = float('%.4f' % float(self.tools_table.item(0, 1).text()))
@@ -769,7 +777,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             def doit(event):
                 # do paint single only for left mouse clicks
                 if event.button == 1:
-                    self.app.inform.emit(_("Painting polygon..."))
+                    self.app.inform.emit(_tr("Painting polygon..."))
                     self.app.plotcanvas.vis_disconnect('mouse_press', doit)
                     pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
                     self.paint_poly(self.paint_obj,
@@ -814,17 +822,17 @@ class ToolPaint(FlatCAMTool, Gerber):
             try:
                 paint_margin = float(self.paintmargin_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                self.app.inform.emit(_tr("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number."))
                 return
 
         # No polygon?
         if poly is None:
             self.app.log.warning('No polygon found.')
-            self.app.inform.emit(_('[WARNING] No polygon found.'))
+            self.app.inform.emit(_tr('[WARNING] No polygon found.'))
             return
 
-        proc = self.app.proc_container.new(_("Painting polygon."))
+        proc = self.app.proc_container.new(_tr("Painting polygon."))
 
         name = outname if outname else self.obj_name + "_paint"
 
@@ -866,7 +874,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     geo_obj.solid_geometry += list(cp.get_objects())
                     return cp
                 else:
-                    self.app.inform.emit(_('[ERROR_NOTCL] Geometry could not be painted completely'))
+                    self.app.inform.emit(_tr('[ERROR_NOTCL] Geometry could not be painted completely'))
                     return None
 
             geo_obj.solid_geometry = []
@@ -892,7 +900,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             except Exception as e:
                 log.debug("Could not Paint the polygons. %s" % str(e))
                 self.app.inform.emit(
-                    _("[ERROR] Could not do Paint. Try a different combination of parameters. "
+                    _tr("[ERROR] Could not do Paint. Try a different combination of parameters. "
                     "Or a different strategy of paint\n%s") % str(e))
                 return
 
@@ -934,13 +942,13 @@ class ToolPaint(FlatCAMTool, Gerber):
                 app_obj.new_object("geometry", name, gen_paintarea)
             except Exception as e:
                 proc.done()
-                self.app.inform.emit(_('[ERROR_NOTCL] PaintTool.paint_poly() --> %s') % str(e))
+                self.app.inform.emit(_tr('[ERROR_NOTCL] PaintTool.paint_poly() --> %s') % str(e))
                 return
             proc.done()
             # focus on Selected Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
-        self.app.inform.emit(_("Polygon Paint started ..."))
+        self.app.inform.emit(_tr("Polygon Paint started ..."))
 
         # Promise object with the new name
         self.app.collection.promise(name)
@@ -969,11 +977,11 @@ class ToolPaint(FlatCAMTool, Gerber):
             try:
                 paint_margin = float(self.paintmargin_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                self.app.inform.emit(_tr("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number."))
                 return
 
-        proc = self.app.proc_container.new(_("Painting polygon..."))
+        proc = self.app.proc_container.new(_tr("Painting polygon..."))
         name = outname if outname else self.obj_name + "_paint"
         over = overlap
         conn = connect
@@ -1088,7 +1096,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     except Exception as e:
                         log.debug("Could not Paint the polygons. %s" % str(e))
                         self.app.inform.emit(
-                            _("[ERROR] Could not do Paint All. Try a different combination of parameters. "
+                            _tr("[ERROR] Could not do Paint All. Try a different combination of parameters. "
                             "Or a different Method of paint\n%s") % str(e))
                         return
 
@@ -1112,7 +1120,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 if geo_obj.tools[tooluid]['solid_geometry']:
                     has_solid_geo += 1
             if has_solid_geo == 0:
-                self.app.inform.emit(_("[ERROR] There is no Painting Geometry in the file.\n"
+                self.app.inform.emit(_tr("[ERROR] There is no Painting Geometry in the file.\n"
                                       "Usually it means that the tool diameter is too big for the painted geometry.\n"
                                       "Change the painting parameters and try again."))
                 return
@@ -1121,7 +1129,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             # print("Indexing...", end=' ')
             # geo_obj.make_index()
 
-            self.app.inform.emit(_("[success] Paint All Done."))
+            self.app.inform.emit(_tr("[success] Paint All Done."))
 
         # Initializes the new geometry object
         def gen_paintarea_rest_machining(geo_obj, app_obj):
@@ -1177,7 +1185,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     except Exception as e:
                         log.debug("Could not Paint the polygons. %s" % str(e))
                         self.app.inform.emit(
-                            _("[ERROR] Could not do Paint All. Try a different combination of parameters. "
+                            _tr("[ERROR] Could not do Paint All. Try a different combination of parameters. "
                             "Or a different Method of paint\n%s") % str(e))
                         return
 
@@ -1207,7 +1215,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 if geo_obj.tools[tooluid]['solid_geometry']:
                     has_solid_geo += 1
             if has_solid_geo == 0:
-                self.app.inform.emit(_("[ERROR_NOTCL] There is no Painting Geometry in the file.\n"
+                self.app.inform.emit(_tr("[ERROR_NOTCL] There is no Painting Geometry in the file.\n"
                                       "Usually it means that the tool diameter is too big for the painted geometry.\n"
                                       "Change the painting parameters and try again."))
                 return
@@ -1216,7 +1224,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             # print("Indexing...", end=' ')
             # geo_obj.make_index()
 
-            self.app.inform.emit(_("[success] Paint All with Rest-Machining done."))
+            self.app.inform.emit(_tr("[success] Paint All with Rest-Machining done."))
 
         def job_thread(app_obj):
             try:
@@ -1232,7 +1240,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             # focus on Selected Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
-        self.app.inform.emit(_("Polygon Paint started ..."))
+        self.app.inform.emit(_tr("Polygon Paint started ..."))
 
         # Promise object with the new name
         self.app.collection.promise(name)

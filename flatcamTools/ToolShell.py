@@ -18,6 +18,13 @@ import FlatCAMTranslation as fcTranslate
 fcTranslate.apply_language('ToolShell')
 
 
+def _tr(text):
+    try:
+        return _(text)
+    except:
+        return text
+
+
 class TermWidget(QWidget):
     """
     Widget wich represents terminal. It only displays text and allows to enter text.
@@ -62,9 +69,9 @@ class TermWidget(QWidget):
         self._edit.setTextColor(Qt.white)
         self._edit.setTextBackgroundColor(Qt.darkGreen)
         if detail is None:
-            self._edit.setPlainText(_("...proccessing..."))
+            self._edit.setPlainText(_tr("...proccessing..."))
         else:
-            self._edit.setPlainText(_("...proccessing... [%s]") % detail)
+            self._edit.setPlainText(_tr("...proccessing... [%s]") % detail)
 
         self._edit.setDisabled(True)
         self._edit.setFocus()

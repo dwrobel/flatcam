@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+8.03.2019
+
+- fixed issue when doing th CTRL (or SHIFT) + LMB, the focus is automatically moved to Project Tab
+- further work in internationalization, added a fallback to English language in case there is no translation for a string
+-
+
 7.03.2019
 
 - made showing a shape when hovering over objects, optional, by adding a Preferences -> General parameter

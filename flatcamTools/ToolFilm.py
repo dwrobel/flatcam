@@ -7,9 +7,17 @@ import gettext
 import FlatCAMTranslation as fcTranslate
 fcTranslate.apply_language('ToolFilm')
 
+
+def _tr(text):
+    try:
+        return _(text)
+    except:
+        return text
+
+
 class Film(FlatCAMTool):
 
-    toolName = _("Film PCB")
+    toolName = _tr("Film PCB")
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -40,9 +48,9 @@ class Film(FlatCAMTool):
         self.tf_type_obj_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
         self.tf_type_obj_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
 
-        self.tf_type_obj_combo_label = QtWidgets.QLabel(_("Object Type:"))
+        self.tf_type_obj_combo_label = QtWidgets.QLabel(_tr("Object Type:"))
         self.tf_type_obj_combo_label.setToolTip(
-            _("Specify the type of object for which to create the film.\n"
+            _tr("Specify the type of object for which to create the film.\n"
             "The object can be of type: Gerber or Geometry.\n"
             "The selection here decide the type of objects that will be\n"
             "in the Film Object combobox.")
@@ -55,9 +63,9 @@ class Film(FlatCAMTool):
         self.tf_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.tf_object_combo.setCurrentIndex(1)
 
-        self.tf_object_label = QtWidgets.QLabel(_("Film Object:"))
+        self.tf_object_label = QtWidgets.QLabel(_tr("Film Object:"))
         self.tf_object_label.setToolTip(
-            _("Object for which to create the film.")
+            _tr("Object for which to create the film.")
         )
         tf_form_layout.addRow(self.tf_object_label, self.tf_object_combo)
 
@@ -73,9 +81,9 @@ class Film(FlatCAMTool):
         self.tf_type_box_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
         self.tf_type_box_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
 
-        self.tf_type_box_combo_label = QtWidgets.QLabel(_("Box Type:"))
+        self.tf_type_box_combo_label = QtWidgets.QLabel(_tr("Box Type:"))
         self.tf_type_box_combo_label.setToolTip(
-            _("Specify the type of object to be used as an container for\n"
+            _tr("Specify the type of object to be used as an container for\n"
             "film creation. It can be: Gerber or Geometry type."
             "The selection here decide the type of objects that will be\n"
             "in the Box Object combobox.")
@@ -88,9 +96,9 @@ class Film(FlatCAMTool):
         self.tf_box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.tf_box_combo.setCurrentIndex(1)
 
-        self.tf_box_combo_label = QtWidgets.QLabel(_("Box Object:"))
+        self.tf_box_combo_label = QtWidgets.QLabel(_tr("Box Object:"))
         self.tf_box_combo_label.setToolTip(
-            _("The actual object that is used a container for the\n "
+            _tr("The actual object that is used a container for the\n "
             "selected object for which we create the film.\n"
             "Usually it is the PCB outline but it can be also the\n"
             "same object for which the film is created.")
@@ -100,9 +108,9 @@ class Film(FlatCAMTool):
         # Film Type
         self.film_type = RadioSet([{'label': 'Positive', 'value': 'pos'},
                                      {'label': 'Negative', 'value': 'neg'}])
-        self.film_type_label = QtWidgets.QLabel(_("Film Type:"))
+        self.film_type_label = QtWidgets.QLabel(_tr("Film Type:"))
         self.film_type_label.setToolTip(
-            _("Generate a Positive black film or a Negative film.\n"
+            _tr("Generate a Positive black film or a Negative film.\n"
             "Positive means that it will print the features\n"
             "with black on a white canvas.\n"
             "Negative means that it will print the features\n"
@@ -114,9 +122,9 @@ class Film(FlatCAMTool):
         # Boundary for negative film generation
 
         self.boundary_entry = FCEntry()
-        self.boundary_label = QtWidgets.QLabel(_("Border:"))
+        self.boundary_label = QtWidgets.QLabel(_tr("Border:"))
         self.boundary_label.setToolTip(
-            _("Specify a border around the object.\n"
+            _tr("Specify a border around the object.\n"
             "Only for negative film.\n"
             "It helps if we use as a Box Object the same \n"
             "object as in Film Object. It will create a thick\n"
@@ -128,9 +136,9 @@ class Film(FlatCAMTool):
         tf_form_layout.addRow(self.boundary_label, self.boundary_entry)
 
         self.film_scale_entry = FCEntry()
-        self.film_scale_label = QtWidgets.QLabel(_("Scale Stroke:"))
+        self.film_scale_label = QtWidgets.QLabel(_tr("Scale Stroke:"))
         self.film_scale_label.setToolTip(
-            _("Scale the line stroke thickness of each feature in the SVG file.\n"
+            _tr("Scale the line stroke thickness of each feature in the SVG file.\n"
             "It means that the line that envelope each SVG feature will be thicker or thinner,\n"
             "therefore the fine features may be more affected by this parameter.")
         )
@@ -141,9 +149,9 @@ class Film(FlatCAMTool):
         self.layout.addLayout(hlay)
         hlay.addStretch()
 
-        self.film_object_button = QtWidgets.QPushButton(_("Save Film"))
+        self.film_object_button = QtWidgets.QPushButton(_tr("Save Film"))
         self.film_object_button.setToolTip(
-            _("Create a Film for the selected object, within\n"
+            _tr("Create a Film for the selected object, within\n"
             "the specified box. Does not create a new \n "
             "FlatCAM object, but directly save it in SVG format\n"
             "which can be opened with Inkscape.")
@@ -184,7 +192,7 @@ class Film(FlatCAMTool):
         FlatCAMTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Film Tool"))
+        self.app.ui.notebook.setTabText(2, _tr("Film Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+L', **kwargs)
@@ -205,13 +213,13 @@ class Film(FlatCAMTool):
         try:
             name = self.tf_object_combo.currentText()
         except:
-            self.app.inform.emit(_("[ERROR_NOTCL] No FlatCAM object selected. Load an object for Film and retry."))
+            self.app.inform.emit(_tr("[ERROR_NOTCL] No FlatCAM object selected. Load an object for Film and retry."))
             return
 
         try:
             boxname = self.tf_box_combo.currentText()
         except:
-            self.app.inform.emit(_("[ERROR_NOTCL] No FlatCAM object selected. Load an object for Box and retry."))
+            self.app.inform.emit(_tr("[ERROR_NOTCL] No FlatCAM object selected. Load an object for Box and retry."))
             return
 
         try:
@@ -221,51 +229,51 @@ class Film(FlatCAMTool):
             try:
                 border = float(self.boundary_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                self.app.inform.emit(_tr("[ERROR_NOTCL]Wrong value format entered, "
                                      "use a number."))
                 return
 
         try:
             scale_stroke_width = int(self.film_scale_entry.get_value())
         except ValueError:
-            self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+            self.app.inform.emit(_tr("[ERROR_NOTCL]Wrong value format entered, "
                                  "use a number."))
             return
 
         if border is None:
             border = 0
 
-        self.app.inform.emit(_("Generating Film ..."))
+        self.app.inform.emit(_tr("Generating Film ..."))
 
         if self.film_type.get_value() == "pos":
             try:
                 filename, _ = QtWidgets.QFileDialog.getSaveFileName(
-                    caption=_("Export SVG positive"),
+                    caption=_tr("Export SVG positive"),
                     directory=self.app.get_last_save_folder() + '/' + name,
                     filter="*.svg")
             except TypeError:
-                filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export SVG positive"))
+                filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_tr("Export SVG positive"))
 
             filename = str(filename)
 
             if str(filename) == "":
-                self.app.inform.emit(_("[WARNING_NOTCL]Export SVG positive cancelled."))
+                self.app.inform.emit(_tr("[WARNING_NOTCL]Export SVG positive cancelled."))
                 return
             else:
                 self.app.export_svg_black(name, boxname, filename, scale_factor=scale_stroke_width)
         else:
             try:
                 filename, _ = QtWidgets.QFileDialog.getSaveFileName(
-                    caption=_("Export SVG negative"),
+                    caption=_tr("Export SVG negative"),
                     directory=self.app.get_last_save_folder() + '/' + name,
                     filter="*.svg")
             except TypeError:
-                filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export SVG negative"))
+                filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_tr("Export SVG negative"))
 
             filename = str(filename)
 
             if str(filename) == "":
-                self.app.inform.emit(_("[WARNING_NOTCL]Export SVG negative cancelled."))
+                self.app.inform.emit(_tr("[WARNING_NOTCL]Export SVG negative cancelled."))
                 return
             else:
                 self.app.export_svg_negative(name, boxname, filename, border, scale_factor=scale_stroke_width)

@@ -7,15 +7,23 @@ import gettext
 import FlatCAMTranslation as fcTranslate
 fcTranslate.apply_language('ToolImage')
 
+
+def _tr(text):
+    try:
+        return _(text)
+    except:
+        return text
+
+
 class ToolImage(FlatCAMTool):
 
-    toolName = _("Image as Object")
+    toolName = _tr("Image as Object")
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
 
         # Title
-        title_label = QtWidgets.QLabel("%s" % _('Image to PCB'))
+        title_label = QtWidgets.QLabel("%s" % _tr('Image to PCB'))
         title_label.setStyleSheet("""
                         QLabel
                         {
@@ -37,9 +45,9 @@ class ToolImage(FlatCAMTool):
         self.tf_type_obj_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
         self.tf_type_obj_combo.setItemIcon(1, QtGui.QIcon("share/geometry16.png"))
 
-        self.tf_type_obj_combo_label = QtWidgets.QLabel(_("Object Type:"))
+        self.tf_type_obj_combo_label = QtWidgets.QLabel(_tr("Object Type:"))
         self.tf_type_obj_combo_label.setToolTip(
-           _( "Specify the type of object to create from the image.\n"
+           _tr( "Specify the type of object to create from the image.\n"
             "It can be of type: Gerber or Geometry.")
 
         )
@@ -47,16 +55,16 @@ class ToolImage(FlatCAMTool):
 
         # DPI value of the imported image
         self.dpi_entry = IntEntry()
-        self.dpi_label = QtWidgets.QLabel(_("DPI value:"))
+        self.dpi_label = QtWidgets.QLabel(_tr("DPI value:"))
         self.dpi_label.setToolTip(
-           _( "Specify a DPI value for the image.")
+           _tr( "Specify a DPI value for the image.")
         )
         ti_form_layout.addRow(self.dpi_label, self.dpi_entry)
 
         self.emty_lbl = QtWidgets.QLabel("")
         self.layout.addWidget(self.emty_lbl)
 
-        self.detail_label = QtWidgets.QLabel("<font size=4><b>%s:</b>" % _('Level of detail'))
+        self.detail_label = QtWidgets.QLabel("<font size=4><b>%s:</b>" % _tr('Level of detail'))
         self.layout.addWidget(self.detail_label)
 
         ti2_form_layout = QtWidgets.QFormLayout()
@@ -65,18 +73,18 @@ class ToolImage(FlatCAMTool):
         # Type of image interpretation
         self.image_type = RadioSet([{'label': 'B/W', 'value': 'black'},
                                      {'label': 'Color', 'value': 'color'}])
-        self.image_type_label = QtWidgets.QLabel("<b>%s:</b>" % _('Image type'))
+        self.image_type_label = QtWidgets.QLabel("<b>%s:</b>" % _tr('Image type'))
         self.image_type_label.setToolTip(
-            _("Choose a method for the image interpretation.\n"
+            _tr("Choose a method for the image interpretation.\n"
             "B/W means a black & white image. Color means a colored image.")
         )
         ti2_form_layout.addRow(self.image_type_label, self.image_type)
 
         # Mask value of the imported image when image monochrome
         self.mask_bw_entry = IntEntry()
-        self.mask_bw_label = QtWidgets.QLabel("%s <b>B/W</b>:" % _('Mask value'))
+        self.mask_bw_label = QtWidgets.QLabel("%s <b>B/W</b>:" % _tr('Mask value'))
         self.mask_bw_label.setToolTip(
-            _("Mask for monochrome image.\n"
+            _tr("Mask for monochrome image.\n"
             "Takes values between [0 ... 255].\n"
             "Decides the level of details to include\n"
             "in the resulting geometry.\n"
@@ -87,9 +95,9 @@ class ToolImage(FlatCAMTool):
 
         # Mask value of the imported image for RED color when image color
         self.mask_r_entry = IntEntry()
-        self.mask_r_label = QtWidgets.QLabel("%s <b>R:</b>" % _('Mask value'))
+        self.mask_r_label = QtWidgets.QLabel("%s <b>R:</b>" % _tr('Mask value'))
         self.mask_r_label.setToolTip(
-            _("Mask for RED color.\n"
+            _tr("Mask for RED color.\n"
             "Takes values between [0 ... 255].\n"
             "Decides the level of details to include\n"
             "in the resulting geometry.")
@@ -98,9 +106,9 @@ class ToolImage(FlatCAMTool):
 
         # Mask value of the imported image for GREEN color when image color
         self.mask_g_entry = IntEntry()
-        self.mask_g_label = QtWidgets.QLabel("%s <b>G:</b>" % _('Mask value'))
+        self.mask_g_label = QtWidgets.QLabel("%s <b>G:</b>" % _tr('Mask value'))
         self.mask_g_label.setToolTip(
-            _("Mask for GREEN color.\n"
+            _tr("Mask for GREEN color.\n"
             "Takes values between [0 ... 255].\n"
             "Decides the level of details to include\n"
             "in the resulting geometry.")
@@ -109,9 +117,9 @@ class ToolImage(FlatCAMTool):
 
         # Mask value of the imported image for BLUE color when image color
         self.mask_b_entry = IntEntry()
-        self.mask_b_label = QtWidgets.QLabel("%s <b>B:</b>" % _('Mask value'))
+        self.mask_b_label = QtWidgets.QLabel("%s <b>B:</b>" % _tr('Mask value'))
         self.mask_b_label.setToolTip(
-            _("Mask for BLUE color.\n"
+            _tr("Mask for BLUE color.\n"
             "Takes values between [0 ... 255].\n"
             "Decides the level of details to include\n"
             "in the resulting geometry.")
@@ -123,9 +131,9 @@ class ToolImage(FlatCAMTool):
         self.layout.addLayout(hlay)
         hlay.addStretch()
 
-        self.import_button = QtWidgets.QPushButton(_("Import image"))
+        self.import_button = QtWidgets.QPushButton(_tr("Import image"))
         self.import_button.setToolTip(
-            _("Open a image of raster type and then import it in FlatCAM.")
+            _tr("Open a image of raster type and then import it in FlatCAM.")
         )
         hlay.addWidget(self.import_button)
 
@@ -151,7 +159,7 @@ class ToolImage(FlatCAMTool):
         FlatCAMTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _("Image Tool"))
+        self.app.ui.notebook.setTabText(2, _tr("Image Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, **kwargs)
@@ -181,10 +189,10 @@ class ToolImage(FlatCAMTool):
                  "Jpeg File (*.JPG);;" \
                  "All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import IMAGE"),
+            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption=_tr("Import IMAGE"),
                                                          directory=self.app.get_last_folder(), filter=filter)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import IMAGE"), filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption=_tr("Import IMAGE"), filter=filter)
 
         filename = str(filename)
         type = self.tf_type_obj_combo.get_value().lower()
@@ -194,7 +202,7 @@ class ToolImage(FlatCAMTool):
                 self.mask_b_entry.get_value()]
 
         if filename == "":
-            self.app.inform.emit(_("Open cancelled."))
+            self.app.inform.emit(_tr("Open cancelled."))
         else:
             self.app.worker_task.emit({'fcn': self.app.import_image,
                                        'params': [filename, type, dpi, mode, mask]})

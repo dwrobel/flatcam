@@ -10,6 +10,13 @@ import FlatCAMTranslation as fcTranslate
 fcTranslate.apply_language('ObjectUI')
 
 
+def _tr(text):
+    try:
+        return _(text)
+    except:
+        return text
+
+
 class ObjectUI(QtWidgets.QWidget):
     """
     Base class for the UI of FlatCAM objects. Deriving classes should

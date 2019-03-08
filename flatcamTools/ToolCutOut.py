@@ -8,9 +8,16 @@ import FlatCAMTranslation as fcTranslate
 fcTranslate.apply_language('ToolCutOut')
 
 
+def _tr(text):
+    try:
+        return _(text)
+    except:
+        return text
+
+
 class CutOut(FlatCAMTool):
 
-    toolName = _("Cutout PCB")
+    toolName = _tr("Cutout PCB")
     gapFinished = pyqtSignal()
 
     def __init__(self, app):
@@ -46,9 +53,9 @@ class CutOut(FlatCAMTool):
         # self.type_obj_combo.setItemIcon(1, QtGui.QIcon("share/drill16.png"))
         self.type_obj_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
 
-        self.type_obj_combo_label = QtWidgets.QLabel(_("Obj Type:"))
+        self.type_obj_combo_label = QtWidgets.QLabel(_tr("Obj Type:"))
         self.type_obj_combo_label.setToolTip(
-            _("Specify the type of object to be cutout.\n"
+            _tr("Specify the type of object to be cutout.\n"
             "It can be of type: Gerber or Geometry.\n"
             "What is selected here will dictate the kind\n"
             "of objects that will populate the 'Object' combobox.")
@@ -62,26 +69,26 @@ class CutOut(FlatCAMTool):
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.obj_combo.setCurrentIndex(1)
 
-        self.object_label = QtWidgets.QLabel(_("Object:"))
+        self.object_label = QtWidgets.QLabel(_tr("Object:"))
         self.object_label.setToolTip(
-            _("Object to be cutout.                        ")
+            _tr("Object to be cutout.                        ")
         )
         form_layout.addRow(self.object_label, self.obj_combo)
 
         # Tool Diameter
         self.dia = FCEntry()
-        self.dia_label = QtWidgets.QLabel(_("Tool Dia:"))
+        self.dia_label = QtWidgets.QLabel(_tr("Tool Dia:"))
         self.dia_label.setToolTip(
-           _( "Diameter of the tool used to cutout\n"
+           _tr( "Diameter of the tool used to cutout\n"
             "the PCB shape out of the surrounding material.")
         )
         form_layout.addRow(self.dia_label, self.dia)
 
         # Margin
         self.margin = FCEntry()
-        self.margin_label = QtWidgets.QLabel(_("Margin:"))
+        self.margin_label = QtWidgets.QLabel(_tr("Margin:"))
         self.margin_label.setToolTip(
-           _( "Margin over bounds. A positive value here\n"
+           _tr( "Margin over bounds. A positive value here\n"
             "will make the cutout of the PCB further from\n"
             "the actual PCB border")
         )
@@ -89,9 +96,9 @@ class CutOut(FlatCAMTool):
 
         # Gapsize
         self.gapsize = FCEntry()
-        self.gapsize_label = QtWidgets.QLabel(_("Gap size:"))
+        self.gapsize_label = QtWidgets.QLabel(_tr("Gap size:"))
         self.gapsize_label.setToolTip(
-           _( "The size of the bridge gaps in the cutout\n"
+           _tr( "The size of the bridge gaps in the cutout\n"
             "used to keep the board connected to\n"
             "the surrounding material (the one \n"
             "from which the PCB is cutout).")
@@ -107,9 +114,9 @@ class CutOut(FlatCAMTool):
         # 8     - 2*left + 2*right +2*top + 2*bottom
 
         ## Title2
-        title_param_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % _('A. Automatic Bridge Gaps'))
+        title_param_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % _tr('A. Automatic Bridge Gaps'))
         title_param_label.setToolTip(
-            _("This section handle creation of automatic bridge gaps.")
+            _tr("This section handle creation of automatic bridge gaps.")
         )
         self.layout.addWidget(title_param_label)
 
@@ -118,9 +125,9 @@ class CutOut(FlatCAMTool):
         self.layout.addLayout(form_layout_2)
 
         # Gaps
-        gaps_label = QtWidgets.QLabel(_('Gaps:'))
+        gaps_label = QtWidgets.QLabel(_tr('Gaps:'))
         gaps_label.setToolTip(
-            _("Number of gaps used for the Automatic cutout.\n"
+            _tr("Number of gaps used for the Automatic cutout.\n"
             "There can be maximum 8 bridges/gaps.\n"
             "The choices are:\n"
             "- lr    - left + right\n"
@@ -143,18 +150,18 @@ class CutOut(FlatCAMTool):
         hlay = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay)
 
-        title_ff_label = QtWidgets.QLabel("<b>%s</b>" % _('FreeForm:'))
+        title_ff_label = QtWidgets.QLabel("<b>%s</b>" % _tr('FreeForm:'))
         title_ff_label.setToolTip(
-            _("The cutout shape can be of ny shape.\n"
+            _tr("The cutout shape can be of ny shape.\n"
             "Useful when the PCB has a non-rectangular shape.")
         )
         hlay.addWidget(title_ff_label)
 
         hlay.addStretch()
 
-        self.ff_cutout_object_btn = QtWidgets.QPushButton(_("Generate Geo"))
+        self.ff_cutout_object_btn = QtWidgets.QPushButton(_tr("Generate Geo"))
         self.ff_cutout_object_btn.setToolTip(
-            _("Cutout the selected object.\n"
+            _tr("Cutout the selected object.\n"
             "The cutout shape can be of any shape.\n"
             "Useful when the PCB has a non-rectangular shape.")
         )
@@ -163,18 +170,18 @@ class CutOut(FlatCAMTool):
         hlay2 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay2)
 
-        title_rct_label = QtWidgets.QLabel("<b>%s</b>" % _('Rectangular:'))
+        title_rct_label = QtWidgets.QLabel("<b>%s</b>" % _tr('Rectangular:'))
         title_rct_label.setToolTip(
-            _("The resulting cutout shape is\n"
+            _tr("The resulting cutout shape is\n"
             "always a rectangle shape and it will be\n"
             "the bounding box of the Object.")
         )
         hlay2.addWidget(title_rct_label)
 
         hlay2.addStretch()
-        self.rect_cutout_object_btn = QtWidgets.QPushButton(_("Generate Geo"))
+        self.rect_cutout_object_btn = QtWidgets.QPushButton(_tr("Generate Geo"))
         self.rect_cutout_object_btn.setToolTip(
-            _("Cutout the selected object.\n"
+            _tr("Cutout the selected object.\n"
             "The resulting cutout shape is\n"
             "always a rectangle shape and it will be\n"
             "the bounding box of the Object.")
@@ -182,9 +189,9 @@ class CutOut(FlatCAMTool):
         hlay2.addWidget(self.rect_cutout_object_btn)
 
         ## Title5
-        title_manual_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % _('B. Manual Bridge Gaps'))
+        title_manual_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % _tr('B. Manual Bridge Gaps'))
         title_manual_label.setToolTip(
-            _("This section handle creation of manual bridge gaps.\n"
+            _tr("This section handle creation of manual bridge gaps.\n"
             "This is done by mouse clicking on the perimeter of the\n"
             "Geometry object that is used as a cutout object. ")
         )
@@ -200,9 +207,9 @@ class CutOut(FlatCAMTool):
         self.man_object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
         self.man_object_combo.setCurrentIndex(1)
 
-        self.man_object_label = QtWidgets.QLabel(_("Geo Obj:"))
+        self.man_object_label = QtWidgets.QLabel(_tr("Geo Obj:"))
         self.man_object_label.setToolTip(
-            _("Geometry object used to create the manual cutout.")
+            _tr("Geometry object used to create the manual cutout.")
         )
         self.man_object_label.setFixedWidth(60)
         # e_lab_0 = QtWidgets.QLabel('')
@@ -213,9 +220,9 @@ class CutOut(FlatCAMTool):
         hlay3 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay3)
 
-        self.man_geo_label = QtWidgets.QLabel(_("Manual Geo:"))
+        self.man_geo_label = QtWidgets.QLabel(_tr("Manual Geo:"))
         self.man_geo_label.setToolTip(
-            _("If the object to be cutout is a Gerber\n"
+            _tr("If the object to be cutout is a Gerber\n"
             "first create a Geometry that surrounds it,\n"
             "to be used as the cutout, if one doesn't exist yet.\n"
             "Select the source Gerber file in the top object combobox.")
@@ -223,9 +230,9 @@ class CutOut(FlatCAMTool):
         hlay3.addWidget(self.man_geo_label)
 
         hlay3.addStretch()
-        self.man_geo_creation_btn = QtWidgets.QPushButton(_("Generate Geo"))
+        self.man_geo_creation_btn = QtWidgets.QPushButton(_tr("Generate Geo"))
         self.man_geo_creation_btn.setToolTip(
-            _("If the object to be cutout is a Gerber\n"
+            _tr("If the object to be cutout is a Gerber\n"
             "first create a Geometry that surrounds it,\n"
             "to be used as the cutout, if one doesn't exist yet.\n"
             "Select the source Gerber file in the top object combobox.")
@@ -235,18 +242,18 @@ class CutOut(FlatCAMTool):
         hlay4 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay4)
 
-        self.man_bridge_gaps_label = QtWidgets.QLabel(_("Manual Add Bridge Gaps:"))
+        self.man_bridge_gaps_label = QtWidgets.QLabel(_tr("Manual Add Bridge Gaps:"))
         self.man_bridge_gaps_label.setToolTip(
-            _("Use the left mouse button (LMB) click\n"
+            _tr("Use the left mouse button (LMB) click\n"
             "to create a bridge gap to separate the PCB from\n"
             "the surrounding material.")
         )
         hlay4.addWidget(self.man_bridge_gaps_label)
 
         hlay4.addStretch()
-        self.man_gaps_creation_btn = QtWidgets.QPushButton(_("Generate Gap"))
+        self.man_gaps_creation_btn = QtWidgets.QPushButton(_tr("Generate Gap"))
         self.man_gaps_creation_btn.setToolTip(
-            _("Use the left mouse button (LMB) click\n"
+            _tr("Use the left mouse button (LMB) click\n"
             "to create a bridge gap to separate the PCB from\n"
             "the surrounding material.\n"
             "The LMB click has to be done on the perimeter of\n"
@@ -319,11 +326,11 @@ class CutOut(FlatCAMTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except:
-            self.app.inform.emit(_("[ERROR_NOTCL]Could not retrieve object: %s") % name)
+            self.app.inform.emit(_tr("[ERROR_NOTCL]Could not retrieve object: %s") % name)
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL]There is no object selected for Cutout.\nSelect one and try again."))
+            self.app.inform.emit(_tr("[ERROR_NOTCL]There is no object selected for Cutout.\nSelect one and try again."))
             return
 
         try:
@@ -333,13 +340,13 @@ class CutOut(FlatCAMTool):
             try:
                 dia = float(self.dia.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
+                self.app.inform.emit(_tr("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
                                      "Add it and retry."))
                 return
 
 
         if 0 in {dia}:
-            self.app.inform.emit(_("[WARNING_NOTCL]Tool Diameter is zero value. Change it to a positive integer."))
+            self.app.inform.emit(_tr("[WARNING_NOTCL]Tool Diameter is zero value. Change it to a positive integer."))
             return "Tool Diameter is zero value. Change it to a positive integer."
 
         try:
@@ -349,7 +356,7 @@ class CutOut(FlatCAMTool):
             try:
                 margin = float(self.margin.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Margin value is missing or wrong format. "
+                self.app.inform.emit(_tr("[WARNING_NOTCL] Margin value is missing or wrong format. "
                                      "Add it and retry."))
                 return
 
@@ -360,23 +367,23 @@ class CutOut(FlatCAMTool):
             try:
                 gapsize = float(self.gapsize.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Gap size value is missing or wrong format. "
+                self.app.inform.emit(_tr("[WARNING_NOTCL] Gap size value is missing or wrong format. "
                                      "Add it and retry."))
                 return
 
         try:
             gaps = self.gaps.get_value()
         except TypeError:
-            self.app.inform.emit(_("[WARNING_NOTCL] Number of gaps value is missing. Add it and retry."))
+            self.app.inform.emit(_tr("[WARNING_NOTCL] Number of gaps value is missing. Add it and retry."))
             return
 
         if gaps not in ['LR', 'TB', '2LR', '2TB', '4', '8']:
-            self.app.inform.emit(_("[WARNING_NOTCL] Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
+            self.app.inform.emit(_tr("[WARNING_NOTCL] Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
                                  "Fill in a correct value and retry. "))
             return
 
         if cutout_obj.multigeo is True:
-            self.app.inform.emit(_("[ERROR]Cutout operation cannot be done on a multi-geo Geometry.\n"
+            self.app.inform.emit(_tr("[ERROR]Cutout operation cannot be done on a multi-geo Geometry.\n"
                                  "Optionally, this Multi-geo Geometry can be converted to Single-geo Geometry,\n"
                                  "and after that perform Cutout."))
             return
@@ -442,7 +449,7 @@ class CutOut(FlatCAMTool):
                                ymax + gapsize)
 
         cutout_obj.plot()
-        self.app.inform.emit(_("[success] Any form CutOut operation finished."))
+        self.app.inform.emit(_tr("[success] Any form CutOut operation finished."))
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
         self.app.should_we_save = True
 
@@ -458,11 +465,11 @@ class CutOut(FlatCAMTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except:
-            self.app.inform.emit(_("[ERROR_NOTCL]Could not retrieve object: %s") % name)
+            self.app.inform.emit(_tr("[ERROR_NOTCL]Could not retrieve object: %s") % name)
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL]Object not found: %s") % cutout_obj)
+            self.app.inform.emit(_tr("[ERROR_NOTCL]Object not found: %s") % cutout_obj)
 
         try:
             dia = float(self.dia.get_value())
@@ -471,12 +478,12 @@ class CutOut(FlatCAMTool):
             try:
                 dia = float(self.dia.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
+                self.app.inform.emit(_tr("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
                                      "Add it and retry."))
                 return
 
         if 0 in {dia}:
-            self.app.inform.emit(_("[ERROR_NOTCL]Tool Diameter is zero value. Change it to a positive integer."))
+            self.app.inform.emit(_tr("[ERROR_NOTCL]Tool Diameter is zero value. Change it to a positive integer."))
             return "Tool Diameter is zero value. Change it to a positive integer."
 
         try:
@@ -486,7 +493,7 @@ class CutOut(FlatCAMTool):
             try:
                 margin = float(self.margin.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Margin value is missing or wrong format. "
+                self.app.inform.emit(_tr("[WARNING_NOTCL] Margin value is missing or wrong format. "
                                      "Add it and retry."))
                 return
 
@@ -497,23 +504,23 @@ class CutOut(FlatCAMTool):
             try:
                 gapsize = float(self.gapsize.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Gap size value is missing or wrong format. "
+                self.app.inform.emit(_tr("[WARNING_NOTCL] Gap size value is missing or wrong format. "
                                      "Add it and retry."))
                 return
 
         try:
             gaps = self.gaps.get_value()
         except TypeError:
-            self.app.inform.emit(_("[WARNING_NOTCL] Number of gaps value is missing. Add it and retry."))
+            self.app.inform.emit(_tr("[WARNING_NOTCL] Number of gaps value is missing. Add it and retry."))
             return
 
         if gaps not in ['LR', 'TB', '2LR', '2TB', '4', '8']:
-            self.app.inform.emit(_("[WARNING_NOTCL] Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
+            self.app.inform.emit(_tr("[WARNING_NOTCL] Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
                                  "Fill in a correct value and retry. "))
             return
 
         if cutout_obj.multigeo is True:
-            self.app.inform.emit(_("[ERROR]Cutout operation cannot be done on a multi-geo Geometry.\n"
+            self.app.inform.emit(_tr("[ERROR]Cutout operation cannot be done on a multi-geo Geometry.\n"
                                  "Optionally, this Multi-geo Geometry can be converted to Single-geo Geometry,\n"
                                  "and after that perform Cutout."))
             return
@@ -576,12 +583,12 @@ class CutOut(FlatCAMTool):
                                ymax + gapsize)
 
         cutout_obj.plot()
-        self.app.inform.emit(_("[success] Any form CutOut operation finished."))
+        self.app.inform.emit(_tr("[success] Any form CutOut operation finished."))
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
         self.app.should_we_save = True
 
     def on_manual_gap_click(self):
-        self.app.inform.emit(_("Click on the selected geometry object perimeter to create a bridge gap ..."))
+        self.app.inform.emit(_tr("Click on the selected geometry object perimeter to create a bridge gap ..."))
         self.app.geo_editor.tool_shape.enabled = True
 
         try:
@@ -591,12 +598,12 @@ class CutOut(FlatCAMTool):
             try:
                 self.cutting_dia = float(self.dia.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
+                self.app.inform.emit(_tr("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
                                      "Add it and retry."))
                 return
 
         if 0 in {self.cutting_dia}:
-            self.app.inform.emit(_("[ERROR_NOTCL]Tool Diameter is zero value. Change it to a positive integer."))
+            self.app.inform.emit(_tr("[ERROR_NOTCL]Tool Diameter is zero value. Change it to a positive integer."))
             return "Tool Diameter is zero value. Change it to a positive integer."
 
         try:
@@ -606,7 +613,7 @@ class CutOut(FlatCAMTool):
             try:
                 self.cutting_gapsize = float(self.gapsize.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Gap size value is missing or wrong format. "
+                self.app.inform.emit(_tr("[WARNING_NOTCL] Gap size value is missing or wrong format. "
                                      "Add it and retry."))
                 return
 
@@ -622,7 +629,7 @@ class CutOut(FlatCAMTool):
     def doit(self, event):
         # do paint single only for left mouse clicks
         if event.button == 1:
-            self.app.inform.emit(_("Making manual bridge gap..."))
+            self.app.inform.emit(_tr("Making manual bridge gap..."))
             pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
             self.on_manual_cutout(click_pos=pos)
 
@@ -645,11 +652,11 @@ class CutOut(FlatCAMTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except:
-            self.app.inform.emit(_("[ERROR_NOTCL]Could not retrieve Geoemtry object: %s") % name)
+            self.app.inform.emit(_tr("[ERROR_NOTCL]Could not retrieve Geoemtry object: %s") % name)
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL]Geometry object for manual cutout not found: %s") % cutout_obj)
+            self.app.inform.emit(_tr("[ERROR_NOTCL]Geometry object for manual cutout not found: %s") % cutout_obj)
             return
 
         # use the snapped position as reference
@@ -659,7 +666,7 @@ class CutOut(FlatCAMTool):
         cutout_obj.subtract_polygon(cut_poly)
 
         cutout_obj.plot()
-        self.app.inform.emit(_("[success] Added manual Bridge Gap."))
+        self.app.inform.emit(_tr("[success] Added manual Bridge Gap."))
 
         self.app.should_we_save = True
 
@@ -676,16 +683,16 @@ class CutOut(FlatCAMTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except:
-            self.app.inform.emit(_("[ERROR_NOTCL]Could not retrieve Gerber object: %s") % name)
+            self.app.inform.emit(_tr("[ERROR_NOTCL]Could not retrieve Gerber object: %s") % name)
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL]There is no Gerber object selected for Cutout.\n"
+            self.app.inform.emit(_tr("[ERROR_NOTCL]There is no Gerber object selected for Cutout.\n"
                                  "Select one and try again."))
             return
 
         if not isinstance(cutout_obj, FlatCAMGerber):
-            self.app.inform.emit(_("[ERROR_NOTCL]The selected object has to be of Gerber type.\n"
+            self.app.inform.emit(_tr("[ERROR_NOTCL]The selected object has to be of Gerber type.\n"
                                  "Select a Gerber file and try again."))
             return
 
@@ -696,12 +703,12 @@ class CutOut(FlatCAMTool):
             try:
                 dia = float(self.dia.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
+                self.app.inform.emit(_tr("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
                                      "Add it and retry."))
                 return
 
         if 0 in {dia}:
-            self.app.inform.emit(_("[ERROR_NOTCL]Tool Diameter is zero value. Change it to a positive integer."))
+            self.app.inform.emit(_tr("[ERROR_NOTCL]Tool Diameter is zero value. Change it to a positive integer."))
             return "Tool Diameter is zero value. Change it to a positive integer."
 
         try:
@@ -711,7 +718,7 @@ class CutOut(FlatCAMTool):
             try:
                 margin = float(self.margin.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[WARNING_NOTCL] Margin value is missing or wrong format. "
+                self.app.inform.emit(_tr("[WARNING_NOTCL] Margin value is missing or wrong format. "
                                      "Add it and retry."))
                 return
 

@@ -27,6 +27,13 @@ import FlatCAMTranslation as fcTranslate
 fcTranslate.apply_language('FlatCAMObj')
 
 
+def _tr(text):
+    try:
+        return _(text)
+    except:
+        return text
+
+
 class ObjectDeleted(Exception):
     # Interrupts plotting process if FlatCAMObj has been deleted
     pass

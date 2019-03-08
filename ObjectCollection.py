@@ -19,6 +19,13 @@ import FlatCAMTranslation as fcTranslate
 fcTranslate.apply_language('ObjectCollection')
 
 
+def _tr(text):
+    try:
+        return _(text)
+    except:
+        return text
+
+
 class KeySensitiveListView(QtWidgets.QTreeView):
     """
     QtGui.QListView extended to emit a signal on key press.
