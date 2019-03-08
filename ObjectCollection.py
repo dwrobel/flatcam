@@ -76,7 +76,7 @@ class KeySensitiveListView(QtWidgets.QTreeView):
             # file drop from outside application
             if drop_indicator == QtWidgets.QAbstractItemView.OnItem:
                 if self.filename == "":
-                    self.app.inform.emit("Open cancelled.")
+                    self.app.inform.emit(_tr("Open cancelled."))
                 else:
                     if self.filename.lower().rpartition('.')[-1] in self.app.grb_list:
                         self.app.worker_task.emit({'fcn': self.app.open_gerber,
@@ -398,7 +398,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                         "setData() --> Could not remove the old object name from auto-completer model list")
 
                 obj.build_ui()
-                self.app.inform.emit("Object renamed from %s to %s" % (old_name, new_name))
+                self.app.inform.emit(_tr("Object renamed from %s to %s") % (old_name, new_name))
 
         return True
 
@@ -692,16 +692,16 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             obj = current.indexes()[0].internalPointer().obj
 
             if obj.kind == 'gerber':
-                self.app.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                self.app.inform.emit(_tr('[selected]<span style="color:%s;">%s</span> selected') %
                                  ('green', str(obj.options['name'])))
             elif obj.kind == 'excellon':
-                self.app.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                self.app.inform.emit(_tr('[selected]<span style="color:%s;">%s</span> selected') %
                                  ('brown', str(obj.options['name'])))
             elif obj.kind == 'cncjob':
-                self.app.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                self.app.inform.emit(_tr('[selected]<span style="color:%s;">%s</span> selected') %
                                  ('blue', str(obj.options['name'])))
             elif obj.kind == 'geometry':
-                self.app.inform.emit('[selected]<span style="color:%s;">%s</span> selected' %
+                self.app.inform.emit(_tr('[selected]<span style="color:%s;">%s</span> selected') %
                                  ('red', str(obj.options['name'])))
 
         except IndexError:
@@ -732,7 +732,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             try:
                 a_idx.build_ui()
             except Exception as e:
-                self.app.inform.emit("[ERROR] Cause of error: %s" % str(e))
+                self.app.inform.emit(_tr("[ERROR] Cause of error: %s") % str(e))
                 raise
 
     def get_list(self):
