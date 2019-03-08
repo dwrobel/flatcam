@@ -1918,56 +1918,58 @@ class App(QtCore.QObject):
         """
         self.report_usage("editor2object()")
 
-        # adjust the visibility of some of the canvas context menu
-        self.ui.popmenu_edit.setVisible(True)
-        self.ui.popmenu_save.setVisible(False)
+        # do not update a geometry or excellon object unless it comes out of an editor
+        if self.call_source != 'app':
+            # adjust the visibility of some of the canvas context menu
+            self.ui.popmenu_edit.setVisible(True)
+            self.ui.popmenu_save.setVisible(False)
 
-        edited_obj = self.collection.get_active()
-        obj_type = ""
+            edited_obj = self.collection.get_active()
+            obj_type = ""
 
-        if isinstance(edited_obj, FlatCAMGeometry):
-            obj_type = "Geometry"
-            self.geo_editor.update_fcgeometry(edited_obj)
-            self.geo_editor.update_options(edited_obj)
-            self.geo_editor.deactivate()
+            if isinstance(edited_obj, FlatCAMGeometry):
+                obj_type = "Geometry"
+                self.geo_editor.update_fcgeometry(edited_obj)
+                self.geo_editor.update_options(edited_obj)
+                self.geo_editor.deactivate()
 
-            # update the geo object options so it is including the bounding box values
-            try:
-                xmin, ymin, xmax, ymax = edited_obj.bounds()
-                edited_obj.options['xmin'] = xmin
-                edited_obj.options['ymin'] = ymin
-                edited_obj.options['xmax'] = xmax
-                edited_obj.options['ymax'] = ymax
-            except AttributeError:
-                self.inform.emit(_tr("[WARNING] Object empty after edit."))
+                # update the geo object options so it is including the bounding box values
+                try:
+                    xmin, ymin, xmax, ymax = edited_obj.bounds()
+                    edited_obj.options['xmin'] = xmin
+                    edited_obj.options['ymin'] = ymin
+                    edited_obj.options['xmax'] = xmax
+                    edited_obj.options['ymax'] = ymax
+                except AttributeError:
+                    self.inform.emit(_tr("[WARNING] Object empty after edit."))
 
-        elif isinstance(edited_obj, FlatCAMExcellon):
-            obj_type = "Excellon"
-            self.exc_editor.update_fcexcellon(edited_obj)
-            self.exc_editor.update_options(edited_obj)
-            self.exc_editor.deactivate()
+            elif isinstance(edited_obj, FlatCAMExcellon):
+                obj_type = "Excellon"
+                self.exc_editor.update_fcexcellon(edited_obj)
+                self.exc_editor.update_options(edited_obj)
+                self.exc_editor.deactivate()
 
-        else:
-            self.inform.emit(_tr("[WARNING_NOTCL]Select a Geometry or Excellon Object to update."))
-            return
+            else:
+                self.inform.emit(_tr("[WARNING_NOTCL]Select a Geometry or Excellon Object to update."))
+                return
 
-        # if notebook is hidden we show it
-        if self.ui.splitter.sizes()[0] == 0:
-            self.ui.splitter.setSizes([1, 1])
+            # if notebook is hidden we show it
+            if self.ui.splitter.sizes()[0] == 0:
+                self.ui.splitter.setSizes([1, 1])
 
-        # restore the call_source to app
-        self.call_source = 'app'
+            # restore the call_source to app
+            self.call_source = 'app'
 
-        edited_obj.plot()
-        self.ui.plot_tab_area.setTabText(0, "Plot Area")
-        self.ui.plot_tab_area.protectTab(0)
-        self.inform.emit(_tr("[selected] %s is updated, returning to App...") % obj_type)
+            edited_obj.plot()
+            self.ui.plot_tab_area.setTabText(0, "Plot Area")
+            self.ui.plot_tab_area.protectTab(0)
+            self.inform.emit(_tr("[selected] %s is updated, returning to App...") % obj_type)
 
-        # reset the Object UI to original settings
-        # edited_obj.set_ui(edited_obj.ui_type())
-        # edited_obj.build_ui()
-        # make sure that we reenable the selection on Project Tab after returning from Editor Mode:
-        self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+            # reset the Object UI to original settings
+            # edited_obj.set_ui(edited_obj.ui_type())
+            # edited_obj.build_ui()
+            # make sure that we reenable the selection on Project Tab after returning from Editor Mode:
+            self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
 
     def get_last_folder(self):
