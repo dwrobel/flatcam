@@ -1,3 +1,11 @@
+############################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# http://flatcam.org                                       #
+# File Author: Dennis Hayrullin                            #
+# Date: 2/5/2016                                           #
+# MIT Licence                                              #
+############################################################
+
 from vispy.visuals import markers, LineVisual, InfiniteLineVisual
 from vispy.visuals.axis import Ticker, _get_ticks_talbot
 from vispy.scene.widgets import Grid

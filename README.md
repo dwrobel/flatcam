@@ -21,7 +21,7 @@ CAD program, and create G-Code for Isolation routing.
 - further work in internationalization, added a fallback to English language in case there is no translation for a string
 - fix for issue #262: when doing Edit-> Save & Close Editor on a Geometry that is not generated through first entering into an Editor, the geometry disappear
 - finished preparing for internationalization for the files: camlib and objectCollection
-- fixed tools shortcuts not working anymore due of the new toogle parameter for the .run().
+- fixed tools shortcuts not working anymore due of the new toggle parameter for the .run().
 - finished preparing for internationalization for the files: FlatCAMEditor, FlatCAMGUI
 - finished preparing for internationalization for the files: FlatCAMObj, ObjectUI
 - sorted the languages in the Preferences combobox

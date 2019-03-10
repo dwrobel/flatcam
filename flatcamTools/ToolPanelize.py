@@ -1,3 +1,11 @@
+############################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# http://flatcam.org                                       #
+# File Author: Marius Adrian Stanciu (c)                   #
+# Date: 3/10/2019                                          #
+# MIT Licence                                              #
+############################################################
+
 from FlatCAMTool import FlatCAMTool
 from copy import copy, deepcopy
 from ObjectCollection import *
@@ -396,85 +404,6 @@ class Panelize(FlatCAMTool):
                 while panel_lengthy > constrain_dy:
                     rows -= 1
                     panel_lengthy = ((ymax - ymin) * rows) + (spacing_rows * (rows - 1))
-
-        # def clean_temp():
-        #     # deselect all  to avoid  delete selected object when run  delete  from  shell
-        #     self.app.collection.set_all_inactive()
-        #
-        #     for del_obj in self.objs:
-        #         self.app.collection.set_active(del_obj.options['name'])
-        #         self.app.on_delete()
-        #
-        #     self.objs[:] = []
-
-        # def panelize():
-        #     if panel_obj is not None:
-        #         self.app.inform.emit("Generating panel ... Please wait.")
-        #
-        #         self.app.progress.emit(10)
-        #
-        #         if isinstance(panel_obj, FlatCAMExcellon):
-        #             currenty = 0.0
-        #             self.app.progress.emit(0)
-        #
-        #             def initialize_local_excellon(obj_init, app):
-        #                 obj_init.tools = panel_obj.tools
-        #                 # drills are offset, so they need to be deep copied
-        #                 obj_init.drills = deepcopy(panel_obj.drills)
-        #                 obj_init.offset([float(currentx), float(currenty)])
-        #                 obj_init.create_geometry()
-        #                 self.objs.append(obj_init)
-        #
-        #             self.app.progress.emit(0)
-        #             for row in range(rows):
-        #                 currentx = 0.0
-        #                 for col in range(columns):
-        #                     local_outname = self.outname + ".tmp." + str(col) + "." + str(row)
-        #                     self.app.new_object("excellon", local_outname, initialize_local_excellon, plot=False,
-        #                                         autoselected=False)
-        #                     currentx += lenghtx
-        #                 currenty += lenghty
-        #         else:
-        #             currenty = 0
-        #             self.app.progress.emit(0)
-        #
-        #             def initialize_local_geometry(obj_init, app):
-        #                 obj_init.solid_geometry = panel_obj.solid_geometry
-        #                 obj_init.offset([float(currentx), float(currenty)])
-        #                 self.objs.append(obj_init)
-        #
-        #             self.app.progress.emit(0)
-        #             for row in range(rows):
-        #                 currentx = 0
-        #
-        #                 for col in range(columns):
-        #                     local_outname = self.outname + ".tmp." + str(col) + "." + str(row)
-        #                     self.app.new_object("geometry", local_outname, initialize_local_geometry, plot=False,
-        #                                         autoselected=False)
-        #                     currentx += lenghtx
-        #                 currenty += lenghty
-        #
-        #         def job_init_geometry(obj_fin, app_obj):
-        #             FlatCAMGeometry.merge(self.objs, obj_fin)
-        #
-        #         def job_init_excellon(obj_fin, app_obj):
-        #             # merge expects tools to exist in the target object
-        #             obj_fin.tools = panel_obj.tools.copy()
-        #             FlatCAMExcellon.merge(self.objs, obj_fin)
-        #
-        #         if isinstance(panel_obj, FlatCAMExcellon):
-        #             self.app.progress.emit(50)
-        #             self.app.new_object("excellon", self.outname, job_init_excellon, plot=True, autoselected=True)
-        #         else:
-        #             self.app.progress.emit(50)
-        #             self.app.new_object("geometry", self.outname, job_init_geometry, plot=True, autoselected=True)
-        #
-        #     else:
-        #         self.app.inform.emit("[ERROR_NOTCL] Obj is None")
-        #         return "ERROR: Obj is None"
-
-        # panelize()
-        # clean_temp()
 
         def panelize_2():
             if panel_obj is not None:

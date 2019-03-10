@@ -2,6 +2,13 @@
 # Vasilis Vlachoudis
 # Date: 20-Oct-2015
 
+############################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# http://flatcam.org                                       #
+# File modified: Marius Adrian Stanciu                     #
+# Date: 3/10/2019                                          #
+############################################################
+
 import math
 import sys
 

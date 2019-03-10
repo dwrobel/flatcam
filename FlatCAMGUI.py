@@ -6,6 +6,11 @@
 # MIT Licence                                              #
 ############################################################
 
+############################################################
+# File Modified (major mod): Marius Adrian Stanciu         #
+# Date: 3/10/2019                                          #
+############################################################
+
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
 from GUIElements import *

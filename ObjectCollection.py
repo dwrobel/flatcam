@@ -6,6 +6,10 @@
 # MIT Licence                                              #
 ############################################################
 
+############################################################
+# File modified by: Dennis Hayrullin                       #
+############################################################
+
 # from PyQt5.QtCore import QModelIndex
 from FlatCAMObj import *
 import inspect  # TODO: Remove

@@ -1,3 +1,16 @@
+############################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# http://flatcam.org                                       #
+# Author: Juan Pablo Caram (c)                             #
+# Date: 2/5/2014                                           #
+# MIT Licence                                              #
+############################################################
+
+############################################################
+# File Modified (major mod): Marius Adrian Stanciu         #
+# Date: 3/10/2019                                          #
+############################################################
+
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QTextEdit, QCompleter, QAction
