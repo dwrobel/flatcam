@@ -83,9 +83,6 @@ class FlatCAMTool(QtWidgets.QWidget):
         # Put ourself in the GUI
         self.app.ui.tool_scroll_area.setWidget(self)
 
-        # Set the tool name as the widget object name
-        self.app.ui.tool_scroll_area.widget().setObjectName(self.toolName)
-
         # Switch notebook to tool page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
 
@@ -99,6 +96,9 @@ class FlatCAMTool(QtWidgets.QWidget):
                         self.app.ui.splitter.setSizes([0, 1])
                 except AttributeError:
                     pass
+
+        # Set the tool name as the widget object name
+        self.app.ui.tool_scroll_area.widget().setObjectName(self.toolName)
 
         self.show()
 

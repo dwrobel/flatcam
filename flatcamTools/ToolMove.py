@@ -56,7 +56,7 @@ class ToolMove(FlatCAMTool):
             return
         self.toggle()
 
-    def toggle(self):
+    def toggle(self, toggle=False):
         if self.isVisible():
             self.setVisible(False)
 

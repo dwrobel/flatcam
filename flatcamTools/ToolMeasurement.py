@@ -167,9 +167,9 @@ class Measurement(FlatCAMTool):
         # VisPy visuals
         self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.vispy_canvas.view.scene, layers=1)
 
-        self.measure_btn.clicked.connect(self.toggle)
+        self.measure_btn.clicked.connect(self.toggle_f)
 
-    def run(self, toggle):
+    def run(self, toggle=False):
         self.app.report_usage("ToolMeasurement()")
 
         if self.app.tool_tab_locked is True:
@@ -179,7 +179,7 @@ class Measurement(FlatCAMTool):
         if self.app.ui.splitter.sizes()[0] == 0:
             self.app.ui.splitter.setSizes([1, 1])
 
-        self.toggle()
+        self.toggle_f()
 
         self.set_tool_ui()
         self.app.ui.notebook.setTabText(2, _("Meas. Tool"))
@@ -199,7 +199,7 @@ class Measurement(FlatCAMTool):
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
         self.show()
 
-    def toggle(self):
+    def toggle_f(self):
         # the self.active var is doing the 'toggle'
         if self.active is True:
             # DISABLE the Measuring TOOL
@@ -333,7 +333,7 @@ class Measurement(FlatCAMTool):
                     self.total_distance_entry.set_value('%.4f' % abs(d))
 
                     self.clicked_meas = 0
-                    self.toggle()
+                    self.toggle_f()
 
                     # delete the measuring line
                     self.delete_shape()

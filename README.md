@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed Tools menu no longer working due of changes
 - added some test translation for the ToolCalculators (in Romanian)
 - fixed bug in ToolCutOut where for each tool invocation the signals were reconnected
+- fixed some issues with ToolMeasurement due of above changes
 
 8.03.2019
 
