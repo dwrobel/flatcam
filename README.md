@@ -21,6 +21,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed bug in ToolCutOut where for each tool invocation the signals were reconnected
 - fixed some issues with ToolMeasurement due of above changes
 - updated the App.final_save() function
+- fixed an issue created by the fact that I used the '_' char inside the app to designate unused info and that conflicted with the _() function used by gettext
+- made impossible to try to reapply current language that it's already applied (un-necessary)
 
 8.03.2019
 

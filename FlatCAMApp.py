@@ -5346,15 +5346,15 @@ class App(QtCore.QObject):
                    "All Files (*.*)"
 
         try:
-            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Gerber",
+            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Gerber",
                                                          directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
-            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Gerber", filter=_filter_)
+            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Gerber", filter=_filter_)
 
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit(_("[WARNING_NOTCL]Open Gerber cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Open Gerber cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -5375,10 +5375,10 @@ class App(QtCore.QObject):
                    "All Files (*.*)"
 
         try:
-            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Excellon",
+            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Excellon",
                                                          directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
-            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Excellon", filter=_filter_)
+            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Excellon", filter=_filter_)
 
         filenames = [str(filename) for filename in filenames]
 
@@ -5405,10 +5405,10 @@ class App(QtCore.QObject):
                    " *.din *.xpi *.hnc *.h *.i *.ncp *.min *.gcd *.rol *.mpr *.ply *.out *.eia *.plt *.sbp *.mpf);;" \
                    "All Files (*.*)"
         try:
-            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Open G-Code",
+            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption="Open G-Code",
                                                          directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
-            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Open G-Code", filter=_filter_)
+            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption="Open G-Code", filter=_filter_)
 
         filenames = [str(filename) for filename in filenames]
 
@@ -5730,10 +5730,10 @@ class App(QtCore.QObject):
 
         filter = "SVG File (*.svg);;All Files (*.*)"
         try:
-            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Import SVG",
+            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption="Import SVG",
                                                          directory=self.get_last_folder(), filter=filter)
         except TypeError:
-            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption="Import SVG", filter=filter)
+            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption="Import SVG", filter=filter)
 
         if type_of_obj is not "geometry" and type_of_obj is not "gerber":
             type_of_obj = "geometry"
@@ -5760,10 +5760,10 @@ class App(QtCore.QObject):
 
         filter = "DXF File (*.DXF);;All Files (*.*)"
         try:
-            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Import DXF"),
+            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Import DXF"),
                                                          directory=self.get_last_folder(), filter=filter)
         except TypeError:
-            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Import DXF"), filter=filter)
+            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Import DXF"), filter=filter)
 
         if type_of_obj is not "geometry" and type_of_obj is not "gerber":
             type_of_obj = "geometry"

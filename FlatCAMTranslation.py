@@ -60,11 +60,17 @@ def on_language_apply_click(app, restart=False):
     """
     name = app.ui.general_defaults_form.general_app_group.language_cb.currentText()
 
+    # do nothing if trying to apply the language that is the current language (already applied).
+    settings = QSettings("Open Source", "FlatCAM")
+    if settings.contains("language"):
+        current_language = settings.value('language', type=str)
+        if current_language == name:
+            return
+
     if restart:
         msgbox = QtWidgets.QMessageBox()
-
-        msgbox.setInformativeText("Are you sure do you want to change the current language to %s?\n\n"
-                                  "The application will restart." % name.capitalize())
+        msgbox.setText("The application will restart.")
+        msgbox.setInformativeText("Are you sure do you want to change the current language to %s?" % name.capitalize())
         msgbox.setWindowTitle("Apply Language ...")
         msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
         msgbox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
@@ -82,7 +88,6 @@ def on_language_apply_click(app, restart=False):
             del settings
 
             restart_program(app=app)
-
 
 def apply_language(domain, lang=None):
     lang_code = ''
