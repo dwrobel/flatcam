@@ -20,6 +20,7 @@ CAD program, and create G-Code for Isolation routing.
 - added some test translation for the ToolCalculators (in Romanian)
 - fixed bug in ToolCutOut where for each tool invocation the signals were reconnected
 - fixed some issues with ToolMeasurement due of above changes
+- updated the App.final_save() function
 
 8.03.2019
 

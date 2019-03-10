@@ -2565,26 +2565,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.final_save.emit()
 
-        if self.app.should_we_quit is True:
-            # # save toolbar state to file
-            # with open(self.app.data_path + '\gui_state.config', 'wb') as stream:
-            #     stream.write(self.saveState().data())
-            #     log.debug("FlatCAMGUI.__init__() --> UI state saved.")
-            # QtWidgets.qApp.quit()
-
-            # save toolbar state to file
-            settings = QSettings("Open Source", "FlatCAM")
-            settings.setValue('saved_gui_state', self.saveState())
-            settings.setValue('maximized_gui', self.isMaximized())
-
-            # This will write the setting to the platform specific storage.
-            del settings
-            log.debug("FlatCAMGUI.__init__() --> UI state saved.")
-            QtWidgets.qApp.quit()
-        else:
-            self.app.should_we_quit = True
-            event.ignore()
-
 
 class GeneralPreferencesUI(QtWidgets.QWidget):
     def __init__(self, parent=None):

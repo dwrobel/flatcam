@@ -2932,7 +2932,19 @@ class App(QtCore.QObject):
                 self.should_we_quit = False
                 return
         self.save_defaults()
-        log.debug("Application defaults saved ... Exit event.")
+        log.debug("App.final_save() --> App Defaults saved.")
+
+        if self.should_we_quit is True:
+
+            # save toolbar state to file
+            settings = QSettings("Open Source", "FlatCAM")
+            settings.setValue('saved_gui_state', self.ui.saveState())
+            settings.setValue('maximized_gui', self.ui.isMaximized())
+
+            # This will write the setting to the platform specific storage.
+            del settings
+            log.debug("App.final_save() --> App UI state saved.")
+            QtWidgets.qApp.quit()
 
     def on_toggle_shell(self):
         """
