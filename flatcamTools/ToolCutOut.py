@@ -5,7 +5,11 @@ from shapely.geometry import box
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+
 fcTranslate.apply_language('ToolCutOut')
+import builtins
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 
 class CutOut(FlatCAMTool):
@@ -262,26 +266,23 @@ class CutOut(FlatCAMTool):
         # true if we want to repeat the gap without clicking again on the button
         self.repeat_gap = False
 
+        ## Signals
+        self.ff_cutout_object_btn.clicked.connect(self.on_freeform_cutout)
+        self.rect_cutout_object_btn.clicked.connect(self.on_rectangular_cutout)
+
+        self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
+        self.man_geo_creation_btn.clicked.connect(self.on_manual_geo)
+        self.man_gaps_creation_btn.clicked.connect(self.on_manual_gap_click)
+
     def on_type_obj_index_changed(self, index):
         obj_type = self.type_obj_combo.currentIndex()
         self.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.obj_combo.setCurrentIndex(0)
 
-    def run(self, toggle=False):
+    def run(self, toggle=True):
         self.app.report_usage("ToolCutOut()")
 
-        if toggle:
-            # if the splitter is hidden, display it, else hide it but only if the current widget is the same
-            if self.app.ui.splitter.sizes()[0] == 0:
-                self.app.ui.splitter.setSizes([1, 1])
-            else:
-                try:
-                    if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                        self.app.ui.splitter.setSizes([0, 1])
-                except AttributeError:
-                    pass
-
-        FlatCAMTool.run(self)
+        FlatCAMTool.run(self, toggle=toggle)
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, "Cutout Tool")
@@ -296,14 +297,6 @@ class CutOut(FlatCAMTool):
         self.margin.set_value(float(self.app.defaults["tools_cutoutmargin"]))
         self.gapsize.set_value(float(self.app.defaults["tools_cutoutgapsize"]))
         self.gaps.set_value(4)
-
-        ## Signals
-        self.ff_cutout_object_btn.clicked.connect(self.on_freeform_cutout)
-        self.rect_cutout_object_btn.clicked.connect(self.on_rectangular_cutout)
-
-        self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
-        self.man_geo_creation_btn.clicked.connect(self.on_manual_geo)
-        self.man_gaps_creation_btn.clicked.connect(self.on_manual_gap_click)
 
         self.gapFinished.connect(self.on_gap_finished)
 

@@ -14,7 +14,11 @@ from FlatCAMObj import *
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+
 fcTranslate.apply_language('ToolTransform')
+import builtins
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 
 class ToolTransform(FlatCAMTool):
@@ -374,21 +378,10 @@ class ToolTransform(FlatCAMTool):
         self.offx_entry.returnPressed.connect(self.on_offx)
         self.offy_entry.returnPressed.connect(self.on_offy)
 
-    def run(self, toggle=False):
+    def run(self, toggle=True):
         self.app.report_usage("ToolTransform()")
 
-        if toggle:
-            # if the splitter is hidden, display it, else hide it but only if the current widget is the same
-            if self.app.ui.splitter.sizes()[0] == 0:
-                self.app.ui.splitter.setSizes([1, 1])
-            else:
-                try:
-                    if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                        self.app.ui.splitter.setSizes([0, 1])
-                except AttributeError:
-                    pass
-                
-        FlatCAMTool.run(self)
+        FlatCAMTool.run(self, toggle=toggle)
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Transform Tool"))

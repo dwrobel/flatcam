@@ -16,7 +16,11 @@ from math import sqrt
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+
 fcTranslate.apply_language('ToolMeasurement')
+import builtins
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 
 class Measurement(FlatCAMTool):
@@ -165,7 +169,7 @@ class Measurement(FlatCAMTool):
 
         self.measure_btn.clicked.connect(self.toggle)
 
-    def run(self):
+    def run(self, toggle):
         self.app.report_usage("ToolMeasurement()")
 
         if self.app.tool_tab_locked is True:

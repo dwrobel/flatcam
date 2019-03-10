@@ -59,10 +59,13 @@ import tclCommands
 
 # from ParseFont import *
 
-from gettext import *
+import gettext
 import FlatCAMTranslation as fcTranslate
-fcTranslate.apply_language('FlatCAMApp')
 
+fcTranslate.apply_language('FlatCAMApp')
+import builtins
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 ########################################
 ##                App                 ##

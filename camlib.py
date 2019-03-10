@@ -72,8 +72,11 @@ log.addHandler(handler)
 
 import gettext
 import FlatCAMTranslation as fcTranslate
-fcTranslate.apply_language('camlib')
 
+fcTranslate.apply_language('camlib')
+import builtins
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 class ParseError(Exception):
     pass

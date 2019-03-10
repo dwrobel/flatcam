@@ -21,8 +21,11 @@ from FlatCAMEditor import FCShapeTool
 
 import gettext
 import FlatCAMTranslation as fcTranslate
-fcTranslate.apply_language('FlatCAMGUI')
 
+fcTranslate.apply_language('FlatCAMGUI')
+import builtins
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 class FlatCAMGUI(QtWidgets.QMainWindow):
     # Emitted when persistent window geometry needs to be retained

@@ -40,8 +40,11 @@ import freetype as ft
 
 import gettext
 import FlatCAMTranslation as fcTranslate
-fcTranslate.apply_language('FlatCAMEditor')
 
+fcTranslate.apply_language('FlatCAMEditor')
+import builtins
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 class BufferSelectionTool(FlatCAMTool):
     """

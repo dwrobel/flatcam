@@ -20,8 +20,11 @@ from PyQt5.QtCore import Qt
 
 import gettext
 import FlatCAMTranslation as fcTranslate
-fcTranslate.apply_language('ObjectCollection')
 
+fcTranslate.apply_language('ObjectCollection')
+import builtins
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 class KeySensitiveListView(QtWidgets.QTreeView):
     """

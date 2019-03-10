@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-03-10 13:01+0200\n"
-"PO-Revision-Date: 2019-03-10 13:21+0200\n"
+"POT-Creation-Date: 2019-03-10 16:22+0200\n"
+"PO-Revision-Date: 2019-03-10 16:24+0200\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -17,35 +17,35 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: en\n"
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:14
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:26
 msgid "Calculators"
 msgstr "Calculators"
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:15
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:27
 msgid "V-Shape Tool Calculator"
 msgstr "V-Shape Tool Calculator"
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:16
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:28
 msgid "Units Calculator"
 msgstr "Units Calculator"
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:17
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:29
 msgid "ElectroPlating Calculator"
 msgstr "ElectroPlating Calculator"
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:58
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:70
 msgid "Here you enter the value to be converted from INCH to MM"
 msgstr "Here you enter the value to be converted from INCH to MM"
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:63
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:75
 msgid "Here you enter the value to be converted from MM to INCH"
 msgstr "Here you enter the value to be converted from MM to INCH"
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:84
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:96
 msgid "Tip Diameter:"
 msgstr "Tip Diameter:"
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:88
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:100
 msgid ""
 "This is the diameter of the tool tip.\n"
 "The manufacturer specifies it."
@@ -53,7 +53,11 @@ msgstr ""
 "This is the diameter of the tool tip.\n"
 "The manufacturer specifies it."
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:95
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:103
+msgid "Tip Angle:"
+msgstr "Tip Angle:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:107
 msgid ""
 "This is the angle of the tip of the tool.\n"
 "It is specified by manufacturer."
@@ -61,7 +65,11 @@ msgstr ""
 "This is the angle of the tip of the tool.\n"
 "It is specified by manufacturer."
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:102
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:110
+msgid "Cut Z:"
+msgstr "Cut Z:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:114
 msgid ""
 "This is the depth to cut into the material.\n"
 "In the CNCJob is the CutZ parameter."
@@ -69,22 +77,26 @@ msgstr ""
 "This is the depth to cut into the material.\n"
 "In the CNCJob is the CutZ parameter."
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:109
-msgid ""
-"This is the tool diameter to be entered into\n"
-"FlatCAM Gerber section.\n"
-"In the CNCJob section it is called >Tool dia<."
-msgstr ""
-"This is the tool diameter to be entered into\n"
-"FlatCAM Gerber section.\n"
-"In the CNCJob section it is called >Tool dia<."
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:117
+msgid "Tool Diameter:"
+msgstr "Tool Diameter:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:121
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:204
+msgid ""
+"This is the tool diameter to be entered into\n"
+"FlatCAM Gerber section.\n"
+"In the CNCJob section it is called >Tool dia<."
+msgstr ""
+"This is the tool diameter to be entered into\n"
+"FlatCAM Gerber section.\n"
+"In the CNCJob section it is called >Tool dia<."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:133
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:216
 msgid "Calculate"
 msgstr "Calculate"
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:124
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:136
 msgid ""
 "Calculate either the Cut Z or the effective tool diameter,\n"
 "  depending on which is desired and which is known. "
@@ -92,7 +104,7 @@ msgstr ""
 "Calculate either the Cut Z or the effective tool diameter,\n"
 "  depending on which is desired and which is known. "
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:142
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:154
 msgid ""
 "This calculator is useful for those who plate the via/pad/drill holes,\n"
 "using a method like grahite ink or calcium hypophosphite ink or palladium "
@@ -102,27 +114,27 @@ msgstr ""
 "using a method like grahite ink or calcium hypophosphite ink or palladium "
 "chloride."
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:151
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:163
 msgid "Board Length:"
 msgstr "Board Length:"
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:155
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:167
 msgid "This is the board length. In centimeters."
 msgstr "This is the board length. In centimeters."
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:157
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:169
 msgid "Board Width:"
 msgstr "Board Width:"
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:161
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:173
 msgid "This is the board width.In centimeters."
 msgstr "This is the board width.In centimeters."
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:163
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:175
 msgid "Current Density:"
 msgstr "Current Density:"
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:167
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:179
 msgid ""
 "Current density to pass through the board. \n"
 "In Amps per Square Feet ASF."
@@ -130,11 +142,11 @@ msgstr ""
 "Current density to pass through the board. \n"
 "In Amps per Square Feet ASF."
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:171
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:183
 msgid "Copper Growth:"
 msgstr "Copper Growth:"
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:175
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:187
 msgid ""
 "How thick the copper growth is intended to be.\n"
 "In microns."
@@ -142,11 +154,11 @@ msgstr ""
 "How thick the copper growth is intended to be.\n"
 "In microns."
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:180
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:192
 msgid "Current Value:"
 msgstr "Current Value:"
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:184
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:196
 msgid ""
 "This is the current intensity value\n"
 "to be set on the Power Supply. In Amps."
@@ -154,11 +166,11 @@ msgstr ""
 "This is the current intensity value\n"
 "to be set on the Power Supply. In Amps."
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:188
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:200
 msgid "Time:"
 msgstr "Time:"
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:192
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:204
 msgid ""
 "This is the calculated time required for the procedure.\n"
 "In minutes."
@@ -166,7 +178,7 @@ msgstr ""
 "This is the calculated time required for the procedure.\n"
 "In minutes."
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:207
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:219
 msgid ""
 "Calculate the current intensity value and the procedure time,\n"
 "  depending on the parameters above"
@@ -174,14 +186,14 @@ msgstr ""
 "Calculate the current intensity value and the procedure time,\n"
 "  depending on the parameters above"
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:294
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:305
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:306
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:317
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:332
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:345
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:359
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:370
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:381
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:392
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:329
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:344
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:357
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:371
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:382
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:393
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:404
 msgid "[ERROR_NOTCL]Wrong value format entered, use a number."
 msgstr "[ERROR_NOTCL]Wrong value format entered, use a number."

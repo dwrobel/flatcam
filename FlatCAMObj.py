@@ -24,8 +24,11 @@ import itertools
 
 import gettext
 import FlatCAMTranslation as fcTranslate
-fcTranslate.apply_language('FlatCAMObj')
 
+fcTranslate.apply_language('FlatCAMObj')
+import builtins
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 class ObjectDeleted(Exception):
     # Interrupts plotting process if FlatCAMObj has been deleted
@@ -3176,7 +3179,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
-        self.ui.paint_tool_button.clicked.connect(self.app.paint_tool.run)
+        self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
         self.ui.pp_geometry_name_cb.activated.connect(self.on_pp_changed)
 
     def set_tool_offset_visibility(self, current_row):

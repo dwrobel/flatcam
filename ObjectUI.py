@@ -20,8 +20,11 @@ from camlib import Excellon
 
 import gettext
 import FlatCAMTranslation as fcTranslate
-fcTranslate.apply_language('ObjectUI')
 
+fcTranslate.apply_language('ObjectUI')
+import builtins
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 class ObjectUI(QtWidgets.QWidget):
     """

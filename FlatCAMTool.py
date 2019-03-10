@@ -71,9 +71,9 @@ class FlatCAMTool(QtWidgets.QWidget):
         if separator is True:
             pos.addSeparator()
 
-        self.menuAction.triggered.connect(self.run)
+        self.menuAction.triggered.connect(lambda: self.run(toggle=True))
 
-    def run(self):
+    def run(self, toggle=True):
 
         if self.app.tool_tab_locked is True:
             return
@@ -88,6 +88,17 @@ class FlatCAMTool(QtWidgets.QWidget):
 
         # Switch notebook to tool page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+
+        if toggle:
+            # if the splitter is hidden, display it, else hide it but only if the current widget is the same
+            if self.app.ui.splitter.sizes()[0] == 0:
+                self.app.ui.splitter.setSizes([1, 1])
+            else:
+                try:
+                    if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
+                        self.app.ui.splitter.setSizes([0, 1])
+                except AttributeError:
+                    pass
 
         self.show()
 

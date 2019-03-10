@@ -14,6 +14,11 @@ CAD program, and create G-Code for Isolation routing.
 - added a fix in the Gerber parser when adding the geometry in the self.apertures dict for the case that the current aperture is None (Allegro does that)
 - finished support for internationalization by adding a set of .po/.mo files for the English language. Unfortunately the final action can be done only when Beta will be out of Beta (no more changes) or when I will decide to stop working on this app.
 - changed the tooltip for 'feedrate_rapids' parameter to point out that this parameter is useful only for the Marlin postprocessor
+- fix app crash for the case that there are no translation files
+- fixed some forgotten strings to be prepared for internationalization in ToolCalculators
+- fixed Tools menu no longer working due of changes
+- added some test translation for the ToolCalculators (in Romanian)
+- fixed bug in ToolCutOut where for each tool invocation the signals were reconnected
 
 8.03.2019
 

@@ -15,7 +15,11 @@ from copy import copy
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+
 fcTranslate.apply_language('ToolMove')
+import builtins
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 
 class ToolMove(FlatCAMTool):
@@ -45,7 +49,7 @@ class ToolMove(FlatCAMTool):
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='M', **kwargs)
 
-    def run(self):
+    def run(self, toggle):
         self.app.report_usage("ToolMove()")
 
         if self.app.tool_tab_locked is True:

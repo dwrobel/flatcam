@@ -14,7 +14,11 @@ import math
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+
 fcTranslate.apply_language('ToolCalculators')
+import builtins
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 
 class ToolCalculator(FlatCAMTool):
@@ -96,21 +100,21 @@ class ToolCalculator(FlatCAMTool):
         self.tipDia_label.setToolTip(_('This is the diameter of the tool tip.\n'
                                      'The manufacturer specifies it.'))
 
-        self.tipAngle_label = QtWidgets.QLabel("Tip Angle:")
+        self.tipAngle_label = QtWidgets.QLabel(_("Tip Angle:"))
         self.tipAngle_entry = FCEntry()
         # self.tipAngle_entry.setFixedWidth(70)
         self.tipAngle_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.tipAngle_label.setToolTip(_("This is the angle of the tip of the tool.\n"
                                        "It is specified by manufacturer."))
 
-        self.cutDepth_label = QtWidgets.QLabel("Cut Z:")
+        self.cutDepth_label = QtWidgets.QLabel(_("Cut Z:"))
         self.cutDepth_entry = FCEntry()
         # self.cutDepth_entry.setFixedWidth(70)
         self.cutDepth_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.cutDepth_label.setToolTip(_("This is the depth to cut into the material.\n"
                                        "In the CNCJob is the CutZ parameter."))
 
-        self.effectiveToolDia_label = QtWidgets.QLabel("Tool Diameter:")
+        self.effectiveToolDia_label = QtWidgets.QLabel(_("Tool Diameter:"))
         self.effectiveToolDia_entry = FCEntry()
         # self.effectiveToolDia_entry.setFixedWidth(70)
         self.effectiveToolDia_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
@@ -234,21 +238,11 @@ class ToolCalculator(FlatCAMTool):
         self.calculate_plate_button.clicked.connect(self.on_calculate_eplate)
 
 
-    def run(self, toggle=False):
+    def run(self, toggle=True):
         self.app.report_usage("ToolCalculators()")
 
-        if toggle:
-            # if the splitter is hidden, display it, else hide it but only if the current widget is the same
-            if self.app.ui.splitter.sizes()[0] == 0:
-                self.app.ui.splitter.setSizes([1, 1])
-            else:
-                try:
-                    if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                        self.app.ui.splitter.setSizes([0, 1])
-                except AttributeError:
-                    pass
+        FlatCAMTool.run(self, toggle=toggle)
 
-        FlatCAMTool.run(self)
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, "Calc. Tool")
