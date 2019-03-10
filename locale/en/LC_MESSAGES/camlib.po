@@ -1,0 +1,233 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2019-03-10 02:11+0200\n"
+"PO-Revision-Date: 2019-03-10 02:35+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 2.2.1\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:202
+msgid "[ERROR_NOTCL] self.solid_geometry is neither BaseGeometry or list."
+msgstr "[ERROR_NOTCL] self.solid_geometry is neither BaseGeometry or list."
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:1389
+msgid "[success]Object was mirrored ..."
+msgstr "[success]Object was mirrored ..."
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:1391
+msgid "[ERROR_NOTCL] Failed to mirror. No object selected"
+msgstr "[ERROR_NOTCL] Failed to mirror. No object selected"
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:1427
+msgid "[success]Object was rotated ..."
+msgstr "[success]Object was rotated ..."
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:1429
+msgid "[ERROR_NOTCL] Failed to rotate. No object selected"
+msgstr "[ERROR_NOTCL] Failed to rotate. No object selected"
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:1463
+msgid "[success]Object was skewed ..."
+msgstr "[success]Object was skewed ..."
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:1465
+msgid "[ERROR_NOTCL] Failed to skew. No object selected"
+msgstr "[ERROR_NOTCL] Failed to skew. No object selected"
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:2641 D:\1.DEV\FlatCAM_beta\camlib.py:2701
+msgid "[WARNING] Coordinates missing, line ignored: %s"
+msgstr "[WARNING] Coordinates missing, line ignored: %s"
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:2642 D:\1.DEV\FlatCAM_beta\camlib.py:2702
+msgid "[WARNING_NOTCL] GERBER file might be CORRUPT. Check the file !!!"
+msgstr "[WARNING_NOTCL] GERBER file might be CORRUPT. Check the file !!!"
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:2671
+msgid ""
+"[ERROR] Region does not have enough points. File will be processed but there "
+"are parser errors. Line number: %s"
+msgstr ""
+"[ERROR] Region does not have enough points. File will be processed but there "
+"are parser errors. Line number: %s"
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:3025
+msgid ""
+"[ERROR]Gerber Parser ERROR.\n"
+"%s:"
+msgstr ""
+"[ERROR]Gerber Parser ERROR.\n"
+"%s:"
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:3203 D:\1.DEV\FlatCAM_beta\camlib.py:3212
+msgid "[ERROR_NOTCL] Scale factor has to be a number: integer or float."
+msgstr "[ERROR_NOTCL] Scale factor has to be a number: integer or float."
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:3241
+msgid "[success]Gerber Scale done."
+msgstr "[success]Gerber Scale done."
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:3274
+msgid ""
+"[ERROR_NOTCL]An (x,y) pair of values are needed. Probable you entered only "
+"one value in the Offset field."
+msgstr ""
+"[ERROR_NOTCL]An (x,y) pair of values are needed. Probable you entered only "
+"one value in the Offset field."
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:3298
+msgid "[success]Gerber Offset done."
+msgstr "[success]Gerber Offset done."
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:3674
+msgid "[ERROR_NOTCL] This is GCODE mark: %s"
+msgstr "[ERROR_NOTCL] This is GCODE mark: %s"
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:4203
+msgid "[ERROR_NOTCL] An internal error has ocurred. See shell.\n"
+msgstr "[ERROR_NOTCL] An internal error has ocurred. See shell.\n"
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:4204
+msgid ""
+"[ERROR] Excellon Parser error.\n"
+"Parsing Failed. Line %d: %s\n"
+msgstr ""
+"[ERROR] Excellon Parser error.\n"
+"Parsing Failed. Line %d: %s\n"
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:4281
+msgid ""
+"[WARNING] Excellon.create_geometry() -> a drill location was skipped due of "
+"not having a tool associated.\n"
+"Check the resulting GCode."
+msgstr ""
+"[WARNING] Excellon.create_geometry() -> a drill location was skipped due of "
+"not having a tool associated.\n"
+"Check the resulting GCode."
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:4817
+msgid "[ERROR] There is no such parameter: %s"
+msgstr "[ERROR] There is no such parameter: %s"
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:4882
+msgid ""
+"[WARNING] The Cut Z parameter has positive value. It is the depth value to "
+"drill into material.\n"
+"The Cut Z parameter needs to have a negative value, assuming it is a typo "
+"therefore the app will convert the value to negative. Check the resulting "
+"CNC code (Gcode etc)."
+msgstr ""
+"[WARNING] The Cut Z parameter has positive value. It is the depth value to "
+"drill into material.\n"
+"The Cut Z parameter needs to have a negative value, assuming it is a typo "
+"therefore the app will convert the value to negative. Check the resulting "
+"CNC code (Gcode etc)."
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:4889 D:\1.DEV\FlatCAM_beta\camlib.py:5357
+#: D:\1.DEV\FlatCAM_beta\camlib.py:5628
+msgid ""
+"[WARNING] The Cut Z parameter is zero. There will be no cut, skipping %s file"
+msgstr ""
+"[WARNING] The Cut Z parameter is zero. There will be no cut, skipping %s file"
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:4903 D:\1.DEV\FlatCAM_beta\camlib.py:5334
+#: D:\1.DEV\FlatCAM_beta\camlib.py:5605
+msgid ""
+"[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be in the "
+"format (x, y) \n"
+"but now there is only one value, not two. "
+msgstr ""
+"[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be in the "
+"format (x, y) \n"
+"but now there is only one value, not two. "
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:5105 D:\1.DEV\FlatCAM_beta\camlib.py:5195
+#: D:\1.DEV\FlatCAM_beta\camlib.py:5246
+msgid "[ERROR_NOTCL]The loaded Excellon file has no drills ..."
+msgstr "[ERROR_NOTCL]The loaded Excellon file has no drills ..."
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:5200
+msgid "[ERROR_NOTCL] Wrong optimization type selected."
+msgstr "[ERROR_NOTCL] Wrong optimization type selected."
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:5345 D:\1.DEV\FlatCAM_beta\camlib.py:5616
+msgid ""
+"[ERROR_NOTCL] Cut_Z parameter is None or zero. Most likely a bad "
+"combinations of other parameters."
+msgstr ""
+"[ERROR_NOTCL] Cut_Z parameter is None or zero. Most likely a bad "
+"combinations of other parameters."
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:5350 D:\1.DEV\FlatCAM_beta\camlib.py:5621
+msgid ""
+"[WARNING] The Cut Z parameter has positive value. It is the depth value to "
+"cut into material.\n"
+"The Cut Z parameter needs to have a negative value, assuming it is a typo "
+"therefore the app will convert the value to negative.Check the resulting CNC "
+"code (Gcode etc)."
+msgstr ""
+"[WARNING] The Cut Z parameter has positive value. It is the depth value to "
+"cut into material.\n"
+"The Cut Z parameter needs to have a negative value, assuming it is a typo "
+"therefore the app will convert the value to negative.Check the resulting CNC "
+"code (Gcode etc)."
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:5362 D:\1.DEV\FlatCAM_beta\camlib.py:5633
+msgid "[ERROR_NOTCL] Travel Z parameter is None or zero."
+msgstr "[ERROR_NOTCL] Travel Z parameter is None or zero."
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:5366 D:\1.DEV\FlatCAM_beta\camlib.py:5637
+msgid ""
+"[WARNING] The Travel Z parameter has negative value. It is the height value "
+"to travel between cuts.\n"
+"The Z Travel parameter needs to have a positive value, assuming it is a typo "
+"therefore the app will convert the value to positive.Check the resulting CNC "
+"code (Gcode etc)."
+msgstr ""
+"[WARNING] The Travel Z parameter has negative value. It is the height value "
+"to travel between cuts.\n"
+"The Z Travel parameter needs to have a positive value, assuming it is a typo "
+"therefore the app will convert the value to positive.Check the resulting CNC "
+"code (Gcode etc)."
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:5373 D:\1.DEV\FlatCAM_beta\camlib.py:5644
+msgid ""
+"[WARNING] The Z Travel parameter is zero. This is dangerous, skipping %s file"
+msgstr ""
+"[WARNING] The Z Travel parameter is zero. This is dangerous, skipping %s file"
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:5503
+msgid "[ERROR]Expected a Geometry, got %s"
+msgstr "[ERROR]Expected a Geometry, got %s"
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:5509
+msgid ""
+"[ERROR_NOTCL]Trying to generate a CNC Job from a Geometry object without "
+"solid_geometry."
+msgstr ""
+"[ERROR_NOTCL]Trying to generate a CNC Job from a Geometry object without "
+"solid_geometry."
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:5548
+msgid ""
+"[ERROR_NOTCL]The Tool Offset value is too negative to use for the "
+"current_geometry.\n"
+"Raise the value (in module) and try again."
+msgstr ""
+"[ERROR_NOTCL]The Tool Offset value is too negative to use for the "
+"current_geometry.\n"
+"Raise the value (in module) and try again."
+
+#: D:\1.DEV\FlatCAM_beta\camlib.py:5770
+msgid "[ERROR_NOTCL] There is no tool data in the SolderPaste geometry."
+msgstr "[ERROR_NOTCL] There is no tool data in the SolderPaste geometry."

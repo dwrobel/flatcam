@@ -1,0 +1,377 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2019-03-10 02:05+0200\n"
+"PO-Revision-Date: 2019-03-10 02:40+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 2.2.1\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:196
+msgid "[success]Name changed from %s to %s"
+msgstr "[success]Name changed from %s to %s"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:534
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:1888
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3151
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:5298
+msgid "<span style=\"color:green;\"><b>Basic</b></span>"
+msgstr "<span style=\"color:green;\"><b>Basic</b></span>"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:546
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:1904
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3173
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:5304
+msgid "<span style=\"color:red;\"><b>Advanced</b></span>"
+msgstr "<span style=\"color:red;\"><b>Advanced</b></span>"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:901
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:956
+msgid "[success]Isolation geometry created: %s"
+msgstr "[success]Isolation geometry created: %s"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:1031
+msgid ""
+"[ERROR_NOTCL] The aperture scale factor value is missing or wrong format."
+msgstr ""
+"[ERROR_NOTCL] The aperture scale factor value is missing or wrong format."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:1046
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:1081
+msgid ""
+"[WARNING_NOTCL] No aperture to scale. Select at least one aperture and try "
+"again."
+msgstr ""
+"[WARNING_NOTCL] No aperture to scale. Select at least one aperture and try "
+"again."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:1066
+msgid "[ERROR_NOTCL] The aperture buffer value is missing or wrong format."
+msgstr "[ERROR_NOTCL] The aperture buffer value is missing or wrong format."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:1139
+msgid "Generating Gerber"
+msgstr "Generating Gerber"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:1146
+msgid "[ERROR_NOTCL] Cretion of Gerber failed."
+msgstr "[ERROR_NOTCL] Cretion of Gerber failed."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:1154
+msgid "[success] Created: %s"
+msgstr "[success] Created: %s"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:1274
+msgid "Plotting Apertures"
+msgstr "Plotting Apertures"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:1728
+msgid "Total Drills"
+msgstr "Total Drills"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:1754
+msgid "Total Slots"
+msgstr "Total Slots"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:1960
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3223
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3529
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3716
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3729
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3846
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4254
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4487
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4893
+msgid "[ERROR_NOTCL]Wrong value format entered, use a number."
+msgstr "[ERROR_NOTCL]Wrong value format entered, use a number."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2184
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2275
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2390
+msgid ""
+"[ERROR_NOTCL]Please select one or more tools from the list and try again."
+msgstr ""
+"[ERROR_NOTCL]Please select one or more tools from the list and try again."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2191
+msgid ""
+"[ERROR_NOTCL] Milling tool for DRILLS is larger than hole size. Cancelled."
+msgstr ""
+"[ERROR_NOTCL] Milling tool for DRILLS is larger than hole size. Cancelled."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2206
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2300
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2411
+msgid "Diameter"
+msgstr "Diameter"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2206
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2300
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2411
+msgid "Drills_Nr"
+msgstr "Drills_Nr"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2206
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2300
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2411
+msgid "Slots_Nr"
+msgstr "Slots_Nr"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2206
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2300
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2411
+msgid "Tool_nr"
+msgstr "Tool_nr"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2285
+msgid ""
+"[ERROR_NOTCL] Milling tool for SLOTS is larger than hole size. Cancelled."
+msgstr ""
+"[ERROR_NOTCL] Milling tool for SLOTS is larger than hole size. Cancelled."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2448
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4142
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4353
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4668
+msgid ""
+"[ERROR_NOTCL]Wrong value format for self.defaults[\"z_pdepth\"] or self."
+"options[\"z_pdepth\"]"
+msgstr ""
+"[ERROR_NOTCL]Wrong value format for self.defaults[\"z_pdepth\"] or self."
+"options[\"z_pdepth\"]"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2460
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4154
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4365
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4680
+msgid ""
+"[ERROR_NOTCL]Wrong value format for self.defaults[\"feedrate_probe\"] or "
+"self.options[\"feedrate_probe\"]"
+msgstr ""
+"[ERROR_NOTCL]Wrong value format for self.defaults[\"feedrate_probe\"] or "
+"self.options[\"feedrate_probe\"]"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2493
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4556
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4561
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4707
+msgid "Generating CNC Code"
+msgstr "Generating CNC Code"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2518
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4852
+msgid ""
+"[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be in the "
+"format (x, y) \n"
+"but now there is only one value, not two. "
+msgstr ""
+"[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be in the "
+"format (x, y) \n"
+"but now there is only one value, not two. "
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2866
+msgid "In"
+msgstr "In"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2866
+msgid "Out"
+msgstr "Out"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2866
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3108
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3393
+msgid "Path"
+msgstr "Path"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2866
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3189
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3762
+msgid "Custom"
+msgstr "Custom"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2867
+msgid "Finish"
+msgstr "Finish"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2867
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3110
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3395
+msgid "Rough"
+msgstr "Rough"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:2867
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3773
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3774
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3783
+msgid "Iso"
+msgstr "Iso"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3145
+msgid "Copy"
+msgstr "Copy"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3147
+msgid "Delete"
+msgstr "Delete"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3364
+msgid "[ERROR_NOTCL] Please enter the desired tool diameter in Float format."
+msgstr ""
+"[ERROR_NOTCL] Please enter the desired tool diameter in Float format."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3439
+msgid "[success] Tool added in Tool Table."
+msgstr "[success] Tool added in Tool Table."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3444
+msgid "[ERROR_NOTCL]Default Tool added. Wrong value format entered."
+msgstr "[ERROR_NOTCL]Default Tool added. Wrong value format entered."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3474
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3484
+msgid "[WARNING_NOTCL]Failed. Select a tool to copy."
+msgstr "[WARNING_NOTCL]Failed. Select a tool to copy."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3513
+msgid "[success] Tool was copied in Tool Table."
+msgstr "[success] Tool was copied in Tool Table."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3546
+msgid "[success] Tool was edited in Tool Table."
+msgstr "[success] Tool was edited in Tool Table."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3577
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3587
+msgid "[WARNING_NOTCL]Failed. Select a tool to delete."
+msgstr "[WARNING_NOTCL]Failed. Select a tool to delete."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:3611
+msgid "[success] Tool was deleted in Tool Table."
+msgstr "[success] Tool was deleted in Tool Table."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4025
+msgid ""
+"[WARNING_NOTCL]This Geometry can't be processed because it is %s geometry."
+msgstr ""
+"[WARNING_NOTCL]This Geometry can't be processed because it is %s geometry."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4042
+msgid "[ERROR_NOTCL]Wrong Tool Dia value format entered, use a number."
+msgstr "[ERROR_NOTCL]Wrong Tool Dia value format entered, use a number."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4069
+msgid "[ERROR_NOTCL] Failed. No tool selected in the tool table ..."
+msgstr "[ERROR_NOTCL] Failed. No tool selected in the tool table ..."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4107
+msgid "[ERROR] An internal error has ocurred. See shell.\n"
+msgstr "[ERROR] An internal error has ocurred. See shell.\n"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4108
+msgid "FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s"
+msgstr "FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4263
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4496
+msgid ""
+"[WARNING] Tool Offset is selected in Tool Table but no value is provided.\n"
+"Add a Tool Offset or change the Offset Type."
+msgstr ""
+"[WARNING] Tool Offset is selected in Tool Table but no value is provided.\n"
+"Add a Tool Offset or change the Offset Type."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4377
+msgid "[ERROR_NOTCL]Cancelled. Empty file, it has no geometry..."
+msgstr "[ERROR_NOTCL]Cancelled. Empty file, it has no geometry..."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4739
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4749
+msgid "[ERROR_NOTCL] Scale factor has to be a number: integer or float."
+msgstr "[ERROR_NOTCL] Scale factor has to be a number: integer or float."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4787
+msgid "[success]Geometry Scale done."
+msgstr "[success]Geometry Scale done."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4804
+msgid ""
+"[ERROR_NOTCL]An (x,y) pair of values are needed. Probable you entered only "
+"one value in the Offset field."
+msgstr ""
+"[ERROR_NOTCL]An (x,y) pair of values are needed. Probable you entered only "
+"one value in the Offset field."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:4824
+msgid "[success]Geometry Offset done."
+msgstr "[success]Geometry Offset done."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:5372
+msgid "Export Machine Code ..."
+msgstr "Export Machine Code ..."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:5377
+msgid "[WARNING_NOTCL]Export Machine Code cancelled ..."
+msgstr "[WARNING_NOTCL]Export Machine Code cancelled ..."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:5389
+msgid "[success] Machine Code file saved to: %s"
+msgstr "[success] Machine Code file saved to: %s"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:5401
+msgid "Code Editor"
+msgstr "Code Editor"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:5420
+msgid "[ERROR]FlatCAMCNNJob.on_modifygcode_button_click() -->%s"
+msgstr "[ERROR]FlatCAMCNNJob.on_modifygcode_button_click() -->%s"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:5526
+msgid ""
+"[WARNING_NOTCL]This CNCJob object can't be processed because it is a %s "
+"CNCJob object."
+msgstr ""
+"[WARNING_NOTCL]This CNCJob object can't be processed because it is a %s "
+"CNCJob object."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:5578
+msgid "[ERROR_NOTCL] G-code does not have a units code: either G20 or G21"
+msgstr "[ERROR_NOTCL] G-code does not have a units code: either G20 or G21"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:5591
+msgid ""
+"[ERROR_NOTCL] Cancelled. The Toolchange Custom code is enabled but it's "
+"empty."
+msgstr ""
+"[ERROR_NOTCL] Cancelled. The Toolchange Custom code is enabled but it's "
+"empty."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:5598
+msgid "[success] Toolchange G-code was replaced by a custom code."
+msgstr "[success] Toolchange G-code was replaced by a custom code."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:5613
+msgid "[WARNING_NOTCL] No such file or directory"
+msgstr "[WARNING_NOTCL] No such file or directory"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:5633
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:5645
+msgid ""
+"[WARNING_NOTCL] The used postprocessor file has to have in it's name: "
+"'toolchange_custom'"
+msgstr ""
+"[WARNING_NOTCL] The used postprocessor file has to have in it's name: "
+"'toolchange_custom'"
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:5651
+msgid "[ERROR] There is no postprocessor file."
+msgstr "[ERROR] There is no postprocessor file."

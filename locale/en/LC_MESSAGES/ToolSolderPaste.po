@@ -1,0 +1,507 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2019-03-10 13:14+0200\n"
+"PO-Revision-Date: 2019-03-10 13:26+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 2.2.1\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:26
+msgid "Solder Paste Tool"
+msgstr "Solder Paste Tool"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:54
+msgid "Gerber Solder paste object.                        "
+msgstr "Gerber Solder paste object.                        "
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:59
+msgid "Tools Table"
+msgstr "Tools Table"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:61
+msgid ""
+"Tools pool from which the algorithm\n"
+"will pick the ones used for dispensing solder paste."
+msgstr ""
+"Tools pool from which the algorithm\n"
+"will pick the ones used for dispensing solder paste."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:70
+msgid "Diameter"
+msgstr "Diameter"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:76
+msgid ""
+"This is the Tool Number.\n"
+"The solder dispensing will start with the tool with the biggest \n"
+"diameter, continuing until there are no more Nozzle tools.\n"
+"If there are no longer tools but there are still pads not covered\n"
+" with solder paste, the app will issue a warning message box."
+msgstr ""
+"This is the Tool Number.\n"
+"The solder dispensing will start with the tool with the biggest \n"
+"diameter, continuing until there are no more Nozzle tools.\n"
+"If there are no longer tools but there are still pads not covered\n"
+" with solder paste, the app will issue a warning message box."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:83
+msgid ""
+"Nozzle tool Diameter. It's value (in current FlatCAM units)\n"
+"is the width of the solder paste dispensed."
+msgstr ""
+"Nozzle tool Diameter. It's value (in current FlatCAM units)\n"
+"is the width of the solder paste dispensed."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:90
+msgid "New Nozzle Tool"
+msgstr "New Nozzle Tool"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:92
+msgid "Diameter for the new Nozzle tool to add in the Tool Table"
+msgstr "Diameter for the new Nozzle tool to add in the Tool Table"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:104
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:464
+msgid "Add"
+msgstr "Add"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:106
+msgid ""
+"Add a new nozzle tool to the Tool Table\n"
+"with the diameter specified above."
+msgstr ""
+"Add a new nozzle tool to the Tool Table\n"
+"with the diameter specified above."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:110
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:466
+msgid "Delete"
+msgstr "Delete"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:112
+msgid ""
+"Delete a selection of tools in the Tool Table\n"
+"by first selecting a row(s) in the Tool Table."
+msgstr ""
+"Delete a selection of tools in the Tool Table\n"
+"by first selecting a row(s) in the Tool Table."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:116
+msgid "Generate Geo"
+msgstr "Generate Geo"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:118
+msgid "Generate solder paste dispensing geometry."
+msgstr "Generate solder paste dispensing geometry."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:131
+msgid "STEP 1"
+msgstr "STEP 1"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:133
+msgid ""
+"First step is to select a number of nozzle tools for usage\n"
+"and then optionally modify the GCode parameters bellow."
+msgstr ""
+"First step is to select a number of nozzle tools for usage\n"
+"and then optionally modify the GCode parameters bellow."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:136
+msgid ""
+"Select tools.\n"
+"Modify parameters."
+msgstr ""
+"Select tools.\n"
+"Modify parameters."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:155
+msgid "Z Dispense Start:"
+msgstr "Z Dispense Start:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:157
+msgid "The height (Z) when solder paste dispensing starts."
+msgstr "The height (Z) when solder paste dispensing starts."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:163
+msgid "Z Dispense:"
+msgstr "Z Dispense:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:165
+msgid "The height (Z) when doing solder paste dispensing."
+msgstr "The height (Z) when doing solder paste dispensing."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:172
+msgid "Z Dispense Stop:"
+msgstr "Z Dispense Stop:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:174
+msgid "The height (Z) when solder paste dispensing stops."
+msgstr "The height (Z) when solder paste dispensing stops."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:180
+msgid "Z Travel:"
+msgstr "Z Travel:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:182
+msgid ""
+"The height (Z) for travel between pads\n"
+"(without dispensing solder paste)."
+msgstr ""
+"The height (Z) for travel between pads\n"
+"(without dispensing solder paste)."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:189
+msgid "Z Toolchange:"
+msgstr "Z Toolchange:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:191
+msgid "The height (Z) for tool (nozzle) change."
+msgstr "The height (Z) for tool (nozzle) change."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:197
+msgid "XY Toolchange:"
+msgstr "XY Toolchange:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:199
+msgid ""
+"The X,Y location for tool (nozzle) change.\n"
+"The format is (x, y) where x and y are real numbers."
+msgstr ""
+"The X,Y location for tool (nozzle) change.\n"
+"The format is (x, y) where x and y are real numbers."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:206
+msgid "Feedrate X-Y:"
+msgstr "Feedrate X-Y:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:208
+msgid "Feedrate (speed) while moving on the X-Y plane."
+msgstr "Feedrate (speed) while moving on the X-Y plane."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:214
+msgid "Feedrate Z:"
+msgstr "Feedrate Z:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:216
+msgid ""
+"Feedrate (speed) while moving vertically\n"
+"(on Z plane)."
+msgstr ""
+"Feedrate (speed) while moving vertically\n"
+"(on Z plane)."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:223
+msgid "Feedrate Z Dispense:"
+msgstr "Feedrate Z Dispense:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:225
+msgid ""
+"Feedrate (speed) while moving up vertically\n"
+" to Dispense position (on Z plane)."
+msgstr ""
+"Feedrate (speed) while moving up vertically\n"
+" to Dispense position (on Z plane)."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:232
+msgid "Spindle Speed FWD:"
+msgstr "Spindle Speed FWD:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:234
+msgid ""
+"The dispenser speed while pushing solder paste\n"
+"through the dispenser nozzle."
+msgstr ""
+"The dispenser speed while pushing solder paste\n"
+"through the dispenser nozzle."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:241
+msgid "Dwell FWD:"
+msgstr "Dwell FWD:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:243
+msgid "Pause after solder dispensing."
+msgstr "Pause after solder dispensing."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:249
+msgid "Spindle Speed REV:"
+msgstr "Spindle Speed REV:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:251
+msgid ""
+"The dispenser speed while retracting solder paste\n"
+"through the dispenser nozzle."
+msgstr ""
+"The dispenser speed while retracting solder paste\n"
+"through the dispenser nozzle."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:258
+msgid "Dwell REV:"
+msgstr "Dwell REV:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:260
+msgid ""
+"Pause after solder paste dispenser retracted,\n"
+"to allow pressure equilibrium."
+msgstr ""
+"Pause after solder paste dispenser retracted,\n"
+"to allow pressure equilibrium."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:266
+msgid "PostProcessors:"
+msgstr "PostProcessors:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:268
+msgid "Files that control the GCode generation."
+msgstr "Files that control the GCode generation."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:279
+msgid "Generate GCode"
+msgstr "Generate GCode"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:281
+msgid ""
+"Generate GCode for Solder Paste dispensing\n"
+"on PCB pads."
+msgstr ""
+"Generate GCode for Solder Paste dispensing\n"
+"on PCB pads."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:297
+msgid "STEP 2:"
+msgstr "STEP 2:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:299
+msgid ""
+"Second step is to create a solder paste dispensing\n"
+"geometry out of an Solder Paste Mask Gerber file."
+msgstr ""
+"Second step is to create a solder paste dispensing\n"
+"geometry out of an Solder Paste Mask Gerber file."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:315
+msgid "Geo Result:"
+msgstr "Geo Result:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:317
+msgid ""
+"Geometry Solder Paste object.\n"
+"The name of the object has to end in:\n"
+"'_solderpaste' as a protection."
+msgstr ""
+"Geometry Solder Paste object.\n"
+"The name of the object has to end in:\n"
+"'_solderpaste' as a protection."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:326
+msgid "STEP 3:"
+msgstr "STEP 3:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:328
+msgid ""
+"Third step is to select a solder paste dispensing geometry,\n"
+"and then generate a CNCJob object.\n"
+"\n"
+"REMEMBER: if you want to create a CNCJob with new parameters,\n"
+"first you need to generate a geometry with those new params,\n"
+"and only after that you can generate an updated CNCJob."
+msgstr ""
+"Third step is to select a solder paste dispensing geometry,\n"
+"and then generate a CNCJob object.\n"
+"\n"
+"REMEMBER: if you want to create a CNCJob with new parameters,\n"
+"first you need to generate a geometry with those new params,\n"
+"and only after that you can generate an updated CNCJob."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:348
+msgid "CNC Result:"
+msgstr "CNC Result:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:350
+msgid ""
+"CNCJob Solder paste object.\n"
+"In order to enable the GCode save section,\n"
+"the name of the object has to end in:\n"
+"'_solderpaste' as a protection."
+msgstr ""
+"CNCJob Solder paste object.\n"
+"In order to enable the GCode save section,\n"
+"the name of the object has to end in:\n"
+"'_solderpaste' as a protection."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:360
+msgid "View GCode"
+msgstr "View GCode"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:362
+msgid ""
+"View the generated GCode for Solder Paste dispensing\n"
+"on PCB pads."
+msgstr ""
+"View the generated GCode for Solder Paste dispensing\n"
+"on PCB pads."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:366
+msgid "Save GCode"
+msgstr "Save GCode"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:368
+msgid ""
+"Save the generated GCode for Solder Paste dispensing\n"
+"on PCB pads, to a file."
+msgstr ""
+"Save the generated GCode for Solder Paste dispensing\n"
+"on PCB pads, to a file."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:372
+msgid "STEP 4:"
+msgstr "STEP 4:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:374
+msgid ""
+"Fourth step (and last) is to select a CNCJob made from \n"
+"a solder paste dispensing geometry, and then view/save it's GCode."
+msgstr ""
+"Fourth step (and last) is to select a CNCJob made from \n"
+"a solder paste dispensing geometry, and then view/save it's GCode."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:402
+msgid "Delete Object"
+msgstr "Delete Object"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:741
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:812
+msgid "[ERROR_NOTCL]Wrong value format entered, use a number."
+msgstr "[ERROR_NOTCL]Wrong value format entered, use a number."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:746
+msgid "[WARNING_NOTCL] Please enter a tool diameter to add, in Float format."
+msgstr ""
+"[WARNING_NOTCL] Please enter a tool diameter to add, in Float format."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:750
+msgid ""
+"[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float "
+"format."
+msgstr ""
+"[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float "
+"format."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:774
+msgid ""
+"[WARNING_NOTCL] Adding Nozzle tool cancelled. Tool already in Tool Table."
+msgstr ""
+"[WARNING_NOTCL] Adding Nozzle tool cancelled. Tool already in Tool Table."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:779
+msgid "[success] New Nozzle tool added to Tool Table."
+msgstr "[success] New Nozzle tool added to Tool Table."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:821
+msgid "[success] Nozzle tool from Tool Table was edited."
+msgstr "[success] Nozzle tool from Tool Table was edited."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:832
+msgid ""
+"[WARNING_NOTCL] Edit cancelled. New diameter value is already in the Tool "
+"Table."
+msgstr ""
+"[WARNING_NOTCL] Edit cancelled. New diameter value is already in the Tool "
+"Table."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:877
+msgid "[WARNING_NOTCL] Delete failed. Select a Nozzle tool to delete."
+msgstr "[WARNING_NOTCL] Delete failed. Select a Nozzle tool to delete."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:882
+msgid "[success] Nozzle tool(s) deleted from Tool Table."
+msgstr "[success] Nozzle tool(s) deleted from Tool Table."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:937
+msgid "[WARNING_NOTCL] No SolderPaste mask Gerber object loaded."
+msgstr "[WARNING_NOTCL] No SolderPaste mask Gerber object loaded."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:954
+msgid "Creating Solder Paste dispensing geometry."
+msgstr "Creating Solder Paste dispensing geometry."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:966
+msgid "[WARNING_NOTCL] No Nozzle tools in the tool table."
+msgstr "[WARNING_NOTCL] No Nozzle tools in the tool table."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:1092
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:1147
+msgid "[ERROR_NOTCL] Cancelled. Empty file, it has no geometry..."
+msgstr "[ERROR_NOTCL] Cancelled. Empty file, it has no geometry..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:1095
+msgid "[success] Solder Paste geometry generated successfully..."
+msgstr "[success] Solder Paste geometry generated successfully..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:1101
+msgid ""
+"[WARNING_NOTCL] Some or all pads have no solder due of inadequate nozzle "
+"diameters..."
+msgstr ""
+"[WARNING_NOTCL] Some or all pads have no solder due of inadequate nozzle "
+"diameters..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:1115
+msgid "Generating Solder Paste dispensing geometry..."
+msgstr "Generating Solder Paste dispensing geometry..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:1135
+msgid "[WARNING_NOTCL] There is no Geometry object available."
+msgstr "[WARNING_NOTCL] There is no Geometry object available."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:1139
+msgid ""
+"[WARNING_NOTCL] This Geometry can't be processed. NOT a solder_paste_tool "
+"geometry."
+msgstr ""
+"[WARNING_NOTCL] This Geometry can't be processed. NOT a solder_paste_tool "
+"geometry."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:1244
+msgid "[success] ToolSolderPaste CNCjob created: %s"
+msgstr "[success] ToolSolderPaste CNCjob created: %s"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:1276
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:1280
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:1331
+msgid ""
+"[WARNING_NOTCL] This CNCJob object can't be processed. NOT a "
+"solder_paste_tool CNCJob object."
+msgstr ""
+"[WARNING_NOTCL] This CNCJob object can't be processed. NOT a "
+"solder_paste_tool CNCJob object."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:1303
+msgid "[ERROR_NOTCL] No Gcode in the object..."
+msgstr "[ERROR_NOTCL] No Gcode in the object..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:1312
+msgid "[ERROR] ToolSolderPaste.on_view_gcode() -->%s"
+msgstr "[ERROR] ToolSolderPaste.on_view_gcode() -->%s"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:1349
+msgid "[WARNING_NOTCL] Export Machine Code cancelled ..."
+msgstr "[WARNING_NOTCL] Export Machine Code cancelled ..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:1375
+msgid "[WARNING_NOTCL] No such file or directory"
+msgstr "[WARNING_NOTCL] No such file or directory"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:1379
+msgid "[success] Solder paste dispenser GCode file saved to: %s"
+msgstr "[success] Solder paste dispenser GCode file saved to: %s"

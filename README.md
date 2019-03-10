@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+10.03.2019
+
+- added a fix in the Gerber parser when adding the geometry in the self.apertures dict for the case that the current aperture is None (Allegro does that)
+- finished support for internationalization by adding a set of .po/.mo files for the English language. Unfortunately the final action can be done only when Beta will be out of Beta (no more changes) or when I will decide to stop working on this app.
+- changed the tooltip for 'feedrate_rapids' parameter to point out that this parameter is useful only for the Marlin postprocessor
+
 8.03.2019
 
 - fixed issue when doing th CTRL (or SHIFT) + LMB, the focus is automatically moved to Project Tab

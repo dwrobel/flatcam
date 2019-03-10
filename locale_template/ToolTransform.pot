@@ -1,0 +1,369 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-03-10 13:16+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=cp1252\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:14
+msgid "Object Transform"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:15
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:73
+msgid "Rotate"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:16
+msgid "Skew/Shear"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:17
+msgid "Scale"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:18
+msgid "Mirror (Flip)"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:19
+msgid "Offset"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:59
+msgid "Angle:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:61
+msgid ""
+"Angle for Rotation action, in degrees.\n"
+"Float number between -360 and 359.\n"
+"Positive numbers for CW motion.\n"
+"Negative numbers for CCW motion."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:75
+msgid ""
+"Rotate the selected object(s).\n"
+"The point of reference is the middle of\n"
+"the bounding box for all selected objects."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:98
+msgid "Angle X:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:100
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:118
+msgid ""
+"Angle for Skew action, in degrees.\n"
+"Float number between -360 and 359."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:109
+msgid "Skew X"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:111
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:129
+msgid ""
+"Skew/shear the selected object(s).\n"
+"The point of reference is the middle of\n"
+"the bounding box for all selected objects."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:116
+msgid "Angle Y:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:127
+msgid "Skew Y"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:155
+msgid "Factor X:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:157
+msgid "Factor for Scale action over X axis."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:165
+msgid "Scale X"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:167
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:184
+msgid ""
+"Scale the selected object(s).\n"
+"The point of reference depends on \n"
+"the Scale reference checkbox state."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:172
+msgid "Factor Y:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:174
+msgid "Factor for Scale action over Y axis."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:182
+msgid "Scale Y"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:191
+msgid "Link"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:193
+msgid ""
+"Scale the selected object(s)\n"
+"using the Scale Factor X for both axis."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:199
+msgid "Scale Reference"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:201
+msgid ""
+"Scale the selected object(s)\n"
+"using the origin reference when checked,\n"
+"and the center of the biggest bounding box\n"
+"of the selected objects when unchecked."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:229
+msgid "Value X:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:231
+msgid "Value for Offset action on X axis."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:239
+msgid "Offset X"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:241
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:258
+msgid ""
+"Offset the selected object(s).\n"
+"The point of reference is the middle of\n"
+"the bounding box for all selected objects.\n"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:246
+msgid "Value Y:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:248
+msgid "Value for Offset action on Y axis."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:256
+msgid "Offset Y"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:286
+msgid "Flip on X"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:288
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:296
+msgid ""
+"Flip the selected object(s) over the X axis.\n"
+"Does not create a new object.\n"
+" "
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:294
+msgid "Flip on Y"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:303
+msgid "Ref Pt"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:305
+msgid ""
+"Flip the selected object(s)\n"
+"around the point in Point Entry Field.\n"
+"\n"
+"The point coordinates can be captured by\n"
+"left click on canvas together with pressing\n"
+"SHIFT key. \n"
+"Then click Add button to insert coordinates.\n"
+"Or enter the coords in format (x, y) in the\n"
+"Point Entry field and click Flip on X(Y)"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:316
+msgid "Point:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:318
+msgid ""
+"Coordinates in format (x, y) used as reference for mirroring.\n"
+"The 'x' in (x, y) will be used when using Flip on X and\n"
+"the 'y' in (x, y) will be used when using Flip on Y and"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:328
+msgid "Add"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:330
+msgid ""
+"The point coordinates can be captured by\n"
+"left click on canvas together with pressing\n"
+"SHIFT key. Then click Add button to insert."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:386
+msgid "Transform Tool"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:456
+msgid "[ERROR_NOTCL]Wrong value format entered for Rotate, use a number."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:490
+msgid "[ERROR_NOTCL]Wrong value format entered for Skew X, use a number."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:508
+msgid "[ERROR_NOTCL]Wrong value format entered for Skew Y, use a number."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:526
+msgid "[ERROR_NOTCL]Wrong value format entered for Scale X, use a number."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:560
+msgid "[ERROR_NOTCL]Wrong value format entered for Scale Y, use a number."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:589
+msgid "[ERROR_NOTCL]Wrong value format entered for Offset X, use a number."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:607
+msgid "[ERROR_NOTCL]Wrong value format entered for Offset Y, use a number."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:625
+msgid "[WARNING_NOTCL] No object selected. Please Select an object to rotate!"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:628
+msgid "Appying Rotate"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:653
+msgid "CNCJob objects can't be rotated."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:662
+msgid "[success]Rotate done ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:666
+msgid "[ERROR_NOTCL] Due of %s, rotation movement was not executed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:677
+msgid "[WARNING_NOTCL] No object selected. Please Select an object to flip!"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:680
+msgid "Applying Flip"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:712
+msgid "CNCJob objects can't be mirrored/flipped."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:723
+msgid "[success]Flip on the Y axis done ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:733
+msgid "[success]Flip on the X axis done ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:738
+msgid "[ERROR_NOTCL] Due of %s, Flip action was not executed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:747
+msgid "[WARNING_NOTCL] No object selected. Please Select an object to shear/skew!"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:750
+msgid "Applying Skew"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:769
+msgid "CNCJob objects can't be skewed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:781
+msgid "[success]Skew on the %s axis done ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:785
+msgid "[ERROR_NOTCL] Due of %s, Skew action was not executed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:796
+msgid "[WARNING_NOTCL] No object selected. Please Select an object to scale!"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:799
+msgid "Applying Scale"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:829
+msgid "CNCJob objects can't be scaled."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:837
+msgid "[success] Scale on the %s axis done ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:840
+msgid "[ERROR_NOTCL] Due of %s, Scale action was not executed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:849
+msgid "[WARNING_NOTCL] No object selected. Please Select an object to offset!"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:852
+msgid "Applying Offset"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:870
+msgid "CNCJob objects can't be offseted."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:882
+msgid "[success]Offset on the %s axis done ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:886
+msgid "[ERROR_NOTCL] Due of %s, Offset action was not executed."
+msgstr ""
+

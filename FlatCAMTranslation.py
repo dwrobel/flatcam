@@ -76,7 +76,7 @@ def on_language_apply_click(app, restart=False):
             restart_program(app=app)
 
 
-def apply_language(filename, lang=None):
+def apply_language(domain, lang=None):
     lang_code = ''
 
     if lang is None:
@@ -97,7 +97,7 @@ def apply_language(filename, lang=None):
         return "no language"
     else:
         try:
-            current_lang = gettext.translation(str(filename), localedir=languages_dir(), languages=[lang_code])
+            current_lang = gettext.translation(str(domain), localedir=languages_dir(), languages=[lang_code])
             current_lang.install()
         except Exception as e:
             log.debug("FlatCAMTranslation.apply_language() --> %s" % str(e))

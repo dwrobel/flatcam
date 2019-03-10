@@ -1,0 +1,61 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-03-10 13:08+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=cp1252\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMove.py:15
+msgid "Move"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMove.py:70
+msgid "MOVE: Click on the Start point ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMove.py:77
+msgid "[WARNING_NOTCL] MOVE action cancelled. No object(s) to move."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMove.py:99
+msgid "MOVE: Click on the Destination point ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMove.py:117
+msgid "Moving ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMove.py:124
+msgid "[WARNING_NOTCL] No object(s) selected."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMove.py:147
+msgid "[ERROR_NOTCL] ToolMove.on_left_click() --> %s"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMove.py:153
+msgid "[success]%s object was moved ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMove.py:163
+msgid "[ERROR_NOTCL] ToolMove.on_left_click() --> Error when mouse left click."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMove.py:191
+msgid "[WARNING_NOTCL]Move action cancelled."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMove.py:203
+msgid "[WARNING_NOTCL]Object(s) not selected"
+msgstr ""
+

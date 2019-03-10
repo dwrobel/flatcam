@@ -64,12 +64,6 @@ import FlatCAMTranslation as fcTranslate
 fcTranslate.apply_language('FlatCAMApp')
 
 
-def _tr(text):
-    try:
-        return _(text)
-    except:
-        return text
-
 ########################################
 ##                App                 ##
 ########################################
@@ -857,12 +851,12 @@ class App(QtCore.QObject):
         ret_val = fcTranslate.apply_language('FlatCAMApp')
 
         if ret_val == "no language":
-            self.inform.emit(_tr("[ERROR] Could not find the Language files. The App strings are missing."))
+            self.inform.emit(_("[ERROR] Could not find the Language files. The App strings are missing."))
             log.debug("Could not find the Language files. The App strings are missing.")
         else:
             # make the current language the current selection on the language combobox
             self.ui.general_defaults_form.general_app_group.language_cb.setCurrentText(ret_val)
-            log.debug("App.__init__tr() --> Applied %s language." % str(ret_val).capitalize())
+            log.debug("App.__init__() --> Applied %s language." % str(ret_val).capitalize())
 
 
         ###################################
@@ -1679,7 +1673,7 @@ class App(QtCore.QObject):
                     project_name = str(argument)
 
                     if project_name == "":
-                        self.inform.emit(_tr("Open cancelled."))
+                        self.inform.emit(_("Open cancelled."))
                     else:
                         # self.open_project(project_name)
                         run_from_arg = True
@@ -1693,7 +1687,7 @@ class App(QtCore.QObject):
                     file_name = str(argument)
 
                     if file_name == "":
-                        self.inform.emit(_tr("Open Config file failed."))
+                        self.inform.emit(_("Open Config file failed."))
                     else:
                         # run_from_arg = True
                         # self.worker_task.emit({'fcn': self.open_config_file,
@@ -1874,7 +1868,7 @@ class App(QtCore.QObject):
         if isinstance(edited_object, FlatCAMGeometry):
             # for now, if the Geometry is MultiGeo do not allow the editing
             if edited_object.multigeo is True:
-                self.inform.emit(_tr("[WARNING_NOTCL] Editing a MultiGeo Geometry is not possible for the moment."))
+                self.inform.emit(_("[WARNING_NOTCL] Editing a MultiGeo Geometry is not possible for the moment."))
                 return
 
             # store the Geometry Editor Toolbar visibility before entering in the Editor
@@ -1895,7 +1889,7 @@ class App(QtCore.QObject):
             # set call source to the Editor we go into
             self.call_source = 'exc_editor'
         else:
-            self.inform.emit(_tr("[WARNING_NOTCL]Select a Geometry or Excellon Object to edit."))
+            self.inform.emit(_("[WARNING_NOTCL]Select a Geometry or Excellon Object to edit."))
             return
 
         # make sure that we can't select another object while in Editor Mode:
@@ -1906,7 +1900,7 @@ class App(QtCore.QObject):
 
         self.ui.plot_tab_area.setTabText(0, "EDITOR Area")
         self.ui.plot_tab_area.protectTab(0)
-        self.inform.emit(_tr("[WARNING_NOTCL]Editor is activated ..."))
+        self.inform.emit(_("[WARNING_NOTCL]Editor is activated ..."))
 
         self.should_we_save = True
 
@@ -1941,7 +1935,7 @@ class App(QtCore.QObject):
                     edited_obj.options['xmax'] = xmax
                     edited_obj.options['ymax'] = ymax
                 except AttributeError:
-                    self.inform.emit(_tr("[WARNING] Object empty after edit."))
+                    self.inform.emit(_("[WARNING] Object empty after edit."))
 
             elif isinstance(edited_obj, FlatCAMExcellon):
                 obj_type = "Excellon"
@@ -1950,7 +1944,7 @@ class App(QtCore.QObject):
                 self.exc_editor.deactivate()
 
             else:
-                self.inform.emit(_tr("[WARNING_NOTCL]Select a Geometry or Excellon Object to update."))
+                self.inform.emit(_("[WARNING_NOTCL]Select a Geometry or Excellon Object to update."))
                 return
 
             # if notebook is hidden we show it
@@ -1963,7 +1957,7 @@ class App(QtCore.QObject):
             edited_obj.plot()
             self.ui.plot_tab_area.setTabText(0, "Plot Area")
             self.ui.plot_tab_area.protectTab(0)
-            self.inform.emit(_tr("[selected] %s is updated, returning to App...") % obj_type)
+            self.inform.emit(_("[selected] %s is updated, returning to App...") % obj_type)
 
             # reset the Object UI to original settings
             # edited_obj.set_ui(edited_obj.ui_type())
@@ -2286,7 +2280,7 @@ class App(QtCore.QObject):
             f.close()
         except IOError:
             self.log.error("Could not load defaults file.")
-            self.inform.emit(_tr("[ERROR] Could not load defaults file."))
+            self.inform.emit(_("[ERROR] Could not load defaults file."))
             # in case the defaults file can't be loaded, show all toolbars
             self.defaults["global_toolbar_view"] = 255
             return
@@ -2298,7 +2292,7 @@ class App(QtCore.QObject):
             self.defaults["global_toolbar_view"] = 255
             e = sys.exc_info()[0]
             App.log.error(str(e))
-            self.inform.emit(_tr("[ERROR] Failed to parse defaults file."))
+            self.inform.emit(_("[ERROR] Failed to parse defaults file."))
             return
         self.defaults.update(defaults)
         log.debug("FlatCAM defaults loaded from: %s" % filename)
@@ -2327,7 +2321,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_tr("[WARNING_NOTCL]FlatCAM preferences import cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL]FlatCAM preferences import cancelled."))
         else:
             try:
                 f = open(filename)
@@ -2335,7 +2329,7 @@ class App(QtCore.QObject):
                 f.close()
             except IOError:
                 self.log.error("Could not load defaults file.")
-                self.inform.emit(_tr("[ERROR_NOTCL] Could not load defaults file."))
+                self.inform.emit(_("[ERROR_NOTCL] Could not load defaults file."))
                 return
 
             try:
@@ -2343,10 +2337,10 @@ class App(QtCore.QObject):
             except:
                 e = sys.exc_info()[0]
                 App.log.error(str(e))
-                self.inform.emit(_tr("[ERROR_NOTCL] Failed to parse defaults file."))
+                self.inform.emit(_("[ERROR_NOTCL] Failed to parse defaults file."))
                 return
             self.defaults.update(defaults_from_file)
-            self.inform.emit(_tr("[success]Imported Defaults from %s") %filename)
+            self.inform.emit(_("[success]Imported Defaults from %s") %filename)
 
     def on_export_preferences(self):
 
@@ -2366,7 +2360,7 @@ class App(QtCore.QObject):
         defaults_from_file = {}
 
         if filename == "":
-            self.inform.emit(_tr("[WARNING_NOTCL]FlatCAM preferences export cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL]FlatCAM preferences export cancelled."))
             return
         else:
             try:
@@ -2382,7 +2376,7 @@ class App(QtCore.QObject):
                 e = sys.exc_info()[0]
                 App.log.error("Could not load defaults file.")
                 App.log.error(str(e))
-                self.inform.emit(_tr("[ERROR_NOTCL]Could not load defaults file."))
+                self.inform.emit(_("[ERROR_NOTCL]Could not load defaults file."))
                 return
 
             try:
@@ -2401,7 +2395,7 @@ class App(QtCore.QObject):
                 json.dump(defaults_from_file, f)
                 f.close()
             except:
-                self.inform.emit(_tr("[ERROR_NOTCL] Failed to write defaults to file."))
+                self.inform.emit(_("[ERROR_NOTCL] Failed to write defaults to file."))
                 return
 
         self.file_saved.emit("preferences", filename)
@@ -2453,7 +2447,7 @@ class App(QtCore.QObject):
             f = open(self.data_path + '/recent.json', 'w')
         except IOError:
             App.log.error("Failed to open recent items file for writing.")
-            self.inform.emit(_tr('[ERROR_NOTCL]Failed to open recent files file for writing.'))
+            self.inform.emit(_('[ERROR_NOTCL]Failed to open recent files file for writing.'))
             return
 
         #try:
@@ -2538,8 +2532,8 @@ class App(QtCore.QObject):
         try:
             return_value = initialize(obj, self)
         except Exception as e:
-            msg = _tr("[ERROR_NOTCL] An internal error has ocurred. See shell.\n")
-            msg += _tr("Object (%s) failed because: %s \n\n") % (kind, str(e))
+            msg = _("[ERROR_NOTCL] An internal error has ocurred. See shell.\n")
+            msg += _("Object (%s) failed because: %s \n\n") % (kind, str(e))
             msg += traceback.format_exc()
             self.inform.emit(msg)
 
@@ -2559,7 +2553,7 @@ class App(QtCore.QObject):
         # Check units and convert if necessary
         # This condition CAN be true because initialize() can change obj.units
         if self.options["units"].upper() != obj.units.upper():
-            self.inform.emit(_tr("Converting units to ") + self.options["units"] + ".")
+            self.inform.emit(_("Converting units to ") + self.options["units"] + ".")
             obj.convert_units(self.options["units"])
             t3 = time.time()
             self.log.debug("%f seconds converting units." % (t3 - t2))
@@ -2617,16 +2611,16 @@ class App(QtCore.QObject):
         # self.inform.emit('[selected] %s created & selected: %s' %
         #                  (str(obj.kind).capitalize(), str(obj.options['name'])))
         if obj.kind == 'gerber':
-            self.inform.emit('_tr([selected]%s created/selected: <span style="color:%s;">%s</span>' %
+            self.inform.emit('_([selected]%s created/selected: <span style="color:%s;">%s</span>' %
                              (obj.kind.capitalize(), 'green', str(obj.options['name'])))
         elif obj.kind == 'excellon':
-            self.inform.emit(_tr('[selected]%s created/selected: <span style="color:%s;">%s</span>') %
+            self.inform.emit(_('[selected]%s created/selected: <span style="color:%s;">%s</span>') %
                              (obj.kind.capitalize(), 'brown', str(obj.options['name'])))
         elif obj.kind == 'cncjob':
-            self.inform.emit(_tr('[selected]%s created/selected: <span style="color:%s;">%s</span>') %
+            self.inform.emit(_('[selected]%s created/selected: <span style="color:%s;">%s</span>') %
                              (obj.kind.capitalize(), 'blue', str(obj.options['name'])))
         elif obj.kind == 'geometry':
-            self.inform.emit(_tr('[selected]%s created/selected: <span style="color:%s;">%s</span>') %
+            self.inform.emit(_('[selected]%s created/selected: <span style="color:%s;">%s</span>') %
                              (obj.kind.capitalize(), 'red', str(obj.options['name'])))
 
         # update the SHELL auto-completer model with the name of the new object
@@ -2809,7 +2803,7 @@ class App(QtCore.QObject):
             e = sys.exc_info()[0]
             App.log.error("Could not load defaults file.")
             App.log.error(str(e))
-            self.inform.emit(_tr("[ERROR_NOTCL] Could not load defaults file."))
+            self.inform.emit(_("[ERROR_NOTCL] Could not load defaults file."))
             return
 
         try:
@@ -2818,7 +2812,7 @@ class App(QtCore.QObject):
             e = sys.exc_info()[0]
             App.log.error("Failed to parse defaults file.")
             App.log.error(str(e))
-            self.inform.emit(_tr("[ERROR_NOTCL] Failed to parse defaults file."))
+            self.inform.emit(_("[ERROR_NOTCL] Failed to parse defaults file."))
             return
 
         # Update options
@@ -2832,7 +2826,7 @@ class App(QtCore.QObject):
             json.dump(defaults, f, default=to_dict, indent=2, sort_keys=True)
             f.close()
         except:
-            self.inform.emit(_tr("[ERROR_NOTCL] Failed to write defaults to file."))
+            self.inform.emit(_("[ERROR_NOTCL] Failed to write defaults to file."))
             return
 
         # Save the toolbar view
@@ -2864,7 +2858,7 @@ class App(QtCore.QObject):
         self.defaults["global_toolbar_view"] = tb_status
 
         if not silent:
-            self.inform.emit(_tr("[success]Defaults saved."))
+            self.inform.emit(_("[success]Defaults saved."))
 
     def save_factory_defaults(self, silent=False):
         """
@@ -2885,7 +2879,7 @@ class App(QtCore.QObject):
             e = sys.exc_info()[0]
             App.log.error("Could not load factory defaults file.")
             App.log.error(str(e))
-            self.inform.emit(_tr("[ERROR_NOTCL] Could not load factory defaults file."))
+            self.inform.emit(_("[ERROR_NOTCL] Could not load factory defaults file."))
             return
 
         try:
@@ -2894,7 +2888,7 @@ class App(QtCore.QObject):
             e = sys.exc_info()[0]
             App.log.error("Failed to parse factory defaults file.")
             App.log.error(str(e))
-            self.inform.emit(_tr("[ERROR_NOTCL] Failed to parse factory defaults file."))
+            self.inform.emit(_("[ERROR_NOTCL] Failed to parse factory defaults file."))
             return
 
         # Update options
@@ -2908,20 +2902,20 @@ class App(QtCore.QObject):
             json.dump(factory_defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
             f_f_def_s.close()
         except:
-            self.inform.emit(_tr("[ERROR_NOTCL] Failed to write factory defaults to file."))
+            self.inform.emit(_("[ERROR_NOTCL] Failed to write factory defaults to file."))
             return
 
         if silent is False:
-            self.inform.emit(_tr("Factory defaults saved."))
+            self.inform.emit(_("Factory defaults saved."))
 
     def final_save(self):
         if self.should_we_save and self.collection.get_list():
             msgbox = QtWidgets.QMessageBox()
             # msgbox.setText("<B>Save changes ...</B>")
-            msgbox.setText(_tr("There are files/objects modified in FlatCAM. "
+            msgbox.setText(_("There are files/objects modified in FlatCAM. "
                            "\n"
                            "Do you want to Save the project?"))
-            msgbox.setWindowTitle(_tr("Save changes"))
+            msgbox.setWindowTitle(_("Save changes"))
             msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
             msgbox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No |
                                       QtWidgets.QMessageBox.Cancel)
@@ -2970,7 +2964,7 @@ class App(QtCore.QObject):
 
         # if len(set(geo_type_list)) == 1 means that all list elements are the same
         if len(set(geo_type_list)) != 1:
-            self.inform.emit(_tr("[ERROR] Failed join. The Geometry objects are of different types.\n"
+            self.inform.emit(_("[ERROR] Failed join. The Geometry objects are of different types.\n"
                              "At least one is MultiGeo type and the other is SingleGeo type. A possibility is to "
                              "convert from one to another and retry joining \n"
                              "but in the case of converting from MultiGeo to SingleGeo, informations may be lost and "
@@ -3011,7 +3005,7 @@ class App(QtCore.QObject):
 
         for obj in objs:
             if not isinstance(obj, FlatCAMExcellon):
-                self.inform.emit(_tr("[ERROR_NOTCL]Failed. Excellon joining works only on Excellon objects."))
+                self.inform.emit(_("[ERROR_NOTCL]Failed. Excellon joining works only on Excellon objects."))
                 return
 
         def initialize(obj, app):
@@ -3033,7 +3027,7 @@ class App(QtCore.QObject):
 
         for obj in objs:
             if not isinstance(obj, FlatCAMGerber):
-                self.inform.emit(_tr("[ERROR_NOTCL]Failed. Gerber joining works only on Gerber objects."))
+                self.inform.emit(_("[ERROR_NOTCL]Failed. Gerber joining works only on Gerber objects."))
                 return
 
         def initialize(obj, app):
@@ -3048,11 +3042,11 @@ class App(QtCore.QObject):
         obj = self.collection.get_active()
 
         if obj is None:
-            self.inform.emit(_tr("[ERROR_NOTCL]Failed. Select a Geometry Object and try again."))
+            self.inform.emit(_("[ERROR_NOTCL]Failed. Select a Geometry Object and try again."))
             return
 
         if not isinstance(obj, FlatCAMGeometry):
-            self.inform.emit(_tr("[ERROR_NOTCL]Expected a FlatCAMGeometry, got %s") % type(obj))
+            self.inform.emit(_("[ERROR_NOTCL]Expected a FlatCAMGeometry, got %s") % type(obj))
             return
 
         obj.multigeo = True
@@ -3065,7 +3059,7 @@ class App(QtCore.QObject):
 
         self.should_we_save = True
 
-        self.inform.emit(_tr("[success] A Geometry object was converted to MultiGeo type."))
+        self.inform.emit(_("[success] A Geometry object was converted to MultiGeo type."))
 
     def on_convert_multigeo_to_singlegeo(self):
         self.report_usage("on_convert_multigeo_to_singlegeo()")
@@ -3073,11 +3067,11 @@ class App(QtCore.QObject):
         obj = self.collection.get_active()
 
         if obj is None:
-            self.inform.emit(_tr("[ERROR_NOTCL]Failed. Select a Geometry Object and try again."))
+            self.inform.emit(_("[ERROR_NOTCL]Failed. Select a Geometry Object and try again."))
             return
 
         if not isinstance(obj, FlatCAMGeometry):
-            self.inform.emit(_tr("[ERROR_NOTCL]Expected a FlatCAMGeometry, got %s") % type(obj))
+            self.inform.emit(_("[ERROR_NOTCL]Expected a FlatCAMGeometry, got %s") % type(obj))
             return
 
         obj.multigeo = False
@@ -3091,7 +3085,7 @@ class App(QtCore.QObject):
 
         self.should_we_save = True
 
-        self.inform.emit(_tr("[success] A Geometry object was converted to SingleGeo type."))
+        self.inform.emit(_("[success] A Geometry object was converted to SingleGeo type."))
 
     def on_options_dict_change(self, field):
         self.options_write_form_field(field)
@@ -3275,7 +3269,7 @@ class App(QtCore.QObject):
                     current.to_form()
 
             self.plot_all()
-            self.inform.emit(_tr("[success]Converted units to %s") % self.defaults["units"])
+            self.inform.emit(_("[success]Converted units to %s") % self.defaults["units"])
             # self.ui.units_label.setText("[" + self.options["units"] + "]")
             self.set_screen_units(self.defaults["units"])
         else:
@@ -3286,7 +3280,7 @@ class App(QtCore.QObject):
             else:
                 self.ui.general_defaults_form.general_app_group.units_radio.set_value('MM')
             self.toggle_units_ignore = False
-            self.inform.emit(_tr("[WARNING_NOTCL]Units conversion cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL]Units conversion cancelled."))
 
         self.options_read_form()
         self.defaults_read_form()
@@ -3910,7 +3904,7 @@ class App(QtCore.QObject):
             filename = str(QtWidgets.QFileDialog.getSaveFileName(caption="Export G-Code ...", filter=_filter_)[0])
 
         if filename == "":
-            self.inform.emit(_tr("[WARNING_NOTCL]Export Code cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL]Export Code cancelled."))
             return
         else:
             try:
@@ -3920,14 +3914,14 @@ class App(QtCore.QObject):
                         f.write(line)
 
             except FileNotFoundError:
-                self.inform.emit(_tr("[WARNING] No such file or directory"))
+                self.inform.emit(_("[WARNING] No such file or directory"))
                 return
 
         # Just for adding it to the recent files list.
         self.file_opened.emit("cncjob", filename)
 
         self.file_saved.emit("cncjob", filename)
-        self.inform.emit(_tr("Saved to: %s") % filename)
+        self.inform.emit(_("Saved to: %s") % filename)
 
     def handleFindGCode(self):
         self.report_usage("handleFindGCode()")
@@ -3990,15 +3984,15 @@ class App(QtCore.QObject):
                     if ok:
                         if float(val) == 0:
                             self.inform.emit(
-                                _tr("[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format."))
+                                _("[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format."))
                             return
                         self.collection.get_active().on_tool_add(dia=float(val))
                     else:
                         self.inform.emit(
-                            _tr("[WARNING_NOTCL] Adding Tool cancelled ..."))
+                            _("[WARNING_NOTCL] Adding Tool cancelled ..."))
                 else:
                     msgbox = QtWidgets.QMessageBox()
-                    msgbox.setText(_tr("Adding Tool works only when Advanced is checked.\n"
+                    msgbox.setText(_("Adding Tool works only when Advanced is checked.\n"
                                    "Go to Preferences -> General - Show Advanced Options."))
                     msgbox.setWindowTitle("Tool adding ...")
                     msgbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
@@ -4022,34 +4016,34 @@ class App(QtCore.QObject):
                 if ok:
                     if float(val) == 0:
                         self.inform.emit(
-                            _tr("[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format."))
+                            _("[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format."))
                         return
                     self.ncclear_tool.on_tool_add(dia=float(val))
                 else:
                     self.inform.emit(
-                        _tr("[WARNING_NOTCL] Adding Tool cancelled ..."))
+                        _("[WARNING_NOTCL] Adding Tool cancelled ..."))
             # and only if the tool is Paint Area Tool
             elif tool_widget == self.paint_tool.toolName:
                 if ok:
                     if float(val) == 0:
                         self.inform.emit(
-                            _tr("[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format."))
+                            _("[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format."))
                         return
                     self.paint_tool.on_tool_add(dia=float(val))
                 else:
                     self.inform.emit(
-                        _tr("[WARNING_NOTCL] Adding Tool cancelled ..."))
+                        _("[WARNING_NOTCL] Adding Tool cancelled ..."))
             # and only if the tool is Solder Paste Dispensing Tool
             elif tool_widget == self.paste_tool.toolName:
                 if ok:
                     if float(val) == 0:
                         self.inform.emit(
-                            _tr("[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format."))
+                            _("[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float format."))
                         return
                     self.paste_tool.on_tool_add(dia=float(val))
                 else:
                     self.inform.emit(
-                        _tr("[WARNING_NOTCL] Adding Tool cancelled ..."))
+                        _("[WARNING_NOTCL] Adding Tool cancelled ..."))
 
 
     # It's meant to delete tools in tool tables via a 'Delete' shortcut key but only if certain conditions are met
@@ -4103,13 +4097,13 @@ class App(QtCore.QObject):
                 while (self.collection.get_active()):
                     self.delete_first_selected()
 
-                self.inform.emit(_tr("Object(s) deleted ..."))
+                self.inform.emit(_("Object(s) deleted ..."))
                 # make sure that the selection shape is deleted, too
                 self.delete_selection_shape()
             else:
-                self.inform.emit(_tr("Failed. No object(s) selected..."))
+                self.inform.emit(_("Failed. No object(s) selected..."))
         else:
-            self.inform.emit(_tr("Save the work in Editor and try again ..."))
+            self.inform.emit(_("Save the work in Editor and try again ..."))
 
     def on_set_origin(self):
         """
@@ -4122,7 +4116,7 @@ class App(QtCore.QObject):
         #and ask him to click on the desired position
         self.report_usage("on_set_origin()")
 
-        self.inform.emit(_tr('Click to set the origin ...'))
+        self.inform.emit(_('Click to set the origin ...'))
 
         self.plotcanvas.vis_connect('mouse_press', self.on_set_zero_click)
 
@@ -4134,15 +4128,15 @@ class App(QtCore.QObject):
         """
         self.report_usage("on_jump_to()")
 
-        dia_box = Dialog_box(title=_tr("Jump to ..."),
-                             label=_tr("Enter the coordinates in format X,Y:"),
+        dia_box = Dialog_box(title=_("Jump to ..."),
+                             label=_("Enter the coordinates in format X,Y:"),
                              icon=QtGui.QIcon('share/jump_to16.png'))
 
         if dia_box.ok is True:
             try:
                 location = eval(dia_box.location)
                 if not isinstance(location, tuple):
-                    self.inform.emit(_tr("Wrong coordinates. Enter coordinates in format: X,Y"))
+                    self.inform.emit(_("Wrong coordinates. Enter coordinates in format: X,Y"))
                     return
             except:
                 return
@@ -4157,7 +4151,7 @@ class App(QtCore.QObject):
         jump_loc = self.plotcanvas.vispy_canvas.translate_coords_2((location[0], location[1]))
 
         cursor.setPos(canvas_origin.x() + jump_loc[0], (canvas_origin.y() + jump_loc[1]))
-        self.inform.emit(_tr("Done."))
+        self.inform.emit(_("Done."))
 
     def on_copy_object(self):
         self.report_usage("on_copy_object()")
@@ -4289,7 +4283,7 @@ class App(QtCore.QObject):
                 obj.options['xmax'] = c
                 obj.options['ymax'] = d
             # self.plot_all(zoom=False)
-            self.inform.emit(_tr('[success] Origin set ...'))
+            self.inform.emit(_('[success] Origin set ...'))
             self.plotcanvas.vis_disconnect('mouse_press', self.on_set_zero_click)
             self.should_we_save = True
 
@@ -4327,7 +4321,7 @@ class App(QtCore.QObject):
         ymaxlist = []
 
         if not obj_list:
-            self.inform.emit(_tr("[WARNING_NOTCL] No object selected to Flip on Y axis."))
+            self.inform.emit(_("[WARNING_NOTCL] No object selected to Flip on Y axis."))
         else:
             try:
                 # first get a bounding box to fit all
@@ -4352,9 +4346,9 @@ class App(QtCore.QObject):
                     obj.mirror('X', [px, py])
                     obj.plot()
                     self.object_changed.emit(obj)
-                self.inform.emit(_tr("[success] Flip on Y axis done."))
+                self.inform.emit(_("[success] Flip on Y axis done."))
             except Exception as e:
-                self.inform.emit(_tr("[ERROR_NOTCL] Due of %s, Flip action was not executed.") % str(e))
+                self.inform.emit(_("[ERROR_NOTCL] Due of %s, Flip action was not executed.") % str(e))
                 return
 
     def on_flipx(self):
@@ -4367,7 +4361,7 @@ class App(QtCore.QObject):
         ymaxlist = []
 
         if not obj_list:
-            self.inform.emit(_tr("[WARNING_NOTCL] No object selected to Flip on X axis."))
+            self.inform.emit(_("[WARNING_NOTCL] No object selected to Flip on X axis."))
         else:
             try:
                 # first get a bounding box to fit all
@@ -4392,9 +4386,9 @@ class App(QtCore.QObject):
                     obj.mirror('Y', [px, py])
                     obj.plot()
                     self.object_changed.emit(obj)
-                self.inform.emit(_tr("[success] Flip on X axis done."))
+                self.inform.emit(_("[success] Flip on X axis done."))
             except Exception as e:
-                self.inform.emit(_tr("[ERROR_NOTCL] Due of %s, Flip action was not executed.") % str(e))
+                self.inform.emit(_("[ERROR_NOTCL] Due of %s, Flip action was not executed.") % str(e))
                 return
 
     def on_rotate(self, silent=False, preset=None):
@@ -4407,10 +4401,10 @@ class App(QtCore.QObject):
         ymaxlist = []
 
         if not obj_list:
-            self.inform.emit(_tr("[WARNING_NOTCL] No object selected to Rotate."))
+            self.inform.emit(_("[WARNING_NOTCL] No object selected to Rotate."))
         else:
             if silent is False:
-                rotatebox = FCInputDialog(title=_tr("Transform"), text=_tr("Enter the Angle value:"),
+                rotatebox = FCInputDialog(title=_("Transform"), text=_("Enter the Angle value:"),
                                           min=-360, max=360, decimals=4,
                                           init_val=float(self.defaults['tools_transform_rotate']))
                 num, ok = rotatebox.get_value()
@@ -4440,9 +4434,9 @@ class App(QtCore.QObject):
                         sel_obj.rotate(-float(num), point=(px, py))
                         sel_obj.plot()
                         self.object_changed.emit(sel_obj)
-                    self.inform.emit(_tr("[success] Rotation done."))
+                    self.inform.emit(_("[success] Rotation done."))
                 except Exception as e:
-                    self.inform.emit(_tr("[ERROR_NOTCL] Due of %s, rotation movement was not executed.") % str(e))
+                    self.inform.emit(_("[ERROR_NOTCL] Due of %s, rotation movement was not executed.") % str(e))
                     return
 
     def on_skewx(self):
@@ -4453,9 +4447,9 @@ class App(QtCore.QObject):
         yminlist = []
 
         if not obj_list:
-            self.inform.emit(_tr("[WARNING_NOTCL] No object selected to Skew/Shear on X axis."))
+            self.inform.emit(_("[WARNING_NOTCL] No object selected to Skew/Shear on X axis."))
         else:
-            skewxbox = FCInputDialog(title=_tr("Transform"), text=_tr("Enter the Angle value:"),
+            skewxbox = FCInputDialog(title=_("Transform"), text=_("Enter the Angle value:"),
                                      min=-360, max=360, decimals=4,
                                      init_val=float(self.defaults['tools_transform_skew_x']))
             num, ok = skewxbox.get_value()
@@ -4474,7 +4468,7 @@ class App(QtCore.QObject):
                     obj.skew(num, 0, point=(xminimal, yminimal))
                     obj.plot()
                     self.object_changed.emit(obj)
-                self.inform.emit(_tr("[success] Skew on X axis done."))
+                self.inform.emit(_("[success] Skew on X axis done."))
 
     def on_skewy(self):
         self.report_usage("on_skewy()")
@@ -4484,9 +4478,9 @@ class App(QtCore.QObject):
         yminlist = []
 
         if not obj_list:
-            self.inform.emit(_tr("[WARNING_NOTCL] No object selected to Skew/Shear on Y axis."))
+            self.inform.emit(_("[WARNING_NOTCL] No object selected to Skew/Shear on Y axis."))
         else:
-            skewybox = FCInputDialog(title=_tr("Transform"), text=_tr("Enter the Angle value:"),
+            skewybox = FCInputDialog(title=_("Transform"), text=_("Enter the Angle value:"),
                                      min=-360, max=360, decimals=4,
                                      init_val=float(self.defaults['tools_transform_skew_y']))
             num, ok = skewybox.get_value()
@@ -4505,7 +4499,7 @@ class App(QtCore.QObject):
                     obj.skew(0, num, point=(xminimal, yminimal))
                     obj.plot()
                     self.object_changed.emit(obj)
-                self.inform.emit(_tr("[success] Skew on Y axis done."))
+                self.inform.emit(_("[success] Skew on Y axis done."))
 
     def delete_first_selected(self):
         # Keep this for later
@@ -4601,19 +4595,19 @@ class App(QtCore.QObject):
         if ok:
             if float(val) == 0:
                 self.inform.emit(
-                    _tr("[WARNING_NOTCL] Please enter a grid value with non-zero value, in Float format."))
+                    _("[WARNING_NOTCL] Please enter a grid value with non-zero value, in Float format."))
                 return
             else:
                 if val not in self.defaults["global_grid_context_menu"][str(units)]:
                     self.defaults["global_grid_context_menu"][str(units)].append(val)
                     self.inform.emit(
-                        _tr("[success] New Grid added ..."))
+                        _("[success] New Grid added ..."))
                 else:
                     self.inform.emit(
-                        _tr("[WARNING_NOTCL] Grid already exists ..."))
+                        _("[WARNING_NOTCL] Grid already exists ..."))
         else:
             self.inform.emit(
-                _tr("[WARNING_NOTCL] Adding New Grid cancelled ..."))
+                _("[WARNING_NOTCL] Adding New Grid cancelled ..."))
 
     def on_grid_delete(self):
         ## Current application units in lower Case
@@ -4628,20 +4622,20 @@ class App(QtCore.QObject):
         if ok:
             if float(val) == 0:
                 self.inform.emit(
-                    _tr("[WARNING_NOTCL] Please enter a grid value with non-zero value, in Float format."))
+                    _("[WARNING_NOTCL] Please enter a grid value with non-zero value, in Float format."))
                 return
             else:
                 try:
                     self.defaults["global_grid_context_menu"][str(units)].remove(val)
                 except ValueError:
                     self.inform.emit(
-                        _tr("[ERROR_NOTCL] Grid Value does not exist ..."))
+                        _("[ERROR_NOTCL] Grid Value does not exist ..."))
                     return
                 self.inform.emit(
-                    _tr("[success] Grid Value deleted ..."))
+                    _("[success] Grid Value deleted ..."))
         else:
             self.inform.emit(
-                _tr("[WARNING_NOTCL] Delete Grid value cancelled ..."))
+                _("[WARNING_NOTCL] Delete Grid value cancelled ..."))
 
     def on_shortcut_list(self):
         self.report_usage("on_shortcut_list()")
@@ -4680,11 +4674,11 @@ class App(QtCore.QObject):
             name = obj.options["name"]
         except AttributeError:
             log.debug("on_copy_name() --> No object selected to copy it's name")
-            self.inform.emit(_tr("[WARNING_NOTCL]No object selected to copy it's name"))
+            self.inform.emit(_("[WARNING_NOTCL]No object selected to copy it's name"))
             return
 
         self.clipboard.setText(name)
-        self.inform.emit(_tr("Name copied on clipboard ..."))
+        self.inform.emit(_("Name copied on clipboard ..."))
 
     def on_mouse_click_over_plot(self, event):
         """
@@ -4979,16 +4973,16 @@ class App(QtCore.QObject):
                         # self.inform.emit('[selected] %s: %s selected' %
                         #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
                         if curr_sel_obj.kind == 'gerber':
-                            self.inform.emit(_tr('[selected]<span style="color:%s;">%s</span> selected') %
+                            self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
                                              ('green', str(curr_sel_obj.options['name'])))
                         elif curr_sel_obj.kind == 'excellon':
-                            self.inform.emit(_tr('[selected]<span style="color:%s;">%s</span> selected') %
+                            self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
                                              ('brown', str(curr_sel_obj.options['name'])))
                         elif curr_sel_obj.kind == 'cncjob':
-                            self.inform.emit(_tr('[selected]<span style="color:%s;">%s</span> selected') %
+                            self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
                                              ('blue', str(curr_sel_obj.options['name'])))
                         elif curr_sel_obj.kind == 'geometry':
-                            self.inform.emit(_tr('[selected]<span style="color:%s;">%s</span> selected') %
+                            self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
                                              ('red', str(curr_sel_obj.options['name'])))
 
                     elif self.collection.get_active().options['name'] not in objects_under_the_click_list:
@@ -5002,16 +4996,16 @@ class App(QtCore.QObject):
                         # self.inform.emit('[selected] %s: %s selected' %
                         #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
                         if curr_sel_obj.kind == 'gerber':
-                            self.inform.emit(_tr('[selected]<span style="color:%s;">%s</span> selected') %
+                            self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
                                              ('green', str(curr_sel_obj.options['name'])))
                         elif curr_sel_obj.kind == 'excellon':
-                            self.inform.emit(_tr('[selected]<span style="color:%s;">%s</span> selected') %
+                            self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
                                              ('brown', str(curr_sel_obj.options['name'])))
                         elif curr_sel_obj.kind == 'cncjob':
-                            self.inform.emit(_tr('[selected]<span style="color:%s;">%s</span> selected') %
+                            self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
                                              ('blue', str(curr_sel_obj.options['name'])))
                         elif curr_sel_obj.kind == 'geometry':
-                            self.inform.emit(_tr('[selected]<span style="color:%s;">%s</span> selected') %
+                            self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
                                              ('red', str(curr_sel_obj.options['name'])))
 
                     else:
@@ -5050,16 +5044,16 @@ class App(QtCore.QObject):
                     # self.inform.emit('[selected] %s: %s selected' %
                     #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
                     if curr_sel_obj.kind == 'gerber':
-                        self.inform.emit(_tr('[selected]<span style="color:%s;">%s</span> selected') %
+                        self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
                                          ('green', str(curr_sel_obj.options['name'])))
                     elif curr_sel_obj.kind == 'excellon':
-                        self.inform.emit(_tr('[selected]<span style="color:%s;">%s</span> selected') %
+                        self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
                                          ('brown', str(curr_sel_obj.options['name'])))
                     elif curr_sel_obj.kind == 'cncjob':
-                        self.inform.emit(_tr('[selected]<span style="color:%s;">%s</span> selected') %
+                        self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
                                          ('blue', str(curr_sel_obj.options['name'])))
                     elif curr_sel_obj.kind == 'geometry':
-                        self.inform.emit(_tr('[selected]<span style="color:%s;">%s</span> selected') %
+                        self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
                                          ('red', str(curr_sel_obj.options['name'])))
 
                     # for obj in self.collection.get_list():
@@ -5176,10 +5170,10 @@ class App(QtCore.QObject):
         if self.collection.get_list() and self.should_we_save:
             msgbox = QtWidgets.QMessageBox()
             # msgbox.setText("<B>Save changes ...</B>")
-            msgbox.setText(_tr("There are files/objects opened in FlatCAM.\n"
+            msgbox.setText(_("There are files/objects opened in FlatCAM.\n"
                            "Creating a New project will delete them.\n"
                            "Do you want to Save the project?"))
-            msgbox.setWindowTitle(_tr("Save changes"))
+            msgbox.setWindowTitle(_("Save changes"))
             msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
             msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Yes |
                                       QtWidgets.QMessageBox.No)
@@ -5194,7 +5188,7 @@ class App(QtCore.QObject):
             self.on_file_new()
         else:
             self.on_file_new()
-        self.inform.emit(_tr("[success] New Project created..."))
+        self.inform.emit(_("[success] New Project created..."))
 
     def on_file_new(self):
         """
@@ -5275,18 +5269,18 @@ class App(QtCore.QObject):
         try:
             obj = self.collection.get_active()
         except:
-            self.inform.emit(_tr("[WARNING_NOTCL] Select an Gerber or Excellon file to view it's source file."))
+            self.inform.emit(_("[WARNING_NOTCL] Select an Gerber or Excellon file to view it's source file."))
             return 'fail'
 
         # then append the text from GCode to the text editor
         try:
             file = StringIO(obj.source_file)
         except AttributeError:
-            self.inform.emit(_tr("[WARNING_NOTCL] There is no selected object for which to see it's source file code."))
+            self.inform.emit(_("[WARNING_NOTCL] There is no selected object for which to see it's source file code."))
             return 'fail'
 
         # add the tab if it was closed
-        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _tr("Code Editor"))
+        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _("Code Editor"))
         # first clear previous text in text editor (if any)
         self.ui.code_editor.clear()
 
@@ -5299,7 +5293,7 @@ class App(QtCore.QObject):
                 self.ui.code_editor.append(proc_line)
         except Exception as e:
             log.debug('App.on_view_source() -->%s' % str(e))
-            self.inform.emit(_tr('[ERROR]App.on_view_source() -->%s') % str(e))
+            self.inform.emit(_('[ERROR]App.on_view_source() -->%s') % str(e))
             return
 
         self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
@@ -5345,7 +5339,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit(_tr("[WARNING_NOTCL]Open Gerber cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL]Open Gerber cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -5374,7 +5368,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit(_tr("[WARNING_NOTCL]Open Excellon cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL]Open Excellon cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -5404,7 +5398,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit(_tr("[WARNING_NOTCL]Open G-Code cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL]Open G-Code cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -5433,7 +5427,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_tr("[WARNING_NOTCL]Open Project cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL]Open Project cancelled."))
         else:
             # self.worker_task.emit({'fcn': self.open_project,
             #                        'params': [filename]})
@@ -5458,7 +5452,7 @@ class App(QtCore.QObject):
             filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Configuration File", filter = _filter_)
 
         if filename == "":
-            self.inform.emit(_tr("[WARNING_NOTCL]Open COnfig cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL]Open COnfig cancelled."))
         else:
             self.open_config_file(filename)
 
@@ -5473,8 +5467,8 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit(_tr("[WARNING_NOTCL] No object selected."))
-            msg = _tr("Please Select a Geometry object to export")
+            self.inform.emit(_("[WARNING_NOTCL] No object selected."))
+            msg = _("Please Select a Geometry object to export")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
             msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
@@ -5485,7 +5479,7 @@ class App(QtCore.QObject):
         # Check for more compatible types and add as required
         if (not isinstance(obj, FlatCAMGeometry) and not isinstance(obj, FlatCAMGerber) and not isinstance(obj, FlatCAMCNCjob)
             and not isinstance(obj, FlatCAMExcellon)):
-            msg = _tr("[ERROR_NOTCL] Only Geometry, Gerber and CNCJob objects can be used.")
+            msg = _("[ERROR_NOTCL] Only Geometry, Gerber and CNCJob objects can be used.")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
             msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
@@ -5507,7 +5501,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_tr("[WARNING_NOTCL]Export SVG cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL]Export SVG cancelled."))
             return
         else:
             self.export_svg(name, filename)
@@ -5521,7 +5515,7 @@ class App(QtCore.QObject):
         image = _screenshot()
         data = np.asarray(image)
         if not data.ndim == 3 and data.shape[-1] in (3, 4):
-            self.inform.emit(_tr('[[WARNING_NOTCL]] Data must be a 3D array with last dimension 3 or 4'))
+            self.inform.emit(_('[[WARNING_NOTCL]] Data must be a 3D array with last dimension 3 or 4'))
             return
 
         filter_ = "PNG File (*.png);;All Files (*.*)"
@@ -5531,12 +5525,12 @@ class App(QtCore.QObject):
                 directory=self.get_last_save_folder() + '/png_' + str(self.date).replace('-', ''),
                 filter=filter_)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_tr("Export PNG Image"), filter=filter_)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export PNG Image"), filter=filter_)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_tr("Export PNG cancelled."))
+            self.inform.emit(_("Export PNG cancelled."))
             return
         else:
             write_png(filename, data)
@@ -5553,12 +5547,12 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit(_tr("[WARNING_NOTCL] No object selected. Please select an Gerber object to export."))
+            self.inform.emit(_("[WARNING_NOTCL] No object selected. Please select an Gerber object to export."))
             return
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMGerber):
-            self.inform.emit(_tr("[ERROR_NOTCL] Failed. Only Gerber objects can be saved as Gerber files..."))
+            self.inform.emit(_("[ERROR_NOTCL] Failed. Only Gerber objects can be saved as Gerber files..."))
             return
 
         name = self.collection.get_active().options["name"]
@@ -5570,12 +5564,12 @@ class App(QtCore.QObject):
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=filter)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_tr("Save Gerber source file"), filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Gerber source file"), filter=filter)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_tr("[WARNING_NOTCL]Save Gerber source file cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL]Save Gerber source file cancelled."))
             return
         else:
             self.save_source_file(name, filename)
@@ -5592,12 +5586,12 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit(_tr("[WARNING_NOTCL] No object selected. Please select an Excellon object to export."))
+            self.inform.emit(_("[WARNING_NOTCL] No object selected. Please select an Excellon object to export."))
             return
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMExcellon):
-            self.inform.emit(_tr("[ERROR_NOTCL] Failed. Only Excellon objects can be saved as Excellon files..."))
+            self.inform.emit(_("[ERROR_NOTCL] Failed. Only Excellon objects can be saved as Excellon files..."))
             return
 
         name = self.collection.get_active().options["name"]
@@ -5609,12 +5603,12 @@ class App(QtCore.QObject):
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=filter)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_tr("Save Excellon source file"), filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Excellon source file"), filter=filter)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_tr("[WARNING_NOTCL]Saving Excellon source file cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL]Saving Excellon source file cancelled."))
             return
         else:
             self.save_source_file(name, filename)
@@ -5631,12 +5625,12 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit(_tr("[WARNING_NOTCL] No object selected. Please Select an Excellon object to export."))
+            self.inform.emit(_("[WARNING_NOTCL] No object selected. Please Select an Excellon object to export."))
             return
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMExcellon):
-            self.inform.emit(_tr("[ERROR_NOTCL] Failed. Only Excellon objects can be saved as Excellon files..."))
+            self.inform.emit(_("[ERROR_NOTCL] Failed. Only Excellon objects can be saved as Excellon files..."))
             return
 
         name = self.collection.get_active().options["name"]
@@ -5648,12 +5642,12 @@ class App(QtCore.QObject):
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=filter)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_tr("Export Excellon"), filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Excellon"), filter=filter)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_tr("[WARNING_NOTCL]Export Excellon cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL]Export Excellon cancelled."))
             return
         else:
             self.export_excellon(name, filename)
@@ -5670,8 +5664,8 @@ class App(QtCore.QObject):
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit(_tr("[WARNING_NOTCL] No object selected."))
-            msg = _tr("Please Select a Geometry object to export")
+            self.inform.emit(_("[WARNING_NOTCL] No object selected."))
+            msg = _("Please Select a Geometry object to export")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
             msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
@@ -5681,7 +5675,7 @@ class App(QtCore.QObject):
 
         # Check for more compatible types and add as required
         if not isinstance(obj, FlatCAMGeometry):
-            msg = _tr("[ERROR_NOTCL] Only Geometry objects can be used.")
+            msg = _("[ERROR_NOTCL] Only Geometry objects can be used.")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
             msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
@@ -5698,12 +5692,12 @@ class App(QtCore.QObject):
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=filter)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_tr("Export DXF"), filter=filter)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export DXF"), filter=filter)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_tr("[WARNING_NOTCL] Export DXF cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Export DXF cancelled."))
             return
         else:
             self.export_dxf(name, filename)
@@ -5732,7 +5726,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit(_tr("[WARNING_NOTCL]Open SVG cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL]Open SVG cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -5751,10 +5745,10 @@ class App(QtCore.QObject):
 
         filter = "DXF File (*.DXF);;All Files (*.*)"
         try:
-            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption=_tr("Import DXF"),
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Import DXF"),
                                                          directory=self.get_last_folder(), filter=filter)
         except TypeError:
-            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption=_tr("Import DXF"), filter=filter)
+            filenames, _ = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Import DXF"), filter=filter)
 
         if type_of_obj is not "geometry" and type_of_obj is not "gerber":
             type_of_obj = "geometry"
@@ -5762,7 +5756,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit(_tr("[WARNING_NOTCL]Open DXF cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL]Open DXF cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -5780,10 +5774,10 @@ class App(QtCore.QObject):
         App.log.debug("on_file_runscript()")
         _filter_ = "TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption=_tr("Open TCL script"),
+            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open TCL script"),
                                                          directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption=_tr("Open TCL script"), filter=_filter_)
+            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open TCL script"), filter=_filter_)
 
         # The Qt methods above will return a QString which can cause problems later.
         # So far json.dump() will fail to serialize it.
@@ -5791,7 +5785,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_tr("[WARNING_NOTCL]Open TCL script cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL]Open TCL script cancelled."))
         else:
             try:
                 with open(filename, "r") as tcl_script:
@@ -5843,12 +5837,12 @@ class App(QtCore.QObject):
                 directory=self.get_last_save_folder() + '/Project_' + self.date.replace('-', ''),
                 filter=filter_)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_tr("Save Project As ..."), filter=filter_)
+            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Project As ..."), filter=filter_)
 
         filename = str(filename)
 
         if filename == '':
-            self.inform.emit(_tr("[WARNING_NOTCL]Save Project cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL]Save Project cancelled."))
             return
 
         try:
@@ -5903,7 +5897,7 @@ class App(QtCore.QObject):
             # TODO: The return behavior has not been established... should raise exception?
             return "Could not retrieve object: %s" % obj_name
 
-        with self.proc_container.new(_tr("Exporting SVG")) as proc:
+        with self.proc_container.new(_("Exporting SVG")) as proc:
             exported_svg = obj.export_svg(scale_factor=scale_factor)
 
             # Determine bounding area for svg export
@@ -5936,7 +5930,7 @@ class App(QtCore.QObject):
                 fp.write(svgcode.toprettyxml())
 
             self.file_saved.emit("SVG", filename)
-            self.inform.emit(_tr("[success] SVG file exported to %s") % filename)
+            self.inform.emit(_("[success] SVG file exported to %s") % filename)
 
     def export_svg_negative(self, obj_name, box_name, filename, boundary, scale_factor=0.00, use_thread=True):
         """
@@ -5967,7 +5961,7 @@ class App(QtCore.QObject):
             return "Could not retrieve object: %s" % box_name
 
         if box is None:
-            self.inform.emit(_tr("[WARNING_NOTCL]No object Box. Using instead %s") % obj)
+            self.inform.emit(_("[WARNING_NOTCL]No object Box. Using instead %s") % obj)
             box = obj
 
         def make_negative_film():
@@ -6041,10 +6035,10 @@ class App(QtCore.QObject):
             self.progress.emit(100)
 
             self.file_saved.emit("SVG", filename)
-            self.inform.emit(_tr("[success] SVG file exported to %s") % filename)
+            self.inform.emit(_("[success] SVG file exported to %s") % filename)
 
         if use_thread is True:
-            proc = self.proc_container.new(_tr("Generating Film ... Please wait."))
+            proc = self.proc_container.new(_("Generating Film ... Please wait."))
 
             def job_thread_film(app_obj):
                 try:
@@ -6087,7 +6081,7 @@ class App(QtCore.QObject):
             return "Could not retrieve object: %s" % box_name
 
         if box is None:
-            self.inform.emit(_tr("[WARNING_NOTCL]No object Box. Using instead %s") % obj)
+            self.inform.emit(_("[WARNING_NOTCL]No object Box. Using instead %s") % obj)
             box = obj
 
         def make_black_film():
@@ -6155,10 +6149,10 @@ class App(QtCore.QObject):
             self.progress.emit(100)
 
             self.file_saved.emit("SVG", filename)
-            self.inform.emit(_tr("[success] SVG file exported to %s") % filename)
+            self.inform.emit(_("[success] SVG file exported to %s") % filename)
 
         if use_thread is True:
-            proc = self.proc_container.new(_tr("Generating Film ... Please wait."))
+            proc = self.proc_container.new(_("Generating Film ... Please wait."))
 
             def job_thread_film(app_obj):
                 try:
@@ -6305,26 +6299,26 @@ class App(QtCore.QObject):
                     fp.write(exported_excellon)
 
                 self.file_saved.emit("Excellon", filename)
-                self.inform.emit(_tr("[success] Excellon file exported to %s") % filename)
+                self.inform.emit(_("[success] Excellon file exported to %s") % filename)
             except Exception as e:
                 log.debug("App.export_excellon.make_excellon() --> %s" % str(e))
                 return 'fail'
 
         if use_thread is True:
 
-            with self.proc_container.new(_tr("Exporting Excellon")) as proc:
+            with self.proc_container.new(_("Exporting Excellon")) as proc:
 
                 def job_thread_exc(app_obj):
                     ret = make_excellon()
                     if ret == 'fail':
-                        self.inform.emit(_tr('[ERROR_NOTCL] Could not export Excellon file.'))
+                        self.inform.emit(_('[ERROR_NOTCL] Could not export Excellon file.'))
                         return
 
                 self.worker_task.emit({'fcn': job_thread_exc, 'params': [self]})
         else:
             ret = make_excellon()
             if ret == 'fail':
-                self.inform.emit(_tr('[ERROR_NOTCL] Could not export Excellon file.'))
+                self.inform.emit(_('[ERROR_NOTCL] Could not export Excellon file.'))
                 return
 
     def export_dxf(self, obj_name, filename, use_thread=True):
@@ -6363,25 +6357,25 @@ class App(QtCore.QObject):
                 dxf_code.saveas(filename)
 
                 self.file_saved.emit("DXF", filename)
-                self.inform.emit(_tr("[success] DXF file exported to %s") % filename)
+                self.inform.emit(_("[success] DXF file exported to %s") % filename)
             except:
                 return 'fail'
 
         if use_thread is True:
 
-            with self.proc_container.new(_tr("Exporting DXF")) as proc:
+            with self.proc_container.new(_("Exporting DXF")) as proc:
 
                 def job_thread_exc(app_obj):
                     ret = make_dxf()
                     if ret == 'fail':
-                        self.inform.emit(_tr('[[WARNING_NOTCL]] Could not export DXF file.'))
+                        self.inform.emit(_('[[WARNING_NOTCL]] Could not export DXF file.'))
                         return
 
                 self.worker_task.emit({'fcn': job_thread_exc, 'params': [self]})
         else:
             ret = make_dxf()
             if ret == 'fail':
-                self.inform.emit(_tr('[[WARNING_NOTCL]] Could not export DXF file.'))
+                self.inform.emit(_('[[WARNING_NOTCL]] Could not export DXF file.'))
                 return
 
     def import_svg(self, filename, geo_type='geometry', outname=None):
@@ -6401,7 +6395,7 @@ class App(QtCore.QObject):
         elif geo_type == "gerber":
             obj_type = geo_type
         else:
-            self.inform.emit(_tr("[ERROR_NOTCL] Not supported type is picked as parameter. "
+            self.inform.emit(_("[ERROR_NOTCL] Not supported type is picked as parameter. "
                              "Only Geometry and Gerber are supported"))
             return
 
@@ -6411,7 +6405,7 @@ class App(QtCore.QObject):
             geo_obj.import_svg(filename, obj_type, units=units)
             geo_obj.multigeo = False
 
-        with self.proc_container.new(_tr("Importing SVG")) as proc:
+        with self.proc_container.new(_("Importing SVG")) as proc:
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
@@ -6422,7 +6416,7 @@ class App(QtCore.QObject):
             self.file_opened.emit("svg", filename)
 
             # GUI feedback
-            self.inform.emit(_tr("[success] Opened: %s") % filename)
+            self.inform.emit(_("[success] Opened: %s") % filename)
             self.progress.emit(100)
 
     def import_dxf(self, filename, geo_type='geometry', outname=None):
@@ -6443,7 +6437,7 @@ class App(QtCore.QObject):
         elif geo_type == "gerber":
             obj_type = geo_type
         else:
-            self.inform.emit(_tr("[ERROR_NOTCL] Not supported type is picked as parameter. "
+            self.inform.emit(_("[ERROR_NOTCL] Not supported type is picked as parameter. "
                              "Only Geometry and Gerber are supported"))
             return
 
@@ -6453,7 +6447,7 @@ class App(QtCore.QObject):
             geo_obj.import_dxf(filename, obj_type, units=units)
             geo_obj.multigeo = False
 
-        with self.proc_container.new(_tr("Importing DXF")) as proc:
+        with self.proc_container.new(_("Importing DXF")) as proc:
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
@@ -6464,7 +6458,7 @@ class App(QtCore.QObject):
             self.file_opened.emit("dxf", filename)
 
             # GUI feedback
-            self.inform.emit(_tr("[success] Opened: %s") % filename)
+            self.inform.emit(_("[success] Opened: %s") % filename)
             self.progress.emit(100)
 
     def import_image(self, filename, type='gerber', dpi=96, mode='black', mask=[250, 250, 250, 250], outname=None):
@@ -6484,7 +6478,7 @@ class App(QtCore.QObject):
         elif type == "gerber":
             obj_type = type
         else:
-            self.inform.emit(_tr("[ERROR_NOTCL] Not supported type is picked as parameter. "
+            self.inform.emit(_("[ERROR_NOTCL] Not supported type is picked as parameter. "
                              "Only Geometry and Gerber are supported"))
             return
 
@@ -6492,7 +6486,7 @@ class App(QtCore.QObject):
             geo_obj.import_image(filename, units=units, dpi=dpi, mode=mode, mask=mask)
             geo_obj.multigeo = False
 
-        with self.proc_container.new(_tr("Importing Image")) as proc:
+        with self.proc_container.new(_("Importing Image")) as proc:
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
@@ -6504,7 +6498,7 @@ class App(QtCore.QObject):
             self.file_opened.emit("image", filename)
 
             # GUI feedback
-            self.inform.emit(_tr("[success] Opened: %s") % filename)
+            self.inform.emit(_("[success] Opened: %s") % filename)
             self.progress.emit(100)
 
     def open_gerber(self, filename, outname=None):
@@ -6533,18 +6527,18 @@ class App(QtCore.QObject):
             try:
                 gerber_obj.parse_file(filename)
             except IOError:
-                app_obj.inform.emit(_tr("[ERROR_NOTCL] Failed to open file: %s") % filename)
+                app_obj.inform.emit(_("[ERROR_NOTCL] Failed to open file: %s") % filename)
                 app_obj.progress.emit(0)
-                self.inform.emit(_tr('[ERROR_NOTCL] Failed to open file: %s') % filename)
+                self.inform.emit(_('[ERROR_NOTCL] Failed to open file: %s') % filename)
                 return "fail"
             except ParseError as err:
-                app_obj.inform.emit(_tr("[ERROR_NOTCL] Failed to parse file: %s. %s") % (filename,  str(err)))
+                app_obj.inform.emit(_("[ERROR_NOTCL] Failed to parse file: %s. %s") % (filename,  str(err)))
                 app_obj.progress.emit(0)
                 self.log.error(str(err))
                 return "fail"
 
             except:
-                msg = _tr("[ERROR] An internal error has ocurred. See shell.\n")
+                msg = _("[ERROR] An internal error has ocurred. See shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
                 return "fail"
@@ -6553,7 +6547,7 @@ class App(QtCore.QObject):
                 # app_obj.inform.emit("[ERROR] No geometry found in file: " + filename)
                 # self.collection.set_active(gerber_obj.options["name"])
                 # self.collection.delete_active()
-                self.inform.emit(_tr("[ERROR_NOTCL] Object is not Gerber file or empty. Aborting object creation."))
+                self.inform.emit(_("[ERROR_NOTCL] Object is not Gerber file or empty. Aborting object creation."))
                 return "fail"
 
             # Further parsing
@@ -6561,7 +6555,7 @@ class App(QtCore.QObject):
 
         App.log.debug("open_gerber()")
 
-        with self.proc_container.new(_tr("Opening Gerber")) as proc:
+        with self.proc_container.new(_("Opening Gerber")) as proc:
 
             self.progress.emit(10)
 
@@ -6571,7 +6565,7 @@ class App(QtCore.QObject):
             ### Object creation ###
             ret = self.new_object("gerber", name, obj_init, autoselected=False)
             if ret == 'fail':
-                self.inform.emit(_tr('[ERROR_NOTCL] Open Gerber failed. Probable not a Gerber file.'))
+                self.inform.emit(_('[ERROR_NOTCL] Open Gerber failed. Probable not a Gerber file.'))
                 return
 
             # Register recent file
@@ -6580,7 +6574,7 @@ class App(QtCore.QObject):
             self.progress.emit(100)
 
             # GUI feedback
-            self.inform.emit(_tr("[success] Opened: %s") % filename)
+            self.inform.emit(_("[success] Opened: %s") % filename)
 
     def open_excellon(self, filename, outname=None):
         """
@@ -6606,15 +6600,15 @@ class App(QtCore.QObject):
                 ret = excellon_obj.parse_file(filename)
                 if ret == "fail":
                     log.debug("Excellon parsing failed.")
-                    self.inform.emit(_tr("[ERROR_NOTCL] This is not Excellon file."))
+                    self.inform.emit(_("[ERROR_NOTCL] This is not Excellon file."))
                     return "fail"
             except IOError:
-                app_obj.inform.emit(_tr("[ERROR_NOTCL] Cannot open file: %s") % filename)
+                app_obj.inform.emit(_("[ERROR_NOTCL] Cannot open file: %s") % filename)
                 log.debug("Could not open Excellon object.")
                 self.progress.emit(0)  # TODO: self and app_bjj mixed
                 return "fail"
             except:
-                msg = _tr("[ERROR_NOTCL] An internal error has occurred. See shell.\n")
+                msg = _("[ERROR_NOTCL] An internal error has occurred. See shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
                 return "fail"
@@ -6630,24 +6624,24 @@ class App(QtCore.QObject):
             for tool in excellon_obj.tools:
                 if excellon_obj.tools[tool]['solid_geometry']:
                     return
-            app_obj.inform.emit(_tr("[ERROR_NOTCL] No geometry found in file: %s") % filename)
+            app_obj.inform.emit(_("[ERROR_NOTCL] No geometry found in file: %s") % filename)
             return "fail"
 
-        with self.proc_container.new(_tr("Opening Excellon.")):
+        with self.proc_container.new(_("Opening Excellon.")):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
             ret = self.new_object("excellon", name, obj_init, autoselected=False)
             if ret == 'fail':
-                self.inform.emit(_tr('[ERROR_NOTCL] Open Excellon file failed. Probable not an Excellon file.'))
+                self.inform.emit(_('[ERROR_NOTCL] Open Excellon file failed. Probable not an Excellon file.'))
                 return
 
                 # Register recent file
             self.file_opened.emit("excellon", filename)
 
             # GUI feedback
-            self.inform.emit(_tr("[success] Opened: %s") % filename)
+            self.inform.emit(_("[success] Opened: %s") % filename)
             # self.progress.emit(100)
 
     def open_gcode(self, filename, outname=None):
@@ -6679,7 +6673,7 @@ class App(QtCore.QObject):
                 gcode = f.read()
                 f.close()
             except IOError:
-                app_obj_.inform.emit(_tr("[ERROR_NOTCL] Failed to open %s") % filename)
+                app_obj_.inform.emit(_("[ERROR_NOTCL] Failed to open %s") % filename)
                 self.progress.emit(0)
                 return "fail"
 
@@ -6689,13 +6683,13 @@ class App(QtCore.QObject):
 
             ret = job_obj.gcode_parse()
             if ret == "fail":
-                self.inform.emit(_tr("[ERROR_NOTCL] This is not GCODE"))
+                self.inform.emit(_("[ERROR_NOTCL] This is not GCODE"))
                 return "fail"
 
             self.progress.emit(60)
             job_obj.create_geometry()
 
-        with self.proc_container.new(_tr("Opening G-Code.")):
+        with self.proc_container.new(_("Opening G-Code.")):
 
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
@@ -6703,7 +6697,7 @@ class App(QtCore.QObject):
             # New object creation and file processing
             ret = self.new_object("cncjob", name, obj_init, autoselected=False)
             if ret == 'fail':
-                self.inform.emit(_tr("[ERROR_NOTCL] Failed to create CNCJob Object. Probable not a GCode file.\n "
+                self.inform.emit(_("[ERROR_NOTCL] Failed to create CNCJob Object. Probable not a GCode file.\n "
                                  "Attempting to create a FlatCAM CNCJob Object from "
                                  "G-Code file failed during processing"))
                 return "fail"
@@ -6712,7 +6706,7 @@ class App(QtCore.QObject):
             self.file_opened.emit("cncjob", filename)
 
             # GUI feedback
-            self.inform.emit(_tr("[success] Opened: %s") % filename)
+            self.inform.emit(_("[success] Opened: %s") % filename)
             self.progress.emit(100)
 
     def open_config_file(self, filename, run_from_arg=None):
@@ -6726,7 +6720,7 @@ class App(QtCore.QObject):
         App.log.debug("Opening config file: " + filename)
 
         # add the tab if it was closed
-        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _tr("Code Editor"))
+        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _("Code Editor"))
         # first clear previous text in text editor (if any)
         self.ui.code_editor.clear()
 
@@ -6743,7 +6737,7 @@ class App(QtCore.QObject):
                     f.close()
         except IOError:
             App.log.error("Failed to open config file: %s" % filename)
-            self.inform.emit(_tr("[ERROR_NOTCL] Failed to open config file: %s") % filename)
+            self.inform.emit(_("[ERROR_NOTCL] Failed to open config file: %s") % filename)
             return
 
     def open_project(self, filename, run_from_arg=None):
@@ -6768,14 +6762,14 @@ class App(QtCore.QObject):
             f = open(filename, 'r')
         except IOError:
             App.log.error("Failed to open project file: %s" % filename)
-            self.inform.emit(_tr("[ERROR_NOTCL] Failed to open project file: %s") % filename)
+            self.inform.emit(_("[ERROR_NOTCL] Failed to open project file: %s") % filename)
             return
 
         try:
             d = json.load(f, object_hook=dict2obj)
         except:
             App.log.error("Failed to parse project file: %s" % filename)
-            self.inform.emit(_tr("[ERROR_NOTCL] Failed to parse project file: %s") % filename)
+            self.inform.emit(_("[ERROR_NOTCL] Failed to parse project file: %s") % filename)
             f.close()
 
             # Open and parse a compressed Project file
@@ -6785,7 +6779,7 @@ class App(QtCore.QObject):
                     d = json.loads(file_content, object_hook=dict2obj)
             except IOError:
                 App.log.error("Failed to open project file: %s" % filename)
-                self.inform.emit(_tr("[ERROR_NOTCL] Failed to open project file: %s") % filename)
+                self.inform.emit(_("[ERROR_NOTCL] Failed to open project file: %s") % filename)
                 return
 
         self.file_opened.emit("project", filename)
@@ -6811,7 +6805,7 @@ class App(QtCore.QObject):
             App.log.debug(obj['kind'] + ":  " + obj['options']['name'])
             self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=True)
         self.plot_all()
-        self.inform.emit(_tr("[success] Project loaded from: %s") % filename)
+        self.inform.emit(_("[success] Project loaded from: %s") % filename)
 
         self.should_we_save = False
 
@@ -6941,9 +6935,9 @@ class App(QtCore.QObject):
 
         def shelp(p=None):
             if not p:
-                return _tr("Available commands:\n") + \
+                return _("Available commands:\n") + \
                        '\n'.join(['  ' + cmd for cmd in sorted(commands)]) + \
-                       _tr("\n\nType help <command_name> for usage.\n Example: help open_gerber")
+                       _("\n\nType help <command_name> for usage.\n Example: help open_gerber")
 
             if p not in commands:
                 return "Unknown command: %s" % p
@@ -7091,7 +7085,7 @@ class App(QtCore.QObject):
         commands = {
             'help': {
                 'fcn': shelp,
-                'help': _tr("Shows list of commands.")
+                'help': _("Shows list of commands.")
             },
         }
 
@@ -7144,14 +7138,14 @@ class App(QtCore.QObject):
             f = open(self.data_path + '/recent.json')
         except IOError:
             App.log.error("Failed to load recent item list.")
-            self.inform.emit(_tr("[ERROR_NOTCL] Failed to load recent item list."))
+            self.inform.emit(_("[ERROR_NOTCL] Failed to load recent item list."))
             return
 
         try:
             self.recent = json.load(f)
         except json.scanner.JSONDecodeError:
             App.log.error("Failed to parse recent item list.")
-            self.inform.emit(_tr("[ERROR_NOTCL] Failed to parse recent item list."))
+            self.inform.emit(_("[ERROR_NOTCL] Failed to parse recent item list."))
             f.close()
             return
         f.close()
@@ -7212,14 +7206,14 @@ class App(QtCore.QObject):
         # label.setAlignment(QtCore.Qt.AlignHCenter | QtCore.Qt.AlignVCenter)
 
         sel_title = QtWidgets.QTextEdit(
-            _tr('<b>Shortcut Key List</b>'))
+            _('<b>Shortcut Key List</b>'))
         sel_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         sel_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
         # font = self.sel_title.font()
         # font.setPointSize(12)
         # self.sel_title.setFont(font)
 
-        selected_text = _tr('''
+        selected_text = _('''
 <p><span style="font-size:14px"><strong>Selected Tab - Choose an Item from Project Tab</strong></span></p>
 
 <p><span style="font-size:10px"><strong>Details</strong>:<br />
@@ -7323,14 +7317,14 @@ The normal flow when working in FlatCAM is the following:</span></p>
         except:
             # App.log.warning("Failed checking for latest version. Could not connect.")
             self.log.warning("Failed checking for latest version. Could not connect.")
-            self.inform.emit(_tr("[WARNING_NOTCL] Failed checking for latest version. Could not connect."))
+            self.inform.emit(_("[WARNING_NOTCL] Failed checking for latest version. Could not connect."))
             return
 
         try:
             data = json.load(f)
         except Exception as e:
             App.log.error("Could not parse information about latest version.")
-            self.inform.emit(_tr("[ERROR_NOTCL] Could not parse information about latest version."))
+            self.inform.emit(_("[ERROR_NOTCL] Could not parse information about latest version."))
             App.log.debug("json.load(): %s" % str(e))
             f.close()
             return
@@ -7340,13 +7334,13 @@ The normal flow when working in FlatCAM is the following:</span></p>
         ### Latest version?
         if self.version >= data["version"]:
             App.log.debug("FlatCAM is up to date!")
-            self.inform.emit(_tr("[success] FlatCAM is up to date!"))
+            self.inform.emit(_("[success] FlatCAM is up to date!"))
             return
 
         App.log.debug("Newer version available.")
         self.message.emit(
-            _tr("Newer Version Available"),
-            _tr("There is a newer version of FlatCAM available for download:<br><br><b>%s</b><br>%s" % (
+            _("Newer Version Available"),
+            _("There is a newer version of FlatCAM available for download:<br><br><b>%s</b><br>%s" % (
                 str(data["name"]), str(data["message"]))
               ),
             "info"
@@ -7368,19 +7362,19 @@ The normal flow when working in FlatCAM is the following:</span></p>
         self.report_usage("disable_all_plots()")
 
         self.disable_plots(self.collection.get_list())
-        self.inform.emit(_tr("[success]All plots disabled."))
+        self.inform.emit(_("[success]All plots disabled."))
 
     def disable_other_plots(self):
         self.report_usage("disable_other_plots()")
 
         self.disable_plots(self.collection.get_non_selected())
-        self.inform.emit(_tr("[success]All non selected plots disabled."))
+        self.inform.emit(_("[success]All non selected plots disabled."))
 
     def enable_all_plots(self):
         self.report_usage("enable_all_plots()")
 
         self.enable_plots(self.collection.get_list())
-        self.inform.emit(_tr("[success]All plots enabled."))
+        self.inform.emit(_("[success]All plots enabled."))
 
     # TODO: FIX THIS
     '''
@@ -7490,7 +7484,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
         """
         self.log.debug("save_project()")
 
-        with self.proc_container.new(_tr("Saving FlatCAM Project")) as proc:
+        with self.proc_container.new(_("Saving FlatCAM Project")) as proc:
             ## Capture the latest changes
             # Current object
             try:
@@ -7511,7 +7505,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
                     g = json.dumps(d, default=to_dict, indent=2, sort_keys=True).encode('utf-8')
                     # # Write
                     f.write(g)
-                self.inform.emit(_tr("[success] Project saved to: %s") % filename)
+                self.inform.emit(_("[success] Project saved to: %s") % filename)
             else:
                 # Open file
                 try:
@@ -7529,22 +7523,22 @@ The normal flow when working in FlatCAM is the following:</span></p>
                 try:
                     saved_f = open(filename, 'r')
                 except IOError:
-                    self.inform.emit(_tr("[ERROR_NOTCL] Failed to verify project file: %s. Retry to save it.") % filename)
+                    self.inform.emit(_("[ERROR_NOTCL] Failed to verify project file: %s. Retry to save it.") % filename)
                     return
 
                 try:
                     saved_d = json.load(saved_f, object_hook=dict2obj)
                 except:
                     self.inform.emit(
-                        _tr("[ERROR_NOTCL] Failed to parse saved project file: %s. Retry to save it.") % filename)
+                        _("[ERROR_NOTCL] Failed to parse saved project file: %s. Retry to save it.") % filename)
                     f.close()
                     return
                 saved_f.close()
 
                 if 'version' in saved_d:
-                    self.inform.emit(_tr("[success] Project saved to: %s") % filename)
+                    self.inform.emit(_("[success] Project saved to: %s") % filename)
                 else:
-                    self.inform.emit(_tr("[ERROR_NOTCL] Failed to save project file: %s. Retry to save it.") % filename)
+                    self.inform.emit(_("[ERROR_NOTCL] Failed to save project file: %s. Retry to save it.") % filename)
 
     def on_options_app2project(self):
         """
@@ -7587,7 +7581,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
         self.options_read_form()
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit(_tr("[WARNING_NOTCL] No object selected."))
+            self.inform.emit(_("[WARNING_NOTCL] No object selected."))
             return
         for option in self.options:
             if option.find(obj.kind + "_") == 0:
@@ -7607,7 +7601,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit(_tr("[WARNING_NOTCL] No object selected."))
+            self.inform.emit(_("[WARNING_NOTCL] No object selected."))
             return
         obj.read_form()
         for option in obj.options:
@@ -7628,7 +7622,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
 
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit(_tr("[WARNING_NOTCL] No object selected."))
+            self.inform.emit(_("[WARNING_NOTCL] No object selected."))
             return
         obj.read_form()
         for option in obj.options:
@@ -7650,7 +7644,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
         self.defaults_read_form()
         obj = self.collection.get_active()
         if obj is None:
-            self.inform.emit(_tr("[WARNING_NOTCL] No object selected."))
+            self.inform.emit(_("[WARNING_NOTCL] No object selected."))
             return
         for option in self.defaults:
             if option.find(obj.kind + "_") == 0:

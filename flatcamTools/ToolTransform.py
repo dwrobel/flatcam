@@ -9,21 +9,14 @@ import FlatCAMTranslation as fcTranslate
 fcTranslate.apply_language('ToolTransform')
 
 
-def _tr(text):
-    try:
-        return _(text)
-    except:
-        return text
-
-
 class ToolTransform(FlatCAMTool):
 
-    toolName = _tr("Object Transform")
-    rotateName = _tr("Rotate")
-    skewName = _tr("Skew/Shear")
-    scaleName = _tr("Scale")
-    flipName = _tr("Mirror (Flip)")
-    offsetName = _tr("Offset")
+    toolName = _("Object Transform")
+    rotateName = _("Rotate")
+    skewName = _("Skew/Shear")
+    scaleName = _("Scale")
+    flipName = _("Mirror (Flip)")
+    offsetName = _("Offset")
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -63,9 +56,9 @@ class ToolTransform(FlatCAMTool):
         self.transform_lay.addLayout(form_layout)
         form_child = QtWidgets.QHBoxLayout()
 
-        self.rotate_label = QtWidgets.QLabel(_tr("Angle:"))
+        self.rotate_label = QtWidgets.QLabel(_("Angle:"))
         self.rotate_label.setToolTip(
-            _tr("Angle for Rotation action, in degrees.\n"
+            _("Angle for Rotation action, in degrees.\n"
             "Float number between -360 and 359.\n"
             "Positive numbers for CW motion.\n"
             "Negative numbers for CCW motion.")
@@ -77,9 +70,9 @@ class ToolTransform(FlatCAMTool):
         self.rotate_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
 
         self.rotate_button = FCButton()
-        self.rotate_button.set_value(_tr("Rotate"))
+        self.rotate_button.set_value(_("Rotate"))
         self.rotate_button.setToolTip(
-            _tr("Rotate the selected object(s).\n"
+            _("Rotate the selected object(s).\n"
             "The point of reference is the middle of\n"
             "the bounding box for all selected objects.")
         )
@@ -102,9 +95,9 @@ class ToolTransform(FlatCAMTool):
         form1_child_1 = QtWidgets.QHBoxLayout()
         form1_child_2 = QtWidgets.QHBoxLayout()
 
-        self.skewx_label = QtWidgets.QLabel(_tr("Angle X:"))
+        self.skewx_label = QtWidgets.QLabel(_("Angle X:"))
         self.skewx_label.setToolTip(
-            _tr("Angle for Skew action, in degrees.\n"
+            _("Angle for Skew action, in degrees.\n"
             "Float number between -360 and 359.")
         )
         self.skewx_label.setFixedWidth(50)
@@ -113,16 +106,16 @@ class ToolTransform(FlatCAMTool):
         # self.skewx_entry.setFixedWidth(60)
 
         self.skewx_button = FCButton()
-        self.skewx_button.set_value(_tr("Skew X"))
+        self.skewx_button.set_value(_("Skew X"))
         self.skewx_button.setToolTip(
-            _tr("Skew/shear the selected object(s).\n"
+            _("Skew/shear the selected object(s).\n"
             "The point of reference is the middle of\n"
             "the bounding box for all selected objects."))
         self.skewx_button.setFixedWidth(60)
 
-        self.skewy_label = QtWidgets.QLabel(_tr("Angle Y:"))
+        self.skewy_label = QtWidgets.QLabel(_("Angle Y:"))
         self.skewy_label.setToolTip(
-            _tr("Angle for Skew action, in degrees.\n"
+            _("Angle for Skew action, in degrees.\n"
             "Float number between -360 and 359.")
         )
         self.skewy_label.setFixedWidth(50)
@@ -131,9 +124,9 @@ class ToolTransform(FlatCAMTool):
         # self.skewy_entry.setFixedWidth(60)
 
         self.skewy_button = FCButton()
-        self.skewy_button.set_value(_tr("Skew Y"))
+        self.skewy_button.set_value(_("Skew Y"))
         self.skewy_button.setToolTip(
-            _tr("Skew/shear the selected object(s).\n"
+            _("Skew/shear the selected object(s).\n"
             "The point of reference is the middle of\n"
             "the bounding box for all selected objects."))
         self.skewy_button.setFixedWidth(60)
@@ -159,9 +152,9 @@ class ToolTransform(FlatCAMTool):
         form2_child_1 = QtWidgets.QHBoxLayout()
         form2_child_2 = QtWidgets.QHBoxLayout()
 
-        self.scalex_label = QtWidgets.QLabel(_tr("Factor X:"))
+        self.scalex_label = QtWidgets.QLabel(_("Factor X:"))
         self.scalex_label.setToolTip(
-            _tr("Factor for Scale action over X axis.")
+            _("Factor for Scale action over X axis.")
         )
         self.scalex_label.setFixedWidth(50)
         self.scalex_entry = FCEntry()
@@ -169,16 +162,16 @@ class ToolTransform(FlatCAMTool):
         # self.scalex_entry.setFixedWidth(60)
 
         self.scalex_button = FCButton()
-        self.scalex_button.set_value(_tr("Scale X"))
+        self.scalex_button.set_value(_("Scale X"))
         self.scalex_button.setToolTip(
-            _tr("Scale the selected object(s).\n"
+            _("Scale the selected object(s).\n"
             "The point of reference depends on \n"
             "the Scale reference checkbox state."))
         self.scalex_button.setFixedWidth(60)
 
-        self.scaley_label = QtWidgets.QLabel(_tr("Factor Y:"))
+        self.scaley_label = QtWidgets.QLabel(_("Factor Y:"))
         self.scaley_label.setToolTip(
-            _tr("Factor for Scale action over Y axis.")
+            _("Factor for Scale action over Y axis.")
         )
         self.scaley_label.setFixedWidth(50)
         self.scaley_entry = FCEntry()
@@ -186,26 +179,26 @@ class ToolTransform(FlatCAMTool):
         # self.scaley_entry.setFixedWidth(60)
 
         self.scaley_button = FCButton()
-        self.scaley_button.set_value(_tr("Scale Y"))
+        self.scaley_button.set_value(_("Scale Y"))
         self.scaley_button.setToolTip(
-            _tr("Scale the selected object(s).\n"
+            _("Scale the selected object(s).\n"
             "The point of reference depends on \n"
             "the Scale reference checkbox state."))
         self.scaley_button.setFixedWidth(60)
 
         self.scale_link_cb = FCCheckBox()
         self.scale_link_cb.set_value(True)
-        self.scale_link_cb.setText(_tr("Link"))
+        self.scale_link_cb.setText(_("Link"))
         self.scale_link_cb.setToolTip(
-            _tr("Scale the selected object(s)\n"
+            _("Scale the selected object(s)\n"
             "using the Scale Factor X for both axis."))
         self.scale_link_cb.setFixedWidth(50)
 
         self.scale_zero_ref_cb = FCCheckBox()
         self.scale_zero_ref_cb.set_value(True)
-        self.scale_zero_ref_cb.setText(_tr("Scale Reference"))
+        self.scale_zero_ref_cb.setText(_("Scale Reference"))
         self.scale_zero_ref_cb.setToolTip(
-            _tr("Scale the selected object(s)\n"
+            _("Scale the selected object(s)\n"
             "using the origin reference when checked,\n"
             "and the center of the biggest bounding box\n"
             "of the selected objects when unchecked."))
@@ -233,9 +226,9 @@ class ToolTransform(FlatCAMTool):
         form3_child_1 = QtWidgets.QHBoxLayout()
         form3_child_2 = QtWidgets.QHBoxLayout()
 
-        self.offx_label = QtWidgets.QLabel(_tr("Value X:"))
+        self.offx_label = QtWidgets.QLabel(_("Value X:"))
         self.offx_label.setToolTip(
-            _tr("Value for Offset action on X axis.")
+            _("Value for Offset action on X axis.")
         )
         self.offx_label.setFixedWidth(50)
         self.offx_entry = FCEntry()
@@ -243,16 +236,16 @@ class ToolTransform(FlatCAMTool):
         # self.offx_entry.setFixedWidth(60)
 
         self.offx_button = FCButton()
-        self.offx_button.set_value(_tr("Offset X"))
+        self.offx_button.set_value(_("Offset X"))
         self.offx_button.setToolTip(
-            _tr("Offset the selected object(s).\n"
+            _("Offset the selected object(s).\n"
             "The point of reference is the middle of\n"
             "the bounding box for all selected objects.\n"))
         self.offx_button.setFixedWidth(60)
 
-        self.offy_label = QtWidgets.QLabel(_tr("Value Y:"))
+        self.offy_label = QtWidgets.QLabel(_("Value Y:"))
         self.offy_label.setToolTip(
-            _tr("Value for Offset action on Y axis.")
+            _("Value for Offset action on Y axis.")
         )
         self.offy_label.setFixedWidth(50)
         self.offy_entry = FCEntry()
@@ -260,9 +253,9 @@ class ToolTransform(FlatCAMTool):
         # self.offy_entry.setFixedWidth(60)
 
         self.offy_button = FCButton()
-        self.offy_button.set_value(_tr("Offset Y"))
+        self.offy_button.set_value(_("Offset Y"))
         self.offy_button.setToolTip(
-            _tr("Offset the selected object(s).\n"
+            _("Offset the selected object(s).\n"
             "The point of reference is the middle of\n"
             "the bounding box for all selected objects.\n"))
         self.offy_button.setFixedWidth(60)
@@ -290,26 +283,26 @@ class ToolTransform(FlatCAMTool):
         form4_child_1 = QtWidgets.QHBoxLayout()
 
         self.flipx_button = FCButton()
-        self.flipx_button.set_value(_tr("Flip on X"))
+        self.flipx_button.set_value(_("Flip on X"))
         self.flipx_button.setToolTip(
-            _tr("Flip the selected object(s) over the X axis.\n"
+            _("Flip the selected object(s) over the X axis.\n"
             "Does not create a new object.\n ")
         )
         self.flipx_button.setFixedWidth(60)
 
         self.flipy_button = FCButton()
-        self.flipy_button.set_value(_tr("Flip on Y"))
+        self.flipy_button.set_value(_("Flip on Y"))
         self.flipy_button.setToolTip(
-            _tr("Flip the selected object(s) over the X axis.\n"
+            _("Flip the selected object(s) over the X axis.\n"
             "Does not create a new object.\n ")
         )
         self.flipy_button.setFixedWidth(60)
 
         self.flip_ref_cb = FCCheckBox()
         self.flip_ref_cb.set_value(True)
-        self.flip_ref_cb.setText(_tr("Ref Pt"))
+        self.flip_ref_cb.setText(_("Ref Pt"))
         self.flip_ref_cb.setToolTip(
-            _tr("Flip the selected object(s)\n"
+            _("Flip the selected object(s)\n"
             "around the point in Point Entry Field.\n"
             "\n"
             "The point coordinates can be captured by\n"
@@ -320,9 +313,9 @@ class ToolTransform(FlatCAMTool):
             "Point Entry field and click Flip on X(Y)"))
         self.flip_ref_cb.setFixedWidth(50)
 
-        self.flip_ref_label = QtWidgets.QLabel(_tr("Point:"))
+        self.flip_ref_label = QtWidgets.QLabel(_("Point:"))
         self.flip_ref_label.setToolTip(
-            _tr("Coordinates in format (x, y) used as reference for mirroring.\n"
+            _("Coordinates in format (x, y) used as reference for mirroring.\n"
             "The 'x' in (x, y) will be used when using Flip on X and\n"
             "the 'y' in (x, y) will be used when using Flip on Y and")
         )
@@ -332,9 +325,9 @@ class ToolTransform(FlatCAMTool):
         # self.flip_ref_entry.setFixedWidth(60)
 
         self.flip_ref_button = FCButton()
-        self.flip_ref_button.set_value(_tr("Add"))
+        self.flip_ref_button.set_value(_("Add"))
         self.flip_ref_button.setToolTip(
-            _tr("The point coordinates can be captured by\n"
+            _("The point coordinates can be captured by\n"
             "left click on canvas together with pressing\n"
             "SHIFT key. Then click Add button to insert."))
         self.flip_ref_button.setFixedWidth(60)
@@ -390,7 +383,7 @@ class ToolTransform(FlatCAMTool):
         FlatCAMTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, _tr("Transform Tool"))
+        self.app.ui.notebook.setTabText(2, _("Transform Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+R', **kwargs)
@@ -460,7 +453,7 @@ class ToolTransform(FlatCAMTool):
             try:
                 value = float(self.rotate_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_tr("[ERROR_NOTCL]Wrong value format entered for Rotate, "
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Rotate, "
                                      "use a number."))
                 return
         self.app.worker_task.emit({'fcn': self.on_rotate_action,
@@ -494,7 +487,7 @@ class ToolTransform(FlatCAMTool):
             try:
                 value = float(self.skewx_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_tr("[ERROR_NOTCL]Wrong value format entered for Skew X, "
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Skew X, "
                                      "use a number."))
                 return
 
@@ -512,7 +505,7 @@ class ToolTransform(FlatCAMTool):
             try:
                 value = float(self.skewy_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_tr("[ERROR_NOTCL]Wrong value format entered for Skew Y, "
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Skew Y, "
                                      "use a number."))
                 return
 
@@ -530,7 +523,7 @@ class ToolTransform(FlatCAMTool):
             try:
                 xvalue = float(self.scalex_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_tr("[ERROR_NOTCL]Wrong value format entered for Scale X, "
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Scale X, "
                                      "use a number."))
                 return
 
@@ -564,7 +557,7 @@ class ToolTransform(FlatCAMTool):
             try:
                 yvalue = float(self.scaley_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_tr("[ERROR_NOTCL]Wrong value format entered for Scale Y, "
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Scale Y, "
                                      "use a number."))
                 return
 
@@ -593,7 +586,7 @@ class ToolTransform(FlatCAMTool):
             try:
                 value = float(self.offx_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_tr("[ERROR_NOTCL]Wrong value format entered for Offset X, "
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Offset X, "
                                      "use a number."))
                 return
 
@@ -611,7 +604,7 @@ class ToolTransform(FlatCAMTool):
             try:
                 value = float(self.offy_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_tr("[ERROR_NOTCL]Wrong value format entered for Offset Y, "
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Offset Y, "
                                      "use a number."))
                 return
 
@@ -629,10 +622,10 @@ class ToolTransform(FlatCAMTool):
         ymaxlist = []
 
         if not obj_list:
-            self.app.inform.emit(_tr("[WARNING_NOTCL] No object selected. Please Select an object to rotate!"))
+            self.app.inform.emit(_("[WARNING_NOTCL] No object selected. Please Select an object to rotate!"))
             return
         else:
-            with self.app.proc_container.new(_tr("Appying Rotate")):
+            with self.app.proc_container.new(_("Appying Rotate")):
                 try:
                     # first get a bounding box to fit all
                     for obj in obj_list:
@@ -657,7 +650,7 @@ class ToolTransform(FlatCAMTool):
                         px = 0.5 * (xminimal + xmaximal)
                         py = 0.5 * (yminimal + ymaximal)
                         if isinstance(sel_obj, FlatCAMCNCjob):
-                            self.app.inform.emit(_tr("CNCJob objects can't be rotated."))
+                            self.app.inform.emit(_("CNCJob objects can't be rotated."))
                         else:
                             sel_obj.rotate(-num, point=(px, py))
                             sel_obj.plot()
@@ -666,11 +659,11 @@ class ToolTransform(FlatCAMTool):
                         # add information to the object that it was changed and how much
                         sel_obj.options['rotate'] = num
 
-                    self.app.inform.emit(_tr('[success]Rotate done ...'))
+                    self.app.inform.emit(_('[success]Rotate done ...'))
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit(_tr("[ERROR_NOTCL] Due of %s, rotation movement was not executed.") % str(e))
+                    self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, rotation movement was not executed.") % str(e))
                     return
 
     def on_flip(self, axis):
@@ -681,10 +674,10 @@ class ToolTransform(FlatCAMTool):
         ymaxlist = []
 
         if not obj_list:
-            self.app.inform.emit(_tr("[WARNING_NOTCL] No object selected. Please Select an object to flip!"))
+            self.app.inform.emit(_("[WARNING_NOTCL] No object selected. Please Select an object to flip!"))
             return
         else:
-            with self.app.proc_container.new(_tr("Applying Flip")):
+            with self.app.proc_container.new(_("Applying Flip")):
                 try:
                     # get mirroring coords from the point entry
                     if self.flip_ref_cb.isChecked():
@@ -716,7 +709,7 @@ class ToolTransform(FlatCAMTool):
                     # execute mirroring
                     for obj in obj_list:
                         if isinstance(obj, FlatCAMCNCjob):
-                            self.app.inform.emit(_tr("CNCJob objects can't be mirrored/flipped."))
+                            self.app.inform.emit(_("CNCJob objects can't be mirrored/flipped."))
                         else:
                             if axis is 'X':
                                 obj.mirror('X', (px, py))
@@ -727,7 +720,7 @@ class ToolTransform(FlatCAMTool):
                                 else:
                                     obj.options['mirror_y'] = True
                                 obj.plot()
-                                self.app.inform.emit(_tr('[success]Flip on the Y axis done ...'))
+                                self.app.inform.emit(_('[success]Flip on the Y axis done ...'))
                             elif axis is 'Y':
                                 obj.mirror('Y', (px, py))
                                 # add information to the object that it was changed and how much
@@ -737,12 +730,12 @@ class ToolTransform(FlatCAMTool):
                                 else:
                                     obj.options['mirror_x'] = True
                                 obj.plot()
-                                self.app.inform.emit(_tr('[success]Flip on the X axis done ...'))
+                                self.app.inform.emit(_('[success]Flip on the X axis done ...'))
                             self.app.object_changed.emit(obj)
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit(_tr("[ERROR_NOTCL] Due of %s, Flip action was not executed.") % str(e))
+                    self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, Flip action was not executed.") % str(e))
                     return
 
     def on_skew(self, axis, num):
@@ -751,10 +744,10 @@ class ToolTransform(FlatCAMTool):
         yminlist = []
 
         if not obj_list:
-            self.app.inform.emit(_tr("[WARNING_NOTCL] No object selected. Please Select an object to shear/skew!"))
+            self.app.inform.emit(_("[WARNING_NOTCL] No object selected. Please Select an object to shear/skew!"))
             return
         else:
-            with self.app.proc_container.new(_tr("Applying Skew")):
+            with self.app.proc_container.new(_("Applying Skew")):
                 try:
                     # first get a bounding box to fit all
                     for obj in obj_list:
@@ -773,7 +766,7 @@ class ToolTransform(FlatCAMTool):
 
                     for obj in obj_list:
                         if isinstance(obj, FlatCAMCNCjob):
-                            self.app.inform.emit(_tr("CNCJob objects can't be skewed."))
+                            self.app.inform.emit(_("CNCJob objects can't be skewed."))
                         else:
                             if axis is 'X':
                                 obj.skew(num, 0, point=(xminimal, yminimal))
@@ -785,11 +778,11 @@ class ToolTransform(FlatCAMTool):
                                 obj.options['skew_y'] = num
                             obj.plot()
                             self.app.object_changed.emit(obj)
-                    self.app.inform.emit(_tr('[success]Skew on the %s axis done ...') % str(axis))
+                    self.app.inform.emit(_('[success]Skew on the %s axis done ...') % str(axis))
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit(_tr("[ERROR_NOTCL] Due of %s, Skew action was not executed.") % str(e))
+                    self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, Skew action was not executed.") % str(e))
                     return
 
     def on_scale(self, axis, xfactor, yfactor, point=None):
@@ -800,10 +793,10 @@ class ToolTransform(FlatCAMTool):
         ymaxlist = []
 
         if not obj_list:
-            self.app.inform.emit(_tr("[WARNING_NOTCL] No object selected. Please Select an object to scale!"))
+            self.app.inform.emit(_("[WARNING_NOTCL] No object selected. Please Select an object to scale!"))
             return
         else:
-            with self.app.proc_container.new(_tr("Applying Scale")):
+            with self.app.proc_container.new(_("Applying Scale")):
                 try:
                     # first get a bounding box to fit all
                     for obj in obj_list:
@@ -833,7 +826,7 @@ class ToolTransform(FlatCAMTool):
 
                     for obj in obj_list:
                         if isinstance(obj, FlatCAMCNCjob):
-                            self.app.inform.emit(_tr("CNCJob objects can't be scaled."))
+                            self.app.inform.emit(_("CNCJob objects can't be scaled."))
                         else:
                             obj.scale(xfactor, yfactor, point=(px, py))
                             # add information to the object that it was changed and how much
@@ -841,10 +834,10 @@ class ToolTransform(FlatCAMTool):
                             obj.options['scale_y'] = yfactor
                             obj.plot()
                             self.app.object_changed.emit(obj)
-                    self.app.inform.emit(_tr('[success] Scale on the %s axis done ...') % str(axis))
+                    self.app.inform.emit(_('[success] Scale on the %s axis done ...') % str(axis))
                     self.app.progress.emit(100)
                 except Exception as e:
-                    self.app.inform.emit(_tr("[ERROR_NOTCL] Due of %s, Scale action was not executed.") % str(e))
+                    self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, Scale action was not executed.") % str(e))
                     return
 
     def on_offset(self, axis, num):
@@ -853,10 +846,10 @@ class ToolTransform(FlatCAMTool):
         yminlist = []
 
         if not obj_list:
-            self.app.inform.emit(_tr("[WARNING_NOTCL] No object selected. Please Select an object to offset!"))
+            self.app.inform.emit(_("[WARNING_NOTCL] No object selected. Please Select an object to offset!"))
             return
         else:
-            with self.app.proc_container.new(_tr("Applying Offset")):
+            with self.app.proc_container.new(_("Applying Offset")):
                 try:
                     # first get a bounding box to fit all
                     for obj in obj_list:
@@ -874,7 +867,7 @@ class ToolTransform(FlatCAMTool):
 
                     for obj in obj_list:
                         if isinstance(obj, FlatCAMCNCjob):
-                            self.app.inform.emit(_tr("CNCJob objects can't be offseted."))
+                            self.app.inform.emit(_("CNCJob objects can't be offseted."))
                         else:
                             if axis is 'X':
                                 obj.offset((num, 0))
@@ -886,11 +879,11 @@ class ToolTransform(FlatCAMTool):
                                 obj.options['offset_y'] = num
                             obj.plot()
                             self.app.object_changed.emit(obj)
-                    self.app.inform.emit(_tr('[success]Offset on the %s axis done ...') % str(axis))
+                    self.app.inform.emit(_('[success]Offset on the %s axis done ...') % str(axis))
                     self.app.progress.emit(100)
 
                 except Exception as e:
-                    self.app.inform.emit(_tr("[ERROR_NOTCL] Due of %s, Offset action was not executed.") % str(e))
+                    self.app.inform.emit(_("[ERROR_NOTCL] Due of %s, Offset action was not executed.") % str(e))
                     return
 
 # end of file

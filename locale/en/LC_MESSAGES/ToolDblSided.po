@@ -1,0 +1,298 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2019-03-10 13:05+0200\n"
+"PO-Revision-Date: 2019-03-10 13:23+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 2.2.1\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:16
+msgid "2-Sided PCB"
+msgstr "2-Sided PCB"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:50
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:74
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:98
+msgid "Mirror"
+msgstr "Mirror"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:52
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:76
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:100
+msgid ""
+"Mirrors (flips) the specified object around \n"
+"the specified axis. Does not create a new \n"
+"object, but modifies it."
+msgstr ""
+"Mirrors (flips) the specified object around \n"
+"the specified axis. Does not create a new \n"
+"object, but modifies it."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:71
+msgid "Excellon Object to be mirrored."
+msgstr "Excellon Object to be mirrored."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:95
+msgid "Geometry Obj to be mirrored."
+msgstr "Geometry Obj to be mirrored."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:114
+msgid "Mirror Axis:"
+msgstr "Mirror Axis:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:116
+msgid "Mirror vertically (X) or horizontally (Y)."
+msgstr "Mirror vertically (X) or horizontally (Y)."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:127
+msgid "Axis Ref:"
+msgstr "Axis Ref:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:129
+msgid ""
+"The axis should pass through a <b>point</b> or cut\n"
+" a specified <b>box</b> (in a FlatCAM object) through \n"
+"the center."
+msgstr ""
+"The axis should pass through a <b>point</b> or cut\n"
+" a specified <b>box</b> (in a FlatCAM object) through \n"
+"the center."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:142
+msgid "Point/Box Reference:"
+msgstr "Point/Box Reference:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:144
+msgid ""
+"If 'Point' is selected above it store the coordinates (x, y) through which\n"
+"the mirroring axis passes.\n"
+"If 'Box' is selected above, select here a FlatCAM object (Gerber, Exc or "
+"Geo).\n"
+"Through the center of this object pass the mirroring axis selected above."
+msgstr ""
+"If 'Point' is selected above it store the coordinates (x, y) through which\n"
+"the mirroring axis passes.\n"
+"If 'Box' is selected above, select here a FlatCAM object (Gerber, Exc or "
+"Geo).\n"
+"Through the center of this object pass the mirroring axis selected above."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:150
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:198
+msgid "Add"
+msgstr "Add"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:152
+msgid ""
+"Add the coordinates in format <b>(x, y)</b> through which the mirroring "
+"axis \n"
+" selected in 'MIRROR AXIS' pass.\n"
+"The (x, y) coordinates are captured by pressing SHIFT key\n"
+"and left mouse button click on canvas or you can enter the coords manually."
+msgstr ""
+"Add the coordinates in format <b>(x, y)</b> through which the mirroring "
+"axis \n"
+" selected in 'MIRROR AXIS' pass.\n"
+"The (x, y) coordinates are captured by pressing SHIFT key\n"
+"and left mouse button click on canvas or you can enter the coords manually."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:172
+msgid "Gerber   Reference Box Object"
+msgstr "Gerber   Reference Box Object"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:173
+msgid "Excellon Reference Box Object"
+msgstr "Excellon Reference Box Object"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:174
+msgid "Geometry Reference Box Object"
+msgstr "Geometry Reference Box Object"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:183
+msgid ">Alignment Drill Coordinates:"
+msgstr ">Alignment Drill Coordinates:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:185
+msgid ""
+"Alignment holes (x1, y1), (x2, y2), ... on one side of the mirror axis. For "
+"each set of (x, y) coordinates\n"
+"entered here, a pair of drills will be created:\n"
+"\n"
+"- one drill at the coordinates from the field\n"
+"- one drill in mirror position over the axis selected above in the 'Mirror "
+"Axis'."
+msgstr ""
+"Alignment holes (x1, y1), (x2, y2), ... on one side of the mirror axis. For "
+"each set of (x, y) coordinates\n"
+"entered here, a pair of drills will be created:\n"
+"\n"
+"- one drill at the coordinates from the field\n"
+"- one drill in mirror position over the axis selected above in the 'Mirror "
+"Axis'."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:200
+msgid ""
+"Add alignment drill holes coords in the format: (x1, y1), (x2, y2), ... \n"
+"on one side of the mirror axis.\n"
+"\n"
+"The coordinates set can be obtained:\n"
+"- press SHIFT key and left mouse clicking on canvas. Then click Add.\n"
+"- press SHIFT key and left mouse clicking on canvas. Then CTRL+V in the "
+"field.\n"
+"- press SHIFT key and left mouse clicking on canvas. Then RMB click in the "
+"field and click Paste.\n"
+"- by entering the coords manually in the format: (x1, y1), (x2, y2), ..."
+msgstr ""
+"Add alignment drill holes coords in the format: (x1, y1), (x2, y2), ... \n"
+"on one side of the mirror axis.\n"
+"\n"
+"The coordinates set can be obtained:\n"
+"- press SHIFT key and left mouse clicking on canvas. Then click Add.\n"
+"- press SHIFT key and left mouse clicking on canvas. Then CTRL+V in the "
+"field.\n"
+"- press SHIFT key and left mouse clicking on canvas. Then RMB click in the "
+"field and click Paste.\n"
+"- by entering the coords manually in the format: (x1, y1), (x2, y2), ..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:214
+msgid "Alignment Drill Diameter"
+msgstr "Alignment Drill Diameter"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:216
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:227
+msgid "Diameter of the drill for the alignment holes."
+msgstr "Diameter of the drill for the alignment holes."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:225
+msgid "Drill diam.:"
+msgstr "Drill diam.:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:234
+msgid "Create Excellon Object"
+msgstr "Create Excellon Object"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:236
+msgid ""
+"Creates an Excellon Object containing the\n"
+"specified alignment holes and their mirror\n"
+"images."
+msgstr ""
+"Creates an Excellon Object containing the\n"
+"specified alignment holes and their mirror\n"
+"images."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:243
+msgid "Reset"
+msgstr "Reset"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:245
+msgid "Resets all the fields."
+msgstr "Resets all the fields."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:287
+msgid "2-Sided Tool"
+msgstr "2-Sided Tool"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:312
+msgid ""
+"[WARNING_NOTCL] 'Point' reference is selected and 'Point' coordinates are "
+"missing. Add them and retry."
+msgstr ""
+"[WARNING_NOTCL] 'Point' reference is selected and 'Point' coordinates are "
+"missing. Add them and retry."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:331
+msgid ""
+"[WARNING_NOTCL] There is no Box reference object loaded. Load one and retry."
+msgstr ""
+"[WARNING_NOTCL] There is no Box reference object loaded. Load one and retry."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:348
+msgid ""
+"[WARNING_NOTCL] Tool diameter value is missing or wrong format. Add it and "
+"retry."
+msgstr ""
+"[WARNING_NOTCL] Tool diameter value is missing or wrong format. Add it and "
+"retry."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:353
+msgid ""
+"[WARNING_NOTCL]No value or wrong format in Drill Dia entry. Add it and retry."
+msgstr ""
+"[WARNING_NOTCL]No value or wrong format in Drill Dia entry. Add it and retry."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:360
+msgid ""
+"[WARNING_NOTCL] There are no Alignment Drill Coordinates to use. Add them "
+"and retry."
+msgstr ""
+"[WARNING_NOTCL] There are no Alignment Drill Coordinates to use. Add them "
+"and retry."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:382
+msgid "[success] Excellon object with alignment drills created..."
+msgstr "[success] Excellon object with alignment drills created..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:391
+msgid "[WARNING_NOTCL] There is no Gerber object loaded ..."
+msgstr "[WARNING_NOTCL] There is no Gerber object loaded ..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:395
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:438
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:482
+msgid ""
+"[ERROR_NOTCL] Only Gerber, Excellon and Geometry objects can be mirrored."
+msgstr ""
+"[ERROR_NOTCL] Only Gerber, Excellon and Geometry objects can be mirrored."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:405
+msgid ""
+"[WARNING_NOTCL] 'Point' coordinates missing. Using Origin (0, 0) as "
+"mirroring reference."
+msgstr ""
+"[WARNING_NOTCL] 'Point' coordinates missing. Using Origin (0, 0) as "
+"mirroring reference."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:415
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:459
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:496
+msgid "[WARNING_NOTCL] There is no Box object loaded ..."
+msgstr "[WARNING_NOTCL] There is no Box object loaded ..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:425
+msgid "[success] Gerber %s was mirrored..."
+msgstr "[success] Gerber %s was mirrored..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:434
+msgid "[WARNING_NOTCL] There is no Excellon object loaded ..."
+msgstr "[WARNING_NOTCL] There is no Excellon object loaded ..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:449
+msgid ""
+"[WARNING_NOTCL] There are no Point coordinates in the Point field. Add "
+"coords and try again ..."
+msgstr ""
+"[WARNING_NOTCL] There are no Point coordinates in the Point field. Add "
+"coords and try again ..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:469
+msgid "[success] Excellon %s was mirrored..."
+msgstr "[success] Excellon %s was mirrored..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:478
+msgid "[WARNING_NOTCL] There is no Geometry object loaded ..."
+msgstr "[WARNING_NOTCL] There is no Geometry object loaded ..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:506
+msgid "[success] Geometry %s was mirrored..."
+msgstr "[success] Geometry %s was mirrored..."

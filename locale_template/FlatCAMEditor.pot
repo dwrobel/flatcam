@@ -1,0 +1,1050 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-03-10 02:10+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=cp1252\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:78
+msgid "Buffer distance:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:79
+msgid "Buffer corner:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:81
+msgid ""
+"There are 3 types of corners:\n"
+" - 'Round': the corner is rounded for exterior buffer.\n"
+" - 'Square:' the corner is met in a sharp angle for exterior buffer.\n"
+" - 'Beveled:' the corner is a line that directly connects the features meeting in the corner"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:87
+msgid "Round"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:88
+msgid "Square"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:89
+msgid "Beveled"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:96
+msgid "Buffer Interior"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:98
+msgid "Buffer Exterior"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:104
+msgid "Full Buffer"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:125
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2625
+msgid "Buffer Tool"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:136
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:153
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:170
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2643
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2669
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2695
+msgid "[WARNING_NOTCL] Buffer distance value is missing or wrong format. Add it and retry."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:418
+msgid "Tool dia:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:420
+msgid ""
+"Diameter of the tool to\n"
+"be used in the operation."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:429
+msgid "Overlap:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:431
+msgid ""
+"How much (fraction) of the tool width to overlap each tool pass.\n"
+"Example:\n"
+"A value here of 0.25 means 25% from the tool diameter found above.\n"
+"\n"
+"Adjust the value starting with lower values\n"
+"and increasing it if areas that should be painted are still \n"
+"not painted.\n"
+"Lower values = faster processing, faster execution on PCB.\n"
+"Higher values = slow processing and slow execution on CNC\n"
+"due of too many paths."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:447
+msgid "Margin:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:449
+msgid ""
+"Distance by which to avoid\n"
+"the edges of the polygon to\n"
+"be painted."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:458
+msgid "Method:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:460
+msgid "Algorithm to paint the polygon:<BR><B>Standard</B>: Fixed step inwards.<BR><B>Seed-based</B>: Outwards from seed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:466
+msgid "Standard"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:467
+msgid "Seed-based"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:468
+msgid "Straight lines"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:473
+msgid "Connect:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:475
+msgid ""
+"Draw lines between resulting\n"
+"segments to minimize tool lifts."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:482
+msgid "Contour:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:484
+msgid ""
+"Cut around the perimeter of the polygon\n"
+"to trim rough edges."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:496
+msgid "Paint"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:514
+msgid "Paint Tool"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:550
+msgid "[WARNING_NOTCL] Paint cancelled. No shape selected."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:561
+msgid "[WARNING_NOTCL] Tool diameter value is missing or wrong format. Add it and retry."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:572
+msgid "[WARNING_NOTCL] Overlap value is missing or wrong format. Add it and retry."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:584
+msgid "[WARNING_NOTCL] Margin distance value is missing or wrong format. Add it and retry."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:593
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2650
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2676
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2702
+msgid "Tools"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:604
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:977
+msgid "Transform Tool"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:605
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:666
+msgid "Rotate"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:606
+msgid "Skew/Shear"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:607
+msgid "Scale"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:608
+msgid "Mirror (Flip)"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:609
+msgid "Offset"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:620
+msgid "Editor %s"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:652
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4853
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4889
+msgid "Angle:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:654
+msgid ""
+"Angle for Rotation action, in degrees.\n"
+"Float number between -360 and 359.\n"
+"Positive numbers for CW motion.\n"
+"Negative numbers for CCW motion."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:668
+msgid ""
+"Rotate the selected shape(s).\n"
+"The point of reference is the middle of\n"
+"the bounding box for all selected shapes."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:691
+msgid "Angle X:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:693
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:711
+msgid ""
+"Angle for Skew action, in degrees.\n"
+"Float number between -360 and 359."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:702
+msgid "Skew X"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:704
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:722
+msgid ""
+"Skew/shear the selected shape(s).\n"
+"The point of reference is the middle of\n"
+"the bounding box for all selected shapes."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:709
+msgid "Angle Y:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:720
+msgid "Skew Y"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:748
+msgid "Factor X:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:750
+msgid "Factor for Scale action over X axis."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:758
+msgid "Scale X"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:760
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:777
+msgid ""
+"Scale the selected shape(s).\n"
+"The point of reference depends on \n"
+"the Scale reference checkbox state."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:765
+msgid "Factor Y:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:767
+msgid "Factor for Scale action over Y axis."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:775
+msgid "Scale Y"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:784
+msgid "Link"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:786
+msgid ""
+"Scale the selected shape(s)\n"
+"using the Scale Factor X for both axis."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:792
+msgid "Scale Reference"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:794
+msgid ""
+"Scale the selected shape(s)\n"
+"using the origin reference when checked,\n"
+"and the center of the biggest bounding box\n"
+"of the selected shapes when unchecked."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:822
+msgid "Value X:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:824
+msgid "Value for Offset action on X axis."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:832
+msgid "Offset X"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:834
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:852
+msgid ""
+"Offset the selected shape(s).\n"
+"The point of reference is the middle of\n"
+"the bounding box for all selected shapes.\n"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:840
+msgid "Value Y:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:842
+msgid "Value for Offset action on Y axis."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:850
+msgid "Offset Y"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:881
+msgid "Flip on X"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:883
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:891
+msgid ""
+"Flip the selected shape(s) over the X axis.\n"
+"Does not create a new shape."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:889
+msgid "Flip on Y"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:898
+msgid "Ref Pt"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:900
+msgid ""
+"Flip the selected shape(s)\n"
+"around the point in Point Entry Field.\n"
+"\n"
+"The point coordinates can be captured by\n"
+"left click on canvas together with pressing\n"
+"SHIFT key. \n"
+"Then click Add button to insert coordinates.\n"
+"Or enter the coords in format (x, y) in the\n"
+"Point Entry field and click Flip on X(Y)"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:912
+msgid "Point:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:914
+msgid ""
+"Coordinates in format (x, y) used as reference for mirroring.\n"
+"The 'x' in (x, y) will be used when using Flip on X and\n"
+"the 'y' in (x, y) will be used when using Flip on Y."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:924
+msgid "Add"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:926
+msgid ""
+"The point coordinates can be captured by\n"
+"left click on canvas together with pressing\n"
+"SHIFT key. Then click Add button to insert."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1041
+msgid "[WARNING_NOTCL] Transformation cancelled. No shape selected."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1062
+msgid "[ERROR_NOTCL]Wrong value format entered for Rotate, use a number."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1099
+msgid "[ERROR_NOTCL]Wrong value format entered for Skew X, use a number."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1120
+msgid "[ERROR_NOTCL]Wrong value format entered for Skew Y, use a number."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1141
+msgid "[ERROR_NOTCL]Wrong value format entered for Scale X, use a number."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1178
+msgid "[ERROR_NOTCL]Wrong value format entered for Scale Y, use a number."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1210
+msgid "[ERROR_NOTCL]Wrong value format entered for Offset X, use a number."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1231
+msgid "[ERROR_NOTCL]Wrong value format entered for Offset Y, use a number."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1249
+msgid "[WARNING_NOTCL] No shape selected. Please Select a shape to rotate!"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1252
+msgid "Appying Rotate"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1280
+msgid "[success] Done. Rotate completed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1285
+msgid "[ERROR_NOTCL] Due of %s, rotation movement was not executed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1296
+msgid "[WARNING_NOTCL] No shape selected. Please Select a shape to flip!"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1299
+msgid "Applying Flip"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1329
+msgid "[success] Flip on the Y axis done ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1332
+msgid "[success] Flip on the X axis done ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1342
+msgid "[ERROR_NOTCL] Due of %s, Flip action was not executed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1351
+msgid "[WARNING_NOTCL] No shape selected. Please Select a shape to shear/skew!"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1354
+msgid "Applying Skew"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1379
+msgid "[success] Skew on the %s axis done ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1383
+msgid "[ERROR_NOTCL] Due of %s, Skew action was not executed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1394
+msgid "[WARNING_NOTCL] No shape selected. Please Select a shape to scale!"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1397
+msgid "Applying Scale"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1430
+msgid "[success] Scale on the %s axis done ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1433
+msgid "[ERROR_NOTCL] Due of %s, Scale action was not executed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1442
+msgid "[WARNING_NOTCL] No shape selected. Please Select a shape to offset!"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1445
+msgid "Applying Offset"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1469
+msgid "[success] Offset on the %s axis done ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1473
+msgid "[ERROR_NOTCL] Due of %s, Offset action was not executed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1477
+msgid "Rotate ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1478
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1535
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1552
+msgid "Enter an Angle Value (degrees):"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1487
+msgid "[success] Geometry shape rotate done..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1492
+msgid "[WARNING_NOTCL] Geometry shape rotate cancelled..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1498
+msgid "Offset on X axis ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1499
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1518
+msgid "Enter a distance Value (%s):"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1508
+msgid "[success] Geometry shape offset on X axis done..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1512
+msgid "[WARNING_NOTCL] Geometry shape offset X cancelled..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1517
+msgid "Offset on Y axis ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1527
+msgid "[success] Geometry shape offset on Y axis done..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1531
+msgid "[WARNING_NOTCL] Geometry shape offset Y cancelled..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1534
+msgid "Skew on X axis ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1544
+msgid "[success] Geometry shape skew on X axis done..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1548
+msgid "[WARNING_NOTCL] Geometry shape skew X cancelled..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1551
+msgid "Skew on Y axis ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1561
+msgid "[success] Geometry shape skew on Y axis done..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1565
+msgid "[WARNING_NOTCL] Geometry shape skew Y cancelled..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1896
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1935
+msgid "Click on CENTER ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1903
+msgid "Click on Circle perimeter point to complete ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1927
+msgid "[success]Done. Adding Circle completed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1954
+msgid "Click on Start arc point ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1958
+msgid "Click on End arc point to complete ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2113
+msgid "[success]Done. Arc completed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2125
+msgid "Click on 1st corner ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2165
+msgid "Click on 1st point ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2172
+msgid "Click on next Point or click Right mouse button to complete ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2195
+msgid "[success]Done. Polygon completed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2214
+msgid "[success]Done. Path completed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2474
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4036
+msgid "[WARNING_NOTCL] Move cancelled. No shape selected."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2478
+msgid "Click on reference point."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2481
+msgid "Click on destination point."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2512
+msgid "[success]Done. Geometry(s) Move completed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2557
+msgid "[success]Done. Geometry(s) Copy completed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2569
+msgid "Click on the Destination point..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2583
+msgid "[ERROR]Font not supported. Only Regular, Bold, Italic and BoldItalic are supported. Error: %s"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2593
+msgid "[success]Done. Adding Text completed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2621
+msgid "Create buffer geometry ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2632
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2658
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2684
+msgid "[WARNING_NOTCL] Buffer cancelled. No shape selected."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2654
+msgid "[success]Done. Buffer Tool completed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2680
+msgid "[success]Done. Buffer Int Tool completed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2706
+msgid "[success]Done. Buffer Ext Tool completed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2739
+msgid "Create Paint geometry ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2753
+msgid "Shape transformations ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2778
+msgid "[WARNING_NOTCL] To add a drill first select a tool"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2787
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2877
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:3150
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:3175
+msgid "Click on target location ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2827
+msgid "[success]Done. Drill added."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2869
+msgid "[WARNING_NOTCL] To add an Drill Array first select a tool in Tool Table"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2894
+msgid "Click on the Drill Circular Array Start position"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2916
+msgid "[ERROR_NOTCL] The value is not Float. Check for comma instead of dot separator."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:2919
+msgid "[ERROR_NOTCL] The value is mistyped. Check the value."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:3012
+msgid "[WARNING_NOTCL]Too many drills for the selected spacing angle."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:3029
+msgid "[success]Done. Drill Array added."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:3040
+msgid "Click on the Drill(s) to resize ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:3060
+msgid "[ERROR_NOTCL]Resize drill(s) failed. Please enter a diameter for resize."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:3132
+msgid "[success]Done. Drill Resize completed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:3152
+msgid "Click on reference location ..."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:3207
+msgid "[success]Done. Drill(s) Move completed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:3260
+msgid "[success]Done. Drill(s) copied."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:3910
+msgid "[success]Done."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4043
+msgid "[WARNING_NOTCL] Copy cancelled. No shape selected."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4050
+msgid "Click on target point."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4291
+msgid "[WARNING_NOTCL]A selection of at least 2 geo items is required to do Intersection."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4329
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4366
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4438
+msgid "[ERROR_NOTCL]Negative buffer value is not accepted. Use Buffer interior to generate an 'inside' shape"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4337
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4375
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4446
+msgid "[WARNING_NOTCL] Nothing selected for buffering."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4341
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4379
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4450
+msgid "[WARNING_NOTCL] Invalid distance for buffering."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4351
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4459
+msgid "[ERROR_NOTCL]Failed, the result is empty. Choose a different buffer value."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4359
+msgid "[success]Full buffer geometry created."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4388
+msgid "[ERROR_NOTCL]Failed, the result is empty. Choose a smaller buffer value."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4400
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4471
+msgid "[success]Exterior buffer geometry created."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4535
+msgid "[WARNING_NOTCL]Nothing selected for painting."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4541
+msgid "[WARNING] Invalid value for {}"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4547
+msgid "[ERROR_NOTCL] Could not do Paint. Overlap value has to be less than 1.00 (100%)."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4606
+msgid ""
+"[ERROR] Could not do Paint. Try a different combination of parameters. Or a different method of Paint\n"
+"%s"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4617
+msgid "[success] Paint done."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4649
+msgid "Excellon Editor"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4656
+msgid "Name:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4676
+msgid "Tools Table"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4678
+msgid ""
+"Tools in this Excellon object\n"
+"when are used for drilling."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4687
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:5747
+msgid "Diameter"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4695
+msgid "Add/Delete Tool"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4697
+msgid ""
+"Add/Delete a tool to the tool list\n"
+"for this Excellon object."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4705
+msgid "Tool Dia:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4707
+msgid "Diameter for the new tool"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4716
+msgid "Add Tool"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4718
+msgid ""
+"Add a new tool to the tool list\n"
+"with the diameter specified above."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4728
+msgid "Delete Tool"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4730
+msgid ""
+"Delete a tool in the tool list\n"
+"by selecting a row in the tool table."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4748
+msgid "Resize Drill(s)"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4750
+msgid "Resize a drill or a selection of drills."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4757
+msgid "Resize Dia:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4759
+msgid "Diameter to resize to."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4767
+msgid "Resize"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4769
+msgid "Resize drill(s)"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4791
+msgid "Add Drill Array"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4793
+msgid "Add an array of drills (linear or circular array)"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4799
+msgid ""
+"Select the type of drills array to create.\n"
+"It can be Linear X(Y) or Circular"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4802
+msgid "Linear"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4803
+msgid "Circular"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4810
+msgid "Nr of drills:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4812
+msgid "Specify how many drills to be in the array."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4829
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4874
+msgid "Direction:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4831
+msgid ""
+"Direction on which the linear array is oriented:\n"
+"- 'X' - horizontal axis \n"
+"- 'Y' - vertical axis or \n"
+"- 'Angle' - a custom angle for the array inclination"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4840
+msgid "Angle"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4844
+msgid "Pitch:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4846
+msgid "Pitch = Distance between elements of the array."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4855
+msgid ""
+"Angle at which the linear array is placed.\n"
+"The precision is of max 2 decimals.\n"
+"Min value is: -359.99 degrees.\n"
+"Max value is:  360.00 degrees."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4876
+msgid "Direction for circular array.Can be CW = clockwise or CCW = counter clockwise."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:4891
+msgid "Angle at which each element in circular array is placed."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:5212
+msgid "Total Drills"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:5244
+msgid "Total Slots"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:5318
+msgid "[ERROR_NOTCL]Wrong value format entered, use a number."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:5331
+msgid ""
+"[WARNING_NOTCL]Tool already in the original or actual tool list.\n"
+"Save and reedit Excellon if you need to add this tool. "
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:5340
+msgid "[success]Added new tool with dia: %s %s"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:5371
+msgid "[WARNING_NOTCL]Select a tool in Tool Table"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:5404
+msgid "[success]Deleted tool with dia: %s %s"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:5801
+msgid "[ERROR_NOTCL] There are no Tools definitions in the file. Aborting Excellon creation."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:5804
+msgid ""
+"[ERROR] An internal error has ocurred. See shell.\n"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:5810
+msgid "Creating Excellon."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:5819
+msgid "[success]Excellon editing finished."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:5836
+msgid "[WARNING_NOTCL]Cancelled. There is no Tool/Drill selected"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:6318
+msgid "[success]Done. Drill(s) deleted."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:6388
+msgid "Click on the circular array Center position"
+msgstr ""
+

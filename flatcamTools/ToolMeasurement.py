@@ -11,16 +11,9 @@ import FlatCAMTranslation as fcTranslate
 fcTranslate.apply_language('ToolMeasurement')
 
 
-def _tr(text):
-    try:
-        return _(text)
-    except:
-        return text
-
-
 class Measurement(FlatCAMTool):
 
-    toolName = _tr("Measurement")
+    toolName = _("Measurement")
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -41,51 +34,51 @@ class Measurement(FlatCAMTool):
         form_layout_child_2 = QtWidgets.QFormLayout()
         form_layout_child_3 = QtWidgets.QFormLayout()
 
-        self.start_label = QtWidgets.QLabel("<b>%s</b> %s:" % (_tr('Start'), _tr('Coords')))
-        self.start_label.setToolTip(_tr("This is measuring Start point coordinates."))
+        self.start_label = QtWidgets.QLabel("<b>%s</b> %s:" % (_('Start'), _('Coords')))
+        self.start_label.setToolTip(_("This is measuring Start point coordinates."))
 
-        self.stop_label = QtWidgets.QLabel("<b>%s</b> %s:" % (_tr('Stop'), _tr('Coords')))
-        self.stop_label.setToolTip(_tr("This is the measuring Stop point coordinates."))
+        self.stop_label = QtWidgets.QLabel("<b>%s</b> %s:" % (_('Stop'), _('Coords')))
+        self.stop_label.setToolTip(_("This is the measuring Stop point coordinates."))
 
         self.distance_x_label = QtWidgets.QLabel("Dx:")
-        self.distance_x_label.setToolTip(_tr("This is the distance measured over the X axis."))
+        self.distance_x_label.setToolTip(_("This is the distance measured over the X axis."))
 
         self.distance_y_label = QtWidgets.QLabel("Dy:")
-        self.distance_y_label.setToolTip(_tr("This is the distance measured over the Y axis."))
+        self.distance_y_label.setToolTip(_("This is the distance measured over the Y axis."))
 
-        self.total_distance_label = QtWidgets.QLabel("<b>%s:</b>" % _tr('DISTANCE'))
-        self.total_distance_label.setToolTip(_tr("This is the point to point Euclidian distance."))
+        self.total_distance_label = QtWidgets.QLabel("<b>%s:</b>" % _('DISTANCE'))
+        self.total_distance_label.setToolTip(_("This is the point to point Euclidian distance."))
 
         self.units_entry_1 = FCEntry()
-        self.units_entry_1.setToolTip(_tr("Those are the units in which the distance is measured."))
+        self.units_entry_1.setToolTip(_("Those are the units in which the distance is measured."))
         self.units_entry_1.setDisabled(True)
         self.units_entry_1.setFocusPolicy(QtCore.Qt.NoFocus)
         self.units_entry_1.setFrame(False)
         self.units_entry_1.setFixedWidth(30)
 
         self.units_entry_2 = FCEntry()
-        self.units_entry_2.setToolTip(_tr("Those are the units in which the distance is measured."))
+        self.units_entry_2.setToolTip(_("Those are the units in which the distance is measured."))
         self.units_entry_2.setDisabled(True)
         self.units_entry_2.setFocusPolicy(QtCore.Qt.NoFocus)
         self.units_entry_2.setFrame(False)
         self.units_entry_2.setFixedWidth(30)
 
         self.units_entry_3 = FCEntry()
-        self.units_entry_3.setToolTip(_tr("Those are the units in which the distance is measured."))
+        self.units_entry_3.setToolTip(_("Those are the units in which the distance is measured."))
         self.units_entry_3.setDisabled(True)
         self.units_entry_3.setFocusPolicy(QtCore.Qt.NoFocus)
         self.units_entry_3.setFrame(False)
         self.units_entry_3.setFixedWidth(30)
 
         self.units_entry_4 = FCEntry()
-        self.units_entry_4.setToolTip(_tr("Those are the units in which the distance is measured."))
+        self.units_entry_4.setToolTip(_("Those are the units in which the distance is measured."))
         self.units_entry_4.setDisabled(True)
         self.units_entry_4.setFocusPolicy(QtCore.Qt.NoFocus)
         self.units_entry_4.setFrame(False)
         self.units_entry_4.setFixedWidth(30)
 
         self.units_entry_5 = FCEntry()
-        self.units_entry_5.setToolTip(_tr("Those are the units in which the distance is measured."))
+        self.units_entry_5.setToolTip(_("Those are the units in which the distance is measured."))
         self.units_entry_5.setDisabled(True)
         self.units_entry_5.setFocusPolicy(QtCore.Qt.NoFocus)
         self.units_entry_5.setFrame(False)
@@ -93,32 +86,32 @@ class Measurement(FlatCAMTool):
 
         self.start_entry = FCEntry()
         self.start_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.start_entry.setToolTip(_tr("This is measuring Start point coordinates."))
+        self.start_entry.setToolTip(_("This is measuring Start point coordinates."))
         self.start_entry.setFixedWidth(100)
 
         self.stop_entry = FCEntry()
         self.stop_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.stop_entry.setToolTip(_tr("This is the measuring Stop point coordinates."))
+        self.stop_entry.setToolTip(_("This is the measuring Stop point coordinates."))
         self.stop_entry.setFixedWidth(100)
 
         self.distance_x_entry = FCEntry()
         self.distance_x_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.distance_x_entry.setToolTip(_tr("This is the distance measured over the X axis."))
+        self.distance_x_entry.setToolTip(_("This is the distance measured over the X axis."))
         self.distance_x_entry.setFixedWidth(100)
 
 
         self.distance_y_entry = FCEntry()
         self.distance_y_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.distance_y_entry.setToolTip(_tr("This is the distance measured over the Y axis."))
+        self.distance_y_entry.setToolTip(_("This is the distance measured over the Y axis."))
         self.distance_y_entry.setFixedWidth(100)
 
 
         self.total_distance_entry = FCEntry()
         self.total_distance_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.total_distance_entry.setToolTip(_tr("This is the point to point Euclidian distance."))
+        self.total_distance_entry.setToolTip(_("This is the point to point Euclidian distance."))
         self.total_distance_entry.setFixedWidth(100)
 
-        self.measure_btn = QtWidgets.QPushButton(_tr("Measure"))
+        self.measure_btn = QtWidgets.QPushButton(_("Measure"))
         self.measure_btn.setFixedWidth(70)
         self.layout.addWidget(self.measure_btn)
 
@@ -177,7 +170,7 @@ class Measurement(FlatCAMTool):
         self.toggle()
 
         self.set_tool_ui()
-        self.app.ui.notebook.setTabText(2, _tr("Meas. Tool"))
+        self.app.ui.notebook.setTabText(2, _("Meas. Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='CTRL+M', **kwargs)
@@ -270,7 +263,7 @@ class Measurement(FlatCAMTool):
             self.units_entry_4.set_value(str(self.units))
             self.units_entry_5.set_value(str(self.units))
 
-            self.app.inform.emit(_tr("MEASURING: Click on the Start point ..."))
+            self.app.inform.emit(_("MEASURING: Click on the Start point ..."))
 
     def on_key_release_meas(self, event):
         if event.key == 'escape':
@@ -299,7 +292,7 @@ class Measurement(FlatCAMTool):
                     pos = pos_canvas[0], pos_canvas[1]
                 self.point1 = pos
                 self.start_entry.set_value("(%.4f, %.4f)" % pos)
-                self.app.inform.emit(_tr("MEASURING: Click on the Destination point ..."))
+                self.app.inform.emit(_("MEASURING: Click on the Destination point ..."))
 
             if self.clicked_meas == 1:
                 try:
@@ -320,7 +313,7 @@ class Measurement(FlatCAMTool):
 
                     self.stop_entry.set_value("(%.4f, %.4f)" % pos)
 
-                    self.app.inform.emit(_tr("MEASURING: Result D(x) = %.4f | D(y) = %.4f | Distance = %.4f") %
+                    self.app.inform.emit(_("MEASURING: Result D(x) = %.4f | D(y) = %.4f | Distance = %.4f") %
                                          (abs(dx), abs(dy), abs(d)))
 
                     self.distance_x_entry.set_value('%.4f' % abs(dx))

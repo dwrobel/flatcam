@@ -1,0 +1,404 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2019-03-10 13:11+0200\n"
+"PO-Revision-Date: 2019-03-10 13:25+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 2.2.1\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:12
+msgid "Paint Area"
+msgstr "Paint Area"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:48
+msgid "Geometry:"
+msgstr "Geometry:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:50
+msgid "Geometry object to be painted.                        "
+msgstr "Geometry object to be painted.                        "
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:57
+msgid "Tools Table"
+msgstr "Tools Table"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:59
+msgid ""
+"Tools pool from which the algorithm\n"
+"will pick the ones used for painting."
+msgstr ""
+"Tools pool from which the algorithm\n"
+"will pick the ones used for painting."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:68
+msgid "Diameter"
+msgstr "Diameter"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:74
+msgid ""
+"This is the Tool Number.\n"
+"Painting will start with the tool with the biggest diameter,\n"
+"continuing until there are no more tools.\n"
+"Only tools that create painting geometry will still be present\n"
+"in the resulting geometry. This is because with some tools\n"
+"this function will not be able to create painting geometry."
+msgstr ""
+"This is the Tool Number.\n"
+"Painting will start with the tool with the biggest diameter,\n"
+"continuing until there are no more tools.\n"
+"Only tools that create painting geometry will still be present\n"
+"in the resulting geometry. This is because with some tools\n"
+"this function will not be able to create painting geometry."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:82
+msgid ""
+"Tool Diameter. It's value (in current FlatCAM units) \n"
+"is the cut width into the material."
+msgstr ""
+"Tool Diameter. It's value (in current FlatCAM units) \n"
+"is the cut width into the material."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:86
+msgid ""
+"The Tool Type (TT) can be:<BR>- <B>Circular</B> with 1 ... 4 teeth -> it is "
+"informative only. Being circular, <BR>the cut width in material is exactly "
+"the tool diameter.<BR>- <B>Ball</B> -> informative only and make reference "
+"to the Ball type endmill.<BR>- <B>V-Shape</B> -> it will disable de Z-Cut "
+"parameter in the resulting geometry UI form and enable two additional UI "
+"form fields in the resulting geometry: V-Tip Dia and V-Tip Angle. Adjusting "
+"those two values will adjust the Z-Cut parameter such as the cut width into "
+"material will be equal with the value in the Tool Diameter column of this "
+"table.<BR>Choosing the <B>V-Shape</B> Tool Type automatically will select "
+"the Operation Type in the resulting geometry as Isolation."
+msgstr ""
+"The Tool Type (TT) can be:<BR>- <B>Circular</B> with 1 ... 4 teeth -> it is "
+"informative only. Being circular, <BR>the cut width in material is exactly "
+"the tool diameter.<BR>- <B>Ball</B> -> informative only and make reference "
+"to the Ball type endmill.<BR>- <B>V-Shape</B> -> it will disable de Z-Cut "
+"parameter in the resulting geometry UI form and enable two additional UI "
+"form fields in the resulting geometry: V-Tip Dia and V-Tip Angle. Adjusting "
+"those two values will adjust the Z-Cut parameter such as the cut width into "
+"material will be equal with the value in the Tool Diameter column of this "
+"table.<BR>Choosing the <B>V-Shape</B> Tool Type automatically will select "
+"the Operation Type in the resulting geometry as Isolation."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:105
+msgid "Tool Dia"
+msgstr "Tool Dia"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:107
+msgid "Diameter for the new tool."
+msgstr "Diameter for the new tool."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:119
+msgid "Add"
+msgstr "Add"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:121
+msgid ""
+"Add a new tool to the Tool Table\n"
+"with the diameter specified above."
+msgstr ""
+"Add a new tool to the Tool Table\n"
+"with the diameter specified above."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:131
+msgid "Delete"
+msgstr "Delete"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:133
+msgid ""
+"Delete a selection of tools in the Tool Table\n"
+"by first selecting a row(s) in the Tool Table."
+msgstr ""
+"Delete a selection of tools in the Tool Table\n"
+"by first selecting a row(s) in the Tool Table."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:148
+msgid "Overlap:"
+msgstr "Overlap:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:150
+msgid ""
+"How much (fraction) of the tool width to overlap each tool pass.\n"
+"Example:\n"
+"A value here of 0.25 means 25% from the tool diameter found above.\n"
+"\n"
+"Adjust the value starting with lower values\n"
+"and increasing it if areas that should be painted are still \n"
+"not painted.\n"
+"Lower values = faster processing, faster execution on PCB.\n"
+"Higher values = slow processing and slow execution on CNC\n"
+"due of too many paths."
+msgstr ""
+"How much (fraction) of the tool width to overlap each tool pass.\n"
+"Example:\n"
+"A value here of 0.25 means 25% from the tool diameter found above.\n"
+"\n"
+"Adjust the value starting with lower values\n"
+"and increasing it if areas that should be painted are still \n"
+"not painted.\n"
+"Lower values = faster processing, faster execution on PCB.\n"
+"Higher values = slow processing and slow execution on CNC\n"
+"due of too many paths."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:165
+msgid "Margin:"
+msgstr "Margin:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:167
+msgid ""
+"Distance by which to avoid\n"
+"the edges of the polygon to\n"
+"be painted."
+msgstr ""
+"Distance by which to avoid\n"
+"the edges of the polygon to\n"
+"be painted."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:176
+msgid "Method:"
+msgstr "Method:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:178
+msgid ""
+"Algorithm for non-copper clearing:<BR><B>Standard</B>: Fixed step inwards."
+"<BR><B>Seed-based</B>: Outwards from seed.<BR><B>Line-based</B>: Parallel "
+"lines."
+msgstr ""
+"Algorithm for non-copper clearing:<BR><B>Standard</B>: Fixed step inwards."
+"<BR><B>Seed-based</B>: Outwards from seed.<BR><B>Line-based</B>: Parallel "
+"lines."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:192
+msgid "Connect:"
+msgstr "Connect:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:194
+msgid ""
+"Draw lines between resulting\n"
+"segments to minimize tool lifts."
+msgstr ""
+"Draw lines between resulting\n"
+"segments to minimize tool lifts."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:201
+msgid "Contour:"
+msgstr "Contour:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:203
+msgid ""
+"Cut around the perimeter of the polygon\n"
+"to trim rough edges."
+msgstr ""
+"Cut around the perimeter of the polygon\n"
+"to trim rough edges."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:210
+msgid "Rest M.:"
+msgstr "Rest M.:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:212
+msgid ""
+"If checked, use 'rest machining'.\n"
+"Basically it will clear copper outside PCB features,\n"
+"using the biggest tool and continue with the next tools,\n"
+"from bigger to smaller, to clear areas of copper that\n"
+"could not be cleared by previous tool, until there is\n"
+"no more copper to clear or there are no more tools.\n"
+"\n"
+"If not checked, use the standard algorithm."
+msgstr ""
+"If checked, use 'rest machining'.\n"
+"Basically it will clear copper outside PCB features,\n"
+"using the biggest tool and continue with the next tools,\n"
+"from bigger to smaller, to clear areas of copper that\n"
+"could not be cleared by previous tool, until there is\n"
+"no more copper to clear or there are no more tools.\n"
+"\n"
+"If not checked, use the standard algorithm."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:225
+msgid "Selection:"
+msgstr "Selection:"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:227
+msgid ""
+"How to select the polygons to paint.<BR>Options:<BR>- <B>Single</B>: left "
+"mouse click on the polygon to be painted.<BR>- <B>All</B>: paint all "
+"polygons."
+msgstr ""
+"How to select the polygons to paint.<BR>Options:<BR>- <B>Single</B>: left "
+"mouse click on the polygon to be painted.<BR>- <B>All</B>: paint all "
+"polygons."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:242
+msgid "Create Paint Geometry"
+msgstr "Create Paint Geometry"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:244
+msgid ""
+"After clicking here, click inside<BR>the polygon you wish to be painted if "
+"<B>Single</B> is selected.<BR>If <B>All</B>  is selected then the Paint will "
+"start after click.<BR>A new Geometry object with the tool<BR>paths will be "
+"created."
+msgstr ""
+"After clicking here, click inside<BR>the polygon you wish to be painted if "
+"<B>Single</B> is selected.<BR>If <B>All</B>  is selected then the Paint will "
+"start after click.<BR>A new Geometry object with the tool<BR>paths will be "
+"created."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:325
+msgid "Paint Tool"
+msgstr "Paint Tool"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:522
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:592
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:727
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:818
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:973
+msgid "[ERROR_NOTCL]Wrong value format entered, use a number."
+msgstr "[ERROR_NOTCL]Wrong value format entered, use a number."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:528
+msgid "[WARNING_NOTCL] Please enter a tool diameter to add, in Float format."
+msgstr "[WARNING_NOTCL] Please enter a tool diameter to add, in Float format."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:552
+msgid "[WARNING_NOTCL]Adding tool cancelled. Tool already in Tool Table."
+msgstr "[WARNING_NOTCL]Adding tool cancelled. Tool already in Tool Table."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:557
+msgid "[success] New tool added to Tool Table."
+msgstr "[success] New tool added to Tool Table."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:600
+msgid "[success] Tool from Tool Table was edited."
+msgstr "[success] Tool from Tool Table was edited."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:611
+msgid ""
+"[WARNING_NOTCL] Edit cancelled. New diameter value is already in the Tool "
+"Table."
+msgstr ""
+"[WARNING_NOTCL] Edit cancelled. New diameter value is already in the Tool "
+"Table."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:708
+msgid "[WARNING_NOTCL]Delete failed. Select a tool to delete."
+msgstr "[WARNING_NOTCL]Delete failed. Select a tool to delete."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:713
+msgid "[success] Tool(s) deleted from Tool Table."
+msgstr "[success] Tool(s) deleted from Tool Table."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:717
+msgid "geometry_on_paint_button"
+msgstr "geometry_on_paint_button"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:719
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:764
+msgid "[WARNING_NOTCL]Click inside the desired polygon."
+msgstr "[WARNING_NOTCL]Click inside the desired polygon."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:741
+msgid "[ERROR_NOTCL]Could not retrieve object: %s"
+msgstr "[ERROR_NOTCL]Could not retrieve object: %s"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:745
+msgid "[ERROR_NOTCL]Object not found: %s"
+msgstr "[ERROR_NOTCL]Object not found: %s"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:751
+msgid "[ERROR_NOTCL] Can't do Paint on MultiGeo geometries ..."
+msgstr "[ERROR_NOTCL] Can't do Paint on MultiGeo geometries ..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:773
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:977
+msgid "Painting polygon..."
+msgstr "Painting polygon..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:825
+msgid "[WARNING] No polygon found."
+msgstr "[WARNING] No polygon found."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:828
+msgid "Painting polygon."
+msgstr "Painting polygon."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:870
+msgid "[ERROR_NOTCL] Geometry could not be painted completely"
+msgstr "[ERROR_NOTCL] Geometry could not be painted completely"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:896
+msgid ""
+"[ERROR] Could not do Paint. Try a different combination of parameters. Or a "
+"different strategy of paint\n"
+"%s"
+msgstr ""
+"[ERROR] Could not do Paint. Try a different combination of parameters. Or a "
+"different strategy of paint\n"
+"%s"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:938
+msgid "[ERROR_NOTCL] PaintTool.paint_poly() --> %s"
+msgstr "[ERROR_NOTCL] PaintTool.paint_poly() --> %s"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:944
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:1236
+msgid "Polygon Paint started ..."
+msgstr "Polygon Paint started ..."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:1092
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:1181
+msgid ""
+"[ERROR] Could not do Paint All. Try a different combination of parameters. "
+"Or a different Method of paint\n"
+"%s"
+msgstr ""
+"[ERROR] Could not do Paint All. Try a different combination of parameters. "
+"Or a different Method of paint\n"
+"%s"
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:1116
+msgid ""
+"[ERROR] There is no Painting Geometry in the file.\n"
+"Usually it means that the tool diameter is too big for the painted "
+"geometry.\n"
+"Change the painting parameters and try again."
+msgstr ""
+"[ERROR] There is no Painting Geometry in the file.\n"
+"Usually it means that the tool diameter is too big for the painted "
+"geometry.\n"
+"Change the painting parameters and try again."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:1125
+msgid "[success] Paint All Done."
+msgstr "[success] Paint All Done."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:1211
+msgid ""
+"[ERROR_NOTCL] There is no Painting Geometry in the file.\n"
+"Usually it means that the tool diameter is too big for the painted "
+"geometry.\n"
+"Change the painting parameters and try again."
+msgstr ""
+"[ERROR_NOTCL] There is no Painting Geometry in the file.\n"
+"Usually it means that the tool diameter is too big for the painted "
+"geometry.\n"
+"Change the painting parameters and try again."
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:1220
+msgid "[success] Paint All with Rest-Machining done."
+msgstr "[success] Paint All with Rest-Machining done."

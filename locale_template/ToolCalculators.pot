@@ -1,0 +1,161 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2019-03-10 13:01+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=cp1252\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:14
+msgid "Calculators"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:15
+msgid "V-Shape Tool Calculator"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:16
+msgid "Units Calculator"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:17
+msgid "ElectroPlating Calculator"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:58
+msgid "Here you enter the value to be converted from INCH to MM"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:63
+msgid "Here you enter the value to be converted from MM to INCH"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:84
+msgid "Tip Diameter:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:88
+msgid ""
+"This is the diameter of the tool tip.\n"
+"The manufacturer specifies it."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:95
+msgid ""
+"This is the angle of the tip of the tool.\n"
+"It is specified by manufacturer."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:102
+msgid ""
+"This is the depth to cut into the material.\n"
+"In the CNCJob is the CutZ parameter."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:109
+msgid ""
+"This is the tool diameter to be entered into\n"
+"FlatCAM Gerber section.\n"
+"In the CNCJob section it is called >Tool dia<."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:121
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:204
+msgid "Calculate"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:124
+msgid ""
+"Calculate either the Cut Z or the effective tool diameter,\n"
+"  depending on which is desired and which is known. "
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:142
+msgid ""
+"This calculator is useful for those who plate the via/pad/drill holes,\n"
+"using a method like grahite ink or calcium hypophosphite ink or palladium chloride."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:151
+msgid "Board Length:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:155
+msgid "This is the board length. In centimeters."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:157
+msgid "Board Width:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:161
+msgid "This is the board width.In centimeters."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:163
+msgid "Current Density:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:167
+msgid ""
+"Current density to pass through the board. \n"
+"In Amps per Square Feet ASF."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:171
+msgid "Copper Growth:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:175
+msgid ""
+"How thick the copper growth is intended to be.\n"
+"In microns."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:180
+msgid "Current Value:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:184
+msgid ""
+"This is the current intensity value\n"
+"to be set on the Power Supply. In Amps."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:188
+msgid "Time:"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:192
+msgid ""
+"This is the calculated time required for the procedure.\n"
+"In minutes."
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:207
+msgid ""
+"Calculate the current intensity value and the procedure time,\n"
+"  depending on the parameters above"
+msgstr ""
+
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:294
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:305
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:317
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:332
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:345
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:359
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:370
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:381
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:392
+msgid "[ERROR_NOTCL]Wrong value format entered, use a number."
+msgstr ""
+
