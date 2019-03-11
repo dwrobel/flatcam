@@ -5266,7 +5266,7 @@ class App(QtCore.QObject):
     def obj_properties(self):
         self.report_usage("obj_properties()")
 
-        self.properties_tool.run()
+        self.properties_tool.run(toggle=False)
 
     def on_project_context_save(self):
         obj = self.collection.get_active()

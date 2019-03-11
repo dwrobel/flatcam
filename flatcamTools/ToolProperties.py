@@ -156,8 +156,14 @@ class Properties(FlatCAMTool):
             self.addChild(options, [str(option), str(obj.options[option])], True)
 
         if obj.kind.lower() == 'gerber':
+            temp_ap = {}
             for ap in obj.apertures:
-                self.addChild(apertures, [str(ap), str(obj.apertures[ap])], True)
+                temp_ap.clear()
+                temp_ap = deepcopy(obj.apertures[ap])
+                if obj.apertures[ap]['solid_geometry']:
+                    elems = len(obj.apertures[ap]['solid_geometry'])
+                    temp_ap['solid_geometry'] = '%s Polygons' % str(elems)
+                self.addChild(apertures, [str(ap), str(temp_ap)], True)
         elif obj.kind.lower() == 'excellon':
             for tool, value in obj.tools.items():
                 self.addChild(tools, [str(tool), str(value['C'])], True)

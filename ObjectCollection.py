@@ -26,6 +26,7 @@ import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
+
 class KeySensitiveListView(QtWidgets.QTreeView):
     """
     QtGui.QListView extended to emit a signal on key press.

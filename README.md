@@ -12,7 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 11.03.2019
 
 - changed some icons here and there
-
+- fixed the Properties Project menu entry to work on the new way
+- in Properties tool now the Gerber apertures show the number of polygons in 'solid_geometry' instead of listing the objects
 
 10.03.2019
 

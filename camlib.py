@@ -2553,8 +2553,8 @@ class Gerber (Geometry):
                         else:
                             if '0' not in self.apertures:
                                 self.apertures['0'] = {}
-                                self.apertures['0']['solid_geometry'] = []
                                 self.apertures['0']['type'] = 'REG'
+                                self.apertures['0']['solid_geometry'] = []
                             used_aperture = '0'
 
                         try:
@@ -2590,18 +2590,6 @@ class Gerber (Geometry):
                     # NOTE: Letting it continue allows it to react to the
                     #       operation code.
 
-                    # we do this for the case that a region is done without having defined any aperture
-                    # Allegro does that
-                    if current_aperture:
-                        last_path_aperture = current_aperture
-
-                    if last_path_aperture is None:
-                        if '0' not in self.apertures:
-                            self.apertures['0'] = {}
-                            self.apertures['0']['solid_geometry'] = []
-                            self.apertures['0']['type'] = 'REG'
-                        last_path_aperture = '0'
-
                     # Parse coordinates
                     if match.group(2) is not None:
                         linear_x = parse_gerber_number(match.group(2),
@@ -2628,7 +2616,7 @@ class Gerber (Geometry):
                             if path[-1] != [linear_x, linear_y]:
                                 path.append([linear_x, linear_y])
 
-                            if  making_region is False:
+                            if making_region is False:
                                 # if the aperture is rectangle then add a rectangular shape having as parameters the
                                 # coordinates of the start and end point and also the width and height
                                 # of the 'R' aperture
@@ -2652,6 +2640,14 @@ class Gerber (Geometry):
                                 except:
                                     pass
                             last_path_aperture = current_aperture
+                            # we do this for the case that a region is done without having defined any aperture
+                            # Allegro does that
+                            if last_path_aperture is None:
+                                if '0' not in self.apertures:
+                                    self.apertures['0'] = {}
+                                    self.apertures['0']['type'] = 'REG'
+                                    self.apertures['0']['solid_geometry'] = []
+                                last_path_aperture = '0'
                         else:
                             self.app.inform.emit(_("[WARNING] Coordinates missing, line ignored: %s") % str(gline))
                             self.app.inform.emit(_("[WARNING_NOTCL] GERBER file might be CORRUPT. Check the file !!!"))
@@ -2660,21 +2656,40 @@ class Gerber (Geometry):
                         if len(path) > 1:
                             geo = None
 
-                            ## --- BUFFERED ---
+                            # --- BUFFERED ---
                             # this treats the case when we are storing geometry as paths only
                             if making_region:
+                                # we do this for the case that a region is done without having defined any aperture
+                                # Allegro does that
+                                if last_path_aperture is None:
+                                    if '0' not in self.apertures:
+                                        self.apertures['0'] = {}
+                                        self.apertures['0']['type'] = 'REG'
+                                        self.apertures['0']['solid_geometry'] = []
+                                    last_path_aperture = '0'
                                 geo = Polygon()
                             else:
                                 geo = LineString(path)
+
                             try:
                                 if self.apertures[last_path_aperture]["type"] != 'R':
                                     if not geo.is_empty:
                                         follow_buffer.append(geo)
-                            except:
-                                follow_buffer.append(geo)
+                            except Exception as e:
+                                log.debug("camlib.Gerber.parse_lines() --> %s" % str(e))
+                                if not geo.is_empty:
+                                    follow_buffer.append(geo)
 
                             # this treats the case when we are storing geometry as solids
                             if making_region:
+                                # we do this for the case that a region is done without having defined any aperture
+                                # Allegro does that
+                                if last_path_aperture is None:
+                                    if '0' not in self.apertures:
+                                        self.apertures['0'] = {}
+                                        self.apertures['0']['type'] = 'REG'
+                                        self.apertures['0']['solid_geometry'] = []
+                                    last_path_aperture = '0'
                                 elem = [linear_x, linear_y]
                                 if elem != path[-1]:
                                     path.append([linear_x, linear_y])
@@ -2701,7 +2716,8 @@ class Gerber (Geometry):
                                         except KeyError:
                                             self.apertures[last_path_aperture]['solid_geometry'] = []
                                             self.apertures[last_path_aperture]['solid_geometry'].append(geo)
-                            except:
+                            except Exception as e:
+                                log.debug("camlib.Gerber.parse_lines() --> %s" % str(e))
                                 poly_buffer.append(geo)
                                 try:
                                     self.apertures[last_path_aperture]['solid_geometry'].append(geo)
