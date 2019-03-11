@@ -5360,13 +5360,13 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         try:
             dir_file_to_save = self.app.get_last_save_folder() + '/' + str(name)
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
-                caption="Export Machine Code ...",
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+                caption=_("Export Machine Code ..."),
                 directory=dir_file_to_save,
                 filter=_filter_
             )
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Machine Code ..."), filter=_filter_)
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Machine Code ..."), filter=_filter_)
 
         filename = str(filename)
 

@@ -198,7 +198,7 @@ class Film(FlatCAMTool):
         f_type = self.app.defaults["tools_film_type"] if self.app.defaults["tools_film_type"] else 'neg'
         self.film_type.set_value(str(f_type))
 
-        b_entry = self.app.defaults[ "tools_film_boundary"] if self.app.defaults[ "tools_film_boundary"] else 0.0
+        b_entry = self.app.defaults["tools_film_boundary"] if self.app.defaults["tools_film_boundary"] else 0.0
         self.boundary_entry.set_value(float(b_entry))
 
         scale_stroke_width = self.app.defaults["tools_film_scale"] if self.app.defaults["tools_film_scale"] else 0.0
@@ -242,12 +242,12 @@ class Film(FlatCAMTool):
 
         if self.film_type.get_value() == "pos":
             try:
-                filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                     caption=_("Export SVG positive"),
                     directory=self.app.get_last_save_folder() + '/' + name,
                     filter="*.svg")
             except TypeError:
-                filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export SVG positive"))
+                filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export SVG positive"))
 
             filename = str(filename)
 
@@ -258,12 +258,12 @@ class Film(FlatCAMTool):
                 self.app.export_svg_black(name, boxname, filename, scale_factor=scale_stroke_width)
         else:
             try:
-                filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+                filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                     caption=_("Export SVG negative"),
                     directory=self.app.get_last_save_folder() + '/' + name,
                     filter="*.svg")
             except TypeError:
-                filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export SVG negative"))
+                filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export SVG negative"))
 
             filename = str(filename)
 

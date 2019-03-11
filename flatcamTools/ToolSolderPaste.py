@@ -1337,13 +1337,13 @@ class SolderPaste(FlatCAMTool):
 
         try:
             dir_file_to_save = self.app.get_last_save_folder() + '/' + str(name)
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
-                caption="Export GCode ...",
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+                caption=_("Export GCode ..."),
                 directory=dir_file_to_save,
                 filter=_filter_
             )
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export Machine Code ...", filter=_filter_)
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Machine Code ..."), filter=_filter_)
 
         if filename == '':
             self.app.inform.emit(_("[WARNING_NOTCL] Export Machine Code cancelled ..."))

@@ -2311,10 +2311,10 @@ class App(QtCore.QObject):
 
         filter = "Config File (*.FlatConfig);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Import FlatCAM Preferences",
+            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import FlatCAM Preferences"),
                                                                 directory=self.data_path, filter=filter)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Import FlatCAM Preferences", filter=filter)
+            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import FlatCAM Preferences"), filter=filter)
 
         filename = str(filename)
 
@@ -2347,12 +2347,12 @@ class App(QtCore.QObject):
 
         filter = "Config File (*.FlatConfig);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
-                caption="Export FlatCAM Preferences",
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+                caption=_("Export FlatCAM Preferences"),
                 directory=self.data_path + '/preferences_' + self.date.replace('-', ''), filter=filter
             )
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export FlatCAM Preferences", filter=filter)
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export FlatCAM Preferences"), filter=filter)
 
         filename = str(filename)
         defaults_from_file = {}
@@ -3853,7 +3853,7 @@ class App(QtCore.QObject):
         filter_group = " G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
                    "All Files (*.*)"
         path, _ = QtWidgets.QFileDialog.getOpenFileName(
-            caption='Open file', directory=self.get_last_folder(), filter=filter_group)
+            caption=__('Open file'), directory=self.get_last_folder(), filter=filter_group)
         if path:
             file = QtCore.QFile(path)
             if file.open(QtCore.QIODevice.ReadOnly):
@@ -3904,12 +3904,12 @@ class App(QtCore.QObject):
 
         try:
             filename = str(QtWidgets.QFileDialog.getSaveFileName(
-                caption="Export G-Code ...",
+                caption=_("Export G-Code ..."),
                 directory=self.defaults["global_last_folder"] + '/' + str(obj_name),
                 filter=_filter_
             )[0])
         except TypeError:
-            filename = str(QtWidgets.QFileDialog.getSaveFileName(caption="Export G-Code ...", filter=_filter_)[0])
+            filename = str(QtWidgets.QFileDialog.getSaveFileName(caption=_("Export G-Code ..."), filter=_filter_)[0])
 
         if filename == "":
             self.inform.emit(_("[WARNING_NOTCL]Export Code cancelled."))
@@ -5339,10 +5339,10 @@ class App(QtCore.QObject):
                    "All Files (*.*)"
 
         try:
-            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Gerber",
+            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Gerber"),
                                                          directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
-            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Gerber", filter=_filter_)
+            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Gerber"), filter=_filter_)
 
         filenames = [str(filename) for filename in filenames]
 
@@ -5368,10 +5368,10 @@ class App(QtCore.QObject):
                    "All Files (*.*)"
 
         try:
-            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Excellon",
+            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Excellon"),
                                                          directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
-            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption="Open Excellon", filter=_filter_)
+            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Excellon"), filter=_filter_)
 
         filenames = [str(filename) for filename in filenames]
 
@@ -5398,10 +5398,10 @@ class App(QtCore.QObject):
                    " *.din *.xpi *.hnc *.h *.i *.ncp *.min *.gcd *.rol *.mpr *.ply *.out *.eia *.plt *.sbp *.mpf);;" \
                    "All Files (*.*)"
         try:
-            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption="Open G-Code",
+            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open G-Code"),
                                                          directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
-            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption="Open G-Code", filter=_filter_)
+            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open G-Code"), filter=_filter_)
 
         filenames = [str(filename) for filename in filenames]
 
@@ -5424,10 +5424,10 @@ class App(QtCore.QObject):
         App.log.debug("on_file_openproject()")
         _filter_ = "FlatCAM Project (*.FlatPrj);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Project",
+            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open Project"),
                                                          directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Project", filter = _filter_)
+            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open Project"), filter = _filter_)
 
         # The Qt methods above will return a QString which can cause problems later.
         # So far json.dump() will fail to serialize it.
@@ -5454,13 +5454,14 @@ class App(QtCore.QObject):
         App.log.debug("on_file_openconfig()")
         _filter_ = "FlatCAM Config (*.FlatConfig);;FlatCAM Config (*.json);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Configuration File",
+            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open Configuration File"),
                                                          directory=self.data_path, filter=_filter_)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption="Open Configuration File", filter = _filter_)
+            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open Configuration File"),
+                                                                 filter = _filter_)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]Open COnfig cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL]Open Config cancelled."))
         else:
             self.open_config_file(filename)
 
@@ -5499,12 +5500,12 @@ class App(QtCore.QObject):
 
         filter = "SVG File (*.svg);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
-                caption="Export SVG",
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+                caption=_("Export SVG"),
                 directory=self.get_last_save_folder() + '/' + str(name),
                 filter=filter)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption="Export SVG", filter=filter)
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export SVG"), filter=filter)
 
         filename = str(filename)
 
@@ -5528,12 +5529,12 @@ class App(QtCore.QObject):
 
         filter_ = "PNG File (*.png);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
-                caption="Export PNG Image",
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+                caption=_("Export PNG Image"),
                 directory=self.get_last_save_folder() + '/png_' + str(self.date).replace('-', ''),
                 filter=filter_)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export PNG Image"), filter=filter_)
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export PNG Image"), filter=filter_)
 
         filename = str(filename)
 
@@ -5567,17 +5568,17 @@ class App(QtCore.QObject):
 
         filter = "Gerber File (*.GBR);;Gerber File (*.GRB);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption="Save Gerber source file",
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=filter)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Gerber source file"), filter=filter)
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Gerber source file"), filter=filter)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]Save Gerber source file cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Save Gerber source file cancelled."))
             return
         else:
             self.save_source_file(name, filename)
@@ -5606,17 +5607,17 @@ class App(QtCore.QObject):
 
         filter = "Excellon File (*.DRL);;Excellon File (*.TXT);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
-                caption="Save Excellon source file",
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+                caption=_("Save Excellon source file"),
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=filter)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Excellon source file"), filter=filter)
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Excellon source file"), filter=filter)
 
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]Saving Excellon source file cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Saving Excellon source file cancelled."))
             return
         else:
             self.save_source_file(name, filename)
@@ -5645,12 +5646,12 @@ class App(QtCore.QObject):
 
         filter = "Excellon File (*.DRL);;Excellon File (*.TXT);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
-                caption="Export Excellon",
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+                caption=_("Export Excellon"),
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=filter)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Excellon"), filter=filter)
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Excellon"), filter=filter)
 
         filename = str(filename)
 
@@ -5695,12 +5696,12 @@ class App(QtCore.QObject):
 
         filter = "DXF File (*.DXF);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
-                caption="Export DXF",
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+                caption=_("Export DXF"),
                 directory=self.get_last_save_folder() + '/' + name,
                 filter=filter)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export DXF"), filter=filter)
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export DXF"), filter=filter)
 
         filename = str(filename)
 
@@ -5723,10 +5724,10 @@ class App(QtCore.QObject):
 
         filter = "SVG File (*.svg);;All Files (*.*)"
         try:
-            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption="Import SVG",
+            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Import SVG"),
                                                          directory=self.get_last_folder(), filter=filter)
         except TypeError:
-            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption="Import SVG", filter=filter)
+            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Import SVG"), filter=filter)
 
         if type_of_obj is not "geometry" and type_of_obj is not "gerber":
             type_of_obj = "geometry"
@@ -5734,7 +5735,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit(_("[WARNING_NOTCL]Open SVG cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Open SVG cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -5782,10 +5783,10 @@ class App(QtCore.QObject):
         App.log.debug("on_file_runscript()")
         _filter_ = "TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open TCL script"),
+            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open TCL script"),
                                                          directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open TCL script"), filter=_filter_)
+            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open TCL script"), filter=_filter_)
 
         # The Qt methods above will return a QString which can cause problems later.
         # So far json.dump() will fail to serialize it.
@@ -5840,17 +5841,17 @@ class App(QtCore.QObject):
 
         filter_ = "FlatCAM Project (*.FlatPrj);; All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(
-                caption="Save Project As ...",
-                directory=self.get_last_save_folder() + '/Project_' + self.date.replace('-', ''),
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+                caption=_("Save Project As ..."),
+                directory=_('%s/Project_%s') % (str(self.get_last_save_folder()), str(self.date.replace('-', ''))),
                 filter=filter_)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Project As ..."), filter=filter_)
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Project As ..."), filter=filter_)
 
         filename = str(filename)
 
         if filename == '':
-            self.inform.emit(_("[WARNING_NOTCL]Save Project cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Save Project cancelled."))
             return
 
         try:

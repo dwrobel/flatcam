@@ -183,10 +183,10 @@ class ToolImage(FlatCAMTool):
                  "Jpeg File (*.JPG);;" \
                  "All Files (*.*)"
         try:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import IMAGE"),
+            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import IMAGE"),
                                                          directory=self.app.get_last_folder(), filter=filter)
         except TypeError:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import IMAGE"), filter=filter)
+            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import IMAGE"), filter=filter)
 
         filename = str(filename)
         type = self.tf_type_obj_combo.get_value().lower()
