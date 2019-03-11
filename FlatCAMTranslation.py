@@ -12,8 +12,7 @@ import sys
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QSettings
 
-import FlatCAMApp
-from GUIElements import log
+from flatcamGUI.GUIElements import log
 import gettext
 
 # ISO639-1 codes from here: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes

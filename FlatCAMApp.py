@@ -6,33 +6,20 @@
 # MIT Licence                                              #
 ############################################################
 
-import sys
-import traceback
 import urllib.request, urllib.parse, urllib.error
 import getopt
-import os
 import random
-import logging
 import simplejson as json
 import lzma
 
-import re
-import os
 from stat import S_IREAD, S_IRGRP, S_IROTH
 import subprocess
 
 import tkinter as tk
-from PyQt5 import QtCore, QtGui, QtWidgets, QtPrintSupport
-from PyQt5.QtCore import QSettings
+from PyQt5 import QtPrintSupport
 
-import time  # Just used for debugging. Double check before removing.
 import urllib.request, urllib.parse, urllib.error
-import webbrowser
 from contextlib import contextmanager
-from xml.dom.minidom import parseString as parse_xml_string
-from copy import copy,deepcopy
-import numpy as np
-from datetime import datetime
 import gc
 
 ########################################
@@ -40,15 +27,15 @@ import gc
 ########################################
 from ObjectCollection import *
 from FlatCAMObj import *
-from PlotCanvas import *
-from FlatCAMGUI import *
+from flatcamGUI.PlotCanvas import *
+from flatcamGUI.FlatCAMGUI import *
 from FlatCAMCommon import LoudDict
 from FlatCAMPostProc import load_postprocessors
 
 from FlatCAMEditor import FlatCAMGeoEditor, FlatCAMExcEditor
 from FlatCAMProcess import *
 from FlatCAMWorkerStack import WorkerStack
-from VisPyVisuals import Color
+from flatcamGUI.VisPyVisuals import Color
 from vispy.gloo.util import _screenshot
 from vispy.io import write_png
 
@@ -1866,6 +1853,10 @@ class App(QtCore.QObject):
         self.ui.popmenu_edit.setVisible(False)
         self.ui.popmenu_save.setVisible(True)
 
+        # adjust the status of the menu entries related to the editor
+        self.ui.menueditedit.setDisabled(True)
+        self.ui.menueditok.setDisabled(False)
+
         edited_object = self.collection.get_active()
 
         if isinstance(edited_object, FlatCAMGeometry):
@@ -1914,6 +1905,10 @@ class App(QtCore.QObject):
         :return: None
         """
         self.report_usage("editor2object()")
+
+        # adjust the status of the menu entries related to the editor
+        self.ui.menueditedit.setDisabled(False)
+        self.ui.menueditok.setDisabled(True)
 
         # do not update a geometry or excellon object unless it comes out of an editor
         if self.call_source != 'app':

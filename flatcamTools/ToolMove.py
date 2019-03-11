@@ -8,9 +8,8 @@
 
 from FlatCAMTool import FlatCAMTool
 from FlatCAMObj import *
-from VisPyVisuals import *
+from flatcamGUI.VisPyVisuals import *
 
-from io import StringIO
 from copy import copy
 
 import gettext

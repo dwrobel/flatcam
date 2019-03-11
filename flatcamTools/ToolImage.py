@@ -8,8 +8,8 @@
 
 from FlatCAMTool import FlatCAMTool
 
-from GUIElements import RadioSet, FloatEntry, FCComboBox, IntEntry
-from PyQt5 import QtGui, QtCore, QtWidgets
+from flatcamGUI.GUIElements import RadioSet, FCComboBox, IntEntry
+from PyQt5 import QtGui, QtWidgets
 
 import gettext
 import FlatCAMTranslation as fcTranslate

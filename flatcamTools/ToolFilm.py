@@ -8,7 +8,7 @@
 
 from FlatCAMTool import FlatCAMTool
 
-from GUIElements import RadioSet, FCEntry
+from flatcamGUI.GUIElements import RadioSet, FCEntry
 from PyQt5 import QtGui, QtCore, QtWidgets
 
 import gettext

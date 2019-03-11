@@ -11,9 +11,8 @@
 # Date: 3/10/2019                                          #
 ############################################################
 
-from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt, QSettings
-from GUIElements import *
+from PyQt5.QtCore import QSettings
+from flatcamGUI.GUIElements import *
 import platform
 import webbrowser
 
@@ -211,6 +210,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuedit.addSeparator()
         self.menueditedit = self.menuedit.addAction(QtGui.QIcon('share/edit16.png'), _('Edit Object\tE'))
         self.menueditok = self.menuedit.addAction(QtGui.QIcon('share/edit_ok16.png'), _('Save && Close Editor\tCTRL+S'))
+
+        # adjust the initial state of the menu entries related to the editor
+        self.menueditedit.setDisabled(False)
+        self.menueditok.setDisabled(True)
+
         # Separator
         self.menuedit.addSeparator()
         self.menuedit_convert = self.menuedit.addMenu(QtGui.QIcon('share/convert24.png'), _('Conversion'))

@@ -6,20 +6,13 @@
 # MIT Licence                                              #
 ############################################################
 
-from io import StringIO
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtCore import Qt
 import copy
 import inspect  # TODO: For debugging only.
-from shapely.geometry.base import JOIN_STYLE
 from datetime import datetime
 
-import FlatCAMApp
-from ObjectUI import *
+from flatcamGUI.ObjectUI import *
 from FlatCAMCommon import LoudDict
-from FlatCAMEditor import FlatCAMGeoEditor
 from camlib import *
-from VisPyVisuals import ShapeCollectionVisual
 import itertools
 
 import gettext
@@ -29,6 +22,7 @@ fcTranslate.apply_language('FlatCAMObj')
 import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
 
 class ObjectDeleted(Exception):
     # Interrupts plotting process if FlatCAMObj has been deleted

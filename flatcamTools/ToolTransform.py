@@ -6,9 +6,6 @@
 # MIT Licence                                              #
 ############################################################
 
-from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt
-from GUIElements import FCEntry, FCButton, OptionalInputSection
 from FlatCAMTool import FlatCAMTool
 from FlatCAMObj import *
 

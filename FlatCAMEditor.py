@@ -13,30 +13,20 @@
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
-import FlatCAMApp
 from camlib import *
 from FlatCAMTool import FlatCAMTool
-from ObjectUI import LengthEntry, RadioSet
+from flatcamGUI.ObjectUI import LengthEntry, RadioSet
 
-from shapely.geometry import Polygon, LineString, Point, LinearRing, MultiLineString
-from shapely.geometry import MultiPoint, MultiPolygon
-from shapely.geometry import box as shply_box
-from shapely.ops import cascaded_union, unary_union
+from shapely.geometry import LineString, LinearRing, MultiLineString
+from shapely.ops import cascaded_union
 import shapely.affinity as affinity
-from shapely.wkt import loads as sloads
-from shapely.wkt import dumps as sdumps
-from shapely.geometry.base import BaseGeometry
 
-from numpy import arctan2, Inf, array, sqrt, pi, ceil, sin, cos, sign, dot
-from numpy.linalg import solve
+from numpy import arctan2, Inf, array, sqrt, sign, dot
 
 from rtree import index as rtindex
-from GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCEntry2, FCComboBox, FCTextAreaRich, \
-    VerticalScrollArea, FCTable, FCDoubleSpinner, FCButton, EvalEntry2, FCInputDialog
+from flatcamGUI.GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCComboBox, FCTextAreaRich, \
+    FCTable, FCDoubleSpinner, FCButton, EvalEntry2, FCInputDialog
 from ParseFont import *
-from vispy.scene.visuals import Markers
-from copy import copy
-import freetype as ft
 
 import gettext
 import FlatCAMTranslation as fcTranslate

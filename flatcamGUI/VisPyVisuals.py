@@ -13,7 +13,7 @@ from vispy.color import Color
 from shapely.geometry import Polygon, LineString, LinearRing
 import threading
 import numpy as np
-from VisPyTesselators import GLUTess
+from flatcamGUI.VisPyTesselators import GLUTess
 
 
 class FlatCAMLineVisual(LineVisual):

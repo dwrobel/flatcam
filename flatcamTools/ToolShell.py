@@ -10,7 +10,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QVBoxLayout, QWidget
-from GUIElements import _BrowserTextEdit, _ExpandableTextEdit
+from flatcamGUI.GUIElements import _BrowserTextEdit, _ExpandableTextEdit
 import html
 
 import gettext

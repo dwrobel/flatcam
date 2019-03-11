@@ -8,10 +8,8 @@
 
 from FlatCAMTool import FlatCAMTool
 from FlatCAMObj import *
-from VisPyVisuals import *
-from PyQt5.QtCore import QSettings
+from flatcamGUI.VisPyVisuals import *
 
-from copy import copy
 from math import sqrt
 
 import gettext

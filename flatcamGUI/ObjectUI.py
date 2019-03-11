@@ -11,12 +11,9 @@
 # Date: 3/10/2019                                          #
 ############################################################
 
-import sys
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt
-from GUIElements import FCEntry, FloatEntry, EvalEntry, FCCheckBox, FCTable, \
-    LengthEntry, FCTextArea, IntEntry, RadioSet, OptionalInputSection, FCComboBox, FloatEntry2, EvalEntry2, FCButton
-from camlib import Excellon
+from flatcamGUI.GUIElements import *
 
 import gettext
 import FlatCAMTranslation as fcTranslate

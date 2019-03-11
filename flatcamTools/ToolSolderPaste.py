@@ -8,9 +8,9 @@
 
 from FlatCAMTool import FlatCAMTool
 from FlatCAMCommon import LoudDict
-from GUIElements import FCComboBox, FCEntry, FCTable
+from flatcamGUI.GUIElements import FCComboBox, FCEntry, FCTable
 from FlatCAMApp import log
-from camlib import distance, CNCjob
+from camlib import distance
 from FlatCAMObj import FlatCAMCNCjob
 
 from PyQt5 import QtGui, QtCore, QtWidgets
@@ -18,8 +18,7 @@ from PyQt5.QtCore import Qt
 from copy import deepcopy
 from datetime import datetime
 
-from shapely.geometry import MultiPolygon, Polygon, LineString
-from shapely.geometry.base import BaseGeometry
+from shapely.geometry import Polygon, LineString
 from shapely.ops import cascaded_union
 
 import traceback

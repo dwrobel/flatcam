@@ -9,12 +9,11 @@
 from PyQt5 import QtCore
 
 import logging
-from VisPyCanvas import VisPyCanvas
-from VisPyVisuals import ShapeGroup, ShapeCollection, TextCollection, TextGroup, Cursor
+from flatcamGUI.VisPyCanvas import VisPyCanvas, time
+from flatcamGUI.VisPyVisuals import ShapeGroup, ShapeCollection, TextCollection, TextGroup, Cursor
 from vispy.scene.visuals import InfiniteLine, Line
 import numpy as np
 from vispy.geometry import Rect
-import time
 
 log = logging.getLogger('base')
 

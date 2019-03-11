@@ -6,8 +6,6 @@
 # MIT Licence                                              #
 ############################################################
 
-from PyQt5 import QtGui
-from GUIElements import FCEntry
 from FlatCAMTool import FlatCAMTool
 from FlatCAMObj import *
 import math
