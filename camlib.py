@@ -12,18 +12,13 @@ from io import StringIO
 from numpy import arctan2, Inf, array, sqrt, pi, ceil, sin, cos, dot, float32, \
     transpose
 from numpy.linalg import solve, norm
-import re
-import sys
 import traceback
 from decimal import Decimal
-
-import collections
 
 from rtree import index as rtindex
 
 # See: http://toblerity.org/shapely/manual.html
-from shapely.geometry import Polygon, LineString, Point, LinearRing, MultiLineString
-from shapely.geometry import MultiPoint, MultiPolygon
+from shapely.geometry import Polygon
 from shapely.geometry import box as shply_box
 from shapely.ops import cascaded_union, unary_union
 import shapely.affinity as affinity
@@ -31,32 +26,22 @@ from shapely.wkt import loads as sloads
 from shapely.wkt import dumps as sdumps
 from shapely.geometry.base import BaseGeometry
 from shapely.geometry import shape
-from shapely import speedups
 
 from collections import Iterable
 
-import numpy as np
 import rasterio
 from rasterio.features import shapes
 
-from copy import deepcopy
-
 # TODO: Commented for FlatCAM packaging with cx_freeze
-
-from xml.dom.minidom import parseString as parse_xml_string
 
 # from scipy.spatial import KDTree, Delaunay
 
-from ParseSVG import *
-from ParseDXF import *
+from flatcamParsers.ParseSVG import *
+from flatcamParsers.ParseDXF import *
 
 import logging
-import os
 # import pprint
 import platform
-import FlatCAMApp
-
-import math
 
 if platform.architecture()[0] == '64bit':
     from ortools.constraint_solver import pywrapcp

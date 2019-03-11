@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Properties tool now the Gerber apertures show the number of polygons in 'solid_geometry' instead of listing the objects
 - added a visual cue in Menu -> Edit about the entries to enter the Editor and to Save & Exit Editor. When one is enabled the other is disabled.
 - grouped all the UI files in flatcamGUI folder
+- grouped all parsers files in flatcamParsers folder
 
 10.03.2019
 

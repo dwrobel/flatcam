@@ -26,7 +26,7 @@ from numpy import arctan2, Inf, array, sqrt, sign, dot
 from rtree import index as rtindex
 from flatcamGUI.GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCComboBox, FCTextAreaRich, \
     FCTable, FCDoubleSpinner, FCButton, EvalEntry2, FCInputDialog
-from ParseFont import *
+from flatcamParsers.ParseFont import *
 
 import gettext
 import FlatCAMTranslation as fcTranslate

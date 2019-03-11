@@ -20,17 +20,13 @@
 ############################################################
 
 # import xml.etree.ElementTree as ET
-from lxml import etree as ET
-import re
-import itertools
-from svg.path import Path, Line, Arc, CubicBezier, QuadraticBezier, parse_path
+from svg.path import Line, Arc, CubicBezier, QuadraticBezier, parse_path
 from svg.path.path import Move
-from shapely.geometry import LinearRing, LineString, Point, Polygon
-from shapely.affinity import translate, rotate, scale, skew, affine_transform
+from shapely.geometry import LineString
+from shapely.affinity import skew, affine_transform
 import numpy as np
-import logging
 
-from ParseFont import *
+from flatcamParsers.ParseFont import *
 
 log = logging.getLogger('base2')
 
