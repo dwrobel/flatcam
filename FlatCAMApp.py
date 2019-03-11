@@ -22,6 +22,8 @@ import urllib.request, urllib.parse, urllib.error
 from contextlib import contextmanager
 import gc
 
+from xml.dom.minidom import parseString as parse_xml_string
+
 ########################################
 ##      Imports part of FlatCAM       ##
 ########################################
@@ -43,8 +45,6 @@ from flatcamTools import *
 
 from multiprocessing import Pool
 import tclCommands
-
-# from ParseFont import *
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -2909,7 +2909,6 @@ class App(QtCore.QObject):
     def final_save(self):
         if self.should_we_save and self.collection.get_list():
             msgbox = QtWidgets.QMessageBox()
-            # msgbox.setText("<B>Save changes ...</B>")
             msgbox.setText(_("There are files/objects modified in FlatCAM. "
                            "\n"
                            "Do you want to Save the project?"))
@@ -2926,20 +2925,19 @@ class App(QtCore.QObject):
             elif response == QtWidgets.QMessageBox.Cancel:
                 self.should_we_quit = False
                 return
+
         self.save_defaults()
         log.debug("App.final_save() --> App Defaults saved.")
 
-        if self.should_we_quit is True:
+        # save toolbar state to file
+        settings = QSettings("Open Source", "FlatCAM")
+        settings.setValue('saved_gui_state', self.ui.saveState())
+        settings.setValue('maximized_gui', self.ui.isMaximized())
 
-            # save toolbar state to file
-            settings = QSettings("Open Source", "FlatCAM")
-            settings.setValue('saved_gui_state', self.ui.saveState())
-            settings.setValue('maximized_gui', self.ui.isMaximized())
-
-            # This will write the setting to the platform specific storage.
-            del settings
-            log.debug("App.final_save() --> App UI state saved.")
-            QtWidgets.qApp.quit()
+        # This will write the setting to the platform specific storage.
+        del settings
+        log.debug("App.final_save() --> App UI state saved.")
+        QtWidgets.qApp.quit()
 
     def on_toggle_shell(self):
         """
@@ -5861,16 +5859,6 @@ class App(QtCore.QObject):
             exists = True
         except IOError:
             exists = False
-
-        # msg = "Project file exists. Overwrite?"
-        # if exists:
-        #     msgbox = QtWidgets.QMessageBox()
-        #     msgbox.setInformativeText(msg)
-        #     msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel |QtWidgets.QMessageBox.Ok)
-        #     msgbox.setDefaultButton(QtWidgets.QMessageBox.Cancel)
-        #     result = msgbox.exec_()
-        #     if result ==QtWidgets.QMessageBox.Cancel:
-        #         return
 
         if thread is True:
             self.worker_task.emit({'fcn': self.save_project,

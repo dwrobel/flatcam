@@ -2569,6 +2569,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.final_save.emit()
 
+        if self.app.should_we_quit is False:
+            event.ignore()
+
 
 class GeneralPreferencesUI(QtWidgets.QWidget):
     def __init__(self, parent=None):
