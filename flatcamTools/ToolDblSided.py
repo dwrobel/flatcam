@@ -272,7 +272,15 @@ class DblSidedTool(FlatCAMTool):
     def run(self, toggle=True):
         self.app.report_usage("Tool2Sided()")
 
-        FlatCAMTool.run(self, toggle=toggle)
+        if toggle:
+            # if the splitter is hidden, display it, else hide it but only if the current widget is the same
+            if self.app.ui.splitter.sizes()[0] == 0:
+                self.app.ui.splitter.setSizes([1, 1])
+            else:
+                if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
+                    self.app.ui.splitter.setSizes([0, 1])
+
+        FlatCAMTool.run(self)
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("2-Sided Tool"))

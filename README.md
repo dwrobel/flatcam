@@ -20,7 +20,7 @@ CAD program, and create G-Code for Isolation routing.
 - another changes to the final_save() function
 - some strings were left outside the translation formatting - fixed
 - finished the replacement of '_' symbols throughout the app which conflicted with the _() function used by the i18n
-
+- reverted changes in Tools regarding the toggle effect - now they work as expected
 
 10.03.2019
 

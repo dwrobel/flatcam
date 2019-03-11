@@ -69,9 +69,18 @@ class Properties(FlatCAMTool):
 
         if self.app.tool_tab_locked is True:
             return
+
+        if toggle:
+            # if the splitter is hidden, display it, else hide it but only if the current widget is the same
+            if self.app.ui.splitter.sizes()[0] == 0:
+                self.app.ui.splitter.setSizes([1, 1])
+            else:
+                if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
+                    self.app.ui.splitter.setSizes([0, 1])
+
+        FlatCAMTool.run(self)
         self.set_tool_ui()
 
-        FlatCAMTool.run(self, toggle=toggle)
         self.properties()
 
     def install(self, icon=None, separator=None, **kwargs):
