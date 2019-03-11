@@ -63,11 +63,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufilenew = self.menufile.addMenu(QtGui.QIcon('share/file16.png'), _('&New'))
         self.menufilenew.setToolTipsVisible(True)
 
-        self.menufilenewgeo = self.menufilenew.addAction(QtGui.QIcon('share/new_geo16.png'), _('&New Geometry\tN'))
+        self.menufilenewgeo = self.menufilenew.addAction(QtGui.QIcon('share/geometry16.png'), _('Geometry\tN'))
         self.menufilenewgeo.setToolTip(
             _("Will create a new, empty Geometry Object.")
         )
-        self.menufilenewexc = self.menufilenew.addAction(QtGui.QIcon('share/new_geo16.png'), _('New Excellon\tL'))
+        self.menufilenewexc = self.menufilenew.addAction(QtGui.QIcon('share/drill16.png'), _('Excellon\tL'))
         self.menufilenewexc.setToolTip(
             _("Will create a new, empty Excellon Object.")
         )
@@ -566,8 +566,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Tools Toolbar ###
         self.dblsided_btn = self.toolbartools.addAction(QtGui.QIcon('share/doubleside32.png'), _("2Sided Tool"))
-        self.cutout_btn = self.toolbartools.addAction(QtGui.QIcon('share/cut16.png'), _("&Cutout Tool"))
-        self.ncc_btn = self.toolbartools.addAction(QtGui.QIcon('share/flatcam_icon32.png'), _("NCC Tool"))
+        self.cutout_btn = self.toolbartools.addAction(QtGui.QIcon('share/cut16_bis.png'), _("&Cutout Tool"))
+        self.ncc_btn = self.toolbartools.addAction(QtGui.QIcon('share/ncc16.png'), _("NCC Tool"))
         self.paint_btn = self.toolbartools.addAction(QtGui.QIcon('share/paint20_1.png'), _("Paint Tool"))
         self.toolbartools.addSeparator()
 
@@ -1615,8 +1615,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Tools Toolbar ###
         self.dblsided_btn = self.toolbartools.addAction(QtGui.QIcon('share/doubleside32.png'), _("2Sided Tool"))
-        self.cutout_btn = self.toolbartools.addAction(QtGui.QIcon('share/cut16.png'), _("&Cutout Tool"))
-        self.ncc_btn = self.toolbartools.addAction(QtGui.QIcon('share/flatcam_icon32.png'), _("NCC Tool"))
+        self.cutout_btn = self.toolbartools.addAction(QtGui.QIcon('share/cut16_bis.png'), _("&Cutout Tool"))
+        self.ncc_btn = self.toolbartools.addAction(QtGui.QIcon('share/ncc16.png'), _("NCC Tool"))
         self.paint_btn = self.toolbartools.addAction(QtGui.QIcon('share/paint20_1.png'), _("Paint Tool"))
         self.toolbartools.addSeparator()
 

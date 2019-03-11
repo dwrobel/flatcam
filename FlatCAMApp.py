@@ -1760,11 +1760,11 @@ class App(QtCore.QObject):
                                before=self.ui.menueditorigin)
 
         self.cutout_tool = CutOut(self)
-        self.cutout_tool.install(icon=QtGui.QIcon('share/cut16.png'), pos=self.ui.menutool,
+        self.cutout_tool.install(icon=QtGui.QIcon('share/cut16_bis.png'), pos=self.ui.menutool,
                                  before=self.measurement_tool.menuAction)
 
         self.ncclear_tool = NonCopperClear(self)
-        self.ncclear_tool.install(icon=QtGui.QIcon('share/flatcam_icon16.png'), pos=self.ui.menutool,
+        self.ncclear_tool.install(icon=QtGui.QIcon('share/ncc16.png'), pos=self.ui.menutool,
                                  before=self.measurement_tool.menuAction, separator=True)
 
         self.paint_tool = ToolPaint(self)

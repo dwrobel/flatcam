@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+11.03.2019
+
+- changed some icons here and there
+
+
 10.03.2019
 
 - added a fix in the Gerber parser when adding the geometry in the self.apertures dict for the case that the current aperture is None (Allegro does that)
