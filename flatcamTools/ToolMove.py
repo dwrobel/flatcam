@@ -15,7 +15,7 @@ from copy import copy
 import gettext
 import FlatCAMTranslation as fcTranslate
 
-fcTranslate.apply_language('ToolMove')
+fcTranslate.apply_language('strings')
 import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext

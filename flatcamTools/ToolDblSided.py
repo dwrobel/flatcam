@@ -7,7 +7,7 @@ from PyQt5 import QtCore
 import gettext
 import FlatCAMTranslation as fcTranslate
 
-fcTranslate.apply_language('ToolDblSided')
+fcTranslate.apply_language('strings')
 import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
@@ -55,7 +55,7 @@ class DblSidedTool(FlatCAMTool):
             "the specified axis. Does not create a new \n"
             "object, but modifies it.")
         )
-        self.mirror_gerber_button.setFixedWidth(40)
+        self.mirror_gerber_button.setFixedWidth(60)
 
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
         grid_lay.addWidget(self.botlay_label, 0, 0)
@@ -79,7 +79,7 @@ class DblSidedTool(FlatCAMTool):
             "the specified axis. Does not create a new \n"
             "object, but modifies it.")
         )
-        self.mirror_exc_button.setFixedWidth(40)
+        self.mirror_exc_button.setFixedWidth(60)
 
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
         grid_lay.addWidget(self.excobj_label, 2, 0)
@@ -103,7 +103,7 @@ class DblSidedTool(FlatCAMTool):
             "the specified axis. Does not create a new \n"
             "object, but modifies it.")
         )
-        self.mirror_geo_button.setFixedWidth(40)
+        self.mirror_geo_button.setFixedWidth(60)
 
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
         grid_lay.addWidget(self.geoobj_label, 4, 0)
@@ -156,7 +156,7 @@ class DblSidedTool(FlatCAMTool):
             "The (x, y) coordinates are captured by pressing SHIFT key\n"
             "and left mouse button click on canvas or you can enter the coords manually.")
         )
-        self.add_point_button.setFixedWidth(40)
+        self.add_point_button.setFixedWidth(60)
 
         grid_lay.addWidget(self.pb_label, 10, 0)
         grid_lay.addLayout(self.point_box_container, 11, 0, 1, 3)
@@ -207,7 +207,7 @@ class DblSidedTool(FlatCAMTool):
             "- press SHIFT key and left mouse clicking on canvas. Then RMB click in the field and click Paste.\n"
             "- by entering the coords manually in the format: (x1, y1), (x2, y2), ...")
         )
-        self.add_drill_point_button.setFixedWidth(40)
+        self.add_drill_point_button.setFixedWidth(60)
 
         grid_lay1.addWidget(self.alignment_holes, 0, 0, 1, 2)
         grid_lay1.addWidget(self.add_drill_point_button, 0, 3)
@@ -239,14 +239,14 @@ class DblSidedTool(FlatCAMTool):
             "specified alignment holes and their mirror\n"
             "images.")
         )
-        # self.create_alignment_hole_button.setFixedWidth(40)
+        # self.create_alignment_hole_button.setFixedWidth(60)
         grid_lay2.addWidget(self.create_alignment_hole_button, 1,0, 1, 2)
 
         self.reset_button = QtWidgets.QPushButton(_("Reset"))
         self.reset_button.setToolTip(
             _("Resets all the fields.")
         )
-        self.reset_button.setFixedWidth(40)
+        self.reset_button.setFixedWidth(60)
         grid_lay2.addWidget(self.reset_button, 1, 2)
 
         self.layout.addStretch()
@@ -282,6 +282,9 @@ class DblSidedTool(FlatCAMTool):
                         self.app.ui.splitter.setSizes([0, 1])
                 except AttributeError:
                     pass
+        else:
+            if self.app.ui.splitter.sizes()[0] == 0:
+                self.app.ui.splitter.setSizes([1, 1])
 
         FlatCAMTool.run(self)
         self.set_tool_ui()

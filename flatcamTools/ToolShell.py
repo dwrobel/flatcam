@@ -16,7 +16,7 @@ import html
 import gettext
 import FlatCAMTranslation as fcTranslate
 
-fcTranslate.apply_language('ToolShell')
+fcTranslate.apply_language('strings')
 import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext

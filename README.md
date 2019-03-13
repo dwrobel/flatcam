@@ -9,6 +9,13 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+13.03.2019
+
+- made the layout combobox current item from Preferences -> General window to reflect the current layout
+- remade the POT translate file
+- work in progress in translation for Romanian language 44%
+- fix for showing tools by activating them from the Menu - final fix.
+
 11.03.2019
 
 - changed some icons here and there

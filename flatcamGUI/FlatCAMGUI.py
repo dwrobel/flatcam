@@ -21,7 +21,7 @@ from FlatCAMEditor import FCShapeTool
 import gettext
 import FlatCAMTranslation as fcTranslate
 
-fcTranslate.apply_language('FlatCAMGUI')
+fcTranslate.apply_language('strings')
 import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
@@ -47,7 +47,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menu = self.menuBar()
 
         ### File ###
-        self.menufile = self.menu.addMenu('&File')
+        self.menufile = self.menu.addMenu(_('&File'))
         self.menufile.setToolTipsVisible(True)
 
         # New Project
@@ -351,12 +351,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Tool ###
         # self.menutool = self.menu.addMenu('&Tool')
-        self.menutool = QtWidgets.QMenu('&Tool')
+        self.menutool = QtWidgets.QMenu(_('&Tool'))
         self.menutoolaction = self.menu.addMenu(self.menutool)
         self.menutoolshell = self.menutool.addAction(QtGui.QIcon('share/shell16.png'), _('&Command Line\tS'))
 
         ### Help ###
-        self.menuhelp = self.menu.addMenu('&Help')
+        self.menuhelp = self.menu.addMenu(_('&Help'))
         self.menuhelp_manual = self.menuhelp.addAction(QtGui.QIcon('share/globe16.png'), _('Help\tF1'))
         self.menuhelp_home = self.menuhelp.addAction(QtGui.QIcon('share/home16.png'), _('FlatCAM.org'))
         self.menuhelp.addSeparator()
@@ -685,7 +685,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Tool ###
         self.tool_tab = QtWidgets.QWidget()
-        self.tool_tab.setObjectName(_("tool_tab"))
+        self.tool_tab.setObjectName("tool_tab")
         self.tool_tab_layout = QtWidgets.QVBoxLayout(self.tool_tab)
         self.tool_tab_layout.setContentsMargins(2, 2, 2, 2)
         self.notebook.addTab(self.tool_tab, _("Tool"))
@@ -1819,7 +1819,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Rotate Object by 90 degree CCW
                 if key == QtCore.Qt.Key_R:
-                    self.app.on_rotate(silent=True, preset=-self.app.defaults['tools_transform_rotate'])
+                    self.app.on_rotate(silent=True, preset=-float(self.app.defaults['tools_transform_rotate']))
                     return
 
                 # Run a Script
@@ -3033,10 +3033,16 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
             "It is applied immediately.")
         )
         self.layout_combo = FCComboBox()
-        self.layout_combo.addItem(_("Choose ..."))
-        self.layout_combo.addItem(_("Standard"))
-        self.layout_combo.addItem(_("Compact"))
-        self.layout_combo.setCurrentIndex(0)
+        # don't translate the QCombo items as they are used in QSettings and identified by name
+        self.layout_combo.addItem("Standard")
+        self.layout_combo.addItem("Compact")
+
+        # Set the current index for layout_combo
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("layout"):
+            layout = settings.value('layout', type=str)
+            idx = self.layout_combo.findText(layout.capitalize())
+            self.layout_combo.setCurrentIndex(idx)
 
         # Style selection
         self.style_label = QtWidgets.QLabel(_('Style:'))

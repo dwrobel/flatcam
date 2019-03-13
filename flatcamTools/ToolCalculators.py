@@ -13,7 +13,7 @@ import math
 import gettext
 import FlatCAMTranslation as fcTranslate
 
-fcTranslate.apply_language('ToolCalculators')
+fcTranslate.apply_language('strings')
 import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
@@ -248,6 +248,9 @@ class ToolCalculator(FlatCAMTool):
                         self.app.ui.splitter.setSizes([0, 1])
                 except AttributeError:
                     pass
+        else:
+            if self.app.ui.splitter.sizes()[0] == 0:
+                self.app.ui.splitter.setSizes([1, 1])
 
         FlatCAMTool.run(self)
 

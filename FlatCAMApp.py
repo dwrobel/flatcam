@@ -49,7 +49,7 @@ import tclCommands
 import gettext
 import FlatCAMTranslation as fcTranslate
 
-fcTranslate.apply_language('FlatCAMApp')
+fcTranslate.apply_language('strings')
 import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
@@ -838,7 +838,7 @@ class App(QtCore.QObject):
         ##### APPLY APP LANGUAGE ###
         ############################
 
-        ret_val = fcTranslate.apply_language('FlatCAMApp')
+        ret_val = fcTranslate.apply_language('strings')
 
         if ret_val == "no language":
             self.inform.emit(_("[ERROR] Could not find the Language files. The App strings are missing."))
@@ -1641,7 +1641,13 @@ class App(QtCore.QObject):
         if not factory_defaults:
             self.save_factory_defaults(silent=False)
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
-            self.on_layout(index=None, lay='compact')
+            initial_lay = 'compact'
+            self.on_layout(index=None, lay=initial_lay)
+            # Set the combobox in Preferences to the current layout
+            idx = self.app.ui.general_defaults_form.general_gui_set_group.layout_combo.findText(
+                initial_lay.capitalize()
+            )
+            self.app.ui.general_defaults_form.general_gui_set_group.layout_combo.setCurrentIndex(idx)
         factory_file.close()
 
         # and then make the  factory_defaults.FlatConfig file read_only os it can't be modified after creation.
@@ -3853,7 +3859,7 @@ class App(QtCore.QObject):
         filter_group = " G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
                    "All Files (*.*)"
         path, _ = QtWidgets.QFileDialog.getOpenFileName(
-            caption=__('Open file'), directory=self.get_last_folder(), filter=filter_group)
+            caption=_('Open file'), directory=self.get_last_folder(), filter=filter_group)
         if path:
             file = QtCore.QFile(path)
             if file.open(QtCore.QIODevice.ReadOnly):
@@ -7339,10 +7345,9 @@ The normal flow when working in FlatCAM is the following:</span></p>
         App.log.debug("Newer version available.")
         self.message.emit(
             _("Newer Version Available"),
-            _("There is a newer version of FlatCAM available for download:<br><br><b>%s</b><br>%s" % (
-                str(data["name"]), str(data["message"]))
-              ),
-            "info"
+            _("There is a newer version of FlatCAM available for download:\n\n") +
+            "<b>%s</b>" % str(data["name"]) + "\n%s" % str(data["message"]),
+            _("info")
         )
 
     def on_zoom_fit(self, event):
