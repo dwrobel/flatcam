@@ -464,6 +464,10 @@ msgstr ""
 msgid "[success] Origin set ..."
 msgstr ""
 
+#: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:4318
+msgid "Preferences"
+msgstr ""
+
 #: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:4338
 msgid "[WARNING_NOTCL] No object selected to Flip on Y axis."
 msgstr ""
@@ -5449,12 +5453,12 @@ msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4744
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1633
-msgid "z_cut = Z coord for Toolchange"
+msgid "z_cut = Z depth for the cut"
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4745
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1634
-msgid "z_move = Z coord for Toolchange"
+msgid "z_move = Z height for travel"
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4746

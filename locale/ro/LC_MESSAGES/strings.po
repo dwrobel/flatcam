@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-03-13 16:15+0200\n"
-"PO-Revision-Date: 2019-03-14 01:05+0200\n"
+"PO-Revision-Date: 2019-03-16 00:59+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ro\n"
@@ -166,7 +166,7 @@ msgstr ""
 #: D:\1.DEV\FlatCAM_beta\camlib.py:5131 D:\1.DEV\FlatCAM_beta\camlib.py:5221
 #: D:\1.DEV\FlatCAM_beta\camlib.py:5272
 msgid "[ERROR_NOTCL]The loaded Excellon file has no drills ..."
-msgstr "[ERROR_NOTCL] Fisierul Excellon incarcat nu are gauri ..."
+msgstr "[ERROR_NOTCL] Fisierul Excellon incarcat nu are găuri ..."
 
 #: D:\1.DEV\FlatCAM_beta\camlib.py:5226
 msgid "[ERROR_NOTCL] Wrong optimization type selected."
@@ -206,7 +206,7 @@ msgid ""
 "code (Gcode etc)."
 msgstr ""
 "[WARNING] Parametrul >Z deplasare< are o valoare negativa. Reprezinta "
-"inaltimea la care unealta se deplaseaza fra sa taie prin urmare poate fi "
+"Înălţimea la care unealta se deplaseaza fra sa taie prin urmare poate fi "
 "numai pozitiv.\n"
 "Se presupune ca este o eroare de tastare astfel ca aplicatia va converti "
 "intr-o valoare pozitiva. Verifica codul masina (G-Code etc) rezultat."
@@ -544,6 +544,10 @@ msgstr "Executat."
 #: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:4300
 msgid "[success] Origin set ..."
 msgstr "[success] Originea a fost setata ..."
+
+#: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:4318
+msgid "Preferences"
+msgstr "Preferinte"
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:4338
 msgid "[WARNING_NOTCL] No object selected to Flip on Y axis."
@@ -1369,7 +1373,7 @@ msgstr ""
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5015
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:330
 msgid "Tool dia:"
-msgstr "Diametrul unealta:"
+msgstr "Dia unealta:"
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:418
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5017
@@ -1377,9 +1381,8 @@ msgid ""
 "Diameter of the tool to\n"
 "be used in the operation."
 msgstr ""
-"Diametrul uneltei care este\n"
-"utilizata in operatie. Este si\n"
-"latimea de taiere pentru uneltele cilindrice."
+"Diametrul uneltei care este utilizata in operatie. \n"
+"Este si latimea de taiere pentru uneltele cilindrice."
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:427
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4790
@@ -1604,7 +1607,7 @@ msgstr "Oglindire"
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1516
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:28
 msgid "Offset"
-msgstr "Deplasare"
+msgstr "Ofset"
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:618
 msgid "Editor %s"
@@ -1770,7 +1773,7 @@ msgstr "Valoare pentru deplasarea pe axa X."
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:830
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:248
 msgid "Offset X"
-msgstr "Deplasare X"
+msgstr "Ofset pe X"
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:832
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:850
@@ -1797,7 +1800,7 @@ msgstr "Valoare pentru deplasarea pe axa Y."
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:848
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:265
 msgid "Offset Y"
-msgstr "Deplasare Y"
+msgstr "Ofset pe Y"
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:879
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:295
@@ -1928,14 +1931,14 @@ msgstr ""
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:598
 msgid "[ERROR_NOTCL]Wrong value format entered for Offset X, use a number."
 msgstr ""
-"[ERROR_NOTCL] Valoare incorecta intodusa pentru Deplasare X, foloseste un "
+"[ERROR_NOTCL] Valoare incorecta intodusa pentru Ofset pe X, foloseste un "
 "numar Real."
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1229
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:616
 msgid "[ERROR_NOTCL]Wrong value format entered for Offset Y, use a number."
 msgstr ""
-"[ERROR_NOTCL] Valoare incorecta intodusa pentru Deplasare Y, foloseste un "
+"[ERROR_NOTCL] Valoare incorecta intodusa pentru Ofset pe Y, foloseste un "
 "numar Real."
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1247
@@ -2017,12 +2020,12 @@ msgstr "[ERROR_NOTCL] Datorita erorii: %s, Scalarea a fost anulata ..."
 msgid "[WARNING_NOTCL] No shape selected. Please Select a shape to offset!"
 msgstr ""
 "[WARNING_NOTCL] Nici-o forma nu este selectata. Selecteaza o forma pentru a "
-"putea face Deplasare!"
+"putea face Ofset!"
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1443
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:861
 msgid "Applying Offset"
-msgstr "Executie Deplasare"
+msgstr "Executie Ofset"
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1467
 msgid "[success] Offset on the %s axis done ..."
@@ -2053,7 +2056,7 @@ msgstr "[WARNING_NOTCL] Rotatia formei geometrice anulata ..."
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1496
 msgid "Offset on X axis ..."
-msgstr "Deplasare pe axa X ..."
+msgstr "Ofset pe axa X ..."
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1497
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1516
@@ -2070,7 +2073,7 @@ msgstr "[WARNING_NOTCL] Deplasarea formei geometrice pe axa X anulata ..."
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1515
 msgid "Offset on Y axis ..."
-msgstr "Deplasare pe axa Y ..."
+msgstr "Ofset pe axa Y ..."
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:1525
 msgid "[success] Geometry shape offset on Y axis done..."
@@ -2819,7 +2822,7 @@ msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:163
 msgid "Export &Excellon ..."
-msgstr "Exporta &PNG ..."
+msgstr "Exporta Excellon ..."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:166
 msgid ""
@@ -3050,7 +3053,7 @@ msgstr "Comuta Suprafata de lucru\tSHIFT+W"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:354
 msgid "&Tool"
-msgstr "Unealta"
+msgstr "Unelte"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:356
 msgid "&Command Line\tS"
@@ -4837,6 +4840,9 @@ msgid ""
 "First 6 digits are the color and the last 2\n"
 "digits are for alpha (transparency) level."
 msgstr ""
+"Seteaza culoarea pentru obiectele afisate.\n"
+"Primii 6 digiti sunt culoarea efectiva si ultimii\n"
+"doi sunt pentru nivelul de transparenta (alfa)."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2827
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2877
@@ -4846,19 +4852,19 @@ msgstr "Nivel Alfa:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2829
 msgid "Set the fill transparency for plotted objects."
-msgstr ""
+msgstr "Seteaza nivelul de transparenta pentru obiectele afisate."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2846
 msgid "Plot Line:"
-msgstr "Culoare linie afisare:"
+msgstr "Culoare contur:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2848
 msgid "Set the line color for plotted objects."
-msgstr ""
+msgstr "Seteaza culoarea conturului."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2860
 msgid "Sel. Fill:"
-msgstr "Culoare Afisare Selectie:"
+msgstr "Culoare Selectie:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2862
 msgid ""
@@ -4867,22 +4873,30 @@ msgid ""
 "First 6 digits are the color and the last 2\n"
 "digits are for alpha (transparency) level."
 msgstr ""
+"Seteaza culoarea pentru forma de selectare in cazul\n"
+"in care selectia se face de la stanga la dreapta.\n"
+"Primii 6 digiti sunt culoarea efectiva si ultimii\n"
+"doi sunt pentru nivelul de transparenta (alfa)."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2879
 msgid "Set the fill transparency for the 'left to right' selection box."
 msgstr ""
+"Seteaza transparenta formei de selectie cand selectia\n"
+"se face de la stanga la dreapta."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2896
 msgid "Sel. Line:"
-msgstr ""
+msgstr "Contur Selectie:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2898
 msgid "Set the line color for the 'left to right' selection box."
 msgstr ""
+"Seteaza transparenta conturului formei de selectie\n"
+"cand selectia se face de la stanga la dreapta."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2910
 msgid "Sel2. Fill:"
-msgstr ""
+msgstr "Culoare Selectie 2:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2912
 msgid ""
@@ -4891,38 +4905,48 @@ msgid ""
 "First 6 digits are the color and the last 2\n"
 "digits are for alpha (transparency) level."
 msgstr ""
+"Seteaza culoarea pentru forma de selectare in cazul\n"
+"in care selectia se face de la dreapta la stanga.\n"
+"Primii 6 digiti sunt culoarea efectiva si ultimii\n"
+"doi sunt pentru nivelul de transparenta (alfa)."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2929
 msgid "Set the fill transparency for selection 'right to left' box."
 msgstr ""
+"Seteaza transparenta formei de selectie cand selectia\n"
+"se face de la dreapta la stanga."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2946
 msgid "Sel2. Line:"
-msgstr ""
+msgstr "Contur Selectie 2:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2948
 msgid "Set the line color for the 'right to left' selection box."
 msgstr ""
+"Seteaza transparenta conturului formei de selectie\n"
+"cand selectia se face de la dreapta la stanga."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2960
 msgid "Editor Draw:"
-msgstr ""
+msgstr "Desen Editor:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2962
 msgid "Set the color for the shape."
-msgstr ""
+msgstr "Seteaza culoarea pentru forma geometrica din Editor."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2974
 msgid "Editor Draw Sel.:"
-msgstr ""
+msgstr "Sel. Desen Editor:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2976
 msgid "Set the color of the shape when selected."
 msgstr ""
+"Seteaza culoarea formei geometrice in Editor\n"
+"cand se face o selectie."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3023
 msgid "GUI Settings"
-msgstr ""
+msgstr "Setari GUI"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3030
 msgid "Layout:"
@@ -4933,6 +4957,8 @@ msgid ""
 "Select an layout for FlatCAM.\n"
 "It is applied immediately."
 msgstr ""
+"Selecteaza un stil de amplasare a elementelor GUI in FlatCAM.\n"
+"Se aplica imediat."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3048
 msgid "Style:"
@@ -4943,6 +4969,8 @@ msgid ""
 "Select an style for FlatCAM.\n"
 "It will be applied at the next app start."
 msgstr ""
+"Selecteaza un stil pentru FlatCAM.\n"
+"Se va aplica la urmatoarea pornire a aplicatiei."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3061
 msgid "HDPI Support:"
@@ -4953,24 +4981,29 @@ msgid ""
 "Enable High DPI support for FlatCAM.\n"
 "It will be applied at the next app start."
 msgstr ""
+"Activeaza capabilitatea de DPI cu valoare mare.\n"
+"Util pentru monitoarele 4k.\n"
+"Va fi aplicata la urmatorea pornire a aplicatiei."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3076
 msgid "Clear GUI Settings:"
-msgstr "Sterge Setarile GUI:"
+msgstr "Sterge setarile GUI:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3078
 msgid ""
 "Clear the GUI settings for FlatCAM,\n"
 "such as: layout, gui state, style, hdpi support etc."
 msgstr ""
+"Sterge setarile GUI pentru FlatCAM,\n"
+"cum ar fi: amplasare, stare UI, suport HDPI sau traducerea."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3081
 msgid "Clear"
-msgstr ""
+msgstr "Sterge"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3085
 msgid "Hover Shape:"
-msgstr ""
+msgstr "Forma Hover:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3087
 msgid ""
@@ -4978,26 +5011,29 @@ msgid ""
 "It is displayed whenever the mouse cursor is hovering\n"
 "over any kind of not-selected object."
 msgstr ""
+"Activeaza o forma cand se tine mouse-ul deasupra unui obiect\n"
+"in canvas-ul FlatCAM. Forma este afisata doar daca obiectul \n"
+"nu este selectat."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3128
 msgid "Are you sure you want to delete the GUI Settings? \n"
-msgstr ""
+msgstr "Esti sigur ca doresti sa stergi setarile GUI?\n"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3131
 msgid "Clear GUI Settings"
-msgstr ""
+msgstr "Sterge Setarile GUI"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3144
 msgid "[success] GUI settings deleted ..."
-msgstr ""
+msgstr "[success] Setarile GUI au fost sterse ..."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3151
 msgid "App Preferences"
-msgstr ""
+msgstr "Preferintele Aplicatie"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3157
 msgid "<b>Units:</b>"
-msgstr ""
+msgstr "<b>Unitati:</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3158
 msgid ""
@@ -5005,10 +5041,12 @@ msgid ""
 "Whatever is selected here is set every time\n"
 "FLatCAM is started."
 msgstr ""
+"Unitatea de masura pt FlatCAM.\n"
+"Este setata la fiecare pornire a programului."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3165
 msgid "<b>APP. LEVEL:</b>"
-msgstr ""
+msgstr "<b>Nivel aplic.:</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3166
 msgid ""
@@ -5019,31 +5057,37 @@ msgid ""
 "The choice here will influence the parameters in\n"
 "the Selected Tab for all kinds of FlatCAM objects."
 msgstr ""
+"Nivelul default de utilizare pt FlatCAM.\n"
+"Nivel BAZA -> functionalitate simplificata, potrivit pt incepatori\n"
+"Nivel AVANSAT -> functionalitate completa.\n"
+"\n"
+"Alegerea efectuata aici va influenta ce aparamtri sunt disponibili\n"
+"in Tab-ul SELECTAT dar si in alte parti ale FlatCAM."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3171
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3775
 msgid "Basic"
-msgstr ""
+msgstr "Baza"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3172
 msgid "Advanced"
-msgstr ""
+msgstr "Avansat"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3175
 msgid "<b>Languages:</b>"
-msgstr ""
+msgstr "<b>Traduceri:</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3176
 msgid "Set the language used throughout FlatCAM."
-msgstr ""
+msgstr "Seteaza limba folosita pentru textele din FlatCAM."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3179
 msgid "Apply Language"
-msgstr ""
+msgstr "Aplica Traducere"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3182
 msgid "Shell at StartUp:"
-msgstr ""
+msgstr "Shell la pornire:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3184
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3189
@@ -5051,10 +5095,13 @@ msgid ""
 "Check this box if you want the shell to\n"
 "start automatically at startup."
 msgstr ""
+"Bifeaza in cazul in care se doreste pornirea\n"
+"automata a ferestrei Shell (linia de comanda)\n"
+"la initializarea aplicatiei."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3194
 msgid "Version Check:"
-msgstr ""
+msgstr "Verificare versiune:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3196
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3201
@@ -5062,10 +5109,13 @@ msgid ""
 "Check this box if you want to check\n"
 "for a new version automatically at startup."
 msgstr ""
+"Bifeaza daca se doreste verificarea automata\n"
+"daca exista o versiune mai noua,\n"
+"la pornirea aplicatiei."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3206
 msgid "Send Stats:"
-msgstr ""
+msgstr "Statistici:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3208
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3213
@@ -5073,10 +5123,14 @@ msgid ""
 "Check this box if you agree to send anonymous\n"
 "stats automatically at startup, to help improve FlatCAM."
 msgstr ""
+"Bifeaza daca esti de acord ca aplicatia sa trimita la pornire\n"
+"un set de informatii cu privire la modul incare folosesti\n"
+"aplicatia. In acest fel dezvoltatorii vor sti unde sa se focalizeze\n"
+"in crearea de inbunatatiri."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3220
 msgid "<b>Pan Button:</b>"
-msgstr ""
+msgstr "Buton Pan (miscare):"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3221
 msgid ""
@@ -5084,34 +5138,37 @@ msgid ""
 "- MMB --> Middle Mouse Button\n"
 "- RMB --> Right Mouse Button"
 msgstr ""
+"Selecteaza butonul folosit pentru 'miscare':\n"
+"- MMB - butonul din mijloc al mouse-ului\n"
+"- RMB - butonul in dreapta al mouse-ului."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3224
 msgid "MMB"
-msgstr ""
+msgstr "MMB"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3225
 msgid "RMB"
-msgstr ""
+msgstr "RMB"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3228
 msgid "<b>Multiple Sel:</b>"
-msgstr ""
+msgstr "<b>Sel. multipla:</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3229
 msgid "Select the key used for multiple selection."
-msgstr ""
+msgstr "Selecteaza tasta folosita pentru selectia multipla."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3230
 msgid "CTRL"
-msgstr ""
+msgstr "CTRL"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3231
 msgid "SHIFT"
-msgstr ""
+msgstr "SHIFT"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3234
 msgid "Project at StartUp:"
-msgstr ""
+msgstr "Proiect la pornire:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3236
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3241
@@ -5119,10 +5176,12 @@ msgid ""
 "Check this box if you want the project/selected/tool tab area to\n"
 "to be shown automatically at startup."
 msgstr ""
+"Bifeaza aici daca doresti ca zona Notebook sa fie\n"
+"afisata automat la pornire."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3246
 msgid "Project AutoHide:"
-msgstr ""
+msgstr "Ascundere Proiect:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3248
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3254
@@ -5131,10 +5190,13 @@ msgid ""
 "hide automatically when there are no objects loaded and\n"
 "to show whenever a new object is created."
 msgstr ""
+"Bifeaza daca doresti ca zona Notebook sa fie ascunsa automat\n"
+"cand nu sunt obiecte incarcate si sa fie afisata automat\n"
+"cand un obiect nou este creat/incarcat."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3260
 msgid "<b>Enable ToolTips:</b>"
-msgstr ""
+msgstr "<b>Activeaza ToolTip-uri:</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3262
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3267
@@ -5142,20 +5204,25 @@ msgid ""
 "Check this box if you want to have toolTips displayed\n"
 "when hovering with mouse over items throughout the App."
 msgstr ""
+"Bifeaza daca doresti ca sa fie afisate texte explicative cand se\n"
+"tine mouse-ul deasupra diverselor texte din FlatCAM."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3301
 msgid "Save Compressed Project"
-msgstr ""
+msgstr "Salveaza Proiectul comprimat"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3303
 msgid ""
 "Whether to save a compressed or uncompressed project.\n"
 "When checked it will save a compressed FlatCAM project."
 msgstr ""
+"Daca sa se salveze proiectul in mod arhivat.\n"
+"Cand este bifat aici, se va salva o arhiva a proiectului\n"
+"lucru care poate reduce dimensiunea semnificativ."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3314
 msgid "Compression Level:"
-msgstr ""
+msgstr "Nivel compresie:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3316
 msgid ""
@@ -5163,6 +5230,10 @@ msgid ""
 "a FlatCAM project. Higher value means better compression\n"
 "but require more RAM usage and more processing time."
 msgstr ""
+"Nivelul de compresie folosit cand se salveaza un proiect FlatCAM.\n"
+"Valorile posibile sunt [0 ... 9]. Valoarea 0 inseamna compresie minimala\n"
+"dar cu consum redus de resurse in timp ce valoarea 9 cere multa memorie RAM\n"
+"si in plus, dureaza semnificativ mai mult."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3342
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3583
@@ -5173,34 +5244,36 @@ msgstr ""
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:900
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1414
 msgid "<b>Plot Options:</b>"
-msgstr ""
+msgstr "Optiuni afisare:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3349
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3595
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:576
 msgid "Solid"
-msgstr ""
+msgstr "Solid"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3351
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:157
 msgid "Solid color polygons."
-msgstr ""
+msgstr "Poligoane color solide."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3356
 msgid "M-Color"
-msgstr ""
+msgstr "M-Color"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3358
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:165
 msgid "Draw polygons in different colors."
 msgstr ""
+"Deseneaza poligoanele Gerber din multiple culori\n"
+"alese in mod aleator."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3363
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3589
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4242
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:171
 msgid "Plot"
-msgstr ""
+msgstr "Afiseaza"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3365
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4244
@@ -5209,28 +5282,30 @@ msgstr ""
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:946
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1500
 msgid "Plot (show) this object."
-msgstr ""
+msgstr "Afiseaza (arata) acest obiect."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3370
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4251
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4598
 msgid "Circle Steps:"
-msgstr ""
+msgstr "Aprox. Cerc"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3372
 msgid ""
 "The number of circle steps for Gerber \n"
 "circular aperture linear approximation."
 msgstr ""
+"Numarul de segmente utilizate pentru\n"
+"aproximarea lineara a aperturilor Gerber circulare."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3387
 msgid "Gerber Options"
-msgstr ""
+msgstr "Optiuni Gerber"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3391
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:321
 msgid "<b>Isolation Routing:</b>"
-msgstr ""
+msgstr "<b>Izolare:</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3393
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:323
@@ -5238,6 +5313,9 @@ msgid ""
 "Create a Geometry object with\n"
 "toolpaths to cut outside polygons."
 msgstr ""
+"Creaza un obiect tip Geometrie cu trasee\n"
+"care sa fie taiate in afara poligoanelor,\n"
+"urmarindu-le conturul."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3404
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3961
@@ -5245,11 +5323,11 @@ msgstr ""
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:855
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:871
 msgid "Diameter of the cutting tool."
-msgstr ""
+msgstr "Diametrul uneltei taietoare."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3411
 msgid "Width (# passes):"
-msgstr ""
+msgstr "Latime(# treceri):"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3413
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:345
@@ -5257,11 +5335,13 @@ msgid ""
 "Width of the isolation gap in\n"
 "number (integer) of tool widths."
 msgstr ""
+"Latimea spatiului de izolare\n"
+"in numar intreg de grosimi ale uneltei."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3421
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:353
 msgid "Pass overlap:"
-msgstr ""
+msgstr "Suprapunere:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3423
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:355
@@ -5271,11 +5351,15 @@ msgid ""
 "A value here of 0.25 means an overlap of 25% from the tool diameter found "
 "above."
 msgstr ""
+"Cat de mult (in fractii ale diametrului uneltei) sa se suprapuna trecerea "
+"curenta\n"
+"peste cea anterioara. Exemplu:\n"
+"O valoare de 0.25 reprezinta o suprapunere de 25% din diametrul uneltei."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3431
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:365
 msgid "Milling Type:"
-msgstr ""
+msgstr "Tip Frezare:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3433
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:367
@@ -5284,29 +5368,33 @@ msgid ""
 "- climb / best for precision milling and to reduce tool usage\n"
 "- conventional / useful when there is no backlash compensation"
 msgstr ""
+"Tipul de frezare:\n"
+"- urcare -> potrivit pentru frezare de precizie si pt a reduce uzura "
+"uneltei\n"
+"- conventional -> pentru cazul cand nu exista o compensare a 'backlash-ului'"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3438
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:372
 msgid "Climb"
-msgstr ""
+msgstr "Urcare"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3439
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:373
 msgid "Conv."
-msgstr ""
+msgstr "Conv."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3443
 msgid "Combine Passes"
-msgstr ""
+msgstr "Combina"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3445
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:379
 msgid "Combine all passes into one object"
-msgstr ""
+msgstr "Combina toate trecerile intr-un singur obiect"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3450
 msgid "<b>Clear non-copper:</b>"
-msgstr ""
+msgstr "<b>Curata non-cupru:</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3452
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4774
@@ -5315,13 +5403,16 @@ msgid ""
 "Create a Geometry object with\n"
 "toolpaths to cut all non-copper regions."
 msgstr ""
+"Creaza un obiect tip Geometrie cu traiectorii unealta\n"
+"care sa curete de cupru toate zonele unde se doreste sa nu \n"
+"fie cupru."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3461
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3487
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:500
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:534
 msgid "Boundary Margin:"
-msgstr ""
+msgstr "Margine:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3463
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:502
@@ -5331,22 +5422,27 @@ msgid ""
 "objects with this minimum\n"
 "distance."
 msgstr ""
+"Specificati marginea PCB-ului prin desenarea\n"
+"unei forme patratice de jur imprejurul la toate obiectele\n"
+"la o distanta minima cu valoarea din acest camp."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3473
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3496
 msgid "Rounded corners"
-msgstr ""
+msgstr "C. rotunjite"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3475
 msgid ""
 "Creates a Geometry objects with polygons\n"
 "covering the copper-free areas of the PCB."
 msgstr ""
+"Creaza un obiect tip Geometrie continand poligoane\n"
+"care acopera toate suprafetele libere de cupru ale PCB-ului."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3481
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:524
 msgid "<b>Bounding Box:</b>"
-msgstr ""
+msgstr "<b>Forma inconjuratoare::</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3489
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:536
@@ -5354,6 +5450,8 @@ msgid ""
 "Distance of the edges of the box\n"
 "to the nearest polygon."
 msgstr ""
+"Distanta de la marginile formei inconjuratoare\n"
+"pana la cel mai apropiat poligon."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3498
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:546
@@ -5363,14 +5461,16 @@ msgid ""
 "their radius is equal to\n"
 "the margin."
 msgstr ""
+"Daca forma inconjuratoare sa aiba colturi rotunjite.\n"
+"Raza acesor colturi va fi egala cu parametrul Margine."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3512
 msgid "Gerber Adv. Options"
-msgstr ""
+msgstr "Optiuni Av. Gerber"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3516
 msgid "<b>Advanced Param.:</b>"
-msgstr ""
+msgstr "<b>Param. avansati.:</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3518
 msgid ""
@@ -5378,11 +5478,15 @@ msgid ""
 "Those parameters are available only for\n"
 "Advanced App. Level."
 msgstr ""
+"O lista de parametri Gerber avansati.\n"
+"Acesti parametri sunt disponibili doar\n"
+"cand este selectat Nivelul Avansat pentru\n"
+"aplicatie in Preferinte - > General"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3528
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:384
 msgid "\"Follow\""
-msgstr ""
+msgstr "\"Urmareste\""
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3530
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:386
@@ -5391,10 +5495,13 @@ msgid ""
 "This means that it will cut through\n"
 "the middle of the trace."
 msgstr ""
+"Genereaza o geometrie de tip 'urmaritor'.\n"
+"Mai exact, in loc sa se genereze un poligon se va genera o 'linie'.\n"
+"In acest fel se taie prin mijlocul unui traseu si nu in jurul lui."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3538
 msgid "Table Show/Hide"
-msgstr ""
+msgstr "Arata/Ascunde Tabela"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3540
 msgid ""
@@ -5402,10 +5509,13 @@ msgid ""
 "Also, on hide, it will delete all mark shapes\n"
 "that are drawn on canvas."
 msgstr ""
+"Comuta afisarea tabelei de aperturi Gerber.\n"
+"Cand se ascunde aceasta, se vor sterge si toate\n"
+"posibil afisatele marcaje ale aperturilor."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3548
 msgid "Ap. Scale Factor:"
-msgstr ""
+msgstr "Factor scalare ap.:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3550
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:253
@@ -5414,10 +5524,13 @@ msgid ""
 "Factor by which to multiply\n"
 "geometric features of this object."
 msgstr ""
+"Schimba dimensiunea aperturilor selectate.\n"
+"Factor cu care se multiplica geometriile\n"
+"acestui obiect."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3560
 msgid "Ap. Buffer Factor:"
-msgstr ""
+msgstr "Factor bufer ap.:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3562
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:274
@@ -5426,14 +5539,17 @@ msgid ""
 "Factor by which to expand/shrink\n"
 "geometric features of this object."
 msgstr ""
+"Schimba dimensiunea aperturilor selectate.\n"
+"Valoare cu care se mareste/micsoreaza\n"
+"geometriile acestui obiect."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3580
 msgid "Excellon General"
-msgstr ""
+msgstr "Excellon General"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3602
 msgid "<b>Excellon Format:</b>"
-msgstr ""
+msgstr "<b>Formatul Excellon</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3604
 msgid ""
@@ -5457,14 +5573,39 @@ msgid ""
 "Sprint Layout 2:4 INCH LZ\n"
 "KiCAD 3:5 INCH TZ"
 msgstr ""
+"Fisierele de gaurire NC drills numite generic Excellon\n"
+"sunt fisiere care nu respecta clar un format.\n"
+"Fiecare companie si-a aplicat propria viziune asa incat\n"
+"s-a ajuns ca nu se poate face o recunoastere automata\n"
+"a formatului Excellon in fiecare caz.\n"
+"Aici putem seta manual ce format ne asteptam sa gasim,\n"
+"cand coordonatele nu sunt reprezentate cu\n"
+"separator zecimal.\n"
+"\n"
+"Setari posibilie:\n"
+"\n"
+"PROTEUS 3:3 MM LZ\n"
+"DipTrace 5:2 MM TZ\n"
+"DipTrace 4:3 MM LZ\n"
+"\n"
+"EAGLE 3:3 MM TZ\n"
+"EAGLE 4:3 MM TZ\n"
+"EAGLE 2:5 INCH TZ\n"
+"EAGLE 3:5 INCH TZ\n"
+"\n"
+"ALTIUM 2:4 INCH LZ\n"
+"Sprint Layout 2:4 INCH LZ\n"
+"KiCAD 3:5 INCH TZ"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3629
 msgid "INCH:"
-msgstr ""
+msgstr "Inch"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3632
 msgid "Default values for INCH are 2:4"
 msgstr ""
+"Valorile default pentru Inch sunt 2:4\n"
+"adica 2 parti intregi si 4 zecimale."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3640
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3673
@@ -5473,6 +5614,8 @@ msgid ""
 "This numbers signify the number of digits in\n"
 "the whole part of Excellon coordinates."
 msgstr ""
+"Acest numar reprezinta numarul de digiti din partea\n"
+"intreaga a coordonatelor Excellon."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3654
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3687
@@ -5481,18 +5624,22 @@ msgid ""
 "This numbers signify the number of digits in\n"
 "the decimal part of Excellon coordinates."
 msgstr ""
+"Acest numar reprezinta numarul de digiti din partea\n"
+"zecimala a coordonatelor Excellon."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3662
 msgid "METRIC:"
-msgstr ""
+msgstr "Metric"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3665
 msgid "Default values for METRIC are 3:3"
 msgstr ""
+"Valorile default pentru Metric sunt 3:3\n"
+"adica 3 parti intregi si 3 zecimale."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3696
 msgid "Default <b>Zeros</b>:"
-msgstr ""
+msgstr "Suprimare <b>Zero</b>:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3699
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4199
@@ -5503,16 +5650,23 @@ msgid ""
 "If TZ is checked then Trailing Zeros are kept\n"
 "and Leading Zeros are removed."
 msgstr ""
+"Aici se seteaza tipul de suprimare a zerourilor,\n"
+"in cazul unui fisier Excellon.\n"
+"LZ = zerourile din fata numarului sunt pastrate si\n"
+"cele de la final sunt indepartate.\n"
+"TZ = zerourile din fata numarului sunt indepartate si\n"
+"cele de la final sunt pastrate.\n"
+"(Invers fata de fisierele Gerber)."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3707
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4206
 msgid "LZ"
-msgstr ""
+msgstr "LZ"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3708
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4207
 msgid "TZ"
-msgstr ""
+msgstr "TZ"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3710
 msgid ""
@@ -5523,10 +5677,19 @@ msgid ""
 "If TZ is checked then Trailing Zeros are kept\n"
 "and Leading Zeros are removed."
 msgstr ""
+"Aici se seteaza tipul de suprimare a zerourilor,\n"
+"in cazul unui fisier Excellon.\n"
+"Daca nu se poate face detectia automata la parsarea\n"
+"fisierului Excellon, se folosesc aceste valori.\n"
+"LZ = zerourile din fata numarului sunt pastrate si\n"
+"cele de la final sunt indepartate.\n"
+"TZ = zerourile din fata numarului sunt indepartate si\n"
+"cele de la final sunt pastrate.\n"
+"(Invers fata de fisierele Gerber)."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3724
 msgid "Default <b>Units</b>:"
-msgstr ""
+msgstr "<b>Unitati</b> Excellon:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3727
 msgid ""
@@ -5535,16 +5698,22 @@ msgid ""
 "will be used.Some Excellon files don't have an header\n"
 "therefore this parameter will be used."
 msgstr ""
+"Aceasta valoare este valoarea la care se recurge\n"
+"in cazul in care nu se poate determina automat\n"
+"atunci cand se face parsarea fisierlui Excellon.\n"
+"Unele fisiere de gaurire (Excellon) nu au header\n"
+"(unde se gasesc unitatile) si atunci se va folosi\n"
+"aceasta valoare."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3735
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4126
 msgid "INCH"
-msgstr ""
+msgstr "Inch"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3736
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4127
 msgid "MM"
-msgstr ""
+msgstr "MM"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3738
 msgid ""
@@ -5552,14 +5721,20 @@ msgid ""
 "Some Excellon files don't have an header\n"
 "therefore this parameter will be used."
 msgstr ""
+"Aceasta valoare este valoarea la care se recurge\n"
+"in cazul in care nu se poate determina automat\n"
+"atunci cand se face parsarea fisierlui Excellon.\n"
+"Unele fisiere de gaurire (Excellon) nu au header\n"
+"(unde se gasesc unitatile) si atunci se va folosi\n"
+"aceasta valoare."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3754
 msgid "<b>Excellon Optimization:</b>"
-msgstr ""
+msgstr "<b>Optimizarea traseului Excellon:</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3761
 msgid "Algorithm:   "
-msgstr ""
+msgstr "Algoritm:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3764
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3777
@@ -5573,14 +5748,26 @@ msgid ""
 "If DISABLED, then FlatCAM works in 32bit mode and it uses \n"
 "Travelling Salesman algorithm for path optimization."
 msgstr ""
+"Se seteaza tipul de optimizare pentru traiectoria parcursa intre\n"
+"gaurile fisierului Excellon. Avand in vedere posibilul numar mare de găuri,\n"
+"folosirea unei optimizari adecvate poate aduce un castig important in "
+"viteza\n"
+"de procesare CNC.\n"
+"MH = algoritm Google OR Tools cu optimiz. ghidata local meta-heuristic.\n"
+"Durata default pentru optimizare este de 3 secunde.\n"
+"Basic = algoritm Google OR Tools cu optimiz. de baza.\n"
+"\n"
+"Daca ambele sunt dezactivate atunci rulam varainta de FlatCAM pe 32bit\n"
+"care nu este compatibila cu pachetul OR Tools si in acest caz se foloseste\n"
+"algoritmul default: Travelling Salesman (vanzatorul ambulant)."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3774
 msgid "MH"
-msgstr ""
+msgstr "MH"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3789
 msgid "Optimization Time:   "
-msgstr ""
+msgstr "Durata optimiz.:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3792
 msgid ""
@@ -5589,21 +5776,26 @@ msgid ""
 "path optimization. This max duration is set here.\n"
 "In seconds."
 msgstr ""
+"Cand se foloseste optimziarea MH, aceasta valoare\n"
+"reprezinta cat timp se sta pentru fiecare element in\n"
+"incercarea de a afla calea optima."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3833
 msgid "Excellon Options"
-msgstr ""
+msgstr "Optiuni Excellon"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3836
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:654
 msgid "<b>Create CNC Job</b>"
-msgstr ""
+msgstr "<b>Creaza CNCJob</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3838
 msgid ""
 "Parameters used to create a CNC Job object\n"
 "for this drill object."
 msgstr ""
+"Parametrii folositi pentru a crea un obiect FlatCAM tip CNCJob\n"
+"din acest obiect Excellon."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3846
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4302
@@ -5612,7 +5804,7 @@ msgstr ""
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1129
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:108
 msgid "Cut Z:"
-msgstr ""
+msgstr "Z taiere:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3848
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:667
@@ -5620,13 +5812,16 @@ msgid ""
 "Drill depth (negative)\n"
 "below the copper surface."
 msgstr ""
+"Adancimea de taiere (valoare negativa).\n"
+"Daca se foloseste o val. pozitiva, aplicatia\n"
+"va incerca in mod automat sa schimbe semnul."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3855
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4335
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:675
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1165
 msgid "Travel Z:"
-msgstr ""
+msgstr "Z Deplasare:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3857
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:677
@@ -5634,11 +5829,14 @@ msgid ""
 "Tool height when travelling\n"
 "across the XY plane."
 msgstr ""
+"Înălţimea la care unealta se deplaseaza\n"
+"in planul X-Y, fara a efectua taieri, adica\n"
+"in afara materialului."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3865
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4345
 msgid "Tool change:"
-msgstr ""
+msgstr "Schimbare unealta:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3867
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4347
@@ -5647,30 +5845,39 @@ msgid ""
 "Include tool-change sequence\n"
 "in G-Code (Pause for tool change)."
 msgstr ""
+"Include o secventa  de schimbare unealta\n"
+"in codul G-Code (pauza pentru schimbare unealta).\n"
+"De obicei este folosita comanda G-Code M6."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3874
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4355
 msgid "Toolchange Z:"
-msgstr ""
+msgstr "Z schimb. unealta:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3876
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4357
 msgid "Toolchange Z position."
 msgstr ""
+"Înălţimea la care se efectueaza schimbarea uneltei.\n"
+"Poate reprezenta Înălţimea unde se gaseste un\n"
+"'toolchanger' automat sau acolo unde utilizatorul\n"
+"schimba unealta manual."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3882
 msgid "Feedrate:"
-msgstr ""
+msgstr "Feedrate:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3884
 msgid ""
 "Tool speed while drilling\n"
 "(in units per minute)."
 msgstr ""
+"Viteza cu care se misca unealta (burghiul) cand se fac\n"
+"operatii de gaurire. In unitati pe minut."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3892
 msgid "Spindle Speed:"
-msgstr ""
+msgstr "Viteza Motor:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3894
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4387
@@ -5679,13 +5886,17 @@ msgid ""
 "Speed of the spindle\n"
 "in RPM (optional)"
 msgstr ""
+"Viteza cu care se roteste motorul ('Spindle').\n"
+"In RPM (rotatii pe minut).\n"
+"Acest parametru este optional si se poate lasa gol\n"
+"daca nu se foloseste."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3902
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4395
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:759
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1288
 msgid "Dwell:"
-msgstr ""
+msgstr "Pauza:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3904
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4397
@@ -5695,34 +5906,39 @@ msgid ""
 "Pause to allow the spindle to reach its\n"
 "speed before cutting."
 msgstr ""
+"O pauza care permite motorului sa ajunga la turatia specificata,\n"
+"inainte de a incepe miscarea spre pozitia de taiere (gaurire)."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3907
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4400
 msgid "Duration:"
-msgstr ""
+msgstr "Durata:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3909
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4402
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:766
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1297
 msgid "Number of milliseconds for spindle to dwell."
-msgstr ""
+msgstr "Timpul (ori secunde ori milisec) cat se sta in pauza."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3921
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4412
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:774
 msgid "Postprocessor:"
-msgstr ""
+msgstr "Postprocesor:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3923
 msgid ""
 "The postprocessor file that dictates\n"
 "gcode output."
 msgstr ""
+"Un fisier care prelucreaza codul G-Code astfel incat sa\n"
+"respecte un anumit format care sa fie inteles de diverse\n"
+"utilaje. Este responsabil de 'personalizarea' G-Code."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3933
 msgid "<b>Gcode:    </b>"
-msgstr ""
+msgstr "<b>G-Code:</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3935
 msgid ""
@@ -5731,70 +5947,79 @@ msgid ""
 "When choosing 'Slots' or 'Both', slots will be\n"
 "converted to drills."
 msgstr ""
+"Alege ce anume sa fie folot ca sursa pentru generarea de GCode:\n"
+"- Găuri\n"
+"- Sloturi\n"
+"- Ambele.\n"
+"Cand se alege Sloturi sau Ambele, sloturile vor fi convertite in serii de "
+"găuri."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3940
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:626
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:822
 msgid "Drills"
-msgstr ""
+msgstr "Găuri"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3941
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:626
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:823
 msgid "Slots"
-msgstr ""
+msgstr "Sloturi"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3942
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:824
 msgid "Both"
-msgstr ""
+msgstr "Ambele"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3951
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:839
 msgid "<b>Mill Holes</b>"
-msgstr ""
+msgstr "<b>Frezare găuri</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3953
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:841
 msgid "Create Geometry for milling holes."
-msgstr ""
+msgstr "Creaza un obiect tip Geometrie pentru frezarea gaurilor."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3959
 msgid "Drill Tool dia:"
-msgstr ""
+msgstr "Dia. Burghiu Gaurire:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3966
 msgid "Slot Tool dia:"
-msgstr ""
+msgstr "Dia. Freza Slot:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3968
 msgid ""
 "Diameter of the cutting tool\n"
 "when milling slots."
-msgstr ""
+msgstr "Diametrul frezei cand se frezeaza sloturile."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3980
 msgid "Defaults"
-msgstr ""
+msgstr "Val. Implicite"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3993
 msgid "Excellon Adv. Options"
-msgstr ""
+msgstr "Optiuni Avans. Excellon"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:3999
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4435
 msgid "<b>Advanced Options:</b>"
-msgstr ""
+msgstr "<b>Optiuni avansate:</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4001
 msgid ""
 "Parameters used to create a CNC Job object\n"
 "for this drill object that are shown when App Level is Advanced."
 msgstr ""
+"Parametri folositi pentru a crea un obiect CNCJob\n"
+"pt acest obiect Excellon, parametri care sunt disponibili\n"
+"doar in modul Avansat al aplicatiei."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4009
 msgid "Offset Z:"
-msgstr ""
+msgstr "Z ofset:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4011
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:644
@@ -5803,48 +6028,56 @@ msgid ""
 "to create the desired exit hole diameter due of the tip shape.\n"
 "The value here can compensate the Cut Z parameter."
 msgstr ""
+"Unele burghie (in special cele cu diametru mai mare)\n"
+"au nevoie sa gaureasca mai adanc pentru a depasi conul\n"
+"din varful burghiului astfel incat diametrul gaurii de iesire\n"
+"sa fie cel dorit.\n"
+"Valoarea de aici efectueaza o compensare asupr\n"
+"parametrului >Z Taiere<."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4018
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4446
 msgid "Toolchange X,Y:"
-msgstr ""
+msgstr "X,Y schimb. unealta:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4020
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4448
 msgid "Toolchange X,Y position."
-msgstr ""
+msgstr "Pozitia X,Y in format (x,y) unde se face schimbarea uneltei."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4026
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4455
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:704
 msgid "Start move Z:"
-msgstr ""
+msgstr "Z pornire:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4028
 msgid ""
 "Height of the tool just after start.\n"
 "Delete the value if you don't need this feature."
 msgstr ""
+"Înălţimea uneltei imediat dupa ce se porneste operatia CNC.\n"
+"Lasa casuta goala daca nu se foloseste."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4035
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4465
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:714
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1211
 msgid "End move Z:"
-msgstr ""
+msgstr "Z oprire:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4037
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4467
 msgid ""
 "Height of the tool after\n"
 "the last move at the end of the job."
-msgstr ""
+msgstr "Înălţimea la care se parcheaza freza dupa ce se termina lucrul."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4044
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4475
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:735
 msgid "Feedrate Rapids:"
-msgstr ""
+msgstr "Feedrate rapizi:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4046
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:737
@@ -5855,13 +6088,17 @@ msgid ""
 "It is useful only for Marlin,\n"
 "ignore for any other cases."
 msgstr ""
+"Viteza de gaurire, in unitati pe minut.\n"
+"Corespunde comenzii G0 si este utila doar pentru\n"
+"printerul 3D Marlin, implicit cand se foloseste fisierul\n"
+"postprocesor: Marlin. Ignora aceasta parametru in rest."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4057
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4499
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:785
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1320
 msgid "Probe Z depth:"
-msgstr ""
+msgstr "Z sonda:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4059
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4501
@@ -5871,25 +6108,27 @@ msgid ""
 "The maximum depth that the probe is allowed\n"
 "to probe. Negative value, in current units."
 msgstr ""
+"Adancimea maxima la care este permis sondei sa coboare.\n"
+"Are o valoare negativa, in unitatile curente."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4067
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4509
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:797
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1334
 msgid "Feedrate Probe:"
-msgstr ""
+msgstr "Feedrate sonda:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4069
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4511
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:799
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1336
 msgid "The feedrate used while the probe is probing."
-msgstr ""
+msgstr "Viteza sondei cand aceasta coboara."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4075
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4518
 msgid "Fast Plunge:"
-msgstr ""
+msgstr "Plonjare rapida:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4077
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4520
@@ -5899,10 +6138,19 @@ msgid ""
 "meaning the fastest speed available.\n"
 "WARNING: the move is done at Toolchange X,Y coords."
 msgstr ""
+"Prin bifarea de aici, miscarea de la Înălţimea unde se face schimbarea "
+"uneltei\n"
+"pana la Înălţimea unde se face deplasarea intre taieri, se va face cu "
+"comanda G0.\n"
+"Aceasta inseamna ca se va folosi viteza maxima disponibila.\n"
+"\n"
+"ATENTIE: miscarea aceasta pe verticala se face la coordonatele X, Y unde se "
+"schimba\n"
+"unealta. Daca aveti ceva plasat sub unealta ceva se va strica."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4086
 msgid "Fast Retract:"
-msgstr ""
+msgstr "Retragere rapida:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4088
 msgid ""
@@ -5913,33 +6161,45 @@ msgid ""
 " - When checked the travel from Z cut (cut depth) to Z_move\n"
 "(travel height) is done as fast as possible (G0) in one move."
 msgstr ""
+"Strategia de evacuare a gaurii tocmai gaurite.\n"
+"- cand nu este bifat, burghiul va iesi din gaura cu viteza feedrate "
+"setata, \n"
+"G1, pana ajunge la nivelul zero, ulterior ridicandu-se pana la Înălţimea de "
+"deplasare\n"
+"cu viteza maxima G0\n"
+"- cand este bifat, burghiul se va deplasa de la adancimea de taiere pana la "
+"adancimea\n"
+"de deplasare cu viteza maxima G0, intr-o singura miscare."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4107
 msgid "Excellon Export"
-msgstr ""
+msgstr "Export Excellon"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4110
 msgid "<b>Export Options:</b>"
-msgstr ""
+msgstr "<b>Optiuni Export::</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4112
 msgid ""
 "The parameters set here are used in the file exported\n"
 "when using the File -> Export -> Export Excellon menu entry."
 msgstr ""
+"Acesti parametri listati aici sunt folositi atunci cand\n"
+"se exporta un fisier Excellon folosind:\n"
+"File -> Exporta -> Exporta Excellon"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4121
 msgid "<b>Units</b>:"
-msgstr ""
+msgstr "<b>Unitati</b>:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4123
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4129
 msgid "The units used in the Excellon file."
-msgstr ""
+msgstr "Unitatile de masura folosite in fisierul Excellon."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4135
 msgid "<b>Int/Decimals:</b>"
-msgstr ""
+msgstr "<b>Int/Zecimale:</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4137
 msgid ""
@@ -5948,10 +6208,14 @@ msgid ""
 "Here we set the format used when the provided\n"
 "coordinates are not using period."
 msgstr ""
+"Fisierele NC, numite usual fisiere Excellon\n"
+"sunt fisiere care pot fi gasite in diverse formate.\n"
+"Aici se seteaza formatul Excellon cand nu se utilizeaza\n"
+"coordonate cu zecimale."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4173
 msgid "<b>Format:</b>"
-msgstr ""
+msgstr "<b>Format:</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4175
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4185
@@ -5963,18 +6227,27 @@ msgid ""
 "Also it will have to be specified if LZ = leading zeros are kept\n"
 "or TZ = trailing zeros are kept."
 msgstr ""
+"Selectati tipul formatului de coordonate folosit.\n"
+"Coordonatele se pot salva cu punct zecimal sau fara.\n"
+"Cand nu se foloseste punctul zecimal ca separator intre\n"
+"partea intreaga si partea zecimala, este necesar sa se\n"
+"specifice numarul de digiti folosit pentru partea intreaga\n"
+"si numarul de digiti folosit pentru partea zecimala.\n"
+"Trebuie specificat si modul in care sunt tratate zerourile:\n"
+"- LZ = zerourile prefix sunt pastrate si cele sufix eliminate\n"
+"- TZ = zerourile prefix sunt eliminate si cele sufix pastrate."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4182
 msgid "Decimal"
-msgstr ""
+msgstr "Cu dec."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4183
 msgid "No-Decimal"
-msgstr ""
+msgstr "Fara dec."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4196
 msgid "<b>Zeros</b>:"
-msgstr ""
+msgstr "<b>Zero-uri</b>:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4209
 msgid ""
@@ -5984,38 +6257,43 @@ msgid ""
 "If TZ is checked then Trailing Zeros are kept\n"
 "and Leading Zeros are removed."
 msgstr ""
+"Acesta este tipul implicit de zero-uri Excellon.\n"
+"- LZ = zerourile prefix sunt pastrate si cele sufix eliminate\n"
+"- TZ = zerourile prefix sunt eliminate si cele sufix pastrate."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4235
 msgid "Geometry General"
-msgstr ""
+msgstr "Geometrie General"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4253
 msgid ""
 "The number of circle steps for <b>Geometry</b> \n"
 "circle and arc shapes linear approximation."
 msgstr ""
+"Numarul de segmente utilizate pentru\n"
+"aproximarea lineara a <b>Geometriilor</b> circulare."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4261
 msgid "<b>Tools</b>"
-msgstr ""
+msgstr "<b>Unelte</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4268
 msgid "Tool dia:                   "
-msgstr ""
+msgstr "Dia Unealta:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4270
 msgid ""
 "The diameter of the cutting\n"
 "tool.."
-msgstr ""
+msgstr "Diametrul uneltei taietoare ..."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4285
 msgid "Geometry Options"
-msgstr ""
+msgstr "Optiuni Geometrie"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4290
 msgid "<b>Create CNC Job:</b>"
-msgstr ""
+msgstr "<b>Creaza CNCJob:</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4292
 msgid ""
@@ -6023,6 +6301,8 @@ msgid ""
 "tracing the contours of this\n"
 "Geometry object."
 msgstr ""
+"Creaza un obiect CNCJob care urmareste conturul\n"
+"acestui obiect tip Geometrie."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4304
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1131
@@ -6030,18 +6310,22 @@ msgid ""
 "Cutting depth (negative)\n"
 "below the copper surface."
 msgstr ""
+"Adancimea la care se taie sub suprafata de cupru.\n"
+"Valoare negativa."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4312
 msgid "Multidepth"
-msgstr ""
+msgstr "MultiPas"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4314
 msgid "Multidepth usage: True or False."
 msgstr ""
+"Daca se folosesc sau nu pasi multipli de taiere\n"
+"pentru a ajunge la adancimea de taiere."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4319
 msgid "Depth/Pass:"
-msgstr ""
+msgstr "Adanc./Trecere"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4321
 msgid ""
@@ -6051,6 +6335,10 @@ msgid ""
 "it is a fraction from the depth\n"
 "which has negative value."
 msgstr ""
+"Adancimea la care se taie la fiecare trecere,\n"
+"atunci cand >MultiPas< este folosit.\n"
+"Valoarea este pozitiva desi reprezinta o fractie\n"
+"a adancimii de taiere care este o valoare negativa."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4337
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1167
@@ -6058,11 +6346,13 @@ msgid ""
 "Height of the tool when\n"
 "moving without cutting."
 msgstr ""
+"Înălţimea la care se misca unealta cand nu taie,\n"
+"deasupra materialului."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4364
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1223
 msgid "Feed Rate X-Y:"
-msgstr ""
+msgstr "Feedrate X-Y:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4366
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1225
@@ -6070,10 +6360,12 @@ msgid ""
 "Cutting speed in the XY\n"
 "plane in units per minute"
 msgstr ""
+"Viteza de taiere in planul X-Y\n"
+"in unitati pe minut."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4374
 msgid "Feed Rate Z:"
-msgstr ""
+msgstr "Feedrate Z:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4376
 msgid ""
@@ -6081,34 +6373,44 @@ msgid ""
 "plane in units per minute.\n"
 "It is called also Plunge."
 msgstr ""
+"Viteza de taiere in planul Z\n"
+"in unitati pe minut.\n"
+"Mai este numita si viteza de plonjare."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4385
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:749
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1275
 msgid "Spindle speed:"
-msgstr ""
+msgstr "Viteza motor:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4414
 msgid ""
 "The postprocessor file that dictates\n"
 "Machine Code output."
 msgstr ""
+"Un fisier care prelucreaza codul G-Code astfel incat sa\n"
+"respecte un anumit format care sa fie inteles de diverse\n"
+"utilaje. Este responsabil de 'personalizarea' G-Code."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4430
 msgid "Geometry Adv. Options"
-msgstr ""
+msgstr "Optiuni Avans. Geometrie"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4437
 msgid ""
 "Parameters to create a CNC Job object\n"
 "tracing the contours of a Geometry object."
 msgstr ""
+"Parametrii folositi pentru a crea un obiect CNCJob,\n"
+"urmarind contururile unui obiect tip Geometrie."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4457
 msgid ""
 "Height of the tool just after starting the work.\n"
 "Delete the value if you don't need this feature."
 msgstr ""
+"Înălţimea uneltei la care se gaseste la inceputul lucrului.\n"
+"Lasa campul gol daca nu folosesti aceasta."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4477
 msgid ""
@@ -6118,10 +6420,14 @@ msgid ""
 "It is useful only for Marlin,\n"
 "ignore for any other cases."
 msgstr ""
+"Viteza de taiere in planul X-Y, in unitati pe minut,\n"
+"in legatura cu comanda G00.\n"
+"Este utila doar cand se foloseste cu un printer 3D Marlin,\n"
+"pentru toate celelalte cazuri ignora acest parametru."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4489
 msgid "Re-cut 1st pt."
-msgstr ""
+msgstr "Re-taiere 1-ul pt."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4491
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1265
@@ -6131,10 +6437,14 @@ msgid ""
 "meet with last cut, we generate an\n"
 "extended cut over the first cut section."
 msgstr ""
+"Bifeaza daca se doreste o siguranta ca resturile de cupru\n"
+"care pot ramane acolo unde se intalneste inceputul taierii\n"
+"cu sfarsitul acesteia (este vorba de un contur), sunt eliminate\n"
+"prin taierea peste acest punct."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4530
 msgid "Seg. X size:"
-msgstr ""
+msgstr "Dim. seg X."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4532
 msgid ""
@@ -6142,10 +6452,14 @@ msgid ""
 "Useful for auto-leveling.\n"
 "A value of 0 means no segmentation on the X axis."
 msgstr ""
+"Dimensiunea segmentului de traseu pe axa X.\n"
+"Folositor pentru auto-nivelare.\n"
+"O valoare de 0 inseamnaca nu se face segmentare\n"
+"pe axa X."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4541
 msgid "Seg. Y size:"
-msgstr ""
+msgstr "Dim. seg Y."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4543
 msgid ""
@@ -6153,21 +6467,25 @@ msgid ""
 "Useful for auto-leveling.\n"
 "A value of 0 means no segmentation on the Y axis."
 msgstr ""
+"Dimensiunea segmentului de traseu pe axa Y.\n"
+"Folositor pentru auto-nivelare.\n"
+"O valoare de 0 inseamnaca nu se face segmentare\n"
+"pe axa Y."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4559
 msgid "CNC Job General"
-msgstr ""
+msgstr "CNCJob General"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4572
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:614
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:944
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1498
 msgid "Plot Object"
-msgstr ""
+msgstr "Afiseaza"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4579
 msgid "Plot kind:"
-msgstr ""
+msgstr "Tip afisare:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4581
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1419
@@ -6177,52 +6495,63 @@ msgid ""
 "above the work piece or it can be of type 'Cut',\n"
 "which means the moves that cut into the material."
 msgstr ""
+"Aici se poate selecta tipul de afisare a geometriilor.\n"
+"Acestea pot fi:\n"
+"- Travel -> miscarile deasupra materialului\n"
+"- Taiere -> miscarile in material, taiere\n"
+"- Amandoua"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4589
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1429
 msgid "Travel"
-msgstr ""
+msgstr "Travel"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4600
 msgid ""
 "The number of circle steps for <b>GCode</b> \n"
 "circle and arc shapes linear approximation."
 msgstr ""
+"Numarul de segmente utilizate pentru\n"
+"aproximarea lineara a reprezentarilor <b>GCodului</b> circular."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4610
 msgid ""
 "Diameter of the tool to be\n"
 "rendered in the plot."
-msgstr ""
+msgstr "Diametrul uneltei care sa fie redat prin afisare."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4618
 msgid "Coords dec.:"
-msgstr ""
+msgstr "Coord. zec.:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4620
 msgid ""
 "The number of decimals to be used for \n"
 "the X, Y, Z coordinates in CNC code (GCODE, etc.)"
 msgstr ""
+"Numarul de zecimale care sa fie folosit in \n"
+"coordonatele X,Y,Z in codul CNC (GCode etc)."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4628
 msgid "Feedrate dec.:"
-msgstr ""
+msgstr "Feedrate zec.:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4630
 msgid ""
 "The number of decimals to be used for \n"
 "the Feedrate parameter in CNC code (GCODE, etc.)"
 msgstr ""
+"Numarul de zecimale care sa fie folosit in \n"
+"parametrul >Feedrate< in codul CNC (GCode etc)."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4645
 msgid "CNC Job Options"
-msgstr ""
+msgstr "Optiuni CNCJob"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4648
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4689
 msgid "<b>Export G-Code:</b>"
-msgstr ""
+msgstr "<b>Exporta G-Code:</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4650
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4691
@@ -6231,20 +6560,24 @@ msgid ""
 "Export and save G-Code to\n"
 "make this object to a file."
 msgstr ""
+"Exporta si salveaza codul G-Code intr-un fisier\n"
+"care este salvat pe HDD."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4656
 msgid "Prepend to G-Code:"
-msgstr ""
+msgstr "Adauga la inceputul G-Code:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4658
 msgid ""
 "Type here any G-Code commands you would\n"
 "like to add at the beginning of the G-Code file."
 msgstr ""
+"Adauga aici orice comenzi G-Code care se doreste sa fie\n"
+"inserate la inceputul codului G-Code."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4667
 msgid "Append to G-Code:"
-msgstr ""
+msgstr "Adauga la sfarsitul G-Code:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4669
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1555
@@ -6253,15 +6586,17 @@ msgid ""
 "like to append to the generated file.\n"
 "I.e.: M2 (End of program)"
 msgstr ""
+"Adauga aici orice comenzi G-Code care se doreste sa fie\n"
+"inserate la sfarsitul codului G-Code."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4686
 msgid "CNC Job Adv. Options"
-msgstr ""
+msgstr "Optiuni Avans. CNCJob"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4697
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1574
 msgid "Toolchange G-Code:"
-msgstr ""
+msgstr "G-Code pt schimb unealta:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4699
 msgid ""
@@ -6270,11 +6605,15 @@ msgid ""
 "This will constitute a Custom Toolchange GCode,\n"
 "or a Toolchange Macro."
 msgstr ""
+"Adauga aici orice comenzi G-Code care se doreste sa fie\n"
+"inserate in codul G-Code atunci cand se intalneste comanda M6.\n"
+"Comanda M6 este inlocuita.\n"
+"Aceata va constitui un macro pentru schimbul uneltelor."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4713
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1596
 msgid "Use Toolchange Macro"
-msgstr ""
+msgstr "Fol. Macro schimb unealta"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4715
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1598
@@ -6282,6 +6621,8 @@ msgid ""
 "Check this box if you want to use\n"
 "a Custom Toolchange GCode (macro)."
 msgstr ""
+"Bifeaza aici daca doresti sa folosesti Macro pentru\n"
+"schimb unelte."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4727
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1614
@@ -6290,75 +6631,78 @@ msgid ""
 "in the Toolchange event.\n"
 "They have to be surrounded by the '%' symbol"
 msgstr ""
+"O lista de variabile FlatCAM care se pot folosi in evenimentul \n"
+"de schimb al uneltei (cand se intalneste comanda M6).\n"
+"Este necesar sa fie inconjurate de simbolul '%'."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4734
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1623
 msgid "Parameters"
-msgstr ""
+msgstr "Parametri"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4737
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1626
 msgid "FlatCAM CNC parameters"
-msgstr ""
+msgstr "Parametri FlatCAM CNC"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4738
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1627
 msgid "tool = tool number"
-msgstr ""
+msgstr "tool = numarul uneltei"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4739
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1628
 msgid "tooldia = tool diameter"
-msgstr ""
+msgstr "tooldia = dimaetrul uneltei"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4740
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1629
 msgid "t_drills = for Excellon, total number of drills"
-msgstr ""
+msgstr "t_drills = pt Excellom, numarul total de operatii gaurire"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4741
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1630
 msgid "x_toolchange = X coord for Toolchange"
-msgstr ""
+msgstr "x_toolchange = coord. X pt schimb unealta"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4742
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1631
 msgid "y_toolchange = Y coord for Toolchange"
-msgstr ""
+msgstr "y_toolchange = coord. Y pt schimb unealta"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4743
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1632
 msgid "z_toolchange = Z coord for Toolchange"
-msgstr ""
+msgstr "z_toolchange = Z coord for Toolchange"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4744
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1633
-msgid "z_cut = Z coord for Toolchange"
-msgstr ""
+msgid "z_cut = Z depth for the cut"
+msgstr "z_cut = Z adancimea de taiere"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4745
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1634
-msgid "z_move = Z coord for Toolchange"
-msgstr ""
+msgid "z_move = Z height for travel"
+msgstr "z_move = Z Înălţimea deplasare"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4746
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1635
 msgid "z_depthpercut = the step value for multidepth cut"
-msgstr ""
+msgstr "z_depthpercut = pasul pentru taierea progresiva"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4747
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1636
 msgid "spindlesspeed = the value for the spindle speed"
-msgstr ""
+msgstr "spindlesspeed = valoarea viteza motor"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4748
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1637
 msgid "dwelltime = time to dwell to allow the spindle to reach it's set RPM"
-msgstr ""
+msgstr "dwelltime = durata de asteptare ca motorul sa ajunga la turatia setata"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4769
 msgid "NCC Tool Options"
-msgstr ""
+msgstr "Optiuni Unealta NCC"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4772
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4873
@@ -6369,16 +6713,16 @@ msgstr ""
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5365
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5492
 msgid "<b>Parameters:</b>"
-msgstr ""
+msgstr "<b>Parametri:</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4782
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5503
 msgid "Tools dia:"
-msgstr ""
+msgstr "Dia unealta:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4784
 msgid "Diameters of the cutting tools, separated by ','"
-msgstr ""
+msgstr "Diametrele pentru unelte taietoare, separate cu virgula"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4792
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolNonCopperClear.py:166
@@ -6394,11 +6738,22 @@ msgid ""
 "Higher values = slow processing and slow execution on CNC\n"
 "due of too many paths."
 msgstr ""
+"Cat de mult (fractie) din diametrul uneltei sa se suprapuna la fiecare "
+"trecere a uneltei.\n"
+"Exemplu:\n"
+"O valoare aici de 0.25 inseamna 25% din diametrul uneltei de mai sus..\n"
+"\n"
+"Ajusteaza valoarea incepand de la valori mici\n"
+"si pe urma creste daca ariile care ar trebui >curatate< inca\n"
+"nu sunt procesate.\n"
+"Valori scazute = procesare rapida,executie rapida a PCB-ului.\n"
+"Valori mari= procesare lenta cat si o executie la fel de lenta a PCB-ului,\n"
+"datorita numarului mai mare de treceri-taiere."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4808
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolNonCopperClear.py:182
 msgid "Bounding box margin."
-msgstr ""
+msgstr "Marginea pentru forma inconjuratoare."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4817
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolNonCopperClear.py:191
@@ -6408,12 +6763,15 @@ msgid ""
 "<BR><B>Seed-based</B>: Outwards from seed.<BR><B>Line-based</B>: Parallel "
 "lines."
 msgstr ""
+"Algoritm pt curatare de cupru:<BR><B>Standard</B>: Pas fix spre interior."
+"<BR><B>Punct-samanta</B>: De la punctul samanta, spre expterior.<BR><B>Linii "
+"drepte</B>: Linii paralele."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4849
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolNonCopperClear.py:223
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:222
 msgid "Rest M.:"
-msgstr ""
+msgstr "Rest M.:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4851
 msgid ""
@@ -6424,10 +6782,18 @@ msgid ""
 "could not be cleared by previous tool.\n"
 "If not checked, use the standard algorithm."
 msgstr ""
+"Daca este bifat, foloste 'rest machining'.\n"
+"Mai exact, se va curata cuprul din afara traseelor,\n"
+"folosind mai intai unealta cu diametrul cel mai mare\n"
+"apoi folosindu-se progresiv unelte cu diametrul tot\n"
+"mai mic, din cele disponibile in tabela de unelte, pt a\n"
+"curata zonele care nu s-au putut curata cu unealta\n"
+"precedenta.\n"
+"Daca nu este bifat, foloseste algoritmul standard."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4870
 msgid "Cutout Tool Options"
-msgstr ""
+msgstr "Optiuni Unealta Decupare"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4875
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:472
@@ -6436,17 +6802,20 @@ msgid ""
 "the PCB and separate it from\n"
 "the original board."
 msgstr ""
+"Creaza taieturi de jur inprejurul PCB-ului,\n"
+"lasand punti pentru a separa PCB-ul de \n"
+"placa din care a fost taiat."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4894
 msgid ""
 "Distance from objects at which\n"
 "to draw the cutout."
-msgstr ""
+msgstr "Distanta de obiecte la care sa se deseneze forma taietoare."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4901
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCutOut.py:96
 msgid "Gap size:"
-msgstr ""
+msgstr "Dim. punte:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4903
 msgid ""
@@ -6454,11 +6823,14 @@ msgid ""
 "that will remain to hold the\n"
 "board in place."
 msgstr ""
+"Dimensiunea puntilor in trecerile de taiere\n"
+"care vor mentine PCB-ul in pozitie, fara sa cada\n"
+"din placa 'mama' dupa decupare."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4911
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCutOut.py:125
 msgid "Gaps:"
-msgstr ""
+msgstr "Punti:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4913
 msgid ""
@@ -6472,58 +6844,69 @@ msgid ""
 "- 2tb  - 2*top + 2*bottom\n"
 "- 8     - 2*left + 2*right +2*top + 2*bottom"
 msgstr ""
+"Numarul de punti folosite in decupare.\n"
+"Pot fi un numar maxim de 8 punti aranjate in felul\n"
+"urmator:\n"
+"- lr = stanga -dreapta\n"
+"- tb = sus - jos\n"
+"- 4 = stanga -dreapta - sus - jos\n"
+"- 2lr = 2* stanga - 2* dreapta\n"
+"- 2tb = 2* sus - 2* jos\n"
+"- 8 = 2* stanga - 2* dreapta - 2* sus - 2* jos"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4940
 msgid "2Sided Tool Options"
-msgstr ""
+msgstr "Optiuni Unealta 2Fețe"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4945
 msgid ""
 "A tool to help in creating a double sided\n"
 "PCB using alignment holes."
 msgstr ""
+"O unealta care ajuta in crearea de PCB-uri cu 2 fețe\n"
+"folosind găuri de aliniere."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4955
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:227
 msgid "Drill diam.:"
-msgstr ""
+msgstr "Dia gaura:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4957
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:218
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:229
 msgid "Diameter of the drill for the alignment holes."
-msgstr ""
+msgstr "Diametrul gaurii pentru gaurile de aliniere."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4964
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4965
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4966
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:116
 msgid "Mirror Axis:"
-msgstr ""
+msgstr "Axe oglindire:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4968
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:118
 msgid "Mirror vertically (X) or horizontally (Y)."
-msgstr ""
+msgstr "Oglindeste vertical (X) sau orizontal (Y)."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4977
 msgid "Point"
-msgstr ""
+msgstr "Punct"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4978
 msgid "Box"
-msgstr ""
+msgstr "Forma"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4979
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolDblSided.py:129
 msgid "Axis Ref:"
-msgstr ""
+msgstr "Axa de ref.:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4981
 msgid ""
@@ -6531,10 +6914,12 @@ msgid ""
 " a specified <b>box</b> (in a Geometry object) in \n"
 "the middle."
 msgstr ""
+"Axa de referinta ar trebui sa treaza printr-un <b>punct</b> ori sa strabata\n"
+" o <b>forma</b> (specificata un obiect tip Geometrie) prin mijloc."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:4997
 msgid "Paint Tool Options"
-msgstr ""
+msgstr "Optiuni Unealta Paint"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5004
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1368
@@ -6544,29 +6929,36 @@ msgid ""
 "all copper). You will be asked\n"
 "to click on the desired polygon."
 msgstr ""
+"Creaza treceri taietoare pentru a acoperi\n"
+"intreaga arie a unui poligon (pentru a indeparta\n"
+"to cuprul, spre ex.). Cand se actioneaza peste un\n"
+"singur poligon se va cere sa faceti click pe poligonul\n"
+"dorit."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5028
 msgid ""
 "How much (fraction) of the tool\n"
 "width to overlap each tool pass."
 msgstr ""
+"Cat de mult (o fractie din diametrul uneltei) din diametrul uneltei,\n"
+"(latimea de taiere) sa se suprapuna peste trecerea anteioara."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5082
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPaint.py:237
 msgid "Selection:"
-msgstr ""
+msgstr "Selectie:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5084
 msgid "How to select the polygons to paint."
-msgstr ""
+msgstr "Cum sa se selecteze poligoanele de pictat (paint)."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5088
 msgid "Single"
-msgstr ""
+msgstr "Unic"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5102
 msgid "Film Tool Options"
-msgstr ""
+msgstr "Optiuni Unealta Film"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5107
 msgid ""
@@ -6574,19 +6966,21 @@ msgid ""
 "FlatCAM object.\n"
 "The file is saved in SVG format."
 msgstr ""
+"Creaza un film PCB dintr-un obiect Gerber sau tip Geometrie.\n"
+"Fisierul este salvat in format SVG."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5116
 msgid "Pos"
-msgstr ""
+msgstr "Pozitiv"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5117
 msgid "Neg"
-msgstr ""
+msgstr "Negativ"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5118
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolFilm.py:116
 msgid "Film Type:"
-msgstr ""
+msgstr "Tip film:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5120
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolFilm.py:118
@@ -6598,11 +6992,15 @@ msgid ""
 "with white on a black canvas.\n"
 "The Film format is SVG."
 msgstr ""
+"Genereaza un film negru Pozitiv sau un film Negativ.\n"
+"Pozitiv = traseele vor fi negre pe un fundal alb.\n"
+"Negativ = traseele vor fi albe pe un fundal negru.\n"
+"Formatul fisierului pt filmul salvat este SVG."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5131
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolFilm.py:130
 msgid "Border:"
-msgstr ""
+msgstr "Bordura:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5133
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolFilm.py:132
@@ -6616,11 +7014,16 @@ msgid ""
 "white color like the rest and which may confound with the\n"
 "surroundings if not for this border."
 msgstr ""
+"Specifica o bordura de jur imprejurul obiectului.\n"
+"Doar pt filmele negative.\n"
+"Ajuta daca folosim in Obiect Forma acelasi obiect ca in Obiect Film.\n"
+"Va crea o bara solida neagra in jurul printului efectiv permitand o\n"
+"delimitare exacta"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5146
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolFilm.py:144
 msgid "Scale Stroke:"
-msgstr ""
+msgstr "Scaleaza contur:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5148
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolFilm.py:146
@@ -6630,10 +7033,12 @@ msgid ""
 "thinner,\n"
 "therefore the fine features may be more affected by this parameter."
 msgstr ""
+"Scaleaza grosimea conturului fiecarui element din fisierul SVG.\n"
+"Elementele mai mici vor fi afectate mai mult."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5163
 msgid "Panelize Tool Options"
-msgstr ""
+msgstr "Optiuni Unealta Panelizare"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5168
 msgid ""
@@ -6641,11 +7046,14 @@ msgid ""
 "each element is a copy of the source object spaced\n"
 "at a X distance, Y distance of each other."
 msgstr ""
+"Creaza un obiect care contine o arie de (linii, coloane) elemente,\n"
+"unde fiecare element este o copie a obiectului sursa, separat la o\n"
+"distanta X, Y unul de celalalt."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5179
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPanelize.py:113
 msgid "Spacing cols:"
-msgstr ""
+msgstr "Sep. coloane:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5181
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPanelize.py:115
@@ -6653,11 +7061,13 @@ msgid ""
 "Spacing between columns of the desired panel.\n"
 "In current units."
 msgstr ""
+"Spatiul de separare intre coloane.\n"
+"In unitatile curente."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5189
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPanelize.py:122
 msgid "Spacing rows:"
-msgstr ""
+msgstr "Sep. linii:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5191
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPanelize.py:124
@@ -6665,39 +7075,41 @@ msgid ""
 "Spacing between rows of the desired panel.\n"
 "In current units."
 msgstr ""
+"Spatiul de separare intre linii.\n"
+"In unitatile curente."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5199
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPanelize.py:131
 msgid "Columns:"
-msgstr ""
+msgstr "Coloane:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5201
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPanelize.py:133
 msgid "Number of columns of the desired panel"
-msgstr ""
+msgstr "Numarul de coloane ale panel-ului dorit."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5208
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPanelize.py:139
 msgid "Rows:"
-msgstr ""
+msgstr "Linii:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5210
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPanelize.py:141
 msgid "Number of rows of the desired panel"
-msgstr ""
+msgstr "Numarul de linii ale panel-ului dorit."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5216
 msgid "Gerber"
-msgstr ""
+msgstr "Gerber"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5217
 msgid "Geo"
-msgstr ""
+msgstr "Geo"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5218
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPanelize.py:148
 msgid "Panel Type:"
-msgstr ""
+msgstr "Tip panel:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5220
 msgid ""
@@ -6705,10 +7117,13 @@ msgid ""
 "- Gerber\n"
 "- Geometry"
 msgstr ""
+"Alege tipul obiectului panel:\n"
+"- Gerber\n"
+"- Geometrie"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5229
 msgid "Constrain within:"
-msgstr ""
+msgstr "Constrange:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5231
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPanelize.py:160
@@ -6719,11 +7134,16 @@ msgid ""
 "the final panel will have as many columns and rows as\n"
 "they fit completely within selected area."
 msgstr ""
+"Arie definita de Dx si Dy in care se constrange panel-ul.\n"
+"Dx si Dy sunt valori in unitati curente.\n"
+"Indiferent de cat de multe coloane si/sau linii sunt selectate mai sus\n"
+"panelul final va contine numai acel numar de linii/coloane care se inscrie\n"
+"complet in aria desemnata."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5240
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPanelize.py:169
 msgid "Width (DX):"
-msgstr ""
+msgstr "Latime (Dx):"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5242
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPanelize.py:171
@@ -6731,11 +7151,13 @@ msgid ""
 "The width (DX) within which the panel must fit.\n"
 "In current units."
 msgstr ""
+"Latimea (Dx) in care panelul trebuie sa se inscrie.\n"
+"In unitati curente."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5249
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPanelize.py:177
 msgid "Height (DY):"
-msgstr ""
+msgstr "Inaltime (Dy):"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5251
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPanelize.py:179
@@ -6743,14 +7165,16 @@ msgid ""
 "The height (DY)within which the panel must fit.\n"
 "In current units."
 msgstr ""
+"Înălţimea (Dy) in care panelul trebuie sa se inscrie.\n"
+"In unitati curente."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5265
 msgid "Calculators Tool Options"
-msgstr ""
+msgstr "Optiuni Unealta Calculatoare"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5268
 msgid "<b>V-Shape Tool Calculator:</b>"
-msgstr ""
+msgstr "<b>Calculator: Unealta V-shape</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5270
 msgid ""
@@ -6758,37 +7182,46 @@ msgid ""
 "having the tip diameter, tip angle and\n"
 "depth-of-cut as parameters."
 msgstr ""
+"Calculeaza diametrul pentru o unealta V-Shape data,\n"
+"avand diametrul varfului si unghiul la varf cat si\n"
+"adancimea de taiere, ca parametri."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5281
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:94
 msgid "Tip Diameter:"
-msgstr ""
+msgstr "Dia varf:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5283
 msgid ""
 "This is the tool tip diameter.\n"
 "It is specified by manufacturer."
 msgstr ""
+"Acesta este diametrul la varf al uneltei.\n"
+"Este specificat de producator."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5291
 msgid "Tip angle:"
-msgstr ""
+msgstr "Unghiul la varf:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5293
 msgid ""
 "This is the angle on the tip of the tool.\n"
 "It is specified by manufacturer."
 msgstr ""
+"Acesta este unghiul la varf al uneltei.\n"
+"Este specificat de producator."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5303
 msgid ""
 "This is depth to cut into material.\n"
 "In the CNCJob object it is the CutZ parameter."
 msgstr ""
+"Aceasta este adancimea la care se taie in material.\n"
+"In obiectul CNCJob este parametrul >Z taiere<."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5310
 msgid "<b>ElectroPlating Calculator:</b>"
-msgstr ""
+msgstr "<b>Calculator Electroplacare:</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5312
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:152
@@ -6797,31 +7230,40 @@ msgid ""
 "using a method like grahite ink or calcium hypophosphite ink or palladium "
 "chloride."
 msgstr ""
+"Acest calculator este util pentru aceia care placheaza găuri/vias\n"
+"folosind o metoda cum ar fi:\n"
+"- cerneala grafitate (carbon)\n"
+"- clorura paladiu\n"
+"- hipofosfit de calciu"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5322
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:161
 msgid "Board Length:"
-msgstr ""
+msgstr "Lungimea placii:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5324
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:165
 msgid "This is the board length. In centimeters."
 msgstr ""
+"Aceasta este lungimea PCB-ului.\n"
+"In centimetri. "
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5330
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:167
 msgid "Board Width:"
-msgstr ""
+msgstr "Latimea placii:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5332
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:171
 msgid "This is the board width.In centimeters."
 msgstr ""
+"Aceasta este latimea PCB-ului.\n"
+"In centimetri. "
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5337
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:173
 msgid "Current Density:"
-msgstr ""
+msgstr "Densitatea de curent:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5340
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:177
@@ -6829,11 +7271,13 @@ msgid ""
 "Current density to pass through the board. \n"
 "In Amps per Square Feet ASF."
 msgstr ""
+"Densitatea de curent care sa treaca prin placa.\n"
+"In ASF (amperi pe picior la patrat)."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5346
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:181
 msgid "Copper Growth:"
-msgstr ""
+msgstr "Grosime Cupru:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5349
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolCalculators.py:185
@@ -6841,62 +7285,73 @@ msgid ""
 "How thick the copper growth is intended to be.\n"
 "In microns."
 msgstr ""
+"Cat de gros se doreste sa fie stratul de cupru depus.\n"
+"In microni."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5362
 msgid "Transform Tool Options"
-msgstr ""
+msgstr "Optiuni Unealta Transformare"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5367
 msgid ""
 "Various transformations that can be applied\n"
 "on a FlatCAM object."
 msgstr ""
+"Diverse transformari care pot fi aplicate\n"
+"asupra unui obiect FlatCAM. Cum ar fi:\n"
+"- rotatie,\n"
+"- scalare,\n"
+"- ofset,\n"
+"- deformare\n"
+"- oglindire"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5377
 msgid "Rotate Angle:"
-msgstr ""
+msgstr "Unghi Rotatie:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5379
 msgid "Angle for rotation. In degrees."
-msgstr ""
+msgstr "Unnghiul pentru rotatie. In grade."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5386
 msgid "Skew_X angle:"
-msgstr ""
+msgstr "Unghi Deform_X:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5388
 msgid "Angle for Skew/Shear on X axis. In degrees."
-msgstr ""
+msgstr "Unghiul pentru deformare pe axa X. In grade."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5395
 msgid "Skew_Y angle:"
-msgstr ""
+msgstr "Unghi Deform_Y:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5397
 msgid "Angle for Skew/Shear on Y axis. In degrees."
-msgstr ""
+msgstr "Unghiul pentru deformare pe axa Y. In grade."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5404
 msgid "Scale_X factor:"
-msgstr ""
+msgstr "Factor Scal_X:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5406
 msgid "Factor for scaling on X axis."
-msgstr ""
+msgstr "Factor de scalare pe axa X."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5413
 msgid "Scale_Y factor:"
-msgstr ""
+msgstr "Factor Scal_Y:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5415
 msgid "Factor for scaling on Y axis."
-msgstr ""
+msgstr "Factor de scalare pe axa Y."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5423
 msgid ""
 "Scale the selected object(s)\n"
 "using the Scale_X factor for both axis."
 msgstr ""
+"Scaleaza obiectele selectate folosind\n"
+"Factor Scal_X pentru ambele axe."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5431
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:210
@@ -6906,26 +7361,31 @@ msgid ""
 "and the center of the biggest bounding box\n"
 "of the selected objects when unchecked."
 msgstr ""
+"Scaleaza obiectele selectate folosind\n"
+"originea ca referinta atunci cand este bifat.\n"
+"Cand nu este bifat, foloseste ca referinta\n"
+"centrul formei inconjuatoare care cuprinde\n"
+"toate obiectele selectate."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5440
 msgid "Offset_X val:"
-msgstr ""
+msgstr "Ofset_X:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5442
 msgid "Distance to offset on X axis. In current units."
-msgstr ""
+msgstr "Distanta la care se face ofset pe axa X. In unitatile curente."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5449
 msgid "Offset_Y val:"
-msgstr ""
+msgstr "Ofset_Y:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5451
 msgid "Distance to offset on Y axis. In current units."
-msgstr ""
+msgstr "Distanta la care se face ofset pe axa Y. In unitatile curente."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5457
 msgid "Mirror Reference"
-msgstr ""
+msgstr "Referinta Oglindire"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5459
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:314
@@ -6940,10 +7400,20 @@ msgid ""
 "Or enter the coords in format (x, y) in the\n"
 "Point Entry field and click Flip on X(Y)"
 msgstr ""
+"Oglindeste obiectele selectate in jurul punctului\n"
+"de referinta.\n"
+"\n"
+"Coordonatele punctului se pot obtine prin click pe \n"
+"canvas simultan cu apasarea tastei SHIFT.\n"
+"Apoi apasa pe butonul >Adauga< pentru a insera\n"
+"coordonatele.\n"
+"Alternativ se pot introduce coordonatele manual,\n"
+"in forma (x, y).\n"
+"La final apasa butonul de oglindire pe axa dorita. "
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5470
 msgid " Mirror Ref. Point:"
-msgstr ""
+msgstr "Pt. Ref. Oglindire:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5472
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolTransform.py:327
@@ -6952,64 +7422,72 @@ msgid ""
 "The 'x' in (x, y) will be used when using Flip on X and\n"
 "the 'y' in (x, y) will be used when using Flip on Y and"
 msgstr ""
+"Coordonatele in format (x, y) ale punctului de referitna pentru\n"
+"oglindire.\n"
+"X din (x,y) se va folosi cand se face oglndirea pe axa X\n"
+"Y din (x,y) se va folosi cand se face oglindirea pe axa Y."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5489
 msgid "SolderPaste Tool Options"
-msgstr ""
+msgstr "Optiuni Unealta Pasta Fludor"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5494
 msgid ""
 "A tool to create GCode for dispensing\n"
 "solder paste onto a PCB."
 msgstr ""
+"O unealta care creaza cod G-Code pentru dispensarea de pasta de fludor\n"
+"pe padurile unui PCB."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5505
 msgid "Diameters of nozzle tools, separated by ','"
-msgstr ""
+msgstr "Diametrele uneltelor (nozzle), separate prin virgula."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5512
 msgid "<b>New Nozzle Dia:</b>"
-msgstr ""
+msgstr "<b>Nou Dia::</b>"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5514
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:103
 msgid "Diameter for the new Nozzle tool to add in the Tool Table"
 msgstr ""
+"Valoarea pentru diametrul unei noi unelte (nozzle) pentru adaugare in Tabela "
+"de Unelte"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5522
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:166
 msgid "Z Dispense Start:"
-msgstr ""
+msgstr "Z start disp.:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5524
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:168
 msgid "The height (Z) when solder paste dispensing starts."
-msgstr ""
+msgstr "Înălţimea (Z) cand incepe dispensarea de pasta de fludor."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5531
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:174
 msgid "Z Dispense:"
-msgstr ""
+msgstr "Z disp.:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5533
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:176
 msgid "The height (Z) when doing solder paste dispensing."
-msgstr ""
+msgstr "Înălţimea (Z) in timp ce se face dispensarea de pasta de fludor."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5540
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:183
 msgid "Z Dispense Stop:"
-msgstr ""
+msgstr "Z stop disp.:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5542
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:185
 msgid "The height (Z) when solder paste dispensing stops."
-msgstr ""
+msgstr "Înălţimea (Z) cand se oprste dispensarea de pasta de fludor."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5549
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:191
 msgid "Z Travel:"
-msgstr ""
+msgstr "Z deplasare:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5551
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:193
@@ -7017,21 +7495,23 @@ msgid ""
 "The height (Z) for travel between pads\n"
 "(without dispensing solder paste)."
 msgstr ""
+"Înălţimea (Z) cand se face deplasare intre pad-uri.\n"
+"(fara dispensare de pasta de fludor)."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5559
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:200
 msgid "Z Toolchange:"
-msgstr ""
+msgstr "Z schimb. unealta:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5561
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:202
 msgid "The height (Z) for tool (nozzle) change."
-msgstr ""
+msgstr "Înălţimea (Z) cand se schimba unealta (nozzle-ul)."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5568
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:208
 msgid "XY Toolchange:"
-msgstr ""
+msgstr "XY schimb unealta:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5570
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:210
@@ -7039,21 +7519,23 @@ msgid ""
 "The X,Y location for tool (nozzle) change.\n"
 "The format is (x, y) where x and y are real numbers."
 msgstr ""
+"Coordonatele X, Y pentru schimbarea uneltei (nozzle).\n"
+"Formatul este (x,y) unde x si y sunt numere Reale."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5578
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:217
 msgid "Feedrate X-Y:"
-msgstr ""
+msgstr "Feedrate X-Y:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5580
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:219
 msgid "Feedrate (speed) while moving on the X-Y plane."
-msgstr ""
+msgstr "Viteza de deplasare a uneltei cand se deplaseaza in planul X-Y."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5587
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:225
 msgid "Feedrate Z:"
-msgstr ""
+msgstr "Feedrate Z:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5589
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:227
@@ -7061,11 +7543,12 @@ msgid ""
 "Feedrate (speed) while moving vertically\n"
 "(on Z plane)."
 msgstr ""
+"Viteza de deplasare a uneltei cand se misca in plan vertical (planul Z)."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5597
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:234
 msgid "Feedrate Z Dispense:"
-msgstr ""
+msgstr "Feedrate Z disp.:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5599
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:236
@@ -7073,11 +7556,13 @@ msgid ""
 "Feedrate (speed) while moving up vertically\n"
 " to Dispense position (on Z plane)."
 msgstr ""
+"Viteza de deplasare la miscarea pe verticala spre\n"
+"pozitia de dispensare (in planul Z)."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5607
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:243
 msgid "Spindle Speed FWD:"
-msgstr ""
+msgstr "Viteza motor inainte:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5609
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:245
@@ -7085,21 +7570,23 @@ msgid ""
 "The dispenser speed while pushing solder paste\n"
 "through the dispenser nozzle."
 msgstr ""
+"Viteza motorului de dispensare in timp ce impinge pasta de fludor\n"
+"prin orificiul uneltei de dispensare."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5617
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:252
 msgid "Dwell FWD:"
-msgstr ""
+msgstr "Pauza dupa disp.:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5619
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:254
 msgid "Pause after solder dispensing."
-msgstr ""
+msgstr "Pauza dupa dispensarea de pasta de fludor."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5626
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:260
 msgid "Spindle Speed REV:"
-msgstr ""
+msgstr "Viteza motor reverse:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5628
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:262
@@ -7107,6 +7594,8 @@ msgid ""
 "The dispenser speed while retracting solder paste\n"
 "through the dispenser nozzle."
 msgstr ""
+"Viteza motorului de dispensare in timp ce retrage pasta de fludor\n"
+"prin orificiul uneltei de dispensare."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:5636
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolSolderPaste.py:269
@@ -7391,13 +7880,15 @@ msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:5575
 msgid "[ERROR_NOTCL] G-code does not have a units code: either G20 or G21"
-msgstr ""
+msgstr "[ERROR_NOTCL] G-code nu contine codul pt unitati: G20 sau G21"
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:5588
 msgid ""
 "[ERROR_NOTCL] Cancelled. The Toolchange Custom code is enabled but it's "
 "empty."
 msgstr ""
+"[ERROR_NOTCL] Anulat. Codul G-Code din Macro-ul Schimbare unealta este "
+"activat dar nuc contine nimic."
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:5595
 msgid "[success] Toolchange G-code was replaced by a custom code."
@@ -7510,7 +8001,7 @@ msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:193
 msgid "Apertures Table for the Gerber Object."
-msgstr ""
+msgstr "Tabela aperturi pt. obiectul Gerber."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:202
 msgid ""
@@ -7521,7 +8012,7 @@ msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:213
 msgid "Mark All"
-msgstr ""
+msgstr "March. tot."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:215
 msgid ""
@@ -7529,32 +8020,34 @@ msgid ""
 "When unchecked, it will delete all mark shapes\n"
 "that are drawn on canvas."
 msgstr ""
+"Cand este bifat se vor afisa toate aperturile.\n"
+"Cand este debifat se vor sterge toate marcajele de aperturi."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:227
 msgid "Code"
-msgstr ""
+msgstr "Cod"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:227
 msgid "Dim"
-msgstr ""
+msgstr "Dim"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:227
 msgid "Size"
-msgstr ""
+msgstr "Dimens."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:227
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:958
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:1516
 msgid "Type"
-msgstr ""
+msgstr "Tip"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:231
 msgid "Index"
-msgstr ""
+msgstr "Index"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:233
 msgid "Aperture Code"
-msgstr ""
+msgstr "Cod"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:235
 msgid "Type of aperture: circular, rectangle, macros etc"
@@ -7562,7 +8055,7 @@ msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:237
 msgid "Aperture Size:"
-msgstr ""
+msgstr "Dim. aper."
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:239
 msgid ""
@@ -7577,7 +8070,7 @@ msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:251
 msgid "Scale Factor:"
-msgstr ""
+msgstr "Factor scalare:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:266
 msgid "Perform scaling operation on the selected apertures."
@@ -7585,11 +8078,11 @@ msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:272
 msgid "Buffer Factor:"
-msgstr ""
+msgstr "Factor bufer:"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:285
 msgid "Buffer"
-msgstr ""
+msgstr "Bufer"
 
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\ObjectUI.py:287
 msgid "Perform buffer operation on the selected apertures."

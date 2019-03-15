@@ -519,6 +519,10 @@ msgstr "Done."
 msgid "[success] Origin set ..."
 msgstr "[success] Origin set ..."
 
+#: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:4318
+msgid "Preferences"
+msgstr "Preferences"
+
 #: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:4338
 msgid "[WARNING_NOTCL] No object selected to Flip on Y axis."
 msgstr "[WARNING_NOTCL] No object selected to Flip on Y axis."

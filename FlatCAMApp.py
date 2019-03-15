@@ -4315,7 +4315,7 @@ class App(QtCore.QObject):
     def on_preferences(self):
 
         # add the tab if it was closed
-        self.ui.plot_tab_area.addTab(self.ui.preferences_tab, "Preferences")
+        self.ui.plot_tab_area.addTab(self.ui.preferences_tab, _("Preferences"))
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")

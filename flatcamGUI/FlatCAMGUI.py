@@ -4741,8 +4741,8 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         self.tc_variable_combo.setItemData(4, _("x_toolchange = X coord for Toolchange"), Qt.ToolTipRole)
         self.tc_variable_combo.setItemData(5, _("y_toolchange = Y coord for Toolchange"), Qt.ToolTipRole)
         self.tc_variable_combo.setItemData(6, _("z_toolchange = Z coord for Toolchange"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(7, _("z_cut = Z coord for Toolchange"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(8, _("z_move = Z coord for Toolchange"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(7, _("z_cut = Z depth for the cut"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(8, _("z_move = Z height for travel"), Qt.ToolTipRole)
         self.tc_variable_combo.setItemData(9, _("z_depthpercut = the step value for multidepth cut"), Qt.ToolTipRole)
         self.tc_variable_combo.setItemData(10, _("spindlesspeed = the value for the spindle speed"), Qt.ToolTipRole)
         self.tc_variable_combo.setItemData(11, _("dwelltime = time to dwell to allow the spindle to reach it's set RPM"),

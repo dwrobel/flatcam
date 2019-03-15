@@ -730,6 +730,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
     def on_paint_button_click(self):
         self.app.report_usage(_("geometry_on_paint_button"))
+        self.app.call_source = 'paint'
 
         self.app.inform.emit(_("[WARNING_NOTCL]Click inside the desired polygon."))
         try:
@@ -819,7 +820,6 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         # Which polygon.
         # poly = find_polygon(self.solid_geometry, inside_pt)
-
         poly = obj.find_polygon(inside_pt)
         paint_method = self.paintmethod_combo.get_value()
 
@@ -888,7 +888,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             geo_obj.solid_geometry = []
 
             try:
-                a, b, c, d = poly.bounds()
+                a, b, c, d = poly.bounds
                 geo_obj.options['xmin'] = a
                 geo_obj.options['ymin'] = b
                 geo_obj.options['xmax'] = c

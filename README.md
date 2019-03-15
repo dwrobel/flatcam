@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+16.03.2019
+
+- fixed bug in Paint Tool - Single Poly: no geometry was generated
+- work in progress for translation in Romanian - 70%
+
 13.03.2019
 
 - made the layout combobox current item from Preferences -> General window to reflect the current layout
