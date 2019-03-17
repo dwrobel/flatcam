@@ -2478,7 +2478,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     if ok:
                         self.app.exc_editor.on_tool_add(tooldia=val)
                         self.app.inform.emit(
-                            _("[success]Added new tool with dia: %s %s") % ('%.4f' % float(val), str(self.units)))
+                            _("[success]Added new tool with dia: {dia} {units}").format(dia='%.4f' % float(val), units=str(self.units)))
                     else:
                         self.app.inform.emit(
                             _("[WARNING_NOTCL] Adding Tool cancelled ..."))

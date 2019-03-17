@@ -2537,7 +2537,7 @@ class App(QtCore.QObject):
             return_value = initialize(obj, self)
         except Exception as e:
             msg = _("[ERROR_NOTCL] An internal error has ocurred. See shell.\n")
-            msg += _("Object (%s) failed because: %s \n\n") % (kind, str(e))
+            msg += _("Object ({kind}) failed because: {error} \n\n").format(kind=kind, error=str(e))
             msg += traceback.format_exc()
             self.inform.emit(msg)
 
@@ -2615,17 +2615,17 @@ class App(QtCore.QObject):
         # self.inform.emit('[selected] %s created & selected: %s' %
         #                  (str(obj.kind).capitalize(), str(obj.options['name'])))
         if obj.kind == 'gerber':
-            self.inform.emit('_([selected]%s created/selected: <span style="color:%s;">%s</span>' %
-                             (obj.kind.capitalize(), 'green', str(obj.options['name'])))
+            self.inform.emit(_('[selected]{kind} created/selected: <span style="color:{color};">{name}</span>').format(
+                kind=obj.kind.capitalize(), color='green', name=str(obj.options['name'])))
         elif obj.kind == 'excellon':
-            self.inform.emit(_('[selected]%s created/selected: <span style="color:%s;">%s</span>') %
-                             (obj.kind.capitalize(), 'brown', str(obj.options['name'])))
+            self.inform.emit(_('[selected]{kind} created/selected: <span style="color:{color};">{name}</span>').format(
+                kind=obj.kind.capitalize(), color='brown', name=str(obj.options['name'])))
         elif obj.kind == 'cncjob':
-            self.inform.emit(_('[selected]%s created/selected: <span style="color:%s;">%s</span>') %
-                             (obj.kind.capitalize(), 'blue', str(obj.options['name'])))
+            self.inform.emit(_('[selected]{kind} created/selected: <span style="color:{color};">{name}</span>').format(
+                kind=obj.kind.capitalize(), color='blue', name=str(obj.options['name'])))
         elif obj.kind == 'geometry':
-            self.inform.emit(_('[selected]%s created/selected: <span style="color:%s;">%s</span>') %
-                             (obj.kind.capitalize(), 'red', str(obj.options['name'])))
+            self.inform.emit(_('[selected]{kind} created/selected: <span style="color:{color};">{name}</span>').format(
+                kind=obj.kind.capitalize(), color='red', name=str(obj.options['name'])))
 
         # update the SHELL auto-completer model with the name of the new object
         self.myKeywords.append(obj.options['name'])
@@ -4987,17 +4987,17 @@ class App(QtCore.QObject):
                         # self.inform.emit('[selected] %s: %s selected' %
                         #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
                         if curr_sel_obj.kind == 'gerber':
-                            self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
-                                             ('green', str(curr_sel_obj.options['name'])))
+                            self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                                color='green', name=str(curr_sel_obj.options['name'])))
                         elif curr_sel_obj.kind == 'excellon':
-                            self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
-                                             ('brown', str(curr_sel_obj.options['name'])))
+                            self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                                color='brown', name=str(curr_sel_obj.options['name'])))
                         elif curr_sel_obj.kind == 'cncjob':
-                            self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
-                                             ('blue', str(curr_sel_obj.options['name'])))
+                            self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                                color='blue', name=str(curr_sel_obj.options['name'])))
                         elif curr_sel_obj.kind == 'geometry':
-                            self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
-                                             ('red', str(curr_sel_obj.options['name'])))
+                            self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                                color='red', name=str(curr_sel_obj.options['name'])))
 
                     elif self.collection.get_active().options['name'] not in objects_under_the_click_list:
                         self.collection.set_all_inactive()
@@ -5010,17 +5010,17 @@ class App(QtCore.QObject):
                         # self.inform.emit('[selected] %s: %s selected' %
                         #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
                         if curr_sel_obj.kind == 'gerber':
-                            self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
-                                             ('green', str(curr_sel_obj.options['name'])))
+                            self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                                color='green', name=str(curr_sel_obj.options['name'])))
                         elif curr_sel_obj.kind == 'excellon':
-                            self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
-                                             ('brown', str(curr_sel_obj.options['name'])))
+                            self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                                color='brown', name=str(curr_sel_obj.options['name'])))
                         elif curr_sel_obj.kind == 'cncjob':
-                            self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
-                                             ('blue', str(curr_sel_obj.options['name'])))
+                            self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                                color='blue', name=str(curr_sel_obj.options['name'])))
                         elif curr_sel_obj.kind == 'geometry':
-                            self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
-                                             ('red', str(curr_sel_obj.options['name'])))
+                            self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                                color='red', name=str(curr_sel_obj.options['name'])))
 
                     else:
                         self.collection.set_all_inactive()
@@ -5058,17 +5058,17 @@ class App(QtCore.QObject):
                     # self.inform.emit('[selected] %s: %s selected' %
                     #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
                     if curr_sel_obj.kind == 'gerber':
-                        self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
-                                         ('green', str(curr_sel_obj.options['name'])))
+                        self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                            color='green', name=str(curr_sel_obj.options['name'])))
                     elif curr_sel_obj.kind == 'excellon':
-                        self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
-                                         ('brown', str(curr_sel_obj.options['name'])))
+                        self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                            color='brown', name=str(curr_sel_obj.options['name'])))
                     elif curr_sel_obj.kind == 'cncjob':
-                        self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
-                                         ('blue', str(curr_sel_obj.options['name'])))
+                        self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                            color='blue', name=str(curr_sel_obj.options['name'])))
                     elif curr_sel_obj.kind == 'geometry':
-                        self.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
-                                         ('red', str(curr_sel_obj.options['name'])))
+                        self.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                            color='red', name=str(curr_sel_obj.options['name'])))
 
                     # for obj in self.collection.get_list():
                     #     obj.plot()
@@ -5849,7 +5849,7 @@ class App(QtCore.QObject):
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Save Project As ..."),
-                directory=_('%s/Project_%s') % (str(self.get_last_save_folder()), str(self.date.replace('-', ''))),
+                directory=_('{l_save}/Project_{date}').format(l_save=str(self.get_last_save_folder()), date=str(self.date.replace('-', ''))),
                 filter=filter_)
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Project As ..."), filter=filter_)
@@ -6537,7 +6537,7 @@ class App(QtCore.QObject):
                 self.inform.emit(_('[ERROR_NOTCL] Failed to open file: %s') % filename)
                 return "fail"
             except ParseError as err:
-                app_obj.inform.emit(_("[ERROR_NOTCL] Failed to parse file: %s. %s") % (filename,  str(err)))
+                app_obj.inform.emit(_("[ERROR_NOTCL] Failed to parse file: {name}. {error}").format(name=filename,  error=str(err)))
                 app_obj.progress.emit(0)
                 self.log.error(str(err))
                 return "fail"

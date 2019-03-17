@@ -1631,8 +1631,8 @@ class CNCObjectUI(ObjectUI):
         self.tc_variable_combo.setItemData(4, _("x_toolchange = X coord for Toolchange"), Qt.ToolTipRole)
         self.tc_variable_combo.setItemData(5, _("y_toolchange = Y coord for Toolchange"), Qt.ToolTipRole)
         self.tc_variable_combo.setItemData(6, _("z_toolchange = Z coord for Toolchange"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(7, _("z_cut = Z coord for Toolchange"), Qt.ToolTipRole)
-        self.tc_variable_combo.setItemData(8, _("z_move = Z coord for Toolchange"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(7, _("z_cut = depth where to cut"), Qt.ToolTipRole)
+        self.tc_variable_combo.setItemData(8, _("z_move = height where to travel"), Qt.ToolTipRole)
         self.tc_variable_combo.setItemData(9, _("z_depthpercut = the step value for multidepth cut"), Qt.ToolTipRole)
         self.tc_variable_combo.setItemData(10, _("spindlesspeed = the value for the spindle speed"), Qt.ToolTipRole)
         self.tc_variable_combo.setItemData(11, _("dwelltime = time to dwell to allow the spindle to reach it's set RPM"),
@@ -1649,7 +1649,7 @@ class CNCObjectUI(ObjectUI):
         # cnclay1.addWidget(self.tc_insert_buton)
 
         h_lay = QtWidgets.QHBoxLayout()
-        h_lay.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        h_lay.setAlignment(QtCore.Qt.AlignVCenter)
         self.custom_box.addLayout(h_lay)
 
         # Edit GCode Button

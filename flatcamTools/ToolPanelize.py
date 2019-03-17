@@ -520,8 +520,8 @@ class Panelize(FlatCAMTool):
             self.app.inform.emit(_("[success]Panel done..."))
         else:
             self.constrain_flag = False
-            self.app.inform.emit(_("[WARNING] Too big for the constrain area. Final panel has %s columns and %s rows") %
-                                 (columns, rows))
+            self.app.inform.emit(_("[WARNING] Too big for the constrain area. Final panel has {col} columns and {row} rows").format(
+                col=columns, row=rows))
 
         proc = self.app.proc_container.new(_("Generating panel ... Please wait."))
 

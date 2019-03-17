@@ -5335,7 +5335,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         # we add a new entry in the tool2tooldia dict
         self.tool2tooldia[len(self.olddia_newdia)] = tool_dia
 
-        self.app.inform.emit(_("[success]Added new tool with dia: %s %s") % (str(tool_dia), str(self.units)))
+        self.app.inform.emit(_("[success]Added new tool with dia: {dia} {units}").format(dia=str(tool_dia), units=str(self.units)))
 
         self.build_ui()
 
@@ -5399,7 +5399,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
             self.olddia_newdia.pop(deleted_tool_dia, None)
 
-            self.app.inform.emit(_("[success]Deleted tool with dia: %s %s") % (str(deleted_tool_dia), str(self.units)))
+            self.app.inform.emit(_("[success]Deleted tool with dia: {del_dia} {units}").format(del_dia=str(deleted_tool_dia), units=str(self.units)))
 
         self.replot()
         # self.app.inform.emit("Could not delete selected tool")

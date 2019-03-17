@@ -6,15 +6,17 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-03-13 16:15+0200\n"
+"POT-Creation-Date: 2019-03-17 05:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=cp1252\n"
+"Content-Type: text/plain; charset=CP1252\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 "X-Generator: Poedit 2.2.1\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SearchPath-0: .\n"
 
 #: D:\1.DEV\FlatCAM_beta\camlib.py:200
 msgid "[ERROR_NOTCL] self.solid_geometry is neither BaseGeometry or list."
@@ -97,7 +99,7 @@ msgstr ""
 #: D:\1.DEV\FlatCAM_beta\camlib.py:4230
 msgid ""
 "[ERROR] Excellon Parser error.\n"
-"Parsing Failed. Line %d: %s\n"
+"Parsing Failed. Line {l_nr}: {line}\n"
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\camlib.py:4307
@@ -301,10 +303,11 @@ msgstr ""
 msgid "Converting units to "
 msgstr ""
 
-#: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:2621
-#: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:2624
-#: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:2627
-msgid "[selected]%s created/selected: <span style=\"color:%s;\">%s</span>"
+#: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:2618
+#: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:2622
+#: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:2626
+#: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:2630
+msgid "[selected]{kind} created/selected: <span style="color:{color};">{name}</span>"
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:2865
@@ -588,7 +591,7 @@ msgstr ""
 #: D:\1.DEV\FlatCAM_beta\ObjectCollection.py:699
 #: D:\1.DEV\FlatCAM_beta\ObjectCollection.py:702
 #: D:\1.DEV\FlatCAM_beta\ObjectCollection.py:705
-msgid "[selected]<span style=\"color:%s;\">%s</span> selected"
+msgid "[selected]<span style="color:{color};">{name}</span> selected"
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:5187
@@ -812,7 +815,7 @@ msgid "Save Project As ..."
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:5852
-msgid "%s/Project_%s"
+msgid "{l_save}/Project_{date}"
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:5860
@@ -900,7 +903,7 @@ msgid "[ERROR_NOTCL] Failed to open file: %s"
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:6540
-msgid "[ERROR_NOTCL] Failed to parse file: %s. %s"
+msgid "[ERROR_NOTCL] Failed to parse file: {name}. {error}"
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMApp.py:6546
@@ -2313,7 +2316,7 @@ msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:5338
 #: D:\1.DEV\FlatCAM_beta\flatcamGUI\FlatCAMGUI.py:2481
-msgid "[success]Added new tool with dia: %s %s"
+msgid "[success]Added new tool with dia: {dia} {units}"
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:5369
@@ -2321,7 +2324,7 @@ msgid "[WARNING_NOTCL]Select a tool in Tool Table"
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:5402
-msgid "[success]Deleted tool with dia: %s %s"
+msgid "[success]Deleted tool with dia: {del_dia} {units}"
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMEditor.py:5799
@@ -6264,7 +6267,7 @@ msgid "Hello!"
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:193
-msgid "[success]Name changed from %s to %s"
+msgid "[success]Name changed from {old} to {new}"
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\FlatCAMObj.py:531
@@ -6540,7 +6543,7 @@ msgid "[ERROR] There is no postprocessor file."
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\ObjectCollection.py:402
-msgid "Object renamed from %s to %s"
+msgid "Object renamed from {old} to {new}"
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\ObjectCollection.py:736
@@ -8198,7 +8201,7 @@ msgid "MEASURING: Click on the Destination point ..."
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMeasurement.py:326
-msgid "MEASURING: Result D(x) = %.4f | D(y) = %.4f | Distance = %.4f"
+msgid "MEASURING: Result D(x) = {d_x} | D(y) = {d_y} | Distance = {d_z}"
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolMove.py:81
@@ -8610,10 +8613,9 @@ msgstr ""
 msgid "[success]Panel done..."
 msgstr ""
 
-#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPanelize.py:520
+#: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPanelize.py:523
 msgid ""
-"[WARNING] Too big for the constrain area. Final panel has %s columns and %s "
-"rows"
+"[WARNING] Too big for the constrain area. Final panel has {col} columns and {row} rows"
 msgstr ""
 
 #: D:\1.DEV\FlatCAM_beta\flatcamTools\ToolPanelize.py:528

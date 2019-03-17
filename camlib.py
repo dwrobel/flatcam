@@ -4227,7 +4227,7 @@ class Excellon(Geometry):
         except Exception as e:
             log.error("Excellon PARSING FAILED. Line %d: %s" % (line_num, eline))
             msg = _("[ERROR_NOTCL] An internal error has ocurred. See shell.\n")
-            msg += _('[ERROR] Excellon Parser error.\nParsing Failed. Line %d: %s\n') % (line_num, eline)
+            msg += _('[ERROR] Excellon Parser error.\nParsing Failed. Line {l_nr}: {line}\n').format(l_nr=line_num, line=eline)
             msg += traceback.format_exc()
             self.app.inform.emit(msg)
 
@@ -5200,7 +5200,12 @@ class CNCjob(Geometry):
                             else:
                                 current_tooldia = float('%.3f' % float(exobj.tools[tool]["C"]))
 
-                            z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+                            # TODO apply offset only when using the GUI, for TclCommand this will create an error
+                            # because the values for Z offset are created in build_ui()
+                            try:
+                                z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+                            except KeyError:
+                                z_offset = 0
                             self.z_cut += z_offset
 
                             # Drillling!

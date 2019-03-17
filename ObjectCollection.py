@@ -399,7 +399,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                         "setData() --> Could not remove the old object name from auto-completer model list")
 
                 obj.build_ui()
-                self.app.inform.emit(_("Object renamed from %s to %s") % (old_name, new_name))
+                self.app.inform.emit(_("Object renamed from {old} to {new}").format(old=old_name, new=new_name))
 
         return True
 
@@ -693,17 +693,17 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             obj = current.indexes()[0].internalPointer().obj
 
             if obj.kind == 'gerber':
-                self.app.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
-                                 ('green', str(obj.options['name'])))
+                self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                    color='green', name=str(obj.options['name'])))
             elif obj.kind == 'excellon':
-                self.app.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
-                                 ('brown', str(obj.options['name'])))
+                self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                    color='brown', name=str(obj.options['name'])))
             elif obj.kind == 'cncjob':
-                self.app.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
-                                 ('blue', str(obj.options['name'])))
+                self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                    color='blue', name=str(obj.options['name'])))
             elif obj.kind == 'geometry':
-                self.app.inform.emit(_('[selected]<span style="color:%s;">%s</span> selected') %
-                                 ('red', str(obj.options['name'])))
+                self.app.inform.emit(_('[selected]<span style="color:{color};">{name}</span> selected').format(
+                    color='red', name=str(obj.options['name'])))
 
         except IndexError:
             FlatCAMApp.App.log.debug("on_list_selection_change(): Index Error (Nothing selected?)")

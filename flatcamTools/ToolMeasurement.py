@@ -323,8 +323,8 @@ class Measurement(FlatCAMTool):
 
                     self.stop_entry.set_value("(%.4f, %.4f)" % pos)
 
-                    self.app.inform.emit(_("MEASURING: Result D(x) = %.4f | D(y) = %.4f | Distance = %.4f") %
-                                         (abs(dx), abs(dy), abs(d)))
+                    self.app.inform.emit(_("MEASURING: Result D(x) = {d_x} | D(y) = {d_y} | Distance = {d_z}").format(
+                        d_x='%4f' % abs(dx), d_y='%4f' % abs(dy), d_z='%4f' % abs(d)))
 
                     self.distance_x_entry.set_value('%.4f' % abs(dx))
                     self.distance_y_entry.set_value('%.4f' % abs(dy))
