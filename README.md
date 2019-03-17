@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - work in progress for translation in Romanian - 91%
 - changed some of the app strings formatting to work better with Poedit translation software
 - fixed bug in Drillcncjob TclCommand
+- finished translation in Romanian
 
 
 16.03.2019

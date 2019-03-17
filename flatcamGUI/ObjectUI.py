@@ -173,7 +173,7 @@ class GerberObjectUI(ObjectUI):
         self.plot_cb.setToolTip(
             _("Plot (show) this object.")
         )
-        self.plot_cb.setFixedWidth(55)
+        self.plot_cb.setFixedWidth(59)
         grid0.addWidget(self.plot_cb, 0, 3)
 
         ## Object name
@@ -355,7 +355,7 @@ class GerberObjectUI(ObjectUI):
         overlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
             "Example:\n"
-            "A value here of 0.25 means an overlap of 25% from the tool diameter found above.")
+            "A value here of 0.25 means an overlap of 25%% from the tool diameter found above.")
         )
         overlabel.setFixedWidth(90)
         grid1.addWidget(overlabel, 2, 0)
