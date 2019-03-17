@@ -59,8 +59,8 @@ class DblSidedTool(FlatCAMTool):
 
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
         grid_lay.addWidget(self.botlay_label, 0, 0)
-        grid_lay.addWidget(self.gerber_object_combo, 1, 0, 1, 2)
-        grid_lay.addWidget(self.mirror_gerber_button, 1, 3)
+        grid_lay.addWidget(self.gerber_object_combo, 1, 0)
+        grid_lay.addWidget(self.mirror_gerber_button, 1, 1)
 
         ## Excellon Object to mirror
         self.exc_object_combo = QtWidgets.QComboBox()
@@ -83,8 +83,8 @@ class DblSidedTool(FlatCAMTool):
 
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
         grid_lay.addWidget(self.excobj_label, 2, 0)
-        grid_lay.addWidget(self.exc_object_combo, 3, 0, 1, 2)
-        grid_lay.addWidget(self.mirror_exc_button, 3, 3)
+        grid_lay.addWidget(self.exc_object_combo, 3, 0)
+        grid_lay.addWidget(self.mirror_exc_button, 3, 1)
 
         ## Geometry Object to mirror
         self.geo_object_combo = QtWidgets.QComboBox()
@@ -107,8 +107,12 @@ class DblSidedTool(FlatCAMTool):
 
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
         grid_lay.addWidget(self.geoobj_label, 4, 0)
-        grid_lay.addWidget(self.geo_object_combo, 5, 0, 1, 2)
-        grid_lay.addWidget(self.mirror_geo_button, 5, 3)
+        grid_lay.addWidget(self.geo_object_combo, 5, 0)
+        grid_lay.addWidget(self.mirror_geo_button, 5, 1)
+
+        ## Grid Layout
+        grid_lay1 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid_lay1)
 
         ## Axis
         self.mirror_axis = RadioSet([{'label': 'X', 'value': 'X'},
@@ -119,9 +123,9 @@ class DblSidedTool(FlatCAMTool):
         )
         # grid_lay.addRow("Mirror Axis:", self.mirror_axis)
         self.empty_lb1 = QtWidgets.QLabel("")
-        grid_lay.addWidget(self.empty_lb1, 6, 0)
-        grid_lay.addWidget(self.mirax_label, 7, 0)
-        grid_lay.addWidget(self.mirror_axis, 7, 1)
+        grid_lay1.addWidget(self.empty_lb1, 6, 0)
+        grid_lay1.addWidget(self.mirax_label, 7, 0)
+        grid_lay1.addWidget(self.mirror_axis, 7, 1)
 
         ## Axis Location
         self.axis_location = RadioSet([{'label': 'Point', 'value': 'point'},
@@ -133,11 +137,15 @@ class DblSidedTool(FlatCAMTool):
             "the center.")
         )
         # grid_lay.addRow("Axis Location:", self.axis_location)
-        grid_lay.addWidget(self.axloc_label, 8, 0)
-        grid_lay.addWidget(self.axis_location, 8, 1)
+        grid_lay1.addWidget(self.axloc_label, 8, 0)
+        grid_lay1.addWidget(self.axis_location, 8, 1)
 
         self.empty_lb2 = QtWidgets.QLabel("")
-        grid_lay.addWidget(self.empty_lb2, 9, 0)
+        grid_lay1.addWidget(self.empty_lb2, 9, 0)
+
+        ## Grid Layout
+        grid_lay2 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid_lay2)
 
         ## Point/Box
         self.point_box_container = QtWidgets.QVBoxLayout()
@@ -158,9 +166,9 @@ class DblSidedTool(FlatCAMTool):
         )
         self.add_point_button.setFixedWidth(60)
 
-        grid_lay.addWidget(self.pb_label, 10, 0)
-        grid_lay.addLayout(self.point_box_container, 11, 0, 1, 3)
-        grid_lay.addWidget(self.add_point_button, 11, 3)
+        grid_lay2.addWidget(self.pb_label, 10, 0)
+        grid_lay2.addLayout(self.point_box_container, 11, 0)
+        grid_lay2.addWidget(self.add_point_button, 11, 1)
 
         self.point_entry = EvalEntry()
 
@@ -192,8 +200,8 @@ class DblSidedTool(FlatCAMTool):
         )
         self.layout.addWidget(self.ah_label)
 
-        grid_lay1 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid_lay1)
+        grid_lay3 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid_lay3)
 
         self.alignment_holes = EvalEntry()
 
@@ -209,8 +217,8 @@ class DblSidedTool(FlatCAMTool):
         )
         self.add_drill_point_button.setFixedWidth(60)
 
-        grid_lay1.addWidget(self.alignment_holes, 0, 0, 1, 2)
-        grid_lay1.addWidget(self.add_drill_point_button, 0, 3)
+        grid_lay3.addWidget(self.alignment_holes, 0, 0)
+        grid_lay3.addWidget(self.add_drill_point_button, 0, 1)
 
         ## Drill diameter for alignment holes
         self.dt_label = QtWidgets.QLabel("<b>%s</b>:" % _('Alignment Drill Diameter'))
@@ -220,8 +228,8 @@ class DblSidedTool(FlatCAMTool):
         )
         self.layout.addWidget(self.dt_label)
 
-        grid_lay2 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid_lay2)
+        hlay = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay)
 
         self.drill_dia = FCEntry()
         self.dd_label = QtWidgets.QLabel(_("Drill diam.:"))
@@ -229,8 +237,11 @@ class DblSidedTool(FlatCAMTool):
             _("Diameter of the drill for the "
             "alignment holes.")
         )
-        grid_lay2.addWidget(self.dd_label, 0, 0)
-        grid_lay2.addWidget(self.drill_dia, 0, 1)
+        hlay.addWidget(self.dd_label)
+        hlay.addWidget(self.drill_dia)
+
+        hlay2 = QtWidgets.QHBoxLayout()
+        self.layout.addLayout(hlay2)
 
         ## Buttons
         self.create_alignment_hole_button = QtWidgets.QPushButton(_("Create Excellon Object"))
@@ -239,15 +250,14 @@ class DblSidedTool(FlatCAMTool):
             "specified alignment holes and their mirror\n"
             "images.")
         )
-        # self.create_alignment_hole_button.setFixedWidth(60)
-        grid_lay2.addWidget(self.create_alignment_hole_button, 1,0, 1, 2)
+        hlay2.addWidget(self.create_alignment_hole_button)
 
         self.reset_button = QtWidgets.QPushButton(_("Reset"))
         self.reset_button.setToolTip(
             _("Resets all the fields.")
         )
         self.reset_button.setFixedWidth(60)
-        grid_lay2.addWidget(self.reset_button, 1, 2)
+        hlay2.addWidget(self.reset_button)
 
         self.layout.addStretch()
 

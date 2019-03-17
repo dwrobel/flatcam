@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+17.03.2019
+
+- remade the layout in 2Sided Tool
+- work in progress for translation in Romanian - 91%
+
 16.03.2019
 
 - fixed bug in Paint Tool - Single Poly: no geometry was generated

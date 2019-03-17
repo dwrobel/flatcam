@@ -23,6 +23,7 @@ import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
+
 class ObjectUI(QtWidgets.QWidget):
     """
     Base class for the UI of FlatCAM objects. Deriving classes should
@@ -100,7 +101,7 @@ class ObjectUI(QtWidgets.QWidget):
         self.scale_button.setToolTip(
             _("Perform scaling operation.")
         )
-        self.scale_button.setFixedWidth(40)
+        self.scale_button.setFixedWidth(50)
         self.scale_grid.addWidget(self.scale_button, 0, 2)
 
         #### Offset ####
@@ -127,7 +128,7 @@ class ObjectUI(QtWidgets.QWidget):
         self.offset_button.setToolTip(
             _("Perform the offset operation.")
         )
-        self.offset_button.setFixedWidth(40)
+        self.offset_button.setFixedWidth(50)
         self.offset_grid.addWidget(self.offset_button, 0, 2)
 
         layout.addStretch()
