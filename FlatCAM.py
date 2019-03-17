@@ -1,15 +1,14 @@
 import sys, os
-from PyQt5 import sip
 
-from PyQt5 import QtGui, QtCore, QtWidgets
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings, Qt
 from FlatCAMApp import App
 from multiprocessing import freeze_support
-import VisPyPatches
+from flatcamGUI import VisPyPatches
 
 if sys.platform == "win32":
     # cx_freeze 'module win32' workaround
-    import OpenGL.platform.win32
+    pass
 
 def debug_trace():
     """

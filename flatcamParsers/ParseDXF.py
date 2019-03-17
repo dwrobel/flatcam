@@ -1,18 +1,18 @@
-import re
-import itertools
-import math
-import ezdxf
+############################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# http://flatcam.org                                       #
+# File Author: Marius Adrian Stanciu (c)                   #
+# Date: 3/10/2019                                          #
+# MIT Licence                                              #
+############################################################
 
-from shapely.geometry import LinearRing, LineString, Point, Polygon
-from shapely.affinity import translate, rotate, scale, skew, affine_transform
-import numpy
+from shapely.geometry import LineString
 import logging
 
 log = logging.getLogger('base2')
-import FlatCAMApp
 
-from ParseFont import *
-from ParseDXF_Spline import *
+from flatcamParsers.ParseFont import *
+from flatcamParsers.ParseDXF_Spline import *
 
 
 def distance(pt1, pt2):

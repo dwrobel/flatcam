@@ -9,6 +9,87 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+17.03.2019
+
+- remade the layout in 2Sided Tool
+- work in progress for translation in Romanian - 91%
+- changed some of the app strings formatting to work better with Poedit translation software
+- fixed bug in Drillcncjob TclCommand
+- finished translation in Romanian
+
+
+16.03.2019
+
+- fixed bug in Paint Tool - Single Poly: no geometry was generated
+- work in progress for translation in Romanian - 70%
+
+13.03.2019
+
+- made the layout combobox current item from Preferences -> General window to reflect the current layout
+- remade the POT translate file
+- work in progress in translation for Romanian language 44%
+- fix for showing tools by activating them from the Menu - final fix.
+
+11.03.2019
+
+- changed some icons here and there
+- fixed the Properties Project menu entry to work on the new way
+- in Properties tool now the Gerber apertures show the number of polygons in 'solid_geometry' instead of listing the objects
+- added a visual cue in Menu -> Edit about the entries to enter the Editor and to Save & Exit Editor. When one is enabled the other is disabled.
+- grouped all the UI files in flatcamGUI folder
+- grouped all parser files in flatcamParsers folder
+- another changes to the final_save() function
+- some strings were left outside the translation formatting - fixed
+- finished the replacement of '_' symbols throughout the app which conflicted with the _() function used by the i18n
+- reverted changes in Tools regarding the toggle effect - now they work as expected
+
+10.03.2019
+
+- added a fix in the Gerber parser when adding the geometry in the self.apertures dict for the case that the current aperture is None (Allegro does that)
+- finished support for internationalization by adding a set of .po/.mo files for the English language. Unfortunately the final action can be done only when Beta will be out of Beta (no more changes) or when I will decide to stop working on this app.
+- changed the tooltip for 'feedrate_rapids' parameter to point out that this parameter is useful only for the Marlin postprocessor
+- fix app crash for the case that there are no translation files
+- fixed some forgotten strings to be prepared for internationalization in ToolCalculators
+- fixed Tools menu no longer working due of changes
+- added some test translation for the ToolCalculators (in Romanian)
+- fixed bug in ToolCutOut where for each tool invocation the signals were reconnected
+- fixed some issues with ToolMeasurement due of above changes
+- updated the App.final_save() function
+- fixed an issue created by the fact that I used the '_' char inside the app to designate unused info and that conflicted with the _() function used by gettext
+- made impossible to try to reapply current language that it's already applied (un-necessary)
+
+8.03.2019
+
+- fixed issue when doing th CTRL (or SHIFT) + LMB, the focus is automatically moved to Project Tab
+- further work in internationalization, added a fallback to English language in case there is no translation for a string
+- fix for issue #262: when doing Edit-> Save & Close Editor on a Geometry that is not generated through first entering into an Editor, the geometry disappear
+- finished preparing for internationalization for the files: camlib and objectCollection
+- fixed tools shortcuts not working anymore due of the new toggle parameter for the .run().
+- finished preparing for internationalization for the files: FlatCAMEditor, FlatCAMGUI
+- finished preparing for internationalization for the files: FlatCAMObj, ObjectUI
+- sorted the languages in the Preferences combobox
+
+7.03.2019
+
+- made showing a shape when hovering over objects, optional, by adding a Preferences -> General parameter
+- starting to work in internationalization using gettext()
+- Finished adding _() in FlatCAM Tools
+- fixed Measuring Tool - after doing a measurement the Notebook was switching to Project Tab without letting the user see the results
+- more work on the translation engine; the app now restarts after a language is applied
+- added protection against using Travel Z parameter with negative or zero value (in Geometry).
+- made sure that when the Measuring Tools is active after last click the Status bar is no longer deleted
+
+6.03.2019
+
+- modified the way the FlatCAM Tools are run from toolbar as opposed of running them from other sources
+- some Gerber UI changes
+
+5.03.2019
+
+- modified the grbl-laser postprocessor lift_code()
+- treated an error created by Z_Cut parameter being None
+- changed the hover and selection box transparency
+
 4.03.2019
 
 - finished work on object hovering

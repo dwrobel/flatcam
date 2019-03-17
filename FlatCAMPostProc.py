@@ -1,3 +1,11 @@
+############################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# http://flatcam.org                                       #
+# File Author: Matthieu Berthomé                           #
+# Date: 5/26/2017                                          #
+# MIT Licence                                              #
+############################################################
+
 from importlib.machinery import SourceFileLoader
 import os
 from abc import ABCMeta, abstractmethod

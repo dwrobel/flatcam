@@ -1,3 +1,11 @@
+############################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# http://flatcam.org                                       #
+# File Author: Dennis Hayrullin                            #
+# Date: 2/5/2016                                           #
+# MIT Licence                                              #
+############################################################
+
 from vispy.visuals import CompoundVisual, LineVisual, MeshVisual, TextVisual, MarkersVisual
 from vispy.scene.visuals import VisualNode, generate_docstring, visuals
 from vispy.gloo import set_state
@@ -5,7 +13,7 @@ from vispy.color import Color
 from shapely.geometry import Polygon, LineString, LinearRing
 import threading
 import numpy as np
-from VisPyTesselators import GLUTess
+from flatcamGUI.VisPyTesselators import GLUTess
 
 
 class FlatCAMLineVisual(LineVisual):

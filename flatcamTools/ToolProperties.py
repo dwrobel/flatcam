@@ -1,12 +1,28 @@
+############################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# http://flatcam.org                                       #
+# File Author: Marius Adrian Stanciu (c)                   #
+# Date: 3/10/2019                                          #
+# MIT Licence                                              #
+############################################################
+
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt
 from FlatCAMTool import FlatCAMTool
 from FlatCAMObj import *
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+
+fcTranslate.apply_language('strings')
+import builtins
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
 
 class Properties(FlatCAMTool):
 
-    toolName = "Properties"
+    toolName = _("Properties")
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -48,24 +64,29 @@ class Properties(FlatCAMTool):
         self.vlay.addWidget(self.treeWidget)
         self.vlay.setStretch(0,0)
 
-    def run(self):
+    def run(self, toggle=True):
         self.app.report_usage("ToolProperties()")
 
         if self.app.tool_tab_locked is True:
             return
-        self.set_tool_ui()
 
-        # if the splitter is hidden, display it, else hide it but only if the current widget is the same
-        if self.app.ui.splitter.sizes()[0] == 0:
-            self.app.ui.splitter.setSizes([1, 1])
+        if toggle:
+            # if the splitter is hidden, display it, else hide it but only if the current widget is the same
+            if self.app.ui.splitter.sizes()[0] == 0:
+                self.app.ui.splitter.setSizes([1, 1])
+            else:
+                try:
+                    if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
+                        self.app.ui.splitter.setSizes([0, 1])
+                except AttributeError:
+                    pass
         else:
-            try:
-                if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                    self.app.ui.splitter.setSizes([0, 1])
-            except AttributeError:
-                pass
+            if self.app.ui.splitter.sizes()[0] == 0:
+                self.app.ui.splitter.setSizes([1, 1])
 
         FlatCAMTool.run(self)
+        self.set_tool_ui()
+
         self.properties()
 
     def install(self, icon=None, separator=None, **kwargs):
@@ -79,15 +100,15 @@ class Properties(FlatCAMTool):
     def properties(self):
         obj_list = self.app.collection.get_selected()
         if not obj_list:
-            self.app.inform.emit("[ERROR_NOTCL] Properties Tool was not displayed. No object selected.")
-            self.app.ui.notebook.setTabText(2, "Tools")
+            self.app.inform.emit(_("[ERROR_NOTCL] Properties Tool was not displayed. No object selected."))
+            self.app.ui.notebook.setTabText(2, _("Tools"))
             self.properties_frame.hide()
             self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
             return
         for obj in obj_list:
             self.addItems(obj)
-            self.app.inform.emit("[success] Object Properties are displayed.")
-        self.app.ui.notebook.setTabText(2, "Properties Tool")
+            self.app.inform.emit(_("[success] Object Properties are displayed."))
+        self.app.ui.notebook.setTabText(2, _("Properties Tool"))
 
     def addItems(self, obj):
         parent = self.treeWidget.invisibleRootItem()
@@ -150,8 +171,14 @@ class Properties(FlatCAMTool):
             self.addChild(options, [str(option), str(obj.options[option])], True)
 
         if obj.kind.lower() == 'gerber':
+            temp_ap = {}
             for ap in obj.apertures:
-                self.addChild(apertures, [str(ap), str(obj.apertures[ap])], True)
+                temp_ap.clear()
+                temp_ap = deepcopy(obj.apertures[ap])
+                if obj.apertures[ap]['solid_geometry']:
+                    elems = len(obj.apertures[ap]['solid_geometry'])
+                    temp_ap['solid_geometry'] = '%s Polygons' % str(elems)
+                self.addChild(apertures, [str(ap), str(temp_ap)], True)
         elif obj.kind.lower() == 'excellon':
             for tool, value in obj.tools.items():
                 self.addChild(tools, [str(tool), str(value['C'])], True)

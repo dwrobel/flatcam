@@ -1,3 +1,11 @@
+############################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# http://flatcam.org                                       #
+# File Author: Matthieu Berthomé                           #
+# Date: 5/26/2017                                          #
+# MIT Licence                                              #
+############################################################
+
 from FlatCAMPostProc import *
 
 # This post processor is configured to output code that
@@ -42,7 +50,7 @@ class grbl_laser(FlatCAMPostProc):
         return ''
 
     def lift_code(self, p):
-        return 'M05'
+        return 'M05 S0'
 
     def down_code(self, p):
         if p.spindlespeed:

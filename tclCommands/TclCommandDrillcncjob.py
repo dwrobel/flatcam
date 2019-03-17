@@ -81,6 +81,11 @@ class TclCommandDrillcncjob(TclCommandSignaled):
         if not isinstance(obj, FlatCAMExcellon):
             self.raise_tcl_error('Expected FlatCAMExcellon, got %s %s.' % (name, type(obj)))
 
+        xmin = obj.options['xmin']
+        ymin = obj.options['ymin']
+        xmax = obj.options['xmax']
+        ymax = obj.options['ymax']
+
         def job_init(job_obj, app_obj):
 
             drillz = args["drillz"] if "drillz" in args else obj.options["drillz"]
@@ -93,9 +98,21 @@ class TclCommandDrillcncjob(TclCommandSignaled):
             job_obj.pp_excellon_name = args["ppname_e"] if "ppname_e" in args \
                 else obj.options["ppname_e"]
 
+            job_obj.coords_decimals = int(self.app.defaults["cncjob_coords_decimals"])
+            job_obj.fr_decimals = int(self.app.defaults["cncjob_fr_decimals"])
+
+            job_obj.options['type'] = 'Excellon'
+
             toolchange = True if "toolchange" in args and args["toolchange"] == 1 else False
             toolchangez = args["toolchangez"] if "toolchangez" in args else obj.options["toolchangez"]
             job_obj.toolchangexy = args["toolchangexy"] if "toolchangexy" in args else obj.options["toolchangexy"]
+
+            job_obj.toolchange_xy_type = "excellon"
+
+            job_obj.options['xmin'] = xmin
+            job_obj.options['ymin'] = ymin
+            job_obj.options['xmax'] = xmax
+            job_obj.options['ymax'] = ymax
 
             endz = args["endz"] if "endz" in args else obj.options["endz"]
 

@@ -1,13 +1,29 @@
+############################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# http://flatcam.org                                       #
+# File Author: Marius Adrian Stanciu (c)                   #
+# Date: 3/10/2019                                          #
+# MIT Licence                                              #
+############################################################
+
 from FlatCAMTool import FlatCAMTool
 from FlatCAMObj import *
-from VisPyVisuals import *
+from flatcamGUI.VisPyVisuals import *
 
-from copy import copy
 from math import sqrt
+
+import gettext
+import FlatCAMTranslation as fcTranslate
+
+fcTranslate.apply_language('strings')
+import builtins
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
 
 class Measurement(FlatCAMTool):
 
-    toolName = "Measurement"
+    toolName = _("Measurement")
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -28,51 +44,51 @@ class Measurement(FlatCAMTool):
         form_layout_child_2 = QtWidgets.QFormLayout()
         form_layout_child_3 = QtWidgets.QFormLayout()
 
-        self.start_label = QtWidgets.QLabel("<b>Start</b> Coords:")
-        self.start_label.setToolTip("This is measuring Start point coordinates.")
+        self.start_label = QtWidgets.QLabel("<b>%s</b> %s:" % (_('Start'), _('Coords')))
+        self.start_label.setToolTip(_("This is measuring Start point coordinates."))
 
-        self.stop_label = QtWidgets.QLabel("<b>Stop</b> Coords:")
-        self.stop_label.setToolTip("This is the measuring Stop point coordinates.")
+        self.stop_label = QtWidgets.QLabel("<b>%s</b> %s:" % (_('Stop'), _('Coords')))
+        self.stop_label.setToolTip(_("This is the measuring Stop point coordinates."))
 
         self.distance_x_label = QtWidgets.QLabel("Dx:")
-        self.distance_x_label.setToolTip("This is the distance measured over the X axis.")
+        self.distance_x_label.setToolTip(_("This is the distance measured over the X axis."))
 
         self.distance_y_label = QtWidgets.QLabel("Dy:")
-        self.distance_y_label.setToolTip("This is the distance measured over the Y axis.")
+        self.distance_y_label.setToolTip(_("This is the distance measured over the Y axis."))
 
-        self.total_distance_label = QtWidgets.QLabel("<b>DISTANCE:</b>")
-        self.total_distance_label.setToolTip("This is the point to point Euclidian distance.")
+        self.total_distance_label = QtWidgets.QLabel("<b>%s:</b>" % _('DISTANCE'))
+        self.total_distance_label.setToolTip(_("This is the point to point Euclidian distance."))
 
         self.units_entry_1 = FCEntry()
-        self.units_entry_1.setToolTip("Those are the units in which the distance is measured.")
+        self.units_entry_1.setToolTip(_("Those are the units in which the distance is measured."))
         self.units_entry_1.setDisabled(True)
         self.units_entry_1.setFocusPolicy(QtCore.Qt.NoFocus)
         self.units_entry_1.setFrame(False)
         self.units_entry_1.setFixedWidth(30)
 
         self.units_entry_2 = FCEntry()
-        self.units_entry_2.setToolTip("Those are the units in which the distance is measured.")
+        self.units_entry_2.setToolTip(_("Those are the units in which the distance is measured."))
         self.units_entry_2.setDisabled(True)
         self.units_entry_2.setFocusPolicy(QtCore.Qt.NoFocus)
         self.units_entry_2.setFrame(False)
         self.units_entry_2.setFixedWidth(30)
 
         self.units_entry_3 = FCEntry()
-        self.units_entry_3.setToolTip("Those are the units in which the distance is measured.")
+        self.units_entry_3.setToolTip(_("Those are the units in which the distance is measured."))
         self.units_entry_3.setDisabled(True)
         self.units_entry_3.setFocusPolicy(QtCore.Qt.NoFocus)
         self.units_entry_3.setFrame(False)
         self.units_entry_3.setFixedWidth(30)
 
         self.units_entry_4 = FCEntry()
-        self.units_entry_4.setToolTip("Those are the units in which the distance is measured.")
+        self.units_entry_4.setToolTip(_("Those are the units in which the distance is measured."))
         self.units_entry_4.setDisabled(True)
         self.units_entry_4.setFocusPolicy(QtCore.Qt.NoFocus)
         self.units_entry_4.setFrame(False)
         self.units_entry_4.setFixedWidth(30)
 
         self.units_entry_5 = FCEntry()
-        self.units_entry_5.setToolTip("Those are the units in which the distance is measured.")
+        self.units_entry_5.setToolTip(_("Those are the units in which the distance is measured."))
         self.units_entry_5.setDisabled(True)
         self.units_entry_5.setFocusPolicy(QtCore.Qt.NoFocus)
         self.units_entry_5.setFrame(False)
@@ -80,32 +96,32 @@ class Measurement(FlatCAMTool):
 
         self.start_entry = FCEntry()
         self.start_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.start_entry.setToolTip("This is measuring Start point coordinates.")
+        self.start_entry.setToolTip(_("This is measuring Start point coordinates."))
         self.start_entry.setFixedWidth(100)
 
         self.stop_entry = FCEntry()
         self.stop_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.stop_entry.setToolTip("This is the measuring Stop point coordinates.")
+        self.stop_entry.setToolTip(_("This is the measuring Stop point coordinates."))
         self.stop_entry.setFixedWidth(100)
 
         self.distance_x_entry = FCEntry()
         self.distance_x_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.distance_x_entry.setToolTip("This is the distance measured over the X axis.")
+        self.distance_x_entry.setToolTip(_("This is the distance measured over the X axis."))
         self.distance_x_entry.setFixedWidth(100)
 
 
         self.distance_y_entry = FCEntry()
         self.distance_y_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.distance_y_entry.setToolTip("This is the distance measured over the Y axis.")
+        self.distance_y_entry.setToolTip(_("This is the distance measured over the Y axis."))
         self.distance_y_entry.setFixedWidth(100)
 
 
         self.total_distance_entry = FCEntry()
         self.total_distance_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.total_distance_entry.setToolTip("This is the point to point Euclidian distance.")
+        self.total_distance_entry.setToolTip(_("This is the point to point Euclidian distance."))
         self.total_distance_entry.setFixedWidth(100)
 
-        self.measure_btn = QtWidgets.QPushButton("Measure")
+        self.measure_btn = QtWidgets.QPushButton(_("Measure"))
         self.measure_btn.setFixedWidth(70)
         self.layout.addWidget(self.measure_btn)
 
@@ -149,17 +165,22 @@ class Measurement(FlatCAMTool):
         # VisPy visuals
         self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.vispy_canvas.view.scene, layers=1)
 
-        self.measure_btn.clicked.connect(self.toggle)
+        self.measure_btn.clicked.connect(self.toggle_f)
 
-    def run(self):
+    def run(self, toggle=False):
         self.app.report_usage("ToolMeasurement()")
 
         if self.app.tool_tab_locked is True:
             return
-        self.toggle()
+
+        # if the splitter is hidden, display it, else hide it but only if the current widget is the same
+        if self.app.ui.splitter.sizes()[0] == 0:
+            self.app.ui.splitter.setSizes([1, 1])
+
+        self.toggle_f()
 
         self.set_tool_ui()
-        self.app.ui.notebook.setTabText(2, "Meas. Tool")
+        self.app.ui.notebook.setTabText(2, _("Meas. Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='CTRL+M', **kwargs)
@@ -176,11 +197,12 @@ class Measurement(FlatCAMTool):
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
         self.show()
 
-    def toggle(self):
+    def toggle_f(self):
         # the self.active var is doing the 'toggle'
         if self.active is True:
             # DISABLE the Measuring TOOL
             self.active = False
+
             # disconnect the mouse/key events from functions of measurement tool
             self.app.plotcanvas.vis_disconnect('mouse_move', self.on_mouse_move_meas)
             self.app.plotcanvas.vis_disconnect('mouse_press', self.on_click_meas)
@@ -202,6 +224,7 @@ class Measurement(FlatCAMTool):
                 self.app.exc_editor.canvas.vis_connect('key_press', self.app.exc_editor.on_canvas_key)
                 self.app.exc_editor.canvas.vis_connect('mouse_release', self.app.exc_editor.on_canvas_click_release)
 
+            self.app.call_source = 'measurement'
             self.clicked_meas = 0
             self.app.command_active = None
             # delete the measuring line
@@ -250,7 +273,7 @@ class Measurement(FlatCAMTool):
             self.units_entry_4.set_value(str(self.units))
             self.units_entry_5.set_value(str(self.units))
 
-            self.app.inform.emit("MEASURING: Click on the Start point ...")
+            self.app.inform.emit(_("MEASURING: Click on the Start point ..."))
 
     def on_key_release_meas(self, event):
         if event.key == 'escape':
@@ -279,7 +302,7 @@ class Measurement(FlatCAMTool):
                     pos = pos_canvas[0], pos_canvas[1]
                 self.point1 = pos
                 self.start_entry.set_value("(%.4f, %.4f)" % pos)
-                self.app.inform.emit("MEASURING: Click on the Destination point ...")
+                self.app.inform.emit(_("MEASURING: Click on the Destination point ..."))
 
             if self.clicked_meas == 1:
                 try:
@@ -300,15 +323,15 @@ class Measurement(FlatCAMTool):
 
                     self.stop_entry.set_value("(%.4f, %.4f)" % pos)
 
-                    self.app.inform.emit("MEASURING: Result D(x) = %.4f | D(y) = %.4f | Distance = %.4f" %
-                                         (abs(dx), abs(dy), abs(d)))
+                    self.app.inform.emit(_("MEASURING: Result D(x) = {d_x} | D(y) = {d_y} | Distance = {d_z}").format(
+                        d_x='%4f' % abs(dx), d_y='%4f' % abs(dy), d_z='%4f' % abs(d)))
 
                     self.distance_x_entry.set_value('%.4f' % abs(dx))
                     self.distance_y_entry.set_value('%.4f' % abs(dy))
                     self.total_distance_entry.set_value('%.4f' % abs(d))
 
                     self.clicked_meas = 0
-                    self.toggle()
+                    self.toggle_f()
 
                     # delete the measuring line
                     self.delete_shape()

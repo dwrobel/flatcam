@@ -10,8 +10,16 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import QVBoxLayout, QWidget
-from GUIElements import _BrowserTextEdit, _ExpandableTextEdit
+from flatcamGUI.GUIElements import _BrowserTextEdit, _ExpandableTextEdit
 import html
+
+import gettext
+import FlatCAMTranslation as fcTranslate
+
+fcTranslate.apply_language('strings')
+import builtins
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 
 class TermWidget(QWidget):
@@ -58,9 +66,9 @@ class TermWidget(QWidget):
         self._edit.setTextColor(Qt.white)
         self._edit.setTextBackgroundColor(Qt.darkGreen)
         if detail is None:
-            self._edit.setPlainText("...proccessing...")
+            self._edit.setPlainText(_("...proccessing..."))
         else:
-            self._edit.setPlainText("...proccessing... [%s]" % detail)
+            self._edit.setPlainText(_("...proccessing... [%s]") % detail)
 
         self._edit.setDisabled(True)
         self._edit.setFocus()

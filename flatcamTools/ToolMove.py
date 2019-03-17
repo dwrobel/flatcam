@@ -1,14 +1,29 @@
+############################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# http://flatcam.org                                       #
+# File Author: Marius Adrian Stanciu (c)                   #
+# Date: 3/10/2019                                          #
+# MIT Licence                                              #
+############################################################
+
 from FlatCAMTool import FlatCAMTool
 from FlatCAMObj import *
-from VisPyVisuals import *
+from flatcamGUI.VisPyVisuals import *
 
-from io import StringIO
 from copy import copy
+
+import gettext
+import FlatCAMTranslation as fcTranslate
+
+fcTranslate.apply_language('strings')
+import builtins
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 
 class ToolMove(FlatCAMTool):
 
-    toolName = "Move"
+    toolName = _("Move")
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -33,14 +48,14 @@ class ToolMove(FlatCAMTool):
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='M', **kwargs)
 
-    def run(self):
+    def run(self, toggle):
         self.app.report_usage("ToolMove()")
 
         if self.app.tool_tab_locked is True:
             return
         self.toggle()
 
-    def toggle(self):
+    def toggle(self, toggle=False):
         if self.isVisible():
             self.setVisible(False)
 
@@ -63,14 +78,14 @@ class ToolMove(FlatCAMTool):
             self.app.command_active = "Move"
 
             if self.app.collection.get_selected():
-                self.app.inform.emit("MOVE: Click on the Start point ...")
+                self.app.inform.emit(_("MOVE: Click on the Start point ..."))
                 # draw the selection box
                 self.draw_sel_bbox()
             else:
                 self.setVisible(False)
                 # signal that there is no command active
                 self.app.command_active = None
-                self.app.inform.emit("[WARNING_NOTCL]MOVE action cancelled. No object(s) to move.")
+                self.app.inform.emit(_("[WARNING_NOTCL] MOVE action cancelled. No object(s) to move."))
 
     def on_left_click(self, event):
         # mouse click will be accepted only if the left button is clicked
@@ -92,7 +107,7 @@ class ToolMove(FlatCAMTool):
                 else:
                     self.point2 = copy(self.point1)
                     self.point1 = pos
-                self.app.inform.emit("MOVE: Click on the Destination point ...")
+                self.app.inform.emit(_("MOVE: Click on the Destination point ..."))
 
             if self.clicked_move == 1:
                 try:
@@ -110,14 +125,14 @@ class ToolMove(FlatCAMTool):
                     dx = pos[0] - self.point1[0]
                     dy = pos[1] - self.point1[1]
 
-                    proc = self.app.proc_container.new("Moving ...")
+                    proc = self.app.proc_container.new(_("Moving ..."))
 
                     def job_move(app_obj):
                         obj_list = self.app.collection.get_selected()
 
                         try:
                             if not obj_list:
-                                self.app.inform.emit("[WARNING_NOTCL] No object(s) selected.")
+                                self.app.inform.emit(_("[WARNING_NOTCL] No object(s) selected."))
                                 return "fail"
                             else:
                                 for sel_obj in obj_list:
@@ -140,13 +155,13 @@ class ToolMove(FlatCAMTool):
                                     # self.app.collection.set_active(sel_obj.options['name'])
                         except Exception as e:
                             proc.done()
-                            self.app.inform.emit('[ERROR_NOTCL] '
-                                                 'ToolMove.on_left_click() --> %s' % str(e))
+                            self.app.inform.emit(_('[ERROR_NOTCL] '
+                                                 'ToolMove.on_left_click() --> %s') % str(e))
                             return "fail"
                         proc.done()
                         # delete the selection bounding box
                         self.delete_shape()
-                        self.app.inform.emit('[success]%s object was moved ...' %
+                        self.app.inform.emit(_('[success]%s object was moved ...') %
                                              str(sel_obj.kind).capitalize())
 
                     self.app.worker_task.emit({'fcn': job_move, 'params': [self]})
@@ -156,8 +171,8 @@ class ToolMove(FlatCAMTool):
                     return
 
                 except TypeError:
-                    self.app.inform.emit('[ERROR_NOTCL] '
-                                         'ToolMove.on_left_click() --> Error when mouse left click.')
+                    self.app.inform.emit(_('[ERROR_NOTCL] '
+                                         'ToolMove.on_left_click() --> Error when mouse left click.'))
                     return
 
             self.clicked_move = 1
@@ -184,7 +199,7 @@ class ToolMove(FlatCAMTool):
     def on_key_press(self, event):
         if event.key == 'escape':
             # abort the move action
-            self.app.inform.emit("[WARNING_NOTCL]Move action cancelled.")
+            self.app.inform.emit(_("[WARNING_NOTCL]Move action cancelled."))
             self.toggle()
         return
 
@@ -196,7 +211,7 @@ class ToolMove(FlatCAMTool):
 
         obj_list = self.app.collection.get_selected()
         if not obj_list:
-            self.app.inform.emit("[WARNING_NOTCL]Object(s) not selected")
+            self.app.inform.emit(_("[WARNING_NOTCL]Object(s) not selected"))
             self.toggle()
         else:
             # if we have an object selected then we can safely activate the mouse events

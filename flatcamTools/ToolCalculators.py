@@ -1,16 +1,30 @@
-from PyQt5 import QtGui
-from GUIElements import FCEntry
+############################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# http://flatcam.org                                       #
+# File Author: Marius Adrian Stanciu (c)                   #
+# Date: 3/10/2019                                          #
+# MIT Licence                                              #
+############################################################
+
 from FlatCAMTool import FlatCAMTool
 from FlatCAMObj import *
 import math
 
+import gettext
+import FlatCAMTranslation as fcTranslate
+
+fcTranslate.apply_language('strings')
+import builtins
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
 
 class ToolCalculator(FlatCAMTool):
 
-    toolName = "Calculators"
-    v_shapeName = "V-Shape Tool Calculator"
-    unitsName = "Units Calculator"
-    eplateName = "ElectroPlating Calculator"
+    toolName = _("Calculators")
+    v_shapeName = _("V-Shape Tool Calculator")
+    unitsName = _("Units Calculator")
+    eplateName = _("ElectroPlating Calculator")
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -51,12 +65,12 @@ class ToolCalculator(FlatCAMTool):
         self.inch_entry = FCEntry()
         # self.inch_entry.setFixedWidth(70)
         self.inch_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.inch_entry.setToolTip("Here you enter the value to be converted from INCH to MM")
+        self.inch_entry.setToolTip(_("Here you enter the value to be converted from INCH to MM"))
 
         self.mm_entry = FCEntry()
         # self.mm_entry.setFixedWidth(130)
         self.mm_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.mm_entry.setToolTip("Here you enter the value to be converted from MM to INCH")
+        self.mm_entry.setToolTip(_("Here you enter the value to be converted from MM to INCH"))
 
         grid_units_layout.addWidget(self.mm_entry, 1, 0)
         grid_units_layout.addWidget(self.inch_entry, 1, 1)
@@ -77,34 +91,34 @@ class ToolCalculator(FlatCAMTool):
         form_layout = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout)
 
-        self.tipDia_label = QtWidgets.QLabel("Tip Diameter:")
+        self.tipDia_label = QtWidgets.QLabel(_("Tip Diameter:"))
         self.tipDia_entry = FCEntry()
         # self.tipDia_entry.setFixedWidth(70)
         self.tipDia_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.tipDia_label.setToolTip('This is the diameter of the tool tip.\n'
-                                     'The manufacturer specifies it.')
+        self.tipDia_label.setToolTip(_('This is the diameter of the tool tip.\n'
+                                     'The manufacturer specifies it.'))
 
-        self.tipAngle_label = QtWidgets.QLabel("Tip Angle:")
+        self.tipAngle_label = QtWidgets.QLabel(_("Tip Angle:"))
         self.tipAngle_entry = FCEntry()
         # self.tipAngle_entry.setFixedWidth(70)
         self.tipAngle_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.tipAngle_label.setToolTip("This is the angle of the tip of the tool.\n"
-                                       "It is specified by manufacturer.")
+        self.tipAngle_label.setToolTip(_("This is the angle of the tip of the tool.\n"
+                                       "It is specified by manufacturer."))
 
-        self.cutDepth_label = QtWidgets.QLabel("Cut Z:")
+        self.cutDepth_label = QtWidgets.QLabel(_("Cut Z:"))
         self.cutDepth_entry = FCEntry()
         # self.cutDepth_entry.setFixedWidth(70)
         self.cutDepth_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.cutDepth_label.setToolTip("This is the depth to cut into the material.\n"
-                                       "In the CNCJob is the CutZ parameter.")
+        self.cutDepth_label.setToolTip(_("This is the depth to cut into the material.\n"
+                                       "In the CNCJob is the CutZ parameter."))
 
-        self.effectiveToolDia_label = QtWidgets.QLabel("Tool Diameter:")
+        self.effectiveToolDia_label = QtWidgets.QLabel(_("Tool Diameter:"))
         self.effectiveToolDia_entry = FCEntry()
         # self.effectiveToolDia_entry.setFixedWidth(70)
         self.effectiveToolDia_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.effectiveToolDia_label.setToolTip("This is the tool diameter to be entered into\n"
+        self.effectiveToolDia_label.setToolTip(_("This is the tool diameter to be entered into\n"
                                                "FlatCAM Gerber section.\n"
-                                               "In the CNCJob section it is called >Tool dia<.")
+                                               "In the CNCJob section it is called >Tool dia<."))
         # self.effectiveToolDia_entry.setEnabled(False)
 
 
@@ -114,11 +128,11 @@ class ToolCalculator(FlatCAMTool):
         form_layout.addRow(self.effectiveToolDia_label, self.effectiveToolDia_entry)
 
         ## Buttons
-        self.calculate_vshape_button = QtWidgets.QPushButton("Calculate")
+        self.calculate_vshape_button = QtWidgets.QPushButton(_("Calculate"))
         # self.calculate_button.setFixedWidth(70)
         self.calculate_vshape_button.setToolTip(
-            "Calculate either the Cut Z or the effective tool diameter,\n  "
-            "depending on which is desired and which is known. "
+            _("Calculate either the Cut Z or the effective tool diameter,\n  "
+            "depending on which is desired and which is known. ")
         )
         self.empty_label = QtWidgets.QLabel(" ")
 
@@ -135,8 +149,8 @@ class ToolCalculator(FlatCAMTool):
         ## Title of the ElectroPlating Tools Calculator
         plate_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.eplateName)
         plate_title_label.setToolTip(
-            "This calculator is useful for those who plate the via/pad/drill holes,\n"
-            "using a method like grahite ink or calcium hypophosphite ink or palladium chloride."
+            _("This calculator is useful for those who plate the via/pad/drill holes,\n"
+            "using a method like grahite ink or calcium hypophosphite ink or palladium chloride.")
         )
         self.layout.addWidget(plate_title_label)
 
@@ -144,49 +158,49 @@ class ToolCalculator(FlatCAMTool):
         plate_form_layout = QtWidgets.QFormLayout()
         self.layout.addLayout(plate_form_layout)
 
-        self.pcblengthlabel = QtWidgets.QLabel("Board Length:")
+        self.pcblengthlabel = QtWidgets.QLabel(_("Board Length:"))
         self.pcblength_entry = FCEntry()
         # self.pcblengthlabel.setFixedWidth(70)
         self.pcblength_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.pcblengthlabel.setToolTip('This is the board length. In centimeters.')
+        self.pcblengthlabel.setToolTip(_('This is the board length. In centimeters.'))
 
-        self.pcbwidthlabel = QtWidgets.QLabel("Board Width:")
+        self.pcbwidthlabel = QtWidgets.QLabel(_("Board Width:"))
         self.pcbwidth_entry = FCEntry()
         # self.pcbwidthlabel.setFixedWidth(70)
         self.pcbwidth_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.pcbwidthlabel.setToolTip('This is the board width.In centimeters.')
+        self.pcbwidthlabel.setToolTip(_('This is the board width.In centimeters.'))
 
-        self.cdensity_label = QtWidgets.QLabel("Current Density:")
+        self.cdensity_label = QtWidgets.QLabel(_("Current Density:"))
         self.cdensity_entry = FCEntry()
         # self.cdensity_entry.setFixedWidth(70)
         self.cdensity_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.cdensity_label.setToolTip("Current density to pass through the board. \n"
-                                       "In Amps per Square Feet ASF.")
+        self.cdensity_label.setToolTip(_("Current density to pass through the board. \n"
+                                       "In Amps per Square Feet ASF."))
 
 
-        self.growth_label = QtWidgets.QLabel("Copper Growth:")
+        self.growth_label = QtWidgets.QLabel(_("Copper Growth:"))
         self.growth_entry = FCEntry()
         # self.growth_entry.setFixedWidth(70)
         self.growth_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.growth_label.setToolTip("How thick the copper growth is intended to be.\n"
-                                     "In microns.")
+        self.growth_label.setToolTip(_("How thick the copper growth is intended to be.\n"
+                                     "In microns."))
 
         # self.growth_entry.setEnabled(False)
 
-        self.cvaluelabel = QtWidgets.QLabel("Current Value:")
+        self.cvaluelabel = QtWidgets.QLabel(_("Current Value:"))
         self.cvalue_entry = FCEntry()
         # self.cvaluelabel.setFixedWidth(70)
         self.cvalue_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.cvaluelabel.setToolTip('This is the current intensity value\n'
-                                     'to be set on the Power Supply. In Amps.')
+        self.cvaluelabel.setToolTip(_('This is the current intensity value\n'
+                                     'to be set on the Power Supply. In Amps.'))
         self.cvalue_entry.setDisabled(True)
 
-        self.timelabel = QtWidgets.QLabel("Time:")
+        self.timelabel = QtWidgets.QLabel(_("Time:"))
         self.time_entry = FCEntry()
         # self.timelabel.setFixedWidth(70)
         self.time_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.timelabel.setToolTip('This is the calculated time required for the procedure.\n'
-                                  'In minutes.')
+        self.timelabel.setToolTip(_('This is the calculated time required for the procedure.\n'
+                                  'In minutes.'))
         self.time_entry.setDisabled(True)
 
         plate_form_layout.addRow(self.pcblengthlabel, self.pcblength_entry)
@@ -197,11 +211,11 @@ class ToolCalculator(FlatCAMTool):
         plate_form_layout.addRow(self.timelabel, self.time_entry)
 
         ## Buttons
-        self.calculate_plate_button = QtWidgets.QPushButton("Calculate")
+        self.calculate_plate_button = QtWidgets.QPushButton(_("Calculate"))
         # self.calculate_button.setFixedWidth(70)
         self.calculate_plate_button.setToolTip(
-            "Calculate the current intensity value and the procedure time,\n  "
-            "depending on the parameters above"
+            _("Calculate the current intensity value and the procedure time,\n  "
+            "depending on the parameters above")
         )
         self.empty_label_2 = QtWidgets.QLabel(" ")
 
@@ -221,21 +235,25 @@ class ToolCalculator(FlatCAMTool):
 
         self.calculate_plate_button.clicked.connect(self.on_calculate_eplate)
 
-
-    def run(self):
+    def run(self, toggle=True):
         self.app.report_usage("ToolCalculators()")
 
-        # if the splitter is hidden, display it, else hide it but only if the current widget is the same
-        if self.app.ui.splitter.sizes()[0] == 0:
-            self.app.ui.splitter.setSizes([1, 1])
+        if toggle:
+            # if the splitter is hidden, display it, else hide it but only if the current widget is the same
+            if self.app.ui.splitter.sizes()[0] == 0:
+                self.app.ui.splitter.setSizes([1, 1])
+            else:
+                try:
+                    if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
+                        self.app.ui.splitter.setSizes([0, 1])
+                except AttributeError:
+                    pass
         else:
-            try:
-                if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                    self.app.ui.splitter.setSizes([0, 1])
-            except AttributeError:
-                pass
+            if self.app.ui.splitter.sizes()[0] == 0:
+                self.app.ui.splitter.setSizes([1, 1])
 
         FlatCAMTool.run(self)
+
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, "Calc. Tool")
@@ -286,8 +304,8 @@ class ToolCalculator(FlatCAMTool):
             try:
                 tip_diameter = float(self.tipDia_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
-                                     "use a number.")
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number."))
                 return
 
         try:
@@ -297,8 +315,8 @@ class ToolCalculator(FlatCAMTool):
             try:
                 half_tip_angle = float(self.tipAngle_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
-                                     "use a number.")
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number."))
                 return
         half_tip_angle /= 2
 
@@ -309,8 +327,8 @@ class ToolCalculator(FlatCAMTool):
             try:
                 cut_depth = float(self.cutDepth_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
-                                     "use a number.")
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number."))
                 return
 
         tool_diameter = tip_diameter + (2 * cut_depth * math.tan(math.radians(half_tip_angle)))
@@ -324,8 +342,8 @@ class ToolCalculator(FlatCAMTool):
             try:
                 mm_val = float(self.mm_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
-                                     "use a number.")
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number."))
                 return
         self.inch_entry.set_value('%.6f' % (mm_val / 25.4))
 
@@ -337,8 +355,8 @@ class ToolCalculator(FlatCAMTool):
             try:
                 inch_val = float(self.inch_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
-                                     "use a number.")
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number."))
                 return
         self.mm_entry.set_value('%.6f' % (inch_val * 25.4))
 
@@ -351,8 +369,8 @@ class ToolCalculator(FlatCAMTool):
             try:
                 length = float(self.pcblength_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
-                                     "use a number.")
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number."))
                 return
 
         try:
@@ -362,8 +380,8 @@ class ToolCalculator(FlatCAMTool):
             try:
                 width = float(self.pcbwidth_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
-                                     "use a number.")
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number."))
                 return
 
         try:
@@ -373,8 +391,8 @@ class ToolCalculator(FlatCAMTool):
             try:
                 density = float(self.cdensity_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
-                                     "use a number.")
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number."))
                 return
 
         try:
@@ -384,8 +402,8 @@ class ToolCalculator(FlatCAMTool):
             try:
                 copper = float(self.growth_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit("[ERROR_NOTCL]Wrong value format entered, "
-                                     "use a number.")
+                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                                     "use a number."))
                 return
 
         calculated_current = (length * width * density) * 0.0021527820833419
