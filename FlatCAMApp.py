@@ -1693,6 +1693,20 @@ class App(QtCore.QObject):
                 except Exception as e:
                     log.debug("Could not open FlatCAM Config file as App parameter due: %s" % str(e))
 
+            if '.FlatScript' in argument:
+                try:
+                    file_name = str(argument)
+
+                    if file_name == "":
+                        self.inform.emit(_("Open Script file failed."))
+                    else:
+                        # run_from_arg = True
+                        # self.worker_task.emit({'fcn': self.open_script_file,
+                        #                        'params': [file_name, run_from_arg]})
+                        self.on_filerunscript(name=file_name)
+                except Exception as e:
+                    log.debug("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
+
     def defaults_read_form(self):
         for option in self.defaults_form_fields:
             try:
@@ -5848,7 +5862,7 @@ class App(QtCore.QObject):
             except Exception as e:
                 log.debug("App.on_fileopenscript() -> %s" % str(e))
 
-    def on_filerunscript(self):
+    def on_filerunscript(self, name=None):
         """
                 File menu callback for loading and running a TCL script.
 
@@ -5857,12 +5871,16 @@ class App(QtCore.QObject):
 
         self.report_usage("on_filerunscript")
         App.log.debug("on_file_runscript()")
-        _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
-        try:
-            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Run TCL script"),
-                                                         directory=self.get_last_folder(), filter=_filter_)
-        except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Run TCL script"), filter=_filter_)
+
+        if name:
+            filename = name
+        else:
+            _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
+            try:
+                filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Run TCL script"),
+                                                             directory=self.get_last_folder(), filter=_filter_)
+            except TypeError:
+                filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Run TCL script"), filter=_filter_)
 
         # The Qt methods above will return a QString which can cause problems later.
         # So far json.dump() will fail to serialize it.
