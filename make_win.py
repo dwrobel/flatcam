@@ -52,8 +52,9 @@ if platform.architecture()[0] == '64bit':
     include_files.append((os.path.join(site_dir, "google/protobuf"), "google/protobuf"))
     include_files.append((os.path.join(site_dir, "ortools"), "ortools"))
 
-include_files.append(("share", "lib/share"))
+include_files.append(("locale", "lib/locale"))
 include_files.append(("postprocessors", "lib/postprocessors"))
+include_files.append(("share", "lib/share"))
 
 include_files.append(("README.md", "README.md"))
 include_files.append(("LICENSE", "LICENSE"))

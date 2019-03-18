@@ -191,12 +191,11 @@ class App(QtCore.QObject):
                 App.log.debug("Win32!")
             else:
                 App.log.debug("Win64!")
-            self.data_path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0) + \
-                '\FlatCAM'
+
+            self.data_path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0) + '\FlatCAM'
             self.os = 'windows'
         else:  # Linux/Unix/MacOS
-            self.data_path = os.path.expanduser('~') + \
-                '/.FlatCAM'
+            self.data_path = os.path.expanduser('~') + '/.FlatCAM'
             self.os = 'unix'
 
         ###############################
@@ -2716,27 +2715,32 @@ class App(QtCore.QObject):
                 layout2.addWidget(logo, stretch=0)
 
                 title = QtWidgets.QLabel(
-                    "<font size=8><B>FlatCAM</B></font><BR>"
-                    "Version %s %s (%s) - %s <BR>"
-                    "<BR>"
-                    "2D Computer-Aided Printed Circuit Board<BR>"
-                    "Manufacturing.<BR>"
-                    "<BR>"
-                    "(c) 2014-2019 <B>Juan Pablo Caram</B><BR>"
-                    "<BR>"
-                    "<B> Main Contributors:</B><BR>"
-                    "Denis Hayrullin<BR>"
-                    "Kamil Sopko<BR>"
-                    "Marius Stanciu<BR>"
-                    "Matthieu Berthomé<BR>"
-                    "and many others found "
-                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/pull-requests/?state=MERGED\">here.</a><BR>"
-                    "<BR>"
-                    "Development is done "
-                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/src/Beta/\">here.</a><BR>"
-                    "DOWNLOAD area "
-                    "<a href = \"https://bitbucket.org/jpcgt/flatcam/downloads/\">here.</a><BR>"
-                    "" % (version, ('BETA' if beta else ''), version_date, platform.architecture()[0])
+                    _(
+                        "<font size=8><B>FlatCAM</B></font><BR>"
+                        "Version {version} {beta} ({date}) - {arch} <BR>"
+                        "<BR>"
+                        "2D Computer-Aided Printed Circuit Board<BR>"
+                        "Manufacturing.<BR>"
+                        "<BR>"
+                        "(c) 2014-2019 <B>Juan Pablo Caram</B><BR>"
+                        "<BR>"
+                        "<B> Main Contributors:</B><BR>"
+                        "Denis Hayrullin<BR>"
+                        "Kamil Sopko<BR>"
+                        "Marius Stanciu<BR>"
+                        "Matthieu Berthomé<BR>"
+                        "and many others found "
+                        "<a href = \"https://bitbucket.org/jpcgt/flatcam/pull-requests/?state=MERGED\">here.</a><BR>"
+                        "<BR>"
+                        "Development is done "
+                        "<a href = \"https://bitbucket.org/jpcgt/flatcam/src/Beta/\">here.</a><BR>"
+                        "DOWNLOAD area "
+                        "<a href = \"https://bitbucket.org/jpcgt/flatcam/downloads/\">here.</a><BR>"
+                        ""
+                    ).format(version=version,
+                             beta=('BETA' if beta else ''),
+                             date=version_date,
+                             arch=platform.architecture()[0])
                 )
                 title.setOpenExternalLinks(True)
 

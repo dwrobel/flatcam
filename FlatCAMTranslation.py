@@ -8,6 +8,7 @@
 
 import os
 import sys
+from pathlib import Path
 
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import QSettings
@@ -33,9 +34,18 @@ languages_path_search = ''
 
 
 def load_languages():
+    available_translations = []
     languages_path_search = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'locale')
 
-    available_translations = next(os.walk(languages_path_search))[1]
+    try:
+        available_translations = next(os.walk(languages_path_search))[1]
+    except StopIteration:
+        if not available_translations:
+            languages_path_search = os.path.join(Path(__file__).parents[1], 'locale')
+            try:
+                available_translations = next(os.walk(languages_path_search))[1]
+            except StopIteration:
+                pass
 
     for lang in available_translations:
         try:
@@ -48,6 +58,10 @@ def load_languages():
 
 def languages_dir():
     return os.path.join(os.path.dirname(os.path.abspath(__file__)), 'locale')
+
+
+def languages_dir_cx_freeze():
+    return os.path.join(Path(__file__).parents[1], 'locale')
 
 
 def on_language_apply_click(app, restart=False):
@@ -88,6 +102,7 @@ def on_language_apply_click(app, restart=False):
 
             restart_program(app=app)
 
+
 def apply_language(domain, lang=None):
     lang_code = ''
 
@@ -112,7 +127,14 @@ def apply_language(domain, lang=None):
             current_lang = gettext.translation(str(domain), localedir=languages_dir(), languages=[lang_code])
             current_lang.install()
         except Exception as e:
-            log.debug("FlatCAMTranslation.apply_language() --> %s" % str(e))
+            log.debug("FlatCAMTranslation.apply_language() --> %s. Perhaps is Cx_freeze-ed?" % str(e))
+            try:
+                current_lang = gettext.translation(str(domain),
+                                                   localedir=languages_dir_cx_freeze(),
+                                                   languages=[lang_code])
+                current_lang.install()
+            except Exception as e:
+                log.debug("FlatCAMTranslation.apply_language() --> %s" % str(e))
 
         return name
 

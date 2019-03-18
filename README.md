@@ -16,7 +16,8 @@ CAD program, and create G-Code for Isolation routing.
 - changed some of the app strings formatting to work better with Poedit translation software
 - fixed bug in Drillcncjob TclCommand
 - finished translation in Romanian
-
+- made the translations work when the app is frozen with CX_freeze
+- some formatting changes for the application strings
 
 16.03.2019
 
