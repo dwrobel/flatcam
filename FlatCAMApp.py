@@ -1640,13 +1640,11 @@ class App(QtCore.QObject):
         if not factory_defaults:
             self.save_factory_defaults(silent=False)
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
-            initial_lay = 'compact'
+            initial_lay = 'Compact'
             self.on_layout(index=None, lay=initial_lay)
             # Set the combobox in Preferences to the current layout
-            idx = self.app.ui.general_defaults_form.general_gui_set_group.layout_combo.findText(
-                initial_lay.capitalize()
-            )
-            self.app.ui.general_defaults_form.general_gui_set_group.layout_combo.setCurrentIndex(idx)
+            idx = self.ui.general_defaults_form.general_gui_set_group.layout_combo.findText(initial_lay)
+            self.ui.general_defaults_form.general_gui_set_group.layout_combo.setCurrentIndex(idx)
         factory_file.close()
 
         # and then make the  factory_defaults.FlatConfig file read_only os it can't be modified after creation.
@@ -3737,7 +3735,7 @@ class App(QtCore.QObject):
         if lay:
             current_layout = lay
         else:
-            current_layout = self.ui.general_defaults_form.general_gui_set_group.layout_combo.get_value().lower()
+            current_layout = self.ui.general_defaults_form.general_gui_set_group.layout_combo.get_value()
 
         settings = QSettings("Open Source", "FlatCAM")
         settings.setValue('layout', current_layout)
@@ -3746,17 +3744,20 @@ class App(QtCore.QObject):
         del settings
 
         # first remove the toolbars:
-        self.ui.removeToolBar(self.ui.toolbarfile)
-        self.ui.removeToolBar(self.ui.toolbargeo)
-        self.ui.removeToolBar(self.ui.toolbarview)
-        self.ui.removeToolBar(self.ui.toolbarshell)
-        self.ui.removeToolBar(self.ui.toolbartools)
-        self.ui.removeToolBar(self.ui.exc_edit_toolbar)
-        self.ui.removeToolBar(self.ui.geo_edit_toolbar)
-        self.ui.removeToolBar(self.ui.snap_toolbar)
-        self.ui.removeToolBar(self.ui.toolbarshell)
+        try:
+            self.ui.removeToolBar(self.ui.toolbarfile)
+            self.ui.removeToolBar(self.ui.toolbargeo)
+            self.ui.removeToolBar(self.ui.toolbarview)
+            self.ui.removeToolBar(self.ui.toolbarshell)
+            self.ui.removeToolBar(self.ui.toolbartools)
+            self.ui.removeToolBar(self.ui.exc_edit_toolbar)
+            self.ui.removeToolBar(self.ui.geo_edit_toolbar)
+            self.ui.removeToolBar(self.ui.snap_toolbar)
+            self.ui.removeToolBar(self.ui.toolbarshell)
+        except:
+            pass
 
-        if current_layout == 'standard':
+        if current_layout == 'Standard':
             ### TOOLBAR INSTALLATION ###
             self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
             self.ui.toolbarfile.setObjectName('File_TB')
@@ -3795,7 +3796,7 @@ class App(QtCore.QObject):
 
             self.ui.corner_snap_btn.setVisible(False)
             self.ui.snap_magnet.setVisible(False)
-        elif current_layout == 'compact':
+        elif current_layout == 'Compact':
             ### TOOLBAR INSTALLATION ###
             self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
             self.ui.toolbarfile.setObjectName('File_TB')

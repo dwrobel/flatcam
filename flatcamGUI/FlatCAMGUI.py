@@ -529,9 +529,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         settings = QSettings("Open Source", "FlatCAM")
         if settings.contains("layout"):
             layout = settings.value('layout', type=str)
-            if layout == 'standard':
+            if layout == 'Standard':
                 pass
-            elif layout == 'compact':
+            elif layout == 'Compact':
                 self.removeToolBar(self.snap_toolbar)
                 self.snap_toolbar.setMaximumHeight(30)
                 self.splitter_left.addWidget(self.snap_toolbar)
@@ -1558,7 +1558,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 self.corner_snap_btn.setVisible(False)
                 self.snap_magnet.setVisible(False)
-            elif layout == 'compact':
+            elif layout == 'Compact':
                 self.exc_edit_toolbar.setDisabled(True)
                 self.geo_edit_toolbar.setDisabled(True)
                 self.snap_magnet.setVisible(True)
@@ -1732,7 +1732,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 self.corner_snap_btn.setVisible(False)
                 self.snap_magnet.setVisible(False)
-            elif layout == 'compact':
+            elif layout == 'Compact':
                 self.exc_edit_toolbar.setVisible(True)
                 self.exc_edit_toolbar.setDisabled(True)
                 self.geo_edit_toolbar.setVisible(True)

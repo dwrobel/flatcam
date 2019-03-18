@@ -18,6 +18,8 @@ CAD program, and create G-Code for Isolation routing.
 - finished translation in Romanian
 - made the translations work when the app is frozen with CX_freeze
 - some formatting changes for the application strings
+- some changes on how the first layout is applied
+- minor bug fixes (typos from copy/paste from another part of the program)
 
 16.03.2019
 
