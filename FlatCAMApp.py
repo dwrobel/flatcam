@@ -90,8 +90,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.912
-    version_date = "2019/03/17"
+    version = 8.913
+    version_date = "2019/03/23"
     beta = True
 
     # current date now
@@ -1240,6 +1240,9 @@ class App(QtCore.QObject):
         self.ui.menufileopenproject.triggered.connect(self.on_file_openproject)
         self.ui.menufileopenconfig.triggered.connect(self.on_file_openconfig)
 
+        self.ui.menufilenewscript.triggered.connect(self.on_filenewscript)
+        self.ui.menufileopenscript.triggered.connect(self.on_fileopenscript)
+
         self.ui.menufilerunscript.triggered.connect(self.on_filerunscript)
 
         self.ui.menufileimportsvg.triggered.connect(lambda: self.on_file_importsvg("geometry"))
@@ -1422,6 +1425,7 @@ class App(QtCore.QObject):
 
         self.ui.cncjob_defaults_form.cncjob_adv_opt_group.tc_variable_combo.currentIndexChanged[str].connect(
             self.on_cnc_custom_parameters)
+
         # Modify G-CODE Plot Area TAB
         self.ui.code_editor.textChanged.connect(self.handleTextChanged)
         self.ui.buttonOpen.clicked.connect(self.handleOpen)
@@ -3374,7 +3378,7 @@ class App(QtCore.QObject):
 
         if self.toggle_codeeditor is False:
             # add the tab if it was closed
-            self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, "Code Editor")
+            self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _("Code Editor"))
             self.ui.cncjob_tab.setObjectName('cncjob_tab')
             # first clear previous text in text editor (if any)
             self.ui.code_editor.clear()
@@ -3863,7 +3867,7 @@ class App(QtCore.QObject):
 
         filter_group = " G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
                    "All Files (*.*)"
-        path, _ = QtWidgets.QFileDialog.getOpenFileName(
+        path, _f = QtWidgets.QFileDialog.getOpenFileName(
             caption=_('Open file'), directory=self.get_last_folder(), filter=filter_group)
         if path:
             file = QtCore.QFile(path)
@@ -5299,9 +5303,11 @@ class App(QtCore.QObject):
             return 'fail'
 
         # add the tab if it was closed
-        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _("Code Editor"))
+        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _("Source Editor"))
+        self.ui.cncjob_tab.setObjectName('cncjob_tab')
         # first clear previous text in text editor (if any)
         self.ui.code_editor.clear()
+        self.toggle_codeeditor = True
 
         # Switch plot_area to CNCJob tab
         self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
@@ -5783,19 +5789,23 @@ class App(QtCore.QObject):
                     self.worker_task.emit({'fcn': self.import_dxf,
                                            'params': [filename, type_of_obj]})
 
-    def on_filerunscript(self):
-        """
-                File menu callback for loading and running a TCL script.
+    def on_filenewscript(self):
+        # add the tab if it was closed
+        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _("Script Editor"))
+        self.ui.cncjob_tab.setObjectName('cncjob_tab')
+        # first clear previous text in text editor (if any)
+        self.ui.code_editor.clear()
 
-                :return: None
-                """
+        # Switch plot_area to CNCJob tab
+        self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
 
-        self.report_usage("on_filerunscript")
-        App.log.debug("on_file_runscript()")
-        _filter_ = "TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
+        self.toggle_codeeditor = True
+
+    def on_fileopenscript(self):
+        _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open TCL script"),
-                                                         directory=self.get_last_folder(), filter=_filter_)
+                                                                 directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open TCL script"), filter=_filter_)
 
@@ -5807,12 +5817,57 @@ class App(QtCore.QObject):
         if filename == "":
             self.inform.emit(_("[WARNING_NOTCL]Open TCL script cancelled."))
         else:
+            self.on_filenewscript()
+            try:
+                with open(filename, "r") as opened_script:
+                    try:
+                        for line in opened_script:
+                            proc_line = str(line).strip('\n')
+                            self.ui.code_editor.append(proc_line)
+                    except Exception as e:
+                        log.debug('App.on_fileopenscript() -->%s' % str(e))
+                        self.inform.emit(_('[ERROR]App.on_fileopenscript() -->%s') % str(e))
+                        return
+
+                    self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
+
+                    self.handleTextChanged()
+                    self.ui.show()
+
+            except Exception as e:
+                log.debug("App.on_fileopenscript() -> %s" % str(e))
+
+
+    def on_filerunscript(self):
+        """
+                File menu callback for loading and running a TCL script.
+
+                :return: None
+                """
+
+        self.report_usage("on_filerunscript")
+        App.log.debug("on_file_runscript()")
+        _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
+        try:
+            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Run TCL script"),
+                                                         directory=self.get_last_folder(), filter=_filter_)
+        except TypeError:
+            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Run TCL script"), filter=_filter_)
+
+        # The Qt methods above will return a QString which can cause problems later.
+        # So far json.dump() will fail to serialize it.
+        # TODO: Improve the serialization methods and remove this fix.
+        filename = str(filename)
+
+        if filename == "":
+            self.inform.emit(_("[WARNING_NOTCL]Run TCL script cancelled."))
+        else:
             try:
                 with open(filename, "r") as tcl_script:
                     cmd_line_shellfile_content = tcl_script.read()
                     self.shell._sysShell.exec_command(cmd_line_shellfile_content)
-            except Exception as ext:
-                print("ERROR: ", ext)
+            except Exception as e:
+                log.debug("App.on_filerunscript() -> %s" % str(e))
                 sys.exit(2)
 
     def on_file_saveproject(self):

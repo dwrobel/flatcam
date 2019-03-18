@@ -107,7 +107,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # Separator
         self.menufile.addSeparator()
 
-        # Run Scripts
+        # Scripting
+        self.menufile_scripting = self.menufile.addMenu(QtGui.QIcon('share/script16.png'), _('Scripting'))
+        self.menufile_scripting.setToolTipsVisible(True)
+
+        self.menufilenewscript = QtWidgets.QAction(QtGui.QIcon('share/script_new16.png'), _('New Script ...'),
+                                                   self)
+        self.menufileopenscript = QtWidgets.QAction(QtGui.QIcon('share/script_open16.png'), _('Open Script ...'),
+                                                   self)
         self.menufilerunscript = QtWidgets.QAction(QtGui.QIcon('share/script16.png'), _('Run Script ...\tSHIFT+S'),
                                                    self)
         self.menufilerunscript.setToolTip(
@@ -115,7 +122,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             "enabling the automation of certain\n"
             "functions of FlatCAM.")
         )
-        self.menufile.addAction(self.menufilerunscript)
+        self.menufile_scripting.addAction(self.menufilenewscript)
+        self.menufile_scripting.addAction(self.menufileopenscript)
+        self.menufile_scripting.addSeparator()
+        self.menufile_scripting.addAction(self.menufilerunscript)
 
         # Separator
         self.menufile.addSeparator()

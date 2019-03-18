@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+18.03.2019
+
+- added ability to create new scripts and open scripts in FlatCAM Script Editor
+
+
 17.03.2019
 
 - remade the layout in 2Sided Tool

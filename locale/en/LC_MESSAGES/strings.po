@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-03-18 03:22+0200\n"
-"PO-Revision-Date: 2019-03-18 03:22+0200\n"
+"POT-Creation-Date: 2019-03-18 22:08+0200\n"
+"PO-Revision-Date: 2019-03-18 22:08+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -25,95 +25,95 @@ msgid "[ERROR] Could not find the Language files. The App strings are missing."
 msgstr ""
 "[ERROR] Could not find the Language files. The App strings are missing."
 
-#: FlatCAMApp.py:1671 ObjectCollection.py:80 flatcamTools/ToolImage.py:213
+#: FlatCAMApp.py:1669 ObjectCollection.py:80 flatcamTools/ToolImage.py:213
 msgid "Open cancelled."
 msgstr "Open cancelled."
 
-#: FlatCAMApp.py:1685
+#: FlatCAMApp.py:1683
 msgid "Open Config file failed."
 msgstr "Open Config file failed."
 
-#: FlatCAMApp.py:1870
+#: FlatCAMApp.py:1868
 msgid ""
 "[WARNING_NOTCL] Editing a MultiGeo Geometry is not possible for the moment."
 msgstr ""
 "[WARNING_NOTCL] Editing a MultiGeo Geometry is not possible for the moment."
 
-#: FlatCAMApp.py:1891
+#: FlatCAMApp.py:1889
 msgid "[WARNING_NOTCL]Select a Geometry or Excellon Object to edit."
 msgstr "[WARNING_NOTCL]Select a Geometry or Excellon Object to edit."
 
-#: FlatCAMApp.py:1902
+#: FlatCAMApp.py:1900
 msgid "[WARNING_NOTCL]Editor is activated ..."
 msgstr "[WARNING_NOTCL]Editor is activated ..."
 
-#: FlatCAMApp.py:1941
+#: FlatCAMApp.py:1939
 msgid "[WARNING] Object empty after edit."
 msgstr "[WARNING] Object empty after edit."
 
-#: FlatCAMApp.py:1950
+#: FlatCAMApp.py:1948
 msgid "[WARNING_NOTCL]Select a Geometry or Excellon Object to update."
 msgstr "[WARNING_NOTCL]Select a Geometry or Excellon Object to update."
 
-#: FlatCAMApp.py:1963
+#: FlatCAMApp.py:1961
 #, python-format
 msgid "[selected] %s is updated, returning to App..."
 msgstr "[selected] %s is updated, returning to App..."
 
-#: FlatCAMApp.py:2286
+#: FlatCAMApp.py:2284
 msgid "[ERROR] Could not load defaults file."
 msgstr "[ERROR] Could not load defaults file."
 
-#: FlatCAMApp.py:2298
+#: FlatCAMApp.py:2296
 msgid "[ERROR] Failed to parse defaults file."
 msgstr "[ERROR] Failed to parse defaults file."
 
-#: FlatCAMApp.py:2319 FlatCAMApp.py:2322
+#: FlatCAMApp.py:2317 FlatCAMApp.py:2320
 msgid "Import FlatCAM Preferences"
 msgstr "Import FlatCAM Preferences"
 
-#: FlatCAMApp.py:2327
+#: FlatCAMApp.py:2325
 msgid "[WARNING_NOTCL]FlatCAM preferences import cancelled."
 msgstr "[WARNING_NOTCL]FlatCAM preferences import cancelled."
 
-#: FlatCAMApp.py:2335 FlatCAMApp.py:2814
+#: FlatCAMApp.py:2333 FlatCAMApp.py:2812
 msgid "[ERROR_NOTCL] Could not load defaults file."
 msgstr "[ERROR_NOTCL] Could not load defaults file."
 
-#: FlatCAMApp.py:2343 FlatCAMApp.py:2823
+#: FlatCAMApp.py:2341 FlatCAMApp.py:2821
 msgid "[ERROR_NOTCL] Failed to parse defaults file."
 msgstr "[ERROR_NOTCL] Failed to parse defaults file."
 
-#: FlatCAMApp.py:2346
+#: FlatCAMApp.py:2344
 #, python-format
 msgid "[success]Imported Defaults from %s"
 msgstr "[success]Imported Defaults from %s"
 
-#: FlatCAMApp.py:2356 FlatCAMApp.py:2360
+#: FlatCAMApp.py:2354 FlatCAMApp.py:2358
 msgid "Export FlatCAM Preferences"
 msgstr "Export FlatCAM Preferences"
 
-#: FlatCAMApp.py:2366
+#: FlatCAMApp.py:2364
 msgid "[WARNING_NOTCL]FlatCAM preferences export cancelled."
 msgstr "[WARNING_NOTCL]FlatCAM preferences export cancelled."
 
-#: FlatCAMApp.py:2382
+#: FlatCAMApp.py:2380
 msgid "[ERROR_NOTCL]Could not load defaults file."
 msgstr "[ERROR_NOTCL]Could not load defaults file."
 
-#: FlatCAMApp.py:2401 FlatCAMApp.py:2837
+#: FlatCAMApp.py:2399 FlatCAMApp.py:2835
 msgid "[ERROR_NOTCL] Failed to write defaults to file."
 msgstr "[ERROR_NOTCL] Failed to write defaults to file."
 
-#: FlatCAMApp.py:2453
+#: FlatCAMApp.py:2451
 msgid "[ERROR_NOTCL]Failed to open recent files file for writing."
 msgstr "[ERROR_NOTCL]Failed to open recent files file for writing."
 
-#: FlatCAMApp.py:2538 camlib.py:4229
+#: FlatCAMApp.py:2536 camlib.py:4229
 msgid "[ERROR_NOTCL] An internal error has ocurred. See shell.\n"
 msgstr "[ERROR_NOTCL] An internal error has ocurred. See shell.\n"
 
-#: FlatCAMApp.py:2539
+#: FlatCAMApp.py:2537
 #, python-brace-format
 msgid ""
 "Object ({kind}) failed because: {error} \n"
@@ -122,11 +122,11 @@ msgstr ""
 "Object ({kind}) failed because: {error} \n"
 "\n"
 
-#: FlatCAMApp.py:2559
+#: FlatCAMApp.py:2557
 msgid "Converting units to "
 msgstr "Converting units to "
 
-#: FlatCAMApp.py:2617 FlatCAMApp.py:2620 FlatCAMApp.py:2623 FlatCAMApp.py:2626
+#: FlatCAMApp.py:2615 FlatCAMApp.py:2618 FlatCAMApp.py:2621 FlatCAMApp.py:2624
 #, python-brace-format
 msgid ""
 "[selected]{kind} created/selected: <span style=\"color:{color};\">{name}</"
@@ -135,7 +135,7 @@ msgstr ""
 "[selected]{kind} created/selected: <span style=\"color:{color};\">{name}</"
 "span>"
 
-#: FlatCAMApp.py:2719
+#: FlatCAMApp.py:2717
 #, python-brace-format
 msgid ""
 "<font size=8><B>FlatCAM</B></font><BR>Version {version} {beta} ({date}) - "
@@ -158,27 +158,27 @@ msgstr ""
 "a><BR>DOWNLOAD area <a href = \"https://bitbucket.org/jpcgt/flatcam/"
 "downloads/\">here.</a><BR>"
 
-#: FlatCAMApp.py:2869
+#: FlatCAMApp.py:2867
 msgid "[success]Defaults saved."
 msgstr "[success]Defaults saved."
 
-#: FlatCAMApp.py:2890
+#: FlatCAMApp.py:2888
 msgid "[ERROR_NOTCL] Could not load factory defaults file."
 msgstr "[ERROR_NOTCL] Could not load factory defaults file."
 
-#: FlatCAMApp.py:2899
+#: FlatCAMApp.py:2897
 msgid "[ERROR_NOTCL] Failed to parse factory defaults file."
 msgstr "[ERROR_NOTCL] Failed to parse factory defaults file."
 
-#: FlatCAMApp.py:2913
+#: FlatCAMApp.py:2911
 msgid "[ERROR_NOTCL] Failed to write factory defaults to file."
 msgstr "[ERROR_NOTCL] Failed to write factory defaults to file."
 
-#: FlatCAMApp.py:2917
+#: FlatCAMApp.py:2915
 msgid "Factory defaults saved."
 msgstr "Factory defaults saved."
 
-#: FlatCAMApp.py:2922
+#: FlatCAMApp.py:2920
 msgid ""
 "There are files/objects modified in FlatCAM. \n"
 "Do you want to Save the project?"
@@ -186,11 +186,11 @@ msgstr ""
 "There are files/objects modified in FlatCAM. \n"
 "Do you want to Save the project?"
 
-#: FlatCAMApp.py:2925 FlatCAMApp.py:5194
+#: FlatCAMApp.py:2923 FlatCAMApp.py:5195
 msgid "Save changes"
 msgstr "Save changes"
 
-#: FlatCAMApp.py:2985
+#: FlatCAMApp.py:2983
 msgid ""
 "[ERROR] Failed join. The Geometry objects are of different types.\n"
 "At least one is MultiGeo type and the other is SingleGeo type. A possibility "
@@ -206,62 +206,62 @@ msgstr ""
 "be lost and the result may not be what was expected. \n"
 "Check the generated GCODE."
 
-#: FlatCAMApp.py:3026
+#: FlatCAMApp.py:3024
 msgid "[ERROR_NOTCL]Failed. Excellon joining works only on Excellon objects."
 msgstr "[ERROR_NOTCL]Failed. Excellon joining works only on Excellon objects."
 
-#: FlatCAMApp.py:3048
+#: FlatCAMApp.py:3046
 msgid "[ERROR_NOTCL]Failed. Gerber joining works only on Gerber objects."
 msgstr "[ERROR_NOTCL]Failed. Gerber joining works only on Gerber objects."
 
-#: FlatCAMApp.py:3063 FlatCAMApp.py:3088
+#: FlatCAMApp.py:3061 FlatCAMApp.py:3086
 msgid "[ERROR_NOTCL]Failed. Select a Geometry Object and try again."
 msgstr "[ERROR_NOTCL]Failed. Select a Geometry Object and try again."
 
-#: FlatCAMApp.py:3067 FlatCAMApp.py:3092
+#: FlatCAMApp.py:3065 FlatCAMApp.py:3090
 #, python-format
 msgid "[ERROR_NOTCL]Expected a FlatCAMGeometry, got %s"
 msgstr "[ERROR_NOTCL]Expected a FlatCAMGeometry, got %s"
 
-#: FlatCAMApp.py:3080
+#: FlatCAMApp.py:3078
 msgid "[success] A Geometry object was converted to MultiGeo type."
 msgstr "[success] A Geometry object was converted to MultiGeo type."
 
-#: FlatCAMApp.py:3106
+#: FlatCAMApp.py:3104
 msgid "[success] A Geometry object was converted to SingleGeo type."
 msgstr "[success] A Geometry object was converted to SingleGeo type."
 
-#: FlatCAMApp.py:3290
+#: FlatCAMApp.py:3288
 #, python-format
 msgid "[success]Converted units to %s"
 msgstr "[success]Converted units to %s"
 
-#: FlatCAMApp.py:3301
+#: FlatCAMApp.py:3299
 msgid "[WARNING_NOTCL]Units conversion cancelled."
 msgstr "[WARNING_NOTCL]Units conversion cancelled."
 
-#: FlatCAMApp.py:3866
+#: FlatCAMApp.py:3867
 msgid "Open file"
 msgstr "Open file"
 
-#: FlatCAMApp.py:3917 FlatCAMApp.py:3922
+#: FlatCAMApp.py:3918 FlatCAMApp.py:3923
 msgid "Export G-Code ..."
 msgstr "Export G-Code ..."
 
-#: FlatCAMApp.py:3925
+#: FlatCAMApp.py:3926
 msgid "[WARNING_NOTCL]Export Code cancelled."
 msgstr "[WARNING_NOTCL]Export Code cancelled."
 
-#: FlatCAMApp.py:3935
+#: FlatCAMApp.py:3936
 msgid "[WARNING] No such file or directory"
 msgstr "[WARNING] No such file or directory"
 
-#: FlatCAMApp.py:3942
+#: FlatCAMApp.py:3943
 #, python-format
 msgid "Saved to: %s"
 msgstr "Saved to: %s"
 
-#: FlatCAMApp.py:4005 FlatCAMApp.py:4037 FlatCAMApp.py:4048 FlatCAMApp.py:4059
+#: FlatCAMApp.py:4006 FlatCAMApp.py:4038 FlatCAMApp.py:4049 FlatCAMApp.py:4060
 #: flatcamTools/ToolNonCopperClear.py:487 flatcamTools/ToolSolderPaste.py:764
 msgid ""
 "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float "
@@ -270,12 +270,12 @@ msgstr ""
 "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float "
 "format."
 
-#: FlatCAMApp.py:4010 FlatCAMApp.py:4042 FlatCAMApp.py:4053 FlatCAMApp.py:4064
+#: FlatCAMApp.py:4011 FlatCAMApp.py:4043 FlatCAMApp.py:4054 FlatCAMApp.py:4065
 #: flatcamGUI/FlatCAMGUI.py:2484
 msgid "[WARNING_NOTCL] Adding Tool cancelled ..."
 msgstr "[WARNING_NOTCL] Adding Tool cancelled ..."
 
-#: FlatCAMApp.py:4013
+#: FlatCAMApp.py:4014
 msgid ""
 "Adding Tool works only when Advanced is checked.\n"
 "Go to Preferences -> General - Show Advanced Options."
@@ -283,106 +283,106 @@ msgstr ""
 "Adding Tool works only when Advanced is checked.\n"
 "Go to Preferences -> General - Show Advanced Options."
 
-#: FlatCAMApp.py:4118
+#: FlatCAMApp.py:4119
 msgid "Object(s) deleted ..."
 msgstr "Object(s) deleted ..."
 
-#: FlatCAMApp.py:4122
+#: FlatCAMApp.py:4123
 msgid "Failed. No object(s) selected..."
 msgstr "Failed. No object(s) selected..."
 
-#: FlatCAMApp.py:4124
+#: FlatCAMApp.py:4125
 msgid "Save the work in Editor and try again ..."
 msgstr "Save the work in Editor and try again ..."
 
-#: FlatCAMApp.py:4137
+#: FlatCAMApp.py:4138
 msgid "Click to set the origin ..."
 msgstr "Click to set the origin ..."
 
-#: FlatCAMApp.py:4149
+#: FlatCAMApp.py:4150
 msgid "Jump to ..."
 msgstr "Jump to ..."
 
-#: FlatCAMApp.py:4150
+#: FlatCAMApp.py:4151
 msgid "Enter the coordinates in format X,Y:"
 msgstr "Enter the coordinates in format X,Y:"
 
-#: FlatCAMApp.py:4157
+#: FlatCAMApp.py:4158
 msgid "Wrong coordinates. Enter coordinates in format: X,Y"
 msgstr "Wrong coordinates. Enter coordinates in format: X,Y"
 
-#: FlatCAMApp.py:4172
+#: FlatCAMApp.py:4173
 msgid "Done."
 msgstr "Done."
 
-#: FlatCAMApp.py:4304
+#: FlatCAMApp.py:4305
 msgid "[success] Origin set ..."
 msgstr "[success] Origin set ..."
 
-#: FlatCAMApp.py:4322
+#: FlatCAMApp.py:4323
 msgid "Preferences"
 msgstr "Preferences"
 
-#: FlatCAMApp.py:4342
+#: FlatCAMApp.py:4343
 msgid "[WARNING_NOTCL] No object selected to Flip on Y axis."
 msgstr "[WARNING_NOTCL] No object selected to Flip on Y axis."
 
-#: FlatCAMApp.py:4367
+#: FlatCAMApp.py:4368
 msgid "[success] Flip on Y axis done."
 msgstr "[success] Flip on Y axis done."
 
-#: FlatCAMApp.py:4369 FlatCAMApp.py:4409 FlatCAMEditor.py:1340
+#: FlatCAMApp.py:4370 FlatCAMApp.py:4410 FlatCAMEditor.py:1340
 #: flatcamTools/ToolTransform.py:750
 #, python-format
 msgid "[ERROR_NOTCL] Due of %s, Flip action was not executed."
 msgstr "[ERROR_NOTCL] Due of %s, Flip action was not executed."
 
-#: FlatCAMApp.py:4382
+#: FlatCAMApp.py:4383
 msgid "[WARNING_NOTCL] No object selected to Flip on X axis."
 msgstr "[WARNING_NOTCL] No object selected to Flip on X axis."
 
-#: FlatCAMApp.py:4407
+#: FlatCAMApp.py:4408
 msgid "[success] Flip on X axis done."
 msgstr "[success] Flip on X axis done."
 
-#: FlatCAMApp.py:4422
+#: FlatCAMApp.py:4423
 msgid "[WARNING_NOTCL] No object selected to Rotate."
 msgstr "[WARNING_NOTCL] No object selected to Rotate."
 
-#: FlatCAMApp.py:4425 FlatCAMApp.py:4470 FlatCAMApp.py:4501
+#: FlatCAMApp.py:4426 FlatCAMApp.py:4471 FlatCAMApp.py:4502
 msgid "Transform"
 msgstr "Transform"
 
-#: FlatCAMApp.py:4425 FlatCAMApp.py:4470 FlatCAMApp.py:4501
+#: FlatCAMApp.py:4426 FlatCAMApp.py:4471 FlatCAMApp.py:4502
 msgid "Enter the Angle value:"
 msgstr "Enter the Angle value:"
 
-#: FlatCAMApp.py:4455
+#: FlatCAMApp.py:4456
 msgid "[success] Rotation done."
 msgstr "[success] Rotation done."
 
-#: FlatCAMApp.py:4457 FlatCAMEditor.py:1283 flatcamTools/ToolTransform.py:678
+#: FlatCAMApp.py:4458 FlatCAMEditor.py:1283 flatcamTools/ToolTransform.py:678
 #, python-format
 msgid "[ERROR_NOTCL] Due of %s, rotation movement was not executed."
 msgstr "[ERROR_NOTCL] Due of %s, rotation movement was not executed."
 
-#: FlatCAMApp.py:4468
+#: FlatCAMApp.py:4469
 msgid "[WARNING_NOTCL] No object selected to Skew/Shear on X axis."
 msgstr "[WARNING_NOTCL] No object selected to Skew/Shear on X axis."
 
-#: FlatCAMApp.py:4489
+#: FlatCAMApp.py:4490
 msgid "[success] Skew on X axis done."
 msgstr "[success] Skew on X axis done."
 
-#: FlatCAMApp.py:4499
+#: FlatCAMApp.py:4500
 msgid "[WARNING_NOTCL] No object selected to Skew/Shear on Y axis."
 msgstr "[WARNING_NOTCL] No object selected to Skew/Shear on Y axis."
 
-#: FlatCAMApp.py:4520
+#: FlatCAMApp.py:4521
 msgid "[success] Skew on Y axis done."
 msgstr "[success] Skew on Y axis done."
 
-#: FlatCAMApp.py:4616 FlatCAMApp.py:4643
+#: FlatCAMApp.py:4617 FlatCAMApp.py:4644
 msgid ""
 "[WARNING_NOTCL] Please enter a grid value with non-zero value, in Float "
 "format."
@@ -390,48 +390,48 @@ msgstr ""
 "[WARNING_NOTCL] Please enter a grid value with non-zero value, in Float "
 "format."
 
-#: FlatCAMApp.py:4622
+#: FlatCAMApp.py:4623
 msgid "[success] New Grid added ..."
 msgstr "[success] New Grid added ..."
 
-#: FlatCAMApp.py:4625
+#: FlatCAMApp.py:4626
 msgid "[WARNING_NOTCL] Grid already exists ..."
 msgstr "[WARNING_NOTCL] Grid already exists ..."
 
-#: FlatCAMApp.py:4628
+#: FlatCAMApp.py:4629
 msgid "[WARNING_NOTCL] Adding New Grid cancelled ..."
 msgstr "[WARNING_NOTCL] Adding New Grid cancelled ..."
 
-#: FlatCAMApp.py:4650
+#: FlatCAMApp.py:4651
 msgid "[ERROR_NOTCL] Grid Value does not exist ..."
 msgstr "[ERROR_NOTCL] Grid Value does not exist ..."
 
-#: FlatCAMApp.py:4653
+#: FlatCAMApp.py:4654
 msgid "[success] Grid Value deleted ..."
 msgstr "[success] Grid Value deleted ..."
 
-#: FlatCAMApp.py:4656
+#: FlatCAMApp.py:4657
 msgid "[WARNING_NOTCL] Delete Grid value cancelled ..."
 msgstr "[WARNING_NOTCL] Delete Grid value cancelled ..."
 
-#: FlatCAMApp.py:4695
+#: FlatCAMApp.py:4696
 msgid "[WARNING_NOTCL]No object selected to copy it's name"
 msgstr "[WARNING_NOTCL]No object selected to copy it's name"
 
-#: FlatCAMApp.py:4699
+#: FlatCAMApp.py:4700
 msgid "Name copied on clipboard ..."
 msgstr "Name copied on clipboard ..."
 
-#: FlatCAMApp.py:4994 FlatCAMApp.py:4997 FlatCAMApp.py:5000 FlatCAMApp.py:5003
-#: FlatCAMApp.py:5017 FlatCAMApp.py:5020 FlatCAMApp.py:5023 FlatCAMApp.py:5026
-#: FlatCAMApp.py:5065 FlatCAMApp.py:5068 FlatCAMApp.py:5071 FlatCAMApp.py:5074
+#: FlatCAMApp.py:4995 FlatCAMApp.py:4998 FlatCAMApp.py:5001 FlatCAMApp.py:5004
+#: FlatCAMApp.py:5018 FlatCAMApp.py:5021 FlatCAMApp.py:5024 FlatCAMApp.py:5027
+#: FlatCAMApp.py:5066 FlatCAMApp.py:5069 FlatCAMApp.py:5072 FlatCAMApp.py:5075
 #: ObjectCollection.py:696 ObjectCollection.py:699 ObjectCollection.py:702
 #: ObjectCollection.py:705
 #, python-brace-format
 msgid "[selected]<span style=\"color:{color};\">{name}</span> selected"
 msgstr "[selected]<span style=\"color:{color};\">{name}</span> selected"
 
-#: FlatCAMApp.py:5191
+#: FlatCAMApp.py:5192
 msgid ""
 "There are files/objects opened in FlatCAM.\n"
 "Creating a New project will delete them.\n"
@@ -441,17 +441,17 @@ msgstr ""
 "Creating a New project will delete them.\n"
 "Do you want to Save the project?"
 
-#: FlatCAMApp.py:5209
+#: FlatCAMApp.py:5210
 msgid "[success] New Project created..."
 msgstr "[success] New Project created..."
 
-#: FlatCAMApp.py:5290
+#: FlatCAMApp.py:5291
 msgid ""
 "[WARNING_NOTCL] Select an Gerber or Excellon file to view it's source file."
 msgstr ""
 "[WARNING_NOTCL] Select an Gerber or Excellon file to view it's source file."
 
-#: FlatCAMApp.py:5297
+#: FlatCAMApp.py:5298
 msgid ""
 "[WARNING_NOTCL] There is no selected object for which to see it's source "
 "file code."
@@ -459,111 +459,111 @@ msgstr ""
 "[WARNING_NOTCL] There is no selected object for which to see it's source "
 "file code."
 
-#: FlatCAMApp.py:5301 FlatCAMApp.py:6732 FlatCAMObj.py:5398
+#: FlatCAMApp.py:5302 FlatCAMApp.py:6733 FlatCAMObj.py:5398
 msgid "Code Editor"
 msgstr "Code Editor"
 
-#: FlatCAMApp.py:5314
+#: FlatCAMApp.py:5315
 #, python-format
 msgid "[ERROR]App.on_view_source() -->%s"
 msgstr "[ERROR]App.on_view_source() -->%s"
 
-#: FlatCAMApp.py:5352 FlatCAMApp.py:5355 flatcamGUI/FlatCAMGUI.py:541
+#: FlatCAMApp.py:5353 FlatCAMApp.py:5356 flatcamGUI/FlatCAMGUI.py:541
 #: flatcamGUI/FlatCAMGUI.py:1590
 msgid "Open Gerber"
 msgstr "Open Gerber"
 
-#: FlatCAMApp.py:5360
+#: FlatCAMApp.py:5361
 msgid "[WARNING_NOTCL] Open Gerber cancelled."
 msgstr "[WARNING_NOTCL] Open Gerber cancelled."
 
-#: FlatCAMApp.py:5381 FlatCAMApp.py:5384 flatcamGUI/FlatCAMGUI.py:542
+#: FlatCAMApp.py:5382 FlatCAMApp.py:5385 flatcamGUI/FlatCAMGUI.py:542
 #: flatcamGUI/FlatCAMGUI.py:1591
 msgid "Open Excellon"
 msgstr "Open Excellon"
 
-#: FlatCAMApp.py:5389
+#: FlatCAMApp.py:5390
 msgid "[WARNING_NOTCL]Open Excellon cancelled."
 msgstr "[WARNING_NOTCL]Open Excellon cancelled."
 
-#: FlatCAMApp.py:5411 FlatCAMApp.py:5414
+#: FlatCAMApp.py:5412 FlatCAMApp.py:5415
 msgid "Open G-Code"
 msgstr "Open G-Code"
 
-#: FlatCAMApp.py:5419
+#: FlatCAMApp.py:5420
 msgid "[WARNING_NOTCL]Open G-Code cancelled."
 msgstr "[WARNING_NOTCL]Open G-Code cancelled."
 
-#: FlatCAMApp.py:5437 FlatCAMApp.py:5440
+#: FlatCAMApp.py:5438 FlatCAMApp.py:5441
 msgid "Open Project"
 msgstr "Open Project"
 
-#: FlatCAMApp.py:5448
+#: FlatCAMApp.py:5449
 msgid "[WARNING_NOTCL]Open Project cancelled."
 msgstr "[WARNING_NOTCL]Open Project cancelled."
 
-#: FlatCAMApp.py:5467 FlatCAMApp.py:5470
+#: FlatCAMApp.py:5468 FlatCAMApp.py:5471
 msgid "Open Configuration File"
 msgstr "Open Configuration File"
 
-#: FlatCAMApp.py:5474
+#: FlatCAMApp.py:5475
 msgid "[WARNING_NOTCL]Open Config cancelled."
 msgstr "[WARNING_NOTCL]Open Config cancelled."
 
-#: FlatCAMApp.py:5489 FlatCAMApp.py:5686 FlatCAMApp.py:7592 FlatCAMApp.py:7612
-#: FlatCAMApp.py:7633 FlatCAMApp.py:7655
+#: FlatCAMApp.py:5490 FlatCAMApp.py:5687 FlatCAMApp.py:7593 FlatCAMApp.py:7613
+#: FlatCAMApp.py:7634 FlatCAMApp.py:7656
 msgid "[WARNING_NOTCL] No object selected."
 msgstr "[WARNING_NOTCL] No object selected."
 
-#: FlatCAMApp.py:5490 FlatCAMApp.py:5687
+#: FlatCAMApp.py:5491 FlatCAMApp.py:5688
 msgid "Please Select a Geometry object to export"
 msgstr "Please Select a Geometry object to export"
 
-#: FlatCAMApp.py:5501
+#: FlatCAMApp.py:5502
 msgid "[ERROR_NOTCL] Only Geometry, Gerber and CNCJob objects can be used."
 msgstr "[ERROR_NOTCL] Only Geometry, Gerber and CNCJob objects can be used."
 
-#: FlatCAMApp.py:5514 FlatCAMApp.py:5518
+#: FlatCAMApp.py:5515 FlatCAMApp.py:5519
 msgid "Export SVG"
 msgstr "Export SVG"
 
-#: FlatCAMApp.py:5523
+#: FlatCAMApp.py:5524
 msgid "[WARNING_NOTCL]Export SVG cancelled."
 msgstr "[WARNING_NOTCL]Export SVG cancelled."
 
-#: FlatCAMApp.py:5537
+#: FlatCAMApp.py:5538
 msgid "[[WARNING_NOTCL]] Data must be a 3D array with last dimension 3 or 4"
 msgstr "[[WARNING_NOTCL]] Data must be a 3D array with last dimension 3 or 4"
 
-#: FlatCAMApp.py:5543 FlatCAMApp.py:5547
+#: FlatCAMApp.py:5544 FlatCAMApp.py:5548
 msgid "Export PNG Image"
 msgstr "Export PNG Image"
 
-#: FlatCAMApp.py:5552
+#: FlatCAMApp.py:5553
 msgid "Export PNG cancelled."
 msgstr "Export PNG cancelled."
 
-#: FlatCAMApp.py:5569
+#: FlatCAMApp.py:5570
 msgid ""
 "[WARNING_NOTCL] No object selected. Please select an Gerber object to export."
 msgstr ""
 "[WARNING_NOTCL] No object selected. Please select an Gerber object to export."
 
-#: FlatCAMApp.py:5574
+#: FlatCAMApp.py:5575
 msgid ""
 "[ERROR_NOTCL] Failed. Only Gerber objects can be saved as Gerber files..."
 msgstr ""
 "[ERROR_NOTCL] Failed. Only Gerber objects can be saved as Gerber files..."
 
-#: FlatCAMApp.py:5586
+#: FlatCAMApp.py:5587
 msgid "Save Gerber source file"
 msgstr "Save Gerber source file"
 
-#: FlatCAMApp.py:5591
+#: FlatCAMApp.py:5592
 msgid "[WARNING_NOTCL] Save Gerber source file cancelled."
 msgstr "[WARNING_NOTCL] Save Gerber source file cancelled."
 
-#: FlatCAMApp.py:5608
+#: FlatCAMApp.py:5609
 msgid ""
 "[WARNING_NOTCL] No object selected. Please select an Excellon object to "
 "export."
@@ -571,21 +571,21 @@ msgstr ""
 "[WARNING_NOTCL] No object selected. Please select an Excellon object to "
 "export."
 
-#: FlatCAMApp.py:5613 FlatCAMApp.py:5652
+#: FlatCAMApp.py:5614 FlatCAMApp.py:5653
 msgid ""
 "[ERROR_NOTCL] Failed. Only Excellon objects can be saved as Excellon files..."
 msgstr ""
 "[ERROR_NOTCL] Failed. Only Excellon objects can be saved as Excellon files..."
 
-#: FlatCAMApp.py:5621 FlatCAMApp.py:5625
+#: FlatCAMApp.py:5622 FlatCAMApp.py:5626
 msgid "Save Excellon source file"
 msgstr "Save Excellon source file"
 
-#: FlatCAMApp.py:5630
+#: FlatCAMApp.py:5631
 msgid "[WARNING_NOTCL] Saving Excellon source file cancelled."
 msgstr "[WARNING_NOTCL] Saving Excellon source file cancelled."
 
-#: FlatCAMApp.py:5647
+#: FlatCAMApp.py:5648
 msgid ""
 "[WARNING_NOTCL] No object selected. Please Select an Excellon object to "
 "export."
@@ -593,108 +593,108 @@ msgstr ""
 "[WARNING_NOTCL] No object selected. Please Select an Excellon object to "
 "export."
 
-#: FlatCAMApp.py:5660 FlatCAMApp.py:5664
+#: FlatCAMApp.py:5661 FlatCAMApp.py:5665
 msgid "Export Excellon"
 msgstr "Export Excellon"
 
-#: FlatCAMApp.py:5669
+#: FlatCAMApp.py:5670
 msgid "[WARNING_NOTCL]Export Excellon cancelled."
 msgstr "[WARNING_NOTCL]Export Excellon cancelled."
 
-#: FlatCAMApp.py:5697
+#: FlatCAMApp.py:5698
 msgid "[ERROR_NOTCL] Only Geometry objects can be used."
 msgstr "[ERROR_NOTCL] Only Geometry objects can be used."
 
-#: FlatCAMApp.py:5710 FlatCAMApp.py:5714
+#: FlatCAMApp.py:5711 FlatCAMApp.py:5715
 msgid "Export DXF"
 msgstr "Export DXF"
 
-#: FlatCAMApp.py:5719
+#: FlatCAMApp.py:5720
 msgid "[WARNING_NOTCL] Export DXF cancelled."
 msgstr "[WARNING_NOTCL] Export DXF cancelled."
 
-#: FlatCAMApp.py:5737 FlatCAMApp.py:5740
+#: FlatCAMApp.py:5738 FlatCAMApp.py:5741
 msgid "Import SVG"
 msgstr "Import SVG"
 
-#: FlatCAMApp.py:5748
+#: FlatCAMApp.py:5749
 msgid "[WARNING_NOTCL] Open SVG cancelled."
 msgstr "[WARNING_NOTCL] Open SVG cancelled."
 
-#: FlatCAMApp.py:5767 FlatCAMApp.py:5770
+#: FlatCAMApp.py:5768 FlatCAMApp.py:5771
 msgid "Import DXF"
 msgstr "Import DXF"
 
-#: FlatCAMApp.py:5778
+#: FlatCAMApp.py:5779
 msgid "[WARNING_NOTCL]Open DXF cancelled."
 msgstr "[WARNING_NOTCL]Open DXF cancelled."
 
-#: FlatCAMApp.py:5796 FlatCAMApp.py:5799
+#: FlatCAMApp.py:5797 FlatCAMApp.py:5800
 msgid "Open TCL script"
 msgstr "Open TCL script"
 
-#: FlatCAMApp.py:5807
+#: FlatCAMApp.py:5808
 msgid "[WARNING_NOTCL]Open TCL script cancelled."
 msgstr "[WARNING_NOTCL]Open TCL script cancelled."
 
-#: FlatCAMApp.py:5855 FlatCAMApp.py:5859
+#: FlatCAMApp.py:5856 FlatCAMApp.py:5860
 msgid "Save Project As ..."
 msgstr "Save Project As ..."
 
-#: FlatCAMApp.py:5856
+#: FlatCAMApp.py:5857
 #, python-brace-format
 msgid "{l_save}/Project_{date}"
 msgstr "{l_save}/Project_{date}"
 
-#: FlatCAMApp.py:5864
+#: FlatCAMApp.py:5865
 msgid "[WARNING_NOTCL] Save Project cancelled."
 msgstr "[WARNING_NOTCL] Save Project cancelled."
 
-#: FlatCAMApp.py:5909
+#: FlatCAMApp.py:5910
 msgid "Exporting SVG"
 msgstr "Exporting SVG"
 
-#: FlatCAMApp.py:5942 FlatCAMApp.py:6047 FlatCAMApp.py:6161
+#: FlatCAMApp.py:5943 FlatCAMApp.py:6048 FlatCAMApp.py:6162
 #, python-format
 msgid "[success] SVG file exported to %s"
 msgstr "[success] SVG file exported to %s"
 
-#: FlatCAMApp.py:5973 FlatCAMApp.py:6093
+#: FlatCAMApp.py:5974 FlatCAMApp.py:6094
 #, python-format
 msgid "[WARNING_NOTCL]No object Box. Using instead %s"
 msgstr "[WARNING_NOTCL]No object Box. Using instead %s"
 
-#: FlatCAMApp.py:6050 FlatCAMApp.py:6164
+#: FlatCAMApp.py:6051 FlatCAMApp.py:6165
 msgid "Generating Film ... Please wait."
 msgstr "Generating Film ... Please wait."
 
-#: FlatCAMApp.py:6311
+#: FlatCAMApp.py:6312
 #, python-format
 msgid "[success] Excellon file exported to %s"
 msgstr "[success] Excellon file exported to %s"
 
-#: FlatCAMApp.py:6318
+#: FlatCAMApp.py:6319
 msgid "Exporting Excellon"
 msgstr "Exporting Excellon"
 
-#: FlatCAMApp.py:6323 FlatCAMApp.py:6330
+#: FlatCAMApp.py:6324 FlatCAMApp.py:6331
 msgid "[ERROR_NOTCL] Could not export Excellon file."
 msgstr "[ERROR_NOTCL] Could not export Excellon file."
 
-#: FlatCAMApp.py:6369
+#: FlatCAMApp.py:6370
 #, python-format
 msgid "[success] DXF file exported to %s"
 msgstr "[success] DXF file exported to %s"
 
-#: FlatCAMApp.py:6375
+#: FlatCAMApp.py:6376
 msgid "Exporting DXF"
 msgstr "Exporting DXF"
 
-#: FlatCAMApp.py:6380 FlatCAMApp.py:6387
+#: FlatCAMApp.py:6381 FlatCAMApp.py:6388
 msgid "[[WARNING_NOTCL]] Could not export DXF file."
 msgstr "[[WARNING_NOTCL]] Could not export DXF file."
 
-#: FlatCAMApp.py:6407 FlatCAMApp.py:6449 FlatCAMApp.py:6490
+#: FlatCAMApp.py:6408 FlatCAMApp.py:6450 FlatCAMApp.py:6491
 msgid ""
 "[ERROR_NOTCL] Not supported type is picked as parameter. Only Geometry and "
 "Gerber are supported"
@@ -702,93 +702,93 @@ msgstr ""
 "[ERROR_NOTCL] Not supported type is picked as parameter. Only Geometry and "
 "Gerber are supported"
 
-#: FlatCAMApp.py:6417
+#: FlatCAMApp.py:6418
 msgid "Importing SVG"
 msgstr "Importing SVG"
 
-#: FlatCAMApp.py:6428 FlatCAMApp.py:6470 FlatCAMApp.py:6510 FlatCAMApp.py:6586
-#: FlatCAMApp.py:6653 FlatCAMApp.py:6718
+#: FlatCAMApp.py:6429 FlatCAMApp.py:6471 FlatCAMApp.py:6511 FlatCAMApp.py:6587
+#: FlatCAMApp.py:6654 FlatCAMApp.py:6719
 #, python-format
 msgid "[success] Opened: %s"
 msgstr "[success] Opened: %s"
 
-#: FlatCAMApp.py:6459
+#: FlatCAMApp.py:6460
 msgid "Importing DXF"
 msgstr "Importing DXF"
 
-#: FlatCAMApp.py:6498
+#: FlatCAMApp.py:6499
 msgid "Importing Image"
 msgstr "Importing Image"
 
-#: FlatCAMApp.py:6539 FlatCAMApp.py:6541
+#: FlatCAMApp.py:6540 FlatCAMApp.py:6542
 #, python-format
 msgid "[ERROR_NOTCL] Failed to open file: %s"
 msgstr "[ERROR_NOTCL] Failed to open file: %s"
 
-#: FlatCAMApp.py:6544
+#: FlatCAMApp.py:6545
 #, python-brace-format
 msgid "[ERROR_NOTCL] Failed to parse file: {name}. {error}"
 msgstr "[ERROR_NOTCL] Failed to parse file: {name}. {error}"
 
-#: FlatCAMApp.py:6550 FlatCAMEditor.py:5802 FlatCAMObj.py:4104
+#: FlatCAMApp.py:6551 FlatCAMEditor.py:5802 FlatCAMObj.py:4104
 msgid "[ERROR] An internal error has ocurred. See shell.\n"
 msgstr "[ERROR] An internal error has ocurred. See shell.\n"
 
-#: FlatCAMApp.py:6559
+#: FlatCAMApp.py:6560
 msgid ""
 "[ERROR_NOTCL] Object is not Gerber file or empty. Aborting object creation."
 msgstr ""
 "[ERROR_NOTCL] Object is not Gerber file or empty. Aborting object creation."
 
-#: FlatCAMApp.py:6567
+#: FlatCAMApp.py:6568
 msgid "Opening Gerber"
 msgstr "Opening Gerber"
 
-#: FlatCAMApp.py:6577
+#: FlatCAMApp.py:6578
 msgid "[ERROR_NOTCL] Open Gerber failed. Probable not a Gerber file."
 msgstr "[ERROR_NOTCL] Open Gerber failed. Probable not a Gerber file."
 
-#: FlatCAMApp.py:6612
+#: FlatCAMApp.py:6613
 msgid "[ERROR_NOTCL] This is not Excellon file."
 msgstr "[ERROR_NOTCL] This is not Excellon file."
 
-#: FlatCAMApp.py:6615
+#: FlatCAMApp.py:6616
 #, python-format
 msgid "[ERROR_NOTCL] Cannot open file: %s"
 msgstr "[ERROR_NOTCL] Cannot open file: %s"
 
-#: FlatCAMApp.py:6620
+#: FlatCAMApp.py:6621
 msgid "[ERROR_NOTCL] An internal error has occurred. See shell.\n"
 msgstr "[ERROR_NOTCL] An internal error has occurred. See shell.\n"
 
-#: FlatCAMApp.py:6636
+#: FlatCAMApp.py:6637
 #, python-format
 msgid "[ERROR_NOTCL] No geometry found in file: %s"
 msgstr "[ERROR_NOTCL] No geometry found in file: %s"
 
-#: FlatCAMApp.py:6639
+#: FlatCAMApp.py:6640
 msgid "Opening Excellon."
 msgstr "Opening Excellon."
 
-#: FlatCAMApp.py:6646
+#: FlatCAMApp.py:6647
 msgid "[ERROR_NOTCL] Open Excellon file failed. Probable not an Excellon file."
 msgstr ""
 "[ERROR_NOTCL] Open Excellon file failed. Probable not an Excellon file."
 
-#: FlatCAMApp.py:6685
+#: FlatCAMApp.py:6686
 #, python-format
 msgid "[ERROR_NOTCL] Failed to open %s"
 msgstr "[ERROR_NOTCL] Failed to open %s"
 
-#: FlatCAMApp.py:6695
+#: FlatCAMApp.py:6696
 msgid "[ERROR_NOTCL] This is not GCODE"
 msgstr "[ERROR_NOTCL] This is not GCODE"
 
-#: FlatCAMApp.py:6701
+#: FlatCAMApp.py:6702
 msgid "Opening G-Code."
 msgstr "Opening G-Code."
 
-#: FlatCAMApp.py:6709
+#: FlatCAMApp.py:6710
 msgid ""
 "[ERROR_NOTCL] Failed to create CNCJob Object. Probable not a GCode file.\n"
 " Attempting to create a FlatCAM CNCJob Object from G-Code file failed during "
@@ -798,31 +798,31 @@ msgstr ""
 " Attempting to create a FlatCAM CNCJob Object from G-Code file failed during "
 "processing"
 
-#: FlatCAMApp.py:6749
+#: FlatCAMApp.py:6750
 #, python-format
 msgid "[ERROR_NOTCL] Failed to open config file: %s"
 msgstr "[ERROR_NOTCL] Failed to open config file: %s"
 
-#: FlatCAMApp.py:6774 FlatCAMApp.py:6791
+#: FlatCAMApp.py:6775 FlatCAMApp.py:6792
 #, python-format
 msgid "[ERROR_NOTCL] Failed to open project file: %s"
 msgstr "[ERROR_NOTCL] Failed to open project file: %s"
 
-#: FlatCAMApp.py:6781
+#: FlatCAMApp.py:6782
 #, python-format
 msgid "[ERROR_NOTCL] Failed to parse project file: %s"
 msgstr "[ERROR_NOTCL] Failed to parse project file: %s"
 
-#: FlatCAMApp.py:6817
+#: FlatCAMApp.py:6818
 #, python-format
 msgid "[success] Project loaded from: %s"
 msgstr "[success] Project loaded from: %s"
 
-#: FlatCAMApp.py:6947
+#: FlatCAMApp.py:6948
 msgid "Available commands:\n"
 msgstr "Available commands:\n"
 
-#: FlatCAMApp.py:6949
+#: FlatCAMApp.py:6950
 msgid ""
 "\n"
 "\n"
@@ -834,23 +834,23 @@ msgstr ""
 "Type help <command_name> for usage.\n"
 " Example: help open_gerber"
 
-#: FlatCAMApp.py:7097
+#: FlatCAMApp.py:7098
 msgid "Shows list of commands."
 msgstr "Shows list of commands."
 
-#: FlatCAMApp.py:7150
+#: FlatCAMApp.py:7151
 msgid "[ERROR_NOTCL] Failed to load recent item list."
 msgstr "[ERROR_NOTCL] Failed to load recent item list."
 
-#: FlatCAMApp.py:7157
+#: FlatCAMApp.py:7158
 msgid "[ERROR_NOTCL] Failed to parse recent item list."
 msgstr "[ERROR_NOTCL] Failed to parse recent item list."
 
-#: FlatCAMApp.py:7218 flatcamGUI/FlatCAMGUI.py:856
+#: FlatCAMApp.py:7219 flatcamGUI/FlatCAMGUI.py:856
 msgid "<b>Shortcut Key List</b>"
 msgstr "<b>Shortcut Key List</b>"
 
-#: FlatCAMApp.py:7225
+#: FlatCAMApp.py:7226
 msgid ""
 "\n"
 "<p><span style=\"font-size:14px\"><strong>Selected Tab - Choose an Item from "
@@ -946,23 +946,23 @@ msgstr ""
 "\n"
 "        "
 
-#: FlatCAMApp.py:7329
+#: FlatCAMApp.py:7330
 msgid "[WARNING_NOTCL] Failed checking for latest version. Could not connect."
 msgstr "[WARNING_NOTCL] Failed checking for latest version. Could not connect."
 
-#: FlatCAMApp.py:7336
+#: FlatCAMApp.py:7337
 msgid "[ERROR_NOTCL] Could not parse information about latest version."
 msgstr "[ERROR_NOTCL] Could not parse information about latest version."
 
-#: FlatCAMApp.py:7346
+#: FlatCAMApp.py:7347
 msgid "[success] FlatCAM is up to date!"
 msgstr "[success] FlatCAM is up to date!"
 
-#: FlatCAMApp.py:7351
+#: FlatCAMApp.py:7352
 msgid "Newer Version Available"
 msgstr "Newer Version Available"
 
-#: FlatCAMApp.py:7352
+#: FlatCAMApp.py:7353
 msgid ""
 "There is a newer version of FlatCAM available for download:\n"
 "\n"
@@ -970,43 +970,43 @@ msgstr ""
 "There is a newer version of FlatCAM available for download:\n"
 "\n"
 
-#: FlatCAMApp.py:7354
+#: FlatCAMApp.py:7355
 msgid "info"
 msgstr "info"
 
-#: FlatCAMApp.py:7373
+#: FlatCAMApp.py:7374
 msgid "[success]All plots disabled."
 msgstr "[success]All plots disabled."
 
-#: FlatCAMApp.py:7379
+#: FlatCAMApp.py:7380
 msgid "[success]All non selected plots disabled."
 msgstr "[success]All non selected plots disabled."
 
-#: FlatCAMApp.py:7385
+#: FlatCAMApp.py:7386
 msgid "[success]All plots enabled."
 msgstr "[success]All plots enabled."
 
-#: FlatCAMApp.py:7495
+#: FlatCAMApp.py:7496
 msgid "Saving FlatCAM Project"
 msgstr "Saving FlatCAM Project"
 
-#: FlatCAMApp.py:7516 FlatCAMApp.py:7547
+#: FlatCAMApp.py:7517 FlatCAMApp.py:7548
 #, python-format
 msgid "[success] Project saved to: %s"
 msgstr "[success] Project saved to: %s"
 
-#: FlatCAMApp.py:7534
+#: FlatCAMApp.py:7535
 #, python-format
 msgid "[ERROR_NOTCL] Failed to verify project file: %s. Retry to save it."
 msgstr "[ERROR_NOTCL] Failed to verify project file: %s. Retry to save it."
 
-#: FlatCAMApp.py:7541
+#: FlatCAMApp.py:7542
 #, python-format
 msgid "[ERROR_NOTCL] Failed to parse saved project file: %s. Retry to save it."
 msgstr ""
 "[ERROR_NOTCL] Failed to parse saved project file: %s. Retry to save it."
 
-#: FlatCAMApp.py:7549
+#: FlatCAMApp.py:7550
 #, python-format
 msgid "[ERROR_NOTCL] Failed to save project file: %s. Retry to save it."
 msgstr "[ERROR_NOTCL] Failed to save project file: %s. Retry to save it."
