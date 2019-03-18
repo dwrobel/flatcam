@@ -2466,8 +2466,8 @@ msgstr "[success] Machine Code file saved to: %s"
 
 #: FlatCAMObj.py:5417
 #, python-format
-msgid "[ERROR]FlatCAMCNNJob.on_modifygcode_button_click() -->%s"
-msgstr "[ERROR]FlatCAMCNNJob.on_modifygcode_button_click() -->%s"
+msgid "[ERROR]FlatCAMCNNJob.on_edit_code_click() -->%s"
+msgstr "[ERROR]FlatCAMCNNJob.on_edit_code_click() -->%s"
 
 #: FlatCAMObj.py:5523
 #, python-format

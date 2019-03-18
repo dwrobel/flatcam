@@ -595,9 +595,12 @@ class FCTab(QtWidgets.QTabWidget):
 
 
 class FCDetachableTab(QtWidgets.QTabWidget):
-    # From here: https://stackoverflow.com/questions/47267195/in-pyqt4-is-it-possible-to-detach-tabs-from-a-qtabwidget
-    def __init__(self, protect=None, protect_by_name=None, parent=None):
+    """
+    From here:
+    https://stackoverflow.com/questions/47267195/in-pyqt4-is-it-possible-to-detach-tabs-from-a-qtabwidget
+    """
 
+    def __init__(self, protect=None, protect_by_name=None, parent=None):
         super().__init__()
 
         self.tabBar = self.FCTabBar(self)
@@ -639,25 +642,38 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         self.removeTab(currentIndex)
 
     def closeTab(self, currentIndex):
+        """
+        Slot connected to the tabCloseRequested signal
+
+        :param currentIndex:
+        :return:
+        """
         self.removeTab(currentIndex)
 
     def protectTab(self, currentIndex):
         # self.FCTabBar().setTabButton(currentIndex, QtWidgets.QTabBar.RightSide, None)
         self.tabBar.setTabButton(currentIndex, QtWidgets.QTabBar.RightSide, None)
 
-    ##
-    #  The default movable functionality of QTabWidget must remain disabled
-    #  so as not to conflict with the added features
     def setMovable(self, movable):
+        """
+        The default movable functionality of QTabWidget must remain disabled
+        so as not to conflict with the added features
+
+        :param movable:
+        :return:
+        """
         pass
 
-    ##
-    #  Move a tab from one position (index) to another
-    #
-    #  @param    fromIndex    the original index location of the tab
-    #  @param    toIndex      the new index location of the tab
     @pyqtSlot(int, int)
     def moveTab(self, fromIndex, toIndex):
+        """
+        Move a tab from one position (index) to another
+
+        :param fromIndex:   the original index location of the tab
+        :param toIndex:     the new index location of the tab
+        :return:
+        """
+
         widget = self.widget(fromIndex)
         icon = self.tabIcon(fromIndex)
         text = self.tabText(fromIndex)
@@ -666,15 +682,16 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         self.insertTab(toIndex, widget, icon, text)
         self.setCurrentIndex(toIndex)
 
-    ##
-    #  Detach the tab by removing it's contents and placing them in
-    #  a DetachedTab window
-    #
-    #  @param    index    the index location of the tab to be detached
-    #  @param    point    the screen position for creating the new DetachedTab window
     @pyqtSlot(int, QtCore.QPoint)
     def detachTab(self, index, point):
+        """
+        Detach the tab by removing it's contents and placing them in
+        a DetachedTab window
 
+        :param index:   the index location of the tab to be detached
+        :param point:   the screen position for creating the new DetachedTab window
+        :return:
+        """
         self.old_index = index
 
         # Get the tab content and add name FlatCAM to the tab so we know on which app is this tab linked
@@ -699,20 +716,20 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         detachedTab.move(point)
         detachedTab.show()
 
-
         # Create a reference to maintain access to the detached tab
         self.detachedTabs[name] = detachedTab
 
-
-    ##
-    #  Re-attach the tab by removing the content from the DetachedTab window,
-    #  closing it, and placing the content back into the DetachableTabWidget
-    #
-    #  @param    contentWidget    the content widget from the DetachedTab window
-    #  @param    name             the name of the detached tab
-    #  @param    icon             the window icon for the detached tab
-    #  @param    insertAt         insert the re-attached tab at the given index
     def attachTab(self, contentWidget, name, icon, insertAt=None):
+        """
+        Re-attach the tab by removing the content from the DetachedTab window,
+        closing it, and placing the content back into the DetachableTabWidget
+
+        :param contentWidget:   the content widget from the DetachedTab window
+        :param name:            the name of the detached tab
+        :param icon:            the window icon for the detached tab
+        :param insertAt:        insert the re-attached tab at the given index
+        :return:
+        """
 
         # Make the content widget a child of this widget
         contentWidget.setParent(self)
@@ -773,11 +790,13 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             if index > -1:
                 self.setCurrentIndex(insert_index) if self.use_old_index else self.setCurrentIndex(index)
 
-    ##
-    #  Remove the tab with the given name, even if it is detached
-    #
-    #  @param    name    the name of the tab to be removed
     def removeTabByName(self, name):
+        """
+        Remove the tab with the given name, even if it is detached
+
+        :param name: the name of the tab to be removed
+        :return:
+        """
 
         # Remove the tab if it is attached
         attached = False
@@ -798,17 +817,18 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                     del self.detachedTabs[key]
                     break
 
-
-    ##
-    #  Handle dropping of a detached tab inside the DetachableTabWidget
-    #
-    #  @param    name     the name of the detached tab
-    #  @param    index    the index of an existing tab (if the tab bar
-    #                     determined that the drop occurred on an
-    #                     existing tab)
-    #  @param    dropPos  the mouse cursor position when the drop occurred
     @QtCore.pyqtSlot(str, int, QtCore.QPoint)
     def detachedTabDrop(self, name, index, dropPos):
+        """
+        Handle dropping of a detached tab inside the DetachableTabWidget
+
+        :param name:        the name of the detached tab
+        :param index:       the index of an existing tab (if the tab bar
+    #                       determined that the drop occurred on an
+    #                       existing tab)
+        :param dropPos:     the mouse cursor position when the drop occurred
+        :return:
+        """
 
         # If the drop occurred on an existing tab, insert the detached
         # tab at the existing tab's location
@@ -848,10 +868,12 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                     # automatically
                     self.detachedTabs[name].close()
 
-
-    ##
-    #  Close all tabs that are currently detached.
     def closeDetachedTabs(self):
+        """
+        Close all tabs that are currently detached.
+
+        :return:
+        """
         listOfDetachedTabs = []
 
         for key in self.detachedTabs:
@@ -860,11 +882,12 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         for detachedTab in listOfDetachedTabs:
             detachedTab.close()
 
-
-    ##
-    #  When a tab is detached, the contents are placed into this QMainWindow.  The tab
-    #  can be re-attached by closing the dialog or by dragging the window into the tab bar
     class FCDetachedTab(QtWidgets.QMainWindow):
+        """
+        When a tab is detached, the contents are placed into this QMainWindow.  The tab
+        can be re-attached by closing the dialog or by dragging the window into the tab bar
+        """
+
         onCloseSignal = pyqtSignal(QtWidgets.QWidget, str, QtGui.QIcon)
         onDropSignal = pyqtSignal(str, QtCore.QPoint)
 
@@ -882,42 +905,46 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             self.installEventFilter(self.windowDropFilter)
             self.windowDropFilter.onDropSignal.connect(self.windowDropSlot)
 
-
-        ##
-        #  Handle a window drop event
-        #
-        #  @param    dropPos    the mouse cursor position of the drop
         @QtCore.pyqtSlot(QtCore.QPoint)
         def windowDropSlot(self, dropPos):
+            """
+            Handle a window drop event
+
+            :param dropPos:     the mouse cursor position of the drop
+            :return:
+            """
             self.onDropSignal.emit(self.objectName(), dropPos)
 
-
-        ##
-        #  If the window is closed, emit the onCloseSignal and give the
-        #  content widget back to the DetachableTabWidget
-        #
-        #  @param    event    a close event
         def closeEvent(self, event):
+            """
+            If the window is closed, emit the onCloseSignal and give the
+            content widget back to the DetachableTabWidget
+
+            :param event:    a close event
+            :return:
+            """
             self.onCloseSignal.emit(self.contentWidget, self.objectName(), self.windowIcon())
 
-
-        ##
-        #  An event filter class to detect a QMainWindow drop event
         class WindowDropFilter(QtCore.QObject):
+            """
+            An event filter class to detect a QMainWindow drop event
+            """
+
             onDropSignal = pyqtSignal(QtCore.QPoint)
 
             def __init__(self):
                 QtCore.QObject.__init__(self)
                 self.lastEvent = None
 
-
-            ##
-            #  Detect a QMainWindow drop event by looking for a NonClientAreaMouseMove (173)
-            #  event that immediately follows a Move event
-            #
-            #  @param    obj    the object that generated the event
-            #  @param    event  the current event
             def eventFilter(self, obj, event):
+                """
+                Detect a QMainWindow drop event by looking for a NonClientAreaMouseMove (173)
+                event that immediately follows a Move event
+
+                :param obj:     the object that generated the event
+                :param event:   the current event
+                :return:
+                """
 
                 # If a NonClientAreaMouseMove (173) event immediately follows a Move event...
                 if self.lastEvent == QtCore.QEvent.Move and event.type() == 173:
@@ -951,19 +978,24 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             self.mouseCursor = QtGui.QCursor()
             self.dragInitiated = False
 
-
-        #  Send the onDetachTabSignal when a tab is double clicked
-        #
-        #  @param    event    a mouse double click event
         def mouseDoubleClickEvent(self, event):
+            """
+            Send the onDetachTabSignal when a tab is double clicked
+
+            :param event:   a mouse double click event
+            :return:
+            """
+
             event.accept()
             self.onDetachTabSignal.emit(self.tabAt(event.pos()), self.mouseCursor.pos())
 
-
-        #  Set the starting position for a drag event when the mouse button is pressed
-        #
-        #  @param    event    a mouse press event
         def mousePressEvent(self, event):
+            """
+            Set the starting position for a drag event when the mouse button is pressed
+
+            :param event:   a mouse press event
+            :return:
+            """
             if event.button() == QtCore.Qt.LeftButton:
                 self.dragStartPos = event.pos()
 
@@ -974,14 +1006,15 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
             QtWidgets.QTabBar.mousePressEvent(self, event)
 
-
-        #  Determine if the current movement is a drag.  If it is, convert it into a QDrag.  If the
-        #  drag ends inside the tab bar, emit an onMoveTabSignal.  If the drag ends outside the tab
-        #  bar, emit an onDetachTabSignal.
-        #
-        #  @param    event    a mouse move event
         def mouseMoveEvent(self, event):
+            """
+            Determine if the current movement is a drag.  If it is, convert it into a QDrag.  If the
+            drag ends inside the tab bar, emit an onMoveTabSignal.  If the drag ends outside the tab
+            bar, emit an onDetachTabSignal.
 
+            :param event:   a mouse move event
+            :return:
+            """
             # Determine if the current movement is detected as a drag
             if not self.dragStartPos.isNull() and ((event.pos() - self.dragStartPos).manhattanLength() < QtWidgets.QApplication.startDragDistance()):
                 self.dragInitiated = True
@@ -1038,29 +1071,40 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             else:
                 QtWidgets.QTabBar.mouseMoveEvent(self, event)
 
-        #  Determine if the drag has entered a tab position from another tab position
-        #
-        #  @param    event    a drag enter event
         def dragEnterEvent(self, event):
+            """
+            Determine if the drag has entered a tab position from another tab position
+
+            :param event:   a drag enter event
+            :return:
+            """
             mimeData = event.mimeData()
             # formats = mcd imeData.formats()
 
-        # if formats.contains('action') and mimeData.data('action') == 'application/tab-detach':
-        # event.acceptProposedAction()
+            # if formats.contains('action') and mimeData.data('action') == 'application/tab-detach':
+            # event.acceptProposedAction()
 
             QtWidgets.QTabBar.dragMoveEvent(self, event)
 
-        #  Get the position of the end of the drag
-        #
-        #  @param    event    a drop event
         def dropEvent(self, event):
+            """
+            Get the position of the end of the drag
+
+            :param event:    a drop event
+            :return:
+            """
             self.dragDropedPos = event.pos()
             QtWidgets.QTabBar.dropEvent(self, event)
 
-        #  Determine if the detached tab drop event occurred on an existing tab,
-        #  then send the event to the DetachableTabWidget
         def detachedTabDrop(self, name, dropPos):
+            """
+            Determine if the detached tab drop event occurred on an existing tab,
+            then send the event to the DetachableTabWidget
 
+            :param name:
+            :param dropPos:
+            :return:
+            """
             tabDropPos = self.mapFromGlobal(dropPos)
 
             index = self.tabAt(tabDropPos)

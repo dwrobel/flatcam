@@ -1429,9 +1429,9 @@ class App(QtCore.QObject):
         # Modify G-CODE Plot Area TAB
         self.ui.code_editor.textChanged.connect(self.handleTextChanged)
         self.ui.buttonOpen.clicked.connect(self.handleOpen)
+        self.ui.buttonSave.clicked.connect(self.handleSaveGCode)
         self.ui.buttonPrint.clicked.connect(self.handlePrint)
         self.ui.buttonPreview.clicked.connect(self.handlePreview)
-        self.ui.buttonSave.clicked.connect(self.handleSaveGCode)
         self.ui.buttonFind.clicked.connect(self.handleFindGCode)
         self.ui.buttonReplace.clicked.connect(self.handleReplaceGCode)
 
@@ -3373,27 +3373,6 @@ class App(QtCore.QObject):
 
         self.ui.grid_snap_btn.trigger()
 
-    def on_toggle_code_editor(self):
-        self.report_usage("on_toggle_code_editor()")
-
-        if self.toggle_codeeditor is False:
-            # add the tab if it was closed
-            self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _("Code Editor"))
-            self.ui.cncjob_tab.setObjectName('cncjob_tab')
-            # first clear previous text in text editor (if any)
-            self.ui.code_editor.clear()
-
-            # Switch plot_area to CNCJob tab
-            self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
-
-            self.toggle_codeeditor = True
-        else:
-            for idx in range(self.ui.plot_tab_area.count()):
-                if self.ui.plot_tab_area.widget(idx).objectName() == "cncjob_tab":
-                    self.ui.plot_tab_area.closeTab(idx)
-                    break
-            self.toggle_codeeditor = False
-
     def on_options_combo_change(self, sel):
         """
         Called when the combo box to choose between application defaults and
@@ -3862,21 +3841,6 @@ class App(QtCore.QObject):
         # Re-fresh project options
         self.on_options_app2project()
 
-    def handleOpen(self):
-        self.report_usage("handleOpen()")
-
-        filter_group = " G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
-                   "All Files (*.*)"
-        path, _f = QtWidgets.QFileDialog.getOpenFileName(
-            caption=_('Open file'), directory=self.get_last_folder(), filter=filter_group)
-        if path:
-            file = QtCore.QFile(path)
-            if file.open(QtCore.QIODevice.ReadOnly):
-                stream = QtCore.QTextStream(file)
-                self.gcode_edited = stream.readAll()
-                self.ui.code_editor.setPlainText(self.gcode_edited)
-                file.close()
-
     def handlePrint(self):
         self.report_usage("handlePrint()")
 
@@ -3899,7 +3863,27 @@ class App(QtCore.QObject):
         # self.ui.buttonPreview.setEnabled(enable)
         pass
 
-    def handleSaveGCode(self, signal, name=None, filt=None):
+    def handleOpen(self, filt=None):
+        self.report_usage("handleOpen()")
+
+        if filt:
+            _filter_ = filt
+        else:
+            _filter_ = "G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
+                       "All Files (*.*)"
+
+        path, _f = QtWidgets.QFileDialog.getOpenFileName(
+            caption=_('Open file'), directory=self.get_last_folder(), filter=_filter_)
+
+        if path:
+            file = QtCore.QFile(path)
+            if file.open(QtCore.QIODevice.ReadOnly):
+                stream = QtCore.QTextStream(file)
+                self.gcode_edited = stream.readAll()
+                self.ui.code_editor.setPlainText(self.gcode_edited)
+                file.close()
+
+    def handleSaveGCode(self,name=None, filt=None):
         self.report_usage("handleSaveGCode()")
 
         if filt:
@@ -5287,50 +5271,6 @@ class App(QtCore.QObject):
         elif type(obj) == FlatCAMGerber:
             self.on_file_savegerber()
 
-    def on_view_source(self):
-
-        try:
-            obj = self.collection.get_active()
-        except:
-            self.inform.emit(_("[WARNING_NOTCL] Select an Gerber or Excellon file to view it's source file."))
-            return 'fail'
-
-        # then append the text from GCode to the text editor
-        try:
-            file = StringIO(obj.source_file)
-        except AttributeError:
-            self.inform.emit(_("[WARNING_NOTCL] There is no selected object for which to see it's source file code."))
-            return 'fail'
-
-        # add the tab if it was closed
-        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _("Source Editor"))
-        self.ui.cncjob_tab.setObjectName('cncjob_tab')
-        # first clear previous text in text editor (if any)
-        self.ui.code_editor.clear()
-        self.toggle_codeeditor = True
-
-        # Switch plot_area to CNCJob tab
-        self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
-
-        try:
-            for line in file:
-                proc_line = str(line).strip('\n')
-                self.ui.code_editor.append(proc_line)
-        except Exception as e:
-            log.debug('App.on_view_source() -->%s' % str(e))
-            self.inform.emit(_('[ERROR]App.on_view_source() -->%s') % str(e))
-            return
-
-        self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
-
-        self.handleTextChanged()
-        self.ui.show()
-
-        # if type(obj) == FlatCAMGerber:
-        #     self.on_file_exportdxf()
-        # elif type(obj) == FlatCAMExcellon:
-        #     self.on_file_exportexcellon()
-
     def obj_move(self):
         self.report_usage("obj_move()")
         self.move_tool.run()
@@ -5789,17 +5729,87 @@ class App(QtCore.QObject):
                     self.worker_task.emit({'fcn': self.import_dxf,
                                            'params': [filename, type_of_obj]})
 
-    def on_filenewscript(self):
+    ###################################################################################################################
+    ### The following section has the functions that are displayed are call the Editoe tab CNCJob Tab #################
+    ###################################################################################################################
+
+    def init_code_editor(self, name):
+        # Signals section
+        # Disconnect the old signals
+        self.ui.buttonOpen.clicked.disconnect()
+        self.ui.buttonSave.clicked.disconnect()
+
         # add the tab if it was closed
-        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _("Script Editor"))
+        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _('%s') % name)
         self.ui.cncjob_tab.setObjectName('cncjob_tab')
+
+        # delete the absolute and relative position and messages in the infobar
+        self.ui.position_label.setText("")
+        self.ui.rel_position_label.setText("")
+
         # first clear previous text in text editor (if any)
         self.ui.code_editor.clear()
+        self.toggle_codeeditor = True
 
         # Switch plot_area to CNCJob tab
         self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
 
-        self.toggle_codeeditor = True
+    def on_view_source(self):
+        try:
+            obj = self.collection.get_active()
+        except:
+            self.inform.emit(_("[WARNING_NOTCL] Select an Gerber or Excellon file to view it's source file."))
+            return 'fail'
+
+        # then append the text from GCode to the text editor
+        try:
+            file = StringIO(obj.source_file)
+        except AttributeError:
+            self.inform.emit(_("[WARNING_NOTCL] There is no selected object for which to see it's source file code."))
+            return 'fail'
+
+        if obj.kind == 'gerber':
+            flt = "Gerber Files (*.GBR);;All Files (*.*)"
+        elif obj.kind == 'excellon':
+            flt = "Excellon Files (*.DRL);;All Files (*.*)"
+
+        self.init_code_editor(name=_("Source Editor"))
+        self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen(filt=flt))
+        self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode(filt=flt))
+
+        try:
+            for line in file:
+                proc_line = str(line).strip('\n')
+                self.ui.code_editor.append(proc_line)
+        except Exception as e:
+            log.debug('App.on_view_source() -->%s' % str(e))
+            self.inform.emit(_('[ERROR]App.on_view_source() -->%s') % str(e))
+            return
+
+        self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
+
+        self.handleTextChanged()
+        self.ui.show()
+
+    def on_toggle_code_editor(self):
+        self.report_usage("on_toggle_code_editor()")
+
+        if self.toggle_codeeditor is False:
+            self.init_code_editor(name=_("Code Editor"))
+            self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen())
+            self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode())
+        else:
+            for idx in range(self.ui.plot_tab_area.count()):
+                if self.ui.plot_tab_area.widget(idx).objectName() == "cncjob_tab":
+                    self.ui.plot_tab_area.closeTab(idx)
+                    break
+            self.toggle_codeeditor = False
+
+    def on_filenewscript(self):
+        flt = "FlatCAM Scripts (*.FlatScript);;All Files (*.*)"
+        self.init_code_editor(name=_("Script Editor"))
+        self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen(filt=flt))
+        self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode(filt=flt))
 
     def on_fileopenscript(self):
         _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
@@ -5818,6 +5828,7 @@ class App(QtCore.QObject):
             self.inform.emit(_("[WARNING_NOTCL]Open TCL script cancelled."))
         else:
             self.on_filenewscript()
+
             try:
                 with open(filename, "r") as opened_script:
                     try:
@@ -5836,7 +5847,6 @@ class App(QtCore.QObject):
 
             except Exception as e:
                 log.debug("App.on_fileopenscript() -> %s" % str(e))
-
 
     def on_filerunscript(self):
         """

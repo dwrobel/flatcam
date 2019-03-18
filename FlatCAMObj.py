@@ -5305,7 +5305,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)
-        self.ui.modify_gcode_button.clicked.connect(self.on_modifygcode_button_click)
+        self.ui.modify_gcode_button.clicked.connect(self.on_edit_code_click)
 
         self.ui.tc_variable_combo.currentIndexChanged[str].connect(self.on_cnc_custom_parameters)
 
@@ -5385,7 +5385,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.app.file_saved.emit("gcode", filename)
         self.app.inform.emit(_("[success] Machine Code file saved to: %s") % filename)
 
-    def on_modifygcode_button_click(self, *args):
+    def on_edit_code_click(self, *args):
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
         gc = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
@@ -5394,18 +5394,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         else:
             self.app.gcode_edited = gc
 
-        # add the tab if it was closed
-        self.app.ui.plot_tab_area.addTab(self.app.ui.cncjob_tab, _("Code Editor"))
-
-        # delete the absolute and relative position and messages in the infobar
-        self.app.ui.position_label.setText("")
-        self.app.ui.rel_position_label.setText("")
-
-        # Switch plot_area to CNCJob tab
-        self.app.ui.plot_tab_area.setCurrentWidget(self.app.ui.cncjob_tab)
-
-        # first clear previous text in text editor (if any)
-        self.app.ui.code_editor.clear()
+        self.app.init_code_editor(name=_("Code Editor"))
+        self.app.ui.buttonOpen.clicked.connect(self.app.handleOpen)
+        self.app.ui.buttonSave.clicked.connect(self.app.handleSaveGCode)
 
         # then append the text from GCode to the text editor
         try:
@@ -5413,8 +5404,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 proc_line = str(line).strip('\n')
                 self.app.ui.code_editor.append(proc_line)
         except Exception as e:
-            log.debug('FlatCAMCNNJob.on_modifygcode_button_click() -->%s' % str(e))
-            self.app.inform.emit(_('[ERROR]FlatCAMCNNJob.on_modifygcode_button_click() -->%s') % str(e))
+            log.debug('FlatCAMCNNJob.on_edit_code_click() -->%s' % str(e))
+            self.app.inform.emit(_('[ERROR]FlatCAMCNNJob.on_edit_code_click() -->%s') % str(e))
             return
 
         self.app.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)

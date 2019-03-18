@@ -12,7 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 18.03.2019
 
 - added ability to create new scripts and open scripts in FlatCAM Script Editor
-
+- the Code Editor tab name is changed according to the task; 'save' and 'open' buttons will have filters installed for the QOpenDialog fit to the task
 
 17.03.2019
 
