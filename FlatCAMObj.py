@@ -186,6 +186,7 @@ class FlatCAMObj(QtCore.QObject):
             self.app.myKeywords.remove(old_name)
             self.app.myKeywords.append(new_name)
             self.app.shell._edit.set_model_data(self.app.myKeywords)
+            self.app.ui.code_editor.set_model_data(self.app.myKeywords)
         except:
             log.debug("on_name_activate() --> Could not remove the old object name from auto-completer model list")
 

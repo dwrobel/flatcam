@@ -1502,6 +1502,7 @@ class App(QtCore.QObject):
 
         self.shell = FCShell(self, version=self.version)
         self.shell._edit.set_model_data(self.myKeywords)
+        self.ui.code_editor.set_model_data(self.myKeywords)
         self.shell.setWindowIcon(self.ui.app_icon)
         self.shell.setWindowTitle("FlatCAM Shell")
         self.shell.resize(*self.defaults["global_shell_shape"])
@@ -2645,6 +2646,7 @@ class App(QtCore.QObject):
         # update the SHELL auto-completer model with the name of the new object
         self.myKeywords.append(obj.options['name'])
         self.shell._edit.set_model_data(self.myKeywords)
+        self.ui.code_editor.set_model_data(self.myKeywords)
 
         if autoselect:
             # select the just opened object but deselect the previous ones

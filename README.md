@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+19.03.2019
+
+- added autocomplete for Code editor; TODO: needs to be enabled only when doing Scripts, right now is available for everyone.
+
 18.03.2019
 
 - added ability to create new scripts and open scripts in FlatCAM Script Editor

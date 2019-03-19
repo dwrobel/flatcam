@@ -494,6 +494,29 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
     def __init__(self, parent=None):
         super(FCTextAreaExtended, self).__init__(parent)
 
+        self.completer = MyCompleter()
+
+        self.model = QtCore.QStringListModel()
+        self.completer.setModel(self.model)
+        self.set_model_data(keyword_list=[])
+        self.completer.insertText.connect(self.insertCompletion)
+
+    def set_model_data(self, keyword_list):
+        self.model.setStringList(keyword_list)
+
+    def insertCompletion(self, completion):
+        tc = self.textCursor()
+        extra = (len(completion) - len(self.completer.completionPrefix()))
+        tc.movePosition(QTextCursor.Left)
+        tc.movePosition(QTextCursor.EndOfWord)
+        tc.insertText(completion[-extra:])
+        self.setTextCursor(tc)
+        self.completer.popup().hide()
+
+    def focusInEvent(self, event):
+        if self.completer:
+            self.completer.setWidget(self)
+        QTextEdit.focusInEvent(self, event)
     def set_value(self, val):
         self.setText(val)
 
@@ -531,7 +554,26 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
                 clip_text = clip_text.replace('\\', '/')
                 self.insertPlainText(clip_text)
 
+        tc = self.textCursor()
+        if event.key() == Qt.Key_Tab and self.completer.popup().isVisible():
+            self.completer.insertText.emit(self.completer.getSelected())
+            self.completer.setCompletionMode(QCompleter.PopupCompletion)
+            return
+
         super(FCTextAreaExtended, self).keyPressEvent(event)
+        tc.select(QTextCursor.WordUnderCursor)
+        cr = self.cursorRect()
+
+        if len(tc.selectedText()) > 0:
+            self.completer.setCompletionPrefix(tc.selectedText())
+            popup = self.completer.popup()
+            popup.setCurrentIndex(self.completer.completionModel().index(0, 0))
+
+            cr.setWidth(self.completer.popup().sizeHintForColumn(0)
+                        + self.completer.popup().verticalScrollBar().sizeHint().width())
+            self.completer.complete(cr)
+        else:
+            self.completer.popup().hide()
 
 
 class FCComboBox(QtWidgets.QComboBox):
@@ -1279,6 +1321,7 @@ class FCTable(QtWidgets.QTableWidget):
             action.setIcon(icon)
         self.addAction(action)
         action.triggered.connect(call_function)
+
 
 class FCSpinner(QtWidgets.QSpinBox):
     def __init__(self, parent=None):
