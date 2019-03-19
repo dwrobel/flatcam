@@ -490,6 +490,50 @@ class FCTextAreaRich(QtWidgets.QTextEdit):
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
+class FCTextAreaExtended(QtWidgets.QTextEdit):
+    def __init__(self, parent=None):
+        super(FCTextAreaExtended, self).__init__(parent)
+
+    def set_value(self, val):
+        self.setText(val)
+
+    def get_value(self):
+        self.toPlainText()
+
+    def insertFromMimeData(self, data):
+        """
+        Reimplemented such that when SHIFT is pressed and doing click Paste in the contextual menu, the '\' symbol
+        is replaced with the '/' symbol. That's because of the difference in path separators in Windows and TCL
+        :param data:
+        :return:
+        """
+        modifier = QtWidgets.QApplication.keyboardModifiers()
+        if modifier == Qt.ShiftModifier:
+            text = data.text()
+            text = text.replace('\\', '/')
+            self.insertPlainText(text)
+        else:
+            self.insertPlainText(data.text())
+
+    def keyPressEvent(self, event):
+        """
+        Reimplemented so the CTRL + SHIFT + V shortcut key combo will paste the text but replacing '\' with '/'
+        :param event:
+        :return:
+        """
+        key = event.key()
+        modifier = QtWidgets.QApplication.keyboardModifiers()
+
+        if modifier & Qt.ControlModifier and modifier & Qt.ShiftModifier:
+            if key == QtCore.Qt.Key_V:
+                clipboard = QtWidgets.QApplication.clipboard()
+                clip_text = clipboard.text()
+                clip_text = clip_text.replace('\\', '/')
+                self.insertPlainText(clip_text)
+
+        super(FCTextAreaExtended, self).keyPressEvent(event)
+
+
 class FCComboBox(QtWidgets.QComboBox):
 
     def __init__(self, parent=None, callback=None):

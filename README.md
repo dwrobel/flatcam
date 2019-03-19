@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - added ability to create new scripts and open scripts in FlatCAM Script Editor
 - the Code Editor tab name is changed according to the task; 'save' and 'open' buttons will have filters installed for the QOpenDialog fit to the task
 - added ability to run a FlatCAM Tcl script by double-clicking on the file
+- in Code Editor added shortcut combo key CTRL+SHIFT+V to function as a Special Paste that will replace the '\' char with '/' so the Windows paths will be pasted correctly for TCL Shell. Also doing SHIFT + LMB on the Paste in contextual menu is doing the same.
 
 17.03.2019
 

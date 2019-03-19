@@ -1414,7 +1414,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.cncjob_tab_layout.setContentsMargins(2, 2, 2, 2)
         self.cncjob_tab.setLayout(self.cncjob_tab_layout)
 
-        self.code_editor = QtWidgets.QTextEdit()
+        self.code_editor = FCTextAreaExtended()
         stylesheet = """
                         QTextEdit { selection-background-color:yellow;
                                     selection-color:black;
