@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 19.03.2019
 
 - added autocomplete for Code editor; TODO: needs to be enabled only when doing Scripts, right now is available for everyone.
+- fixed the Gerber.merge() to work for the case when one of the merged Gerber objects solid_geometry type is Polygon and not a list
 
 18.03.2019
 

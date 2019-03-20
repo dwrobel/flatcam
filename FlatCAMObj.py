@@ -411,9 +411,13 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         except:
                             log.warning("Failed to copy option.", option)
 
-                for geos in grb.solid_geometry:
-                    grb_final.solid_geometry.append(geos)
-                    grb_final.follow_geometry.append(geos)
+                try:
+                    for geos in grb.solid_geometry:
+                        grb_final.solid_geometry.append(geos)
+                        grb_final.follow_geometry.append(geos)
+                except TypeError:
+                    grb_final.solid_geometry.append(grb.solid_geometry)
+                    grb_final.follow_geometry.append(grb.solid_geometry)
 
                 for ap in grb.apertures:
                     if ap not in grb_final.apertures:
