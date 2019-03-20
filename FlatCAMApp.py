@@ -3915,7 +3915,8 @@ class App(QtCore.QObject):
                 obj_name = self.collection.get_active().options['name']
             except AttributeError:
                 obj_name = 'file'
-                _filter_ = "FlatConfig Files (*.FlatConfig);;All Files (*.*)"
+                if filt is None:
+                    _filter_ = "FlatConfig Files (*.FlatConfig);;All Files (*.*)"
 
         try:
             filename = str(QtWidgets.QFileDialog.getSaveFileName(
@@ -5766,6 +5767,7 @@ class App(QtCore.QObject):
         # first clear previous text in text editor (if any)
         self.ui.code_editor.clear()
         self.toggle_codeeditor = True
+        self.ui.code_editor.completer_enable = False
 
         # Switch plot_area to CNCJob tab
         self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
@@ -5824,6 +5826,7 @@ class App(QtCore.QObject):
     def on_filenewscript(self):
         flt = "FlatCAM Scripts (*.FlatScript);;All Files (*.*)"
         self.init_code_editor(name=_("Script Editor"))
+        self.ui.code_editor.completer_enable = True
         self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen(filt=flt))
         self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode(filt=flt))
 

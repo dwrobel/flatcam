@@ -9,9 +9,14 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+20.03.2019
+
+- added autocomplete finish with ENTER key for the TCL Shell
+- made sure that the autocomplete function works only for FlatCAM Scripts
+
 19.03.2019
 
-- added autocomplete for Code editor; TODO: needs to be enabled only when doing Scripts, right now is available for everyone.
+- added autocomplete for Code editor;
 - autocomplete in Code Editor is finished by hitting either TAB key or ENTER key
 - fixed the Gerber.merge() to work for the case when one of the merged Gerber objects solid_geometry type is Polygon and not a list
 

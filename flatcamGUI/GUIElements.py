@@ -501,6 +501,8 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
         self.set_model_data(keyword_list=[])
         self.completer.insertText.connect(self.insertCompletion)
 
+        self.completer_enable = False
+
     def set_model_data(self, keyword_list):
         self.model.setStringList(keyword_list)
 
@@ -563,19 +565,20 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
         else:
             super(FCTextAreaExtended, self).keyPressEvent(event)
 
-        tc.select(QTextCursor.WordUnderCursor)
-        cr = self.cursorRect()
+        if self.completer_enable:
+            tc.select(QTextCursor.WordUnderCursor)
+            cr = self.cursorRect()
 
-        if len(tc.selectedText()) > 0:
-            self.completer.setCompletionPrefix(tc.selectedText())
-            popup = self.completer.popup()
-            popup.setCurrentIndex(self.completer.completionModel().index(0, 0))
+            if len(tc.selectedText()) > 0:
+                self.completer.setCompletionPrefix(tc.selectedText())
+                popup = self.completer.popup()
+                popup.setCurrentIndex(self.completer.completionModel().index(0, 0))
 
-            cr.setWidth(self.completer.popup().sizeHintForColumn(0)
-                        + self.completer.popup().verticalScrollBar().sizeHint().width())
-            self.completer.complete(cr)
-        else:
-            self.completer.popup().hide()
+                cr.setWidth(self.completer.popup().sizeHintForColumn(0)
+                            + self.completer.popup().verticalScrollBar().sizeHint().width())
+                self.completer.complete(cr)
+            else:
+                self.completer.popup().hide()
 
 
 class FCComboBox(QtWidgets.QComboBox):
@@ -1466,6 +1469,13 @@ class _ExpandableTextEdit(QTextEdit):
         """
         Catch keyboard events. Process Enter, Up, Down
         """
+
+        key = event.key()
+        if (key == Qt.Key_Tab or key == Qt.Key_Return or key == Qt.Key_Enter) and self.completer.popup().isVisible():
+            self.completer.insertText.emit(self.completer.getSelected())
+            self.completer.setCompletionMode(QCompleter.PopupCompletion)
+            return
+
         if event.matches(QKeySequence.InsertParagraphSeparator):
             text = self.toPlainText()
             if self._termWidget.is_command_complete(text):
@@ -1496,10 +1506,6 @@ class _ExpandableTextEdit(QTextEdit):
             return self._termWidget.browser().keyPressEvent(event)
 
         tc = self.textCursor()
-        if event.key() == Qt.Key_Tab and self.completer.popup().isVisible():
-            self.completer.insertText.emit(self.completer.getSelected())
-            self.completer.setCompletionMode(QCompleter.PopupCompletion)
-            return
 
         QTextEdit.keyPressEvent(self, event)
         tc.select(QTextCursor.WordUnderCursor)
