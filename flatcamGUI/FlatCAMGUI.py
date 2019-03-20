@@ -1958,6 +1958,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Escape = Deselect All
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
                     self.app.on_deselect_all()
+
+                    # if in full screen, exit to normal view
+                    self.showNormal()
+                    self.app.restore_toolbar_view()
+                    self.splitter_left.setVisible(True)
+                    self.app.toggle_fscreen = False
+
                     # try to disconnect the slot from Set Origin
                     try:
                         self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_set_zero_click)
