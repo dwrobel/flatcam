@@ -517,6 +517,7 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
         if self.completer:
             self.completer.setWidget(self)
         QTextEdit.focusInEvent(self, event)
+
     def set_value(self, val):
         self.setText(val)
 
@@ -555,12 +556,13 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
                 self.insertPlainText(clip_text)
 
         tc = self.textCursor()
-        if event.key() == Qt.Key_Tab and self.completer.popup().isVisible():
+        if (key == Qt.Key_Tab or key == Qt.Key_Enter or key == Qt.Key_Return) and self.completer.popup().isVisible():
             self.completer.insertText.emit(self.completer.getSelected())
             self.completer.setCompletionMode(QCompleter.PopupCompletion)
             return
+        else:
+            super(FCTextAreaExtended, self).keyPressEvent(event)
 
-        super(FCTextAreaExtended, self).keyPressEvent(event)
         tc.select(QTextCursor.WordUnderCursor)
         cr = self.cursorRect()
 
