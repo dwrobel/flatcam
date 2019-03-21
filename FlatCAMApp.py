@@ -3263,9 +3263,11 @@ class App(QtCore.QObject):
 
         # Changing project units. Warn user.
         msgbox = QtWidgets.QMessageBox()
+        msgbox.setWindowTitle("Toggle Units")
+        msgbox.setWindowIcon(QtGui.QIcon('share/toggle_units32.png'))
         msgbox.setText("<B>Change project units ...</B>")
         msgbox.setInformativeText("Changing the units of the project causes all geometrical "
-                                  "properties of all objects to be scaled accordingly. Continue?")
+                                  "properties of all objects to be scaled accordingly.\nContinue?")
         msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Ok)
         msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
 

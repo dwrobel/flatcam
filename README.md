@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - added autocomplete finish with ENTER key for the TCL Shell
 - made sure that the autocomplete function works only for FlatCAM Scripts
 - ESC key will trigger normal view if in full screen and the ESC key is pressed
+- added an icon and title text for the Toggle Units QMessageBox
 
 19.03.2019
 
