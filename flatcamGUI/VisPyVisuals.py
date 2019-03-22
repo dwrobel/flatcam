@@ -437,8 +437,11 @@ class TextGroup(object):
         :param value: bool
         """
         self._visible = value
-        self._collection.data[self._index]['visible'] = value
-
+        try:
+            self._collection.data[self._index]['visible'] = value
+        except KeyError:
+            print("VisPyVisuals.TextGroup.visible --> KeyError")
+            pass
         self._collection.redraw()
 
 

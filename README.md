@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+22.03.2019
+
+- fixed an error that created a situation that when saving a project with some of the CNCJob objects disabled, on project reload the CNCJob objects are no longer loaded
+
 20.03.2019
 
 - added autocomplete finish with ENTER key for the TCL Shell
