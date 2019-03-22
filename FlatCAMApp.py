@@ -95,7 +95,9 @@ class App(QtCore.QObject):
     beta = True
 
     # current date now
-    date = str(datetime.today()).rpartition(' ')[0]
+    date = str(datetime.today()).rpartition('.')[0]
+    date = ''.join(c for c in date if c not in ':-')
+    date = date.replace(' ', '_')
 
     # URL for update checks and statistics
     version_url = "http://flatcam.org/version"
@@ -2371,7 +2373,7 @@ class App(QtCore.QObject):
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Export FlatCAM Preferences"),
-                directory=self.data_path + '/preferences_' + self.date.replace('-', ''), filter=filter
+                directory=self.data_path + '/preferences_' + self.date, filter=filter
             )
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export FlatCAM Preferences"), filter=filter)
@@ -5507,7 +5509,7 @@ class App(QtCore.QObject):
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Export PNG Image"),
-                directory=self.get_last_save_folder() + '/png_' + str(self.date).replace('-', ''),
+                directory=self.get_last_save_folder() + '/png_' + self.date,
                 filter=filter_)
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export PNG Image"), filter=filter_)
@@ -5921,10 +5923,8 @@ class App(QtCore.QObject):
         else:
             self.worker_task.emit({'fcn': self.save_project,
                                    'params': [self.project_filename]})
-            # self.save_project(self.project_filename)
 
             self.file_opened.emit("project", self.project_filename)
-
             self.file_saved.emit("project", self.project_filename)
 
         self.should_we_save = False
@@ -5944,7 +5944,7 @@ class App(QtCore.QObject):
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Save Project As ..."),
-                directory=_('{l_save}/Project_{date}').format(l_save=str(self.get_last_save_folder()), date=str(self.date.replace('-', ''))),
+                directory=_('{l_save}/Project_{date}').format(l_save=str(self.get_last_save_folder()), date=self.date),
                 filter=filter_)
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Project As ..."), filter=filter_)

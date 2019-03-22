@@ -13,7 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed an error that created a situation that when saving a project with some of the CNCJob objects disabled, on project reload the CNCJob objects are no longer loaded
 - fixed the Gerber.merge() function. When some of the Gerber files have apertures with same id, create a new aperture id for the object that is fused because each aperture id may hold different geometries.
-
+- changed the autoname for saving Preferences, Project and PNG file
 
 20.03.2019
 
