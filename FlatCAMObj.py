@@ -423,10 +423,15 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     if ap not in grb_final.apertures:
                         grb_final.apertures[ap] = grb.apertures[ap]
                     else:
-                        if 'solid_geometry' not in grb_final.apertures[ap]:
-                            grb_final.apertures[ap]['solid_geometry'] = []
-                        for geo in grb.apertures[ap]['solid_geometry']:
-                            grb_final.apertures[ap]['solid_geometry'].append(geo)
+                        # create a list of integers out of the grb.apertures keys and find the max of that value
+                        # then, the aperture duplicate is assigned an id value incremented with 1,
+                        # and finally made string because the apertures dict keys are strings
+                        max_ap = str(max([int(k) for k in grb_final.apertures.keys()]) + 1)
+                        grb_final.apertures[max_ap] = {}
+                        grb_final.apertures[max_ap]['solid_geometry'] = []
+
+                        for k, v in grb.apertures[ap].items():
+                            grb_final.apertures[max_ap][k] = v
 
         grb_final.solid_geometry = MultiPolygon(grb_final.solid_geometry)
         grb_final.follow_geometry = MultiPolygon(grb_final.follow_geometry)
