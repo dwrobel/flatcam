@@ -12,7 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 25.03.2019
 
 - in the TCL completer if the word is already complete don't add it again but add a space
-
+- added all the TCL keywords in the completer keyword list
 
 22.03.2019
 
