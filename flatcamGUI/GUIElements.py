@@ -519,6 +519,8 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
         tc.movePosition(QTextCursor.Left)
         tc.movePosition(QTextCursor.EndOfWord)
         tc.insertText(completion[-extra:])
+        # add a space after inserting the word
+        tc.insertText(' ')
         self.setTextCursor(tc)
         self.completer.popup().hide()
 
@@ -1471,6 +1473,8 @@ class _ExpandableTextEdit(QTextEdit):
         tc.movePosition(QTextCursor.Left)
         tc.movePosition(QTextCursor.EndOfWord)
         tc.insertText(completion[-extra:])
+        # add a space after inserting the word
+        tc.insertText(' ')
         self.setTextCursor(tc)
         self.completer.popup().hide()
 

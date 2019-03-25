@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - in the TCL completer if the word is already complete don't add it again but add a space
 - added all the TCL keywords in the completer keyword list
+- work in progress in German translation ~7%
+- after any autocomplete in TCL completer, a space is added
 
 22.03.2019
 
