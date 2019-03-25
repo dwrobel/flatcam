@@ -509,6 +509,13 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
     def insertCompletion(self, completion):
         tc = self.textCursor()
         extra = (len(completion) - len(self.completer.completionPrefix()))
+
+        # don't insert if the word is finished but add a space instead
+        if extra == 0:
+            tc.insertText(' ')
+            self.completer.popup().hide()
+            return
+
         tc.movePosition(QTextCursor.Left)
         tc.movePosition(QTextCursor.EndOfWord)
         tc.insertText(completion[-extra:])
@@ -1454,6 +1461,13 @@ class _ExpandableTextEdit(QTextEdit):
     def insertCompletion(self, completion):
         tc = self.textCursor()
         extra = (len(completion) - len(self.completer.completionPrefix()))
+
+        # don't insert if the word is finished but add a space instead
+        if extra == 0:
+            tc.insertText(' ')
+            self.completer.popup().hide()
+            return
+
         tc.movePosition(QTextCursor.Left)
         tc.movePosition(QTextCursor.EndOfWord)
         tc.insertText(completion[-extra:])

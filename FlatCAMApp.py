@@ -91,7 +91,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.913
-    version_date = "2019/03/23"
+    version_date = "2019/03/25"
     beta = True
 
     # current date now
@@ -5834,6 +5834,14 @@ class App(QtCore.QObject):
             "#\n"
             "# CREATE A NEW FLATCAM TCL SCRIPT\n"
             "# TCL Tutorial here: https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n"
+            "#\n\n"
+            "# FlatCAM commands list:\n"
+            "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, AlignDrillGrid, ClearShell, Cncjob,\n"
+            "# Cutout, Delete, Drillcncjob, ExportGcode, ExportSVG, Exteriors, GeoCutout, GeoUnion, GetNames, GetSys,\n"
+            "# ImportSvg, Interiors, Isolate, Follow, JoinExcellon, JoinGeometry, ListSys, MillHoles, Mirror, New,\n"
+            "# NewGeometry, Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject, Options, Paint, Panelize,\n"
+            "# Plot, SaveProject, SaveSys, Scale, SetActive, SetSys, Skew, SubtractPoly,SubtractRectangle, Version,\n"
+            "# WriteGCode\n"
             "#\n\n"
         ))
 

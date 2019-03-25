@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+25.03.2019
+
+- in the TCL completer if the word is already complete don't add it again but add a space
+
+
 22.03.2019
 
 - fixed an error that created a situation that when saving a project with some of the CNCJob objects disabled, on project reload the CNCJob objects are no longer loaded
