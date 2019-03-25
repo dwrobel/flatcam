@@ -13,6 +13,7 @@ import time
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+from shapely.geometry import base
 
 fcTranslate.apply_language('strings')
 import builtins
@@ -661,7 +662,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         # Prepare non-copper polygons
         try:
-            bounding_box = self.ncc_obj.solid_geometry.envelope.buffer(distance=margin, join_style=JOIN_STYLE.mitre)
+            bounding_box = self.ncc_obj.solid_geometry.envelope.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
         except AttributeError:
             self.app.inform.emit(_("[ERROR_NOTCL]No Gerber file available."))
             return

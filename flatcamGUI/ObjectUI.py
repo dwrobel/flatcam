@@ -1601,13 +1601,6 @@ class CNCObjectUI(ObjectUI):
                 "a Custom Toolchange GCode (macro)."
             )
         )
-        cnclay.addWidget(self.toolchange_cb)
-
-        self.toolch_ois = OptionalInputSection(self.toolchange_cb, [self.toolchangelabel, self.toolchange_text])
-        cnclay.addStretch()
-
-        cnclay1 = QtWidgets.QHBoxLayout()
-        self.cnc_box.addLayout(cnclay1)
 
         # Variable list
         self.tc_variable_combo = FCComboBox()
@@ -1618,7 +1611,6 @@ class CNCObjectUI(ObjectUI):
                 "They have to be surrounded by the '%' symbol"
             )
         )
-        cnclay1.addWidget(self.tc_variable_combo)
 
         # Populate the Combo Box
         variables = [_('Parameters'), 'tool', 'tooldia', 't_drills', 'x_toolchange', 'y_toolchange', 'z_toolchange',
@@ -1638,15 +1630,12 @@ class CNCObjectUI(ObjectUI):
         self.tc_variable_combo.setItemData(11, _("dwelltime = time to dwell to allow the spindle to reach it's set RPM"),
                                            Qt.ToolTipRole)
 
-        cnclay1.addStretch()
+        cnclay.addWidget(self.toolchange_cb)
+        cnclay.addStretch()
+        cnclay.addWidget(self.tc_variable_combo)
 
-        # Insert Variable into the Toolchange G-Code Text Box
-        # self.tc_insert_buton = FCButton("Insert")
-        # self.tc_insert_buton.setToolTip(
-        #     "Insert the variable in the GCode Box\n"
-        #     "surrounded by the '%' symbol."
-        # )
-        # cnclay1.addWidget(self.tc_insert_buton)
+        self.toolch_ois = OptionalInputSection(self.toolchange_cb,
+                                               [self.toolchangelabel, self.toolchange_text, self.tc_variable_combo])
 
         h_lay = QtWidgets.QHBoxLayout()
         h_lay.setAlignment(QtCore.Qt.AlignVCenter)

@@ -15,6 +15,9 @@ CAD program, and create G-Code for Isolation routing.
 - added all the TCL keywords in the completer keyword list
 - work in progress in German translation ~7%
 - after any autocomplete in TCL completer, a space is added
+- fixed an module import issue in NCC Tool
+- minor change (optimization) of the CNCJob UI
+- work in progress in German translation ~20%
 
 22.03.2019
 
