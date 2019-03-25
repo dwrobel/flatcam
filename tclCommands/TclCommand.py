@@ -314,7 +314,7 @@ class TclCommandSignaled(TclCommand):
 
 
         This class is  child of  TclCommand and is used for commands  which create  new objects
-        it handles  all neccessary stuff about blocking and passing exeptions
+        it handles  all necessary stuff about blocking and passing exceptions
     """
 
     @abc.abstractmethod

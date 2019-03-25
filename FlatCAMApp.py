@@ -3876,8 +3876,6 @@ class App(QtCore.QObject):
         dialog.exec_()
 
     def handleTextChanged(self):
-        self.report_usage("handleTextChanged()")
-
         # enable = not self.ui.code_editor.document().isEmpty()
         # self.ui.buttonPrint.setEnabled(enable)
         # self.ui.buttonPreview.setEnabled(enable)
@@ -5770,6 +5768,7 @@ class App(QtCore.QObject):
 
         # first clear previous text in text editor (if any)
         self.ui.code_editor.clear()
+        self.ui.code_editor.setReadOnly(False)
         self.toggle_codeeditor = True
         self.ui.code_editor.completer_enable = False
 
@@ -5831,8 +5830,18 @@ class App(QtCore.QObject):
         flt = "FlatCAM Scripts (*.FlatScript);;All Files (*.*)"
         self.init_code_editor(name=_("Script Editor"))
         self.ui.code_editor.completer_enable = True
+        self.ui.code_editor.append(_(
+            "#\n"
+            "# CREATE A NEW FLATCAM TCL SCRIPT\n"
+            "# TCL Tutorial here: https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n"
+            "#\n\n"
+        ))
+
         self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen(filt=flt))
         self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode(filt=flt))
+
+        self.handleTextChanged()
+        self.ui.code_editor.show()
 
     def on_fileopenscript(self):
         _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
