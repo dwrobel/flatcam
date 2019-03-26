@@ -3371,7 +3371,6 @@ class Gerber (Geometry):
         # self.solid_geometry = affinity.scale(self.solid_geometry,
         #                                      xscale, yscale, origin=(px, py))
 
-
     def skew(self, angle_x, angle_y, point):
         """
         Shear/Skew the geometries of an object by angles along x and y dimensions.

@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 26.03.2019
 
 - fixed an issue where the Geometry plot function protested that it does not have an parameter that is used by the CNCJob plot function. But both inherit from FaltCAMObj plot function which does not have that parameter so something may need to be changed. Until then I provided a phony keyboard parameter to make that function 'shut up'
+- fixed bug: after using Paint Tool shortcut keys are disabled
 
 25.03.2019
 

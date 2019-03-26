@@ -730,7 +730,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
     def on_paint_button_click(self):
         self.app.report_usage(_("geometry_on_paint_button"))
-        self.app.call_source = 'paint'
+        # self.app.call_source = 'paint'
 
         self.app.inform.emit(_("[WARNING_NOTCL]Click inside the desired polygon."))
         try:
