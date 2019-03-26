@@ -4718,6 +4718,8 @@ class CNCjob(Geometry):
         Geometry.__init__(self, geo_steps_per_circle=int(steps_per_circle))
 
         self.kind = kind
+        self.origin_kind = None
+
         self.units = units
 
         self.z_cut = z_cut
@@ -4781,6 +4783,10 @@ class CNCjob(Geometry):
         self.oldy = None
 
         self.tool = 0.0
+
+        # used for creating drill CCode geometry; will be updated in the generate_from_excellon_by_tool()
+        self.exc_drills = None
+        self.exc_tools = None
 
         # search for toolchange parameters in the Toolchange Custom Code
         self.re_toolchange_custom = re.compile(r'(%[a-zA-Z0-9\-_]+%)')
@@ -4903,6 +4909,11 @@ class CNCjob(Geometry):
         :return: None
         :rtype: None
         """
+
+        # create a local copy of the exobj.drills so it can be used for creating drill CCode geometry
+        self.exc_drills = deepcopy(exobj.drills)
+        self.exc_tools = deepcopy(exobj.tools)
+
         if drillz > 0:
             self.app.inform.emit(_("[WARNING] The Cut Z parameter has positive value. "
                                  "It is the depth value to drill into material.\n"
@@ -6129,6 +6140,23 @@ class CNCjob(Geometry):
                                      "kind": kind})
                     path = [path[-1]]  # Start with the last point of last path.
 
+                # create the geometry for the holes created when drilling Excellon drills
+                if self.origin_kind == 'excellon':
+                    if current['Z'] < 0:
+                        current_drill_point_coords = (float('%.4f' % current['X']), float('%.4f' % current['Y']))
+                        # find the drill diameter knowing the drill coordinates
+                        for pt_dict in self.exc_drills:
+                            point_in_dict_coords = (float('%.4f' % pt_dict['point'].x),
+                                                   float('%.4f' % pt_dict['point'].y))
+                            if point_in_dict_coords == current_drill_point_coords:
+                                tool = pt_dict['tool']
+                                dia = self.exc_tools[tool]['C']
+                                kind = ['C', 'F']
+                                geometry.append({"geom": Point(current_drill_point_coords).
+                                                buffer(dia/2).exterior,
+                                                 "kind": kind})
+                                break
+
             if 'G' in gobj:
                 current['G'] = int(gobj['G'])
                 
@@ -6255,7 +6283,17 @@ class CNCjob(Geometry):
                 text.append(str(path_num))
                 pos.append(geo['geom'].coords[0])
 
-                poly = geo['geom'].buffer(tooldia / 2.0).simplify(tool_tolerance)
+                # plot the geometry of Excellon objects
+                if self.origin_kind == 'excellon':
+                    try:
+                        poly = Polygon(geo['geom'])
+                    except ValueError:
+                        # if the geos are travel lines it will enter into Exception
+                        poly = geo['geom'].buffer(tooldia / 2.0).simplify(tool_tolerance)
+                else:
+                    # plot the geometry of any objects other than Excellon
+                    poly = geo['geom'].buffer(tooldia / 2.0).simplify(tool_tolerance)
+
                 if kind == 'all':
                     obj.add_shape(shape=poly, color=color[geo['kind'][0]][1], face_color=color[geo['kind'][0]][0],
                               visible=visible, layer=1 if geo['kind'][0] == 'C' else 2)

@@ -2419,6 +2419,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
             ### Add properties to the object
 
+            job_obj.origin_kind = 'excellon'
+
             job_obj.options['Tools_in_use'] = tool_table_items
             job_obj.options['type'] = 'Excellon'
             job_obj.options['ppname_e'] = pp_excellon_name
@@ -5714,7 +5716,6 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         else:
             self.ui.plot_cb.setChecked(True)
         self.ui_connect()
-
 
     def plot(self, visible=None, kind='all'):
 
