@@ -7196,8 +7196,7 @@ class App(QtCore.QObject):
         try:
             d = json.load(f, object_hook=dict2obj)
         except:
-            App.log.error("Failed to parse project file: %s" % filename)
-            self.inform.emit(_("[ERROR_NOTCL] Failed to parse project file: %s") % filename)
+            App.log.error("Failed to parse project file, trying to see if it loads as an LZMA archive: %s" % filename)
             f.close()
 
             # Open and parse a compressed Project file

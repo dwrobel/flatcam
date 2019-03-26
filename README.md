@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+26.03.2019
+
+- fixed an issue where the Geometry plot function protested that it does not have an parameter that is used by the CNCJob plot function. But both inherit from FaltCAMObj plot function which does not have that parameter so something may need to be changed. Until then I provided a phony keyboard parameter to make that function 'shut up'
+
 25.03.2019
 
 - in the TCL completer if the word is already complete don't add it again but add a space

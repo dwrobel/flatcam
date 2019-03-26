@@ -4958,11 +4958,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         except TypeError:  # Element is not iterable...
             self.add_shape(shape=element, color=color, visible=visible, layer=0)
 
-    def plot(self, visible=None):
+    def plot(self, visible=None, kind=None):
         """
-        Adds the object into collection.
+        Plot the object.
 
-        :return: None
+        :param visible: Controls if the added shape is visible of not
+        :param kind: added so there is no error when a project is loaded and it has both geometry and CNCJob, because
+        CNCJob require the 'kind' parameter. Perhaps the FlatCAMObj.plot() has to be rewrited
+        :return:
         """
 
         # Does all the required setup and returns False
