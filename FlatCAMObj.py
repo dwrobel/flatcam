@@ -178,7 +178,7 @@ class FlatCAMObj(QtCore.QObject):
         self.muted_ui = False
 
     def on_name_activate(self):
-        old_name = copy.copy(self.options["name"])
+        old_name = copy(self.options["name"])
         new_name = self.ui.name_entry.get_value()
 
         # update the SHELL auto-completer model data
