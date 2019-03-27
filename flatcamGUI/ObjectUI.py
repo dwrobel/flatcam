@@ -101,7 +101,7 @@ class ObjectUI(QtWidgets.QWidget):
         self.scale_button.setToolTip(
             _("Perform scaling operation.")
         )
-        self.scale_button.setFixedWidth(50)
+        self.scale_button.setFixedWidth(70)
         self.scale_grid.addWidget(self.scale_button, 0, 2)
 
         #### Offset ####
@@ -128,7 +128,7 @@ class ObjectUI(QtWidgets.QWidget):
         self.offset_button.setToolTip(
             _("Perform the offset operation.")
         )
-        self.offset_button.setFixedWidth(50)
+        self.offset_button.setFixedWidth(70)
         self.offset_grid.addWidget(self.offset_button, 0, 2)
 
         layout.addStretch()
@@ -244,9 +244,24 @@ class GerberObjectUI(ObjectUI):
             _("Mark the aperture instances on canvas."))
         # self.apertures_table.setColumnHidden(5, True)
 
-        #### Aperture Scale ####
+        #### Aperture EDIT ####
         self.transform_aperture_grid = QtWidgets.QGridLayout()
         self.custom_box.addLayout(self.transform_aperture_grid)
+
+        # Delete Aperture
+        self.delete_aperture_label = QtWidgets.QLabel(_('Delete aperture:'))
+        self.delete_aperture_label.setToolTip(
+            _("Delete selected apertures.")
+        )
+        self.delete_aperture_label.setFixedWidth(90)
+        self.transform_aperture_grid.addWidget(self.delete_aperture_label, 0, 0)
+
+        self.delete_aperture_button = QtWidgets.QPushButton(_('Delete'))
+        self.delete_aperture_button.setToolTip(
+            _("Delete selected apertures.")
+        )
+        self.delete_aperture_button.setFixedWidth(70)
+        self.transform_aperture_grid.addWidget(self.delete_aperture_button, 0, 2)
 
         # Scale Aperture Factor
         self.scale_aperture_label = QtWidgets.QLabel(_('Scale Factor:'))
@@ -256,18 +271,18 @@ class GerberObjectUI(ObjectUI):
             "geometric features of this object.")
         )
         self.scale_aperture_label.setFixedWidth(90)
-        self.transform_aperture_grid.addWidget(self.scale_aperture_label, 0, 0)
+        self.transform_aperture_grid.addWidget(self.scale_aperture_label, 1, 0)
 
         self.scale_aperture_entry = FloatEntry2()
-        self.transform_aperture_grid.addWidget(self.scale_aperture_entry, 0, 1)
+        self.transform_aperture_grid.addWidget(self.scale_aperture_entry, 1, 1)
 
         # Scale Button
         self.scale_aperture_button = QtWidgets.QPushButton(_('Scale'))
         self.scale_aperture_button.setToolTip(
             _("Perform scaling operation on the selected apertures.")
         )
-        self.scale_aperture_button.setFixedWidth(50)
-        self.transform_aperture_grid.addWidget(self.scale_aperture_button, 0, 2)
+        self.scale_aperture_button.setFixedWidth(70)
+        self.transform_aperture_grid.addWidget(self.scale_aperture_button, 1, 2)
 
         # Buffer Aperture Factor
         self.buffer_aperture_label = QtWidgets.QLabel(_('Buffer Factor:'))
@@ -277,18 +292,18 @@ class GerberObjectUI(ObjectUI):
             "geometric features of this object.")
         )
         self.buffer_aperture_label.setFixedWidth(90)
-        self.transform_aperture_grid.addWidget(self.buffer_aperture_label, 1, 0)
+        self.transform_aperture_grid.addWidget(self.buffer_aperture_label, 2, 0)
 
         self.buffer_aperture_entry = FloatEntry2()
-        self.transform_aperture_grid.addWidget(self.buffer_aperture_entry, 1, 1)
+        self.transform_aperture_grid.addWidget(self.buffer_aperture_entry, 2, 1)
 
         # Buffer Button
         self.buffer_aperture_button = QtWidgets.QPushButton(_('Buffer'))
         self.buffer_aperture_button.setToolTip(
             _("Perform buffer operation on the selected apertures.")
         )
-        self.buffer_aperture_button.setFixedWidth(50)
-        self.transform_aperture_grid.addWidget(self.buffer_aperture_button, 1, 2)
+        self.buffer_aperture_button.setFixedWidth(70)
+        self.transform_aperture_grid.addWidget(self.buffer_aperture_button, 2, 2)
 
         new_hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(new_hlay)
@@ -305,7 +320,7 @@ class GerberObjectUI(ObjectUI):
         self.new_grb_button.setToolTip(
             _("Will generate a new Gerber object from the changed apertures.\n"
             "This new object can then be isolated etc."))
-        self.new_grb_button.setFixedWidth(50)
+        self.new_grb_button.setFixedWidth(70)
         new_hlay.addWidget(self.new_grb_button)
 
         # start with apertures table hidden

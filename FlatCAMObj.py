@@ -532,6 +532,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.generate_noncopper_button.clicked.connect(self.on_generatenoncopper_button_click)
         self.ui.aperture_table_visibility_cb.stateChanged.connect(self.on_aperture_table_visibility_change)
         self.ui.follow_cb.stateChanged.connect(self.on_follow_cb_click)
+        self.ui.delete_aperture_button.clicked.connect(self.on_delete_aperture_click)
         self.ui.scale_aperture_button.clicked.connect(self.on_scale_aperture_click)
         self.ui.buffer_aperture_button.clicked.connect(self.on_buffer_aperture_click)
         self.ui.new_grb_button.clicked.connect(self.on_new_modified_gerber)
@@ -999,6 +1000,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
     def on_aperture_table_visibility_change(self):
         if self.ui.aperture_table_visibility_cb.isChecked():
             self.ui.apertures_table.setVisible(True)
+            self.ui.delete_aperture_label.setVisible(True)
+            self.ui.delete_aperture_button.setVisible(True)
             self.ui.scale_aperture_label.setVisible(True)
             self.ui.scale_aperture_entry.setVisible(True)
             self.ui.scale_aperture_button.setVisible(True)
@@ -1013,6 +1016,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.ui.mark_all_cb.setChecked(False)
         else:
             self.ui.apertures_table.setVisible(False)
+            self.ui.delete_aperture_label.setVisible(False)
+            self.ui.delete_aperture_button.setVisible(False)
             self.ui.scale_aperture_label.setVisible(False)
             self.ui.scale_aperture_entry.setVisible(False)
             self.ui.scale_aperture_button.setVisible(False)
@@ -1029,6 +1034,21 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             for row in range(self.ui.apertures_table.rowCount()):
                 self.ui.apertures_table.cellWidget(row, 5).set_value(False)
             self.clear_plot_apertures()
+
+    def on_delete_aperture_click(self, signal):
+        apid_to_del = []
+
+        # create a list of apertures to be deleted
+        for sel_item in self.ui.apertures_table.selectedItems():
+            sel_row = sel_item.row()
+            apid_to_del.append(self.ui.apertures_table.item(sel_row, 1).text())
+
+        # actual aperture removal
+        for apid in apid_to_del:
+            if apid in self.apertures:
+                self.apertures.pop(apid)
+            if apid in self.aperture_macros:
+                self.apertures_macros.pop(apid)
 
     def on_scale_aperture_click(self, signal):
         try:

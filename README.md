@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+27.03.2019
+
+- added new feature: user can delete apertures in Advanced mode and then create a new FlatCAM Gerber object
+
 26.03.2019
 
 - fixed an issue where the Geometry plot function protested that it does not have an parameter that is used by the CNCJob plot function. But both inherit from FaltCAMObj plot function which does not have that parameter so something may need to be changed. Until then I provided a phony keyboard parameter to make that function 'shut up'
