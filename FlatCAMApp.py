@@ -2195,14 +2195,17 @@ class App(QtCore.QObject):
         edited_object = self.collection.get_active()
 
         if isinstance(edited_object, FlatCAMGeometry):
-            # for now, if the Geometry is MultiGeo do not allow the editing
-            if edited_object.multigeo is True:
-                self.inform.emit(_("[WARNING_NOTCL] Editing a MultiGeo Geometry is not possible for the moment."))
-                return
-
             # store the Geometry Editor Toolbar visibility before entering in the Editor
             self.geo_editor.toolbar_old_state = True if self.ui.geo_edit_toolbar.isVisible() else False
-            self.geo_editor.edit_fcgeometry(edited_object)
+
+            if edited_object.multigeo is True:
+                edited_tools = [int(x.text()) for x in edited_object.ui.geo_tools_table.selectedItems()]
+                if len(edited_tools) > 1:
+                    self.inform.emit(_("[WARNING_NOTCL] Simultanoeus editing of tools geometry in a MultiGeo Geometry "
+                                       "is not possible.\n Edit only one geometry at a time."))
+                self.geo_editor.edit_fcgeometry(edited_object, multigeo_tool=edited_tools[0])
+            else:
+                self.geo_editor.edit_fcgeometry(edited_object)
 
             # we set the notebook to hidden
             self.ui.splitter.setSizes([0, 1])

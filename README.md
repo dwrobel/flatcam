@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 28.03.2019
 
 - About 45% progress in German translation
+- new feature: added ability to edit MultiGeo geometry (geometry from Paint Tool)
 
 27.03.2019
 

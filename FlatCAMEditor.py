@@ -2148,7 +2148,7 @@ class FCRectangle(FCShapeTool):
         # self.geometry = LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])])
         self.geometry = DrawToolShape(Polygon([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])]))
         self.complete = True
-        self.draw_app.app.inform.emit("_([success]Done. Rectangle completed.")
+        self.draw_app.app.inform.emit(_("[success]Done. Rectangle completed."))
 
 
 class FCPolygon(FCShapeTool):
@@ -3364,6 +3364,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.x = None  # Current mouse cursor pos
         self.y = None
 
+        # if we edit a multigeo geometry store here the tool number
+        self.multigeo_tool = None
+
         # Current snapped mouse pos
         self.snap_x = None
         self.snap_y = None
@@ -3645,7 +3648,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.storage = FlatCAMGeoEditor.make_storage()
         self.replot()
 
-    def edit_fcgeometry(self, fcgeometry):
+    def edit_fcgeometry(self, fcgeometry, multigeo_tool=None):
         """
         Imports the geometry from the given FlatCAM Geometry object
         into the editor.
@@ -3669,7 +3672,15 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.select_tool("select")
 
         # Link shapes into editor.
-        for shape in fcgeometry.flatten():
+        if multigeo_tool:
+            self.multigeo_tool = multigeo_tool
+            geo_to_edit = fcgeometry.flatten(geometry=fcgeometry.tools[self.multigeo_tool]['solid_geometry'])
+            self.app.inform.emit(_("[WARNING] Editing MultiGeo Geometry, tool: {tool} with diameter: {dia}").
+                                 format(tool=self.multigeo_tool, dia=fcgeometry.tools[self.multigeo_tool]['tooldia']))
+        else:
+            geo_to_edit = fcgeometry.flatten()
+
+        for shape in geo_to_edit:
             if shape is not None:  # TODO: Make flatten never create a None
                 if type(shape) == Polygon:
                     self.add_shape(DrawToolShape(shape.exterior))
@@ -4233,10 +4244,17 @@ class FlatCAMGeoEditor(QtCore.QObject):
         :param fcgeometry: FlatCAMGeometry
         :return: None
         """
-        fcgeometry.solid_geometry = []
-        # for shape in self.shape_buffer:
-        for shape in self.storage.get_objects():
-            fcgeometry.solid_geometry.append(shape.geo)
+        if self.multigeo_tool:
+            fcgeometry.tools[self.multigeo_tool]['solid_geometry'] = []
+            # for shape in self.shape_buffer:
+            for shape in self.storage.get_objects():
+                fcgeometry.tools[self.multigeo_tool]['solid_geometry'].append(shape.geo)
+            self.multigeo_tool = None
+        else:
+            fcgeometry.solid_geometry = []
+            # for shape in self.shape_buffer:
+            for shape in self.storage.get_objects():
+                fcgeometry.solid_geometry.append(shape.geo)
 
         # re-enable all the widgets in the Selected Tab that were disabled after entering in Edit Geometry Mode
         sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
