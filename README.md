@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+28.03.2019
+
+- About 45% progress in German translation
+
 27.03.2019
 
 - added new feature: user can delete apertures in Advanced mode and then create a new FlatCAM Gerber object
