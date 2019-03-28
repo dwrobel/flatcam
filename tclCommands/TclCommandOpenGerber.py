@@ -89,4 +89,4 @@ class TclCommandOpenGerber(TclCommandSignaled):
             self.app.progress.emit(100)
 
             # GUI feedback
-            self.app.inform.emit("[success]Opened: " + filename)
+            self.app.inform.emit("[success] Opened: " + filename)

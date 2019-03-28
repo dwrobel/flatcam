@@ -2221,7 +2221,7 @@ class App(QtCore.QObject):
             # set call source to the Editor we go into
             self.call_source = 'exc_editor'
         else:
-            self.inform.emit(_("[WARNING_NOTCL]Select a Geometry or Excellon Object to edit."))
+            self.inform.emit(_("[WARNING_NOTCL] Select a Geometry or Excellon Object to edit."))
             return
 
         # make sure that we can't select another object while in Editor Mode:
@@ -2232,7 +2232,7 @@ class App(QtCore.QObject):
 
         self.ui.plot_tab_area.setTabText(0, "EDITOR Area")
         self.ui.plot_tab_area.protectTab(0)
-        self.inform.emit(_("[WARNING_NOTCL]Editor is activated ..."))
+        self.inform.emit(_("[WARNING_NOTCL] Editor is activated ..."))
 
         self.should_we_save = True
 
@@ -2280,7 +2280,7 @@ class App(QtCore.QObject):
                 self.exc_editor.deactivate()
 
             else:
-                self.inform.emit(_("[WARNING_NOTCL]Select a Geometry or Excellon Object to update."))
+                self.inform.emit(_("[WARNING_NOTCL] Select a Geometry or Excellon Object to update."))
                 return
 
             # if notebook is hidden we show it
@@ -2657,7 +2657,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]FlatCAM preferences import cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] FlatCAM preferences import cancelled."))
         else:
             try:
                 f = open(filename)
@@ -2676,7 +2676,7 @@ class App(QtCore.QObject):
                 self.inform.emit(_("[ERROR_NOTCL] Failed to parse defaults file."))
                 return
             self.defaults.update(defaults_from_file)
-            self.inform.emit(_("[success]Imported Defaults from %s") %filename)
+            self.inform.emit(_("[success] Imported Defaults from %s") %filename)
 
     def on_export_preferences(self):
 
@@ -2696,7 +2696,7 @@ class App(QtCore.QObject):
         defaults_from_file = {}
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]FlatCAM preferences export cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] FlatCAM preferences export cancelled."))
             return
         else:
             try:
@@ -2712,7 +2712,7 @@ class App(QtCore.QObject):
                 e = sys.exc_info()[0]
                 App.log.error("Could not load defaults file.")
                 App.log.error(str(e))
-                self.inform.emit(_("[ERROR_NOTCL]Could not load defaults file."))
+                self.inform.emit(_("[ERROR_NOTCL] Could not load defaults file."))
                 return
 
             try:
@@ -2735,7 +2735,7 @@ class App(QtCore.QObject):
                 return
 
         self.file_saved.emit("preferences", filename)
-        self.inform.emit("[success]Exported Defaults to %s" % filename)
+        self.inform.emit("[success] Exported Defaults to %s" % filename)
 
     def on_preferences_open_folder(self):
         self.report_usage("on_preferences_open_folder()")
@@ -2746,7 +2746,7 @@ class App(QtCore.QObject):
             os.system('open "%s"' % self.data_path)
         else:
             subprocess.Popen(['xdg-open', self.data_path])
-        self.inform.emit("[success]FlatCAM Preferences Folder opened.")
+        self.inform.emit("[success] FlatCAM Preferences Folder opened.")
 
     def save_geometry(self, x, y, width, height, notebook_width):
         self.defaults["global_def_win_x"] = x
@@ -2783,7 +2783,7 @@ class App(QtCore.QObject):
             f = open(self.data_path + '/recent.json', 'w')
         except IOError:
             App.log.error("Failed to open recent items file for writing.")
-            self.inform.emit(_('[ERROR_NOTCL]Failed to open recent files file for writing.'))
+            self.inform.emit(_('[ERROR_NOTCL] Failed to open recent files file for writing.'))
             return
 
         #try:
@@ -2947,16 +2947,16 @@ class App(QtCore.QObject):
         # self.inform.emit('[selected] %s created & selected: %s' %
         #                  (str(obj.kind).capitalize(), str(obj.options['name'])))
         if obj.kind == 'gerber':
-            self.inform.emit(_('[selected]{kind} created/selected: <span style="color:{color};">{name}</span>').format(
+            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
                 kind=obj.kind.capitalize(), color='green', name=str(obj.options['name'])))
         elif obj.kind == 'excellon':
-            self.inform.emit(_('[selected]{kind} created/selected: <span style="color:{color};">{name}</span>').format(
+            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
                 kind=obj.kind.capitalize(), color='brown', name=str(obj.options['name'])))
         elif obj.kind == 'cncjob':
-            self.inform.emit(_('[selected]{kind} created/selected: <span style="color:{color};">{name}</span>').format(
+            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
                 kind=obj.kind.capitalize(), color='blue', name=str(obj.options['name'])))
         elif obj.kind == 'geometry':
-            self.inform.emit(_('[selected]{kind} created/selected: <span style="color:{color};">{name}</span>').format(
+            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
                 kind=obj.kind.capitalize(), color='red', name=str(obj.options['name'])))
 
         # update the SHELL auto-completer model with the name of the new object
@@ -3200,7 +3200,7 @@ class App(QtCore.QObject):
         self.defaults["global_toolbar_view"] = tb_status
 
         if not silent:
-            self.inform.emit(_("[success]Defaults saved."))
+            self.inform.emit(_("[success] Defaults saved."))
 
     def save_factory_defaults(self, silent=False):
         """
@@ -3357,7 +3357,7 @@ class App(QtCore.QObject):
 
         for obj in objs:
             if not isinstance(obj, FlatCAMExcellon):
-                self.inform.emit(_("[ERROR_NOTCL]Failed. Excellon joining works only on Excellon objects."))
+                self.inform.emit(_("[ERROR_NOTCL] Failed. Excellon joining works only on Excellon objects."))
                 return
 
         def initialize(obj, app):
@@ -3379,7 +3379,7 @@ class App(QtCore.QObject):
 
         for obj in objs:
             if not isinstance(obj, FlatCAMGerber):
-                self.inform.emit(_("[ERROR_NOTCL]Failed. Gerber joining works only on Gerber objects."))
+                self.inform.emit(_("[ERROR_NOTCL] Failed. Gerber joining works only on Gerber objects."))
                 return
 
         def initialize(obj, app):
@@ -3394,11 +3394,11 @@ class App(QtCore.QObject):
         obj = self.collection.get_active()
 
         if obj is None:
-            self.inform.emit(_("[ERROR_NOTCL]Failed. Select a Geometry Object and try again."))
+            self.inform.emit(_("[ERROR_NOTCL] Failed. Select a Geometry Object and try again."))
             return
 
         if not isinstance(obj, FlatCAMGeometry):
-            self.inform.emit(_("[ERROR_NOTCL]Expected a FlatCAMGeometry, got %s") % type(obj))
+            self.inform.emit(_("[ERROR_NOTCL] Expected a FlatCAMGeometry, got %s") % type(obj))
             return
 
         obj.multigeo = True
@@ -3419,11 +3419,11 @@ class App(QtCore.QObject):
         obj = self.collection.get_active()
 
         if obj is None:
-            self.inform.emit(_("[ERROR_NOTCL]Failed. Select a Geometry Object and try again."))
+            self.inform.emit(_("[ERROR_NOTCL] Failed. Select a Geometry Object and try again."))
             return
 
         if not isinstance(obj, FlatCAMGeometry):
-            self.inform.emit(_("[ERROR_NOTCL]Expected a FlatCAMGeometry, got %s") % type(obj))
+            self.inform.emit(_("[ERROR_NOTCL] Expected a FlatCAMGeometry, got %s") % type(obj))
             return
 
         obj.multigeo = False
@@ -3623,7 +3623,7 @@ class App(QtCore.QObject):
                     current.to_form()
 
             self.plot_all()
-            self.inform.emit(_("[success]Converted units to %s") % self.defaults["units"])
+            self.inform.emit(_("[success] Converted units to %s") % self.defaults["units"])
             # self.ui.units_label.setText("[" + self.options["units"] + "]")
             self.set_screen_units(self.defaults["units"])
         else:
@@ -3634,7 +3634,7 @@ class App(QtCore.QObject):
             else:
                 self.ui.general_defaults_form.general_app_group.units_radio.set_value('MM')
             self.toggle_units_ignore = False
-            self.inform.emit(_("[WARNING_NOTCL]Units conversion cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Units conversion cancelled."))
 
         self.options_read_form()
         self.defaults_read_form()
@@ -4244,7 +4244,7 @@ class App(QtCore.QObject):
             filename = str(QtWidgets.QFileDialog.getSaveFileName(caption=_("Export G-Code ..."), filter=_filter_)[0])
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]Export Code cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Export Code cancelled."))
             return
         else:
             try:
@@ -5014,7 +5014,7 @@ class App(QtCore.QObject):
             name = obj.options["name"]
         except AttributeError:
             log.debug("on_copy_name() --> No object selected to copy it's name")
-            self.inform.emit(_("[WARNING_NOTCL]No object selected to copy it's name"))
+            self.inform.emit(_("[WARNING_NOTCL] No object selected to copy it's name"))
             return
 
         self.clipboard.setText(name)
@@ -5666,7 +5666,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit(_("[WARNING_NOTCL]Open Excellon cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Open Excellon cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -5696,7 +5696,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit(_("[WARNING_NOTCL]Open G-Code cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Open G-Code cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -5725,7 +5725,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]Open Project cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Open Project cancelled."))
         else:
             # self.worker_task.emit({'fcn': self.open_project,
             #                        'params': [filename]})
@@ -5751,7 +5751,7 @@ class App(QtCore.QObject):
                                                                  filter = _filter_)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]Open Config cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL Open Config cancelled."))
         else:
             self.open_config_file(filename)
 
@@ -5800,7 +5800,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]Export SVG cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Export SVG cancelled."))
             return
         else:
             self.export_svg(name, filename)
@@ -5946,7 +5946,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]Export Excellon cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Export Excellon cancelled."))
             return
         else:
             self.export_excellon(name, filename)
@@ -6055,7 +6055,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit(_("[WARNING_NOTCL]Open DXF cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Open DXF cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -6179,7 +6179,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]Open TCL script cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Open TCL script cancelled."))
         else:
             self.on_filenewscript()
 
@@ -6228,7 +6228,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]Run TCL script cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Run TCL script cancelled."))
         else:
             try:
                 with open(filename, "r") as tcl_script:
@@ -6392,7 +6392,7 @@ class App(QtCore.QObject):
             return "Could not retrieve object: %s" % box_name
 
         if box is None:
-            self.inform.emit(_("[WARNING_NOTCL]No object Box. Using instead %s") % obj)
+            self.inform.emit(_("[WARNING_NOTCL] No object Box. Using instead %s") % obj)
             box = obj
 
         def make_negative_film():
@@ -6512,7 +6512,7 @@ class App(QtCore.QObject):
             return "Could not retrieve object: %s" % box_name
 
         if box is None:
-            self.inform.emit(_("[WARNING_NOTCL]No object Box. Using instead %s") % obj)
+            self.inform.emit(_("[WARNING_NOTCL] No object Box. Using instead %s") % obj)
             box = obj
 
         def make_black_film():
@@ -7791,19 +7791,19 @@ The normal flow when working in FlatCAM is the following:</span></p>
         self.report_usage("disable_all_plots()")
 
         self.disable_plots(self.collection.get_list())
-        self.inform.emit(_("[success]All plots disabled."))
+        self.inform.emit(_("[success] All plots disabled."))
 
     def disable_other_plots(self):
         self.report_usage("disable_other_plots()")
 
         self.disable_plots(self.collection.get_non_selected())
-        self.inform.emit(_("[success]All non selected plots disabled."))
+        self.inform.emit(_("[success] All non selected plots disabled."))
 
     def enable_all_plots(self):
         self.report_usage("enable_all_plots()")
 
         self.enable_plots(self.collection.get_list())
-        self.inform.emit(_("[success]All plots enabled."))
+        self.inform.emit(_("[success] All plots enabled."))
 
     # TODO: FIX THIS
     '''

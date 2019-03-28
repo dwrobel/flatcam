@@ -2128,7 +2128,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                             if self.app.geo_editor.active_tool.complete:
                                 self.app.geo_editor.on_shape_complete()
-                                self.app.inform.emit(_("[success]Done."))
+                                self.app.inform.emit(_("[success] Done."))
                             # automatically make the selection tool active after completing current action
                             self.app.geo_editor.select_tool('select')
                             return
@@ -2140,7 +2140,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                             if self.app.geo_editor.active_tool.complete:
                                 self.app.geo_editor.on_shape_complete()
-                                self.app.inform.emit(_("[success]Done."))
+                                self.app.inform.emit(_("[success] Done."))
                             # automatically make the selection tool active after completing current action
                             self.app.geo_editor.select_tool('select')
 
@@ -2148,7 +2148,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
                     # TODO: ...?
                     # self.on_tool_select("select")
-                    self.app.inform.emit(_("[WARNING_NOTCL]Cancelled."))
+                    self.app.inform.emit(_("[WARNING_NOTCL] Cancelled."))
 
                     self.app.geo_editor.delete_utility_geometry()
 
@@ -2342,7 +2342,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
                     # TODO: ...?
                     # self.on_tool_select("select")
-                    self.app.inform.emit(_("[WARNING_NOTCL]Cancelled."))
+                    self.app.inform.emit(_("[WARNING_NOTCL] Cancelled."))
 
                     self.app.exc_editor.delete_utility_geometry()
 
@@ -2359,7 +2359,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.exc_editor.delete_selected()
                         self.app.exc_editor.replot()
                     else:
-                        self.app.inform.emit(_("[WARNING_NOTCL]Cancelled. Nothing selected to delete."))
+                        self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to delete."))
                     return
 
                 # Delete tools in tools table if delete key event comes from the Selected Tab
@@ -2426,7 +2426,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.exc_editor.active_tool.set_origin(
                             (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
                     else:
-                        self.app.inform.emit(_("[WARNING_NOTCL]Cancelled. Nothing selected to copy."))
+                        self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to copy."))
                     return
 
                 # Add Drill Hole Tool
@@ -2472,7 +2472,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.exc_editor.active_tool.set_origin(
                             (self.app.exc_editor.snap_x, self.app.exc_editor.snap_y))
                     else:
-                        self.app.inform.emit(_("[WARNING_NOTCL]Cancelled. Nothing selected to move."))
+                        self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to move."))
                     return
 
                 # Resize Tool
@@ -2495,7 +2495,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     if ok:
                         self.app.exc_editor.on_tool_add(tooldia=val)
                         self.app.inform.emit(
-                            _("[success]Added new tool with dia: {dia} {units}").format(dia='%.4f' % float(val), units=str(self.units)))
+                            _("[success] Added new tool with dia: {dia} {units}").format(dia='%.4f' % float(val), units=str(self.units)))
                     else:
                         self.app.inform.emit(
                             _("[WARNING_NOTCL] Adding Tool cancelled ..."))

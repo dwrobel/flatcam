@@ -121,6 +121,6 @@ class TclCommandCutout(TclCommand):
 
         try:
             obj.app.new_object("geometry", name + "_cutout", geo_init_me)
-            self.app.inform.emit("[success]Rectangular-form Cutout operation finished.")
+            self.app.inform.emit("[success] Rectangular-form Cutout operation finished.")
         except Exception as e:
             return "Operation failed: %s" % str(e)

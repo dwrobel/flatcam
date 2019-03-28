@@ -326,11 +326,11 @@ class CutOut(FlatCAMTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except:
-            self.app.inform.emit(_("[ERROR_NOTCL]Could not retrieve object: %s") % name)
+            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % name)
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL]There is no object selected for Cutout.\nSelect one and try again."))
+            self.app.inform.emit(_("[ERROR_NOTCL] There is no object selected for Cutout.\nSelect one and try again."))
             return
 
         try:
@@ -346,8 +346,8 @@ class CutOut(FlatCAMTool):
 
 
         if 0 in {dia}:
-            self.app.inform.emit(_("[WARNING_NOTCL]Tool Diameter is zero value. Change it to a positive integer."))
-            return "Tool Diameter is zero value. Change it to a positive integer."
+            self.app.inform.emit(_("[WARNING_NOTCL] Tool Diameter is zero value. Change it to a positive real number."))
+            return "Tool Diameter is zero value. Change it to a positive real number."
 
         try:
             margin = float(self.margin.get_value())
@@ -465,11 +465,11 @@ class CutOut(FlatCAMTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except:
-            self.app.inform.emit(_("[ERROR_NOTCL]Could not retrieve object: %s") % name)
+            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % name)
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL]Object not found: %s") % cutout_obj)
+            self.app.inform.emit(_("[ERROR_NOTCL] Object not found: %s") % cutout_obj)
 
         try:
             dia = float(self.dia.get_value())
@@ -483,8 +483,8 @@ class CutOut(FlatCAMTool):
                 return
 
         if 0 in {dia}:
-            self.app.inform.emit(_("[ERROR_NOTCL]Tool Diameter is zero value. Change it to a positive integer."))
-            return "Tool Diameter is zero value. Change it to a positive integer."
+            self.app.inform.emit(_("[ERROR_NOTCL] Tool Diameter is zero value. Change it to a positive real number."))
+            return "Tool Diameter is zero value. Change it to a positive real number."
 
         try:
             margin = float(self.margin.get_value())
@@ -603,8 +603,8 @@ class CutOut(FlatCAMTool):
                 return
 
         if 0 in {self.cutting_dia}:
-            self.app.inform.emit(_("[ERROR_NOTCL]Tool Diameter is zero value. Change it to a positive integer."))
-            return "Tool Diameter is zero value. Change it to a positive integer."
+            self.app.inform.emit(_("[ERROR_NOTCL] Tool Diameter is zero value. Change it to a positive real number."))
+            return "Tool Diameter is zero value. Change it to a positive real number."
 
         try:
             self.cutting_gapsize = float(self.gapsize.get_value())
@@ -652,11 +652,11 @@ class CutOut(FlatCAMTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except:
-            self.app.inform.emit(_("[ERROR_NOTCL]Could not retrieve Geoemtry object: %s") % name)
+            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve Geometry object: %s") % name)
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL]Geometry object for manual cutout not found: %s") % cutout_obj)
+            self.app.inform.emit(_("[ERROR_NOTCL] Geometry object for manual cutout not found: %s") % cutout_obj)
             return
 
         # use the snapped position as reference
@@ -683,16 +683,16 @@ class CutOut(FlatCAMTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except:
-            self.app.inform.emit(_("[ERROR_NOTCL]Could not retrieve Gerber object: %s") % name)
+            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve Gerber object: %s") % name)
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL]There is no Gerber object selected for Cutout.\n"
+            self.app.inform.emit(_("[ERROR_NOTCL] There is no Gerber object selected for Cutout.\n"
                                  "Select one and try again."))
             return
 
         if not isinstance(cutout_obj, FlatCAMGerber):
-            self.app.inform.emit(_("[ERROR_NOTCL]The selected object has to be of Gerber type.\n"
+            self.app.inform.emit(_("[ERROR_NOTCL] The selected object has to be of Gerber type.\n"
                                  "Select a Gerber file and try again."))
             return
 
@@ -708,8 +708,8 @@ class CutOut(FlatCAMTool):
                 return
 
         if 0 in {dia}:
-            self.app.inform.emit(_("[ERROR_NOTCL]Tool Diameter is zero value. Change it to a positive integer."))
-            return "Tool Diameter is zero value. Change it to a positive integer."
+            self.app.inform.emit(_("[ERROR_NOTCL] Tool Diameter is zero value. Change it to a positive real number."))
+            return "Tool Diameter is zero value. Change it to a positive real number."
 
         try:
             margin = float(self.margin.get_value())

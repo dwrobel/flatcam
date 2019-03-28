@@ -752,7 +752,7 @@ class SolderPaste(FlatCAMTool):
                 try:
                     tool_dia = float(self.addtool_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
                                          "use a number."))
                     return
             if tool_dia is None:
@@ -823,7 +823,7 @@ class SolderPaste(FlatCAMTool):
                 try:
                     new_tool_dia = float(self.tools_table.item(row, 1).text().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
                                          "use a number."))
                     return
 

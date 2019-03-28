@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - About 45% progress in German translation
 - new feature: added ability to edit MultiGeo geometry (geometry from Paint Tool)
+- changed all the info messages that are of type warning, error or success so they have a space added after the keyword
+- changed the Romanian translation by adding more diacritics  
 
 27.03.2019
 

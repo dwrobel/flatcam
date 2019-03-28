@@ -1384,7 +1384,7 @@ class Geometry(object):
                     self.tools[tool]['solid_geometry'] = mirror_geom(self.tools[tool]['solid_geometry'])
             else:
                 self.solid_geometry = mirror_geom(self.solid_geometry)
-            self.app.inform.emit(_('[success]Object was mirrored ...'))
+            self.app.inform.emit(_('[success] Object was mirrored ...'))
         except AttributeError:
             self.app.inform.emit(_("[ERROR_NOTCL] Failed to mirror. No object selected"))
 
@@ -1422,7 +1422,7 @@ class Geometry(object):
                     self.tools[tool]['solid_geometry'] = rotate_geom(self.tools[tool]['solid_geometry'])
             else:
                 self.solid_geometry = rotate_geom(self.solid_geometry)
-            self.app.inform.emit(_('[success]Object was rotated ...'))
+            self.app.inform.emit(_('[success] Object was rotated ...'))
         except AttributeError:
             self.app.inform.emit(_("[ERROR_NOTCL] Failed to rotate. No object selected"))
 
@@ -1458,7 +1458,7 @@ class Geometry(object):
                     self.tools[tool]['solid_geometry'] = skew_geom(self.tools[tool]['solid_geometry'])
             else:
                 self.solid_geometry = skew_geom(self.solid_geometry)
-            self.app.inform.emit(_('[success]Object was skewed ...'))
+            self.app.inform.emit(_('[success] Object was skewed ...'))
         except AttributeError:
             self.app.inform.emit(_("[ERROR_NOTCL] Failed to skew. No object selected"))
 
@@ -3264,7 +3264,7 @@ class Gerber (Geometry):
         except Exception as e:
             log.debug('FlatCAMGeometry.scale() --> %s' % str(e))
 
-        self.app.inform.emit(_("[success]Gerber Scale done."))
+        self.app.inform.emit(_("[success] Gerber Scale done."))
 
 
         ## solid_geometry ???
@@ -3297,7 +3297,7 @@ class Gerber (Geometry):
         try:
             dx, dy = vect
         except TypeError:
-            self.app.inform.emit(_("[ERROR_NOTCL]An (x,y) pair of values are needed. "
+            self.app.inform.emit(_("[ERROR_NOTCL] An (x,y) pair of values are needed. "
                                  "Probable you entered only one value in the Offset field."))
             return
 
@@ -3321,7 +3321,7 @@ class Gerber (Geometry):
         except Exception as e:
             log.debug('FlatCAMGeometry.offset() --> %s' % str(e))
 
-        self.app.inform.emit(_("[success]Gerber Offset done."))
+        self.app.inform.emit(_("[success] Gerber Offset done."))
 
     def mirror(self, axis, point):
         """
@@ -5138,7 +5138,7 @@ class CNCjob(Geometry):
                 else:
                     log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
                               "The loaded Excellon file has no drills ...")
-                    self.app.inform.emit(_('[ERROR_NOTCL]The loaded Excellon file has no drills ...'))
+                    self.app.inform.emit(_('[ERROR_NOTCL] The loaded Excellon file has no drills ...'))
                     return 'fail'
 
                 log.debug("The total travel distance with OR-TOOLS Metaheuristics is: %s" % str(measured_distance))
@@ -5233,7 +5233,7 @@ class CNCjob(Geometry):
                 else:
                     log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
                               "The loaded Excellon file has no drills ...")
-                    self.app.inform.emit(_('[ERROR_NOTCL]The loaded Excellon file has no drills ...'))
+                    self.app.inform.emit(_('[ERROR_NOTCL] The loaded Excellon file has no drills ...'))
                     return 'fail'
 
                 log.debug("The total travel distance with OR-TOOLS Basic Algorithm is: %s" % str(measured_distance))
@@ -5284,7 +5284,7 @@ class CNCjob(Geometry):
                     else:
                         log.debug("camlib.CNCJob.generate_from_excellon_by_tool() --> "
                                   "The loaded Excellon file has no drills ...")
-                        self.app.inform.emit(_('[ERROR_NOTCL]The loaded Excellon file has no drills ...'))
+                        self.app.inform.emit(_('[ERROR_NOTCL] The loaded Excellon file has no drills ...'))
                         return 'fail'
             log.debug("The total travel distance with Travelling Salesman Algorithm is: %s" % str(measured_distance))
 
@@ -5547,7 +5547,7 @@ class CNCjob(Geometry):
 
         # if solid_geometry is empty raise an exception
         if not geometry.solid_geometry:
-            self.app.inform.emit(_("[ERROR_NOTCL]Trying to generate a CNC Job "
+            self.app.inform.emit(_("[ERROR_NOTCL] Trying to generate a CNC Job "
                                  "from a Geometry object without solid_geometry."))
 
         temp_solid_geometry = []
@@ -5586,7 +5586,7 @@ class CNCjob(Geometry):
                 # if the offset is less than half of the total length or less than half of the total width of the
                 # solid geometry it's obvious we can't do the offset
                 if -offset > ((c - a) / 2) or -offset > ((d - b) / 2):
-                    self.app.inform.emit(_("[ERROR_NOTCL]The Tool Offset value is too negative to use "
+                    self.app.inform.emit(_("[ERROR_NOTCL] The Tool Offset value is too negative to use "
                                          "for the current_geometry.\n"
                                          "Raise the value (in module) and try again."))
                     return 'fail'

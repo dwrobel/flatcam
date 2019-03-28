@@ -534,7 +534,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 try:
                     tool_dia = float(self.addtool_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
                                          "use a number."))
                     return
 
@@ -564,7 +564,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         if float('%.4f' % tool_dia) in tool_dias:
             if muted is None:
-                self.app.inform.emit(_("[WARNING_NOTCL]Adding tool cancelled. Tool already in Tool Table."))
+                self.app.inform.emit(_("[WARNING_NOTCL] Adding tool cancelled. Tool already in Tool Table."))
             self.tools_table.itemChanged.connect(self.on_tool_edit)
             return
         else:
@@ -604,7 +604,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 try:
                     new_tool_dia = float(self.tools_table.item(row, 1).text().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
                                          "use a number."))
                     return
             tooluid = int(self.tools_table.item(row, 3).text())
@@ -656,7 +656,7 @@ class ToolPaint(FlatCAMTool, Gerber):
     #                         print("COPIED", self.paint_tools[td])
     #                     self.build_ui()
     #                 except AttributeError:
-    #                     self.app.inform.emit("[WARNING_NOTCL]Failed. Select a tool to copy.")
+    #                     self.app.inform.emit("[WARNING_NOTCL] Failed. Select a tool to copy.")
     #                     self.build_ui()
     #                     return
     #                 except Exception as e:
@@ -664,7 +664,7 @@ class ToolPaint(FlatCAMTool, Gerber):
     #             # deselect the table
     #             # self.ui.geo_tools_table.clearSelection()
     #         else:
-    #             self.app.inform.emit("[WARNING_NOTCL]Failed. Select a tool to copy.")
+    #             self.app.inform.emit("[WARNING_NOTCL] Failed. Select a tool to copy.")
     #             self.build_ui()
     #             return
     #     else:
@@ -720,7 +720,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     self.paint_tools.pop(t, None)
 
         except AttributeError:
-            self.app.inform.emit(_("[WARNING_NOTCL]Delete failed. Select a tool to delete."))
+            self.app.inform.emit(_("[WARNING_NOTCL] Delete failed. Select a tool to delete."))
             return
         except Exception as e:
             log.debug(str(e))
@@ -732,7 +732,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.app.report_usage(_("geometry_on_paint_button"))
         # self.app.call_source = 'paint'
 
-        self.app.inform.emit(_("[WARNING_NOTCL]Click inside the desired polygon."))
+        self.app.inform.emit(_("[WARNING_NOTCL] Click inside the desired polygon."))
         try:
             overlap = float(self.paintoverlap_entry.get_value())
         except ValueError:
@@ -740,7 +740,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             try:
                 overlap = float(self.paintoverlap_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
                                      "use a number."))
                 return
 
@@ -754,11 +754,11 @@ class ToolPaint(FlatCAMTool, Gerber):
         try:
             self.paint_obj = self.app.collection.get_by_name(str(self.obj_name))
         except:
-            self.app.inform.emit(_("[ERROR_NOTCL]Could not retrieve object: %s") % self.obj_name)
+            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
             return
 
         if self.paint_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL]Object not found: %s") % self.paint_obj)
+            self.app.inform.emit(_("[ERROR_NOTCL] Object not found: %s") % self.paint_obj)
             return
 
         # test if the Geometry Object is multigeo and return Fail if True because
@@ -777,7 +777,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                 contour=contour)
 
         if select_method == "single":
-            self.app.inform.emit(_("[WARNING_NOTCL]Click inside the desired polygon."))
+            self.app.inform.emit(_("[WARNING_NOTCL] Click inside the desired polygon."))
 
             # use the first tool in the tool table; get the diameter
             tooldia = float('%.4f' % float(self.tools_table.item(0, 1).text()))
@@ -830,7 +830,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             try:
                 paint_margin = float(self.paintmargin_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
                                      "use a number."))
                 return
 
@@ -985,7 +985,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             try:
                 paint_margin = float(self.paintmargin_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
                                      "use a number."))
                 return
 

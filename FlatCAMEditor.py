@@ -1057,7 +1057,7 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.rotate_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Rotate, "
+                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Rotate, "
                                          "use a number."))
                     return
         self.app.worker_task.emit({'fcn': self.on_rotate_action,
@@ -1094,7 +1094,7 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.skewx_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Skew X, "
+                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Skew X, "
                                          "use a number."))
                     return
 
@@ -1115,7 +1115,7 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.skewy_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Skew Y, "
+                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Skew Y, "
                                          "use a number."))
                     return
 
@@ -1136,7 +1136,7 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     xvalue = float(self.scalex_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Scale X, "
+                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Scale X, "
                                          "use a number."))
                     return
 
@@ -1173,7 +1173,7 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     yvalue = float(self.scaley_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Scale Y, "
+                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Scale Y, "
                                          "use a number."))
                     return
 
@@ -1205,7 +1205,7 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.offx_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Offset X, "
+                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Offset X, "
                                          "use a number."))
                     return
 
@@ -1226,7 +1226,7 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     value = float(self.offy_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Offset Y, "
+                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Offset Y, "
                                          "use a number."))
                     return
 
@@ -1922,7 +1922,7 @@ class FCCircle(FCShapeTool):
         radius = distance(p1, p2)
         self.geometry = DrawToolShape(Point(p1).buffer(radius, int(self.steps_per_circ / 4)))
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success]Done. Adding Circle completed."))
+        self.draw_app.app.inform.emit(_("[success] Done. Adding Circle completed."))
 
 
 class FCArc(FCShapeTool):
@@ -2108,7 +2108,7 @@ class FCArc(FCShapeTool):
             self.geometry = DrawToolShape(LineString(arc(center, radius, startangle, stopangle,
                                                          self.direction, self.steps_per_circ)))
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success]Done. Arc completed."))
+        self.draw_app.app.inform.emit(_("[success] Done. Arc completed."))
 
 
 class FCRectangle(FCShapeTool):
@@ -2148,7 +2148,7 @@ class FCRectangle(FCShapeTool):
         # self.geometry = LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])])
         self.geometry = DrawToolShape(Polygon([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])]))
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success]Done. Rectangle completed."))
+        self.draw_app.app.inform.emit(_("[success] Done. Rectangle completed."))
 
 
 class FCPolygon(FCShapeTool):
@@ -2190,7 +2190,7 @@ class FCPolygon(FCShapeTool):
         self.geometry = DrawToolShape(Polygon(self.points))
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success]Done. Polygon completed."))
+        self.draw_app.app.inform.emit(_("[success] Done. Polygon completed."))
 
     def on_key(self, key):
         if key == 'backspace':
@@ -2209,7 +2209,7 @@ class FCPath(FCPolygon):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success]Done. Path completed."))
+        self.draw_app.app.inform.emit(_("[success] Done. Path completed."))
 
     def utility_geometry(self, data=None):
         if len(self.points) > 0:
@@ -2507,7 +2507,7 @@ class FCMove(FCShapeTool):
         #     self.draw_app.set_selected(g)
 
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success]Done. Geometry(s) Move completed."))
+        self.draw_app.app.inform.emit(_("[success] Done. Geometry(s) Move completed."))
 
     def utility_geometry(self, data=None):
         """
@@ -2552,7 +2552,7 @@ class FCCopy(FCMove):
         self.geometry = [DrawToolShape(affinity.translate(geom.geo, xoff=dx, yoff=dy))
                          for geom in self.draw_app.get_selected()]
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success]Done. Geometry(s) Copy completed."))
+        self.draw_app.app.inform.emit(_("[success] Done. Geometry(s) Copy completed."))
 
 
 class FCText(FCShapeTool):
@@ -2588,7 +2588,7 @@ class FCText(FCShapeTool):
         self.text_gui.text_path = []
         self.text_gui.hide_tool()
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success]Done. Adding Text completed."))
+        self.draw_app.app.inform.emit(_("[success] Done. Adding Text completed."))
 
     def utility_geometry(self, data=None):
         """
@@ -2649,7 +2649,7 @@ class FCBuffer(FCShapeTool):
         self.draw_app.app.ui.splitter.setSizes([0, 1])
 
         self.disactivate()
-        self.draw_app.app.inform.emit(_("[success]Done. Buffer Tool completed."))
+        self.draw_app.app.inform.emit(_("[success] Done. Buffer Tool completed."))
 
     def on_buffer_int(self):
         if not self.draw_app.selected:
@@ -2675,7 +2675,7 @@ class FCBuffer(FCShapeTool):
         self.draw_app.app.ui.splitter.setSizes([0, 1])
 
         self.disactivate()
-        self.draw_app.app.inform.emit(_("[success]Done. Buffer Int Tool completed."))
+        self.draw_app.app.inform.emit(_("[success] Done. Buffer Int Tool completed."))
 
     def on_buffer_ext(self):
         if not self.draw_app.selected:
@@ -2701,7 +2701,7 @@ class FCBuffer(FCShapeTool):
         self.draw_app.app.ui.splitter.setSizes([0, 1])
 
         self.disactivate()
-        self.draw_app.app.inform.emit(_("[success]Done. Buffer Ext Tool completed."))
+        self.draw_app.app.inform.emit(_("[success] Done. Buffer Ext Tool completed."))
 
     def activate(self):
         self.buff_tool.buffer_button.clicked.disconnect()
@@ -2822,7 +2822,7 @@ class FCDrillAdd(FCShapeTool):
         self.draw_app.current_storage = self.draw_app.storage_dict[self.selected_dia]
         self.geometry = DrawToolShape(self.util_shape(self.points))
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success]Done. Drill added."))
+        self.draw_app.app.inform.emit(_("[success] Done. Drill added."))
 
 
 class FCDrillArray(FCShapeTool):
@@ -3007,7 +3007,7 @@ class FCDrillArray(FCShapeTool):
                 self.geometry.append(DrawToolShape(geo))
         else:
             if (self.drill_angle * self.drill_array_size) > 360:
-                self.draw_app.app.inform.emit(_("[WARNING_NOTCL]Too many drills for the selected spacing angle."))
+                self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Too many drills for the selected spacing angle."))
                 return
 
             radius = distance(self.destination, self.origin)
@@ -3024,7 +3024,7 @@ class FCDrillArray(FCShapeTool):
                 geo = self.util_shape((x, y))
                 self.geometry.append(DrawToolShape(geo))
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success]Done. Drill Array added."))
+        self.draw_app.app.inform.emit(_("[success] Done. Drill Array added."))
         self.draw_app.in_action = True
         self.draw_app.array_frame.hide()
         return
@@ -3055,7 +3055,7 @@ class FCDrillResize(FCShapeTool):
         try:
             new_dia = self.draw_app.resdrill_entry.get_value()
         except:
-            self.draw_app.app.inform.emit(_("[ERROR_NOTCL]Resize drill(s) failed. Please enter a diameter for resize."))
+            self.draw_app.app.inform.emit(_("[ERROR_NOTCL] Resize drill(s) failed. Please enter a diameter for resize."))
             return
 
         if new_dia not in self.draw_app.olddia_newdia:
@@ -3127,7 +3127,7 @@ class FCDrillResize(FCShapeTool):
 
         self.draw_app.resize_frame.hide()
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success]Done. Drill Resize completed."))
+        self.draw_app.app.inform.emit(_("[success] Done. Drill Resize completed."))
 
         # MS: always return to the Select Tool
         self.draw_app.select_tool("select")
@@ -3202,7 +3202,7 @@ class FCDrillMove(FCShapeTool):
             sel_shapes_to_be_deleted = []
 
         self.draw_app.build_ui()
-        self.draw_app.app.inform.emit(_("[success]Done. Drill(s) Move completed."))
+        self.draw_app.app.inform.emit(_("[success] Done. Drill(s) Move completed."))
 
     def utility_geometry(self, data=None):
         """
@@ -3255,7 +3255,7 @@ class FCDrillCopy(FCDrillMove):
             sel_shapes_to_be_deleted = []
 
         self.draw_app.build_ui()
-        self.draw_app.app.inform.emit(_("[success]Done. Drill(s) copied."))
+        self.draw_app.app.inform.emit(_("[success] Done. Drill(s) copied."))
 
 
 ########################
@@ -3916,7 +3916,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                             self.active_tool.make()
                             if self.active_tool.complete:
                                 self.on_shape_complete()
-                                self.app.inform.emit(_("[success]Done."))
+                                self.app.inform.emit(_("[success] Done."))
 
                                 # MS: always return to the Select Tool if modifier key is not pressed
                                 # else return to the current tool
@@ -4304,7 +4304,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             results = shapes[0].geo
         except Exception as e:
             log.debug("FlatCAMGeoEditor.intersection() --> %s" % str(e))
-            self.app.inform.emit(_("[WARNING_NOTCL]A selection of at least 2 geo items is required to do Intersection."))
+            self.app.inform.emit(_("[WARNING_NOTCL] A selection of at least 2 geo items is required to do Intersection."))
             self.select_tool('select')
             return
 
@@ -4342,7 +4342,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         if buf_distance < 0:
             self.app.inform.emit(
-               _( "[ERROR_NOTCL]Negative buffer value is not accepted. Use Buffer interior to generate an 'inside' shape"))
+               _( "[ERROR_NOTCL] Negative buffer value is not accepted. Use Buffer interior to generate an 'inside' shape"))
 
             # deselect everything
             self.selected = []
@@ -4364,7 +4364,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         pre_buffer = cascaded_union([t.geo for t in selected])
         results = pre_buffer.buffer(buf_distance - 1e-10, resolution=32, join_style=join_style)
         if results.is_empty:
-            self.app.inform.emit(_("[ERROR_NOTCL]Failed, the result is empty. Choose a different buffer value."))
+            self.app.inform.emit(_("[ERROR_NOTCL] Failed, the result is empty. Choose a different buffer value."))
             # deselect everything
             self.selected = []
             self.replot()
@@ -4372,14 +4372,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.add_shape(DrawToolShape(results))
 
         self.replot()
-        self.app.inform.emit(_("[success]Full buffer geometry created."))
+        self.app.inform.emit(_("[success] Full buffer geometry created."))
 
     def buffer_int(self, buf_distance, join_style):
         selected = self.get_selected()
 
         if buf_distance < 0:
             self.app.inform.emit(
-                _("[ERROR_NOTCL]Negative buffer value is not accepted. "
+                _("[ERROR_NOTCL] Negative buffer value is not accepted. "
                     "Use Buffer interior to generate an 'inside' shape")
             )
             # deselect everything
@@ -4401,7 +4401,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         pre_buffer = cascaded_union([t.geo for t in selected])
         results = pre_buffer.buffer(-buf_distance + 1e-10, resolution=32, join_style=join_style)
         if results.is_empty:
-            self.app.inform.emit(_("[ERROR_NOTCL]Failed, the result is empty. Choose a smaller buffer value."))
+            self.app.inform.emit(_("[ERROR_NOTCL] Failed, the result is empty. Choose a smaller buffer value."))
             # deselect everything
             self.selected = []
             self.replot()
@@ -4413,7 +4413,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.add_shape(DrawToolShape(results.exterior))
 
         self.replot()
-        self.app.inform.emit(_("[success]Exterior buffer geometry created."))
+        self.app.inform.emit(_("[success] Exterior buffer geometry created."))
         # selected = self.get_selected()
         #
         # if len(selected) == 0:
@@ -4451,7 +4451,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         selected = self.get_selected()
 
         if buf_distance < 0:
-            self.app.inform.emit(_("[ERROR_NOTCL]Negative buffer value is not accepted. "
+            self.app.inform.emit(_("[ERROR_NOTCL] Negative buffer value is not accepted. "
                                  "Use Buffer interior to generate an 'inside' shape"))
             # deselect everything
             self.selected = []
@@ -4472,7 +4472,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         pre_buffer = cascaded_union([t.geo for t in selected])
         results = pre_buffer.buffer(buf_distance - 1e-10, resolution=32, join_style=join_style)
         if results.is_empty:
-            self.app.inform.emit(_("[ERROR_NOTCL]Failed, the result is empty. Choose a different buffer value."))
+            self.app.inform.emit(_("[ERROR_NOTCL] Failed, the result is empty. Choose a different buffer value."))
             # deselect everything
             self.selected = []
             self.replot()
@@ -4484,7 +4484,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.add_shape(DrawToolShape(results.exterior))
 
         self.replot()
-        self.app.inform.emit(_("[success]Exterior buffer geometry created."))
+        self.app.inform.emit(_("[success] Exterior buffer geometry created."))
 
     # def paint(self, tooldia, overlap, margin, method):
     #     selected = self.get_selected()
@@ -4548,7 +4548,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         selected = self.get_selected()
 
         if len(selected) == 0:
-            self.app.inform.emit(_("[WARNING_NOTCL]Nothing selected for painting."))
+            self.app.inform.emit(_("[WARNING_NOTCL] Nothing selected for painting."))
             return
 
         for param in [tooldia, overlap, margin]:
@@ -5331,7 +5331,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 try:
                     tool_dia = float(self.addtool_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
                                          "use a number.")
                                          )
                     return
@@ -5344,7 +5344,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             # each time a tool diameter is edited or added
             self.olddia_newdia[tool_dia] = tool_dia
         else:
-            self.app.inform.emit(_("[WARNING_NOTCL]Tool already in the original or actual tool list.\n"
+            self.app.inform.emit(_("[WARNING_NOTCL] Tool already in the original or actual tool list.\n"
                                  "Save and reedit Excellon if you need to add this tool. ")
                                  )
             return
@@ -5353,7 +5353,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         # we add a new entry in the tool2tooldia dict
         self.tool2tooldia[len(self.olddia_newdia)] = tool_dia
 
-        self.app.inform.emit(_("[success]Added new tool with dia: {dia} {units}").format(dia=str(tool_dia), units=str(self.units)))
+        self.app.inform.emit(_("[success] Added new tool with dia: {dia} {units}").format(dia=str(tool_dia), units=str(self.units)))
 
         self.build_ui()
 
@@ -5384,7 +5384,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 else:
                     deleted_tool_dia_list.append(float('%.4f' % dia))
         except:
-            self.app.inform.emit(_("[WARNING_NOTCL]Select a tool in Tool Table"))
+            self.app.inform.emit(_("[WARNING_NOTCL] Select a tool in Tool Table"))
             return
 
         for deleted_tool_dia in deleted_tool_dia_list:
@@ -5417,7 +5417,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
             self.olddia_newdia.pop(deleted_tool_dia, None)
 
-            self.app.inform.emit(_("[success]Deleted tool with dia: {del_dia} {units}").format(del_dia=str(deleted_tool_dia), units=str(self.units)))
+            self.app.inform.emit(_("[success] Deleted tool with dia: {del_dia} {units}").format(del_dia=str(deleted_tool_dia), units=str(self.units)))
 
         self.replot()
         # self.app.inform.emit("Could not delete selected tool")
@@ -5832,7 +5832,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 self.app.progress.emit(100)
                 return
 
-            self.app.inform.emit(_("[success]Excellon editing finished."))
+            self.app.inform.emit(_("[success] Excellon editing finished."))
             # self.progress.emit(100)
 
     def on_tool_select(self, tool):
@@ -5849,7 +5849,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             # self.draw_app.select_tool('select')
             self.complete = True
             current_tool = 'select'
-            self.app.inform.emit(_("[WARNING_NOTCL]Cancelled. There is no Tool/Drill selected"))
+            self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. There is no Tool/Drill selected"))
 
         # This is to make the group behave as radio group
         if current_tool in self.tools_exc:
@@ -6331,7 +6331,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.selected = []
         self.build_ui()
-        self.app.inform.emit(_("[success]Done. Drill(s) deleted."))
+        self.app.inform.emit(_("[success] Done. Drill(s) deleted."))
 
     def delete_shape(self, shape):
         self.is_modified = True

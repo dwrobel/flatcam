@@ -476,7 +476,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 try:
                     tool_dia = float(self.addtool_entry.get_value().replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
                                          "use a number."))
                     return
             if tool_dia is None:
@@ -509,7 +509,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         if float('%.4f' % tool_dia) in tool_dias:
             if muted is None:
-                self.app.inform.emit(_("[WARNING_NOTCL]Adding tool cancelled. Tool already in Tool Table."))
+                self.app.inform.emit(_("[WARNING_NOTCL] Adding tool cancelled. Tool already in Tool Table."))
             self.tools_table.itemChanged.connect(self.on_tool_edit)
             return
         else:
@@ -606,7 +606,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     self.ncc_tools.pop(t, None)
 
         except AttributeError:
-            self.app.inform.emit(_("[WARNING_NOTCL]Delete failed. Select a tool to delete."))
+            self.app.inform.emit(_("[WARNING_NOTCL] Delete failed. Select a tool to delete."))
             return
         except Exception as e:
             log.debug(str(e))
@@ -623,7 +623,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             try:
                 over = float(self.ncc_overlap_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
                                      "use a number."))
                 return
         over = over if over else self.app.defaults["tools_nccoverlap"]
@@ -635,7 +635,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             try:
                 margin = float(self.ncc_margin_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
                                      "use a number."))
                 return
         margin = margin if margin else self.app.defaults["tools_nccmargin"]
@@ -657,14 +657,14 @@ class NonCopperClear(FlatCAMTool, Gerber):
         try:
             self.ncc_obj = self.app.collection.get_by_name(self.obj_name)
         except:
-            self.app.inform.emit(_("[ERROR_NOTCL]Could not retrieve object: %s") % self.obj_name)
+            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
             return "Could not retrieve object: %s" % self.obj_name
 
         # Prepare non-copper polygons
         try:
             bounding_box = self.ncc_obj.solid_geometry.envelope.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
         except AttributeError:
-            self.app.inform.emit(_("[ERROR_NOTCL]No Gerber file available."))
+            self.app.inform.emit(_("[ERROR_NOTCL] No Gerber file available."))
             return
 
         # calculate the empty area by subtracting the solid_geometry from the object bounding box geometry

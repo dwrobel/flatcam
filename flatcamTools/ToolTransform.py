@@ -465,7 +465,7 @@ class ToolTransform(FlatCAMTool):
             try:
                 value = float(self.rotate_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Rotate, "
+                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Rotate, "
                                      "use a number."))
                 return
         self.app.worker_task.emit({'fcn': self.on_rotate_action,
@@ -499,7 +499,7 @@ class ToolTransform(FlatCAMTool):
             try:
                 value = float(self.skewx_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Skew X, "
+                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Skew X, "
                                      "use a number."))
                 return
 
@@ -517,7 +517,7 @@ class ToolTransform(FlatCAMTool):
             try:
                 value = float(self.skewy_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Skew Y, "
+                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Skew Y, "
                                      "use a number."))
                 return
 
@@ -535,7 +535,7 @@ class ToolTransform(FlatCAMTool):
             try:
                 xvalue = float(self.scalex_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Scale X, "
+                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Scale X, "
                                      "use a number."))
                 return
 
@@ -569,7 +569,7 @@ class ToolTransform(FlatCAMTool):
             try:
                 yvalue = float(self.scaley_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Scale Y, "
+                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Scale Y, "
                                      "use a number."))
                 return
 
@@ -598,7 +598,7 @@ class ToolTransform(FlatCAMTool):
             try:
                 value = float(self.offx_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Offset X, "
+                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Offset X, "
                                      "use a number."))
                 return
 
@@ -616,7 +616,7 @@ class ToolTransform(FlatCAMTool):
             try:
                 value = float(self.offy_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered for Offset Y, "
+                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Offset Y, "
                                      "use a number."))
                 return
 
@@ -671,7 +671,7 @@ class ToolTransform(FlatCAMTool):
                         # add information to the object that it was changed and how much
                         sel_obj.options['rotate'] = num
 
-                    self.app.inform.emit(_('[success]Rotate done ...'))
+                    self.app.inform.emit(_('[success] Rotate done ...'))
                     self.app.progress.emit(100)
 
                 except Exception as e:
@@ -732,7 +732,7 @@ class ToolTransform(FlatCAMTool):
                                 else:
                                     obj.options['mirror_y'] = True
                                 obj.plot()
-                                self.app.inform.emit(_('[success]Flip on the Y axis done ...'))
+                                self.app.inform.emit(_('[success] Flip on the Y axis done ...'))
                             elif axis is 'Y':
                                 obj.mirror('Y', (px, py))
                                 # add information to the object that it was changed and how much
@@ -742,7 +742,7 @@ class ToolTransform(FlatCAMTool):
                                 else:
                                     obj.options['mirror_x'] = True
                                 obj.plot()
-                                self.app.inform.emit(_('[success]Flip on the X axis done ...'))
+                                self.app.inform.emit(_('[success] Flip on the X axis done ...'))
                             self.app.object_changed.emit(obj)
                     self.app.progress.emit(100)
 
@@ -790,7 +790,7 @@ class ToolTransform(FlatCAMTool):
                                 obj.options['skew_y'] = num
                             obj.plot()
                             self.app.object_changed.emit(obj)
-                    self.app.inform.emit(_('[success]Skew on the %s axis done ...') % str(axis))
+                    self.app.inform.emit(_('[success] Skew on the %s axis done ...') % str(axis))
                     self.app.progress.emit(100)
 
                 except Exception as e:
@@ -891,7 +891,7 @@ class ToolTransform(FlatCAMTool):
                                 obj.options['offset_y'] = num
                             obj.plot()
                             self.app.object_changed.emit(obj)
-                    self.app.inform.emit(_('[success]Offset on the %s axis done ...') % str(axis))
+                    self.app.inform.emit(_('[success] Offset on the %s axis done ...') % str(axis))
                     self.app.progress.emit(100)
 
                 except Exception as e:

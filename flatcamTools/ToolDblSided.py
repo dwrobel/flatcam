@@ -365,7 +365,7 @@ class DblSidedTool(FlatCAMTool):
                 return
 
         if dia is '':
-            self.app.inform.emit(_("[WARNING_NOTCL]No value or wrong format in Drill Dia entry. Add it and retry."))
+            self.app.inform.emit(_("[WARNING_NOTCL] No value or wrong format in Drill Dia entry. Add it and retry."))
             return
         tools = {"1": {"C": dia}}
 

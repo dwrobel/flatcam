@@ -238,14 +238,14 @@ class Film(FlatCAMTool):
             try:
                 border = float(self.boundary_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
                                      "use a number."))
                 return
 
         try:
             scale_stroke_width = int(self.film_scale_entry.get_value())
         except ValueError:
-            self.app.inform.emit(_("[ERROR_NOTCL]Wrong value format entered, "
+            self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
                                  "use a number."))
             return
 
@@ -266,7 +266,7 @@ class Film(FlatCAMTool):
             filename = str(filename)
 
             if str(filename) == "":
-                self.app.inform.emit(_("[WARNING_NOTCL]Export SVG positive cancelled."))
+                self.app.inform.emit(_("[WARNING_NOTCL] Export SVG positive cancelled."))
                 return
             else:
                 self.app.export_svg_black(name, boxname, filename, scale_factor=scale_stroke_width)
@@ -282,7 +282,7 @@ class Film(FlatCAMTool):
             filename = str(filename)
 
             if str(filename) == "":
-                self.app.inform.emit(_("[WARNING_NOTCL]Export SVG negative cancelled."))
+                self.app.inform.emit(_("[WARNING_NOTCL] Export SVG negative cancelled."))
                 return
             else:
                 self.app.export_svg_negative(name, boxname, filename, border, scale_factor=scale_stroke_width)
