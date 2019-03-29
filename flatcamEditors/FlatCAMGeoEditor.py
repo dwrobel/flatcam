@@ -3750,6 +3750,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         pre_buffer = cascaded_union([t.geo for t in selected])
         results = pre_buffer.buffer(-buf_distance + 1e-10, resolution=32, join_style=join_style)
+
         if results.is_empty:
             self.app.inform.emit(_("[ERROR_NOTCL] Failed, the result is empty. Choose a smaller buffer value."))
             # deselect everything
@@ -3763,7 +3764,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.add_shape(DrawToolShape(results.exterior))
 
         self.replot()
-        self.app.inform.emit(_("[success] Exterior buffer geometry created."))
+        self.app.inform.emit(_("[success] Interior buffer geometry created."))
         # selected = self.get_selected()
         #
         # if len(selected) == 0:
