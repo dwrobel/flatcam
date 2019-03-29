@@ -1337,6 +1337,48 @@ class FCTable(QtWidgets.QTableWidget):
         action.triggered.connect(call_function)
 
 
+class SpinBoxDelegate(QtWidgets.QItemDelegate):
+
+    def __init__(self, units):
+        super(SpinBoxDelegate, self).__init__()
+        self.units = units
+        self.current_value = None
+
+    def createEditor(self, parent, option, index):
+        editor = QtWidgets.QDoubleSpinBox(parent)
+        editor.setMinimum(-999.9999)
+        editor.setMaximum(999.9999)
+
+        if self.units == 'MM':
+            editor.setDecimals(2)
+        else:
+            editor.setDecimals(3)
+
+        return editor
+
+    def setEditorData(self, spinBox, index):
+        try:
+            value = float(index.model().data(index, Qt.EditRole))
+        except ValueError:
+            value = self.current_value
+            # return
+
+        spinBox.setValue(value)
+
+    def setModelData(self, spinBox, model, index):
+        spinBox.interpretText()
+        value = spinBox.value()
+        self.current_value = value
+
+        model.setData(index, value, Qt.EditRole)
+
+    def updateEditorGeometry(self, editor, option, index):
+        editor.setGeometry(option.rect)
+
+    def setDecimals(self, spinbox, digits):
+        spinbox.setDecimals(digits)
+
+
 class FCSpinner(QtWidgets.QSpinBox):
     def __init__(self, parent=None):
         super(FCSpinner, self).__init__(parent)

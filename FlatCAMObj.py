@@ -2640,7 +2640,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
     #     except TypeError:  # Element is not iterable...
     #         self.add_shape(shape=element, color=color, visible=visible, layer=0)
 
-    def plot(self):
+    def plot(self, kind=None):
 
         # Does all the required setup and returns False
         # if the 'ptint' option is set to False.

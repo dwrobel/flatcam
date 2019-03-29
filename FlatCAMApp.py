@@ -34,7 +34,9 @@ from flatcamGUI.FlatCAMGUI import *
 from FlatCAMCommon import LoudDict
 from FlatCAMPostProc import load_postprocessors
 
-from FlatCAMEditor import FlatCAMGeoEditor, FlatCAMExcEditor
+from flatcamEditors.FlatCAMGeoEditor import FlatCAMGeoEditor
+from flatcamEditors.FlatCAMExcEditor import FlatCAMExcEditor
+
 from FlatCAMProcess import *
 from FlatCAMWorkerStack import WorkerStack
 from flatcamGUI.VisPyVisuals import Color

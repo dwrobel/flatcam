@@ -16,7 +16,7 @@ from flatcamGUI.GUIElements import *
 import platform
 import webbrowser
 
-from FlatCAMEditor import FCShapeTool
+from flatcamEditors.FlatCAMGeoEditor import FCShapeTool
 
 import gettext
 import FlatCAMTranslation as fcTranslate
