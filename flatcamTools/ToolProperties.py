@@ -178,6 +178,12 @@ class Properties(FlatCAMTool):
                 if obj.apertures[ap]['solid_geometry']:
                     elems = len(obj.apertures[ap]['solid_geometry'])
                     temp_ap['solid_geometry'] = '%s Polygons' % str(elems)
+                try:
+                    if obj.apertures[ap]['follow_geometry']:
+                        elems = len(obj.apertures[ap]['follow_geometry'])
+                        temp_ap['follow_geometry'] = '%s Polygons' % str(elems)
+                except KeyError:
+                    pass
                 self.addChild(apertures, [str(ap), str(temp_ap)], True)
         elif obj.kind.lower() == 'excellon':
             for tool, value in obj.tools.items():

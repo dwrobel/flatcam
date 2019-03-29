@@ -4499,6 +4499,15 @@ class App(QtCore.QObject):
         def initialize(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
             try:
+                obj_init.follow_geometry = obj.follow_geometry
+            except:
+                pass
+            try:
+                obj_init.apertures = obj.apertures
+            except:
+                pass
+
+            try:
                 if obj.tools:
                     obj_init.tools = obj.tools
             except Exception as e:
@@ -4531,6 +4540,15 @@ class App(QtCore.QObject):
 
         def initialize_geometry(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
+            try:
+                obj_init.follow_geometry = obj.follow_geometry
+            except:
+                pass
+            try:
+                obj_init.apertures = obj.apertures
+            except:
+                pass
+
             try:
                 if obj.tools:
                     obj_init.tools = obj.tools
@@ -4580,6 +4598,15 @@ class App(QtCore.QObject):
 
         def initialize(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
+            try:
+                obj_init.follow_geometry = obj.follow_geometry
+            except:
+                pass
+            try:
+                obj_init.apertures = obj.apertures
+            except:
+                pass
+
             if obj.tools:
                 obj_init.tools = obj.tools
 

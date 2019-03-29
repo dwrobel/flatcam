@@ -15,6 +15,9 @@ CAD program, and create G-Code for Isolation routing.
 - new feature: added ability to edit MultiGeo geometry (geometry from Paint Tool)
 - changed all the info messages that are of type warning, error or success so they have a space added after the keyword
 - changed the Romanian translation by adding more diacritics  
+- modified Gerber parser to copy the follow_geometry in the self.apertures
+- modified the Properties Tool to show the number of elements in the follow_geometry for each aperture
+- modified the copy functions to copy the follow_geometry and also the apertures if it's possible (only for Gerber objects)
 
 27.03.2019
 
