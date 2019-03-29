@@ -1953,12 +1953,12 @@ class Gerber (Geometry):
         # The format of X and Y must be the same!
         # L-omit leading zeros, T-omit trailing zeros
         # A-absolute notation, I-incremental notation
-        self.fmt_re = re.compile(r'%FS([LT])([AI])X(\d)(\d)Y\d\d\*%$')
+        self.fmt_re = re.compile(r'%?FS([LT])([AI])X(\d)(\d)Y\d\d\*%?$')
         self.fmt_re_alt = re.compile(r'%FS([LT])([AI])X(\d)(\d)Y\d\d\*MO(IN|MM)\*%$')
         self.fmt_re_orcad = re.compile(r'(G\d+)*\**%FS([LT])([AI]).*X(\d)(\d)Y\d\d\*%$')
 
         # Mode (IN/MM)
-        self.mode_re = re.compile(r'^%MO(IN|MM)\*%$')
+        self.mode_re = re.compile(r'^%?MO(IN|MM)\*%?$')
 
         # Comment G04|G4
         self.comm_re = re.compile(r'^G0?4(.*)$')
@@ -2013,7 +2013,7 @@ class Gerber (Geometry):
         self.eof_re = re.compile(r'^M02\*')
 
         # IP - Image polarity
-        self.pol_re = re.compile(r'^%IP(POS|NEG)\*%$')
+        self.pol_re = re.compile(r'^%?IP(POS|NEG)\*%?$')
 
         # LP - Level polarity
         self.lpol_re = re.compile(r'^%LP([DC])\*%$')
@@ -6170,7 +6170,7 @@ class CNCjob(Geometry):
 
         # Process every instruction
         for line in StringIO(self.gcode):
-            if '%MO' in line or '%' in line:
+            if '%MO' in line or '%' in line or 'MOIN' in line or 'MOMM' in line:
                 return "fail"
 
             gobj = self.codes_split(line)
