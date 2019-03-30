@@ -3636,7 +3636,7 @@ class Excellon(Geometry):
         #                              r'(?=.*F(\d*\.?\d*))?(?=.*S(\d*\.?\d*))?' +
         #                              r'(?=.*B(\d*\.?\d*))?(?=.*H(\d*\.?\d*))?' +
         #                              r'(?=.*Z([-\+]?\d*\.?\d*))?[CFSBHT]')
-        self.toolset_re = re.compile(r'^T(\d+)(?=.*C(\d*\.?\d*))?' +
+        self.toolset_re = re.compile(r'^T(\d+)(?=.*C,?(\d*\.?\d*))?' +
                                      r'(?=.*F(\d*\.?\d*))?(?=.*S(\d*\.?\d*))?' +
                                      r'(?=.*B(\d*\.?\d*))?(?=.*H(\d*\.?\d*))?' +
                                      r'(?=.*Z([-\+]?\d*\.?\d*))?[CFSBHT]')

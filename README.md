@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - FlatCAM editors now are separated each in it's own file
 - fixed TextTool in Geometry Editor so it will open the notebook on activation and close it after finishing text adding
 - started to work on a Gerber Editor
+- added a fix in the Excellon parser by allowing a comma in the tool definitions between the diameter and the rest
 
 28.03.2019
 
