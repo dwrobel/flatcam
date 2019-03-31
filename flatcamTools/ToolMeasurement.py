@@ -223,6 +223,11 @@ class Measurement(FlatCAMTool):
                 self.app.exc_editor.canvas.vis_connect('mouse_press', self.app.exc_editor.on_canvas_click)
                 self.app.exc_editor.canvas.vis_connect('key_press', self.app.exc_editor.on_canvas_key)
                 self.app.exc_editor.canvas.vis_connect('mouse_release', self.app.exc_editor.on_canvas_click_release)
+            # elif self.app.call_source == 'grb_editor':
+            #     self.app.grb_editor.canvas.vis_connect('mouse_move', self.app.grb_editor.on_canvas_move)
+            #     self.app.grb_editor.canvas.vis_connect('mouse_press', self.app.grb_editor.on_canvas_click)
+            #     self.app.grb_editor.canvas.vis_connect('key_press', self.app.grb_editor.on_canvas_key)
+            #     self.app.grb_editor.canvas.vis_connect('mouse_release', self.app.grb_editor.on_canvas_click_release)
 
             self.app.call_source = 'measurement'
             self.clicked_meas = 0
@@ -251,10 +256,15 @@ class Measurement(FlatCAMTool):
                 self.app.exc_editor.canvas.vis_disconnect('mouse_press', self.app.exc_editor.on_canvas_click)
                 self.app.exc_editor.canvas.vis_disconnect('key_press', self.app.exc_editor.on_canvas_key)
                 self.app.exc_editor.canvas.vis_disconnect('mouse_release', self.app.exc_editor.on_canvas_click_release)
+            # elif self.app.call_source == 'grb_editor':
+            #     self.app.grb_editor.canvas.vis_disconnect('mouse_move', self.app.grb_editor.on_canvas_move)
+            #     self.app.grb_editor.canvas.vis_disconnect('mouse_press', self.app.grb_editor.on_canvas_click)
+            #     self.app.grb_editor.canvas.vis_disconnect('key_press', self.app.grb_editor.on_canvas_key)
+            #     self.app.grb_editor.canvas.vis_disconnect('mouse_release', self.app.grb_editor.on_canvas_click_release)
 
             # we can safely connect the app mouse events to the measurement tool
             self.app.plotcanvas.vis_connect('mouse_move', self.on_mouse_move_meas)
-            self.app.plotcanvas.vis_connect('mouse_press', self.on_click_meas)
+            self.app.plotcanvas.vis_connect('mouse_release', self.on_click_meas)
             self.app.plotcanvas.vis_connect('key_release', self.on_key_release_meas)
 
             self.app.command_active = "Measurement"
@@ -278,7 +288,8 @@ class Measurement(FlatCAMTool):
     def on_key_release_meas(self, event):
         if event.key == 'escape':
             # abort the measurement action
-            self.toggle()
+            self.toggle_f()
+            self.app.inform.emit("")
             return
 
         if event.key == 'G':
@@ -287,8 +298,8 @@ class Measurement(FlatCAMTool):
             return
 
     def on_click_meas(self, event):
-        # mouse click will be accepted only if the left button is clicked
-        # this is necessary because right mouse click and middle mouse click
+        # mouse click releases will be accepted only if the left button is clicked
+        # this is necessary because right mouse click or middle mouse click
         # are used for panning on the canvas
 
         if event.button == 1:
