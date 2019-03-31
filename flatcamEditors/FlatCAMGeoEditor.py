@@ -2823,6 +2823,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.app.ui.geo_edit_toolbar.setDisabled(False)
         self.app.ui.geo_edit_toolbar.setVisible(True)
+        self.app.ui.grb_edit_toolbar.setDisabled(False)
+        self.app.ui.grb_edit_toolbar.setVisible(True)
         self.app.ui.snap_toolbar.setDisabled(False)
 
         # prevent the user to change anything in the Selected Tab while the Geo Editor is active

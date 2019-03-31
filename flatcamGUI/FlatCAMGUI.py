@@ -532,6 +532,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_edit_toolbar.setObjectName('GeoEditor_TB')
         self.addToolBar(self.geo_edit_toolbar)
 
+        self.grb_edit_toolbar = QtWidgets.QToolBar(_('Gerber Editor Toolbar'))
+        self.grb_edit_toolbar.setObjectName('GrbEditor_TB')
+        self.addToolBar(self.grb_edit_toolbar)
+
         self.snap_toolbar = QtWidgets.QToolBar(_('Grid Toolbar'))
         self.snap_toolbar.setObjectName('Snap_TB')
         self.addToolBar(self.snap_toolbar)
@@ -639,6 +643,17 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                                  _("Transformations"))
         self.geo_edit_toolbar.addSeparator()
         self.geo_move_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), _("Move Objects "))
+
+        ### Gerber Editor Toolbar ###
+        self.grb_select_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
+
+
+
+
+
+
+
+
 
         ### Snap Toolbar ###
         # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
@@ -1565,12 +1580,16 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 self.exc_edit_toolbar.setDisabled(True)
                 self.geo_edit_toolbar.setVisible(False)
                 self.geo_edit_toolbar.setDisabled(True)
+                self.grb_edit_toolbar.setVisible(False)
+                self.grb_edit_toolbar.setDisabled(True)
 
                 self.corner_snap_btn.setVisible(False)
                 self.snap_magnet.setVisible(False)
             elif layout == 'Compact':
                 self.exc_edit_toolbar.setDisabled(True)
                 self.geo_edit_toolbar.setDisabled(True)
+                self.grb_edit_toolbar.setDisabled(True)
+
                 self.snap_magnet.setVisible(True)
                 self.corner_snap_btn.setVisible(True)
                 self.snap_magnet.setDisabled(True)
@@ -1580,6 +1599,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             self.exc_edit_toolbar.setDisabled(True)
             self.geo_edit_toolbar.setVisible(False)
             self.geo_edit_toolbar.setDisabled(True)
+            self.grb_edit_toolbar.setVisible(False)
+            self.grb_edit_toolbar.setDisabled(True)
 
             self.corner_snap_btn.setVisible(False)
             self.snap_magnet.setVisible(False)
@@ -1694,6 +1715,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_edit_toolbar.addSeparator()
         self.geo_move_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), _("Move Objects"))
 
+        ### Geometry Editor Toolbar ###
+        self.grb_select_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
+
+
+
+
         ### Snap Toolbar ###
         # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
         # self.addToolBar(self.snap_toolbar)
@@ -1739,6 +1766,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 self.exc_edit_toolbar.setDisabled(True)
                 self.geo_edit_toolbar.setVisible(False)
                 self.geo_edit_toolbar.setDisabled(True)
+                self.grb_edit_toolbar.setVisible(False)
+                self.grb_edit_toolbar.setDisabled(True)
 
                 self.corner_snap_btn.setVisible(False)
                 self.snap_magnet.setVisible(False)
@@ -1747,6 +1776,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 self.exc_edit_toolbar.setDisabled(True)
                 self.geo_edit_toolbar.setVisible(True)
                 self.geo_edit_toolbar.setDisabled(True)
+                self.grb_edit_toolbar.setVisible(False)
+                self.grb_edit_toolbar.setDisabled(True)
 
                 self.corner_snap_btn.setVisible(True)
                 self.snap_magnet.setVisible(True)
@@ -3158,7 +3189,6 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
                 settings.remove(key)
             # This will write the setting to the platform specific storage.
             del settings
-            self.app.inform.emit(_("[success] GUI settings deleted ..."))
 
 
 class GeneralAppPrefGroupUI(OptionsGroupUI):

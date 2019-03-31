@@ -26,7 +26,7 @@ class FCApertureResize(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'aperture_resize'
 
-        self.draw_app.app.inform.emit(_("Click on the Drill(s) to resize ..."))
+        self.draw_app.app.inform.emit(_("Click on the Apertures to resize ..."))
         self.resize_dia = None
         self.draw_app.resize_frame.show()
         self.points = None
@@ -370,9 +370,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         ## Current application units in Upper Case
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
-        self.exc_edit_widget = QtWidgets.QWidget()
+        self.grb_edit_widget = QtWidgets.QWidget()
         layout = QtWidgets.QVBoxLayout()
-        self.exc_edit_widget.setLayout(layout)
+        self.grb_edit_widget.setLayout(layout)
 
         ## Page Title box (spacing between children)
         self.title_box = QtWidgets.QHBoxLayout()
@@ -397,110 +397,118 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.name_entry = FCEntry()
         self.name_box.addWidget(self.name_entry)
 
-        ## Box box for custom widgets
+        ## Box for custom widgets
         # This gets populated in offspring implementations.
         self.custom_box = QtWidgets.QVBoxLayout()
         layout.addLayout(self.custom_box)
 
         # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Drills widgets
         # this way I can hide/show the frame
-        self.drills_frame = QtWidgets.QFrame()
-        self.drills_frame.setContentsMargins(0, 0, 0, 0)
-        self.custom_box.addWidget(self.drills_frame)
-        self.tools_box = QtWidgets.QVBoxLayout()
-        self.tools_box.setContentsMargins(0, 0, 0, 0)
-        self.drills_frame.setLayout(self.tools_box)
+        self.apertures_frame = QtWidgets.QFrame()
+        self.apertures_frame.setContentsMargins(0, 0, 0, 0)
+        self.custom_box.addWidget(self.apertures_frame)
+        self.apertures_box = QtWidgets.QVBoxLayout()
+        self.apertures_box.setContentsMargins(0, 0, 0, 0)
+        self.apertures_frame.setLayout(self.apertures_box)
 
-        #### Tools Drills ####
-        self.tools_table_label = QtWidgets.QLabel("<b>%s</b>" % _('Tools Table'))
-        self.tools_table_label.setToolTip(
-           _( "Tools in this Excellon object\n"
-            "when are used for drilling.")
+        #### Gerber Apertures ####
+        self.apertures_table_label = QtWidgets.QLabel(_('<b>Apertures:</b>'))
+        self.apertures_table_label.setToolTip(
+            _("Apertures Table for the Gerber Object.")
         )
-        self.tools_box.addWidget(self.tools_table_label)
+        self.apertures_box.addWidget(self.apertures_table_label)
 
-        self.tools_table_exc = FCTable()
+        self.apertures_table = FCTable()
         # delegate = SpinBoxDelegate(units=self.units)
         # self.tools_table_exc.setItemDelegateForColumn(1, delegate)
 
-        self.tools_box.addWidget(self.tools_table_exc)
+        self.apertures_box.addWidget(self.apertures_table)
 
-        self.tools_table_exc.setColumnCount(4)
-        self.tools_table_exc.setHorizontalHeaderLabels(['#', _('Diameter'), 'D', 'S'])
-        self.tools_table_exc.setSortingEnabled(False)
-        self.tools_table_exc.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.apertures_table.setColumnCount(5)
+        self.apertures_table.setHorizontalHeaderLabels(['#', _('Code'), _('Type'), _('Size'), _('Dim')])
+        self.apertures_table.setSortingEnabled(False)
+
+        self.apertures_table.horizontalHeaderItem(0).setToolTip(
+            _("Index"))
+        self.apertures_table.horizontalHeaderItem(1).setToolTip(
+            _("Aperture Code"))
+        self.apertures_table.horizontalHeaderItem(2).setToolTip(
+            _("Type of aperture: circular, rectangle, macros etc"))
+        self.apertures_table.horizontalHeaderItem(4).setToolTip(
+            _("Aperture Size:"))
+        self.apertures_table.horizontalHeaderItem(4).setToolTip(
+            _("Aperture Dimensions:\n"
+              " - (width, height) for R, O type.\n"
+              " - (dia, nVertices) for P type"))
 
         self.empty_label = QtWidgets.QLabel('')
-        self.tools_box.addWidget(self.empty_label)
+        self.apertures_box.addWidget(self.empty_label)
 
         #### Add a new Tool ####
-        self.addtool_label = QtWidgets.QLabel('<b>%s</b>' % _('Add/Delete Tool'))
-        self.addtool_label.setToolTip(
-            _("Add/Delete a tool to the tool list\n"
-            "for this Excellon object.")
+        self.addaperture_label = QtWidgets.QLabel('<b>%s</b>' % _('Add/Delete Aperture'))
+        self.addaperture_label.setToolTip(
+            _("Add/Delete an aperture to the aperture list")
         )
-        self.tools_box.addWidget(self.addtool_label)
+        self.apertures_box.addWidget(self.addaperture_label)
 
         grid1 = QtWidgets.QGridLayout()
-        self.tools_box.addLayout(grid1)
+        self.apertures_box.addLayout(grid1)
 
-        addtool_entry_lbl = QtWidgets.QLabel(_('Tool Dia:'))
-        addtool_entry_lbl.setToolTip(
-        _("Diameter for the new tool")
+        addaperture_entry_lbl = QtWidgets.QLabel(_('Aperture Size:'))
+        addaperture_entry_lbl.setToolTip(
+        _("Size for the new aperture")
         )
-        grid1.addWidget(addtool_entry_lbl, 0, 0)
+        grid1.addWidget(addaperture_entry_lbl, 0, 0)
 
         hlay = QtWidgets.QHBoxLayout()
         self.addtool_entry = FCEntry()
         self.addtool_entry.setValidator(QtGui.QDoubleValidator(0.0001, 99.9999, 4))
         hlay.addWidget(self.addtool_entry)
 
-        self.addtool_btn = QtWidgets.QPushButton(_('Add Tool'))
-        self.addtool_btn.setToolTip(
-           _( "Add a new tool to the tool list\n"
-            "with the diameter specified above.")
+        self.addaperture_btn = QtWidgets.QPushButton(_('Add Aperture'))
+        self.addaperture_btn.setToolTip(
+           _( "Add a new aperture to the aperture list")
         )
-        self.addtool_btn.setFixedWidth(80)
-        hlay.addWidget(self.addtool_btn)
+        self.addaperture_btn.setFixedWidth(80)
+        hlay.addWidget(self.addaperture_btn)
         grid1.addLayout(hlay, 0, 1)
 
         grid2 = QtWidgets.QGridLayout()
-        self.tools_box.addLayout(grid2)
+        self.apertures_box.addLayout(grid2)
 
-        self.deltool_btn = QtWidgets.QPushButton(_('Delete Tool'))
-        self.deltool_btn.setToolTip(
-           _( "Delete a tool in the tool list\n"
-            "by selecting a row in the tool table.")
+        self.delaperture_btn = QtWidgets.QPushButton(_('Delete Aperture'))
+        self.delaperture_btn.setToolTip(
+           _( "Delete a aperture in the aperture list")
         )
-        grid2.addWidget(self.deltool_btn, 0, 1)
+        grid2.addWidget(self.delaperture_btn, 0, 1)
 
-        # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Drills widgets
+        # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the aperture widgets
         # this way I can hide/show the frame
         self.resize_frame = QtWidgets.QFrame()
         self.resize_frame.setContentsMargins(0, 0, 0, 0)
-        self.tools_box.addWidget(self.resize_frame)
+        self.apertures_box.addWidget(self.resize_frame)
         self.resize_box = QtWidgets.QVBoxLayout()
         self.resize_box.setContentsMargins(0, 0, 0, 0)
         self.resize_frame.setLayout(self.resize_box)
 
-        #### Resize a  drill ####
+        #### Resize a aperture ####
         self.emptyresize_label = QtWidgets.QLabel('')
         self.resize_box.addWidget(self.emptyresize_label)
 
-        self.drillresize_label = QtWidgets.QLabel('<b>%s</b>' % _("Resize Drill(s)"))
-        self.drillresize_label.setToolTip(
-            _("Resize a drill or a selection of drills.")
+        self.apertureresize_label = QtWidgets.QLabel('<b>%s</b>' % _("Resize Aperture"))
+        self.apertureresize_label.setToolTip(
+            _("Resize a aperture or a selection of apertures.")
         )
-        self.resize_box.addWidget(self.drillresize_label)
+        self.resize_box.addWidget(self.apertureresize_label)
 
         grid3 = QtWidgets.QGridLayout()
         self.resize_box.addLayout(grid3)
 
         res_entry_lbl = QtWidgets.QLabel(_('Resize Dia:'))
         res_entry_lbl.setToolTip(
-           _( "Diameter to resize to.")
+           _( "Size to resize to.")
         )
-        grid3.addWidget(addtool_entry_lbl, 0, 0)
+        grid3.addWidget(res_entry_lbl, 0, 0)
 
         hlay2 = QtWidgets.QHBoxLayout()
         self.resdrill_entry = LengthEntry()
@@ -521,7 +529,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # this way I can hide/show the frame
         self.array_frame = QtWidgets.QFrame()
         self.array_frame.setContentsMargins(0, 0, 0, 0)
-        self.tools_box.addWidget(self.array_frame)
+        self.apertures_box.addWidget(self.array_frame)
         self.array_box = QtWidgets.QVBoxLayout()
         self.array_box.setContentsMargins(0, 0, 0, 0)
         self.array_frame.setLayout(self.array_box)
@@ -643,22 +651,18 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.linear_angle_label.hide()
 
         self.array_frame.hide()
-        self.tools_box.addStretch()
+        self.apertures_box.addStretch()
 
         ## Toolbar events and properties
         self.tools_exc = {
             "select": {"button": self.app.ui.select_drill_btn,
-                       "constructor": FCDrillSelect},
-            "drill_add": {"button": self.app.ui.add_drill_btn,
-                    "constructor": FCDrillAdd},
-            "drill_array": {"button": self.app.ui.add_drill_array_btn,
-                          "constructor": FCDrillArray},
+                       "constructor": FCApertureSelect},
             "drill_resize": {"button": self.app.ui.resize_drill_btn,
-                       "constructor": FCDrillResize},
+                       "constructor": FCApertureResize},
             "drill_copy": {"button": self.app.ui.copy_drill_btn,
-                     "constructor": FCDrillCopy},
+                     "constructor": FCApertureCopy},
             "drill_move": {"button": self.app.ui.move_drill_btn,
-                     "constructor": FCDrillMove},
+                     "constructor": FCApertureMove},
         }
 
         ### Data
@@ -696,16 +700,14 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.app.ui.delete_drill_btn.triggered.connect(self.on_delete_btn)
         self.name_entry.returnPressed.connect(self.on_name_activate)
-        self.addtool_btn.clicked.connect(self.on_tool_add)
+        self.addaperture_btn.clicked.connect(self.on_tool_add)
         # self.addtool_entry.editingFinished.connect(self.on_tool_add)
-        self.deltool_btn.clicked.connect(self.on_tool_delete)
-        self.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
+        self.delaperture_btn.clicked.connect(self.on_tool_delete)
+        self.apertures_table.selectionModel().currentChanged.connect(self.on_row_selected)
         self.array_type_combo.currentIndexChanged.connect(self.on_array_type_combo)
 
         self.drill_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
 
-        self.app.ui.exc_add_array_drill_menuitem.triggered.connect(self.exc_add_drill_array)
-        self.app.ui.exc_add_drill_menuitem.triggered.connect(self.exc_add_drill)
 
         self.app.ui.exc_resize_drill_menuitem.triggered.connect(self.exc_resize_drills)
         self.app.ui.exc_copy_drill_menuitem.triggered.connect(self.exc_copy_drills)
@@ -1663,7 +1665,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         self.select_tool("select")
                         return
 
-                if isinstance(self.active_tool, FCDrillSelect):
+                if isinstance(self.active_tool, FCApertureSelect):
                     # self.app.log.debug("Replotting after click.")
                     self.replot()
             else:
@@ -1776,7 +1778,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 if self.app.selection_type is not None:
                     self.draw_selection_area_handler(self.pos, pos, self.app.selection_type)
                     self.app.selection_type = None
-                elif isinstance(self.active_tool, FCDrillSelect):
+                elif isinstance(self.active_tool, FCApertureSelect):
                     # Dispatch event to active_tool
                     # msg = self.active_tool.click(self.app.geo_editor.snap(event.xdata, event.ydata))
                     # msg = self.active_tool.click_release((self.pos[0], self.pos[1]))

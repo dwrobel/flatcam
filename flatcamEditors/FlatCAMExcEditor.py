@@ -830,7 +830,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         res_entry_lbl.setToolTip(
            _( "Diameter to resize to.")
         )
-        grid3.addWidget(addtool_entry_lbl, 0, 0)
+        grid3.addWidget(res_entry_lbl, 0, 0)
 
         hlay2 = QtWidgets.QHBoxLayout()
         self.resdrill_entry = LengthEntry()

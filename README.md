@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed issue #281 by making generation of a convex shape for the freeform cutout in Tool Cutout a choice rather than the default
 - fixed bug in Tool Cutout, now in manual cutout mode the gap size reflect the value set
 - changed Measuring Tool to use the mouse click release instead of mouse click press; also fixed a bug when using the ESC key.
+- fixed errors when the File -> New Project is initiated while an Editor is still active.
+- the File->Exit action handler is now self.final_save() 
 
 29.03.2019
 

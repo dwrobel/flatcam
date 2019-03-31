@@ -36,6 +36,7 @@ from FlatCAMPostProc import load_postprocessors
 
 from flatcamEditors.FlatCAMGeoEditor import FlatCAMGeoEditor
 from flatcamEditors.FlatCAMExcEditor import FlatCAMExcEditor
+from flatcamEditors.FlatCAMGrbEditor import FlatCAMGrbEditor
 
 from FlatCAMProcess import *
 from FlatCAMWorkerStack import WorkerStack
@@ -605,7 +606,7 @@ class App(QtCore.QObject):
             "global_draw_color": '#FF0000',
             "global_sel_draw_color": '#0000FF',
 
-            "global_toolbar_view": 127,
+            "global_toolbar_view": 511,
 
             "global_background_timeout": 300000,  # Default value is 5 minutes
             "global_verbose_error_level": 0,  # Shell verbosity 0 = default
@@ -1206,7 +1207,7 @@ class App(QtCore.QObject):
         ### EDITOR section
         self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
         self.exc_editor = FlatCAMExcEditor(self)
-
+        self.grb_editor = FlatCAMGrbEditor(self)
 
         #### Adjust tabs width ####
         # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
@@ -1268,7 +1269,7 @@ class App(QtCore.QObject):
         self.ui.menufilesaveprojectas.triggered.connect(self.on_file_saveprojectas)
         self.ui.menufilesaveprojectcopy.triggered.connect(lambda: self.on_file_saveprojectas(make_copy=True))
         self.ui.menufilesavedefaults.triggered.connect(self.on_file_savedefaults)
-        self.ui.menufile_exit.triggered.connect(self.on_app_exit)
+        self.ui.menufile_exit.triggered.connect(self.final_save)
 
         self.ui.menueditedit.triggered.connect(self.object2editor)
         self.ui.menueditok.triggered.connect(self.editor2object)
@@ -2096,6 +2097,15 @@ class App(QtCore.QObject):
 
             # set call source to the Editor we go into
             self.call_source = 'exc_editor'
+
+        elif isinstance(edited_object, FlatCAMGerber):
+            # store the Gerber Editor Toolbar visibility before entering in the Editor
+            self.grbeditor.toolbar_old_state = True if self.ui.grb_edit_toolbar.isVisible() else False
+            self.grbeditor.edit_fcgerber(edited_object)
+
+            # set call source to the Editor we go into
+            self.call_source = 'grb_editor'
+
         else:
             self.inform.emit(_("[WARNING_NOTCL] Select a Geometry or Excellon Object to edit."))
             return
@@ -2112,7 +2122,7 @@ class App(QtCore.QObject):
 
         self.should_we_save = True
 
-    def editor2object(self):
+    def editor2object(self, cleanup=None):
         """
         Transfers the Geometry or Excellon from the editor to the current object.
 
@@ -2135,9 +2145,27 @@ class App(QtCore.QObject):
 
             if isinstance(edited_obj, FlatCAMGeometry):
                 obj_type = "Geometry"
-                self.geo_editor.update_fcgeometry(edited_obj)
-                self.geo_editor.update_options(edited_obj)
+                if cleanup is None:
+                    self.geo_editor.update_fcgeometry(edited_obj)
+                    self.geo_editor.update_options(edited_obj)
                 self.geo_editor.deactivate()
+
+                # update the geo object options so it is including the bounding box values
+                try:
+                    xmin, ymin, xmax, ymax = edited_obj.bounds()
+                    edited_obj.options['xmin'] = xmin
+                    edited_obj.options['ymin'] = ymin
+                    edited_obj.options['xmax'] = xmax
+                    edited_obj.options['ymax'] = ymax
+                except AttributeError:
+                    self.inform.emit(_("[WARNING] Object empty after edit."))
+
+            if isinstance(edited_obj, FlatCAMGerber):
+                obj_type = "Gerber"
+                if cleanup is None:
+                    self.grb_editor.update_fcgerber(edited_obj)
+                    self.grb_editor.update_options(edited_obj)
+                self.grb_editor.deactivate()
 
                 # update the geo object options so it is including the bounding box values
                 try:
@@ -2151,12 +2179,13 @@ class App(QtCore.QObject):
 
             elif isinstance(edited_obj, FlatCAMExcellon):
                 obj_type = "Excellon"
-                self.exc_editor.update_fcexcellon(edited_obj)
-                self.exc_editor.update_options(edited_obj)
+                if cleanup is None:
+                    self.exc_editor.update_fcexcellon(edited_obj)
+                    self.exc_editor.update_options(edited_obj)
                 self.exc_editor.deactivate()
 
             else:
-                self.inform.emit(_("[WARNING_NOTCL] Select a Geometry or Excellon Object to update."))
+                self.inform.emit(_("[WARNING_NOTCL] Select a Gerber, Geometry or Excellon Object to update."))
                 return
 
             # if notebook is hidden we show it
@@ -2470,11 +2499,16 @@ class App(QtCore.QObject):
             self.ui.geo_edit_toolbar.setVisible(False)
 
         if tb & 64:
+            self.ui.grb_edit_toolbar.setVisible(True)
+        else:
+            self.ui.grb_edit_toolbar.setVisible(False)
+
+        if tb & 128:
             self.ui.snap_toolbar.setVisible(True)
         else:
             self.ui.snap_toolbar.setVisible(False)
 
-        if tb & 128:
+        if tb & 256:
             self.ui.toolbarshell.setVisible(True)
         else:
             self.ui.toolbarshell.setVisible(False)
@@ -2494,14 +2528,14 @@ class App(QtCore.QObject):
             self.log.error("Could not load defaults file.")
             self.inform.emit(_("[ERROR] Could not load defaults file."))
             # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 255
+            self.defaults["global_toolbar_view"] = 511
             return
 
         try:
             defaults = json.loads(options)
         except:
             # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 255
+            self.defaults["global_toolbar_view"] = 511
             e = sys.exc_info()[0]
             App.log.error(str(e))
             self.inform.emit(_("[ERROR] Failed to parse defaults file."))
@@ -2976,32 +3010,32 @@ class App(QtCore.QObject):
 
         self.save_defaults()
 
-    def on_app_exit(self):
-        self.report_usage("on_app_exit()")
-
-        if self.collection.get_list():
-            msgbox = QtWidgets.QMessageBox()
-            # msgbox.setText("<B>Save changes ...</B>")
-            msgbox.setText("There are files/objects opened in FlatCAM. "
-                           "\n"
-                           "Do you want to Save the project?")
-            msgbox.setWindowTitle("Save changes")
-            msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No |
-                                      QtWidgets.QMessageBox.Cancel)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Yes)
-
-            response = msgbox.exec_()
-
-            if response == QtWidgets.QMessageBox.Yes:
-                self.on_file_saveprojectas(thread=False)
-            elif response == QtWidgets.QMessageBox.Cancel:
-                return
-            self.save_defaults()
-        else:
-            self.save_defaults()
-        log.debug("Application defaults saved ... Exit event.")
-        QtWidgets.qApp.quit()
+    # def on_app_exit(self):
+    #     self.report_usage("on_app_exit()")
+    #
+    #     if self.collection.get_list():
+    #         msgbox = QtWidgets.QMessageBox()
+    #         # msgbox.setText("<B>Save changes ...</B>")
+    #         msgbox.setText("There are files/objects opened in FlatCAM. "
+    #                        "\n"
+    #                        "Do you want to Save the project?")
+    #         msgbox.setWindowTitle("Save changes")
+    #         msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
+    #         msgbox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No |
+    #                                   QtWidgets.QMessageBox.Cancel)
+    #         msgbox.setDefaultButton(QtWidgets.QMessageBox.Yes)
+    #
+    #         response = msgbox.exec_()
+    #
+    #         if response == QtWidgets.QMessageBox.Yes:
+    #             self.on_file_saveprojectas(thread=False)
+    #         elif response == QtWidgets.QMessageBox.Cancel:
+    #             return
+    #         self.save_defaults()
+    #     else:
+    #         self.save_defaults()
+    #     log.debug("Application defaults saved ... Exit event.")
+    #     QtWidgets.qApp.quit()
 
     def save_defaults(self, silent=False):
         """
@@ -3067,11 +3101,14 @@ class App(QtCore.QObject):
         if self.ui.geo_edit_toolbar.isVisible():
             tb_status += 32
 
-        if self.ui.snap_toolbar.isVisible():
+        if self.ui.grb_edit_toolbar.isVisible():
             tb_status += 64
 
-        if self.ui.toolbarshell.isVisible():
+        if self.ui.snap_toolbar.isVisible():
             tb_status += 128
+
+        if self.ui.toolbarshell.isVisible():
+            tb_status += 256
 
         self.defaults["global_toolbar_view"] = tb_status
 
@@ -3945,6 +3982,7 @@ class App(QtCore.QObject):
             self.ui.removeToolBar(self.ui.toolbartools)
             self.ui.removeToolBar(self.ui.exc_edit_toolbar)
             self.ui.removeToolBar(self.ui.geo_edit_toolbar)
+            self.ui.removeToolBar(self.ui.grb_edit_toolbar)
             self.ui.removeToolBar(self.ui.snap_toolbar)
             self.ui.removeToolBar(self.ui.toolbarshell)
         except:
@@ -3982,6 +4020,11 @@ class App(QtCore.QObject):
             self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
             self.ui.addToolBar(self.ui.geo_edit_toolbar)
 
+            self.ui.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
+            self.ui.grb_edit_toolbar.setVisible(False)
+            self.ui.grb_edit_toolbar.setObjectName('GrbEditor_TB')
+            self.ui.addToolBar(self.ui.grb_edit_toolbar)
+
             self.ui.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
             self.ui.snap_toolbar.setObjectName('Snap_TB')
             # self.ui.snap_toolbar.setMaximumHeight(30)
@@ -4013,6 +4056,11 @@ class App(QtCore.QObject):
             # self.ui.geo_edit_toolbar.setVisible(False)
             self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
             self.ui.addToolBar(Qt.RightToolBarArea, self.ui.geo_edit_toolbar)
+
+            self.ui.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
+            # self.ui.grb_edit_toolbar.setVisible(False)
+            self.ui.grb_edit_toolbar.setObjectName('GrbEditor_TB')
+            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.grb_edit_toolbar)
 
             self.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
             self.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
@@ -5445,6 +5493,13 @@ class App(QtCore.QObject):
 
         # Remove everything from memory
         App.log.debug("on_file_new()")
+
+        if self.call_source != 'app':
+            self.editor2object(cleanup=True)
+            ### EDITOR section
+            self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
+            self.exc_editor = FlatCAMExcEditor(self)
+            self.grb_editor = FlatCAMGrbEditor(self)
 
         # Clear pool
         self.clear_pool()
