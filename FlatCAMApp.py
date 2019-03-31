@@ -2100,8 +2100,8 @@ class App(QtCore.QObject):
 
         elif isinstance(edited_object, FlatCAMGerber):
             # store the Gerber Editor Toolbar visibility before entering in the Editor
-            self.grbeditor.toolbar_old_state = True if self.ui.grb_edit_toolbar.isVisible() else False
-            self.grbeditor.edit_fcgerber(edited_object)
+            self.grb_editor.toolbar_old_state = True if self.ui.grb_edit_toolbar.isVisible() else False
+            self.grb_editor.edit_fcgerber(edited_object)
 
             # set call source to the Editor we go into
             self.call_source = 'grb_editor'

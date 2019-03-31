@@ -722,7 +722,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.drill_angle_entry.set_value(12)
         self.drill_direction_radio.set_value('CW')
         self.drill_axis_radio.set_value('X')
-        self.exc_obj = None
+        self.gerber_obj = None
 
         # VisPy Visuals
         self.shapes = self.app.plotcanvas.new_shape_collection(layers=1)
@@ -817,12 +817,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.tool2tooldia.clear()
 
         # build the self.points_edit dict {dimaters: [point_list]}
-        for drill in self.exc_obj.drills:
-            if drill['tool'] in self.exc_obj.tools:
+        for drill in self.gerber_obj.drills:
+            if drill['tool'] in self.gerber_obj.tools:
                 if self.units == 'IN':
-                    tool_dia = float('%.3f' % self.exc_obj.tools[drill['tool']]['C'])
+                    tool_dia = float('%.3f' % self.gerber_obj.tools[drill['tool']]['C'])
                 else:
-                    tool_dia = float('%.2f' % self.exc_obj.tools[drill['tool']]['C'])
+                    tool_dia = float('%.2f' % self.gerber_obj.tools[drill['tool']]['C'])
 
                 try:
                     self.points_edit[tool_dia].append(drill['point'])
@@ -854,7 +854,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         # make a new name for the new Excellon object (the one with edited content)
-        self.edited_obj_name = self.exc_obj.options['name']
+        self.edited_obj_name = self.gerber_obj.options['name']
         self.name_entry.set_value(self.edited_obj_name)
 
         if self.units == "IN":
@@ -1115,7 +1115,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         for deleted_tool_dia in deleted_tool_dia_list:
 
             # delete de tool offset
-            self.exc_obj.tool_offset.pop(float(deleted_tool_dia), None)
+            self.gerber_obj.tool_offset.pop(float(deleted_tool_dia), None)
 
             # delete the storage used for that tool
             storage_elem = FlatCAMGeoEditor.make_storage()
@@ -1182,8 +1182,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.tool2tooldia[key_in_tool2tooldia] = current_table_dia_edited
 
             # update the tool offset
-            modified_offset = self.exc_obj.tool_offset.pop(dia_changed)
-            self.exc_obj.tool_offset[current_table_dia_edited] = modified_offset
+            modified_offset = self.gerber_obj.tool_offset.pop(dia_changed)
+            self.gerber_obj.tool_offset[current_table_dia_edited] = modified_offset
 
             self.replot()
         else:
@@ -1199,7 +1199,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.on_tool_delete(dia=dia_changed)
 
             # delete the tool offset
-            self.exc_obj.tool_offset.pop(dia_changed, None)
+            self.gerber_obj.tool_offset.pop(dia_changed, None)
 
         # we reactivate the signals after the after the tool editing
         self.tools_table_exc.itemChanged.connect(self.on_tool_edit)
@@ -1290,8 +1290,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.ui.e_editor_cmenu.setEnabled(False)
 
         # Show original geometry
-        if self.exc_obj:
-            self.exc_obj.visible = True
+        if self.gerber_obj:
+            self.gerber_obj.visible = True
 
     def connect_canvas_event_handlers(self):
         ## Canvas events
@@ -1338,9 +1338,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # self.storage = FlatCAMExcEditor.make_storage()
         self.replot()
 
-    def edit_fcexcellon(self, exc_obj):
+    def edit_fcgerber(self, exc_obj):
         """
-        Imports the geometry from the given FlatCAM Excellon object
+        Imports the geometry found in self.apertures from the given FlatCAM Gerber object
         into the editor.
 
         :param fcgeometry: FlatCAMExcellon
@@ -1354,7 +1354,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.activate()
 
         # Hide original geometry
-        self.exc_obj = exc_obj
+        self.gerber_obj = exc_obj
         exc_obj.visible = False
 
         # Set selection tolerance
@@ -1368,7 +1368,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.build_ui()
 
         # we activate this after the initial build as we don't need to see the tool been populated
-        self.tools_table_exc.itemChanged.connect(self.on_tool_edit)
+        self.apertures_table.itemChanged.connect(self.on_tool_edit)
 
         # build the geometry for each tool-diameter, each drill will be represented by a '+' symbol
         # and then add it to the storage elements (each storage elements is a member of a list
@@ -1391,7 +1391,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         if not self.tool2tooldia:
             self.on_tool_add(tooldia=1.00)
 
-    def update_fcexcellon(self, exc_obj):
+    def update_fcgerber(self, exc_obj):
         """
         Create a new Excellon object that contain the edited content of the source Excellon object
 
@@ -1484,10 +1484,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.worker_task.emit({'fcn': self.new_edited_excellon,
                                    'params': [self.edited_obj_name]})
 
-        if self.exc_obj.slots:
-            self.new_slots = self.exc_obj.slots
+        if self.gerber_obj.slots:
+            self.new_slots = self.gerber_obj.slots
 
-        self.new_tool_offset = self.exc_obj.tool_offset
+        self.new_tool_offset = self.gerber_obj.tool_offset
 
         # reset the tool table
         self.tools_table_exc.clear()
@@ -1495,7 +1495,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.last_tool_selected = None
 
         # delete the edited Excellon object which will be replaced by a new one having the edited content of the first
-        self.app.collection.set_active(self.exc_obj.options['name'])
+        self.app.collection.set_active(self.gerber_obj.options['name'])
         self.app.collection.delete_active()
 
         # restore GUI to the Selected TAB
@@ -1530,7 +1530,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         """
 
         self.app.log.debug("Update the Excellon object with edited content. Source is %s" %
-                           self.exc_obj.options['name'])
+                           self.gerber_obj.options['name'])
 
         # How the object should be initialized
         def obj_init(excellon_obj, app_obj):

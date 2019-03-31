@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - changed Measuring Tool to use the mouse click release instead of mouse click press; also fixed a bug when using the ESC key.
 - fixed errors when the File -> New Project is initiated while an Editor is still active.
 - the File->Exit action handler is now self.final_save() 
+- wip in Gerber editor
 
 29.03.2019
 
