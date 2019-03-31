@@ -4946,6 +4946,15 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
             self.gaps_combo.addItem(it)
             self.gaps_combo.setStyleSheet('background-color: rgb(255,255,255)')
 
+        # Surrounding convex box shape
+        self.convex_box = FCCheckBox()
+        self.convex_box_label = QtWidgets.QLabel(_("Convex Sh.:"))
+        self.convex_box_label.setToolTip(
+            _("Create a convex shape surrounding the entire PCB.")
+        )
+        grid0.addWidget(self.convex_box_label, 4, 0)
+        grid0.addWidget(self.convex_box, 4, 1)
+
         self.layout.addStretch()
 
 

@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+31.03.2019
+
+- fixed issue #281 by making generation of a convex shape for the freeform cutout in Tool Cutout a choice rather than the default
+- fixed bug in Tool Cutout, now in manual cutout mode the gap size reflect the value set
+
 29.03.2019
 
 - update the TCL keyword list

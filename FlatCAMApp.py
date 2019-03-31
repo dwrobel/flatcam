@@ -465,6 +465,7 @@ class App(QtCore.QObject):
             "tools_cutoutmargin": self.ui.tools_defaults_form.tools_cutout_group.cutout_margin_entry,
             "tools_cutoutgapsize": self.ui.tools_defaults_form.tools_cutout_group.cutout_gap_entry,
             "tools_gaps_ff": self.ui.tools_defaults_form.tools_cutout_group.gaps_combo,
+            "tools_cutout_convexshape": self.ui.tools_defaults_form.tools_cutout_group.convex_box,
 
             # Paint Area Tool
             "tools_painttooldia": self.ui.tools_defaults_form.tools_paint_group.painttooldia_entry,
@@ -766,6 +767,7 @@ class App(QtCore.QObject):
             "tools_cutoutmargin": 0.00393701,
             "tools_cutoutgapsize": 0.005905512,
             "tools_gaps_ff": "8",
+            "tools_cutout_convexshape": False,
 
             "tools_painttooldia": 0.07,
             "tools_paintoverlap": 0.15,

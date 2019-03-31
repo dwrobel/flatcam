@@ -110,6 +110,14 @@ class CutOut(FlatCAMTool):
         # 2tb   - 2*top + 2*bottom
         # 8     - 2*left + 2*right +2*top + 2*bottom
 
+        # Surrounding convex box shape
+        self.convex_box = FCCheckBox()
+        self.convex_box_label = QtWidgets.QLabel(_("Convex Sh.:"))
+        self.convex_box_label.setToolTip(
+            _("Create a convex shape surrounding the entire PCB.")
+        )
+        form_layout.addRow(self.convex_box_label, self.convex_box)
+
         ## Title2
         title_param_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % _('A. Automatic Bridge Gaps'))
         title_param_label.setToolTip(
@@ -310,7 +318,8 @@ class CutOut(FlatCAMTool):
         self.dia.set_value(float(self.app.defaults["tools_cutouttooldia"]))
         self.margin.set_value(float(self.app.defaults["tools_cutoutmargin"]))
         self.gapsize.set_value(float(self.app.defaults["tools_cutoutgapsize"]))
-        self.gaps.set_value(4)
+        self.gaps.set_value(self.app.defaults["tools_gaps_ff"])
+        self.convex_box.set_value(self.app.defaults['tools_cutout_convexshape'])
 
         self.gapFinished.connect(self.on_gap_finished)
 
@@ -388,6 +397,8 @@ class CutOut(FlatCAMTool):
                                  "and after that perform Cutout."))
             return
 
+        convex_box = self.convex_box.get_value()
+
         # Get min and max data for each object as we just cut rectangles across X or Y
         xmin, ymin, xmax, ymax = cutout_obj.bounds()
         px = 0.5 * (xmin + xmax) + margin
@@ -402,8 +413,12 @@ class CutOut(FlatCAMTool):
             cutout_obj.options["name"] += "_cutout"
         else:
             def geo_init(geo_obj, app_obj):
-                geo = cutout_obj.solid_geometry.convex_hull
-                geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
+                if convex_box:
+                    geo = cutout_obj.solid_geometry.convex_hull
+                    geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
+                else:
+                    geo = cutout_obj.solid_geometry
+                    geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2)).exterior
 
             outname = cutout_obj.options["name"] + "_cutout"
             self.app.new_object('geometry', outname, geo_init)
@@ -722,16 +737,21 @@ class CutOut(FlatCAMTool):
                                      "Add it and retry."))
                 return
 
+        convex_box = self.convex_box.get_value()
+
         def geo_init(geo_obj, app_obj):
-            geo = cutout_obj.solid_geometry.convex_hull
-            geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
+            if convex_box:
+                geo = cutout_obj.solid_geometry.convex_hull
+                geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
+            else:
+                geo = cutout_obj.solid_geometry
+                geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2)).exterior
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.new_object('geometry', outname, geo_init)
 
     def cutting_geo(self, pos):
-        self.cutting_gapsize = self.cutting_gapsize / 2 + (self.cutting_dia / 2)
-        offset = self.cutting_gapsize / 2
+        offset = self.cutting_dia / 2 + self.cutting_gapsize / 2
 
         # cutting area definition
         orig_x = pos[0]
