@@ -349,53 +349,57 @@ class FCDrillResize(FCShapeTool):
 
         sel_shapes_to_be_deleted = []
 
-        for sel_dia in self.selected_dia_list:
-            self.current_storage = self.draw_app.storage_dict[sel_dia]
-            for select_shape in self.draw_app.get_selected():
-                if select_shape in self.current_storage.get_objects():
-                    factor = new_dia / sel_dia
-                    self.geometry.append(
-                        DrawToolShape(affinity.scale(select_shape.geo, xfact=factor, yfact=factor, origin='center'))
-                    )
-                    self.current_storage.remove(select_shape)
-                    # a hack to make the tool_table display less drills per diameter when shape(drill) is deleted
-                    # self.points_edit it's only useful first time when we load the data into the storage
-                    # but is still used as reference when building tool_table in self.build_ui()
-                    # the number of drills displayed in column 2 is just a len(self.points_edit) therefore
-                    # deleting self.points_edit elements (doesn't matter who but just the number)
-                    # solved the display issue.
-                    del self.draw_app.points_edit[sel_dia][0]
+        if self.selected_dia_list:
+            for sel_dia in self.selected_dia_list:
+                self.current_storage = self.draw_app.storage_dict[sel_dia]
+                for select_shape in self.draw_app.get_selected():
+                    if select_shape in self.current_storage.get_objects():
+                        factor = new_dia / sel_dia
+                        self.geometry.append(
+                            DrawToolShape(affinity.scale(select_shape.geo, xfact=factor, yfact=factor, origin='center'))
+                        )
+                        self.current_storage.remove(select_shape)
+                        # a hack to make the tool_table display less drills per diameter when shape(drill) is deleted
+                        # self.points_edit it's only useful first time when we load the data into the storage
+                        # but is still used as reference when building tool_table in self.build_ui()
+                        # the number of drills displayed in column 2 is just a len(self.points_edit) therefore
+                        # deleting self.points_edit elements (doesn't matter who but just the number)
+                        # solved the display issue.
+                        del self.draw_app.points_edit[sel_dia][0]
 
-                    sel_shapes_to_be_deleted.append(select_shape)
+                        sel_shapes_to_be_deleted.append(select_shape)
 
-                    self.draw_app.on_exc_shape_complete(self.destination_storage)
-                    # a hack to make the tool_table display more drills per diameter when shape(drill) is added
-                    # self.points_edit it's only useful first time when we load the data into the storage
-                    # but is still used as reference when building tool_table in self.build_ui()
-                    # the number of drills displayed in column 2 is just a len(self.points_edit) therefore
-                    # deleting self.points_edit elements (doesn't matter who but just the number)
-                    # solved the display issue.
-                    if new_dia not in self.draw_app.points_edit:
-                        self.draw_app.points_edit[new_dia] = [(0, 0)]
-                    else:
-                        self.draw_app.points_edit[new_dia].append((0,0))
-                    self.geometry = []
+                        self.draw_app.on_exc_shape_complete(self.destination_storage)
+                        # a hack to make the tool_table display more drills per diameter when shape(drill) is added
+                        # self.points_edit it's only useful first time when we load the data into the storage
+                        # but is still used as reference when building tool_table in self.build_ui()
+                        # the number of drills displayed in column 2 is just a len(self.points_edit) therefore
+                        # deleting self.points_edit elements (doesn't matter who but just the number)
+                        # solved the display issue.
+                        if new_dia not in self.draw_app.points_edit:
+                            self.draw_app.points_edit[new_dia] = [(0, 0)]
+                        else:
+                            self.draw_app.points_edit[new_dia].append((0,0))
+                        self.geometry = []
 
-                    # if following the resize of the drills there will be no more drills for the selected tool then
-                    # delete that tool
-                    if not self.draw_app.points_edit[sel_dia]:
-                        self.draw_app.on_tool_delete(sel_dia)
+                        # if following the resize of the drills there will be no more drills for the selected tool then
+                        # delete that tool
+                        if not self.draw_app.points_edit[sel_dia]:
+                            self.draw_app.on_tool_delete(sel_dia)
 
             for shp in sel_shapes_to_be_deleted:
                 self.draw_app.selected.remove(shp)
             sel_shapes_to_be_deleted = []
 
-        self.draw_app.build_ui()
-        self.draw_app.replot()
+            self.draw_app.build_ui()
+            self.draw_app.replot()
+            self.draw_app.app.inform.emit(_("[success] Done. Drill Resize completed."))
+
+        else:
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Cancelled. No drills selected for resize ..."))
 
         self.draw_app.resize_frame.hide()
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Drill Resize completed."))
 
         # MS: always return to the Select Tool
         self.draw_app.select_tool("select")
