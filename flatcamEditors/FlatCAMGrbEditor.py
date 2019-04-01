@@ -59,11 +59,11 @@ class FCApertureResize(FCShapeTool):
         else:
             self.destination_storage = self.draw_app.storage_dict[new_dia]
 
-        for index in self.draw_app.tools_table_exc.selectedIndexes():
+        for index in self.draw_app.apertures_table.selectedIndexes():
             row = index.row()
             # on column 1 in tool tables we hold the diameters, and we retrieve them as strings
             # therefore below we convert to float
-            dia_on_row = self.draw_app.tools_table_exc.item(row, 1).text()
+            dia_on_row = self.draw_app.apertures_table.item(row, 1).text()
             self.selected_dia_list.append(float(dia_on_row))
 
         # since we add a new tool, we update also the intial state of the tool_table through it's dictionary
@@ -142,11 +142,11 @@ class FCApertureMove(FCShapeTool):
         self.current_storage = None
         self.geometry = []
 
-        for index in self.draw_app.tools_table_exc.selectedIndexes():
+        for index in self.draw_app.apertures_table.selectedIndexes():
             row = index.row()
             # on column 1 in tool tables we hold the diameters, and we retrieve them as strings
             # therefore below we convert to float
-            dia_on_row = self.draw_app.tools_table_exc.item(row, 1).text()
+            dia_on_row = self.draw_app.apertures_table.item(row, 1).text()
             self.selected_dia_list.append(float(dia_on_row))
 
         # Switch notebook to Selected page
@@ -250,51 +250,51 @@ class FCApertureCopy(FCApertureMove):
 
 
 class FCApertureSelect(DrawTool):
-    def __init__(self, exc_editor_app):
-        DrawTool.__init__(self, exc_editor_app)
+    def __init__(self, grb_editor_app):
+        DrawTool.__init__(self, grb_editor_app)
         self.name = 'drill_select'
 
-        self.exc_editor_app = exc_editor_app
-        self.storage = self.exc_editor_app.storage_dict
-        # self.selected = self.exc_editor_app.selected
+        self.grb_editor_app = grb_editor_app
+        self.storage = self.grb_editor_app.storage_dict
+        # self.selected = self.grb_editor_app.selected
 
         # here we store all shapes that were selected so we can search for the nearest to our click location
         self.sel_storage = FlatCAMGrbEditor.make_storage()
 
-        self.exc_editor_app.resize_frame.hide()
-        self.exc_editor_app.array_frame.hide()
+        self.grb_editor_app.resize_frame.hide()
+        self.grb_editor_app.array_frame.hide()
 
     def click(self, point):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
-        if self.exc_editor_app.app.defaults["global_mselect_key"] == 'Control':
+        if self.grb_editor_app.app.defaults["global_mselect_key"] == 'Control':
             if key_modifier == Qt.ControlModifier:
                 pass
             else:
-                self.exc_editor_app.selected = []
+                self.grb_editor_app.selected = []
         else:
             if key_modifier == Qt.ShiftModifier:
                 pass
             else:
-                self.exc_editor_app.selected = []
+                self.grb_editor_app.selected = []
 
     def click_release(self, point):
         self.select_shapes(point)
         return ""
 
     def select_shapes(self, pos):
-        self.exc_editor_app.tools_table_exc.clearSelection()
+        self.grb_editor_app.apertures_table.clearSelection()
 
         try:
-            # for storage in self.exc_editor_app.storage_dict:
-            #     _, partial_closest_shape = self.exc_editor_app.storage_dict[storage].nearest(pos)
+            # for storage in self.grb_editor_app.storage_dict:
+            #     _, partial_closest_shape = self.grb_editor_app.storage_dict[storage].nearest(pos)
             #     if partial_closest_shape is not None:
             #         self.sel_storage.insert(partial_closest_shape)
             #
             # _, closest_shape = self.sel_storage.nearest(pos)
 
-            for storage in self.exc_editor_app.storage_dict:
-                for shape in self.exc_editor_app.storage_dict[storage].get_objects():
-                    self.sel_storage.insert(shape)
+            for storage in self.grb_editor_app.storage_dict:
+                for shape in self.grb_editor_app.storage_dict[storage].get_objects():
+                    self.sel_storage.insert(DrawToolShape(LineString(shape.geo.exterior)))
 
             _, closest_shape = self.sel_storage.nearest(pos)
 
@@ -311,42 +311,42 @@ class FCApertureSelect(DrawTool):
             return ""
 
         if pos[0] < xmin or pos[0] > xmax or pos[1] < ymin or pos[1] > ymax:
-            self.exc_editor_app.selected = []
+            self.grb_editor_app.selected = []
         else:
             key_modifier = QtWidgets.QApplication.keyboardModifiers()
-            if self.exc_editor_app.app.defaults["global_mselect_key"] == 'Control':
+            if self.grb_editor_app.app.defaults["global_mselect_key"] == 'Control':
                 # if CONTROL key is pressed then we add to the selected list the current shape but if it's already
                 # in the selected list, we removed it. Therefore first click selects, second deselects.
                 if key_modifier == Qt.ControlModifier:
-                    if closest_shape in self.exc_editor_app.selected:
-                        self.exc_editor_app.selected.remove(closest_shape)
+                    if closest_shape in self.grb_editor_app.selected:
+                        self.grb_editor_app.selected.remove(closest_shape)
                     else:
-                        self.exc_editor_app.selected.append(closest_shape)
+                        self.grb_editor_app.selected.append(closest_shape)
                 else:
-                    self.exc_editor_app.selected = []
-                    self.exc_editor_app.selected.append(closest_shape)
+                    self.grb_editor_app.selected = []
+                    self.grb_editor_app.selected.append(closest_shape)
             else:
                 if key_modifier == Qt.ShiftModifier:
-                    if closest_shape in self.exc_editor_app.selected:
-                        self.exc_editor_app.selected.remove(closest_shape)
+                    if closest_shape in self.grb_editor_app.selected:
+                        self.grb_editor_app.selected.remove(closest_shape)
                     else:
-                        self.exc_editor_app.selected.append(closest_shape)
+                        self.grb_editor_app.selected.append(closest_shape)
                 else:
-                    self.exc_editor_app.selected = []
-                    self.exc_editor_app.selected.append(closest_shape)
+                    self.grb_editor_app.selected = []
+                    self.grb_editor_app.selected.append(closest_shape)
 
             # select the diameter of the selected shape in the tool table
-            for storage in self.exc_editor_app.storage_dict:
-                for shape_s in self.exc_editor_app.selected:
-                    if shape_s in self.exc_editor_app.storage_dict[storage].get_objects():
-                        for key in self.exc_editor_app.tool2tooldia:
-                            if self.exc_editor_app.tool2tooldia[key] == storage:
-                                item = self.exc_editor_app.tools_table_exc.item((key - 1), 1)
-                                self.exc_editor_app.tools_table_exc.setCurrentItem(item)
+            for storage in self.grb_editor_app.storage_dict:
+                for shape_s in self.grb_editor_app.selected:
+                    if shape_s in self.grb_editor_app.storage_dict[storage].get_objects():
+                        for key in self.grb_editor_app.tool2tooldia:
+                            if self.grb_editor_app.tool2tooldia[key] == storage:
+                                item = self.grb_editor_app.apertures_table.item((key - 1), 1)
+                                self.grb_editor_app.apertures_table.setCurrentItem(item)
                                 # item.setSelected(True)
-                                # self.exc_editor_app.tools_table_exc.selectItem(key - 1)
-                                # midx = self.exc_editor_app.tools_table_exc.model().index((key - 1), 0)
-                                # self.exc_editor_app.tools_table_exc.setCurrentIndex(midx)
+                                # self.grb_editor_app.apertures_table.selectItem(key - 1)
+                                # midx = self.grb_editor_app.apertures_table.model().index((key - 1), 0)
+                                # self.grb_editor_app.apertures_table.setCurrentIndex(midx)
                                 self.draw_app.last_tool_selected = key
         # delete whatever is in selection storage, there is no longer need for those shapes
         self.sel_storage = FlatCAMGrbEditor.make_storage()
@@ -420,7 +420,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.apertures_table = FCTable()
         # delegate = SpinBoxDelegate(units=self.units)
-        # self.tools_table_exc.setItemDelegateForColumn(1, delegate)
+        # self.apertures_table.setItemDelegateForColumn(1, delegate)
 
         self.apertures_box.addWidget(self.apertures_table)
 
@@ -674,7 +674,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # build the data from the Excellon point into a dictionary
         #  {tool_dia: [geometry_in_points]}
         self.points_edit = {}
-        self.sorted_diameters =[]
+        self.sorted_apid =[]
 
         self.new_drills = []
         self.new_tools = {}
@@ -816,37 +816,25 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.olddia_newdia.clear()
         self.tool2tooldia.clear()
 
-        # build the self.points_edit dict {dimaters: [point_list]}
-        for drill in self.gerber_obj.drills:
-            if drill['tool'] in self.gerber_obj.tools:
-                if self.units == 'IN':
-                    tool_dia = float('%.3f' % self.gerber_obj.tools[drill['tool']]['C'])
-                else:
-                    tool_dia = float('%.2f' % self.gerber_obj.tools[drill['tool']]['C'])
-
-                try:
-                    self.points_edit[tool_dia].append(drill['point'])
-                except KeyError:
-                    self.points_edit[tool_dia] = [drill['point']]
         # update the olddia_newdia dict to make sure we have an updated state of the tool_table
-        for key in self.points_edit:
-            self.olddia_newdia[key] = key
+        # for key in self.points_edit:
+        #     self.olddia_newdia[key] = key
 
-        sort_temp = []
-        for diam in self.olddia_newdia:
-            sort_temp.append(float(diam))
-        self.sorted_diameters = sorted(sort_temp)
-
-        # populate self.intial_table_rows dict with the tool number as keys and tool diameters as values
-        for i in range(len(self.sorted_diameters)):
-            tt_dia = self.sorted_diameters[i]
-            self.tool2tooldia[i + 1] = tt_dia
+        # sort_temp = []
+        # for diam in self.olddia_newdia:
+        #     sort_temp.append(float(diam))
+        # self.sorted_apid = sorted(sort_temp)
+        #
+        # # populate self.intial_table_rows dict with the tool number as keys and tool diameters as values
+        # for i in range(len(self.sorted_apid)):
+        #     tt_dia = self.sorted_apid[i]
+        #     self.tool2tooldia[i + 1] = tt_dia
 
     def build_ui(self):
 
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
-            self.tools_table_exc.itemChanged.disconnect()
+            self.apertures_table.itemChanged.disconnect()
         except:
             pass
 
@@ -862,187 +850,109 @@ class FlatCAMGrbEditor(QtCore.QObject):
         else:
             self.addtool_entry.set_value(1.00)
 
-        sort_temp = []
+        self.apertures_row = 0
+        aper_no = self.apertures_row + 1
+        sort = []
+        for k, v in list(self.gerber_obj.apertures.items()):
+            sort.append(int(k))
+        sorted_apertures = sorted(sort)
 
-        for diam in self.olddia_newdia:
-            sort_temp.append(float(diam))
-        self.sorted_diameters = sorted(sort_temp)
+        sort = []
+        for k, v in list(self.gerber_obj.aperture_macros.items()):
+            sort.append(k)
+        sorted_macros = sorted(sort)
 
-        # here, self.sorted_diameters will hold in a oblique way, the number of tools
-        n = len(self.sorted_diameters)
-        # we have (n+2) rows because there are 'n' tools, each a row, plus the last 2 rows for totals.
-        self.tools_table_exc.setRowCount(n + 2)
+        n = len(sorted_apertures) + len(sorted_macros)
+        self.apertures_table.setRowCount(n)
 
-        self.tot_drill_cnt = 0
-        self.tot_slot_cnt = 0
+        for ap_code in sorted_apertures:
+            ap_code = str(ap_code)
 
-        self.tool_row = 0
-        # this variable will serve as the real tool_number
-        tool_id = 0
+            ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
+            ap_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
 
-        for tool_no in self.sorted_diameters:
-            tool_id += 1
-            drill_cnt = 0  # variable to store the nr of drills per tool
-            slot_cnt = 0  # variable to store the nr of slots per tool
+            ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
+            ap_code_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-            # Find no of drills for the current tool
-            for tool_dia in self.points_edit:
-                if float(tool_dia) == tool_no:
-                    drill_cnt = len(self.points_edit[tool_dia])
+            ap_type_item = QtWidgets.QTableWidgetItem(str(self.gerber_obj.apertures[ap_code]['type']))
+            ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-            self.tot_drill_cnt += drill_cnt
+            if str(self.gerber_obj.apertures[ap_code]['type']) == 'R' or str(self.gerber_obj.apertures[ap_code]['type']) == 'O':
+                ap_dim_item = QtWidgets.QTableWidgetItem(
+                    '%.4f, %.4f' % (self.gerber_obj.apertures[ap_code]['width'] * self.gerber_obj.file_units_factor,
+                                    self.gerber_obj.apertures[ap_code]['height'] * self.gerber_obj.file_units_factor
+                                    )
+                )
+                ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            elif str(self.gerber_obj.apertures[ap_code]['type']) == 'P':
+                ap_dim_item = QtWidgets.QTableWidgetItem(
+                    '%.4f, %.4f' % (self.gerber_obj.apertures[ap_code]['diam'] * self.gerber_obj.file_units_factor,
+                                    self.gerber_obj.apertures[ap_code]['nVertices'] * self.gerber_obj.file_units_factor)
+                )
+                ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
+            else:
+                ap_dim_item = QtWidgets.QTableWidgetItem('')
+                ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
             try:
-                # Find no of slots for the current tool
-                for slot in self.slots:
-                    if slot['tool'] == tool_no:
-                        slot_cnt += 1
+                if self.gerber_obj.apertures[ap_code]['size'] is not None:
+                    ap_size_item = QtWidgets.QTableWidgetItem('%.4f' %
+                                                              float(self.gerber_obj.apertures[ap_code]['size'] *
+                                                                    self.gerber_obj.file_units_factor))
+                else:
+                    ap_size_item = QtWidgets.QTableWidgetItem('')
+            except KeyError:
+                ap_size_item = QtWidgets.QTableWidgetItem('')
+            ap_size_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-                self.tot_slot_cnt += slot_cnt
-            except AttributeError:
-                # log.debug("No slots in the Excellon file")
-                # slot editing not implemented
-                pass
+            self.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
+            self.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
+            self.apertures_table.setItem(self.apertures_row, 3, ap_size_item)  # Aperture Dimensions
+            self.apertures_table.setItem(self.apertures_row, 4, ap_dim_item)  # Aperture Dimensions
 
-            id = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
-            id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.tools_table_exc.setItem(self.tool_row, 0, id)  # Tool name/id
+            self.apertures_row += 1
 
-            # Make sure that the drill diameter when in MM is with no more than 2 decimals
-            # There are no drill bits in MM with more than 3 decimals diameter
-            # For INCH the decimals should be no more than 3. There are no drills under 10mils
-            if self.units == 'MM':
-                dia = QtWidgets.QTableWidgetItem('%.2f' % self.olddia_newdia[tool_no])
-            else:
-                dia = QtWidgets.QTableWidgetItem('%.3f' % self.olddia_newdia[tool_no])
+        for ap_code in sorted_macros:
+            ap_code = str(ap_code)
 
-            dia.setFlags(QtCore.Qt.ItemIsEnabled)
+            ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
+            ap_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
 
-            drill_count = QtWidgets.QTableWidgetItem('%d' % drill_cnt)
-            drill_count.setFlags(QtCore.Qt.ItemIsEnabled)
+            ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
 
-            # if the slot number is zero is better to not clutter the GUI with zero's so we print a space
-            if slot_cnt > 0:
-                slot_count = QtWidgets.QTableWidgetItem('%d' % slot_cnt)
-            else:
-                slot_count = QtWidgets.QTableWidgetItem('')
-            slot_count.setFlags(QtCore.Qt.ItemIsEnabled)
+            ap_type_item = QtWidgets.QTableWidgetItem('AM')
+            ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-            self.tools_table_exc.setItem(self.tool_row, 1, dia)  # Diameter
-            self.tools_table_exc.setItem(self.tool_row, 2, drill_count)  # Number of drills per tool
-            self.tools_table_exc.setItem(self.tool_row, 3, slot_count)  # Number of drills per tool
-            self.tool_row += 1
+            self.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
+            self.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
 
-        # make the diameter column editable
-        for row in range(self.tool_row):
-            self.tools_table_exc.item(row, 1).setFlags(
-                QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.tools_table_exc.item(row, 2).setForeground(QtGui.QColor(0, 0, 0))
-            self.tools_table_exc.item(row, 3).setForeground(QtGui.QColor(0, 0, 0))
+            self.apertures_row += 1
 
-        # add a last row with the Total number of drills
-        # HACK: made the text on this cell '9999' such it will always be the one before last when sorting
-        # it will have to have the foreground color (font color) white
-        empty = QtWidgets.QTableWidgetItem('9998')
-        empty.setForeground(QtGui.QColor(255, 255, 255))
+        self.apertures_table.selectColumn(0)
+        self.apertures_table.resizeColumnsToContents()
+        self.apertures_table.resizeRowsToContents()
 
-        empty.setFlags(empty.flags() ^ QtCore.Qt.ItemIsEnabled)
-        empty_b = QtWidgets.QTableWidgetItem('')
-        empty_b.setFlags(empty_b.flags() ^ QtCore.Qt.ItemIsEnabled)
-
-        label_tot_drill_count = QtWidgets.QTableWidgetItem(_('Total Drills'))
-        tot_drill_count = QtWidgets.QTableWidgetItem('%d' % self.tot_drill_cnt)
-
-        label_tot_drill_count.setFlags(label_tot_drill_count.flags() ^ QtCore.Qt.ItemIsEnabled)
-        tot_drill_count.setFlags(tot_drill_count.flags() ^ QtCore.Qt.ItemIsEnabled)
-
-        self.tools_table_exc.setItem(self.tool_row, 0, empty)
-        self.tools_table_exc.setItem(self.tool_row, 1, label_tot_drill_count)
-        self.tools_table_exc.setItem(self.tool_row, 2, tot_drill_count)  # Total number of drills
-        self.tools_table_exc.setItem(self.tool_row, 3, empty_b)
-
-        font = QtGui.QFont()
-        font.setBold(True)
-        font.setWeight(75)
-
-        for k in [1, 2]:
-            self.tools_table_exc.item(self.tool_row, k).setForeground(QtGui.QColor(127, 0, 255))
-            self.tools_table_exc.item(self.tool_row, k).setFont(font)
-
-        self.tool_row += 1
-
-        # add a last row with the Total number of slots
-        # HACK: made the text on this cell '9999' such it will always be the last when sorting
-        # it will have to have the foreground color (font color) white
-        empty_2 = QtWidgets.QTableWidgetItem('9999')
-        empty_2.setForeground(QtGui.QColor(255, 255, 255))
-
-        empty_2.setFlags(empty_2.flags() ^ QtCore.Qt.ItemIsEnabled)
-
-        empty_3 = QtWidgets.QTableWidgetItem('')
-        empty_3.setFlags(empty_3.flags() ^ QtCore.Qt.ItemIsEnabled)
-
-        label_tot_slot_count = QtWidgets.QTableWidgetItem(_('Total Slots'))
-        tot_slot_count = QtWidgets.QTableWidgetItem('%d' % self.tot_slot_cnt)
-        label_tot_slot_count.setFlags(label_tot_slot_count.flags() ^ QtCore.Qt.ItemIsEnabled)
-        tot_slot_count.setFlags(tot_slot_count.flags() ^ QtCore.Qt.ItemIsEnabled)
-
-        self.tools_table_exc.setItem(self.tool_row, 0, empty_2)
-        self.tools_table_exc.setItem(self.tool_row, 1, label_tot_slot_count)
-        self.tools_table_exc.setItem(self.tool_row, 2, empty_3)
-        self.tools_table_exc.setItem(self.tool_row, 3, tot_slot_count)  # Total number of slots
-
-        for kl in [1, 2, 3]:
-            self.tools_table_exc.item(self.tool_row, kl).setFont(font)
-            self.tools_table_exc.item(self.tool_row, kl).setForeground(QtGui.QColor(0, 70, 255))
-
-
-        # all the tools are selected by default
-        self.tools_table_exc.selectColumn(0)
-        #
-        self.tools_table_exc.resizeColumnsToContents()
-        self.tools_table_exc.resizeRowsToContents()
-
-        vertical_header = self.tools_table_exc.verticalHeader()
+        vertical_header = self.apertures_table.verticalHeader()
         # vertical_header.setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         vertical_header.hide()
-        self.tools_table_exc.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.apertures_table.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 
-        horizontal_header = self.tools_table_exc.horizontalHeader()
-        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+        horizontal_header = self.apertures_table.horizontalHeader()
+        horizontal_header.setMinimumSectionSize(10)
+        horizontal_header.setDefaultSectionSize(70)
+        horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
+        horizontal_header.resizeSection(0, 20)
+        horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
-        # horizontal_header.setStretchLastSection(True)
+        horizontal_header.setSectionResizeMode(4, QtWidgets.QHeaderView.Stretch)
 
-        # self.tools_table_exc.setSortingEnabled(True)
-        # sort by tool diameter
-        self.tools_table_exc.sortItems(1)
-
-        # After sorting, to display also the number of drills in the right row we need to update self.initial_rows dict
-        # with the new order. Of course the last 2 rows in the tool table are just for display therefore we don't
-        # use them
-        self.tool2tooldia.clear()
-        for row in range(self.tools_table_exc.rowCount() - 2):
-            tool = int(self.tools_table_exc.item(row, 0).text())
-            diameter = float(self.tools_table_exc.item(row, 1).text())
-            self.tool2tooldia[tool] = diameter
-
-        self.tools_table_exc.setMinimumHeight(self.tools_table_exc.getHeight())
-        self.tools_table_exc.setMaximumHeight(self.tools_table_exc.getHeight())
-
-        # make sure no rows are selected so the user have to click the correct row, meaning selecting the correct tool
-        self.tools_table_exc.clearSelection()
-
-        # Remove anything else in the GUI Selected Tab
-        self.app.ui.selected_scroll_area.takeWidget()
-        # Put ourself in the GUI Selected Tab
-        self.app.ui.selected_scroll_area.setWidget(self.exc_edit_widget)
-        # Switch notebook to Selected page
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
-
-        # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
-        self.tools_table_exc.itemChanged.connect(self.on_tool_edit)
+        self.apertures_table.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.apertures_table.setSortingEnabled(False)
+        self.apertures_table.setMinimumHeight(self.apertures_table.getHeight())
+        self.apertures_table.setMaximumHeight(self.apertures_table.getHeight())
 
     def on_tool_add(self, tooldia=None):
         self.is_modified = True
@@ -1089,7 +999,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 row_to_be_selected = int(key) - 1
                 break
 
-        self.tools_table_exc.selectRow(row_to_be_selected)
+        self.apertures_table.selectRow(row_to_be_selected)
 
     def on_tool_delete(self, dia=None):
         self.is_modified = True
@@ -1098,10 +1008,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         try:
             if dia is None or dia is False:
-                # deleted_tool_dia = float(self.tools_table_exc.item(self.tools_table_exc.currentRow(), 1).text())
-                for index in self.tools_table_exc.selectionModel().selectedRows():
+                # deleted_tool_dia = float(self.apertures_table.item(self.apertures_table.currentRow(), 1).text())
+                for index in self.apertures_table.selectionModel().selectedRows():
                     row = index.row()
-                    deleted_tool_dia_list.append(float(self.tools_table_exc.item(row, 1).text()))
+                    deleted_tool_dia_list.append(float(self.apertures_table.item(row, 1).text()))
             else:
                 if isinstance(dia, list):
                     for dd in dia:
@@ -1152,22 +1062,22 @@ class FlatCAMGrbEditor(QtCore.QObject):
     def on_tool_edit(self, item_changed):
 
         # if connected, disconnect the signal from the slot on item_changed as it creates issues
-        self.tools_table_exc.itemChanged.disconnect()
-        # self.tools_table_exc.selectionModel().currentChanged.disconnect()
+        self.apertures_table.itemChanged.disconnect()
+        # self.apertures_table.selectionModel().currentChanged.disconnect()
 
         self.is_modified = True
         geometry = []
         current_table_dia_edited = None
 
-        if self.tools_table_exc.currentItem() is not None:
+        if self.apertures_table.currentItem() is not None:
             try:
-                current_table_dia_edited = float(self.tools_table_exc.currentItem().text())
+                current_table_dia_edited = float(self.apertures_table.currentItem().text())
             except ValueError as e:
                 log.debug("FlatCAMExcEditor.on_tool_edit() --> %s" % str(e))
-                self.tools_table_exc.setCurrentItem(None)
+                self.apertures_table.setCurrentItem(None)
                 return
 
-        row_of_item_changed = self.tools_table_exc.currentRow()
+        row_of_item_changed = self.apertures_table.currentRow()
 
         # rows start with 0, tools start with 1 so we adjust the value by 1
         key_in_tool2tooldia = row_of_item_changed + 1
@@ -1194,7 +1104,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     MultiLineString([affinity.scale(subgeo, xfact=factor, yfact=factor) for subgeo in shape.geo])))
 
                 self.points_edit[current_table_dia_edited].append((0, 0))
-            self.add_exc_shape(geometry, self.storage_dict[current_table_dia_edited])
+            self.add_gerber_shape(geometry, self.storage_dict[current_table_dia_edited])
 
             self.on_tool_delete(dia=dia_changed)
 
@@ -1202,8 +1112,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.gerber_obj.tool_offset.pop(dia_changed, None)
 
         # we reactivate the signals after the after the tool editing
-        self.tools_table_exc.itemChanged.connect(self.on_tool_edit)
-        # self.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
+        self.apertures_table.itemChanged.connect(self.on_tool_edit)
+        # self.apertures_table.selectionModel().currentChanged.connect(self.on_row_selected)
 
     def on_name_activate(self):
         self.edited_obj_name = self.name_entry.get_value()
@@ -1347,7 +1257,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :return: None
         """
 
-        assert isinstance(exc_obj, Excellon), \
+        assert isinstance(exc_obj, Gerber), \
             "Expected an Excellon Object, got %s" % type(exc_obj)
 
         self.deactivate()
@@ -1372,24 +1282,18 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # build the geometry for each tool-diameter, each drill will be represented by a '+' symbol
         # and then add it to the storage elements (each storage elements is a member of a list
-        for tool_dia in self.points_edit:
+        for apid in self.gerber_obj.apertures:
             storage_elem = FlatCAMGeoEditor.make_storage()
-            for point in self.points_edit[tool_dia]:
-                # make a '+' sign, the line length is the tool diameter
-                start_hor_line = ((point.x - (tool_dia / 2)), point.y)
-                stop_hor_line = ((point.x + (tool_dia / 2)), point.y)
-                start_vert_line = (point.x, (point.y - (tool_dia / 2)))
-                stop_vert_line = (point.x, (point.y + (tool_dia / 2)))
-                shape = MultiLineString([(start_hor_line, stop_hor_line),(start_vert_line, stop_vert_line)])
-                if shape is not None:
-                    self.add_exc_shape(DrawToolShape(shape), storage_elem)
-            self.storage_dict[tool_dia] = storage_elem
+            for geo in self.gerber_obj.apertures[apid]['solid_geometry']:
+                if geo is not None:
+                    self.add_gerber_shape(DrawToolShape(geo), storage_elem)
+            self.storage_dict[apid] = storage_elem
 
         self.replot()
 
         # add a first tool in the Tool Table but only if the Excellon Object is empty
-        if not self.tool2tooldia:
-            self.on_tool_add(tooldia=1.00)
+        # if not self.tool2tooldia:
+        #     self.on_tool_add(tooldia=1.00)
 
     def update_fcgerber(self, exc_obj):
         """
@@ -1490,8 +1394,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.new_tool_offset = self.gerber_obj.tool_offset
 
         # reset the tool table
-        self.tools_table_exc.clear()
-        self.tools_table_exc.setHorizontalHeaderLabels(['#', _('Diameter'), 'D', 'S'])
+        self.apertures_table.clear()
+        self.apertures_table.setHorizontalHeaderLabels(['#', _('Diameter'), 'D', 'S'])
         self.last_tool_selected = None
 
         # delete the edited Excellon object which will be replaced by a new one having the edited content of the first
@@ -1603,8 +1507,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.selected = []
 
         try:
-            selected_dia = self.tool2tooldia[self.tools_table_exc.currentRow() + 1]
-            self.last_tool_selected = self.tools_table_exc.currentRow() + 1
+            selected_dia = self.tool2tooldia[self.apertures_table.currentRow() + 1]
+            self.last_tool_selected = self.apertures_table.currentRow() + 1
             for obj in self.storage_dict[selected_dia].get_objects():
                 self.selected.append(obj)
         except Exception as e:
@@ -1677,9 +1581,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # Add shape
         if type(storage) is list:
             for item_storage in storage:
-                self.add_exc_shape(self.active_tool.geometry, item_storage)
+                self.add_gerber_shape(self.active_tool.geometry, item_storage)
         else:
-            self.add_exc_shape(self.active_tool.geometry, storage)
+            self.add_gerber_shape(self.active_tool.geometry, storage)
 
         # Remove any utility shapes
         self.delete_utility_geometry()
@@ -1689,7 +1593,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.replot()
         # self.active_tool = type(self.active_tool)(self)
 
-    def add_exc_shape(self, shape, storage):
+    def add_gerber_shape(self, shape, storage):
         """
         Adds a shape to the shape storage.
 
@@ -1700,7 +1604,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # List of DrawToolShape?
         if isinstance(shape, list):
             for subshape in shape:
-                self.add_exc_shape(subshape, storage)
+                self.add_gerber_shape(subshape, storage)
             return
 
         assert isinstance(shape, DrawToolShape), \
@@ -1819,11 +1723,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 if shape_s in self.storage_dict[storage].get_objects():
                     for key in self.tool2tooldia:
                         if self.tool2tooldia[key] == storage:
-                            item = self.tools_table_exc.item((key - 1), 1)
-                            self.tools_table_exc.setCurrentItem(item)
+                            item = self.apertures_table.item((key - 1), 1)
+                            self.apertures_table.setCurrentItem(item)
                             self.last_tool_selected = key
                             # item.setSelected(True)
-                            # self.exc_editor_app.tools_table_exc.selectItem(key - 1)
+                            # self.grb_editor_app.apertures_table.selectItem(key - 1)
 
         self.replot()
 
