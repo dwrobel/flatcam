@@ -1365,7 +1365,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             else:
                 self.edited_obj_name += "_edit"
 
-        self.app.worker_task.emit({'fcn': self.new_edited_excellon,
+        self.app.worker_task.emit({'fcn': self.new_edited_gerber,
                                    'params': [self.edited_obj_name]})
 
         if self.gerber_obj.slots:
@@ -1403,7 +1403,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             obj.options = {}
             return True
 
-    def new_edited_excellon(self, outname):
+    def new_edited_gerber(self, outname):
         """
         Creates a new Excellon object for the edited Excellon. Thread-safe.
 

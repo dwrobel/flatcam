@@ -11,6 +11,7 @@ import getopt
 import random
 import simplejson as json
 import lzma
+import threading
 
 from stat import S_IREAD, S_IRGRP, S_IROTH
 import subprocess
@@ -112,11 +113,12 @@ class App(QtCore.QObject):
     manual_url = "http://flatcam.org/manual/index.html"
     video_url = "https://www.youtube.com/playlist?list=PLVvP2SYRpx-AQgNlfoxw93tXUXon7G94_"
 
-    should_we_quit = True
-
     # this variable will hold the project status
     # if True it will mean that the project was modified and not saved
     should_we_save = False
+
+    # flag is True if saving action has been triggered
+    save_in_progress = False
 
     ##################
     ##    Signals   ##
@@ -126,6 +128,8 @@ class App(QtCore.QObject):
     # Handled by:
     #  * App.info() --> Print on the status bar
     inform = QtCore.pyqtSignal(str)
+
+    app_quit = QtCore.pyqtSignal()
 
     # General purpose background task
     worker_task = QtCore.pyqtSignal(dict)
@@ -1224,6 +1228,7 @@ class App(QtCore.QObject):
         ### Signal handling ###
         ## Custom signals
         self.inform.connect(self.info)
+        self.app_quit.connect(self.quit_application)
         self.message.connect(self.message_dialog)
         self.progress.connect(self.set_progress_bar)
         self.object_created.connect(self.on_object_created)
@@ -3164,6 +3169,11 @@ class App(QtCore.QObject):
             self.inform.emit(_("Factory defaults saved."))
 
     def final_save(self):
+
+        if self.save_in_progress:
+            self.inform.emit(_("Application is saving the project. Please wait ..."))
+            return
+
         if self.should_we_save and self.collection.get_list():
             msgbox = QtWidgets.QMessageBox()
             msgbox.setText(_("There are files/objects modified in FlatCAM. "
@@ -3178,11 +3188,15 @@ class App(QtCore.QObject):
             response = msgbox.exec_()
 
             if response == QtWidgets.QMessageBox.Yes:
-                self.on_file_saveprojectas(thread=False)
+                self.on_file_saveprojectas(thread=True, quit=True)
+            elif response == QtWidgets.QMessageBox.No:
+                QtWidgets.qApp.quit()
             elif response == QtWidgets.QMessageBox.Cancel:
-                self.should_we_quit = False
                 return
+        else:
+            QtWidgets.qApp.quit()
 
+    def quit_application(self):
         self.save_defaults()
         log.debug("App.final_save() --> App Defaults saved.")
 
@@ -6218,7 +6232,7 @@ class App(QtCore.QObject):
 
         self.should_we_save = False
 
-    def on_file_saveprojectas(self, make_copy=False, thread=True):
+    def on_file_saveprojectas(self, make_copy=False, thread=True, quit=False):
         """
         Callback for menu item File->Save Project As... Opens a file
         chooser and saves the project to the given file via
@@ -6253,9 +6267,9 @@ class App(QtCore.QObject):
 
         if thread is True:
             self.worker_task.emit({'fcn': self.save_project,
-                                   'params': [filename]})
+                                   'params': [filename, quit]})
         else:
-            self.save_project(filename)
+            self.save_project(filename, quit)
 
         # self.save_project(filename)
         self.file_opened.emit("project", filename)
@@ -7861,7 +7875,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
         for obj in objects:
             obj.on_generatecnc_button_click()
 
-    def save_project(self, filename):
+    def save_project(self, filename, quit=False):
         """
         Saves the current project to the specified file.
 
@@ -7870,6 +7884,8 @@ The normal flow when working in FlatCAM is the following:</span></p>
         :return: None
         """
         self.log.debug("save_project()")
+
+        self.save_in_progress = True
 
         with self.proc_container.new(_("Saving FlatCAM Project")) as proc:
             ## Capture the latest changes
@@ -7926,6 +7942,27 @@ The normal flow when working in FlatCAM is the following:</span></p>
                     self.inform.emit(_("[success] Project saved to: %s") % filename)
                 else:
                     self.inform.emit(_("[ERROR_NOTCL] Failed to save project file: %s. Retry to save it.") % filename)
+
+            if quit:
+                t = threading.Thread(target=lambda: self.check_project_file_size(1, filename=filename))
+                t.start()
+
+    # using Alfe's answer from here:
+    # https://stackoverflow.com/questions/474528/what-is-the-best-way-to-repeatedly-execute-a-function-every-x-seconds-in-python
+    def check_project_file_size(self, delay, filename):
+        next_time = time.time() + delay
+        while True:
+            time.sleep(max(0, next_time - time.time()))
+            try:
+                statinfo = os.stat(filename)
+                if statinfo:
+                    self.app_quit.emit()
+            except Exception:
+                traceback.print_exc()
+                # in production code you might want to have this instead of course:
+                # logger.exception("Problem while executing repetitive task.")
+            # skip tasks if we are behind schedule:
+            next_time += (time.time() - next_time) // delay * delay + delay
 
     def on_options_app2project(self):
         """

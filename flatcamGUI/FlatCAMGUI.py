@@ -2383,6 +2383,177 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Show Shortcut list
                 if key == 'F3':
                     self.app.on_shortcut_list()
+        elif self.app.call_source == 'grb_editor':
+            if modifiers == QtCore.Qt.ControlModifier:
+                # save (update) the current geometry and return to the App
+                if key == QtCore.Qt.Key_S or key == 'S':
+                    self.app.editor2object()
+                    return
+
+                # toggle the measurement tool
+                if key == QtCore.Qt.Key_M or key == 'M':
+                    self.app.measurement_tool.run()
+                    return
+
+            elif modifiers == QtCore.Qt.ShiftModifier:
+                pass
+            elif modifiers == QtCore.Qt.AltModifier:
+                pass
+            elif modifiers == QtCore.Qt.NoModifier:
+                # Abort the current action
+                if key == QtCore.Qt.Key_Escape or key == 'Escape':
+                    # self.on_tool_select("select")
+                    self.app.inform.emit(_("[WARNING_NOTCL] Cancelled."))
+
+                    self.app.grb_editor.delete_utility_geometry()
+
+                    self.app.grb_editor.replot()
+                    # self.select_btn.setChecked(True)
+                    # self.on_tool_select('select')
+                    self.app.grb_editor.select_tool('select')
+                    return
+
+                # Delete selected object if delete key event comes out of canvas
+                if key == 'Delete':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    if self.app.grb_editor.selected:
+                        self.app.grb_editor.delete_selected()
+                        self.app.grb_editor.replot()
+                    else:
+                        self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to delete."))
+                    return
+
+                # Delete aperture in apertures table if delete key event comes from the Selected Tab
+                if key == QtCore.Qt.Key_Delete:
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    self.app.grb_editor.on_tool_delete()
+                    return
+
+                if key == QtCore.Qt.Key_Minus or key == '-':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'],
+                                             [self.app.grb_editor.snap_x, self.app.grb_editor.snap_y])
+                    return
+
+                if key == QtCore.Qt.Key_Equal or key == '=':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'],
+                                             [self.app.grb_editor.snap_x, self.app.grb_editor.snap_y])
+                    return
+
+                # toggle display of Notebook area
+                if key == QtCore.Qt.Key_QuoteLeft or key == '`':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    self.app.on_toggle_notebook()
+                    return
+
+                # Switch to Project Tab
+                if key == QtCore.Qt.Key_1 or key == '1':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    self.app.on_select_tab('project')
+                    return
+
+                # Switch to Selected Tab
+                if key == QtCore.Qt.Key_2 or key == '2':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    self.app.on_select_tab('selected')
+                    return
+
+                # Switch to Tool Tab
+                if key == QtCore.Qt.Key_3 or key == '3':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    self.app.on_select_tab('tool')
+                    return
+
+                # Copy
+                if key == QtCore.Qt.Key_C or key == 'C':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    if self.app.grb_editor.selected:
+                        self.app.inform.emit(_("Click on target point."))
+                        self.app.ui.copy_aperture_btn.setChecked(True)
+                        self.app.grb_editor.on_tool_select('aperture_copy')
+                        self.app.grb_editor.active_tool.set_origin(
+                            (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
+                    else:
+                        self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to copy."))
+                    return
+
+                # Add Aperture Tool
+                if key == QtCore.Qt.Key_A or key == 'A':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    self.app.inform.emit(_("Click on target point."))
+                    self.app.ui.add_aperture_btn.setChecked(True)
+
+                    self.app.grb_editor.x = self.app.mouse[0]
+                    self.app.grb_editor.y = self.app.mouse[1]
+
+                    self.app.grb_editor.select_tool('aperture_add')
+                    return
+
+                # Grid Snap
+                if key == QtCore.Qt.Key_G or key == 'G':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    # make sure that the cursor shape is enabled/disabled, too
+                    if self.app.grb_editor.options['grid_snap'] is True:
+                        self.app.app_cursor.enabled = False
+                    else:
+                        self.app.app_cursor.enabled = True
+                    self.app.ui.grid_snap_btn.trigger()
+                    return
+
+                # Jump to coords
+                if key == QtCore.Qt.Key_J or key == 'J':
+                    self.app.on_jump_to()
+
+                # Corner Snap
+                if key == QtCore.Qt.Key_K or key == 'K':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    self.app.ui.corner_snap_btn.trigger()
+                    return
+
+                # Move
+                if key == QtCore.Qt.Key_M or key == 'M':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    if self.app.grb_editor.selected:
+                        self.app.inform.emit(_("Click on target point."))
+                        self.app.ui.move_aperture_btn.setChecked(True)
+                        self.app.exc_editor.on_tool_select('aperture_move')
+                        self.app.grb_editor.active_tool.set_origin(
+                            (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
+                    else:
+                        self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to move."))
+                    return
+
+                # Resize Tool
+                if key == QtCore.Qt.Key_R or key == 'R':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    self.app.grb_editor.select_tool('drill_resize')
+                    return
+
+                # Add Track
+                if key == QtCore.Qt.Key_T or key == 'T':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    ## Current application units in Upper Case
+                    self.units = self.general_defaults_group.general_app_group.units_radio.get_value().upper()
+                    return
+
+                # Zoom Fit
+                if key == QtCore.Qt.Key_V or key == 'V':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    self.app.on_zoom_fit(None)
+                    return
+
+                # Propagate to tool
+                response = None
+                if self.app.grb_editor.active_tool is not None:
+                    response = self.app.grb_editor.active_tool.on_key(key=key)
+                if response is not None:
+                    self.app.inform.emit(response)
+
+                # Show Shortcut list
+                if key == QtCore.Qt.Key_F3 or key == 'F3':
+                    self.app.on_shortcut_list()
+                    return
         elif self.app.call_source == 'exc_editor':
             if modifiers == QtCore.Qt.ControlModifier:
                 # save (update) the current geometry and return to the App
@@ -2640,16 +2811,17 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             event.ignore()
 
     def closeEvent(self, event):
-        grect = self.geometry()
+        if self.app.save_in_progress:
+            self.app.inform.emit(_("[WARNING_NOTCL] Application is saving the project. Please wait ..."))
+        else:
+            grect = self.geometry()
 
-        # self.splitter.sizes()[0] is actually the size of the "notebook"
-        if not self.isMaximized():
-            self.geom_update.emit(grect.x(), grect.y(), grect.width(), grect.height(), self.splitter.sizes()[0])
+            # self.splitter.sizes()[0] is actually the size of the "notebook"
+            if not self.isMaximized():
+                self.geom_update.emit(grect.x(), grect.y(), grect.width(), grect.height(), self.splitter.sizes()[0])
 
-        self.final_save.emit()
-
-        if self.app.should_we_quit is False:
-            event.ignore()
+            self.final_save.emit()
+        event.ignore()
 
 
 class GeneralPreferencesUI(QtWidgets.QWidget):
