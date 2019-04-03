@@ -621,7 +621,6 @@ class Geometry(object):
 
         # flatten the self.solid_geometry list for import_svg() to import SVG as Gerber
         self.solid_geometry = list(self.flatten_list(self.solid_geometry))
-        #self.solid_geometry = cascaded_union(self.solid_geometry)
 
         geos_text = getsvgtext(svg_root, object_type, units=units)
         if geos_text is not None:
@@ -632,7 +631,8 @@ class Geometry(object):
                     _, minimy, _, maximy = i.bounds
                     h2 = (maximy - minimy) * 0.5
                     geos_text_f.append(translate(scale(i, 1.0, -1.0, origin=(0, 0)), yoff=(h + h2)))
-            self.solid_geometry = [self.solid_geometry, geos_text_f]
+            if geos_text_f:
+                self.solid_geometry = self.solid_geometry + geos_text_f
 
     def import_dxf(self, filename, object_type=None, units='MM'):
         """
@@ -3246,16 +3246,17 @@ class Gerber (Geometry):
                             maxx = max(maxx, maxx_)
                             maxy = max(maxy, maxy_)
                     else:
-                        try:
-                            minx_, miny_, maxx_, maxy_ = bounds_rec(k)
-                        except Exception as e:
-                            log.debug("camlib.Geometry.bounds() --> %s" % str(e))
-                            return
+                        if not k.is_empty:
+                            try:
+                                minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                            except Exception as e:
+                                log.debug("camlib.Gerber.bounds() --> %s" % str(e))
+                                return
 
-                        minx = min(minx, minx_)
-                        miny = min(miny, miny_)
-                        maxx = max(maxx, maxx_)
-                        maxy = max(maxy, maxy_)
+                            minx = min(minx, minx_)
+                            miny = min(miny, miny_)
+                            maxx = max(maxx, maxx_)
+                            maxy = max(maxy, maxy_)
                 return minx, miny, maxx, maxy
             else:
                 # it's a Shapely object, return it's bounds

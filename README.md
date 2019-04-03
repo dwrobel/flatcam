@@ -17,7 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - modified the calling of the editor2object() slot function to fix an issue with updating geometry imported from SVG file, after edit
 - working on Gerber Editor - added the key shortcuts: wip
 - made saving of the project file non-blocking and also while saving the project file, if the user tries again to close the app while project file is being saved, the app will close only after saving is complete (the project file size is non zero)
-- fixed the quit action when denying the save, to save the default values and the QSettings
+- fixed the camlib.Geometry.import_svg() and camlib.Gerber.bounds() to work when importing SVG files as Gerber
 
 31.03.2019
 
