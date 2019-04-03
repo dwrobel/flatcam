@@ -5539,6 +5539,17 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         return gcode
 
+    def gcode_footer(self, end_command=None):
+        """
+
+        :param end_command: 'M02' or 'M30' - String
+        :return:
+        """
+        if end_command:
+            return end_command
+        else:
+            return 'M02'
+
     def export_gcode(self, filename=None, preamble='', postamble='', to_file=False):
         gcode = ''
         roland = False
@@ -5603,7 +5614,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 ))
                 return
 
-            g = gcode[:g_idx] + preamble + '\n' + gcode[g_idx:] + postamble
+            g = gcode[:g_idx] + preamble + '\n' + gcode[g_idx:] + postamble + self.gcode_footer()
 
         # if toolchange custom is used, replace M6 code with the code from the Toolchange Custom Text box
         if self.ui.toolchange_cb.get_value() is True:
