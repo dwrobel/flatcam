@@ -437,7 +437,7 @@ class PaintOptionsTool(FlatCAMTool):
         grid.addWidget(self.painttooldia_entry, 0, 1)
 
         # Overlap
-        ovlabel = QtWidgets.QLabel(_('Overlap:'))
+        ovlabel = QtWidgets.QLabel(_('Overlap Rate:'))
         ovlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
             "Example:\n"

@@ -162,7 +162,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         e_lab_1 = QtWidgets.QLabel('')
         grid3.addWidget(e_lab_1, 0, 0)
 
-        nccoverlabel = QtWidgets.QLabel(_('Overlap:'))
+        nccoverlabel = QtWidgets.QLabel(_('Overlap Rate:'))
         nccoverlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
             "Example:\n"
@@ -627,6 +627,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                      "use a number."))
                 return
         over = over if over else self.app.defaults["tools_nccoverlap"]
+
+        if over >= 1 or over < 0:
+            self.app.inform.emit(_("[ERROR_NOTCL] Overlap value must be between "
+                                  "0 (inclusive) and 1 (exclusive), "))
+            return
 
         try:
             margin = float(self.ncc_margin_entry.get_value())

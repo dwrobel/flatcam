@@ -157,7 +157,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tools_box.addLayout(grid3)
 
         # Overlap
-        ovlabel = QtWidgets.QLabel(_('Overlap:'))
+        ovlabel = QtWidgets.QLabel(_('Overlap Rate:'))
         ovlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
             "Example:\n"
@@ -732,7 +732,6 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.app.report_usage(_("geometry_on_paint_button"))
         # self.app.call_source = 'paint'
 
-        self.app.inform.emit(_("[WARNING_NOTCL] Click inside the desired polygon."))
         try:
             overlap = float(self.paintoverlap_entry.get_value())
         except ValueError:
@@ -743,6 +742,13 @@ class ToolPaint(FlatCAMTool, Gerber):
                 self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
                                      "use a number."))
                 return
+
+        if overlap >= 1 or overlap < 0:
+            self.app.inform.emit(_("[ERROR_NOTCL] Overlap value must be between "
+                                  "0 (inclusive) and 1 (exclusive), "))
+            return
+
+        self.app.inform.emit(_("[WARNING_NOTCL] Click inside the desired polygon."))
 
         connect = self.pathconnect_cb.get_value()
         contour = self.paintcontour_cb.get_value()
