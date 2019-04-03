@@ -3751,7 +3751,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             return
 
         pre_buffer = cascaded_union([t.geo for t in selected])
-        results = pre_buffer.buffer(-buf_distance + 1e-10, resolution=32, join_style=join_style)
+        results = pre_buffer.buffer(buf_distance + 1e-10, resolution=32, join_style=join_style)
 
         if results.is_empty:
             self.app.inform.emit(_("[ERROR_NOTCL] Failed, the result is empty. Choose a smaller buffer value."))
@@ -3761,9 +3761,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
             return
         if type(results) == MultiPolygon:
             for poly in results:
-                self.add_shape(DrawToolShape(poly.exterior))
+                self.add_shape(DrawToolShape(poly.interiors))
         else:
-            self.add_shape(DrawToolShape(results.exterior))
+            self.add_shape(DrawToolShape(results.interiors))
 
         self.replot()
         self.app.inform.emit(_("[success] Interior buffer geometry created."))
