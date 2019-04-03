@@ -2160,7 +2160,7 @@ class App(QtCore.QObject):
                 except AttributeError:
                     self.inform.emit(_("[WARNING] Object empty after edit."))
 
-            if isinstance(edited_obj, FlatCAMGerber):
+            elif isinstance(edited_obj, FlatCAMGerber):
                 obj_type = "Gerber"
                 if cleanup is None:
                     self.grb_editor.update_fcgerber(edited_obj)

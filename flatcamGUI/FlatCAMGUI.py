@@ -451,6 +451,30 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.exc_move_drill_menuitem = self.exc_editor_menu.addAction(
             QtGui.QIcon('share/move32.png'),_( 'Move Drill(s)\tM'))
 
+        self.grb_editor_menu = QtWidgets.QMenu(_(">Gerber Editor<"))
+        self.menu.addMenu(self.grb_editor_menu)
+
+        self.grb_add_trace_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon('share/rectangle32.png'), _('Add Trace\tT'))
+        self.grb_add_zone_menuitem = self.exc_editor_menu.addAction(QtGui.QIcon('share/plus16.png'),
+                                                                     _('Add Zone\tZ'))
+        self.grb_editor_menu.addSeparator()
+
+        self.grb_resize_aperture_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon('share/resize16.png'), _('Resize Aperture\tR')
+        )
+        self.grb_copy_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/copy32.png'), _('Copy\tC'))
+        self.grb_delete_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon('share/deleteshape32.png'), _('Delete\tDEL')
+        )
+        self.grb_editor_menu.addSeparator()
+
+        self.grb_move_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon('share/move32.png'),_( 'Move\tM'))
+
+        self.grb_editor_menu.menuAction().setVisible(False)
+        self.grb_editor_menu.setDisabled(True)
+
         self.geo_editor_menu.menuAction().setVisible(False)
         self.geo_editor_menu.setDisabled(True)
 
@@ -1404,6 +1428,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.g_editor_cmenu.addSeparator()
         self.draw_move = self.g_editor_cmenu.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
 
+        self.grb_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/draw32.png'), _("Gerber Editor"))
+        self.grb_draw_track = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/path32.png'), _("Track"))
+        self.grb_draw_zone = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/rectangle32.png'), _("Zone"))
+        self.grb_editor_cmenu.addSeparator()
+        self.grb_move = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
+
         self.e_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/drill32.png'), _("Exc Editor"))
         self.drill = self.e_editor_cmenu.addAction(QtGui.QIcon('share/drill32.png'), _("Add Drill"))
         self.drill_array = self.e_editor_cmenu.addAction(QtGui.QIcon('share/addarray32.png'), _("Add Drill Array"))
@@ -1548,6 +1578,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grid_snap_btn.trigger()
 
         self.g_editor_cmenu.setEnabled(False)
+        self.grb_editor_cmenu.setEnabled(False)
         self.e_editor_cmenu.setEnabled(False)
 
         self.general_defaults_form = GeneralPreferencesUI()

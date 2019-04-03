@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+3.04.2019
+
+- fixed plotting in Gerber Editor
+- working on GUI in Gerber Editor
+
 31.03.2019
 
 - fixed issue #281 by making generation of a convex shape for the freeform cutout in Tool Cutout a choice rather than the default

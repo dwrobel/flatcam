@@ -1132,14 +1132,14 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.ui.snap_magnet.setVisible(True)
         self.app.ui.corner_snap_btn.setVisible(True)
 
-        self.app.ui.exc_editor_menu.setDisabled(False)
-        self.app.ui.exc_editor_menu.menuAction().setVisible(True)
+        self.app.ui.grb_editor_menu.setDisabled(False)
+        self.app.ui.grb_editor_menu.menuAction().setVisible(True)
 
         self.app.ui.update_obj_btn.setEnabled(True)
-        self.app.ui.e_editor_cmenu.setEnabled(True)
+        self.app.ui.grb_editor_cmenu.setEnabled(True)
 
-        self.app.ui.exc_edit_toolbar.setDisabled(False)
-        self.app.ui.exc_edit_toolbar.setVisible(True)
+        self.app.ui.grb_edit_toolbar.setDisabled(False)
+        self.app.ui.grb_edit_toolbar.setVisible(True)
         # self.app.ui.snap_toolbar.setDisabled(False)
 
         # start with GRID toolbar activated
@@ -1152,7 +1152,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
     def deactivate(self):
         self.disconnect_canvas_event_handlers()
         self.clear()
-        self.app.ui.exc_edit_toolbar.setDisabled(True)
+        self.app.ui.grb_edit_toolbar.setDisabled(True)
 
         settings = QSettings("Open Source", "FlatCAM")
         if settings.contains("layout"):
@@ -1180,8 +1180,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.app.ui.corner_snap_btn.setVisible(False)
 
         # set the Editor Toolbar visibility to what was before entering in the Editor
-        self.app.ui.exc_edit_toolbar.setVisible(False) if self.toolbar_old_state is False \
-            else self.app.ui.exc_edit_toolbar.setVisible(True)
+        self.app.ui.grb_edit_toolbar.setVisible(False) if self.toolbar_old_state is False \
+            else self.app.ui.grb_edit_toolbar.setVisible(True)
 
         # Disable visuals
         self.shapes.enabled = False
@@ -1191,12 +1191,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # Tell the app that the editor is no longer active
         self.editor_active = False
 
-        self.app.ui.exc_editor_menu.setDisabled(True)
-        self.app.ui.exc_editor_menu.menuAction().setVisible(False)
+        self.app.ui.grb_editor_menu.setDisabled(True)
+        self.app.ui.grb_editor_menu.menuAction().setVisible(False)
 
         self.app.ui.update_obj_btn.setEnabled(False)
 
         self.app.ui.g_editor_cmenu.setEnabled(False)
+        self.app.ui.grb_editor_cmenu.setEnabled(False)
         self.app.ui.e_editor_cmenu.setEnabled(False)
 
         # Show original geometry
@@ -1879,18 +1880,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     continue
                 self.plot_shape(geometry=shape_plus.geo, color=self.app.defaults['global_draw_color'])
 
-        # for shape in self.storage.get_objects():
-        #     if shape.geo is None:  # TODO: This shouldn't have happened
-        #         continue
-        #
-        #     if shape in self.selected:
-        #         self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_sel_draw_color'], linewidth=2)
-        #         continue
-        #
-        #     self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_draw_color'])
-
-
-
         for shape in self.utility:
             self.plot_shape(geometry=shape.geo, linewidth=1)
             continue
@@ -1907,34 +1896,38 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :param linewidth: Width of lines in # of pixels.
         :return: List of plotted elements.
         """
-        plot_elements = []
+        # plot_elements = []
 
         if geometry is None:
             geometry = self.active_tool.geometry
 
         try:
-            for geo in geometry:
-                plot_elements += self.plot_shape(geometry=geo, color=color, linewidth=linewidth)
-
-        ## Non-iterable
-        except TypeError:
-
-            ## DrawToolShape
-            if isinstance(geometry, DrawToolShape):
-                plot_elements += self.plot_shape(geometry=geometry.geo, color=color, linewidth=linewidth)
-
-            ## Polygon: Descend into exterior and each interior.
-            if type(geometry) == Polygon:
-                plot_elements += self.plot_shape(geometry=geometry.exterior, color=color, linewidth=linewidth)
-                plot_elements += self.plot_shape(geometry=geometry.interiors, color=color, linewidth=linewidth)
-
-            if type(geometry) == LineString or type(geometry) == LinearRing:
-                plot_elements.append(self.shapes.add(shape=geometry, color=color, layer=0))
-
+            self.shapes.add(shape=geometry.geo, color=color, face_color=color, layer=0)
+        except AttributeError:
             if type(geometry) == Point:
-                pass
+                return
+            self.shapes.add(shape=geometry, color=color, face_color=color+'AF', layer=0)
 
-        return plot_elements
+        # try:
+        #     for geo in geometry:
+        #         plot_elements += self.plot_shape(geometry=geo.geo, color=color, linewidth=linewidth)
+        #
+        # ## Non-iterable
+        # except TypeError:
+        #
+        #     # ## DrawToolShape
+        #     # if isinstance(geometry, DrawToolShape):
+        #     #     plot_elements += self.plot_shape(geometry=geometry.geo, color=color, linewidth=linewidth)
+        #     #
+        #     # ## Polygon: Descend into exterior and each interior.
+        #     # if type(geometry) == Polygon:
+        #     #     plot_elements += self.plot_shape(geometry=geometry.exterior, color=color, linewidth=linewidth)
+        #     #     plot_elements += self.plot_shape(geometry=geometry.interiors, color=color, linewidth=linewidth)
+        #     if type(geometry) == Point:
+        #         pass
+        #     else:
+        #         plot_elements.append(self.shapes.add(shape=geometry, color=color, face_color=color, layer=0))
+        # return plot_elements
 
     def on_shape_complete(self):
         self.app.log.debug("on_shape_complete()")
