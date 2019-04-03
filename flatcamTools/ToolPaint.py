@@ -1068,8 +1068,9 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 for geo in recurse(obj.solid_geometry):
                     try:
+                        #Polygons are the only really paintable geometries, lines in theory have no area to be painted
                         if not isinstance(geo, Polygon):
-                            geo = Polygon(geo)
+                            continue
                         poly_buf = geo.buffer(-paint_margin)
 
                         if paint_method == "seed":

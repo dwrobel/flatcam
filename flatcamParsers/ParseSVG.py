@@ -56,9 +56,9 @@ def svgparselength(lengthstr):
 def path2shapely(path, object_type, res=1.0):
     """
     Converts an svg.path.Path into a Shapely
-    LinearRing or LinearString.
+    Polygon or LinearString.
 
-    :rtype : LinearRing
+    :rtype : Polygon
     :rtype : LineString
     :param path: svg.path.Path instance
     :param res: Resolution (minimum step along path)
@@ -68,6 +68,7 @@ def path2shapely(path, object_type, res=1.0):
     points = []
     geometry = []
     geo_element = None
+    rings = []
 
     for component in path:
 
@@ -109,35 +110,30 @@ def path2shapely(path, object_type, res=1.0):
 
         # Move
         if isinstance(component, Move):
-            if object_type == 'geometry':
-                geo_element = LineString(points)
-            elif object_type == 'gerber':
-                # Didn't worked out using Polygon because if there is a large outline it will envelope everything
-                # and create issues with intersections. I will let the parameter obj_type present though
-                # geo_element = Polygon(points)
-                geo_element = LineString(points)
-            else:
-                log.error("[ERROR]: Not a valid target object.")
             if not points:
                 continue
             else:
-                geometry.append(geo_element)
+                rings.append(points)
                 points = []
             continue
         log.warning("I don't know what this is: %s" % str(component))
         continue
 
-    # if there are still points in points then add them as a LineString
-    if points:
-        geo_element = LineString(points)
-        geometry.append(geo_element)
-        points = []
+    # if there are still points in points then add them to the last ring
 
-    # if path.closed:
-    #     return Polygon(points).buffer(0)
-    #     # return LinearRing(points)
-    # else:
-    #     return LineString(points)
+    if points:
+        rings.append(points)
+    if len(rings) > 0:
+        if len(rings) == 1:
+            # Polygons are closed and require more than 2 points
+            if Point(rings[0][0]).almost_equals(Point(rings[0][-1])) and len(rings[0]) > 2:
+                geo_element = Polygon(rings[0])
+            else:
+                geo_element = LineString(rings[0])
+        else:
+            geo_element = Polygon(rings[0], rings[1:])
+        geometry.append(geo_element)
+
     return geometry
 
 def svgrect2shapely(rect, n_points=32):
@@ -362,7 +358,7 @@ def getsvggeo(node, object_type):
                 if tr[0] == 'translate':
                     geo = [translate(geoi, tr[1], tr[2]) for geoi in geo]
                 elif tr[0] == 'scale':
-                    geo = [scale(geoi, tr[0], tr[1], origin=(0, 0))
+                    geo = [scale(geoi, tr[1], tr[2], origin=(0, 0))
                            for geoi in geo]
                 elif tr[0] == 'rotate':
                     geo = [rotate(geoi, tr[1], origin=(tr[2], tr[3]))
@@ -459,7 +455,7 @@ def getsvgtext(node, object_type, units='MM'):
                 if tr[0] == 'translate':
                     geo = [translate(geoi, tr[1], tr[2]) for geoi in geo]
                 elif tr[0] == 'scale':
-                    geo = [scale(geoi, tr[0], tr[1], origin=(0, 0))
+                    geo = [scale(geoi, tr[1], tr[2], origin=(0, 0))
                            for geoi in geo]
                 elif tr[0] == 'rotate':
                     geo = [rotate(geoi, tr[1], origin=(tr[2], tr[3]))
@@ -592,7 +588,7 @@ def parse_svg_transform(trstr):
             trlist.append([
                 'translate',
                 float(match.group(1)),
-                float(match.group(2)) if match.group else 0.0
+                float(match.group(2)) if (match.group(2) is not None) else 0.0
             ])
             trstr = trstr[len(match.group(0)):].strip(' ')
             continue
@@ -600,9 +596,9 @@ def parse_svg_transform(trstr):
         match = re.search(r'^' + scale_re_str, trstr)
         if match:
             trlist.append([
-                'translate',
+                'scale',
                 float(match.group(1)),
-                float(match.group(2)) if not None else float(match.group(1))
+                float(match.group(2)) if (match.group(2) is not None) else float(match.group(1))
             ])
             trstr = trstr[len(match.group(0)):].strip(' ')
             continue
