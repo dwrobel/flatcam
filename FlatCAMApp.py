@@ -1271,8 +1271,8 @@ class App(QtCore.QObject):
         self.ui.menufilesavedefaults.triggered.connect(self.on_file_savedefaults)
         self.ui.menufile_exit.triggered.connect(self.final_save)
 
-        self.ui.menueditedit.triggered.connect(self.object2editor)
-        self.ui.menueditok.triggered.connect(self.editor2object)
+        self.ui.menueditedit.triggered.connect(lambda: self.object2editor())
+        self.ui.menueditok.triggered.connect(lambda: self.editor2object())
 
         self.ui.menuedit_convertjoin.triggered.connect(self.on_edit_join)
         self.ui.menuedit_convertjoinexc.triggered.connect(self.on_edit_join_exc)
@@ -1370,7 +1370,7 @@ class App(QtCore.QObject):
         self.ui.popmenu_copy.triggered.connect(self.on_copy_object)
         self.ui.popmenu_delete.triggered.connect(self.on_delete)
         self.ui.popmenu_edit.triggered.connect(self.object2editor)
-        self.ui.popmenu_save.triggered.connect(self.editor2object)
+        self.ui.popmenu_save.triggered.connect(lambda: self.editor2object())
         self.ui.popmenu_move.triggered.connect(self.obj_move)
 
         self.ui.popmenu_properties.triggered.connect(self.obj_properties)
@@ -2036,7 +2036,7 @@ class App(QtCore.QObject):
         self.ui.newgeo_btn.triggered.connect(self.new_geometry_object)
         self.ui.newexc_btn.triggered.connect(self.new_excellon_object)
         self.ui.editgeo_btn.triggered.connect(self.object2editor)
-        self.ui.update_obj_btn.triggered.connect(self.editor2object)
+        self.ui.update_obj_btn.triggered.connect(lambda: self.editor2object())
         self.ui.delete_btn.triggered.connect(self.on_delete)
         self.ui.shell_btn.triggered.connect(self.on_toggle_shell)
 

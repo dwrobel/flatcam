@@ -284,31 +284,10 @@ class FCApertureSelect(DrawTool):
     def select_shapes(self, pos):
         self.grb_editor_app.apertures_table.clearSelection()
 
-        try:
-            # for storage in self.grb_editor_app.storage_dict:
-            #     _, partial_closest_shape = self.grb_editor_app.storage_dict[storage].nearest(pos)
-            #     if partial_closest_shape is not None:
-            #         self.sel_storage.insert(partial_closest_shape)
-            #
-            # _, closest_shape = self.sel_storage.nearest(pos)
-
-            for storage in self.grb_editor_app.storage_dict:
-                for shape in self.grb_editor_app.storage_dict[storage].get_objects():
-                    self.sel_storage.insert(DrawToolShape(LineString(shape.geo.exterior)))
-
-            _, closest_shape = self.sel_storage.nearest(pos)
-
-
-            # constrain selection to happen only within a certain bounding box
-            x_coord, y_coord = closest_shape.geo[0].xy
-            delta = (x_coord[1] - x_coord[0])
-            # closest_shape_coords = (((x_coord[0] + delta / 2)), y_coord[0])
-            xmin = x_coord[0] - (0.7 * delta)
-            xmax = x_coord[0] + (1.7 * delta)
-            ymin = y_coord[0] - (0.7 * delta)
-            ymax = y_coord[0] + (1.7 * delta)
-        except StopIteration:
-            return ""
+        for storage in self.grb_editor_app.storage_dict:
+            for shape in self.grb_editor_app.storage_dict[storage].get_objects():
+                if Point(pos).within(shape.geo):
+                    self.sel_storage.insert(DrawToolShape(shape.geo))
 
         if pos[0] < xmin or pos[0] > xmax or pos[1] < ymin or pos[1] > ymax:
             self.grb_editor_app.selected = []
@@ -1298,7 +1277,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
     def update_fcgerber(self, exc_obj):
         """
-        Create a new Excellon object that contain the edited content of the source Excellon object
+        Create a new Gerber object that contain the edited content of the source Excellon object
 
         :param exc_obj: FlatCAMExcellon
         :return: None
@@ -1307,8 +1286,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # this dictionary will contain tooldia's as keys and a list of coordinates tuple as values
         # the values of this dict are coordinates of the holes (drills)
         edited_points = {}
-        for storage_tooldia in self.storage_dict:
-            for x in self.storage_dict[storage_tooldia].get_objects():
+        for storage_aperture in self.storage_dict:
+            for x in self.storage_dict[storage_aperture].get_objects():
 
                 # all x.geo in self.storage_dict[storage] are MultiLinestring objects
                 # each MultiLineString is made out of Linestrings

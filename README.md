@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed plotting in Gerber Editor
 - working on GUI in Gerber Editor
 - added a Gcode end_command: default is M02
+- modified the calling of the editor2object() slot function
 
 31.03.2019
 
