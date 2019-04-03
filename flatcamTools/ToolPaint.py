@@ -743,7 +743,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                                      "use a number."))
                 return
 
-        if not overlap < 1 and overlap >= 0:
+        if overlap >= 1 or overlap < 0:
             self.app.inform.emit(_("[ERROR_NOTCL] Overlap value must be between "
                                   "0 (inclusive) and 1 (exclusive), "))
             return
