@@ -3190,7 +3190,7 @@ class App(QtCore.QObject):
             if response == QtWidgets.QMessageBox.Yes:
                 self.on_file_saveprojectas(thread=True, quit=True)
             elif response == QtWidgets.QMessageBox.No:
-                QtWidgets.qApp.quit()
+                self.quit_application()
             elif response == QtWidgets.QMessageBox.Cancel:
                 return
         else:

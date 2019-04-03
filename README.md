@@ -14,9 +14,10 @@ CAD program, and create G-Code for Isolation routing.
 - fixed plotting in Gerber Editor
 - working on GUI in Gerber Editor
 - added a Gcode end_command: default is M02
-- modified the calling of the editor2object() slot function to fix an issue with updating geometry imported from SVG file, after edut
+- modified the calling of the editor2object() slot function to fix an issue with updating geometry imported from SVG file, after edit
 - working on Gerber Editor - added the key shortcuts: wip
 - made saving of the project file non-blocking and also while saving the project file, if the user tries again to close the app while project file is being saved, the app will close only after saving is complete (the project file size is non zero)
+- fixed the quit action when denying the save, to save the default values and the QSettings
 
 31.03.2019
 
