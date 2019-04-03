@@ -4865,7 +4865,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.ncc_tool_dia_entry = FCEntry()
         grid0.addWidget(self.ncc_tool_dia_entry, 0, 1)
 
-        nccoverlabel = QtWidgets.QLabel(_('Overlap:'))
+        nccoverlabel = QtWidgets.QLabel(_('Overlap Rate:'))
         nccoverlabel.setToolTip(
            _( "How much (fraction) of the tool width to overlap each tool pass.\n"
             "Example:\n"
@@ -5110,7 +5110,7 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.painttooldia_entry, 0, 1)
 
         # Overlap
-        ovlabel = QtWidgets.QLabel(_('Overlap:'))
+        ovlabel = QtWidgets.QLabel(_('Overlap Rate:'))
         ovlabel.setToolTip(
             _("How much (fraction) of the tool\n"
             "width to overlap each tool pass.")
