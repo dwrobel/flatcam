@@ -3595,6 +3595,8 @@ class Excellon(Geometry):
         # this will serve as a default if the Excellon file has no info regarding of tool diameters (this info may be
         # in another file like for PCB WIzard ECAD software
         self.toolless_diam = 1.0
+        # signal that the Excellon file has no tool diameter informations and the tools have bogus (random) diameter
+        self.diameterless = False
 
         # Excellon format
         self.excellon_format_upper_in = excellon_format_upper_in or self.defaults["excellon_format_upper_in"]
@@ -3865,6 +3867,7 @@ class Excellon(Geometry):
                                     # then match.group(2) = None and float(None) will create the exception
                                     # the bellow construction is so each tool will have a slightly different diameter
                                     # starting with a default value, to allow Excellon editing after that
+                                    self.diameterless = True
                                     if self.excellon_units == 'MM':
                                         self.toolless_diam += (int(current_tool) - 1) / 10
                                     else:
