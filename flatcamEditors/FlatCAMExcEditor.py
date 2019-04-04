@@ -1768,7 +1768,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 first_linestring = x.geo[0]
                 # get it's coordinates
                 first_linestring_coords = first_linestring.coords
-                x_coord = first_linestring_coords[0][0] + (float(storage_tooldia) / 2)
+                x_coord = first_linestring_coords[0][0] + (float(first_linestring.length / 2))
                 y_coord = first_linestring_coords[0][1]
 
                 # create a tuple with the coordinates (x, y) and add it to the list that is the value of the
