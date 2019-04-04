@@ -1170,9 +1170,20 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.sorted_diameters = sorted(sort_temp)
 
         # populate self.intial_table_rows dict with the tool number as keys and tool diameters as values
-        for i in range(len(self.sorted_diameters)):
-            tt_dia = self.sorted_diameters[i]
-            self.tool2tooldia[i + 1] = tt_dia
+        if self.exc_obj.diameterless is False:
+            for i in range(len(self.sorted_diameters)):
+                tt_dia = self.sorted_diameters[i]
+                self.tool2tooldia[i + 1] = tt_dia
+        else:
+            # the Excellon object has diameters that are bogus information, added by the application because the
+            # Excellon file has no tool diameter information. In this case do not order the diameter in the table
+            # but use the real order found in the exc_obj.tools
+            for k, v in self.exc_obj.tools.items():
+                if self.units == 'IN':
+                    tool_dia = float('%.3f' % v['C'])
+                else:
+                    tool_dia = float('%.2f' % v['C'])
+                self.tool2tooldia[int(k)] = tool_dia
 
     def build_ui(self):
 
@@ -1521,13 +1532,26 @@ class FlatCAMExcEditor(QtCore.QObject):
         else:
             # tool diameter is already in use so we move the drills from the prior tool to the new tool
             factor = current_table_dia_edited / dia_changed
+            geometry = []
+
             for shape in self.storage_dict[dia_changed].get_objects():
                 geometry.append(DrawToolShape(
                     MultiLineString([affinity.scale(subgeo, xfact=factor, yfact=factor) for subgeo in shape.geo])))
 
-                self.points_edit[current_table_dia_edited].append((0, 0))
-            self.add_exc_shape(geometry, self.storage_dict[current_table_dia_edited])
+                # add bogus drill points (for total count of drills)
+                for k, v in self.olddia_newdia.items():
+                    if v == current_table_dia_edited:
+                        self.points_edit[k].append((0, 0))
+                        break
 
+            # search for the oldia that correspond to the newdia and add the drills in it's storage
+            # everything will be sort out later, when the edited excellon is updated
+            for k, v in self.olddia_newdia.items():
+                if v == current_table_dia_edited:
+                    self.add_exc_shape(geometry, self.storage_dict[k])
+                    break
+
+            # delete the old tool from which we moved the drills
             self.on_tool_delete(dia=dia_changed)
 
             # delete the tool offset

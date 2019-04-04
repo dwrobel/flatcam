@@ -3868,13 +3868,11 @@ class Excellon(Geometry):
                                     # the bellow construction is so each tool will have a slightly different diameter
                                     # starting with a default value, to allow Excellon editing after that
                                     self.diameterless = True
+
                                     if self.excellon_units == 'MM':
-                                        self.toolless_diam += (int(current_tool) - 1) / 10
+                                        diam = self.toolless_diam + (int(current_tool) - 1) / 100
                                     else:
-                                        self.toolless_diam += (int(current_tool) - 1) / 10
-                                        # convert to inch
-                                        self.toolless_diam /= 25.4
-                                    diam = self.toolless_diam
+                                        diam = (self.toolless_diam + (int(current_tool) - 1) / 100) / 25.4
 
                                 spec = {
                                     "C": diam,
