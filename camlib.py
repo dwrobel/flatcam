@@ -3592,6 +3592,10 @@ class Excellon(Geometry):
         self.zeros_found = self.zeros
         self.units_found = self.units
 
+        # this will serve as a default if the Excellon file has no info regarding of tool diameters (this info may be
+        # in another file like for PCB WIzard ECAD software
+        self.toolless_diam = 1.0
+
         # Excellon format
         self.excellon_format_upper_in = excellon_format_upper_in or self.defaults["excellon_format_upper_in"]
         self.excellon_format_lower_in = excellon_format_lower_in or self.defaults["excellon_format_lower_in"]
@@ -3652,7 +3656,8 @@ class Excellon(Geometry):
         self.toolsel_re = re.compile(r'^T(\d+)')
 
         # Headerless toolset
-        self.toolset_hl_re = re.compile(r'^T(\d+)(?=.*C(\d*\.?\d*))')
+        # self.toolset_hl_re = re.compile(r'^T(\d+)(?=.*C(\d*\.?\d*))')
+        self.toolset_hl_re = re.compile(r'^T(\d+)(?:.?C(\d+\.?\d*))?')
 
         # Comment
         self.comm_re = re.compile(r'^;(.*)$')
@@ -3801,10 +3806,9 @@ class Excellon(Geometry):
                             continue
                     else:
                         log.warning("Line ignored, it's a comment: %s" % eline)
-
                 else:
                     if self.hend_re.search(eline):
-                        if in_header is False:
+                        if in_header is False or bool(self.tools) is False:
                             log.warning("Found end of the header but there is no header: %s" % eline)
                             log.warning("The only useful data in header are tools, units and format.")
                             log.warning("Therefore we will create units and format based on defaults.")
@@ -3849,12 +3853,28 @@ class Excellon(Geometry):
                     if match:
                         current_tool = str(int(match.group(1)))
                         log.debug("Tool change: %s" % current_tool)
-                        if headerless is True:
+                        if bool(headerless):
                             match = self.toolset_hl_re.search(eline)
                             if match:
                                 name = str(int(match.group(1)))
+                                try:
+                                    diam = float(match.group(2))
+                                except:
+                                    # it's possible that tool definition has only tool number and no diameter info
+                                    # (those could be in another file like PCB Wizard do)
+                                    # then match.group(2) = None and float(None) will create the exception
+                                    # the bellow construction is so each tool will have a slightly different diameter
+                                    # starting with a default value, to allow Excellon editing after that
+                                    if self.excellon_units == 'MM':
+                                        self.toolless_diam += (int(current_tool) - 1) / 10
+                                    else:
+                                        self.toolless_diam += (int(current_tool) - 1) / 10
+                                        # convert to inch
+                                        self.toolless_diam /= 25.4
+                                    diam = self.toolless_diam
+
                                 spec = {
-                                    "C": float(match.group(2)),
+                                    "C": diam,
                                 }
                                 spec['solid_geometry'] = []
                                 self.tools[name] = spec
