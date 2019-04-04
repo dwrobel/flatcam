@@ -1951,9 +1951,9 @@ class Gerber (Geometry):
         #### Parser patterns ####
         # FS - Format Specification
         # The format of X and Y must be the same!
-        # L-omit leading zeros, T-omit trailing zeros
+        # L-omit leading zeros, T-omit trailing zeros, D-no zero supression
         # A-absolute notation, I-incremental notation
-        self.fmt_re = re.compile(r'%?FS([LT])([AI])X(\d)(\d)Y\d\d\*%?$')
+        self.fmt_re = re.compile(r'%?FS([LTD])([AI])X(\d)(\d)Y\d\d\*%?$')
         self.fmt_re_alt = re.compile(r'%FS([LT])([AI])X(\d)(\d)Y\d\d\*MO(IN|MM)\*%$')
         self.fmt_re_orcad = re.compile(r'(G\d+)*\**%FS([LT])([AI]).*X(\d)(\d)Y\d\d\*%$')
 
@@ -2289,8 +2289,8 @@ class Gerber (Geometry):
                     log.debug("Gerber format found. (%s) " % str(gline))
 
                     log.debug(
-                        "Gerber format found. Gerber zeros = %s (L-omit leading zeros, T-omit trailing zeros)" %
-                        self.gerber_zeros)
+                        "Gerber format found. Gerber zeros = %s (L-omit leading zeros, T-omit trailing zeros, "
+                        "D-no zero supression)" % self.gerber_zeros)
                     log.debug("Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
                     continue
 
@@ -2313,8 +2313,8 @@ class Gerber (Geometry):
                     self.frac_digits = int(match.group(4))
                     log.debug("Gerber format found. (%s) " % str(gline))
                     log.debug(
-                        "Gerber format found. Gerber zeros = %s (L-omit leading zeros, T-omit trailing zeros)" %
-                        self.gerber_zeros)
+                        "Gerber format found. Gerber zeros = %s (L-omit leading zeros, T-omit trailing zeros, "
+                        "D-no zero suppression)" % self.gerber_zeros)
                     log.debug("Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
 
                     gerber_units = match.group(1)
@@ -2337,8 +2337,8 @@ class Gerber (Geometry):
                         self.frac_digits = int(match.group(5))
                         log.debug("Gerber format found. (%s) " % str(gline))
                         log.debug(
-                            "Gerber format found. Gerber zeros = %s (L-omit leading zeros, T-omit trailing zeros)" %
-                            self.gerber_zeros)
+                            "Gerber format found. Gerber zeros = %s (L-omit leading zeros, T-omit trailing zeros, "
+                            "D-no zerosuppressionn)" % self.gerber_zeros)
                         log.debug("Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
 
                         gerber_units = match.group(1)
@@ -7175,17 +7175,22 @@ def parse_gerber_number(strnumber, int_digits, frac_digits, zeros):
     :param frac_digits: Number of digits used for the fractional
     part of the number
     :type frac_digits: int
-    :param zeros: If 'L', leading zeros are removed and trailing zeros are kept. If 'T', is in reverse.
+    :param zeros: If 'L', leading zeros are removed and trailing zeros are kept. Same situation for 'D' when
+    no zero suppression is done. If 'T', is in reverse.
     :type zeros: str
     :return: The number in floating point.
     :rtype: float
     """
-    if zeros == 'L':
+
+    ret_val = None
+
+    if zeros == 'L' or zeros == 'D':
         ret_val = int(strnumber) * (10 ** (-frac_digits))
 
     if zeros == 'T':
         int_val = int(strnumber)
         ret_val = (int_val * (10 ** ((int_digits + frac_digits) - len(strnumber)))) * (10 ** (-frac_digits))
+
     return ret_val
 
 

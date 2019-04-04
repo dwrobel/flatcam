@@ -1810,9 +1810,11 @@ class App(QtCore.QObject):
         # Variable to store the GCODE that was edited
         self.gcode_edited = ""
 
-        self.grb_list = ['gbr', 'ger', 'gtl', 'gbl', 'gts', 'gbs', 'gtp', 'gbp', 'gto', 'gbo', 'gm1', 'gm2', 'gm3', 'gko',
-                    'cmp', 'sol', 'stc', 'sts', 'plc', 'pls', 'crc', 'crs', 'tsm', 'bsm', 'ly2', 'ly15', 'dim', 'mil',
-                    'grb', 'top', 'bot', 'smt', 'smb', 'sst', 'ssb', 'spt', 'spb', 'pho', 'gdo', 'art', 'gbd']
+        self.grb_list = ['gbr', 'ger', 'gtl', 'gbl', 'gts', 'gbs', 'gtp', 'gbp', 'gto', 'gbo', 'gm1', 'gm2', 'gm3',
+                         'gko', 'cmp', 'sol', 'stc', 'sts', 'plc', 'pls', 'crc', 'crs', 'tsm', 'bsm', 'ly2', 'ly15',
+                         'dim', 'mil', 'grb', 'top', 'bot', 'smt', 'smb', 'sst', 'ssb', 'spt', 'spb', 'pho', 'gdo',
+                         'art', 'gbd', 'gb0', 'gb1', 'gb2', 'gb3', 'g4', 'gb5', 'gb6', 'gb7', 'gb8', 'gb9'
+                         ]
         self.exc_list = ['drl', 'txt', 'xln', 'drd', 'tap', 'exc']
         self.gcode_list = ['nc', 'ncc', 'tap', 'gcode', 'cnc', 'ecs', 'fnc', 'dnc', 'ncg', 'gc', 'fan', 'fgc', 'din',
                       'xpi', 'hnc', 'h', 'i', 'ncp', 'min', 'gcd', 'rol', 'mpr', 'ply', 'out', 'eia', 'plt', 'sbp',
@@ -5592,7 +5594,7 @@ class App(QtCore.QObject):
 
         _filter_ = "Gerber Files (*.gbr *.ger *.gtl *.gbl *.gts *.gbs *.gtp *.gbp *.gto *.gbo *.gm1 *.gml *.gm3 *.gko " \
                    "*.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim *.mil *.grb" \
-                   "*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb *.pho *.gdo *.art *.gbd);;" \
+                   "*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb *.pho *.gdo *.art *.gbd *.gb*);;" \
                    "Protel Files (*.gtl *.gbl *.gts *.gbs *.gto *.gbo *.gtp *.gbp *.gml *.gm1 *.gm3 *.gko);;" \
                    "Eagle Files (*.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim *.mil);;" \
                    "OrCAD Files (*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb);;" \

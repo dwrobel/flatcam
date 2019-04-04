@@ -2774,35 +2774,37 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if self.filename == "":
                     self.app.inform.emit("Open cancelled.")
                 else:
-                    if self.filename.lower().rpartition('.')[-1] in self.app.grb_list:
+                    extension = self.filename.lower().rpartition('.')[-1]
+
+                    if extension in self.app.grb_list:
                         self.app.worker_task.emit({'fcn': self.app.open_gerber,
                                                    'params': [self.filename]})
                     else:
                         event.ignore()
 
-                    if self.filename.lower().rpartition('.')[-1] in self.app.exc_list:
+                    if extension in self.app.exc_list:
                         self.app.worker_task.emit({'fcn': self.app.open_excellon,
                                                    'params': [self.filename]})
                     else:
                         event.ignore()
 
-                    if self.filename.lower().rpartition('.')[-1] in self.app.gcode_list:
+                    if extension in self.app.gcode_list:
                         self.app.worker_task.emit({'fcn': self.app.open_gcode,
                                                    'params': [self.filename]})
                     else:
                         event.ignore()
 
-                    if self.filename.lower().rpartition('.')[-1] in self.app.svg_list:
+                    if extension in self.app.svg_list:
                         object_type = 'geometry'
                         self.app.worker_task.emit({'fcn': self.app.import_svg,
                                                    'params': [self.filename, object_type, None]})
 
-                    if self.filename.lower().rpartition('.')[-1] in self.app.dxf_list:
+                    if extension in self.app.dxf_list:
                         object_type = 'geometry'
                         self.app.worker_task.emit({'fcn': self.app.import_dxf,
                                                    'params': [self.filename, object_type, None]})
 
-                    if self.filename.lower().rpartition('.')[-1] in self.app.prj_list:
+                    if extension in self.app.prj_list:
                         # self.app.open_project() is not Thread Safe
                         self.app.open_project(self.filename)
                     else:

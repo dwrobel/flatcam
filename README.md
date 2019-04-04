@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+4.04.2019
+
+- added support for Gerber format specification D (no zero suppression) - PCBWizard Gerber files support
+
 3.04.2019
 
 - fixed plotting in Gerber Editor
