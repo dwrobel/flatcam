@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - modified the bogus diameters series for Excellon objects that do not have tool diameter info
 - made Excellon Editor aware of the fact that the Excellon object that is edited has fake (bogus) tool diameters and therefore it will not sort the tools based on diameter but based on tool number
 - fixed bug on Excellon Editor: when diameter is edited in Tools Table and the target diameter is already in the tool table, the drills from current tool are moved to the new tool (with new dia) - before it crashed
+- fixed offset after editing drill diameters in Excellon Editor.
 
 3.04.2019
 

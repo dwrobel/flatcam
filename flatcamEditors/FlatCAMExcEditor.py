@@ -1536,7 +1536,8 @@ class FlatCAMExcEditor(QtCore.QObject):
 
             for shape in self.storage_dict[dia_changed].get_objects():
                 geometry.append(DrawToolShape(
-                    MultiLineString([affinity.scale(subgeo, xfact=factor, yfact=factor) for subgeo in shape.geo])))
+                    MultiLineString([affinity.scale(subgeo, xfact=factor, yfact=factor, origin='center')
+                                     for subgeo in shape.geo])))
 
                 # add bogus drill points (for total count of drills)
                 for k, v in self.olddia_newdia.items():
