@@ -116,7 +116,7 @@ class FCApertureResize(FCShapeTool):
             sel_shapes_to_be_deleted = []
 
         self.draw_app.build_ui()
-        self.draw_app.replot()
+        self.draw_app.plot_all()
 
         self.draw_app.resize_frame.hide()
         self.complete = True
@@ -287,9 +287,10 @@ class FCApertureSelect(DrawTool):
         self.grb_editor_app.apertures_table.clearSelection()
 
         for storage in self.grb_editor_app.storage_dict:
-            for shape in self.grb_editor_app.storage_dict[storage]:
+            for shape in self.grb_editor_app.storage_dict[storage]['solid_geometry']:
                 if Point(pos).within(shape.geo):
-                    self.sel_storage.append(DrawToolShape(shape.geo))
+                    self.sel_storage.append(shape)
+        xmin, ymin, xmax, ymax = self.bounds(self.sel_storage)
 
         if pos[0] < xmin or pos[0] > xmax or pos[1] < ymin or pos[1] > ymax:
             self.grb_editor_app.selected = []
@@ -1028,7 +1029,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
             self.app.inform.emit(_("[success] Deleted tool with dia: {del_dia} {units}").format(del_dia=str(deleted_tool_dia), units=str(self.units)))
 
-        self.replot()
+        self.plot_all()
         # self.app.inform.emit("Could not delete selected tool")
 
         self.build_ui()
@@ -1069,7 +1070,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             modified_offset = self.gerber_obj.tool_offset.pop(dia_changed)
             self.gerber_obj.tool_offset[current_table_dia_edited] = modified_offset
 
-            self.replot()
+            self.plot_all()
         else:
             # tool diameter is already in use so we move the drills from the prior tool to the new tool
             factor = current_table_dia_edited / dia_changed
@@ -1217,7 +1218,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.tool_shape.clear(update=True)
 
         # self.storage = FlatCAMExcEditor.make_storage()
-        self.replot()
+        self.plot_all()
 
     def edit_fcgerber(self, exc_obj):
         """
@@ -1274,8 +1275,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     else:
                         self.storage_dict[apid][k] = v
 
+                apid_promise = apid
+
                 # Check promises and clear if exists
-                self.app.collection.plot_remove_promise(apid)
+                self.app.collection.plot_remove_promise(apid_promise)
+                # if apid_promise in self.app.collection.plot_promises:
+                #     self.app.collection.plot_promises.remove(apid_promise)
 
         for apid in self.gerber_obj.apertures:
             self.app.worker_task.emit({'fcn': job_thread, 'params': [apid]})
@@ -1290,6 +1295,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :param grb_obj: FlatCAMGerber
         :return: None
         """
+
+        # if the 'delayed plot' malfunctioned stop the QTimer
+        try:
+            self.plot_thread.stop()
+        except:
+            pass
 
         if "_edit" in self.edited_obj_name:
             try:
@@ -1310,7 +1321,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # restore GUI to the Selected TAB
         # Remove anything else in the GUI
-        self.app.ui.tool_scroll_area.takeWidget()
+        self.app.ui.selected_scroll_area.takeWidget()
         # Switch notebook to Selected page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
@@ -1443,7 +1454,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         except Exception as e:
             self.app.log.debug(str(e))
 
-        self.replot()
+        self.plot_all()
 
     def toolbar_tool_toggle(self, key):
         self.options[key] = self.sender().isChecked()
@@ -1500,7 +1511,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
                 if isinstance(self.active_tool, FCApertureSelect):
                     # self.app.log.debug("Replotting after click.")
-                    self.replot()
+                    self.plot_all()
             else:
                 self.app.log.debug("No active tool to respond to click!")
 
@@ -1519,7 +1530,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.tool_shape.clear(update=True)
 
         # Replot and reset tool.
-        self.replot()
+        self.plot_all()
         # self.active_tool = type(self.active_tool)(self)
 
     def add_gerber_shape(self, shape, storage):
@@ -1617,7 +1628,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     # msg = self.active_tool.click_release((self.pos[0], self.pos[1]))
                     # self.app.inform.emit(msg)
                     self.active_tool.click_release((self.pos[0], self.pos[1]))
-                    self.replot()
+                    self.plot_all()
         except Exception as e:
             log.warning("Error: %s" % str(e))
             raise
@@ -1658,7 +1669,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                             # item.setSelected(True)
                             # self.grb_editor_app.apertures_table.selectItem(key - 1)
 
-        self.replot()
+        self.plot_all()
 
     def on_canvas_move(self, event):
         """
@@ -1783,9 +1794,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
             self.tool_shape.redraw()
 
-    def replot(self):
-        self.plot_all()
-
     def plot_all(self):
         """
         Plots all shapes in the editor.
@@ -1817,14 +1825,17 @@ class FlatCAMGrbEditor(QtCore.QObject):
     def start_delayed_plot(self, check_period):
         # self.plot_thread = threading.Thread(target=lambda: self.check_plot_finished(check_period))
         # self.plot_thread.start()
+        log.debug("FlatCAMGrbEditor --> Delayed Plot started.")
         self.plot_thread = QtCore.QTimer()
         self.plot_thread.setInterval(check_period)
         self.plot_thread.timeout.connect(self.check_plot_finished)
         self.plot_thread.start()
 
     def check_plot_finished(self):
+        print(self.app.collection.plot_promises)
         try:
-            if self.app.collection.has_plot_promises() is False:
+            has_promise = self.app.collection.has_plot_promises()
+            if has_promise == False:
                 self.plot_thread.stop()
                 self.plot_all()
                 log.debug("FlatCAMGrbEditor --> delayed_plot finished")
@@ -1890,7 +1901,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.tool_shape.clear(update=True)
 
         # Replot and reset tool.
-        self.replot()
+        self.plot_all()
         # self.active_tool = type(self.active_tool)(self)
 
     def get_selected(self):
@@ -1947,7 +1958,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
     def on_delete_btn(self):
         self.delete_selected()
-        self.replot()
+        self.plot_all()
 
     def select_tool(self, toolname):
         """

@@ -17,6 +17,10 @@ CAD program, and create G-Code for Isolation routing.
 - WIP in Gerber Editor: geometry is no longer stored in a Rtree storage as it is not needed
 - changed the way delayed plot is working in Gerber Editor to use a Qtimer instead of python threading module
 - WIP in Gerber Editor
+- fixed bug in saving the maximized state
+- fixed bug in applying default language on first start
+- on activating 'V' key shortcut (zoom fit) the mouse cursor is now jumping to origin (0, 0)
+- fixed bug in saving toolbars state; the file was saved before setting the self.defaults['global_toolbar_view]
 
 4.04.2019
 

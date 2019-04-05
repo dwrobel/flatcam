@@ -567,9 +567,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         settings = QSettings("Open Source", "FlatCAM")
         if settings.contains("layout"):
             layout = settings.value('layout', type=str)
-            if layout == 'Standard':
+            if layout == 'standard':
                 pass
-            elif layout == 'Compact':
+            elif layout == 'compact':
                 self.removeToolBar(self.snap_toolbar)
                 self.snap_toolbar.setMaximumHeight(30)
                 self.splitter_left.addWidget(self.snap_toolbar)
@@ -670,13 +670,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Gerber Editor Toolbar ###
         self.grb_select_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
-
-
-
-
-
-
-
 
 
         ### Snap Toolbar ###
@@ -1616,7 +1609,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 self.corner_snap_btn.setVisible(False)
                 self.snap_magnet.setVisible(False)
-            elif layout == 'Compact':
+            elif layout == 'compact':
                 self.exc_edit_toolbar.setDisabled(True)
                 self.geo_edit_toolbar.setDisabled(True)
                 self.grb_edit_toolbar.setDisabled(True)
@@ -1746,10 +1739,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_edit_toolbar.addSeparator()
         self.geo_move_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), _("Move Objects"))
 
-        ### Geometry Editor Toolbar ###
+        ### Gerber Editor Toolbar ###
         self.grb_select_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
-
-
 
 
         ### Snap Toolbar ###
@@ -1802,7 +1793,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 self.corner_snap_btn.setVisible(False)
                 self.snap_magnet.setVisible(False)
-            elif layout == 'Compact':
+            elif layout == 'compact':
                 self.exc_edit_toolbar.setVisible(True)
                 self.exc_edit_toolbar.setDisabled(True)
                 self.geo_edit_toolbar.setVisible(True)
@@ -2097,6 +2088,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Zoom Fit
                 if key == QtCore.Qt.Key_V:
                     self.app.on_zoom_fit(None)
+                    # and move mouse cursor to origin
+                    self.app.on_jump_to(custom_location=(0, 0))
 
                 # Mirror on X the selected object(s)
                 if key == QtCore.Qt.Key_X:
@@ -2362,6 +2355,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 if key == QtCore.Qt.Key_V or key == 'V':
                     self.app.on_zoom_fit(None)
+                    # and move mouse cursor to origin
+                    self.app.on_jump_to(custom_location=(0, 0))
 
                 # Flip on X axis
                 if key == QtCore.Qt.Key_X or key == 'X':
@@ -2541,6 +2536,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_V or key == 'V':
                     self.app.grb_editor.launched_from_shortcuts = True
                     self.app.on_zoom_fit(None)
+                    # and move mouse cursor to origin
+                    self.app.on_jump_to(custom_location=(0, 0))
                     return
 
                 # Propagate to tool
@@ -2738,6 +2735,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_V or key == 'V':
                     self.app.exc_editor.launched_from_shortcuts = True
                     self.app.on_zoom_fit(None)
+                    # and move mouse cursor to origin
+                    self.app.on_jump_to(custom_location=(0, 0))
                     return
 
                 # Propagate to tool
@@ -3287,8 +3286,8 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         )
         self.layout_combo = FCComboBox()
         # don't translate the QCombo items as they are used in QSettings and identified by name
-        self.layout_combo.addItem("Standard")
-        self.layout_combo.addItem("Compact")
+        self.layout_combo.addItem("standard")
+        self.layout_combo.addItem("compact")
 
         # Set the current index for layout_combo
         settings = QSettings("Open Source", "FlatCAM")

@@ -629,7 +629,7 @@ class App(QtCore.QObject):
             "global_def_win_y": 100,
             "global_def_win_w": 1024,
             "global_def_win_h": 650,
-
+            "global_def_notebook_width": 1,
             # Constants...
             "global_defaults_save_period_ms": 20000,  # Time between default saves.
             "global_shell_shape": [500, 300],  # Shape of the shell in pixels.
@@ -1847,7 +1847,7 @@ class App(QtCore.QObject):
         if not factory_defaults:
             self.save_factory_defaults(silent=False)
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
-            initial_lay = 'Compact'
+            initial_lay = 'compact'
             self.on_layout(index=None, lay=initial_lay)
             # Set the combobox in Preferences to the current layout
             idx = self.ui.general_defaults_form.general_gui_set_group.layout_combo.findText(initial_lay)
@@ -2675,7 +2675,7 @@ class App(QtCore.QObject):
         self.defaults["global_def_win_y"] = y
         self.defaults["global_def_win_w"] = width
         self.defaults["global_def_win_h"] = height
-        self.defaults["def_notebook_width"] = notebook_width
+        self.defaults["global_def_notebook_width"] = notebook_width
         self.save_defaults()
 
     def message_dialog(self, title, message, kind="info"):
@@ -3084,15 +3084,6 @@ class App(QtCore.QObject):
         defaults.update(self.defaults)
         self.propagate_defaults(silent=True)
 
-        # Save update options
-        try:
-            f = open(self.data_path + "/current_defaults.FlatConfig", "w")
-            json.dump(defaults, f, default=to_dict, indent=2, sort_keys=True)
-            f.close()
-        except:
-            self.inform.emit(_("[ERROR_NOTCL] Failed to write defaults to file."))
-            return
-
         # Save the toolbar view
         tb_status = 0
         if self.ui.toolbarfile.isVisible():
@@ -3123,6 +3114,15 @@ class App(QtCore.QObject):
             tb_status += 256
 
         self.defaults["global_toolbar_view"] = tb_status
+
+        # Save update options
+        try:
+            f = open(self.data_path + "/current_defaults.FlatConfig", "w")
+            json.dump(defaults, f, default=to_dict, indent=2, sort_keys=True)
+            f.close()
+        except:
+            self.inform.emit(_("[ERROR_NOTCL] Failed to write defaults to file."))
+            return
 
         if not silent:
             self.inform.emit(_("[success] Defaults saved."))
@@ -3201,7 +3201,7 @@ class App(QtCore.QObject):
             elif response == QtWidgets.QMessageBox.Cancel:
                 return
         else:
-            QtWidgets.qApp.quit()
+            self.quit_application()
 
     def quit_application(self):
         self.save_defaults()
@@ -4009,7 +4009,7 @@ class App(QtCore.QObject):
         except:
             pass
 
-        if current_layout == 'Standard':
+        if current_layout == 'standard':
             ### TOOLBAR INSTALLATION ###
             self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
             self.ui.toolbarfile.setObjectName('File_TB')
@@ -4053,7 +4053,7 @@ class App(QtCore.QObject):
 
             self.ui.corner_snap_btn.setVisible(False)
             self.ui.snap_magnet.setVisible(False)
-        elif current_layout == 'Compact':
+        elif current_layout == 'compact':
             ### TOOLBAR INSTALLATION ###
             self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
             self.ui.toolbarfile.setObjectName('File_TB')
@@ -4405,7 +4405,7 @@ class App(QtCore.QObject):
 
         self.plotcanvas.vis_connect('mouse_press', self.on_set_zero_click)
 
-    def on_jump_to(self):
+    def on_jump_to(self, custom_location=None):
         """
         Jump to a location by setting the mouse cursor location
         :return:
@@ -4413,20 +4413,23 @@ class App(QtCore.QObject):
         """
         self.report_usage("on_jump_to()")
 
-        dia_box = Dialog_box(title=_("Jump to ..."),
-                             label=_("Enter the coordinates in format X,Y:"),
-                             icon=QtGui.QIcon('share/jump_to16.png'))
+        if custom_location is None:
+            dia_box = Dialog_box(title=_("Jump to ..."),
+                                 label=_("Enter the coordinates in format X,Y:"),
+                                 icon=QtGui.QIcon('share/jump_to16.png'))
 
-        if dia_box.ok is True:
-            try:
-                location = eval(dia_box.location)
-                if not isinstance(location, tuple):
-                    self.inform.emit(_("Wrong coordinates. Enter coordinates in format: X,Y"))
+            if dia_box.ok is True:
+                try:
+                    location = eval(dia_box.location)
+                    if not isinstance(location, tuple):
+                        self.inform.emit(_("Wrong coordinates. Enter coordinates in format: X,Y"))
+                        return
+                except:
                     return
-            except:
+            else:
                 return
         else:
-            return
+            location = custom_location
 
         self.plotcanvas.fit_center(loc=location)
 
@@ -7270,15 +7273,15 @@ class App(QtCore.QObject):
                                 self.defaults["global_def_win_y"],
                                 self.defaults["global_def_win_w"],
                                 self.defaults["global_def_win_h"])
-            self.ui.splitter.setSizes([self.defaults["def_notebook_width"], 0])
+            self.ui.splitter.setSizes([self.defaults["global_def_notebook_width"], 0])
 
             settings = QSettings("Open Source", "FlatCAM")
             if settings.contains("maximized_gui"):
                 maximized_ui = settings.value('maximized_gui', type=bool)
                 if maximized_ui is True:
                     self.ui.showMaximized()
-        except KeyError:
-            pass
+        except KeyError as e:
+            log.debug("App.restore_main_win_geom() --> %s" % str(e))
 
     def plot_all(self, zoom=True):
         """
@@ -7951,31 +7954,36 @@ The normal flow when working in FlatCAM is the following:</span></p>
                     self.inform.emit(_("[ERROR_NOTCL] Failed to save project file: %s. Retry to save it.") % filename)
 
             if quit:
-                t = threading.Thread(target=lambda: self.check_project_file_size(1, filename=filename))
-                t.start()
+                # t = threading.Thread(target=lambda: self.check_project_file_size(1, filename=filename))
+                # t.start()
+                self.start_delayed_quit(delay=500, filename=filename)
 
-    def check_project_file_size(self, delay, filename):
+    def start_delayed_quit(self, delay, filename):
         """
-        Using Alfe's answer from here:
-        https://stackoverflow.com/questions/474528/what-is-the-best-way-to-repeatedly-execute-a-function-every-x-seconds-in-python
 
-        :param delay: period of checking if project file size is more than zero; in seconds
-        :param filename: the name of the project file to be checked for size more than zero
+        :param delay:       period of checking if project file size is more than zero; in seconds
+        :param filename:    the name of the project file to be checked periodically for size more than zero
         :return:
         """
-        next_time = time.time() + delay
-        while True:
-            time.sleep(max(0, next_time - time.time()))
-            try:
-                statinfo = os.stat(filename)
-                if statinfo:
-                    self.app_quit.emit()
-            except Exception:
-                traceback.print_exc()
-                # in production code you might want to have this instead of course:
-                # logger.exception("Problem while executing repetitive task.")
-            # skip tasks if we are behind schedule:
-            next_time += (time.time() - next_time) // delay * delay + delay
+
+        self.quit_timer = QtCore.QTimer()
+        self.quit_timer.setInterval(delay)
+        self.quit_timer.timeout.connect(lambda : self.check_project_file_size(filename=filename))
+        self.quit_timer.start()
+
+    def check_project_file_size(self, filename):
+        """
+
+        :param filename: the name of the project file to be checked periodically for size more than zero
+        :return:
+        """
+
+        try:
+            if os.stat(filename).st_size > 0:
+                self.quit_timer.stop()
+                self.app_quit.emit()
+        except Exception:
+            traceback.print_exc()
 
     def on_options_app2project(self):
         """

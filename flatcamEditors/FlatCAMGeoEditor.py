@@ -1882,6 +1882,33 @@ class DrawTool(object):
     def utility_geometry(self, data=None):
         return None
 
+    def bounds(self, obj):
+        def bounds_rec(o):
+            if type(o) is list:
+                minx = Inf
+                miny = Inf
+                maxx = -Inf
+                maxy = -Inf
+
+                for k in o:
+                    try:
+                        minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                    except Exception as e:
+                        log.debug("camlib.Gerber.bounds() --> %s" % str(e))
+                        return
+
+                    minx = min(minx, minx_)
+                    miny = min(miny, miny_)
+                    maxx = max(maxx, maxx_)
+                    maxy = max(maxy, maxy_)
+                return minx, miny, maxx, maxy
+            else:
+                # it's a Shapely object, return it's bounds
+                return o.geo.bounds
+
+        bounds_coords = bounds_rec(obj)
+        return bounds_coords
+
 
 class FCShapeTool(DrawTool):
     """
@@ -2843,14 +2870,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
         settings = QSettings("Open Source", "FlatCAM")
         if settings.contains("layout"):
             layout = settings.value('layout', type=str)
-            if layout == 'Standard':
+            if layout == 'standard':
                 # self.app.ui.geo_edit_toolbar.setVisible(False)
 
                 self.app.ui.snap_max_dist_entry.setEnabled(False)
                 self.app.ui.corner_snap_btn.setEnabled(False)
                 self.app.ui.snap_magnet.setVisible(False)
                 self.app.ui.corner_snap_btn.setVisible(False)
-            elif layout == 'Compact':
+            elif layout == 'compact':
                 # self.app.ui.geo_edit_toolbar.setVisible(True)
 
                 self.app.ui.snap_max_dist_entry.setEnabled(False)

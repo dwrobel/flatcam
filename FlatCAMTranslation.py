@@ -112,6 +112,12 @@ def apply_language(domain, lang=None):
             name = settings.value('language')
         else:
             name = settings.value('English')
+            # in case the 'language' parameter is not in QSettings add it to QSettings and it's value is
+            # the default language, English
+            settings.setValue('language', 'English')
+
+            # This will write the setting to the platform specific storage.
+            del settings
     else:
         name = str(lang)
 
