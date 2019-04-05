@@ -7896,6 +7896,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
         :return: None
         """
         self.log.debug("save_project()")
+        self.save_in_progress = True
 
         with self.proc_container.new(_("Saving FlatCAM Project")) as proc:
             ## Capture the latest changes
@@ -7953,26 +7954,25 @@ The normal flow when working in FlatCAM is the following:</span></p>
                 else:
                     self.inform.emit(_("[ERROR_NOTCL] Failed to save project file: %s. Retry to save it.") % filename)
 
-            if quit:
+            # if quit:
                 # t = threading.Thread(target=lambda: self.check_project_file_size(1, filename=filename))
                 # t.start()
-                self.save_in_progress = True
-                self.start_delayed_quit(delay=500, filename=filename)
+            self.start_delayed_quit(delay=500, filename=filename, quit=quit)
 
-    def start_delayed_quit(self, delay, filename):
+    def start_delayed_quit(self, delay, filename, quit=None):
         """
 
         :param delay:       period of checking if project file size is more than zero; in seconds
         :param filename:    the name of the project file to be checked periodically for size more than zero
         :return:
         """
+        to_quit = quit
+        self.save_timer = QtCore.QTimer()
+        self.save_timer.setInterval(delay)
+        self.save_timer.timeout.connect(lambda : self.check_project_file_size(filename=filename, quit=to_quit))
+        self.save_timer.start()
 
-        self.quit_timer = QtCore.QTimer()
-        self.quit_timer.setInterval(delay)
-        self.quit_timer.timeout.connect(lambda : self.check_project_file_size(filename=filename))
-        self.quit_timer.start()
-
-    def check_project_file_size(self, filename):
+    def check_project_file_size(self, filename, quit=None):
         """
 
         :param filename: the name of the project file to be checked periodically for size more than zero
@@ -7981,8 +7981,10 @@ The normal flow when working in FlatCAM is the following:</span></p>
 
         try:
             if os.stat(filename).st_size > 0:
-                self.quit_timer.stop()
-                self.app_quit.emit()
+                self.save_in_progress = False
+                self.save_timer.stop()
+                if quit:
+                    self.app_quit.emit()
         except Exception:
             traceback.print_exc()
 
