@@ -3786,11 +3786,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.selected = []
             self.replot()
             return
+
         if type(results) == MultiPolygon:
             for poly in results:
-                self.add_shape(DrawToolShape(poly.interiors))
+                for interior in poly.interiors:
+                    self.add_shape(DrawToolShape(interior))
         else:
-            self.add_shape(DrawToolShape(results.interiors))
+            for interior in results:
+                self.add_shape(DrawToolShape(interior))
 
         self.replot()
         self.app.inform.emit(_("[success] Interior buffer geometry created."))

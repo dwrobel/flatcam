@@ -95,7 +95,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.913
-    version_date = "2019/03/25"
+    version_date = "2019/04/12"
     beta = True
 
     # current date now
@@ -2169,8 +2169,9 @@ class App(QtCore.QObject):
                     edited_obj.options['ymin'] = ymin
                     edited_obj.options['xmax'] = xmax
                     edited_obj.options['ymax'] = ymax
-                except AttributeError:
+                except AttributeError as e:
                     self.inform.emit(_("[WARNING] Object empty after edit."))
+                    log. debug("App.editor2object() --> Geometry --> %s" % str(e))
 
             elif isinstance(edited_obj, FlatCAMGerber):
                 obj_type = "Gerber"
@@ -2186,8 +2187,9 @@ class App(QtCore.QObject):
                     edited_obj.options['ymin'] = ymin
                     edited_obj.options['xmax'] = xmax
                     edited_obj.options['ymax'] = ymax
-                except AttributeError:
+                except AttributeError as e:
                     self.inform.emit(_("[WARNING] Object empty after edit."))
+                    log.debug("App.editor2object() --> Gerber --> %s" % str(e))
 
             elif isinstance(edited_obj, FlatCAMExcellon):
                 obj_type = "Excellon"

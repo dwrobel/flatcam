@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+6.04.2019
+
+- fixed bug in Geometry Editor in buffer_int() function that created an Circular Reference Error when applying buffer interior on a geometry.
+
 5.04.2019
 
 - Gerber Editor: made geometry transfer (which is slow) to Editor to be multithreaded
