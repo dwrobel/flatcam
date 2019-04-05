@@ -259,8 +259,8 @@ class FCApertureSelect(DrawTool):
         self.storage = self.grb_editor_app.storage_dict
         # self.selected = self.grb_editor_app.selected
 
-        # here we store all shapes that were selected so we can search for the nearest to our click location
-        self.sel_storage = FlatCAMGrbEditor.make_storage()
+        # here we store all shapes that were selected
+        self.sel_storage = []
 
         self.grb_editor_app.resize_frame.hide()
         self.grb_editor_app.array_frame.hide()
@@ -286,9 +286,9 @@ class FCApertureSelect(DrawTool):
         self.grb_editor_app.apertures_table.clearSelection()
 
         for storage in self.grb_editor_app.storage_dict:
-            for shape in self.grb_editor_app.storage_dict[storage].get_objects():
+            for shape in self.grb_editor_app.storage_dict[storage]:
                 if Point(pos).within(shape.geo):
-                    self.sel_storage.insert(DrawToolShape(shape.geo))
+                    self.sel_storage.append(DrawToolShape(shape.geo))
 
         if pos[0] < xmin or pos[0] > xmax or pos[1] < ymin or pos[1] > ymax:
             self.grb_editor_app.selected = []
@@ -315,10 +315,10 @@ class FCApertureSelect(DrawTool):
                     self.grb_editor_app.selected = []
                     self.grb_editor_app.selected.append(closest_shape)
 
-            # select the diameter of the selected shape in the tool table
+            # select the aperture of the selected shape in the tool table
             for storage in self.grb_editor_app.storage_dict:
                 for shape_s in self.grb_editor_app.selected:
-                    if shape_s in self.grb_editor_app.storage_dict[storage].get_objects():
+                    if shape_s in self.grb_editor_app.storage_dict[storage]:
                         for key in self.grb_editor_app.tool2tooldia:
                             if self.grb_editor_app.tool2tooldia[key] == storage:
                                 item = self.grb_editor_app.apertures_table.item((key - 1), 1)
@@ -329,7 +329,7 @@ class FCApertureSelect(DrawTool):
                                 # self.grb_editor_app.apertures_table.setCurrentIndex(midx)
                                 self.draw_app.last_tool_selected = key
         # delete whatever is in selection storage, there is no longer need for those shapes
-        self.sel_storage = FlatCAMGrbEditor.make_storage()
+        self.sel_storage = []
 
         return ""
 
@@ -1266,7 +1266,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         def job_thread(apid):
             with self.app.proc_container.new(_("Adding aperture: %s geo ...") % str(apid)):
-                storage_elem = FlatCAMGeoEditor.make_storage()
+                storage_elem = []
                 for geo in self.gerber_obj.apertures[apid]['solid_geometry']:
                     if geo is not None:
                         self.add_gerber_shape(DrawToolShape(geo), storage_elem)
@@ -1606,7 +1606,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         if isinstance(shape, DrawToolUtilityShape):
             self.utility.append(shape)
         else:
-            storage.insert(shape)  # TODO: Check performance
+            storage.append(shape)  # TODO: Check performance
 
     def add_shape(self, shape):
         """
@@ -1840,7 +1840,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
             self.tool_shape.redraw()
 
-
     def replot(self):
         self.plot_all()
 
@@ -1856,7 +1855,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.shapes.clear(update=True)
 
             for storage in self.storage_dict:
-                for shape in self.storage_dict[storage].get_objects():
+                for shape in self.storage_dict[storage]:
                     if shape.geo is None:
                         continue
 

@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - Gerber Editor: made geometry transfer (which is slow) to Editor to be multithreaded
 - Gerber Editor: plotting process is showed in the status bar
 - increased the number of workers in FlatCAM and made the number of workers customizable from Preferences
+- WIP in Gerber Editor: geometry is no longer stored in a Rtree storage as it is not needed
 
 4.04.2019
 
