@@ -7949,9 +7949,15 @@ The normal flow when working in FlatCAM is the following:</span></p>
                 t = threading.Thread(target=lambda: self.check_project_file_size(1, filename=filename))
                 t.start()
 
-    # using Alfe's answer from here:
-    # https://stackoverflow.com/questions/474528/what-is-the-best-way-to-repeatedly-execute-a-function-every-x-seconds-in-python
     def check_project_file_size(self, delay, filename):
+        """
+        Using Alfe's answer from here:
+        https://stackoverflow.com/questions/474528/what-is-the-best-way-to-repeatedly-execute-a-function-every-x-seconds-in-python
+
+        :param delay: period of checking if project file size is more than zero; in seconds
+        :param filename: the name of the project file to be checked for size more than zero
+        :return:
+        """
         next_time = time.time() + delay
         while True:
             time.sleep(max(0, next_time - time.time()))

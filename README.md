@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+5.04.2019
+
+- Gerber Editor: made geometry transfer (which is slow) to Editor to be multithreaded
+- Gerber Editor: plotting process is showed in the status bar
+
 4.04.2019
 
 - added support for Gerber format specification D (no zero suppression) - PCBWizard Gerber files support

@@ -7,6 +7,7 @@ import shapely.affinity as affinity
 
 from numpy import arctan2, Inf, array, sqrt, sign, dot
 from rtree import index as rtindex
+import threading, time
 
 from camlib import *
 from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, LengthEntry, RadioSet, SpinBoxDelegate
@@ -1262,18 +1263,23 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # build the geometry for each tool-diameter, each drill will be represented by a '+' symbol
         # and then add it to the storage elements (each storage elements is a member of a list
+
+        def job_thread(apid):
+            with self.app.proc_container.new(_("Adding aperture: %s geo ...") % str(apid)):
+                storage_elem = FlatCAMGeoEditor.make_storage()
+                for geo in self.gerber_obj.apertures[apid]['solid_geometry']:
+                    if geo is not None:
+                        self.add_gerber_shape(DrawToolShape(geo), storage_elem)
+                self.storage_dict[apid] = storage_elem
+
+                # Check promises and clear if exists
+                self.app.collection.plot_remove_promise(apid)
+
         for apid in self.gerber_obj.apertures:
-            storage_elem = FlatCAMGeoEditor.make_storage()
-            for geo in self.gerber_obj.apertures[apid]['solid_geometry']:
-                if geo is not None:
-                    self.add_gerber_shape(DrawToolShape(geo), storage_elem)
-            self.storage_dict[apid] = storage_elem
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [apid]})
+            self.app.collection.plot_promise(apid)
 
-        self.replot()
-
-        # add a first tool in the Tool Table but only if the Excellon Object is empty
-        # if not self.tool2tooldia:
-        #     self.on_tool_add(tooldia=1.00)
+        self.start_delayed_plot(check_period=0.5)
 
     def update_fcgerber(self, exc_obj):
         """
@@ -1845,25 +1851,56 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :return: None
         :rtype: None
         """
-        # self.app.log.debug("plot_all()")
-        self.shapes.clear(update=True)
+        with self.app.proc_container.new("Plotting"):
+            # self.app.log.debug("plot_all()")
+            self.shapes.clear(update=True)
 
-        for storage in self.storage_dict:
-            for shape_plus in self.storage_dict[storage].get_objects():
-                if shape_plus.geo is None:
-                    continue
+            for storage in self.storage_dict:
+                for shape in self.storage_dict[storage].get_objects():
+                    if shape.geo is None:
+                        continue
 
-                if shape_plus in self.selected:
-                    self.plot_shape(geometry=shape_plus.geo, color=self.app.defaults['global_sel_draw_color'],
-                                    linewidth=2)
-                    continue
-                self.plot_shape(geometry=shape_plus.geo, color=self.app.defaults['global_draw_color'])
+                    if shape in self.selected:
+                        self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_sel_draw_color'],
+                                        linewidth=2)
+                        continue
+                    self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_draw_color'])
 
-        for shape in self.utility:
-            self.plot_shape(geometry=shape.geo, linewidth=1)
-            continue
+            for shape in self.utility:
+                self.plot_shape(geometry=shape.geo, linewidth=1)
+                continue
 
-        self.shapes.redraw()
+            self.shapes.redraw()
+
+    def start_delayed_plot(self, check_period):
+        self.plot_thread = threading.Thread(target=lambda: self.check_plot_finished(check_period))
+        self.plot_thread.start()
+
+    def stop_delayed_plot(self):
+        self.plot_thread.exit()
+        # self.plot_thread.join()
+
+    def check_plot_finished(self, delay):
+        """
+        Using Alfe's answer from here:
+        https://stackoverflow.com/questions/474528/what-is-the-best-way-to-repeatedly-execute-a-function-every-x-seconds-in-python
+
+        :param delay: period of checking if project file size is more than zero; in seconds
+        :param filename: the name of the project file to be checked for size more than zero
+        :return:
+        """
+        next_time = time.time() + delay
+        while True:
+            time.sleep(max(0, next_time - time.time()))
+            try:
+                if self.app.collection.has_plot_promises() is False:
+                    self.plot_all()
+                    break
+            except Exception:
+                traceback.print_exc()
+
+            # skip tasks if we are behind schedule:
+            next_time += (time.time() - next_time) // delay * delay + delay
 
     def plot_shape(self, geometry=None, color='black', linewidth=1):
         """
@@ -1886,27 +1923,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
             if type(geometry) == Point:
                 return
             self.shapes.add(shape=geometry, color=color, face_color=color+'AF', layer=0)
-
-        # try:
-        #     for geo in geometry:
-        #         plot_elements += self.plot_shape(geometry=geo.geo, color=color, linewidth=linewidth)
-        #
-        # ## Non-iterable
-        # except TypeError:
-        #
-        #     # ## DrawToolShape
-        #     # if isinstance(geometry, DrawToolShape):
-        #     #     plot_elements += self.plot_shape(geometry=geometry.geo, color=color, linewidth=linewidth)
-        #     #
-        #     # ## Polygon: Descend into exterior and each interior.
-        #     # if type(geometry) == Polygon:
-        #     #     plot_elements += self.plot_shape(geometry=geometry.exterior, color=color, linewidth=linewidth)
-        #     #     plot_elements += self.plot_shape(geometry=geometry.interiors, color=color, linewidth=linewidth)
-        #     if type(geometry) == Point:
-        #         pass
-        #     else:
-        #         plot_elements.append(self.shapes.add(shape=geometry, color=color, face_color=color, layer=0))
-        # return plot_elements
 
     def on_shape_complete(self):
         self.app.log.debug("on_shape_complete()")

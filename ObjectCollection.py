@@ -240,6 +240,9 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # tasks know that they have to wait until available.
         self.promises = set()
 
+        # same as above only for objects that are plotted
+        self.plot_promises = set()
+
         self.app = app
 
         ### View
@@ -274,6 +277,16 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
     def has_promises(self):
         return len(self.promises) > 0
+
+    def plot_promise(self, plot_obj_name):
+        self.plot_promises.add(plot_obj_name)
+
+    def plot_remove_promise(self, plot_obj_name):
+        if plot_obj_name in self.plot_promises:
+            self.plot_promises.remove(plot_obj_name)
+
+    def has_plot_promises(self):
+        return len(self.plot_promises) > 0
 
     def on_mouse_down(self, event):
         FlatCAMApp.App.log.debug("Mouse button pressed on list")
