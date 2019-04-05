@@ -2371,7 +2371,6 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         ## Non-iterable
         except TypeError:
-
             ## DrawToolShape
             if isinstance(geometry, DrawToolShape):
                 plot_elements += self.plot_shape(geometry=geometry.geo, color=color, linewidth=linewidth)

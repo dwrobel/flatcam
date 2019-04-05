@@ -3180,7 +3180,7 @@ class App(QtCore.QObject):
     def final_save(self):
 
         if self.save_in_progress:
-            self.inform.emit(_("Application is saving the project. Please wait ..."))
+            self.inform.emit(_("[WARNING_NOTCL] Application is saving the project. Please wait ..."))
             return
 
         if self.should_we_save and self.collection.get_list():
@@ -7897,8 +7897,6 @@ The normal flow when working in FlatCAM is the following:</span></p>
         """
         self.log.debug("save_project()")
 
-        self.save_in_progress = True
-
         with self.proc_container.new(_("Saving FlatCAM Project")) as proc:
             ## Capture the latest changes
             # Current object
@@ -7958,6 +7956,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
             if quit:
                 # t = threading.Thread(target=lambda: self.check_project_file_size(1, filename=filename))
                 # t.start()
+                self.save_in_progress = True
                 self.start_delayed_quit(delay=500, filename=filename)
 
     def start_delayed_quit(self, delay, filename):

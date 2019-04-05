@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 6.04.2019
 
 - fixed bug in Geometry Editor in buffer_int() function that created an Circular Reference Error when applying buffer interior on a geometry.
+- fixed issue with not possible to close the app after a project save.
 
 5.04.2019
 
