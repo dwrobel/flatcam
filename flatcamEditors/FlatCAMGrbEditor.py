@@ -8,6 +8,7 @@ import shapely.affinity as affinity
 from numpy import arctan2, Inf, array, sqrt, sign, dot
 from rtree import index as rtindex
 import threading, time
+import copy
 
 from camlib import *
 from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, LengthEntry, RadioSet, SpinBoxDelegate
@@ -634,7 +635,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.apertures_box.addStretch()
 
         ## Toolbar events and properties
-        self.tools_exc = {
+        self.tools_gerber = {
             "select": {"button": self.app.ui.select_drill_btn,
                        "constructor": FCApertureSelect},
             "drill_resize": {"button": self.app.ui.resize_drill_btn,
@@ -656,10 +657,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.points_edit = {}
         self.sorted_apid =[]
 
-        self.new_drills = []
-        self.new_tools = {}
-        self.new_slots = {}
-        self.new_tool_offset = {}
+        self.new_apertures = {}
+        self.new_aperture_macros = {}
 
         # dictionary to store the tool_row and diameters in Tool_table
         # it will be updated everytime self.build_ui() is called
@@ -669,7 +668,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # this will store the value for the last selected tool, for use after clicking on canvas when the selection
         # is cleared but as a side effect also the selected tool is cleared
-        self.last_tool_selected = None
+        self.last_aperture_selected = None
         self.utility = []
 
         # this will flag if the Editor "tools" are launched from key shortcuts (True) or from menu toolbar (False)
@@ -733,9 +732,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.on_tool_select(thetool)
             return f
 
-        for tool in self.tools_exc:
-            self.tools_exc[tool]["button"].triggered.connect(make_callback(tool))  # Events
-            self.tools_exc[tool]["button"].setCheckable(True)  # Checkable
+        for tool in self.tools_gerber:
+            self.tools_gerber[tool]["button"].triggered.connect(make_callback(tool))  # Events
+            self.tools_gerber[tool]["button"].setCheckable(True)  # Checkable
 
         self.options = {
             "global_gridx": 0.1,
@@ -751,19 +750,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
             if option in self.app.options:
                 self.options[option] = self.app.options[option]
 
-        self.rtree_exc_index = rtindex.Index()
         # flag to show if the object was modified
         self.is_modified = False
 
         self.edited_obj_name = ""
-
-        # variable to store the total amount of drills per job
-        self.tot_drill_cnt = 0
-        self.tool_row = 0
-
-        # variable to store the total amount of slots per job
-        self.tot_slot_cnt = 0
-        self.tool_row_slots = 0
 
         self.tool_row = 0
 
@@ -780,15 +770,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.shapes.pool = pool
         self.tool_shape.pool = pool
 
-    @staticmethod
-    def make_storage():
-
-        ## Shape storage.
-        storage = FlatCAMRTreeStorage()
-        storage.get_points = DrawToolShape.get_pts
-
-        return storage
-
     def set_ui(self):
         # updated units
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
@@ -797,18 +778,18 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.tool2tooldia.clear()
 
         # update the olddia_newdia dict to make sure we have an updated state of the tool_table
-        # for key in self.points_edit:
-        #     self.olddia_newdia[key] = key
+        for key in self.storage_dict:
+            self.olddia_newdia[key] = key
 
-        # sort_temp = []
-        # for diam in self.olddia_newdia:
-        #     sort_temp.append(float(diam))
-        # self.sorted_apid = sorted(sort_temp)
-        #
-        # # populate self.intial_table_rows dict with the tool number as keys and tool diameters as values
-        # for i in range(len(self.sorted_apid)):
-        #     tt_dia = self.sorted_apid[i]
-        #     self.tool2tooldia[i + 1] = tt_dia
+        sort_temp = []
+        for aperture in self.olddia_newdia:
+            sort_temp.append(float(aperture))
+        self.sorted_apid = sorted(sort_temp)
+
+        # populate self.intial_table_rows dict with the tool number as keys and tool diameters as values
+        for i in range(len(self.sorted_apid)):
+            tt_aperture = self.sorted_apid[i]
+            self.tool2tooldia[i + 1] = tt_aperture
 
     def build_ui(self):
 
@@ -933,6 +914,19 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.apertures_table.setSortingEnabled(False)
         self.apertures_table.setMinimumHeight(self.apertures_table.getHeight())
         self.apertures_table.setMaximumHeight(self.apertures_table.getHeight())
+
+        # make sure no rows are selected so the user have to click the correct row, meaning selecting the correct tool
+        self.apertures_table.clearSelection()
+
+        # Remove anything else in the GUI Selected Tab
+        self.app.ui.selected_scroll_area.takeWidget()
+        # Put ourself in the GUI Selected Tab
+        self.app.ui.selected_scroll_area.setWidget(self.grb_edit_widget)
+        # Switch notebook to Selected page
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+
+        # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
+        self.apertures_table.itemChanged.connect(self.on_tool_edit)
 
     def on_tool_add(self, tooldia=None):
         self.is_modified = True
@@ -1217,10 +1211,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # self.shape_buffer = []
         self.selected = []
 
-        self.points_edit = {}
-        self.new_tools = {}
-        self.new_drills = []
-
         self.storage_dict = {}
 
         self.shapes.clear(update=True)
@@ -1266,11 +1256,23 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         def job_thread(apid):
             with self.app.proc_container.new(_("Adding aperture: %s geo ...") % str(apid)):
-                storage_elem = []
-                for geo in self.gerber_obj.apertures[apid]['solid_geometry']:
-                    if geo is not None:
-                        self.add_gerber_shape(DrawToolShape(geo), storage_elem)
-                self.storage_dict[apid] = storage_elem
+                solid_storage_elem = []
+                follow_storage_elem = []
+
+                self.storage_dict[apid] = {}
+                for k, v in self.gerber_obj.apertures[apid].items():
+                    if k == 'solid_geometry':
+                        for geo in v:
+                            if geo is not None:
+                                self.add_gerber_shape(DrawToolShape(geo), solid_storage_elem)
+                        self.storage_dict[apid][k] = solid_storage_elem
+                    elif k == 'follow_geometry':
+                        for geo in v:
+                            if geo is not None:
+                                self.add_gerber_shape(DrawToolShape(geo), follow_storage_elem)
+                        self.storage_dict[apid][k] = follow_storage_elem
+                    else:
+                        self.storage_dict[apid][k] = v
 
                 # Check promises and clear if exists
                 self.app.collection.plot_remove_promise(apid)
@@ -1279,114 +1281,32 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.app.worker_task.emit({'fcn': job_thread, 'params': [apid]})
             self.app.collection.plot_promise(apid)
 
-        self.start_delayed_plot(check_period=0.5)
+        self.start_delayed_plot(check_period=500)
 
-    def update_fcgerber(self, exc_obj):
+    def update_fcgerber(self, grb_obj):
         """
-        Create a new Gerber object that contain the edited content of the source Excellon object
+        Create a new Gerber object that contain the edited content of the source Gerber object
 
-        :param exc_obj: FlatCAMExcellon
+        :param grb_obj: FlatCAMGerber
         :return: None
         """
 
-        # this dictionary will contain tooldia's as keys and a list of coordinates tuple as values
-        # the values of this dict are coordinates of the holes (drills)
-        edited_points = {}
-        for storage_aperture in self.storage_dict:
-            for x in self.storage_dict[storage_aperture].get_objects():
-
-                # all x.geo in self.storage_dict[storage] are MultiLinestring objects
-                # each MultiLineString is made out of Linestrings
-                # select first Linestring object in the current MultiLineString
-                first_linestring = x.geo[0]
-                # get it's coordinates
-                first_linestring_coords = first_linestring.coords
-                x_coord = first_linestring_coords[0][0] + (float(storage_tooldia) / 2)
-                y_coord = first_linestring_coords[0][1]
-
-                # create a tuple with the coordinates (x, y) and add it to the list that is the value of the
-                # edited_points dictionary
-                point = (x_coord, y_coord)
-                if not storage_tooldia in edited_points:
-                    edited_points[storage_tooldia] = [point]
-                else:
-                    edited_points[storage_tooldia].append(point)
-
-        # recreate the drills and tools to be added to the new Excellon edited object
-        # first, we look in the tool table if one of the tool diameters was changed then
-        # append that a tuple formed by (old_dia, edited_dia) to a list
-        changed_key = []
-        for initial_dia in self.olddia_newdia:
-            edited_dia = self.olddia_newdia[initial_dia]
-            if edited_dia != initial_dia:
-                for old_dia in edited_points:
-                    if old_dia == initial_dia:
-                        changed_key.append((old_dia, edited_dia))
-            # if the initial_dia is not in edited_points it means it is a new tool with no drill points
-            # (and we have to add it)
-            # because in case we have drill points it will have to be already added in edited_points
-            # if initial_dia not in edited_points.keys():
-            #     edited_points[initial_dia] = []
-
-        for el in changed_key:
-            edited_points[el[1]] = edited_points.pop(el[0])
-
-        # Let's sort the edited_points dictionary by keys (diameters) and store the result in a zipped list
-        # ordered_edited_points is a ordered list of tuples;
-        # element[0] of the tuple is the diameter and
-        # element[1] of the tuple is a list of coordinates (a tuple themselves)
-        ordered_edited_points = sorted(zip(edited_points.keys(), edited_points.values()))
-
-        current_tool = 0
-        for tool_dia in ordered_edited_points:
-            current_tool += 1
-
-            # create the self.tools for the new Excellon object (the one with edited content)
-            name = str(current_tool)
-            spec = {"C": float(tool_dia[0])}
-            self.new_tools[name] = spec
-
-            # add in self.tools the 'solid_geometry' key, the value (a list) is populated bellow
-            self.new_tools[name]['solid_geometry'] = []
-
-            # create the self.drills for the new Excellon object (the one with edited content)
-            for point in tool_dia[1]:
-                self.new_drills.append(
-                    {
-                        'point': Point(point),
-                        'tool': str(current_tool)
-                    }
-                )
-                # repopulate the 'solid_geometry' for each tool
-                poly = Point(point).buffer(float(tool_dia[0]) / 2.0, int(int(exc_obj.geo_steps_per_circle) / 4))
-                self.new_tools[name]['solid_geometry'].append(poly)
-
-        if self.is_modified is True:
-            if "_edit" in self.edited_obj_name:
-                try:
-                    id = int(self.edited_obj_name[-1]) + 1
-                    self.edited_obj_name = self.edited_obj_name[:-1] + str(id)
-                except ValueError:
-                    self.edited_obj_name += "_1"
-            else:
-                self.edited_obj_name += "_edit"
+        if "_edit" in self.edited_obj_name:
+            try:
+                id = int(self.edited_obj_name[-1]) + 1
+                self.edited_obj_name = self.edited_obj_name[:-1] + str(id)
+            except ValueError:
+                self.edited_obj_name += "_1"
+        else:
+            self.edited_obj_name += "_edit"
 
         self.app.worker_task.emit({'fcn': self.new_edited_gerber,
                                    'params': [self.edited_obj_name]})
 
-        if self.gerber_obj.slots:
-            self.new_slots = self.gerber_obj.slots
-
-        self.new_tool_offset = self.gerber_obj.tool_offset
-
         # reset the tool table
         self.apertures_table.clear()
-        self.apertures_table.setHorizontalHeaderLabels(['#', _('Diameter'), 'D', 'S'])
-        self.last_tool_selected = None
-
-        # delete the edited Excellon object which will be replaced by a new one having the edited content of the first
-        self.app.collection.set_active(self.gerber_obj.options['name'])
-        self.app.collection.delete_active()
+        self.apertures_table.setHorizontalHeaderLabels(['#', _('Code'), _('Type'), _('Size'), _('Dim')])
+        self.last_aperture_selected = None
 
         # restore GUI to the Selected TAB
         # Remove anything else in the GUI
@@ -1411,31 +1331,55 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
     def new_edited_gerber(self, outname):
         """
-        Creates a new Excellon object for the edited Excellon. Thread-safe.
+        Creates a new Gerber object for the edited Gerber. Thread-safe.
 
-        :param outname: Name of the resulting object. None causes the
-            name to be that of the file.
+        :param outname: Name of the resulting object. None causes the name to be that of the file.
         :type outname: str
         :return: None
         """
 
-        self.app.log.debug("Update the Excellon object with edited content. Source is %s" %
+        self.app.log.debug("Update the Gerber object with edited content. Source is %s" %
                            self.gerber_obj.options['name'])
 
         # How the object should be initialized
-        def obj_init(excellon_obj, app_obj):
-            # self.progress.emit(20)
-            excellon_obj.drills = self.new_drills
-            excellon_obj.tools = self.new_tools
-            excellon_obj.slots = self.new_slots
-            excellon_obj.tool_offset = self.new_tool_offset
-            excellon_obj.options['name'] = outname
+        def obj_init(grb_obj, app_obj):
+            poly_buffer = []
+            follow_buffer = []
+
+            for storage_apid, storage_val in self.storage_dict.items():
+                grb_obj.apertures[storage_apid] = {}
+                for k, v in storage_val.items():
+                    if k == 'solid_geometry':
+                        grb_obj.apertures[storage_apid][k] = []
+                        for geo in v:
+                            grb_obj.apertures[storage_apid][k].append(deepcopy(geo.geo))
+                            poly_buffer.append(deepcopy(geo.geo))
+                    if k == 'follow_geometry':
+                        grb_obj.apertures[storage_apid][k] = []
+                        for geo in v:
+                            grb_obj.apertures[storage_apid][k].append(deepcopy(geo.geo))
+                            follow_buffer.append(deepcopy(geo.geo))
+                    else:
+                        grb_obj.apertures[storage_apid][k] = v
+
+            grb_obj.aperture_macros = deepcopy(self.gerber_obj.aperture_macros)
+
+            new_poly = MultiPolygon(poly_buffer)
+            new_poly = new_poly.buffer(0.00000001)
+            new_poly = new_poly.buffer(-0.00000001)
+            grb_obj.solid_geometry = new_poly
+
+            grb_obj.follow_geometry = deepcopy(follow_buffer)
+
+            grb_obj.options = self.gerber_obj.options.copy()
+            grb_obj.options['name'] = outname
+
 
             try:
-                excellon_obj.create_geometry()
+                grb_obj.create_geometry()
             except KeyError:
                 self.app.inform.emit(
-                   _( "[ERROR_NOTCL] There are no Tools definitions in the file. Aborting Excellon creation.")
+                   _( "[ERROR_NOTCL] There are no Aperture definitions in the file. Aborting Gerber creation.")
                 )
             except:
                 msg = _("[ERROR] An internal error has ocurred. See shell.\n")
@@ -1444,16 +1388,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 raise
                 # raise
 
-        with self.app.proc_container.new(_("Creating Excellon.")):
-
+        with self.app.proc_container.new(_("Creating Gerber.")):
             try:
-                self.app.new_object("excellon", outname, obj_init)
+                self.app.new_object("gerber", outname, obj_init)
             except Exception as e:
                 log.error("Error on object creation: %s" % str(e))
                 self.app.progress.emit(100)
                 return
 
-            self.app.inform.emit(_("[success] Excellon editing finished."))
+            self.app.inform.emit(_("[success] Gerber editing finished."))
             # self.progress.emit(100)
 
     def on_tool_select(self, tool):
@@ -1466,27 +1409,27 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.app.log.debug("on_tool_select('%s')" % tool)
 
-        if self.last_tool_selected is None and current_tool is not 'select':
+        if self.last_aperture_selected is None and current_tool is not 'select':
             # self.draw_app.select_tool('select')
             self.complete = True
             current_tool = 'select'
             self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. There is no Tool/Drill selected"))
 
         # This is to make the group behave as radio group
-        if current_tool in self.tools_exc:
-            if self.tools_exc[current_tool]["button"].isChecked():
+        if current_tool in self.tools_gerber:
+            if self.tools_gerber[current_tool]["button"].isChecked():
                 self.app.log.debug("%s is checked." % current_tool)
-                for t in self.tools_exc:
+                for t in self.tools_gerber:
                     if t != current_tool:
-                        self.tools_exc[t]["button"].setChecked(False)
+                        self.tools_gerber[t]["button"].setChecked(False)
 
                 # this is where the Editor toolbar classes (button's) are instantiated
-                self.active_tool = self.tools_exc[current_tool]["constructor"](self)
+                self.active_tool = self.tools_gerber[current_tool]["constructor"](self)
                 # self.app.inform.emit(self.active_tool.start_msg)
             else:
                 self.app.log.debug("%s is NOT checked." % current_tool)
-                for t in self.tools_exc:
-                    self.tools_exc[t]["button"].setChecked(False)
+                for t in self.tools_gerber:
+                    self.tools_gerber[t]["button"].setChecked(False)
                 self.active_tool = None
 
     def on_row_selected(self):
@@ -1494,7 +1437,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         try:
             selected_dia = self.tool2tooldia[self.apertures_table.currentRow() + 1]
-            self.last_tool_selected = self.apertures_table.currentRow() + 1
+            self.last_aperture_selected = self.apertures_table.currentRow() + 1
             for obj in self.storage_dict[selected_dia].get_objects():
                 self.selected.append(obj)
         except Exception as e:
@@ -1711,7 +1654,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         if self.tool2tooldia[key] == storage:
                             item = self.apertures_table.item((key - 1), 1)
                             self.apertures_table.setCurrentItem(item)
-                            self.last_tool_selected = key
+                            self.last_aperture_selected = key
                             # item.setSelected(True)
                             # self.grb_editor_app.apertures_table.selectItem(key - 1)
 
@@ -1855,7 +1798,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.shapes.clear(update=True)
 
             for storage in self.storage_dict:
-                for shape in self.storage_dict[storage]:
+                for shape in self.storage_dict[storage]['solid_geometry']:
                     if shape.geo is None:
                         continue
 
@@ -1872,34 +1815,47 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.shapes.redraw()
 
     def start_delayed_plot(self, check_period):
-        self.plot_thread = threading.Thread(target=lambda: self.check_plot_finished(check_period))
+        # self.plot_thread = threading.Thread(target=lambda: self.check_plot_finished(check_period))
+        # self.plot_thread.start()
+        self.plot_thread = QtCore.QTimer()
+        self.plot_thread.setInterval(check_period)
+        self.plot_thread.timeout.connect(self.check_plot_finished)
         self.plot_thread.start()
 
-    def stop_delayed_plot(self):
-        self.plot_thread.exit()
-        # self.plot_thread.join()
+    def check_plot_finished(self):
+        try:
+            if self.app.collection.has_plot_promises() is False:
+                self.plot_thread.stop()
+                self.plot_all()
+                log.debug("FlatCAMGrbEditor --> delayed_plot finished")
+        except Exception:
+            traceback.print_exc()
 
-    def check_plot_finished(self, delay):
-        """
-        Using Alfe's answer from here:
-        https://stackoverflow.com/questions/474528/what-is-the-best-way-to-repeatedly-execute-a-function-every-x-seconds-in-python
+    # def stop_delayed_plot(self):
+    #     self.plot_thread.exit()
+    #     # self.plot_thread.join()
 
-        :param delay: period of checking if project file size is more than zero; in seconds
-        :param filename: the name of the project file to be checked for size more than zero
-        :return:
-        """
-        next_time = time.time() + delay
-        while True:
-            time.sleep(max(0, next_time - time.time()))
-            try:
-                if self.app.collection.has_plot_promises() is False:
-                    self.plot_all()
-                    break
-            except Exception:
-                traceback.print_exc()
-
-            # skip tasks if we are behind schedule:
-            next_time += (time.time() - next_time) // delay * delay + delay
+    # def check_plot_finished(self, delay):
+    #     """
+    #     Using Alfe's answer from here:
+    #     https://stackoverflow.com/questions/474528/what-is-the-best-way-to-repeatedly-execute-a-function-every-x-seconds-in-python
+    #
+    #     :param delay: period of checking if project file size is more than zero; in seconds
+    #     :param filename: the name of the project file to be checked for size more than zero
+    #     :return:
+    #     """
+    #     next_time = time.time() + delay
+    #     while True:
+    #         time.sleep(max(0, next_time - time.time()))
+    #         try:
+    #             if self.app.collection.has_plot_promises() is False:
+    #                 self.plot_all()
+    #                 break
+    #         except Exception:
+    #             traceback.print_exc()
+    #
+    #         # skip tasks if we are behind schedule:
+    #         next_time += (time.time() - next_time) // delay * delay + delay
 
     def plot_shape(self, geometry=None, color='black', linewidth=1):
         """
@@ -2000,7 +1956,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :param toolname: Name of the tool.
         :return: None
         """
-        self.tools_exc[toolname]["button"].setChecked(True)
+        self.tools_gerber[toolname]["button"].setChecked(True)
         self.on_tool_select(toolname)
 
     def set_selected(self, shape):
