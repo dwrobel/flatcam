@@ -3519,6 +3519,25 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
            _( "Check this box if you want to have toolTips displayed\n"
             "when hovering with mouse over items throughout the App.")
         )
+        self.worker_number_label = QtWidgets.QLabel(_('Workers number:'))
+        self.worker_number_label.setToolTip(
+            _("The number of Qthreads made available to the App.\n"
+              "A bigger number may finish the jobs more quickly but\n"
+              "depending on your computer speed, may make the App\n"
+              "unresponsive. Can have a value between 2 and 16.\n"
+              "Default value is 2.\n"
+              "After change, it will be applied at next App start.")
+        )
+        self.worker_number_sb = FCSpinner()
+        self.worker_number_sb.setToolTip(
+            _("The number of Qthreads made available to the App.\n"
+              "A bigger number may finish the jobs more quickly but\n"
+              "depending on your computer speed, may make the App\n"
+              "unresponsive. Can have a value between 2 and 16.\n"
+              "Default value is 2.\n"
+              "After change, it will be applied at next App start.")
+        )
+        self.worker_number_sb.set_range(2, 16)
 
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
@@ -3539,6 +3558,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.project_startup_label, self.project_startup_cb)
         self.form_box.addRow(self.project_autohide_label, self.project_autohide_cb)
         self.form_box.addRow(self.toggle_tooltips_label, self.toggle_tooltips_cb)
+        self.form_box.addRow(self.worker_number_label, self.worker_number_sb)
+
         self.form_box.addRow(self.spacelabel, self.spacelabel)
 
         # Add the QFormLayout that holds the Application general defaults

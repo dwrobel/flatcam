@@ -1382,6 +1382,18 @@ class SpinBoxDelegate(QtWidgets.QItemDelegate):
 class FCSpinner(QtWidgets.QSpinBox):
     def __init__(self, parent=None):
         super(FCSpinner, self).__init__(parent)
+        self.readyToEdit = True
+
+    def mousePressEvent(self, e, parent=None):
+        super(FCSpinner, self).mousePressEvent(e)  # required to deselect on 2e click
+        if self.readyToEdit:
+            self.lineEdit().selectAll()
+            self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        super(FCSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
+        self.lineEdit().deselect()
+        self.readyToEdit = True
 
     def get_value(self):
         return str(self.value())
@@ -1393,6 +1405,9 @@ class FCSpinner(QtWidgets.QSpinBox):
             log.debug(str(e))
             return
         self.setValue(k)
+
+    def set_range(self, min_val, max_val):
+        self.setRange(min_val, max_val)
 
     # def sizeHint(self):
     #     default_hint_size = super(FCSpinner, self).sizeHint()
@@ -1430,7 +1445,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         self.setDecimals(val)
 
     def set_range(self, min_val, max_val):
-        self.setRange(self, min_val, max_val)
+        self.setRange(min_val, max_val)
 
 
 class Dialog_box(QtWidgets.QWidget):

@@ -319,6 +319,7 @@ class App(QtCore.QObject):
             "global_project_at_startup": self.ui.general_defaults_form.general_app_group.project_startup_cb,
             "global_project_autohide": self.ui.general_defaults_form.general_app_group.project_autohide_cb,
             "global_toggle_tooltips": self.ui.general_defaults_form.general_app_group.toggle_tooltips_cb,
+            "global_worker_number": self.ui.general_defaults_form.general_app_group.worker_number_sb,
 
             "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_combo,
             "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
@@ -586,6 +587,7 @@ class App(QtCore.QObject):
             "global_project_at_startup": False,
             "global_project_autohide": True,
             "global_toggle_tooltips": True,
+            "global_worker_number": 2,
             "global_compression_level": 3,
             "global_save_compressed": True,
 
@@ -1221,7 +1223,10 @@ class App(QtCore.QObject):
         self.log.debug("Finished adding Geometry and Excellon Editor's.")
 
         #### Worker ####
-        self.workers = WorkerStack()
+        if self.defaults["global_worker_number"]:
+            self.workers = WorkerStack(workers_number=int(self.defaults["global_worker_number"]))
+        else:
+            self.workers = WorkerStack(workers_number=2)
         self.worker_task.connect(self.workers.add_task)
 
 
