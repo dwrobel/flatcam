@@ -4407,7 +4407,7 @@ class App(QtCore.QObject):
 
         self.plotcanvas.vis_connect('mouse_press', self.on_set_zero_click)
 
-    def on_jump_to(self, custom_location=None):
+    def on_jump_to(self, custom_location=None, fit_center=True):
         """
         Jump to a location by setting the mouse cursor location
         :return:
@@ -4433,7 +4433,8 @@ class App(QtCore.QObject):
         else:
             location = custom_location
 
-        self.plotcanvas.fit_center(loc=location)
+        if fit_center:
+            self.plotcanvas.fit_center(loc=location)
 
         cursor = QtGui.QCursor()
 

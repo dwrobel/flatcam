@@ -2088,8 +2088,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Zoom Fit
                 if key == QtCore.Qt.Key_V:
                     self.app.on_zoom_fit(None)
-                    # and move mouse cursor to origin
-                    self.app.on_jump_to(custom_location=(0, 0))
 
                 # Mirror on X the selected object(s)
                 if key == QtCore.Qt.Key_X:
@@ -2355,8 +2353,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 if key == QtCore.Qt.Key_V or key == 'V':
                     self.app.on_zoom_fit(None)
-                    # and move mouse cursor to origin
-                    self.app.on_jump_to(custom_location=(0, 0))
 
                 # Flip on X axis
                 if key == QtCore.Qt.Key_X or key == 'X':
@@ -2536,8 +2532,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_V or key == 'V':
                     self.app.grb_editor.launched_from_shortcuts = True
                     self.app.on_zoom_fit(None)
-                    # and move mouse cursor to origin
-                    self.app.on_jump_to(custom_location=(0, 0))
                     return
 
                 # Propagate to tool
@@ -2735,8 +2729,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_V or key == 'V':
                     self.app.exc_editor.launched_from_shortcuts = True
                     self.app.on_zoom_fit(None)
-                    # and move mouse cursor to origin
-                    self.app.on_jump_to(custom_location=(0, 0))
                     return
 
                 # Propagate to tool

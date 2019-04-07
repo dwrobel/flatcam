@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+7.04.2019
+
+- default values for Jump To function is jumping to origin (0, 0)
+
 6.04.2019
 
 - fixed bug in Geometry Editor in buffer_int() function that created an Circular Reference Error when applying buffer interior on a geometry.
@@ -27,7 +31,7 @@ CAD program, and create G-Code for Isolation routing.
 - WIP in Gerber Editor
 - fixed bug in saving the maximized state
 - fixed bug in applying default language on first start
-- on activating 'V' key shortcut (zoom fit) the mouse cursor is now jumping to origin (0, 0)
+~~- on activating 'V' key shortcut (zoom fit) the mouse cursor is now jumping to origin (0, 0)~~
 - fixed bug in saving toolbars state; the file was saved before setting the self.defaults['global_toolbar_view]
 
 4.04.2019

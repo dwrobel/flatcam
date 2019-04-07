@@ -1463,7 +1463,20 @@ class Dialog_box(QtWidgets.QWidget):
         dialog_box.setFixedWidth(290)
         self.setWindowIcon(icon)
 
-        self.location, self.ok = dialog_box.getText(self, title, label)
+        self.location, self.ok = dialog_box.getText(self, title, label, text="0, 0")
+        self.readyToEdit = True
+
+    def mousePressEvent(self, e, parent=None):
+        super(Dialog_box, self).mousePressEvent(e)  # required to deselect on 2e click
+        if self.readyToEdit:
+            self.lineEdit().selectAll()
+            self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        super(Dialog_box, self).focusOutEvent(e)  # required to remove cursor on focusOut
+        self.lineEdit().deselect()
+        self.readyToEdit = True
+
 
 
 class _BrowserTextEdit(QTextEdit):
