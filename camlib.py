@@ -3186,7 +3186,7 @@ class Gerber (Geometry):
         :rtype : None
         :return: None
         """
-
+        pass
         # self.buffer_paths()
         #
         # self.fix_regions()

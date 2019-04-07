@@ -13,6 +13,9 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed bug in Geometry Editor in buffer_int() function that created an Circular Reference Error when applying buffer interior on a geometry.
 - fixed issue with not possible to close the app after a project save.
+- preliminary Gerber Editor.on_aperture_delete() 
+- fixed 'circular reference' error when creating the new Gerber file in Gerber Editor
+- preliminary Gerber Editor.on_aperture_add()
 
 5.04.2019
 

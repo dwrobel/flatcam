@@ -13,6 +13,7 @@ import copy
 from camlib import *
 from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, LengthEntry, RadioSet, SpinBoxDelegate
 from flatcamEditors.FlatCAMGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, FlatCAMGeoEditor
+from FlatCAMObj import FlatCAMGerber
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -109,7 +110,7 @@ class FCApertureResize(FCShapeTool):
                     # if following the resize of the drills there will be no more drills for the selected tool then
                     # delete that tool
                     if not self.draw_app.points_edit[sel_dia]:
-                        self.draw_app.on_tool_delete(sel_dia)
+                        self.draw_app.on_aperture_delete(sel_dia)
 
             for shp in sel_shapes_to_be_deleted:
                 self.draw_app.selected.remove(shp)
@@ -661,6 +662,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.new_apertures = {}
         self.new_aperture_macros = {}
 
+        # store here the plot promises, if empty the delayed plot will be activated
+        self.grb_plot_promises = []
+
         # dictionary to store the tool_row and diameters in Tool_table
         # it will be updated everytime self.build_ui() is called
         self.olddia_newdia = {}
@@ -680,9 +684,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.app.ui.delete_drill_btn.triggered.connect(self.on_delete_btn)
         self.name_entry.returnPressed.connect(self.on_name_activate)
-        self.addaperture_btn.clicked.connect(self.on_tool_add)
+        self.addaperture_btn.clicked.connect(self.on_aperture_add)
         # self.addtool_entry.editingFinished.connect(self.on_tool_add)
-        self.delaperture_btn.clicked.connect(self.on_tool_delete)
+        self.delaperture_btn.clicked.connect(self.on_aperture_delete)
         self.apertures_table.selectionModel().currentChanged.connect(self.on_row_selected)
         self.array_type_combo.currentIndexChanged.connect(self.on_array_type_combo)
 
@@ -703,6 +707,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.drill_direction_radio.set_value('CW')
         self.drill_axis_radio.set_value('X')
         self.gerber_obj = None
+        self.gerber_obj_options = {}
 
         # VisPy Visuals
         self.shapes = self.app.plotcanvas.new_shape_collection(layers=1)
@@ -784,7 +789,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         sort_temp = []
         for aperture in self.olddia_newdia:
-            sort_temp.append(float(aperture))
+            sort_temp.append(int(aperture))
         self.sorted_apid = sorted(sort_temp)
 
         # populate self.intial_table_rows dict with the tool number as keys and tool diameters as values
@@ -814,9 +819,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.apertures_row = 0
         aper_no = self.apertures_row + 1
+
         sort = []
-        for k, v in list(self.gerber_obj.apertures.items()):
+        for k, v in list(self.storage_dict.items()):
             sort.append(int(k))
+
         sorted_apertures = sorted(sort)
 
         sort = []
@@ -837,20 +844,20 @@ class FlatCAMGrbEditor(QtCore.QObject):
             ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
             ap_code_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-            ap_type_item = QtWidgets.QTableWidgetItem(str(self.gerber_obj.apertures[ap_code]['type']))
+            ap_type_item = QtWidgets.QTableWidgetItem(str(self.storage_dict[ap_code]['type']))
             ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
-            if str(self.gerber_obj.apertures[ap_code]['type']) == 'R' or str(self.gerber_obj.apertures[ap_code]['type']) == 'O':
+            if str(self.storage_dict[ap_code]['type']) == 'R' or str(self.storage_dict[ap_code]['type']) == 'O':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
-                    '%.4f, %.4f' % (self.gerber_obj.apertures[ap_code]['width'] * self.gerber_obj.file_units_factor,
-                                    self.gerber_obj.apertures[ap_code]['height'] * self.gerber_obj.file_units_factor
+                    '%.4f, %.4f' % (self.storage_dict[ap_code]['width'] * self.gerber_obj.file_units_factor,
+                                    self.storage_dict[ap_code]['height'] * self.gerber_obj.file_units_factor
                                     )
                 )
                 ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
-            elif str(self.gerber_obj.apertures[ap_code]['type']) == 'P':
+            elif str(self.storage_dict[ap_code]['type']) == 'P':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
-                    '%.4f, %.4f' % (self.gerber_obj.apertures[ap_code]['diam'] * self.gerber_obj.file_units_factor,
-                                    self.gerber_obj.apertures[ap_code]['nVertices'] * self.gerber_obj.file_units_factor)
+                    '%.4f, %.4f' % (self.storage_dict[ap_code]['diam'] * self.gerber_obj.file_units_factor,
+                                    self.storage_dict[ap_code]['nVertices'] * self.gerber_obj.file_units_factor)
                 )
                 ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
             else:
@@ -858,9 +865,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
 
             try:
-                if self.gerber_obj.apertures[ap_code]['size'] is not None:
+                if self.storage_dict[ap_code]['size'] is not None:
                     ap_size_item = QtWidgets.QTableWidgetItem('%.4f' %
-                                                              float(self.gerber_obj.apertures[ap_code]['size'] *
+                                                              float(self.storage_dict[ap_code]['size'] *
                                                                     self.gerber_obj.file_units_factor))
                 else:
                     ap_size_item = QtWidgets.QTableWidgetItem('')
@@ -929,30 +936,26 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
         self.apertures_table.itemChanged.connect(self.on_tool_edit)
 
-    def on_tool_add(self, tooldia=None):
+    def on_aperture_add(self, apid=None):
         self.is_modified = True
-        if tooldia:
-            tool_dia = tooldia
+        if apid:
+            ap_id = apid
         else:
             try:
-                tool_dia = float(self.addtool_entry.get_value())
+                ap_id = str(self.addtool_entry.get_value())
             except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    tool_dia = float(self.addtool_entry.get_value().replace(',', '.'))
-                except ValueError:
-                    self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                         "use a number.")
-                                         )
-                    return
+                return
 
-        if tool_dia not in self.olddia_newdia:
-            storage_elem = FlatCAMGeoEditor.make_storage()
-            self.storage_dict[tool_dia] = storage_elem
+        if ap_id not in self.olddia_newdia:
+            self.storage_dict[ap_id] = {}
+            self.storage_dict[ap_id]['type'] = 'C'
+            self.storage_dict[ap_id]['size'] = 1
+            self.storage_dict[ap_id]['solid_geometry'] = []
+            self.storage_dict[ap_id]['follow_geometry'] = []
 
             # self.olddia_newdia dict keeps the evidence on current tools diameters as keys and gets updated on values
             # each time a tool diameter is edited or added
-            self.olddia_newdia[tool_dia] = tool_dia
+            self.olddia_newdia[ap_id] = ap_id
         else:
             self.app.inform.emit(_("[WARNING_NOTCL] Tool already in the original or actual tool list.\n"
                                  "Save and reedit Excellon if you need to add this tool. ")
@@ -961,56 +964,49 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # since we add a new tool, we update also the initial state of the tool_table through it's dictionary
         # we add a new entry in the tool2tooldia dict
-        self.tool2tooldia[len(self.olddia_newdia)] = tool_dia
+        self.tool2tooldia[len(self.olddia_newdia)] = ap_id
 
-        self.app.inform.emit(_("[success] Added new tool with dia: {dia} {units}").format(dia=str(tool_dia), units=str(self.units)))
+        self.app.inform.emit(_("[success] Added new tool with dia: {apid}").format(apid=str(ap_id)))
 
         self.build_ui()
 
         # make a quick sort through the tool2tooldia dict so we find which row to select
         row_to_be_selected = None
         for key in sorted(self.tool2tooldia):
-            if self.tool2tooldia[key] == tool_dia:
+            if self.tool2tooldia[key] == ap_id:
                 row_to_be_selected = int(key) - 1
                 break
 
         self.apertures_table.selectRow(row_to_be_selected)
 
-    def on_tool_delete(self, dia=None):
+    def on_aperture_delete(self, apid=None):
         self.is_modified = True
         deleted_tool_dia_list = []
         deleted_tool_offset_list = []
 
         try:
-            if dia is None or dia is False:
+            if apid is None or apid is False:
                 # deleted_tool_dia = float(self.apertures_table.item(self.apertures_table.currentRow(), 1).text())
                 for index in self.apertures_table.selectionModel().selectedRows():
                     row = index.row()
-                    deleted_tool_dia_list.append(float(self.apertures_table.item(row, 1).text()))
+                    deleted_tool_dia_list.append(self.apertures_table.item(row, 1).text())
             else:
-                if isinstance(dia, list):
-                    for dd in dia:
-                        deleted_tool_dia_list.append(float('%.4f' % dd))
+                if isinstance(apid, list):
+                    for dd in apid:
+                        deleted_tool_dia_list.append(dd)
                 else:
-                    deleted_tool_dia_list.append(float('%.4f' % dia))
+                    deleted_tool_dia_list.append(apid)
         except:
             self.app.inform.emit(_("[WARNING_NOTCL] Select a tool in Tool Table"))
             return
 
         for deleted_tool_dia in deleted_tool_dia_list:
-
-            # delete de tool offset
-            self.gerber_obj.tool_offset.pop(float(deleted_tool_dia), None)
-
             # delete the storage used for that tool
-            storage_elem = FlatCAMGeoEditor.make_storage()
-            self.storage_dict[deleted_tool_dia] = storage_elem
             self.storage_dict.pop(deleted_tool_dia, None)
 
             # I've added this flag_del variable because dictionary don't like
             # having keys deleted while iterating through them
             flag_del = []
-            # self.points_edit.pop(deleted_tool_dia, None)
             for deleted_tool in self.tool2tooldia:
                 if self.tool2tooldia[deleted_tool] == deleted_tool_dia:
                     flag_del.append(deleted_tool)
@@ -1019,19 +1015,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 for tool_to_be_deleted in flag_del:
                     # delete the tool
                     self.tool2tooldia.pop(tool_to_be_deleted, None)
-
-                    # delete also the drills from points_edit dict just in case we add the tool again, we don't want to show the
-                    # number of drills from before was deleter
-                    self.points_edit[deleted_tool_dia] = []
                 flag_del = []
 
             self.olddia_newdia.pop(deleted_tool_dia, None)
 
-            self.app.inform.emit(_("[success] Deleted tool with dia: {del_dia} {units}").format(del_dia=str(deleted_tool_dia), units=str(self.units)))
+            self.app.inform.emit(_("[success] Deleted aperture with code: {del_dia}").format(del_dia=str(deleted_tool_dia)))
 
         self.plot_all()
-        # self.app.inform.emit("Could not delete selected tool")
-
         self.build_ui()
 
     def on_tool_edit(self, item_changed):
@@ -1081,7 +1071,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.points_edit[current_table_dia_edited].append((0, 0))
             self.add_gerber_shape(geometry, self.storage_dict[current_table_dia_edited])
 
-            self.on_tool_delete(dia=dia_changed)
+            self.on_aperture_delete(apid=dia_changed)
 
             # delete the tool offset
             self.gerber_obj.tool_offset.pop(dia_changed, None)
@@ -1220,7 +1210,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # self.storage = FlatCAMExcEditor.make_storage()
         self.plot_all()
 
-    def edit_fcgerber(self, exc_obj):
+    def edit_fcgerber(self, orig_grb_obj):
         """
         Imports the geometry found in self.apertures from the given FlatCAM Gerber object
         into the editor.
@@ -1229,25 +1219,21 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :return: None
         """
 
-        assert isinstance(exc_obj, Gerber), \
-            "Expected an Excellon Object, got %s" % type(exc_obj)
-
         self.deactivate()
         self.activate()
 
+        # create a reference to the source object
+        self.gerber_obj = orig_grb_obj
+
+        self.gerber_obj_options = orig_grb_obj.options
+
         # Hide original geometry
-        self.gerber_obj = exc_obj
-        exc_obj.visible = False
+        orig_grb_obj.visible = False
 
         # Set selection tolerance
         # DrawToolShape.tolerance = fc_excellon.drawing_tolerance * 10
 
         self.select_tool("select")
-
-        self.set_ui()
-
-        # now that we hava data, create the GUI interface and add it to the Tool Tab
-        self.build_ui()
 
         # we activate this after the initial build as we don't need to see the tool been populated
         self.apertures_table.itemChanged.connect(self.on_tool_edit)
@@ -1255,7 +1241,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # build the geometry for each tool-diameter, each drill will be represented by a '+' symbol
         # and then add it to the storage elements (each storage elements is a member of a list
 
-        def job_thread(apid):
+        def job_thread(self, apid):
             with self.app.proc_container.new(_("Adding aperture: %s geo ...") % str(apid)):
                 solid_storage_elem = []
                 follow_storage_elem = []
@@ -1275,18 +1261,19 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     else:
                         self.storage_dict[apid][k] = v
 
-                apid_promise = apid
-
                 # Check promises and clear if exists
-                self.app.collection.plot_remove_promise(apid_promise)
-                # if apid_promise in self.app.collection.plot_promises:
-                #     self.app.collection.plot_promises.remove(apid_promise)
+                while True:
+                    try:
+                        self.grb_plot_promises.remove(apid)
+                        time.sleep(0.5)
+                    except ValueError:
+                        break
 
         for apid in self.gerber_obj.apertures:
-            self.app.worker_task.emit({'fcn': job_thread, 'params': [apid]})
-            self.app.collection.plot_promise(apid)
+            self.grb_plot_promises.append(apid)
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [self, apid]})
 
-        self.start_delayed_plot(check_period=500)
+        self.start_delayed_plot(check_period=1000)
 
     def update_fcgerber(self, grb_obj):
         """
@@ -1295,6 +1282,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :param grb_obj: FlatCAMGerber
         :return: None
         """
+
+        new_grb_name = self.edited_obj_name
 
         # if the 'delayed plot' malfunctioned stop the QTimer
         try:
@@ -1305,14 +1294,14 @@ class FlatCAMGrbEditor(QtCore.QObject):
         if "_edit" in self.edited_obj_name:
             try:
                 id = int(self.edited_obj_name[-1]) + 1
-                self.edited_obj_name = self.edited_obj_name[:-1] + str(id)
+                new_grb_name= self.edited_obj_name[:-1] + str(id)
             except ValueError:
-                self.edited_obj_name += "_1"
+                new_grb_name += "_1"
         else:
-            self.edited_obj_name += "_edit"
+            new_grb_name = self.edited_obj_name + "_edit"
 
         self.app.worker_task.emit({'fcn': self.new_edited_gerber,
-                                   'params': [self.edited_obj_name]})
+                                   'params': [new_grb_name]})
 
         # reset the tool table
         self.apertures_table.clear()
@@ -1349,29 +1338,36 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :return: None
         """
 
-        self.app.log.debug("Update the Gerber object with edited content. Source is %s" %
-                           self.gerber_obj.options['name'])
+        self.app.log.debug("Update the Gerber object with edited content. Source is: %s" %
+                           self.gerber_obj.options['name'].upper())
+
+        out_name = outname
 
         # How the object should be initialized
         def obj_init(grb_obj, app_obj):
             poly_buffer = []
             follow_buffer = []
+            new_geo = []
 
             for storage_apid, storage_val in self.storage_dict.items():
                 grb_obj.apertures[storage_apid] = {}
+
                 for k, v in storage_val.items():
                     if k == 'solid_geometry':
                         grb_obj.apertures[storage_apid][k] = []
                         for geo in v:
-                            grb_obj.apertures[storage_apid][k].append(deepcopy(geo.geo))
-                            poly_buffer.append(deepcopy(geo.geo))
-                    if k == 'follow_geometry':
+                            new_geo = deepcopy(geo.geo)
+                            grb_obj.apertures[storage_apid][k].append(new_geo)
+                            poly_buffer.append(new_geo)
+
+                    elif k == 'follow_geometry':
                         grb_obj.apertures[storage_apid][k] = []
                         for geo in v:
-                            grb_obj.apertures[storage_apid][k].append(deepcopy(geo.geo))
-                            follow_buffer.append(deepcopy(geo.geo))
+                            new_geo = deepcopy(geo.geo)
+                            grb_obj.apertures[storage_apid][k].append(new_geo)
+                            follow_buffer.append(new_geo)
                     else:
-                        grb_obj.apertures[storage_apid][k] = v
+                        grb_obj.apertures[storage_apid][k] = deepcopy(v)
 
             grb_obj.aperture_macros = deepcopy(self.gerber_obj.aperture_macros)
 
@@ -1382,9 +1378,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
             grb_obj.follow_geometry = deepcopy(follow_buffer)
 
-            grb_obj.options = self.gerber_obj.options.copy()
-            grb_obj.options['name'] = outname
-
+            for k, v in self.gerber_obj_options.items():
+                if k == 'name':
+                    grb_obj.options[k] = out_name
+                else:
+                    grb_obj.options[k] = deepcopy(v)
 
             try:
                 grb_obj.create_geometry()
@@ -1832,11 +1830,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.plot_thread.start()
 
     def check_plot_finished(self):
-        print(self.app.collection.plot_promises)
+        # print(self.grb_plot_promises)
         try:
-            has_promise = self.app.collection.has_plot_promises()
-            if has_promise == False:
+            if not self.grb_plot_promises:
                 self.plot_thread.stop()
+
+                self.set_ui()
+                # now that we hava data, create the GUI interface and add it to the Tool Tab
+                self.build_ui()
+
                 self.plot_all()
                 log.debug("FlatCAMGrbEditor --> delayed_plot finished")
         except Exception:
