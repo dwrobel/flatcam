@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 9.04.2019
 
 - Gerber Editor: added buffer and scale tools
+- Gerber Editor: working on aperture selection to show on Aperture Table
 
 7.04.2019
 

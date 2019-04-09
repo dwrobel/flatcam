@@ -448,7 +448,20 @@ class FCApertureSelect(DrawTool):
                 self.grb_editor_app.selected = []
 
     def click_release(self, point):
-        # self.select_shapes(point)
+        self.grb_editor_app.apertures_table.clearSelection()
+        sel_aperture = set()
+        for storage in self.grb_editor_app.storage_dict:
+            for shape in self.grb_editor_app.storage_dict[storage]['solid_geometry']:
+                if Point(point).within(shape.geo):
+                    sel_aperture.add(storage)
+        try:
+            self.grb_editor_app.apertures_table.itemClicked.disconnect()
+        except:
+            pass
+        for aper in sel_aperture:
+            for row in range(self.grb_editor_app.apertures_table.rowCount()):
+                if str(aper) == self.grb_editor_app.apertures_table.item(row, 1).text():
+                    self.grb_editor_app.apertures_table.selectRow(row)
         return ""
 
     # def select_shapes(self, pos):
