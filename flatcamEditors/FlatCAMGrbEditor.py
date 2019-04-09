@@ -11,9 +11,11 @@ import threading, time
 import copy
 
 from camlib import *
-from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, LengthEntry, RadioSet, SpinBoxDelegate
+from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, LengthEntry, RadioSet, \
+    SpinBoxDelegate, EvalEntry
 from flatcamEditors.FlatCAMGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, FlatCAMGeoEditor
 from FlatCAMObj import FlatCAMGerber
+from FlatCAMTool import FlatCAMTool
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -22,6 +24,171 @@ fcTranslate.apply_language('strings')
 import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
+
+# class ScaleGrbTool(FlatCAMTool):
+#     """
+#     Simple input for buffer distance.
+#     """
+#
+#     toolName = _("Scale")
+#
+#     def __init__(self, app, draw_app):
+#         FlatCAMTool.__init__(self, app)
+#
+#         self.draw_app = draw_app
+#
+#         # Title
+#         title_label = QtWidgets.QLabel("{name} {tooln} ".format(name=_("Editor"), tooln=self.toolName))
+#         title_label.setStyleSheet("""
+#                         QLabel
+#                         {
+#                             font-size: 16px;
+#                             font-weight: bold;
+#                         }
+#                         """)
+#         self.layout.addWidget(title_label)
+#
+#         # this way I can hide/show the frame
+#         self.scale_tool_frame = QtWidgets.QFrame()
+#         self.scale_tool_frame.setContentsMargins(0, 0, 0, 0)
+#         self.layout.addWidget(self.scale_tool_frame)
+#         self.scale_tools_box = QtWidgets.QVBoxLayout()
+#         self.scale_tools_box.setContentsMargins(0, 0, 0, 0)
+#         self.scale_tool_frame.setLayout(self.scale_tools_box)
+#
+#         # Form Layout
+#         form_layout = QtWidgets.QFormLayout()
+#         self.scale_tools_box.addLayout(form_layout)
+#
+#         # Buffer distance
+#         self.scale_factor_entry = FCEntry()
+#         form_layout.addRow(_("Scale Factor:"), self.scale_factor_entry)
+#
+#         # Buttons
+#         hlay1 = QtWidgets.QHBoxLayout()
+#         self.scale_tools_box.addLayout(hlay1)
+#
+#         self.scale_button = QtWidgets.QPushButton(_("Scale"))
+#         hlay1.addWidget(self.scale_button)
+#
+#         self.layout.addStretch()
+#
+#         # Signals
+#         self.scale_button.clicked.connect(self.on_scale)
+#
+#         # Init GUI
+#         self.scale_factor_entry.set_value(1)
+#
+#     def run(self):
+#         self.app.report_usage("Gerber Editor ToolScale()")
+#         FlatCAMTool.run(self)
+#
+#         # if the splitter us hidden, display it
+#         if self.app.ui.splitter.sizes()[0] == 0:
+#             self.app.ui.splitter.setSizes([1, 1])
+#
+#         self.app.ui.notebook.setTabText(2, _("Scale Tool"))
+#
+#     def on_scale(self):
+#         if not self.draw_app.selected:
+#             self.app.inform.emit(_("[WARNING_NOTCL] Scale cancelled. No aperture selected."))
+#             return
+#
+#         try:
+#             buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value())
+#         except ValueError:
+#             # try to convert comma to decimal point. if it's still not working error message and return
+#             try:
+#                 buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value().replace(',', '.'))
+#                 self.buff_tool.buffer_distance_entry.set_value(buffer_distance)
+#             except ValueError:
+#                 self.app.inform.emit(_("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
+#                                        "Add it and retry."))
+#                 return
+#         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
+#         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
+#         join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
+#         self.draw_app.buffer(buffer_distance, join_style)
+#         self.app.ui.notebook.setTabText(2, _("Tools"))
+#         self.draw_app.app.ui.splitter.setSizes([0, 1])
+#
+#         self.deactivate()
+#         self.app.inform.emit(_("[success] Done. Scale Tool completed."))
+
+
+class FCScale(FCShapeTool):
+    def __init__(self, draw_app):
+        FCShapeTool.__init__(self, draw_app)
+        self.name = 'scale'
+
+        # self.shape_buffer = self.draw_app.shape_buffer
+        self.draw_app = draw_app
+        self.app = draw_app.app
+
+        self.start_msg = _("Scale the selected Gerber apertures ...")
+        self.origin = (0, 0)
+
+        if self.draw_app.app.ui.splitter.sizes()[0] == 0:
+            self.draw_app.app.ui.splitter.setSizes([1, 1])
+        self.activate()
+
+    def activate(self):
+        self.draw_app.hide_tool('all')
+        self.draw_app.scale_tool_frame.show()
+
+        try:
+            self.draw_app.scale_button.clicked.disconnect()
+        except TypeError:
+            pass
+        self.draw_app.scale_button.clicked.connect(self.on_scale_click)
+
+    def deactivate(self):
+        self.draw_app.scale_button.clicked.disconnect()
+        self.complete = True
+        self.draw_app.select_tool("select")
+        self.draw_app.hide_tool(self.name)
+
+    def on_scale_click(self):
+        self.draw_app.on_scale()
+        self.deactivate()
+
+
+class FCBuffer(FCShapeTool):
+    def __init__(self, draw_app):
+        FCShapeTool.__init__(self, draw_app)
+        self.name = 'buffer'
+
+        # self.shape_buffer = self.draw_app.shape_buffer
+        self.draw_app = draw_app
+        self.app = draw_app.app
+
+        self.start_msg = _("Buffer the selected apertures ...")
+        self.origin = (0, 0)
+
+        if self.draw_app.app.ui.splitter.sizes()[0] == 0:
+            self.draw_app.app.ui.splitter.setSizes([1, 1])
+        self.activate()
+
+    def activate(self):
+        self.draw_app.hide_tool('all')
+        self.draw_app.buffer_tool_frame.show()
+
+        try:
+            self.draw_app.buffer_button.clicked.disconnect()
+        except TypeError:
+            pass
+        self.draw_app.buffer_button.clicked.connect(self.on_buffer_click)
+
+    def deactivate(self):
+        self.draw_app.buffer_button.clicked.disconnect()
+        self.complete = True
+        self.draw_app.select_tool("select")
+        self.draw_app.hide_tool(self.name)
+
+    def on_buffer_click(self):
+        self.draw_app.on_buffer()
+        self.deactivate()
 
 
 class FCApertureResize(FCShapeTool):
@@ -255,7 +422,7 @@ class FCApertureCopy(FCApertureMove):
 class FCApertureSelect(DrawTool):
     def __init__(self, grb_editor_app):
         DrawTool.__init__(self, grb_editor_app)
-        self.name = 'drill_select'
+        self.name = 'select'
 
         self.grb_editor_app = grb_editor_app
         self.storage = self.grb_editor_app.storage_dict
@@ -264,8 +431,8 @@ class FCApertureSelect(DrawTool):
         # here we store all shapes that were selected
         self.sel_storage = []
 
-        self.grb_editor_app.resize_frame.hide()
-        self.grb_editor_app.array_frame.hide()
+        self.grb_editor_app.hide_tool('all')
+        self.grb_editor_app.hide_tool('select')
 
     def click(self, point):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
@@ -281,60 +448,60 @@ class FCApertureSelect(DrawTool):
                 self.grb_editor_app.selected = []
 
     def click_release(self, point):
-        self.select_shapes(point)
+        # self.select_shapes(point)
         return ""
 
-    def select_shapes(self, pos):
-        self.grb_editor_app.apertures_table.clearSelection()
-
-        for storage in self.grb_editor_app.storage_dict:
-            for shape in self.grb_editor_app.storage_dict[storage]['solid_geometry']:
-                if Point(pos).within(shape.geo):
-                    self.sel_storage.append(shape)
-        xmin, ymin, xmax, ymax = self.bounds(self.sel_storage)
-
-        if pos[0] < xmin or pos[0] > xmax or pos[1] < ymin or pos[1] > ymax:
-            self.grb_editor_app.selected = []
-        else:
-            key_modifier = QtWidgets.QApplication.keyboardModifiers()
-            if self.grb_editor_app.app.defaults["global_mselect_key"] == 'Control':
-                # if CONTROL key is pressed then we add to the selected list the current shape but if it's already
-                # in the selected list, we removed it. Therefore first click selects, second deselects.
-                if key_modifier == Qt.ControlModifier:
-                    if closest_shape in self.grb_editor_app.selected:
-                        self.grb_editor_app.selected.remove(closest_shape)
-                    else:
-                        self.grb_editor_app.selected.append(closest_shape)
-                else:
-                    self.grb_editor_app.selected = []
-                    self.grb_editor_app.selected.append(closest_shape)
-            else:
-                if key_modifier == Qt.ShiftModifier:
-                    if closest_shape in self.grb_editor_app.selected:
-                        self.grb_editor_app.selected.remove(closest_shape)
-                    else:
-                        self.grb_editor_app.selected.append(closest_shape)
-                else:
-                    self.grb_editor_app.selected = []
-                    self.grb_editor_app.selected.append(closest_shape)
-
-            # select the aperture of the selected shape in the tool table
-            for storage in self.grb_editor_app.storage_dict:
-                for shape_s in self.grb_editor_app.selected:
-                    if shape_s in self.grb_editor_app.storage_dict[storage]:
-                        for key in self.grb_editor_app.tool2tooldia:
-                            if self.grb_editor_app.tool2tooldia[key] == storage:
-                                item = self.grb_editor_app.apertures_table.item((key - 1), 1)
-                                self.grb_editor_app.apertures_table.setCurrentItem(item)
-                                # item.setSelected(True)
-                                # self.grb_editor_app.apertures_table.selectItem(key - 1)
-                                # midx = self.grb_editor_app.apertures_table.model().index((key - 1), 0)
-                                # self.grb_editor_app.apertures_table.setCurrentIndex(midx)
-                                self.draw_app.last_tool_selected = key
-        # delete whatever is in selection storage, there is no longer need for those shapes
-        self.sel_storage = []
-
-        return ""
+    # def select_shapes(self, pos):
+    #     self.grb_editor_app.apertures_table.clearSelection()
+    #
+    #     for storage in self.grb_editor_app.storage_dict:
+    #         for shape in self.grb_editor_app.storage_dict[storage]['solid_geometry']:
+    #             if Point(pos).within(shape.geo):
+    #                 self.sel_storage.append(shape)
+    #     xmin, ymin, xmax, ymax = self.bounds(self.sel_storage)
+    #
+    #     if pos[0] < xmin or pos[0] > xmax or pos[1] < ymin or pos[1] > ymax:
+    #         self.grb_editor_app.selected = []
+    #     else:
+    #         key_modifier = QtWidgets.QApplication.keyboardModifiers()
+    #         if self.grb_editor_app.app.defaults["global_mselect_key"] == 'Control':
+    #             # if CONTROL key is pressed then we add to the selected list the current shape but if it's already
+    #             # in the selected list, we removed it. Therefore first click selects, second deselects.
+    #             if key_modifier == Qt.ControlModifier:
+    #                 if closest_shape in self.grb_editor_app.selected:
+    #                     self.grb_editor_app.selected.remove(closest_shape)
+    #                 else:
+    #                     self.grb_editor_app.selected.append(closest_shape)
+    #             else:
+    #                 self.grb_editor_app.selected = []
+    #                 self.grb_editor_app.selected.append(closest_shape)
+    #         else:
+    #             if key_modifier == Qt.ShiftModifier:
+    #                 if closest_shape in self.grb_editor_app.selected:
+    #                     self.grb_editor_app.selected.remove(closest_shape)
+    #                 else:
+    #                     self.grb_editor_app.selected.append(closest_shape)
+    #             else:
+    #                 self.grb_editor_app.selected = []
+    #                 self.grb_editor_app.selected.append(closest_shape)
+    #
+    #         # select the aperture of the selected shape in the tool table
+    #         for storage in self.grb_editor_app.storage_dict:
+    #             for shape_s in self.grb_editor_app.selected:
+    #                 if shape_s in self.grb_editor_app.storage_dict[storage]:
+    #                     for key in self.grb_editor_app.tool2tooldia:
+    #                         if self.grb_editor_app.tool2tooldia[key] == storage:
+    #                             item = self.grb_editor_app.apertures_table.item((key - 1), 1)
+    #                             self.grb_editor_app.apertures_table.setCurrentItem(item)
+    #                             # item.setSelected(True)
+    #                             # self.grb_editor_app.apertures_table.selectItem(key - 1)
+    #                             # midx = self.grb_editor_app.apertures_table.model().index((key - 1), 0)
+    #                             # self.grb_editor_app.apertures_table.setCurrentIndex(midx)
+    #                             self.draw_app.last_tool_selected = key
+    #     # delete whatever is in selection storage, there is no longer need for those shapes
+    #     self.sel_storage = []
+    #
+    #     return ""
 
 
 class FlatCAMGrbEditor(QtCore.QObject):
@@ -385,27 +552,19 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.custom_box = QtWidgets.QVBoxLayout()
         layout.addLayout(self.custom_box)
 
-        # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Drills widgets
-        # this way I can hide/show the frame
-        self.apertures_frame = QtWidgets.QFrame()
-        self.apertures_frame.setContentsMargins(0, 0, 0, 0)
-        self.custom_box.addWidget(self.apertures_frame)
-        self.apertures_box = QtWidgets.QVBoxLayout()
-        self.apertures_box.setContentsMargins(0, 0, 0, 0)
-        self.apertures_frame.setLayout(self.apertures_box)
 
         #### Gerber Apertures ####
         self.apertures_table_label = QtWidgets.QLabel(_('<b>Apertures:</b>'))
         self.apertures_table_label.setToolTip(
             _("Apertures Table for the Gerber Object.")
         )
-        self.apertures_box.addWidget(self.apertures_table_label)
+        self.custom_box.addWidget(self.apertures_table_label)
 
         self.apertures_table = FCTable()
         # delegate = SpinBoxDelegate(units=self.units)
         # self.apertures_table.setItemDelegateForColumn(1, delegate)
 
-        self.apertures_box.addWidget(self.apertures_table)
+        self.custom_box.addWidget(self.apertures_table)
 
         self.apertures_table.setColumnCount(5)
         self.apertures_table.setHorizontalHeaderLabels(['#', _('Code'), _('Type'), _('Size'), _('Dim')])
@@ -425,227 +584,187 @@ class FlatCAMGrbEditor(QtCore.QObject):
               " - (dia, nVertices) for P type"))
 
         self.empty_label = QtWidgets.QLabel('')
-        self.apertures_box.addWidget(self.empty_label)
+        self.custom_box.addWidget(self.empty_label)
 
-        #### Add a new Tool ####
-        self.addaperture_label = QtWidgets.QLabel('<b>%s</b>' % _('Add/Delete Aperture'))
-        self.addaperture_label.setToolTip(
-            _("Add/Delete an aperture to the aperture list")
-        )
-        self.apertures_box.addWidget(self.addaperture_label)
+        # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Apertures widgets
+        # this way I can hide/show the frame
+        self.apertures_frame = QtWidgets.QFrame()
+        self.apertures_frame.setContentsMargins(0, 0, 0, 0)
+        self.custom_box.addWidget(self.apertures_frame)
+        self.apertures_box = QtWidgets.QVBoxLayout()
+        self.apertures_box.setContentsMargins(0, 0, 0, 0)
+        self.apertures_frame.setLayout(self.apertures_box)
+
+        #### Add/Delete an new Aperture ####
 
         grid1 = QtWidgets.QGridLayout()
         self.apertures_box.addLayout(grid1)
 
-        addaperture_entry_lbl = QtWidgets.QLabel(_('Aperture Size:'))
-        addaperture_entry_lbl.setToolTip(
+        apcode_lbl = QtWidgets.QLabel(_('Aperture Code:'))
+        apcode_lbl.setToolTip(
+        _("Code for the new aperture")
+        )
+        grid1.addWidget(apcode_lbl, 1, 0)
+
+        self.apcodeentry = FCEntry()
+        self.apcodeentry.setValidator(QtGui.QIntValidator(0,999))
+        grid1.addWidget(self.apcodeentry, 1, 1)
+
+        apsize_lbl = QtWidgets.QLabel(_('Aperture Size:'))
+        apsize_lbl.setToolTip(
         _("Size for the new aperture")
         )
-        grid1.addWidget(addaperture_entry_lbl, 0, 0)
+        grid1.addWidget(apsize_lbl, 2, 0)
 
-        hlay = QtWidgets.QHBoxLayout()
-        self.addtool_entry = FCEntry()
-        self.addtool_entry.setValidator(QtGui.QDoubleValidator(0.0001, 99.9999, 4))
-        hlay.addWidget(self.addtool_entry)
+        self.apsize_entry = FCEntry()
+        self.apsize_entry.setValidator(QtGui.QDoubleValidator(0.0001, 99.9999, 4))
+        grid1.addWidget(self.apsize_entry, 2, 1)
 
-        self.addaperture_btn = QtWidgets.QPushButton(_('Add Aperture'))
+        aptype_lbl = QtWidgets.QLabel(_('Aperture Type:'))
+        aptype_lbl.setToolTip(
+        _("Select the type of new aperture. Can be:\n"
+          "C = circular\n"
+          "R = rectangular")
+        )
+        grid1.addWidget(aptype_lbl, 3, 0)
+
+        self.aptype_cb = FCComboBox()
+        self.aptype_cb.addItems(['C', 'R'])
+        grid1.addWidget(self.aptype_cb, 3, 1)
+
+        self.apdim_lbl = QtWidgets.QLabel(_('Aperture Dim:'))
+        self.apdim_lbl.setToolTip(
+        _("Dimensions for the new aperture.\n"
+          "Active only for rectangular apertures (type R).\n"
+          "The format is (width, height)")
+        )
+        grid1.addWidget(self.apdim_lbl, 4, 0)
+
+        self.apdim_entry = EvalEntry()
+        grid1.addWidget(self.apdim_entry, 4, 1)
+
+        apadd_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Add Aperture:'))
+        apadd_lbl.setToolTip(
+            _("Add an aperture to the aperture list")
+        )
+        grid1.addWidget(apadd_lbl, 5, 0)
+
+        self.addaperture_btn = QtWidgets.QPushButton(_('Go'))
         self.addaperture_btn.setToolTip(
            _( "Add a new aperture to the aperture list")
         )
-        self.addaperture_btn.setFixedWidth(80)
-        hlay.addWidget(self.addaperture_btn)
-        grid1.addLayout(hlay, 0, 1)
+        grid1.addWidget(self.addaperture_btn, 5, 1)
 
-        grid2 = QtWidgets.QGridLayout()
-        self.apertures_box.addLayout(grid2)
+        apdelete_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Del Aperture:'))
+        apdelete_lbl.setToolTip(
+            _( "Delete a aperture in the aperture list")
+        )
+        grid1.addWidget(apdelete_lbl, 6, 0)
 
-        self.delaperture_btn = QtWidgets.QPushButton(_('Delete Aperture'))
+        self.delaperture_btn = QtWidgets.QPushButton(_('Go'))
         self.delaperture_btn.setToolTip(
            _( "Delete a aperture in the aperture list")
         )
-        grid2.addWidget(self.delaperture_btn, 0, 1)
+        grid1.addWidget(self.delaperture_btn, 6, 1)
 
-        # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the aperture widgets
-        # this way I can hide/show the frame
-        self.resize_frame = QtWidgets.QFrame()
-        self.resize_frame.setContentsMargins(0, 0, 0, 0)
-        self.apertures_box.addWidget(self.resize_frame)
-        self.resize_box = QtWidgets.QVBoxLayout()
-        self.resize_box.setContentsMargins(0, 0, 0, 0)
-        self.resize_frame.setLayout(self.resize_box)
+        ### BUFFER TOOL ###
 
-        #### Resize a aperture ####
-        self.emptyresize_label = QtWidgets.QLabel('')
-        self.resize_box.addWidget(self.emptyresize_label)
+        self.buffer_tool_frame = QtWidgets.QFrame()
+        self.buffer_tool_frame.setContentsMargins(0, 0, 0, 0)
+        self.custom_box.addWidget(self.buffer_tool_frame)
+        self.buffer_tools_box = QtWidgets.QVBoxLayout()
+        self.buffer_tools_box.setContentsMargins(0, 0, 0, 0)
+        self.buffer_tool_frame.setLayout(self.buffer_tools_box)
+        self.buffer_tool_frame.hide()
 
-        self.apertureresize_label = QtWidgets.QLabel('<b>%s</b>' % _("Resize Aperture"))
-        self.apertureresize_label.setToolTip(
-            _("Resize a aperture or a selection of apertures.")
+        # Title
+        buf_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Buffer Aperture:'))
+        buf_title_lbl.setToolTip(
+            _("Buffer a aperture in the aperture list")
         )
-        self.resize_box.addWidget(self.apertureresize_label)
+        self.buffer_tools_box.addWidget(buf_title_lbl)
 
-        grid3 = QtWidgets.QGridLayout()
-        self.resize_box.addLayout(grid3)
+        # Form Layout
+        buf_form_layout = QtWidgets.QFormLayout()
+        self.buffer_tools_box.addLayout(buf_form_layout)
 
-        res_entry_lbl = QtWidgets.QLabel(_('Resize Dia:'))
-        res_entry_lbl.setToolTip(
-           _( "Size to resize to.")
+        # Buffer distance
+        self.buffer_distance_entry = FCEntry()
+        buf_form_layout.addRow(_("Buffer distance:"), self.buffer_distance_entry)
+        self.buffer_corner_lbl = QtWidgets.QLabel(_("Buffer corner:"))
+        self.buffer_corner_lbl.setToolTip(
+            _("There are 3 types of corners:\n"
+              " - 'Round': the corner is rounded.\n"
+              " - 'Square:' the corner is met in a sharp angle.\n"
+              " - 'Beveled:' the corner is a line that directly connects the features meeting in the corner")
         )
-        grid3.addWidget(res_entry_lbl, 0, 0)
+        self.buffer_corner_cb = FCComboBox()
+        self.buffer_corner_cb.addItem(_("Round"))
+        self.buffer_corner_cb.addItem(_("Square"))
+        self.buffer_corner_cb.addItem(_("Beveled"))
+        buf_form_layout.addRow(self.buffer_corner_lbl, self.buffer_corner_cb)
 
-        hlay2 = QtWidgets.QHBoxLayout()
-        self.resdrill_entry = LengthEntry()
-        hlay2.addWidget(self.resdrill_entry)
+        # Buttons
+        hlay_buf = QtWidgets.QHBoxLayout()
+        self.buffer_tools_box.addLayout(hlay_buf)
 
-        self.resize_btn = QtWidgets.QPushButton(_('Resize'))
-        self.resize_btn.setToolTip(
-            _("Resize drill(s)")
+        self.buffer_button = QtWidgets.QPushButton(_("Buffer"))
+        hlay_buf.addWidget(self.buffer_button)
+
+        ### SCALE TOOL ###
+
+        self.scale_tool_frame = QtWidgets.QFrame()
+        self.scale_tool_frame.setContentsMargins(0, 0, 0, 0)
+        self.custom_box.addWidget(self.scale_tool_frame)
+        self.scale_tools_box = QtWidgets.QVBoxLayout()
+        self.scale_tools_box.setContentsMargins(0, 0, 0, 0)
+        self.scale_tool_frame.setLayout(self.scale_tools_box)
+        self.scale_tool_frame.hide()
+
+        # Title
+        scale_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Scale Aperture:'))
+        scale_title_lbl.setToolTip(
+            _("Scale a aperture in the aperture list")
         )
-        self.resize_btn.setFixedWidth(80)
-        hlay2.addWidget(self.resize_btn)
-        grid3.addLayout(hlay2, 0, 1)
+        self.scale_tools_box.addWidget(scale_title_lbl)
 
-        self.resize_frame.hide()
+        # Form Layout
+        scale_form_layout = QtWidgets.QFormLayout()
+        self.scale_tools_box.addLayout(scale_form_layout)
 
-        # add a frame and inside add a vertical box layout. Inside this vbox layout I add
-        # all the add drill array  widgets
-        # this way I can hide/show the frame
-        self.array_frame = QtWidgets.QFrame()
-        self.array_frame.setContentsMargins(0, 0, 0, 0)
-        self.apertures_box.addWidget(self.array_frame)
-        self.array_box = QtWidgets.QVBoxLayout()
-        self.array_box.setContentsMargins(0, 0, 0, 0)
-        self.array_frame.setLayout(self.array_box)
-
-        #### Add DRILL Array ####
-        self.emptyarray_label = QtWidgets.QLabel('')
-        self.array_box.addWidget(self.emptyarray_label)
-
-        self.drillarray_label = QtWidgets.QLabel('<b>%s</b>' % _("Add Drill Array"))
-        self.drillarray_label.setToolTip(
-            _("Add an array of drills (linear or circular array)")
+        self.scale_factor_lbl = QtWidgets.QLabel(_("Scale factor:"))
+        self.scale_factor_lbl.setToolTip(
+            _("The factor by which to scale the selected aperture.\n"
+              "Values can be between 0.0000 and 999.9999")
         )
-        self.array_box.addWidget(self.drillarray_label)
+        self.scale_factor_entry = FCEntry()
+        self.scale_factor_entry.setValidator(QtGui.QDoubleValidator(0.0000, 999.9999, 4))
+        scale_form_layout.addRow(self.scale_factor_lbl, self.scale_factor_entry)
 
-        self.array_type_combo = FCComboBox()
-        self.array_type_combo.setToolTip(
-           _( "Select the type of drills array to create.\n"
-            "It can be Linear X(Y) or Circular")
-        )
-        self.array_type_combo.addItem(_("Linear"))
-        self.array_type_combo.addItem(_("Circular"))
+        # Buttons
+        hlay_scale = QtWidgets.QHBoxLayout()
+        self.scale_tools_box.addLayout(hlay_scale)
 
-        self.array_box.addWidget(self.array_type_combo)
+        self.scale_button = QtWidgets.QPushButton(_("Scale"))
+        hlay_scale.addWidget(self.scale_button)
 
-        self.array_form = QtWidgets.QFormLayout()
-        self.array_box.addLayout(self.array_form)
 
-        self.drill_array_size_label = QtWidgets.QLabel(_('Nr of drills:'))
-        self.drill_array_size_label.setToolTip(
-            _("Specify how many drills to be in the array.")
-        )
-        self.drill_array_size_label.setFixedWidth(100)
-
-        self.drill_array_size_entry = LengthEntry()
-        self.array_form.addRow(self.drill_array_size_label, self.drill_array_size_entry)
-
-        self.array_linear_frame = QtWidgets.QFrame()
-        self.array_linear_frame.setContentsMargins(0, 0, 0, 0)
-        self.array_box.addWidget(self.array_linear_frame)
-        self.linear_box = QtWidgets.QVBoxLayout()
-        self.linear_box.setContentsMargins(0, 0, 0, 0)
-        self.array_linear_frame.setLayout(self.linear_box)
-
-        self.linear_form = QtWidgets.QFormLayout()
-        self.linear_box.addLayout(self.linear_form)
-
-        self.drill_axis_label = QtWidgets.QLabel(_('Direction:'))
-        self.drill_axis_label.setToolTip(
-            _("Direction on which the linear array is oriented:\n"
-            "- 'X' - horizontal axis \n"
-            "- 'Y' - vertical axis or \n"
-            "- 'Angle' - a custom angle for the array inclination")
-        )
-        self.drill_axis_label.setFixedWidth(100)
-
-        self.drill_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
-                                          {'label': 'Y', 'value': 'Y'},
-                                          {'label': _('Angle'), 'value': 'A'}])
-        self.drill_axis_radio.set_value('X')
-        self.linear_form.addRow(self.drill_axis_label, self.drill_axis_radio)
-
-        self.drill_pitch_label = QtWidgets.QLabel(_('Pitch:'))
-        self.drill_pitch_label.setToolTip(
-            _("Pitch = Distance between elements of the array.")
-        )
-        self.drill_pitch_label.setFixedWidth(100)
-
-        self.drill_pitch_entry = LengthEntry()
-        self.linear_form.addRow(self.drill_pitch_label, self.drill_pitch_entry)
-
-        self.linear_angle_label = QtWidgets.QLabel(_('Angle:'))
-        self.linear_angle_label.setToolTip(
-           _( "Angle at which the linear array is placed.\n"
-            "The precision is of max 2 decimals.\n"
-            "Min value is: -359.99 degrees.\n"
-            "Max value is:  360.00 degrees.")
-        )
-        self.linear_angle_label.setFixedWidth(100)
-
-        self.linear_angle_spinner = FCDoubleSpinner()
-        self.linear_angle_spinner.set_precision(2)
-        self.linear_angle_spinner.setRange(-359.99, 360.00)
-        self.linear_form.addRow(self.linear_angle_label, self.linear_angle_spinner)
-
-        self.array_circular_frame = QtWidgets.QFrame()
-        self.array_circular_frame.setContentsMargins(0, 0, 0, 0)
-        self.array_box.addWidget(self.array_circular_frame)
-        self.circular_box = QtWidgets.QVBoxLayout()
-        self.circular_box.setContentsMargins(0, 0, 0, 0)
-        self.array_circular_frame.setLayout(self.circular_box)
-
-        self.drill_direction_label = QtWidgets.QLabel(_('Direction:'))
-        self.drill_direction_label.setToolTip(
-           _( "Direction for circular array."
-            "Can be CW = clockwise or CCW = counter clockwise.")
-        )
-        self.drill_direction_label.setFixedWidth(100)
-
-        self.circular_form = QtWidgets.QFormLayout()
-        self.circular_box.addLayout(self.circular_form)
-
-        self.drill_direction_radio = RadioSet([{'label': 'CW', 'value': 'CW'},
-                                               {'label': 'CCW.', 'value': 'CCW'}])
-        self.drill_direction_radio.set_value('CW')
-        self.circular_form.addRow(self.drill_direction_label, self.drill_direction_radio)
-
-        self.drill_angle_label = QtWidgets.QLabel(_('Angle:'))
-        self.drill_angle_label.setToolTip(
-            _("Angle at which each element in circular array is placed.")
-        )
-        self.drill_angle_label.setFixedWidth(100)
-
-        self.drill_angle_entry = LengthEntry()
-        self.circular_form.addRow(self.drill_angle_label, self.drill_angle_entry)
-
-        self.array_circular_frame.hide()
-
-        self.linear_angle_spinner.hide()
-        self.linear_angle_label.hide()
-
-        self.array_frame.hide()
-        self.apertures_box.addStretch()
+        self.custom_box.addStretch()
 
         ## Toolbar events and properties
         self.tools_gerber = {
-            "select": {"button": self.app.ui.select_drill_btn,
+            "select": {"button": self.app.ui.grb_select_btn,
                        "constructor": FCApertureSelect},
-            "drill_resize": {"button": self.app.ui.resize_drill_btn,
-                       "constructor": FCApertureResize},
-            "drill_copy": {"button": self.app.ui.copy_drill_btn,
-                     "constructor": FCApertureCopy},
-            "drill_move": {"button": self.app.ui.move_drill_btn,
-                     "constructor": FCApertureMove},
+            "aperture_buffer": {"button": self.app.ui.aperture_buffer_btn,
+                                "constructor": FCBuffer},
+            "aperture_scale": {"button": self.app.ui.aperture_scale_btn,
+                                "constructor": FCScale},
+            # "aperture_resize": {"button": self.app.ui.resize_aperture_btn,
+            #            "constructor": FCApertureResize},
+            # "ap_geometry_copy": {"button": self.app.ui.copy_ap_geometry_btn,
+            #          "constructor": FCApertureCopy},
+            # "ap_geometry_move": {"button": self.app.ui.move_drill_btn,
+            #          "constructor": FCApertureMove},
         }
 
         ### Data
@@ -654,9 +773,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.storage_dict = {}
         self.current_storage = []
 
-        # build the data from the Excellon point into a dictionary
-        #  {tool_dia: [geometry_in_points]}
-        self.points_edit = {}
         self.sorted_apid =[]
 
         self.new_apertures = {}
@@ -682,32 +798,34 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # this var will store the state of the toolbar before starting the editor
         self.toolbar_old_state = False
 
+        # Signals
+        self.buffer_button.clicked.connect(self.on_buffer)
+        self.scale_button.clicked.connect(self.on_scale)
+
         self.app.ui.delete_drill_btn.triggered.connect(self.on_delete_btn)
         self.name_entry.returnPressed.connect(self.on_name_activate)
+
+        self.aptype_cb.currentIndexChanged[str].connect(self.on_aptype_changed)
+
         self.addaperture_btn.clicked.connect(self.on_aperture_add)
-        # self.addtool_entry.editingFinished.connect(self.on_tool_add)
         self.delaperture_btn.clicked.connect(self.on_aperture_delete)
         self.apertures_table.selectionModel().currentChanged.connect(self.on_row_selected)
-        self.array_type_combo.currentIndexChanged.connect(self.on_array_type_combo)
 
-        self.drill_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
+        self.app.ui.grb_resize_aperture_menuitem.triggered.connect(self.exc_resize_drills)
+        self.app.ui.grb_copy_menuitem.triggered.connect(self.exc_copy_drills)
+        self.app.ui.grb_delete_menuitem.triggered.connect(self.on_delete_btn)
 
-
-        self.app.ui.exc_resize_drill_menuitem.triggered.connect(self.exc_resize_drills)
-        self.app.ui.exc_copy_drill_menuitem.triggered.connect(self.exc_copy_drills)
-        self.app.ui.exc_delete_drill_menuitem.triggered.connect(self.on_delete_btn)
-
-        self.app.ui.exc_move_drill_menuitem.triggered.connect(self.exc_move_drills)
+        self.app.ui.grb_move_menuitem.triggered.connect(self.exc_move_drills)
 
 
         # Init GUI
-        self.drill_array_size_entry.set_value(5)
-        self.drill_pitch_entry.set_value(2.54)
-        self.drill_angle_entry.set_value(12)
-        self.drill_direction_radio.set_value('CW')
-        self.drill_axis_radio.set_value('X')
+        self.apdim_lbl.hide()
+        self.apdim_entry.hide()
         self.gerber_obj = None
         self.gerber_obj_options = {}
+
+        self.buffer_distance_entry.set_value(0.01)
+        self.scale_factor_entry.set_value(1.0)
 
         # VisPy Visuals
         self.shapes = self.app.plotcanvas.new_shape_collection(layers=1)
@@ -813,9 +931,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.name_entry.set_value(self.edited_obj_name)
 
         if self.units == "IN":
-            self.addtool_entry.set_value(0.039)
+            self.apsize_entry.set_value(0.039)
         else:
-            self.addtool_entry.set_value(1.00)
+            self.apsize_entry.set_value(1.00)
 
         self.apertures_row = 0
         aper_no = self.apertures_row + 1
@@ -942,7 +1060,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             ap_id = apid
         else:
             try:
-                ap_id = str(self.addtool_entry.get_value())
+                ap_id = str(self.apsize_entry.get_value())
             except ValueError:
                 return
 
@@ -1082,6 +1200,14 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
     def on_name_activate(self):
         self.edited_obj_name = self.name_entry.get_value()
+
+    def on_aptype_changed(self, current_text):
+        if current_text == 'R':
+            self.apdim_lbl.show()
+            self.apdim_entry.show()
+        else:
+            self.apdim_lbl.hide()
+            self.apdim_entry.hide()
 
     def activate(self):
         self.connect_canvas_event_handlers()
@@ -1383,6 +1509,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     grb_obj.options[k] = out_name
                 else:
                     grb_obj.options[k] = deepcopy(v)
+
+            grb_obj.source_file = []
+            grb_obj.multigeo = False
+            grb_obj.follow = False
 
             try:
                 grb_obj.create_geometry()
@@ -2003,14 +2133,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.linear_angle_spinner.hide()
             self.linear_angle_label.hide()
 
-    def exc_add_drill(self):
-        self.select_tool('add')
-        return
-
-    def exc_add_drill_array(self):
-        self.select_tool('add_array')
-        return
-
     def exc_resize_drills(self):
         self.select_tool('resize')
         return
@@ -2022,3 +2144,110 @@ class FlatCAMGrbEditor(QtCore.QObject):
     def exc_move_drills(self):
         self.select_tool('move')
         return
+
+    def on_buffer(self):
+        buff_value = 0.01
+        log.debug("FlatCAMGrbEditor.on_buffer()")
+
+        try:
+            buff_value = float(self.buffer_distance_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                buff_value = float(self.buffer_distance_entry.get_value().replace(',', '.'))
+                self.buffer_distance_entry.set_value(buff_value)
+            except ValueError:
+                self.app.inform.emit(_("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
+                                     "Add it and retry."))
+                return
+        # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
+        # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
+        join_style = self.buffer_corner_cb.currentIndex() + 1
+
+        def buffer_recursion(geom):
+            if type(geom) == list or type(geom) is MultiPolygon:
+                geoms = list()
+                for local_geom in geom:
+                    geoms.append(buffer_recursion(local_geom))
+                return geoms
+            else:
+                return DrawToolShape(geom.geo.buffer(buff_value, join_style=join_style))
+
+        if not self.apertures_table.selectedItems():
+            self.app.inform.emit(_(
+                "[WARNING_NOTCL] No aperture to buffer. Select at least one aperture and try again."
+            ))
+            return
+
+        for x in self.apertures_table.selectedItems():
+            try:
+                apid = self.apertures_table.item(x.row(), 1).text()
+
+                temp_storage = deepcopy(buffer_recursion(self.storage_dict[apid]['solid_geometry']))
+                self.storage_dict[apid]['solid_geometry'] = []
+                self.storage_dict[apid]['solid_geometry'] = temp_storage
+
+            except Exception as e:
+                log.debug("FlatCAMGrbEditor.buffer() --> %s" % str(e))
+
+        self.plot_all()
+        self.app.inform.emit(_("[success] Done. Buffer Tool completed."))
+
+    def on_scale(self):
+        scale_factor = 1.0
+        log.debug("FlatCAMGrbEditor.on_scale()")
+
+        try:
+            scale_factor = float(self.scale_factor_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                scale_factor = float(self.scale_factor_entry.get_value().replace(',', '.'))
+                self.scale_factor_entry.set_value(scale_factor)
+            except ValueError:
+                self.app.inform.emit(_("[WARNING_NOTCL] Scale factor value is missing or wrong format. "
+                                     "Add it and retry."))
+                return
+
+        def scale_recursion(geom):
+            if type(geom) == list or type(geom) is MultiPolygon:
+                geoms = list()
+                for local_geom in geom:
+                    geoms.append(scale_recursion(local_geom))
+                return geoms
+            else:
+                return DrawToolShape(affinity.scale(geom.geo, scale_factor, scale_factor, origin='center'))
+
+        if not self.apertures_table.selectedItems():
+            self.app.inform.emit(_(
+                "[WARNING_NOTCL] No aperture to scale. Select at least one aperture and try again."
+            ))
+            return
+
+        for x in self.apertures_table.selectedItems():
+            try:
+                apid = self.apertures_table.item(x.row(), 1).text()
+
+                temp_storage = deepcopy(scale_recursion(self.storage_dict[apid]['solid_geometry']))
+                self.storage_dict[apid]['solid_geometry'] = []
+                self.storage_dict[apid]['solid_geometry'] = temp_storage
+
+            except Exception as e:
+                log.debug("FlatCAMGrbEditor.on_scale() --> %s" % str(e))
+
+        self.plot_all()
+        self.app.inform.emit(_("[success] Done. Scale Tool completed."))
+
+    def hide_tool(self, tool_name):
+        # self.app.ui.notebook.setTabText(2, _("Tools"))
+
+        if tool_name == 'all':
+            self.apertures_frame.hide()
+        if tool_name == 'select':
+            self.apertures_frame.show()
+        if tool_name == 'buffer' or tool_name == 'all':
+            self.buffer_tool_frame.hide()
+        if tool_name == 'scale' or tool_name == 'all':
+            self.scale_tool_frame.hide()
+
+        self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)

@@ -1050,6 +1050,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             if apid in self.aperture_macros:
                 self.apertures_macros.pop(apid)
 
+        self.on_mark_cb_click_table()
+
     def on_scale_aperture_click(self, signal):
         try:
             factor = self.ui.scale_aperture_entry.get_value()
@@ -1089,7 +1091,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         try:
             buff_value = self.ui.buffer_aperture_entry.get_value()
         except Exception as e:
-            log.debug("FlatCAMGerber.on_scale_aperture_click() --> %s" % str(e))
+            log.debug("FlatCAMGerber.on_buffer_aperture_click() --> %s" % str(e))
             self.app.inform.emit(_(
                 "[ERROR_NOTCL] The aperture buffer value is missing or wrong format."
             ))
@@ -1106,7 +1108,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         if not self.ui.apertures_table.selectedItems():
             self.app.inform.emit(_(
-                "[WARNING_NOTCL] No aperture to scale. Select at least one aperture and try again."
+                "[WARNING_NOTCL] No aperture to buffer. Select at least one aperture and try again."
             ))
             return
 
@@ -1114,7 +1116,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             try:
                 apid = self.ui.apertures_table.item(x.row(), 1).text()
             except Exception as e:
-                log.debug("FlatCAMGerber.on_scale_aperture_click() --> %s" % str(e))
+                log.debug("FlatCAMGerber.on_buffer_aperture_click() --> %s" % str(e))
 
             self.apertures[apid]['solid_geometry'] = buffer_recursion(self.apertures[apid]['solid_geometry'])
 

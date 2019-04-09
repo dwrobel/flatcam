@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+9.04.2019
+
+- Gerber Editor: added buffer and scale tools
+
 7.04.2019
 
 - default values for Jump To function is jumping to origin (0, 0)

@@ -670,6 +670,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Gerber Editor Toolbar ###
         self.grb_select_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
+        self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), _('Buffer'))
+        self.aperture_scale_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/scale32.png'), _('Scale'))
 
 
         ### Snap Toolbar ###
@@ -2398,9 +2400,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                     self.app.grb_editor.delete_utility_geometry()
 
-                    self.app.grb_editor.replot()
-                    # self.select_btn.setChecked(True)
-                    # self.on_tool_select('select')
+                    self.app.grb_editor.plot_all()
                     self.app.grb_editor.select_tool('select')
                     return
 
