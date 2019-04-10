@@ -1220,7 +1220,7 @@ class App(QtCore.QObject):
         #     self.ui.options_scroll_area.verticalScrollBar().sizeHint().width())
         self.collection.view.setMinimumWidth(290)
 
-        self.log.debug("Finished adding Geometry and Excellon Editor's.")
+        self.log.debug("Finished adding FlatCAM Editor's.")
 
         #### Worker ####
         if self.defaults["global_worker_number"]:

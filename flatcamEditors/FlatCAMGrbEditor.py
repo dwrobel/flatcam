@@ -191,109 +191,6 @@ class FCBuffer(FCShapeTool):
         self.deactivate()
 
 
-class FCApertureResize(FCShapeTool):
-    def __init__(self, draw_app):
-        DrawTool.__init__(self, draw_app)
-        self.name = 'aperture_resize'
-
-        self.draw_app.app.inform.emit(_("Click on the Apertures to resize ..."))
-        self.resize_dia = None
-        self.draw_app.resize_frame.show()
-        self.points = None
-        self.selected_dia_list = []
-        self.current_storage = None
-        self.geometry = []
-        self.destination_storage = None
-
-        self.draw_app.resize_btn.clicked.connect(self.make)
-
-        # Switch notebook to Selected page
-        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
-
-    def make(self):
-        self.draw_app.is_modified = True
-
-        try:
-            new_dia = self.draw_app.resdrill_entry.get_value()
-        except:
-            self.draw_app.app.inform.emit(_("[ERROR_NOTCL] Resize drill(s) failed. Please enter a diameter for resize."))
-            return
-
-        if new_dia not in self.draw_app.olddia_newdia:
-            self.destination_storage = FlatCAMGeoEditor.make_storage()
-            self.draw_app.storage_dict[new_dia] = self.destination_storage
-
-            # self.olddia_newdia dict keeps the evidence on current tools diameters as keys and gets updated on values
-            # each time a tool diameter is edited or added
-            self.draw_app.olddia_newdia[new_dia] = new_dia
-        else:
-            self.destination_storage = self.draw_app.storage_dict[new_dia]
-
-        for index in self.draw_app.apertures_table.selectedIndexes():
-            row = index.row()
-            # on column 1 in tool tables we hold the diameters, and we retrieve them as strings
-            # therefore below we convert to float
-            dia_on_row = self.draw_app.apertures_table.item(row, 1).text()
-            self.selected_dia_list.append(float(dia_on_row))
-
-        # since we add a new tool, we update also the intial state of the tool_table through it's dictionary
-        # we add a new entry in the tool2tooldia dict
-        self.draw_app.tool2tooldia[len(self.draw_app.olddia_newdia)] = new_dia
-
-        sel_shapes_to_be_deleted = []
-
-        for sel_dia in self.selected_dia_list:
-            self.current_storage = self.draw_app.storage_dict[sel_dia]
-            for select_shape in self.draw_app.get_selected():
-                if select_shape in self.current_storage.get_objects():
-                    factor = new_dia / sel_dia
-                    self.geometry.append(
-                        DrawToolShape(affinity.scale(select_shape.geo, xfact=factor, yfact=factor, origin='center'))
-                    )
-                    self.current_storage.remove(select_shape)
-                    # a hack to make the tool_table display less drills per diameter when shape(drill) is deleted
-                    # self.points_edit it's only useful first time when we load the data into the storage
-                    # but is still used as reference when building tool_table in self.build_ui()
-                    # the number of drills displayed in column 2 is just a len(self.points_edit) therefore
-                    # deleting self.points_edit elements (doesn't matter who but just the number)
-                    # solved the display issue.
-                    del self.draw_app.points_edit[sel_dia][0]
-
-                    sel_shapes_to_be_deleted.append(select_shape)
-
-                    self.draw_app.on_exc_shape_complete(self.destination_storage)
-                    # a hack to make the tool_table display more drills per diameter when shape(drill) is added
-                    # self.points_edit it's only useful first time when we load the data into the storage
-                    # but is still used as reference when building tool_table in self.build_ui()
-                    # the number of drills displayed in column 2 is just a len(self.points_edit) therefore
-                    # deleting self.points_edit elements (doesn't matter who but just the number)
-                    # solved the display issue.
-                    if new_dia not in self.draw_app.points_edit:
-                        self.draw_app.points_edit[new_dia] = [(0, 0)]
-                    else:
-                        self.draw_app.points_edit[new_dia].append((0,0))
-                    self.geometry = []
-
-                    # if following the resize of the drills there will be no more drills for the selected tool then
-                    # delete that tool
-                    if not self.draw_app.points_edit[sel_dia]:
-                        self.draw_app.on_aperture_delete(sel_dia)
-
-            for shp in sel_shapes_to_be_deleted:
-                self.draw_app.selected.remove(shp)
-            sel_shapes_to_be_deleted = []
-
-        self.draw_app.build_ui()
-        self.draw_app.plot_all()
-
-        self.draw_app.resize_frame.hide()
-        self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Drill Resize completed."))
-
-        # MS: always return to the Select Tool
-        self.draw_app.select_tool("select")
-
-
 class FCApertureMove(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
@@ -302,7 +199,7 @@ class FCApertureMove(FCShapeTool):
         # self.shape_buffer = self.draw_app.shape_buffer
         self.origin = None
         self.destination = None
-        self.selected_dia_list = []
+        self.selected_apertures = []
 
         if self.draw_app.launched_from_shortcuts is True:
             self.draw_app.launched_from_shortcuts = False
@@ -316,8 +213,8 @@ class FCApertureMove(FCShapeTool):
             row = index.row()
             # on column 1 in tool tables we hold the diameters, and we retrieve them as strings
             # therefore below we convert to float
-            dia_on_row = self.draw_app.apertures_table.item(row, 1).text()
-            self.selected_dia_list.append(float(dia_on_row))
+            aperture_on_row = self.draw_app.apertures_table.item(row, 1).text()
+            self.selected_apertures.append(aperture_on_row)
 
         # Switch notebook to Selected page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
@@ -347,15 +244,15 @@ class FCApertureMove(FCShapeTool):
         dy = self.destination[1] - self.origin[1]
         sel_shapes_to_be_deleted = []
 
-        for sel_dia in self.selected_dia_list:
-            self.current_storage = self.draw_app.storage_dict[sel_dia]
+        for sel_dia in self.selected_apertures:
+            self.current_storage = self.draw_app.storage_dict[sel_dia]['solid_geometry']
             for select_shape in self.draw_app.get_selected():
-                if select_shape in self.current_storage.get_objects():
+                if select_shape in self.current_storage:
 
                     self.geometry.append(DrawToolShape(affinity.translate(select_shape.geo, xoff=dx, yoff=dy)))
                     self.current_storage.remove(select_shape)
                     sel_shapes_to_be_deleted.append(select_shape)
-                    self.draw_app.on_exc_shape_complete(self.current_storage)
+                    self.draw_app.on_grb_shape_complete(self.current_storage)
                     self.geometry = []
 
             for shp in sel_shapes_to_be_deleted:
@@ -363,7 +260,7 @@ class FCApertureMove(FCShapeTool):
             sel_shapes_to_be_deleted = []
 
         self.draw_app.build_ui()
-        self.draw_app.app.inform.emit(_("[success] Done. Drill(s) Move completed."))
+        self.draw_app.app.inform.emit(_("[success] Done. Apertures Move completed."))
 
     def utility_geometry(self, data=None):
         """
@@ -398,17 +295,14 @@ class FCApertureCopy(FCApertureMove):
         dy = self.destination[1] - self.origin[1]
         sel_shapes_to_be_deleted = []
 
-        for sel_dia in self.selected_dia_list:
-            self.current_storage = self.draw_app.storage_dict[sel_dia]
+        for sel_dia in self.selected_apertures:
+            self.current_storage = self.draw_app.storage_dict[sel_dia]['solid_geometry']
             for select_shape in self.draw_app.get_selected():
-                if select_shape in self.current_storage.get_objects():
+                if select_shape in self.current_storage:
                     self.geometry.append(DrawToolShape(affinity.translate(select_shape.geo, xoff=dx, yoff=dy)))
 
-                    # add some fake drills into the self.draw_app.points_edit to update the drill count in tool table
-                    self.draw_app.points_edit[sel_dia].append((0, 0))
-
                     sel_shapes_to_be_deleted.append(select_shape)
-                    self.draw_app.on_exc_shape_complete(self.current_storage)
+                    self.draw_app.on_grb_shape_complete(self.current_storage)
                     self.geometry = []
 
             for shp in sel_shapes_to_be_deleted:
@@ -416,7 +310,7 @@ class FCApertureCopy(FCApertureMove):
             sel_shapes_to_be_deleted = []
 
         self.draw_app.build_ui()
-        self.draw_app.app.inform.emit(_("[success] Done. Drill(s) copied."))
+        self.draw_app.app.inform.emit(_("[success] Done. Apertures copied."))
 
 
 class FCApertureSelect(DrawTool):
@@ -431,6 +325,7 @@ class FCApertureSelect(DrawTool):
         # here we store all shapes that were selected
         self.sel_storage = []
 
+        self.grb_editor_app.apertures_table.clearSelection()
         self.grb_editor_app.hide_tool('all')
         self.grb_editor_app.hide_tool('select')
 
@@ -453,68 +348,33 @@ class FCApertureSelect(DrawTool):
         for storage in self.grb_editor_app.storage_dict:
             for shape in self.grb_editor_app.storage_dict[storage]['solid_geometry']:
                 if Point(point).within(shape.geo):
-                    sel_aperture.add(storage)
+                    if self.draw_app.key == self.draw_app.app.defaults["global_mselect_key"]:
+                        if shape in self.draw_app.selected:
+                            self.draw_app.selected.remove(shape)
+                        else:
+                            # add the object to the selected shapes
+                            self.draw_app.selected.append(shape)
+                            sel_aperture.add(storage)
+                    else:
+                        self.draw_app.selected.append(shape)
+                        sel_aperture.add(storage)
+
         try:
-            self.grb_editor_app.apertures_table.itemClicked.disconnect()
+            self.draw_app.apertures_table.cellPressed.disconnect()
         except:
             pass
+
+        self.grb_editor_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         for aper in sel_aperture:
             for row in range(self.grb_editor_app.apertures_table.rowCount()):
                 if str(aper) == self.grb_editor_app.apertures_table.item(row, 1).text():
                     self.grb_editor_app.apertures_table.selectRow(row)
-        return ""
+                    self.draw_app.last_aperture_selected = aper
+        self.grb_editor_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
-    # def select_shapes(self, pos):
-    #     self.grb_editor_app.apertures_table.clearSelection()
-    #
-    #     for storage in self.grb_editor_app.storage_dict:
-    #         for shape in self.grb_editor_app.storage_dict[storage]['solid_geometry']:
-    #             if Point(pos).within(shape.geo):
-    #                 self.sel_storage.append(shape)
-    #     xmin, ymin, xmax, ymax = self.bounds(self.sel_storage)
-    #
-    #     if pos[0] < xmin or pos[0] > xmax or pos[1] < ymin or pos[1] > ymax:
-    #         self.grb_editor_app.selected = []
-    #     else:
-    #         key_modifier = QtWidgets.QApplication.keyboardModifiers()
-    #         if self.grb_editor_app.app.defaults["global_mselect_key"] == 'Control':
-    #             # if CONTROL key is pressed then we add to the selected list the current shape but if it's already
-    #             # in the selected list, we removed it. Therefore first click selects, second deselects.
-    #             if key_modifier == Qt.ControlModifier:
-    #                 if closest_shape in self.grb_editor_app.selected:
-    #                     self.grb_editor_app.selected.remove(closest_shape)
-    #                 else:
-    #                     self.grb_editor_app.selected.append(closest_shape)
-    #             else:
-    #                 self.grb_editor_app.selected = []
-    #                 self.grb_editor_app.selected.append(closest_shape)
-    #         else:
-    #             if key_modifier == Qt.ShiftModifier:
-    #                 if closest_shape in self.grb_editor_app.selected:
-    #                     self.grb_editor_app.selected.remove(closest_shape)
-    #                 else:
-    #                     self.grb_editor_app.selected.append(closest_shape)
-    #             else:
-    #                 self.grb_editor_app.selected = []
-    #                 self.grb_editor_app.selected.append(closest_shape)
-    #
-    #         # select the aperture of the selected shape in the tool table
-    #         for storage in self.grb_editor_app.storage_dict:
-    #             for shape_s in self.grb_editor_app.selected:
-    #                 if shape_s in self.grb_editor_app.storage_dict[storage]:
-    #                     for key in self.grb_editor_app.tool2tooldia:
-    #                         if self.grb_editor_app.tool2tooldia[key] == storage:
-    #                             item = self.grb_editor_app.apertures_table.item((key - 1), 1)
-    #                             self.grb_editor_app.apertures_table.setCurrentItem(item)
-    #                             # item.setSelected(True)
-    #                             # self.grb_editor_app.apertures_table.selectItem(key - 1)
-    #                             # midx = self.grb_editor_app.apertures_table.model().index((key - 1), 0)
-    #                             # self.grb_editor_app.apertures_table.setCurrentIndex(midx)
-    #                             self.draw_app.last_tool_selected = key
-    #     # delete whatever is in selection storage, there is no longer need for those shapes
-    #     self.sel_storage = []
-    #
-    #     return ""
+        self.draw_app.apertures_table.cellPressed.connect(self.draw_app.on_row_selected)
+
+        return ""
 
 
 class FlatCAMGrbEditor(QtCore.QObject):
@@ -619,9 +479,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         )
         grid1.addWidget(apcode_lbl, 1, 0)
 
-        self.apcodeentry = FCEntry()
-        self.apcodeentry.setValidator(QtGui.QIntValidator(0,999))
-        grid1.addWidget(self.apcodeentry, 1, 1)
+        self.apcode_entry = FCEntry()
+        self.apcode_entry.setValidator(QtGui.QIntValidator(0, 999))
+        grid1.addWidget(self.apcode_entry, 1, 1)
 
         apsize_lbl = QtWidgets.QLabel(_('Aperture Size:'))
         apsize_lbl.setToolTip(
@@ -772,12 +632,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
                                 "constructor": FCBuffer},
             "aperture_scale": {"button": self.app.ui.aperture_scale_btn,
                                 "constructor": FCScale},
-            # "aperture_resize": {"button": self.app.ui.resize_aperture_btn,
-            #            "constructor": FCApertureResize},
-            # "ap_geometry_copy": {"button": self.app.ui.copy_ap_geometry_btn,
-            #          "constructor": FCApertureCopy},
-            # "ap_geometry_move": {"button": self.app.ui.move_drill_btn,
-            #          "constructor": FCApertureMove},
+            "aperture_copy": {"button": self.app.ui.aperture_copy_btn,
+                     "constructor": FCApertureCopy},
+            "aperture_move": {"button": self.app.ui.aperture_move_btn,
+                     "constructor": FCApertureMove},
         }
 
         ### Data
@@ -822,13 +680,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.addaperture_btn.clicked.connect(self.on_aperture_add)
         self.delaperture_btn.clicked.connect(self.on_aperture_delete)
-        self.apertures_table.selectionModel().currentChanged.connect(self.on_row_selected)
+        self.apertures_table.cellPressed.connect(self.on_row_selected)
 
-        self.app.ui.grb_resize_aperture_menuitem.triggered.connect(self.exc_resize_drills)
-        self.app.ui.grb_copy_menuitem.triggered.connect(self.exc_copy_drills)
+        self.app.ui.grb_copy_menuitem.triggered.connect(self.on_copy_button)
         self.app.ui.grb_delete_menuitem.triggered.connect(self.on_delete_btn)
 
-        self.app.ui.grb_move_menuitem.triggered.connect(self.exc_move_drills)
+        self.app.ui.grb_move_menuitem.triggered.connect(self.on_move_button)
 
 
         # Init GUI
@@ -933,6 +790,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.apertures_table.itemChanged.disconnect()
+        except:
+            pass
+
+        try:
+            self.apertures_table.cellPressed.disconnect()
         except:
             pass
 
@@ -1066,6 +928,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
         self.apertures_table.itemChanged.connect(self.on_tool_edit)
+        self.apertures_table.cellPressed.connect(self.on_row_selected)
 
     def on_aperture_add(self, apid=None):
         self.is_modified = True
@@ -1073,14 +936,42 @@ class FlatCAMGrbEditor(QtCore.QObject):
             ap_id = apid
         else:
             try:
-                ap_id = str(self.apsize_entry.get_value())
+                ap_id = str(self.apcode_entry.get_value())
             except ValueError:
+                self.app.inform.emit(_("[WARNING_NOTCL] Aperture code value is missing or wrong format. "
+                                       "Add it and retry."))
                 return
 
         if ap_id not in self.olddia_newdia:
             self.storage_dict[ap_id] = {}
-            self.storage_dict[ap_id]['type'] = 'C'
-            self.storage_dict[ap_id]['size'] = 1
+
+            type_val = self.aptype_cb.currentText()
+            self.storage_dict[ap_id]['type'] = type_val
+            try:
+                size_val = float(self.apsize_entry.get_value())
+            except ValueError:
+                # try to convert comma to decimal point. if it's still not working error message and return
+                try:
+                    size_val = float(self.apsize_entry.get_value().replace(',', '.'))
+                    self.apsize_entry.set_value(size_val)
+                except ValueError:
+                    self.app.inform.emit(_("[WARNING_NOTCL] Aperture size value is missing or wrong format. "
+                                           "Add it and retry."))
+                    return
+            self.storage_dict[ap_id]['size'] = size_val
+
+            if type_val == 'R':
+                try:
+                    dims = self.apdim_entry.get_value()
+                    self.storage_dict[ap_id]['width'] = dims[0]
+                    self.storage_dict[ap_id]['height'] = dims[1]
+                except Exception as e:
+                    log.error("FlatCAMGrbEditor.on_aperture_add() --> the R aperture dims has to be in a "
+                              "tuple format (x,y)\nError: %s" % str(e))
+                    self.app.inform.emit(_("[WARNING_NOTCL] Aperture dimensions value is missing or wrong format. "
+                                           "Add it in format (width, height) and retry."))
+                    return
+
             self.storage_dict[ap_id]['solid_geometry'] = []
             self.storage_dict[ap_id]['follow_geometry'] = []
 
@@ -1088,16 +979,14 @@ class FlatCAMGrbEditor(QtCore.QObject):
             # each time a tool diameter is edited or added
             self.olddia_newdia[ap_id] = ap_id
         else:
-            self.app.inform.emit(_("[WARNING_NOTCL] Tool already in the original or actual tool list.\n"
-                                 "Save and reedit Excellon if you need to add this tool. ")
-                                 )
+            self.app.inform.emit(_("[WARNING_NOTCL] Aperture already in the aperture table."))
             return
 
         # since we add a new tool, we update also the initial state of the tool_table through it's dictionary
         # we add a new entry in the tool2tooldia dict
         self.tool2tooldia[len(self.olddia_newdia)] = ap_id
 
-        self.app.inform.emit(_("[success] Added new tool with dia: {apid}").format(apid=str(ap_id)))
+        self.app.inform.emit(_("[success] Added new aperture with dia: {apid}").format(apid=str(ap_id)))
 
         self.build_ui()
 
@@ -1159,7 +1048,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # if connected, disconnect the signal from the slot on item_changed as it creates issues
         self.apertures_table.itemChanged.disconnect()
-        # self.apertures_table.selectionModel().currentChanged.disconnect()
+        # self.apertures_table.cellPressed.disconnect()
 
         self.is_modified = True
         geometry = []
@@ -1209,7 +1098,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # we reactivate the signals after the after the tool editing
         self.apertures_table.itemChanged.connect(self.on_tool_edit)
-        # self.apertures_table.selectionModel().currentChanged.connect(self.on_row_selected)
+        # self.apertures_table.cellPressed.connect(self.on_row_selected)
 
     def on_name_activate(self):
         self.edited_obj_name = self.name_entry.get_value()
@@ -1341,13 +1230,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # self.shape_buffer = []
         self.selected = []
 
-        self.storage_dict = {}
-
         self.shapes.clear(update=True)
         self.tool_shape.clear(update=True)
-
-        # self.storage = FlatCAMExcEditor.make_storage()
-        self.plot_all()
 
     def edit_fcgerber(self, orig_grb_obj):
         """
@@ -1444,6 +1328,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # reset the tool table
         self.apertures_table.clear()
+
         self.apertures_table.setHorizontalHeaderLabels(['#', _('Code'), _('Type'), _('Size'), _('Dim')])
         self.last_aperture_selected = None
 
@@ -1481,14 +1366,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
                            self.gerber_obj.options['name'].upper())
 
         out_name = outname
+        local_storage_dict = deepcopy(self.storage_dict)
 
         # How the object should be initialized
         def obj_init(grb_obj, app_obj):
+
             poly_buffer = []
             follow_buffer = []
-            new_geo = []
 
-            for storage_apid, storage_val in self.storage_dict.items():
+            for storage_apid, storage_val in local_storage_dict.items():
                 grb_obj.apertures[storage_apid] = {}
 
                 for k, v in storage_val.items():
@@ -1565,7 +1451,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             # self.draw_app.select_tool('select')
             self.complete = True
             current_tool = 'select'
-            self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. There is no Tool/Drill selected"))
+            self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. No aperture is selected"))
 
         # This is to make the group behave as radio group
         if current_tool in self.tools_gerber:
@@ -1584,87 +1470,39 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     self.tools_gerber[t]["button"].setChecked(False)
                 self.active_tool = None
 
-    def on_row_selected(self):
-        self.selected = []
+    def on_row_selected(self, row, col):
+        if col == 0:
+            key_modifier = QtWidgets.QApplication.keyboardModifiers()
+            if self.app.defaults["global_mselect_key"] == 'Control':
+                modifier_to_use = Qt.ControlModifier
+            else:
+                modifier_to_use = Qt.ShiftModifier
 
-        try:
-            selected_dia = self.tool2tooldia[self.apertures_table.currentRow() + 1]
-            self.last_aperture_selected = self.apertures_table.currentRow() + 1
-            for obj in self.storage_dict[selected_dia].get_objects():
-                self.selected.append(obj)
-        except Exception as e:
-            self.app.log.debug(str(e))
+            if key_modifier == modifier_to_use:
+                pass
+            else:
+                self.selected = []
 
-        self.plot_all()
+            try:
+                selected_apid = str(self.tool2tooldia[row + 1])
+                self.last_aperture_selected = row + 1
+
+                for obj in self.storage_dict[selected_apid]['solid_geometry']:
+                    self.selected.append(obj)
+            except Exception as e:
+                self.app.log.debug(str(e))
+
+            self.plot_all()
 
     def toolbar_tool_toggle(self, key):
         self.options[key] = self.sender().isChecked()
-        if self.options[key] == True:
-            return 1
-        else:
-            return 0
+        return self.options[key]
 
-    def on_canvas_click(self, event):
-        """
-        event.x and .y have canvas coordinates
-        event.xdaya and .ydata have plot coordinates
-
-        :param event: Event object dispatched by Matplotlib
-        :return: None
-        """
-
-        if event.button is 1:
-            self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
-            self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
-
-            ### Snap coordinates
-            x, y = self.app.geo_editor.snap(self.pos[0], self.pos[1])
-
-            self.pos = (x, y)
-            # print(self.active_tool)
-
-            # Selection with left mouse button
-            if self.active_tool is not None and event.button is 1:
-                # Dispatch event to active_tool
-                # msg = self.active_tool.click(self.app.geo_editor.snap(event.xdata, event.ydata))
-                msg = self.active_tool.click(self.app.geo_editor.snap(self.pos[0], self.pos[1]))
-
-                # If it is a shape generating tool
-                if isinstance(self.active_tool, FCShapeTool) and self.active_tool.complete:
-                    if self.current_storage is not None:
-                        self.on_exc_shape_complete(self.current_storage)
-                        self.build_ui()
-                    # MS: always return to the Select Tool if modifier key is not pressed
-                    # else return to the current tool
-                    key_modifier = QtWidgets.QApplication.keyboardModifiers()
-                    if self.app.defaults["global_mselect_key"] == 'Control':
-                        modifier_to_use = Qt.ControlModifier
-                    else:
-                        modifier_to_use = Qt.ShiftModifier
-                    # if modifier key is pressed then we add to the selected list the current shape but if it's already
-                    # in the selected list, we removed it. Therefore first click selects, second deselects.
-                    if key_modifier == modifier_to_use:
-                        self.select_tool(self.active_tool.name)
-                    else:
-                        self.select_tool("select")
-                        return
-
-                if isinstance(self.active_tool, FCApertureSelect):
-                    # self.app.log.debug("Replotting after click.")
-                    self.plot_all()
-            else:
-                self.app.log.debug("No active tool to respond to click!")
-
-    def on_exc_shape_complete(self, storage):
+    def on_grb_shape_complete(self, storage):
         self.app.log.debug("on_shape_complete()")
 
         # Add shape
-        if type(storage) is list:
-            for item_storage in storage:
-                self.add_gerber_shape(self.active_tool.geometry, item_storage)
-        else:
-            self.add_gerber_shape(self.active_tool.geometry, storage)
+        self.add_gerber_shape(self.active_tool.geometry, storage)
 
         # Remove any utility shapes
         self.delete_utility_geometry()
@@ -1672,7 +1510,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # Replot and reset tool.
         self.plot_all()
-        # self.active_tool = type(self.active_tool)(self)
 
     def add_gerber_shape(self, shape, storage):
         """
@@ -1703,35 +1540,56 @@ class FlatCAMGrbEditor(QtCore.QObject):
         else:
             storage.append(shape)  # TODO: Check performance
 
-    def add_shape(self, shape):
+    def on_canvas_click(self, event):
         """
-        Adds a shape to the shape storage.
+        event.x and .y have canvas coordinates
+        event.xdaya and .ydata have plot coordinates
 
-        :param shape: Shape to be added.
-        :type shape: DrawToolShape
+        :param event: Event object dispatched by Matplotlib
         :return: None
         """
 
-        # List of DrawToolShape?
-        if isinstance(shape, list):
-            for subshape in shape:
-                self.add_shape(subshape)
-            return
+        if event.button is 1:
+            self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
+            self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
 
-        assert isinstance(shape, DrawToolShape), \
-            "Expected a DrawToolShape, got %s" % type(shape)
+            ### Snap coordinates
+            x, y = self.app.geo_editor.snap(self.pos[0], self.pos[1])
 
-        assert shape.geo is not None, \
-            "Shape object has empty geometry (None)"
+            self.pos = (x, y)
 
-        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or \
-               not isinstance(shape.geo, list), \
-            "Shape objects has empty geometry ([])"
+            # Selection with left mouse button
+            if self.active_tool is not None and event.button is 1:
+                # Dispatch event to active_tool
+                # msg = self.active_tool.click(self.app.geo_editor.snap(event.xdata, event.ydata))
+                msg = self.active_tool.click(self.app.geo_editor.snap(self.pos[0], self.pos[1]))
 
-        if isinstance(shape, DrawToolUtilityShape):
-            self.utility.append(shape)
-        else:
-            self.storage.insert(shape)  # TODO: Check performance
+                # If it is a shape generating tool
+                if isinstance(self.active_tool, FCShapeTool) and self.active_tool.complete:
+                    if self.current_storage is not None:
+                        self.on_grb_shape_complete(self.current_storage)
+                        self.build_ui()
+                    # MS: always return to the Select Tool if modifier key is not pressed
+                    # else return to the current tool
+                    key_modifier = QtWidgets.QApplication.keyboardModifiers()
+                    if self.app.defaults["global_mselect_key"] == 'Control':
+                        modifier_to_use = Qt.ControlModifier
+                    else:
+                        modifier_to_use = Qt.ShiftModifier
+                    # if modifier key is pressed then we add to the selected list the current shape but if it's already
+                    # in the selected list, we removed it. Therefore first click selects, second deselects.
+                    if key_modifier == modifier_to_use:
+                        self.select_tool(self.active_tool.name)
+                    else:
+                        self.select_tool("select")
+                        return
+
+                if isinstance(self.active_tool, FCApertureSelect):
+                    # self.app.log.debug("Replotting after click.")
+                    self.plot_all()
+            else:
+                self.app.log.debug("No active tool to respond to click!")
 
     def on_canvas_click_release(self, event):
         pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
@@ -1763,13 +1621,17 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 if self.app.selection_type is not None:
                     self.draw_selection_area_handler(self.pos, pos, self.app.selection_type)
                     self.app.selection_type = None
+
                 elif isinstance(self.active_tool, FCApertureSelect):
                     # Dispatch event to active_tool
                     # msg = self.active_tool.click(self.app.geo_editor.snap(event.xdata, event.ydata))
                     # msg = self.active_tool.click_release((self.pos[0], self.pos[1]))
                     # self.app.inform.emit(msg)
                     self.active_tool.click_release((self.pos[0], self.pos[1]))
-                    self.plot_all()
+
+                    # if there are selected objects then plot them
+                    if self.selected:
+                        self.plot_all()
         except Exception as e:
             log.warning("Error: %s" % str(e))
             raise
@@ -1784,9 +1646,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
         """
         poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
 
+        sel_aperture = set()
+        self.apertures_table.clearSelection()
+
         self.app.delete_selection_shape()
         for storage in self.storage_dict:
-            for obj in self.storage_dict[storage].get_objects():
+            for obj in self.storage_dict[storage]['solid_geometry']:
                 if (sel_type is True and poly_selection.contains(obj.geo)) or \
                         (sel_type is False and poly_selection.intersects(obj.geo)):
                     if self.key == self.app.defaults["global_mselect_key"]:
@@ -1795,21 +1660,25 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         else:
                             # add the object to the selected shapes
                             self.selected.append(obj)
+                            sel_aperture.add(storage)
                     else:
                         self.selected.append(obj)
+                        sel_aperture.add(storage)
 
-        # select the diameter of the selected shape in the tool table
-        for storage in self.storage_dict:
-            for shape_s in self.selected:
-                if shape_s in self.storage_dict[storage].get_objects():
-                    for key in self.tool2tooldia:
-                        if self.tool2tooldia[key] == storage:
-                            item = self.apertures_table.item((key - 1), 1)
-                            self.apertures_table.setCurrentItem(item)
-                            self.last_aperture_selected = key
-                            # item.setSelected(True)
-                            # self.grb_editor_app.apertures_table.selectItem(key - 1)
+        try:
+            self.apertures_table.cellPressed.disconnect()
+        except:
+            pass
 
+        self.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        for aper in sel_aperture:
+            for row in range(self.apertures_table.rowCount()):
+                if str(aper) == self.apertures_table.item(row, 1).text():
+                    self.apertures_table.selectRow(row)
+                    self.last_aperture_selected = aper
+        self.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+
+        self.apertures_table.cellPressed.connect(self.on_row_selected)
         self.plot_all()
 
     def on_canvas_move(self, event):
@@ -1898,42 +1767,19 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.key = None
 
     def draw_utility_geometry(self, geo):
-            # Add the new utility shape
-            try:
-                # this case is for the Font Parse
-                for el in list(geo.geo):
-                    if type(el) == MultiPolygon:
-                        for poly in el:
-                            self.tool_shape.add(
-                                shape=poly,
-                                color=(self.app.defaults["global_draw_color"] + '80'),
-                                update=False,
-                                layer=0,
-                                tolerance=None
-                            )
-                    elif type(el) == MultiLineString:
-                        for linestring in el:
-                            self.tool_shape.add(
-                                shape=linestring,
-                                color=(self.app.defaults["global_draw_color"] + '80'),
-                                update=False,
-                                layer=0,
-                                tolerance=None
-                            )
-                    else:
-                        self.tool_shape.add(
-                            shape=el,
-                            color=(self.app.defaults["global_draw_color"] + '80'),
-                            update=False,
-                            layer=0,
-                            tolerance=None
-                        )
-            except TypeError:
+        if type(geo.geo) == list:
+            for el in geo.geo:
+                # Add the new utility shape
                 self.tool_shape.add(
-                    shape=geo.geo, color=(self.app.defaults["global_draw_color"] + '80'),
+                    shape=el, color=(self.app.defaults["global_draw_color"] + '80'),
                     update=False, layer=0, tolerance=None)
+        else:
+            # Add the new utility shape
+            self.tool_shape.add(
+                shape=geo.geo, color=(self.app.defaults["global_draw_color"] + '80'),
+                update=False, layer=0, tolerance=None)
 
-            self.tool_shape.redraw()
+        self.tool_shape.redraw()
 
     def plot_all(self):
         """
@@ -1963,6 +1809,28 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
             self.shapes.redraw()
 
+    def plot_shape(self, geometry=None, color='black', linewidth=1):
+        """
+        Plots a geometric object or list of objects without rendering. Plotted objects
+        are returned as a list. This allows for efficient/animated rendering.
+
+        :param geometry: Geometry to be plotted (Any Shapely.geom kind or list of such)
+        :param color: Shape color
+        :param linewidth: Width of lines in # of pixels.
+        :return: List of plotted elements.
+        """
+        # plot_elements = []
+
+        if geometry is None:
+            geometry = self.active_tool.geometry
+
+        try:
+            self.shapes.add(shape=geometry.geo, color=color, face_color=color, layer=0)
+        except AttributeError:
+            if type(geometry) == Point:
+                return
+            self.shapes.add(shape=geometry, color=color, face_color=color+'AF', layer=0)
+
     def start_delayed_plot(self, check_period):
         # self.plot_thread = threading.Thread(target=lambda: self.check_plot_finished(check_period))
         # self.plot_thread.start()
@@ -1986,54 +1854,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 log.debug("FlatCAMGrbEditor --> delayed_plot finished")
         except Exception:
             traceback.print_exc()
-
-    # def stop_delayed_plot(self):
-    #     self.plot_thread.exit()
-    #     # self.plot_thread.join()
-
-    # def check_plot_finished(self, delay):
-    #     """
-    #     Using Alfe's answer from here:
-    #     https://stackoverflow.com/questions/474528/what-is-the-best-way-to-repeatedly-execute-a-function-every-x-seconds-in-python
-    #
-    #     :param delay: period of checking if project file size is more than zero; in seconds
-    #     :param filename: the name of the project file to be checked for size more than zero
-    #     :return:
-    #     """
-    #     next_time = time.time() + delay
-    #     while True:
-    #         time.sleep(max(0, next_time - time.time()))
-    #         try:
-    #             if self.app.collection.has_plot_promises() is False:
-    #                 self.plot_all()
-    #                 break
-    #         except Exception:
-    #             traceback.print_exc()
-    #
-    #         # skip tasks if we are behind schedule:
-    #         next_time += (time.time() - next_time) // delay * delay + delay
-
-    def plot_shape(self, geometry=None, color='black', linewidth=1):
-        """
-        Plots a geometric object or list of objects without rendering. Plotted objects
-        are returned as a list. This allows for efficient/animated rendering.
-
-        :param geometry: Geometry to be plotted (Any Shapely.geom kind or list of such)
-        :param color: Shape color
-        :param linewidth: Width of lines in # of pixels.
-        :return: List of plotted elements.
-        """
-        # plot_elements = []
-
-        if geometry is None:
-            geometry = self.active_tool.geometry
-
-        try:
-            self.shapes.add(shape=geometry.geo, color=color, face_color=color, layer=0)
-        except AttributeError:
-            if type(geometry) == Point:
-                return
-            self.shapes.add(shape=geometry, color=color, face_color=color+'AF', layer=0)
 
     def on_shape_complete(self):
         self.app.log.debug("on_shape_complete()")
@@ -2065,7 +1885,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.selected = []
         self.build_ui()
-        self.app.inform.emit(_("[success] Done. Drill(s) deleted."))
+        self.app.inform.emit(_("[success] Done. Apertures deleted."))
 
     def delete_shape(self, shape):
         self.is_modified = True
@@ -2079,14 +1899,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
             #     self.storage_dict[storage].remove(shape)
             # except:
             #     pass
-            if shape in self.storage_dict[storage].get_objects():
-                self.storage_dict[storage].remove(shape)
-                # a hack to make the tool_table display less drills per diameter
-                # self.points_edit it's only useful first time when we load the data into the storage
-                # but is still used as referecen when building tool_table in self.build_ui()
-                # the number of drills displayed in column 2 is just a len(self.points_edit) therefore
-                # deleting self.points_edit elements (doesn't matter who but just the number) solved the display issue.
-                del self.points_edit[storage][0]
+            if shape in self.storage_dict[storage]['solid_geometry']:
+                self.storage_dict[storage]['solid_geometry'].remove(shape)
 
         if shape in self.selected:
             self.selected.remove(shape)  # TODO: Check performance
@@ -2127,34 +1941,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
         if shape in self.selected:
             self.selected.remove(shape)
 
-    def on_array_type_combo(self):
-        if self.array_type_combo.currentIndex() == 0:
-            self.array_circular_frame.hide()
-            self.array_linear_frame.show()
-        else:
-            self.delete_utility_geometry()
-            self.array_circular_frame.show()
-            self.array_linear_frame.hide()
-            self.app.inform.emit(_("Click on the circular array Center position"))
-
-    def on_linear_angle_radio(self):
-        val = self.drill_axis_radio.get_value()
-        if val == 'A':
-            self.linear_angle_spinner.show()
-            self.linear_angle_label.show()
-        else:
-            self.linear_angle_spinner.hide()
-            self.linear_angle_label.hide()
-
-    def exc_resize_drills(self):
-        self.select_tool('resize')
-        return
-
-    def exc_copy_drills(self):
+    def on_copy_button(self):
         self.select_tool('copy')
         return
 
-    def exc_move_drills(self):
+    def on_move_button(self):
         self.select_tool('move')
         return
 
@@ -2177,14 +1968,17 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buffer_corner_cb.currentIndex() + 1
 
-        def buffer_recursion(geom):
+        def buffer_recursion(geom, selection):
             if type(geom) == list or type(geom) is MultiPolygon:
                 geoms = list()
                 for local_geom in geom:
-                    geoms.append(buffer_recursion(local_geom))
+                    geoms.append(buffer_recursion(local_geom, selection=selection))
                 return geoms
             else:
-                return DrawToolShape(geom.geo.buffer(buff_value, join_style=join_style))
+                if geom in selection:
+                    return DrawToolShape(geom.geo.buffer(buff_value, join_style=join_style))
+                else:
+                    return geom
 
         if not self.apertures_table.selectedItems():
             self.app.inform.emit(_(
@@ -2196,13 +1990,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
             try:
                 apid = self.apertures_table.item(x.row(), 1).text()
 
-                temp_storage = deepcopy(buffer_recursion(self.storage_dict[apid]['solid_geometry']))
+                temp_storage = deepcopy(buffer_recursion(self.storage_dict[apid]['solid_geometry'], self.selected))
                 self.storage_dict[apid]['solid_geometry'] = []
                 self.storage_dict[apid]['solid_geometry'] = temp_storage
 
             except Exception as e:
                 log.debug("FlatCAMGrbEditor.buffer() --> %s" % str(e))
-
         self.plot_all()
         self.app.inform.emit(_("[success] Done. Buffer Tool completed."))
 
@@ -2222,14 +2015,17 @@ class FlatCAMGrbEditor(QtCore.QObject):
                                      "Add it and retry."))
                 return
 
-        def scale_recursion(geom):
+        def scale_recursion(geom, selection):
             if type(geom) == list or type(geom) is MultiPolygon:
                 geoms = list()
                 for local_geom in geom:
-                    geoms.append(scale_recursion(local_geom))
+                    geoms.append(scale_recursion(local_geom, selection=selection))
                 return geoms
             else:
-                return DrawToolShape(affinity.scale(geom.geo, scale_factor, scale_factor, origin='center'))
+                if geom in selection:
+                    return DrawToolShape(affinity.scale(geom.geo, scale_factor, scale_factor, origin='center'))
+                else:
+                    return geom
 
         if not self.apertures_table.selectedItems():
             self.app.inform.emit(_(
@@ -2241,7 +2037,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             try:
                 apid = self.apertures_table.item(x.row(), 1).text()
 
-                temp_storage = deepcopy(scale_recursion(self.storage_dict[apid]['solid_geometry']))
+                temp_storage = deepcopy(scale_recursion(self.storage_dict[apid]['solid_geometry'], self.selected))
                 self.storage_dict[apid]['solid_geometry'] = []
                 self.storage_dict[apid]['solid_geometry'] = temp_storage
 

@@ -3024,7 +3024,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.shapes.clear(update=True)
         self.tool_shape.clear(update=True)
 
-        self.storage = FlatCAMGeoEditor.make_storage()
+        # self.storage = FlatCAMGeoEditor.make_storage()
         self.replot()
 
     def edit_fcgeometry(self, fcgeometry, multigeo_tool=None):

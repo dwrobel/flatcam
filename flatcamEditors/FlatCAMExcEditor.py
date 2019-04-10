@@ -1687,7 +1687,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.new_tools = {}
         self.new_drills = []
 
-        self.storage_dict = {}
+        # self.storage_dict = {}
 
         self.shapes.clear(update=True)
         self.tool_shape.clear(update=True)

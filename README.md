@@ -13,6 +13,9 @@ CAD program, and create G-Code for Isolation routing.
 
 - Gerber Editor: added buffer and scale tools
 - Gerber Editor: working on aperture selection to show on Aperture Table
+- Gerber Editor: finished the selection on canvas; should be used as an template for the other Editors
+- Gerber Editor: finished the Copy, Aperture Add, Buffer, Scale, Move including the Utility geometry
+- Trying to fix bug in Measurement Tool: the mouse events don't disconnect
 
 7.04.2019
 

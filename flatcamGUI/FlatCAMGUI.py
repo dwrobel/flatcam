@@ -672,6 +672,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grb_select_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
         self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), _('Buffer'))
         self.aperture_scale_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/scale32.png'), _('Scale'))
+        self.aperture_copy_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _("Copy"))
+        self.aperture_move_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
 
 
         ### Snap Toolbar ###
@@ -2409,7 +2411,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.grb_editor.launched_from_shortcuts = True
                     if self.app.grb_editor.selected:
                         self.app.grb_editor.delete_selected()
-                        self.app.grb_editor.replot()
+                        self.app.grb_editor.plot_all()
                     else:
                         self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to delete."))
                     return
@@ -2417,7 +2419,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Delete aperture in apertures table if delete key event comes from the Selected Tab
                 if key == QtCore.Qt.Key_Delete:
                     self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.grb_editor.on_tool_delete()
+                    self.app.grb_editor.on_aperture_delete()
                     return
 
                 if key == QtCore.Qt.Key_Minus or key == '-':
@@ -2461,7 +2463,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.grb_editor.launched_from_shortcuts = True
                     if self.app.grb_editor.selected:
                         self.app.inform.emit(_("Click on target point."))
-                        self.app.ui.copy_aperture_btn.setChecked(True)
+                        self.app.ui.aperture_copy_btn.setChecked(True)
                         self.app.grb_editor.on_tool_select('aperture_copy')
                         self.app.grb_editor.active_tool.set_origin(
                             (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
@@ -2479,6 +2481,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.grb_editor.y = self.app.mouse[1]
 
                     self.app.grb_editor.select_tool('aperture_add')
+                    return
+
+                # Scale Tool
+                if key == QtCore.Qt.Key_B or key == 'B':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    self.app.grb_editor.select_tool('aperture_buffer')
                     return
 
                 # Grid Snap
@@ -2507,18 +2515,18 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.grb_editor.launched_from_shortcuts = True
                     if self.app.grb_editor.selected:
                         self.app.inform.emit(_("Click on target point."))
-                        self.app.ui.move_aperture_btn.setChecked(True)
-                        self.app.exc_editor.on_tool_select('aperture_move')
+                        self.app.ui.aperture_move_btn.setChecked(True)
+                        self.app.grb_editor.on_tool_select('aperture_move')
                         self.app.grb_editor.active_tool.set_origin(
                             (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
                     else:
                         self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to move."))
                     return
 
-                # Resize Tool
-                if key == QtCore.Qt.Key_R or key == 'R':
+                # Scale Tool
+                if key == QtCore.Qt.Key_S or key == 'S':
                     self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.grb_editor.select_tool('drill_resize')
+                    self.app.grb_editor.select_tool('aperture_scale')
                     return
 
                 # Add Track
