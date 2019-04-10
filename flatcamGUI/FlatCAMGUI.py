@@ -681,7 +681,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Gerber Editor Toolbar ###
         self.grb_select_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
-        self.grb_add_pad_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/aperture16.png'), _("Add Pad"))
+        self.grb_add_pad_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/aperture32.png'), _("Add Pad"))
         self.grb_add_track_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/track32.png'), _("Add Track"))
         self.grb_add_region_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), _("Add Region"))
         self.grb_edit_toolbar.addSeparator()
@@ -1445,7 +1445,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.draw_move = self.g_editor_cmenu.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
 
         self.grb_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/draw32.png'), _("Gerber Editor"))
-        self.grb_draw_track = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/aperture16.png'), _("Pad"))
+        self.grb_draw_track = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/aperture32.png'), _("Pad"))
         self.grb_draw_track = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/path32.png'), _("Track"))
         self.grb_draw_zone = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/polygon32.png'), _("Region"))
         self.grb_editor_cmenu.addSeparator()
@@ -1773,7 +1773,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Gerber Editor Toolbar ###
         self.grb_select_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
-        self.grb_add_pad_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/aperture16.png'), _("Add Pad"))
+        self.grb_add_pad_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/aperture32.png'), _("Add Pad"))
         self.grb_add_track_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/track32.png'), _("Add Track"))
         self.grb_add_region_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), _("Add Region"))
         self.grb_edit_toolbar.addSeparator()
@@ -2560,7 +2560,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_P or key == 'P':
                     self.app.grb_editor.launched_from_shortcuts = True
                     self.app.inform.emit(_("Click on target point."))
-                    self.app.ui.add_aperture_btn.setChecked(True)
+                    self.app.ui.grb_add_pad_btn.setChecked(True)
 
                     self.app.grb_editor.x = self.app.mouse[0]
                     self.app.grb_editor.y = self.app.mouse[1]

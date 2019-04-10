@@ -34,49 +34,87 @@ class FCPad(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'pad'
+        self.draw_app = draw_app
 
-        self.start_msg = _("Click on CENTER ...")
-        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
+        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
+        self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
+
+        # if those cause KeyError exception it means that the aperture type is not 'R'. Only 'R' type has those keys
+        try:
+            self.half_width = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['width']) / 2
+        except KeyError:
+            pass
+        try:
+            self.half_height = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['height']) / 2
+        except KeyError:
+            pass
+
+        geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+
+        if isinstance(geo, DrawToolShape) and geo.geo is not None:
+            self.draw_app.draw_utility_geometry(geo=geo)
+
+        self.draw_app.app.inform.emit(_("Click to place ..."))
+
+        # Switch notebook to Selected page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+
+        self.start_msg = _("Click to place ...")
 
     def click(self, point):
-        self.points.append(point)
-
-        if len(self.points) == 1:
-            self.draw_app.app.inform.emit(_("Click on Circle perimeter point to complete ..."))
-            return "Click on perimeter to complete ..."
-
-        if len(self.points) == 2:
-            self.make()
-            return "Done."
-
-        return ""
+        self.make()
+        return "Done."
 
     def utility_geometry(self, data=None):
-        if len(self.points) == 1:
-            p1 = self.points[0]
-            p2 = data
-            radius = sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
-            return DrawToolUtilityShape(Point(p1).buffer(radius, int(self.steps_per_circ / 4)))
+        self.points = data
+        geo_data = self.util_shape(data)
+        if geo_data:
+            return DrawToolUtilityShape(geo_data)
+        else:
+            return None
 
-        return None
+    def util_shape(self, point):
+        if point[0] is None and point[1] is None:
+            point_x = self.draw_app.x
+            point_y = self.draw_app.y
+        else:
+            point_x = point[0]
+            point_y = point[1]
+
+        ap_type = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['type']
+        if ap_type == 'C':
+            center = Point([point_x, point_y])
+            return center.buffer(self.radius)
+        elif ap_type == 'R':
+            p1 = (point_x - self.half_width, point_y - self.half_height)
+            p2 = (point_x + self.half_width, point_y - self.half_height)
+            p3 = (point_x + self.half_width, point_y + self.half_height)
+            p4 = (point_x - self.half_width, point_y + self.half_height)
+            return Polygon([p1, p2, p3, p4, p1])
+        else:
+            self.draw_app.app.inform.emit(_("Incompatible aperture type. Select an aperture with type 'C' or 'R'."))
+            return None
 
     def make(self):
-        p1 = self.points[0]
-        p2 = self.points[1]
-        radius = distance(p1, p2)
-        self.geometry = DrawToolShape(Point(p1).buffer(radius, int(self.steps_per_circ / 4)))
+        self.draw_app.current_storage = self.storage_obj
+        try:
+            self.geometry = DrawToolShape(self.util_shape(self.points))
+        except Exception as e:
+            log.debug("FCPad.make() --> %s" % str(e))
+
+        self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Adding Circle completed."))
+        self.draw_app.app.inform.emit(_("[success] Done. Adding Pad completed."))
 
 
-class FCRectPad(FCShapeTool):
+class FCPadArray(FCShapeTool):
     """
     Resulting type: Polygon
     """
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
-        self.name = 'rectangle'
+        self.name = 'pad_array'
 
         self.start_msg = _("Click on 1st corner ...")
 
