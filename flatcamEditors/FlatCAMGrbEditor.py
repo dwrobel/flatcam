@@ -1114,11 +1114,18 @@ class FlatCAMGrbEditor(QtCore.QObject):
     def activate(self):
         self.connect_canvas_event_handlers()
 
-        # self.app.collection.view.keyPressed.connect(self.on_canvas_key)
+        # init working objects
+        self.storage_dict = {}
+        self.current_storage = []
+        self.sorted_apid = []
+        self.new_apertures = {}
+        self.new_aperture_macros = {}
+        self.grb_plot_promises = []
+        self.olddia_newdia = {}
+        self.tool2tooldia = {}
 
         self.shapes.enabled = True
         self.tool_shape.enabled = True
-        # self.app.app_cursor.enabled = True
 
         self.app.ui.snap_max_dist_entry.setEnabled(True)
         self.app.ui.corner_snap_btn.setEnabled(True)

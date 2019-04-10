@@ -2833,6 +2833,12 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
     def activate(self):
         self.connect_canvas_event_handlers()
+
+        # initialize working objects
+        self.storage = FlatCAMGeoEditor.make_storage()
+        self.utility = []
+        self.selected = []
+
         self.shapes.enabled = True
         self.tool_shape.enabled = True
         self.app.app_cursor.enabled = True

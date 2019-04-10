@@ -1568,7 +1568,16 @@ class FlatCAMExcEditor(QtCore.QObject):
     def activate(self):
         self.connect_canvas_event_handlers()
 
-        # self.app.collection.view.keyPressed.connect(self.on_canvas_key)
+        # initialize working objects
+        self.storage_dict = {}
+        self.current_storage = []
+        self.points_edit = {}
+        self.sorted_diameters = []
+        self.new_drills = []
+        self.new_tools = {}
+        self.new_slots = {}
+        self.new_tool_offset = {}
+        self.olddia_newdia = {}
 
         self.shapes.enabled = True
         self.tool_shape.enabled = True
