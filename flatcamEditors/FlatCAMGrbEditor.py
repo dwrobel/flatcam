@@ -1344,7 +1344,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # create a reference to the source object
         self.gerber_obj = orig_grb_obj
-
         self.gerber_obj_options = orig_grb_obj.options
 
         # Hide original geometry

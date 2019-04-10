@@ -1250,6 +1250,7 @@ class App(QtCore.QObject):
         # Menu
         self.ui.menufilenewproject.triggered.connect(self.on_file_new_click)
         self.ui.menufilenewgeo.triggered.connect(self.new_geometry_object)
+        self.ui.menufilenewgrb.triggered.connect(self.new_gerber_object)
         self.ui.menufilenewexc.triggered.connect(self.new_excellon_object)
 
         self.ui.menufileopengerber.triggered.connect(self.on_fileopengerber)
@@ -2047,6 +2048,7 @@ class App(QtCore.QObject):
         self.ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
 
         self.ui.newgeo_btn.triggered.connect(self.new_geometry_object)
+        self.ui.newgrb_btn.triggered.connect(self.new_gerber_object)
         self.ui.newexc_btn.triggered.connect(self.new_excellon_object)
         self.ui.editgeo_btn.triggered.connect(self.object2editor)
         self.ui.update_obj_btn.triggered.connect(lambda: self.editor2object())
@@ -2175,22 +2177,30 @@ class App(QtCore.QObject):
                     log. debug("App.editor2object() --> Geometry --> %s" % str(e))
 
             elif isinstance(edited_obj, FlatCAMGerber):
+                new_obj = self.collection.get_active()
                 obj_type = "Gerber"
                 if cleanup is None:
                     self.grb_editor.update_fcgerber(edited_obj)
-                    self.grb_editor.update_options(edited_obj)
+                    self.grb_editor.update_options(new_obj)
                 self.grb_editor.deactivate()
 
-                # update the geo object options so it is including the bounding box values
-                try:
-                    xmin, ymin, xmax, ymax = edited_obj.bounds()
-                    edited_obj.options['xmin'] = xmin
-                    edited_obj.options['ymin'] = ymin
-                    edited_obj.options['xmax'] = xmax
-                    edited_obj.options['ymax'] = ymax
-                except AttributeError as e:
-                    self.inform.emit(_("[WARNING] Object empty after edit."))
-                    log.debug("App.editor2object() --> Gerber --> %s" % str(e))
+                # delete the old object (the source object) if it was an empty one
+                if edited_obj.solid_geometry.is_empty:
+                    old_name = edited_obj.options['name']
+                    self.collection.set_active(old_name)
+                    self.collection.delete_active()
+                else:
+                    # update the geo object options so it is including the bounding box values
+                    # but don't do this for objects that are made out of empty source objects, it will fail
+                    try:
+                        xmin, ymin, xmax, ymax = new_obj.bounds()
+                        new_obj.options['xmin'] = xmin
+                        new_obj.options['ymin'] = ymin
+                        new_obj.options['xmax'] = xmax
+                        new_obj.options['ymax'] = ymax
+                    except Exception as e:
+                        self.inform.emit(_("[WARNING] Object empty after edit."))
+                        log.debug("App.editor2object() --> Gerber --> %s" % str(e))
 
             elif isinstance(edited_obj, FlatCAMExcellon):
                 obj_type = "Excellon"
@@ -2842,7 +2852,7 @@ class App(QtCore.QObject):
     def new_excellon_object(self):
         self.report_usage("new_excellon_object()")
 
-        self.new_object('excellon', 'new_e', lambda x, y: None, plot=False)
+        self.new_object('excellon', 'new_exc', lambda x, y: None, plot=False)
 
     def new_geometry_object(self):
         self.report_usage("new_geometry_object()")
@@ -2850,7 +2860,19 @@ class App(QtCore.QObject):
         def initialize(obj, self):
             obj.multitool = False
 
-        self.new_object('geometry', 'new_g', initialize, plot=False)
+        self.new_object('geometry', 'new_geo', initialize, plot=False)
+
+    def new_gerber_object(self):
+        self.report_usage("new_gerber_object()")
+
+        def initialize(grb_obj, self):
+            grb_obj.multitool = False
+            grb_obj.source_file = []
+            grb_obj.multigeo = False
+            grb_obj.follow = False
+            grb_obj.apertures = {}
+
+        self.new_object('gerber', 'new_grb', initialize, plot=False)
 
     def on_object_created(self, obj, plot, autoselect):
         """

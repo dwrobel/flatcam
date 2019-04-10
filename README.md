@@ -14,6 +14,9 @@ CAD program, and create G-Code for Isolation routing.
 - Gerber Editor: added Add Track and Add Region functions
 - Gerber Editor: fixed key shortcuts
 - fixed setting the Layout combobox in Preferences according to the current layout
+- created menu links and shortcut keys for adding a new empty Gerber objects; on update of the edited Gerber, if the source object was an empty one (new blank one) this source obj will be deleted
+- removed the old apertures editing from Gerber Obj selected tab
+
 
 9.04.2019
 

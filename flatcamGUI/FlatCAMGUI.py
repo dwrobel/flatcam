@@ -66,6 +66,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufilenewgeo.setToolTip(
             _("Will create a new, empty Geometry Object.")
         )
+        self.menufilenewgrb = self.menufilenew.addAction(QtGui.QIcon('share/flatcam_icon32.png'), _('Gerber\tB'))
+        self.menufilenewgrb.setToolTip(
+            _("Will create a new, empty Gerber Object.")
+        )
         self.menufilenewexc = self.menufilenew.addAction(QtGui.QIcon('share/drill16.png'), _('Excellon\tL'))
         self.menufilenewexc.setToolTip(
             _("Will create a new, empty Excellon Object.")
@@ -590,6 +594,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Edit Toolbar ###
         self.newgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_geo32_bis.png'), _("New Blank Geometry"))
+        self.newgrb_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_geo32.png'), _("New Blank Gerber"))
         self.newexc_btn = self.toolbargeo.addAction(QtGui.QIcon('share/new_exc32.png'), _("New Blank Excellon"))
         self.toolbargeo.addSeparator()
         self.editgeo_btn = self.toolbargeo.addAction(QtGui.QIcon('share/edit32.png'), _("Editor"))
@@ -2070,6 +2075,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         select.ui.plot_cb.toggle()
                     self.app.delete_selection_shape()
 
+                # New Geometry
+                if key == QtCore.Qt.Key_B:
+                    self.app.new_gerber_object()
+
                 # Copy Object Name
                 if key == QtCore.Qt.Key_E:
                     self.app.object2editor()
@@ -2575,7 +2584,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_T or key == 'T':
                     self.app.grb_editor.launched_from_shortcuts = True
                     ## Current application units in Upper Case
-                    self.units = self.general_defaults_group.general_app_group.units_radio.get_value().upper()
                     self.app.grb_editor.select_tool('track')
                     return
 
