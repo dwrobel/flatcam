@@ -26,95 +26,168 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-# class ScaleGrbTool(FlatCAMTool):
-#     """
-#     Simple input for buffer distance.
-#     """
-#
-#     toolName = _("Scale")
-#
-#     def __init__(self, app, draw_app):
-#         FlatCAMTool.__init__(self, app)
-#
-#         self.draw_app = draw_app
-#
-#         # Title
-#         title_label = QtWidgets.QLabel("{name} {tooln} ".format(name=_("Editor"), tooln=self.toolName))
-#         title_label.setStyleSheet("""
-#                         QLabel
-#                         {
-#                             font-size: 16px;
-#                             font-weight: bold;
-#                         }
-#                         """)
-#         self.layout.addWidget(title_label)
-#
-#         # this way I can hide/show the frame
-#         self.scale_tool_frame = QtWidgets.QFrame()
-#         self.scale_tool_frame.setContentsMargins(0, 0, 0, 0)
-#         self.layout.addWidget(self.scale_tool_frame)
-#         self.scale_tools_box = QtWidgets.QVBoxLayout()
-#         self.scale_tools_box.setContentsMargins(0, 0, 0, 0)
-#         self.scale_tool_frame.setLayout(self.scale_tools_box)
-#
-#         # Form Layout
-#         form_layout = QtWidgets.QFormLayout()
-#         self.scale_tools_box.addLayout(form_layout)
-#
-#         # Buffer distance
-#         self.scale_factor_entry = FCEntry()
-#         form_layout.addRow(_("Scale Factor:"), self.scale_factor_entry)
-#
-#         # Buttons
-#         hlay1 = QtWidgets.QHBoxLayout()
-#         self.scale_tools_box.addLayout(hlay1)
-#
-#         self.scale_button = QtWidgets.QPushButton(_("Scale"))
-#         hlay1.addWidget(self.scale_button)
-#
-#         self.layout.addStretch()
-#
-#         # Signals
-#         self.scale_button.clicked.connect(self.on_scale)
-#
-#         # Init GUI
-#         self.scale_factor_entry.set_value(1)
-#
-#     def run(self):
-#         self.app.report_usage("Gerber Editor ToolScale()")
-#         FlatCAMTool.run(self)
-#
-#         # if the splitter us hidden, display it
-#         if self.app.ui.splitter.sizes()[0] == 0:
-#             self.app.ui.splitter.setSizes([1, 1])
-#
-#         self.app.ui.notebook.setTabText(2, _("Scale Tool"))
-#
-#     def on_scale(self):
-#         if not self.draw_app.selected:
-#             self.app.inform.emit(_("[WARNING_NOTCL] Scale cancelled. No aperture selected."))
-#             return
-#
-#         try:
-#             buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value())
-#         except ValueError:
-#             # try to convert comma to decimal point. if it's still not working error message and return
-#             try:
-#                 buffer_distance = float(self.buff_tool.buffer_distance_entry.get_value().replace(',', '.'))
-#                 self.buff_tool.buffer_distance_entry.set_value(buffer_distance)
-#             except ValueError:
-#                 self.app.inform.emit(_("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
-#                                        "Add it and retry."))
-#                 return
-#         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
-#         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
-#         join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
-#         self.draw_app.buffer(buffer_distance, join_style)
-#         self.app.ui.notebook.setTabText(2, _("Tools"))
-#         self.draw_app.app.ui.splitter.setSizes([0, 1])
-#
-#         self.deactivate()
-#         self.app.inform.emit(_("[success] Done. Scale Tool completed."))
+class FCPad(FCShapeTool):
+    """
+    Resulting type: Polygon
+    """
+
+    def __init__(self, draw_app):
+        DrawTool.__init__(self, draw_app)
+        self.name = 'pad'
+
+        self.start_msg = _("Click on CENTER ...")
+        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
+
+    def click(self, point):
+        self.points.append(point)
+
+        if len(self.points) == 1:
+            self.draw_app.app.inform.emit(_("Click on Circle perimeter point to complete ..."))
+            return "Click on perimeter to complete ..."
+
+        if len(self.points) == 2:
+            self.make()
+            return "Done."
+
+        return ""
+
+    def utility_geometry(self, data=None):
+        if len(self.points) == 1:
+            p1 = self.points[0]
+            p2 = data
+            radius = sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
+            return DrawToolUtilityShape(Point(p1).buffer(radius, int(self.steps_per_circ / 4)))
+
+        return None
+
+    def make(self):
+        p1 = self.points[0]
+        p2 = self.points[1]
+        radius = distance(p1, p2)
+        self.geometry = DrawToolShape(Point(p1).buffer(radius, int(self.steps_per_circ / 4)))
+        self.complete = True
+        self.draw_app.app.inform.emit(_("[success] Done. Adding Circle completed."))
+
+
+class FCRectPad(FCShapeTool):
+    """
+    Resulting type: Polygon
+    """
+
+    def __init__(self, draw_app):
+        DrawTool.__init__(self, draw_app)
+        self.name = 'rectangle'
+
+        self.start_msg = _("Click on 1st corner ...")
+
+    def click(self, point):
+        self.points.append(point)
+
+        if len(self.points) == 1:
+            return "Click on opposite corner to complete ..."
+
+        if len(self.points) == 2:
+            self.make()
+            return "Done."
+
+        return ""
+
+    def utility_geometry(self, data=None):
+        if len(self.points) == 1:
+            p1 = self.points[0]
+            p2 = data
+            return DrawToolUtilityShape(LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])]))
+
+        return None
+
+    def make(self):
+        p1 = self.points[0]
+        p2 = self.points[1]
+        # self.geometry = LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])])
+        self.geometry = DrawToolShape(Polygon([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])]))
+        self.complete = True
+        self.draw_app.app.inform.emit(_("[success] Done. Rectangle completed."))
+
+
+class FCRegion(FCShapeTool):
+    """
+    Resulting type: Polygon
+    """
+
+    def __init__(self, draw_app):
+        DrawTool.__init__(self, draw_app)
+        self.name = 'region'
+        self.draw_app = draw_app
+
+        size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+        self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
+
+        self.start_msg = _("Click on 1st point ...")
+
+    def click(self, point):
+        self.draw_app.in_action = True
+        self.points.append(point)
+
+        if len(self.points) > 0:
+            self.draw_app.app.inform.emit(_("Click on next Point or click Right mouse button to complete ..."))
+            return "Click on next point or hit ENTER to complete ..."
+
+        return ""
+
+    def utility_geometry(self, data=None):
+
+        if len(self.points) == 1:
+            temp_points = [x for x in self.points]
+            temp_points.append(data)
+            return DrawToolUtilityShape(LineString(temp_points).buffer(self.buf_val, join_style=1))
+
+        if len(self.points) > 1:
+            temp_points = [x for x in self.points]
+            temp_points.append(data)
+            return DrawToolUtilityShape(LinearRing(temp_points).buffer(self.buf_val, join_style=1))
+
+        return None
+
+    def make(self):
+        # self.geometry = LinearRing(self.points)
+        self.geometry = DrawToolShape(Polygon(self.points).buffer(self.buf_val, join_style=2))
+        self.draw_app.in_action = False
+        self.complete = True
+        self.draw_app.app.inform.emit(_("[success] Done. Region completed."))
+
+    def on_key(self, key):
+        if key == 'backspace':
+            if len(self.points) > 0:
+                self.points = self.points[0:-1]
+
+
+class FCTrack(FCRegion):
+    """
+    Resulting type: Polygon
+    """
+
+    def make(self):
+
+        self.geometry = DrawToolShape(LineString(self.points).buffer(self.buf_val))
+        self.name = 'track'
+
+        self.draw_app.in_action = False
+        self.complete = True
+        self.draw_app.app.inform.emit(_("[success] Done. Path completed."))
+
+    def utility_geometry(self, data=None):
+        if len(self.points) > 0:
+            temp_points = [x for x in self.points]
+            temp_points.append(data)
+
+            return DrawToolUtilityShape(LineString(temp_points).buffer(self.buf_val))
+
+        return None
+
+    def on_key(self, key):
+        if key == 'backspace':
+            if len(self.points) > 0:
+                self.points = self.points[0:-1]
 
 
 class FCScale(FCShapeTool):
@@ -194,7 +267,7 @@ class FCBuffer(FCShapeTool):
 class FCApertureMove(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
-        self.name = 'aperture_move'
+        self.name = 'move'
 
         # self.shape_buffer = self.draw_app.shape_buffer
         self.origin = None
@@ -287,7 +360,7 @@ class FCApertureMove(FCShapeTool):
 class FCApertureCopy(FCApertureMove):
     def __init__(self, draw_app):
         FCApertureMove.__init__(self, draw_app)
-        self.name = 'aperture_copy'
+        self.name = 'copy'
 
     def make(self):
         # Create new geometry
@@ -317,6 +390,7 @@ class FCApertureSelect(DrawTool):
     def __init__(self, grb_editor_app):
         DrawTool.__init__(self, grb_editor_app)
         self.name = 'select'
+        self.origin = None
 
         self.grb_editor_app = grb_editor_app
         self.storage = self.grb_editor_app.storage_dict
@@ -328,6 +402,9 @@ class FCApertureSelect(DrawTool):
         self.grb_editor_app.apertures_table.clearSelection()
         self.grb_editor_app.hide_tool('all')
         self.grb_editor_app.hide_tool('select')
+
+    def set_origin(self, origin):
+        self.origin = origin
 
     def click(self, point):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
@@ -628,13 +705,19 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.tools_gerber = {
             "select": {"button": self.app.ui.grb_select_btn,
                        "constructor": FCApertureSelect},
-            "aperture_buffer": {"button": self.app.ui.aperture_buffer_btn,
+            "pad": {"button": self.app.ui.grb_add_pad_btn,
+                              "constructor": FCPad},
+            "track": {"button": self.app.ui.grb_add_track_btn,
+                              "constructor": FCTrack},
+            "region": {"button": self.app.ui.grb_add_region_btn,
+                              "constructor": FCRegion},
+            "buffer": {"button": self.app.ui.aperture_buffer_btn,
                                 "constructor": FCBuffer},
-            "aperture_scale": {"button": self.app.ui.aperture_scale_btn,
+            "scale": {"button": self.app.ui.aperture_scale_btn,
                                 "constructor": FCScale},
-            "aperture_copy": {"button": self.app.ui.aperture_copy_btn,
+            "copy": {"button": self.app.ui.aperture_copy_btn,
                      "constructor": FCApertureCopy},
-            "aperture_move": {"button": self.app.ui.aperture_move_btn,
+            "move": {"button": self.app.ui.aperture_move_btn,
                      "constructor": FCApertureMove},
         }
 
@@ -681,6 +764,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.addaperture_btn.clicked.connect(self.on_aperture_add)
         self.delaperture_btn.clicked.connect(self.on_aperture_delete)
         self.apertures_table.cellPressed.connect(self.on_row_selected)
+
+        self.app.ui.grb_add_pad_menuitem.triggered.connect(self.on_pad_add)
+        self.app.ui.grb_add_track_menuitem.triggered.connect(self.on_track_add)
+        self.app.ui.grb_add_region_menuitem.triggered.connect(self.on_region_add)
+
+        self.app.ui.grb_add_buffer_menuitem.triggered.connect(self.on_buffer)
+        self.app.ui.grb_add_scale_menuitem.triggered.connect(self.on_scale)
 
         self.app.ui.grb_copy_menuitem.triggered.connect(self.on_copy_button)
         self.app.ui.grb_delete_menuitem.triggered.connect(self.on_delete_btn)
@@ -1492,7 +1582,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
             try:
                 selected_apid = str(self.tool2tooldia[row + 1])
-                self.last_aperture_selected = row + 1
+                self.last_aperture_selected =  self.apertures_table.item(row, 1).text()
 
                 for obj in self.storage_dict[selected_apid]['solid_geometry']:
                     self.selected.append(obj)
@@ -1505,11 +1595,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.options[key] = self.sender().isChecked()
         return self.options[key]
 
-    def on_grb_shape_complete(self, storage):
+    def on_grb_shape_complete(self, storage=None):
         self.app.log.debug("on_shape_complete()")
 
-        # Add shape
-        self.add_gerber_shape(self.active_tool.geometry, storage)
+        if storage is not None:
+            # Add shape
+            self.add_gerber_shape(self.active_tool.geometry, storage)
+        else:
+            stora = self.storage_dict[self.last_aperture_selected]['solid_geometry']
+            self.add_gerber_shape(self.active_tool.geometry, storage=stora)
 
         # Remove any utility shapes
         self.delete_utility_geometry()
@@ -1615,8 +1709,31 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 if self.app.panning_action is True:
                     self.app.panning_action = False
                 else:
-                    self.app.cursor = QtGui.QCursor()
-                    self.app.ui.popMenu.popup(self.app.cursor.pos())
+                    if self.in_action is False:
+                        self.app.cursor = QtGui.QCursor()
+                        self.app.ui.popMenu.popup(self.app.cursor.pos())
+                    else:
+                        # if right click on canvas and the active tool need to be finished (like Path or Polygon)
+                        # right mouse click will finish the action
+                        if isinstance(self.active_tool, FCShapeTool):
+                            self.active_tool.click(self.app.geo_editor.snap(self.x, self.y))
+                            self.active_tool.make()
+                            if self.active_tool.complete:
+                                self.on_grb_shape_complete()
+                                self.app.inform.emit(_("[success] Done."))
+
+                                # MS: always return to the Select Tool if modifier key is not pressed
+                                # else return to the current tool
+                                key_modifier = QtWidgets.QApplication.keyboardModifiers()
+                                if self.app.defaults["global_mselect_key"] == 'Control':
+                                    modifier_to_use = Qt.ControlModifier
+                                else:
+                                    modifier_to_use = Qt.ShiftModifier
+
+                                if key_modifier == modifier_to_use:
+                                    self.select_tool(self.active_tool.name)
+                                else:
+                                    self.select_tool("select")
         except Exception as e:
             log.warning("Error: %s" % str(e))
             raise
@@ -1866,7 +1983,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.log.debug("on_shape_complete()")
 
         # Add shape
-        self.add_shape(self.active_tool.geometry)
+        self.add_gerber_shape(self.active_tool.geometry)
 
         # Remove any utility shapes
         self.delete_utility_geometry()
@@ -1955,6 +2072,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
     def on_move_button(self):
         self.select_tool('move')
         return
+
+    def on_pad_add(self):
+        self.select_tool('pad')
+
+    def on_track_add(self):
+        self.select_tool('track')
+
+    def on_region_add(self):
+        self.select_tool('region')
 
     def on_buffer(self):
         buff_value = 0.01

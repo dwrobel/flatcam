@@ -95,7 +95,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.913
-    version_date = "2019/04/12"
+    version_date = "2019/04/13"
     beta = True
 
     # current date now
@@ -341,6 +341,7 @@ class App(QtCore.QObject):
             "global_sel_draw_color": self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry,
 
             # General GUI Settings
+            "global_layout": self.ui.general_defaults_form.general_gui_set_group.layout_combo,
             "global_hover": self.ui.general_defaults_form.general_gui_set_group.hover_cb,
 
             # Gerber General
@@ -646,7 +647,7 @@ class App(QtCore.QObject):
 
             # General GUI Settings
             "global_hover": True,
-
+            "global_layout": "compact",
             # Gerber General
             "gerber_plot": True,
             "gerber_solid": True,
@@ -1848,7 +1849,7 @@ class App(QtCore.QObject):
             self.save_factory_defaults(silent=False)
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
             initial_lay = 'compact'
-            self.on_layout(index=None, lay=initial_lay)
+            self.on_layout(lay=initial_lay)
             # Set the combobox in Preferences to the current layout
             idx = self.ui.general_defaults_form.general_gui_set_group.layout_combo.findText(initial_lay)
             self.ui.general_defaults_form.general_gui_set_group.layout_combo.setCurrentIndex(idx)
@@ -2219,7 +2220,6 @@ class App(QtCore.QObject):
             # edited_obj.build_ui()
             # make sure that we reenable the selection on Project Tab after returning from Editor Mode:
             self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-
 
     def get_last_folder(self):
         return self.defaults["global_last_folder"]
@@ -3213,6 +3213,7 @@ class App(QtCore.QObject):
         settings = QSettings("Open Source", "FlatCAM")
         settings.setValue('saved_gui_state', self.ui.saveState())
         settings.setValue('maximized_gui', self.ui.isMaximized())
+        settings.setValue('language', self.ui.general_defaults_form.general_app_group.language_cb.get_value())
 
         # This will write the setting to the platform specific storage.
         del settings
@@ -3983,7 +3984,7 @@ class App(QtCore.QObject):
             self.ui.general_defaults_form.general_gui_group.workspace_cb.setChecked(True)
         self.on_workspace()
 
-    def on_layout(self, index, lay=None):
+    def on_layout(self, index=None, lay=None):
         self.report_usage("on_layout()")
         if lay:
             current_layout = lay

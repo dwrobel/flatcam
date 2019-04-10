@@ -451,18 +451,25 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.exc_move_drill_menuitem = self.exc_editor_menu.addAction(
             QtGui.QIcon('share/move32.png'),_( 'Move Drill(s)\tM'))
 
+        ### APPLICATION GERBER EDITOR MENU ###
+
         self.grb_editor_menu = QtWidgets.QMenu(_(">Gerber Editor<"))
         self.menu.addMenu(self.grb_editor_menu)
 
-        self.grb_add_trace_menuitem = self.grb_editor_menu.addAction(
-            QtGui.QIcon('share/rectangle32.png'), _('Add Trace\tT'))
-        self.grb_add_zone_menuitem = self.exc_editor_menu.addAction(QtGui.QIcon('share/plus16.png'),
-                                                                     _('Add Zone\tZ'))
+        self.grb_add_pad_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon('share/aperture16.png'), _('Add Pad\tP'))
+        self.grb_add_track_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon('share/track32.png'), _('Add Track\tT'))
+        self.grb_add_region_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/rectangle32.png'),
+                                                                     _('Add Region\tN'))
         self.grb_editor_menu.addSeparator()
 
-        self.grb_resize_aperture_menuitem = self.grb_editor_menu.addAction(
-            QtGui.QIcon('share/resize16.png'), _('Resize Aperture\tR')
-        )
+        self.grb_add_buffer_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/buffer16-2.png'),
+                                                                    _('Buffer\tB'))
+        self.grb_add_scale_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/scale32.png'),
+                                                                    _('Scale\tS'))
+        self.grb_editor_menu.addSeparator()
+
         self.grb_copy_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/copy32.png'), _('Copy\tC'))
         self.grb_delete_menuitem = self.grb_editor_menu.addAction(
             QtGui.QIcon('share/deleteshape32.png'), _('Delete\tDEL')
@@ -480,7 +487,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.exc_editor_menu.menuAction().setVisible(False)
         self.exc_editor_menu.setDisabled(True)
-
 
         ################################
         ### Project Tab Context menu ###
@@ -630,7 +636,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.exc_edit_toolbar.addSeparator()
 
         self.copy_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _('Copy Drill'))
-        self.delete_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'), _("Delete Drill"))
+        self.delete_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/trash32.png'), _("Delete Drill"))
 
         self.exc_edit_toolbar.addSeparator()
         self.move_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), _("Move Drill"))
@@ -661,7 +667,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/cutpath32.png'), _('Cut Path'))
         self.geo_copy_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _("Copy Shape(s)"))
 
-        self.geo_delete_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'),
+        self.geo_delete_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/trash32.png'),
                                                               _("Delete Shape '-'"))
         self.geo_transform_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/transform.png'),
                                                                  _("Transformations"))
@@ -670,11 +676,19 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Gerber Editor Toolbar ###
         self.grb_select_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
+        self.grb_add_pad_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/aperture16.png'), _("Add Pad"))
+        self.grb_add_track_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/track32.png'), _("Add Track"))
+        self.grb_add_region_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), _("Add Region"))
+        self.grb_edit_toolbar.addSeparator()
+
         self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), _('Buffer'))
         self.aperture_scale_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/scale32.png'), _('Scale'))
+        self.grb_edit_toolbar.addSeparator()
         self.aperture_copy_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _("Copy"))
+        self.aperture_delete_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/trash32.png'),
+                                                                   _("Delete"))
+        self.grb_edit_toolbar.addSeparator()
         self.aperture_move_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
-
 
         ### Snap Toolbar ###
         # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
@@ -1426,9 +1440,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.draw_move = self.g_editor_cmenu.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
 
         self.grb_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/draw32.png'), _("Gerber Editor"))
+        self.grb_draw_track = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/aperture16.png'), _("Pad"))
         self.grb_draw_track = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/path32.png'), _("Track"))
-        self.grb_draw_zone = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/rectangle32.png'), _("Zone"))
+        self.grb_draw_zone = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/polygon32.png'), _("Region"))
         self.grb_editor_cmenu.addSeparator()
+        self.grb_delete = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/trash32.png'), _("Delete"))
         self.grb_move = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
 
         self.e_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/drill32.png'), _("Exc Editor"))
@@ -1601,6 +1617,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             self.restoreState(saved_gui_state)
             log.debug("FlatCAMGUI.__init__() --> UI state restored.")
 
+        settings = QSettings("Open Source", "FlatCAM")
         if settings.contains("layout"):
             layout = settings.value('layout', type=str)
             if layout == 'standard':
@@ -1622,6 +1639,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 self.corner_snap_btn.setVisible(True)
                 self.snap_magnet.setDisabled(True)
                 self.corner_snap_btn.setDisabled(True)
+            log.debug("FlatCAMGUI.__init__() --> UI layout restored from QSettings.")
         else:
             self.exc_edit_toolbar.setVisible(False)
             self.exc_edit_toolbar.setDisabled(True)
@@ -1632,6 +1650,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
             self.corner_snap_btn.setVisible(False)
             self.snap_magnet.setVisible(False)
+            settings.setValue('layout', "standard")
+
+            # This will write the setting to the platform specific storage.
+            del settings
+            log.debug("FlatCAMGUI.__init__() --> UI layout restored from defaults. QSettings set to 'standard'")
 
     def eventFilter(self, obj, event):
         if self.general_defaults_form.general_app_group.toggle_tooltips_cb.get_value() is False:
@@ -1702,7 +1725,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.exc_edit_toolbar.addSeparator()
 
         self.copy_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _('Copy Drill'))
-        self.delete_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'),
+        self.delete_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/trash32.png'),
                                                                 _("Delete Drill"))
 
         self.exc_edit_toolbar.addSeparator()
@@ -1735,7 +1758,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_edit_toolbar.addSeparator()
         self.geo_cutpath_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/cutpath32.png'), _('Cut Path'))
         self.geo_copy_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _("Copy Objects"))
-        self.geo_delete_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/deleteshape32.png'),
+        self.geo_delete_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/trash32.png'),
                                                               _("Delete Shape"))
         self.geo_transform_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/transform.png'),
                                                                  _("Transformations"))
@@ -1745,7 +1768,19 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         ### Gerber Editor Toolbar ###
         self.grb_select_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
+        self.grb_add_pad_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/aperture16.png'), _("Add Pad"))
+        self.grb_add_track_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/track32.png'), _("Add Track"))
+        self.grb_add_region_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), _("Add Region"))
+        self.grb_edit_toolbar.addSeparator()
 
+        self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), _('Buffer'))
+        self.aperture_scale_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/scale32.png'), _('Scale'))
+        self.grb_edit_toolbar.addSeparator()
+        self.aperture_copy_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _("Copy"))
+        self.aperture_delete_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/trash32.png'),
+                                                                   _("Delete"))
+        self.grb_edit_toolbar.addSeparator()
+        self.aperture_move_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
 
         ### Snap Toolbar ###
         # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
@@ -2464,29 +2499,18 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     if self.app.grb_editor.selected:
                         self.app.inform.emit(_("Click on target point."))
                         self.app.ui.aperture_copy_btn.setChecked(True)
-                        self.app.grb_editor.on_tool_select('aperture_copy')
+                        self.app.grb_editor.on_tool_select('copy')
                         self.app.grb_editor.active_tool.set_origin(
                             (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
                     else:
                         self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to copy."))
                     return
 
-                # Add Aperture Tool
-                if key == QtCore.Qt.Key_A or key == 'A':
-                    self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.inform.emit(_("Click on target point."))
-                    self.app.ui.add_aperture_btn.setChecked(True)
-
-                    self.app.grb_editor.x = self.app.mouse[0]
-                    self.app.grb_editor.y = self.app.mouse[1]
-
-                    self.app.grb_editor.select_tool('aperture_add')
-                    return
 
                 # Scale Tool
                 if key == QtCore.Qt.Key_B or key == 'B':
                     self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.grb_editor.select_tool('aperture_buffer')
+                    self.app.grb_editor.select_tool('buffer')
                     return
 
                 # Grid Snap
@@ -2516,17 +2540,35 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     if self.app.grb_editor.selected:
                         self.app.inform.emit(_("Click on target point."))
                         self.app.ui.aperture_move_btn.setChecked(True)
-                        self.app.grb_editor.on_tool_select('aperture_move')
+                        self.app.grb_editor.on_tool_select('move')
                         self.app.grb_editor.active_tool.set_origin(
                             (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
                     else:
                         self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to move."))
                     return
 
+                # Add Pad Tool
+                if key == QtCore.Qt.Key_P or key == 'P':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    self.app.inform.emit(_("Click on target point."))
+                    self.app.ui.add_aperture_btn.setChecked(True)
+
+                    self.app.grb_editor.x = self.app.mouse[0]
+                    self.app.grb_editor.y = self.app.mouse[1]
+
+                    self.app.grb_editor.select_tool('pad')
+                    return
+
+                # Add Region Tool
+                if key == QtCore.Qt.Key_R or key == 'R':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    self.app.grb_editor.select_tool('region')
+                    return
+
                 # Scale Tool
                 if key == QtCore.Qt.Key_S or key == 'S':
                     self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.grb_editor.select_tool('aperture_scale')
+                    self.app.grb_editor.select_tool('scale')
                     return
 
                 # Add Track
@@ -2534,6 +2576,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.grb_editor.launched_from_shortcuts = True
                     ## Current application units in Upper Case
                     self.units = self.general_defaults_group.general_app_group.units_radio.get_value().upper()
+                    self.app.grb_editor.select_tool('track')
                     return
 
                 # Zoom Fit

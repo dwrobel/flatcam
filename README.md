@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+10.04.2019
+
+- Gerber Editor: added Add Track and Add Region functions
+- Gerber Editor: fixed key shortcuts
+- fixed setting the Layout combobox in Preferences according to the current layout
+
 9.04.2019
 
 - Gerber Editor: added buffer and scale tools
