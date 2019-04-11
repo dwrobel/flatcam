@@ -38,6 +38,7 @@ class FCPad(FCShapeTool):
 
         self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
         self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
+        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
         # if those cause KeyError exception it means that the aperture type is not 'R'. Only 'R' type has those keys
         try:
@@ -91,8 +92,61 @@ class FCPad(FCShapeTool):
             p3 = (point_x + self.half_width, point_y + self.half_height)
             p4 = (point_x - self.half_width, point_y + self.half_height)
             return Polygon([p1, p2, p3, p4, p1])
+        elif ap_type == 'O':
+            geo = []
+            if self.half_height > self.half_width:
+                p1 = (point_x - self.half_width, point_y - self.half_height + self.half_width)
+                p2 = (point_x + self.half_width, point_y - self.half_height + self.half_width)
+                p3 = (point_x + self.half_width, point_y + self.half_height - self.half_width)
+                p4 = (point_x - self.half_width, point_y + self.half_height - self.half_width)
+
+                down_center = (point_x, point_y - self.half_height + self.half_width)
+                d_start_angle = math.pi
+                d_stop_angle = 0.0
+                down_arc = arc(down_center, self.half_width, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
+
+                up_center = (point_x, point_y + self.half_height - self.half_width)
+                u_start_angle = 0.0
+                u_stop_angle = math.pi
+                up_arc = arc(up_center, self.half_width, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
+
+                geo.append(p1)
+                for pt in down_arc:
+                    geo.append(pt)
+                geo.append(p2)
+                geo.append(p3)
+                for pt in up_arc:
+                    geo.append(pt)
+                geo.append(p4)
+                return Polygon(geo)
+            else:
+                p1 = (point_x - self.half_width + self.half_height, point_y - self.half_height)
+                p2 = (point_x + self.half_width - self.half_height, point_y - self.half_height)
+                p3 = (point_x + self.half_width - self.half_height, point_y + self.half_height)
+                p4 = (point_x - self.half_width + self.half_height, point_y + self.half_height)
+
+                left_center = (point_x - self.half_width + self.half_height, point_y)
+                d_start_angle = math.pi / 2
+                d_stop_angle = 1.5 * math.pi
+                left_arc = arc(left_center, self.half_height, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
+
+                right_center = (point_x + self.half_width - self.half_height, point_y)
+                u_start_angle = 1.5 * math.pi
+                u_stop_angle = math.pi / 2
+                right_arc = arc(right_center, self.half_height, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
+
+                geo.append(p1)
+                geo.append(p2)
+                for pt in right_arc:
+                    geo.append(pt)
+                geo.append(p3)
+                geo.append(p4)
+                for pt in left_arc:
+                    geo.append(pt)
+                return Polygon(geo)
         else:
-            self.draw_app.app.inform.emit(_("Incompatible aperture type. Select an aperture with type 'C' or 'R'."))
+            self.draw_app.app.inform.emit(_(
+                "Incompatible aperture type. Select an aperture with type 'C', 'R' or 'O'."))
             return None
 
     def make(self):
@@ -119,6 +173,7 @@ class FCPadArray(FCShapeTool):
 
         self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
         self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
+        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
         # if those cause KeyError exception it means that the aperture type is not 'R'. Only 'R' type has those keys
         try:
@@ -274,8 +329,61 @@ class FCPadArray(FCShapeTool):
             p3 = (point_x + self.half_width, point_y + self.half_height)
             p4 = (point_x - self.half_width, point_y + self.half_height)
             return Polygon([p1, p2, p3, p4, p1])
+        elif ap_type == 'O':
+            geo = []
+            if self.half_height > self.half_width:
+                p1 = (point_x - self.half_width, point_y - self.half_height + self.half_width)
+                p2 = (point_x + self.half_width, point_y - self.half_height + self.half_width)
+                p3 = (point_x + self.half_width, point_y + self.half_height - self.half_width)
+                p4 = (point_x - self.half_width, point_y + self.half_height - self.half_width)
+
+                down_center = (point_x, point_y - self.half_height + self.half_width)
+                d_start_angle = math.pi
+                d_stop_angle = 0.0
+                down_arc = arc(down_center, self.half_width, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
+
+                up_center = (point_x, point_y + self.half_height - self.half_width)
+                u_start_angle = 0.0
+                u_stop_angle = math.pi
+                up_arc = arc(up_center, self.half_width, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
+
+                geo.append(p1)
+                for pt in down_arc:
+                    geo.append(pt)
+                geo.append(p2)
+                geo.append(p3)
+                for pt in up_arc:
+                    geo.append(pt)
+                geo.append(p4)
+                return Polygon(geo)
+            else:
+                p1 = (point_x - self.half_width + self.half_height, point_y - self.half_height)
+                p2 = (point_x + self.half_width - self.half_height, point_y - self.half_height)
+                p3 = (point_x + self.half_width - self.half_height, point_y + self.half_height)
+                p4 = (point_x - self.half_width + self.half_height, point_y + self.half_height)
+
+                left_center = (point_x - self.half_width + self.half_height, point_y)
+                d_start_angle = math.pi / 2
+                d_stop_angle = 1.5 * math.pi
+                left_arc = arc(left_center, self.half_height, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
+
+                right_center = (point_x + self.half_width - self.half_height, point_y)
+                u_start_angle = 1.5 * math.pi
+                u_stop_angle = math.pi / 2
+                right_arc = arc(right_center, self.half_height, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
+
+                geo.append(p1)
+                geo.append(p2)
+                for pt in right_arc:
+                    geo.append(pt)
+                geo.append(p3)
+                geo.append(p4)
+                for pt in left_arc:
+                    geo.append(pt)
+                return Polygon(geo)
         else:
-            self.draw_app.app.inform.emit(_("Incompatible aperture type. Select an aperture with type 'C' or 'R'."))
+            self.draw_app.app.inform.emit(_(
+                "Incompatible aperture type. Select an aperture with type 'C', 'R' or 'O'."))
             return None
 
     def make(self):
@@ -318,7 +426,7 @@ class FCPadArray(FCShapeTool):
                 if self.pad_direction == 'CW':
                     geo = affinity.rotate(geo, angle=(math.pi - angle_radians), use_radians=True)
                 else:
-                    geo = affinity.rotate(geo, angle=angle_radians, use_radians=True)
+                    geo = affinity.rotate(geo, angle=(angle_radians - math.pi), use_radians=True)
 
                 self.geometry.append(DrawToolShape(geo))
         self.complete = True
@@ -802,8 +910,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         apsize_lbl = QtWidgets.QLabel(_('Aperture Size:'))
         apsize_lbl.setToolTip(
         _("Size for the new aperture.\n"
-          "If aperture type is 'R' then this value\n"
-          "is automatically calculated as:\n"
+          "If aperture type is 'R' or 'O' then\n"
+          "this value is automatically\n"
+          "calculated as:\n"
           "sqrt(width**2 + height**2)")
         )
         grid1.addWidget(apsize_lbl, 2, 0)
@@ -816,12 +925,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
         aptype_lbl.setToolTip(
         _("Select the type of new aperture. Can be:\n"
           "C = circular\n"
-          "R = rectangular")
+          "R = rectangular\n"
+          "O = oblong")
         )
         grid1.addWidget(aptype_lbl, 3, 0)
 
         self.aptype_cb = FCComboBox()
-        self.aptype_cb.addItems(['C', 'R'])
+        self.aptype_cb.addItems(['C', 'R', 'O'])
         grid1.addWidget(self.aptype_cb, 3, 1)
 
         self.apdim_lbl = QtWidgets.QLabel(_('Aperture Dim:'))
@@ -1409,7 +1519,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.apertures_table.cellPressed.connect(self.on_row_selected)
 
         # for convenience set the next aperture code in the apcode field
-        self.apcode_entry.set_value(max(self.tool2tooldia.values()) + 1)
+        try:
+            self.apcode_entry.set_value(max(self.tool2tooldia.values()) + 1)
+        except ValueError:
+            # this means that the edited object has no apertures so we start with 10 (Gerber specifications)
+            self.apcode_entry.set_value(10)
 
     def on_aperture_add(self, apid=None):
         self.is_modified = True
@@ -1433,7 +1547,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             type_val = self.aptype_cb.currentText()
             self.storage_dict[ap_id]['type'] = type_val
 
-            if type_val == 'R':
+            if type_val == 'R' or type_val == 'O':
                 try:
                     dims = self.apdim_entry.get_value()
                     self.storage_dict[ap_id]['width'] = dims[0]
@@ -1443,7 +1557,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     self.apsize_entry.set_value(size_val)
 
                 except Exception as e:
-                    log.error("FlatCAMGrbEditor.on_aperture_add() --> the R aperture dims has to be in a "
+                    log.error("FlatCAMGrbEditor.on_aperture_add() --> the R or O aperture dims has to be in a "
                               "tuple format (x,y)\nError: %s" % str(e))
                     self.app.inform.emit(_("[WARNING_NOTCL] Aperture dimensions value is missing or wrong format. "
                                            "Add it in format (width, height) and retry."))
@@ -1594,7 +1708,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.edited_obj_name = self.name_entry.get_value()
 
     def on_aptype_changed(self, current_text):
-        if current_text == 'R':
+        if current_text == 'R' or current_text == 'O':
             self.apdim_lbl.show()
             self.apdim_entry.show()
             self.apsize_entry.setReadOnly(True)
@@ -2129,12 +2243,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
                                 # MS: always return to the Select Tool if modifier key is not pressed
                                 # else return to the current tool
                                 key_modifier = QtWidgets.QApplication.keyboardModifiers()
-                                if self.app.defaults["global_mselect_key"] == 'Control':
-                                    modifier_to_use = Qt.ControlModifier
-                                else:
-                                    modifier_to_use = Qt.ShiftModifier
+                                if (self.app.defaults["global_mselect_key"] == 'Control' and
+                                    key_modifier == Qt.ControlModifier) or \
+                                        (self.app.defaults["global_mselect_key"] == 'Shift' and
+                                         key_modifier == Qt.ShiftModifier):
 
-                                if key_modifier == modifier_to_use:
                                     self.select_tool(self.active_tool.name)
                                 else:
                                     self.select_tool("select")
@@ -2619,6 +2732,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.scale_tool_frame.hide()
 
         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+
 
 class TransformEditorTool(FlatCAMTool):
     """
