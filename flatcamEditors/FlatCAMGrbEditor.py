@@ -109,42 +109,223 @@ class FCPad(FCShapeTool):
 
 class FCPadArray(FCShapeTool):
     """
-    Resulting type: Polygon
+    Resulting type: MultiPolygon
     """
 
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
-        self.name = 'pad_array'
+        self.name = 'array'
+        self.draw_app = draw_app
 
-        self.start_msg = _("Click on 1st corner ...")
+        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
+        self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
+
+        # if those cause KeyError exception it means that the aperture type is not 'R'. Only 'R' type has those keys
+        try:
+            self.half_width = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['width']) / 2
+        except KeyError:
+            pass
+        try:
+            self.half_height = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['height']) / 2
+        except KeyError:
+            pass
+
+        self.draw_app.array_frame.show()
+
+        self.selected_size = None
+        self.pad_axis = 'X'
+        self.pad_array = 'linear'
+        self.pad_array_size = None
+        self.pad_pitch = None
+        self.pad_linear_angle = None
+
+        self.pad_angle = None
+        self.pad_direction = None
+        self.pad_radius = None
+
+        self.origin = None
+        self.destination = None
+        self.flag_for_circ_array = None
+
+        self.last_dx = 0
+        self.last_dy = 0
+
+        self.pt = []
+
+        self.draw_app.app.inform.emit(self.start_msg)
+
+        try:
+            self.selected_size = self.draw_app.tool2tooldia[self.draw_app.last_aperture_selected]
+        except KeyError:
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] To add an Pad Array first select a tool in Tool Table"))
+            return
+
+        geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y), static=True)
+
+        if isinstance(geo, DrawToolShape) and geo.geo is not None:
+            self.draw_app.draw_utility_geometry(geo=geo)
+
+        self.draw_app.app.inform.emit(_("Click on target location ..."))
+
+        # Switch notebook to Selected page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
 
     def click(self, point):
-        self.points.append(point)
 
-        if len(self.points) == 1:
-            return "Click on opposite corner to complete ..."
-
-        if len(self.points) == 2:
+        if self.pad_array == 'Linear':
             self.make()
-            return "Done."
+            return
+        else:
+            if self.flag_for_circ_array is None:
+                self.draw_app.in_action = True
+                self.pt.append(point)
 
-        return ""
+                self.flag_for_circ_array = True
+                self.set_origin(point)
+                self.draw_app.app.inform.emit(_("Click on the Pad Circular Array Start position"))
+            else:
+                self.destination = point
+                self.make()
+                self.flag_for_circ_array = None
+                return
 
-    def utility_geometry(self, data=None):
-        if len(self.points) == 1:
-            p1 = self.points[0]
-            p2 = data
-            return DrawToolUtilityShape(LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])]))
+    def set_origin(self, origin):
+        self.origin = origin
 
-        return None
+    def utility_geometry(self, data=None, static=None):
+        self.pad_axis = self.draw_app.pad_axis_radio.get_value()
+        self.pad_direction = self.draw_app.pad_direction_radio.get_value()
+        self.pad_array = self.draw_app.array_type_combo.get_value()
+        try:
+            self.pad_array_size = int(self.draw_app.pad_array_size_entry.get_value())
+            try:
+                self.pad_pitch = float(self.draw_app.pad_pitch_entry.get_value())
+                self.pad_linear_angle = float(self.draw_app.linear_angle_spinner.get_value())
+                self.pad_angle = float(self.draw_app.pad_angle_entry.get_value())
+            except TypeError:
+                self.draw_app.app.inform.emit(
+                    _("[ERROR_NOTCL] The value is not Float. Check for comma instead of dot separator."))
+                return
+        except Exception as e:
+            self.draw_app.app.inform.emit(_("[ERROR_NOTCL] The value is mistyped. Check the value."))
+            return
+
+        if self.pad_array == 'Linear':
+            if data[0] is None and data[1] is None:
+                dx = self.draw_app.x
+                dy = self.draw_app.y
+            else:
+                dx = data[0]
+                dy = data[1]
+
+            geo_list = []
+            geo = None
+            self.points = [dx, dy]
+
+            for item in range(self.pad_array_size):
+                if self.pad_axis == 'X':
+                    geo = self.util_shape(((dx + (self.pad_pitch * item)), dy))
+                if self.pad_axis == 'Y':
+                    geo = self.util_shape((dx, (dy + (self.pad_pitch * item))))
+                if self.pad_axis == 'A':
+                    x_adj = self.pad_pitch * math.cos(math.radians(self.pad_linear_angle))
+                    y_adj = self.pad_pitch * math.sin(math.radians(self.pad_linear_angle))
+                    geo = self.util_shape(
+                        ((dx + (x_adj * item)), (dy + (y_adj * item)))
+                    )
+
+                if static is None or static is False:
+                    geo_list.append(affinity.translate(geo, xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)))
+                else:
+                    geo_list.append(geo)
+            # self.origin = data
+
+            self.last_dx = dx
+            self.last_dy = dy
+            return DrawToolUtilityShape(geo_list)
+        else:
+            if data[0] is None and data[1] is None:
+                cdx = self.draw_app.x
+                cdy = self.draw_app.y
+            else:
+                cdx = data[0]
+                cdy = data[1]
+
+            if len(self.pt) > 0:
+                temp_points = [x for x in self.pt]
+                temp_points.append([cdx, cdy])
+                return DrawToolUtilityShape(LineString(temp_points))
+
+    def util_shape(self, point):
+        if point[0] is None and point[1] is None:
+            point_x = self.draw_app.x
+            point_y = self.draw_app.y
+        else:
+            point_x = point[0]
+            point_y = point[1]
+
+        ap_type = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['type']
+        if ap_type == 'C':
+            center = Point([point_x, point_y])
+            return center.buffer(self.radius)
+        elif ap_type == 'R':
+            p1 = (point_x - self.half_width, point_y - self.half_height)
+            p2 = (point_x + self.half_width, point_y - self.half_height)
+            p3 = (point_x + self.half_width, point_y + self.half_height)
+            p4 = (point_x - self.half_width, point_y + self.half_height)
+            return Polygon([p1, p2, p3, p4, p1])
+        else:
+            self.draw_app.app.inform.emit(_("Incompatible aperture type. Select an aperture with type 'C' or 'R'."))
+            return None
 
     def make(self):
-        p1 = self.points[0]
-        p2 = self.points[1]
-        # self.geometry = LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])])
-        self.geometry = DrawToolShape(Polygon([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])]))
+        self.geometry = []
+        geo = None
+
+        self.draw_app.current_storage = self.storage_obj
+
+        if self.pad_array == 'Linear':
+            for item in range(self.pad_array_size):
+                if self.pad_axis == 'X':
+                    geo = self.util_shape(((self.points[0] + (self.pad_pitch * item)), self.points[1]))
+                if self.pad_axis == 'Y':
+                    geo = self.util_shape((self.points[0], (self.points[1] + (self.pad_pitch * item))))
+                if self.pad_axis == 'A':
+                    x_adj = self.pad_pitch * math.cos(math.radians(self.pad_linear_angle))
+                    y_adj = self.pad_pitch * math.sin(math.radians(self.pad_linear_angle))
+                    geo = self.util_shape(
+                        ((self.points[0] + (x_adj * item)), (self.points[1] + (y_adj * item)))
+                    )
+
+                self.geometry.append(DrawToolShape(geo))
+        else:
+            if (self.pad_angle * self.pad_array_size) > 360:
+                self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Too many Pads for the selected spacing angle."))
+                return
+
+            radius = distance(self.destination, self.origin)
+            initial_angle = math.asin((self.destination[1] - self.origin[1]) / radius)
+            for i in range(self.pad_array_size):
+                angle_radians = math.radians(self.pad_angle * i)
+                if self.pad_direction == 'CW':
+                    x = self.origin[0] + radius * math.cos(-angle_radians + initial_angle)
+                    y = self.origin[1] + radius * math.sin(-angle_radians + initial_angle)
+                else:
+                    x = self.origin[0] + radius * math.cos(angle_radians + initial_angle)
+                    y = self.origin[1] + radius * math.sin(angle_radians + initial_angle)
+
+                geo = self.util_shape((x, y))
+                if self.pad_direction == 'CW':
+                    geo = affinity.rotate(geo, angle=(math.pi - angle_radians), use_radians=True)
+                else:
+                    geo = affinity.rotate(geo, angle=angle_radians, use_radians=True)
+
+                self.geometry.append(DrawToolShape(geo))
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Rectangle completed."))
+        self.draw_app.app.inform.emit(_("[success] Done. Pad Array added."))
+        self.draw_app.in_action = True
+        self.draw_app.array_frame.hide()
+        return
 
 
 class FCRegion(FCShapeTool):
@@ -322,8 +503,7 @@ class FCApertureMove(FCShapeTool):
 
         for index in self.draw_app.apertures_table.selectedIndexes():
             row = index.row()
-            # on column 1 in tool tables we hold the diameters, and we retrieve them as strings
-            # therefore below we convert to float
+            # on column 1 in tool tables we hold the aperture codes, and we retrieve them as strings
             aperture_on_row = self.draw_app.apertures_table.item(row, 1).text()
             self.selected_apertures.append(aperture_on_row)
 
@@ -756,6 +936,133 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.scale_button = QtWidgets.QPushButton(_("Scale"))
         hlay_scale.addWidget(self.scale_button)
 
+        # add a frame and inside add a vertical box layout. Inside this vbox layout I add
+        # all the add Pad array  widgets
+        # this way I can hide/show the frame
+        self.array_frame = QtWidgets.QFrame()
+        self.array_frame.setContentsMargins(0, 0, 0, 0)
+        self.custom_box.addWidget(self.array_frame)
+        self.array_box = QtWidgets.QVBoxLayout()
+        self.array_box.setContentsMargins(0, 0, 0, 0)
+        self.array_frame.setLayout(self.array_box)
+
+        #### Add Pad Array ####
+        self.emptyarray_label = QtWidgets.QLabel('')
+        self.array_box.addWidget(self.emptyarray_label)
+
+        self.padarray_label = QtWidgets.QLabel('<b>%s</b>' % _("Add Pad Array"))
+        self.padarray_label.setToolTip(
+            _("Add an array of pads (linear or circular array)")
+        )
+        self.array_box.addWidget(self.padarray_label)
+
+        self.array_type_combo = FCComboBox()
+        self.array_type_combo.setToolTip(
+           _( "Select the type of pads array to create.\n"
+            "It can be Linear X(Y) or Circular")
+        )
+        self.array_type_combo.addItem(_("Linear"))
+        self.array_type_combo.addItem(_("Circular"))
+
+        self.array_box.addWidget(self.array_type_combo)
+
+        self.array_form = QtWidgets.QFormLayout()
+        self.array_box.addLayout(self.array_form)
+
+        self.pad_array_size_label = QtWidgets.QLabel(_('Nr of pads:'))
+        self.pad_array_size_label.setToolTip(
+            _("Specify how many pads to be in the array.")
+        )
+        self.pad_array_size_label.setFixedWidth(100)
+
+        self.pad_array_size_entry = LengthEntry()
+        self.array_form.addRow(self.pad_array_size_label, self.pad_array_size_entry)
+
+        self.array_linear_frame = QtWidgets.QFrame()
+        self.array_linear_frame.setContentsMargins(0, 0, 0, 0)
+        self.array_box.addWidget(self.array_linear_frame)
+        self.linear_box = QtWidgets.QVBoxLayout()
+        self.linear_box.setContentsMargins(0, 0, 0, 0)
+        self.array_linear_frame.setLayout(self.linear_box)
+
+        self.linear_form = QtWidgets.QFormLayout()
+        self.linear_box.addLayout(self.linear_form)
+
+        self.pad_axis_label = QtWidgets.QLabel(_('Direction:'))
+        self.pad_axis_label.setToolTip(
+            _("Direction on which the linear array is oriented:\n"
+            "- 'X' - horizontal axis \n"
+            "- 'Y' - vertical axis or \n"
+            "- 'Angle' - a custom angle for the array inclination")
+        )
+        self.pad_axis_label.setFixedWidth(100)
+
+        self.pad_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
+                                          {'label': 'Y', 'value': 'Y'},
+                                          {'label': _('Angle'), 'value': 'A'}])
+        self.pad_axis_radio.set_value('X')
+        self.linear_form.addRow(self.pad_axis_label, self.pad_axis_radio)
+
+        self.pad_pitch_label = QtWidgets.QLabel(_('Pitch:'))
+        self.pad_pitch_label.setToolTip(
+            _("Pitch = Distance between elements of the array.")
+        )
+        self.pad_pitch_label.setFixedWidth(100)
+
+        self.pad_pitch_entry = LengthEntry()
+        self.linear_form.addRow(self.pad_pitch_label, self.pad_pitch_entry)
+
+        self.linear_angle_label = QtWidgets.QLabel(_('Angle:'))
+        self.linear_angle_label.setToolTip(
+           _( "Angle at which the linear array is placed.\n"
+            "The precision is of max 2 decimals.\n"
+            "Min value is: -359.99 degrees.\n"
+            "Max value is:  360.00 degrees.")
+        )
+        self.linear_angle_label.setFixedWidth(100)
+
+        self.linear_angle_spinner = FCDoubleSpinner()
+        self.linear_angle_spinner.set_precision(2)
+        self.linear_angle_spinner.setRange(-359.99, 360.00)
+        self.linear_form.addRow(self.linear_angle_label, self.linear_angle_spinner)
+
+        self.array_circular_frame = QtWidgets.QFrame()
+        self.array_circular_frame.setContentsMargins(0, 0, 0, 0)
+        self.array_box.addWidget(self.array_circular_frame)
+        self.circular_box = QtWidgets.QVBoxLayout()
+        self.circular_box.setContentsMargins(0, 0, 0, 0)
+        self.array_circular_frame.setLayout(self.circular_box)
+
+        self.pad_direction_label = QtWidgets.QLabel(_('Direction:'))
+        self.pad_direction_label.setToolTip(
+           _( "Direction for circular array."
+            "Can be CW = clockwise or CCW = counter clockwise.")
+        )
+        self.pad_direction_label.setFixedWidth(100)
+
+        self.circular_form = QtWidgets.QFormLayout()
+        self.circular_box.addLayout(self.circular_form)
+
+        self.pad_direction_radio = RadioSet([{'label': 'CW', 'value': 'CW'},
+                                               {'label': 'CCW.', 'value': 'CCW'}])
+        self.pad_direction_radio.set_value('CW')
+        self.circular_form.addRow(self.pad_direction_label, self.pad_direction_radio)
+
+        self.pad_angle_label = QtWidgets.QLabel(_('Angle:'))
+        self.pad_angle_label.setToolTip(
+            _("Angle at which each element in circular array is placed.")
+        )
+        self.pad_angle_label.setFixedWidth(100)
+
+        self.pad_angle_entry = LengthEntry()
+        self.circular_form.addRow(self.pad_angle_label, self.pad_angle_entry)
+
+        self.array_circular_frame.hide()
+
+        self.linear_angle_spinner.hide()
+        self.linear_angle_label.hide()
+
+        self.array_frame.hide()
 
         self.custom_box.addStretch()
 
@@ -765,6 +1072,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                        "constructor": FCApertureSelect},
             "pad": {"button": self.app.ui.grb_add_pad_btn,
                               "constructor": FCPad},
+            "array": {"button": self.app.ui.add_pad_ar_btn,
+                    "constructor": FCPadArray},
             "track": {"button": self.app.ui.grb_add_track_btn,
                               "constructor": FCTrack},
             "region": {"button": self.app.ui.grb_add_region_btn,
@@ -795,7 +1104,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # store here the plot promises, if empty the delayed plot will be activated
         self.grb_plot_promises = []
 
-        # dictionary to store the tool_row and diameters in Tool_table
+        # dictionary to store the tool_row and aperture codes in Tool_table
         # it will be updated everytime self.build_ui() is called
         self.olddia_newdia = {}
 
@@ -887,7 +1196,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.buffer_button.clicked.connect(self.on_buffer)
         self.scale_button.clicked.connect(self.on_scale)
 
-        self.app.ui.delete_drill_btn.triggered.connect(self.on_delete_btn)
+        self.app.ui.aperture_delete_btn.triggered.connect(self.on_delete_btn)
         self.name_entry.returnPressed.connect(self.on_name_activate)
 
         self.aptype_cb.currentIndexChanged[str].connect(self.on_aptype_changed)
@@ -897,6 +1206,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.apertures_table.cellPressed.connect(self.on_row_selected)
 
         self.app.ui.grb_add_pad_menuitem.triggered.connect(self.on_pad_add)
+        self.app.ui.grb_add_pad_array_menuitem.triggered.connect(self.on_pad_add_array)
+
         self.app.ui.grb_add_track_menuitem.triggered.connect(self.on_track_add)
         self.app.ui.grb_add_region_menuitem.triggered.connect(self.on_region_add)
 
@@ -908,6 +1219,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.ui.grb_delete_menuitem.triggered.connect(self.on_delete_btn)
 
         self.app.ui.grb_move_menuitem.triggered.connect(self.on_move_button)
+
+        self.array_type_combo.currentIndexChanged.connect(self.on_array_type_combo)
+        self.pad_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
 
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
@@ -932,7 +1246,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             sort_temp.append(int(aperture))
         self.sorted_apid = sorted(sort_temp)
 
-        # populate self.intial_table_rows dict with the tool number as keys and tool diameters as values
+        # populate self.intial_table_rows dict with the tool number as keys and aperture codes as values
         for i in range(len(self.sorted_apid)):
             tt_aperture = self.sorted_apid[i]
             self.tool2tooldia[i + 1] = tt_aperture
@@ -941,6 +1255,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.apsize_entry.set_value(0.039)
         else:
             self.apsize_entry.set_value(1.00)
+
+        # Init GUI
+        self.pad_array_size_entry.set_value(5)
+        self.pad_pitch_entry.set_value(2.54)
+        self.pad_angle_entry.set_value(12)
+        self.pad_direction_radio.set_value('CW')
+        self.pad_axis_radio.set_value('X')
 
     def build_ui(self):
 
@@ -1139,8 +1460,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.storage_dict[ap_id]['solid_geometry'] = []
             self.storage_dict[ap_id]['follow_geometry'] = []
 
-            # self.olddia_newdia dict keeps the evidence on current tools diameters as keys and gets updated on values
-            # each time a tool diameter is edited or added
+            # self.olddia_newdia dict keeps the evidence on current aperture codes as keys and gets updated on values
+            # each time a aperture code is edited or added
             self.olddia_newdia[ap_id] = ap_id
         else:
             self.app.inform.emit(_("[WARNING_NOTCL] Aperture already in the aperture table."))
@@ -1150,7 +1471,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # we add a new entry in the tool2tooldia dict
         self.tool2tooldia[len(self.olddia_newdia)] = int(ap_id)
 
-        self.app.inform.emit(_("[success] Added new aperture with dia: {apid}").format(apid=str(ap_id)))
+        self.app.inform.emit(_("[success] Added new aperture with code: {apid}").format(apid=str(ap_id)))
 
         self.build_ui()
 
@@ -1164,7 +1485,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
     def on_aperture_delete(self, apid=None):
         self.is_modified = True
-        deleted_tool_dia_list = []
+        deleted_apcode_list = []
         deleted_tool_offset_list = []
 
         try:
@@ -1172,37 +1493,38 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 # deleted_tool_dia = float(self.apertures_table.item(self.apertures_table.currentRow(), 1).text())
                 for index in self.apertures_table.selectionModel().selectedRows():
                     row = index.row()
-                    deleted_tool_dia_list.append(self.apertures_table.item(row, 1).text())
+                    deleted_apcode_list.append(self.apertures_table.item(row, 1).text())
             else:
                 if isinstance(apid, list):
                     for dd in apid:
-                        deleted_tool_dia_list.append(dd)
+                        deleted_apcode_list.append(dd)
                 else:
-                    deleted_tool_dia_list.append(apid)
+                    deleted_apcode_list.append(apid)
         except:
             self.app.inform.emit(_("[WARNING_NOTCL] Select a tool in Tool Table"))
             return
 
-        for deleted_tool_dia in deleted_tool_dia_list:
+        for deleted_aperture in deleted_apcode_list:
             # delete the storage used for that tool
-            self.storage_dict.pop(deleted_tool_dia, None)
+            self.storage_dict.pop(deleted_aperture, None)
 
             # I've added this flag_del variable because dictionary don't like
             # having keys deleted while iterating through them
             flag_del = []
             for deleted_tool in self.tool2tooldia:
-                if self.tool2tooldia[deleted_tool] == deleted_tool_dia:
+                if self.tool2tooldia[deleted_tool] == deleted_aperture:
                     flag_del.append(deleted_tool)
 
             if flag_del:
-                for tool_to_be_deleted in flag_del:
+                for aperture_to_be_deleted in flag_del:
                     # delete the tool
-                    self.tool2tooldia.pop(tool_to_be_deleted, None)
+                    self.tool2tooldia.pop(aperture_to_be_deleted, None)
                 flag_del = []
 
-            self.olddia_newdia.pop(deleted_tool_dia, None)
+            self.olddia_newdia.pop(deleted_aperture, None)
 
-            self.app.inform.emit(_("[success] Deleted aperture with code: {del_dia}").format(del_dia=str(deleted_tool_dia)))
+            self.app.inform.emit(_("[success] Deleted aperture with code: {del_dia}").format(
+                del_dia=str(deleted_aperture)))
 
         self.plot_all()
         self.build_ui()
@@ -1232,7 +1554,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         dia_changed = self.tool2tooldia[key_in_tool2tooldia]
 
-        # tool diameter is not used so we create a new tool with the desired diameter
+        # aperture code is not used so we create a new tool with the desired diameter
         if current_table_dia_edited not in self.olddia_newdia.values():
             # update the dict that holds as keys our initial diameters and as values the edited diameters
             self.olddia_newdia[dia_changed] = current_table_dia_edited
@@ -1245,7 +1567,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
             self.plot_all()
         else:
-            # tool diameter is already in use so we move the drills from the prior tool to the new tool
+            # aperture code is already in use so we move the pads from the prior tool to the new tool
             factor = current_table_dia_edited / dia_changed
             for shape in self.storage_dict[dia_changed].get_objects():
                 geometry.append(DrawToolShape(
@@ -1432,7 +1754,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # we activate this after the initial build as we don't need to see the tool been populated
         self.apertures_table.itemChanged.connect(self.on_tool_edit)
 
-        # build the geometry for each tool-diameter, each drill will be represented by a '+' symbol
         # and then add it to the storage elements (each storage elements is a member of a list
 
         def job_thread(self, apid):
@@ -2143,6 +2464,25 @@ class FlatCAMGrbEditor(QtCore.QObject):
         if shape in self.selected:
             self.selected.remove(shape)
 
+    def on_array_type_combo(self):
+        if self.array_type_combo.currentIndex() == 0:
+            self.array_circular_frame.hide()
+            self.array_linear_frame.show()
+        else:
+            self.delete_utility_geometry()
+            self.array_circular_frame.show()
+            self.array_linear_frame.hide()
+            self.app.inform.emit(_("Click on the circular array Center position"))
+
+    def on_linear_angle_radio(self):
+        val = self.pad_axis_radio.get_value()
+        if val == 'A':
+            self.linear_angle_spinner.show()
+            self.linear_angle_label.show()
+        else:
+            self.linear_angle_spinner.hide()
+            self.linear_angle_label.hide()
+
     def on_copy_button(self):
         self.select_tool('copy')
         return
@@ -2153,6 +2493,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
     def on_pad_add(self):
         self.select_tool('pad')
+
+    def on_pad_add_array(self):
+        self.select_tool('array')
 
     def on_track_add(self):
         self.select_tool('track')

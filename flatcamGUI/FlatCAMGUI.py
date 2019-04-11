@@ -462,6 +462,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.grb_add_pad_menuitem = self.grb_editor_menu.addAction(
             QtGui.QIcon('share/aperture16.png'), _('Add Pad\tP'))
+        self.grb_add_pad_array_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon('share/padarray32.png'), _('Add Pad Array\tA'))
         self.grb_add_track_menuitem = self.grb_editor_menu.addAction(
             QtGui.QIcon('share/track32.png'), _('Add Track\tT'))
         self.grb_add_region_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/rectangle32.png'),
@@ -639,7 +641,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
         self.add_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), _('Add Drill Hole'))
         self.add_drill_array_btn = self.exc_edit_toolbar.addAction(
-            QtGui.QIcon('share/addarray16.png'), 'Add Drill Hole Array')
+            QtGui.QIcon('share/addarray16.png'), _('Add Drill Hole Array'))
         self.resize_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/resize16.png'), _('Resize Drill'))
         self.exc_edit_toolbar.addSeparator()
 
@@ -685,6 +687,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         ### Gerber Editor Toolbar ###
         self.grb_select_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
         self.grb_add_pad_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/aperture32.png'), _("Add Pad"))
+        self.add_pad_ar_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/padarray32.png'), _('Add Pad Array'))
         self.grb_add_track_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/track32.png'), _("Add Track"))
         self.grb_add_region_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), _("Add Region"))
         self.grb_edit_toolbar.addSeparator()
@@ -1779,6 +1782,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         ### Gerber Editor Toolbar ###
         self.grb_select_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
         self.grb_add_pad_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/aperture32.png'), _("Add Pad"))
+        self.add_pad_ar_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/padarray32.png'), _('Add Pad Array'))
         self.grb_add_track_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/track32.png'), _("Add Track"))
         self.grb_add_region_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), _("Add Region"))
         self.grb_edit_toolbar.addSeparator()
@@ -2513,6 +2517,24 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.on_select_tab('tool')
                     return
 
+                # Add Array of pads
+                if key == QtCore.Qt.Key_A or key == 'A':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    self.app.inform.emit("Click on target point.")
+                    self.app.ui.add_pad_ar_btn.setChecked(True)
+
+                    self.app.grb_editor.x = self.app.mouse[0]
+                    self.app.grb_editor.y = self.app.mouse[1]
+
+                    self.app.grb_editor.select_tool('array')
+                    return
+
+                # Scale Tool
+                if key == QtCore.Qt.Key_B or key == 'B':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    self.app.grb_editor.select_tool('buffer')
+                    return
+
                 # Copy
                 if key == QtCore.Qt.Key_C or key == 'C':
                     self.app.grb_editor.launched_from_shortcuts = True
@@ -2524,12 +2546,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                             (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
                     else:
                         self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to copy."))
-                    return
-
-                # Scale Tool
-                if key == QtCore.Qt.Key_B or key == 'B':
-                    self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.grb_editor.select_tool('buffer')
                     return
 
                 # Grid Snap
@@ -2570,7 +2586,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_P or key == 'P':
                     self.app.grb_editor.launched_from_shortcuts = True
                     self.app.inform.emit(_("Click on target point."))
-                    self.app.ui.grb_add_pad_btn.setChecked(True)
+                    self.app.ui.add_pad_ar_btn.setChecked(True)
 
                     self.app.grb_editor.x = self.app.mouse[0]
                     self.app.grb_editor.y = self.app.mouse[1]
