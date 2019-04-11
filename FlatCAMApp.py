@@ -2182,7 +2182,7 @@ class App(QtCore.QObject):
                 if cleanup is None:
                     self.grb_editor.update_fcgerber(edited_obj)
                     self.grb_editor.update_options(new_obj)
-                self.grb_editor.deactivate()
+                self.grb_editor.deactivate_grb_editor()
 
                 # delete the old object (the source object) if it was an empty one
                 if edited_obj.solid_geometry.is_empty:

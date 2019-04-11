@@ -558,27 +558,15 @@ class FCDrillSelect(DrawTool):
             else:
                 self.exc_editor_app.selected = []
 
-    def click_release(self, point):
-        self.select_shapes(point)
-        return ""
-
-    def select_shapes(self, pos):
+    def click_release(self, pos):
         self.exc_editor_app.tools_table_exc.clearSelection()
 
         try:
-            # for storage in self.exc_editor_app.storage_dict:
-            #     _, partial_closest_shape = self.exc_editor_app.storage_dict[storage].nearest(pos)
-            #     if partial_closest_shape is not None:
-            #         self.sel_storage.insert(partial_closest_shape)
-            #
-            # _, closest_shape = self.sel_storage.nearest(pos)
-
             for storage in self.exc_editor_app.storage_dict:
                 for shape in self.exc_editor_app.storage_dict[storage].get_objects():
                     self.sel_storage.insert(shape)
 
             _, closest_shape = self.sel_storage.nearest(pos)
-
 
             # constrain selection to happen only within a certain bounding box
             x_coord, y_coord = closest_shape.geo[0].xy
@@ -594,41 +582,43 @@ class FCDrillSelect(DrawTool):
         if pos[0] < xmin or pos[0] > xmax or pos[1] < ymin or pos[1] > ymax:
             self.exc_editor_app.selected = []
         else:
-            key_modifier = QtWidgets.QApplication.keyboardModifiers()
-            if self.exc_editor_app.app.defaults["global_mselect_key"] == 'Control':
-                # if CONTROL key is pressed then we add to the selected list the current shape but if it's already
-                # in the selected list, we removed it. Therefore first click selects, second deselects.
-                if key_modifier == Qt.ControlModifier:
-                    if closest_shape in self.exc_editor_app.selected:
-                        self.exc_editor_app.selected.remove(closest_shape)
-                    else:
-                        self.exc_editor_app.selected.append(closest_shape)
+            modifiers = QtWidgets.QApplication.keyboardModifiers()
+            mod_key = 'Control'
+            if modifiers == QtCore.Qt.ShiftModifier:
+                mod_key = 'Shift'
+            elif modifiers == QtCore.Qt.ControlModifier:
+                mod_key = 'Control'
+
+            if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+                if closest_shape in self.exc_editor_app.selected:
+                    self.exc_editor_app.selected.remove(closest_shape)
                 else:
-                    self.exc_editor_app.selected = []
                     self.exc_editor_app.selected.append(closest_shape)
             else:
-                if key_modifier == Qt.ShiftModifier:
-                    if closest_shape in self.exc_editor_app.selected:
-                        self.exc_editor_app.selected.remove(closest_shape)
-                    else:
-                        self.exc_editor_app.selected.append(closest_shape)
-                else:
-                    self.exc_editor_app.selected = []
-                    self.exc_editor_app.selected.append(closest_shape)
+                self.draw_app.selected = []
+                self.draw_app.selected.append(closest_shape)
 
             # select the diameter of the selected shape in the tool table
-            for storage in self.exc_editor_app.storage_dict:
-                for shape_s in self.exc_editor_app.selected:
+            try:
+                self.draw_app.tools_table_exc.cellPressed.disconnect()
+            except:
+                pass
+
+            sel_tools = set()
+            self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+            for shape_s in self.exc_editor_app.selected:
+                for storage in self.exc_editor_app.storage_dict:
                     if shape_s in self.exc_editor_app.storage_dict[storage].get_objects():
-                        for key in self.exc_editor_app.tool2tooldia:
-                            if self.exc_editor_app.tool2tooldia[key] == storage:
-                                item = self.exc_editor_app.tools_table_exc.item((key - 1), 1)
-                                self.exc_editor_app.tools_table_exc.setCurrentItem(item)
-                                # item.setSelected(True)
-                                # self.exc_editor_app.tools_table_exc.selectItem(key - 1)
-                                # midx = self.exc_editor_app.tools_table_exc.model().index((key - 1), 0)
-                                # self.exc_editor_app.tools_table_exc.setCurrentIndex(midx)
-                                self.draw_app.last_tool_selected = key
+                        sel_tools.add(storage)
+
+            for storage in sel_tools:
+                self.exc_editor_app.tools_table_exc.selectRow(int(storage))
+                self.draw_app.last_tool_selected = int(storage)
+
+            self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+
+            self.draw_app.tools_table_exc.cellPressed.connect(self.draw_app.on_row_selected)
+
         # delete whatever is in selection storage, there is no longer need for those shapes
         self.sel_storage = FlatCAMExcEditor.make_storage()
 
@@ -1033,7 +1023,9 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.addtool_btn.clicked.connect(self.on_tool_add)
         # self.addtool_entry.editingFinished.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
-        self.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
+        # self.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
+        self.tools_table_exc.cellPressed.connect(self.on_row_selected)
+
         self.array_type_combo.currentIndexChanged.connect(self.on_array_type_combo)
 
         self.drill_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
@@ -1190,6 +1182,11 @@ class FlatCAMExcEditor(QtCore.QObject):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.tools_table_exc.itemChanged.disconnect()
+        except:
+            pass
+
+        try:
+            self.tools_table_exc.cellPressed.disconnect()
         except:
             pass
 
@@ -1386,6 +1383,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
         self.tools_table_exc.itemChanged.connect(self.on_tool_edit)
+        self.tools_table_exc.cellPressed.connect(self.on_row_selected)
 
     def on_tool_add(self, tooldia=None):
         self.is_modified = True
@@ -1496,6 +1494,8 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # if connected, disconnect the signal from the slot on item_changed as it creates issues
         self.tools_table_exc.itemChanged.disconnect()
+        self.tools_table_exc.cellPressed.disconnect()
+
         # self.tools_table_exc.selectionModel().currentChanged.disconnect()
 
         self.is_modified = True
@@ -1560,6 +1560,8 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # we reactivate the signals after the after the tool editing
         self.tools_table_exc.itemChanged.connect(self.on_tool_edit)
+        self.tools_table_exc.cellPressed.connect(self.on_row_selected)
+
         # self.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
 
     def on_name_activate(self):
@@ -1963,20 +1965,32 @@ class FlatCAMExcEditor(QtCore.QObject):
                 self.app.log.debug("%s is NOT checked." % current_tool)
                 for t in self.tools_exc:
                     self.tools_exc[t]["button"].setChecked(False)
-                self.active_tool = None
 
-    def on_row_selected(self):
-        self.selected = []
+                self.select_tool('select')
+                self.active_tool = FCDrillSelect(self)
 
-        try:
-            selected_dia = self.tool2tooldia[self.tools_table_exc.currentRow() + 1]
-            self.last_tool_selected = self.tools_table_exc.currentRow() + 1
-            for obj in self.storage_dict[selected_dia].get_objects():
-                self.selected.append(obj)
-        except Exception as e:
-            self.app.log.debug(str(e))
+    def on_row_selected(self, row, col):
+        if col == 0:
+            key_modifier = QtWidgets.QApplication.keyboardModifiers()
+            if self.app.defaults["global_mselect_key"] == 'Control':
+                modifier_to_use = Qt.ControlModifier
+            else:
+                modifier_to_use = Qt.ShiftModifier
 
-        self.replot()
+            if key_modifier == modifier_to_use:
+                pass
+            else:
+                self.selected = []
+
+            try:
+                selected_dia = self.tool2tooldia[self.tools_table_exc.currentRow() + 1]
+                self.last_tool_selected = self.tools_table_exc.currentRow() + 1
+                for obj in self.storage_dict[selected_dia].get_objects():
+                    self.selected.append(obj)
+            except Exception as e:
+                self.app.log.debug(str(e))
+
+            self.replot()
 
     def toolbar_tool_toggle(self, key):
         self.options[key] = self.sender().isChecked()
@@ -2179,7 +2193,12 @@ class FlatCAMExcEditor(QtCore.QObject):
                     else:
                         self.selected.append(obj)
 
+        try:
+            self.tools_table_exc.cellPressed.disconnect()
+        except:
+            pass
         # select the diameter of the selected shape in the tool table
+        self.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         for storage in self.storage_dict:
             for shape_s in self.selected:
                 if shape_s in self.storage_dict[storage].get_objects():
@@ -2188,9 +2207,10 @@ class FlatCAMExcEditor(QtCore.QObject):
                             item = self.tools_table_exc.item((key - 1), 1)
                             self.tools_table_exc.setCurrentItem(item)
                             self.last_tool_selected = key
-                            # item.setSelected(True)
-                            # self.exc_editor_app.tools_table_exc.selectItem(key - 1)
 
+        self.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+
+        self.tools_table_exc.cellPressed.connect(self.on_row_selected)
         self.replot()
 
     def on_canvas_move(self, event):

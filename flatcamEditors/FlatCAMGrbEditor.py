@@ -460,6 +460,7 @@ class FCApertureSelect(DrawTool):
     def click_release(self, point):
         self.grb_editor_app.apertures_table.clearSelection()
         sel_aperture = set()
+
         for storage in self.grb_editor_app.storage_dict:
             for shape in self.grb_editor_app.storage_dict[storage]['solid_geometry']:
                 if Point(point).within(shape.geo):
@@ -474,6 +475,7 @@ class FCApertureSelect(DrawTool):
                         self.draw_app.selected.append(shape)
                         sel_aperture.add(storage)
 
+        # select the aperture in the Apertures Table that is associated with the selected shape
         try:
             self.draw_app.apertures_table.cellPressed.disconnect()
         except:
@@ -1639,7 +1641,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.app.log.debug("%s is NOT checked." % current_tool)
                 for t in self.tools_gerber:
                     self.tools_gerber[t]["button"].setChecked(False)
-                self.active_tool = None
+
+                self.select_tool('select')
+                self.active_tool = FCApertureSelect(self)
 
     def on_row_selected(self, row, col):
         if col == 0:
@@ -1867,7 +1871,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.apertures_table.cellPressed.disconnect()
         except:
             pass
-
+        # select the aperture code of the selected geometry, in the tool table
         self.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         for aper in sel_aperture:
             for row in range(self.apertures_table.rowCount()):

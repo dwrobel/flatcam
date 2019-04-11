@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - changed the color of the marked apertures to the global_selection_color
 - Gerber Editor: added Transformation Tool and Rotation key shortcut
+- in all Editors, manually deactivating a button in the editor toolbar will automatically select the 'Select' button
+- fixed Excellon Editor selection: when a tool is selected in Tools Table, all the drills belonging to that tool are selected. When a drill is selected on canvas, the associated tool will be selected without automatically selecting all other drills with same tool
 
 10.04.2019
 

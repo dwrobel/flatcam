@@ -3110,7 +3110,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 self.app.log.debug("%s is NOT checked." % tool)
                 for t in self.tools:
                     self.tools[t]["button"].setChecked(False)
-                self.active_tool = None
+
+                self.select_tool('select')
+                self.active_tool = FCSelect(self)
 
     def draw_tool_path(self):
         self.select_tool('path')
