@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed Excellon Editor selection: when a tool is selected in Tools Table, all the drills belonging to that tool are selected. When a drill is selected on canvas, the associated tool will be selected without automatically selecting all other drills with same tool
 - Gerber Editor: added Add Pad Array tool
 - Gerber Editor: in Add Pad Array tool, if the pad is not circular type, for circular array the pad will be rotated to match the array angle
+- Gerber Editor: fixed multiple selection with key modifier such that first click selects, second deselects
 
 10.04.2019
 

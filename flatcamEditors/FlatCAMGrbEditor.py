@@ -640,11 +640,16 @@ class FCApertureSelect(DrawTool):
     def click_release(self, point):
         self.grb_editor_app.apertures_table.clearSelection()
         sel_aperture = set()
+        key_modifier = QtWidgets.QApplication.keyboardModifiers()
 
         for storage in self.grb_editor_app.storage_dict:
             for shape in self.grb_editor_app.storage_dict[storage]['solid_geometry']:
                 if Point(point).within(shape.geo):
-                    if self.draw_app.key == self.draw_app.app.defaults["global_mselect_key"]:
+                    if (self.grb_editor_app.app.defaults["global_mselect_key"] == 'Control' and
+                        key_modifier == Qt.ControlModifier) or \
+                            (self.grb_editor_app.app.defaults["global_mselect_key"] == 'Shift' and
+                             key_modifier == Qt.ShiftModifier):
+
                         if shape in self.draw_app.selected:
                             self.draw_app.selected.remove(shape)
                         else:
