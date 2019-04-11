@@ -472,6 +472,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                                     _('Buffer\tB'))
         self.grb_add_scale_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/scale32.png'),
                                                                     _('Scale\tS'))
+        self.grb_transform_menuitem = self.grb_editor_menu.addAction(
+            QtGui.QIcon('share/transform.png'),_( "Transform\tALT+R")
+        )
         self.grb_editor_menu.addSeparator()
 
         self.grb_copy_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/copy32.png'), _('Copy\tC'))
@@ -692,6 +695,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.aperture_copy_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _("Copy"))
         self.aperture_delete_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/trash32.png'),
                                                                    _("Delete"))
+        self.grb_transform_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/transform.png'),
+                                                                 _("Transformations"))
         self.grb_edit_toolbar.addSeparator()
         self.aperture_move_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
 
@@ -1784,6 +1789,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.aperture_copy_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _("Copy"))
         self.aperture_delete_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/trash32.png'),
                                                                    _("Delete"))
+        self.grb_transform_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/transform.png'),
+                                                                 _("Transformations"))
         self.grb_edit_toolbar.addSeparator()
         self.aperture_move_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
 
@@ -2268,7 +2275,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.geo_editor.delete_selected()
                     self.app.geo_editor.replot()
 
-                # Move
+                # Rotate
                 if key == QtCore.Qt.Key_Space or key == 'Space':
                     self.app.geo_editor.transform_tool.on_rotate_key()
 
@@ -2484,6 +2491,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.on_toggle_notebook()
                     return
 
+                # Rotate
+                if key == QtCore.Qt.Key_Space or key == 'Space':
+                    self.app.grb_editor.transform_tool.on_rotate_key()
+
                 # Switch to Project Tab
                 if key == QtCore.Qt.Key_1 or key == '1':
                     self.app.grb_editor.launched_from_shortcuts = True
@@ -2514,7 +2525,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     else:
                         self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to copy."))
                     return
-
 
                 # Scale Tool
                 if key == QtCore.Qt.Key_B or key == 'B':

@@ -1172,7 +1172,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
                 aperture = self.ui.apertures_table.item(row, 1).text()
                 # self.plot_apertures(color='#2d4606bf', marked_aperture=aperture, visible=True)
-                self.plot_apertures(color='#FD6A02', marked_aperture=aperture, visible=True)
+                self.plot_apertures(color=self.app.defaults['global_sel_draw_color'], marked_aperture=aperture, visible=True)
             else:
                 self.marked_rows.append(False)
 
@@ -1209,7 +1209,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if mark_all:
             for aperture in self.apertures:
                 # self.plot_apertures(color='#2d4606bf', marked_aperture=aperture, visible=True)
-                self.plot_apertures(color='#FD6A02', marked_aperture=aperture, visible=True)
+                self.plot_apertures(color=self.app.defaults['global_sel_draw_color'], marked_aperture=aperture, visible=True)
         else:
             self.clear_plot_apertures()
 

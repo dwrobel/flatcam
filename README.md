@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+11.04.2019
+
+- changed the color of the marked apertures to the global_selection_color
+- Gerber Editor: added Transformation Tool and Rotation key shortcut
+
 10.04.2019
 
 - Gerber Editor: added Add Track and Add Region functions

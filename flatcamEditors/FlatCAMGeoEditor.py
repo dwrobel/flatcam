@@ -2653,34 +2653,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app = app
         self.canvas = app.plotcanvas
 
-        self.app.ui.geo_add_circle_menuitem.triggered.connect(lambda: self.select_tool('circle'))
-        self.app.ui.geo_add_arc_menuitem.triggered.connect(lambda: self.select_tool('arc'))
-        self.app.ui.geo_add_rectangle_menuitem.triggered.connect(lambda: self.select_tool('rectangle'))
-        self.app.ui.geo_add_polygon_menuitem.triggered.connect(lambda: self.select_tool('polygon'))
-        self.app.ui.geo_add_path_menuitem.triggered.connect(lambda: self.select_tool('path'))
-        self.app.ui.geo_add_text_menuitem.triggered.connect(lambda: self.select_tool('text'))
-        self.app.ui.geo_paint_menuitem.triggered.connect(self.on_paint_tool)
-        self.app.ui.geo_buffer_menuitem.triggered.connect(self.on_buffer_tool)
-        self.app.ui.geo_transform_menuitem.triggered.connect(self.on_transform_tool)
-
-        self.app.ui.geo_delete_menuitem.triggered.connect(self.on_delete_btn)
-        self.app.ui.geo_union_menuitem.triggered.connect(self.union)
-        self.app.ui.geo_intersection_menuitem.triggered.connect(self.intersection)
-        self.app.ui.geo_subtract_menuitem.triggered.connect(self.subtract)
-        self.app.ui.geo_cutpath_menuitem.triggered.connect(self.cutpath)
-        self.app.ui.geo_copy_menuitem.triggered.connect(lambda: self.select_tool('copy'))
-
-        self.app.ui.geo_union_btn.triggered.connect(self.union)
-        self.app.ui.geo_intersection_btn.triggered.connect(self.intersection)
-        self.app.ui.geo_subtract_btn.triggered.connect(self.subtract)
-        self.app.ui.geo_cutpath_btn.triggered.connect(self.cutpath)
-        self.app.ui.geo_delete_btn.triggered.connect(self.on_delete_btn)
-
-        self.app.ui.geo_move_menuitem.triggered.connect(self.on_move)
-        self.app.ui.geo_cornersnap_menuitem.triggered.connect(self.on_corner_snap)
-
-        self.transform_complete.connect(self.on_transform_complete)
-
         ## Toolbar events and properties
         self.tools = {
             "select": {"button": self.app.ui.geo_select_btn,
@@ -2814,14 +2786,42 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.snap_max_dist_entry.textChanged.connect(
             lambda: entry2option("snap_max", self.app.ui.snap_max_dist_entry))
 
-        # store the status of the editor so the Delete at object level will not work until the edit is finished
-        self.editor_active = False
-
         # if using Paint store here the tool diameter used
         self.paint_tooldia = None
 
         self.paint_tool = PaintOptionsTool(self.app, self)
         self.transform_tool = TransformEditorTool(self.app, self)
+
+        self.app.ui.geo_add_circle_menuitem.triggered.connect(lambda: self.select_tool('circle'))
+        self.app.ui.geo_add_arc_menuitem.triggered.connect(lambda: self.select_tool('arc'))
+        self.app.ui.geo_add_rectangle_menuitem.triggered.connect(lambda: self.select_tool('rectangle'))
+        self.app.ui.geo_add_polygon_menuitem.triggered.connect(lambda: self.select_tool('polygon'))
+        self.app.ui.geo_add_path_menuitem.triggered.connect(lambda: self.select_tool('path'))
+        self.app.ui.geo_add_text_menuitem.triggered.connect(lambda: self.select_tool('text'))
+        self.app.ui.geo_paint_menuitem.triggered.connect(self.on_paint_tool)
+        self.app.ui.geo_buffer_menuitem.triggered.connect(self.on_buffer_tool)
+        self.app.ui.geo_transform_menuitem.triggered.connect(self.transform_tool.run)
+
+        self.app.ui.geo_delete_menuitem.triggered.connect(self.on_delete_btn)
+        self.app.ui.geo_union_menuitem.triggered.connect(self.union)
+        self.app.ui.geo_intersection_menuitem.triggered.connect(self.intersection)
+        self.app.ui.geo_subtract_menuitem.triggered.connect(self.subtract)
+        self.app.ui.geo_cutpath_menuitem.triggered.connect(self.cutpath)
+        self.app.ui.geo_copy_menuitem.triggered.connect(lambda: self.select_tool('copy'))
+
+        self.app.ui.geo_union_btn.triggered.connect(self.union)
+        self.app.ui.geo_intersection_btn.triggered.connect(self.intersection)
+        self.app.ui.geo_subtract_btn.triggered.connect(self.subtract)
+        self.app.ui.geo_cutpath_btn.triggered.connect(self.cutpath)
+        self.app.ui.geo_delete_btn.triggered.connect(self.on_delete_btn)
+
+        self.app.ui.geo_move_menuitem.triggered.connect(self.on_move)
+        self.app.ui.geo_cornersnap_menuitem.triggered.connect(self.on_corner_snap)
+
+        self.transform_complete.connect(self.on_transform_complete)
+
+        # store the status of the editor so the Delete at object level will not work until the edit is finished
+        self.editor_active = False
 
     def pool_recreated(self, pool):
         self.shapes.pool = pool
@@ -2856,8 +2856,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.app.ui.geo_edit_toolbar.setDisabled(False)
         self.app.ui.geo_edit_toolbar.setVisible(True)
-        self.app.ui.grb_edit_toolbar.setDisabled(False)
-        self.app.ui.grb_edit_toolbar.setVisible(True)
+
         self.app.ui.snap_toolbar.setDisabled(False)
 
         # prevent the user to change anything in the Selected Tab while the Geo Editor is active
@@ -2936,7 +2935,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.canvas.vis_connect('mouse_press', self.on_canvas_click)
         self.canvas.vis_connect('mouse_move', self.on_canvas_move)
         self.canvas.vis_connect('mouse_release', self.on_canvas_click_release)
-
 
     def disconnect_canvas_event_handlers(self):
 
@@ -3088,10 +3086,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
     def on_paint_tool(self):
         paint_tool = PaintOptionsTool(self.app, self)
         paint_tool.run()
-
-    def on_transform_tool(self):
-        transform_tool = TransformEditorTool(self.app, self)
-        transform_tool.run()
 
     def on_tool_select(self, tool):
         """
