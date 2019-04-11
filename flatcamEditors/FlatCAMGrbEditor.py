@@ -600,7 +600,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         apsize_lbl = QtWidgets.QLabel(_('Aperture Size:'))
         apsize_lbl.setToolTip(
-        _("Size for the new aperture")
+        _("Size for the new aperture.\n"
+          "If aperture type is 'R' then this value\n"
+          "is automatically calculated as:\n"
+          "sqrt(width**2 + height**2)")
         )
         grid1.addWidget(apsize_lbl, 2, 0)
 
@@ -639,13 +642,14 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.addaperture_btn = QtWidgets.QPushButton(_('Go'))
         self.addaperture_btn.setToolTip(
-           _( "Add a new aperture to the aperture list")
+           _( "Add a new aperture to the aperture list.")
         )
         grid1.addWidget(self.addaperture_btn, 5, 1)
 
         apdelete_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Del Aperture:'))
         apdelete_lbl.setToolTip(
-            _( "Delete a aperture in the aperture list")
+            _( "Delete a aperture in the aperture list.\n"
+               "It will delete also the associated geometry.")
         )
         grid1.addWidget(apdelete_lbl, 6, 0)
 
@@ -913,6 +917,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
             tt_aperture = self.sorted_apid[i]
             self.tool2tooldia[i + 1] = tt_aperture
 
+        if self.units == "IN":
+            self.apsize_entry.set_value(0.039)
+        else:
+            self.apsize_entry.set_value(1.00)
+
     def build_ui(self):
 
         try:
@@ -932,11 +941,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # make a new name for the new Excellon object (the one with edited content)
         self.edited_obj_name = self.gerber_obj.options['name']
         self.name_entry.set_value(self.edited_obj_name)
-
-        if self.units == "IN":
-            self.apsize_entry.set_value(0.039)
-        else:
-            self.apsize_entry.set_value(1.00)
 
         self.apertures_row = 0
         aper_no = self.apertures_row + 1
@@ -1058,6 +1062,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.apertures_table.itemChanged.connect(self.on_tool_edit)
         self.apertures_table.cellPressed.connect(self.on_row_selected)
 
+        # for convenience set the next aperture code in the apcode field
+        self.apcode_entry.set_value(max(self.tool2tooldia.values()) + 1)
+
     def on_aperture_add(self, apid=None):
         self.is_modified = True
         if apid:
@@ -1069,36 +1076,45 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.app.inform.emit(_("[WARNING_NOTCL] Aperture code value is missing or wrong format. "
                                        "Add it and retry."))
                 return
+            if ap_id == '':
+                self.app.inform.emit(_("[WARNING_NOTCL] Aperture code value is missing or wrong format. "
+                                       "Add it and retry."))
+                return
 
         if ap_id not in self.olddia_newdia:
             self.storage_dict[ap_id] = {}
 
             type_val = self.aptype_cb.currentText()
             self.storage_dict[ap_id]['type'] = type_val
-            try:
-                size_val = float(self.apsize_entry.get_value())
-            except ValueError:
-                # try to convert comma to decimal point. if it's still not working error message and return
-                try:
-                    size_val = float(self.apsize_entry.get_value().replace(',', '.'))
-                    self.apsize_entry.set_value(size_val)
-                except ValueError:
-                    self.app.inform.emit(_("[WARNING_NOTCL] Aperture size value is missing or wrong format. "
-                                           "Add it and retry."))
-                    return
-            self.storage_dict[ap_id]['size'] = size_val
 
             if type_val == 'R':
                 try:
                     dims = self.apdim_entry.get_value()
                     self.storage_dict[ap_id]['width'] = dims[0]
                     self.storage_dict[ap_id]['height'] = dims[1]
+
+                    size_val = math.sqrt((dims[0] ** 2) + (dims[1] ** 2))
+                    self.apsize_entry.set_value(size_val)
+
                 except Exception as e:
                     log.error("FlatCAMGrbEditor.on_aperture_add() --> the R aperture dims has to be in a "
                               "tuple format (x,y)\nError: %s" % str(e))
                     self.app.inform.emit(_("[WARNING_NOTCL] Aperture dimensions value is missing or wrong format. "
                                            "Add it in format (width, height) and retry."))
                     return
+            else:
+                try:
+                    size_val = float(self.apsize_entry.get_value())
+                except ValueError:
+                    # try to convert comma to decimal point. if it's still not working error message and return
+                    try:
+                        size_val = float(self.apsize_entry.get_value().replace(',', '.'))
+                        self.apsize_entry.set_value(size_val)
+                    except ValueError:
+                        self.app.inform.emit(_("[WARNING_NOTCL] Aperture size value is missing or wrong format. "
+                                               "Add it and retry."))
+                        return
+            self.storage_dict[ap_id]['size'] = size_val
 
             self.storage_dict[ap_id]['solid_geometry'] = []
             self.storage_dict[ap_id]['follow_geometry'] = []
@@ -1112,7 +1128,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # since we add a new tool, we update also the initial state of the tool_table through it's dictionary
         # we add a new entry in the tool2tooldia dict
-        self.tool2tooldia[len(self.olddia_newdia)] = ap_id
+        self.tool2tooldia[len(self.olddia_newdia)] = int(ap_id)
 
         self.app.inform.emit(_("[success] Added new aperture with dia: {apid}").format(apid=str(ap_id)))
 
@@ -1121,10 +1137,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # make a quick sort through the tool2tooldia dict so we find which row to select
         row_to_be_selected = None
         for key in sorted(self.tool2tooldia):
-            if self.tool2tooldia[key] == ap_id:
+            if self.tool2tooldia[key] == int(ap_id):
                 row_to_be_selected = int(key) - 1
                 break
-
         self.apertures_table.selectRow(row_to_be_selected)
 
     def on_aperture_delete(self, apid=None):
@@ -1235,9 +1250,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
         if current_text == 'R':
             self.apdim_lbl.show()
             self.apdim_entry.show()
+            self.apsize_entry.setReadOnly(True)
         else:
             self.apdim_lbl.hide()
             self.apdim_entry.hide()
+            self.apsize_entry.setReadOnly(False)
 
     def activate(self):
         self.connect_canvas_event_handlers()
@@ -1405,19 +1422,21 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
                 self.storage_dict[apid] = {}
                 for k, v in self.gerber_obj.apertures[apid].items():
-                    if k == 'solid_geometry':
-                        for geo in v:
-                            if geo is not None:
-                                self.add_gerber_shape(DrawToolShape(geo), solid_storage_elem)
-                        self.storage_dict[apid][k] = solid_storage_elem
-                    elif k == 'follow_geometry':
-                        for geo in v:
-                            if geo is not None:
-                                self.add_gerber_shape(DrawToolShape(geo), follow_storage_elem)
-                        self.storage_dict[apid][k] = follow_storage_elem
-                    else:
-                        self.storage_dict[apid][k] = v
-
+                    try:
+                        if k == 'solid_geometry':
+                            for geo in v:
+                                if geo:
+                                    self.add_gerber_shape(DrawToolShape(geo), solid_storage_elem)
+                            self.storage_dict[apid][k] = solid_storage_elem
+                        elif k == 'follow_geometry':
+                            for geo in v:
+                                if geo is not None:
+                                    self.add_gerber_shape(DrawToolShape(geo), follow_storage_elem)
+                            self.storage_dict[apid][k] = follow_storage_elem
+                        else:
+                            self.storage_dict[apid][k] = v
+                    except Exception as e:
+                        log.debug("FlatCAMGrbEditor.edit_fcgerber().job_thread() --> %s" % str(e))
                 # Check promises and clear if exists
                 while True:
                     try:
@@ -1425,6 +1444,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         time.sleep(0.5)
                     except ValueError:
                         break
+
+        for k, v in self.gerber_obj.apertures.items():
+            print(k, v)
 
         for apid in self.gerber_obj.apertures:
             self.grb_plot_promises.append(apid)

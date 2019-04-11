@@ -17,7 +17,8 @@ CAD program, and create G-Code for Isolation routing.
 - created menu links and shortcut keys for adding a new empty Gerber objects; on update of the edited Gerber, if the source object was an empty one (new blank one) this source obj will be deleted
 - removed the old apertures editing from Gerber Obj selected tab
 - Gerber Editor: added Add Pad (circular or rectangular type only)
-
+- Gerber Editor: autoincrement aperture code when adding new apertures
+- Gerber Editor: automatically calculate the size of the rectangular aperture
 
 9.04.2019
 
