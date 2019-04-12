@@ -1541,50 +1541,65 @@ class FlatCAMGrbEditor(QtCore.QObject):
                                        "Add it and retry."))
                 return
 
-        if ap_id not in self.olddia_newdia:
-            self.storage_dict[ap_id] = {}
+        if ap_id == '0':
+            if ap_id not in self.olddia_newdia:
+                self.storage_dict[ap_id] = {}
+                self.storage_dict[ap_id]['type'] = 'REG'
+                size_val = 0
+                self.apsize_entry.set_value(size_val)
+                self.storage_dict[ap_id]['size'] = size_val
 
-            type_val = self.aptype_cb.currentText()
-            self.storage_dict[ap_id]['type'] = type_val
+                self.storage_dict[ap_id]['solid_geometry'] = []
+                self.storage_dict[ap_id]['follow_geometry'] = []
 
-            if type_val == 'R' or type_val == 'O':
-                try:
-                    dims = self.apdim_entry.get_value()
-                    self.storage_dict[ap_id]['width'] = dims[0]
-                    self.storage_dict[ap_id]['height'] = dims[1]
-
-                    size_val = math.sqrt((dims[0] ** 2) + (dims[1] ** 2))
-                    self.apsize_entry.set_value(size_val)
-
-                except Exception as e:
-                    log.error("FlatCAMGrbEditor.on_aperture_add() --> the R or O aperture dims has to be in a "
-                              "tuple format (x,y)\nError: %s" % str(e))
-                    self.app.inform.emit(_("[WARNING_NOTCL] Aperture dimensions value is missing or wrong format. "
-                                           "Add it in format (width, height) and retry."))
-                    return
-            else:
-                try:
-                    size_val = float(self.apsize_entry.get_value())
-                except ValueError:
-                    # try to convert comma to decimal point. if it's still not working error message and return
-                    try:
-                        size_val = float(self.apsize_entry.get_value().replace(',', '.'))
-                        self.apsize_entry.set_value(size_val)
-                    except ValueError:
-                        self.app.inform.emit(_("[WARNING_NOTCL] Aperture size value is missing or wrong format. "
-                                               "Add it and retry."))
-                        return
-            self.storage_dict[ap_id]['size'] = size_val
-
-            self.storage_dict[ap_id]['solid_geometry'] = []
-            self.storage_dict[ap_id]['follow_geometry'] = []
-
-            # self.olddia_newdia dict keeps the evidence on current aperture codes as keys and gets updated on values
-            # each time a aperture code is edited or added
-            self.olddia_newdia[ap_id] = ap_id
+                # self.olddia_newdia dict keeps the evidence on current aperture codes as keys and gets updated on values
+                # each time a aperture code is edited or added
+                self.olddia_newdia[ap_id] = ap_id
         else:
-            self.app.inform.emit(_("[WARNING_NOTCL] Aperture already in the aperture table."))
-            return
+            if ap_id not in self.olddia_newdia:
+                self.storage_dict[ap_id] = {}
+
+                type_val = self.aptype_cb.currentText()
+                self.storage_dict[ap_id]['type'] = type_val
+
+                if type_val == 'R' or type_val == 'O':
+                    try:
+                        dims = self.apdim_entry.get_value()
+                        self.storage_dict[ap_id]['width'] = dims[0]
+                        self.storage_dict[ap_id]['height'] = dims[1]
+
+                        size_val = math.sqrt((dims[0] ** 2) + (dims[1] ** 2))
+                        self.apsize_entry.set_value(size_val)
+
+                    except Exception as e:
+                        log.error("FlatCAMGrbEditor.on_aperture_add() --> the R or O aperture dims has to be in a "
+                                  "tuple format (x,y)\nError: %s" % str(e))
+                        self.app.inform.emit(_("[WARNING_NOTCL] Aperture dimensions value is missing or wrong format. "
+                                               "Add it in format (width, height) and retry."))
+                        return
+                else:
+                    try:
+                        size_val = float(self.apsize_entry.get_value())
+                    except ValueError:
+                        # try to convert comma to decimal point. if it's still not working error message and return
+                        try:
+                            size_val = float(self.apsize_entry.get_value().replace(',', '.'))
+                            self.apsize_entry.set_value(size_val)
+                        except ValueError:
+                            self.app.inform.emit(_("[WARNING_NOTCL] Aperture size value is missing or wrong format. "
+                                                   "Add it and retry."))
+                            return
+                self.storage_dict[ap_id]['size'] = size_val
+
+                self.storage_dict[ap_id]['solid_geometry'] = []
+                self.storage_dict[ap_id]['follow_geometry'] = []
+
+                # self.olddia_newdia dict keeps the evidence on current aperture codes as keys and gets updated on values
+                # each time a aperture code is edited or added
+                self.olddia_newdia[ap_id] = ap_id
+            else:
+                self.app.inform.emit(_("[WARNING_NOTCL] Aperture already in the aperture table."))
+                return
 
         # since we add a new tool, we update also the initial state of the tool_table through it's dictionary
         # we add a new entry in the tool2tooldia dict
