@@ -1414,6 +1414,81 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     </tr>
                 </tbody>
             </table>
+            <br>
+            <br>
+            <strong><span style="color:#00ff00">GERBER EDITOR</span></strong><br>
+            <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
+                <tbody>
+                    <tr height="20">
+                        <td height="20" width="89"><strong>A</strong></td>
+                        <td width="194">&nbsp;Add Pad Array</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>B</strong></td>
+                        <td>&nbsp;Buffer</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>C</strong></td>
+                        <td>&nbsp;Copy</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>J</strong></td>
+                        <td>&nbsp;Jump to Location (x, y)</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>M</strong></td>
+                        <td>&nbsp;Move</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>N</strong></td>
+                        <td>&nbsp;Add Region</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>P</strong></td>
+                        <td>&nbsp;Add Pad</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>S</strong></td>
+                        <td>&nbsp;Scale</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>T</strong></td>
+                        <td>&nbsp;Add Track</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20">&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Del</strong></td>
+                        <td>&nbsp;Delete</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>Del</strong></td>
+                        <td>&nbsp;Alternate: Delete Apertures</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20">&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>ESC</strong></td>
+                        <td>&nbsp;Abort and return to Select</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>CTRL+S</strong></td>
+                        <td>&nbsp;Save Object and Exit Editor</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20">&nbsp;</td>
+                        <td>&nbsp;</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>ALT+R</strong></td>
+                        <td>&nbsp;Transformation Tool</td>
+                    </tr>
+                </tbody>
+            </table>
                     '''
         )
         self.sh_editor = QtWidgets.QTextEdit()
@@ -2450,7 +2525,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             elif modifiers == QtCore.Qt.ShiftModifier:
                 pass
             elif modifiers == QtCore.Qt.AltModifier:
-                pass
+                # Transformation Tool
+                if key == QtCore.Qt.Key_R or key == 'R':
+                    self.app.grb_editor.on_transform()
+                    return
+
             elif modifiers == QtCore.Qt.NoModifier:
                 # Abort the current action
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
@@ -2584,6 +2663,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to move."))
                     return
 
+                # Add Region Tool
+                if key == QtCore.Qt.Key_N or key == 'N':
+                    self.app.grb_editor.launched_from_shortcuts = True
+                    self.app.grb_editor.select_tool('region')
+                    return
+
                 # Add Pad Tool
                 if key == QtCore.Qt.Key_P or key == 'P':
                     self.app.grb_editor.launched_from_shortcuts = True
@@ -2594,12 +2679,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.grb_editor.y = self.app.mouse[1]
 
                     self.app.grb_editor.select_tool('pad')
-                    return
-
-                # Add Region Tool
-                if key == QtCore.Qt.Key_R or key == 'R':
-                    self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.grb_editor.select_tool('region')
                     return
 
                 # Scale Tool

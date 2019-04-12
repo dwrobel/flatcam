@@ -15,6 +15,11 @@ CAD program, and create G-Code for Isolation routing.
 - fixed an issue with automatically filled in aperture code when the edited Gerber file has no apertures; established an default with value 10 (according to Gerber specifications)
 - fixed a bug in editing a blank Gerber object
 - added handlers for the Gerber Editor context menu
+- updated the translation template POT file and the EN PO/MO files
+- Gerber Editor: added toggle effect to the Transform Tool
+- Gerber Editor: added shortcut for Transform Tool and also toggle effect here, too
+- updated the shortcut list with the Gerber Editor shortcut keys
+- Gerber Editor: fixed error when adding an aperture with code value lower than the ones that already exists
 
 11.04.2019
 

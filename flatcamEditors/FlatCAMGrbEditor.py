@@ -2099,8 +2099,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.selected = []
 
             try:
-                selected_apid = str(self.tool2tooldia[row + 1])
-                self.last_aperture_selected =  self.apertures_table.item(row, 1).text()
+                # selected_apid = str(self.tool2tooldia[row + 1])
+                selected_apid = self.apertures_table.item(row, 1).text()
+                self.last_aperture_selected = selected_apid
 
                 for obj in self.storage_dict[selected_apid]['solid_geometry']:
                     self.selected.append(obj)
@@ -2719,6 +2720,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.plot_all()
         self.app.inform.emit(_("[success] Done. Scale Tool completed."))
 
+    def on_transform(self):
+        if type(self.active_tool) == FCTransform:
+            self.select_tool('select')
+        else:
+            self.select_tool('transform')
+
     def hide_tool(self, tool_name):
         # self.app.ui.notebook.setTabText(2, _("Tools"))
 
@@ -3104,14 +3111,24 @@ class TransformEditorTool(FlatCAMTool):
 
         self.set_tool_ui()
 
-    def run(self):
+    def run(self, toggle=True):
         self.app.report_usage("Geo Editor Transform Tool()")
-        FlatCAMTool.run(self)
-        self.set_tool_ui()
 
-        # if the splitter us hidden, display it
+        # if the splitter is hidden, display it, else hide it but only if the current widget is the same
         if self.app.ui.splitter.sizes()[0] == 0:
             self.app.ui.splitter.setSizes([1, 1])
+
+        if toggle:
+            try:
+                if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
+                    self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+                else:
+                    self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+            except AttributeError:
+                pass
+
+        FlatCAMTool.run(self)
+        self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Transform Tool"))
 
