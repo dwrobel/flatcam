@@ -2864,6 +2864,10 @@ class FlatCAMGeoEditor(QtCore.QObject):
         for w in sel_tab_widget_list:
             w.setEnabled(False)
 
+        # adjust the visibility of some of the canvas context menu
+        self.app.ui.popmenu_edit.setVisible(False)
+        self.app.ui.popmenu_save.setVisible(True)
+
         # Tell the App that the editor is active
         self.editor_active = True
 
@@ -2914,6 +2918,18 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # Tell the app that the editor is no longer active
         self.editor_active = False
+
+        # adjust the visibility of some of the canvas context menu
+        self.app.ui.popmenu_edit.setVisible(True)
+        self.app.ui.popmenu_save.setVisible(False)
+
+        try:
+            # re-enable all the widgets in the Selected Tab that were disabled after entering in Edit Geometry Mode
+            sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
+            for w in sel_tab_widget_list:
+                w.setEnabled(True)
+        except Exception as e:
+            log.debug("FlatCAMGeoEditor.deactivate() --> %s" % str(e))
 
         # Show original geometry
         if self.fcgeometry:
@@ -3636,11 +3652,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
             # for shape in self.shape_buffer:
             for shape in self.storage.get_objects():
                 fcgeometry.solid_geometry.append(shape.geo)
-
-        # re-enable all the widgets in the Selected Tab that were disabled after entering in Edit Geometry Mode
-        sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
-        for w in sel_tab_widget_list:
-            w.setEnabled(True)
 
     def update_options(self, obj):
         if self.paint_tooldia:

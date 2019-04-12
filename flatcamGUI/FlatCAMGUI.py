@@ -223,7 +223,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # Separator
         self.menuedit.addSeparator()
         self.menueditedit = self.menuedit.addAction(QtGui.QIcon('share/edit16.png'), _('Edit Object\tE'))
-        self.menueditok = self.menuedit.addAction(QtGui.QIcon('share/edit_ok16.png'), _('Save && Close Editor\tCTRL+S'))
+        self.menueditok = self.menuedit.addAction(QtGui.QIcon('share/edit_ok16.png'), _('Close Editor\tCTRL+S'))
 
         # adjust the initial state of the menu entries related to the editor
         self.menueditedit.setDisabled(False)
@@ -1546,7 +1546,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.popmenu_copy = self.popMenu.addAction(QtGui.QIcon('share/copy32.png'), _("Copy"))
         self.popmenu_delete = self.popMenu.addAction(QtGui.QIcon('share/delete32.png'), _("Delete"))
         self.popmenu_edit = self.popMenu.addAction(QtGui.QIcon('share/edit32.png'), _("Edit"))
-        self.popmenu_save = self.popMenu.addAction(QtGui.QIcon('share/floppy32.png'), _("Save && Close Edit"))
+        self.popmenu_save = self.popMenu.addAction(QtGui.QIcon('share/floppy32.png'), _("Close Editor"))
         self.popmenu_save.setVisible(False)
         self.popMenu.addSeparator()
 
@@ -3534,18 +3534,19 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
 
     def handle_clear(self):
         msgbox = QtWidgets.QMessageBox()
-        # msgbox.setText("<B>Save changes ...</B>")
         msgbox.setText(_("Are you sure you want to delete the GUI Settings? "
                        "\n")
                        )
         msgbox.setWindowTitle(_("Clear GUI Settings"))
         msgbox.setWindowIcon(QtGui.QIcon('share/trash32.png'))
-        msgbox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-        msgbox.setDefaultButton(QtWidgets.QMessageBox.No)
+        bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
+        bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
 
-        response = msgbox.exec_()
+        msgbox.setDefaultButton(bt_no)
+        msgbox.exec_()
+        response = msgbox.clickedButton()
 
-        if response == QtWidgets.QMessageBox.Yes:
+        if response == bt_yes:
             settings = QSettings("Open Source", "FlatCAM")
             for key in settings.allKeys():
                 settings.remove(key)

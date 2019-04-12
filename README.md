@@ -23,6 +23,9 @@ CAD program, and create G-Code for Isolation routing.
 - when adding an aperture with code '0' (zero) it will automatically be set with size zero and type: 'REG' (from region); here we store all the regions from a Gerber file, the ones without a declared aperture
 - Gerber Editor: added support for Gerber polarity change commands (LPD, LPC)
 - moved the polarity change processing from FlatCAMGrbEditor() class to camlib.Gerber().parse_lines()
+- made optional the saving of an edited object. Now the user can cancel the changes to the object.
+- replaced the standard buttons in the QMessageBox's used in the app with custom ones that can have text translated
+- updated the POT translation file and the MO/PO files for English and Romanian language
 
 11.04.2019
 

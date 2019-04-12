@@ -1767,6 +1767,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
         if self.app.ui.grid_snap_btn.isChecked() is False:
             self.app.ui.grid_snap_btn.trigger()
 
+        # adjust the visibility of some of the canvas context menu
+        self.app.ui.popmenu_edit.setVisible(False)
+        self.app.ui.popmenu_save.setVisible(True)
+
         # Tell the App that the editor is active
         self.editor_active = True
 
@@ -1820,6 +1824,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.ui.g_editor_cmenu.setEnabled(False)
         self.app.ui.grb_editor_cmenu.setEnabled(False)
         self.app.ui.e_editor_cmenu.setEnabled(False)
+
+        # adjust the visibility of some of the canvas context menu
+        self.app.ui.popmenu_edit.setVisible(True)
+        self.app.ui.popmenu_save.setVisible(False)
 
         # Show original geometry
         if self.gerber_obj:

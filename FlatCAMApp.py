@@ -2086,15 +2086,17 @@ class App(QtCore.QObject):
         """
         self.report_usage("object2editor()")
 
-        # adjust the visibility of some of the canvas context menu
-        self.ui.popmenu_edit.setVisible(False)
-        self.ui.popmenu_save.setVisible(True)
-
-        # adjust the status of the menu entries related to the editor
-        self.ui.menueditedit.setDisabled(True)
-        self.ui.menueditok.setDisabled(False)
-
         edited_object = self.collection.get_active()
+
+        if isinstance(edited_object, FlatCAMGerber) or isinstance(edited_object, FlatCAMGeometry) or \
+                isinstance(edited_object, FlatCAMExcellon):
+
+            # adjust the status of the menu entries related to the editor
+            self.ui.menueditedit.setDisabled(True)
+            self.ui.menueditok.setDisabled(False)
+        else:
+            self.inform.emit(_("[WARNING_NOTCL] Select a Geometry or Excellon Object to edit."))
+            return
 
         if isinstance(edited_object, FlatCAMGeometry):
             # store the Geometry Editor Toolbar visibility before entering in the Editor
@@ -2131,10 +2133,6 @@ class App(QtCore.QObject):
             # set call source to the Editor we go into
             self.call_source = 'grb_editor'
 
-        else:
-            self.inform.emit(_("[WARNING_NOTCL] Select a Geometry or Excellon Object to edit."))
-            return
-
         # make sure that we can't select another object while in Editor Mode:
         self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
 
@@ -2168,60 +2166,96 @@ class App(QtCore.QObject):
             edited_obj = self.collection.get_active()
             obj_type = ""
 
-            if isinstance(edited_obj, FlatCAMGeometry):
-                obj_type = "Geometry"
-                if cleanup is None:
-                    self.geo_editor.update_fcgeometry(edited_obj)
-                    self.geo_editor.update_options(edited_obj)
-                self.geo_editor.deactivate()
+            if cleanup is None:
+                msgbox = QtWidgets.QMessageBox()
+                msgbox.setText(_("Do you want to save the edited object?"))
+                msgbox.setWindowTitle(_("Close Editor"))
+                msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
 
-                # update the geo object options so it is including the bounding box values
-                try:
-                    xmin, ymin, xmax, ymax = edited_obj.bounds()
-                    edited_obj.options['xmin'] = xmin
-                    edited_obj.options['ymin'] = ymin
-                    edited_obj.options['xmax'] = xmax
-                    edited_obj.options['ymax'] = ymax
-                except AttributeError as e:
-                    self.inform.emit(_("[WARNING] Object empty after edit."))
-                    log. debug("App.editor2object() --> Geometry --> %s" % str(e))
+                bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
+                bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+                bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
-            elif isinstance(edited_obj, FlatCAMGerber):
-                new_obj = self.collection.get_active()
-                obj_type = "Gerber"
-                if cleanup is None:
-                    self.grb_editor.update_fcgerber(edited_obj)
-                    self.grb_editor.update_options(new_obj)
-                self.grb_editor.deactivate_grb_editor()
+                msgbox.setDefaultButton(bt_yes)
+                msgbox.exec_()
+                response = msgbox.clickedButton()
 
-                # delete the old object (the source object) if it was an empty one
-                if edited_obj.solid_geometry.is_empty:
-                    old_name = edited_obj.options['name']
-                    self.collection.set_active(old_name)
-                    self.collection.delete_active()
-                else:
-                    # update the geo object options so it is including the bounding box values
-                    # but don't do this for objects that are made out of empty source objects, it will fail
-                    try:
-                        xmin, ymin, xmax, ymax = new_obj.bounds()
-                        new_obj.options['xmin'] = xmin
-                        new_obj.options['ymin'] = ymin
-                        new_obj.options['xmax'] = xmax
-                        new_obj.options['ymax'] = ymax
-                    except Exception as e:
-                        self.inform.emit(_("[WARNING] Object empty after edit."))
-                        log.debug("App.editor2object() --> Gerber --> %s" % str(e))
+                if response == bt_yes:
+                    if isinstance(edited_obj, FlatCAMGeometry):
+                        obj_type = "Geometry"
+                        if cleanup is None:
+                            self.geo_editor.update_fcgeometry(edited_obj)
+                            self.geo_editor.update_options(edited_obj)
+                        self.geo_editor.deactivate()
 
-            elif isinstance(edited_obj, FlatCAMExcellon):
-                obj_type = "Excellon"
-                if cleanup is None:
-                    self.exc_editor.update_fcexcellon(edited_obj)
-                    self.exc_editor.update_options(edited_obj)
-                self.exc_editor.deactivate()
+                        # update the geo object options so it is including the bounding box values
+                        try:
+                            xmin, ymin, xmax, ymax = edited_obj.bounds()
+                            edited_obj.options['xmin'] = xmin
+                            edited_obj.options['ymin'] = ymin
+                            edited_obj.options['xmax'] = xmax
+                            edited_obj.options['ymax'] = ymax
+                        except AttributeError as e:
+                            self.inform.emit(_("[WARNING] Object empty after edit."))
+                            log.debug("App.editor2object() --> Geometry --> %s" % str(e))
+                    elif isinstance(edited_obj, FlatCAMGerber):
+                        new_obj = self.collection.get_active()
+                        obj_type = "Gerber"
+                        if cleanup is None:
+                            self.grb_editor.update_fcgerber(edited_obj)
+                            self.grb_editor.update_options(new_obj)
+                        self.grb_editor.deactivate_grb_editor()
 
+                        # delete the old object (the source object) if it was an empty one
+                        if edited_obj.solid_geometry.is_empty:
+                            old_name = edited_obj.options['name']
+                            self.collection.set_active(old_name)
+                            self.collection.delete_active()
+                        else:
+                            # update the geo object options so it is including the bounding box values
+                            # but don't do this for objects that are made out of empty source objects, it will fail
+                            try:
+                                xmin, ymin, xmax, ymax = new_obj.bounds()
+                                new_obj.options['xmin'] = xmin
+                                new_obj.options['ymin'] = ymin
+                                new_obj.options['xmax'] = xmax
+                                new_obj.options['ymax'] = ymax
+                            except Exception as e:
+                                self.inform.emit(_("[WARNING] Object empty after edit."))
+                                log.debug("App.editor2object() --> Gerber --> %s" % str(e))
+                    elif isinstance(edited_obj, FlatCAMExcellon):
+                        obj_type = "Excellon"
+                        if cleanup is None:
+                            self.exc_editor.update_fcexcellon(edited_obj)
+                            self.exc_editor.update_options(edited_obj)
+                        self.exc_editor.deactivate()
+                    else:
+                        self.inform.emit(_("[WARNING_NOTCL] Select a Gerber, Geometry or Excellon Object to update."))
+                        return
+
+                    self.inform.emit(_("[selected] %s is updated, returning to App...") % obj_type)
+                elif response == bt_no:
+                    if isinstance(edited_obj, FlatCAMGeometry):
+                        self.geo_editor.deactivate()
+                    elif isinstance(edited_obj, FlatCAMGerber):
+                        self.grb_editor.deactivate_grb_editor()
+                    elif isinstance(edited_obj, FlatCAMExcellon):
+                        self.exc_editor.deactivate()
+                    else:
+                        self.inform.emit(_("[WARNING_NOTCL] Select a Gerber, Geometry or Excellon Object to update."))
+                        return
+                elif response == bt_cancel:
+                    return
             else:
-                self.inform.emit(_("[WARNING_NOTCL] Select a Gerber, Geometry or Excellon Object to update."))
-                return
+                if isinstance(edited_obj, FlatCAMGeometry):
+                    self.geo_editor.deactivate()
+                elif isinstance(edited_obj, FlatCAMGerber):
+                    self.grb_editor.deactivate_grb_editor()
+                elif isinstance(edited_obj, FlatCAMExcellon):
+                    self.exc_editor.deactivate()
+                else:
+                    self.inform.emit(_("[WARNING_NOTCL] Select a Gerber, Geometry or Excellon Object to update."))
+                    return
 
             # if notebook is hidden we show it
             if self.ui.splitter.sizes()[0] == 0:
@@ -2233,11 +2267,7 @@ class App(QtCore.QObject):
             edited_obj.plot()
             self.ui.plot_tab_area.setTabText(0, "Plot Area")
             self.ui.plot_tab_area.protectTab(0)
-            self.inform.emit(_("[selected] %s is updated, returning to App...") % obj_type)
 
-            # reset the Object UI to original settings
-            # edited_obj.set_ui(edited_obj.ui_type())
-            # edited_obj.build_ui()
             # make sure that we reenable the selection on Project Tab after returning from Editor Mode:
             self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
@@ -3222,17 +3252,19 @@ class App(QtCore.QObject):
                            "Do you want to Save the project?"))
             msgbox.setWindowTitle(_("Save changes"))
             msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No |
-                                      QtWidgets.QMessageBox.Cancel)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Yes)
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
+            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+            bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
-            response = msgbox.exec_()
+            msgbox.setDefaultButton(bt_yes)
+            msgbox.exec_()
+            response = msgbox.clickedButton()
 
-            if response == QtWidgets.QMessageBox.Yes:
+            if response == bt_yes:
                 self.on_file_saveprojectas(thread=True, quit=True)
-            elif response == QtWidgets.QMessageBox.No:
+            elif response == bt_no:
                 self.quit_application()
-            elif response == QtWidgets.QMessageBox.Cancel:
+            elif response == bt_cancel:
                 return
         else:
             self.quit_application()
@@ -3553,12 +3585,14 @@ class App(QtCore.QObject):
         msgbox.setText("<B>Change project units ...</B>")
         msgbox.setInformativeText("Changing the units of the project causes all geometrical "
                                   "properties of all objects to be scaled accordingly.\nContinue?")
-        msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Ok)
-        msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+        bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+        bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
-        response = msgbox.exec_()
+        msgbox.setDefaultButton(bt_ok)
+        msgbox.exec_()
+        response = msgbox.clickedButton()
 
-        if response == QtWidgets.QMessageBox.Ok:
+        if response == bt_ok:
             self.options_read_form()
             scale_options(factor)
             self.options_write_form()
@@ -4316,8 +4350,9 @@ class App(QtCore.QObject):
                                    "Go to Preferences -> General - Show Advanced Options."))
                     msgbox.setWindowTitle("Tool adding ...")
                     msgbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-                    msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                    msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                    bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+
+                    msgbox.setDefaultButton(bt_ok)
                     msgbox.exec_()
 
         # work only if the notebook tab on focus is the Tools_Tab
@@ -5526,17 +5561,20 @@ class App(QtCore.QObject):
                            "Do you want to Save the project?"))
             msgbox.setWindowTitle(_("Save changes"))
             msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Yes |
-                                      QtWidgets.QMessageBox.No)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
+            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+            bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
-            response = msgbox.exec_()
+            msgbox.setDefaultButton(bt_yes)
+            msgbox.exec_()
+            response = msgbox.clickedButton()
 
-            if response == QtWidgets.QMessageBox.Yes:
+            if response == bt_yes:
                 self.on_file_saveprojectas()
-            elif response == QtWidgets.QMessageBox.Cancel:
+            elif response == bt_cancel:
                 return
-            self.on_file_new()
+            elif response == bt_no:
+                self.on_file_new()
         else:
             self.on_file_new()
         self.inform.emit(_("[success] New Project created..."))
@@ -5788,8 +5826,8 @@ class App(QtCore.QObject):
             msg = _("Please Select a Geometry object to export")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+            msgbox.setDefaultButton(bt_ok)
             msgbox.exec_()
             return
 
@@ -5799,8 +5837,8 @@ class App(QtCore.QObject):
             msg = _("[ERROR_NOTCL] Only Geometry, Gerber and CNCJob objects can be used.")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+            msgbox.setDefaultButton(bt_ok)
             msgbox.exec_()
             return
 
@@ -5985,8 +6023,8 @@ class App(QtCore.QObject):
             msg = _("Please Select a Geometry object to export")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+            msgbox.setDefaultButton(bt_ok)
             msgbox.exec_()
             return
 
@@ -5995,9 +6033,10 @@ class App(QtCore.QObject):
             msg = _("[ERROR_NOTCL] Only Geometry objects can be used.")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+            msgbox.setDefaultButton(bt_ok)
             msgbox.exec_()
+
             return
 
         name = self.collection.get_active().options["name"]
