@@ -3178,8 +3178,22 @@ class Gerber (Geometry):
                                 self.apertures[last_path_aperture]['solid_geometry'] = []
                                 self.apertures[last_path_aperture]['solid_geometry'].append(geo)
 
-            # --- Apply buffer ---
+            # first check if we have any clear_geometry (LPC) and if yes then we need to substract it
+            # from the apertures solid_geometry
+            temp_geo = []
+            for apid in self.apertures:
+                if 'clear_geometry' in self.apertures[apid]:
+                    for clear_geo in self.apertures[apid]['clear_geometry']:
+                        for solid_geo in self.apertures[apid]['solid_geometry']:
+                            if solid_geo.intersects(clear_geo):
+                                res_geo = clear_geo.symmetric_difference(solid_geo)
+                                temp_geo.append(res_geo)
+                            else:
+                                temp_geo.append(solid_geo)
+                    self.apertures[apid]['solid_geometry'] = deepcopy(temp_geo)
+                    self.apertures[apid].pop('clear_geometry', None)
 
+            # --- Apply buffer ---
             # this treats the case when we are storing geometry as paths
             self.follow_geometry = follow_buffer
 

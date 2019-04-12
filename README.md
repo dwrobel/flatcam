@@ -22,6 +22,7 @@ CAD program, and create G-Code for Isolation routing.
 - Gerber Editor: fixed error when adding an aperture with code value lower than the ones that already exists
 - when adding an aperture with code '0' (zero) it will automatically be set with size zero and type: 'REG' (from region); here we store all the regions from a Gerber file, the ones without a declared aperture
 - Gerber Editor: added support for Gerber polarity change commands (LPD, LPC)
+- moved the polarity change processing from FlatCAMGrbEditor() class to camlib.Gerber().parse_lines()
 
 11.04.2019
 
