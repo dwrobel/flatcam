@@ -1453,10 +1453,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.draw_move = self.g_editor_cmenu.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
 
         self.grb_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/draw32.png'), _("Gerber Editor"))
-        self.grb_draw_track = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/aperture32.png'), _("Pad"))
-        self.grb_draw_track = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/path32.png'), _("Track"))
-        self.grb_draw_zone = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/polygon32.png'), _("Region"))
+        self.grb_draw_pad = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/aperture32.png'), _("Pad"))
+        self.grb_draw_pad_array = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/padarray32.png'), _("Pad Array"))
+        self.grb_draw_track = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/track32.png'), _("Track"))
+        self.grb_draw_region = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/polygon32.png'), _("Region"))
         self.grb_editor_cmenu.addSeparator()
+        self.grb_copy = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/copy.png'), _("Copy"))
         self.grb_delete = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/trash32.png'), _("Delete"))
         self.grb_move = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
 

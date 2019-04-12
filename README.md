@@ -12,7 +12,9 @@ CAD program, and create G-Code for Isolation routing.
 12.04.2019
 
 - Gerber Editor: added support for Oblong type of aperture
-- fixed an issue with automatically filled in aperture size when the edited Gerber file has no apertures; established an default with value 10 (according to Gerber specifications)
+- fixed an issue with automatically filled in aperture code when the edited Gerber file has no apertures; established an default with value 10 (according to Gerber specifications)
+- fixed a bug in editing a blank Gerber object
+- added handlers for the Gerber Editor context menu
 
 11.04.2019
 

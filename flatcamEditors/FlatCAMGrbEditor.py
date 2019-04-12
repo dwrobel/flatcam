@@ -472,7 +472,6 @@ class FCRegion(FCShapeTool):
             temp_points = [x for x in self.points]
             temp_points.append(data)
             return DrawToolUtilityShape(LinearRing(temp_points).buffer(self.buf_val, join_style=1))
-
         return None
 
     def make(self):
@@ -508,7 +507,6 @@ class FCTrack(FCRegion):
             temp_points.append(data)
 
             return DrawToolUtilityShape(LineString(temp_points).buffer(self.buf_val))
-
         return None
 
     def on_key(self, key):
@@ -1257,9 +1255,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
         ## List of selected shapes.
         self.selected = []
 
-        self.move_timer = QtCore.QTimer()
-        self.move_timer.setSingleShot(True)
-
         self.key = None  # Currently pressed key
         self.modifiers = None
         self.x = None  # Current mouse cursor pos
@@ -1268,6 +1263,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.snap_x = None
         self.snap_y = None
         self.pos = None
+
+        # signal that there is an action active like polygon or path
+        self.in_action = False
+        # this will flag if the Editor "tools" are launched from key shortcuts (True) or from menu toolbar (False)
+        self.launched_from_shortcuts = False
 
         def make_callback(thetool):
             def f():
