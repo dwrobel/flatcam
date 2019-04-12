@@ -1896,6 +1896,20 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 follow_storage_elem = []
 
                 self.storage_dict[apid] = {}
+                # first check if we have any clear_geometry (LPC) and if yes then we need to substract it
+                # from the solid_geometry
+                temp_geo = []
+                if 'clear_geometry' in self.gerber_obj.apertures[apid]:
+                    for clear_geo in self.gerber_obj.apertures[apid]['clear_geometry']:
+                        for solid_geo in self.gerber_obj.apertures[apid]['solid_geometry']:
+                            if solid_geo.intersects(clear_geo):
+                                res_geo = clear_geo.symmetric_difference(solid_geo)
+                                temp_geo.append(res_geo)
+                            else:
+                                temp_geo.append(solid_geo)
+                    self.gerber_obj.apertures[apid]['solid_geometry'] = deepcopy(temp_geo)
+
+                # add the Gerber geometry to editor storage
                 for k, v in self.gerber_obj.apertures[apid].items():
                     try:
                         if k == 'solid_geometry':

@@ -21,6 +21,7 @@ CAD program, and create G-Code for Isolation routing.
 - updated the shortcut list with the Gerber Editor shortcut keys
 - Gerber Editor: fixed error when adding an aperture with code value lower than the ones that already exists
 - when adding an aperture with code '0' (zero) it will automatically be set with size zero and type: 'REG' (from region); here we store all the regions from a Gerber file, the ones without a declared aperture
+- Gerber Editor: added support for Gerber polarity change commands (LPD, LPC)
 
 11.04.2019
 

@@ -2169,6 +2169,10 @@ class Gerber (Geometry):
         # applying a union for every new polygon.
         poly_buffer = []
 
+        # made True when the LPC command is encountered in Gerber parsing
+        # it allows adding data into the clear_geometry key of the self.apertures[aperture] dict
+        self.is_lpc = False
+
         # store here the follow geometry
         follow_buffer = []
 
@@ -2243,19 +2247,26 @@ class Gerber (Geometry):
                         if not geo.is_empty:
                             follow_buffer.append(geo)
                             try:
-                                self.apertures[current_aperture]['follow_geometry'].append(geo)
+                                self.apertures[last_path_aperture]['follow_geometry'].append(geo)
                             except KeyError:
-                                self.apertures[current_aperture]['follow_geometry'] = []
-                                self.apertures[current_aperture]['follow_geometry'].append(geo)
+                                self.apertures[last_path_aperture]['follow_geometry'] = []
+                                self.apertures[last_path_aperture]['follow_geometry'].append(geo)
 
                         geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                         if not geo.is_empty:
                             poly_buffer.append(geo)
-                            try:
-                                self.apertures[current_aperture]['solid_geometry'].append(geo)
-                            except KeyError:
-                                self.apertures[current_aperture]['solid_geometry'] = []
-                                self.apertures[current_aperture]['solid_geometry'].append(geo)
+                            if self.is_lpc is True:
+                                try:
+                                    self.apertures[last_path_aperture]['clear_geometry'].append(geo)
+                                except KeyError:
+                                    self.apertures[last_path_aperture]['clear_geometry'] = []
+                                    self.apertures[last_path_aperture]['clear_geometry'].append(geo)
+                            else:
+                                try:
+                                    self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                                except KeyError:
+                                    self.apertures[last_path_aperture]['solid_geometry'] = []
+                                    self.apertures[last_path_aperture]['solid_geometry'].append(geo)
 
                         path = [path[-1]]
 
@@ -2264,10 +2275,12 @@ class Gerber (Geometry):
                     # TODO: Remove when bug fixed
                     if len(poly_buffer) > 0:
                         if current_polarity == 'D':
+                            self.is_lpc = True
                             # self.follow_geometry = self.follow_geometry.union(cascaded_union(follow_buffer))
                             self.solid_geometry = self.solid_geometry.union(cascaded_union(poly_buffer))
 
                         else:
+                            self.is_lpc = False
                             # self.follow_geometry = self.follow_geometry.difference(cascaded_union(follow_buffer))
                             self.solid_geometry = self.solid_geometry.difference(cascaded_union(poly_buffer))
 
@@ -2420,11 +2433,18 @@ class Gerber (Geometry):
                                 int(self.steps_per_circle))
                             if not flash.is_empty:
                                 poly_buffer.append(flash)
-                                try:
-                                    self.apertures[current_aperture]['solid_geometry'].append(flash)
-                                except KeyError:
-                                    self.apertures[current_aperture]['solid_geometry'] = []
-                                    self.apertures[current_aperture]['solid_geometry'].append(flash)
+                                if self.is_lpc is True:
+                                    try:
+                                        self.apertures[current_aperture]['clear_geometry'].append(flash)
+                                    except KeyError:
+                                        self.apertures[current_aperture]['clear_geometry'] = []
+                                        self.apertures[current_aperture]['clear_geometry'].append(flash)
+                                else:
+                                    try:
+                                        self.apertures[current_aperture]['solid_geometry'].append(flash)
+                                    except KeyError:
+                                        self.apertures[current_aperture]['solid_geometry'] = []
+                                        self.apertures[current_aperture]['solid_geometry'].append(flash)
                         except IndexError:
                             log.warning("Line %d: %s -> Nothing there to flash!" % (line_num, gline))
 
@@ -2467,11 +2487,18 @@ class Gerber (Geometry):
                             geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                             if not geo.is_empty:
                                 poly_buffer.append(geo)
-                                try:
-                                    self.apertures[last_path_aperture]['solid_geometry'].append(geo)
-                                except KeyError:
-                                    self.apertures[last_path_aperture]['solid_geometry'] = []
-                                    self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                                if self.is_lpc is True:
+                                    try:
+                                        self.apertures[last_path_aperture]['clear_geometry'].append(geo)
+                                    except KeyError:
+                                        self.apertures[last_path_aperture]['clear_geometry'] = []
+                                        self.apertures[last_path_aperture]['clear_geometry'].append(geo)
+                                else:
+                                    try:
+                                        self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                                    except KeyError:
+                                        self.apertures[last_path_aperture]['solid_geometry'] = []
+                                        self.apertures[last_path_aperture]['solid_geometry'].append(geo)
 
                             path = [path[-1]]
 
@@ -2497,11 +2524,18 @@ class Gerber (Geometry):
                         geo = LineString(path).buffer(width/1.999, int(self.steps_per_circle / 4))
                         if not geo.is_empty:
                             poly_buffer.append(geo)
-                            try:
-                                self.apertures[last_path_aperture]['solid_geometry'].append(geo)
-                            except KeyError:
-                                self.apertures[last_path_aperture]['solid_geometry'] = []
-                                self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                            if self.is_lpc is True:
+                                try:
+                                    self.apertures[last_path_aperture]['clear_geometry'].append(geo)
+                                except KeyError:
+                                    self.apertures[last_path_aperture]['clear_geometry'] = []
+                                    self.apertures[last_path_aperture]['clear_geometry'].append(geo)
+                            else:
+                                try:
+                                    self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                                except KeyError:
+                                    self.apertures[last_path_aperture]['solid_geometry'] = []
+                                    self.apertures[last_path_aperture]['solid_geometry'].append(geo)
 
                         path = [path[-1]]
 
@@ -2525,11 +2559,18 @@ class Gerber (Geometry):
                                     self.apertures[current_aperture]['follow_geometry'].append(geo)
 
                                 poly_buffer.append(geo)
-                                try:
-                                    self.apertures[current_aperture]['solid_geometry'].append(geo)
-                                except KeyError:
-                                    self.apertures[current_aperture]['solid_geometry'] = []
-                                    self.apertures[current_aperture]['solid_geometry'].append(geo)
+                                if self.is_lpc is True:
+                                    try:
+                                        self.apertures[current_aperture]['clear_geometry'].append(geo)
+                                    except KeyError:
+                                        self.apertures[current_aperture]['clear_geometry'] = []
+                                        self.apertures[current_aperture]['clear_geometry'].append(geo)
+                                else:
+                                    try:
+                                        self.apertures[current_aperture]['solid_geometry'].append(geo)
+                                    except KeyError:
+                                        self.apertures[current_aperture]['solid_geometry'] = []
+                                        self.apertures[current_aperture]['solid_geometry'].append(geo)
                             continue
 
                     # Only one path defines region?
@@ -2578,11 +2619,18 @@ class Gerber (Geometry):
                                 self.apertures['0']['solid_geometry'] = []
                             used_aperture = '0'
 
-                        try:
-                            self.apertures[used_aperture]['solid_geometry'].append(region)
-                        except KeyError:
-                            self.apertures[used_aperture]['solid_geometry'] = []
-                            self.apertures[used_aperture]['solid_geometry'].append(region)
+                        if self.is_lpc is True:
+                            try:
+                                self.apertures[used_aperture]['clear_geometry'].append(region)
+                            except KeyError:
+                                self.apertures[used_aperture]['clear_geometry'] = []
+                                self.apertures[used_aperture]['clear_geometry'].append(region)
+                        else:
+                            try:
+                                self.apertures[used_aperture]['solid_geometry'].append(region)
+                            except KeyError:
+                                self.apertures[used_aperture]['solid_geometry'] = []
+                                self.apertures[used_aperture]['solid_geometry'].append(region)
 
                     path = [[current_x, current_y]]  # Start new path
                     continue
@@ -2653,11 +2701,18 @@ class Gerber (Geometry):
 
                                         geo = shply_box(minx, miny, maxx, maxy)
                                         poly_buffer.append(geo)
-                                        try:
-                                            self.apertures[current_aperture]['solid_geometry'].append(geo)
-                                        except KeyError:
-                                            self.apertures[current_aperture]['solid_geometry'] = []
-                                            self.apertures[current_aperture]['solid_geometry'].append(geo)
+                                        if self.is_lpc is True:
+                                            try:
+                                                self.apertures[current_aperture]['clear_geometry'].append(geo)
+                                            except KeyError:
+                                                self.apertures[current_aperture]['clear_geometry'] = []
+                                                self.apertures[current_aperture]['clear_geometry'].append(geo)
+                                        else:
+                                            try:
+                                                self.apertures[current_aperture]['solid_geometry'].append(geo)
+                                            except KeyError:
+                                                self.apertures[current_aperture]['solid_geometry'] = []
+                                                self.apertures[current_aperture]['solid_geometry'].append(geo)
                                 except:
                                     pass
                             last_path_aperture = current_aperture
@@ -2742,19 +2797,33 @@ class Gerber (Geometry):
                                 if self.apertures[last_path_aperture]["type"] != 'R':
                                     if not geo.is_empty:
                                         poly_buffer.append(geo)
-                                        try:
-                                            self.apertures[last_path_aperture]['solid_geometry'].append(geo)
-                                        except KeyError:
-                                            self.apertures[last_path_aperture]['solid_geometry'] = []
-                                            self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                                        if self.is_lpc is True:
+                                            try:
+                                                self.apertures[last_path_aperture]['clear_geometry'].append(geo)
+                                            except KeyError:
+                                                self.apertures[last_path_aperture]['clear_geometry'] = []
+                                                self.apertures[last_path_aperture]['clear_geometry'].append(geo)
+                                        else:
+                                            try:
+                                                self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                                            except KeyError:
+                                                self.apertures[last_path_aperture]['solid_geometry'] = []
+                                                self.apertures[last_path_aperture]['solid_geometry'].append(geo)
                             except Exception as e:
                                 log.debug("camlib.Gerber.parse_lines() --> %s" % str(e))
                                 poly_buffer.append(geo)
-                                try:
-                                    self.apertures[last_path_aperture]['solid_geometry'].append(geo)
-                                except KeyError:
-                                    self.apertures[last_path_aperture]['solid_geometry'] = []
-                                    self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                                if self.is_lpc is True:
+                                    try:
+                                        self.apertures[last_path_aperture]['clear_geometry'].append(geo)
+                                    except KeyError:
+                                        self.apertures[last_path_aperture]['clear_geometry'] = []
+                                        self.apertures[last_path_aperture]['clear_geometry'].append(geo)
+                                else:
+                                    try:
+                                        self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                                    except KeyError:
+                                        self.apertures[last_path_aperture]['solid_geometry'] = []
+                                        self.apertures[last_path_aperture]['solid_geometry'].append(geo)
 
                         # if linear_x or linear_y are None, ignore those
                         if linear_x is not None and linear_y is not None:
@@ -2797,18 +2866,32 @@ class Gerber (Geometry):
                                 try:
                                     if self.apertures[last_path_aperture]["type"] != 'R':
                                         poly_buffer.append(geo)
+                                        if self.is_lpc is True:
+                                            try:
+                                                self.apertures[last_path_aperture]['clear_geometry'].append(geo)
+                                            except KeyError:
+                                                self.apertures[last_path_aperture]['clear_geometry'] = []
+                                                self.apertures[last_path_aperture]['clear_geometry'].append(geo)
+                                        else:
+                                            try:
+                                                self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                                            except KeyError:
+                                                self.apertures[last_path_aperture]['solid_geometry'] = []
+                                                self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                                except:
+                                    poly_buffer.append(geo)
+                                    if self.is_lpc is True:
+                                        try:
+                                            self.apertures[last_path_aperture]['clear_geometry'].append(geo)
+                                        except KeyError:
+                                            self.apertures[last_path_aperture]['clear_geometry'] = []
+                                            self.apertures[last_path_aperture]['clear_geometry'].append(geo)
+                                    else:
                                         try:
                                             self.apertures[last_path_aperture]['solid_geometry'].append(geo)
                                         except KeyError:
                                             self.apertures[last_path_aperture]['solid_geometry'] = []
                                             self.apertures[last_path_aperture]['solid_geometry'].append(geo)
-                                except:
-                                    poly_buffer.append(geo)
-                                    try:
-                                        self.apertures[last_path_aperture]['solid_geometry'].append(geo)
-                                    except KeyError:
-                                        self.apertures[last_path_aperture]['solid_geometry'] = []
-                                        self.apertures[last_path_aperture]['solid_geometry'].append(geo)
 
                         # Reset path starting point
                         path = [[linear_x, linear_y]]
@@ -2832,11 +2915,18 @@ class Gerber (Geometry):
                         )
                         if not flash.is_empty:
                             poly_buffer.append(flash)
-                            try:
-                                self.apertures[current_aperture]['solid_geometry'].append(flash)
-                            except KeyError:
-                                self.apertures[current_aperture]['solid_geometry'] = []
-                                self.apertures[current_aperture]['solid_geometry'].append(flash)
+                            if self.is_lpc is True:
+                                try:
+                                    self.apertures[current_aperture]['clear_geometry'].append(flash)
+                                except KeyError:
+                                    self.apertures[current_aperture]['clear_geometry'] = []
+                                    self.apertures[current_aperture]['clear_geometry'].append(flash)
+                            else:
+                                try:
+                                    self.apertures[current_aperture]['solid_geometry'].append(flash)
+                                except KeyError:
+                                    self.apertures[current_aperture]['solid_geometry'] = []
+                                    self.apertures[current_aperture]['solid_geometry'].append(flash)
 
                     # maybe those lines are not exactly needed but it is easier to read the program as those coordinates
                     # are used in case that circular interpolation is encountered within the Gerber file
@@ -2931,11 +3021,18 @@ class Gerber (Geometry):
                             buffered = LineString(path).buffer(width / 1.999, int(self.steps_per_circle))
                             if not buffered.is_empty:
                                 poly_buffer.append(buffered)
-                                try:
-                                    self.apertures[last_path_aperture]['solid_geometry'].append(buffered)
-                                except KeyError:
-                                    self.apertures[last_path_aperture]['solid_geometry'] = []
-                                    self.apertures[last_path_aperture]['solid_geometry'].append(buffered)
+                                if self.is_lpc is True:
+                                    try:
+                                        self.apertures[last_path_aperture]['clear_geometry'].append(buffered)
+                                    except KeyError:
+                                        self.apertures[last_path_aperture]['clear_geometry'] = []
+                                        self.apertures[last_path_aperture]['clear_geometry'].append(buffered)
+                                else:
+                                    try:
+                                        self.apertures[last_path_aperture]['solid_geometry'].append(buffered)
+                                    except KeyError:
+                                        self.apertures[last_path_aperture]['solid_geometry'] = []
+                                        self.apertures[last_path_aperture]['solid_geometry'].append(buffered)
 
                         current_x = circular_x
                         current_y = circular_y
@@ -3068,11 +3165,18 @@ class Gerber (Geometry):
                     geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                     if not geo.is_empty:
                         poly_buffer.append(geo)
-                        try:
-                            self.apertures[last_path_aperture]['solid_geometry'].append(geo)
-                        except KeyError:
-                            self.apertures[last_path_aperture]['solid_geometry'] = []
-                            self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                        if self.is_lpc is True:
+                            try:
+                                self.apertures[last_path_aperture]['clear_geometry'].append(geo)
+                            except KeyError:
+                                self.apertures[last_path_aperture]['clear_geometry'] = []
+                                self.apertures[last_path_aperture]['clear_geometry'].append(geo)
+                        else:
+                            try:
+                                self.apertures[last_path_aperture]['solid_geometry'].append(geo)
+                            except KeyError:
+                                self.apertures[last_path_aperture]['solid_geometry'] = []
+                                self.apertures[last_path_aperture]['solid_geometry'].append(geo)
 
             # --- Apply buffer ---
 
