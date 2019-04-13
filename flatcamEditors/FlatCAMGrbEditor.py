@@ -2572,10 +2572,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.plot_thread.stop()
 
                 self.set_ui()
-                # now that we hava data, create the GUI interface and add it to the Tool Tab
+                # now that we have data, create the GUI interface and add it to the Tool Tab
                 self.build_ui()
-
                 self.plot_all()
+
+                # HACK: enabling/disabling the cursor seams to somehow update the shapes making them more 'solid'
+                # - perhaps is a bug in VisPy implementation
+                self.app.app_cursor.enabled = False
+                self.app.app_cursor.enabled = True
+
                 log.debug("FlatCAMGrbEditor --> delayed_plot finished")
         except Exception:
             traceback.print_exc()
