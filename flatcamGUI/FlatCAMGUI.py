@@ -1952,6 +1952,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # events from Vispy are of type KeyEvent
         else:
             key = event.key
+
+        # Propagate to tool
+        response = None
+
         if self.app.call_source == 'app':
             if modifiers == QtCore.Qt.ControlModifier:
                 if key == QtCore.Qt.Key_A:
@@ -2380,132 +2384,130 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_3 or key == '3':
                     self.app.on_select_tab('tool')
 
-                # Arc Tool
-                if key == QtCore.Qt.Key_A or key == 'A':
-                    self.app.geo_editor.select_tool('arc')
-
-                # Buffer
-                if key == QtCore.Qt.Key_B or key == 'B':
-                    self.app.geo_editor.select_tool('buffer')
-
-                # Copy
-                if key == QtCore.Qt.Key_C or key == 'C':
-                    self.app.geo_editor.on_copy_click()
-
-                # Substract Tool
-                if key == QtCore.Qt.Key_E or key == 'E':
-                    if self.app.geo_editor.get_selected() is not None:
-                        self.app.geo_editor.intersection()
-                    else:
-                        msg = _("Please select geometry items \n" \
-                              "on which to perform Intersection Tool.")
-
-                        messagebox = QtWidgets.QMessageBox()
-                        messagebox.setText(msg)
-                        messagebox.setWindowTitle(_("Warning"))
-                        messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-                        messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                        messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-                        messagebox.exec_()
-
-                # Grid Snap
-                if key == QtCore.Qt.Key_G or key == 'G':
-                    self.app.ui.grid_snap_btn.trigger()
-
-                    # make sure that the cursor shape is enabled/disabled, too
-                    if self.app.geo_editor.options['grid_snap'] is True:
-                        self.app.app_cursor.enabled = True
-                    else:
-                        self.app.app_cursor.enabled = False
-
-                # Paint
-                if key == QtCore.Qt.Key_I or key == 'I':
-                    self.app.geo_editor.select_tool('paint')
-
-                # Jump to coords
-                if key == QtCore.Qt.Key_J or key == 'J':
-                    self.app.on_jump_to()
-
-                # Corner Snap
-                if key == QtCore.Qt.Key_K or key == 'K':
-                    self.app.geo_editor.on_corner_snap()
-
-                # Move
-                if key == QtCore.Qt.Key_M or key == 'M':
-                    self.app.geo_editor.on_move_click()
-
-                # Polygon Tool
-                if key == QtCore.Qt.Key_N or key == 'N':
-                    self.app.geo_editor.select_tool('polygon')
-
-                # Circle Tool
-                if key == QtCore.Qt.Key_O or key == 'O':
-                    self.app.geo_editor.select_tool('circle')
-
-                # Path Tool
-                if key == QtCore.Qt.Key_P or key == 'P':
-                    self.app.geo_editor.select_tool('path')
-
-                # Rectangle Tool
-                if key == QtCore.Qt.Key_R or key == 'R':
-                    self.app.geo_editor.select_tool('rectangle')
-
-                # Substract Tool
-                if key == QtCore.Qt.Key_S or key == 'S':
-                    if self.app.geo_editor.get_selected() is not None:
-                        self.app.geo_editor.subtract()
-                    else:
-                        msg = _(
-                            "Please select geometry items \n"
-                            "on which to perform Substraction Tool.")
-
-                        messagebox = QtWidgets.QMessageBox()
-                        messagebox.setText(msg)
-                        messagebox.setWindowTitle(_("Warning"))
-                        messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-                        messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                        messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-                        messagebox.exec_()
-
-                # Add Text Tool
-                if key == QtCore.Qt.Key_T or key == 'T':
-                    self.app.geo_editor.select_tool('text')
-
-                # Substract Tool
-                if key == QtCore.Qt.Key_U or key == 'U':
-                    if self.app.geo_editor.get_selected() is not None:
-                        self.app.geo_editor.union()
-                    else:
-                        msg = _("Please select geometry items \n"
-                              "on which to perform union.")
-
-                        messagebox = QtWidgets.QMessageBox()
-                        messagebox.setText(msg)
-                        messagebox.setWindowTitle(_("Warning"))
-                        messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-                        messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                        messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
-                        messagebox.exec_()
-
-                if key == QtCore.Qt.Key_V or key == 'V':
-                    self.app.on_zoom_fit(None)
-
-                # Flip on X axis
-                if key == QtCore.Qt.Key_X or key == 'X':
-                    self.app.geo_editor.transform_tool.on_flipx()
-                    return
-
-                # Flip on Y axis
-                if key == QtCore.Qt.Key_Y or key == 'Y':
-                    self.app.geo_editor.transform_tool.on_flipy()
-                    return
-
-                # Propagate to tool
-                response = None
-                if self.app.geo_editor.active_tool is not None:
+                if self.app.geo_editor.active_tool is not None and self.geo_select_btn.isChecked() == False:
                     response = self.app.geo_editor.active_tool.on_key(key=key)
-                if response is not None:
-                    self.app.inform.emit(response)
+                    if response is not None:
+                        self.app.inform.emit(response)
+                else:
+                    # Arc Tool
+                    if key == QtCore.Qt.Key_A or key == 'A':
+                        self.app.geo_editor.select_tool('arc')
+
+                    # Buffer
+                    if key == QtCore.Qt.Key_B or key == 'B':
+                        self.app.geo_editor.select_tool('buffer')
+
+                    # Copy
+                    if key == QtCore.Qt.Key_C or key == 'C':
+                        self.app.geo_editor.on_copy_click()
+
+                    # Substract Tool
+                    if key == QtCore.Qt.Key_E or key == 'E':
+                        if self.app.geo_editor.get_selected() is not None:
+                            self.app.geo_editor.intersection()
+                        else:
+                            msg = _("Please select geometry items \n" \
+                                  "on which to perform Intersection Tool.")
+
+                            messagebox = QtWidgets.QMessageBox()
+                            messagebox.setText(msg)
+                            messagebox.setWindowTitle(_("Warning"))
+                            messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                            messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                            messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                            messagebox.exec_()
+
+                    # Grid Snap
+                    if key == QtCore.Qt.Key_G or key == 'G':
+                        self.app.ui.grid_snap_btn.trigger()
+
+                        # make sure that the cursor shape is enabled/disabled, too
+                        if self.app.geo_editor.options['grid_snap'] is True:
+                            self.app.app_cursor.enabled = True
+                        else:
+                            self.app.app_cursor.enabled = False
+
+                    # Paint
+                    if key == QtCore.Qt.Key_I or key == 'I':
+                        self.app.geo_editor.select_tool('paint')
+
+                    # Jump to coords
+                    if key == QtCore.Qt.Key_J or key == 'J':
+                        self.app.on_jump_to()
+
+                    # Corner Snap
+                    if key == QtCore.Qt.Key_K or key == 'K':
+                        self.app.geo_editor.on_corner_snap()
+
+                    # Move
+                    if key == QtCore.Qt.Key_M or key == 'M':
+                        self.app.geo_editor.on_move_click()
+
+                    # Polygon Tool
+                    if key == QtCore.Qt.Key_N or key == 'N':
+                        self.app.geo_editor.select_tool('polygon')
+
+                    # Circle Tool
+                    if key == QtCore.Qt.Key_O or key == 'O':
+                        self.app.geo_editor.select_tool('circle')
+
+                    # Path Tool
+                    if key == QtCore.Qt.Key_P or key == 'P':
+                        self.app.geo_editor.select_tool('path')
+
+                    # Rectangle Tool
+                    if key == QtCore.Qt.Key_R or key == 'R':
+                        self.app.geo_editor.select_tool('rectangle')
+
+                    # Substract Tool
+                    if key == QtCore.Qt.Key_S or key == 'S':
+                        if self.app.geo_editor.get_selected() is not None:
+                            self.app.geo_editor.subtract()
+                        else:
+                            msg = _(
+                                "Please select geometry items \n"
+                                "on which to perform Substraction Tool.")
+
+                            messagebox = QtWidgets.QMessageBox()
+                            messagebox.setText(msg)
+                            messagebox.setWindowTitle(_("Warning"))
+                            messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                            messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                            messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                            messagebox.exec_()
+
+                    # Add Text Tool
+                    if key == QtCore.Qt.Key_T or key == 'T':
+                        self.app.geo_editor.select_tool('text')
+
+                    # Substract Tool
+                    if key == QtCore.Qt.Key_U or key == 'U':
+                        if self.app.geo_editor.get_selected() is not None:
+                            self.app.geo_editor.union()
+                        else:
+                            msg = _("Please select geometry items \n"
+                                  "on which to perform union.")
+
+                            messagebox = QtWidgets.QMessageBox()
+                            messagebox.setText(msg)
+                            messagebox.setWindowTitle(_("Warning"))
+                            messagebox.setWindowIcon(QtGui.QIcon('share/warning.png'))
+                            messagebox.setStandardButtons(QtWidgets.QMessageBox.Ok)
+                            messagebox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                            messagebox.exec_()
+
+                    if key == QtCore.Qt.Key_V or key == 'V':
+                        self.app.on_zoom_fit(None)
+
+                    # Flip on X axis
+                    if key == QtCore.Qt.Key_X or key == 'X':
+                        self.app.geo_editor.transform_tool.on_flipx()
+                        return
+
+                    # Flip on Y axis
+                    if key == QtCore.Qt.Key_Y or key == 'Y':
+                        self.app.geo_editor.transform_tool.on_flipy()
+                        return
 
                 # Show Shortcut list
                 if key == 'F3':
@@ -2599,114 +2601,114 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.on_select_tab('tool')
                     return
 
-                # Add Array of pads
-                if key == QtCore.Qt.Key_A or key == 'A':
-                    self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.inform.emit("Click on target point.")
-                    self.app.ui.add_pad_ar_btn.setChecked(True)
-
-                    self.app.grb_editor.x = self.app.mouse[0]
-                    self.app.grb_editor.y = self.app.mouse[1]
-
-                    self.app.grb_editor.select_tool('array')
-                    return
-
-                # Scale Tool
-                if key == QtCore.Qt.Key_B or key == 'B':
-                    self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.grb_editor.select_tool('buffer')
-                    return
-
-                # Copy
-                if key == QtCore.Qt.Key_C or key == 'C':
-                    self.app.grb_editor.launched_from_shortcuts = True
-                    if self.app.grb_editor.selected:
-                        self.app.inform.emit(_("Click on target point."))
-                        self.app.ui.aperture_copy_btn.setChecked(True)
-                        self.app.grb_editor.on_tool_select('copy')
-                        self.app.grb_editor.active_tool.set_origin(
-                            (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
-                    else:
-                        self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to copy."))
-                    return
-
-                # Grid Snap
-                if key == QtCore.Qt.Key_G or key == 'G':
-                    self.app.grb_editor.launched_from_shortcuts = True
-                    # make sure that the cursor shape is enabled/disabled, too
-                    if self.app.grb_editor.options['grid_snap'] is True:
-                        self.app.app_cursor.enabled = False
-                    else:
-                        self.app.app_cursor.enabled = True
-                    self.app.ui.grid_snap_btn.trigger()
-                    return
-
-                # Jump to coords
-                if key == QtCore.Qt.Key_J or key == 'J':
-                    self.app.on_jump_to()
-
-                # Corner Snap
-                if key == QtCore.Qt.Key_K or key == 'K':
-                    self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.ui.corner_snap_btn.trigger()
-                    return
-
-                # Move
-                if key == QtCore.Qt.Key_M or key == 'M':
-                    self.app.grb_editor.launched_from_shortcuts = True
-                    if self.app.grb_editor.selected:
-                        self.app.inform.emit(_("Click on target point."))
-                        self.app.ui.aperture_move_btn.setChecked(True)
-                        self.app.grb_editor.on_tool_select('move')
-                        self.app.grb_editor.active_tool.set_origin(
-                            (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
-                    else:
-                        self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to move."))
-                    return
-
-                # Add Region Tool
-                if key == QtCore.Qt.Key_N or key == 'N':
-                    self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.grb_editor.select_tool('region')
-                    return
-
-                # Add Pad Tool
-                if key == QtCore.Qt.Key_P or key == 'P':
-                    self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.inform.emit(_("Click on target point."))
-                    self.app.ui.add_pad_ar_btn.setChecked(True)
-
-                    self.app.grb_editor.x = self.app.mouse[0]
-                    self.app.grb_editor.y = self.app.mouse[1]
-
-                    self.app.grb_editor.select_tool('pad')
-                    return
-
-                # Scale Tool
-                if key == QtCore.Qt.Key_S or key == 'S':
-                    self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.grb_editor.select_tool('scale')
-                    return
-
-                # Add Track
-                if key == QtCore.Qt.Key_T or key == 'T':
-                    self.app.grb_editor.launched_from_shortcuts = True
-                    ## Current application units in Upper Case
-                    self.app.grb_editor.select_tool('track')
-                    return
-
-                # Zoom Fit
-                if key == QtCore.Qt.Key_V or key == 'V':
-                    self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.on_zoom_fit(None)
-                    return
-
-                # Propagate to tool
-                response = None
-                if self.app.grb_editor.active_tool is not None:
+                # we do this so we can reuse the following keys while inside a Tool
+                # the above keys are general enough so were left outside
+                if self.app.grb_editor.active_tool is not None and self.grb_select_btn.isChecked() == False:
                     response = self.app.grb_editor.active_tool.on_key(key=key)
-                if response is not None:
-                    self.app.inform.emit(response)
+                    if response is not None:
+                        self.app.inform.emit(response)
+                else:
+                    # Add Array of pads
+                    if key == QtCore.Qt.Key_A or key == 'A':
+                        self.app.grb_editor.launched_from_shortcuts = True
+                        self.app.inform.emit("Click on target point.")
+                        self.app.ui.add_pad_ar_btn.setChecked(True)
+
+                        self.app.grb_editor.x = self.app.mouse[0]
+                        self.app.grb_editor.y = self.app.mouse[1]
+
+                        self.app.grb_editor.select_tool('array')
+                        return
+
+                    # Scale Tool
+                    if key == QtCore.Qt.Key_B or key == 'B':
+                        self.app.grb_editor.launched_from_shortcuts = True
+                        self.app.grb_editor.select_tool('buffer')
+                        return
+
+                    # Copy
+                    if key == QtCore.Qt.Key_C or key == 'C':
+                        self.app.grb_editor.launched_from_shortcuts = True
+                        if self.app.grb_editor.selected:
+                            self.app.inform.emit(_("Click on target point."))
+                            self.app.ui.aperture_copy_btn.setChecked(True)
+                            self.app.grb_editor.on_tool_select('copy')
+                            self.app.grb_editor.active_tool.set_origin(
+                                (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
+                        else:
+                            self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to copy."))
+                        return
+
+                    # Grid Snap
+                    if key == QtCore.Qt.Key_G or key == 'G':
+                        self.app.grb_editor.launched_from_shortcuts = True
+                        # make sure that the cursor shape is enabled/disabled, too
+                        if self.app.grb_editor.options['grid_snap'] is True:
+                            self.app.app_cursor.enabled = False
+                        else:
+                            self.app.app_cursor.enabled = True
+                        self.app.ui.grid_snap_btn.trigger()
+                        return
+
+                    # Jump to coords
+                    if key == QtCore.Qt.Key_J or key == 'J':
+                        self.app.on_jump_to()
+
+                    # Corner Snap
+                    if key == QtCore.Qt.Key_K or key == 'K':
+                        self.app.grb_editor.launched_from_shortcuts = True
+                        self.app.ui.corner_snap_btn.trigger()
+                        return
+
+                    # Move
+                    if key == QtCore.Qt.Key_M or key == 'M':
+                        self.app.grb_editor.launched_from_shortcuts = True
+                        if self.app.grb_editor.selected:
+                            self.app.inform.emit(_("Click on target point."))
+                            self.app.ui.aperture_move_btn.setChecked(True)
+                            self.app.grb_editor.on_tool_select('move')
+                            self.app.grb_editor.active_tool.set_origin(
+                                (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
+                        else:
+                            self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to move."))
+                        return
+
+                    # Add Region Tool
+                    if key == QtCore.Qt.Key_N or key == 'N':
+                        self.app.grb_editor.launched_from_shortcuts = True
+                        self.app.grb_editor.select_tool('region')
+                        return
+
+                    # Add Pad Tool
+                    if key == QtCore.Qt.Key_P or key == 'P':
+                        self.app.grb_editor.launched_from_shortcuts = True
+                        self.app.inform.emit(_("Click on target point."))
+                        self.app.ui.add_pad_ar_btn.setChecked(True)
+
+                        self.app.grb_editor.x = self.app.mouse[0]
+                        self.app.grb_editor.y = self.app.mouse[1]
+
+                        self.app.grb_editor.select_tool('pad')
+                        return
+
+                    # Scale Tool
+                    if key == QtCore.Qt.Key_S or key == 'S':
+                        self.app.grb_editor.launched_from_shortcuts = True
+                        self.app.grb_editor.select_tool('scale')
+                        return
+
+                    # Add Track
+                    if key == QtCore.Qt.Key_T or key == 'T':
+                        self.app.grb_editor.launched_from_shortcuts = True
+                        ## Current application units in Upper Case
+                        self.app.grb_editor.select_tool('track')
+                        return
+
+                    # Zoom Fit
+                    if key == QtCore.Qt.Key_V or key == 'V':
+                        self.app.grb_editor.launched_from_shortcuts = True
+                        self.app.on_zoom_fit(None)
+                        return
 
                 # Show Shortcut list
                 if key == QtCore.Qt.Key_F3 or key == 'F3':

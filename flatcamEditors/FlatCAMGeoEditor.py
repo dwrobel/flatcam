@@ -2003,18 +2003,18 @@ class FCArc(FCShapeTool):
         return ""
 
     def on_key(self, key):
-        if key == 'o':
+        if key == 'D' or key == QtCore.Qt.Key_D:
             self.direction = 'cw' if self.direction == 'ccw' else 'ccw'
-            return 'Direction: ' + self.direction.upper()
+            return _('Direction: %s') % self.direction.upper()
 
-        if key == 'p':
+        if key == 'M' or key == QtCore.Qt.Key_M:
             if self.mode == 'c12':
                 self.mode = '12c'
             elif self.mode == '12c':
                 self.mode = '132'
             else:
                 self.mode = 'c12'
-            return 'Mode: ' + self.mode
+            return _('Mode: %s') % self.mode
 
     def utility_geometry(self, data=None):
         if len(self.points) == 1:  # Show the radius
@@ -2233,9 +2233,14 @@ class FCPolygon(FCShapeTool):
         self.draw_app.app.inform.emit(_("[success] Done. Polygon completed."))
 
     def on_key(self, key):
-        if key == 'backspace':
+        if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
             if len(self.points) > 0:
                 self.points = self.points[0:-1]
+                # Remove any previous utility shape
+                self.draw_app.tool_shape.clear(update=False)
+                geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+                self.draw_app.draw_utility_geometry(geo=geo)
+                return _("Backtracked one point ...")
 
 
 class FCPath(FCPolygon):
@@ -2260,9 +2265,14 @@ class FCPath(FCPolygon):
         return None
 
     def on_key(self, key):
-        if key == 'backspace':
+        if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
             if len(self.points) > 0:
                 self.points = self.points[0:-1]
+                # Remove any previous utility shape
+                self.draw_app.tool_shape.clear(update=False)
+                geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+                self.draw_app.draw_utility_geometry(geo=geo)
+                return _("Backtracked one point ...")
 
 
 class FCSelect(DrawTool):

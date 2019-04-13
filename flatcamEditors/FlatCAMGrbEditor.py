@@ -527,9 +527,14 @@ class FCRegion(FCShapeTool):
         self.draw_app.plot_all()
 
     def on_key(self, key):
-        if key == 'backspace':
+        if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
             if len(self.points) > 0:
                 self.points = self.points[0:-1]
+                # Remove any previous utility shape
+                self.draw_app.tool_shape.clear(update=False)
+                geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+                self.draw_app.draw_utility_geometry(geo=geo)
+                return _("Backtracked one point ...")
 
 
 class FCTrack(FCRegion):
@@ -560,9 +565,14 @@ class FCTrack(FCRegion):
         return None
 
     def on_key(self, key):
-        if key == 'backspace':
+        if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
             if len(self.points) > 0:
                 self.points = self.points[0:-1]
+                # Remove any previous utility shape
+                self.draw_app.tool_shape.clear(update=False)
+                geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+                self.draw_app.draw_utility_geometry(geo=geo)
+                return _("Backtracked one point ...")
 
 
 class FCScale(FCShapeTool):
