@@ -3183,15 +3183,17 @@ class Gerber (Geometry):
             temp_geo = []
             for apid in self.apertures:
                 if 'clear_geometry' in self.apertures[apid]:
-                    for clear_geo in self.apertures[apid]['clear_geometry']:
-                        for solid_geo in self.apertures[apid]['solid_geometry']:
-                            if solid_geo.intersects(clear_geo):
-                                res_geo = clear_geo.symmetric_difference(solid_geo)
-                                temp_geo.append(res_geo)
-                            else:
-                                temp_geo.append(solid_geo)
+                    clear_geo = cascaded_union(self.apertures[apid]['clear_geometry'])
+                    for solid_geo in self.apertures[apid]['solid_geometry']:
+                        if clear_geo.intersects(solid_geo):
+                            res_geo = clear_geo.symmetric_difference(solid_geo)
+                            temp_geo.append(res_geo)
+                        else:
+                            temp_geo.append(solid_geo)
                     self.apertures[apid]['solid_geometry'] = deepcopy(temp_geo)
                     self.apertures[apid].pop('clear_geometry', None)
+
+
 
             # --- Apply buffer ---
             # this treats the case when we are storing geometry as paths
