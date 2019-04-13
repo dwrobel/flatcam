@@ -5321,7 +5321,13 @@ class CNCjob(Geometry):
                                 current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
                             else:
                                 current_tooldia = float('%.3f' % float(exobj.tools[tool]["C"]))
-                            z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+
+                            # TODO apply offset only when using the GUI, for TclCommand this will create an error
+                            # because the values for Z offset are created in build_ui()
+                            try:
+                                z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+                            except KeyError:
+                                z_offset = 0
                             self.z_cut += z_offset
 
                             # Drillling!
@@ -5467,8 +5473,15 @@ class CNCjob(Geometry):
                             current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
                         else:
                             current_tooldia = float('%.3f' % float(exobj.tools[tool]["C"]))
-                        z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+
+                        # TODO apply offset only when using the GUI, for TclCommand this will create an error
+                        # because the values for Z offset are created in build_ui()
+                        try:
+                            z_offset = float(self.tool_offset[current_tooldia]) * (-1)
+                        except KeyError:
+                            z_offset = 0
                         self.z_cut += z_offset
+
                         # Drillling!
                         altPoints = []
                         for point in points[tool]:
