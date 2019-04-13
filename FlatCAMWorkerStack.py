@@ -8,7 +8,7 @@ class WorkerStack(QtCore.QObject):
     worker_task = QtCore.pyqtSignal(dict)               # 'worker_name', 'func', 'params'
     thread_exception = QtCore.pyqtSignal(object)
 
-    def __init__(self):
+    def __init__(self, workers_number):
         super(WorkerStack, self).__init__()
 
         self.workers = []
@@ -16,7 +16,7 @@ class WorkerStack(QtCore.QObject):
         self.load = {}                                  # {'worker_name': tasks_count}
 
         # Create workers crew
-        for i in range(0, 2):
+        for i in range(0, workers_number):
             worker = Worker(self, 'Slogger-' + str(i))
             thread = QtCore.QThread()
 

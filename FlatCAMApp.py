@@ -11,6 +11,7 @@ import getopt
 import random
 import simplejson as json
 import lzma
+import threading
 
 from stat import S_IREAD, S_IRGRP, S_IROTH
 import subprocess
@@ -34,7 +35,10 @@ from flatcamGUI.FlatCAMGUI import *
 from FlatCAMCommon import LoudDict
 from FlatCAMPostProc import load_postprocessors
 
-from FlatCAMEditor import FlatCAMGeoEditor, FlatCAMExcEditor
+from flatcamEditors.FlatCAMGeoEditor import FlatCAMGeoEditor
+from flatcamEditors.FlatCAMExcEditor import FlatCAMExcEditor
+from flatcamEditors.FlatCAMGrbEditor import FlatCAMGrbEditor
+
 from FlatCAMProcess import *
 from FlatCAMWorkerStack import WorkerStack
 from flatcamGUI.VisPyVisuals import Color
@@ -90,12 +94,14 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.912
-    version_date = "2019/03/17"
+    version = 8.913
+    version_date = "2019/04/13"
     beta = True
 
     # current date now
-    date = str(datetime.today()).rpartition(' ')[0]
+    date = str(datetime.today()).rpartition('.')[0]
+    date = ''.join(c for c in date if c not in ':-')
+    date = date.replace(' ', '_')
 
     # URL for update checks and statistics
     version_url = "http://flatcam.org/version"
@@ -107,11 +113,12 @@ class App(QtCore.QObject):
     manual_url = "http://flatcam.org/manual/index.html"
     video_url = "https://www.youtube.com/playlist?list=PLVvP2SYRpx-AQgNlfoxw93tXUXon7G94_"
 
-    should_we_quit = True
-
     # this variable will hold the project status
     # if True it will mean that the project was modified and not saved
     should_we_save = False
+
+    # flag is True if saving action has been triggered
+    save_in_progress = False
 
     ##################
     ##    Signals   ##
@@ -121,6 +128,8 @@ class App(QtCore.QObject):
     # Handled by:
     #  * App.info() --> Print on the status bar
     inform = QtCore.pyqtSignal(str)
+
+    app_quit = QtCore.pyqtSignal()
 
     # General purpose background task
     worker_task = QtCore.pyqtSignal(dict)
@@ -310,6 +319,7 @@ class App(QtCore.QObject):
             "global_project_at_startup": self.ui.general_defaults_form.general_app_group.project_startup_cb,
             "global_project_autohide": self.ui.general_defaults_form.general_app_group.project_autohide_cb,
             "global_toggle_tooltips": self.ui.general_defaults_form.general_app_group.toggle_tooltips_cb,
+            "global_worker_number": self.ui.general_defaults_form.general_app_group.worker_number_sb,
 
             "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_combo,
             "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
@@ -331,6 +341,7 @@ class App(QtCore.QObject):
             "global_sel_draw_color": self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry,
 
             # General GUI Settings
+            "global_layout": self.ui.general_defaults_form.general_gui_set_group.layout_combo,
             "global_hover": self.ui.general_defaults_form.general_gui_set_group.hover_cb,
 
             # Gerber General
@@ -461,6 +472,7 @@ class App(QtCore.QObject):
             "tools_cutoutmargin": self.ui.tools_defaults_form.tools_cutout_group.cutout_margin_entry,
             "tools_cutoutgapsize": self.ui.tools_defaults_form.tools_cutout_group.cutout_gap_entry,
             "tools_gaps_ff": self.ui.tools_defaults_form.tools_cutout_group.gaps_combo,
+            "tools_cutout_convexshape": self.ui.tools_defaults_form.tools_cutout_group.convex_box,
 
             # Paint Area Tool
             "tools_painttooldia": self.ui.tools_defaults_form.tools_paint_group.painttooldia_entry,
@@ -576,6 +588,7 @@ class App(QtCore.QObject):
             "global_project_at_startup": False,
             "global_project_autohide": True,
             "global_toggle_tooltips": True,
+            "global_worker_number": 2,
             "global_compression_level": 3,
             "global_save_compressed": True,
 
@@ -600,7 +613,7 @@ class App(QtCore.QObject):
             "global_draw_color": '#FF0000',
             "global_sel_draw_color": '#0000FF',
 
-            "global_toolbar_view": 127,
+            "global_toolbar_view": 511,
 
             "global_background_timeout": 300000,  # Default value is 5 minutes
             "global_verbose_error_level": 0,  # Shell verbosity 0 = default
@@ -617,7 +630,7 @@ class App(QtCore.QObject):
             "global_def_win_y": 100,
             "global_def_win_w": 1024,
             "global_def_win_h": 650,
-
+            "global_def_notebook_width": 1,
             # Constants...
             "global_defaults_save_period_ms": 20000,  # Time between default saves.
             "global_shell_shape": [500, 300],  # Shape of the shell in pixels.
@@ -634,7 +647,7 @@ class App(QtCore.QObject):
 
             # General GUI Settings
             "global_hover": True,
-
+            "global_layout": "compact",
             # Gerber General
             "gerber_plot": True,
             "gerber_solid": True,
@@ -762,6 +775,7 @@ class App(QtCore.QObject):
             "tools_cutoutmargin": 0.00393701,
             "tools_cutoutgapsize": 0.005905512,
             "tools_gaps_ff": "8",
+            "tools_cutout_convexshape": False,
 
             "tools_painttooldia": 0.07,
             "tools_paintoverlap": 0.15,
@@ -1200,23 +1214,27 @@ class App(QtCore.QObject):
         ### EDITOR section
         self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
         self.exc_editor = FlatCAMExcEditor(self)
-
+        self.grb_editor = FlatCAMGrbEditor(self)
 
         #### Adjust tabs width ####
         # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
         #     self.ui.options_scroll_area.verticalScrollBar().sizeHint().width())
         self.collection.view.setMinimumWidth(290)
 
-        self.log.debug("Finished adding Geometry and Excellon Editor's.")
+        self.log.debug("Finished adding FlatCAM Editor's.")
 
         #### Worker ####
-        self.workers = WorkerStack()
+        if self.defaults["global_worker_number"]:
+            self.workers = WorkerStack(workers_number=int(self.defaults["global_worker_number"]))
+        else:
+            self.workers = WorkerStack(workers_number=2)
         self.worker_task.connect(self.workers.add_task)
 
 
         ### Signal handling ###
         ## Custom signals
         self.inform.connect(self.info)
+        self.app_quit.connect(self.quit_application)
         self.message.connect(self.message_dialog)
         self.progress.connect(self.set_progress_bar)
         self.object_created.connect(self.on_object_created)
@@ -1232,6 +1250,7 @@ class App(QtCore.QObject):
         # Menu
         self.ui.menufilenewproject.triggered.connect(self.on_file_new_click)
         self.ui.menufilenewgeo.triggered.connect(self.new_geometry_object)
+        self.ui.menufilenewgrb.triggered.connect(self.new_gerber_object)
         self.ui.menufilenewexc.triggered.connect(self.new_excellon_object)
 
         self.ui.menufileopengerber.triggered.connect(self.on_fileopengerber)
@@ -1239,6 +1258,9 @@ class App(QtCore.QObject):
         self.ui.menufileopengcode.triggered.connect(self.on_fileopengcode)
         self.ui.menufileopenproject.triggered.connect(self.on_file_openproject)
         self.ui.menufileopenconfig.triggered.connect(self.on_file_openconfig)
+
+        self.ui.menufilenewscript.triggered.connect(self.on_filenewscript)
+        self.ui.menufileopenscript.triggered.connect(self.on_fileopenscript)
 
         self.ui.menufilerunscript.triggered.connect(self.on_filerunscript)
 
@@ -1259,10 +1281,10 @@ class App(QtCore.QObject):
         self.ui.menufilesaveprojectas.triggered.connect(self.on_file_saveprojectas)
         self.ui.menufilesaveprojectcopy.triggered.connect(lambda: self.on_file_saveprojectas(make_copy=True))
         self.ui.menufilesavedefaults.triggered.connect(self.on_file_savedefaults)
-        self.ui.menufile_exit.triggered.connect(self.on_app_exit)
+        self.ui.menufile_exit.triggered.connect(self.final_save)
 
-        self.ui.menueditedit.triggered.connect(self.object2editor)
-        self.ui.menueditok.triggered.connect(self.editor2object)
+        self.ui.menueditedit.triggered.connect(lambda: self.object2editor())
+        self.ui.menueditok.triggered.connect(lambda: self.editor2object())
 
         self.ui.menuedit_convertjoin.triggered.connect(self.on_edit_join)
         self.ui.menuedit_convertjoinexc.triggered.connect(self.on_edit_join_exc)
@@ -1343,15 +1365,25 @@ class App(QtCore.QObject):
         self.ui.popmenu_new_exc.triggered.connect(self.new_excellon_object)
         self.ui.popmenu_new_prj.triggered.connect(self.on_file_new)
 
+        # Geometry Editor
         self.ui.draw_line.triggered.connect(self.geo_editor.draw_tool_path)
         self.ui.draw_rect.triggered.connect(self.geo_editor.draw_tool_rectangle)
         self.ui.draw_cut.triggered.connect(self.geo_editor.cutpath)
         self.ui.draw_move.triggered.connect(self.geo_editor.on_move)
 
+        # Gerber Editor
+        self.ui.grb_draw_pad.triggered.connect(self.grb_editor.on_pad_add)
+        self.ui.grb_draw_pad_array.triggered.connect(self.grb_editor.on_pad_add_array)
+        self.ui.grb_draw_track.triggered.connect(self.grb_editor.on_track_add)
+        self.ui.grb_draw_region.triggered.connect(self.grb_editor.on_region_add)
+        self.ui.grb_copy.triggered.connect(self.grb_editor.on_copy_button)
+        self.ui.grb_delete.triggered.connect(self.grb_editor.on_delete_btn)
+        self.ui.grb_move.triggered.connect(self.grb_editor.on_move_button)
+
+        # Excellon Editor
         self.ui.drill.triggered.connect(self.exc_editor.exc_add_drill)
         self.ui.drill_array.triggered.connect(self.exc_editor.exc_add_drill_array)
         self.ui.drill_copy.triggered.connect(self.exc_editor.exc_copy_drills)
-
 
         self.ui.zoomfit.triggered.connect(self.on_zoom_fit)
         self.ui.clearplot.triggered.connect(self.clear_plots)
@@ -1360,7 +1392,7 @@ class App(QtCore.QObject):
         self.ui.popmenu_copy.triggered.connect(self.on_copy_object)
         self.ui.popmenu_delete.triggered.connect(self.on_delete)
         self.ui.popmenu_edit.triggered.connect(self.object2editor)
-        self.ui.popmenu_save.triggered.connect(self.editor2object)
+        self.ui.popmenu_save.triggered.connect(lambda: self.editor2object())
         self.ui.popmenu_move.triggered.connect(self.obj_move)
 
         self.ui.popmenu_properties.triggered.connect(self.obj_properties)
@@ -1422,12 +1454,13 @@ class App(QtCore.QObject):
 
         self.ui.cncjob_defaults_form.cncjob_adv_opt_group.tc_variable_combo.currentIndexChanged[str].connect(
             self.on_cnc_custom_parameters)
+
         # Modify G-CODE Plot Area TAB
         self.ui.code_editor.textChanged.connect(self.handleTextChanged)
         self.ui.buttonOpen.clicked.connect(self.handleOpen)
+        self.ui.buttonSave.clicked.connect(self.handleSaveGCode)
         self.ui.buttonPrint.clicked.connect(self.handlePrint)
         self.ui.buttonPreview.clicked.connect(self.handlePreview)
-        self.ui.buttonSave.clicked.connect(self.handleSaveGCode)
         self.ui.buttonFind.clicked.connect(self.handleFindGCode)
         self.ui.buttonReplace.clicked.connect(self.handleReplaceGCode)
 
@@ -1494,10 +1527,194 @@ class App(QtCore.QObject):
                                   'angle_y', 'gridx', 'gridy', 'True', 'False'
                              ]
 
-        self.myKeywords = self.tcl_commands_list + self.ordinary_keywords
+        self.tcl_keywords = [
+            "after", "append", "apply", "array", "auto_execok", "auto_import", "auto_load", "auto_mkindex",
+            "auto_qualify", "auto_reset", "bgerror", "binary", "break", "case", "catch", "cd", "chan", "clock", "close",
+            "concat", "continue", "coroutine", "dict", "encoding", "eof", "error", "eval", "exec", "exit", "expr",
+            "fblocked", "fconfigure", "fcopy", "file", "fileevent", "flush", "for", "foreach", "format", "gets", "glob",
+            "global", "history", "if", "incr", "info", "interp", "join", "lappend", "lassign", "lindex", "linsert",
+            "list", "llength", "load", "lrange", "lrepeat", "lreplace", "lreverse", "lsearch", "lset", "lsort",
+            "mathfunc", "mathop", "memory", "my", "namespace", "next", "nextto", "open", "package", "parray", "pid",
+            "pkg_mkIndex", "platform", "proc", "puts", "pwd", "read", "refchan", "regexp", "regsub", "rename", "return",
+            "scan", "seek", "self", "set", "socket", "source", "split", "string", "subst", "switch", "tailcall",
+            "tcl_endOfWord", "tcl_findLibrary", "tcl_startOfNextWord", "tcl_startOfPreviousWord", "tcl_wordBreakAfter",
+            "tcl_wordBreakBefore", "tell", "throw", "time", "tm", "trace", "transchan", "try", "unknown", "unload",
+            "unset", "update", "uplevel", "upvar", "variable", "vwait", "while", "yield", "yieldto", "zlib",
+            "attemptckalloc", "attemptckrealloc", "ckalloc", "ckfree", "ckrealloc", "Tcl_Access", "Tcl_AddErrorInfo",
+            "Tcl_AddObjErrorInfo", "Tcl_AlertNotifier", "Tcl_Alloc", "Tcl_AllocStatBuf", "Tcl_AllowExceptions",
+            "Tcl_AppendAllObjTypes", "Tcl_AppendElement", "Tcl_AppendExportList", "Tcl_AppendFormatToObj",
+            "Tcl_AppendLimitedToObj", "Tcl_AppendObjToErrorInfo", "Tcl_AppendObjToObj", "Tcl_AppendPrintfToObj",
+            "Tcl_AppendResult", "Tcl_AppendResultVA", "Tcl_AppendStringsToObj", "Tcl_AppendStringsToObjVA",
+            "Tcl_AppendToObj", "Tcl_AppendUnicodeToObj", "Tcl_AppInit", "Tcl_AsyncCreate", "Tcl_AsyncDelete",
+            "Tcl_AsyncInvoke", "Tcl_AsyncMark", "Tcl_AsyncReady", "Tcl_AttemptAlloc", "Tcl_AttemptRealloc",
+            "Tcl_AttemptSetObjLength", "Tcl_BackgroundError", "Tcl_BackgroundException", "Tcl_Backslash",
+            "Tcl_BadChannelOption", "Tcl_CallWhenDeleted", "Tcl_Canceled", "Tcl_CancelEval", "Tcl_CancelIdleCall",
+            "Tcl_ChannelBlockModeProc", "Tcl_ChannelBuffered", "Tcl_ChannelClose2Proc", "Tcl_ChannelCloseProc",
+            "Tcl_ChannelFlushProc", "Tcl_ChannelGetHandleProc", "Tcl_ChannelGetOptionProc", "Tcl_ChannelHandlerProc",
+            "Tcl_ChannelInputProc", "Tcl_ChannelName", "Tcl_ChannelOutputProc", "Tcl_ChannelSeekProc",
+            "Tcl_ChannelSetOptionProc", "Tcl_ChannelThreadActionProc", "Tcl_ChannelTruncateProc", "Tcl_ChannelVersion",
+            "Tcl_ChannelWatchProc", "Tcl_ChannelWideSeekProc", "Tcl_Chdir", "Tcl_ClassGetMetadata",
+            "Tcl_ClassSetConstructor", "Tcl_ClassSetDestructor", "Tcl_ClassSetMetadata", "Tcl_ClearChannelHandlers",
+            "Tcl_Close", "Tcl_CommandComplete", "Tcl_CommandTraceInfo", "Tcl_Concat", "Tcl_ConcatObj",
+            "Tcl_ConditionFinalize", "Tcl_ConditionNotify", "Tcl_ConditionWait", "Tcl_ConvertCountedElement",
+            "Tcl_ConvertElement", "Tcl_ConvertToType", "Tcl_CopyObjectInstance", "Tcl_CreateAlias",
+            "Tcl_CreateAliasObj", "Tcl_CreateChannel", "Tcl_CreateChannelHandler", "Tcl_CreateCloseHandler",
+            "Tcl_CreateCommand", "Tcl_CreateEncoding", "Tcl_CreateEnsemble", "Tcl_CreateEventSource",
+            "Tcl_CreateExitHandler", "Tcl_CreateFileHandler", "Tcl_CreateHashEntry", "Tcl_CreateInterp",
+            "Tcl_CreateMathFunc", "Tcl_CreateNamespace", "Tcl_CreateObjCommand", "Tcl_CreateObjTrace",
+            "Tcl_CreateSlave", "Tcl_CreateThread", "Tcl_CreateThreadExitHandler", "Tcl_CreateTimerHandler",
+            "Tcl_CreateTrace", "Tcl_CutChannel", "Tcl_DecrRefCount", "Tcl_DeleteAssocData", "Tcl_DeleteChannelHandler",
+            "Tcl_DeleteCloseHandler", "Tcl_DeleteCommand", "Tcl_DeleteCommandFromToken", "Tcl_DeleteEvents",
+            "Tcl_DeleteEventSource", "Tcl_DeleteExitHandler", "Tcl_DeleteFileHandler", "Tcl_DeleteHashEntry",
+            "Tcl_DeleteHashTable", "Tcl_DeleteInterp", "Tcl_DeleteNamespace", "Tcl_DeleteThreadExitHandler",
+            "Tcl_DeleteTimerHandler", "Tcl_DeleteTrace", "Tcl_DetachChannel", "Tcl_DetachPids", "Tcl_DictObjDone",
+            "Tcl_DictObjFirst", "Tcl_DictObjGet", "Tcl_DictObjNext", "Tcl_DictObjPut", "Tcl_DictObjPutKeyList",
+            "Tcl_DictObjRemove", "Tcl_DictObjRemoveKeyList", "Tcl_DictObjSize", "Tcl_DiscardInterpState",
+            "Tcl_DiscardResult", "Tcl_DontCallWhenDeleted", "Tcl_DoOneEvent", "Tcl_DoWhenIdle", "Tcl_DStringAppend",
+            "Tcl_DStringAppendElement", "Tcl_DStringEndSublist", "Tcl_DStringFree", "Tcl_DStringGetResult",
+            "Tcl_DStringInit", "Tcl_DStringLength", "Tcl_DStringResult", "Tcl_DStringSetLength",
+            "Tcl_DStringStartSublist", "Tcl_DStringTrunc", "Tcl_DStringValue", "Tcl_DumpActiveMemory",
+            "Tcl_DuplicateObj", "Tcl_Eof", "Tcl_ErrnoId", "Tcl_ErrnoMsg", "Tcl_Eval", "Tcl_EvalEx", "Tcl_EvalFile",
+            "Tcl_EvalObjEx", "Tcl_EvalObjv", "Tcl_EvalTokens", "Tcl_EvalTokensStandard", "Tcl_EventuallyFree",
+            "Tcl_Exit", "Tcl_ExitThread", "Tcl_Export", "Tcl_ExposeCommand", "Tcl_ExprBoolean", "Tcl_ExprBooleanObj",
+            "Tcl_ExprDouble", "Tcl_ExprDoubleObj", "Tcl_ExprLong", "Tcl_ExprLongObj", "Tcl_ExprObj", "Tcl_ExprString",
+            "Tcl_ExternalToUtf", "Tcl_ExternalToUtfDString", "Tcl_Finalize", "Tcl_FinalizeNotifier",
+            "Tcl_FinalizeThread", "Tcl_FindCommand", "Tcl_FindEnsemble", "Tcl_FindExecutable", "Tcl_FindHashEntry",
+            "Tcl_FindNamespace", "Tcl_FirstHashEntry", "Tcl_Flush", "Tcl_ForgetImport", "Tcl_Format",
+            "Tcl_Free· Tcl_FreeEncoding", "Tcl_FreeParse", "Tcl_FreeResult", "Tcl_FSAccess", "Tcl_FSChdir",
+            "Tcl_FSConvertToPathType", "Tcl_FSCopyDirectory", "Tcl_FSCopyFile", "Tcl_FSCreateDirectory", "Tcl_FSData",
+            "Tcl_FSDeleteFile", "Tcl_FSEqualPaths", "Tcl_FSEvalFile", "Tcl_FSEvalFileEx", "Tcl_FSFileAttrsGet",
+            "Tcl_FSFileAttrsSet", "Tcl_FSFileAttrStrings", "Tcl_FSFileSystemInfo", "Tcl_FSGetCwd",
+            "Tcl_FSGetFileSystemForPath", "Tcl_FSGetInternalRep", "Tcl_FSGetNativePath", "Tcl_FSGetNormalizedPath",
+            "Tcl_FSGetPathType", "Tcl_FSGetTranslatedPath", "Tcl_FSGetTranslatedStringPath", "Tcl_FSJoinPath",
+            "Tcl_FSJoinToPath", "Tcl_FSLink· Tcl_FSListVolumes", "Tcl_FSLoadFile", "Tcl_FSLstat",
+            "Tcl_FSMatchInDirectory", "Tcl_FSMountsChanged", "Tcl_FSNewNativePath", "Tcl_FSOpenFileChannel",
+            "Tcl_FSPathSeparator", "Tcl_FSRegister", "Tcl_FSRemoveDirectory", "Tcl_FSRenameFile", "Tcl_FSSplitPath",
+            "Tcl_FSStat", "Tcl_FSUnloadFile", "Tcl_FSUnregister", "Tcl_FSUtime", "Tcl_GetAccessTimeFromStat",
+            "Tcl_GetAlias", "Tcl_GetAliasObj", "Tcl_GetAssocData", "Tcl_GetBignumFromObj", "Tcl_GetBlocksFromStat",
+            "Tcl_GetBlockSizeFromStat", "Tcl_GetBoolean", "Tcl_GetBooleanFromObj", "Tcl_GetByteArrayFromObj",
+            "Tcl_GetChangeTimeFromStat", "Tcl_GetChannel", "Tcl_GetChannelBufferSize", "Tcl_GetChannelError",
+            "Tcl_GetChannelErrorInterp", "Tcl_GetChannelHandle", "Tcl_GetChannelInstanceData", "Tcl_GetChannelMode",
+            "Tcl_GetChannelName", "Tcl_GetChannelNames", "Tcl_GetChannelNamesEx", "Tcl_GetChannelOption",
+            "Tcl_GetChannelThread", "Tcl_GetChannelType", "Tcl_GetCharLength", "Tcl_GetClassAsObject",
+            "Tcl_GetCommandFromObj", "Tcl_GetCommandFullName", "Tcl_GetCommandInfo", "Tcl_GetCommandInfoFromToken",
+            "Tcl_GetCommandName", "Tcl_GetCurrentNamespace", "Tcl_GetCurrentThread", "Tcl_GetCwd",
+            "Tcl_GetDefaultEncodingDir", "Tcl_GetDeviceTypeFromStat", "Tcl_GetDouble", "Tcl_GetDoubleFromObj",
+            "Tcl_GetEncoding", "Tcl_GetEncodingFromObj", "Tcl_GetEncodingName", "Tcl_GetEncodingNameFromEnvironment",
+            "Tcl_GetEncodingNames", "Tcl_GetEncodingSearchPath", "Tcl_GetEnsembleFlags", "Tcl_GetEnsembleMappingDict",
+            "Tcl_GetEnsembleNamespace", "Tcl_GetEnsembleParameterList", "Tcl_GetEnsembleSubcommandList",
+            "Tcl_GetEnsembleUnknownHandler", "Tcl_GetErrno", "Tcl_GetErrorLine", "Tcl_GetFSDeviceFromStat",
+            "Tcl_GetFSInodeFromStat", "Tcl_GetGlobalNamespace", "Tcl_GetGroupIdFromStat", "Tcl_GetHashKey",
+            "Tcl_GetHashValue", "Tcl_GetHostName", "Tcl_GetIndexFromObj", "Tcl_GetIndexFromObjStruct", "Tcl_GetInt",
+            "Tcl_GetInterpPath", "Tcl_GetIntFromObj", "Tcl_GetLinkCountFromStat", "Tcl_GetLongFromObj", "Tcl_GetMaster",
+            "Tcl_GetMathFuncInfo", "Tcl_GetModeFromStat", "Tcl_GetModificationTimeFromStat", "Tcl_GetNameOfExecutable",
+            "Tcl_GetNamespaceUnknownHandler", "Tcl_GetObjectAsClass", "Tcl_GetObjectCommand", "Tcl_GetObjectFromObj",
+            "Tcl_GetObjectName", "Tcl_GetObjectNamespace", "Tcl_GetObjResult", "Tcl_GetObjType", "Tcl_GetOpenFile",
+            "Tcl_GetPathType", "Tcl_GetRange", "Tcl_GetRegExpFromObj", "Tcl_GetReturnOptions", "Tcl_Gets",
+            "Tcl_GetServiceMode", "Tcl_GetSizeFromStat", "Tcl_GetSlave", "Tcl_GetsObj", "Tcl_GetStackedChannel",
+            "Tcl_GetStartupScript", "Tcl_GetStdChannel", "Tcl_GetString", "Tcl_GetStringFromObj", "Tcl_GetStringResult",
+            "Tcl_GetThreadData", "Tcl_GetTime", "Tcl_GetTopChannel", "Tcl_GetUniChar", "Tcl_GetUnicode",
+            "Tcl_GetUnicodeFromObj", "Tcl_GetUserIdFromStat", "Tcl_GetVar", "Tcl_GetVar2", "Tcl_GetVar2Ex",
+            "Tcl_GetVersion", "Tcl_GetWideIntFromObj", "Tcl_GlobalEval", "Tcl_GlobalEvalObj", "Tcl_HashStats",
+            "Tcl_HideCommand", "Tcl_Import", "Tcl_IncrRefCount", "Tcl_Init", "Tcl_InitCustomHashTable",
+            "Tcl_InitHashTable", "Tcl_InitMemory", "Tcl_InitNotifier", "Tcl_InitObjHashTable", "Tcl_InitStubs",
+            "Tcl_InputBlocked", "Tcl_InputBuffered", "Tcl_InterpActive", "Tcl_InterpDeleted", "Tcl_InvalidateStringRep",
+            "Tcl_IsChannelExisting", "Tcl_IsChannelRegistered", "Tcl_IsChannelShared", "Tcl_IsEnsemble", "Tcl_IsSafe",
+            "Tcl_IsShared", "Tcl_IsStandardChannel", "Tcl_JoinPath", "Tcl_JoinThread", "Tcl_LimitAddHandler",
+            "Tcl_LimitCheck", "Tcl_LimitExceeded", "Tcl_LimitGetCommands", "Tcl_LimitGetGranularity",
+            "Tcl_LimitGetTime", "Tcl_LimitReady", "Tcl_LimitRemoveHandler", "Tcl_LimitSetCommands",
+            "Tcl_LimitSetGranularity", "Tcl_LimitSetTime", "Tcl_LimitTypeEnabled", "Tcl_LimitTypeExceeded",
+            "Tcl_LimitTypeReset", "Tcl_LimitTypeSet", "Tcl_LinkVar", "Tcl_ListMathFuncs", "Tcl_ListObjAppendElement",
+            "Tcl_ListObjAppendList", "Tcl_ListObjGetElements", "Tcl_ListObjIndex", "Tcl_ListObjLength",
+            "Tcl_ListObjReplace", "Tcl_LogCommandInfo", "Tcl_Main", "Tcl_MakeFileChannel", "Tcl_MakeSafe",
+            "Tcl_MakeTcpClientChannel", "Tcl_Merge", "Tcl_MethodDeclarerClass", "Tcl_MethodDeclarerObject",
+            "Tcl_MethodIsPublic", "Tcl_MethodIsType", "Tcl_MethodName", "Tcl_MutexFinalize", "Tcl_MutexLock",
+            "Tcl_MutexUnlock", "Tcl_NewBignumObj", "Tcl_NewBooleanObj", "Tcl_NewByteArrayObj", "Tcl_NewDictObj",
+            "Tcl_NewDoubleObj", "Tcl_NewInstanceMethod", "Tcl_NewIntObj", "Tcl_NewListObj", "Tcl_NewLongObj",
+            "Tcl_NewMethod", "Tcl_NewObj", "Tcl_NewObjectInstance", "Tcl_NewStringObj", "Tcl_NewUnicodeObj",
+            "Tcl_NewWideIntObj", "Tcl_NextHashEntry", "Tcl_NotifyChannel", "Tcl_NRAddCallback", "Tcl_NRCallObjProc",
+            "Tcl_NRCmdSwap", "Tcl_NRCreateCommand", "Tcl_NREvalObj", "Tcl_NREvalObjv", "Tcl_NumUtfChars",
+            "Tcl_ObjectContextInvokeNext", "Tcl_ObjectContextIsFiltering", "Tcl_ObjectContextMethod",
+            "Tcl_ObjectContextObject", "Tcl_ObjectContextSkippedArgs", "Tcl_ObjectDeleted", "Tcl_ObjectGetMetadata",
+            "Tcl_ObjectGetMethodNameMapper", "Tcl_ObjectSetMetadata", "Tcl_ObjectSetMethodNameMapper", "Tcl_ObjGetVar2",
+            "Tcl_ObjPrintf", "Tcl_ObjSetVar2", "Tcl_OpenCommandChannel", "Tcl_OpenFileChannel", "Tcl_OpenTcpClient",
+            "Tcl_OpenTcpServer", "Tcl_OutputBuffered", "Tcl_Panic", "Tcl_PanicVA", "Tcl_ParseArgsObjv",
+            "Tcl_ParseBraces", "Tcl_ParseCommand", "Tcl_ParseExpr", "Tcl_ParseQuotedString", "Tcl_ParseVar",
+            "Tcl_ParseVarName", "Tcl_PkgPresent", "Tcl_PkgPresentEx", "Tcl_PkgProvide", "Tcl_PkgProvideEx",
+            "Tcl_PkgRequire", "Tcl_PkgRequireEx", "Tcl_PkgRequireProc", "Tcl_PosixError", "Tcl_Preserve",
+            "Tcl_PrintDouble", "Tcl_PutEnv", "Tcl_QueryTimeProc", "Tcl_QueueEvent", "Tcl_Read", "Tcl_ReadChars",
+            "Tcl_ReadRaw", "Tcl_Realloc", "Tcl_ReapDetachedProcs", "Tcl_RecordAndEval", "Tcl_RecordAndEvalObj",
+            "Tcl_RegExpCompile", "Tcl_RegExpExec", "Tcl_RegExpExecObj", "Tcl_RegExpGetInfo", "Tcl_RegExpMatch",
+            "Tcl_RegExpMatchObj", "Tcl_RegExpRange", "Tcl_RegisterChannel", "Tcl_RegisterConfig", "Tcl_RegisterObjType",
+            "Tcl_Release", "Tcl_ResetResult", "Tcl_RestoreInterpState", "Tcl_RestoreResult", "Tcl_SaveInterpState",
+            "Tcl_SaveResult", "Tcl_ScanCountedElement", "Tcl_ScanElement", "Tcl_Seek", "Tcl_ServiceAll",
+            "Tcl_ServiceEvent", "Tcl_ServiceModeHook", "Tcl_SetAssocData", "Tcl_SetBignumObj", "Tcl_SetBooleanObj",
+            "Tcl_SetByteArrayLength", "Tcl_SetByteArrayObj", "Tcl_SetChannelBufferSize", "Tcl_SetChannelError",
+            "Tcl_SetChannelErrorInterp", "Tcl_SetChannelOption", "Tcl_SetCommandInfo", "Tcl_SetCommandInfoFromToken",
+            "Tcl_SetDefaultEncodingDir", "Tcl_SetDoubleObj", "Tcl_SetEncodingSearchPath", "Tcl_SetEnsembleFlags",
+            "Tcl_SetEnsembleMappingDict", "Tcl_SetEnsembleParameterList", "Tcl_SetEnsembleSubcommandList",
+            "Tcl_SetEnsembleUnknownHandler", "Tcl_SetErrno", "Tcl_SetErrorCode", "Tcl_SetErrorCodeVA",
+            "Tcl_SetErrorLine", "Tcl_SetExitProc", "Tcl_SetHashValue", "Tcl_SetIntObj", "Tcl_SetListObj",
+            "Tcl_SetLongObj", "Tcl_SetMainLoop", "Tcl_SetMaxBlockTime", "Tcl_SetNamespaceUnknownHandler",
+            "Tcl_SetNotifier", "Tcl_SetObjErrorCode", "Tcl_SetObjLength", "Tcl_SetObjResult", "Tcl_SetPanicProc",
+            "Tcl_SetRecursionLimit", "Tcl_SetResult", "Tcl_SetReturnOptions", "Tcl_SetServiceMode",
+            "Tcl_SetStartupScript", "Tcl_SetStdChannel", "Tcl_SetStringObj", "Tcl_SetSystemEncoding", "Tcl_SetTimeProc",
+            "Tcl_SetTimer", "Tcl_SetUnicodeObj", "Tcl_SetVar", "Tcl_SetVar2", "Tcl_SetVar2Ex", "Tcl_SetWideIntObj",
+            "Tcl_SignalId", "Tcl_SignalMsg", "Tcl_Sleep", "Tcl_SourceRCFile", "Tcl_SpliceChannel", "Tcl_SplitList",
+            "Tcl_SplitPath", "Tcl_StackChannel", "Tcl_StandardChannels", "Tcl_Stat", "Tcl_StaticPackage",
+            "Tcl_StringCaseMatch", "Tcl_StringMatch", "Tcl_SubstObj", "Tcl_TakeBignumFromObj", "Tcl_Tell",
+            "Tcl_ThreadAlert", "Tcl_ThreadQueueEvent", "Tcl_TraceCommand", "Tcl_TraceVar", "Tcl_TraceVar2",
+            "Tcl_TransferResult", "Tcl_TranslateFileName", "Tcl_TruncateChannel", "Tcl_Ungets", "Tcl_UniChar",
+            "Tcl_UniCharAtIndex", "Tcl_UniCharCaseMatch", "Tcl_UniCharIsAlnum", "Tcl_UniCharIsAlpha",
+            "Tcl_UniCharIsControl", "Tcl_UniCharIsDigit", "Tcl_UniCharIsGraph", "Tcl_UniCharIsLower",
+            "Tcl_UniCharIsPrint", "Tcl_UniCharIsPunct", "Tcl_UniCharIsSpace", "Tcl_UniCharIsUpper",
+            "Tcl_UniCharIsWordChar", "Tcl_UniCharLen", "Tcl_UniCharNcasecmp", "Tcl_UniCharNcmp", "Tcl_UniCharToLower",
+            "Tcl_UniCharToTitle", "Tcl_UniCharToUpper", "Tcl_UniCharToUtf", "Tcl_UniCharToUtfDString", "Tcl_UnlinkVar",
+            "Tcl_UnregisterChannel", "Tcl_UnsetVar", "Tcl_UnsetVar2", "Tcl_UnstackChannel", "Tcl_UntraceCommand",
+            "Tcl_UntraceVar", "Tcl_UntraceVar2", "Tcl_UpdateLinkedVar", "Tcl_UpVar", "Tcl_UpVar2", "Tcl_UtfAtIndex",
+            "Tcl_UtfBackslash", "Tcl_UtfCharComplete", "Tcl_UtfFindFirst", "Tcl_UtfFindLast", "Tcl_UtfNext",
+            "Tcl_UtfPrev", "Tcl_UtfToExternal", "Tcl_UtfToExternalDString", "Tcl_UtfToLower", "Tcl_UtfToTitle",
+            "Tcl_UtfToUniChar", "Tcl_UtfToUniCharDString", "Tcl_UtfToUpper", "Tcl_ValidateAllMemory", "Tcl_VarEval",
+            "Tcl_VarEvalVA", "Tcl_VarTraceInfo", "Tcl_VarTraceInfo2", "Tcl_WaitForEvent", "Tcl_WaitPid",
+            "Tcl_WinTCharToUtf", "Tcl_WinUtfToTChar", "Tcl_Write", "Tcl_WriteChars", "Tcl_WriteObj", "Tcl_WriteRaw",
+            "Tcl_WrongNumArgs", "Tcl_ZlibAdler32", "Tcl_ZlibCRC32", "Tcl_ZlibDeflate", "Tcl_ZlibInflate",
+            "Tcl_ZlibStreamChecksum", "Tcl_ZlibStreamClose", "Tcl_ZlibStreamEof", "Tcl_ZlibStreamGet",
+            "Tcl_ZlibStreamGetCommandName", "Tcl_ZlibStreamInit", "Tcl_ZlibStreamPut", "dde", "http", "msgcat",
+            "registry", "tcltest", "Tcl_AllocHashEntryProc", "Tcl_AppInitProc", "Tcl_ArgvInfo", "Tcl_AsyncProc",
+            "Tcl_ChannelProc", "Tcl_ChannelType", "Tcl_CloneProc", "Tcl_CloseProc", "Tcl_CmdDeleteProc", "Tcl_CmdInfo",
+            "Tcl_CmdObjTraceDeleteProc", "Tcl_CmdObjTraceProc", "Tcl_CmdProc", "Tcl_CmdTraceProc",
+            "Tcl_CommandTraceProc", "Tcl_CompareHashKeysProc", "Tcl_Config", "Tcl_DriverBlockModeProc",
+            "Tcl_DriverClose2Proc", "Tcl_DriverCloseProc", "Tcl_DriverFlushProc", "Tcl_DriverGetHandleProc",
+            "Tcl_DriverGetOptionProc", "Tcl_DriverHandlerProc", "Tcl_DriverInputProc", "Tcl_DriverOutputProc",
+            "Tcl_DriverSeekProc", "Tcl_DriverSetOptionProc", "Tcl_DriverThreadActionProc", "Tcl_DriverTruncateProc",
+            "Tcl_DriverWatchProc", "Tcl_DriverWideSeekProc", "Tcl_DupInternalRepProc", "Tcl_EncodingConvertProc",
+            "Tcl_EncodingFreeProc", "Tcl_EncodingType", "Tcl_Event", "Tcl_EventCheckProc", "Tcl_EventDeleteProc",
+            "Tcl_EventProc", "Tcl_EventSetupProc", "Tcl_ExitProc", "Tcl_FileProc", "Tcl_Filesystem",
+            "Tcl_FreeHashEntryProc", "Tcl_FreeInternalRepProc", "Tcl_FreeProc", "Tcl_FSAccessProc", "Tcl_FSChdirProc",
+            "Tcl_FSCopyDirectoryProc", "Tcl_FSCopyFileProc", "Tcl_FSCreateDirectoryProc", "Tcl_FSCreateInternalRepProc",
+            "Tcl_FSDeleteFileProc", "Tcl_FSDupInternalRepProc", "Tcl_FSFileAttrsGetProc", "Tcl_FSFileAttrsSetProc",
+            "Tcl_FSFilesystemPathTypeProc", "Tcl_FSFilesystemSeparatorProc", "Tcl_FSFreeInternalRepProc",
+            "Tcl_FSGetCwdProc", "Tcl_FSInternalToNormalizedProc", "Tcl_FSLinkProc", "Tcl_FSListVolumesProc",
+            "Tcl_FSLoadFileProc", "Tcl_FSLstatProc", "Tcl_FSMatchInDirectoryProc", "Tcl_FSNormalizePathProc",
+            "Tcl_FSOpenFileChannelProc", "Tcl_FSPathInFilesystemProc", "Tcl_FSRemoveDirectoryProc",
+            "Tcl_FSRenameFileProc", "Tcl_FSStatProc", "Tcl_FSUnloadFileProc", "Tcl_FSUtimeProc", "Tcl_GlobTypeData",
+            "Tcl_HashKeyType", "Tcl_IdleProc", "Tcl_Interp", "Tcl_InterpDeleteProc", "Tcl_LimitHandlerDeleteProc",
+            "Tcl_LimitHandlerProc", "Tcl_MainLoopProc", "Tcl_MathProc", "Tcl_MethodCallProc", "Tcl_MethodDeleteProc",
+            "Tcl_MethodType", "Tcl_NamespaceDeleteProc", "Tcl_NotifierProcs", "Tcl_Obj", "Tcl_ObjCmdProc",
+            "Tcl_ObjectMapMethodNameProc", "Tcl_ObjectMetadataDeleteProc", "Tcl_ObjType", "Tcl_PackageInitProc",
+            "Tcl_PackageUnloadProc", "Tcl_PanicProc", "Tcl_RegExpIndices", "Tcl_RegExpInfo", "Tcl_ScaleTimeProc",
+            "Tcl_SetFromAnyProc", "Tcl_TcpAcceptProc", "Tcl_Time", "Tcl_TimerProc", "Tcl_Token", "Tcl_UpdateStringProc",
+            "Tcl_Value", "Tcl_VarTraceProc", "argc", "argv", "argv0", "auto_path", "env", "errorCode", "errorInfo",
+            "filename", "re_syntax", "safe", "Tcl", "tcl_interactive", "tcl_library", "TCL_MEM_DEBUG",
+            "tcl_nonwordchars", "tcl_patchLevel", "tcl_pkgPath", "tcl_platform", "tcl_precision", "tcl_rcFileName",
+            "tcl_traceCompile", "tcl_traceEval", "tcl_version", "tcl_wordchars"
+        ]
+
+        self.myKeywords = self.tcl_commands_list + self.ordinary_keywords + self.tcl_keywords
 
         self.shell = FCShell(self, version=self.version)
         self.shell._edit.set_model_data(self.myKeywords)
+        self.ui.code_editor.set_model_data(self.myKeywords)
         self.shell.setWindowIcon(self.ui.app_icon)
         self.shell.setWindowTitle("FlatCAM Shell")
         self.shell.resize(*self.defaults["global_shell_shape"])
@@ -1610,9 +1827,11 @@ class App(QtCore.QObject):
         # Variable to store the GCODE that was edited
         self.gcode_edited = ""
 
-        self.grb_list = ['gbr', 'ger', 'gtl', 'gbl', 'gts', 'gbs', 'gtp', 'gbp', 'gto', 'gbo', 'gm1', 'gm2', 'gm3', 'gko',
-                    'cmp', 'sol', 'stc', 'sts', 'plc', 'pls', 'crc', 'crs', 'tsm', 'bsm', 'ly2', 'ly15', 'dim', 'mil',
-                    'grb', 'top', 'bot', 'smt', 'smb', 'sst', 'ssb', 'spt', 'spb', 'pho', 'gdo', 'art', 'gbd']
+        self.grb_list = ['gbr', 'ger', 'gtl', 'gbl', 'gts', 'gbs', 'gtp', 'gbp', 'gto', 'gbo', 'gm1', 'gm2', 'gm3',
+                         'gko', 'cmp', 'sol', 'stc', 'sts', 'plc', 'pls', 'crc', 'crs', 'tsm', 'bsm', 'ly2', 'ly15',
+                         'dim', 'mil', 'grb', 'top', 'bot', 'smt', 'smb', 'sst', 'ssb', 'spt', 'spb', 'pho', 'gdo',
+                         'art', 'gbd', 'gb0', 'gb1', 'gb2', 'gb3', 'g4', 'gb5', 'gb6', 'gb7', 'gb8', 'gb9'
+                         ]
         self.exc_list = ['drl', 'txt', 'xln', 'drd', 'tap', 'exc']
         self.gcode_list = ['nc', 'ncc', 'tap', 'gcode', 'cnc', 'ecs', 'fnc', 'dnc', 'ncg', 'gc', 'fan', 'fgc', 'din',
                       'xpi', 'hnc', 'h', 'i', 'ncp', 'min', 'gcd', 'rol', 'mpr', 'ply', 'out', 'eia', 'plt', 'sbp',
@@ -1640,8 +1859,8 @@ class App(QtCore.QObject):
         if not factory_defaults:
             self.save_factory_defaults(silent=False)
             # ONLY AT FIRST STARTUP INIT THE GUI LAYOUT TO 'COMPACT'
-            initial_lay = 'Compact'
-            self.on_layout(index=None, lay=initial_lay)
+            initial_lay = 'compact'
+            self.on_layout(lay=initial_lay)
             # Set the combobox in Preferences to the current layout
             idx = self.ui.general_defaults_form.general_gui_set_group.layout_combo.findText(initial_lay)
             self.ui.general_defaults_form.general_gui_set_group.layout_combo.setCurrentIndex(idx)
@@ -1688,6 +1907,20 @@ class App(QtCore.QObject):
                         self.open_config_file(file_name, run_from_arg=True)
                 except Exception as e:
                     log.debug("Could not open FlatCAM Config file as App parameter due: %s" % str(e))
+
+            if '.FlatScript' in argument:
+                try:
+                    file_name = str(argument)
+
+                    if file_name == "":
+                        self.inform.emit(_("Open Script file failed."))
+                    else:
+                        # run_from_arg = True
+                        # self.worker_task.emit({'fcn': self.open_script_file,
+                        #                        'params': [file_name, run_from_arg]})
+                        self.on_filerunscript(name=file_name)
+                except Exception as e:
+                    log.debug("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
 
     def defaults_read_form(self):
         for option in self.defaults_form_fields:
@@ -1825,9 +2058,10 @@ class App(QtCore.QObject):
         self.ui.zoom_out_btn.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
 
         self.ui.newgeo_btn.triggered.connect(self.new_geometry_object)
+        self.ui.newgrb_btn.triggered.connect(self.new_gerber_object)
         self.ui.newexc_btn.triggered.connect(self.new_excellon_object)
         self.ui.editgeo_btn.triggered.connect(self.object2editor)
-        self.ui.update_obj_btn.triggered.connect(self.editor2object)
+        self.ui.update_obj_btn.triggered.connect(lambda: self.editor2object())
         self.ui.delete_btn.triggered.connect(self.on_delete)
         self.ui.shell_btn.triggered.connect(self.on_toggle_shell)
 
@@ -1852,25 +2086,30 @@ class App(QtCore.QObject):
         """
         self.report_usage("object2editor()")
 
-        # adjust the visibility of some of the canvas context menu
-        self.ui.popmenu_edit.setVisible(False)
-        self.ui.popmenu_save.setVisible(True)
-
-        # adjust the status of the menu entries related to the editor
-        self.ui.menueditedit.setDisabled(True)
-        self.ui.menueditok.setDisabled(False)
-
         edited_object = self.collection.get_active()
 
-        if isinstance(edited_object, FlatCAMGeometry):
-            # for now, if the Geometry is MultiGeo do not allow the editing
-            if edited_object.multigeo is True:
-                self.inform.emit(_("[WARNING_NOTCL] Editing a MultiGeo Geometry is not possible for the moment."))
-                return
+        if isinstance(edited_object, FlatCAMGerber) or isinstance(edited_object, FlatCAMGeometry) or \
+                isinstance(edited_object, FlatCAMExcellon):
 
+            # adjust the status of the menu entries related to the editor
+            self.ui.menueditedit.setDisabled(True)
+            self.ui.menueditok.setDisabled(False)
+        else:
+            self.inform.emit(_("[WARNING_NOTCL] Select a Geometry or Excellon Object to edit."))
+            return
+
+        if isinstance(edited_object, FlatCAMGeometry):
             # store the Geometry Editor Toolbar visibility before entering in the Editor
             self.geo_editor.toolbar_old_state = True if self.ui.geo_edit_toolbar.isVisible() else False
-            self.geo_editor.edit_fcgeometry(edited_object)
+
+            if edited_object.multigeo is True:
+                edited_tools = [int(x.text()) for x in edited_object.ui.geo_tools_table.selectedItems()]
+                if len(edited_tools) > 1:
+                    self.inform.emit(_("[WARNING_NOTCL] Simultanoeus editing of tools geometry in a MultiGeo Geometry "
+                                       "is not possible.\n Edit only one geometry at a time."))
+                self.geo_editor.edit_fcgeometry(edited_object, multigeo_tool=edited_tools[0])
+            else:
+                self.geo_editor.edit_fcgeometry(edited_object)
 
             # we set the notebook to hidden
             self.ui.splitter.setSizes([0, 1])
@@ -1885,9 +2124,14 @@ class App(QtCore.QObject):
 
             # set call source to the Editor we go into
             self.call_source = 'exc_editor'
-        else:
-            self.inform.emit(_("[WARNING_NOTCL]Select a Geometry or Excellon Object to edit."))
-            return
+
+        elif isinstance(edited_object, FlatCAMGerber):
+            # store the Gerber Editor Toolbar visibility before entering in the Editor
+            self.grb_editor.toolbar_old_state = True if self.ui.grb_edit_toolbar.isVisible() else False
+            self.grb_editor.edit_fcgerber(edited_object)
+
+            # set call source to the Editor we go into
+            self.call_source = 'grb_editor'
 
         # make sure that we can't select another object while in Editor Mode:
         self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
@@ -1897,11 +2141,11 @@ class App(QtCore.QObject):
 
         self.ui.plot_tab_area.setTabText(0, "EDITOR Area")
         self.ui.plot_tab_area.protectTab(0)
-        self.inform.emit(_("[WARNING_NOTCL]Editor is activated ..."))
+        self.inform.emit(_("[WARNING_NOTCL] Editor is activated ..."))
 
         self.should_we_save = True
 
-    def editor2object(self):
+    def editor2object(self, cleanup=None):
         """
         Transfers the Geometry or Excellon from the editor to the current object.
 
@@ -1922,31 +2166,96 @@ class App(QtCore.QObject):
             edited_obj = self.collection.get_active()
             obj_type = ""
 
-            if isinstance(edited_obj, FlatCAMGeometry):
-                obj_type = "Geometry"
-                self.geo_editor.update_fcgeometry(edited_obj)
-                self.geo_editor.update_options(edited_obj)
-                self.geo_editor.deactivate()
+            if cleanup is None:
+                msgbox = QtWidgets.QMessageBox()
+                msgbox.setText(_("Do you want to save the edited object?"))
+                msgbox.setWindowTitle(_("Close Editor"))
+                msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
 
-                # update the geo object options so it is including the bounding box values
-                try:
-                    xmin, ymin, xmax, ymax = edited_obj.bounds()
-                    edited_obj.options['xmin'] = xmin
-                    edited_obj.options['ymin'] = ymin
-                    edited_obj.options['xmax'] = xmax
-                    edited_obj.options['ymax'] = ymax
-                except AttributeError:
-                    self.inform.emit(_("[WARNING] Object empty after edit."))
+                bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
+                bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+                bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
-            elif isinstance(edited_obj, FlatCAMExcellon):
-                obj_type = "Excellon"
-                self.exc_editor.update_fcexcellon(edited_obj)
-                self.exc_editor.update_options(edited_obj)
-                self.exc_editor.deactivate()
+                msgbox.setDefaultButton(bt_yes)
+                msgbox.exec_()
+                response = msgbox.clickedButton()
 
+                if response == bt_yes:
+                    if isinstance(edited_obj, FlatCAMGeometry):
+                        obj_type = "Geometry"
+                        if cleanup is None:
+                            self.geo_editor.update_fcgeometry(edited_obj)
+                            self.geo_editor.update_options(edited_obj)
+                        self.geo_editor.deactivate()
+
+                        # update the geo object options so it is including the bounding box values
+                        try:
+                            xmin, ymin, xmax, ymax = edited_obj.bounds()
+                            edited_obj.options['xmin'] = xmin
+                            edited_obj.options['ymin'] = ymin
+                            edited_obj.options['xmax'] = xmax
+                            edited_obj.options['ymax'] = ymax
+                        except AttributeError as e:
+                            self.inform.emit(_("[WARNING] Object empty after edit."))
+                            log.debug("App.editor2object() --> Geometry --> %s" % str(e))
+                    elif isinstance(edited_obj, FlatCAMGerber):
+                        new_obj = self.collection.get_active()
+                        obj_type = "Gerber"
+                        if cleanup is None:
+                            self.grb_editor.update_fcgerber(edited_obj)
+                            self.grb_editor.update_options(new_obj)
+                        self.grb_editor.deactivate_grb_editor()
+
+                        # delete the old object (the source object) if it was an empty one
+                        if edited_obj.solid_geometry.is_empty:
+                            old_name = edited_obj.options['name']
+                            self.collection.set_active(old_name)
+                            self.collection.delete_active()
+                        else:
+                            # update the geo object options so it is including the bounding box values
+                            # but don't do this for objects that are made out of empty source objects, it will fail
+                            try:
+                                xmin, ymin, xmax, ymax = new_obj.bounds()
+                                new_obj.options['xmin'] = xmin
+                                new_obj.options['ymin'] = ymin
+                                new_obj.options['xmax'] = xmax
+                                new_obj.options['ymax'] = ymax
+                            except Exception as e:
+                                self.inform.emit(_("[WARNING] Object empty after edit."))
+                                log.debug("App.editor2object() --> Gerber --> %s" % str(e))
+                    elif isinstance(edited_obj, FlatCAMExcellon):
+                        obj_type = "Excellon"
+                        if cleanup is None:
+                            self.exc_editor.update_fcexcellon(edited_obj)
+                            self.exc_editor.update_options(edited_obj)
+                        self.exc_editor.deactivate()
+                    else:
+                        self.inform.emit(_("[WARNING_NOTCL] Select a Gerber, Geometry or Excellon Object to update."))
+                        return
+
+                    self.inform.emit(_("[selected] %s is updated, returning to App...") % obj_type)
+                elif response == bt_no:
+                    if isinstance(edited_obj, FlatCAMGeometry):
+                        self.geo_editor.deactivate()
+                    elif isinstance(edited_obj, FlatCAMGerber):
+                        self.grb_editor.deactivate_grb_editor()
+                    elif isinstance(edited_obj, FlatCAMExcellon):
+                        self.exc_editor.deactivate()
+                    else:
+                        self.inform.emit(_("[WARNING_NOTCL] Select a Gerber, Geometry or Excellon Object to update."))
+                        return
+                elif response == bt_cancel:
+                    return
             else:
-                self.inform.emit(_("[WARNING_NOTCL]Select a Geometry or Excellon Object to update."))
-                return
+                if isinstance(edited_obj, FlatCAMGeometry):
+                    self.geo_editor.deactivate()
+                elif isinstance(edited_obj, FlatCAMGerber):
+                    self.grb_editor.deactivate_grb_editor()
+                elif isinstance(edited_obj, FlatCAMExcellon):
+                    self.exc_editor.deactivate()
+                else:
+                    self.inform.emit(_("[WARNING_NOTCL] Select a Gerber, Geometry or Excellon Object to update."))
+                    return
 
             # if notebook is hidden we show it
             if self.ui.splitter.sizes()[0] == 0:
@@ -1958,14 +2267,9 @@ class App(QtCore.QObject):
             edited_obj.plot()
             self.ui.plot_tab_area.setTabText(0, "Plot Area")
             self.ui.plot_tab_area.protectTab(0)
-            self.inform.emit(_("[selected] %s is updated, returning to App...") % obj_type)
 
-            # reset the Object UI to original settings
-            # edited_obj.set_ui(edited_obj.ui_type())
-            # edited_obj.build_ui()
             # make sure that we reenable the selection on Project Tab after returning from Editor Mode:
             self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-
 
     def get_last_folder(self):
         return self.defaults["global_last_folder"]
@@ -2259,11 +2563,16 @@ class App(QtCore.QObject):
             self.ui.geo_edit_toolbar.setVisible(False)
 
         if tb & 64:
+            self.ui.grb_edit_toolbar.setVisible(True)
+        else:
+            self.ui.grb_edit_toolbar.setVisible(False)
+
+        if tb & 128:
             self.ui.snap_toolbar.setVisible(True)
         else:
             self.ui.snap_toolbar.setVisible(False)
 
-        if tb & 128:
+        if tb & 256:
             self.ui.toolbarshell.setVisible(True)
         else:
             self.ui.toolbarshell.setVisible(False)
@@ -2283,14 +2592,14 @@ class App(QtCore.QObject):
             self.log.error("Could not load defaults file.")
             self.inform.emit(_("[ERROR] Could not load defaults file."))
             # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 255
+            self.defaults["global_toolbar_view"] = 511
             return
 
         try:
             defaults = json.loads(options)
         except:
             # in case the defaults file can't be loaded, show all toolbars
-            self.defaults["global_toolbar_view"] = 255
+            self.defaults["global_toolbar_view"] = 511
             e = sys.exc_info()[0]
             App.log.error(str(e))
             self.inform.emit(_("[ERROR] Failed to parse defaults file."))
@@ -2322,7 +2631,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]FlatCAM preferences import cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] FlatCAM preferences import cancelled."))
         else:
             try:
                 f = open(filename)
@@ -2341,7 +2650,7 @@ class App(QtCore.QObject):
                 self.inform.emit(_("[ERROR_NOTCL] Failed to parse defaults file."))
                 return
             self.defaults.update(defaults_from_file)
-            self.inform.emit(_("[success]Imported Defaults from %s") %filename)
+            self.inform.emit(_("[success] Imported Defaults from %s") %filename)
 
     def on_export_preferences(self):
 
@@ -2352,7 +2661,7 @@ class App(QtCore.QObject):
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Export FlatCAM Preferences"),
-                directory=self.data_path + '/preferences_' + self.date.replace('-', ''), filter=filter
+                directory=self.data_path + '/preferences_' + self.date, filter=filter
             )
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export FlatCAM Preferences"), filter=filter)
@@ -2361,7 +2670,7 @@ class App(QtCore.QObject):
         defaults_from_file = {}
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]FlatCAM preferences export cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] FlatCAM preferences export cancelled."))
             return
         else:
             try:
@@ -2377,7 +2686,7 @@ class App(QtCore.QObject):
                 e = sys.exc_info()[0]
                 App.log.error("Could not load defaults file.")
                 App.log.error(str(e))
-                self.inform.emit(_("[ERROR_NOTCL]Could not load defaults file."))
+                self.inform.emit(_("[ERROR_NOTCL] Could not load defaults file."))
                 return
 
             try:
@@ -2400,7 +2709,7 @@ class App(QtCore.QObject):
                 return
 
         self.file_saved.emit("preferences", filename)
-        self.inform.emit("[success]Exported Defaults to %s" % filename)
+        self.inform.emit("[success] Exported Defaults to %s" % filename)
 
     def on_preferences_open_folder(self):
         self.report_usage("on_preferences_open_folder()")
@@ -2411,14 +2720,14 @@ class App(QtCore.QObject):
             os.system('open "%s"' % self.data_path)
         else:
             subprocess.Popen(['xdg-open', self.data_path])
-        self.inform.emit("[success]FlatCAM Preferences Folder opened.")
+        self.inform.emit("[success] FlatCAM Preferences Folder opened.")
 
     def save_geometry(self, x, y, width, height, notebook_width):
         self.defaults["global_def_win_x"] = x
         self.defaults["global_def_win_y"] = y
         self.defaults["global_def_win_w"] = width
         self.defaults["global_def_win_h"] = height
-        self.defaults["def_notebook_width"] = notebook_width
+        self.defaults["global_def_notebook_width"] = notebook_width
         self.save_defaults()
 
     def message_dialog(self, title, message, kind="info"):
@@ -2448,7 +2757,7 @@ class App(QtCore.QObject):
             f = open(self.data_path + '/recent.json', 'w')
         except IOError:
             App.log.error("Failed to open recent items file for writing.")
-            self.inform.emit(_('[ERROR_NOTCL]Failed to open recent files file for writing.'))
+            self.inform.emit(_('[ERROR_NOTCL] Failed to open recent files file for writing.'))
             return
 
         #try:
@@ -2583,7 +2892,7 @@ class App(QtCore.QObject):
     def new_excellon_object(self):
         self.report_usage("new_excellon_object()")
 
-        self.new_object('excellon', 'new_e', lambda x, y: None, plot=False)
+        self.new_object('excellon', 'new_exc', lambda x, y: None, plot=False)
 
     def new_geometry_object(self):
         self.report_usage("new_geometry_object()")
@@ -2591,7 +2900,19 @@ class App(QtCore.QObject):
         def initialize(obj, self):
             obj.multitool = False
 
-        self.new_object('geometry', 'new_g', initialize, plot=False)
+        self.new_object('geometry', 'new_geo', initialize, plot=False)
+
+    def new_gerber_object(self):
+        self.report_usage("new_gerber_object()")
+
+        def initialize(grb_obj, self):
+            grb_obj.multitool = False
+            grb_obj.source_file = []
+            grb_obj.multigeo = False
+            grb_obj.follow = False
+            grb_obj.apertures = {}
+
+        self.new_object('gerber', 'new_grb', initialize, plot=False)
 
     def on_object_created(self, obj, plot, autoselect):
         """
@@ -2612,21 +2933,22 @@ class App(QtCore.QObject):
         # self.inform.emit('[selected] %s created & selected: %s' %
         #                  (str(obj.kind).capitalize(), str(obj.options['name'])))
         if obj.kind == 'gerber':
-            self.inform.emit(_('[selected]{kind} created/selected: <span style="color:{color};">{name}</span>').format(
+            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
                 kind=obj.kind.capitalize(), color='green', name=str(obj.options['name'])))
         elif obj.kind == 'excellon':
-            self.inform.emit(_('[selected]{kind} created/selected: <span style="color:{color};">{name}</span>').format(
+            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
                 kind=obj.kind.capitalize(), color='brown', name=str(obj.options['name'])))
         elif obj.kind == 'cncjob':
-            self.inform.emit(_('[selected]{kind} created/selected: <span style="color:{color};">{name}</span>').format(
+            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
                 kind=obj.kind.capitalize(), color='blue', name=str(obj.options['name'])))
         elif obj.kind == 'geometry':
-            self.inform.emit(_('[selected]{kind} created/selected: <span style="color:{color};">{name}</span>').format(
+            self.inform.emit(_('[selected] {kind} created/selected: <span style="color:{color};">{name}</span>').format(
                 kind=obj.kind.capitalize(), color='red', name=str(obj.options['name'])))
 
         # update the SHELL auto-completer model with the name of the new object
         self.myKeywords.append(obj.options['name'])
         self.shell._edit.set_model_data(self.myKeywords)
+        self.ui.code_editor.set_model_data(self.myKeywords)
 
         if autoselect:
             # select the just opened object but deselect the previous ones
@@ -2764,32 +3086,32 @@ class App(QtCore.QObject):
 
         self.save_defaults()
 
-    def on_app_exit(self):
-        self.report_usage("on_app_exit()")
-
-        if self.collection.get_list():
-            msgbox = QtWidgets.QMessageBox()
-            # msgbox.setText("<B>Save changes ...</B>")
-            msgbox.setText("There are files/objects opened in FlatCAM. "
-                           "\n"
-                           "Do you want to Save the project?")
-            msgbox.setWindowTitle("Save changes")
-            msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No |
-                                      QtWidgets.QMessageBox.Cancel)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Yes)
-
-            response = msgbox.exec_()
-
-            if response == QtWidgets.QMessageBox.Yes:
-                self.on_file_saveprojectas(thread=False)
-            elif response == QtWidgets.QMessageBox.Cancel:
-                return
-            self.save_defaults()
-        else:
-            self.save_defaults()
-        log.debug("Application defaults saved ... Exit event.")
-        QtWidgets.qApp.quit()
+    # def on_app_exit(self):
+    #     self.report_usage("on_app_exit()")
+    #
+    #     if self.collection.get_list():
+    #         msgbox = QtWidgets.QMessageBox()
+    #         # msgbox.setText("<B>Save changes ...</B>")
+    #         msgbox.setText("There are files/objects opened in FlatCAM. "
+    #                        "\n"
+    #                        "Do you want to Save the project?")
+    #         msgbox.setWindowTitle("Save changes")
+    #         msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
+    #         msgbox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No |
+    #                                   QtWidgets.QMessageBox.Cancel)
+    #         msgbox.setDefaultButton(QtWidgets.QMessageBox.Yes)
+    #
+    #         response = msgbox.exec_()
+    #
+    #         if response == QtWidgets.QMessageBox.Yes:
+    #             self.on_file_saveprojectas(thread=False)
+    #         elif response == QtWidgets.QMessageBox.Cancel:
+    #             return
+    #         self.save_defaults()
+    #     else:
+    #         self.save_defaults()
+    #     log.debug("Application defaults saved ... Exit event.")
+    #     QtWidgets.qApp.quit()
 
     def save_defaults(self, silent=False):
         """
@@ -2826,15 +3148,6 @@ class App(QtCore.QObject):
         defaults.update(self.defaults)
         self.propagate_defaults(silent=True)
 
-        # Save update options
-        try:
-            f = open(self.data_path + "/current_defaults.FlatConfig", "w")
-            json.dump(defaults, f, default=to_dict, indent=2, sort_keys=True)
-            f.close()
-        except:
-            self.inform.emit(_("[ERROR_NOTCL] Failed to write defaults to file."))
-            return
-
         # Save the toolbar view
         tb_status = 0
         if self.ui.toolbarfile.isVisible():
@@ -2855,16 +3168,28 @@ class App(QtCore.QObject):
         if self.ui.geo_edit_toolbar.isVisible():
             tb_status += 32
 
-        if self.ui.snap_toolbar.isVisible():
+        if self.ui.grb_edit_toolbar.isVisible():
             tb_status += 64
 
-        if self.ui.toolbarshell.isVisible():
+        if self.ui.snap_toolbar.isVisible():
             tb_status += 128
+
+        if self.ui.toolbarshell.isVisible():
+            tb_status += 256
 
         self.defaults["global_toolbar_view"] = tb_status
 
+        # Save update options
+        try:
+            f = open(self.data_path + "/current_defaults.FlatConfig", "w")
+            json.dump(defaults, f, default=to_dict, indent=2, sort_keys=True)
+            f.close()
+        except:
+            self.inform.emit(_("[ERROR_NOTCL] Failed to write defaults to file."))
+            return
+
         if not silent:
-            self.inform.emit(_("[success]Defaults saved."))
+            self.inform.emit(_("[success] Defaults saved."))
 
     def save_factory_defaults(self, silent=False):
         """
@@ -2915,6 +3240,11 @@ class App(QtCore.QObject):
             self.inform.emit(_("Factory defaults saved."))
 
     def final_save(self):
+
+        if self.save_in_progress:
+            self.inform.emit(_("[WARNING_NOTCL] Application is saving the project. Please wait ..."))
+            return
+
         if self.should_we_save and self.collection.get_list():
             msgbox = QtWidgets.QMessageBox()
             msgbox.setText(_("There are files/objects modified in FlatCAM. "
@@ -2922,18 +3252,24 @@ class App(QtCore.QObject):
                            "Do you want to Save the project?"))
             msgbox.setWindowTitle(_("Save changes"))
             msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No |
-                                      QtWidgets.QMessageBox.Cancel)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Yes)
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
+            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+            bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
-            response = msgbox.exec_()
+            msgbox.setDefaultButton(bt_yes)
+            msgbox.exec_()
+            response = msgbox.clickedButton()
 
-            if response == QtWidgets.QMessageBox.Yes:
-                self.on_file_saveprojectas(thread=False)
-            elif response == QtWidgets.QMessageBox.Cancel:
-                self.should_we_quit = False
+            if response == bt_yes:
+                self.on_file_saveprojectas(thread=True, quit=True)
+            elif response == bt_no:
+                self.quit_application()
+            elif response == bt_cancel:
                 return
+        else:
+            self.quit_application()
 
+    def quit_application(self):
         self.save_defaults()
         log.debug("App.final_save() --> App Defaults saved.")
 
@@ -2941,6 +3277,7 @@ class App(QtCore.QObject):
         settings = QSettings("Open Source", "FlatCAM")
         settings.setValue('saved_gui_state', self.ui.saveState())
         settings.setValue('maximized_gui', self.ui.isMaximized())
+        settings.setValue('language', self.ui.general_defaults_form.general_app_group.language_cb.get_value())
 
         # This will write the setting to the platform specific storage.
         del settings
@@ -3021,7 +3358,7 @@ class App(QtCore.QObject):
 
         for obj in objs:
             if not isinstance(obj, FlatCAMExcellon):
-                self.inform.emit(_("[ERROR_NOTCL]Failed. Excellon joining works only on Excellon objects."))
+                self.inform.emit(_("[ERROR_NOTCL] Failed. Excellon joining works only on Excellon objects."))
                 return
 
         def initialize(obj, app):
@@ -3043,7 +3380,7 @@ class App(QtCore.QObject):
 
         for obj in objs:
             if not isinstance(obj, FlatCAMGerber):
-                self.inform.emit(_("[ERROR_NOTCL]Failed. Gerber joining works only on Gerber objects."))
+                self.inform.emit(_("[ERROR_NOTCL] Failed. Gerber joining works only on Gerber objects."))
                 return
 
         def initialize(obj, app):
@@ -3058,11 +3395,11 @@ class App(QtCore.QObject):
         obj = self.collection.get_active()
 
         if obj is None:
-            self.inform.emit(_("[ERROR_NOTCL]Failed. Select a Geometry Object and try again."))
+            self.inform.emit(_("[ERROR_NOTCL] Failed. Select a Geometry Object and try again."))
             return
 
         if not isinstance(obj, FlatCAMGeometry):
-            self.inform.emit(_("[ERROR_NOTCL]Expected a FlatCAMGeometry, got %s") % type(obj))
+            self.inform.emit(_("[ERROR_NOTCL] Expected a FlatCAMGeometry, got %s") % type(obj))
             return
 
         obj.multigeo = True
@@ -3083,11 +3420,11 @@ class App(QtCore.QObject):
         obj = self.collection.get_active()
 
         if obj is None:
-            self.inform.emit(_("[ERROR_NOTCL]Failed. Select a Geometry Object and try again."))
+            self.inform.emit(_("[ERROR_NOTCL] Failed. Select a Geometry Object and try again."))
             return
 
         if not isinstance(obj, FlatCAMGeometry):
-            self.inform.emit(_("[ERROR_NOTCL]Expected a FlatCAMGeometry, got %s") % type(obj))
+            self.inform.emit(_("[ERROR_NOTCL] Expected a FlatCAMGeometry, got %s") % type(obj))
             return
 
         obj.multigeo = False
@@ -3243,15 +3580,19 @@ class App(QtCore.QObject):
 
         # Changing project units. Warn user.
         msgbox = QtWidgets.QMessageBox()
+        msgbox.setWindowTitle("Toggle Units")
+        msgbox.setWindowIcon(QtGui.QIcon('share/toggle_units32.png'))
         msgbox.setText("<B>Change project units ...</B>")
         msgbox.setInformativeText("Changing the units of the project causes all geometrical "
-                                  "properties of all objects to be scaled accordingly. Continue?")
-        msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Ok)
-        msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                                  "properties of all objects to be scaled accordingly.\nContinue?")
+        bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+        bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
-        response = msgbox.exec_()
+        msgbox.setDefaultButton(bt_ok)
+        msgbox.exec_()
+        response = msgbox.clickedButton()
 
-        if response == QtWidgets.QMessageBox.Ok:
+        if response == bt_ok:
             self.options_read_form()
             scale_options(factor)
             self.options_write_form()
@@ -3285,7 +3626,7 @@ class App(QtCore.QObject):
                     current.to_form()
 
             self.plot_all()
-            self.inform.emit(_("[success]Converted units to %s") % self.defaults["units"])
+            self.inform.emit(_("[success] Converted units to %s") % self.defaults["units"])
             # self.ui.units_label.setText("[" + self.options["units"] + "]")
             self.set_screen_units(self.defaults["units"])
         else:
@@ -3296,7 +3637,7 @@ class App(QtCore.QObject):
             else:
                 self.ui.general_defaults_form.general_app_group.units_radio.set_value('MM')
             self.toggle_units_ignore = False
-            self.inform.emit(_("[WARNING_NOTCL]Units conversion cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Units conversion cancelled."))
 
         self.options_read_form()
         self.defaults_read_form()
@@ -3368,27 +3709,6 @@ class App(QtCore.QObject):
         self.report_usage("on_toggle_grid()")
 
         self.ui.grid_snap_btn.trigger()
-
-    def on_toggle_code_editor(self):
-        self.report_usage("on_toggle_code_editor()")
-
-        if self.toggle_codeeditor is False:
-            # add the tab if it was closed
-            self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, "Code Editor")
-            self.ui.cncjob_tab.setObjectName('cncjob_tab')
-            # first clear previous text in text editor (if any)
-            self.ui.code_editor.clear()
-
-            # Switch plot_area to CNCJob tab
-            self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
-
-            self.toggle_codeeditor = True
-        else:
-            for idx in range(self.ui.plot_tab_area.count()):
-                if self.ui.plot_tab_area.widget(idx).objectName() == "cncjob_tab":
-                    self.ui.plot_tab_area.closeTab(idx)
-                    break
-            self.toggle_codeeditor = False
 
     def on_options_combo_change(self, sel):
         """
@@ -3730,7 +4050,7 @@ class App(QtCore.QObject):
             self.ui.general_defaults_form.general_gui_group.workspace_cb.setChecked(True)
         self.on_workspace()
 
-    def on_layout(self, index, lay=None):
+    def on_layout(self, index=None, lay=None):
         self.report_usage("on_layout()")
         if lay:
             current_layout = lay
@@ -3752,12 +4072,13 @@ class App(QtCore.QObject):
             self.ui.removeToolBar(self.ui.toolbartools)
             self.ui.removeToolBar(self.ui.exc_edit_toolbar)
             self.ui.removeToolBar(self.ui.geo_edit_toolbar)
+            self.ui.removeToolBar(self.ui.grb_edit_toolbar)
             self.ui.removeToolBar(self.ui.snap_toolbar)
             self.ui.removeToolBar(self.ui.toolbarshell)
         except:
             pass
 
-        if current_layout == 'Standard':
+        if current_layout == 'standard':
             ### TOOLBAR INSTALLATION ###
             self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
             self.ui.toolbarfile.setObjectName('File_TB')
@@ -3789,6 +4110,11 @@ class App(QtCore.QObject):
             self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
             self.ui.addToolBar(self.ui.geo_edit_toolbar)
 
+            self.ui.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
+            self.ui.grb_edit_toolbar.setVisible(False)
+            self.ui.grb_edit_toolbar.setObjectName('GrbEditor_TB')
+            self.ui.addToolBar(self.ui.grb_edit_toolbar)
+
             self.ui.snap_toolbar = QtWidgets.QToolBar('Grid Toolbar')
             self.ui.snap_toolbar.setObjectName('Snap_TB')
             # self.ui.snap_toolbar.setMaximumHeight(30)
@@ -3796,7 +4122,7 @@ class App(QtCore.QObject):
 
             self.ui.corner_snap_btn.setVisible(False)
             self.ui.snap_magnet.setVisible(False)
-        elif current_layout == 'Compact':
+        elif current_layout == 'compact':
             ### TOOLBAR INSTALLATION ###
             self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
             self.ui.toolbarfile.setObjectName('File_TB')
@@ -3820,6 +4146,11 @@ class App(QtCore.QObject):
             # self.ui.geo_edit_toolbar.setVisible(False)
             self.ui.geo_edit_toolbar.setObjectName('GeoEditor_TB')
             self.ui.addToolBar(Qt.RightToolBarArea, self.ui.geo_edit_toolbar)
+
+            self.ui.grb_edit_toolbar = QtWidgets.QToolBar('Gerber Editor Toolbar')
+            # self.ui.grb_edit_toolbar.setVisible(False)
+            self.ui.grb_edit_toolbar.setObjectName('GrbEditor_TB')
+            self.ui.addToolBar(Qt.RightToolBarArea, self.ui.grb_edit_toolbar)
 
             self.ui.exc_edit_toolbar = QtWidgets.QToolBar('Excellon Editor Toolbar')
             self.ui.exc_edit_toolbar.setObjectName('ExcEditor_TB')
@@ -3858,21 +4189,6 @@ class App(QtCore.QObject):
         # Re-fresh project options
         self.on_options_app2project()
 
-    def handleOpen(self):
-        self.report_usage("handleOpen()")
-
-        filter_group = " G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
-                   "All Files (*.*)"
-        path, _ = QtWidgets.QFileDialog.getOpenFileName(
-            caption=_('Open file'), directory=self.get_last_folder(), filter=filter_group)
-        if path:
-            file = QtCore.QFile(path)
-            if file.open(QtCore.QIODevice.ReadOnly):
-                stream = QtCore.QTextStream(file)
-                self.gcode_edited = stream.readAll()
-                self.ui.code_editor.setPlainText(self.gcode_edited)
-                file.close()
-
     def handlePrint(self):
         self.report_usage("handlePrint()")
 
@@ -3888,14 +4204,32 @@ class App(QtCore.QObject):
         dialog.exec_()
 
     def handleTextChanged(self):
-        self.report_usage("handleTextChanged()")
-
         # enable = not self.ui.code_editor.document().isEmpty()
         # self.ui.buttonPrint.setEnabled(enable)
         # self.ui.buttonPreview.setEnabled(enable)
         pass
 
-    def handleSaveGCode(self, signal, name=None, filt=None):
+    def handleOpen(self, filt=None):
+        self.report_usage("handleOpen()")
+
+        if filt:
+            _filter_ = filt
+        else:
+            _filter_ = "G-Code Files (*.nc);; G-Code Files (*.txt);; G-Code Files (*.tap);; G-Code Files (*.cnc);; " \
+                       "All Files (*.*)"
+
+        path, _f = QtWidgets.QFileDialog.getOpenFileName(
+            caption=_('Open file'), directory=self.get_last_folder(), filter=_filter_)
+
+        if path:
+            file = QtCore.QFile(path)
+            if file.open(QtCore.QIODevice.ReadOnly):
+                stream = QtCore.QTextStream(file)
+                self.gcode_edited = stream.readAll()
+                self.ui.code_editor.setPlainText(self.gcode_edited)
+                file.close()
+
+    def handleSaveGCode(self,name=None, filt=None):
         self.report_usage("handleSaveGCode()")
 
         if filt:
@@ -3911,7 +4245,8 @@ class App(QtCore.QObject):
                 obj_name = self.collection.get_active().options['name']
             except AttributeError:
                 obj_name = 'file'
-                _filter_ = "FlatConfig Files (*.FlatConfig);;All Files (*.*)"
+                if filt is None:
+                    _filter_ = "FlatConfig Files (*.FlatConfig);;All Files (*.*)"
 
         try:
             filename = str(QtWidgets.QFileDialog.getSaveFileName(
@@ -3923,7 +4258,7 @@ class App(QtCore.QObject):
             filename = str(QtWidgets.QFileDialog.getSaveFileName(caption=_("Export G-Code ..."), filter=_filter_)[0])
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]Export Code cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Export Code cancelled."))
             return
         else:
             try:
@@ -4015,8 +4350,9 @@ class App(QtCore.QObject):
                                    "Go to Preferences -> General - Show Advanced Options."))
                     msgbox.setWindowTitle("Tool adding ...")
                     msgbox.setWindowIcon(QtGui.QIcon('share/warning.png'))
-                    msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-                    msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+                    bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+
+                    msgbox.setDefaultButton(bt_ok)
                     msgbox.exec_()
 
         # work only if the notebook tab on focus is the Tools_Tab
@@ -4139,7 +4475,7 @@ class App(QtCore.QObject):
 
         self.plotcanvas.vis_connect('mouse_press', self.on_set_zero_click)
 
-    def on_jump_to(self):
+    def on_jump_to(self, custom_location=None, fit_center=True):
         """
         Jump to a location by setting the mouse cursor location
         :return:
@@ -4147,22 +4483,26 @@ class App(QtCore.QObject):
         """
         self.report_usage("on_jump_to()")
 
-        dia_box = Dialog_box(title=_("Jump to ..."),
-                             label=_("Enter the coordinates in format X,Y:"),
-                             icon=QtGui.QIcon('share/jump_to16.png'))
+        if custom_location is None:
+            dia_box = Dialog_box(title=_("Jump to ..."),
+                                 label=_("Enter the coordinates in format X,Y:"),
+                                 icon=QtGui.QIcon('share/jump_to16.png'))
 
-        if dia_box.ok is True:
-            try:
-                location = eval(dia_box.location)
-                if not isinstance(location, tuple):
-                    self.inform.emit(_("Wrong coordinates. Enter coordinates in format: X,Y"))
+            if dia_box.ok is True:
+                try:
+                    location = eval(dia_box.location)
+                    if not isinstance(location, tuple):
+                        self.inform.emit(_("Wrong coordinates. Enter coordinates in format: X,Y"))
+                        return
+                except:
                     return
-            except:
+            else:
                 return
         else:
-            return
+            location = custom_location
 
-        self.plotcanvas.fit_center(loc=location)
+        if fit_center:
+            self.plotcanvas.fit_center(loc=location)
 
         cursor = QtGui.QCursor()
 
@@ -4177,6 +4517,15 @@ class App(QtCore.QObject):
 
         def initialize(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
+            try:
+                obj_init.follow_geometry = obj.follow_geometry
+            except:
+                pass
+            try:
+                obj_init.apertures = obj.apertures
+            except:
+                pass
+
             try:
                 if obj.tools:
                     obj_init.tools = obj.tools
@@ -4210,6 +4559,15 @@ class App(QtCore.QObject):
 
         def initialize_geometry(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
+            try:
+                obj_init.follow_geometry = obj.follow_geometry
+            except:
+                pass
+            try:
+                obj_init.apertures = obj.apertures
+            except:
+                pass
+
             try:
                 if obj.tools:
                     obj_init.tools = obj.tools
@@ -4259,6 +4617,15 @@ class App(QtCore.QObject):
 
         def initialize(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
+            try:
+                obj_init.follow_geometry = obj.follow_geometry
+            except:
+                pass
+            try:
+                obj_init.apertures = obj.apertures
+            except:
+                pass
+
             if obj.tools:
                 obj_init.tools = obj.tools
 
@@ -4693,7 +5060,7 @@ class App(QtCore.QObject):
             name = obj.options["name"]
         except AttributeError:
             log.debug("on_copy_name() --> No object selected to copy it's name")
-            self.inform.emit(_("[WARNING_NOTCL]No object selected to copy it's name"))
+            self.inform.emit(_("[WARNING_NOTCL] No object selected to copy it's name"))
             return
 
         self.clipboard.setText(name)
@@ -5194,17 +5561,20 @@ class App(QtCore.QObject):
                            "Do you want to Save the project?"))
             msgbox.setWindowTitle(_("Save changes"))
             msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Cancel | QtWidgets.QMessageBox.Yes |
-                                      QtWidgets.QMessageBox.No)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
+            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+            bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
-            response = msgbox.exec_()
+            msgbox.setDefaultButton(bt_yes)
+            msgbox.exec_()
+            response = msgbox.clickedButton()
 
-            if response == QtWidgets.QMessageBox.Yes:
+            if response == bt_yes:
                 self.on_file_saveprojectas()
-            elif response == QtWidgets.QMessageBox.Cancel:
+            elif response == bt_cancel:
                 return
-            self.on_file_new()
+            elif response == bt_no:
+                self.on_file_new()
         else:
             self.on_file_new()
         self.inform.emit(_("[success] New Project created..."))
@@ -5221,6 +5591,13 @@ class App(QtCore.QObject):
 
         # Remove everything from memory
         App.log.debug("on_file_new()")
+
+        if self.call_source != 'app':
+            self.editor2object(cleanup=True)
+            ### EDITOR section
+            self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
+            self.exc_editor = FlatCAMExcEditor(self)
+            self.grb_editor = FlatCAMGrbEditor(self)
 
         # Clear pool
         self.clear_pool()
@@ -5283,48 +5660,6 @@ class App(QtCore.QObject):
         elif type(obj) == FlatCAMGerber:
             self.on_file_savegerber()
 
-    def on_view_source(self):
-
-        try:
-            obj = self.collection.get_active()
-        except:
-            self.inform.emit(_("[WARNING_NOTCL] Select an Gerber or Excellon file to view it's source file."))
-            return 'fail'
-
-        # then append the text from GCode to the text editor
-        try:
-            file = StringIO(obj.source_file)
-        except AttributeError:
-            self.inform.emit(_("[WARNING_NOTCL] There is no selected object for which to see it's source file code."))
-            return 'fail'
-
-        # add the tab if it was closed
-        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _("Code Editor"))
-        # first clear previous text in text editor (if any)
-        self.ui.code_editor.clear()
-
-        # Switch plot_area to CNCJob tab
-        self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
-
-        try:
-            for line in file:
-                proc_line = str(line).strip('\n')
-                self.ui.code_editor.append(proc_line)
-        except Exception as e:
-            log.debug('App.on_view_source() -->%s' % str(e))
-            self.inform.emit(_('[ERROR]App.on_view_source() -->%s') % str(e))
-            return
-
-        self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
-
-        self.handleTextChanged()
-        self.ui.show()
-
-        # if type(obj) == FlatCAMGerber:
-        #     self.on_file_exportdxf()
-        # elif type(obj) == FlatCAMExcellon:
-        #     self.on_file_exportexcellon()
-
     def obj_move(self):
         self.report_usage("obj_move()")
         self.move_tool.run()
@@ -5341,7 +5676,7 @@ class App(QtCore.QObject):
 
         _filter_ = "Gerber Files (*.gbr *.ger *.gtl *.gbl *.gts *.gbs *.gtp *.gbp *.gto *.gbo *.gm1 *.gml *.gm3 *.gko " \
                    "*.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim *.mil *.grb" \
-                   "*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb *.pho *.gdo *.art *.gbd);;" \
+                   "*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb *.pho *.gdo *.art *.gbd *.gb*);;" \
                    "Protel Files (*.gtl *.gbl *.gts *.gbs *.gto *.gbo *.gtp *.gbp *.gml *.gm1 *.gm3 *.gko);;" \
                    "Eagle Files (*.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim *.mil);;" \
                    "OrCAD Files (*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb);;" \
@@ -5387,7 +5722,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit(_("[WARNING_NOTCL]Open Excellon cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Open Excellon cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -5417,7 +5752,7 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit(_("[WARNING_NOTCL]Open G-Code cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Open G-Code cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
@@ -5446,7 +5781,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]Open Project cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Open Project cancelled."))
         else:
             # self.worker_task.emit({'fcn': self.open_project,
             #                        'params': [filename]})
@@ -5472,7 +5807,7 @@ class App(QtCore.QObject):
                                                                  filter = _filter_)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]Open Config cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL Open Config cancelled."))
         else:
             self.open_config_file(filename)
 
@@ -5491,8 +5826,8 @@ class App(QtCore.QObject):
             msg = _("Please Select a Geometry object to export")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+            msgbox.setDefaultButton(bt_ok)
             msgbox.exec_()
             return
 
@@ -5502,8 +5837,8 @@ class App(QtCore.QObject):
             msg = _("[ERROR_NOTCL] Only Geometry, Gerber and CNCJob objects can be used.")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+            msgbox.setDefaultButton(bt_ok)
             msgbox.exec_()
             return
 
@@ -5521,7 +5856,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]Export SVG cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Export SVG cancelled."))
             return
         else:
             self.export_svg(name, filename)
@@ -5542,7 +5877,7 @@ class App(QtCore.QObject):
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Export PNG Image"),
-                directory=self.get_last_save_folder() + '/png_' + str(self.date).replace('-', ''),
+                directory=self.get_last_save_folder() + '/png_' + self.date,
                 filter=filter_)
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export PNG Image"), filter=filter_)
@@ -5667,7 +6002,7 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]Export Excellon cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Export Excellon cancelled."))
             return
         else:
             self.export_excellon(name, filename)
@@ -5688,8 +6023,8 @@ class App(QtCore.QObject):
             msg = _("Please Select a Geometry object to export")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+            msgbox.setDefaultButton(bt_ok)
             msgbox.exec_()
             return
 
@@ -5698,9 +6033,10 @@ class App(QtCore.QObject):
             msg = _("[ERROR_NOTCL] Only Geometry objects can be used.")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
-            msgbox.setStandardButtons(QtWidgets.QMessageBox.Ok)
-            msgbox.setDefaultButton(QtWidgets.QMessageBox.Ok)
+            bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+            msgbox.setDefaultButton(bt_ok)
             msgbox.exec_()
+
             return
 
         name = self.collection.get_active().options["name"]
@@ -5776,26 +6112,121 @@ class App(QtCore.QObject):
         filenames = [str(filename) for filename in filenames]
 
         if len(filenames) == 0:
-            self.inform.emit(_("[WARNING_NOTCL]Open DXF cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Open DXF cancelled."))
         else:
             for filename in filenames:
                 if filename != '':
                     self.worker_task.emit({'fcn': self.import_dxf,
                                            'params': [filename, type_of_obj]})
 
-    def on_filerunscript(self):
-        """
-                File menu callback for loading and running a TCL script.
+    ###################################################################################################################
+    ### The following section has the functions that are displayed are call the Editoe tab CNCJob Tab #################
+    ###################################################################################################################
 
-                :return: None
-                """
+    def init_code_editor(self, name):
+        # Signals section
+        # Disconnect the old signals
+        self.ui.buttonOpen.clicked.disconnect()
+        self.ui.buttonSave.clicked.disconnect()
 
-        self.report_usage("on_filerunscript")
-        App.log.debug("on_file_runscript()")
-        _filter_ = "TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
+        # add the tab if it was closed
+        self.ui.plot_tab_area.addTab(self.ui.cncjob_tab, _('%s') % name)
+        self.ui.cncjob_tab.setObjectName('cncjob_tab')
+
+        # delete the absolute and relative position and messages in the infobar
+        self.ui.position_label.setText("")
+        self.ui.rel_position_label.setText("")
+
+        # first clear previous text in text editor (if any)
+        self.ui.code_editor.clear()
+        self.ui.code_editor.setReadOnly(False)
+        self.toggle_codeeditor = True
+        self.ui.code_editor.completer_enable = False
+
+        # Switch plot_area to CNCJob tab
+        self.ui.plot_tab_area.setCurrentWidget(self.ui.cncjob_tab)
+
+    def on_view_source(self):
+        try:
+            obj = self.collection.get_active()
+        except:
+            self.inform.emit(_("[WARNING_NOTCL] Select an Gerber or Excellon file to view it's source file."))
+            return 'fail'
+
+        # then append the text from GCode to the text editor
+        try:
+            file = StringIO(obj.source_file)
+        except AttributeError:
+            self.inform.emit(_("[WARNING_NOTCL] There is no selected object for which to see it's source file code."))
+            return 'fail'
+
+        if obj.kind == 'gerber':
+            flt = "Gerber Files (*.GBR);;All Files (*.*)"
+        elif obj.kind == 'excellon':
+            flt = "Excellon Files (*.DRL);;All Files (*.*)"
+
+        self.init_code_editor(name=_("Source Editor"))
+        self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen(filt=flt))
+        self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode(filt=flt))
+
+        try:
+            for line in file:
+                proc_line = str(line).strip('\n')
+                self.ui.code_editor.append(proc_line)
+        except Exception as e:
+            log.debug('App.on_view_source() -->%s' % str(e))
+            self.inform.emit(_('[ERROR]App.on_view_source() -->%s') % str(e))
+            return
+
+        self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
+
+        self.handleTextChanged()
+        self.ui.show()
+
+    def on_toggle_code_editor(self):
+        self.report_usage("on_toggle_code_editor()")
+
+        if self.toggle_codeeditor is False:
+            self.init_code_editor(name=_("Code Editor"))
+            self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen())
+            self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode())
+        else:
+            for idx in range(self.ui.plot_tab_area.count()):
+                if self.ui.plot_tab_area.widget(idx).objectName() == "cncjob_tab":
+                    self.ui.plot_tab_area.closeTab(idx)
+                    break
+            self.toggle_codeeditor = False
+
+    def on_filenewscript(self):
+        flt = "FlatCAM Scripts (*.FlatScript);;All Files (*.*)"
+        self.init_code_editor(name=_("Script Editor"))
+        self.ui.code_editor.completer_enable = True
+        self.ui.code_editor.append(_(
+            "#\n"
+            "# CREATE A NEW FLATCAM TCL SCRIPT\n"
+            "# TCL Tutorial here: https://www.tcl.tk/man/tcl8.5/tutorial/tcltutorial.html\n"
+            "#\n\n"
+            "# FlatCAM commands list:\n"
+            "# AddCircle, AddPolygon, AddPolyline, AddRectangle, AlignDrill, AlignDrillGrid, ClearShell, Cncjob,\n"
+            "# Cutout, Delete, Drillcncjob, ExportGcode, ExportSVG, Exteriors, GeoCutout, GeoUnion, GetNames, GetSys,\n"
+            "# ImportSvg, Interiors, Isolate, Follow, JoinExcellon, JoinGeometry, ListSys, MillHoles, Mirror, New,\n"
+            "# NewGeometry, Offset, OpenExcellon, OpenGCode, OpenGerber, OpenProject, Options, Paint, Panelize,\n"
+            "# Plot, SaveProject, SaveSys, Scale, SetActive, SetSys, Skew, SubtractPoly,SubtractRectangle, Version,\n"
+            "# WriteGCode\n"
+            "#\n\n"
+        ))
+
+        self.ui.buttonOpen.clicked.connect(lambda: self.handleOpen(filt=flt))
+        self.ui.buttonSave.clicked.connect(lambda: self.handleSaveGCode(filt=flt))
+
+        self.handleTextChanged()
+        self.ui.code_editor.show()
+
+    def on_fileopenscript(self):
+        _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open TCL script"),
-                                                         directory=self.get_last_folder(), filter=_filter_)
+                                                                 directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open TCL script"), filter=_filter_)
 
@@ -5805,14 +6236,63 @@ class App(QtCore.QObject):
         filename = str(filename)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL]Open TCL script cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Open TCL script cancelled."))
+        else:
+            self.on_filenewscript()
+
+            try:
+                with open(filename, "r") as opened_script:
+                    try:
+                        for line in opened_script:
+                            proc_line = str(line).strip('\n')
+                            self.ui.code_editor.append(proc_line)
+                    except Exception as e:
+                        log.debug('App.on_fileopenscript() -->%s' % str(e))
+                        self.inform.emit(_('[ERROR]App.on_fileopenscript() -->%s') % str(e))
+                        return
+
+                    self.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
+
+                    self.handleTextChanged()
+                    self.ui.show()
+
+            except Exception as e:
+                log.debug("App.on_fileopenscript() -> %s" % str(e))
+
+    def on_filerunscript(self, name=None):
+        """
+                File menu callback for loading and running a TCL script.
+
+                :return: None
+                """
+
+        self.report_usage("on_filerunscript")
+        App.log.debug("on_file_runscript()")
+
+        if name:
+            filename = name
+        else:
+            _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
+            try:
+                filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Run TCL script"),
+                                                             directory=self.get_last_folder(), filter=_filter_)
+            except TypeError:
+                filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Run TCL script"), filter=_filter_)
+
+        # The Qt methods above will return a QString which can cause problems later.
+        # So far json.dump() will fail to serialize it.
+        # TODO: Improve the serialization methods and remove this fix.
+        filename = str(filename)
+
+        if filename == "":
+            self.inform.emit(_("[WARNING_NOTCL] Run TCL script cancelled."))
         else:
             try:
                 with open(filename, "r") as tcl_script:
                     cmd_line_shellfile_content = tcl_script.read()
                     self.shell._sysShell.exec_command(cmd_line_shellfile_content)
-            except Exception as ext:
-                print("ERROR: ", ext)
+            except Exception as e:
+                log.debug("App.on_filerunscript() -> %s" % str(e))
                 sys.exit(2)
 
     def on_file_saveproject(self):
@@ -5831,15 +6311,13 @@ class App(QtCore.QObject):
         else:
             self.worker_task.emit({'fcn': self.save_project,
                                    'params': [self.project_filename]})
-            # self.save_project(self.project_filename)
 
             self.file_opened.emit("project", self.project_filename)
-
             self.file_saved.emit("project", self.project_filename)
 
         self.should_we_save = False
 
-    def on_file_saveprojectas(self, make_copy=False, thread=True):
+    def on_file_saveprojectas(self, make_copy=False, thread=True, quit=False):
         """
         Callback for menu item File->Save Project As... Opens a file
         chooser and saves the project to the given file via
@@ -5854,7 +6332,7 @@ class App(QtCore.QObject):
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Save Project As ..."),
-                directory=_('{l_save}/Project_{date}').format(l_save=str(self.get_last_save_folder()), date=str(self.date.replace('-', ''))),
+                directory=_('{l_save}/Project_{date}').format(l_save=str(self.get_last_save_folder()), date=self.date),
                 filter=filter_)
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Project As ..."), filter=filter_)
@@ -5874,9 +6352,9 @@ class App(QtCore.QObject):
 
         if thread is True:
             self.worker_task.emit({'fcn': self.save_project,
-                                   'params': [filename]})
+                                   'params': [filename, quit]})
         else:
-            self.save_project(filename)
+            self.save_project(filename, quit)
 
         # self.save_project(filename)
         self.file_opened.emit("project", filename)
@@ -5971,7 +6449,7 @@ class App(QtCore.QObject):
             return "Could not retrieve object: %s" % box_name
 
         if box is None:
-            self.inform.emit(_("[WARNING_NOTCL]No object Box. Using instead %s") % obj)
+            self.inform.emit(_("[WARNING_NOTCL] No object Box. Using instead %s") % obj)
             box = obj
 
         def make_negative_film():
@@ -6091,7 +6569,7 @@ class App(QtCore.QObject):
             return "Could not retrieve object: %s" % box_name
 
         if box is None:
-            self.inform.emit(_("[WARNING_NOTCL]No object Box. Using instead %s") % obj)
+            self.inform.emit(_("[WARNING_NOTCL] No object Box. Using instead %s") % obj)
             box = obj
 
         def make_black_film():
@@ -6778,8 +7256,7 @@ class App(QtCore.QObject):
         try:
             d = json.load(f, object_hook=dict2obj)
         except:
-            App.log.error("Failed to parse project file: %s" % filename)
-            self.inform.emit(_("[ERROR_NOTCL] Failed to parse project file: %s") % filename)
+            App.log.error("Failed to parse project file, trying to see if it loads as an LZMA archive: %s" % filename)
             f.close()
 
             # Open and parse a compressed Project file
@@ -6871,15 +7348,15 @@ class App(QtCore.QObject):
                                 self.defaults["global_def_win_y"],
                                 self.defaults["global_def_win_w"],
                                 self.defaults["global_def_win_h"])
-            self.ui.splitter.setSizes([self.defaults["def_notebook_width"], 0])
+            self.ui.splitter.setSizes([self.defaults["global_def_notebook_width"], 0])
 
             settings = QSettings("Open Source", "FlatCAM")
             if settings.contains("maximized_gui"):
                 maximized_ui = settings.value('maximized_gui', type=bool)
                 if maximized_ui is True:
                     self.ui.showMaximized()
-        except KeyError:
-            pass
+        except KeyError as e:
+            log.debug("App.restore_main_win_geom() --> %s" % str(e))
 
     def plot_all(self, zoom=True):
         """
@@ -7371,19 +7848,19 @@ The normal flow when working in FlatCAM is the following:</span></p>
         self.report_usage("disable_all_plots()")
 
         self.disable_plots(self.collection.get_list())
-        self.inform.emit(_("[success]All plots disabled."))
+        self.inform.emit(_("[success] All plots disabled."))
 
     def disable_other_plots(self):
         self.report_usage("disable_other_plots()")
 
         self.disable_plots(self.collection.get_non_selected())
-        self.inform.emit(_("[success]All non selected plots disabled."))
+        self.inform.emit(_("[success] All non selected plots disabled."))
 
     def enable_all_plots(self):
         self.report_usage("enable_all_plots()")
 
         self.enable_plots(self.collection.get_list())
-        self.inform.emit(_("[success]All plots enabled."))
+        self.inform.emit(_("[success] All plots enabled."))
 
     # TODO: FIX THIS
     '''
@@ -7483,7 +7960,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
         for obj in objects:
             obj.on_generatecnc_button_click()
 
-    def save_project(self, filename):
+    def save_project(self, filename, quit=False):
         """
         Saves the current project to the specified file.
 
@@ -7492,6 +7969,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
         :return: None
         """
         self.log.debug("save_project()")
+        self.save_in_progress = True
 
         with self.proc_container.new(_("Saving FlatCAM Project")) as proc:
             ## Capture the latest changes
@@ -7548,6 +8026,40 @@ The normal flow when working in FlatCAM is the following:</span></p>
                     self.inform.emit(_("[success] Project saved to: %s") % filename)
                 else:
                     self.inform.emit(_("[ERROR_NOTCL] Failed to save project file: %s. Retry to save it.") % filename)
+
+            # if quit:
+                # t = threading.Thread(target=lambda: self.check_project_file_size(1, filename=filename))
+                # t.start()
+            self.start_delayed_quit(delay=500, filename=filename, quit=quit)
+
+    def start_delayed_quit(self, delay, filename, quit=None):
+        """
+
+        :param delay:       period of checking if project file size is more than zero; in seconds
+        :param filename:    the name of the project file to be checked periodically for size more than zero
+        :return:
+        """
+        to_quit = quit
+        self.save_timer = QtCore.QTimer()
+        self.save_timer.setInterval(delay)
+        self.save_timer.timeout.connect(lambda : self.check_project_file_size(filename=filename, quit=to_quit))
+        self.save_timer.start()
+
+    def check_project_file_size(self, filename, quit=None):
+        """
+
+        :param filename: the name of the project file to be checked periodically for size more than zero
+        :return:
+        """
+
+        try:
+            if os.stat(filename).st_size > 0:
+                self.save_in_progress = False
+                self.save_timer.stop()
+                if quit:
+                    self.app_quit.emit()
+        except Exception:
+            traceback.print_exc()
 
     def on_options_app2project(self):
         """

@@ -190,7 +190,7 @@ class DblSidedTool(FlatCAMTool):
 
 
         ## Alignment holes
-        self.ah_label = QtWidgets.QLabel("<b%s</b>" % _('Alignment Drill Coordinates:'))
+        self.ah_label = QtWidgets.QLabel("<b>%s</b>" % _('Alignment Drill Coordinates:'))
         self.ah_label.setToolTip(
            _( "Alignment holes (x1, y1), (x2, y2), ... "
             "on one side of the mirror axis. For each set of (x, y) coordinates\n"
@@ -365,7 +365,7 @@ class DblSidedTool(FlatCAMTool):
                 return
 
         if dia is '':
-            self.app.inform.emit(_("[WARNING_NOTCL]No value or wrong format in Drill Dia entry. Add it and retry."))
+            self.app.inform.emit(_("[WARNING_NOTCL] No value or wrong format in Drill Dia entry. Add it and retry."))
             return
         tools = {"1": {"C": dia}}
 

@@ -101,7 +101,7 @@ class ObjectUI(QtWidgets.QWidget):
         self.scale_button.setToolTip(
             _("Perform scaling operation.")
         )
-        self.scale_button.setFixedWidth(50)
+        self.scale_button.setFixedWidth(70)
         self.scale_grid.addWidget(self.scale_button, 0, 2)
 
         #### Offset ####
@@ -128,7 +128,7 @@ class ObjectUI(QtWidgets.QWidget):
         self.offset_button.setToolTip(
             _("Perform the offset operation.")
         )
-        self.offset_button.setFixedWidth(50)
+        self.offset_button.setFixedWidth(70)
         self.offset_grid.addWidget(self.offset_button, 0, 2)
 
         layout.addStretch()
@@ -244,79 +244,8 @@ class GerberObjectUI(ObjectUI):
             _("Mark the aperture instances on canvas."))
         # self.apertures_table.setColumnHidden(5, True)
 
-        #### Aperture Scale ####
-        self.transform_aperture_grid = QtWidgets.QGridLayout()
-        self.custom_box.addLayout(self.transform_aperture_grid)
-
-        # Scale Aperture Factor
-        self.scale_aperture_label = QtWidgets.QLabel(_('Scale Factor:'))
-        self.scale_aperture_label.setToolTip(
-            _("Change the size of the selected apertures.\n"
-            "Factor by which to multiply\n"
-            "geometric features of this object.")
-        )
-        self.scale_aperture_label.setFixedWidth(90)
-        self.transform_aperture_grid.addWidget(self.scale_aperture_label, 0, 0)
-
-        self.scale_aperture_entry = FloatEntry2()
-        self.transform_aperture_grid.addWidget(self.scale_aperture_entry, 0, 1)
-
-        # Scale Button
-        self.scale_aperture_button = QtWidgets.QPushButton(_('Scale'))
-        self.scale_aperture_button.setToolTip(
-            _("Perform scaling operation on the selected apertures.")
-        )
-        self.scale_aperture_button.setFixedWidth(50)
-        self.transform_aperture_grid.addWidget(self.scale_aperture_button, 0, 2)
-
-        # Buffer Aperture Factor
-        self.buffer_aperture_label = QtWidgets.QLabel(_('Buffer Factor:'))
-        self.buffer_aperture_label.setToolTip(
-            _("Change the size of the selected apertures.\n"
-            "Factor by which to expand/shrink\n"
-            "geometric features of this object.")
-        )
-        self.buffer_aperture_label.setFixedWidth(90)
-        self.transform_aperture_grid.addWidget(self.buffer_aperture_label, 1, 0)
-
-        self.buffer_aperture_entry = FloatEntry2()
-        self.transform_aperture_grid.addWidget(self.buffer_aperture_entry, 1, 1)
-
-        # Buffer Button
-        self.buffer_aperture_button = QtWidgets.QPushButton(_('Buffer'))
-        self.buffer_aperture_button.setToolTip(
-            _("Perform buffer operation on the selected apertures.")
-        )
-        self.buffer_aperture_button.setFixedWidth(50)
-        self.transform_aperture_grid.addWidget(self.buffer_aperture_button, 1, 2)
-
-        new_hlay = QtWidgets.QHBoxLayout()
-        self.custom_box.addLayout(new_hlay)
-
-        self.new_grb_label = QtWidgets.QLabel(_("<b>Generate new Gerber Object:</b>"))
-        self.new_grb_label.setToolTip(
-            _("Will generate a new Gerber object from the changed apertures.")
-        )
-        new_hlay.addWidget(self.new_grb_label)
-
-        new_hlay.addStretch()
-
-        self.new_grb_button = FCButton(_('Go'))
-        self.new_grb_button.setToolTip(
-            _("Will generate a new Gerber object from the changed apertures.\n"
-            "This new object can then be isolated etc."))
-        self.new_grb_button.setFixedWidth(50)
-        new_hlay.addWidget(self.new_grb_button)
-
         # start with apertures table hidden
         self.apertures_table.setVisible(False)
-        self.scale_aperture_label.setVisible(False)
-        self.scale_aperture_entry.setVisible(False)
-        self.scale_aperture_button.setVisible(False)
-
-        self.buffer_aperture_label.setVisible(False)
-        self.buffer_aperture_entry.setVisible(False)
-        self.buffer_aperture_button.setVisible(False)
 
         # Isolation Routing
         self.isolation_routing_label = QtWidgets.QLabel(_("<b>Isolation Routing:</b>"))
@@ -1601,13 +1530,6 @@ class CNCObjectUI(ObjectUI):
                 "a Custom Toolchange GCode (macro)."
             )
         )
-        cnclay.addWidget(self.toolchange_cb)
-
-        self.toolch_ois = OptionalInputSection(self.toolchange_cb, [self.toolchangelabel, self.toolchange_text])
-        cnclay.addStretch()
-
-        cnclay1 = QtWidgets.QHBoxLayout()
-        self.cnc_box.addLayout(cnclay1)
 
         # Variable list
         self.tc_variable_combo = FCComboBox()
@@ -1618,7 +1540,6 @@ class CNCObjectUI(ObjectUI):
                 "They have to be surrounded by the '%' symbol"
             )
         )
-        cnclay1.addWidget(self.tc_variable_combo)
 
         # Populate the Combo Box
         variables = [_('Parameters'), 'tool', 'tooldia', 't_drills', 'x_toolchange', 'y_toolchange', 'z_toolchange',
@@ -1638,15 +1559,12 @@ class CNCObjectUI(ObjectUI):
         self.tc_variable_combo.setItemData(11, _("dwelltime = time to dwell to allow the spindle to reach it's set RPM"),
                                            Qt.ToolTipRole)
 
-        cnclay1.addStretch()
+        cnclay.addWidget(self.toolchange_cb)
+        cnclay.addStretch()
+        cnclay.addWidget(self.tc_variable_combo)
 
-        # Insert Variable into the Toolchange G-Code Text Box
-        # self.tc_insert_buton = FCButton("Insert")
-        # self.tc_insert_buton.setToolTip(
-        #     "Insert the variable in the GCode Box\n"
-        #     "surrounded by the '%' symbol."
-        # )
-        # cnclay1.addWidget(self.tc_insert_buton)
+        self.toolch_ois = OptionalInputSection(self.toolchange_cb,
+                                               [self.toolchangelabel, self.toolchange_text, self.tc_variable_combo])
 
         h_lay = QtWidgets.QHBoxLayout()
         h_lay.setAlignment(QtCore.Qt.AlignVCenter)

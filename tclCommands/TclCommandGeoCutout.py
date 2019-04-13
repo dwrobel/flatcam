@@ -155,8 +155,8 @@ class TclCommandGeoCutout(TclCommandSignaled):
             return "Could not retrieve object: %s" % name
 
         if 0 in {dia}:
-            self.app.inform.emit("[WARNING]Tool Diameter is zero value. Change it to a positive integer.")
-            return "Tool Diameter is zero value. Change it to a positive integer."
+            self.app.inform.emit("[WARNING]Tool Diameter is zero value. Change it to a positive real number.")
+            return "Tool Diameter is zero value. Change it to a positive real number."
 
         if gaps not in ['lr', 'tb', '2lr', '2tb', 4, 8]:
             self.app.inform.emit("[WARNING]Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
@@ -220,7 +220,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
                                    ymax + gapsize)
 
             cutout_obj.plot()
-            self.app.inform.emit("[success]Any-form Cutout operation finished.")
+            self.app.inform.emit("[success] Any-form Cutout operation finished.")
         elif isinstance(cutout_obj, FlatCAMGerber):
 
             def geo_init(geo_obj, app_obj):

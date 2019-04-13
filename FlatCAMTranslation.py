@@ -86,12 +86,14 @@ def on_language_apply_click(app, restart=False):
         msgbox.setInformativeText("Are you sure do you want to change the current language to %s?" % name.capitalize())
         msgbox.setWindowTitle("Apply Language ...")
         msgbox.setWindowIcon(QtGui.QIcon('share/language32.png'))
-        msgbox.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
-        msgbox.setDefaultButton(QtWidgets.QMessageBox.Yes)
+        bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
+        bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
 
-        response = msgbox.exec_()
+        msgbox.setDefaultButton(bt_yes)
+        msgbox.exec_()
+        response = msgbox.clickedButton()
 
-        if response == QtWidgets.QMessageBox.Cancel:
+        if response == bt_no:
             return
         else:
             settings = QSettings("Open Source", "FlatCAM")
@@ -112,6 +114,12 @@ def apply_language(domain, lang=None):
             name = settings.value('language')
         else:
             name = settings.value('English')
+            # in case the 'language' parameter is not in QSettings add it to QSettings and it's value is
+            # the default language, English
+            settings.setValue('language', 'English')
+
+            # This will write the setting to the platform specific storage.
+            del settings
     else:
         name = str(lang)
 

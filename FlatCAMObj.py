@@ -178,7 +178,7 @@ class FlatCAMObj(QtCore.QObject):
         self.muted_ui = False
 
     def on_name_activate(self):
-        old_name = copy.copy(self.options["name"])
+        old_name = copy(self.options["name"])
         new_name = self.ui.name_entry.get_value()
 
         # update the SHELL auto-completer model data
@@ -186,11 +186,12 @@ class FlatCAMObj(QtCore.QObject):
             self.app.myKeywords.remove(old_name)
             self.app.myKeywords.append(new_name)
             self.app.shell._edit.set_model_data(self.app.myKeywords)
+            self.app.ui.code_editor.set_model_data(self.app.myKeywords)
         except:
             log.debug("on_name_activate() --> Could not remove the old object name from auto-completer model list")
 
         self.options["name"] = self.ui.name_entry.get_value()
-        self.app.inform.emit(_("[success]Name changed from {old} to {new}").format(old=old_name, new=new_name))
+        self.app.inform.emit(_("[success] Name changed from {old} to {new}").format(old=old_name, new=new_name))
 
     def on_offset_button_click(self):
         self.app.report_usage("obj_on_offset_button")
@@ -410,18 +411,27 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         except:
                             log.warning("Failed to copy option.", option)
 
-                for geos in grb.solid_geometry:
-                    grb_final.solid_geometry.append(geos)
-                    grb_final.follow_geometry.append(geos)
+                try:
+                    for geos in grb.solid_geometry:
+                        grb_final.solid_geometry.append(geos)
+                        grb_final.follow_geometry.append(geos)
+                except TypeError:
+                    grb_final.solid_geometry.append(grb.solid_geometry)
+                    grb_final.follow_geometry.append(grb.solid_geometry)
 
                 for ap in grb.apertures:
                     if ap not in grb_final.apertures:
                         grb_final.apertures[ap] = grb.apertures[ap]
                     else:
-                        if 'solid_geometry' not in grb_final.apertures[ap]:
-                            grb_final.apertures[ap]['solid_geometry'] = []
-                        for geo in grb.apertures[ap]['solid_geometry']:
-                            grb_final.apertures[ap]['solid_geometry'].append(geo)
+                        # create a list of integers out of the grb.apertures keys and find the max of that value
+                        # then, the aperture duplicate is assigned an id value incremented with 1,
+                        # and finally made string because the apertures dict keys are strings
+                        max_ap = str(max([int(k) for k in grb_final.apertures.keys()]) + 1)
+                        grb_final.apertures[max_ap] = {}
+                        grb_final.apertures[max_ap]['solid_geometry'] = []
+
+                        for k, v in grb.apertures[ap].items():
+                            grb_final.apertures[max_ap][k] = v
 
         grb_final.solid_geometry = MultiPolygon(grb_final.solid_geometry)
         grb_final.follow_geometry = MultiPolygon(grb_final.follow_geometry)
@@ -448,8 +458,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             "bboxmargin": 0.0,
             "bboxrounded": False,
             "aperture_display": False,
-            "aperture_scale_factor": 1.0,
-            "aperture_buffer_factor": 0.0,
             "follow": False
         })
 
@@ -501,8 +509,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             "bboxmargin": self.ui.bbmargin_entry,
             "bboxrounded": self.ui.bbrounded_cb,
             "aperture_display": self.ui.aperture_table_visibility_cb,
-            "aperture_scale_factor": self.ui.scale_aperture_entry,
-            "aperture_buffer_factor": self.ui.buffer_aperture_entry,
             "follow": self.ui.follow_cb
         })
 
@@ -522,9 +528,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.ui.generate_noncopper_button.clicked.connect(self.on_generatenoncopper_button_click)
         self.ui.aperture_table_visibility_cb.stateChanged.connect(self.on_aperture_table_visibility_change)
         self.ui.follow_cb.stateChanged.connect(self.on_follow_cb_click)
-        self.ui.scale_aperture_button.clicked.connect(self.on_scale_aperture_click)
-        self.ui.buffer_aperture_button.clicked.connect(self.on_buffer_aperture_click)
-        self.ui.new_grb_button.clicked.connect(self.on_new_modified_gerber)
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
@@ -896,7 +899,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 for g in geo_obj.solid_geometry:
                     if g:
                         app_obj.inform.emit(_(
-                            "[success]Isolation geometry created: %s"
+                            "[success] Isolation geometry created: %s"
                         ) % geo_obj.options["name"])
                         break
                     else:
@@ -951,7 +954,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     for g in geo_obj.solid_geometry:
                         if g:
                             app_obj.inform.emit(_(
-                                "[success]Isolation geometry created: %s"
+                                "[success] Isolation geometry created: %s"
                             ) % geo_obj.options["name"])
                             break
                         else:
@@ -989,166 +992,18 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
     def on_aperture_table_visibility_change(self):
         if self.ui.aperture_table_visibility_cb.isChecked():
             self.ui.apertures_table.setVisible(True)
-            self.ui.scale_aperture_label.setVisible(True)
-            self.ui.scale_aperture_entry.setVisible(True)
-            self.ui.scale_aperture_button.setVisible(True)
 
-            self.ui.buffer_aperture_label.setVisible(True)
-            self.ui.buffer_aperture_entry.setVisible(True)
-            self.ui.buffer_aperture_button.setVisible(True)
-
-            self.ui.new_grb_label.setVisible(True)
-            self.ui.new_grb_button.setVisible(True)
             self.ui.mark_all_cb.setVisible(True)
             self.ui.mark_all_cb.setChecked(False)
         else:
             self.ui.apertures_table.setVisible(False)
-            self.ui.scale_aperture_label.setVisible(False)
-            self.ui.scale_aperture_entry.setVisible(False)
-            self.ui.scale_aperture_button.setVisible(False)
 
-            self.ui.buffer_aperture_label.setVisible(False)
-            self.ui.buffer_aperture_entry.setVisible(False)
-            self.ui.buffer_aperture_button.setVisible(False)
-
-            self.ui.new_grb_label.setVisible(False)
-            self.ui.new_grb_button.setVisible(False)
             self.ui.mark_all_cb.setVisible(False)
 
             # on hide disable all mark plots
             for row in range(self.ui.apertures_table.rowCount()):
                 self.ui.apertures_table.cellWidget(row, 5).set_value(False)
             self.clear_plot_apertures()
-
-    def on_scale_aperture_click(self, signal):
-        try:
-            factor = self.ui.scale_aperture_entry.get_value()
-        except Exception as e:
-            log.debug("FlatCAMGerber.on_scale_aperture_click() --> %s" % str(e))
-            self.app.inform.emit(_(
-                "[ERROR_NOTCL] The aperture scale factor value is missing or wrong format."
-            ))
-            return
-
-        def scale_recursion(geom):
-            if type(geom) == list or type(geom) is MultiPolygon:
-                geoms=list()
-                for local_geom in geom:
-                    geoms.append(scale_recursion(local_geom))
-                return geoms
-            else:
-                return  affinity.scale(geom, factor, factor, origin='center')
-
-        if not self.ui.apertures_table.selectedItems():
-            self.app.inform.emit(_(
-                "[WARNING_NOTCL] No aperture to scale. Select at least one aperture and try again."
-            ))
-            return
-
-        for x in self.ui.apertures_table.selectedItems():
-            try:
-                apid = self.ui.apertures_table.item(x.row(), 1).text()
-            except Exception as e:
-                log.debug("FlatCAMGerber.on_scale_aperture_click() --> %s" % str(e))
-
-            self.apertures[apid]['solid_geometry'] = scale_recursion(self.apertures[apid]['solid_geometry'])
-
-        self.on_mark_cb_click_table()
-
-    def on_buffer_aperture_click(self, signal):
-        try:
-            buff_value = self.ui.buffer_aperture_entry.get_value()
-        except Exception as e:
-            log.debug("FlatCAMGerber.on_scale_aperture_click() --> %s" % str(e))
-            self.app.inform.emit(_(
-                "[ERROR_NOTCL] The aperture buffer value is missing or wrong format."
-            ))
-            return
-
-        def buffer_recursion(geom):
-            if type(geom) == list or type(geom) is MultiPolygon:
-                geoms=list()
-                for local_geom in geom:
-                    geoms.append(buffer_recursion(local_geom))
-                return geoms
-            else:
-                return  geom.buffer(buff_value, join_style=2)
-
-        if not self.ui.apertures_table.selectedItems():
-            self.app.inform.emit(_(
-                "[WARNING_NOTCL] No aperture to scale. Select at least one aperture and try again."
-            ))
-            return
-
-        for x in self.ui.apertures_table.selectedItems():
-            try:
-                apid = self.ui.apertures_table.item(x.row(), 1).text()
-            except Exception as e:
-                log.debug("FlatCAMGerber.on_scale_aperture_click() --> %s" % str(e))
-
-            self.apertures[apid]['solid_geometry'] = buffer_recursion(self.apertures[apid]['solid_geometry'])
-
-        self.on_mark_cb_click_table()
-
-    def on_new_modified_gerber(self, signal):
-
-        name = '%s_ap_mod' % str(self.options['name'])
-        apertures = deepcopy(self.apertures)
-        options = self.options
-
-        # geometry storage
-        poly_buff = []
-
-        # How the object should be initialized
-        def obj_init(gerber_obj, app_obj):
-            assert isinstance(gerber_obj, FlatCAMGerber), \
-                "Expected to initialize a FlatCAMGerber but got %s" % type(gerber_obj)
-
-            gerber_obj.source_file = self.source_file
-            gerber_obj.multigeo = False
-            gerber_obj.follow = False
-
-            gerber_obj.apertures = apertures
-            for option in options:
-                # we don't want to overwrite the new name and we don't want to share the 'plot' state
-                # because the new object should ve visible even if the source is not visible
-                if option != 'name' and option != 'plot':
-                    gerber_obj.options[option] = options[option]
-
-            # regenerate solid_geometry
-            app_obj.log.debug("Creating new Gerber object. Joining %s polygons.")
-            # for ap in apertures:
-                # for geo in apertures[ap]['solid_geometry']:
-                #     poly_buff.append(geo)
-            poly_buff = [geo for ap in apertures for geo in apertures[ap]['solid_geometry']]
-
-            # buffering the poly_buff
-            new_geo = MultiPolygon(poly_buff)
-            new_geo = new_geo.buffer(0.0000001)
-            new_geo = new_geo.buffer(-0.0000001)
-
-            gerber_obj.solid_geometry = new_geo
-
-            app_obj.log.debug("Finished creation of a new Gerber object. Polygons joined.")
-
-        log.debug("on_new_modified_gerber()")
-
-        with self.app.proc_container.new(_("Generating Gerber")) as proc:
-
-            self.app.progress.emit(10)
-
-            ### Object creation ###
-            ret = self.app.new_object("gerber", name, obj_init, autoselected=False)
-            if ret == 'fail':
-                self.app.inform.emit(_(
-                    '[ERROR_NOTCL] Cretion of Gerber failed.'
-                ))
-                return
-
-            self.app.progress.emit(100)
-
-            # GUI feedback
-            self.app.inform.emit(_("[success] Created: %s") % name)
 
     def convert_units(self, units):
         """
@@ -1317,7 +1172,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
                 aperture = self.ui.apertures_table.item(row, 1).text()
                 # self.plot_apertures(color='#2d4606bf', marked_aperture=aperture, visible=True)
-                self.plot_apertures(color='#FD6A02', marked_aperture=aperture, visible=True)
+                self.plot_apertures(color=self.app.defaults['global_sel_draw_color'], marked_aperture=aperture, visible=True)
             else:
                 self.marked_rows.append(False)
 
@@ -1354,7 +1209,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         if mark_all:
             for aperture in self.apertures:
                 # self.plot_apertures(color='#2d4606bf', marked_aperture=aperture, visible=True)
-                self.plot_apertures(color='#FD6A02', marked_aperture=aperture, visible=True)
+                self.plot_apertures(color=self.app.defaults['global_sel_draw_color'], marked_aperture=aperture, visible=True)
         else:
             self.clear_plot_apertures()
 
@@ -1955,7 +1810,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                         self.ui.tools_table.currentItem().text().replace(',', '.'))
                 except ValueError:
                     self.app.inform.emit(_(
-                        "[ERROR_NOTCL]Wrong value format entered, use a number."
+                        "[ERROR_NOTCL] Wrong value format entered, use a number."
                     ))
                     self.ui.tools_table.currentItem().setText(str(self.tool_offset[dia]))
                     return
@@ -2179,7 +2034,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         if len(tools) == 0:
             self.app.inform.emit(_(
-                "[ERROR_NOTCL]Please select one or more tools from the list and try again."
+                "[ERROR_NOTCL] Please select one or more tools from the list and try again."
             ))
             return False, "Error: No tools."
 
@@ -2270,7 +2125,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         if len(tools) == 0:
             self.app.inform.emit(_(
-                "[ERROR_NOTCL]Please select one or more tools from the list and try again."
+                "[ERROR_NOTCL] Please select one or more tools from the list and try again."
             ))
             return False, "Error: No tools."
 
@@ -2385,7 +2240,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 tools.append(self.ui.tools_table.item(0, 0).text())
             else:
                 self.app.inform.emit(_(
-                    "[ERROR_NOTCL]Please select one or more tools from the list and try again."
+                    "[ERROR_NOTCL] Please select one or more tools from the list and try again."
                 ))
                 return
 
@@ -2408,6 +2263,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             tool_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
 
             ### Add properties to the object
+
+            job_obj.origin_kind = 'excellon'
 
             job_obj.options['Tools_in_use'] = tool_table_items
             job_obj.options['type'] = 'Excellon'
@@ -2443,7 +2300,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 except ValueError:
                     self.app.inform.emit(
                         _(
-                            '[ERROR_NOTCL]Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]'
+                            '[ERROR_NOTCL] Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]'
                         ))
 
             try:
@@ -2455,7 +2312,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 except ValueError:
                     self.app.inform.emit(
                         _(
-                            '[ERROR_NOTCL]Wrong value format for self.defaults["feedrate_probe"] '
+                            '[ERROR_NOTCL] Wrong value format for self.defaults["feedrate_probe"] '
                             'or self.options["feedrate_probe"]'
                         )
                     )
@@ -2608,7 +2465,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
     #     except TypeError:  # Element is not iterable...
     #         self.add_shape(shape=element, color=color, visible=visible, layer=0)
 
-    def plot(self):
+    def plot(self, kind=None):
 
         # Does all the required setup and returns False
         # if the 'ptint' option is set to False.
@@ -3218,7 +3075,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                             )
                         except ValueError:
                             self.app.inform.emit(_(
-                                "[ERROR_NOTCL]Wrong value format entered, "
+                                "[ERROR_NOTCL] Wrong value format entered, "
                                 "use a number."
                             )
                             )
@@ -3439,7 +3296,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             change_message = False
             self.app.inform.emit(_(
-                "[ERROR_NOTCL]Default Tool added. Wrong value format entered."
+                "[ERROR_NOTCL] Default Tool added. Wrong value format entered."
             ))
         self.build_ui()
 
@@ -3469,7 +3326,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         self.tools[int(max_uid)] = deepcopy(self.tools[tooluid_copy])
                     except AttributeError:
                         self.app.inform.emit(_(
-                            "[WARNING_NOTCL]Failed. Select a tool to copy."
+                            "[WARNING_NOTCL] Failed. Select a tool to copy."
                         ))
                         self.build_ui()
                         return
@@ -3479,7 +3336,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # self.ui.geo_tools_table.clearSelection()
             else:
                 self.app.inform.emit(_(
-                    "[WARNING_NOTCL]Failed. Select a tool to copy."
+                    "[WARNING_NOTCL] Failed. Select a tool to copy."
                 ))
                 self.build_ui()
                 return
@@ -3524,7 +3381,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 d = float(self.ui.geo_tools_table.item(current_row, 1).text().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_(
-                    "[ERROR_NOTCL]Wrong value format entered, "
+                    "[ERROR_NOTCL] Wrong value format entered, "
                     "use a number."
                 ))
                 return
@@ -3572,7 +3429,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         temp_tools.clear()
                     except AttributeError:
                         self.app.inform.emit(_(
-                            "[WARNING_NOTCL]Failed. Select a tool to delete."
+                            "[WARNING_NOTCL] Failed. Select a tool to delete."
                         ))
                         self.build_ui()
                         return
@@ -3582,7 +3439,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # self.ui.geo_tools_table.clearSelection()
             else:
                 self.app.inform.emit(_(
-                    "[WARNING_NOTCL]Failed. Select a tool to delete."
+                    "[WARNING_NOTCL] Failed. Select a tool to delete."
                 ))
                 self.build_ui()
                 return
@@ -3711,7 +3568,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 vdia = float(self.ui.tipdia_entry.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_(
-                    "[ERROR_NOTCL]Wrong value format entered, "
+                    "[ERROR_NOTCL] Wrong value format entered, "
                     "use a number."
                 ))
                 return
@@ -3724,7 +3581,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 half_vangle = float(self.ui.tipangle_entry.get_value().replace(',', '.')) / 2
             except ValueError:
                 self.app.inform.emit(_(
-                    "[ERROR_NOTCL]Wrong value format entered, "
+                    "[ERROR_NOTCL] Wrong value format entered, "
                     "use a number."
                 ))
                 return
@@ -3841,7 +3698,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                                      )
             except ValueError:
                 self.app.inform.emit(_(
-                    "[ERROR_NOTCL]Wrong value format entered, "
+                    "[ERROR_NOTCL] Wrong value format entered, "
                     "use a number."
                 ))
                 return
@@ -4020,7 +3877,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         try:
             if self.special_group:
                 self.app.inform.emit(_(
-                    "[WARNING_NOTCL]This Geometry can't be processed because it is %s geometry."
+                    "[WARNING_NOTCL] This Geometry can't be processed because it is %s geometry."
                 ) % str(self.special_group))
                 return
         except AttributeError:
@@ -4037,7 +3894,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         tooldia = float(self.ui.geo_tools_table.item(x.row(), 1).text().replace(',', '.'))
                     except ValueError:
                         self.app.inform.emit(_(
-                            "[ERROR_NOTCL]Wrong Tool Dia value format entered, "
+                            "[ERROR_NOTCL] Wrong Tool Dia value format entered, "
                             "use a number."
                         ))
                         return
@@ -4137,7 +3994,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 except ValueError:
                     self.app.inform.emit(
                         _(
-                            '[ERROR_NOTCL]Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]'
+                            '[ERROR_NOTCL] Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]'
                         ))
 
             try:
@@ -4149,7 +4006,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 except ValueError:
                     self.app.inform.emit(
                         _(
-                            '[ERROR_NOTCL]Wrong value format for self.defaults["feedrate_probe"] '
+                            '[ERROR_NOTCL] Wrong value format for self.defaults["feedrate_probe"] '
                             'or self.options["feedrate_probe"]'
                         ))
 
@@ -4249,7 +4106,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                                                  )
                         except ValueError:
                             self.app.inform.emit(_(
-                                "[ERROR_NOTCL]Wrong value format entered, "
+                                "[ERROR_NOTCL] Wrong value format entered, "
                                 "use a number."
                             ))
                             return
@@ -4348,7 +4205,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 except ValueError:
                     self.app.inform.emit(
                         _(
-                            '[ERROR_NOTCL]Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]'
+                            '[ERROR_NOTCL] Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]'
                         ))
 
             try:
@@ -4360,7 +4217,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 except ValueError:
                     self.app.inform.emit(
                         _(
-                            '[ERROR_NOTCL]Wrong value format for self.defaults["feedrate_probe"] '
+                            '[ERROR_NOTCL] Wrong value format for self.defaults["feedrate_probe"] '
                             'or self.options["feedrate_probe"]'
                         ))
 
@@ -4372,7 +4229,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         a += 1
                 if a == len(self.tools):
                     self.app.inform.emit(_(
-                        '[ERROR_NOTCL]Cancelled. Empty file, it has no geometry...'
+                        '[ERROR_NOTCL] Cancelled. Empty file, it has no geometry...'
                     ))
                     return 'fail'
 
@@ -4482,7 +4339,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                                                   )
                         except ValueError:
                             self.app.inform.emit(_(
-                                "[ERROR_NOTCL]Wrong value format entered, "
+                                "[ERROR_NOTCL] Wrong value format entered, "
                                 "use a number."
                             ))
                             return
@@ -4552,12 +4409,12 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 if self.solid_geometry:
                     with self.app.proc_container.new(_("Generating CNC Code")):
                         if app_obj.new_object("cncjob", outname, job_init_single_geometry) != 'fail':
-                            app_obj.inform.emit("[success]CNCjob created: %s" % outname)
+                            app_obj.inform.emit("[success] CNCjob created: %s" % outname)
                             app_obj.progress.emit(100)
                 else:
                     with self.app.proc_container.new(_("Generating CNC Code")):
                         if app_obj.new_object("cncjob", outname, job_init_multi_geometry) != 'fail':
-                            app_obj.inform.emit("[success]CNCjob created: %s" % outname)
+                            app_obj.inform.emit("[success] CNCjob created: %s" % outname)
                             app_obj.progress.emit(100)
 
             # Create a promise with the name
@@ -4663,7 +4520,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 except ValueError:
                     self.app.inform.emit(
                         _(
-                            '[ERROR_NOTCL]Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]'
+                            '[ERROR_NOTCL] Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]'
                         ))
 
             try:
@@ -4675,7 +4532,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 except ValueError:
                     self.app.inform.emit(
                         _(
-                            '[ERROR_NOTCL]Wrong value format for self.defaults["feedrate_probe"] '
+                            '[ERROR_NOTCL] Wrong value format for self.defaults["feedrate_probe"] '
                             'or self.options["feedrate_probe"]'
                         ))
 
@@ -4703,7 +4560,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             def job_thread(app_obj):
                 with self.app.proc_container.new(_("Generating CNC Code")):
                     app_obj.new_object("cncjob", outname, job_init)
-                    app_obj.inform.emit("[success]CNCjob created: %s" % outname)
+                    app_obj.inform.emit("[success] CNCjob created: %s" % outname)
                     app_obj.progress.emit(100)
 
             # Create a promise with the name
@@ -4764,7 +4621,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # else:
         #     self.solid_geometry = affinity.scale(self.solid_geometry, xfactor, yfactor,
         #                                          origin=(px, py))
-        # self.app.inform.emit("[success]Geometry Scale done.")
+        # self.app.inform.emit("[success] Geometry Scale done.")
 
         def scale_recursion(geom):
             if type(geom) == list:
@@ -4782,7 +4639,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.solid_geometry=scale_recursion(self.solid_geometry)
 
         self.app.inform.emit(_(
-            "[success]Geometry Scale done."
+            "[success] Geometry Scale done."
         ))
 
     def offset(self, vect):
@@ -4799,7 +4656,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             dx, dy = vect
         except TypeError:
             self.app.inform.emit(_(
-                "[ERROR_NOTCL]An (x,y) pair of values are needed. "
+                "[ERROR_NOTCL] An (x,y) pair of values are needed. "
                 "Probable you entered only one value in the Offset field."
             ))
             return
@@ -4819,7 +4676,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             self.solid_geometry=translate_recursion(self.solid_geometry)
         self.app.inform.emit(_(
-            "[success]Geometry Offset done."
+            "[success] Geometry Offset done."
         ))
 
     def convert_units(self, units):
@@ -4888,7 +4745,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                                 )
                             except ValueError:
                                 self.app.inform.emit(_(
-                                    "[ERROR_NOTCL]Wrong value format entered, "
+                                    "[ERROR_NOTCL] Wrong value format entered, "
                                     "use a number."
                                 ))
                                 return
@@ -4948,11 +4805,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         except TypeError:  # Element is not iterable...
             self.add_shape(shape=element, color=color, visible=visible, layer=0)
 
-    def plot(self, visible=None):
+    def plot(self, visible=None, kind=None):
         """
-        Adds the object into collection.
+        Plot the object.
 
-        :return: None
+        :param visible: Controls if the added shape is visible of not
+        :param kind: added so there is no error when a project is loaded and it has both geometry and CNCJob, because
+        CNCJob require the 'kind' parameter. Perhaps the FlatCAMObj.plot() has to be rewrited
+        :return:
         """
 
         # Does all the required setup and returns False
@@ -5305,7 +5165,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         self.ui.updateplot_button.clicked.connect(self.on_updateplot_button_click)
         self.ui.export_gcode_button.clicked.connect(self.on_exportgcode_button_click)
-        self.ui.modify_gcode_button.clicked.connect(self.on_modifygcode_button_click)
+        self.ui.modify_gcode_button.clicked.connect(self.on_edit_code_click)
 
         self.ui.tc_variable_combo.currentIndexChanged[str].connect(self.on_cnc_custom_parameters)
 
@@ -5372,7 +5232,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         if filename == '':
             self.app.inform.emit(_(
-                "[WARNING_NOTCL]Export Machine Code cancelled ..."))
+                "[WARNING_NOTCL] Export Machine Code cancelled ..."))
             return
 
         preamble = str(self.ui.prepend_text.get_value())
@@ -5385,7 +5245,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.app.file_saved.emit("gcode", filename)
         self.app.inform.emit(_("[success] Machine Code file saved to: %s") % filename)
 
-    def on_modifygcode_button_click(self, *args):
+    def on_edit_code_click(self, *args):
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())
         gc = self.export_gcode(preamble=preamble, postamble=postamble, to_file=True)
@@ -5394,18 +5254,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         else:
             self.app.gcode_edited = gc
 
-        # add the tab if it was closed
-        self.app.ui.plot_tab_area.addTab(self.app.ui.cncjob_tab, _("Code Editor"))
-
-        # delete the absolute and relative position and messages in the infobar
-        self.app.ui.position_label.setText("")
-        self.app.ui.rel_position_label.setText("")
-
-        # Switch plot_area to CNCJob tab
-        self.app.ui.plot_tab_area.setCurrentWidget(self.app.ui.cncjob_tab)
-
-        # first clear previous text in text editor (if any)
-        self.app.ui.code_editor.clear()
+        self.app.init_code_editor(name=_("Code Editor"))
+        self.app.ui.buttonOpen.clicked.connect(self.app.handleOpen)
+        self.app.ui.buttonSave.clicked.connect(self.app.handleSaveGCode)
 
         # then append the text from GCode to the text editor
         try:
@@ -5413,8 +5264,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 proc_line = str(line).strip('\n')
                 self.app.ui.code_editor.append(proc_line)
         except Exception as e:
-            log.debug('FlatCAMCNNJob.on_modifygcode_button_click() -->%s' % str(e))
-            self.app.inform.emit(_('[ERROR]FlatCAMCNNJob.on_modifygcode_button_click() -->%s') % str(e))
+            log.debug('FlatCAMCNNJob.on_edit_code_click() -->%s' % str(e))
+            self.app.inform.emit(_('[ERROR]FlatCAMCNNJob.on_edit_code_click() -->%s') % str(e))
             return
 
         self.app.ui.code_editor.moveCursor(QtGui.QTextCursor.Start)
@@ -5513,6 +5364,17 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         return gcode
 
+    def gcode_footer(self, end_command=None):
+        """
+
+        :param end_command: 'M02' or 'M30' - String
+        :return:
+        """
+        if end_command:
+            return end_command
+        else:
+            return 'M02'
+
     def export_gcode(self, filename=None, preamble='', postamble='', to_file=False):
         gcode = ''
         roland = False
@@ -5520,7 +5382,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         try:
             if self.special_group:
-                self.app.inform.emit(_("[WARNING_NOTCL]This CNCJob object can't be processed because "
+                self.app.inform.emit(_("[WARNING_NOTCL] This CNCJob object can't be processed because "
                                      "it is a %s CNCJob object.") % str(self.special_group))
                 return 'fail'
         except AttributeError:
@@ -5577,7 +5439,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 ))
                 return
 
-            g = gcode[:g_idx] + preamble + '\n' + gcode[g_idx:] + postamble
+            g = gcode[:g_idx] + preamble + '\n' + gcode[g_idx:] + postamble + self.gcode_footer()
 
         # if toolchange custom is used, replace M6 code with the code from the Toolchange Custom Text box
         if self.ui.toolchange_cb.get_value() is True:
@@ -5710,7 +5572,6 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         else:
             self.ui.plot_cb.setChecked(True)
         self.ui_connect()
-
 
     def plot(self, visible=None, kind='all'):
 

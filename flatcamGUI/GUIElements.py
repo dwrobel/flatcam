@@ -490,6 +490,106 @@ class FCTextAreaRich(QtWidgets.QTextEdit):
         return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
 
 
+class FCTextAreaExtended(QtWidgets.QTextEdit):
+    def __init__(self, parent=None):
+        super(FCTextAreaExtended, self).__init__(parent)
+
+        self.completer = MyCompleter()
+
+        self.model = QtCore.QStringListModel()
+        self.completer.setModel(self.model)
+        self.set_model_data(keyword_list=[])
+        self.completer.insertText.connect(self.insertCompletion)
+
+        self.completer_enable = False
+
+    def set_model_data(self, keyword_list):
+        self.model.setStringList(keyword_list)
+
+    def insertCompletion(self, completion):
+        tc = self.textCursor()
+        extra = (len(completion) - len(self.completer.completionPrefix()))
+
+        # don't insert if the word is finished but add a space instead
+        if extra == 0:
+            tc.insertText(' ')
+            self.completer.popup().hide()
+            return
+
+        tc.movePosition(QTextCursor.Left)
+        tc.movePosition(QTextCursor.EndOfWord)
+        tc.insertText(completion[-extra:])
+        # add a space after inserting the word
+        tc.insertText(' ')
+        self.setTextCursor(tc)
+        self.completer.popup().hide()
+
+    def focusInEvent(self, event):
+        if self.completer:
+            self.completer.setWidget(self)
+        QTextEdit.focusInEvent(self, event)
+
+    def set_value(self, val):
+        self.setText(val)
+
+    def get_value(self):
+        self.toPlainText()
+
+    def insertFromMimeData(self, data):
+        """
+        Reimplemented such that when SHIFT is pressed and doing click Paste in the contextual menu, the '\' symbol
+        is replaced with the '/' symbol. That's because of the difference in path separators in Windows and TCL
+        :param data:
+        :return:
+        """
+        modifier = QtWidgets.QApplication.keyboardModifiers()
+        if modifier == Qt.ShiftModifier:
+            text = data.text()
+            text = text.replace('\\', '/')
+            self.insertPlainText(text)
+        else:
+            self.insertPlainText(data.text())
+
+    def keyPressEvent(self, event):
+        """
+        Reimplemented so the CTRL + SHIFT + V shortcut key combo will paste the text but replacing '\' with '/'
+        :param event:
+        :return:
+        """
+        key = event.key()
+        modifier = QtWidgets.QApplication.keyboardModifiers()
+
+        if modifier & Qt.ControlModifier and modifier & Qt.ShiftModifier:
+            if key == QtCore.Qt.Key_V:
+                clipboard = QtWidgets.QApplication.clipboard()
+                clip_text = clipboard.text()
+                clip_text = clip_text.replace('\\', '/')
+                self.insertPlainText(clip_text)
+
+        tc = self.textCursor()
+        if (key == Qt.Key_Tab or key == Qt.Key_Enter or key == Qt.Key_Return) and self.completer.popup().isVisible():
+            self.completer.insertText.emit(self.completer.getSelected())
+            self.completer.setCompletionMode(QCompleter.PopupCompletion)
+            return
+        else:
+            super(FCTextAreaExtended, self).keyPressEvent(event)
+
+        if self.completer_enable:
+            tc.select(QTextCursor.WordUnderCursor)
+            cr = self.cursorRect()
+
+            if len(tc.selectedText()) > 0:
+                self.completer.setCompletionPrefix(tc.selectedText())
+                popup = self.completer.popup()
+                popup.setCurrentIndex(self.completer.completionModel().index(0, 0))
+
+                cr.setWidth(self.completer.popup().sizeHintForColumn(0)
+                            + self.completer.popup().verticalScrollBar().sizeHint().width())
+                self.completer.complete(cr)
+            else:
+                self.completer.popup().hide()
+
+
 class FCComboBox(QtWidgets.QComboBox):
 
     def __init__(self, parent=None, callback=None):
@@ -595,9 +695,12 @@ class FCTab(QtWidgets.QTabWidget):
 
 
 class FCDetachableTab(QtWidgets.QTabWidget):
-    # From here: https://stackoverflow.com/questions/47267195/in-pyqt4-is-it-possible-to-detach-tabs-from-a-qtabwidget
-    def __init__(self, protect=None, protect_by_name=None, parent=None):
+    """
+    From here:
+    https://stackoverflow.com/questions/47267195/in-pyqt4-is-it-possible-to-detach-tabs-from-a-qtabwidget
+    """
 
+    def __init__(self, protect=None, protect_by_name=None, parent=None):
         super().__init__()
 
         self.tabBar = self.FCTabBar(self)
@@ -639,25 +742,38 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         self.removeTab(currentIndex)
 
     def closeTab(self, currentIndex):
+        """
+        Slot connected to the tabCloseRequested signal
+
+        :param currentIndex:
+        :return:
+        """
         self.removeTab(currentIndex)
 
     def protectTab(self, currentIndex):
         # self.FCTabBar().setTabButton(currentIndex, QtWidgets.QTabBar.RightSide, None)
         self.tabBar.setTabButton(currentIndex, QtWidgets.QTabBar.RightSide, None)
 
-    ##
-    #  The default movable functionality of QTabWidget must remain disabled
-    #  so as not to conflict with the added features
     def setMovable(self, movable):
+        """
+        The default movable functionality of QTabWidget must remain disabled
+        so as not to conflict with the added features
+
+        :param movable:
+        :return:
+        """
         pass
 
-    ##
-    #  Move a tab from one position (index) to another
-    #
-    #  @param    fromIndex    the original index location of the tab
-    #  @param    toIndex      the new index location of the tab
     @pyqtSlot(int, int)
     def moveTab(self, fromIndex, toIndex):
+        """
+        Move a tab from one position (index) to another
+
+        :param fromIndex:   the original index location of the tab
+        :param toIndex:     the new index location of the tab
+        :return:
+        """
+
         widget = self.widget(fromIndex)
         icon = self.tabIcon(fromIndex)
         text = self.tabText(fromIndex)
@@ -666,15 +782,16 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         self.insertTab(toIndex, widget, icon, text)
         self.setCurrentIndex(toIndex)
 
-    ##
-    #  Detach the tab by removing it's contents and placing them in
-    #  a DetachedTab window
-    #
-    #  @param    index    the index location of the tab to be detached
-    #  @param    point    the screen position for creating the new DetachedTab window
     @pyqtSlot(int, QtCore.QPoint)
     def detachTab(self, index, point):
+        """
+        Detach the tab by removing it's contents and placing them in
+        a DetachedTab window
 
+        :param index:   the index location of the tab to be detached
+        :param point:   the screen position for creating the new DetachedTab window
+        :return:
+        """
         self.old_index = index
 
         # Get the tab content and add name FlatCAM to the tab so we know on which app is this tab linked
@@ -699,20 +816,20 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         detachedTab.move(point)
         detachedTab.show()
 
-
         # Create a reference to maintain access to the detached tab
         self.detachedTabs[name] = detachedTab
 
-
-    ##
-    #  Re-attach the tab by removing the content from the DetachedTab window,
-    #  closing it, and placing the content back into the DetachableTabWidget
-    #
-    #  @param    contentWidget    the content widget from the DetachedTab window
-    #  @param    name             the name of the detached tab
-    #  @param    icon             the window icon for the detached tab
-    #  @param    insertAt         insert the re-attached tab at the given index
     def attachTab(self, contentWidget, name, icon, insertAt=None):
+        """
+        Re-attach the tab by removing the content from the DetachedTab window,
+        closing it, and placing the content back into the DetachableTabWidget
+
+        :param contentWidget:   the content widget from the DetachedTab window
+        :param name:            the name of the detached tab
+        :param icon:            the window icon for the detached tab
+        :param insertAt:        insert the re-attached tab at the given index
+        :return:
+        """
 
         # Make the content widget a child of this widget
         contentWidget.setParent(self)
@@ -773,11 +890,13 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             if index > -1:
                 self.setCurrentIndex(insert_index) if self.use_old_index else self.setCurrentIndex(index)
 
-    ##
-    #  Remove the tab with the given name, even if it is detached
-    #
-    #  @param    name    the name of the tab to be removed
     def removeTabByName(self, name):
+        """
+        Remove the tab with the given name, even if it is detached
+
+        :param name: the name of the tab to be removed
+        :return:
+        """
 
         # Remove the tab if it is attached
         attached = False
@@ -798,17 +917,18 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                     del self.detachedTabs[key]
                     break
 
-
-    ##
-    #  Handle dropping of a detached tab inside the DetachableTabWidget
-    #
-    #  @param    name     the name of the detached tab
-    #  @param    index    the index of an existing tab (if the tab bar
-    #                     determined that the drop occurred on an
-    #                     existing tab)
-    #  @param    dropPos  the mouse cursor position when the drop occurred
     @QtCore.pyqtSlot(str, int, QtCore.QPoint)
     def detachedTabDrop(self, name, index, dropPos):
+        """
+        Handle dropping of a detached tab inside the DetachableTabWidget
+
+        :param name:        the name of the detached tab
+        :param index:       the index of an existing tab (if the tab bar
+    #                       determined that the drop occurred on an
+    #                       existing tab)
+        :param dropPos:     the mouse cursor position when the drop occurred
+        :return:
+        """
 
         # If the drop occurred on an existing tab, insert the detached
         # tab at the existing tab's location
@@ -848,10 +968,12 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                     # automatically
                     self.detachedTabs[name].close()
 
-
-    ##
-    #  Close all tabs that are currently detached.
     def closeDetachedTabs(self):
+        """
+        Close all tabs that are currently detached.
+
+        :return:
+        """
         listOfDetachedTabs = []
 
         for key in self.detachedTabs:
@@ -860,11 +982,12 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         for detachedTab in listOfDetachedTabs:
             detachedTab.close()
 
-
-    ##
-    #  When a tab is detached, the contents are placed into this QMainWindow.  The tab
-    #  can be re-attached by closing the dialog or by dragging the window into the tab bar
     class FCDetachedTab(QtWidgets.QMainWindow):
+        """
+        When a tab is detached, the contents are placed into this QMainWindow.  The tab
+        can be re-attached by closing the dialog or by dragging the window into the tab bar
+        """
+
         onCloseSignal = pyqtSignal(QtWidgets.QWidget, str, QtGui.QIcon)
         onDropSignal = pyqtSignal(str, QtCore.QPoint)
 
@@ -882,42 +1005,46 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             self.installEventFilter(self.windowDropFilter)
             self.windowDropFilter.onDropSignal.connect(self.windowDropSlot)
 
-
-        ##
-        #  Handle a window drop event
-        #
-        #  @param    dropPos    the mouse cursor position of the drop
         @QtCore.pyqtSlot(QtCore.QPoint)
         def windowDropSlot(self, dropPos):
+            """
+            Handle a window drop event
+
+            :param dropPos:     the mouse cursor position of the drop
+            :return:
+            """
             self.onDropSignal.emit(self.objectName(), dropPos)
 
-
-        ##
-        #  If the window is closed, emit the onCloseSignal and give the
-        #  content widget back to the DetachableTabWidget
-        #
-        #  @param    event    a close event
         def closeEvent(self, event):
+            """
+            If the window is closed, emit the onCloseSignal and give the
+            content widget back to the DetachableTabWidget
+
+            :param event:    a close event
+            :return:
+            """
             self.onCloseSignal.emit(self.contentWidget, self.objectName(), self.windowIcon())
 
-
-        ##
-        #  An event filter class to detect a QMainWindow drop event
         class WindowDropFilter(QtCore.QObject):
+            """
+            An event filter class to detect a QMainWindow drop event
+            """
+
             onDropSignal = pyqtSignal(QtCore.QPoint)
 
             def __init__(self):
                 QtCore.QObject.__init__(self)
                 self.lastEvent = None
 
-
-            ##
-            #  Detect a QMainWindow drop event by looking for a NonClientAreaMouseMove (173)
-            #  event that immediately follows a Move event
-            #
-            #  @param    obj    the object that generated the event
-            #  @param    event  the current event
             def eventFilter(self, obj, event):
+                """
+                Detect a QMainWindow drop event by looking for a NonClientAreaMouseMove (173)
+                event that immediately follows a Move event
+
+                :param obj:     the object that generated the event
+                :param event:   the current event
+                :return:
+                """
 
                 # If a NonClientAreaMouseMove (173) event immediately follows a Move event...
                 if self.lastEvent == QtCore.QEvent.Move and event.type() == 173:
@@ -951,19 +1078,24 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             self.mouseCursor = QtGui.QCursor()
             self.dragInitiated = False
 
-
-        #  Send the onDetachTabSignal when a tab is double clicked
-        #
-        #  @param    event    a mouse double click event
         def mouseDoubleClickEvent(self, event):
+            """
+            Send the onDetachTabSignal when a tab is double clicked
+
+            :param event:   a mouse double click event
+            :return:
+            """
+
             event.accept()
             self.onDetachTabSignal.emit(self.tabAt(event.pos()), self.mouseCursor.pos())
 
-
-        #  Set the starting position for a drag event when the mouse button is pressed
-        #
-        #  @param    event    a mouse press event
         def mousePressEvent(self, event):
+            """
+            Set the starting position for a drag event when the mouse button is pressed
+
+            :param event:   a mouse press event
+            :return:
+            """
             if event.button() == QtCore.Qt.LeftButton:
                 self.dragStartPos = event.pos()
 
@@ -974,14 +1106,15 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
             QtWidgets.QTabBar.mousePressEvent(self, event)
 
-
-        #  Determine if the current movement is a drag.  If it is, convert it into a QDrag.  If the
-        #  drag ends inside the tab bar, emit an onMoveTabSignal.  If the drag ends outside the tab
-        #  bar, emit an onDetachTabSignal.
-        #
-        #  @param    event    a mouse move event
         def mouseMoveEvent(self, event):
+            """
+            Determine if the current movement is a drag.  If it is, convert it into a QDrag.  If the
+            drag ends inside the tab bar, emit an onMoveTabSignal.  If the drag ends outside the tab
+            bar, emit an onDetachTabSignal.
 
+            :param event:   a mouse move event
+            :return:
+            """
             # Determine if the current movement is detected as a drag
             if not self.dragStartPos.isNull() and ((event.pos() - self.dragStartPos).manhattanLength() < QtWidgets.QApplication.startDragDistance()):
                 self.dragInitiated = True
@@ -1038,29 +1171,40 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             else:
                 QtWidgets.QTabBar.mouseMoveEvent(self, event)
 
-        #  Determine if the drag has entered a tab position from another tab position
-        #
-        #  @param    event    a drag enter event
         def dragEnterEvent(self, event):
+            """
+            Determine if the drag has entered a tab position from another tab position
+
+            :param event:   a drag enter event
+            :return:
+            """
             mimeData = event.mimeData()
             # formats = mcd imeData.formats()
 
-        # if formats.contains('action') and mimeData.data('action') == 'application/tab-detach':
-        # event.acceptProposedAction()
+            # if formats.contains('action') and mimeData.data('action') == 'application/tab-detach':
+            # event.acceptProposedAction()
 
             QtWidgets.QTabBar.dragMoveEvent(self, event)
 
-        #  Get the position of the end of the drag
-        #
-        #  @param    event    a drop event
         def dropEvent(self, event):
+            """
+            Get the position of the end of the drag
+
+            :param event:    a drop event
+            :return:
+            """
             self.dragDropedPos = event.pos()
             QtWidgets.QTabBar.dropEvent(self, event)
 
-        #  Determine if the detached tab drop event occurred on an existing tab,
-        #  then send the event to the DetachableTabWidget
         def detachedTabDrop(self, name, dropPos):
+            """
+            Determine if the detached tab drop event occurred on an existing tab,
+            then send the event to the DetachableTabWidget
 
+            :param name:
+            :param dropPos:
+            :return:
+            """
             tabDropPos = self.mapFromGlobal(dropPos)
 
             index = self.tabAt(tabDropPos)
@@ -1192,9 +1336,64 @@ class FCTable(QtWidgets.QTableWidget):
         self.addAction(action)
         action.triggered.connect(call_function)
 
+
+class SpinBoxDelegate(QtWidgets.QItemDelegate):
+
+    def __init__(self, units):
+        super(SpinBoxDelegate, self).__init__()
+        self.units = units
+        self.current_value = None
+
+    def createEditor(self, parent, option, index):
+        editor = QtWidgets.QDoubleSpinBox(parent)
+        editor.setMinimum(-999.9999)
+        editor.setMaximum(999.9999)
+
+        if self.units == 'MM':
+            editor.setDecimals(2)
+        else:
+            editor.setDecimals(3)
+
+        return editor
+
+    def setEditorData(self, spinBox, index):
+        try:
+            value = float(index.model().data(index, Qt.EditRole))
+        except ValueError:
+            value = self.current_value
+            # return
+
+        spinBox.setValue(value)
+
+    def setModelData(self, spinBox, model, index):
+        spinBox.interpretText()
+        value = spinBox.value()
+        self.current_value = value
+
+        model.setData(index, value, Qt.EditRole)
+
+    def updateEditorGeometry(self, editor, option, index):
+        editor.setGeometry(option.rect)
+
+    def setDecimals(self, spinbox, digits):
+        spinbox.setDecimals(digits)
+
+
 class FCSpinner(QtWidgets.QSpinBox):
     def __init__(self, parent=None):
         super(FCSpinner, self).__init__(parent)
+        self.readyToEdit = True
+
+    def mousePressEvent(self, e, parent=None):
+        super(FCSpinner, self).mousePressEvent(e)  # required to deselect on 2e click
+        if self.readyToEdit:
+            self.lineEdit().selectAll()
+            self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        super(FCSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
+        self.lineEdit().deselect()
+        self.readyToEdit = True
 
     def get_value(self):
         return str(self.value())
@@ -1206,6 +1405,9 @@ class FCSpinner(QtWidgets.QSpinBox):
             log.debug(str(e))
             return
         self.setValue(k)
+
+    def set_range(self, min_val, max_val):
+        self.setRange(min_val, max_val)
 
     # def sizeHint(self):
     #     default_hint_size = super(FCSpinner, self).sizeHint()
@@ -1243,7 +1445,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
         self.setDecimals(val)
 
     def set_range(self, min_val, max_val):
-        self.setRange(self, min_val, max_val)
+        self.setRange(min_val, max_val)
 
 
 class Dialog_box(QtWidgets.QWidget):
@@ -1261,7 +1463,20 @@ class Dialog_box(QtWidgets.QWidget):
         dialog_box.setFixedWidth(290)
         self.setWindowIcon(icon)
 
-        self.location, self.ok = dialog_box.getText(self, title, label)
+        self.location, self.ok = dialog_box.getText(self, title, label, text="0, 0")
+        self.readyToEdit = True
+
+    def mousePressEvent(self, e, parent=None):
+        super(Dialog_box, self).mousePressEvent(e)  # required to deselect on 2e click
+        if self.readyToEdit:
+            self.lineEdit().selectAll()
+            self.readyToEdit = False
+
+    def focusOutEvent(self, e):
+        super(Dialog_box, self).focusOutEvent(e)  # required to remove cursor on focusOut
+        self.lineEdit().deselect()
+        self.readyToEdit = True
+
 
 
 class _BrowserTextEdit(QTextEdit):
@@ -1318,9 +1533,18 @@ class _ExpandableTextEdit(QTextEdit):
     def insertCompletion(self, completion):
         tc = self.textCursor()
         extra = (len(completion) - len(self.completer.completionPrefix()))
+
+        # don't insert if the word is finished but add a space instead
+        if extra == 0:
+            tc.insertText(' ')
+            self.completer.popup().hide()
+            return
+
         tc.movePosition(QTextCursor.Left)
         tc.movePosition(QTextCursor.EndOfWord)
         tc.insertText(completion[-extra:])
+        # add a space after inserting the word
+        tc.insertText(' ')
         self.setTextCursor(tc)
         self.completer.popup().hide()
 
@@ -1333,6 +1557,13 @@ class _ExpandableTextEdit(QTextEdit):
         """
         Catch keyboard events. Process Enter, Up, Down
         """
+
+        key = event.key()
+        if (key == Qt.Key_Tab or key == Qt.Key_Return or key == Qt.Key_Enter) and self.completer.popup().isVisible():
+            self.completer.insertText.emit(self.completer.getSelected())
+            self.completer.setCompletionMode(QCompleter.PopupCompletion)
+            return
+
         if event.matches(QKeySequence.InsertParagraphSeparator):
             text = self.toPlainText()
             if self._termWidget.is_command_complete(text):
@@ -1363,10 +1594,6 @@ class _ExpandableTextEdit(QTextEdit):
             return self._termWidget.browser().keyPressEvent(event)
 
         tc = self.textCursor()
-        if event.key() == Qt.Key_Tab and self.completer.popup().isVisible():
-            self.completer.insertText.emit(self.completer.getSelected())
-            self.completer.setCompletionMode(QCompleter.PopupCompletion)
-            return
 
         QTextEdit.keyPressEvent(self, event)
         tc.select(QTextCursor.WordUnderCursor)

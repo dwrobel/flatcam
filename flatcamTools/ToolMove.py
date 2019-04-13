@@ -161,7 +161,7 @@ class ToolMove(FlatCAMTool):
                         proc.done()
                         # delete the selection bounding box
                         self.delete_shape()
-                        self.app.inform.emit(_('[success]%s object was moved ...') %
+                        self.app.inform.emit(_('[success] %s object was moved ...') %
                                              str(sel_obj.kind).capitalize())
 
                     self.app.worker_task.emit({'fcn': job_move, 'params': [self]})
@@ -199,7 +199,7 @@ class ToolMove(FlatCAMTool):
     def on_key_press(self, event):
         if event.key == 'escape':
             # abort the move action
-            self.app.inform.emit(_("[WARNING_NOTCL]Move action cancelled."))
+            self.app.inform.emit(_("[WARNING_NOTCL] Move action cancelled."))
             self.toggle()
         return
 
@@ -211,7 +211,7 @@ class ToolMove(FlatCAMTool):
 
         obj_list = self.app.collection.get_selected()
         if not obj_list:
-            self.app.inform.emit(_("[WARNING_NOTCL]Object(s) not selected"))
+            self.app.inform.emit(_("[WARNING_NOTCL] Object(s) not selected"))
             self.toggle()
         else:
             # if we have an object selected then we can safely activate the mouse events

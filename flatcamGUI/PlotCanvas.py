@@ -148,8 +148,11 @@ class PlotCanvas(QtCore.QObject):
     def vis_connect(self, event_name, callback):
         return getattr(self.vispy_canvas.events, event_name).connect(callback)
 
-    def vis_disconnect(self, event_name, callback):
-        getattr(self.vispy_canvas.events, event_name).disconnect(callback)
+    def vis_disconnect(self, event_name, callback=None):
+        if callback is None:
+            getattr(self.vispy_canvas.events, event_name).disconnect()
+        else:
+            getattr(self.vispy_canvas.events, event_name).disconnect(callback)
 
     def zoom(self, factor, center=None):
         """

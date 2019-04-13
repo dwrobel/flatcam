@@ -110,6 +110,14 @@ class CutOut(FlatCAMTool):
         # 2tb   - 2*top + 2*bottom
         # 8     - 2*left + 2*right +2*top + 2*bottom
 
+        # Surrounding convex box shape
+        self.convex_box = FCCheckBox()
+        self.convex_box_label = QtWidgets.QLabel(_("Convex Sh.:"))
+        self.convex_box_label.setToolTip(
+            _("Create a convex shape surrounding the entire PCB.")
+        )
+        form_layout.addRow(self.convex_box_label, self.convex_box)
+
         ## Title2
         title_param_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % _('A. Automatic Bridge Gaps'))
         title_param_label.setToolTip(
@@ -310,7 +318,8 @@ class CutOut(FlatCAMTool):
         self.dia.set_value(float(self.app.defaults["tools_cutouttooldia"]))
         self.margin.set_value(float(self.app.defaults["tools_cutoutmargin"]))
         self.gapsize.set_value(float(self.app.defaults["tools_cutoutgapsize"]))
-        self.gaps.set_value(4)
+        self.gaps.set_value(self.app.defaults["tools_gaps_ff"])
+        self.convex_box.set_value(self.app.defaults['tools_cutout_convexshape'])
 
         self.gapFinished.connect(self.on_gap_finished)
 
@@ -326,11 +335,11 @@ class CutOut(FlatCAMTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except:
-            self.app.inform.emit(_("[ERROR_NOTCL]Could not retrieve object: %s") % name)
+            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % name)
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL]There is no object selected for Cutout.\nSelect one and try again."))
+            self.app.inform.emit(_("[ERROR_NOTCL] There is no object selected for Cutout.\nSelect one and try again."))
             return
 
         try:
@@ -346,8 +355,8 @@ class CutOut(FlatCAMTool):
 
 
         if 0 in {dia}:
-            self.app.inform.emit(_("[WARNING_NOTCL]Tool Diameter is zero value. Change it to a positive integer."))
-            return "Tool Diameter is zero value. Change it to a positive integer."
+            self.app.inform.emit(_("[WARNING_NOTCL] Tool Diameter is zero value. Change it to a positive real number."))
+            return "Tool Diameter is zero value. Change it to a positive real number."
 
         try:
             margin = float(self.margin.get_value())
@@ -388,6 +397,8 @@ class CutOut(FlatCAMTool):
                                  "and after that perform Cutout."))
             return
 
+        convex_box = self.convex_box.get_value()
+
         # Get min and max data for each object as we just cut rectangles across X or Y
         xmin, ymin, xmax, ymax = cutout_obj.bounds()
         px = 0.5 * (xmin + xmax) + margin
@@ -402,8 +413,12 @@ class CutOut(FlatCAMTool):
             cutout_obj.options["name"] += "_cutout"
         else:
             def geo_init(geo_obj, app_obj):
-                geo = cutout_obj.solid_geometry.convex_hull
-                geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
+                if convex_box:
+                    geo = cutout_obj.solid_geometry.convex_hull
+                    geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
+                else:
+                    geo = cutout_obj.solid_geometry
+                    geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2)).exterior
 
             outname = cutout_obj.options["name"] + "_cutout"
             self.app.new_object('geometry', outname, geo_init)
@@ -465,11 +480,11 @@ class CutOut(FlatCAMTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except:
-            self.app.inform.emit(_("[ERROR_NOTCL]Could not retrieve object: %s") % name)
+            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % name)
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL]Object not found: %s") % cutout_obj)
+            self.app.inform.emit(_("[ERROR_NOTCL] Object not found: %s") % cutout_obj)
 
         try:
             dia = float(self.dia.get_value())
@@ -483,8 +498,8 @@ class CutOut(FlatCAMTool):
                 return
 
         if 0 in {dia}:
-            self.app.inform.emit(_("[ERROR_NOTCL]Tool Diameter is zero value. Change it to a positive integer."))
-            return "Tool Diameter is zero value. Change it to a positive integer."
+            self.app.inform.emit(_("[ERROR_NOTCL] Tool Diameter is zero value. Change it to a positive real number."))
+            return "Tool Diameter is zero value. Change it to a positive real number."
 
         try:
             margin = float(self.margin.get_value())
@@ -603,8 +618,8 @@ class CutOut(FlatCAMTool):
                 return
 
         if 0 in {self.cutting_dia}:
-            self.app.inform.emit(_("[ERROR_NOTCL]Tool Diameter is zero value. Change it to a positive integer."))
-            return "Tool Diameter is zero value. Change it to a positive integer."
+            self.app.inform.emit(_("[ERROR_NOTCL] Tool Diameter is zero value. Change it to a positive real number."))
+            return "Tool Diameter is zero value. Change it to a positive real number."
 
         try:
             self.cutting_gapsize = float(self.gapsize.get_value())
@@ -652,11 +667,11 @@ class CutOut(FlatCAMTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except:
-            self.app.inform.emit(_("[ERROR_NOTCL]Could not retrieve Geoemtry object: %s") % name)
+            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve Geometry object: %s") % name)
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL]Geometry object for manual cutout not found: %s") % cutout_obj)
+            self.app.inform.emit(_("[ERROR_NOTCL] Geometry object for manual cutout not found: %s") % cutout_obj)
             return
 
         # use the snapped position as reference
@@ -683,16 +698,16 @@ class CutOut(FlatCAMTool):
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
         except:
-            self.app.inform.emit(_("[ERROR_NOTCL]Could not retrieve Gerber object: %s") % name)
+            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve Gerber object: %s") % name)
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL]There is no Gerber object selected for Cutout.\n"
+            self.app.inform.emit(_("[ERROR_NOTCL] There is no Gerber object selected for Cutout.\n"
                                  "Select one and try again."))
             return
 
         if not isinstance(cutout_obj, FlatCAMGerber):
-            self.app.inform.emit(_("[ERROR_NOTCL]The selected object has to be of Gerber type.\n"
+            self.app.inform.emit(_("[ERROR_NOTCL] The selected object has to be of Gerber type.\n"
                                  "Select a Gerber file and try again."))
             return
 
@@ -708,8 +723,8 @@ class CutOut(FlatCAMTool):
                 return
 
         if 0 in {dia}:
-            self.app.inform.emit(_("[ERROR_NOTCL]Tool Diameter is zero value. Change it to a positive integer."))
-            return "Tool Diameter is zero value. Change it to a positive integer."
+            self.app.inform.emit(_("[ERROR_NOTCL] Tool Diameter is zero value. Change it to a positive real number."))
+            return "Tool Diameter is zero value. Change it to a positive real number."
 
         try:
             margin = float(self.margin.get_value())
@@ -722,16 +737,21 @@ class CutOut(FlatCAMTool):
                                      "Add it and retry."))
                 return
 
+        convex_box = self.convex_box.get_value()
+
         def geo_init(geo_obj, app_obj):
-            geo = cutout_obj.solid_geometry.convex_hull
-            geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
+            if convex_box:
+                geo = cutout_obj.solid_geometry.convex_hull
+                geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
+            else:
+                geo = cutout_obj.solid_geometry
+                geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2)).exterior
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.new_object('geometry', outname, geo_init)
 
     def cutting_geo(self, pos):
-        self.cutting_gapsize = self.cutting_gapsize / 2 + (self.cutting_dia / 2)
-        offset = self.cutting_gapsize / 2
+        offset = self.cutting_dia / 2 + self.cutting_gapsize / 2
 
         # cutting area definition
         orig_x = pos[0]

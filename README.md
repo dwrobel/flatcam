@@ -9,6 +9,184 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+13.04.2019
+
+- updating the German translation
+- Gerber Editor: added ability to change on the fly the aperture after one of the tools: Add Pad or Add Pad Array is activated
+- Gerber Editor: if a tool is cancelled via key shortcut ESCAPE, the selection is now deleted and any other action require a new selection
+- finished German translation (Google translated with some adjustments)
+- final fix for issue #277. Previous fix was applied only for one case out of three.
+- RELEASE 8.913
+
+12.04.2019
+
+- Gerber Editor: added support for Oblong type of aperture
+- fixed an issue with automatically filled in aperture code when the edited Gerber file has no apertures; established an default with value 10 (according to Gerber specifications)
+- fixed a bug in editing a blank Gerber object
+- added handlers for the Gerber Editor context menu
+- updated the translation template POT file and the EN PO/MO files
+- Gerber Editor: added toggle effect to the Transform Tool
+- Gerber Editor: added shortcut for Transform Tool and also toggle effect here, too
+- updated the shortcut list with the Gerber Editor shortcut keys
+- Gerber Editor: fixed error when adding an aperture with code value lower than the ones that already exists
+- when adding an aperture with code '0' (zero) it will automatically be set with size zero and type: 'REG' (from region); here we store all the regions from a Gerber file, the ones without a declared aperture
+- Gerber Editor: added support for Gerber polarity change commands (LPD, LPC)
+- moved the polarity change processing from FlatCAMGrbEditor() class to camlib.Gerber().parse_lines()
+- made optional the saving of an edited object. Now the user can cancel the changes to the object.
+- replaced the standard buttons in the QMessageBox's used in the app with custom ones that can have text translated
+- updated the POT translation file and the MO/PO files for English and Romanian language
+
+11.04.2019
+
+- changed the color of the marked apertures to the global_selection_color
+- Gerber Editor: added Transformation Tool and Rotation key shortcut
+- in all Editors, manually deactivating a button in the editor toolbar will automatically select the 'Select' button
+- fixed Excellon Editor selection: when a tool is selected in Tools Table, all the drills belonging to that tool are selected. When a drill is selected on canvas, the associated tool will be selected without automatically selecting all other drills with same tool
+- Gerber Editor: added Add Pad Array tool
+- Gerber Editor: in Add Pad Array tool, if the pad is not circular type, for circular array the pad will be rotated to match the array angle
+- Gerber Editor: fixed multiple selection with key modifier such that first click selects, second deselects
+
+10.04.2019
+
+- Gerber Editor: added Add Track and Add Region functions
+- Gerber Editor: fixed key shortcuts
+- fixed setting the Layout combobox in Preferences according to the current layout
+- created menu links and shortcut keys for adding a new empty Gerber objects; on update of the edited Gerber, if the source object was an empty one (new blank one) this source obj will be deleted
+- removed the old apertures editing from Gerber Obj selected tab
+- Gerber Editor: added Add Pad (circular or rectangular type only)
+- Gerber Editor: autoincrement aperture code when adding new apertures
+- Gerber Editor: automatically calculate the size of the rectangular aperture
+
+9.04.2019
+
+- Gerber Editor: added buffer and scale tools
+- Gerber Editor: working on aperture selection to show on Aperture Table
+- Gerber Editor: finished the selection on canvas; should be used as an template for the other Editors
+- Gerber Editor: finished the Copy, Aperture Add, Buffer, Scale, Move including the Utility geometry
+- Trying to fix bug in Measurement Tool: the mouse events don't disconnect
+- fixed above bug in Measurement Tool (but there is a TODO there)
+
+7.04.2019
+
+- default values for Jump To function is jumping to origin (0, 0)
+
+6.04.2019
+
+- fixed bug in Geometry Editor in buffer_int() function that created an Circular Reference Error when applying buffer interior on a geometry.
+- fixed issue with not possible to close the app after a project save.
+- preliminary Gerber Editor.on_aperture_delete() 
+- fixed 'circular reference' error when creating the new Gerber file in Gerber Editor
+- preliminary Gerber Editor.on_aperture_add()
+
+5.04.2019
+
+- Gerber Editor: made geometry transfer (which is slow) to Editor to be multithreaded
+- Gerber Editor: plotting process is showed in the status bar
+- increased the number of workers in FlatCAM and made the number of workers customizable from Preferences
+- WIP in Gerber Editor: geometry is no longer stored in a Rtree storage as it is not needed
+- changed the way delayed plot is working in Gerber Editor to use a Qtimer instead of python threading module
+- WIP in Gerber Editor
+- fixed bug in saving the maximized state
+- fixed bug in applying default language on first start
+~~- on activating 'V' key shortcut (zoom fit) the mouse cursor is now jumping to origin (0, 0)~~
+- fixed bug in saving toolbars state; the file was saved before setting the self.defaults['global_toolbar_view]
+
+4.04.2019
+
+- added support for Gerber format specification D (no zero suppression) - PCBWizard Gerber files support
+- added support for Excellon file with no info about tool diameters - PCB Wizard Excellon file support
+- modified the bogus diameters series for Excellon objects that do not have tool diameter info
+- made Excellon Editor aware of the fact that the Excellon object that is edited has fake (bogus) tool diameters and therefore it will not sort the tools based on diameter but based on tool number
+- fixed bug on Excellon Editor: when diameter is edited in Tools Table and the target diameter is already in the tool table, the drills from current tool are moved to the new tool (with new dia) - before it crashed
+- fixed offset after editing drill diameters in Excellon Editor.
+
+3.04.2019
+
+- fixed plotting in Gerber Editor
+- working on GUI in Gerber Editor
+- added a Gcode end_command: default is M02
+- modified the calling of the editor2object() slot function to fix an issue with updating geometry imported from SVG file, after edit
+- working on Gerber Editor - added the key shortcuts: wip
+- made saving of the project file non-blocking and also while saving the project file, if the user tries again to close the app while project file is being saved, the app will close only after saving is complete (the project file size is non zero)
+- fixed the camlib.Geometry.import_svg() and camlib.Gerber.bounds() to work when importing SVG files as Gerber
+
+31.03.2019
+
+- fixed issue #281 by making generation of a convex shape for the freeform cutout in Tool Cutout a choice rather than the default
+- fixed bug in Tool Cutout, now in manual cutout mode the gap size reflect the value set
+- changed Measuring Tool to use the mouse click release instead of mouse click press; also fixed a bug when using the ESC key.
+- fixed errors when the File -> New Project is initiated while an Editor is still active.
+- the File->Exit action handler is now self.final_save() 
+- wip in Gerber editor
+
+29.03.2019
+
+- update the TCL keyword list
+- fix on the Gerber parser that makes searching for '%%' char optional when doing regex search for mode, units or image polarity. This allow loading Gerber files generated by the ECAD software TCl4.4
+- fix error in plotting Excellon when toggling units
+- FlatCAM editors now are separated each in it's own file
+- fixed TextTool in Geometry Editor so it will open the notebook on activation and close it after finishing text adding
+- started to work on a Gerber Editor
+- added a fix in the Excellon parser by allowing a comma in the tool definitions between the diameter and the rest
+
+28.03.2019
+
+- About 45% progress in German translation
+- new feature: added ability to edit MultiGeo geometry (geometry from Paint Tool)
+- changed all the info messages that are of type warning, error or success so they have a space added after the keyword
+- changed the Romanian translation by adding more diacritics  
+- modified Gerber parser to copy the follow_geometry in the self.apertures
+- modified the Properties Tool to show the number of elements in the follow_geometry for each aperture
+- modified the copy functions to copy the follow_geometry and also the apertures if it's possible (only for Gerber objects)
+
+27.03.2019
+
+- added new feature: user can delete apertures in Advanced mode and then create a new FlatCAM Gerber object
+- progress in German translation. About 27% done.
+- fixed issue #278. Crash on name change in the Name field in the Selected Tab.
+
+26.03.2019
+
+- fixed an issue where the Geometry plot function protested that it does not have an parameter that is used by the CNCJob plot function. But both inherit from FaltCAMObj plot function which does not have that parameter so something may need to be changed. Until then I provided a phony keyboard parameter to make that function 'shut up'
+- fixed bug: after using Paint Tool shortcut keys are disabled
+- added CNCJob geometry for the holes created by the drills from Excellon objects
+
+25.03.2019
+
+- in the TCL completer if the word is already complete don't add it again but add a space
+- added all the TCL keywords in the completer keyword list
+- work in progress in German translation ~7%
+- after any autocomplete in TCL completer, a space is added
+- fixed an module import issue in NCC Tool
+- minor change (optimization) of the CNCJob UI
+- work in progress in German translation ~20%
+
+22.03.2019
+
+- fixed an error that created a situation that when saving a project with some of the CNCJob objects disabled, on project reload the CNCJob objects are no longer loaded
+- fixed the Gerber.merge() function. When some of the Gerber files have apertures with same id, create a new aperture id for the object that is fused because each aperture id may hold different geometries.
+- changed the autoname for saving Preferences, Project and PNG file
+
+20.03.2019
+
+- added autocomplete finish with ENTER key for the TCL Shell
+- made sure that the autocomplete function works only for FlatCAM Scripts
+- ESC key will trigger normal view if in full screen and the ESC key is pressed
+- added an icon and title text for the Toggle Units QMessageBox
+
+19.03.2019
+
+- added autocomplete for Code editor;
+- autocomplete in Code Editor is finished by hitting either TAB key or ENTER key
+- fixed the Gerber.merge() to work for the case when one of the merged Gerber objects solid_geometry type is Polygon and not a list
+
+18.03.2019
+
+- added ability to create new scripts and open scripts in FlatCAM Script Editor
+- the Code Editor tab name is changed according to the task; 'save' and 'open' buttons will have filters installed for the QOpenDialog fit to the task
+- added ability to run a FlatCAM Tcl script by double-clicking on the file
+- in Code Editor added shortcut combo key CTRL+SHIFT+V to function as a Special Paste that will replace the '\' char with '/' so the Windows paths will be pasted correctly for TCL Shell. Also doing SHIFT + LMB on the Paste in contextual menu is doing the same.
+
 17.03.2019
 
 - remade the layout in 2Sided Tool
