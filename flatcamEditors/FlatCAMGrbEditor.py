@@ -1292,6 +1292,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # this var will store the state of the toolbar before starting the editor
         self.toolbar_old_state = False
 
+        # holds flattened geometry
+        self.flat_geometry = []
+
         # Init GUI
         self.apdim_lbl.hide()
         self.apdim_entry.hide()
@@ -1926,6 +1929,37 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.shapes.clear(update=True)
         self.tool_shape.clear(update=True)
+
+    def flatten(self, geometry=None, reset=True, pathonly=False):
+        """
+        Creates a list of non-iterable linear geometry objects.
+        Polygons are expanded into its exterior pathonly param if specified.
+
+        Results are placed in flat_geometry
+
+        :param geometry: Shapely type or list or list of list of such.
+        :param reset: Clears the contents of self.flat_geometry.
+        :param pathonly: Expands polygons into linear elements from the exterior attribute.
+        """
+
+        if reset:
+            self.flat_geometry = []
+        ## If iterable, expand recursively.
+        try:
+            for geo in geometry:
+                if geo is not None:
+                    self.flatten(geometry=geo, reset=False, pathonly=pathonly)
+
+        ## Not iterable, do the actual indexing and add.
+        except TypeError:
+            if pathonly and type(geometry) == Polygon:
+                self.flat_geometry.append(geometry.exterior)
+                self.flatten(geometry=geometry.interiors,
+                             reset=False,
+                             pathonly=True)
+            else:
+                self.flat_geometry.append(geometry)
+        return self.flat_geometry
 
     def edit_fcgerber(self, orig_grb_obj):
         """
