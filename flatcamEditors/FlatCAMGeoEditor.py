@@ -22,6 +22,7 @@ from shapely.ops import cascaded_union
 import shapely.affinity as affinity
 
 from numpy import arctan2, Inf, array, sqrt, sign, dot
+from numpy.linalg import norm
 
 from rtree import index as rtindex
 from flatcamGUI.GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCComboBox, FCTextAreaRich, \
@@ -1989,11 +1990,21 @@ class FCArc(FCShapeTool):
         self.points.append(point)
 
         if len(self.points) == 1:
-            self.draw_app.app.inform.emit(_("Click on Start arc point ..."))
+            if self.mode == 'c12':
+                self.draw_app.app.inform.emit(_("Click on Start point ..."))
+            elif self.mode == '132':
+                self.draw_app.app.inform.emit(_("Click on Point3 ..."))
+            else:
+                self.draw_app.app.inform.emit(_("Click on Stop point to complete ..."))
             return "Click on 1st point ..."
 
         if len(self.points) == 2:
-            self.draw_app.app.inform.emit(_("Click on End arc point to complete ..."))
+            if self.mode == 'c12':
+                self.draw_app.app.inform.emit(_("Click on Stop point to complete ..."))
+            elif self.mode == '132':
+                self.draw_app.app.inform.emit(_("Click on Point2 ..."))
+            else:
+                self.draw_app.app.inform.emit(_("Click on Center point to complete ..."))
             return "Click on 2nd point to complete ..."
 
         if len(self.points) == 3:
@@ -2010,11 +2021,13 @@ class FCArc(FCShapeTool):
         if key == 'M' or key == QtCore.Qt.Key_M:
             if self.mode == 'c12':
                 self.mode = '12c'
+                return _('Mode: Start -> Stop -> Center. Click on Start point ...')
             elif self.mode == '12c':
                 self.mode = '132'
+                return _('Mode: Point1 -> Point3 -> Point2. Click on 1st point ...')
             else:
                 self.mode = 'c12'
-            return _('Mode: %s') % self.mode
+                return _('Mode: Center -> Start -> Stop. Click on Center ...')
 
     def utility_geometry(self, data=None):
         if len(self.points) == 1:  # Show the radius

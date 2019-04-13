@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - Gerber Editor: a disabled/enabled sequence for the VisPy cursor on Gerber edit make the graphics better
 - Editors: activated an old function that was no longer active: each tool can have it's own set of shortcut keys, the Editor general shortcut keys that are letters are overridden
 - Gerber and Geometry editors, when using the Backspace keys for certain tools, they will backtrack one point but now the utility geometry is immediately updated
+- In Geometry Editor I fixed bug in Arc modes. Arc mode shortcut key is now key 'M' and arc direction change shortcut key is 'D'
 
 13.04.2019
 

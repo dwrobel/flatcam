@@ -7589,7 +7589,7 @@ def three_point_circle(p1, p2, p3):
     center = a1 + b1 * T[0]
 
     # Radius
-    radius = norm(center - p1)
+    radius = np.linalg.norm(center - p1)
 
     return center, radius, T[0]
 
