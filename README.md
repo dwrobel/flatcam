@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - updating the German translation
 - Gerber Editor: added ability to change on the fly the aperture after one of the tools: Add Pad or Add Pad Array is activated
 - Gerber Editor: if a tool is cancelled via key shortcut ESCAPE, the selection is now deleted and any other action require a new selection
+- finished German translation (Google translated with some adjustments)
+- RELEASE 8.913
 
 12.04.2019
 
