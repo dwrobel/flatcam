@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+13.04.2019
+
+- updating the German translation
+
 12.04.2019
 
 - Gerber Editor: added support for Oblong type of aperture
