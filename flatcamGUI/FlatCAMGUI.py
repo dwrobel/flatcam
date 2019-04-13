@@ -2538,7 +2538,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                     self.app.grb_editor.delete_utility_geometry()
 
-                    self.app.grb_editor.plot_all()
+                    # self.app.grb_editor.plot_all()
+                    self.app.grb_editor.active_tool.clean_up()
                     self.app.grb_editor.select_tool('select')
                     return
 

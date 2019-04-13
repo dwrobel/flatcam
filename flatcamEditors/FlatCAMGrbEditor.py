@@ -75,6 +75,21 @@ class FCPad(FCShapeTool):
             return None
 
     def util_shape(self, point):
+        # updating values here allows us to change the aperture on the fly, after the Tool has been started
+        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
+        self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
+        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
+
+        # if those cause KeyError exception it means that the aperture type is not 'R'. Only 'R' type has those keys
+        try:
+            self.half_width = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['width']) / 2
+        except KeyError:
+            pass
+        try:
+            self.half_height = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['height']) / 2
+        except KeyError:
+            pass
+
         if point[0] is None and point[1] is None:
             point_x = self.draw_app.x
             point_y = self.draw_app.y
@@ -159,6 +174,11 @@ class FCPad(FCShapeTool):
         self.draw_app.in_action = False
         self.complete = True
         self.draw_app.app.inform.emit(_("[success] Done. Adding Pad completed."))
+
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.apertures_table.clearSelection()
+        self.draw_app.plot_all()
 
 
 class FCPadArray(FCShapeTool):
@@ -312,6 +332,21 @@ class FCPadArray(FCShapeTool):
                 return DrawToolUtilityShape(LineString(temp_points))
 
     def util_shape(self, point):
+        # updating values here allows us to change the aperture on the fly, after the Tool has been started
+        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
+        self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
+        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
+
+        # if those cause KeyError exception it means that the aperture type is not 'R'. Only 'R' type has those keys
+        try:
+            self.half_width = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['width']) / 2
+        except KeyError:
+            pass
+        try:
+            self.half_height = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['height']) / 2
+        except KeyError:
+            pass
+
         if point[0] is None and point[1] is None:
             point_x = self.draw_app.x
             point_y = self.draw_app.y
@@ -435,6 +470,11 @@ class FCPadArray(FCShapeTool):
         self.draw_app.array_frame.hide()
         return
 
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.apertures_table.clearSelection()
+        self.draw_app.plot_all()
+
 
 class FCRegion(FCShapeTool):
     """
@@ -481,6 +521,11 @@ class FCRegion(FCShapeTool):
         self.complete = True
         self.draw_app.app.inform.emit(_("[success] Done. Region completed."))
 
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.apertures_table.clearSelection()
+        self.draw_app.plot_all()
+
     def on_key(self, key):
         if key == 'backspace':
             if len(self.points) > 0:
@@ -500,6 +545,11 @@ class FCTrack(FCRegion):
         self.draw_app.in_action = False
         self.complete = True
         self.draw_app.app.inform.emit(_("[success] Done. Path completed."))
+
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.apertures_table.clearSelection()
+        self.draw_app.plot_all()
 
     def utility_geometry(self, data=None):
         if len(self.points) > 0:
@@ -659,6 +709,11 @@ class FCApertureMove(FCShapeTool):
         self.draw_app.build_ui()
         self.draw_app.app.inform.emit(_("[success] Done. Apertures Move completed."))
 
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.apertures_table.clearSelection()
+        self.draw_app.plot_all()
+
     def utility_geometry(self, data=None):
         """
         Temporary geometry on screen while using this tool.
@@ -783,6 +838,9 @@ class FCApertureSelect(DrawTool):
         self.draw_app.apertures_table.cellPressed.connect(self.draw_app.on_row_selected)
 
         return ""
+
+    def clean_up(self):
+        self.draw_app.plot_all()
 
 
 class FCTransform(FCShapeTool):
