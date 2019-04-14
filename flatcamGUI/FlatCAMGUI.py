@@ -2923,7 +2923,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             elif modifiers == QtCore.Qt.NoModifier:
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':
                     # abort the measurement action
-                    self.app.measurement_tool.on_measure(activate=False)
                     self.app.measurement_tool.deactivate_measure_tool()
                     self.app.inform.emit(_("Measurement Tool exit..."))
                     return

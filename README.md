@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - In Geometry Editor I fixed bug in Arc modes. Arc mode shortcut key is now key 'M' and arc direction change shortcut key is 'D'
 - moved the key handler out of the Measurement tool to flatcamGUI.FlatCAMGui.keyPressEvent()
 - Gerber Editor: started to add new function of poligonize which should make a filled polygon out of a shape
+- cleaned up Measuring Tool
 
 13.04.2019
 

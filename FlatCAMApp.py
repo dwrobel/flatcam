@@ -4472,7 +4472,6 @@ class App(QtCore.QObject):
         self.report_usage("on_set_origin()")
 
         self.inform.emit(_('Click to set the origin ...'))
-
         self.plotcanvas.vis_connect('mouse_press', self.on_set_zero_click)
 
     def on_jump_to(self, custom_location=None, fit_center=True):
@@ -5117,9 +5116,7 @@ class App(QtCore.QObject):
 
     def on_mouse_move_over_plot(self, event, origin_click=None):
         """
-        Callback for the mouse motion event over the plot. This event is generated
-        by the Matplotlib backend and has been registered in ``self.__init__()``.
-        For details, see: http://matplotlib.org/users/event_handling.html
+        Callback for the mouse motion event over the plot.
 
         :param event: Contains information about the event.
         :param origin_click
@@ -5314,7 +5311,6 @@ class App(QtCore.QObject):
     def select_objects(self, key=None):
         # list where we store the overlapped objects under our mouse left click position
         objects_under_the_click_list = []
-
         # Populate the list with the overlapped objects on the click position
         curr_x, curr_y = self.pos
         for obj in self.all_objects_list:
