@@ -2162,6 +2162,9 @@ class Gerber (Geometry):
         # Coordinates of the current path, each is [x, y]
         path = []
 
+        # store the file units here:
+        gerber_units = 'IN'
+
         # this is for temporary storage of geometry until it is added to poly_buffer
         geo = None
 
@@ -3180,6 +3183,13 @@ class Gerber (Geometry):
                                 self.apertures[last_path_aperture]['solid_geometry'] = []
                                 self.apertures[last_path_aperture]['solid_geometry'].append(geo)
 
+            # TODO: make sure to keep track of units changes because right now it seems to happen in a weird way
+            # find out the conversion factor used to convert inside the self.apertures keys: size, width, height
+            file_units = gerber_units if gerber_units else 'IN'
+            app_units = self.app.defaults['units']
+
+            conversion_factor = 25.4 if file_units == 'IN' else (1/25.4) if file_units != app_units else 1
+
             # first check if we have any clear_geometry (LPC) and if yes then we need to substract it
             # from the apertures solid_geometry
             temp_geo = []
@@ -3195,7 +3205,9 @@ class Gerber (Geometry):
                     self.apertures[apid]['solid_geometry'] = deepcopy(temp_geo)
                     self.apertures[apid].pop('clear_geometry', None)
 
-
+                for k, v in self.apertures[apid].items():
+                    if k == 'size' or k == 'width' or k == 'height':
+                        self.apertures[apid][k] = v * conversion_factor
 
             # --- Apply buffer ---
             # this treats the case when we are storing geometry as paths

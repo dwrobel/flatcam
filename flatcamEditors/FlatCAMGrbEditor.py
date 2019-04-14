@@ -1570,15 +1570,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
             if str(self.storage_dict[ap_code]['type']) == 'R' or str(self.storage_dict[ap_code]['type']) == 'O':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
-                    '%.4f, %.4f' % (self.storage_dict[ap_code]['width'] * self.gerber_obj.file_units_factor,
-                                    self.storage_dict[ap_code]['height'] * self.gerber_obj.file_units_factor
+                    '%.4f, %.4f' % (self.storage_dict[ap_code]['width'],
+                                    self.storage_dict[ap_code]['height']
                                     )
                 )
                 ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
             elif str(self.storage_dict[ap_code]['type']) == 'P':
                 ap_dim_item = QtWidgets.QTableWidgetItem(
-                    '%.4f, %.4f' % (self.storage_dict[ap_code]['diam'] * self.gerber_obj.file_units_factor,
-                                    self.storage_dict[ap_code]['nVertices'] * self.gerber_obj.file_units_factor)
+                    '%.4f, %.4f' % (self.storage_dict[ap_code]['diam'],
+                                    self.storage_dict[ap_code]['nVertices'])
                 )
                 ap_dim_item.setFlags(QtCore.Qt.ItemIsEnabled)
             else:
@@ -1588,8 +1588,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             try:
                 if self.storage_dict[ap_code]['size'] is not None:
                     ap_size_item = QtWidgets.QTableWidgetItem('%.4f' %
-                                                              float(self.storage_dict[ap_code]['size'] *
-                                                                    self.gerber_obj.file_units_factor))
+                                                              float(self.storage_dict[ap_code]['size']))
                 else:
                     ap_size_item = QtWidgets.QTableWidgetItem('')
             except KeyError:

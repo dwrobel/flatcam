@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - moved the key handler out of the Measurement tool to flatcamGUI.FlatCAMGui.keyPressEvent()
 - Gerber Editor: started to add new function of poligonize which should make a filled polygon out of a shape
 - cleaned up Measuring Tool
+- solved bug in Gerber apertures size and dimensions values conversion when file units are different than app units
 
 13.04.2019
 
