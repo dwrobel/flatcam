@@ -1683,12 +1683,12 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.canvas.vis_connect('mouse_press', self.on_canvas_click)
         self.canvas.vis_connect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_connect('mouse_release', self.on_canvas_click_release)
+        self.canvas.vis_connect('mouse_release', self.on_exc_click_release)
 
     def disconnect_canvas_event_handlers(self):
         self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
         self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_disconnect('mouse_release', self.on_canvas_click_release)
+        self.canvas.vis_disconnect('mouse_release', self.on_exc_click_release)
 
         # we restore the key and mouse control to FlatCAMApp method
         self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
@@ -2136,7 +2136,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         else:
             self.storage.insert(shape)  # TODO: Check performance
 
-    def on_canvas_click_release(self, event):
+    def on_exc_click_release(self, event):
         pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
 
         self.modifiers = QtWidgets.QApplication.keyboardModifiers()

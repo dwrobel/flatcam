@@ -2973,13 +2973,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.canvas.vis_connect('mouse_press', self.on_canvas_click)
         self.canvas.vis_connect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_connect('mouse_release', self.on_canvas_click_release)
+        self.canvas.vis_connect('mouse_release', self.on_geo_click_release)
 
     def disconnect_canvas_event_handlers(self):
 
         self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
         self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_disconnect('mouse_release', self.on_canvas_click_release)
+        self.canvas.vis_disconnect('mouse_release', self.on_geo_click_release)
 
         # we restore the key and mouse control to FlatCAMApp method
         self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
@@ -3310,7 +3310,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # Update cursor
         self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
 
-    def on_canvas_click_release(self, event):
+    def on_geo_click_release(self, event):
         pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
 
         if self.app.grid_status():

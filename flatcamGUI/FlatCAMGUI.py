@@ -690,6 +690,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.add_pad_ar_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/padarray32.png'), _('Add Pad Array'))
         self.grb_add_track_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/track32.png'), _("Add Track"))
         self.grb_add_region_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), _("Add Region"))
+        self.grb_convert_poly_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), _("Poligonize"))
+
         self.grb_edit_toolbar.addSeparator()
 
         self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), _('Buffer'))
@@ -2910,6 +2912,24 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Show Shortcut list
                 if key == QtCore.Qt.Key_F3 or key == 'F3':
                     self.app.on_shortcut_list()
+                    return
+        elif self.app.call_source == 'measurement':
+            if modifiers == QtCore.Qt.ControlModifier:
+                pass
+            elif modifiers == QtCore.Qt.AltModifier:
+                pass
+            elif modifiers == QtCore.Qt.ShiftModifier:
+                pass
+            elif modifiers == QtCore.Qt.NoModifier:
+                if key == QtCore.Qt.Key_Escape or key == 'Escape':
+                    # abort the measurement action
+                    self.app.measurement_tool.on_measure(activate=False)
+                    self.app.measurement_tool.deactivate_measure_tool()
+                    self.app.inform.emit(_("Measurement Tool exit..."))
+                    return
+
+                if key == QtCore.Qt.Key_G or key == 'G':
+                    self.app.ui.grid_snap_btn.trigger()
                     return
 
     def dragEnterEvent(self, event):

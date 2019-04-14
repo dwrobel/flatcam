@@ -476,6 +476,73 @@ class FCPadArray(FCShapeTool):
         self.draw_app.plot_all()
 
 
+class FCPoligonize(FCShapeTool):
+    """
+    Resulting type: Polygon
+    """
+
+    def __init__(self, draw_app):
+        DrawTool.__init__(self, draw_app)
+        self.name = 'poligonize'
+        self.draw_app = draw_app
+
+        self.start_msg = _("Select shape(s) and then click ...")
+        self.draw_app.in_action = True
+        self.make()
+
+    def click(self, point):
+        # self.draw_app.in_action = True
+        # if self.draw_app.selected:
+        #     self.make()
+        # else:
+        #     self.draw_app.app.inform.emit(_("[WARNING_NOTCL] No shapes are selected. Select shapes and try again ..."))
+
+        return ""
+
+    def make(self):
+        geo = []
+
+        for shape in self.draw_app.selected:
+            current_storage = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
+            print(self.draw_app.active_tool)
+            aha = []
+            if shape.geo:
+                shape_points = list(shape.geo.exterior.coords)
+                for pt in shape_points:
+                    aha.append(Point(pt))
+                concave_hull, bla_bla = alpha_shape(points=aha, alpha=0.5)
+                geo.append(concave_hull)
+                print(geo)
+                self.geometry = DrawToolShape(geo)
+                self.draw_app.on_grb_shape_complete(current_storage)
+
+        self.draw_app.in_action = False
+        self.complete = True
+        self.draw_app.app.inform.emit(_("[success] Done. Poligonize completed."))
+
+        self.draw_app.build_ui()
+        # MS: always return to the Select Tool if modifier key is not pressed
+        # else return to the current tool
+
+        key_modifier = QtWidgets.QApplication.keyboardModifiers()
+        if self.draw_app.app.defaults["global_mselect_key"] == 'Control':
+            modifier_to_use = Qt.ControlModifier
+        else:
+            modifier_to_use = Qt.ShiftModifier
+        # if modifier key is pressed then we add to the selected list the current shape but if it's already
+        # in the selected list, we removed it. Therefore first click selects, second deselects.
+        if key_modifier == modifier_to_use:
+            self.draw_app.select_tool(self.draw_app.active_tool.name)
+        else:
+            self.draw_app.select_tool("select")
+            return
+
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.apertures_table.clearSelection()
+        self.draw_app.plot_all()
+
+
 class FCRegion(FCShapeTool):
     """
     Resulting type: Polygon
@@ -1259,6 +1326,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                               "constructor": FCTrack},
             "region": {"button": self.app.ui.grb_add_region_btn,
                               "constructor": FCRegion},
+            "poligonize": {"button": self.app.ui.grb_convert_poly_btn,
+                       "constructor": FCPoligonize},
             "buffer": {"button": self.app.ui.aperture_buffer_btn,
                                 "constructor": FCBuffer},
             "scale": {"button": self.app.ui.aperture_scale_btn,
@@ -1918,12 +1987,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.canvas.vis_connect('mouse_press', self.on_canvas_click)
         self.canvas.vis_connect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_connect('mouse_release', self.on_canvas_click_release)
+        self.canvas.vis_connect('mouse_release', self.on_grb_click_release)
 
     def disconnect_canvas_event_handlers(self):
         self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
         self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_disconnect('mouse_release', self.on_canvas_click_release)
+        self.canvas.vis_disconnect('mouse_release', self.on_grb_click_release)
 
         # we restore the key and mouse control to FlatCAMApp method
         self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
@@ -2338,7 +2407,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             else:
                 self.app.log.debug("No active tool to respond to click!")
 
-    def on_canvas_click_release(self, event):
+    def on_grb_click_release(self, event):
         pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
 
         self.modifiers = QtWidgets.QApplication.keyboardModifiers()
