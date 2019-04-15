@@ -8,7 +8,7 @@ import shapely.affinity as affinity
 from numpy import arctan2, Inf, array, sqrt, sign, dot
 from rtree import index as rtindex
 import threading, time
-import copy
+from copy import copy, deepcopy
 
 from camlib import *
 from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, LengthEntry, RadioSet, \
@@ -36,8 +36,14 @@ class FCPad(FCShapeTool):
         self.name = 'pad'
         self.draw_app = draw_app
 
+        try:
+            self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
+        except KeyError:
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] To add a Pad, first select a tool in Tool Table"))
+            self.draw_app.in_action = False
+            self.complete = True
+            return
         self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
-        self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
         # if those cause KeyError exception it means that the aperture type is not 'R'. Only 'R' type has those keys
@@ -51,7 +57,6 @@ class FCPad(FCShapeTool):
             pass
 
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
-
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
             self.draw_app.draw_utility_geometry(geo=geo)
 
@@ -191,8 +196,15 @@ class FCPadArray(FCShapeTool):
         self.name = 'array'
         self.draw_app = draw_app
 
+        try:
+            self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
+        except KeyError:
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] To add an Pad Array first select a tool in Tool Table"))
+            self.complete = True
+            self.draw_app.in_action = False
+            self.draw_app.array_frame.hide()
+            return
         self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
-        self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
         # if those cause KeyError exception it means that the aperture type is not 'R'. Only 'R' type has those keys
@@ -228,12 +240,6 @@ class FCPadArray(FCShapeTool):
         self.pt = []
 
         self.draw_app.app.inform.emit(self.start_msg)
-
-        try:
-            self.selected_size = self.draw_app.tool2tooldia[self.draw_app.last_aperture_selected]
-        except KeyError:
-            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] To add an Pad Array first select a tool in Tool Table"))
-            return
 
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y), static=True)
 
@@ -466,7 +472,7 @@ class FCPadArray(FCShapeTool):
                 self.geometry.append(DrawToolShape(geo))
         self.complete = True
         self.draw_app.app.inform.emit(_("[success] Done. Pad Array added."))
-        self.draw_app.in_action = True
+        self.draw_app.in_action = False
         self.draw_app.array_frame.hide()
         return
 
@@ -1518,7 +1524,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.pad_direction_radio.set_value('CW')
         self.pad_axis_radio.set_value('X')
 
-    def build_ui(self):
+    def build_ui(self, first_run=None):
 
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
@@ -1601,6 +1607,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.apertures_table.setItem(self.apertures_row, 4, ap_dim_item)  # Aperture Dimensions
 
             self.apertures_row += 1
+            if first_run is True:
+                # set now the last aperture selected
+                self.last_aperture_selected = ap_code
 
         for ap_code in sorted_macros:
             ap_code = str(ap_code)
@@ -1618,6 +1627,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
 
             self.apertures_row += 1
+            if first_run is True:
+                # set now the last aperture selected
+                self.last_aperture_selected = ap_code
 
         self.apertures_table.selectColumn(0)
         self.apertures_table.resizeColumnsToContents()
@@ -1872,6 +1884,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.apsize_entry.setReadOnly(False)
 
     def activate_grb_editor(self):
+        # adjust the status of the menu entries related to the editor
+        self.app.ui.menueditedit.setDisabled(True)
+        self.app.ui.menueditok.setDisabled(False)
+        # adjust the visibility of some of the canvas context menu
+        self.app.ui.popmenu_edit.setVisible(False)
+        self.app.ui.popmenu_save.setVisible(True)
+
         self.connect_canvas_event_handlers()
 
         # init working objects
@@ -1914,6 +1933,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.editor_active = True
 
     def deactivate_grb_editor(self):
+        # adjust the status of the menu entries related to the editor
+        self.app.ui.menueditedit.setDisabled(False)
+        self.app.ui.menueditok.setDisabled(True)
+        # adjust the visibility of some of the canvas context menu
+        self.app.ui.popmenu_edit.setVisible(True)
+        self.app.ui.popmenu_save.setVisible(False)
+
         self.disconnect_canvas_event_handlers()
         self.clear()
         self.app.ui.grb_edit_toolbar.setDisabled(True)
@@ -1978,27 +2004,32 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
         # but those from FlatCAMGeoEditor
 
+        # first connect to new, then disconnect the old handlers
+        # don't ask why but if there is nothing connected I've seen issues
+        self.canvas.vis_connect('mouse_press', self.on_canvas_click)
+        self.canvas.vis_connect('mouse_move', self.on_canvas_move)
+        self.canvas.vis_connect('mouse_release', self.on_grb_click_release)
+
         self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
         self.app.collection.view.clicked.disconnect()
 
-        self.canvas.vis_connect('mouse_press', self.on_canvas_click)
-        self.canvas.vis_connect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_connect('mouse_release', self.on_grb_click_release)
-
     def disconnect_canvas_event_handlers(self):
-        self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
-        self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_disconnect('mouse_release', self.on_grb_click_release)
 
         # we restore the key and mouse control to FlatCAMApp method
+        # first connect to new, then disconnect the old handlers
+        # don't ask why but if there is nothing connected I've seen issues
         self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
         self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
         self.app.plotcanvas.vis_connect('mouse_double_click', self.app.on_double_click_over_plot)
         self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
+
+        self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
+        self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
+        self.canvas.vis_disconnect('mouse_release', self.on_grb_click_release)
 
     def clear(self):
         self.active_tool = None
@@ -2104,7 +2135,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.grb_plot_promises.append(apid)
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self, apid]})
 
-        self.start_delayed_plot(check_period=1000)
+        # do the delayed plot only if there is something to plot (the gerber is not empty)
+        if bool(self.gerber_obj.apertures):
+            self.start_delayed_plot(check_period=1000)
+        else:
+            self.set_ui()
+            # now that we have data (empty data actually), create the GUI interface and add it to the Tool Tab
+            self.build_ui(first_run=True)
 
     def update_fcgerber(self, grb_obj):
         """
@@ -2296,7 +2333,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             try:
                 # selected_apid = str(self.tool2tooldia[row + 1])
                 selected_apid = self.apertures_table.item(row, 1).text()
-                self.last_aperture_selected = selected_apid
+                self.last_aperture_selected = copy(selected_apid)
 
                 for obj in self.storage_dict[selected_apid]['solid_geometry']:
                     self.selected.append(obj)
@@ -2685,7 +2722,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
                 self.set_ui()
                 # now that we have data, create the GUI interface and add it to the Tool Tab
-                self.build_ui()
+                self.build_ui(first_run=True)
                 self.plot_all()
 
                 # HACK: enabling/disabling the cursor seams to somehow update the shapes making them more 'solid'

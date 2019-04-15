@@ -2093,12 +2093,9 @@ class App(QtCore.QObject):
 
         if isinstance(edited_object, FlatCAMGerber) or isinstance(edited_object, FlatCAMGeometry) or \
                 isinstance(edited_object, FlatCAMExcellon):
-
-            # adjust the status of the menu entries related to the editor
-            self.ui.menueditedit.setDisabled(True)
-            self.ui.menueditok.setDisabled(False)
+            pass
         else:
-            self.inform.emit(_("[WARNING_NOTCL] Select a Geometry or Excellon Object to edit."))
+            self.inform.emit(_("[WARNING_NOTCL] Select a Geometry, Gerber or Excellon Object to edit."))
             return
 
         if isinstance(edited_object, FlatCAMGeometry):
@@ -2109,7 +2106,8 @@ class App(QtCore.QObject):
                 edited_tools = [int(x.text()) for x in edited_object.ui.geo_tools_table.selectedItems()]
                 if len(edited_tools) > 1:
                     self.inform.emit(_("[WARNING_NOTCL] Simultanoeus editing of tools geometry in a MultiGeo Geometry "
-                                       "is not possible.\n Edit only one geometry at a time."))
+                                       "is not possible.\n"
+                                       "Edit only one geometry at a time."))
                 self.geo_editor.edit_fcgeometry(edited_object, multigeo_tool=edited_tools[0])
             else:
                 self.geo_editor.edit_fcgeometry(edited_object)
@@ -2156,16 +2154,8 @@ class App(QtCore.QObject):
         """
         self.report_usage("editor2object()")
 
-        # adjust the status of the menu entries related to the editor
-        self.ui.menueditedit.setDisabled(False)
-        self.ui.menueditok.setDisabled(True)
-
         # do not update a geometry or excellon object unless it comes out of an editor
         if self.call_source != 'app':
-            # adjust the visibility of some of the canvas context menu
-            self.ui.popmenu_edit.setVisible(True)
-            self.ui.popmenu_save.setVisible(False)
-
             edited_obj = self.collection.get_active()
             obj_type = ""
 
@@ -2244,6 +2234,8 @@ class App(QtCore.QObject):
                         self.grb_editor.deactivate_grb_editor()
                     elif isinstance(edited_obj, FlatCAMExcellon):
                         self.exc_editor.deactivate()
+                        # set focus on the project tab
+                        self.ui.notebook.setCurrentWidget(self.ui.project_tab)
                     else:
                         self.inform.emit(_("[WARNING_NOTCL] Select a Gerber, Geometry or Excellon Object to update."))
                         return

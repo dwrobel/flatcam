@@ -13,6 +13,10 @@ CAD program, and create G-Code for Isolation routing.
 
 - working on a new tool to process automatically PcbWizard Excellon files which are generated in 2 files
 - finished ToolPcbWizard; it will autodetect the Excellon format, units from the INF file
+- Gerber Editor: reduced the delay to show UI when editing an empty Gerber object
+- update the order of event handlers connection in Editors to first connect new handlers then disconnect old handlers. It seems that if nothing is connected some VispY functions like canvas panning no longer works if there is at least once nothing connected to the 'mouse_move' event
+- Excellon Editor: update so always there is a tool selected even after the Execllon object was just edited; before it always required a click inside of the tool table, not you do it only if needed.
+- fixed the menu File -> Edit -> Edit/Close Editor entry to reflect the status of the app (Editor active or not)
 
 14.04.2019
 

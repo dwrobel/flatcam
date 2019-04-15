@@ -2855,6 +2855,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.replot()
 
     def activate(self):
+        # adjust the status of the menu entries related to the editor
+        self.app.ui.menueditedit.setDisabled(True)
+        self.app.ui.menueditok.setDisabled(False)
+        # adjust the visibility of some of the canvas context menu
+        self.app.ui.popmenu_edit.setVisible(False)
+        self.app.ui.popmenu_save.setVisible(True)
+
         self.connect_canvas_event_handlers()
 
         # initialize working objects
@@ -2887,14 +2894,17 @@ class FlatCAMGeoEditor(QtCore.QObject):
         for w in sel_tab_widget_list:
             w.setEnabled(False)
 
-        # adjust the visibility of some of the canvas context menu
-        self.app.ui.popmenu_edit.setVisible(False)
-        self.app.ui.popmenu_save.setVisible(True)
-
         # Tell the App that the editor is active
         self.editor_active = True
 
     def deactivate(self):
+        # adjust the status of the menu entries related to the editor
+        self.app.ui.menueditedit.setDisabled(False)
+        self.app.ui.menueditok.setDisabled(True)
+        # adjust the visibility of some of the canvas context menu
+        self.app.ui.popmenu_edit.setVisible(True)
+        self.app.ui.popmenu_save.setVisible(False)
+
         self.disconnect_canvas_event_handlers()
         self.clear()
         self.app.ui.geo_edit_toolbar.setDisabled(True)
@@ -2942,10 +2952,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # Tell the app that the editor is no longer active
         self.editor_active = False
 
-        # adjust the visibility of some of the canvas context menu
-        self.app.ui.popmenu_edit.setVisible(True)
-        self.app.ui.popmenu_save.setVisible(False)
-
         try:
             # re-enable all the widgets in the Selected Tab that were disabled after entering in Edit Geometry Mode
             sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
@@ -2961,9 +2967,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
     def connect_canvas_event_handlers(self):
         ## Canvas events
 
+        # first connect to new, then disconnect the old handlers
+        # don't ask why but if there is nothing connected I've seen issues
+        self.canvas.vis_connect('mouse_press', self.on_canvas_click)
+        self.canvas.vis_connect('mouse_move', self.on_canvas_move)
+        self.canvas.vis_connect('mouse_release', self.on_geo_click_release)
+
         # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
         # but those from FlatCAMGeoEditor
-
         self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
@@ -2971,22 +2982,19 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.app.collection.view.clicked.disconnect()
 
-        self.canvas.vis_connect('mouse_press', self.on_canvas_click)
-        self.canvas.vis_connect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_connect('mouse_release', self.on_geo_click_release)
-
     def disconnect_canvas_event_handlers(self):
-
-        self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
-        self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_disconnect('mouse_release', self.on_geo_click_release)
-
         # we restore the key and mouse control to FlatCAMApp method
+        # first connect to new, then disconnect the old handlers
+        # don't ask why but if there is nothing connected I've seen issues
         self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
         self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
         self.app.plotcanvas.vis_connect('mouse_double_click', self.app.on_double_click_over_plot)
         self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
+
+        self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
+        self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
+        self.canvas.vis_disconnect('mouse_release', self.on_geo_click_release)
 
     def add_shape(self, shape):
         """
