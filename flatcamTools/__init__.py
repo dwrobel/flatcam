@@ -14,5 +14,6 @@ from flatcamTools.ToolPaint import ToolPaint
 from flatcamTools.ToolNonCopperClear import NonCopperClear
 from flatcamTools.ToolTransform import ToolTransform
 from flatcamTools.ToolSolderPaste import SolderPaste
+from flatcamTools.ToolPcbWizard import PcbWizard
 
 from flatcamTools.ToolShell import FCShell

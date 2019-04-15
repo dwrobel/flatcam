@@ -2006,6 +2006,9 @@ class App(QtCore.QObject):
         self.image_tool = ToolImage(self)
         self.image_tool.install(icon=QtGui.QIcon('share/image32.png'), pos=self.ui.menufileimport,
                                 separator=True)
+        self.pcb_wizard_tool = PcbWizard(self)
+        self.pcb_wizard_tool.install(icon=QtGui.QIcon('share/drill32.png'), pos=self.ui.menufileimport,
+                                separator=True)
 
         self.log.debug("Tools are installed.")
 
@@ -7081,7 +7084,7 @@ class App(QtCore.QObject):
             # self.progress.emit(20)
 
             try:
-                ret = excellon_obj.parse_file(filename)
+                ret = excellon_obj.parse_file(filename=filename)
                 if ret == "fail":
                     log.debug("Excellon parsing failed.")
                     self.inform.emit(_("[ERROR_NOTCL] This is not Excellon file."))

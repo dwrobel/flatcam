@@ -3837,7 +3837,7 @@ class Excellon(Geometry):
         # Repeating command
         self.repeat_re = re.compile(r'R(\d+)')
 
-    def parse_file(self, filename):
+    def parse_file(self, filename=None, file_obj=None):
         """
         Reads the specified file as array of lines as
         passes it to ``parse_lines()``.
@@ -3846,9 +3846,15 @@ class Excellon(Geometry):
         :type filename: str
         :return: None
         """
-        efile = open(filename, 'r')
-        estr = efile.readlines()
-        efile.close()
+        if file_obj:
+            estr = file_obj
+        else:
+            if filename is None:
+                return "fail"
+            efile = open(filename, 'r')
+            estr = efile.readlines()
+            efile.close()
+
         try:
             self.parse_lines(estr)
         except:
