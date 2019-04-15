@@ -470,6 +470,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                                      _('Add Region\tN'))
         self.grb_editor_menu.addSeparator()
 
+        self.grb_convert_poly_menuitem  = self.grb_editor_menu.addAction(QtGui.QIcon('share/poligonize32.png'),
+                                                                    _("Poligonize\tALT+N"))
         self.grb_add_buffer_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/buffer16-2.png'),
                                                                     _('Buffer\tB'))
         self.grb_add_scale_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/scale32.png'),
@@ -690,7 +692,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.add_pad_ar_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/padarray32.png'), _('Add Pad Array'))
         self.grb_add_track_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/track32.png'), _("Add Track"))
         self.grb_add_region_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), _("Add Region"))
-        self.grb_convert_poly_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), _("Poligonize"))
+        self.grb_convert_poly_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/poligonize32.png'),
+                                                                    _("Poligonize"))
 
         self.grb_edit_toolbar.addSeparator()
 
@@ -2529,11 +2532,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             elif modifiers == QtCore.Qt.ShiftModifier:
                 pass
             elif modifiers == QtCore.Qt.AltModifier:
+                # Poligonize Tool
+                if key == QtCore.Qt.Key_N or key == 'N':
+                    self.app.grb_editor.on_poligonize()
+                    return
+
                 # Transformation Tool
                 if key == QtCore.Qt.Key_R or key == 'R':
                     self.app.grb_editor.on_transform()
                     return
-
             elif modifiers == QtCore.Qt.NoModifier:
                 # Abort the current action
                 if key == QtCore.Qt.Key_Escape or key == 'Escape':

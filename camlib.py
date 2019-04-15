@@ -3928,9 +3928,10 @@ class Excellon(Geometry):
                     log.warning("Found ALLEGRO start of the header: %s" % eline)
                     continue
 
-                # Header End #
-                # Since there might be comments in the header that include char % or M95
-                # we ignore the lines starting with ';' which show they are comments
+                # Search for Header End #
+                # Since there might be comments in the header that include header end char (% or M95)
+                # we ignore the lines starting with ';' that contains such header end chars because it is not a
+                # real header end.
                 if self.comm_re.search(eline):
                     match = self.tool_units_re.search(eline)
                     if match:
@@ -3938,7 +3939,7 @@ class Excellon(Geometry):
                             line_units_found = True
                             line_units = match.group(3)
                             self.convert_units({"MILS": "IN", "MM": "MM"}[line_units])
-                            log.warning("Type of Allegro UNITS found inline: %s" % line_units)
+                            log.warning("Type of Allegro UNITS found inline in comments: %s" % line_units)
 
                         if match.group(2):
                             name_tool += 1
@@ -3960,7 +3961,8 @@ class Excellon(Geometry):
 
                         self.excellon_format_upper_in = match.group(1)
                         self.excellon_format_lower_in = match.group(2)
-                        log.warning("Altium Excellon format preset found: %s:%s" % (match.group(1), match.group(2)))
+                        log.warning("Altium Excellon format preset found in comments: %s:%s" %
+                                    (match.group(1), match.group(2)))
                         continue
                     else:
                         log.warning("Line ignored, it's a comment: %s" % eline)

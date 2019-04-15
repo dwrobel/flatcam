@@ -5653,7 +5653,7 @@ class App(QtCore.QObject):
 
     def obj_move(self):
         self.report_usage("obj_move()")
-        self.move_tool.run()
+        self.move_tool.run(toggle=False)
 
     def on_fileopengerber(self):
         """

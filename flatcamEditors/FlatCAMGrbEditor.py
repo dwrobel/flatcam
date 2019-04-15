@@ -2,7 +2,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
 
 from shapely.geometry import LineString, LinearRing, MultiLineString
-from shapely.ops import cascaded_union
+from shapely.ops import cascaded_union, unary_union
 import shapely.affinity as affinity
 
 from numpy import arctan2, Inf, array, sqrt, sign, dot
@@ -497,39 +497,42 @@ class FCPoligonize(FCShapeTool):
         self.make()
 
     def click(self, point):
-        # self.draw_app.in_action = True
-        # if self.draw_app.selected:
-        #     self.make()
-        # else:
-        #     self.draw_app.app.inform.emit(_("[WARNING_NOTCL] No shapes are selected. Select shapes and try again ..."))
-
         return ""
 
     def make(self):
-        geo = []
 
-        for shape in self.draw_app.selected:
-            current_storage = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
-            print(self.draw_app.active_tool)
-            aha = []
-            if shape.geo:
-                shape_points = list(shape.geo.exterior.coords)
-                for pt in shape_points:
-                    aha.append(Point(pt))
-                concave_hull, bla_bla = alpha_shape(points=aha, alpha=0.5)
-                geo.append(concave_hull)
-                print(geo)
-                self.geometry = DrawToolShape(geo)
-                self.draw_app.on_grb_shape_complete(current_storage)
+        if not self.draw_app.selected:
+            self.draw_app.in_action = False
+            self.complete = True
+            self.draw_app.app.inform.emit(_("[ERROR_NOTCL] Failed. Nothing selected."))
+            self.draw_app.select_tool("select")
+            return
+
+        try:
+            current_storage = self.draw_app.storage_dict['0']['solid_geometry']
+        except KeyError:
+            self.draw_app.on_aperture_add(apid='0')
+            current_storage = self.draw_app.storage_dict['0']['solid_geometry']
+
+        fused_geo = [Polygon(sh.geo.exterior) for sh in self.draw_app.selected]
+
+        fused_geo = MultiPolygon(fused_geo)
+        fused_geo = fused_geo.buffer(0.0000001)
+        if isinstance(fused_geo, MultiPolygon):
+            for geo in fused_geo:
+                self.draw_app.on_grb_shape_complete(current_storage, specific_shape=DrawToolShape(geo))
+        else:
+            self.draw_app.on_grb_shape_complete(current_storage, specific_shape=DrawToolShape(fused_geo))
+
+        self.draw_app.delete_selected()
+        self.draw_app.plot_all()
 
         self.draw_app.in_action = False
         self.complete = True
         self.draw_app.app.inform.emit(_("[success] Done. Poligonize completed."))
 
-        self.draw_app.build_ui()
         # MS: always return to the Select Tool if modifier key is not pressed
         # else return to the current tool
-
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
         if self.draw_app.app.defaults["global_mselect_key"] == 'Control':
             modifier_to_use = Qt.ControlModifier
@@ -1472,6 +1475,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.ui.grb_add_track_menuitem.triggered.connect(self.on_track_add)
         self.app.ui.grb_add_region_menuitem.triggered.connect(self.on_region_add)
 
+        self.app.ui.grb_convert_poly_menuitem.triggered.connect(self.on_poligonize)
         self.app.ui.grb_add_buffer_menuitem.triggered.connect(self.on_buffer)
         self.app.ui.grb_add_scale_menuitem.triggered.connect(self.on_scale)
         self.app.ui.grb_transform_menuitem.triggered.connect(self.transform_tool.run)
@@ -1759,6 +1763,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.inform.emit(_("[success] Added new aperture with code: {apid}").format(apid=str(ap_id)))
 
         self.build_ui()
+
+        self.last_aperture_selected = ap_id
 
         # make a quick sort through the tool2tooldia dict so we find which row to select
         row_to_be_selected = None
@@ -2346,15 +2352,22 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.options[key] = self.sender().isChecked()
         return self.options[key]
 
-    def on_grb_shape_complete(self, storage=None):
+    def on_grb_shape_complete(self, storage=None, specific_shape=None):
         self.app.log.debug("on_shape_complete()")
+
+        if specific_shape:
+            geo = specific_shape
+        else:
+            geo = self.active_tool.geometry
+            if geo is None:
+                return
 
         if storage is not None:
             # Add shape
-            self.add_gerber_shape(self.active_tool.geometry, storage)
+            self.add_gerber_shape(geo, storage)
         else:
             stora = self.storage_dict[self.last_aperture_selected]['solid_geometry']
-            self.add_gerber_shape(self.active_tool.geometry, storage=stora)
+            self.add_gerber_shape(geo, storage=stora)
 
         # Remove any utility shapes
         self.delete_utility_geometry()
@@ -2372,6 +2385,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :return: None
         """
         # List of DrawToolShape?
+
         if isinstance(shape, list):
             for subshape in shape:
                 self.add_gerber_shape(subshape, storage)
@@ -2858,6 +2872,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
     def on_region_add(self):
         self.select_tool('region')
+
+    def on_poligonize(self):
+        self.select_tool('poligonize')
 
     def on_buffer(self):
         buff_value = 0.01
