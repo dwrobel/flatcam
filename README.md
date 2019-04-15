@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 15.04.2019
 
 - working on a new tool to process automatically PcbWizard Excellon files which are generated in 2 files
+- finished ToolPcbWizard; it will autodetect the Excellon format, units from the INF file
 
 14.04.2019
 

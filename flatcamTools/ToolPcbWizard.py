@@ -13,6 +13,8 @@ from PyQt5 import QtGui, QtWidgets, QtCore
 from PyQt5.QtCore import pyqtSignal
 import re
 import os
+from datetime import datetime
+from io import StringIO
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -108,8 +110,8 @@ class PcbWizard(FlatCAMTool):
         form_layout1.addRow(self.frac_label, self.frac_entry)
 
         # Zeros suppression for coordinates
-        self.zeros_radio = RadioSet([{'label': 'LZ', 'value': 'L'},
-                                     {'label': 'TZ', 'value': 'T'},
+        self.zeros_radio = RadioSet([{'label': 'LZ', 'value': 'LZ'},
+                                     {'label': 'TZ', 'value': 'TZ'},
                                      {'label': 'No Suppression', 'value': 'D'}])
         self.zeros_label = QtWidgets.QLabel(_("Zeros supp.:"))
         self.zeros_label.setToolTip(
@@ -148,15 +150,19 @@ class PcbWizard(FlatCAMTool):
         self.inf_loaded = False
         self.process_finished = False
 
+        self.modified_excellon_file = ''
+
         ## Signals
         self.excellon_brn.clicked.connect(self.on_load_excellon_click)
         self.inf_btn.clicked.connect(self.on_load_inf_click)
-        self.import_button.clicked.connect(self.on_import_excellon)
+        self.import_button.clicked.connect(lambda: self.on_import_excellon(
+            excellon_fileobj=self.modified_excellon_file))
+
         self.file_loaded.connect(self.on_file_loaded)
         self.units_radio.activated_custom.connect(self.on_units_change)
 
         self.units = 'INCH'
-        self.zeros = 'L'
+        self.zeros = 'LZ'
         self.integral = 2
         self.fractional = 4
 
@@ -191,6 +197,16 @@ class PcbWizard(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, **kwargs)
 
     def set_tool_ui(self):
+        self.units = 'INCH'
+        self.zeros = 'LZ'
+        self.integral = 2
+        self.fractional = 4
+
+        self.outname = 'file'
+
+        self.exc_file_content = None
+        self.tools_from_inf = {}
+
         ## Initialize form
         self.int_entry.set_value(self.integral)
         self.frac_entry.set_value(self.fractional)
@@ -200,6 +216,7 @@ class PcbWizard(FlatCAMTool):
         self.excellon_loaded = False
         self.inf_loaded = False
         self.process_finished = False
+        self.modified_excellon_file = ''
 
         self.build_ui()
 
@@ -207,7 +224,7 @@ class PcbWizard(FlatCAMTool):
         sorted_tools = []
 
         if not self.tools_from_inf:
-            self.tools_table.setRowCount(1)
+            self.tools_table.setVisible(False)
         else:
             sort = []
             for k, v in list(self.tools_from_inf.items()):
@@ -281,8 +298,7 @@ class PcbWizard(FlatCAMTool):
         if filename == "":
             self.app.inform.emit(_("Open cancelled."))
         else:
-            self.app.worker_task.emit({'fcn': self.load_excellon,
-                                       'params': [self, filename]})
+            self.app.worker_task.emit({'fcn': self.load_excellon, 'params': [filename]})
 
     def on_load_inf_click(self):
         """
@@ -314,6 +330,7 @@ class PcbWizard(FlatCAMTool):
             inf_file_content = inf_f.readlines()
 
         tool_re = re.compile(r'^T(\d+)\s+(\d*\.?\d+)$')
+        format_re = re.compile(r'^(\d+)\.?(\d+)\s*format,\s*(inches|metric)?,\s*(absolute|incremental)?.*$')
 
         for eline in inf_file_content:
             # Cleanup lines
@@ -323,11 +340,24 @@ class PcbWizard(FlatCAMTool):
             if match:
                 tool =int( match.group(1))
                 dia = float(match.group(2))
-                if dia < 0.1:
-                    # most likely the file is in INCH
-                    self.units_radio.set_value('INCH')
+                # if dia < 0.1:
+                #     # most likely the file is in INCH
+                #     self.units_radio.set_value('INCH')
 
                 self.tools_from_inf[tool] = dia
+                continue
+            match = format_re.search(eline)
+            if match:
+                self.integral = int(match.group(1))
+                self.fractional = int(match.group(2))
+                units = match.group(3)
+                if units == 'inches':
+                    self.units = 'INCH'
+                else:
+                    self.units = 'METRIC'
+                self.units_radio.set_value(self.units)
+                self.int_entry.set_value(self.integral)
+                self.frac_entry.set_value(self.fractional)
 
         if not self.tools_from_inf:
             self.app.inform.emit(_("[ERROR] The INF file does not contain the tool table.\n"
@@ -335,7 +365,6 @@ class PcbWizard(FlatCAMTool):
                                    "and edit the drill diameters manually."))
             return "fail"
 
-        self.tools_table.setVisible(True)
         self.file_loaded.emit('inf', filename)
 
     def load_excellon(self, filename):
@@ -346,20 +375,39 @@ class PcbWizard(FlatCAMTool):
 
     def on_file_loaded(self, signal, filename):
         self.build_ui()
+        time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
 
         if signal == 'inf':
             self.inf_loaded = True
+            self.tools_table.setVisible(True)
+            self.app.inform.emit(_("[success] PcbWizard .INF file loaded."))
         elif signal == 'excellon':
             self.excellon_loaded = True
+            self.outname = os.path.split(str(filename))[1]
+            self.app.inform.emit(_("[success] Main PcbWizard Excellon file loaded."))
 
         if self.excellon_loaded and self.inf_loaded:
-            pass
-
+            self.update_params()
+            excellon_string = ''
+            for line in self.exc_file_content:
+                excellon_string += line
+                if 'M48' in line:
+                    header = ';EXCELLON RE-GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s\n' % \
+                              (str(self.app.version), str(self.app.version_date))
+                    header += ';Created on : %s' % time_str + '\n'
+                    header += ';FILE_FORMAT={integral}:{fractional}\n'.format(integral=self.integral,
+                                                                               fractional=self.fractional)
+                    header += '{units},{zeros}\n'.format(units=self.units, zeros=self.zeros)
+                    for k, v in self.tools_from_inf.items():
+                        header += 'T{tool}C{dia}\n'.format(tool=int(k), dia=float(v))
+                    excellon_string += header
+            self.modified_excellon_file = StringIO(excellon_string)
+            self.process_finished = True
 
         # Register recent file
         self.app.defaults["global_last_folder"] = os.path.split(str(filename))[0]
 
-    def on_import_excellon(self, signal, excellon_fileobj):
+    def on_import_excellon(self, signal=None, excellon_fileobj=None):
         self.app.log.debug("import_2files_excellon()")
 
         # How the object should be initialized
@@ -394,22 +442,25 @@ class PcbWizard(FlatCAMTool):
             app_obj.inform.emit(_("[ERROR_NOTCL] No geometry found in file: %s") % name)
             return "fail"
 
-        if self.process_finished:
-            with self.app.proc_container.new(_("Importing Excellon.")):
+        if excellon_fileobj is not None and excellon_fileobj != '':
+            if self.process_finished:
+                with self.app.proc_container.new(_("Importing Excellon.")):
 
-                # Object name
-                name = self.outname
+                    # Object name
+                    name = self.outname
 
-                ret = self.app.new_object("excellon", name, obj_init, autoselected=False)
-                if ret == 'fail':
-                    self.app.inform.emit(_('[ERROR_NOTCL] Import Excellon file failed.'))
-                    return
+                    ret = self.app.new_object("excellon", name, obj_init, autoselected=False)
+                    if ret == 'fail':
+                        self.app.inform.emit(_('[ERROR_NOTCL] Import Excellon file failed.'))
+                        return
 
-                    # Register recent file
-                self.app.file_opened.emit("excellon", name)
+                        # Register recent file
+                    self.app.file_opened.emit("excellon", name)
 
-                # GUI feedback
-                self.app.inform.emit(_("[success] Opened: %s") % name)
+                    # GUI feedback
+                    self.app.inform.emit(_("[success] Imported: %s") % name)
+                    self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+            else:
+                self.app.inform.emit(_('[WARNING_NOTCL] Excellon merging is in progress. Please wait...'))
         else:
-            self.app.inform.emit(_('[WARNING_NOTCL] Excellon merging is in progress. Please wait...'))
-
+            self.app.inform.emit(_('[ERROR_NOTCL] The imported Excellon file is None.'))
