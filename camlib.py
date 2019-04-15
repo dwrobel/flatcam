@@ -3738,6 +3738,8 @@ class Excellon(Geometry):
         self.excellon_format_upper_mm = excellon_format_upper_mm or self.defaults["excellon_format_upper_mm"]
         self.excellon_format_lower_mm = excellon_format_lower_mm or self.defaults["excellon_format_lower_mm"]
         self.excellon_units = excellon_units or self.defaults["excellon_units"]
+        # detected Excellon format is stored here:
+        self.excellon_format = None
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -3766,10 +3768,10 @@ class Excellon(Geometry):
         # Ignored in the parser
         #self.fmat_re = re.compile(r'^FMAT,([12])$')
 
-        # Number format and units
+        # Uunits and possible Excellon zeros and possible Excellon format
         # INCH uses 6 digits
         # METRIC uses 5/6
-        self.units_re = re.compile(r'^(INCH|METRIC)(?:,([TL])Z)?.*$')
+        self.units_re = re.compile(r'^(INCH|METRIC)(?:,([TL])Z)?,?(\d*\.\d+)?.*$')
 
         # Tool definition/parameters (?= is look-ahead
         # NOTE: This might be an overkill!
@@ -3830,6 +3832,10 @@ class Excellon(Geometry):
 
         # Allegro Excellon format support
         self.tool_units_re = re.compile(r'(\;\s*Holesize \d+.\s*\=\s*(\d+.\d+).*(MILS|MM))')
+
+        # Altium Excellon format support
+        # it's a comment like this: ";FILE_FORMAT=2:5"
+        self.altium_format = re.compile(r'^;\s*(?:FILE_FORMAT)?(?:Format)?[=|:]\s*(\d+)[:|.](\d+).*$')
 
         # Parse coordinates
         self.leadingzeros_re = re.compile(r'^[-\+]?(0*)(\d*)')
@@ -3946,6 +3952,16 @@ class Excellon(Geometry):
                                 log.debug("  Tool definition: %s %s" % (name_tool, spec))
                             spec['solid_geometry'] = []
                             continue
+                    # search for Altium Excellon Format / Sprint Layout who is included as a comment
+                    match = self.altium_format.search(eline)
+                    if match:
+                        self.excellon_format_upper_mm = match.group(1)
+                        self.excellon_format_lower_mm = match.group(2)
+
+                        self.excellon_format_upper_in = match.group(1)
+                        self.excellon_format_lower_in = match.group(2)
+                        log.warning("Altium Excellon format preset found: %s:%s" % (match.group(1), match.group(2)))
+                        continue
                     else:
                         log.warning("Line ignored, it's a comment: %s" % eline)
                 else:
@@ -4373,8 +4389,16 @@ class Excellon(Geometry):
                     if match:
                         self.units_found = match.group(1)
                         self.zeros = match.group(2)  # "T" or "L". Might be empty
-
-                        # self.units = {"INCH": "IN", "METRIC": "MM"}[match.group(1)]
+                        self.excellon_format = match.group(3)
+                        if self.excellon_format:
+                            upper = len(self.excellon_format.partition('.')[0])
+                            lower = len(self.excellon_format.partition('.')[2])
+                            if self.units == 'MM':
+                                self.excellon_format_upper_mm = upper
+                                self.excellon_format_lower_mm = lower
+                            else:
+                                self.excellon_format_upper_in = upper
+                                self.excellon_format_lower_in = lower
 
                         # Modified for issue #80
                         self.convert_units({"INCH": "IN", "METRIC": "MM"}[self.units_found])
@@ -4423,8 +4447,16 @@ class Excellon(Geometry):
                 if match:
                     self.units_found = match.group(1)
                     self.zeros = match.group(2)  # "T" or "L". Might be empty
-
-                    # self.units = {"INCH": "IN", "METRIC": "MM"}[match.group(1)]
+                    self.excellon_format = match.group(3)
+                    if self.excellon_format:
+                        upper = len(self.excellon_format.partition('.')[0])
+                        lower = len(self.excellon_format.partition('.')[2])
+                        if self.units == 'MM':
+                            self.excellon_format_upper_mm = upper
+                            self.excellon_format_lower_mm = lower
+                        else:
+                            self.excellon_format_upper_in = upper
+                            self.excellon_format_lower_in = lower
 
                     # Modified for issue #80
                     self.convert_units({"INCH": "IN", "METRIC": "MM"}[self.units_found])

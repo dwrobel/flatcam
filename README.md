@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - update the order of event handlers connection in Editors to first connect new handlers then disconnect old handlers. It seems that if nothing is connected some VispY functions like canvas panning no longer works if there is at least once nothing connected to the 'mouse_move' event
 - Excellon Editor: update so always there is a tool selected even after the Execllon object was just edited; before it always required a click inside of the tool table, not you do it only if needed.
 - fixed the menu File -> Edit -> Edit/Close Editor entry to reflect the status of the app (Editor active or not)
+- added support in Excellon parser for autodetection of Excellon file format for the Excellon files generate by the following ECAD sw: DipTrace, Eagle, Altium, Sprint Layout
 
 14.04.2019
 
