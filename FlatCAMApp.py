@@ -7772,7 +7772,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
 
         self.log.debug("version_check()")
 
-        if self.ui.general_defaults_form.general_gui_group.send_stats_cb.get_value() is True:
+        if self.ui.general_defaults_form.general_app_group.send_stats_cb.get_value() is True:
             full_url = App.version_url + \
                        "?s=" + str(self.defaults['global_serial']) + \
                        "&v=" + str(self.version) + \

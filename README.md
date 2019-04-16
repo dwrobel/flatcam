@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 17.04.2019
 
 - Gerber Editor: added some messages to warn user if no selection exists when trying to do aperture deletion or aperture geometry deletion
+- fixed version check
 
 16.04.2019
 
