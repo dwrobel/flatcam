@@ -1962,6 +1962,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         try:
             if apid is None or apid is False:
                 # deleted_tool_dia = float(self.apertures_table.item(self.apertures_table.currentRow(), 1).text())
+                if len(self.apertures_table.selectionModel().selectedRows()) == 0:
+                    self.app.inform.emit(_("[WARNING_NOTCL] Select an aperture in Aperture Table"))
+                    return
                 for index in self.apertures_table.selectionModel().selectedRows():
                     row = index.row()
                     deleted_apcode_list.append(self.apertures_table.item(row, 1).text())
@@ -1972,7 +1975,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 else:
                     deleted_apcode_list.append(apid)
         except:
-            self.app.inform.emit(_("[WARNING_NOTCL] Select a tool in Tool Table"))
+            self.app.inform.emit(_("[WARNING_NOTCL] Select an aperture in Aperture Table"))
             return
 
         for deleted_aperture in deleted_apcode_list:
@@ -2964,12 +2967,17 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
     def delete_selected(self):
         temp_ref = [s for s in self.selected]
+
+        if len(temp_ref) == 0:
+            self.app.inform.emit(_("[ERROR_NOTCL] Failed. No aperture geometry is selected."))
+            return
+
         for shape_sel in temp_ref:
             self.delete_shape(shape_sel)
 
         self.selected = []
         self.build_ui()
-        self.app.inform.emit(_("[success] Done. Apertures deleted."))
+        self.app.inform.emit(_("[success] Done. Apertures geometry deleted."))
 
     def delete_shape(self, shape):
         self.is_modified = True
