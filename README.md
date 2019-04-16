@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - Gerber Editor: started to add modes of laying a track
 - Gerber Editor: Add Track Tool: added 5 modes for laying a track: 45-degrees, reverse-45 degrees, 90-degrees, reverse 90-degrees and free angle. Key 'T' will cycle forward through the modes and key 'R' will cycle in reverse through the track laying modes.
 - Gerber Editor: Add Track Tool: first right click will finish the track. Second right click will exit the Track Tool and return to Select Tool.
+- Gerber Editor: added protections for the Pad Array and Pad Tool for the case when the aperture size is zero (the aperture where to store the regions)
 
 15.04.2019
 

@@ -39,10 +39,19 @@ class FCPad(FCShapeTool):
         try:
             self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
         except KeyError:
-            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] To add a Pad, first select a tool in Tool Table"))
+            self.draw_app.app.inform.emit(_(
+                "[WARNING_NOTCL] To add an Pad first select a aperture in Aperture Table"))
             self.draw_app.in_action = False
             self.complete = True
             return
+
+        if self.radius == 0:
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Aperture size is zero. It needs to be greater than zero."))
+            self.dont_execute = True
+            return
+        else:
+            self.dont_execute = False
+
         self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
@@ -72,6 +81,10 @@ class FCPad(FCShapeTool):
         return "Done."
 
     def utility_geometry(self, data=None):
+        if self.dont_execute is True:
+            self.draw_app.select_tool('select')
+            return
+
         self.points = data
         geo_data = self.util_shape(data)
         if geo_data:
@@ -199,11 +212,20 @@ class FCPadArray(FCShapeTool):
         try:
             self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
         except KeyError:
-            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] To add an Pad Array first select a tool in Tool Table"))
+            self.draw_app.app.inform.emit(_(
+                "[WARNING_NOTCL] To add an Pad Array first select a aperture in Aperture Table"))
             self.complete = True
             self.draw_app.in_action = False
             self.draw_app.array_frame.hide()
             return
+
+        if self.radius == 0:
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Aperture size is zero. It needs to be greater than zero."))
+            self.dont_execute = True
+            return
+        else:
+            self.dont_execute = False
+
         self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
@@ -274,6 +296,10 @@ class FCPadArray(FCShapeTool):
         self.origin = origin
 
     def utility_geometry(self, data=None, static=None):
+        if self.dont_execute is True:
+            self.draw_app.select_tool('select')
+            return
+
         self.pad_axis = self.draw_app.pad_axis_radio.get_value()
         self.pad_direction = self.draw_app.pad_direction_radio.get_value()
         self.pad_array = self.draw_app.array_type_combo.get_value()
@@ -823,6 +849,11 @@ class FCScale(FCShapeTool):
         self.draw_app.on_scale()
         self.deactivate_scale()
 
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.apertures_table.clearSelection()
+        self.draw_app.plot_all()
+
 
 class FCBuffer(FCShapeTool):
     def __init__(self, draw_app):
@@ -859,6 +890,11 @@ class FCBuffer(FCShapeTool):
     def on_buffer_click(self):
         self.draw_app.on_buffer()
         self.deactivate_buffer()
+
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.apertures_table.clearSelection()
+        self.draw_app.plot_all()
 
 
 class FCApertureMove(FCShapeTool):
@@ -1077,6 +1113,11 @@ class FCTransform(FCShapeTool):
         self.start_msg = _("Shape transformations ...")
         self.origin = (0, 0)
         self.draw_app.transform_tool.run()
+
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.apertures_table.clearSelection()
+        self.draw_app.plot_all()
 
 
 class FlatCAMGrbEditor(QtCore.QObject):
@@ -2781,8 +2822,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.draw_utility_geometry(geo=geo)
 
         ### Selection area on canvas section ###
-        dx = pos[0] - self.pos[0]
         if event.is_dragging == 1 and event.button == 1:
+            dx = pos[0] - self.pos[0]
             self.app.delete_selection_shape()
             if dx < 0:
                 self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x,y),
