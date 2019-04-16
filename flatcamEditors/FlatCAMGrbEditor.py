@@ -653,6 +653,9 @@ class FCTrack(FCRegion):
     """
     def __init__(self, draw_app):
         FCRegion.__init__(self, draw_app)
+
+        self.name = 'track'
+
         self.draw_app = draw_app
         self.draw_app.app.inform.emit(_('Track Mode 1: 45 degrees ...'))
         self.mode = 1
@@ -662,7 +665,6 @@ class FCTrack(FCRegion):
             self.geometry = DrawToolShape(Point(self.temp_points).buffer(self.buf_val))
         else:
             self.geometry = DrawToolShape(LineString(self.temp_points).buffer(self.buf_val))
-        self.name = 'track'
 
         self.draw_app.in_action = False
         self.complete = True
