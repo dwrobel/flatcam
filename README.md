@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 16.04.2019
 
 - added ability to use ENTER key to finish tool adding in Editors, NCC Tool, Paint Tool and SolderPaste Tool.
+- Gerber Editor: started to add modes of laying a track
 
 15.04.2019
 

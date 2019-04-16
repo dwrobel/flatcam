@@ -565,6 +565,10 @@ class FCRegion(FCShapeTool):
         size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
         self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
 
+        self.gridx_size = float(self.draw_app.app.ui.grid_gap_x_entry.get_value())
+        self.gridy_size = float(self.draw_app.app.ui.grid_gap_y_entry.get_value())
+        self.temp_points = []
+
         self.start_msg = _("Click on 1st point ...")
 
     def click(self, point):
@@ -576,6 +580,10 @@ class FCRegion(FCShapeTool):
             return "Click on next point or hit ENTER to complete ..."
 
         return ""
+
+    def update_grid_info(self):
+        self.gridx_size =float( self.draw_app.app.ui.grid_gap_x_entry.get_value())
+        self.gridy_size = float(self.draw_app.app.ui.grid_gap_y_entry.get_value())
 
     def utility_geometry(self, data=None):
 
@@ -619,8 +627,10 @@ class FCTrack(FCRegion):
     """
 
     def make(self):
-
-        self.geometry = DrawToolShape(LineString(self.points).buffer(self.buf_val))
+        if len(self.temp_points) == 1:
+            self.geometry = DrawToolShape(Point(self.temp_points).buffer(self.buf_val))
+        else:
+            self.geometry = DrawToolShape(LineString(self.temp_points).buffer(self.buf_val))
         self.name = 'track'
 
         self.draw_app.in_action = False
@@ -632,13 +642,62 @@ class FCTrack(FCRegion):
         self.draw_app.apertures_table.clearSelection()
         self.draw_app.plot_all()
 
-    def utility_geometry(self, data=None):
-        if len(self.points) > 0:
-            temp_points = [x for x in self.points]
-            temp_points.append(data)
+    def click(self, point):
+        self.draw_app.in_action = True
+        self.points.append(point)
 
-            return DrawToolUtilityShape(LineString(temp_points).buffer(self.buf_val))
-        return None
+        if len(self.temp_points) == 1:
+            g = DrawToolShape(Point(self.temp_points).buffer(self.buf_val))
+        else:
+            g = DrawToolShape(LineString(self.temp_points).buffer(self.buf_val))
+
+        self.draw_app.add_gerber_shape(g, self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry'])
+        self.draw_app.plot_all()
+        if len(self.points) > 0:
+            self.draw_app.app.inform.emit(_("Click on next Point or click Right mouse button to complete ..."))
+            return "Click on next point or hit ENTER to complete ..."
+
+        return ""
+
+    def utility_geometry(self, data=None):
+        self.update_grid_info()
+
+        if len(self.points) == 0:
+            return None
+        elif len(self.points) > 0:
+
+            # TODO make sure to check the status of GRID SNAP BUTTON: if enabled ot not
+            self.temp_points = [self.points[-1]]
+            old_x = self.points[-1][0]
+            old_y = self.points[-1][1]
+            x = data[0]
+            y = data[1]
+            if (x > old_x and y == old_y) or (x < old_x and y == old_y) or (x == old_x and y > old_y) or (x == old_x and y < old_y):
+                self.temp_points.append(data)
+            elif x > old_x and y > old_y:
+                self.temp_points.append((x-self.gridx_size, old_y))
+                self.temp_points.append((x, old_y+self.gridy_size))
+                self.temp_points.append(data)
+
+            elif x > old_x and y < old_y:
+                self.temp_points.append((x-self.gridx_size, old_y))
+                self.temp_points.append((x, old_y-self.gridy_size))
+                self.temp_points.append(data)
+
+            elif x < old_x and y > old_y:
+                self.temp_points.append((x+self.gridx_size, old_y))
+                self.temp_points.append((x, old_y+self.gridy_size))
+                self.temp_points.append(data)
+
+            elif x < old_x and y < old_y:
+                self.temp_points.append((x+self.gridx_size, old_y))
+                self.temp_points.append((x, old_y-self.gridy_size))
+                self.temp_points.append(data)
+
+            if len(self.temp_points) == 1:
+                return DrawToolUtilityShape(Point(self.temp_points).buffer(self.buf_val))
+
+            return DrawToolUtilityShape(LineString(self.temp_points).buffer(self.buf_val))
 
     def on_key(self, key):
         if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
@@ -2491,16 +2550,19 @@ class FlatCAMGrbEditor(QtCore.QObject):
                                 self.app.inform.emit(_("[success] Done."))
 
                                 # MS: always return to the Select Tool if modifier key is not pressed
-                                # else return to the current tool
-                                key_modifier = QtWidgets.QApplication.keyboardModifiers()
-                                if (self.app.defaults["global_mselect_key"] == 'Control' and
-                                    key_modifier == Qt.ControlModifier) or \
-                                        (self.app.defaults["global_mselect_key"] == 'Shift' and
-                                         key_modifier == Qt.ShiftModifier):
-
+                                # else return to the current tool but not for FCTrack
+                                if isinstance(self.active_tool, FCTrack):
                                     self.select_tool(self.active_tool.name)
                                 else:
-                                    self.select_tool("select")
+                                    key_modifier = QtWidgets.QApplication.keyboardModifiers()
+                                    if (self.app.defaults["global_mselect_key"] == 'Control' and
+                                        key_modifier == Qt.ControlModifier) or \
+                                            (self.app.defaults["global_mselect_key"] == 'Shift' and
+                                             key_modifier == Qt.ShiftModifier):
+
+                                        self.select_tool(self.active_tool.name)
+                                    else:
+                                        self.select_tool("select")
         except Exception as e:
             log.warning("Error: %s" % str(e))
             raise
@@ -2663,11 +2725,14 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 # Add the new utility shape
                 self.tool_shape.add(
                     shape=el, color=(self.app.defaults["global_draw_color"] + '80'),
+                    # face_color=self.app.defaults['global_alt_sel_fill'],
                     update=False, layer=0, tolerance=None)
         else:
             # Add the new utility shape
             self.tool_shape.add(
-                shape=geo.geo, color=(self.app.defaults["global_draw_color"] + '80'),
+                shape=geo.geo,
+                color=(self.app.defaults["global_draw_color"] + '80'),
+                # face_color=self.app.defaults['global_alt_sel_fill'],
                 update=False, layer=0, tolerance=None)
 
         self.tool_shape.redraw()
