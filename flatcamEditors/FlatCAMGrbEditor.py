@@ -1084,7 +1084,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         )
         grid1.addWidget(self.apdim_lbl, 4, 0)
 
-        self.apdim_entry = EvalEntry()
+        self.apdim_entry = EvalEntry2()
         grid1.addWidget(self.apdim_entry, 4, 1)
 
         apadd_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Add Aperture:'))
@@ -1466,6 +1466,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.aptype_cb.currentIndexChanged[str].connect(self.on_aptype_changed)
 
         self.addaperture_btn.clicked.connect(self.on_aperture_add)
+        self.apsize_entry.returnPressed.connect(self.on_aperture_add)
+        self.apdim_entry.returnPressed.connect(self.on_aperture_add)
+
         self.delaperture_btn.clicked.connect(self.on_aperture_delete)
         self.apertures_table.cellPressed.connect(self.on_row_selected)
 

@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+16.04.2019
+
+- added ability to use ENTER key to finish tool adding in Editors, NCC Tool, Paint Tool and SolderPaste Tool.
+
 15.04.2019
 
 - working on a new tool to process automatically PcbWizard Excellon files which are generated in 2 files

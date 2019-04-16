@@ -975,7 +975,7 @@ class GeometryObjectUI(ObjectUI):
                 "Diameter for the new tool"
             )
         )
-        self.addtool_entry = FCEntry()
+        self.addtool_entry = FCEntry2()
 
         # hlay.addWidget(self.addtool_label)
         # hlay.addStretch()

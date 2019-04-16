@@ -1020,7 +1020,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app.ui.delete_drill_btn.triggered.connect(self.on_delete_btn)
         self.name_entry.returnPressed.connect(self.on_name_activate)
         self.addtool_btn.clicked.connect(self.on_tool_add)
-        # self.addtool_entry.editingFinished.connect(self.on_tool_add)
+        self.addtool_entry.returnPressed.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
         # self.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
         self.tools_table_exc.cellPressed.connect(self.on_row_selected)
