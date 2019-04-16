@@ -582,7 +582,7 @@ class FCRegion(FCShapeTool):
         return ""
 
     def update_grid_info(self):
-        self.gridx_size =float( self.draw_app.app.ui.grid_gap_x_entry.get_value())
+        self.gridx_size = float(self.draw_app.app.ui.grid_gap_x_entry.get_value())
         self.gridy_size = float(self.draw_app.app.ui.grid_gap_y_entry.get_value())
 
     def utility_geometry(self, data=None):
@@ -625,6 +625,11 @@ class FCTrack(FCRegion):
     """
     Resulting type: Polygon
     """
+    def __init__(self, draw_app):
+        FCRegion.__init__(self, draw_app)
+        self.draw_app = draw_app
+        self.draw_app.app.inform.emit(_('Track Mode 1: 45 degrees ...'))
+        self.mode = 1
 
     def make(self):
         if len(self.temp_points) == 1:
@@ -663,37 +668,61 @@ class FCTrack(FCRegion):
         self.update_grid_info()
 
         if len(self.points) == 0:
-            return None
+            return DrawToolUtilityShape(Point(data).buffer(self.buf_val))
         elif len(self.points) > 0:
 
-            # TODO make sure to check the status of GRID SNAP BUTTON: if enabled ot not
             self.temp_points = [self.points[-1]]
             old_x = self.points[-1][0]
             old_y = self.points[-1][1]
             x = data[0]
             y = data[1]
-            if (x > old_x and y == old_y) or (x < old_x and y == old_y) or (x == old_x and y > old_y) or (x == old_x and y < old_y):
-                self.temp_points.append(data)
-            elif x > old_x and y > old_y:
-                self.temp_points.append((x-self.gridx_size, old_y))
-                self.temp_points.append((x, old_y+self.gridy_size))
-                self.temp_points.append(data)
 
-            elif x > old_x and y < old_y:
-                self.temp_points.append((x-self.gridx_size, old_y))
-                self.temp_points.append((x, old_y-self.gridy_size))
-                self.temp_points.append(data)
+            mx = abs(round((x - old_x) / self.gridx_size))
+            my = abs(round((y - old_y) / self.gridy_size))
 
-            elif x < old_x and y > old_y:
-                self.temp_points.append((x+self.gridx_size, old_y))
-                self.temp_points.append((x, old_y+self.gridy_size))
-                self.temp_points.append(data)
+            if self.draw_app.app.ui.grid_snap_btn.isChecked():
+                if self.mode == 1:
+                    if x > old_x:
+                        if mx > my:
+                            self.temp_points.append((old_x + self.gridx_size*(mx-my), old_y))
+                        if mx < my:
+                            if y < old_y:
+                                self.temp_points.append((old_x, old_y - self.gridy_size * (my-mx)))
+                            else:
+                                self.temp_points.append((old_x, old_y - self.gridy_size * (mx-my)))
+                    if x < old_x:
+                        if mx > my:
+                            self.temp_points.append((old_x - self.gridx_size*(mx-my), old_y))
+                        if mx < my:
+                            if y < old_y:
+                                self.temp_points.append((old_x, old_y - self.gridy_size * (my-mx)))
+                            else:
+                                self.temp_points.append((old_x, old_y - self.gridy_size * (mx-my)))
+                elif self.mode == 2:
+                    if x > old_x:
+                        if mx > my:
+                            self.temp_points.append((old_x + self.gridx_size*my, y))
+                        if mx < my:
+                            if y < old_y:
+                                self.temp_points.append((x, old_y - self.gridy_size * mx))
+                            else:
+                                self.temp_points.append((x, old_y + self.gridy_size * mx))
+                    if x < old_x:
+                        if mx > my:
+                            self.temp_points.append((old_x - self.gridx_size * my, y))
+                        if mx < my:
+                            if y < old_y:
+                                self.temp_points.append((x, old_y - self.gridy_size * mx))
+                            else:
+                                self.temp_points.append((x, old_y + self.gridy_size * mx))
+                elif self.mode == 3:
+                    self.temp_points.append((old_x, y))
+                elif self.mode == 4:
+                    self.temp_points.append((x, old_y))
+                else:
+                    pass
 
-            elif x < old_x and y < old_y:
-                self.temp_points.append((x+self.gridx_size, old_y))
-                self.temp_points.append((x, old_y-self.gridy_size))
-                self.temp_points.append(data)
-
+            self.temp_points.append(data)
             if len(self.temp_points) == 1:
                 return DrawToolUtilityShape(Point(self.temp_points).buffer(self.buf_val))
 
@@ -702,12 +731,60 @@ class FCTrack(FCRegion):
     def on_key(self, key):
         if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
             if len(self.points) > 0:
-                self.points = self.points[0:-1]
+                self.temp_points = self.points[0:-1]
                 # Remove any previous utility shape
                 self.draw_app.tool_shape.clear(update=False)
                 geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
                 self.draw_app.draw_utility_geometry(geo=geo)
                 return _("Backtracked one point ...")
+
+        if key == 'T' or key == QtCore.Qt.Key_T:
+            if self.mode == 1:
+                self.mode = 2
+                msg =  _('Track Mode 2: Reverse 45 degrees ...')
+            elif self.mode == 2:
+                self.mode = 3
+                msg = _('Track Mode 3: 90 degrees ...')
+            elif self.mode == 3:
+                self.mode = 4
+                msg = _('Track Mode 4: Reverse 90 degrees ...')
+            elif self.mode == 4:
+                self.mode = 5
+                msg = _('Track Mode 5: Free angle ...')
+            else:
+                self.mode = 1
+                msg = _('Track Mode 1: 45 degrees ...')
+
+            # Remove any previous utility shape
+            self.draw_app.tool_shape.clear(update=False)
+            geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+            self.draw_app.draw_utility_geometry(geo=geo)
+
+            return msg
+
+        if key == 'R' or key == QtCore.Qt.Key_R:
+            if self.mode == 1:
+                self.mode = 5
+                msg = _('Track Mode 5: Free angle ...')
+            elif self.mode == 5:
+                self.mode = 4
+                msg = _('Track Mode 4: Reverse 90 degrees ...')
+            elif self.mode == 4:
+                self.mode = 3
+                msg = _('Track Mode 3: 90 degrees ...')
+            elif self.mode == 3:
+                self.mode = 2
+                msg = _('Track Mode 2: Reverse 45 degrees ...')
+            else:
+                self.mode = 1
+                msg = _('Track Mode 1: 45 degrees ...')
+
+            # Remove any previous utility shape
+            self.draw_app.tool_shape.clear(update=False)
+            geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+            self.draw_app.draw_utility_geometry(geo=geo)
+
+            return msg
 
 
 class FCScale(FCShapeTool):
@@ -2537,8 +2614,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     self.app.panning_action = False
                 else:
                     if self.in_action is False:
-                        self.app.cursor = QtGui.QCursor()
-                        self.app.ui.popMenu.popup(self.app.cursor.pos())
+                        if self.active_tool.complete is False and not isinstance(self.active_tool, FCApertureSelect):
+                            self.active_tool.complete = True
+                            self.delete_utility_geometry()
+                            self.select_tool('select')
+                        else:
+                            self.app.cursor = QtGui.QCursor()
+                            self.app.ui.popMenu.popup(self.app.cursor.pos())
                     else:
                         # if right click on canvas and the active tool need to be finished (like Path or Polygon)
                         # right mouse click will finish the action
