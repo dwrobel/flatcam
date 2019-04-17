@@ -37,6 +37,13 @@ class FCPad(FCShapeTool):
         self.draw_app = draw_app
 
         try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_circle.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
+        try:
             self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
         except KeyError:
             self.draw_app.app.inform.emit(_(
@@ -225,6 +232,13 @@ class FCPadArray(FCShapeTool):
             return
         else:
             self.dont_execute = False
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_array.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
@@ -593,7 +607,18 @@ class FCRegion(FCShapeTool):
 
         self.gridx_size = float(self.draw_app.app.ui.grid_gap_x_entry.get_value())
         self.gridy_size = float(self.draw_app.app.ui.grid_gap_y_entry.get_value())
+
         self.temp_points = []
+        # this will store the inflexion point in the geometry
+        self.inter_point = None
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.start_msg = _("Click on 1st point ...")
 
@@ -612,16 +637,18 @@ class FCRegion(FCShapeTool):
         self.gridy_size = float(self.draw_app.app.ui.grid_gap_y_entry.get_value())
 
     def utility_geometry(self, data=None):
+        if len(self.points) == 0:
+            return DrawToolUtilityShape(Point(data).buffer(self.buf_val))
 
         if len(self.points) == 1:
-            temp_points = [x for x in self.points]
-            temp_points.append(data)
-            return DrawToolUtilityShape(LineString(temp_points).buffer(self.buf_val, join_style=1))
+            self.temp_points = [x for x in self.points]
+            self.temp_points.append(data)
+            return DrawToolUtilityShape(LineString(self.temp_points).buffer(self.buf_val, join_style=1))
 
         if len(self.points) > 1:
-            temp_points = [x for x in self.points]
-            temp_points.append(data)
-            return DrawToolUtilityShape(LinearRing(temp_points).buffer(self.buf_val, join_style=1))
+            self.temp_points = [x for x in self.points]
+            self.temp_points.append(data)
+            return DrawToolUtilityShape(LinearRing(self.temp_points).buffer(self.buf_val, join_style=1))
         return None
 
     def make(self):
@@ -657,6 +684,14 @@ class FCTrack(FCRegion):
         self.name = 'track'
 
         self.draw_app = draw_app
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
         self.draw_app.app.inform.emit(_('Track Mode 1: 45 degrees ...'))
         self.mode = 1
 
@@ -1041,6 +1076,11 @@ class FCApertureSelect(DrawTool):
         self.grb_editor_app.apertures_table.clearSelection()
         self.grb_editor_app.hide_tool('all')
         self.grb_editor_app.hide_tool('select')
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
 
     def set_origin(self, origin):
         self.origin = origin
@@ -2660,8 +2700,14 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     self.app.panning_action = False
                 else:
                     if self.in_action is False:
+                        try:
+                            QtGui.QGuiApplication.restoreOverrideCursor()
+                        except:
+                            pass
+
                         if self.active_tool.complete is False and not isinstance(self.active_tool, FCApertureSelect):
                             self.active_tool.complete = True
+                            self.in_action = False
                             self.delete_utility_geometry()
                             self.select_tool('select')
                         else:
