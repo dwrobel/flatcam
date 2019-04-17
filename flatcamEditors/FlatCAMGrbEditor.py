@@ -620,6 +620,7 @@ class FCRegion(FCShapeTool):
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.mode = 1
+        self.draw_app.app.inform.emit(_('Corner Mode 1: 45 degrees ...'))
 
         self.start_msg = _("Click on 1st point ...")
 
@@ -628,7 +629,6 @@ class FCRegion(FCShapeTool):
 
         if self.inter_point is not None:
             self.points.append(self.inter_point)
-
         self.points.append(point)
 
         if len(self.points) > 0:
@@ -694,13 +694,15 @@ class FCRegion(FCShapeTool):
                                 else:
                                     self.inter_point = (x, old_y + self.gridy_size * mx)
                     elif self.mode == 3:
-                        self.temp_points.append((old_x, y))
+                        self.inter_point = (old_x, y)
                     elif self.mode == 4:
-                        self.temp_points.append((x, old_y))
+                        self.inter_point = (x, old_y)
+
                     if self.inter_point is not None:
                         self.temp_points.append(self.inter_point)
                     else:
                         self.inter_point = data
+
                 self.temp_points.append(data)
             else:
                 self.inter_point = data
@@ -714,67 +716,68 @@ class FCRegion(FCShapeTool):
             else:
                 return DrawToolUtilityShape(Point(self.temp_points).buffer(self.buf_val))
 
-        if len(self.points) > 1:
+        if len(self.points) > 2:
             self.temp_points = [x for x in self.points]
-
             old_x = self.points[-1][0]
             old_y = self.points[-1][1]
             mx = abs(round((x - old_x) / self.gridx_size))
             my = abs(round((y - old_y) / self.gridy_size))
 
-            if self.draw_app.app.ui.grid_snap_btn.isChecked():
-                if self.mode != 5:
-                    if self.mode == 1:
-                        if x > old_x:
-                            if mx > my:
-                                self.inter_point = (old_x + self.gridx_size * (mx - my), old_y)
-                            if mx < my:
-                                if y < old_y:
-                                    self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
-                                else:
-                                    self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
-                        if x < old_x:
-                            if mx > my:
-                                self.inter_point = (old_x - self.gridx_size * (mx - my), old_y)
-                            if mx < my:
-                                if y < old_y:
-                                    self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
-                                else:
-                                    self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
-                    elif self.mode == 2:
-                        if x > old_x:
-                            if mx > my:
-                                self.inter_point = (old_x + self.gridx_size * my, y)
-                            if mx < my:
-                                if y < old_y:
-                                    self.inter_point = (x, old_y - self.gridy_size * mx)
-                                else:
-                                    self.inter_point = (x, old_y + self.gridy_size * mx)
-                        if x < old_x:
-                            if mx > my:
-                                self.inter_point = (old_x - self.gridx_size * my, y)
-                            if mx < my:
-                                if y < old_y:
-                                    self.inter_point = (x, old_y - self.gridy_size * mx)
-                                else:
-                                    self.inter_point = (x, old_y + self.gridy_size * mx)
-                    elif self.mode == 3:
-                        self.temp_points.append((old_x, y))
-                    elif self.mode == 4:
-                        self.temp_points.append((x, old_y))
+            if mx and my:
+                if self.draw_app.app.ui.grid_snap_btn.isChecked():
+                    if self.mode != 5:
+                        if self.mode == 1:
+                            if x > old_x:
+                                if mx > my:
+                                    self.inter_point = (old_x + self.gridx_size * (mx - my), old_y)
+                                if mx < my:
+                                    if y < old_y:
+                                        self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
+                                    else:
+                                        self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
+                            if x < old_x:
+                                if mx > my:
+                                    self.inter_point = (old_x - self.gridx_size * (mx - my), old_y)
+                                if mx < my:
+                                    if y < old_y:
+                                        self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
+                                    else:
+                                        self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
+                        elif self.mode == 2:
+                            if x > old_x:
+                                if mx > my:
+                                    self.inter_point = (old_x + self.gridx_size * my, y)
+                                if mx < my:
+                                    if y < old_y:
+                                        self.inter_point = (x, old_y - self.gridy_size * mx)
+                                    else:
+                                        self.inter_point = (x, old_y + self.gridy_size * mx)
+                            if x < old_x:
+                                if mx > my:
+                                    self.inter_point = (old_x - self.gridx_size * my, y)
+                                if mx < my:
+                                    if y < old_y:
+                                        self.inter_point = (x, old_y - self.gridy_size * mx)
+                                    else:
+                                        self.inter_point = (x, old_y + self.gridy_size * mx)
+                        elif self.mode == 3:
+                            self.inter_point = (old_x, y)
+                        elif self.mode == 4:
+                            self.inter_point = (x, old_y)
 
-                    self.temp_points.append(self.inter_point)
-
+                        self.temp_points.append(self.inter_point)
             self.temp_points.append(data)
+
             return DrawToolUtilityShape(LinearRing(self.temp_points).buffer(self.buf_val, join_style=1))
         return None
 
     def make(self):
         # self.geometry = LinearRing(self.points)
-        self.geometry = DrawToolShape(Polygon(self.points).buffer(self.buf_val, join_style=2))
+        if len(self.points) > 2:
+            self.geometry = DrawToolShape(Polygon(self.points).buffer(self.buf_val, join_style=2))
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Region completed."))
+        self.draw_app.app.inform.emit(_("[success] Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -784,7 +787,10 @@ class FCRegion(FCShapeTool):
     def on_key(self, key):
         if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
             if len(self.points) > 0:
-                self.points = self.points[0:-1]
+                if self.mode == 5:
+                    self.points = self.points[0:-1]
+                else:
+                    self.points = self.points[0:-2]
                 # Remove any previous utility shape
                 self.draw_app.tool_shape.clear(update=False)
                 geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
@@ -794,19 +800,19 @@ class FCRegion(FCShapeTool):
         if key == 'T' or key == QtCore.Qt.Key_T:
             if self.mode == 1:
                 self.mode = 2
-                msg =  _('Track Mode 2: Reverse 45 degrees ...')
+                msg =  _('Corner Mode 2: Reverse 45 degrees ...')
             elif self.mode == 2:
                 self.mode = 3
-                msg = _('Track Mode 3: 90 degrees ...')
+                msg = _('Corner Mode 3: 90 degrees ...')
             elif self.mode == 3:
                 self.mode = 4
-                msg = _('Track Mode 4: Reverse 90 degrees ...')
+                msg = _('Corner Mode 4: Reverse 90 degrees ...')
             elif self.mode == 4:
                 self.mode = 5
-                msg = _('Track Mode 5: Free angle ...')
+                msg = _('Corner Mode 5: Free angle ...')
             else:
                 self.mode = 1
-                msg = _('Track Mode 1: 45 degrees ...')
+                msg = _('Corner Mode 1: 45 degrees ...')
 
             # Remove any previous utility shape
             self.draw_app.tool_shape.clear(update=False)
@@ -818,19 +824,19 @@ class FCRegion(FCShapeTool):
         if key == 'R' or key == QtCore.Qt.Key_R:
             if self.mode == 1:
                 self.mode = 5
-                msg = _('Track Mode 5: Free angle ...')
+                msg = _('Corner Mode 5: Free angle ...')
             elif self.mode == 5:
                 self.mode = 4
-                msg = _('Track Mode 4: Reverse 90 degrees ...')
+                msg = _('Corner Mode 4: Reverse 90 degrees ...')
             elif self.mode == 4:
                 self.mode = 3
-                msg = _('Track Mode 3: 90 degrees ...')
+                msg = _('Corner Mode 3: 90 degrees ...')
             elif self.mode == 3:
                 self.mode = 2
-                msg = _('Track Mode 2: Reverse 45 degrees ...')
+                msg = _('Corner Mode 2: Reverse 45 degrees ...')
             else:
                 self.mode = 1
-                msg = _('Track Mode 1: 45 degrees ...')
+                msg = _('Corner Mode 1: 45 degrees ...')
 
             # Remove any previous utility shape
             self.draw_app.tool_shape.clear(update=False)
@@ -868,7 +874,7 @@ class FCTrack(FCRegion):
 
         self.draw_app.in_action = False
         self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Path completed."))
+        self.draw_app.app.inform.emit(_("[success] Done."))
 
     def clean_up(self):
         self.draw_app.selected = []
@@ -2874,6 +2880,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                             self.active_tool.complete = True
                             self.in_action = False
                             self.delete_utility_geometry()
+                            self.app.inform.emit(_("[success] Done."))
                             self.select_tool('select')
                         else:
                             self.app.cursor = QtGui.QCursor()
