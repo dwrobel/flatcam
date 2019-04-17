@@ -4026,6 +4026,13 @@ class Excellon(Geometry):
                                     # the bellow construction is so each tool will have a slightly different diameter
                                     # starting with a default value, to allow Excellon editing after that
                                     self.diameterless = True
+                                    self.app.inform.emit(_("[WARNING] No tool diameter info's. See shell.\n"
+                                                           "A tool change event: T%s was found but the Excellon file "
+                                                           "have no informations regarding the tool "
+                                                           "diameters therefore the application will try to load it by "
+                                                           "using some 'fake' diameters.\nThe user needs to edit the "
+                                                           "resulting Excellon object and change the diameters to "
+                                                           "reflect the real diameters.") % current_tool)
 
                                     if self.excellon_units == 'MM':
                                         diam = self.toolless_diam + (int(current_tool) - 1) / 100
