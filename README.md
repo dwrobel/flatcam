@@ -15,6 +15,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed version check
 - added custom mouse cursors for some tools in Gerber Editor
 - Gerber Editor: added multiple modes to lay a Region: 45-degrees, reverse 45-degrees, 90-degrees, reverse 90-degrees and free-angle. Added also key shortcuts 'T' and 'R' to cycle forward, respectively in reverse through the modes.
+- Excellon Editor: fixed issue not remembering last tool after adding a new tool
+- added custom mouse cursors for Excellon and Geometry Editors in some of their tools
 
 16.04.2019
 

@@ -47,6 +47,13 @@ class FCDrillAdd(FCShapeTool):
             self.draw_app.select_tool("select")
             return
 
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_drill.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
 
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
@@ -81,6 +88,11 @@ class FCDrillAdd(FCShapeTool):
         return MultiLineString([(start_hor_line, stop_hor_line), (start_vert_line, stop_vert_line)])
 
     def make(self):
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
 
         # add the point to drills if the diameter is a key in the dict, if not, create it add the drill location
         # to the value, as a list of itself
@@ -136,6 +148,13 @@ class FCDrillArray(FCShapeTool):
         except KeyError:
             self.draw_app.app.inform.emit(_("[WARNING_NOTCL] To add an Drill Array first select a tool in Tool Table"))
             return
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_drill_array.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y), static=True)
 
@@ -251,6 +270,11 @@ class FCDrillArray(FCShapeTool):
     def make(self):
         self.geometry = []
         geo = None
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
 
         # add the point to drills if the diameter is a key in the dict, if not, create it add the drill location
         # to the value, as a list of itself
@@ -536,6 +560,11 @@ class FCDrillSelect(DrawTool):
     def __init__(self, exc_editor_app):
         DrawTool.__init__(self, exc_editor_app)
         self.name = 'drill_select'
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
 
         self.exc_editor_app = exc_editor_app
         self.storage = self.exc_editor_app.storage_dict
@@ -1433,6 +1462,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         for key in sorted(self.tool2tooldia):
             if self.tool2tooldia[key] == tool_dia:
                 row_to_be_selected = int(key) - 1
+                self.last_tool_selected = int(key)
                 break
 
         self.tools_table_exc.selectRow(row_to_be_selected)

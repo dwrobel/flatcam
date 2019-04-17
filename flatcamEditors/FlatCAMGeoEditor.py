@@ -1932,6 +1932,13 @@ class FCCircle(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'circle'
 
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_circle.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
         self.start_msg = _("Click on CENTER ...")
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
@@ -1958,6 +1965,11 @@ class FCCircle(FCShapeTool):
         return None
 
     def make(self):
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+
         p1 = self.points[0]
         p2 = self.points[1]
         radius = distance(p1, p2)
@@ -2173,6 +2185,13 @@ class FCRectangle(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'rectangle'
 
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
         self.start_msg = _("Click on 1st corner ...")
 
     def click(self, point):
@@ -2196,6 +2215,11 @@ class FCRectangle(FCShapeTool):
         return None
 
     def make(self):
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+
         p1 = self.points[0]
         p2 = self.points[1]
         # self.geometry = LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])])
@@ -2212,6 +2236,13 @@ class FCPolygon(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'polygon'
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.start_msg = _("Click on 1st point ...")
 
@@ -2239,6 +2270,11 @@ class FCPolygon(FCShapeTool):
         return None
 
     def make(self):
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+
         # self.geometry = LinearRing(self.points)
         self.geometry = DrawToolShape(Polygon(self.points))
         self.draw_app.in_action = False
@@ -2260,10 +2296,24 @@ class FCPath(FCPolygon):
     """
     Resulting type: LineString
     """
+    def __init__(self, draw_app):
+        FCPolygon.__init__(self, draw_app)
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
     def make(self):
         self.geometry = DrawToolShape(LineString(self.points))
         self.name = 'path'
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
 
         self.draw_app.in_action = False
         self.complete = True
@@ -2292,6 +2342,11 @@ class FCSelect(DrawTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'select'
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
 
         self.storage = self.draw_app.storage
         # self.shape_buffer = self.draw_app.shape_buffer
