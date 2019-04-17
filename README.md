@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - Gerber Editor: added some messages to warn user if no selection exists when trying to do aperture deletion or aperture geometry deletion
 - fixed version check
 - added custom mouse cursors for some tools in Gerber Editor
+- Gerber Editor: work in progress to add multiple modes of drawing for the Region Tool
 
 16.04.2019
 
