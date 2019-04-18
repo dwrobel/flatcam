@@ -540,7 +540,6 @@ class FCPoligonize(FCShapeTool):
         return ""
 
     def make(self):
-
         if not self.draw_app.selected:
             self.draw_app.in_action = False
             self.complete = True
@@ -548,20 +547,22 @@ class FCPoligonize(FCShapeTool):
             self.draw_app.select_tool("select")
             return
 
-        try:
-            current_storage = self.draw_app.storage_dict['0']['solid_geometry']
-        except KeyError:
-            self.draw_app.on_aperture_add(apid='0')
-            current_storage = self.draw_app.storage_dict['0']['solid_geometry']
-
         fused_geo = [Polygon(sh.geo.exterior) for sh in self.draw_app.selected]
-
         fused_geo = MultiPolygon(fused_geo)
         fused_geo = fused_geo.buffer(0.0000001)
+
+        current_storage = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
         if isinstance(fused_geo, MultiPolygon):
             for geo in fused_geo:
                 self.draw_app.on_grb_shape_complete(current_storage, specific_shape=DrawToolShape(geo))
         else:
+            if len(fused_geo.interiors) == 0:
+                try:
+                    current_storage = self.draw_app.storage_dict['0']['solid_geometry']
+                except KeyError:
+                    self.draw_app.on_aperture_add(apid='0')
+                    current_storage = self.draw_app.storage_dict['0']['solid_geometry']
+
             self.draw_app.on_grb_shape_complete(current_storage, specific_shape=DrawToolShape(fused_geo))
 
         self.draw_app.delete_selected()
@@ -694,9 +695,9 @@ class FCRegion(FCShapeTool):
                                 else:
                                     self.inter_point = (x, old_y + self.gridy_size * mx)
                     elif self.mode == 3:
-                        self.inter_point = (old_x, y)
-                    elif self.mode == 4:
                         self.inter_point = (x, old_y)
+                    elif self.mode == 4:
+                        self.inter_point = (old_x, y)
 
                     if self.inter_point is not None:
                         self.temp_points.append(self.inter_point)
@@ -761,9 +762,9 @@ class FCRegion(FCShapeTool):
                                     else:
                                         self.inter_point = (x, old_y + self.gridy_size * mx)
                         elif self.mode == 3:
-                            self.inter_point = (old_x, y)
-                        elif self.mode == 4:
                             self.inter_point = (x, old_y)
+                        elif self.mode == 4:
+                            self.inter_point = (old_x, y)
 
                         self.temp_points.append(self.inter_point)
             self.temp_points.append(data)
@@ -861,7 +862,7 @@ class FCTrack(FCRegion):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path1.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.draw_app.app.inform.emit(_('Track Mode 1: 45 degrees ...'))
@@ -950,9 +951,9 @@ class FCTrack(FCRegion):
                             else:
                                 self.temp_points.append((x, old_y + self.gridy_size * mx))
                 elif self.mode == 3:
-                    self.temp_points.append((old_x, y))
-                elif self.mode == 4:
                     self.temp_points.append((x, old_y))
+                elif self.mode == 4:
+                    self.temp_points.append((old_x, y))
                 else:
                     pass
 
@@ -973,20 +974,34 @@ class FCTrack(FCRegion):
                 return _("Backtracked one point ...")
 
         if key == 'T' or key == QtCore.Qt.Key_T:
+            try:
+                QtGui.QGuiApplication.restoreOverrideCursor()
+            except:
+                pass
             if self.mode == 1:
                 self.mode = 2
+                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path2.png'))
+                QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg =  _('Track Mode 2: Reverse 45 degrees ...')
             elif self.mode == 2:
                 self.mode = 3
+                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path3.png'))
+                QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 3: 90 degrees ...')
             elif self.mode == 3:
                 self.mode = 4
+                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path4.png'))
+                QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 4: Reverse 90 degrees ...')
             elif self.mode == 4:
                 self.mode = 5
+                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path5.png'))
+                QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 5: Free angle ...')
             else:
                 self.mode = 1
+                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path1.png'))
+                QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 1: 45 degrees ...')
 
             # Remove any previous utility shape
@@ -997,20 +1012,34 @@ class FCTrack(FCRegion):
             return msg
 
         if key == 'R' or key == QtCore.Qt.Key_R:
+            try:
+                QtGui.QGuiApplication.restoreOverrideCursor()
+            except:
+                pass
             if self.mode == 1:
                 self.mode = 5
+                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path5.png'))
+                QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 5: Free angle ...')
             elif self.mode == 5:
                 self.mode = 4
+                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path4.png'))
+                QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 4: Reverse 90 degrees ...')
             elif self.mode == 4:
                 self.mode = 3
+                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path3.png'))
+                QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 3: 90 degrees ...')
             elif self.mode == 3:
                 self.mode = 2
+                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path2.png'))
+                QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 2: Reverse 45 degrees ...')
             else:
                 self.mode = 1
+                self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path1.png'))
+                QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 1: 45 degrees ...')
 
             # Remove any previous utility shape
@@ -1477,30 +1506,26 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.apdim_entry = EvalEntry2()
         grid1.addWidget(self.apdim_entry, 4, 1)
 
-        apadd_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Add Aperture:'))
-        apadd_lbl.setToolTip(
-            _("Add an aperture to the aperture list")
+        apadd_del_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Add/Delete Aperture:'))
+        apadd_del_lbl.setToolTip(
+            _("Add/Delete an aperture in the aperture table")
         )
-        grid1.addWidget(apadd_lbl, 5, 0)
+        self.apertures_box.addWidget(apadd_del_lbl)
 
-        self.addaperture_btn = QtWidgets.QPushButton(_('Go'))
+        hlay_ad = QtWidgets.QHBoxLayout()
+        self.apertures_box.addLayout(hlay_ad)
+
+        self.addaperture_btn = QtWidgets.QPushButton(_('Add'))
         self.addaperture_btn.setToolTip(
            _( "Add a new aperture to the aperture list.")
         )
-        grid1.addWidget(self.addaperture_btn, 5, 1)
 
-        apdelete_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Del Aperture:'))
-        apdelete_lbl.setToolTip(
-            _( "Delete a aperture in the aperture list.\n"
-               "It will delete also the associated geometry.")
-        )
-        grid1.addWidget(apdelete_lbl, 6, 0)
-
-        self.delaperture_btn = QtWidgets.QPushButton(_('Go'))
+        self.delaperture_btn = QtWidgets.QPushButton(_('Delete'))
         self.delaperture_btn.setToolTip(
            _( "Delete a aperture in the aperture list")
         )
-        grid1.addWidget(self.delaperture_btn, 6, 1)
+        hlay_ad.addWidget(self.addaperture_btn)
+        hlay_ad.addWidget(self.delaperture_btn)
 
         ### BUFFER TOOL ###
 
