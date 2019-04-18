@@ -547,8 +547,8 @@ class FCPoligonize(FCShapeTool):
             self.draw_app.select_tool("select")
             return
 
-        fused_geo = [Polygon(sh.geo.exterior) for sh in self.draw_app.selected]
-        fused_geo = MultiPolygon(fused_geo)
+        exterior_geo = [Polygon(sh.geo.exterior) for sh in self.draw_app.selected]
+        fused_geo = MultiPolygon(exterior_geo)
         fused_geo = fused_geo.buffer(0.0000001)
 
         current_storage = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
@@ -556,7 +556,7 @@ class FCPoligonize(FCShapeTool):
             for geo in fused_geo:
                 self.draw_app.on_grb_shape_complete(current_storage, specific_shape=DrawToolShape(geo))
         else:
-            if len(fused_geo.interiors) == 0:
+            if len(fused_geo.interiors) == 0 and len(exterior_geo) == 1:
                 try:
                     current_storage = self.draw_app.storage_dict['0']['solid_geometry']
                 except KeyError:
@@ -620,13 +620,6 @@ class FCRegion(FCShapeTool):
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
-        # regions are added always in the '0' aperture
-        if '0' not in self.draw_app.storage_dict:
-            self.draw_app.on_aperture_add(apid='0')
-        else:
-            self.draw_app.last_aperture_selected = '0'
-
-        self.mode = 1
         self.draw_app.app.inform.emit(_('Corner Mode 1: 45 degrees ...'))
 
         self.start_msg = _("Click on 1st point ...")
@@ -666,8 +659,8 @@ class FCRegion(FCShapeTool):
 
             if mx and my:
                 if self.draw_app.app.ui.grid_snap_btn.isChecked():
-                    if self.mode != 5:
-                        if self.mode == 1:
+                    if self.draw_app.bend_mode != 5:
+                        if self.draw_app.bend_mode == 1:
                             if x > old_x:
                                 if mx > my:
                                     self.inter_point = (old_x + self.gridx_size * (mx - my), old_y)
@@ -684,7 +677,7 @@ class FCRegion(FCShapeTool):
                                         self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
                                     else:
                                         self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
-                        elif self.mode == 2:
+                        elif self.draw_app.bend_mode == 2:
                             if x > old_x:
                                 if mx > my:
                                     self.inter_point = (old_x + self.gridx_size * my, y)
@@ -701,9 +694,9 @@ class FCRegion(FCShapeTool):
                                         self.inter_point = (x, old_y - self.gridy_size * mx)
                                     else:
                                         self.inter_point = (x, old_y + self.gridy_size * mx)
-                        elif self.mode == 3:
+                        elif self.draw_app.bend_mode == 3:
                             self.inter_point = (x, old_y)
-                        elif self.mode == 4:
+                        elif self.draw_app.bend_mode == 4:
                             self.inter_point = (old_x, y)
 
                         if self.inter_point is not None:
@@ -733,8 +726,8 @@ class FCRegion(FCShapeTool):
 
             if mx and my:
                 if self.draw_app.app.ui.grid_snap_btn.isChecked():
-                    if self.mode != 5:
-                        if self.mode == 1:
+                    if self.draw_app.bend_mode != 5:
+                        if self.draw_app.bend_mode == 1:
                             if x > old_x:
                                 if mx > my:
                                     self.inter_point = (old_x + self.gridx_size * (mx - my), old_y)
@@ -751,7 +744,7 @@ class FCRegion(FCShapeTool):
                                         self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
                                     else:
                                         self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
-                        elif self.mode == 2:
+                        elif self.draw_app.bend_mode == 2:
                             if x > old_x:
                                 if mx > my:
                                     self.inter_point = (old_x + self.gridx_size * my, y)
@@ -768,9 +761,9 @@ class FCRegion(FCShapeTool):
                                         self.inter_point = (x, old_y - self.gridy_size * mx)
                                     else:
                                         self.inter_point = (x, old_y + self.gridy_size * mx)
-                        elif self.mode == 3:
+                        elif self.draw_app.bend_mode == 3:
                             self.inter_point = (x, old_y)
-                        elif self.mode == 4:
+                        elif self.draw_app.bend_mode == 4:
                             self.inter_point = (old_x, y)
 
                         self.temp_points.append(self.inter_point)
@@ -782,6 +775,13 @@ class FCRegion(FCShapeTool):
     def make(self):
         # self.geometry = LinearRing(self.points)
         if len(self.points) > 2:
+
+            # regions are added always in the '0' aperture
+            if '0' not in self.draw_app.storage_dict:
+                self.draw_app.on_aperture_add(apid='0')
+            else:
+                self.draw_app.last_aperture_selected = '0'
+
             self.geometry = DrawToolShape(Polygon(self.points).buffer(self.buf_val, join_style=2))
         self.draw_app.in_action = False
         self.complete = True
@@ -795,7 +795,7 @@ class FCRegion(FCShapeTool):
     def on_key(self, key):
         if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
             if len(self.points) > 0:
-                if self.mode == 5:
+                if self.draw_app.bend_mode == 5:
                     self.points = self.points[0:-1]
                 else:
                     self.points = self.points[0:-2]
@@ -806,20 +806,20 @@ class FCRegion(FCShapeTool):
                 return _("Backtracked one point ...")
 
         if key == 'T' or key == QtCore.Qt.Key_T:
-            if self.mode == 1:
-                self.mode = 2
+            if self.draw_app.bend_mode == 1:
+                self.draw_app.bend_mode = 2
                 msg =  _('Corner Mode 2: Reverse 45 degrees ...')
-            elif self.mode == 2:
-                self.mode = 3
+            elif self.draw_app.bend_mode == 2:
+                self.draw_app.bend_mode = 3
                 msg = _('Corner Mode 3: 90 degrees ...')
-            elif self.mode == 3:
-                self.mode = 4
+            elif self.draw_app.bend_mode == 3:
+                self.draw_app.bend_mode = 4
                 msg = _('Corner Mode 4: Reverse 90 degrees ...')
-            elif self.mode == 4:
-                self.mode = 5
+            elif self.draw_app.bend_mode == 4:
+                self.draw_app.bend_mode = 5
                 msg = _('Corner Mode 5: Free angle ...')
             else:
-                self.mode = 1
+                self.draw_app.bend_mode = 1
                 msg = _('Corner Mode 1: 45 degrees ...')
 
             # Remove any previous utility shape
@@ -830,20 +830,20 @@ class FCRegion(FCShapeTool):
             return msg
 
         if key == 'R' or key == QtCore.Qt.Key_R:
-            if self.mode == 1:
-                self.mode = 5
+            if self.draw_app.bend_mode == 1:
+                self.draw_app.bend_mode = 5
                 msg = _('Corner Mode 5: Free angle ...')
-            elif self.mode == 5:
-                self.mode = 4
+            elif self.draw_app.bend_mode == 5:
+                self.draw_app.bend_mode = 4
                 msg = _('Corner Mode 4: Reverse 90 degrees ...')
-            elif self.mode == 4:
-                self.mode = 3
+            elif self.draw_app.bend_mode == 4:
+                self.draw_app.bend_mode = 3
                 msg = _('Corner Mode 3: 90 degrees ...')
-            elif self.mode == 3:
-                self.mode = 2
+            elif self.draw_app.bend_mode == 3:
+                self.draw_app.bend_mode = 2
                 msg = _('Corner Mode 2: Reverse 45 degrees ...')
             else:
-                self.mode = 1
+                self.draw_app.bend_mode = 1
                 msg = _('Corner Mode 1: 45 degrees ...')
 
             # Remove any previous utility shape
@@ -869,7 +869,7 @@ class FCTrack(FCRegion):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path1.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path%s.png' % self.draw_app.bend_mode))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.draw_app.app.inform.emit(_('Track Mode 1: 45 degrees ...'))
@@ -923,7 +923,7 @@ class FCTrack(FCRegion):
             my = abs(round((y - old_y) / self.gridy_size))
 
             if self.draw_app.app.ui.grid_snap_btn.isChecked():
-                if self.mode == 1:
+                if self.draw_app.bend_mode == 1:
                     if x > old_x:
                         if mx > my:
                             self.temp_points.append((old_x + self.gridx_size*(mx-my), old_y))
@@ -940,7 +940,7 @@ class FCTrack(FCRegion):
                                 self.temp_points.append((old_x, old_y - self.gridy_size * (my-mx)))
                             else:
                                 self.temp_points.append((old_x, old_y - self.gridy_size * (mx-my)))
-                elif self.mode == 2:
+                elif self.draw_app.bend_mode == 2:
                     if x > old_x:
                         if mx > my:
                             self.temp_points.append((old_x + self.gridx_size*my, y))
@@ -957,9 +957,9 @@ class FCTrack(FCRegion):
                                 self.temp_points.append((x, old_y - self.gridy_size * mx))
                             else:
                                 self.temp_points.append((x, old_y + self.gridy_size * mx))
-                elif self.mode == 3:
+                elif self.draw_app.bend_mode == 3:
                     self.temp_points.append((x, old_y))
-                elif self.mode == 4:
+                elif self.draw_app.bend_mode == 4:
                     self.temp_points.append((old_x, y))
                 else:
                     pass
@@ -985,28 +985,28 @@ class FCTrack(FCRegion):
                 QtGui.QGuiApplication.restoreOverrideCursor()
             except:
                 pass
-            if self.mode == 1:
-                self.mode = 2
+            if self.draw_app.bend_mode == 1:
+                self.draw_app.bend_mode = 2
                 self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path2.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg =  _('Track Mode 2: Reverse 45 degrees ...')
-            elif self.mode == 2:
-                self.mode = 3
+            elif self.draw_app.bend_mode == 2:
+                self.draw_app.bend_mode = 3
                 self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path3.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 3: 90 degrees ...')
-            elif self.mode == 3:
-                self.mode = 4
+            elif self.draw_app.bend_mode == 3:
+                self.draw_app.bend_mode = 4
                 self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path4.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 4: Reverse 90 degrees ...')
-            elif self.mode == 4:
-                self.mode = 5
+            elif self.draw_app.bend_mode == 4:
+                self.draw_app.bend_mode = 5
                 self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path5.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 5: Free angle ...')
             else:
-                self.mode = 1
+                self.draw_app.bend_mode = 1
                 self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path1.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 1: 45 degrees ...')
@@ -1023,28 +1023,28 @@ class FCTrack(FCRegion):
                 QtGui.QGuiApplication.restoreOverrideCursor()
             except:
                 pass
-            if self.mode == 1:
-                self.mode = 5
+            if self.draw_app.bend_mode == 1:
+                self.draw_app.bend_mode = 5
                 self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path5.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 5: Free angle ...')
-            elif self.mode == 5:
-                self.mode = 4
+            elif self.draw_app.bend_mode == 5:
+                self.draw_app.bend_mode = 4
                 self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path4.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 4: Reverse 90 degrees ...')
-            elif self.mode == 4:
-                self.mode = 3
+            elif self.draw_app.bend_mode == 4:
+                self.draw_app.bend_mode = 3
                 self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path3.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 3: 90 degrees ...')
-            elif self.mode == 3:
-                self.mode = 2
+            elif self.draw_app.bend_mode == 3:
+                self.draw_app.bend_mode = 2
                 self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path2.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 2: Reverse 45 degrees ...')
             else:
-                self.mode = 1
+                self.draw_app.bend_mode = 1
                 self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path1.png'))
                 QtGui.QGuiApplication.setOverrideCursor(self.cursor)
                 msg = _('Track Mode 1: 45 degrees ...')
@@ -1279,6 +1279,10 @@ class FCApertureSelect(DrawTool):
 
         # here we store all shapes that were selected
         self.sel_storage = []
+
+        # since FCApertureSelect tool is activated whenever a tool is exited I place here the reinitialization of the
+        # bending modes using in FCRegion and FCTrack
+        self.draw_app.bend_mode = 1
 
         self.grb_editor_app.apertures_table.clearSelection()
         self.grb_editor_app.hide_tool('all')
@@ -1815,8 +1819,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.scale_factor_entry.set_value(1.0)
 
         # VisPy Visuals
-        self.shapes = self.app.plotcanvas.new_shape_collection(layers=1)
-        self.tool_shape = self.app.plotcanvas.new_shape_collection(layers=1)
+        self.shapes = self.canvas.new_shape_collection(layers=1)
+        self.tool_shape = self.canvas.new_shape_collection(layers=1)
         self.app.pool_recreated.connect(self.pool_recreated)
 
         # Remove from scene
@@ -1834,6 +1838,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.snap_x = None
         self.snap_y = None
         self.pos = None
+
+        # used in FCRegion and FCTrack. Will store the bending mode
+        self.bend_mode = 1
 
         # signal that there is an action active like polygon or path
         self.in_action = False
@@ -2122,7 +2129,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 return
 
         if ap_id == '0':
-            if ap_id not in self.olddia_newdia:
+            if ap_id not in self.tool2tooldia:
                 self.storage_dict[ap_id] = {}
                 self.storage_dict[ap_id]['type'] = 'REG'
                 size_val = 0
@@ -2205,7 +2212,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
         deleted_tool_offset_list = []
 
         try:
-            if apid is None or apid is False:
+            if apid:
+                if isinstance(apid, list):
+                    for dd in apid:
+                        deleted_apcode_list.append(dd)
+                else:
+                    deleted_apcode_list.append(apid)
+            else:
                 # deleted_tool_dia = float(self.apertures_table.item(self.apertures_table.currentRow(), 1).text())
                 if len(self.apertures_table.selectionModel().selectedRows()) == 0:
                     self.app.inform.emit(_("[WARNING_NOTCL] Select an aperture in Aperture Table"))
@@ -2213,40 +2226,44 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 for index in self.apertures_table.selectionModel().selectedRows():
                     row = index.row()
                     deleted_apcode_list.append(self.apertures_table.item(row, 1).text())
-            else:
-                if isinstance(apid, list):
-                    for dd in apid:
-                        deleted_apcode_list.append(dd)
-                else:
-                    deleted_apcode_list.append(apid)
         except:
             self.app.inform.emit(_("[WARNING_NOTCL] Select an aperture in Aperture Table"))
             return
 
-        for deleted_aperture in deleted_apcode_list:
-            # delete the storage used for that tool
-            self.storage_dict.pop(deleted_aperture, None)
+        if deleted_apcode_list:
+            for deleted_aperture in deleted_apcode_list:
+                # delete the storage used for that tool
+                self.storage_dict.pop(deleted_aperture, None)
 
-            # I've added this flag_del variable because dictionary don't like
-            # having keys deleted while iterating through them
-            flag_del = []
-            for deleted_tool in self.tool2tooldia:
-                if self.tool2tooldia[deleted_tool] == deleted_aperture:
-                    flag_del.append(deleted_tool)
-
-            if flag_del:
-                for aperture_to_be_deleted in flag_del:
-                    # delete the tool
-                    self.tool2tooldia.pop(aperture_to_be_deleted, None)
+                # I've added this flag_del variable because dictionary don't like
+                # having keys deleted while iterating through them
                 flag_del = []
+                for deleted_tool in self.tool2tooldia:
+                    if self.tool2tooldia[deleted_tool] == deleted_aperture:
+                        flag_del.append(deleted_tool)
 
-            self.olddia_newdia.pop(deleted_aperture, None)
+                if flag_del:
+                    for aperture_to_be_deleted in flag_del:
+                        # delete the tool
+                        self.tool2tooldia.pop(aperture_to_be_deleted, None)
+                    flag_del = []
 
-            self.app.inform.emit(_("[success] Deleted aperture with code: {del_dia}").format(
-                del_dia=str(deleted_aperture)))
+                    self.olddia_newdia.pop(deleted_aperture, None)
+
+                    self.app.inform.emit(_("[success] Deleted aperture with code: {del_dia}").format(
+                        del_dia=str(deleted_aperture)))
 
         self.plot_all()
         self.build_ui()
+
+        # if last aperture selected was in the apertures deleted than make sure to select a 'new' last aperture selected
+        # because there are tools who depend on it.
+        # if there is no aperture left, then add a default one :)
+        if self.last_aperture_selected in deleted_apcode_list:
+            if self.apertures_table.rowCount() == 0:
+                self.on_aperture_add('10')
+            else:
+                self.last_aperture_selected = self.apertures_table.item(0, 1).text()
 
     def on_tool_edit(self, item_changed):
 
@@ -2444,10 +2461,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.canvas.vis_connect('mouse_move', self.on_canvas_move)
         self.canvas.vis_connect('mouse_release', self.on_grb_click_release)
 
-        self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
-        self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
-        self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
-        self.app.plotcanvas.vis_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
+        self.canvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+        self.canvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
+        self.canvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+        self.canvas.vis_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
         self.app.collection.view.clicked.disconnect()
 
     def disconnect_canvas_event_handlers(self):
@@ -2455,10 +2472,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # we restore the key and mouse control to FlatCAMApp method
         # first connect to new, then disconnect the old handlers
         # don't ask why but if there is nothing connected I've seen issues
-        self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
-        self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
-        self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
-        self.app.plotcanvas.vis_connect('mouse_double_click', self.app.on_double_click_over_plot)
+        self.canvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
+        self.canvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
+        self.canvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+        self.canvas.vis_connect('mouse_double_click', self.app.on_double_click_over_plot)
         self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
 
         self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
@@ -2576,6 +2593,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.set_ui()
             # now that we have data (empty data actually), create the GUI interface and add it to the Tool Tab
             self.build_ui(first_run=True)
+            # and add the first aperture to have something to play with
+            self.on_aperture_add('10')
 
     def update_fcgerber(self, grb_obj):
         """
@@ -2976,7 +2995,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :return:
         """
         poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
-
         sel_aperture = set()
         self.apertures_table.clearSelection()
 
@@ -3078,16 +3096,21 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         ### Selection area on canvas section ###
         if event.is_dragging == 1 and event.button == 1:
-            dx = pos[0] - self.pos[0]
-            self.app.delete_selection_shape()
-            if dx < 0:
-                self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x,y),
-                     color=self.app.defaults["global_alt_sel_line"],
-                     face_color=self.app.defaults['global_alt_sel_fill'])
-                self.app.selection_type = False
+            # I make an exception for FCRegion and FCTrack because clicking and dragging while making regions can
+            # create strange issues like missing a point in a track/region
+            if isinstance(self.active_tool, FCRegion) or isinstance(self.active_tool, FCTrack):
+                pass
             else:
-                self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x,y))
-                self.app.selection_type = True
+                dx = pos[0] - self.pos[0]
+                self.app.delete_selection_shape()
+                if dx < 0:
+                    self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x,y),
+                         color=self.app.defaults["global_alt_sel_line"],
+                         face_color=self.app.defaults['global_alt_sel_fill'])
+                    self.app.selection_type = False
+                else:
+                    self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x,y))
+                    self.app.selection_type = True
         else:
             self.app.selection_type = None
 
