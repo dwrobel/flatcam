@@ -620,6 +620,12 @@ class FCRegion(FCShapeTool):
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
+        # regions are added always in the '0' aperture
+        if '0' not in self.draw_app.storage_dict:
+            self.draw_app.on_aperture_add(apid='0')
+        else:
+            self.draw_app.last_aperture_selected = '0'
+
         self.mode = 1
         self.draw_app.app.inform.emit(_('Corner Mode 1: 45 degrees ...'))
 
@@ -658,56 +664,57 @@ class FCRegion(FCShapeTool):
             mx = abs(round((x - old_x) / self.gridx_size))
             my = abs(round((y - old_y) / self.gridy_size))
 
-            if self.draw_app.app.ui.grid_snap_btn.isChecked():
-                if self.mode != 5:
-                    if self.mode == 1:
-                        if x > old_x:
-                            if mx > my:
-                                self.inter_point = (old_x + self.gridx_size * (mx - my), old_y)
-                            if mx < my:
-                                if y < old_y:
-                                    self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
-                                else:
-                                    self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
-                        if x < old_x:
-                            if mx > my:
-                                self.inter_point = (old_x - self.gridx_size * (mx - my), old_y)
-                            if mx < my:
-                                if y < old_y:
-                                    self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
-                                else:
-                                    self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
-                    elif self.mode == 2:
-                        if x > old_x:
-                            if mx > my:
-                                self.inter_point = (old_x + self.gridx_size * my, y)
-                            if mx < my:
-                                if y < old_y:
-                                    self.inter_point = (x, old_y - self.gridy_size * mx)
-                                else:
-                                    self.inter_point = (x, old_y + self.gridy_size * mx)
-                        if x < old_x:
-                            if mx > my:
-                                self.inter_point = (old_x - self.gridx_size * my, y)
-                            if mx < my:
-                                if y < old_y:
-                                    self.inter_point = (x, old_y - self.gridy_size * mx)
-                                else:
-                                    self.inter_point = (x, old_y + self.gridy_size * mx)
-                    elif self.mode == 3:
-                        self.inter_point = (x, old_y)
-                    elif self.mode == 4:
-                        self.inter_point = (old_x, y)
+            if mx and my:
+                if self.draw_app.app.ui.grid_snap_btn.isChecked():
+                    if self.mode != 5:
+                        if self.mode == 1:
+                            if x > old_x:
+                                if mx > my:
+                                    self.inter_point = (old_x + self.gridx_size * (mx - my), old_y)
+                                if mx < my:
+                                    if y < old_y:
+                                        self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
+                                    else:
+                                        self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
+                            if x < old_x:
+                                if mx > my:
+                                    self.inter_point = (old_x - self.gridx_size * (mx - my), old_y)
+                                if mx < my:
+                                    if y < old_y:
+                                        self.inter_point = (old_x, old_y - self.gridy_size * (my - mx))
+                                    else:
+                                        self.inter_point = (old_x, old_y - self.gridy_size * (mx - my))
+                        elif self.mode == 2:
+                            if x > old_x:
+                                if mx > my:
+                                    self.inter_point = (old_x + self.gridx_size * my, y)
+                                if mx < my:
+                                    if y < old_y:
+                                        self.inter_point = (x, old_y - self.gridy_size * mx)
+                                    else:
+                                        self.inter_point = (x, old_y + self.gridy_size * mx)
+                            if x < old_x:
+                                if mx > my:
+                                    self.inter_point = (old_x - self.gridx_size * my, y)
+                                if mx < my:
+                                    if y < old_y:
+                                        self.inter_point = (x, old_y - self.gridy_size * mx)
+                                    else:
+                                        self.inter_point = (x, old_y + self.gridy_size * mx)
+                        elif self.mode == 3:
+                            self.inter_point = (x, old_y)
+                        elif self.mode == 4:
+                            self.inter_point = (old_x, y)
 
-                    if self.inter_point is not None:
-                        self.temp_points.append(self.inter_point)
-                    else:
-                        self.inter_point = data
+                        if self.inter_point is not None:
+                            self.temp_points.append(self.inter_point)
+                        else:
+                            self.inter_point = data
 
-                self.temp_points.append(data)
-            else:
-                self.inter_point = data
-                self.temp_points.append(data)
+                else:
+                    self.inter_point = data
+
+            self.temp_points.append(data)
 
             if len(self.temp_points) > 1:
                 try:

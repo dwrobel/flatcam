@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 18.04.2019
 - Gerber Editor: added custom mouse cursors for each mode in Add Track Tool
 - Gerber Editor: Poligonize Tool will first fuse polygons that touch each other and at a second try will create a polygon. The polygon will be automatically moved to Aperture '0' (regions).
+- Gerber Editor: Region Tool will add regions only in '0' aperture
 
 17.04.2019
 
