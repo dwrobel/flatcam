@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+20.04.2019
+
+- finished adding the PDF import tool although it does not support all kinds of outputs from PDF printers. Microsoft PDF printer is not supported.
+
 19.04.2019
 
 - started to work on PDF import tool

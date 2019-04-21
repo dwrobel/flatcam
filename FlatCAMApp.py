@@ -7606,6 +7606,7 @@ class App(QtCore.QObject):
         openers = {
             'gerber': lambda fname: self.worker_task.emit({'fcn': self.open_gerber, 'params': [fname]}),
             'excellon': lambda fname: self.worker_task.emit({'fcn': self.open_excellon, 'params': [fname]}),
+            'geometry': lambda fname: self.worker_task.emit({'fcn': self.import_dxf, 'params': [fname]}),
             'cncjob': lambda fname: self.worker_task.emit({'fcn': self.open_gcode, 'params': [fname]}),
             'project': self.open_project,
             'svg': self.import_svg,
