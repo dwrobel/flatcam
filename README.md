@@ -16,7 +16,8 @@ CAD program, and create G-Code for Isolation routing.
 - PDF import tool: added support for save/restore Graphics stack. Only for scale and offset transformations and for the linewidth. This is the final fix for Microsoft PDF printer who saves in PDF format 1.7
 - PDF Import tool: added support for PDF files that embed multiple Gerber layers (top, bottom, outline, silkscreen etc). Each will be opened in it's own Gerber file. The requirement is that each one is drawn in a different color
 - PDF Import tool: fixed bugs when drag & dropping PDF files on canvas the files geometry previously opened was added to the new one. Also scaling issues. Solved.
-
+- PDF Import tool: added support for detection of circular geometry drawn with white color which means actually invisible color. When detected, FlatCAM will build an Excellon file out of those geoms.
+- PDF Import tool: fixed storing geometries in apertures with the right size (before they were all stored in aperture D10)
 
 21.04.2019
 

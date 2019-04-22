@@ -43,8 +43,12 @@ class ToolPDF(FlatCAMTool):
 
         self.stream_re = re.compile(b'.*?FlateDecode.*?stream(.*?)endstream', re.S)
 
-        # detect color change; it means a new object to be created
-        self.color_re = re.compile(r'^\s*(\d+\.?\d*) (\d+\.?\d*) (\d+\.?\d*)\s*RG$')
+        # detect stroke color change; it means a new object to be created
+        self.stroke_color_re = re.compile(r'^\s*(\d+\.?\d*) (\d+\.?\d*) (\d+\.?\d*)\s*RG$')
+
+        # detect fill color change; we check here for white color (transparent geometry);
+        # if detected we create an Excellon from it
+        self.fill_color_re = re.compile(r'^\s*(\d+\.?\d*) (\d+\.?\d*) (\d+\.?\d*)\s*rg$')
 
         # detect 're' command
         self.rect_re = re.compile(r'^(-?\d+\.?\d*)\s(-?\d+\.?\d*)\s(-?\d+\.?\d*)\s(-?\d+\.?\d*)\s*re$')
@@ -104,6 +108,7 @@ class ToolPDF(FlatCAMTool):
 
         self.obj_dict = dict()
         self.pdf_parsed = ''
+        self.parsed_obj_dict = dict()
 
         # conversion factor to INCH
         self.point_to_unit_factor = 0.01388888888
@@ -151,6 +156,8 @@ class ToolPDF(FlatCAMTool):
         new_name = filename.split('/')[-1].split('\\')[-1]
         self.obj_dict.clear()
         self.pdf_parsed = ''
+        self.parsed_obj_dict = {}
+        obj_type = 'gerber'
 
         # the UNITS in PDF files are points and here we set the factor to convert them to real units (either MM or INCH)
         if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
@@ -174,37 +181,96 @@ class ToolPDF(FlatCAMTool):
                 except Exception as e:
                     log.debug("ToolPDF.open_pdf().obj_init() --> %s" % str(e))
 
-            self.obj_dict = self.parse_pdf(pdf_content=self.pdf_parsed)
+            self.parsed_obj_dict = self.parse_pdf(pdf_content=self.pdf_parsed)
 
-        for k in self.obj_dict:
-            ap_dict = deepcopy(self.obj_dict[k])
+        for k in self.parsed_obj_dict:
+            ap_dict = deepcopy(self.parsed_obj_dict[k])
             if ap_dict:
-                def obj_init(grb_obj, app_obj):
+                if k == 0:
+                    # Excellon
+                    obj_type = 'excellon'
 
-                    grb_obj.apertures = ap_dict
+                    new_name = new_name + "_exc"
+                    # store the points here until reconstitution: keys are diameters and values are list of (x,y) coords
+                    points = {}
 
-                    poly_buff = []
-                    for ap in grb_obj.apertures:
-                        for k in grb_obj.apertures[ap]:
-                            if k == 'solid_geometry':
-                                poly_buff += ap_dict[ap][k]
+                    def obj_init(exc_obj, app_obj):
+                        # print(self.parsed_obj_dict[0])
 
-                    poly_buff = unary_union(poly_buff)
-                    poly_buff = poly_buff.buffer(0.0000001)
-                    poly_buff = poly_buff.buffer(-0.0000001)
+                        for geo in self.parsed_obj_dict[0]['0']['solid_geometry']:
+                            xmin, ymin, xmax, ymax = geo.bounds
+                            center = (((xmax - xmin) / 2) + xmin, ((ymax - ymin) / 2) + ymin)
 
-                    grb_obj.solid_geometry = deepcopy(poly_buff)
+                            # for drill bits, even in INCH, it's enough 3 decimals
+                            correction_factor = 0.974
+                            dia = (xmax - xmin) * correction_factor
+                            dia = round(dia, 3)
+                            if dia in points:
+                                points[dia].append(center)
+                            else:
+                                points[dia] = [center]
 
-                with self.app.proc_container.new(_("Opening PDF layer #%d ...") % (int(k) - 2)):
+                        sorted_dia = sorted(points.keys())
 
-                    ret = self.app.new_object("gerber", new_name, obj_init, autoselected=False)
+                        name_tool = 0
+                        for dia in sorted_dia:
+                            name_tool += 1
+
+                            # create tools dictionary
+                            spec = {"C": dia}
+                            spec['solid_geometry'] = []
+                            exc_obj.tools[str(name_tool)] = spec
+
+                            # create drill list of dictionaries
+                            for dia_points in points:
+                                if dia == dia_points:
+                                    for pt in points[dia_points]:
+                                        exc_obj.drills.append({'point': Point(pt), 'tool': str(name_tool)})
+                                    break
+
+                        ret = exc_obj.create_geometry()
+                        if ret == 'fail':
+                            log.debug("Could not create geometry for Excellon object.")
+                            return "fail"
+                        for tool in exc_obj.tools:
+                            if exc_obj.tools[tool]['solid_geometry']:
+                                return
+                        app_obj.inform.emit(_("[ERROR_NOTCL] No geometry found in file: %s") % new_name)
+                        return "fail"
+                else:
+                    # Gerber
+                    obj_type = 'gerber'
+
+                    def obj_init(grb_obj, app_obj):
+
+                        grb_obj.apertures = ap_dict
+
+                        poly_buff = []
+                        for ap in grb_obj.apertures:
+                            for k in grb_obj.apertures[ap]:
+                                if k == 'solid_geometry':
+                                    poly_buff += ap_dict[ap][k]
+
+                        poly_buff = unary_union(poly_buff)
+                        try:
+                            poly_buff = poly_buff.buffer(0.0000001)
+                        except ValueError:
+                            pass
+                        try:
+                            poly_buff = poly_buff.buffer(-0.0000001)
+                        except ValueError:
+                            pass
+
+                        grb_obj.solid_geometry = deepcopy(poly_buff)
+
+                with self.app.proc_container.new(_("Rendering PDF layer #%d ...") % (int(k) - 2)):
+
+                    ret = self.app.new_object(obj_type, new_name, obj_init, autoselected=False)
                     if ret == 'fail':
                         self.app.inform.emit(_('[ERROR_NOTCL] Open PDF file failed.'))
                         return
-
                     # Register recent file
-                    self.app.file_opened.emit("gerber", filename)
-
+                    self.app.file_opened.emit(obj_type, filename)
                     # GUI feedback
                     self.app.inform.emit(_("[success] Opened: %s") % filename)
 
@@ -233,9 +299,6 @@ class ToolPDF(FlatCAMTool):
         offset_geo = [0, 0]
         scale_geo = [1, 1]
 
-        # initial aperture
-        aperture = 10
-
         # store the objects to be transformed into Gerbers
         object_dict = {}
 
@@ -245,13 +308,28 @@ class ToolPDF(FlatCAMTool):
         # store the apertures here
         apertures_dict = {}
 
+        # initial aperture
+        aperture = 10
+
+        # store the apertures with clear geometry here
+        # we are interested only in the circular geometry (drill holes) therefore we target only Bezier subpaths
+        clear_apertures_dict = dict()
+        # everything will be stored in the '0' aperture since we are dealing with clear polygons not strokes
+        clear_apertures_dict['0'] = dict()
+        clear_apertures_dict['0']['size'] = 0.0
+        clear_apertures_dict['0']['type'] = 'C'
+        clear_apertures_dict['0']['solid_geometry'] = []
+
         # create first object
         object_dict[object_nr] = apertures_dict
         object_nr += 1
 
-        # on color change we create a new apertures dictionary and store the old one in a storage from where it will be
-        # transformed into Gerber object
+        # on stroke color change we create a new apertures dictionary and store the old one in a storage from where
+        # it will be transformed into Gerber object
         old_color = [None, None ,None]
+
+        # signal that we have clear geometry and the geometry will be added to a special object_nr = 0
+        flag_clear_geo = False
 
         line_nr = 0
         lines = pdf_content.splitlines()
@@ -261,9 +339,12 @@ class ToolPDF(FlatCAMTool):
             # log.debug("line %d: %s" % (line_nr, pline))
 
             # COLOR DETECTION / OBJECT DETECTION
-            match = self.color_re.search(pline)
+            match = self.stroke_color_re.search(pline)
             if match:
                 color = [float(match.group(1)), float(match.group(2)), float(match.group(3))]
+                log.debug(
+                    "ToolPDF.parse_pdf() --> STROKE Color change on line: %s --> RED=%f GREEN=%f BLUE=%f" %
+                    (line_nr, color[0], color[1], color[2]))
 
                 if color[0] == old_color[0] and color[1] == old_color[1] and color[2] == old_color[2]:
                     # same color, do nothing
@@ -271,9 +352,28 @@ class ToolPDF(FlatCAMTool):
                 else:
                     object_dict[object_nr] = deepcopy(apertures_dict)
                     object_nr += 1
+
                     object_dict[object_nr] = dict()
-                    apertures_dict.clear()
+                    apertures_dict = {}
                 old_color = copy(color)
+                # we make sure that the following geometry is added to the right storage
+                flag_clear_geo = False
+                continue
+
+            # CLEAR GEOMETRY detection
+            match = self.fill_color_re.search(pline)
+            if match:
+                fill_color = [float(match.group(1)), float(match.group(2)), float(match.group(3))]
+                log.debug(
+                    "ToolPDF.parse_pdf() --> FILL Color change on line: %s --> RED=%f GREEN=%f BLUE=%f" %
+                    (line_nr, fill_color[0], fill_color[1], fill_color[2]))
+                # if the color is white we are seeing 'clear_geometry' that can't be seen. It may be that those
+                # geometries are actually holes from which we can make an Excellon file
+                if fill_color[0] == 1 and fill_color[1] == 1 and fill_color[2] == 1:
+                    flag_clear_geo = True
+                else:
+                    flag_clear_geo = False
+                continue
 
             # TRANSFORMATIONS DETECTION #
 
@@ -366,7 +466,7 @@ class ToolPDF(FlatCAMTool):
                 # add the start point to subpaths
                 subpath['lines'].append(start_point)
                 # subpath['bezier'].append(start_point)
-                subpath['rectangle'].append(start_point)
+                # subpath['rectangle'].append(start_point)
                 current_point = start_point
                 continue
 
@@ -440,7 +540,7 @@ class ToolPDF(FlatCAMTool):
                 current_point = stop
                 continue
 
-            # Draw Rectangle 're
+            # Draw Rectangle 're'
             match = self.rect_re.search(pline)
             if match:
                 current_subpath = 'rectangle'
@@ -454,7 +554,6 @@ class ToolPDF(FlatCAMTool):
                 pt2 = (x+width, y)
                 pt3 = (x+width, y+height)
                 pt4 = (x, y+height)
-                # TODO: I'm not sure if rectangles are a type of subpath that close by itself
                 subpath['rectangle'] += [pt1, pt2, pt3, pt4, pt1]
                 current_point = pt1
                 continue
@@ -491,7 +590,7 @@ class ToolPDF(FlatCAMTool):
                     path['bezier'].append(copy(subpath['bezier']))
                     subpath['bezier'] = []
                 elif current_subpath == 'rectangle':
-                    subpath['rectangle'].append(start_point)
+                    # subpath['rectangle'].append(start_point)
                     # since we are closing the subpath add it to the path, a path may have chained subpaths
                     path['rectangle'].append(copy(subpath['rectangle']))
                     subpath['rectangle'] = []
@@ -566,12 +665,29 @@ class ToolPDF(FlatCAMTool):
                         path_geo.append(geo)
                         subpath['rectangle'] = []
 
-                try:
-                    apertures_dict[str(aperture)]['solid_geometry'] += path_geo
-                except KeyError:
-                    # in case there is no stroke width yet therefore no aperture
+                # store the found geometry
+                found_aperture = None
+                if apertures_dict:
+                    for apid in apertures_dict:
+                        # if we already have an aperture with the current size (rounded to 5 decimals)
+                        if apertures_dict[apid]['size'] == round(applied_size, 5):
+                            found_aperture = apid
+                            break
+
+                    if found_aperture:
+                        apertures_dict[copy(found_aperture)]['solid_geometry'] += path_geo
+                        found_aperture = None
+                    else:
+                        if str(aperture) in apertures_dict.keys():
+                            aperture += 1
+                        apertures_dict[str(aperture)] = {}
+                        apertures_dict[str(aperture)]['size'] = round(applied_size, 5)
+                        apertures_dict[str(aperture)]['type'] = 'C'
+                        apertures_dict[str(aperture)]['solid_geometry'] = []
+                        apertures_dict[str(aperture)]['solid_geometry'] += path_geo
+                else:
                     apertures_dict[str(aperture)] = {}
-                    apertures_dict[str(aperture)]['size'] = applied_size
+                    apertures_dict[str(aperture)]['size'] = round(applied_size, 5)
                     apertures_dict[str(aperture)]['type'] = 'C'
                     apertures_dict[str(aperture)]['solid_geometry'] = []
                     apertures_dict[str(aperture)]['solid_geometry'] += path_geo
@@ -583,8 +699,8 @@ class ToolPDF(FlatCAMTool):
             if match:
                 # scale the size here; some PDF printers apply transformation after the size is declared
                 applied_size = size * scale_geo[0] * self.point_to_unit_factor
-
                 path_geo = list()
+
                 if current_subpath == 'lines':
                     if path['lines']:
                         for subp in path['lines']:
@@ -632,8 +748,8 @@ class ToolPDF(FlatCAMTool):
                         for subp in path['rectangle']:
                             geo = copy(subp)
                             # close the subpath if it was not closed already
-                            if close_subpath is False:
-                                geo.append(geo[0])
+                            if close_subpath is False and start_point is not None:
+                                geo.append(start_point)
                             geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
                             path_geo.append(geo_el)
                         # the path was painted therefore initialize it
@@ -650,24 +766,35 @@ class ToolPDF(FlatCAMTool):
                 # we finished painting and also closed the path if it was the case
                 close_subpath = True
 
-                try:
-                    apertures_dict['0']['solid_geometry'] += path_geo
-                except KeyError:
-                    # in case there is no stroke width yet therefore no aperture
-                    apertures_dict['0'] = {}
-                    apertures_dict['0']['size'] = applied_size
-                    apertures_dict['0']['type'] = 'C'
-                    apertures_dict['0']['solid_geometry'] = []
-                    apertures_dict['0']['solid_geometry'] += path_geo
-                continue
+                # if there was a fill color change we look for circular geometries from which we can make drill holes
+                # for the Excellon file
+                if flag_clear_geo is True:
+                    # we llok for circular geometries
+                    if current_subpath == 'bezier':
+                        # if there are geometries in the list
+                        if path_geo:
+                            clear_apertures_dict['0']['solid_geometry'] += path_geo
+                else:
+                    # else, add the geometry as usual
+                    try:
+                        apertures_dict['0']['solid_geometry'] += path_geo
+                    except KeyError:
+                        # in case there is no stroke width yet therefore no aperture
+                        apertures_dict['0'] = {}
+                        apertures_dict['0']['size'] = applied_size
+                        apertures_dict['0']['type'] = 'C'
+                        apertures_dict['0']['solid_geometry'] = []
+                        apertures_dict['0']['solid_geometry'] += path_geo
+                    continue
 
-            # fill and stroke the path
+            # Fill and Stroke the path
             match = self.fill_stroke_path_re.search(pline)
             if match:
                 # scale the size here; some PDF printers apply transformation after the size is declared
                 applied_size = size * scale_geo[0] * self.point_to_unit_factor
-
                 path_geo = list()
+                fill_geo = list()
+
                 if current_subpath == 'lines':
                     if path['lines']:
                         # fill
@@ -677,7 +804,7 @@ class ToolPDF(FlatCAMTool):
                             if close_subpath is False:
                                 geo.append(geo[0])
                             geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
-                            path_geo.append(geo_el)
+                            fill_geo.append(geo_el)
                         # stroke
                         for subp in path['lines']:
                             geo = copy(subp)
@@ -692,7 +819,7 @@ class ToolPDF(FlatCAMTool):
                         if close_subpath is False:
                             geo.append(start_point)
                         geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
-                        path_geo.append(geo_el)
+                        fill_geo.append(geo_el)
                         # stroke
                         geo = copy(subpath['lines'])
                         geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
@@ -711,7 +838,7 @@ class ToolPDF(FlatCAMTool):
                                 if close_subpath is False:
                                     geo.append(geo[0])
                                 geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
-                                path_geo.append(geo_el)
+                                fill_geo.append(geo_el)
                         # stroke
                         for subp in path['bezier']:
                             geo = []
@@ -728,7 +855,7 @@ class ToolPDF(FlatCAMTool):
                         if close_subpath is False:
                             geo.append(start_point)
                         geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
-                        path_geo.append(geo_el)
+                        fill_geo.append(geo_el)
                         # stroke
                         geo = []
                         for b in subpath['bezier']:
@@ -746,7 +873,7 @@ class ToolPDF(FlatCAMTool):
                             if close_subpath is False:
                                 geo.append(geo[0])
                             geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
-                            path_geo.append(geo_el)
+                            fill_geo.append(geo_el)
                         # stroke
                         for subp in path['rectangle']:
                             geo = copy(subp)
@@ -761,7 +888,7 @@ class ToolPDF(FlatCAMTool):
                         if close_subpath is False:
                             geo.append(start_point)
                         geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
-                        path_geo.append(geo_el)
+                        fill_geo.append(geo_el)
                         # stroke
                         geo = copy(subpath['rectangle'])
                         geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
@@ -771,16 +898,53 @@ class ToolPDF(FlatCAMTool):
                 # we finished painting and also closed the path if it was the case
                 close_subpath = True
 
+                # store the found geometry for stroking the path
+                found_aperture = None
+                if apertures_dict:
+                    for apid in apertures_dict:
+                        # if we already have an aperture with the current size (rounded to 5 decimals)
+                        if apertures_dict[apid]['size'] == round(applied_size, 5):
+                            found_aperture = apid
+                            break
+
+                    if found_aperture:
+                        apertures_dict[copy(found_aperture)]['solid_geometry'] += path_geo
+                        found_aperture = None
+                    else:
+                        if str(aperture) in apertures_dict.keys():
+                            aperture += 1
+                        apertures_dict[str(aperture)] = {}
+                        apertures_dict[str(aperture)]['size'] = round(applied_size, 5)
+                        apertures_dict[str(aperture)]['type'] = 'C'
+                        apertures_dict[str(aperture)]['solid_geometry'] = []
+                        apertures_dict[str(aperture)]['solid_geometry'] += path_geo
+                else:
+                    apertures_dict[str(aperture)] = {}
+                    apertures_dict[str(aperture)]['size'] = round(applied_size, 5)
+                    apertures_dict[str(aperture)]['type'] = 'C'
+                    apertures_dict[str(aperture)]['solid_geometry'] = []
+                    apertures_dict[str(aperture)]['solid_geometry'] += path_geo
+
+                # store the found geometry for filling the path
                 try:
-                    apertures_dict['0']['solid_geometry'] += path_geo
+                    apertures_dict['0']['solid_geometry'] += fill_geo
                 except KeyError:
                     # in case there is no stroke width yet therefore no aperture
                     apertures_dict['0'] = {}
-                    apertures_dict['0']['size'] = applied_size
+                    apertures_dict['0']['size'] = round(applied_size, 5)
                     apertures_dict['0']['type'] = 'C'
                     apertures_dict['0']['solid_geometry'] = []
-                    apertures_dict['0']['solid_geometry'] += path_geo
+                    apertures_dict['0']['solid_geometry'] += fill_geo
+
                 continue
+
+        # tidy up. copy the current aperture dict to the object dict but only if it is not empty
+        if apertures_dict:
+            object_dict[object_nr] = deepcopy(apertures_dict)
+
+        if clear_apertures_dict['0']['solid_geometry']:
+            object_dict[0] = deepcopy(clear_apertures_dict)
+
         return object_dict
 
     def bezier_to_points(self, start, c1, c2, stop):
