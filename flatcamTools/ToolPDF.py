@@ -62,7 +62,7 @@ class ToolPDF(FlatCAMTool):
         # detect 'w' command
         self.strokewidth_re = re.compile(r'^(\d+\.?\d*)\s*w$')
         # detect 'S' command
-        self.stroke_path__re = re.compile(r'^S$')
+        self.stroke_path__re = re.compile(r'^S\s?[Q]?$')
         # detect 's' command
         self.close_stroke_path__re = re.compile(r'^s$')
         # detect 'f' or 'f*' command
@@ -152,7 +152,7 @@ class ToolPDF(FlatCAMTool):
             stream_nr = 0
             for s in re.findall(self.stream_re, pdf):
                 stream_nr += 1
-                print("STREAM:", stream_nr, '\n', '\n')
+                log.debug(" PDF STREAM: %d\n" % stream_nr)
                 s = s.strip(b'\r\n')
                 try:
                     self.pdf_parsed += (zlib.decompress(s).decode('UTF-8') + '\r\n')
@@ -189,26 +189,40 @@ class ToolPDF(FlatCAMTool):
 
     def parse_pdf(self, pdf_content):
         path = dict()
-        path['lines'] = []      # it's a list of points
-        path['bezier'] = []     # it's a list of sublists each like this [start, c1, c2, stop]
-        path['rectangle'] = []  # it's a list of sublists of points
+        path['lines'] = []      # it's a list of lines subpaths
+        path['bezier'] = []     # it's a list of bezier arcs subpaths
+        path['rectangle'] = []  # it's a list of rectangle subpaths
+
+        subpath = dict()
+        subpath['lines'] = []      # it's a list of points
+        subpath['bezier'] = []     # it's a list of sublists each like this [start, c1, c2, stop]
+        subpath['rectangle'] = []  # it's a list of sublists of points
+
+        # store the start point (when 'm' command is encountered)
+        current_subpath = None
+
+        # set True when 'h' command is encountered (close path)
+        close_path = False
 
         start_point = None
         current_point = None
-        size = None
-
-        # signal that we have encountered a close path command
-        flag_close_path = False
+        size = 0
 
         # initial values for the transformations, in case they are not encountered in the PDF file
         offset_geo = [0, 0]
         scale_geo = [1, 1]
+
+        c_offset_f= [0, 0]
+        c_scale_f = [1, 1]
 
         # initial aperture
         aperture = 10
 
         # store the apertures here
         apertures_dict = {}
+
+        # it seems that first transform apply to the whole PDF; signal here if it's first
+        first_transform = True
 
         line_nr = 0
         lines = pdf_content.splitlines()
@@ -219,56 +233,50 @@ class ToolPDF(FlatCAMTool):
 
             # TRANSFORMATIONS DETECTION #
 
-            # Detect Scale transform
-            match = self.scale_re.search(pline)
-            if match:
-                log.debug(
-                    "ToolPDF.parse_pdf() --> SCALE transformation found on line: %s --> %s" % (line_nr, pline))
-                scale_geo = [float(match.group(1)), float(match.group(2))]
-                continue
+            # # Detect Scale transform
+            # match = self.scale_re.search(pline)
+            # if match:
+            #     log.debug(
+            #         "ToolPDF.parse_pdf() --> SCALE transformation found on line: %s --> %s" % (line_nr, pline))
+            #     if first_transform:
+            #         first_transform = False
+            #         c_scale_f = [float(match.group(1)), float(match.group(2))]
+            #     else:
+            #         scale_geo = [float(match.group(1)), float(match.group(2))]
+            #     continue
 
-            # Detect Offset transform
-            match = self.offset_re.search(pline)
-            if match:
-                log.debug(
-                    "ToolPDF.parse_pdf() --> OFFSET transformation found on line: %s --> %s" % (line_nr, pline))
-                offset_geo = [float(match.group(1)), float(match.group(2))]
-                continue
+            # # Detect Offset transform
+            # match = self.offset_re.search(pline)
+            # if match:
+            #     log.debug(
+            #         "ToolPDF.parse_pdf() --> OFFSET transformation found on line: %s --> %s" % (line_nr, pline))
+            #     offset_geo = [float(match.group(1)), float(match.group(2))]
+            #     continue
 
             # Detect combined transformation. Must be always the last from transformations to be checked.
-            # TODO: Perhaps it can replace the others transformation detections
             match = self.combined_transform_re.search(pline)
             if match:
                 # transformation = TRANSLATION (OFFSET)
-                if float(match.group(1)) == 1 and float(match.group(2)) == 0 and \
-                        float(match.group(3)) == 0 and float(match.group(4)) == 1:
-                    pass
+                if (float(match.group(2)) == 0 and float(match.group(3)) == 0) and \
+                        (float(match.group(5)) != 0 or float(match.group(6)) != 0):
+                    log.debug(
+                        "ToolPDF.parse_pdf() --> OFFSET transformation found on line: %s --> %s" % (line_nr, pline))
+                    if first_transform:
+                        c_offset_f = [float(match.group(5)), float(match.group(6))]
+                    else:
+                        offset_geo = [float(match.group(5)), float(match.group(6))]
 
                 # transformation = SCALING
-                elif float(match.group(2)) == 0 and float(match.group(3)) == 0 and \
-                        float(match.group(5)) == 0 and float(match.group(6)) == 0:
-                    pass
+                if float(match.group(1)) != 1 and float(match.group(4)) != 1:
+                    log.debug(
+                        "ToolPDF.parse_pdf() --> SCALE transformation found on line: %s --> %s" % (line_nr, pline))
+                    if first_transform:
+                        c_scale_f = [float(match.group(1)), float(match.group(4))]
+                    else:
+                        scale_geo = [float(match.group(1)), float(match.group(4))]
 
-                # transformation = ROTATION
-                elif float(match.group(1)) == float(match.group(4)) and \
-                        float(match.group(2)) == - float(match.group(3)) and \
-                        float(match.group(5)) == 0 and float(match.group(6)) == 0:
-                    # rot_angle = math.acos(float(match.group(1)))
-                    pass
-
-                # transformation = SKEW
-                elif float(match.group(1)) == 1 and float(match.group(4)) == 1 and \
-                        float(match.group(5)) == 0 and float(match.group(6)) == 0:
-                    # skew_x = math.atan(float(match.group(2)))
-                    # skew_y = math.atan(float(match.group(3)))
-                    pass
-
-                # transformation combined
-                else:
-                    log.debug("ToolPDF.parse_pdf() --> COMBINED transformation found on line: %s --> %s" %
-                              (line_nr, pline))
-                    scale_geo = [float(match.group(1)), float(match.group(4))]
-                    offset_geo = [float(match.group(5)), float(match.group(6))]
+                if first_transform:
+                    first_transform = False
                 continue
 
             # PATH CONSTRUCTION #
@@ -276,53 +284,77 @@ class ToolPDF(FlatCAMTool):
             # Start SUBPATH
             match = self.start_subpath_re.search(pline)
             if match:
+                # we just started a subpath so we mark it as not closed yet
+                close_path = False
+
+                # init subpaths
+                subpath['lines'] = []
+                subpath['bezier'] = []
+                subpath['rectangle'] = []
+
+                # detect start point to move to
                 x = float(match.group(1)) + offset_geo[0]
                 y = float(match.group(2)) + offset_geo[1]
-                pt = (x * self.point_to_unit_factor * scale_geo[0], y * self.point_to_unit_factor * scale_geo[1])
+                pt = (x * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0],
+                      y * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1])
                 start_point = pt
-                current_point = pt
+
+                # add the start point to subpaths
+                subpath['lines'].append(start_point)
+                # subpath['bezier'].append(start_point)
+                subpath['rectangle'].append(start_point)
+                current_point = start_point
                 continue
 
             # Draw Line
             match = self.draw_line_re.search(pline)
             if match:
+                current_subpath = 'lines'
                 x = float(match.group(1)) + offset_geo[0]
                 y = float(match.group(2)) + offset_geo[1]
-                pt = (x * self.point_to_unit_factor * scale_geo[0], y * self.point_to_unit_factor * scale_geo[1])
-                path['lines'].append(pt)
+                pt = (x * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0],
+                      y * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1])
+                subpath['lines'].append(pt)
                 current_point = pt
                 continue
 
             # Draw Bezier 'c'
             match = self.draw_arc_3pt_re.search(pline)
             if match:
+                current_subpath = 'bezier'
                 start = current_point
                 x = float(match.group(1)) + offset_geo[0]
                 y = float(match.group(2)) + offset_geo[1]
-                c1 = (x * self.point_to_unit_factor * scale_geo[0], y * self.point_to_unit_factor * scale_geo[1])
+                c1 = (x * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0],
+                      y * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1])
                 x = float(match.group(3)) + offset_geo[0]
                 y = float(match.group(4)) + offset_geo[1]
-                c2 = (x * self.point_to_unit_factor * scale_geo[0], y * self.point_to_unit_factor * scale_geo[1])
+                c2 = (x * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0],
+                      y * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1])
                 x = float(match.group(5)) + offset_geo[0]
                 y = float(match.group(6)) + offset_geo[1]
-                stop = (x * self.point_to_unit_factor * scale_geo[0], y * self.point_to_unit_factor * scale_geo[1])
+                stop = (x * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0],
+                        y * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1])
 
-                path['bezier'].append([start, c1, c2, stop])
+                subpath['bezier'].append([start, c1, c2, stop])
                 current_point = stop
                 continue
 
             # Draw Bezier 'v'
             match = self.draw_arc_2pt_c1start_re.search(pline)
             if match:
+                current_subpath = 'bezier'
                 start = current_point
                 x = float(match.group(1)) + offset_geo[0]
                 y = float(match.group(2)) + offset_geo[1]
-                c2 = (x * self.point_to_unit_factor * scale_geo[0], y * self.point_to_unit_factor * scale_geo[1])
+                c2 = (x * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0],
+                      y * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1])
                 x = float(match.group(3)) + offset_geo[0]
                 y = float(match.group(4)) + offset_geo[1]
-                stop = (x * self.point_to_unit_factor * scale_geo[0], y * self.point_to_unit_factor * scale_geo[1])
+                stop = (x * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0],
+                        y * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1])
 
-                path['bezier'].append([start, start, c2, stop])
+                subpath['bezier'].append([start, start, c2, stop])
                 current_point = stop
                 continue
 
@@ -332,33 +364,34 @@ class ToolPDF(FlatCAMTool):
                 start = current_point
                 x = float(match.group(1)) + offset_geo[0]
                 y = float(match.group(2)) + offset_geo[1]
-                c1 = (x * self.point_to_unit_factor * scale_geo[0], y * self.point_to_unit_factor * scale_geo[1])
+                c1 = (x * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0],
+                      y * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1])
                 x = float(match.group(3)) + offset_geo[0]
                 y = float(match.group(4)) + offset_geo[1]
-                stop = (x * self.point_to_unit_factor * scale_geo[0], y * self.point_to_unit_factor * scale_geo[1])
+                stop = (x * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0],
+                        y * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1])
 
-                path['bezier'].append([start, c1, stop, stop])
+                subpath['bezier'].append([start, c1, stop, stop])
+                print(subpath['bezier'])
                 current_point = stop
-                continue
-
-            # Close SUBPATH
-            match = self.end_subpath_re.search(pline)
-            if match:
-                flag_close_path = True
                 continue
 
             # Draw RECTANGLE
             match = self.rect_re.search(pline)
             if match:
-                x = (float(match.group(1)) + offset_geo[0]) * self.point_to_unit_factor * scale_geo[0]
-                y = (float(match.group(2)) + offset_geo[1]) * self.point_to_unit_factor * scale_geo[1]
-                width = (float(match.group(3)) + offset_geo[0]) * self.point_to_unit_factor * scale_geo[0]
-                height = (float(match.group(4)) + offset_geo[1]) * self.point_to_unit_factor * scale_geo[1]
+                current_subpath = 'rectangle'
+                x = (float(match.group(1)) + offset_geo[0]) * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0]
+                y = (float(match.group(2)) + offset_geo[1]) * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1]
+                width = (float(match.group(3)) + offset_geo[0]) * \
+                        self.point_to_unit_factor * scale_geo[0] * c_scale_f[0]
+                height = (float(match.group(4)) + offset_geo[1]) * \
+                         self.point_to_unit_factor * scale_geo[1] * c_scale_f[1]
                 pt1 = (x, y)
                 pt2 = (x+width, y)
                 pt3 = (x+width, y+height)
                 pt4 = (x, y+height)
-                path['rectangle'] += [pt1, pt2, pt3, pt4, pt1]
+                # TODO: I'm not sure if rectangles are a subpath in themselves that autoclose
+                subpath['rectangle'] += [pt1, pt2, pt3, pt4, pt1]
                 current_point = pt1
                 continue
 
@@ -366,9 +399,38 @@ class ToolPDF(FlatCAMTool):
             # ignore this and delete the current subpath
             match = self.clip_path_re.search(pline)
             if match:
-                path['lines'] = []
-                path['bezier'] = []
-                path['rectangle'] = []
+                subpath['lines'] = []
+                subpath['bezier'] = []
+                subpath['rectangle'] = []
+                # it measns that we've already added the subpath to path and we need to delete it
+                # clipping path is usually either rectangle or lines
+                if close_path is True:
+                    close_path = False
+                    if current_subpath == 'lines':
+                        path['lines'].pop(-1)
+                    if current_subpath == 'rectangle':
+                        path['rectangle'].pop(-1)
+                continue
+
+            # Close SUBPATH
+            match = self.end_subpath_re.search(pline)
+            if match:
+                close_path = True
+                if current_subpath == 'lines':
+                    subpath['lines'].append(start_point)
+                    # since we are closing the subpath add it to the path, a path may have chained subpaths
+                    path['lines'].append(copy(subpath['lines']))
+                    subpath['lines'] = []
+                elif current_subpath == 'bezier':
+                    # subpath['bezier'].append(start_point)
+                    # since we are closing the subpath add it to the path, a path may have chained subpaths
+                    path['bezier'].append(copy(subpath['bezier']))
+                    subpath['bezier'] = []
+                elif current_subpath == 'rectangle':
+                    subpath['rectangle'].append(start_point)
+                    # since we are closing the subpath add it to the path, a path may have chained subpaths
+                    path['rectangle'].append(copy(subpath['rectangle']))
+                    subpath['rectangle'] = []
                 continue
 
             # PATH PAINTING #
@@ -376,128 +438,303 @@ class ToolPDF(FlatCAMTool):
             # Detect Stroke width / aperture
             match = self.strokewidth_re.search(pline)
             if match:
-                size = float(match.group(1)) * self.point_to_unit_factor * scale_geo[0]
-                flag = 0
-
-                if not apertures_dict:
-                    apertures_dict[str(aperture)] = dict()
-                    apertures_dict[str(aperture)]['size'] = size
-                    apertures_dict[str(aperture)]['type'] = 'C'
-                    apertures_dict[str(aperture)]['solid_geometry'] = []
-                else:
-                    for k in apertures_dict:
-                        if size == apertures_dict[k]['size']:
-                            flag = 1
-                            break
-                    if flag == 0:
-                        aperture += 1
-                        apertures_dict[str(aperture)] = dict()
-                        apertures_dict[str(aperture)]['size'] = size
-                        apertures_dict[str(aperture)]['type'] = 'C'
-                        apertures_dict[str(aperture)]['solid_geometry'] = []
+                size = float(match.group(1))
+                # flag = 0
+                #
+                # if not apertures_dict:
+                #     apertures_dict[str(aperture)] = dict()
+                #     apertures_dict[str(aperture)]['size'] = size
+                #     apertures_dict[str(aperture)]['type'] = 'C'
+                #     apertures_dict[str(aperture)]['solid_geometry'] = []
+                # else:
+                #     for k in apertures_dict:
+                #         if size == apertures_dict[k]['size']:
+                #             flag = 1
+                #             break
+                #     if flag == 0:
+                #         aperture += 1
+                #         apertures_dict[str(aperture)] = dict()
+                #         apertures_dict[str(aperture)]['size'] = size
+                #         apertures_dict[str(aperture)]['type'] = 'C'
+                #         apertures_dict[str(aperture)]['solid_geometry'] = []
                 continue
 
             # Detect No_Op command, ignore the current subpath
             match = self.no_op_re.search(pline)
             if match:
-                path['lines'] = []
-                path['bezier'] = []
-                path['rectangle'] = []
+                subpath['lines'] = []
+                subpath['bezier'] = []
+                subpath['rectangle'] = []
                 continue
 
             # Stroke the path
             match = self.stroke_path__re.search(pline)
             if match:
-                # path['lines'] = []
-                # path['bezier'] = []
-                # path['rectangle'] = []
-                # continue
-                geo = None
-                if path['lines']:
-                    path['lines'].insert(0, start_point)
-                    geo = copy(path['lines'])
-                    if flag_close_path:
-                        flag_close_path = False
-                        geo.append(start_point)
-                    path['lines'] = []
+                # scale the size here; some PDF printers apply transformation after the size is declared
+                applied_size = size * scale_geo[0] * c_scale_f[0] * self.point_to_unit_factor
 
-                if path['bezier']:
-                    geo = list()
-                    geo.append(start_point)
-                    for b in path['bezier']:
-                        geo += self.bezier_to_points(start=b[0], c1=b[1], c2=b[2], stop=b[3])
-                    if flag_close_path:
-                        flag_close_path = False
-                        geo.append(start_point)
-                    path['bezier'] = []
+                path_geo = list()
+                if current_subpath == 'lines':
+                    if path['lines']:
+                        for subp in path['lines']:
+                            geo = copy(subp)
+                            geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
+                            path_geo.append(geo)
+                        # the path was painted therefore initialize it
+                        path['lines'] = []
+                    else:
+                        geo = copy(subpath['lines'])
+                        geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
+                        path_geo.append(geo)
+                        subpath['lines'] = []
 
-                if path['rectangle']:
-                    geo = copy(path['rectangle'])
-                    # if flag_close_path:
-                    #     flag_close_path = False
-                    #     geo.append(start_point)
-                    path['rectangle'] = []
+                if current_subpath == 'bezier':
+                    if path['bezier']:
+                        for subp in path['bezier']:
+                            geo = []
+                            for b in subp:
+                                geo += self.bezier_to_points(start=b[0], c1=b[1], c2=b[2], stop=b[3])
+                            geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
+                            path_geo.append(geo)
+                        # the path was painted therefore initialize it
+                        path['bezier'] = []
+                    else:
+                        geo = []
+                        for b in subpath['bezier']:
+                            geo += self.bezier_to_points(start=b[0], c1=b[1], c2=b[2], stop=b[3])
+                        geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
+                        path_geo.append(geo)
+                        subpath['bezier'] = []
 
-                ext_geo = LineString(geo)
-                ext_geo = ext_geo.buffer((float(size) / 2), resolution=self.step_per_circles)
-                # ext_geo = affinity.scale(ext_geo, scale_geo[0], scale_geo[1])
-                # off_x = offset_geo[0]
-                # off_y = offset_geo[1]
-                #
-                # ext_geo = affinity.translate(ext_geo, off_x, off_y)
+                if current_subpath == 'rectangle':
+                    if path['rectangle']:
+                        for subp in path['rectangle']:
+                            geo = copy(subp)
+                            geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
+                            path_geo.append(geo)
+                        # the path was painted therefore initialize it
+                        path['rectangle'] = []
+                    else:
+                        geo = copy(subpath['rectangle'])
+                        geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
+                        path_geo.append(geo)
+                        subpath['rectangle'] = []
+
                 try:
-                    apertures_dict[str(aperture)]['solid_geometry'].append(deepcopy(ext_geo))
+                    apertures_dict[str(aperture)]['solid_geometry'] += path_geo
                 except KeyError:
                     # in case there is no stroke width yet therefore no aperture
-                    apertures_dict['0'] = {}
-                    apertures_dict['0']['solid_geometry'] = []
-                    apertures_dict['0']['size'] = size
-                    apertures_dict['0']['type'] = 'C'
-                    apertures_dict['0']['solid_geometry'].append(deepcopy(ext_geo))
+                    apertures_dict[str(aperture)] = {}
+                    apertures_dict[str(aperture)]['size'] = applied_size
+                    apertures_dict[str(aperture)]['type'] = 'C'
+                    apertures_dict[str(aperture)]['solid_geometry'] = []
+                    apertures_dict[str(aperture)]['solid_geometry'] += path_geo
+
                 continue
 
             # Fill the path
             match = self.fill_path_re.search(pline)
-            match2 = self.fill_stroke_path_re.search(pline)
-            if match or match2:
+            if match:
+                # scale the size here; some PDF printers apply transformation after the size is declared
+                applied_size = size * scale_geo[0] * c_scale_f[0] * self.point_to_unit_factor
 
-                geo = None
-                if path['lines']:
-                    path['lines'].insert(0, start_point)
-                    geo = copy(path['lines'])
-                    geo.append(start_point)
-                    path['lines'] = []
+                path_geo = list()
+                if current_subpath == 'lines':
+                    if path['lines']:
+                        for subp in path['lines']:
+                            geo = copy(subp)
+                            # close the subpath if it was not closed already
+                            if close_path is False:
+                                geo.append(geo[0])
+                            geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                            path_geo.append(geo_el)
+                        # the path was painted therefore initialize it
+                        path['lines'] = []
+                    else:
+                        geo = copy(subpath['lines'])
+                        # close the subpath if it was not closed already
+                        if close_path is False:
+                            geo.append(start_point)
+                        geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                        path_geo.append(geo_el)
+                        subpath['lines'] = []
 
-                elif path['bezier']:
+                if current_subpath == 'bezier':
                     geo = []
-                    for b in path['bezier']:
-                        geo += self.bezier_to_points(start=b[0], c1=b[1], c2=b[2], stop=b[3])
-                    geo.append(start_point)
-                    path['bezier'] = []
+                    if path['bezier']:
+                        for subp in path['bezier']:
+                            for b in subp:
+                                geo += self.bezier_to_points(start=b[0], c1=b[1], c2=b[2], stop=b[3])
+                                # close the subpath if it was not closed already
+                                if close_path is False:
+                                    geo.append(geo[0])
+                                geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                                path_geo.append(geo_el)
+                        # the path was painted therefore initialize it
+                        path['bezier'] = []
+                    else:
+                        for b in subpath['bezier']:
+                            geo += self.bezier_to_points(start=b[0], c1=b[1], c2=b[2], stop=b[3])
+                        if close_path is False:
+                            geo.append(start_point)
+                        geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                        path_geo.append(geo_el)
+                        subpath['bezier'] = []
 
-                elif path['rectangle']:
-                    # path['rectangle'].append(start_point)
-                    geo = copy(path['rectangle'])
-                    path['rectangle'] = []
+                if current_subpath == 'rectangle':
+                    if path['rectangle']:
+                        for subp in path['rectangle']:
+                            geo = copy(subp)
+                            # close the subpath if it was not closed already
+                            if close_path is False:
+                                geo.append(geo[0])
+                            geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                            path_geo.append(geo_el)
+                        # the path was painted therefore initialize it
+                        path['rectangle'] = []
+                    else:
+                        geo = copy(subpath['rectangle'])
+                        # close the subpath if it was not closed already
+                        if close_path is False:
+                            geo.append(start_point)
+                        geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                        path_geo.append(geo_el)
+                        subpath['rectangle'] = []
 
-                ext_geo = Polygon(geo)
-                ext_geo = ext_geo.buffer(0.000001, resolution=self.step_per_circles)
-                # ext_geo = affinity.scale(ext_geo, scale_geo[0], scale_geo[1])
-                # off_x = offset_geo[0]
-                # off_y = offset_geo[1]
-                #
-                # ext_geo = affinity.translate(ext_geo, off_x, off_y)
+                # we finished painting and also closed the path if it was the case
+                close_path = True
+
                 try:
-                    apertures_dict[str(aperture)]['solid_geometry'].append(deepcopy(ext_geo))
+                    apertures_dict['0']['solid_geometry'] += path_geo
                 except KeyError:
                     # in case there is no stroke width yet therefore no aperture
                     apertures_dict['0'] = {}
-                    apertures_dict['0']['solid_geometry'] = []
-                    apertures_dict['0']['size'] = size
+                    apertures_dict['0']['size'] = applied_size
                     apertures_dict['0']['type'] = 'C'
-                    apertures_dict['0']['solid_geometry'].append(deepcopy(ext_geo))
+                    apertures_dict['0']['solid_geometry'] = []
+                    apertures_dict['0']['solid_geometry'] += path_geo
                 continue
 
+            # fill and stroke the path
+            match = self.fill_stroke_path_re.search(pline)
+            if match:
+                # scale the size here; some PDF printers apply transformation after the size is declared
+                applied_size = size * scale_geo[0] * c_scale_f[0] * self.point_to_unit_factor
+
+                path_geo = list()
+                if current_subpath == 'lines':
+                    if path['lines']:
+                        # fill
+                        for subp in path['lines']:
+                            geo = copy(subp)
+                            # close the subpath if it was not closed already
+                            if close_path is False:
+                                geo.append(geo[0])
+                            geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                            path_geo.append(geo_el)
+                        # stroke
+                        for subp in path['lines']:
+                            geo = copy(subp)
+                            geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
+                            path_geo.append(geo)
+                        # the path was painted therefore initialize it
+                        path['lines'] = []
+                    else:
+                        # fill
+                        geo = copy(subpath['lines'])
+                        # close the subpath if it was not closed already
+                        if close_path is False:
+                            geo.append(start_point)
+                        geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                        path_geo.append(geo_el)
+                        # stroke
+                        geo = copy(subpath['lines'])
+                        geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
+                        path_geo.append(geo)
+                        subpath['lines'] = []
+                        subpath['lines'] = []
+
+                if current_subpath == 'bezier':
+                    geo = []
+                    if path['bezier']:
+                        # fill
+                        for subp in path['bezier']:
+                            for b in subp:
+                                geo += self.bezier_to_points(start=b[0], c1=b[1], c2=b[2], stop=b[3])
+                                # close the subpath if it was not closed already
+                                if close_path is False:
+                                    geo.append(geo[0])
+                                geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                                path_geo.append(geo_el)
+                        # stroke
+                        for subp in path['bezier']:
+                            geo = []
+                            for b in subp:
+                                geo += self.bezier_to_points(start=b[0], c1=b[1], c2=b[2], stop=b[3])
+                            geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
+                            path_geo.append(geo)
+                        # the path was painted therefore initialize it
+                        path['bezier'] = []
+                    else:
+                        # fill
+                        for b in subpath['bezier']:
+                            geo += self.bezier_to_points(start=b[0], c1=b[1], c2=b[2], stop=b[3])
+                        if close_path is False:
+                            geo.append(start_point)
+                        geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                        path_geo.append(geo_el)
+                        # stroke
+                        geo = []
+                        for b in subpath['bezier']:
+                            geo += self.bezier_to_points(start=b[0], c1=b[1], c2=b[2], stop=b[3])
+                        geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
+                        path_geo.append(geo)
+                        subpath['bezier'] = []
+
+                if current_subpath == 'rectangle':
+                    if path['rectangle']:
+                        # fill
+                        for subp in path['rectangle']:
+                            geo = copy(subp)
+                            # close the subpath if it was not closed already
+                            if close_path is False:
+                                geo.append(geo[0])
+                            geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                            path_geo.append(geo_el)
+                        # stroke
+                        for subp in path['rectangle']:
+                            geo = copy(subp)
+                            geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
+                            path_geo.append(geo)
+                        # the path was painted therefore initialize it
+                        path['rectangle'] = []
+                    else:
+                        # fill
+                        geo = copy(subpath['rectangle'])
+                        # close the subpath if it was not closed already
+                        if close_path is False:
+                            geo.append(start_point)
+                        geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                        path_geo.append(geo_el)
+                        # stroke
+                        geo = copy(subpath['rectangle'])
+                        geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
+                        path_geo.append(geo)
+                        subpath['rectangle'] = []
+
+                # we finished painting and also closed the path if it was the case
+                close_path = True
+
+                try:
+                    apertures_dict['0']['solid_geometry'] += path_geo
+                except KeyError:
+                    # in case there is no stroke width yet therefore no aperture
+                    apertures_dict['0'] = {}
+                    apertures_dict['0']['size'] = applied_size
+                    apertures_dict['0']['type'] = 'C'
+                    apertures_dict['0']['solid_geometry'] = []
+                    apertures_dict['0']['solid_geometry'] += path_geo
+                continue
         return apertures_dict
 
     def bezier_to_points(self, start, c1, c2, stop):

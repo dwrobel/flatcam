@@ -95,7 +95,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.914
-    version_date = "2019/04/20"
+    version_date = "2019/04/22"
     beta = True
 
     # current date now
@@ -2003,14 +2003,15 @@ class App(QtCore.QObject):
         self.properties_tool = Properties(self)
         self.properties_tool.install(icon=QtGui.QIcon('share/properties32.png'), pos=self.ui.menuoptions)
 
+        self.pdf_tool = ToolPDF(self)
+        self.pdf_tool.install(icon=QtGui.QIcon('share/pdf32.png'), pos=self.ui.menufileimport,
+                              separator=True)
+
         self.image_tool = ToolImage(self)
         self.image_tool.install(icon=QtGui.QIcon('share/image32.png'), pos=self.ui.menufileimport,
                                 separator=True)
         self.pcb_wizard_tool = PcbWizard(self)
         self.pcb_wizard_tool.install(icon=QtGui.QIcon('share/drill32.png'), pos=self.ui.menufileimport)
-
-        self.pdf_tool = ToolPDF(self)
-        self.pdf_tool.install(icon=QtGui.QIcon('share/pdf32.png'), pos=self.ui.menufileimport)
 
         self.log.debug("Tools are installed.")
 

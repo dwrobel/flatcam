@@ -1147,6 +1147,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;Paint Area Tool</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>ALT+Q</strong></td>
+                        <td>&nbsp;PDF Import Tool</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>ALT+R</strong></td>
                         <td>&nbsp;Transformations Tool</td>
                     </tr>
@@ -1239,6 +1243,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;Copy Geo Item</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>D</strong></td>
+                        <td>&nbsp;Within Add Arc will toogle the ARC direction: CW or CCW</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>E</strong></td>
                         <td>&nbsp;Polygon Intersection Tool</td>
                     </tr>
@@ -1257,6 +1265,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     <tr height="20">
                         <td height="20"><strong>M</strong></td>
                         <td>&nbsp;Move Geo Item</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>M</strong></td>
+                        <td>&nbsp;Within Add Arc will cycle through the ARC modes</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>N</strong></td>
@@ -1453,12 +1465,20 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;Add Pad</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>R</strong></td>
+                        <td>&nbsp;Within Track & Region Tools will cycle in REVERSE the bend modes</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>S</strong></td>
                         <td>&nbsp;Scale</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>T</strong></td>
                         <td>&nbsp;Add Track</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>R</strong></td>
+                        <td>&nbsp;Within Track & Region Tools will cycle FORWARD the bend modes</td>
                     </tr>
                     <tr height="20">
                         <td height="20">&nbsp;</td>
@@ -2085,6 +2105,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Paint Tool
                 if key == QtCore.Qt.Key_P:
                     self.app.paint_tool.run(toggle=True)
+                    return
+
+                # Paint Tool
+                if key == QtCore.Qt.Key_Q:
+                    self.app.pdf_tool.run()
                     return
 
                 # Transformation Tool
