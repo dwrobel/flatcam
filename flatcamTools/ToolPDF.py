@@ -75,15 +75,29 @@ class ToolPDF(FlatCAMTool):
         self.no_op_re = re.compile(r'^n$')
 
         # detect offset transformation. Pattern: (1) (0) (0) (1) (x) (y)
-        self.offset_re = re.compile(r'^1\.?0*\s0?\.?0*\s0?\.?0*\s1\.?0*\s(-?\d+\.?\d*)\s(-?\d+\.?\d*)\s*cm$')
+        # self.offset_re = re.compile(r'^1\.?0*\s0?\.?0*\s0?\.?0*\s1\.?0*\s(-?\d+\.?\d*)\s(-?\d+\.?\d*)\s*cm$')
         # detect scale transformation. Pattern: (factor_x) (0) (0) (factor_y) (0) (0)
-        self.scale_re = re.compile(r'^q? (-?\d+\.?\d*) 0\.?0* 0\.?0* (-?\d+\.?\d*) 0\.?0* 0\.?0*\s+cm$')
+        # self.scale_re = re.compile(r'^q? (-?\d+\.?\d*) 0\.?0* 0\.?0* (-?\d+\.?\d*) 0\.?0* 0\.?0*\s+cm$')
         # detect combined transformation. Should always be the last
-        self.combined_transform_re = re.compile(r'^q?\s*(-?\d+\.?\d*) (-?\d+\.?\d*) (-?\d+\.?\d*) (-?\d+\.?\d*) '
+        self.combined_transform_re = re.compile(r'^(q)?\s*(-?\d+\.?\d*) (-?\d+\.?\d*) (-?\d+\.?\d*) (-?\d+\.?\d*) '
                                                 r'(-?\d+\.?\d*) (-?\d+\.?\d*)\s+cm$')
 
         # detect clipping path
         self.clip_path_re = re.compile(r'^W[*]? n?$')
+
+        # detect save graphic state in graphic stack
+        self.save_gs_re = re.compile(r'^q.*?$')
+
+        # detect restore graphic state from graphic stack
+        self.restore_gs_re = re.compile(r'^Q.*$')
+
+        # graphic stack where we save parameters like transformation, line_width
+        self.gs = dict()
+        # each element is a list composed of sublist elements
+        # (each sublist has 2 lists each having 2 elements: first is offset like:
+        # offset_geo = [off_x, off_y], second element is scale list with 2 elements, like: scale_geo = [sc_x, sc_yy])
+        self.gs['transform'] = []
+        self.gs['line_width'] = []   # each element is a float
 
         self.geo_buffer = []
         self.pdf_parsed = ''
@@ -201,8 +215,8 @@ class ToolPDF(FlatCAMTool):
         # store the start point (when 'm' command is encountered)
         current_subpath = None
 
-        # set True when 'h' command is encountered (close path)
-        close_path = False
+        # set True when 'h' command is encountered (close subpath)
+        close_subpath = False
 
         start_point = None
         current_point = None
@@ -212,72 +226,86 @@ class ToolPDF(FlatCAMTool):
         offset_geo = [0, 0]
         scale_geo = [1, 1]
 
-        c_offset_f= [0, 0]
-        c_scale_f = [1, 1]
-
         # initial aperture
         aperture = 10
 
         # store the apertures here
         apertures_dict = {}
 
-        # it seems that first transform apply to the whole PDF; signal here if it's first
-        first_transform = True
-
         line_nr = 0
         lines = pdf_content.splitlines()
 
         for pline in lines:
             line_nr += 1
-            log.debug("line %d: %s" % (line_nr, pline))
+            # log.debug("line %d: %s" % (line_nr, pline))
 
             # TRANSFORMATIONS DETECTION #
 
-            # # Detect Scale transform
-            # match = self.scale_re.search(pline)
-            # if match:
-            #     log.debug(
-            #         "ToolPDF.parse_pdf() --> SCALE transformation found on line: %s --> %s" % (line_nr, pline))
-            #     if first_transform:
-            #         first_transform = False
-            #         c_scale_f = [float(match.group(1)), float(match.group(2))]
-            #     else:
-            #         scale_geo = [float(match.group(1)), float(match.group(2))]
-            #     continue
-
-            # # Detect Offset transform
-            # match = self.offset_re.search(pline)
-            # if match:
-            #     log.debug(
-            #         "ToolPDF.parse_pdf() --> OFFSET transformation found on line: %s --> %s" % (line_nr, pline))
-            #     offset_geo = [float(match.group(1)), float(match.group(2))]
-            #     continue
-
-            # Detect combined transformation. Must be always the last from transformations to be checked.
+            # Detect combined transformation.
             match = self.combined_transform_re.search(pline)
             if match:
+                # detect save graphic stack event
+                # sometimes they combine save_to_graphics_stack with the transformation on the same line
+                if match.group(1) == 'q':
+                    log.debug(
+                        "ToolPDF.parse_pdf() --> Save to GS found on line: %s --> offset=[%f, %f] ||| scale=[%f, %f]" %
+                        (line_nr, offset_geo[0], offset_geo[1], scale_geo[0], scale_geo[1]))
+
+                    self.gs['transform'].append(deepcopy([offset_geo, scale_geo]))
+                    self.gs['line_width'].append(deepcopy(size))
+
                 # transformation = TRANSLATION (OFFSET)
-                if (float(match.group(2)) == 0 and float(match.group(3)) == 0) and \
-                        (float(match.group(5)) != 0 or float(match.group(6)) != 0):
+                if (float(match.group(3)) == 0 and float(match.group(4)) == 0) and \
+                        (float(match.group(6)) != 0 or float(match.group(7)) != 0):
                     log.debug(
                         "ToolPDF.parse_pdf() --> OFFSET transformation found on line: %s --> %s" % (line_nr, pline))
-                    if first_transform:
-                        c_offset_f = [float(match.group(5)), float(match.group(6))]
-                    else:
-                        offset_geo = [float(match.group(5)), float(match.group(6))]
+
+                    offset_geo[0] += float(match.group(6))
+                    offset_geo[1] += float(match.group(7))
+                    # log.debug("Offset= [%f, %f]" % (offset_geo[0], offset_geo[1]))
 
                 # transformation = SCALING
-                if float(match.group(1)) != 1 and float(match.group(4)) != 1:
+                if float(match.group(2)) != 1 and float(match.group(5)) != 1:
                     log.debug(
                         "ToolPDF.parse_pdf() --> SCALE transformation found on line: %s --> %s" % (line_nr, pline))
-                    if first_transform:
-                        c_scale_f = [float(match.group(1)), float(match.group(4))]
-                    else:
-                        scale_geo = [float(match.group(1)), float(match.group(4))]
 
-                if first_transform:
-                    first_transform = False
+                    scale_geo[0] *= float(match.group(2))
+                    scale_geo[1] *= float(match.group(5))
+                # log.debug("Scale= [%f, %f]" % (scale_geo[0], scale_geo[1]))
+
                 continue
+
+            # detect save graphic stack event
+            match = self.save_gs_re.search(pline)
+            if match:
+                log.debug(
+                    "ToolPDF.parse_pdf() --> Save to GS found on line: %s --> offset=[%f, %f] ||| scale=[%f, %f]" %
+                    (line_nr, offset_geo[0], offset_geo[1], scale_geo[0], scale_geo[1]))
+                self.gs['transform'].append(deepcopy([offset_geo, scale_geo]))
+                self.gs['line_width'].append(deepcopy(size))
+
+            # detect restore from graphic stack event
+            match = self.restore_gs_re.search(pline)
+            if match:
+                log.debug(
+                    "ToolPDF.parse_pdf() --> Restore from GS found on line: %s --> %s" % (line_nr, pline))
+                try:
+                    restored_transform = self.gs['transform'].pop(-1)
+                    offset_geo = restored_transform[0]
+                    scale_geo = restored_transform[1]
+                except IndexError:
+                    # nothing to remove
+                    log.debug("ToolPDF.parse_pdf() --> Nothing to restore")
+                    pass
+
+                try:
+                    size = self.gs['line_width'].pop(-1)
+                except IndexError:
+                    log.debug("ToolPDF.parse_pdf() --> Nothing to restore")
+                    # nothing to remove
+                    pass
+                # log.debug("Restored Offset= [%f, %f]" % (offset_geo[0], offset_geo[1]))
+                # log.debug("Restored Scale= [%f, %f]" % (scale_geo[0], scale_geo[1]))
 
             # PATH CONSTRUCTION #
 
@@ -285,7 +313,7 @@ class ToolPDF(FlatCAMTool):
             match = self.start_subpath_re.search(pline)
             if match:
                 # we just started a subpath so we mark it as not closed yet
-                close_path = False
+                close_subpath = False
 
                 # init subpaths
                 subpath['lines'] = []
@@ -295,8 +323,8 @@ class ToolPDF(FlatCAMTool):
                 # detect start point to move to
                 x = float(match.group(1)) + offset_geo[0]
                 y = float(match.group(2)) + offset_geo[1]
-                pt = (x * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0],
-                      y * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1])
+                pt = (x * self.point_to_unit_factor * scale_geo[0],
+                      y * self.point_to_unit_factor * scale_geo[1])
                 start_point = pt
 
                 # add the start point to subpaths
@@ -312,8 +340,8 @@ class ToolPDF(FlatCAMTool):
                 current_subpath = 'lines'
                 x = float(match.group(1)) + offset_geo[0]
                 y = float(match.group(2)) + offset_geo[1]
-                pt = (x * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0],
-                      y * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1])
+                pt = (x * self.point_to_unit_factor * scale_geo[0],
+                      y * self.point_to_unit_factor * scale_geo[1])
                 subpath['lines'].append(pt)
                 current_point = pt
                 continue
@@ -325,16 +353,16 @@ class ToolPDF(FlatCAMTool):
                 start = current_point
                 x = float(match.group(1)) + offset_geo[0]
                 y = float(match.group(2)) + offset_geo[1]
-                c1 = (x * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0],
-                      y * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1])
+                c1 = (x * self.point_to_unit_factor * scale_geo[0],
+                      y * self.point_to_unit_factor * scale_geo[1])
                 x = float(match.group(3)) + offset_geo[0]
                 y = float(match.group(4)) + offset_geo[1]
-                c2 = (x * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0],
-                      y * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1])
+                c2 = (x * self.point_to_unit_factor * scale_geo[0],
+                      y * self.point_to_unit_factor * scale_geo[1])
                 x = float(match.group(5)) + offset_geo[0]
                 y = float(match.group(6)) + offset_geo[1]
-                stop = (x * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0],
-                        y * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1])
+                stop = (x * self.point_to_unit_factor * scale_geo[0],
+                        y * self.point_to_unit_factor * scale_geo[1])
 
                 subpath['bezier'].append([start, c1, c2, stop])
                 current_point = stop
@@ -347,12 +375,12 @@ class ToolPDF(FlatCAMTool):
                 start = current_point
                 x = float(match.group(1)) + offset_geo[0]
                 y = float(match.group(2)) + offset_geo[1]
-                c2 = (x * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0],
-                      y * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1])
+                c2 = (x * self.point_to_unit_factor * scale_geo[0],
+                      y * self.point_to_unit_factor * scale_geo[1])
                 x = float(match.group(3)) + offset_geo[0]
                 y = float(match.group(4)) + offset_geo[1]
-                stop = (x * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0],
-                        y * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1])
+                stop = (x * self.point_to_unit_factor * scale_geo[0],
+                        y * self.point_to_unit_factor * scale_geo[1])
 
                 subpath['bezier'].append([start, start, c2, stop])
                 current_point = stop
@@ -364,33 +392,33 @@ class ToolPDF(FlatCAMTool):
                 start = current_point
                 x = float(match.group(1)) + offset_geo[0]
                 y = float(match.group(2)) + offset_geo[1]
-                c1 = (x * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0],
-                      y * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1])
+                c1 = (x * self.point_to_unit_factor * scale_geo[0],
+                      y * self.point_to_unit_factor * scale_geo[1])
                 x = float(match.group(3)) + offset_geo[0]
                 y = float(match.group(4)) + offset_geo[1]
-                stop = (x * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0],
-                        y * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1])
+                stop = (x * self.point_to_unit_factor * scale_geo[0],
+                        y * self.point_to_unit_factor * scale_geo[1])
 
                 subpath['bezier'].append([start, c1, stop, stop])
                 print(subpath['bezier'])
                 current_point = stop
                 continue
 
-            # Draw RECTANGLE
+            # Draw Rectangle 're
             match = self.rect_re.search(pline)
             if match:
                 current_subpath = 'rectangle'
-                x = (float(match.group(1)) + offset_geo[0]) * self.point_to_unit_factor * scale_geo[0] * c_scale_f[0]
-                y = (float(match.group(2)) + offset_geo[1]) * self.point_to_unit_factor * scale_geo[1] * c_scale_f[1]
+                x = (float(match.group(1)) + offset_geo[0]) * self.point_to_unit_factor * scale_geo[0]
+                y = (float(match.group(2)) + offset_geo[1]) * self.point_to_unit_factor * scale_geo[1]
                 width = (float(match.group(3)) + offset_geo[0]) * \
-                        self.point_to_unit_factor * scale_geo[0] * c_scale_f[0]
+                        self.point_to_unit_factor * scale_geo[0]
                 height = (float(match.group(4)) + offset_geo[1]) * \
-                         self.point_to_unit_factor * scale_geo[1] * c_scale_f[1]
+                         self.point_to_unit_factor * scale_geo[1]
                 pt1 = (x, y)
                 pt2 = (x+width, y)
                 pt3 = (x+width, y+height)
                 pt4 = (x, y+height)
-                # TODO: I'm not sure if rectangles are a subpath in themselves that autoclose
+                # TODO: I'm not sure if rectangles are a type of subpath that close by itself
                 subpath['rectangle'] += [pt1, pt2, pt3, pt4, pt1]
                 current_point = pt1
                 continue
@@ -404,8 +432,8 @@ class ToolPDF(FlatCAMTool):
                 subpath['rectangle'] = []
                 # it measns that we've already added the subpath to path and we need to delete it
                 # clipping path is usually either rectangle or lines
-                if close_path is True:
-                    close_path = False
+                if close_subpath is True:
+                    close_subpath = False
                     if current_subpath == 'lines':
                         path['lines'].pop(-1)
                     if current_subpath == 'rectangle':
@@ -415,7 +443,7 @@ class ToolPDF(FlatCAMTool):
             # Close SUBPATH
             match = self.end_subpath_re.search(pline)
             if match:
-                close_path = True
+                close_subpath = True
                 if current_subpath == 'lines':
                     subpath['lines'].append(start_point)
                     # since we are closing the subpath add it to the path, a path may have chained subpaths
@@ -439,24 +467,6 @@ class ToolPDF(FlatCAMTool):
             match = self.strokewidth_re.search(pline)
             if match:
                 size = float(match.group(1))
-                # flag = 0
-                #
-                # if not apertures_dict:
-                #     apertures_dict[str(aperture)] = dict()
-                #     apertures_dict[str(aperture)]['size'] = size
-                #     apertures_dict[str(aperture)]['type'] = 'C'
-                #     apertures_dict[str(aperture)]['solid_geometry'] = []
-                # else:
-                #     for k in apertures_dict:
-                #         if size == apertures_dict[k]['size']:
-                #             flag = 1
-                #             break
-                #     if flag == 0:
-                #         aperture += 1
-                #         apertures_dict[str(aperture)] = dict()
-                #         apertures_dict[str(aperture)]['size'] = size
-                #         apertures_dict[str(aperture)]['type'] = 'C'
-                #         apertures_dict[str(aperture)]['solid_geometry'] = []
                 continue
 
             # Detect No_Op command, ignore the current subpath
@@ -471,7 +481,7 @@ class ToolPDF(FlatCAMTool):
             match = self.stroke_path__re.search(pline)
             if match:
                 # scale the size here; some PDF printers apply transformation after the size is declared
-                applied_size = size * scale_geo[0] * c_scale_f[0] * self.point_to_unit_factor
+                applied_size = size * scale_geo[0] * self.point_to_unit_factor
 
                 path_geo = list()
                 if current_subpath == 'lines':
@@ -536,7 +546,7 @@ class ToolPDF(FlatCAMTool):
             match = self.fill_path_re.search(pline)
             if match:
                 # scale the size here; some PDF printers apply transformation after the size is declared
-                applied_size = size * scale_geo[0] * c_scale_f[0] * self.point_to_unit_factor
+                applied_size = size * scale_geo[0] * self.point_to_unit_factor
 
                 path_geo = list()
                 if current_subpath == 'lines':
@@ -544,7 +554,7 @@ class ToolPDF(FlatCAMTool):
                         for subp in path['lines']:
                             geo = copy(subp)
                             # close the subpath if it was not closed already
-                            if close_path is False:
+                            if close_subpath is False:
                                 geo.append(geo[0])
                             geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
                             path_geo.append(geo_el)
@@ -553,7 +563,7 @@ class ToolPDF(FlatCAMTool):
                     else:
                         geo = copy(subpath['lines'])
                         # close the subpath if it was not closed already
-                        if close_path is False:
+                        if close_subpath is False:
                             geo.append(start_point)
                         geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
                         path_geo.append(geo_el)
@@ -566,7 +576,7 @@ class ToolPDF(FlatCAMTool):
                             for b in subp:
                                 geo += self.bezier_to_points(start=b[0], c1=b[1], c2=b[2], stop=b[3])
                                 # close the subpath if it was not closed already
-                                if close_path is False:
+                                if close_subpath is False:
                                     geo.append(geo[0])
                                 geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
                                 path_geo.append(geo_el)
@@ -575,7 +585,7 @@ class ToolPDF(FlatCAMTool):
                     else:
                         for b in subpath['bezier']:
                             geo += self.bezier_to_points(start=b[0], c1=b[1], c2=b[2], stop=b[3])
-                        if close_path is False:
+                        if close_subpath is False:
                             geo.append(start_point)
                         geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
                         path_geo.append(geo_el)
@@ -586,7 +596,7 @@ class ToolPDF(FlatCAMTool):
                         for subp in path['rectangle']:
                             geo = copy(subp)
                             # close the subpath if it was not closed already
-                            if close_path is False:
+                            if close_subpath is False:
                                 geo.append(geo[0])
                             geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
                             path_geo.append(geo_el)
@@ -595,14 +605,14 @@ class ToolPDF(FlatCAMTool):
                     else:
                         geo = copy(subpath['rectangle'])
                         # close the subpath if it was not closed already
-                        if close_path is False:
+                        if close_subpath is False:
                             geo.append(start_point)
                         geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
                         path_geo.append(geo_el)
                         subpath['rectangle'] = []
 
                 # we finished painting and also closed the path if it was the case
-                close_path = True
+                close_subpath = True
 
                 try:
                     apertures_dict['0']['solid_geometry'] += path_geo
@@ -619,7 +629,7 @@ class ToolPDF(FlatCAMTool):
             match = self.fill_stroke_path_re.search(pline)
             if match:
                 # scale the size here; some PDF printers apply transformation after the size is declared
-                applied_size = size * scale_geo[0] * c_scale_f[0] * self.point_to_unit_factor
+                applied_size = size * scale_geo[0] * self.point_to_unit_factor
 
                 path_geo = list()
                 if current_subpath == 'lines':
@@ -628,7 +638,7 @@ class ToolPDF(FlatCAMTool):
                         for subp in path['lines']:
                             geo = copy(subp)
                             # close the subpath if it was not closed already
-                            if close_path is False:
+                            if close_subpath is False:
                                 geo.append(geo[0])
                             geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
                             path_geo.append(geo_el)
@@ -643,7 +653,7 @@ class ToolPDF(FlatCAMTool):
                         # fill
                         geo = copy(subpath['lines'])
                         # close the subpath if it was not closed already
-                        if close_path is False:
+                        if close_subpath is False:
                             geo.append(start_point)
                         geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
                         path_geo.append(geo_el)
@@ -662,7 +672,7 @@ class ToolPDF(FlatCAMTool):
                             for b in subp:
                                 geo += self.bezier_to_points(start=b[0], c1=b[1], c2=b[2], stop=b[3])
                                 # close the subpath if it was not closed already
-                                if close_path is False:
+                                if close_subpath is False:
                                     geo.append(geo[0])
                                 geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
                                 path_geo.append(geo_el)
@@ -679,7 +689,7 @@ class ToolPDF(FlatCAMTool):
                         # fill
                         for b in subpath['bezier']:
                             geo += self.bezier_to_points(start=b[0], c1=b[1], c2=b[2], stop=b[3])
-                        if close_path is False:
+                        if close_subpath is False:
                             geo.append(start_point)
                         geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
                         path_geo.append(geo_el)
@@ -697,7 +707,7 @@ class ToolPDF(FlatCAMTool):
                         for subp in path['rectangle']:
                             geo = copy(subp)
                             # close the subpath if it was not closed already
-                            if close_path is False:
+                            if close_subpath is False:
                                 geo.append(geo[0])
                             geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
                             path_geo.append(geo_el)
@@ -712,7 +722,7 @@ class ToolPDF(FlatCAMTool):
                         # fill
                         geo = copy(subpath['rectangle'])
                         # close the subpath if it was not closed already
-                        if close_path is False:
+                        if close_subpath is False:
                             geo.append(start_point)
                         geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
                         path_geo.append(geo_el)
@@ -723,7 +733,7 @@ class ToolPDF(FlatCAMTool):
                         subpath['rectangle'] = []
 
                 # we finished painting and also closed the path if it was the case
-                close_path = True
+                close_subpath = True
 
                 try:
                     apertures_dict['0']['solid_geometry'] += path_geo
