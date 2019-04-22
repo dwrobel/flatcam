@@ -1838,6 +1838,7 @@ class App(QtCore.QObject):
                       'mpf']
         self.svg_list = ['svg']
         self.dxf_list = ['dxf']
+        self.pdf_list = ['pdf']
         self.prj_list = ['flatprj']
 
         # global variable used by NCC Tool to signal that some polygons could not be cleared, if True
@@ -7600,6 +7601,7 @@ class App(QtCore.QObject):
             "project": "share/project16.png",
             "svg": "share/geometry16.png",
             "dxf": "share/dxf16.png",
+            "pdf": "share/pdf32.png",
             "image": "share/image16.png"
 
         }
@@ -7612,7 +7614,8 @@ class App(QtCore.QObject):
             'project': self.open_project,
             'svg': self.import_svg,
             'dxf': self.import_dxf,
-            'image': self.import_image
+            'image': self.import_image,
+            'pdf': lambda fname: self.worker_task.emit({'fcn': self.pdf_tool.open_pdf, 'params': [fname]})
         }
 
         # Open file

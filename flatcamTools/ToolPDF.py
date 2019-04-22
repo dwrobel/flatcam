@@ -205,7 +205,7 @@ class ToolPDF(FlatCAMTool):
                         return
 
                     # Register recent file
-                    self.app.file_opened.emit("gerber", new_name)
+                    self.app.file_opened.emit("gerber", filename)
 
                     # GUI feedback
                     self.app.inform.emit(_("[success] Opened: %s") % filename)

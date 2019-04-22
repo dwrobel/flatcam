@@ -3015,6 +3015,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.worker_task.emit({'fcn': self.app.import_dxf,
                                                    'params': [self.filename, object_type, None]})
 
+                    if extension in self.app.pdf_list:
+                        self.app.worker_task.emit({'fcn': self.app.pdf_tool.open_pdf,
+                                                   'params': [self.filename]})
+
                     if extension in self.app.prj_list:
                         # self.app.open_project() is not Thread Safe
                         self.app.open_project(self.filename)
