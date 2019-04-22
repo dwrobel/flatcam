@@ -102,7 +102,7 @@ class ToolPDF(FlatCAMTool):
         self.gs['transform'] = []
         self.gs['line_width'] = []   # each element is a float
 
-        self.geo_buffer = []
+        self.obj_dict = dict()
         self.pdf_parsed = ''
 
         # conversion factor to INCH
@@ -110,18 +110,6 @@ class ToolPDF(FlatCAMTool):
 
     def run(self, toggle=True):
         self.app.report_usage("ToolPDF()")
-
-        # init variables for reuse
-        self.geo_buffer = []
-        self.pdf_parsed = ''
-
-        # the UNITS in PDF files are points and here we set the factor to convert them to real units (either MM or INCH)
-        if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
-            # 1 inch = 72 points => 1 point = 1 / 72 = 0.01388888888 inch = 0.01388888888 inch * 25.4 = 0.35277777778 mm
-            self.point_to_unit_factor = 0.35277777778
-        else:
-            # 1 inch = 72 points => 1 point = 1 / 72 = 0.01388888888 inch
-            self.point_to_unit_factor = 0.01388888888
 
         self.set_tool_ui()
         self.on_open_pdf_click()
@@ -161,6 +149,16 @@ class ToolPDF(FlatCAMTool):
 
     def open_pdf(self, filename):
         new_name = filename.split('/')[-1].split('\\')[-1]
+        self.obj_dict.clear()
+        self.pdf_parsed = ''
+
+        # the UNITS in PDF files are points and here we set the factor to convert them to real units (either MM or INCH)
+        if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
+            # 1 inch = 72 points => 1 point = 1 / 72 = 0.01388888888 inch = 0.01388888888 inch * 25.4 = 0.35277777778 mm
+            self.point_to_unit_factor = 25.4 / 72
+        else:
+            # 1 inch = 72 points => 1 point = 1 / 72 = 0.01388888888 inch
+            self.point_to_unit_factor = 1 / 72
 
         with self.app.proc_container.new(_("Parsing PDF file ...")):
             with open(filename, "rb") as f:
@@ -176,14 +174,14 @@ class ToolPDF(FlatCAMTool):
                 except Exception as e:
                     log.debug("ToolPDF.open_pdf().obj_init() --> %s" % str(e))
 
-            obj_dict = self.parse_pdf(pdf_content=self.pdf_parsed)
+            self.obj_dict = self.parse_pdf(pdf_content=self.pdf_parsed)
 
-        for k in obj_dict:
-            ap_dict = obj_dict[k]
+        for k in self.obj_dict:
+            ap_dict = deepcopy(self.obj_dict[k])
             if ap_dict:
                 def obj_init(grb_obj, app_obj):
 
-                    grb_obj.apertures = deepcopy(ap_dict)
+                    grb_obj.apertures = ap_dict
 
                     poly_buff = []
                     for ap in grb_obj.apertures:
@@ -273,7 +271,7 @@ class ToolPDF(FlatCAMTool):
                 else:
                     object_dict[object_nr] = deepcopy(apertures_dict)
                     object_nr += 1
-                    object_dict[object_nr] = {}
+                    object_dict[object_nr] = dict()
                     apertures_dict.clear()
                 old_color = copy(color)
 
