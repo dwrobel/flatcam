@@ -43,6 +43,9 @@ class ToolPDF(FlatCAMTool):
 
         self.stream_re = re.compile(b'.*?FlateDecode.*?stream(.*?)endstream', re.S)
 
+        # detect color change; it means a new object to be created
+        self.color_re = re.compile(r'^\s*(\d+\.?\d*) (\d+\.?\d*) (\d+\.?\d*)\s*RG$')
+
         # detect 're' command
         self.rect_re = re.compile(r'^(-?\d+\.?\d*)\s(-?\d+\.?\d*)\s(-?\d+\.?\d*)\s(-?\d+\.?\d*)\s*re$')
         # detect 'm' command
@@ -159,7 +162,7 @@ class ToolPDF(FlatCAMTool):
     def open_pdf(self, filename):
         new_name = filename.split('/')[-1].split('\\')[-1]
 
-        def obj_init(grb_obj, app_obj):
+        with self.app.proc_container.new(_("Parsing PDF file ...")):
             with open(filename, "rb") as f:
                 pdf = f.read()
 
@@ -171,35 +174,41 @@ class ToolPDF(FlatCAMTool):
                 try:
                     self.pdf_parsed += (zlib.decompress(s).decode('UTF-8') + '\r\n')
                 except Exception as e:
-                    app_obj.log.debug("ToolPDF.open_pdf().obj_init() --> %s" % str(e))
+                    log.debug("ToolPDF.open_pdf().obj_init() --> %s" % str(e))
 
-            ap_dict = self.parse_pdf(pdf_content=self.pdf_parsed)
-            grb_obj.apertures = deepcopy(ap_dict)
+            obj_dict = self.parse_pdf(pdf_content=self.pdf_parsed)
 
-            poly_buff = []
-            for ap in ap_dict:
-                for k in ap_dict[ap]:
-                    if k == 'solid_geometry':
-                        poly_buff += ap_dict[ap][k]
+        for k in obj_dict:
+            ap_dict = obj_dict[k]
+            if ap_dict:
+                def obj_init(grb_obj, app_obj):
 
-            poly_buff = unary_union(poly_buff)
-            poly_buff = poly_buff.buffer(0.0000001)
-            poly_buff = poly_buff.buffer(-0.0000001)
+                    grb_obj.apertures = deepcopy(ap_dict)
 
-            grb_obj.solid_geometry = deepcopy(poly_buff)
+                    poly_buff = []
+                    for ap in grb_obj.apertures:
+                        for k in grb_obj.apertures[ap]:
+                            if k == 'solid_geometry':
+                                poly_buff += ap_dict[ap][k]
 
-        with self.app.proc_container.new(_("Opening PDF.")):
+                    poly_buff = unary_union(poly_buff)
+                    poly_buff = poly_buff.buffer(0.0000001)
+                    poly_buff = poly_buff.buffer(-0.0000001)
 
-            ret = self.app.new_object("gerber", new_name, obj_init, autoselected=False)
-            if ret == 'fail':
-                self.app.inform.emit(_('[ERROR_NOTCL] Open PDF file failed.'))
-                return
+                    grb_obj.solid_geometry = deepcopy(poly_buff)
 
-            # Register recent file
-            self.app.file_opened.emit("gerber", new_name)
+                with self.app.proc_container.new(_("Opening PDF layer #%d ...") % (int(k) - 2)):
 
-            # GUI feedback
-            self.app.inform.emit(_("[success] Opened: %s") % filename)
+                    ret = self.app.new_object("gerber", new_name, obj_init, autoselected=False)
+                    if ret == 'fail':
+                        self.app.inform.emit(_('[ERROR_NOTCL] Open PDF file failed.'))
+                        return
+
+                    # Register recent file
+                    self.app.file_opened.emit("gerber", new_name)
+
+                    # GUI feedback
+                    self.app.inform.emit(_("[success] Opened: %s") % filename)
 
     def parse_pdf(self, pdf_content):
         path = dict()
@@ -229,8 +238,22 @@ class ToolPDF(FlatCAMTool):
         # initial aperture
         aperture = 10
 
+        # store the objects to be transformed into Gerbers
+        object_dict = {}
+
+        # will serve as key in the object_dict
+        object_nr = 1
+
         # store the apertures here
         apertures_dict = {}
+
+        # create first object
+        object_dict[object_nr] = apertures_dict
+        object_nr += 1
+
+        # on color change we create a new apertures dictionary and store the old one in a storage from where it will be
+        # transformed into Gerber object
+        old_color = [None, None ,None]
 
         line_nr = 0
         lines = pdf_content.splitlines()
@@ -238,6 +261,21 @@ class ToolPDF(FlatCAMTool):
         for pline in lines:
             line_nr += 1
             # log.debug("line %d: %s" % (line_nr, pline))
+
+            # COLOR DETECTION / OBJECT DETECTION
+            match = self.color_re.search(pline)
+            if match:
+                color = [float(match.group(1)), float(match.group(2)), float(match.group(3))]
+
+                if color[0] == old_color[0] and color[1] == old_color[1] and color[2] == old_color[2]:
+                    # same color, do nothing
+                    continue
+                else:
+                    object_dict[object_nr] = deepcopy(apertures_dict)
+                    object_nr += 1
+                    object_dict[object_nr] = {}
+                    apertures_dict.clear()
+                old_color = copy(color)
 
             # TRANSFORMATIONS DETECTION #
 
@@ -605,7 +643,7 @@ class ToolPDF(FlatCAMTool):
                     else:
                         geo = copy(subpath['rectangle'])
                         # close the subpath if it was not closed already
-                        if close_subpath is False:
+                        if close_subpath is False and start_point is not None:
                             geo.append(start_point)
                         geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
                         path_geo.append(geo_el)
@@ -745,7 +783,7 @@ class ToolPDF(FlatCAMTool):
                     apertures_dict['0']['solid_geometry'] = []
                     apertures_dict['0']['solid_geometry'] += path_geo
                 continue
-        return apertures_dict
+        return object_dict
 
     def bezier_to_points(self, start, c1, c2, stop):
         """
