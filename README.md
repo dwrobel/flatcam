@@ -16,6 +16,8 @@ CAD program, and create G-Code for Isolation routing.
 - Gerber and Geometry Editors: fixed some issues with the Add Arc/Add Semidisc; in mode 132, the norm() function was not the one from numpy but from a FlatCAM Class. Also fixed some of the texts and made sure that when changing the mode, the current points are reset to prepare for the newly selected mode.
 - Fixed Measurement Tool to show the mouse coordinates on the status bar (it was broken at some point)
 - updated the translation files
+- added more custom mouse cursors in Geometry and Gerber Editors
+- RELEASE 8.914
 
 22.04.2019
 

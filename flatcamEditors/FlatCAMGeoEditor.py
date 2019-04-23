@@ -1936,7 +1936,7 @@ class FCCircle(FCShapeTool):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_circle.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_circle_geo.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.start_msg = _("Click on Center point ...")
@@ -1983,6 +1983,13 @@ class FCArc(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'arc'
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_arc.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.start_msg = _("Click on Center point ...")
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
@@ -2314,7 +2321,7 @@ class FCPath(FCPolygon):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path5.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
     def make(self):
@@ -2530,6 +2537,14 @@ class FCText(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
         self.name = 'text'
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_text.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
 
         # self.shape_buffer = self.draw_app.shape_buffer
         self.draw_app = draw_app

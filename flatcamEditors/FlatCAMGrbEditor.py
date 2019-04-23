@@ -1070,7 +1070,7 @@ class FCDisc(FCShapeTool):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_circle.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_disc.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
@@ -1131,6 +1131,13 @@ class FCSemiDisc(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'semidisc'
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_semidisc.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.start_msg = _("Click on Center point ...")
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
