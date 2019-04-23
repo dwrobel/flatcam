@@ -7701,7 +7701,11 @@ def three_point_circle(p1, p2, p3):
     b2 = dot((p3 - p2), array([[0, 1], [-1, 0]], dtype=float32))
 
     # Params
-    T = solve(transpose(array([-b1, b2])), a1 - a2)
+    try:
+        T = solve(transpose(array([-b1, b2])), a1 - a2)
+    except Exception as e:
+        log.debug("camlib.three_point_circle() --> %s" % str(e))
+        return
 
     # Center
     center = a1 + b1 * T[0]

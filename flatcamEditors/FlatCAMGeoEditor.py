@@ -22,7 +22,7 @@ from shapely.ops import cascaded_union
 import shapely.affinity as affinity
 
 from numpy import arctan2, Inf, array, sqrt, sign, dot
-from numpy.linalg import norm
+from numpy.linalg import norm as numpy_norm
 
 from rtree import index as rtindex
 from flatcamGUI.GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCComboBox, FCTextAreaRich, \
@@ -1939,14 +1939,15 @@ class FCCircle(FCShapeTool):
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_circle.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
-        self.start_msg = _("Click on CENTER ...")
+        self.start_msg = _("Click on Center point ...")
+        self.draw_app.app.inform.emit(_("Click on Center point ..."))
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
     def click(self, point):
         self.points.append(point)
 
         if len(self.points) == 1:
-            self.draw_app.app.inform.emit(_("Click on Circle perimeter point to complete ..."))
+            self.draw_app.app.inform.emit(_("Click on Perimeter point to complete ..."))
             return "Click on perimeter to complete ..."
 
         if len(self.points) == 2:
@@ -1983,7 +1984,8 @@ class FCArc(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'arc'
 
-        self.start_msg = _("Click on CENTER ...")
+        self.start_msg = _("Click on Center point ...")
+        self.draw_app.app.inform.emit(_("Click on Center point ..."))
 
         # Direction of rotation between point 1 and 2.
         # 'cw' or 'ccw'. Switch direction by hitting the
@@ -2007,14 +2009,14 @@ class FCArc(FCShapeTool):
             elif self.mode == '132':
                 self.draw_app.app.inform.emit(_("Click on Point3 ..."))
             else:
-                self.draw_app.app.inform.emit(_("Click on Stop point to complete ..."))
+                self.draw_app.app.inform.emit(_("Click on Stop point ..."))
             return "Click on 1st point ..."
 
         if len(self.points) == 2:
             if self.mode == 'c12':
                 self.draw_app.app.inform.emit(_("Click on Stop point to complete ..."))
             elif self.mode == '132':
-                self.draw_app.app.inform.emit(_("Click on Point2 ..."))
+                self.draw_app.app.inform.emit(_("Click on Point2 to complete ..."))
             else:
                 self.draw_app.app.inform.emit(_("Click on Center point to complete ..."))
             return "Click on 2nd point to complete ..."
@@ -2031,15 +2033,20 @@ class FCArc(FCShapeTool):
             return _('Direction: %s') % self.direction.upper()
 
         if key == 'M' or key == QtCore.Qt.Key_M:
+            # delete the possible points made before this action; we want to start anew
+            self.points[:] = []
+            # and delete the utility geometry made up until this point
+            self.draw_app.delete_utility_geometry()
+
             if self.mode == 'c12':
                 self.mode = '12c'
                 return _('Mode: Start -> Stop -> Center. Click on Start point ...')
             elif self.mode == '12c':
                 self.mode = '132'
-                return _('Mode: Point1 -> Point3 -> Point2. Click on 1st point ...')
+                return _('Mode: Point1 -> Point3 -> Point2. Click on Point1 ...')
             else:
                 self.mode = 'c12'
-                return _('Mode: Center -> Start -> Stop. Click on Center ...')
+                return _('Mode: Center -> Start -> Stop. Click on Center point ...')
 
     def utility_geometry(self, data=None):
         if len(self.points) == 1:  # Show the radius
@@ -2068,7 +2075,11 @@ class FCArc(FCShapeTool):
                 p3 = array(self.points[1])
                 p2 = array(data)
 
-                center, radius, t = three_point_circle(p1, p2, p3)
+                try:
+                    center, radius, t = three_point_circle(p1, p2, p3)
+                except TypeError:
+                    return
+
                 direction = 'cw' if sign(t) > 0 else 'ccw'
 
                 startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
@@ -2090,7 +2101,7 @@ class FCArc(FCShapeTool):
 
                 # Perpendicular vector
                 b = dot(c, array([[0, -1], [1, 0]], dtype=float32))
-                b /= norm(b)
+                b /= numpy_norm(b)
 
                 # Distance
                 t = distance(data, a)
@@ -2103,7 +2114,7 @@ class FCArc(FCShapeTool):
                 # Center = a + bt
                 center = a + b * t
 
-                radius = norm(center - p1)
+                radius = numpy_norm(center - p1)
                 startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
                 stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
 
@@ -2153,7 +2164,7 @@ class FCArc(FCShapeTool):
 
             # Perpendicular vector
             b = dot(c, array([[0, -1], [1, 0]], dtype=float32))
-            b /= norm(b)
+            b /= numpy_norm(b)
 
             # Distance
             t = distance(pc, a)
@@ -2166,7 +2177,7 @@ class FCArc(FCShapeTool):
             # Center = a + bt
             center = a + b * t
 
-            radius = norm(center - p1)
+            radius = numpy_norm(center - p1)
             startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
             stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
 

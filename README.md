@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 23.04.2019
 
 - Gerber Editor: added two new tools: Add Disc and Add SemiDisc (porting of Circle and Arc from Geometry Editor)
+- Gerber Editor: made Add Pad repeat until user exits the Add Pad through either mouse right click, or ESC key or deselecting the Add Pad menu item
+- Gerber and Geometry Editors: fixed some issues with the Add Arc/Add Semidisc; in mode 132, the norm() function was not the one from numpy but from a FlatCAM Class. Also fixed some of the texts and made sure that when changing the mode, the current points are reset to prepare for the newly selected mode.
 
 22.04.2019
 

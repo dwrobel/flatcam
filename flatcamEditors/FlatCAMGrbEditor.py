@@ -17,6 +17,8 @@ from flatcamEditors.FlatCAMGeoEditor import FCShapeTool, DrawTool, DrawToolShape
 from FlatCAMObj import FlatCAMGerber
 from FlatCAMTool import FlatCAMTool
 
+from numpy.linalg import norm as numpy_norm
+
 import gettext
 import FlatCAMTranslation as fcTranslate
 
@@ -860,9 +862,7 @@ class FCTrack(FCRegion):
     """
     def __init__(self, draw_app):
         FCRegion.__init__(self, draw_app)
-
         self.name = 'track'
-
         self.draw_app = draw_app
 
         try:
@@ -1078,15 +1078,17 @@ class FCDisc(FCShapeTool):
 
         self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
 
-        self.start_msg = _("Click on CENTER ...")
+        self.start_msg = _("Click on Center point ...")
+        self.draw_app.app.inform.emit(_("Click on Center point ..."))
+
         self.steps_per_circ = self.draw_app.app.defaults["gerber_circle_steps"]
 
     def click(self, point):
         self.points.append(point)
 
         if len(self.points) == 1:
-            self.draw_app.app.inform.emit(_("Click on perimeter point to complete ..."))
-            return "Click on perimeter to complete ..."
+            self.draw_app.app.inform.emit(_("Click on Perimeter point to complete ..."))
+            return "Click on Perimeter to complete ..."
 
         if len(self.points) == 2:
             self.make()
@@ -1130,7 +1132,8 @@ class FCSemiDisc(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'semidisc'
 
-        self.start_msg = _("Click on CENTER ...")
+        self.start_msg = _("Click on Center point ...")
+        self.draw_app.app.inform.emit(_("Click on Center point ..."))
 
         # Direction of rotation between point 1 and 2.
         # 'cw' or 'ccw'. Switch direction by hitting the
@@ -1159,14 +1162,14 @@ class FCSemiDisc(FCShapeTool):
             elif self.mode == '132':
                 self.draw_app.app.inform.emit(_("Click on Point3 ..."))
             else:
-                self.draw_app.app.inform.emit(_("Click on Stop point to complete ..."))
+                self.draw_app.app.inform.emit(_("Click on Stop point ..."))
             return "Click on 1st point ..."
 
         if len(self.points) == 2:
             if self.mode == 'c12':
                 self.draw_app.app.inform.emit(_("Click on Stop point to complete ..."))
             elif self.mode == '132':
-                self.draw_app.app.inform.emit(_("Click on Point2 ..."))
+                self.draw_app.app.inform.emit(_("Click on Point2 to complete ..."))
             else:
                 self.draw_app.app.inform.emit(_("Click on Center point to complete ..."))
             return "Click on 2nd point to complete ..."
@@ -1183,15 +1186,20 @@ class FCSemiDisc(FCShapeTool):
             return _('Direction: %s') % self.direction.upper()
 
         if key == 'M' or key == QtCore.Qt.Key_M:
+            # delete the possible points made before this action; we want to start anew
+            self.points = []
+            # and delete the utility geometry made up until this point
+            self.draw_app.delete_utility_geometry()
+
             if self.mode == 'c12':
                 self.mode = '12c'
                 return _('Mode: Start -> Stop -> Center. Click on Start point ...')
             elif self.mode == '12c':
                 self.mode = '132'
-                return _('Mode: Point1 -> Point3 -> Point2. Click on 1st point ...')
+                return _('Mode: Point1 -> Point3 -> Point2. Click on Point1 ...')
             else:
                 self.mode = 'c12'
-                return _('Mode: Center -> Start -> Stop. Click on Center ...')
+                return _('Mode: Center -> Start -> Stop. Click on Center point ...')
 
     def utility_geometry(self, data=None):
         if len(self.points) == 1:  # Show the radius
@@ -1220,7 +1228,11 @@ class FCSemiDisc(FCShapeTool):
                 p3 = array(self.points[1])
                 p2 = array(data)
 
-                center, radius, t = three_point_circle(p1, p2, p3)
+                try:
+                    center, radius, t = three_point_circle(p1, p2, p3)
+                except TypeError:
+                    return
+
                 direction = 'cw' if sign(t) > 0 else 'ccw'
                 radius += (self.buf_val / 2)
 
@@ -1234,7 +1246,6 @@ class FCSemiDisc(FCShapeTool):
             else:  # '12c'
                 p1 = array(self.points[0])
                 p2 = array(self.points[1])
-
                 # Midpoint
                 a = (p1 + p2) / 2.0
 
@@ -1243,7 +1254,7 @@ class FCSemiDisc(FCShapeTool):
 
                 # Perpendicular vector
                 b = dot(c, array([[0, -1], [1, 0]], dtype=float32))
-                b /= norm(b)
+                b /= numpy_norm(b)
 
                 # Distance
                 t = distance(data, a)
@@ -1256,7 +1267,7 @@ class FCSemiDisc(FCShapeTool):
                 # Center = a + bt
                 center = a + b * t
 
-                radius = norm(center - p1) + (self.buf_val / 2)
+                radius = numpy_norm(center - p1) + (self.buf_val / 2)
                 startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
                 stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
 
@@ -1308,7 +1319,7 @@ class FCSemiDisc(FCShapeTool):
 
             # Perpendicular vector
             b = dot(c, array([[0, -1], [1, 0]], dtype=float32))
-            b /= norm(b)
+            b /= numpy_norm(b)
 
             # Distance
             t = distance(pc, a)
@@ -1321,7 +1332,7 @@ class FCSemiDisc(FCShapeTool):
             # Center = a + bt
             center = a + b * t
 
-            radius = norm(center - p1) + (self.buf_val / 2)
+            radius = numpy_norm(center - p1) + (self.buf_val / 2)
             startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
             stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
 
@@ -3181,7 +3192,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     if key_modifier == modifier_to_use:
                         self.select_tool(self.active_tool.name)
                     else:
-                        self.select_tool("select")
+                        # return to Select tool but not for FCPad
+                        if isinstance(self.active_tool, FCPad):
+                            self.select_tool(self.active_tool.name)
+                        else:
+                            self.select_tool("select")
                         return
 
                 if isinstance(self.active_tool, FCApertureSelect):
@@ -3234,6 +3249,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
                                 # MS: always return to the Select Tool if modifier key is not pressed
                                 # else return to the current tool but not for FCTrack
+
                                 if isinstance(self.active_tool, FCTrack):
                                     self.select_tool(self.active_tool.name)
                                 else:

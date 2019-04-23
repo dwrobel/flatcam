@@ -4508,7 +4508,7 @@ class App(QtCore.QObject):
         jump_loc = self.plotcanvas.vispy_canvas.translate_coords_2((location[0], location[1]))
 
         cursor.setPos(canvas_origin.x() + jump_loc[0], (canvas_origin.y() + jump_loc[1]))
-        self.inform.emit(_("Done."))
+        self.inform.emit(_("[success] Done."))
 
     def on_copy_object(self):
         self.report_usage("on_copy_object()")
