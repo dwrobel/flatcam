@@ -472,6 +472,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.grb_convert_poly_menuitem  = self.grb_editor_menu.addAction(QtGui.QIcon('share/poligonize32.png'),
                                                                     _("Poligonize\tALT+N"))
+        self.grb_add_semidisc_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/semidisc32.png'),
+                                                                        _("Add SemiDisc\tE"))
+        self.grb_add_disc_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/disc32.png'),
+                                                                        _("Add Disc\tD"))
         self.grb_add_buffer_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/buffer16-2.png'),
                                                                     _('Buffer\tB'))
         self.grb_add_scale_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/scale32.png'),
@@ -695,6 +699,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grb_convert_poly_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/poligonize32.png'),
                                                                     _("Poligonize"))
 
+
+        self.grb_add_semidisc_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/semidisc32.png'), _("SemiDisc"))
+        self.grb_add_disc_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/disc32.png'), _("Disc"))
         self.grb_edit_toolbar.addSeparator()
 
         self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), _('Buffer'))
@@ -1447,6 +1454,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     <tr height="20">
                         <td height="20"><strong>C</strong></td>
                         <td>&nbsp;Copy</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>D</strong></td>
+                        <td>&nbsp;Add Disc</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>E</strong></td>
+                        <td>&nbsp;Add SemiDisc</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>J</strong></td>
@@ -2671,6 +2686,18 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                 (self.app.grb_editor.snap_x, self.app.grb_editor.snap_y))
                         else:
                             self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to copy."))
+                        return
+
+                    # Add Disc Tool
+                    if key == QtCore.Qt.Key_D or key == 'D':
+                        self.app.grb_editor.launched_from_shortcuts = True
+                        self.app.grb_editor.select_tool('disc')
+                        return
+
+                    # Add SemiDisc Tool
+                    if key == QtCore.Qt.Key_E or key == 'E':
+                        self.app.grb_editor.launched_from_shortcuts = True
+                        self.app.grb_editor.select_tool('semidisc')
                         return
 
                     # Grid Snap

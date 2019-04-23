@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+23.04.2019
+
+- Gerber Editor: added two new tools: Add Disc and Add SemiDisc (porting of Circle and Arc from Geometry Editor)
+
 22.04.2019
 
 - added PDF file as type in the Recent File list and capability to load it from there

@@ -1057,6 +1057,286 @@ class FCTrack(FCRegion):
             return msg
 
 
+class FCDisc(FCShapeTool):
+    """
+    Resulting type: Polygon
+    """
+
+    def __init__(self, draw_app):
+        DrawTool.__init__(self, draw_app)
+        self.name = 'disc'
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_circle.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
+        size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+        self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
+
+        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
+
+        self.start_msg = _("Click on CENTER ...")
+        self.steps_per_circ = self.draw_app.app.defaults["gerber_circle_steps"]
+
+    def click(self, point):
+        self.points.append(point)
+
+        if len(self.points) == 1:
+            self.draw_app.app.inform.emit(_("Click on perimeter point to complete ..."))
+            return "Click on perimeter to complete ..."
+
+        if len(self.points) == 2:
+            self.make()
+            return "Done."
+
+        return ""
+
+    def utility_geometry(self, data=None):
+        if len(self.points) == 1:
+            p1 = self.points[0]
+            p2 = data
+            radius = sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
+            return DrawToolUtilityShape(Point(p1).buffer((radius + self.buf_val / 2), int(self.steps_per_circ / 4)))
+
+        return None
+
+    def make(self):
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+
+        self.draw_app.current_storage = self.storage_obj
+
+        p1 = self.points[0]
+        p2 = self.points[1]
+        radius = distance(p1, p2)
+        self.geometry = DrawToolShape(Point(p1).buffer((radius + self.buf_val / 2), int(self.steps_per_circ / 4)))
+        self.draw_app.in_action = False
+        self.complete = True
+        self.draw_app.app.inform.emit(_("[success] Done."))
+
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.apertures_table.clearSelection()
+        self.draw_app.plot_all()
+
+
+class FCSemiDisc(FCShapeTool):
+    def __init__(self, draw_app):
+        DrawTool.__init__(self, draw_app)
+        self.name = 'semidisc'
+
+        self.start_msg = _("Click on CENTER ...")
+
+        # Direction of rotation between point 1 and 2.
+        # 'cw' or 'ccw'. Switch direction by hitting the
+        # 'o' key.
+        self.direction = "cw"
+
+        # Mode
+        # C12 = Center, p1, p2
+        # 12C = p1, p2, Center
+        # 132 = p1, p3, p2
+        self.mode = "c12"  # Center, p1, p2
+
+        size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
+        self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
+
+        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
+
+        self.steps_per_circ = self.draw_app.app.defaults["gerber_circle_steps"]
+
+    def click(self, point):
+        self.points.append(point)
+
+        if len(self.points) == 1:
+            if self.mode == 'c12':
+                self.draw_app.app.inform.emit(_("Click on Start point ..."))
+            elif self.mode == '132':
+                self.draw_app.app.inform.emit(_("Click on Point3 ..."))
+            else:
+                self.draw_app.app.inform.emit(_("Click on Stop point to complete ..."))
+            return "Click on 1st point ..."
+
+        if len(self.points) == 2:
+            if self.mode == 'c12':
+                self.draw_app.app.inform.emit(_("Click on Stop point to complete ..."))
+            elif self.mode == '132':
+                self.draw_app.app.inform.emit(_("Click on Point2 ..."))
+            else:
+                self.draw_app.app.inform.emit(_("Click on Center point to complete ..."))
+            return "Click on 2nd point to complete ..."
+
+        if len(self.points) == 3:
+            self.make()
+            return "Done."
+
+        return ""
+
+    def on_key(self, key):
+        if key == 'D' or key == QtCore.Qt.Key_D:
+            self.direction = 'cw' if self.direction == 'ccw' else 'ccw'
+            return _('Direction: %s') % self.direction.upper()
+
+        if key == 'M' or key == QtCore.Qt.Key_M:
+            if self.mode == 'c12':
+                self.mode = '12c'
+                return _('Mode: Start -> Stop -> Center. Click on Start point ...')
+            elif self.mode == '12c':
+                self.mode = '132'
+                return _('Mode: Point1 -> Point3 -> Point2. Click on 1st point ...')
+            else:
+                self.mode = 'c12'
+                return _('Mode: Center -> Start -> Stop. Click on Center ...')
+
+    def utility_geometry(self, data=None):
+        if len(self.points) == 1:  # Show the radius
+            center = self.points[0]
+            p1 = data
+
+            return DrawToolUtilityShape(LineString([center, p1]))
+
+        if len(self.points) == 2:  # Show the arc
+
+            if self.mode == 'c12':
+                center = self.points[0]
+                p1 = self.points[1]
+                p2 = data
+
+                radius = sqrt((center[0] - p1[0]) ** 2 + (center[1] - p1[1]) ** 2) + (self.buf_val / 2)
+                startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
+                stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
+
+                return DrawToolUtilityShape([LineString(arc(center, radius, startangle, stopangle,
+                                                            self.direction, self.steps_per_circ)),
+                                             Point(center)])
+
+            elif self.mode == '132':
+                p1 = array(self.points[0])
+                p3 = array(self.points[1])
+                p2 = array(data)
+
+                center, radius, t = three_point_circle(p1, p2, p3)
+                direction = 'cw' if sign(t) > 0 else 'ccw'
+                radius += (self.buf_val / 2)
+
+                startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
+                stopangle = arctan2(p3[1] - center[1], p3[0] - center[0])
+
+                return DrawToolUtilityShape([LineString(arc(center, radius, startangle, stopangle,
+                                                            direction, self.steps_per_circ)),
+                                             Point(center), Point(p1), Point(p3)])
+
+            else:  # '12c'
+                p1 = array(self.points[0])
+                p2 = array(self.points[1])
+
+                # Midpoint
+                a = (p1 + p2) / 2.0
+
+                # Parallel vector
+                c = p2 - p1
+
+                # Perpendicular vector
+                b = dot(c, array([[0, -1], [1, 0]], dtype=float32))
+                b /= norm(b)
+
+                # Distance
+                t = distance(data, a)
+
+                # Which side? Cross product with c.
+                # cross(M-A, B-A), where line is AB and M is test point.
+                side = (data[0] - p1[0]) * c[1] - (data[1] - p1[1]) * c[0]
+                t *= sign(side)
+
+                # Center = a + bt
+                center = a + b * t
+
+                radius = norm(center - p1) + (self.buf_val / 2)
+                startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
+                stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
+
+                return DrawToolUtilityShape([LineString(arc(center, radius, startangle, stopangle,
+                                                            self.direction, self.steps_per_circ)),
+                                             Point(center)])
+
+        return None
+
+    def make(self):
+        self.draw_app.current_storage = self.storage_obj
+
+        if self.mode == 'c12':
+            center = self.points[0]
+            p1 = self.points[1]
+            p2 = self.points[2]
+
+            radius = distance(center, p1) + (self.buf_val / 2)
+            startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
+            stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
+            self.geometry = DrawToolShape(Polygon(arc(center, radius, startangle, stopangle,
+                                                         self.direction, self.steps_per_circ)))
+
+        elif self.mode == '132':
+            p1 = array(self.points[0])
+            p3 = array(self.points[1])
+            p2 = array(self.points[2])
+
+            center, radius, t = three_point_circle(p1, p2, p3)
+            direction = 'cw' if sign(t) > 0 else 'ccw'
+            radius += (self.buf_val / 2)
+
+            startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
+            stopangle = arctan2(p3[1] - center[1], p3[0] - center[0])
+
+            self.geometry = DrawToolShape(Polygon(arc(center, radius, startangle, stopangle,
+                                                         direction, self.steps_per_circ)))
+
+        else:  # self.mode == '12c'
+            p1 = array(self.points[0])
+            p2 = array(self.points[1])
+            pc = array(self.points[2])
+
+            # Midpoint
+            a = (p1 + p2) / 2.0
+
+            # Parallel vector
+            c = p2 - p1
+
+            # Perpendicular vector
+            b = dot(c, array([[0, -1], [1, 0]], dtype=float32))
+            b /= norm(b)
+
+            # Distance
+            t = distance(pc, a)
+
+            # Which side? Cross product with c.
+            # cross(M-A, B-A), where line is AB and M is test point.
+            side = (pc[0] - p1[0]) * c[1] - (pc[1] - p1[1]) * c[0]
+            t *= sign(side)
+
+            # Center = a + bt
+            center = a + b * t
+
+            radius = norm(center - p1) + (self.buf_val / 2)
+            startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
+            stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
+
+            self.geometry = DrawToolShape(Polygon(arc(center, radius, startangle, stopangle,
+                                                         self.direction, self.steps_per_circ)))
+        self.draw_app.in_action = False
+        self.complete = True
+        self.draw_app.app.inform.emit(_("[success] Done."))
+
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.apertures_table.clearSelection()
+        self.draw_app.plot_all()
+
+
 class FCScale(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
@@ -1763,6 +2043,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
                               "constructor": FCRegion},
             "poligonize": {"button": self.app.ui.grb_convert_poly_btn,
                        "constructor": FCPoligonize},
+            "semidisc": {"button": self.app.ui.grb_add_semidisc_btn,
+                     "constructor": FCSemiDisc},
+            "disc": {"button": self.app.ui.grb_add_disc_btn,
+                           "constructor": FCDisc},
             "buffer": {"button": self.app.ui.aperture_buffer_btn,
                                 "constructor": FCBuffer},
             "scale": {"button": self.app.ui.aperture_scale_btn,
@@ -1908,6 +2192,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.ui.grb_add_region_menuitem.triggered.connect(self.on_region_add)
 
         self.app.ui.grb_convert_poly_menuitem.triggered.connect(self.on_poligonize)
+        self.app.ui.grb_add_semidisc_menuitem.triggered.connect(self.on_add_semidisc)
+        self.app.ui.grb_add_disc_menuitem.triggered.connect(self.on_disc_add)
         self.app.ui.grb_add_buffer_menuitem.triggered.connect(self.on_buffer)
         self.app.ui.grb_add_scale_menuitem.triggered.connect(self.on_scale)
         self.app.ui.grb_transform_menuitem.triggered.connect(self.transform_tool.run)
@@ -3349,6 +3635,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
     def on_poligonize(self):
         self.select_tool('poligonize')
+
+    def on_disc_add(self):
+        self.select_tool('disc')
+
+    def on_add_semidisc(self):
+        self.select_tool('semidisc')
 
     def on_buffer(self):
         buff_value = 0.01
