@@ -106,6 +106,9 @@ class Measurement(FlatCAMTool):
         # store here the first click and second click of the measurement process
         self.points = []
 
+        self.rel_point1 = None
+        self.rel_point2 = None
+
         self.active = False
 
         self.original_call_source = 'app'
@@ -119,6 +122,9 @@ class Measurement(FlatCAMTool):
         self.app.report_usage("ToolMeasurement()")
 
         self.points[:] = []
+
+        self.rel_point1 = None
+        self.rel_point2 = None
 
         if self.app.tool_tab_locked is True:
             return
@@ -244,11 +250,20 @@ class Measurement(FlatCAMTool):
         if event.button == 1:
             pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
             # if GRID is active we need to get the snapped positions
-            if self.app.grid_status() == True:
+            if self.app.grid_status():
                 pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
             else:
                 pos = pos_canvas[0], pos_canvas[1]
             self.points.append(pos)
+
+            # Reset here the relative coordinates so there is a new reference on the click position
+            if self.rel_point1 is None:
+                self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                                       "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0.0, 0.0))
+                self.rel_point1 = pos
+            else:
+                self.rel_point2 = copy(self.rel_point1)
+                self.rel_point1 = pos
 
             if len(self.points) == 1:
                 self.start_entry.set_value("(%.4f, %.4f)" % pos)
@@ -258,7 +273,6 @@ class Measurement(FlatCAMTool):
                 dx = self.points[1][0] - self.points[0][0]
                 dy = self.points[1][1] - self.points[0][1]
                 d = sqrt(dx ** 2 + dy ** 2)
-
                 self.stop_entry.set_value("(%.4f, %.4f)" % pos)
 
                 self.app.inform.emit(_("MEASURING: Result D(x) = {d_x} | D(y) = {d_y} | Distance = {d_z}").format(
@@ -267,19 +281,40 @@ class Measurement(FlatCAMTool):
                 self.distance_x_entry.set_value('%.4f' % abs(dx))
                 self.distance_y_entry.set_value('%.4f' % abs(dy))
                 self.total_distance_entry.set_value('%.4f' % abs(d))
-
+                self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                                       "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (pos[0], pos[1]))
                 self.deactivate_measure_tool()
 
     def on_mouse_move_meas(self, event):
-        pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
-        # Update cursor
-        pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
-        if self.app.grid_status() == True:
-            self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]), symbol='++', edge_color='black', size=20)
+        try:  # May fail in case mouse not within axes
+            pos_canvas = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+            if self.app.grid_status():
+                pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+                self.app.app_cursor.enabled = True
+                # Update cursor
+                self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
+                                             symbol='++', edge_color='black', size=20)
+            else:
+                pos = (pos_canvas[0], pos_canvas[1])
+                self.app.app_cursor.enabled = False
 
-        # update utility geometry
-        if len(self.points) == 1:
-            self.utility_geometry(pos=pos)
+            if self.rel_point1 is not None:
+                dx = pos[0] - self.rel_point1[0]
+                dy = pos[1] - self.rel_point1[1]
+            else:
+                dx = pos[0]
+                dy = pos[1]
+
+            self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                                               "<b>Y</b>: %.4f" % (pos[0], pos[1]))
+            self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+            # update utility geometry
+            if len(self.points) == 1:
+                self.utility_geometry(pos=pos)
+        except:
+            self.app.ui.position_label.setText("")
+            self.app.ui.rel_position_label.setText("")
 
     def utility_geometry(self, pos):
         # first delete old shape
