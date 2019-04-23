@@ -978,6 +978,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>B</strong></td>
+                        <td>&nbsp;New Gerber</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>E</strong></td>
                         <td>&nbsp;Edit Object (if selected)</td>
                     </tr>
@@ -1492,7 +1496,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;Add Track</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>R</strong></td>
+                        <td height="20"><strong>T</strong></td>
                         <td>&nbsp;Within Track & Region Tools will cycle FORWARD the bend modes</td>
                     </tr>
                     <tr height="20">
