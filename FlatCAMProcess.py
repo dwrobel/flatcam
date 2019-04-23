@@ -134,13 +134,13 @@ class FCVisibleProcessContainer(QtCore.QObject, FCProcessContainer):
         self.something_changed.connect(self.update_view)
 
     def on_done(self, proc):
-        self.app.log.debug("FCVisibleProcessContainer.on_done()")
+        # self.app.log.debug("FCVisibleProcessContainer.on_done()")
         super(FCVisibleProcessContainer, self).on_done(proc)
 
         self.something_changed.emit()
 
     def on_change(self, proc):
-        self.app.log.debug("FCVisibleProcessContainer.on_change()")
+        # self.app.log.debug("FCVisibleProcessContainer.on_change()")
         super(FCVisibleProcessContainer, self).on_change(proc)
 
         self.something_changed.emit()

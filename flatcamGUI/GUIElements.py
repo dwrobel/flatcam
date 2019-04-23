@@ -27,7 +27,7 @@ EDIT_SIZE_HINT = 70
 
 
 class RadioSet(QtWidgets.QWidget):
-    activated_custom = QtCore.pyqtSignal()
+    activated_custom = QtCore.pyqtSignal(str)
 
     def __init__(self, choices, orientation='horizontal', parent=None, stretch=None):
         """
@@ -72,7 +72,8 @@ class RadioSet(QtWidgets.QWidget):
         radio = self.sender()
         if radio.isChecked():
             self.group_toggle_fn()
-            self.activated_custom.emit()
+            ret_val = str(self.get_value())
+            self.activated_custom.emit(ret_val)
         return
 
     def get_value(self):

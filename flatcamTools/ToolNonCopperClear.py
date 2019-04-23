@@ -121,7 +121,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool to add in the Tool Table")
         )
-        self.addtool_entry = FCEntry()
+        self.addtool_entry = FCEntry2()
 
         # hlay.addWidget(self.addtool_label)
         # hlay.addStretch()
@@ -254,6 +254,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.tools_box.addStretch()
 
         self.addtool_btn.clicked.connect(self.on_tool_add)
+        self.addtool_entry.returnPressed.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
         self.generate_ncc_button.clicked.connect(self.on_ncc)
 

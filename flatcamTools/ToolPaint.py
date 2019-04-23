@@ -118,7 +118,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool.")
         )
-        self.addtool_entry = FCEntry()
+        self.addtool_entry = FCEntry2()
 
         # hlay.addWidget(self.addtool_label)
         # hlay.addStretch()
@@ -307,6 +307,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         ## Signals
         self.addtool_btn.clicked.connect(self.on_tool_add)
+        self.addtool_entry.returnPressed.connect(self.on_tool_add)
         # self.copytool_btn.clicked.connect(lambda: self.on_tool_copy())
         self.tools_table.itemChanged.connect(self.on_tool_edit)
         self.deltool_btn.clicked.connect(self.on_tool_delete)

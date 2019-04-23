@@ -12,6 +12,8 @@ from camlib import *
 from flatcamGUI.GUIElements import FCEntry, FCComboBox, FCTable, FCDoubleSpinner, LengthEntry, RadioSet, SpinBoxDelegate
 from flatcamEditors.FlatCAMGeoEditor import FCShapeTool, DrawTool, DrawToolShape, DrawToolUtilityShape, FlatCAMGeoEditor
 
+from copy import copy, deepcopy
+
 import gettext
 import FlatCAMTranslation as fcTranslate
 
@@ -44,6 +46,13 @@ class FCDrillAdd(FCShapeTool):
             self.draw_app.app.inform.emit(_("[WARNING_NOTCL] To add a drill first select a tool"))
             self.draw_app.select_tool("select")
             return
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_drill.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
 
@@ -79,6 +88,11 @@ class FCDrillAdd(FCShapeTool):
         return MultiLineString([(start_hor_line, stop_hor_line), (start_vert_line, stop_vert_line)])
 
     def make(self):
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
 
         # add the point to drills if the diameter is a key in the dict, if not, create it add the drill location
         # to the value, as a list of itself
@@ -134,6 +148,13 @@ class FCDrillArray(FCShapeTool):
         except KeyError:
             self.draw_app.app.inform.emit(_("[WARNING_NOTCL] To add an Drill Array first select a tool in Tool Table"))
             return
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_drill_array.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y), static=True)
 
@@ -249,6 +270,11 @@ class FCDrillArray(FCShapeTool):
     def make(self):
         self.geometry = []
         geo = None
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
 
         # add the point to drills if the diameter is a key in the dict, if not, create it add the drill location
         # to the value, as a list of itself
@@ -535,6 +561,11 @@ class FCDrillSelect(DrawTool):
         DrawTool.__init__(self, exc_editor_app)
         self.name = 'drill_select'
 
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+
         self.exc_editor_app = exc_editor_app
         self.storage = self.exc_editor_app.storage_dict
         # self.selected = self.exc_editor_app.selected
@@ -695,12 +726,23 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         self.exc_edit_widget = QtWidgets.QWidget()
+        ## Box for custom widgets
+        # This gets populated in offspring implementations.
         layout = QtWidgets.QVBoxLayout()
         self.exc_edit_widget.setLayout(layout)
 
+        # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Drills widgets
+        # this way I can hide/show the frame
+        self.drills_frame = QtWidgets.QFrame()
+        self.drills_frame.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.drills_frame)
+        self.tools_box = QtWidgets.QVBoxLayout()
+        self.tools_box.setContentsMargins(0, 0, 0, 0)
+        self.drills_frame.setLayout(self.tools_box)
+
         ## Page Title box (spacing between children)
         self.title_box = QtWidgets.QHBoxLayout()
-        layout.addLayout(self.title_box)
+        self.tools_box.addLayout(self.title_box)
 
         ## Page Title icon
         pixmap = QtGui.QPixmap('share/flatcam_icon32.png')
@@ -715,25 +757,11 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         ## Object name
         self.name_box = QtWidgets.QHBoxLayout()
-        layout.addLayout(self.name_box)
+        self.tools_box.addLayout(self.name_box)
         name_label = QtWidgets.QLabel(_("Name:"))
         self.name_box.addWidget(name_label)
         self.name_entry = FCEntry()
         self.name_box.addWidget(self.name_entry)
-
-        ## Box box for custom widgets
-        # This gets populated in offspring implementations.
-        self.custom_box = QtWidgets.QVBoxLayout()
-        layout.addLayout(self.custom_box)
-
-        # add a frame and inside add a vertical box layout. Inside this vbox layout I add all the Drills widgets
-        # this way I can hide/show the frame
-        self.drills_frame = QtWidgets.QFrame()
-        self.drills_frame.setContentsMargins(0, 0, 0, 0)
-        self.custom_box.addWidget(self.drills_frame)
-        self.tools_box = QtWidgets.QVBoxLayout()
-        self.tools_box.setContentsMargins(0, 0, 0, 0)
-        self.drills_frame.setLayout(self.tools_box)
 
         #### Tools Drills ####
         self.tools_table_label = QtWidgets.QLabel("<b>%s</b>" % _('Tools Table'))
@@ -1021,7 +1049,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app.ui.delete_drill_btn.triggered.connect(self.on_delete_btn)
         self.name_entry.returnPressed.connect(self.on_name_activate)
         self.addtool_btn.clicked.connect(self.on_tool_add)
-        # self.addtool_entry.editingFinished.connect(self.on_tool_add)
+        self.addtool_entry.returnPressed.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
         # self.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
         self.tools_table_exc.cellPressed.connect(self.on_row_selected)
@@ -1134,6 +1162,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         return storage
 
     def set_ui(self):
+
         # updated units
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
@@ -1177,7 +1206,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                     tool_dia = float('%.2f' % v['C'])
                 self.tool2tooldia[int(k)] = tool_dia
 
-    def build_ui(self):
+    def build_ui(self, first_run=None):
 
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
@@ -1271,6 +1300,11 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.tools_table_exc.setItem(self.tool_row, 1, dia)  # Diameter
             self.tools_table_exc.setItem(self.tool_row, 2, drill_count)  # Number of drills per tool
             self.tools_table_exc.setItem(self.tool_row, 3, slot_count)  # Number of drills per tool
+
+            if first_run is True:
+                # set now the last tool selected
+                self.last_tool_selected = int(tool_id)
+
             self.tool_row += 1
 
         # make the diameter column editable
@@ -1428,6 +1462,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         for key in sorted(self.tool2tooldia):
             if self.tool2tooldia[key] == tool_dia:
                 row_to_be_selected = int(key) - 1
+                self.last_tool_selected = int(key)
                 break
 
         self.tools_table_exc.selectRow(row_to_be_selected)
@@ -1568,6 +1603,13 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.edited_obj_name = self.name_entry.get_value()
 
     def activate(self):
+        # adjust the status of the menu entries related to the editor
+        self.app.ui.menueditedit.setDisabled(True)
+        self.app.ui.menueditok.setDisabled(False)
+        # adjust the visibility of some of the canvas context menu
+        self.app.ui.popmenu_edit.setVisible(False)
+        self.app.ui.popmenu_save.setVisible(True)
+
         self.connect_canvas_event_handlers()
 
         # initialize working objects
@@ -1604,14 +1646,20 @@ class FlatCAMExcEditor(QtCore.QObject):
         if self.app.ui.grid_snap_btn.isChecked() is False:
             self.app.ui.grid_snap_btn.trigger()
 
-        # adjust the visibility of some of the canvas context menu
-        self.app.ui.popmenu_edit.setVisible(False)
-        self.app.ui.popmenu_save.setVisible(True)
-
         # Tell the App that the editor is active
         self.editor_active = True
 
+        # show the UI
+        self.drills_frame.show()
+
     def deactivate(self):
+        # adjust the status of the menu entries related to the editor
+        self.app.ui.menueditedit.setDisabled(False)
+        self.app.ui.menueditok.setDisabled(True)
+        # adjust the visibility of some of the canvas context menu
+        self.app.ui.popmenu_edit.setVisible(True)
+        self.app.ui.popmenu_save.setVisible(False)
+
         self.disconnect_canvas_event_handlers()
         self.clear()
         self.app.ui.exc_edit_toolbar.setDisabled(True)
@@ -1661,41 +1709,43 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app.ui.g_editor_cmenu.setEnabled(False)
         self.app.ui.e_editor_cmenu.setEnabled(False)
 
-        # adjust the visibility of some of the canvas context menu
-        self.app.ui.popmenu_edit.setVisible(True)
-        self.app.ui.popmenu_save.setVisible(False)
-
         # Show original geometry
         if self.exc_obj:
             self.exc_obj.visible = True
 
+        # hide the UI
+        self.drills_frame.hide()
+
     def connect_canvas_event_handlers(self):
         ## Canvas events
 
+        # first connect to new, then disconnect the old handlers
+        # don't ask why but if there is nothing connected I've seen issues
+        self.canvas.vis_connect('mouse_press', self.on_canvas_click)
+        self.canvas.vis_connect('mouse_move', self.on_canvas_move)
+        self.canvas.vis_connect('mouse_release', self.on_exc_click_release)
+
         # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
         # but those from FlatCAMGeoEditor
-
         self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
         self.app.collection.view.clicked.disconnect()
 
-        self.canvas.vis_connect('mouse_press', self.on_canvas_click)
-        self.canvas.vis_connect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_connect('mouse_release', self.on_canvas_click_release)
-
     def disconnect_canvas_event_handlers(self):
-        self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
-        self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_disconnect('mouse_release', self.on_canvas_click_release)
-
         # we restore the key and mouse control to FlatCAMApp method
+        # first connect to new, then disconnect the old handlers
+        # don't ask why but if there is nothing connected I've seen issues
         self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
         self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
         self.app.plotcanvas.vis_connect('mouse_double_click', self.app.on_double_click_over_plot)
         self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
+
+        self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
+        self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
+        self.canvas.vis_disconnect('mouse_release', self.on_exc_click_release)
 
     def clear(self):
         self.active_tool = None
@@ -1741,7 +1791,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.set_ui()
 
         # now that we hava data, create the GUI interface and add it to the Tool Tab
-        self.build_ui()
+        self.build_ui(first_run=True)
 
         # we activate this after the initial build as we don't need to see the tool been populated
         self.tools_table_exc.itemChanged.connect(self.on_tool_edit)
@@ -1992,7 +2042,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
             try:
                 selected_dia = self.tool2tooldia[self.tools_table_exc.currentRow() + 1]
-                self.last_tool_selected = self.tools_table_exc.currentRow() + 1
+                self.last_tool_selected = copy(self.tools_table_exc.currentRow()) + 1
                 for obj in self.storage_dict[selected_dia].get_objects():
                     self.selected.append(obj)
             except Exception as e:
@@ -2136,7 +2186,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         else:
             self.storage.insert(shape)  # TODO: Check performance
 
-    def on_canvas_click_release(self, event):
+    def on_exc_click_release(self, event):
         pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
 
         self.modifiers = QtWidgets.QApplication.keyboardModifiers()

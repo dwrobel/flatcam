@@ -94,8 +94,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.913
-    version_date = "2019/04/13"
+    version = 8.914
+    version_date = "2019/04/23"
     beta = True
 
     # current date now
@@ -1838,6 +1838,7 @@ class App(QtCore.QObject):
                       'mpf']
         self.svg_list = ['svg']
         self.dxf_list = ['dxf']
+        self.pdf_list = ['pdf']
         self.prj_list = ['flatprj']
 
         # global variable used by NCC Tool to signal that some polygons could not be cleared, if True
@@ -2003,9 +2004,15 @@ class App(QtCore.QObject):
         self.properties_tool = Properties(self)
         self.properties_tool.install(icon=QtGui.QIcon('share/properties32.png'), pos=self.ui.menuoptions)
 
+        self.pdf_tool = ToolPDF(self)
+        self.pdf_tool.install(icon=QtGui.QIcon('share/pdf32.png'), pos=self.ui.menufileimport,
+                              separator=True)
+
         self.image_tool = ToolImage(self)
         self.image_tool.install(icon=QtGui.QIcon('share/image32.png'), pos=self.ui.menufileimport,
                                 separator=True)
+        self.pcb_wizard_tool = PcbWizard(self)
+        self.pcb_wizard_tool.install(icon=QtGui.QIcon('share/drill32.png'), pos=self.ui.menufileimport)
 
         self.log.debug("Tools are installed.")
 
@@ -2090,12 +2097,9 @@ class App(QtCore.QObject):
 
         if isinstance(edited_object, FlatCAMGerber) or isinstance(edited_object, FlatCAMGeometry) or \
                 isinstance(edited_object, FlatCAMExcellon):
-
-            # adjust the status of the menu entries related to the editor
-            self.ui.menueditedit.setDisabled(True)
-            self.ui.menueditok.setDisabled(False)
+            pass
         else:
-            self.inform.emit(_("[WARNING_NOTCL] Select a Geometry or Excellon Object to edit."))
+            self.inform.emit(_("[WARNING_NOTCL] Select a Geometry, Gerber or Excellon Object to edit."))
             return
 
         if isinstance(edited_object, FlatCAMGeometry):
@@ -2106,7 +2110,8 @@ class App(QtCore.QObject):
                 edited_tools = [int(x.text()) for x in edited_object.ui.geo_tools_table.selectedItems()]
                 if len(edited_tools) > 1:
                     self.inform.emit(_("[WARNING_NOTCL] Simultanoeus editing of tools geometry in a MultiGeo Geometry "
-                                       "is not possible.\n Edit only one geometry at a time."))
+                                       "is not possible.\n"
+                                       "Edit only one geometry at a time."))
                 self.geo_editor.edit_fcgeometry(edited_object, multigeo_tool=edited_tools[0])
             else:
                 self.geo_editor.edit_fcgeometry(edited_object)
@@ -2153,16 +2158,8 @@ class App(QtCore.QObject):
         """
         self.report_usage("editor2object()")
 
-        # adjust the status of the menu entries related to the editor
-        self.ui.menueditedit.setDisabled(False)
-        self.ui.menueditok.setDisabled(True)
-
         # do not update a geometry or excellon object unless it comes out of an editor
         if self.call_source != 'app':
-            # adjust the visibility of some of the canvas context menu
-            self.ui.popmenu_edit.setVisible(True)
-            self.ui.popmenu_save.setVisible(False)
-
             edited_obj = self.collection.get_active()
             obj_type = ""
 
@@ -2241,6 +2238,8 @@ class App(QtCore.QObject):
                         self.grb_editor.deactivate_grb_editor()
                     elif isinstance(edited_obj, FlatCAMExcellon):
                         self.exc_editor.deactivate()
+                        # set focus on the project tab
+                        self.ui.notebook.setCurrentWidget(self.ui.project_tab)
                     else:
                         self.inform.emit(_("[WARNING_NOTCL] Select a Gerber, Geometry or Excellon Object to update."))
                         return
@@ -4472,7 +4471,6 @@ class App(QtCore.QObject):
         self.report_usage("on_set_origin()")
 
         self.inform.emit(_('Click to set the origin ...'))
-
         self.plotcanvas.vis_connect('mouse_press', self.on_set_zero_click)
 
     def on_jump_to(self, custom_location=None, fit_center=True):
@@ -4510,7 +4508,7 @@ class App(QtCore.QObject):
         jump_loc = self.plotcanvas.vispy_canvas.translate_coords_2((location[0], location[1]))
 
         cursor.setPos(canvas_origin.x() + jump_loc[0], (canvas_origin.y() + jump_loc[1]))
-        self.inform.emit(_("Done."))
+        self.inform.emit(_("[success] Done."))
 
     def on_copy_object(self):
         self.report_usage("on_copy_object()")
@@ -5117,9 +5115,7 @@ class App(QtCore.QObject):
 
     def on_mouse_move_over_plot(self, event, origin_click=None):
         """
-        Callback for the mouse motion event over the plot. This event is generated
-        by the Matplotlib backend and has been registered in ``self.__init__()``.
-        For details, see: http://matplotlib.org/users/event_handling.html
+        Callback for the mouse motion event over the plot.
 
         :param event: Contains information about the event.
         :param origin_click
@@ -5314,7 +5310,6 @@ class App(QtCore.QObject):
     def select_objects(self, key=None):
         # list where we store the overlapped objects under our mouse left click position
         objects_under_the_click_list = []
-
         # Populate the list with the overlapped objects on the click position
         curr_x, curr_y = self.pos
         for obj in self.all_objects_list:
@@ -5662,7 +5657,7 @@ class App(QtCore.QObject):
 
     def obj_move(self):
         self.report_usage("obj_move()")
-        self.move_tool.run()
+        self.move_tool.run(toggle=False)
 
     def on_fileopengerber(self):
         """
@@ -7085,7 +7080,7 @@ class App(QtCore.QObject):
             # self.progress.emit(20)
 
             try:
-                ret = excellon_obj.parse_file(filename)
+                ret = excellon_obj.parse_file(filename=filename)
                 if ret == "fail":
                     log.debug("Excellon parsing failed.")
                     self.inform.emit(_("[ERROR_NOTCL] This is not Excellon file."))
@@ -7606,6 +7601,7 @@ class App(QtCore.QObject):
             "project": "share/project16.png",
             "svg": "share/geometry16.png",
             "dxf": "share/dxf16.png",
+            "pdf": "share/pdf32.png",
             "image": "share/image16.png"
 
         }
@@ -7613,11 +7609,13 @@ class App(QtCore.QObject):
         openers = {
             'gerber': lambda fname: self.worker_task.emit({'fcn': self.open_gerber, 'params': [fname]}),
             'excellon': lambda fname: self.worker_task.emit({'fcn': self.open_excellon, 'params': [fname]}),
+            'geometry': lambda fname: self.worker_task.emit({'fcn': self.import_dxf, 'params': [fname]}),
             'cncjob': lambda fname: self.worker_task.emit({'fcn': self.open_gcode, 'params': [fname]}),
             'project': self.open_project,
             'svg': self.import_svg,
             'dxf': self.import_dxf,
-            'image': self.import_image
+            'image': self.import_image,
+            'pdf': lambda fname: self.worker_task.emit({'fcn': self.pdf_tool.open_pdf, 'params': [fname]})
         }
 
         # Open file
@@ -7781,7 +7779,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
 
         self.log.debug("version_check()")
 
-        if self.ui.general_defaults_form.general_gui_group.send_stats_cb.get_value() is True:
+        if self.ui.general_defaults_form.general_app_group.send_stats_cb.get_value() is True:
             full_url = App.version_url + \
                        "?s=" + str(self.defaults['global_serial']) + \
                        "&v=" + str(self.version) + \

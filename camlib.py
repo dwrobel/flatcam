@@ -26,10 +26,11 @@ from rtree import index as rtindex
 from lxml import etree as ET
 
 # See: http://toblerity.org/shapely/manual.html
+
 from shapely.geometry import Polygon, LineString, Point, LinearRing, MultiLineString
 from shapely.geometry import MultiPoint, MultiPolygon
 from shapely.geometry import box as shply_box
-from shapely.ops import cascaded_union, unary_union
+from shapely.ops import cascaded_union, unary_union, polygonize
 import shapely.affinity as affinity
 from shapely.wkt import loads as sloads
 from shapely.wkt import dumps as sdumps
@@ -45,6 +46,7 @@ import ezdxf
 
 # TODO: Commented for FlatCAM packaging with cx_freeze
 # from scipy.spatial import KDTree, Delaunay
+# from scipy.spatial import Delaunay
 
 from flatcamParsers.ParseSVG import *
 from flatcamParsers.ParseDXF import *
@@ -2160,6 +2162,9 @@ class Gerber (Geometry):
         # Coordinates of the current path, each is [x, y]
         path = []
 
+        # store the file units here:
+        gerber_units = 'IN'
+
         # this is for temporary storage of geometry until it is added to poly_buffer
         geo = None
 
@@ -3178,20 +3183,31 @@ class Gerber (Geometry):
                                 self.apertures[last_path_aperture]['solid_geometry'] = []
                                 self.apertures[last_path_aperture]['solid_geometry'].append(geo)
 
+            # TODO: make sure to keep track of units changes because right now it seems to happen in a weird way
+            # find out the conversion factor used to convert inside the self.apertures keys: size, width, height
+            file_units = gerber_units if gerber_units else 'IN'
+            app_units = self.app.defaults['units']
+
+            conversion_factor = 25.4 if file_units == 'IN' else (1/25.4) if file_units != app_units else 1
+
             # first check if we have any clear_geometry (LPC) and if yes then we need to substract it
             # from the apertures solid_geometry
             temp_geo = []
             for apid in self.apertures:
                 if 'clear_geometry' in self.apertures[apid]:
-                    for clear_geo in self.apertures[apid]['clear_geometry']:
-                        for solid_geo in self.apertures[apid]['solid_geometry']:
-                            if solid_geo.intersects(clear_geo):
-                                res_geo = clear_geo.symmetric_difference(solid_geo)
-                                temp_geo.append(res_geo)
-                            else:
-                                temp_geo.append(solid_geo)
+                    clear_geo = MultiPolygon(self.apertures[apid]['clear_geometry'])
+                    for solid_geo in self.apertures[apid]['solid_geometry']:
+                        if clear_geo.intersects(solid_geo):
+                            res_geo = solid_geo.difference(clear_geo)
+                            temp_geo.append(res_geo)
+                        else:
+                            temp_geo.append(solid_geo)
                     self.apertures[apid]['solid_geometry'] = deepcopy(temp_geo)
                     self.apertures[apid].pop('clear_geometry', None)
+
+                for k, v in self.apertures[apid].items():
+                    if k == 'size' or k == 'width' or k == 'height':
+                        self.apertures[apid][k] = v * conversion_factor
 
             # --- Apply buffer ---
             # this treats the case when we are storing geometry as paths
@@ -3722,6 +3738,8 @@ class Excellon(Geometry):
         self.excellon_format_upper_mm = excellon_format_upper_mm or self.defaults["excellon_format_upper_mm"]
         self.excellon_format_lower_mm = excellon_format_lower_mm or self.defaults["excellon_format_lower_mm"]
         self.excellon_units = excellon_units or self.defaults["excellon_units"]
+        # detected Excellon format is stored here:
+        self.excellon_format = None
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
@@ -3750,10 +3768,10 @@ class Excellon(Geometry):
         # Ignored in the parser
         #self.fmat_re = re.compile(r'^FMAT,([12])$')
 
-        # Number format and units
+        # Uunits and possible Excellon zeros and possible Excellon format
         # INCH uses 6 digits
         # METRIC uses 5/6
-        self.units_re = re.compile(r'^(INCH|METRIC)(?:,([TL])Z)?.*$')
+        self.units_re = re.compile(r'^(INCH|METRIC)(?:,([TL])Z)?,?(\d*\.\d+)?.*$')
 
         # Tool definition/parameters (?= is look-ahead
         # NOTE: This might be an overkill!
@@ -3815,13 +3833,17 @@ class Excellon(Geometry):
         # Allegro Excellon format support
         self.tool_units_re = re.compile(r'(\;\s*Holesize \d+.\s*\=\s*(\d+.\d+).*(MILS|MM))')
 
+        # Altium Excellon format support
+        # it's a comment like this: ";FILE_FORMAT=2:5"
+        self.altium_format = re.compile(r'^;\s*(?:FILE_FORMAT)?(?:Format)?[=|:]\s*(\d+)[:|.](\d+).*$')
+
         # Parse coordinates
         self.leadingzeros_re = re.compile(r'^[-\+]?(0*)(\d*)')
 
         # Repeating command
         self.repeat_re = re.compile(r'R(\d+)')
 
-    def parse_file(self, filename):
+    def parse_file(self, filename=None, file_obj=None):
         """
         Reads the specified file as array of lines as
         passes it to ``parse_lines()``.
@@ -3830,9 +3852,15 @@ class Excellon(Geometry):
         :type filename: str
         :return: None
         """
-        efile = open(filename, 'r')
-        estr = efile.readlines()
-        efile.close()
+        if file_obj:
+            estr = file_obj
+        else:
+            if filename is None:
+                return "fail"
+            efile = open(filename, 'r')
+            estr = efile.readlines()
+            efile.close()
+
         try:
             self.parse_lines(estr)
         except:
@@ -3900,9 +3928,10 @@ class Excellon(Geometry):
                     log.warning("Found ALLEGRO start of the header: %s" % eline)
                     continue
 
-                # Header End #
-                # Since there might be comments in the header that include char % or M95
-                # we ignore the lines starting with ';' which show they are comments
+                # Search for Header End #
+                # Since there might be comments in the header that include header end char (% or M95)
+                # we ignore the lines starting with ';' that contains such header end chars because it is not a
+                # real header end.
                 if self.comm_re.search(eline):
                     match = self.tool_units_re.search(eline)
                     if match:
@@ -3910,7 +3939,7 @@ class Excellon(Geometry):
                             line_units_found = True
                             line_units = match.group(3)
                             self.convert_units({"MILS": "IN", "MM": "MM"}[line_units])
-                            log.warning("Type of Allegro UNITS found inline: %s" % line_units)
+                            log.warning("Type of Allegro UNITS found inline in comments: %s" % line_units)
 
                         if match.group(2):
                             name_tool += 1
@@ -3924,6 +3953,17 @@ class Excellon(Geometry):
                                 log.debug("  Tool definition: %s %s" % (name_tool, spec))
                             spec['solid_geometry'] = []
                             continue
+                    # search for Altium Excellon Format / Sprint Layout who is included as a comment
+                    match = self.altium_format.search(eline)
+                    if match:
+                        self.excellon_format_upper_mm = match.group(1)
+                        self.excellon_format_lower_mm = match.group(2)
+
+                        self.excellon_format_upper_in = match.group(1)
+                        self.excellon_format_lower_in = match.group(2)
+                        log.warning("Altium Excellon format preset found in comments: %s:%s" %
+                                    (match.group(1), match.group(2)))
+                        continue
                     else:
                         log.warning("Line ignored, it's a comment: %s" % eline)
                 else:
@@ -3986,6 +4026,13 @@ class Excellon(Geometry):
                                     # the bellow construction is so each tool will have a slightly different diameter
                                     # starting with a default value, to allow Excellon editing after that
                                     self.diameterless = True
+                                    self.app.inform.emit(_("[WARNING] No tool diameter info's. See shell.\n"
+                                                           "A tool change event: T%s was found but the Excellon file "
+                                                           "have no informations regarding the tool "
+                                                           "diameters therefore the application will try to load it by "
+                                                           "using some 'fake' diameters.\nThe user needs to edit the "
+                                                           "resulting Excellon object and change the diameters to "
+                                                           "reflect the real diameters.") % current_tool)
 
                                     if self.excellon_units == 'MM':
                                         diam = self.toolless_diam + (int(current_tool) - 1) / 100
@@ -4351,8 +4398,16 @@ class Excellon(Geometry):
                     if match:
                         self.units_found = match.group(1)
                         self.zeros = match.group(2)  # "T" or "L". Might be empty
-
-                        # self.units = {"INCH": "IN", "METRIC": "MM"}[match.group(1)]
+                        self.excellon_format = match.group(3)
+                        if self.excellon_format:
+                            upper = len(self.excellon_format.partition('.')[0])
+                            lower = len(self.excellon_format.partition('.')[2])
+                            if self.units == 'MM':
+                                self.excellon_format_upper_mm = upper
+                                self.excellon_format_lower_mm = lower
+                            else:
+                                self.excellon_format_upper_in = upper
+                                self.excellon_format_lower_in = lower
 
                         # Modified for issue #80
                         self.convert_units({"INCH": "IN", "METRIC": "MM"}[self.units_found])
@@ -4401,8 +4456,16 @@ class Excellon(Geometry):
                 if match:
                     self.units_found = match.group(1)
                     self.zeros = match.group(2)  # "T" or "L". Might be empty
-
-                    # self.units = {"INCH": "IN", "METRIC": "MM"}[match.group(1)]
+                    self.excellon_format = match.group(3)
+                    if self.excellon_format:
+                        upper = len(self.excellon_format.partition('.')[0])
+                        lower = len(self.excellon_format.partition('.')[2])
+                        if self.units == 'MM':
+                            self.excellon_format_upper_mm = upper
+                            self.excellon_format_lower_mm = lower
+                        else:
+                            self.excellon_format_upper_in = upper
+                            self.excellon_format_lower_in = lower
 
                     # Modified for issue #80
                     self.convert_units({"INCH": "IN", "METRIC": "MM"}[self.units_found])
@@ -7346,6 +7409,63 @@ def parse_gerber_number(strnumber, int_digits, frac_digits, zeros):
     return ret_val
 
 
+# def alpha_shape(points, alpha):
+#     """
+#     Compute the alpha shape (concave hull) of a set of points.
+#
+#     @param points: Iterable container of points.
+#     @param alpha: alpha value to influence the gooeyness of the border. Smaller
+#                   numbers don't fall inward as much as larger numbers. Too large,
+#                   and you lose everything!
+#     """
+#     if len(points) < 4:
+#         # When you have a triangle, there is no sense in computing an alpha
+#         # shape.
+#         return MultiPoint(list(points)).convex_hull
+#
+#     def add_edge(edges, edge_points, coords, i, j):
+#         """Add a line between the i-th and j-th points, if not in the list already"""
+#         if (i, j) in edges or (j, i) in edges:
+#             # already added
+#             return
+#         edges.add( (i, j) )
+#         edge_points.append(coords[ [i, j] ])
+#
+#     coords = np.array([point.coords[0] for point in points])
+#
+#     tri = Delaunay(coords)
+#     edges = set()
+#     edge_points = []
+#     # loop over triangles:
+#     # ia, ib, ic = indices of corner points of the triangle
+#     for ia, ib, ic in tri.vertices:
+#         pa = coords[ia]
+#         pb = coords[ib]
+#         pc = coords[ic]
+#
+#         # Lengths of sides of triangle
+#         a = math.sqrt((pa[0]-pb[0])**2 + (pa[1]-pb[1])**2)
+#         b = math.sqrt((pb[0]-pc[0])**2 + (pb[1]-pc[1])**2)
+#         c = math.sqrt((pc[0]-pa[0])**2 + (pc[1]-pa[1])**2)
+#
+#         # Semiperimeter of triangle
+#         s = (a + b + c)/2.0
+#
+#         # Area of triangle by Heron's formula
+#         area = math.sqrt(s*(s-a)*(s-b)*(s-c))
+#         circum_r = a*b*c/(4.0*area)
+#
+#         # Here's the radius filter.
+#         #print circum_r
+#         if circum_r < 1.0/alpha:
+#             add_edge(edges, edge_points, coords, ia, ib)
+#             add_edge(edges, edge_points, coords, ib, ic)
+#             add_edge(edges, edge_points, coords, ic, ia)
+#
+#     m = MultiLineString(edge_points)
+#     triangles = list(polygonize(m))
+#     return cascaded_union(triangles), edge_points
+
 # def voronoi(P):
 #     """
 #     Returns a list of all edges of the voronoi diagram for the given input points.
@@ -7581,13 +7701,17 @@ def three_point_circle(p1, p2, p3):
     b2 = dot((p3 - p2), array([[0, 1], [-1, 0]], dtype=float32))
 
     # Params
-    T = solve(transpose(array([-b1, b2])), a1 - a2)
+    try:
+        T = solve(transpose(array([-b1, b2])), a1 - a2)
+    except Exception as e:
+        log.debug("camlib.three_point_circle() --> %s" % str(e))
+        return
 
     # Center
     center = a1 + b1 * T[0]
 
     # Radius
-    radius = norm(center - p1)
+    radius = np.linalg.norm(center - p1)
 
     return center, radius, T[0]
 

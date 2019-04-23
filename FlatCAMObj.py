@@ -3032,6 +3032,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
         self.ui.pp_geometry_name_cb.activated.connect(self.on_pp_changed)
+        self.ui.addtool_entry.returnPressed.connect(lambda: self.on_tool_add())
 
     def set_tool_offset_visibility(self, current_row):
         if current_row is None:
@@ -3107,6 +3108,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         # I use lambda's because the connected functions have parameters that could be used in certain scenarios
         self.ui.addtool_btn.clicked.connect(lambda: self.on_tool_add())
+
         self.ui.copytool_btn.clicked.connect(lambda: self.on_tool_copy())
         self.ui.deltool_btn.clicked.connect(lambda: self.on_tool_delete())
 

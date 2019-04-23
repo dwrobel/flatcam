@@ -22,6 +22,7 @@ from shapely.ops import cascaded_union
 import shapely.affinity as affinity
 
 from numpy import arctan2, Inf, array, sqrt, sign, dot
+from numpy.linalg import norm as numpy_norm
 
 from rtree import index as rtindex
 from flatcamGUI.GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FCComboBox, FCTextAreaRich, \
@@ -1931,14 +1932,22 @@ class FCCircle(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'circle'
 
-        self.start_msg = _("Click on CENTER ...")
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_circle_geo.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
+        self.start_msg = _("Click on Center point ...")
+        self.draw_app.app.inform.emit(_("Click on Center point ..."))
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
     def click(self, point):
         self.points.append(point)
 
         if len(self.points) == 1:
-            self.draw_app.app.inform.emit(_("Click on Circle perimeter point to complete ..."))
+            self.draw_app.app.inform.emit(_("Click on Perimeter point to complete ..."))
             return "Click on perimeter to complete ..."
 
         if len(self.points) == 2:
@@ -1957,6 +1966,11 @@ class FCCircle(FCShapeTool):
         return None
 
     def make(self):
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+
         p1 = self.points[0]
         p2 = self.points[1]
         radius = distance(p1, p2)
@@ -1970,7 +1984,15 @@ class FCArc(FCShapeTool):
         DrawTool.__init__(self, draw_app)
         self.name = 'arc'
 
-        self.start_msg = _("Click on CENTER ...")
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_arc.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
+        self.start_msg = _("Click on Center point ...")
+        self.draw_app.app.inform.emit(_("Click on Center point ..."))
 
         # Direction of rotation between point 1 and 2.
         # 'cw' or 'ccw'. Switch direction by hitting the
@@ -1989,11 +2011,21 @@ class FCArc(FCShapeTool):
         self.points.append(point)
 
         if len(self.points) == 1:
-            self.draw_app.app.inform.emit(_("Click on Start arc point ..."))
+            if self.mode == 'c12':
+                self.draw_app.app.inform.emit(_("Click on Start point ..."))
+            elif self.mode == '132':
+                self.draw_app.app.inform.emit(_("Click on Point3 ..."))
+            else:
+                self.draw_app.app.inform.emit(_("Click on Stop point ..."))
             return "Click on 1st point ..."
 
         if len(self.points) == 2:
-            self.draw_app.app.inform.emit(_("Click on End arc point to complete ..."))
+            if self.mode == 'c12':
+                self.draw_app.app.inform.emit(_("Click on Stop point to complete ..."))
+            elif self.mode == '132':
+                self.draw_app.app.inform.emit(_("Click on Point2 to complete ..."))
+            else:
+                self.draw_app.app.inform.emit(_("Click on Center point to complete ..."))
             return "Click on 2nd point to complete ..."
 
         if len(self.points) == 3:
@@ -2003,18 +2035,25 @@ class FCArc(FCShapeTool):
         return ""
 
     def on_key(self, key):
-        if key == 'o':
+        if key == 'D' or key == QtCore.Qt.Key_D:
             self.direction = 'cw' if self.direction == 'ccw' else 'ccw'
-            return 'Direction: ' + self.direction.upper()
+            return _('Direction: %s') % self.direction.upper()
 
-        if key == 'p':
+        if key == 'M' or key == QtCore.Qt.Key_M:
+            # delete the possible points made before this action; we want to start anew
+            self.points[:] = []
+            # and delete the utility geometry made up until this point
+            self.draw_app.delete_utility_geometry()
+
             if self.mode == 'c12':
                 self.mode = '12c'
+                return _('Mode: Start -> Stop -> Center. Click on Start point ...')
             elif self.mode == '12c':
                 self.mode = '132'
+                return _('Mode: Point1 -> Point3 -> Point2. Click on Point1 ...')
             else:
                 self.mode = 'c12'
-            return 'Mode: ' + self.mode
+                return _('Mode: Center -> Start -> Stop. Click on Center point ...')
 
     def utility_geometry(self, data=None):
         if len(self.points) == 1:  # Show the radius
@@ -2043,7 +2082,11 @@ class FCArc(FCShapeTool):
                 p3 = array(self.points[1])
                 p2 = array(data)
 
-                center, radius, t = three_point_circle(p1, p2, p3)
+                try:
+                    center, radius, t = three_point_circle(p1, p2, p3)
+                except TypeError:
+                    return
+
                 direction = 'cw' if sign(t) > 0 else 'ccw'
 
                 startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
@@ -2065,7 +2108,7 @@ class FCArc(FCShapeTool):
 
                 # Perpendicular vector
                 b = dot(c, array([[0, -1], [1, 0]], dtype=float32))
-                b /= norm(b)
+                b /= numpy_norm(b)
 
                 # Distance
                 t = distance(data, a)
@@ -2078,7 +2121,7 @@ class FCArc(FCShapeTool):
                 # Center = a + bt
                 center = a + b * t
 
-                radius = norm(center - p1)
+                radius = numpy_norm(center - p1)
                 startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
                 stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
 
@@ -2128,7 +2171,7 @@ class FCArc(FCShapeTool):
 
             # Perpendicular vector
             b = dot(c, array([[0, -1], [1, 0]], dtype=float32))
-            b /= norm(b)
+            b /= numpy_norm(b)
 
             # Distance
             t = distance(pc, a)
@@ -2141,7 +2184,7 @@ class FCArc(FCShapeTool):
             # Center = a + bt
             center = a + b * t
 
-            radius = norm(center - p1)
+            radius = numpy_norm(center - p1)
             startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
             stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
 
@@ -2159,6 +2202,13 @@ class FCRectangle(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'rectangle'
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.start_msg = _("Click on 1st corner ...")
 
@@ -2183,6 +2233,11 @@ class FCRectangle(FCShapeTool):
         return None
 
     def make(self):
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+
         p1 = self.points[0]
         p2 = self.points[1]
         # self.geometry = LinearRing([p1, (p2[0], p1[1]), p2, (p1[0], p2[1])])
@@ -2199,6 +2254,13 @@ class FCPolygon(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'polygon'
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.start_msg = _("Click on 1st point ...")
 
@@ -2226,6 +2288,11 @@ class FCPolygon(FCShapeTool):
         return None
 
     def make(self):
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+
         # self.geometry = LinearRing(self.points)
         self.geometry = DrawToolShape(Polygon(self.points))
         self.draw_app.in_action = False
@@ -2233,19 +2300,38 @@ class FCPolygon(FCShapeTool):
         self.draw_app.app.inform.emit(_("[success] Done. Polygon completed."))
 
     def on_key(self, key):
-        if key == 'backspace':
+        if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
             if len(self.points) > 0:
                 self.points = self.points[0:-1]
+                # Remove any previous utility shape
+                self.draw_app.tool_shape.clear(update=False)
+                geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+                self.draw_app.draw_utility_geometry(geo=geo)
+                return _("Backtracked one point ...")
 
 
 class FCPath(FCPolygon):
     """
     Resulting type: LineString
     """
+    def __init__(self, draw_app):
+        FCPolygon.__init__(self, draw_app)
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path5.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
     def make(self):
         self.geometry = DrawToolShape(LineString(self.points))
         self.name = 'path'
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
 
         self.draw_app.in_action = False
         self.complete = True
@@ -2260,15 +2346,25 @@ class FCPath(FCPolygon):
         return None
 
     def on_key(self, key):
-        if key == 'backspace':
+        if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
             if len(self.points) > 0:
                 self.points = self.points[0:-1]
+                # Remove any previous utility shape
+                self.draw_app.tool_shape.clear(update=False)
+                geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+                self.draw_app.draw_utility_geometry(geo=geo)
+                return _("Backtracked one point ...")
 
 
 class FCSelect(DrawTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
         self.name = 'select'
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
 
         self.storage = self.draw_app.storage
         # self.shape_buffer = self.draw_app.shape_buffer
@@ -2441,6 +2537,14 @@ class FCText(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
         self.name = 'text'
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_text.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
 
         # self.shape_buffer = self.draw_app.shape_buffer
         self.draw_app = draw_app
@@ -2832,6 +2936,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.replot()
 
     def activate(self):
+        # adjust the status of the menu entries related to the editor
+        self.app.ui.menueditedit.setDisabled(True)
+        self.app.ui.menueditok.setDisabled(False)
+        # adjust the visibility of some of the canvas context menu
+        self.app.ui.popmenu_edit.setVisible(False)
+        self.app.ui.popmenu_save.setVisible(True)
+
         self.connect_canvas_event_handlers()
 
         # initialize working objects
@@ -2864,14 +2975,17 @@ class FlatCAMGeoEditor(QtCore.QObject):
         for w in sel_tab_widget_list:
             w.setEnabled(False)
 
-        # adjust the visibility of some of the canvas context menu
-        self.app.ui.popmenu_edit.setVisible(False)
-        self.app.ui.popmenu_save.setVisible(True)
-
         # Tell the App that the editor is active
         self.editor_active = True
 
     def deactivate(self):
+        # adjust the status of the menu entries related to the editor
+        self.app.ui.menueditedit.setDisabled(False)
+        self.app.ui.menueditok.setDisabled(True)
+        # adjust the visibility of some of the canvas context menu
+        self.app.ui.popmenu_edit.setVisible(True)
+        self.app.ui.popmenu_save.setVisible(False)
+
         self.disconnect_canvas_event_handlers()
         self.clear()
         self.app.ui.geo_edit_toolbar.setDisabled(True)
@@ -2919,10 +3033,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # Tell the app that the editor is no longer active
         self.editor_active = False
 
-        # adjust the visibility of some of the canvas context menu
-        self.app.ui.popmenu_edit.setVisible(True)
-        self.app.ui.popmenu_save.setVisible(False)
-
         try:
             # re-enable all the widgets in the Selected Tab that were disabled after entering in Edit Geometry Mode
             sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
@@ -2938,9 +3048,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
     def connect_canvas_event_handlers(self):
         ## Canvas events
 
+        # first connect to new, then disconnect the old handlers
+        # don't ask why but if there is nothing connected I've seen issues
+        self.canvas.vis_connect('mouse_press', self.on_canvas_click)
+        self.canvas.vis_connect('mouse_move', self.on_canvas_move)
+        self.canvas.vis_connect('mouse_release', self.on_geo_click_release)
+
         # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
         # but those from FlatCAMGeoEditor
-
         self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
@@ -2948,22 +3063,19 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.app.collection.view.clicked.disconnect()
 
-        self.canvas.vis_connect('mouse_press', self.on_canvas_click)
-        self.canvas.vis_connect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_connect('mouse_release', self.on_canvas_click_release)
-
     def disconnect_canvas_event_handlers(self):
-
-        self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
-        self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
-        self.canvas.vis_disconnect('mouse_release', self.on_canvas_click_release)
-
         # we restore the key and mouse control to FlatCAMApp method
+        # first connect to new, then disconnect the old handlers
+        # don't ask why but if there is nothing connected I've seen issues
         self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
         self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
         self.app.plotcanvas.vis_connect('mouse_double_click', self.app.on_double_click_over_plot)
         self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
+
+        self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
+        self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
+        self.canvas.vis_disconnect('mouse_release', self.on_geo_click_release)
 
     def add_shape(self, shape):
         """
@@ -3287,7 +3399,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # Update cursor
         self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
 
-    def on_canvas_click_release(self, event):
+    def on_geo_click_release(self, event):
         pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
 
         if self.app.grid_status():

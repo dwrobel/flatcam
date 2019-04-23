@@ -8,7 +8,7 @@
 
 from FlatCAMTool import FlatCAMTool
 from FlatCAMCommon import LoudDict
-from flatcamGUI.GUIElements import FCComboBox, FCEntry, FCTable
+from flatcamGUI.GUIElements import FCComboBox, FCEntry, FCEntry2, FCTable
 from FlatCAMApp import log
 from camlib import distance
 from FlatCAMObj import FlatCAMCNCjob
@@ -102,7 +102,7 @@ class SolderPaste(FlatCAMTool):
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new Nozzle tool to add in the Tool Table")
         )
-        self.addtool_entry = FCEntry()
+        self.addtool_entry = FCEntry2()
 
         # hlay.addWidget(self.addtool_label)
         # hlay.addStretch()
@@ -415,6 +415,7 @@ class SolderPaste(FlatCAMTool):
         ## Signals
         self.combo_context_del_action.triggered.connect(self.on_delete_object)
         self.addtool_btn.clicked.connect(self.on_tool_add)
+        self.addtool_entry.returnPressed.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
         self.soldergeo_btn.clicked.connect(self.on_create_geo_click)
         self.solder_gcode_btn.clicked.connect(self.on_create_gcode_click)

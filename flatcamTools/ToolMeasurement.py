@@ -103,33 +103,44 @@ class Measurement(FlatCAMTool):
 
         self.layout.addStretch()
 
-        self.clicked_meas = 0
+        # store here the first click and second click of the measurement process
+        self.points = []
 
-        self.point1 = None
-        self.point2 = None
+        self.rel_point1 = None
+        self.rel_point2 = None
 
-        # the default state is disabled for the Move command
-        # self.setVisible(False)
-        self.active = 0
+        self.active = False
+
+        self.original_call_source = 'app'
 
         # VisPy visuals
         self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.vispy_canvas.view.scene, layers=1)
 
-        self.measure_btn.clicked.connect(lambda: self.on_measure(activate=True))
+        self.measure_btn.clicked.connect(self.activate_measure_tool)
 
     def run(self, toggle=False):
         self.app.report_usage("ToolMeasurement()")
+
+        self.points[:] = []
+
+        self.rel_point1 = None
+        self.rel_point2 = None
 
         if self.app.tool_tab_locked is True:
             return
 
         self.app.ui.notebook.setTabText(2, _("Meas. Tool"))
 
-        # if the splitter is hidden, display it, else hide it but only if the current widget is the same
+        # if the splitter is hidden, display it
         if self.app.ui.splitter.sizes()[0] == 0:
             self.app.ui.splitter.setSizes([1, 1])
+        if toggle:
+            pass
 
-        self.on_measure(activate=True)
+        if self.active is False:
+            self.activate_measure_tool()
+        else:
+            self.deactivate_measure_tool()
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='CTRL+M', **kwargs)
@@ -154,123 +165,114 @@ class Measurement(FlatCAMTool):
         self.distance_x_entry.set_value('0')
         self.distance_y_entry.set_value('0')
         self.total_distance_entry.set_value('0')
+        log.debug("Measurement Tool --> tool initialized")
 
-    def activate(self):
-        # we disconnect the mouse/key handlers from wherever the measurement tool was called
-        self.canvas.vis_disconnect('key_press')
-        self.canvas.vis_disconnect('mouse_move')
-        self.canvas.vis_disconnect('mouse_press')
-        self.canvas.vis_disconnect('mouse_release')
-        self.canvas.vis_disconnect('key_release')
+    def activate_measure_tool(self):
+        # ENABLE the Measuring TOOL
+        self.active = True
 
-        # we can safely connect the app mouse events to the measurement tool
+        self.clicked_meas = 0
+        self.original_call_source = copy(self.app.call_source)
+
+        self.app.inform.emit(_("MEASURING: Click on the Start point ..."))
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
+
+        # we can connect the app mouse events to the measurement tool
+        # NEVER DISCONNECT THOSE before connecting some other handlers; it breaks something in VisPy
         self.canvas.vis_connect('mouse_move', self.on_mouse_move_meas)
-        self.canvas.vis_connect('mouse_release', self.on_mouse_click)
-        self.canvas.vis_connect('key_release', self.on_key_release_meas)
+        self.canvas.vis_connect('mouse_release', self.on_mouse_click_release)
+
+        # we disconnect the mouse/key handlers from wherever the measurement tool was called
+        if self.app.call_source == 'app':
+            self.canvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
+            self.canvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+            self.canvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+        elif self.app.call_source == 'geo_editor':
+            self.canvas.vis_disconnect('mouse_move', self.app.geo_editor.on_canvas_move)
+            self.canvas.vis_disconnect('mouse_press', self.app.geo_editor.on_canvas_click)
+            self.canvas.vis_disconnect('mouse_release', self.app.geo_editor.on_geo_click_release)
+        elif self.app.call_source == 'exc_editor':
+            self.canvas.vis_disconnect('mouse_move', self.app.exc_editor.on_canvas_move)
+            self.canvas.vis_disconnect('mouse_press', self.app.exc_editor.on_canvas_click)
+            self.canvas.vis_disconnect('mouse_release', self.app.exc_editor.on_exc_click_release)
+        elif self.app.call_source == 'grb_editor':
+            self.canvas.vis_disconnect('mouse_move', self.app.grb_editor.on_canvas_move)
+            self.canvas.vis_disconnect('mouse_press', self.app.grb_editor.on_canvas_click)
+            self.canvas.vis_disconnect('mouse_release', self.app.grb_editor.on_grb_click_release)
+
+        self.app.call_source = 'measurement'
 
         self.set_tool_ui()
 
-    def deactivate(self):
-        # disconnect the mouse/key events from functions of measurement tool
-        self.canvas.vis_disconnect('mouse_move', self.on_mouse_move_meas)
-        self.canvas.vis_disconnect('mouse_release', self.on_mouse_click)
-        self.canvas.vis_disconnect('key_release', self.on_key_release_meas)
+    def deactivate_measure_tool(self):
+        # DISABLE the Measuring TOOL
+        self.active = False
+        self.points = []
 
-        # reconnect the mouse/key events to the functions from where the tool was called
-        self.canvas.vis_connect('key_press', self.app.ui.keyPressEvent)
-
-        if self.app.call_source == 'app':
+        self.app.call_source = copy(self.original_call_source)
+        if self.original_call_source == 'app':
             self.canvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
             self.canvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
             self.canvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
-        elif self.app.call_source == 'geo_editor':
+        elif self.original_call_source == 'geo_editor':
             self.canvas.vis_connect('mouse_move', self.app.geo_editor.on_canvas_move)
             self.canvas.vis_connect('mouse_press', self.app.geo_editor.on_canvas_click)
-            # self.canvas.vis_connect('key_press', self.app.geo_editor.on_canvas_key)
-            self.canvas.vis_connect('mouse_release', self.app.geo_editor.on_canvas_click_release)
-        elif self.app.call_source == 'exc_editor':
+            self.canvas.vis_connect('mouse_release', self.app.geo_editor.on_geo_click_release)
+        elif self.original_call_source == 'exc_editor':
             self.canvas.vis_connect('mouse_move', self.app.exc_editor.on_canvas_move)
             self.canvas.vis_connect('mouse_press', self.app.exc_editor.on_canvas_click)
-            # self.canvas.vis_connect('key_press', self.app.exc_editor.on_canvas_key)
-            self.canvas.vis_connect('mouse_release', self.app.exc_editor.on_canvas_click_release)
-        elif self.app.call_source == 'grb_editor':
+            self.canvas.vis_connect('mouse_release', self.app.exc_editor.on_exc_click_release)
+        elif self.original_call_source == 'grb_editor':
             self.canvas.vis_connect('mouse_move', self.app.grb_editor.on_canvas_move)
             self.canvas.vis_connect('mouse_press', self.app.grb_editor.on_canvas_click)
-            # self.canvas.vis_connect('key_press', self.app.grb_editor.on_canvas_key)
-            self.canvas.vis_connect('mouse_release', self.app.grb_editor.on_canvas_click_release)
+            self.canvas.vis_connect('mouse_release', self.app.grb_editor.on_grb_click_release)
 
-        self.app.ui.notebook.setTabText(2, _("Tools"))
-        self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+        # disconnect the mouse/key events from functions of measurement tool
+        self.canvas.vis_disconnect('mouse_move', self.on_mouse_move_meas)
+        self.canvas.vis_disconnect('mouse_release', self.on_mouse_click_release)
 
-    def on_measure(self, signal=None, activate=None):
-        log.debug("Measurement.on_measure()")
-        if activate is False or activate is None:
-            # DISABLE the Measuring TOOL
-            self.deactivate()
+        # self.app.ui.notebook.setTabText(2, _("Tools"))
+        # self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
 
-            self.app.command_active = None
+        self.app.command_active = None
 
-            # delete the measuring line
-            self.delete_shape()
+        # delete the measuring line
+        self.delete_shape()
 
-            log.debug("Measurement Tool --> exit tool")
-        elif activate is True:
-            # ENABLE the Measuring TOOL
-            self.clicked_meas = 0
+        log.debug("Measurement Tool --> exit tool")
 
-            self.app.inform.emit(_("MEASURING: Click on the Start point ..."))
-            self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
-
-            self.activate()
-            log.debug("Measurement Tool --> tool initialized")
-
-    def on_key_release_meas(self, event):
-        if event.key == 'escape':
-            # abort the measurement action
-            self.on_measure(activate=False)
-            self.app.inform.emit(_("Measurement Tool exit..."))
-            return
-
-        if event.key == 'G':
-            # toggle grid status
-            self.app.ui.grid_snap_btn.trigger()
-            return
-
-    def on_mouse_click(self, event):
+    def on_mouse_click_release(self, event):
         # mouse click releases will be accepted only if the left button is clicked
         # this is necessary because right mouse click or middle mouse click
         # are used for panning on the canvas
+        log.debug("Measuring Tool --> mouse click release")
 
         if event.button == 1:
             pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
+            # if GRID is active we need to get the snapped positions
+            if self.app.grid_status():
+                pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+            else:
+                pos = pos_canvas[0], pos_canvas[1]
+            self.points.append(pos)
 
-            if self.clicked_meas == 0:
-                self.clicked_meas = 1
+            # Reset here the relative coordinates so there is a new reference on the click position
+            if self.rel_point1 is None:
+                self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                                       "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0.0, 0.0))
+                self.rel_point1 = pos
+            else:
+                self.rel_point2 = copy(self.rel_point1)
+                self.rel_point1 = pos
 
-                # if GRID is active we need to get the snapped positions
-                if self.app.grid_status() == True:
-                    pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
-                else:
-                    pos = pos_canvas[0], pos_canvas[1]
-
-                self.point1 = pos
+            if len(self.points) == 1:
                 self.start_entry.set_value("(%.4f, %.4f)" % pos)
                 self.app.inform.emit(_("MEASURING: Click on the Destination point ..."))
 
-            else:
-                # delete the selection bounding box
-                self.delete_shape()
-
-                # if GRID is active we need to get the snapped positions
-                if self.app.grid_status() is True:
-                    pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
-                else:
-                    pos = pos_canvas[0], pos_canvas[1]
-
-                dx = pos[0] - self.point1[0]
-                dy = pos[1] - self.point1[1]
+            if len(self.points) == 2:
+                dx = self.points[1][0] - self.points[0][0]
+                dy = self.points[1][1] - self.points[0][1]
                 d = sqrt(dx ** 2 + dy ** 2)
-
                 self.stop_entry.set_value("(%.4f, %.4f)" % pos)
 
                 self.app.inform.emit(_("MEASURING: Result D(x) = {d_x} | D(y) = {d_y} | Distance = {d_z}").format(
@@ -279,34 +281,47 @@ class Measurement(FlatCAMTool):
                 self.distance_x_entry.set_value('%.4f' % abs(dx))
                 self.distance_y_entry.set_value('%.4f' % abs(dy))
                 self.total_distance_entry.set_value('%.4f' % abs(d))
-
-                # TODO: I don't understand why I have to do it twice ... but without it the mouse handlers are
-                # TODO: are left disconnected ...
-                self.on_measure(activate=False)
-                self.deactivate()
+                self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                                       "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (pos[0], pos[1]))
+                self.deactivate_measure_tool()
 
     def on_mouse_move_meas(self, event):
-        pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
+        try:  # May fail in case mouse not within axes
+            pos_canvas = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+            if self.app.grid_status():
+                pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
+                self.app.app_cursor.enabled = True
+                # Update cursor
+                self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]),
+                                             symbol='++', edge_color='black', size=20)
+            else:
+                pos = (pos_canvas[0], pos_canvas[1])
+                self.app.app_cursor.enabled = False
 
-        # if GRID is active we need to get the snapped positions
-        if self.app.grid_status() == True:
-            pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
-            self.app.app_cursor.enabled = True
-            # Update cursor
-            self.app.app_cursor.set_data(np.asarray([(pos[0], pos[1])]), symbol='++', edge_color='black', size=20)
-        else:
-            pos = pos_canvas
-            self.app.app_enabled = False
+            if self.rel_point1 is not None:
+                dx = pos[0] - self.rel_point1[0]
+                dy = pos[1] - self.rel_point1[1]
+            else:
+                dx = pos[0]
+                dy = pos[1]
 
-        self.point2 = (pos[0], pos[1])
+            self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
+                                               "<b>Y</b>: %.4f" % (pos[0], pos[1]))
+            self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
+                                                   "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+            # update utility geometry
+            if len(self.points) == 1:
+                self.utility_geometry(pos=pos)
+        except:
+            self.app.ui.position_label.setText("")
+            self.app.ui.rel_position_label.setText("")
 
-        # update utility geometry
-        if self.clicked_meas == 1:
-            # first delete old shape
-            self.delete_shape()
-            # second draw the new shape of the utility geometry
-            self.meas_line = LineString([self.point2, self.point1])
-            self.sel_shapes.add(self.meas_line, color='black', update=True, layer=0, tolerance=None)
+    def utility_geometry(self, pos):
+        # first delete old shape
+        self.delete_shape()
+        # second draw the new shape of the utility geometry
+        self.meas_line = LineString([pos, self.points[0]])
+        self.sel_shapes.add(self.meas_line, color='black', update=True, layer=0, tolerance=None)
 
     def delete_shape(self):
         self.sel_shapes.clear()
