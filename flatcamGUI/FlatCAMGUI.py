@@ -638,6 +638,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panel16.png'), _("Panel Tool"))
         self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'),_( "Film Tool"))
         self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'), _("SolderPaste Tool"))
+        self.silk_btn = self.toolbartools.addAction(QtGui.QIcon('share/silk32.png'), _("Silkscreen Tool"))
+
         self.toolbartools.addSeparator()
 
         self.calculators_btn = self.toolbartools.addAction(QtGui.QIcon('share/calculator24.png'), _("Calculators Tool"))
@@ -1843,6 +1845,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'), _("Film Tool"))
         self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'),
                                                       _("SolderPaste Tool"))
+        self.silk_btn = self.toolbartools.addAction(QtGui.QIcon('share/silk32.png'), _("Silkscreen Tool"))
+
         self.toolbartools.addSeparator()
 
         self.calculators_btn = self.toolbartools.addAction(QtGui.QIcon('share/calculator24.png'),
@@ -2108,6 +2112,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # 2-Sided PCB Tool
                 if key == QtCore.Qt.Key_D:
                     self.app.dblsidedtool.run(toggle=True)
+                    return
+
+                # Silkscreen Tool
+                if key == QtCore.Qt.Key_E:
+                    self.app.silk_tool.run(toggle=True)
                     return
 
                 # Solder Paste Dispensing Tool

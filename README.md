@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - PDF import tool: working in making the PDF layer rendering multithreaded in itself (one layer rendered on each worker)
 - PDF import tool: solved a bug in parsing the rectangle subpath (an extra point was added to the subpath creating nonexisting geometry)
 - PDF import tool: finished layer rendering multithreading
+- New tool: Silkscreen Tool: I am trying to remove the overlapped geo with the soldermask layer from overlay layer; layed out the class and functions - not working yet
 
 23.04.2019
 
