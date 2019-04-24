@@ -3051,6 +3051,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                    'params': [self.filename, object_type, None]})
 
                     if extension in self.app.pdf_list:
+                        self.app.pdf_tool.periodic_check(1000)
                         self.app.worker_task.emit({'fcn': self.app.pdf_tool.open_pdf,
                                                    'params': [self.filename]})
 

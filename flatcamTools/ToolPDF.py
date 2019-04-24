@@ -106,8 +106,6 @@ class ToolPDF(FlatCAMTool):
         self.gs['transform'] = []
         self.gs['line_width'] = []   # each element is a float
 
-        self.obj_dict = dict()
-
         self.pdf_decompressed = {}
 
         # key = file name and extension
@@ -169,12 +167,10 @@ class ToolPDF(FlatCAMTool):
     def open_pdf(self, filename):
         short_name = filename.split('/')[-1].split('\\')[-1]
         self.parsing_promises.append(short_name)
-
         self.pdf_parsed[short_name] = {}
         self.pdf_parsed[short_name]['pdf'] = {}
         self.pdf_parsed[short_name]['filename'] = filename
 
-        self.obj_dict.clear()
         self.pdf_decompressed[short_name] = ''
 
         # the UNITS in PDF files are points and here we set the factor to convert them to real units (either MM or INCH)
@@ -201,21 +197,18 @@ class ToolPDF(FlatCAMTool):
 
             self.pdf_parsed[short_name]['pdf'] = self.parse_pdf(pdf_content=self.pdf_decompressed[short_name])
 
-
         # removal from list is done in a multithreaded way therefore not always the removal can be done
         try:
             self.parsing_promises.remove(short_name)
         except:
             pass
 
-    def layer_rendering(self, **kwargs):
-        filename = kwargs['filename']
-        parsed_content_dict = kwargs['pdf']
+    def layer_rendering(self, filename, parsed_content_dict):
         short_name = filename.split('/')[-1].split('\\')[-1]
 
         for k in parsed_content_dict:
             ap_dict = parsed_content_dict[k]
-            if ap_dict:
+            if parsed_content_dict[k]:
                 if k == 0:
                     # Excellon
                     obj_type = 'excellon'
@@ -226,7 +219,6 @@ class ToolPDF(FlatCAMTool):
                     points = {}
 
                     def obj_init(exc_obj, app_obj):
-                        # print(self.parsed_obj_dict[0])
 
                         for geo in parsed_content_dict[k]['0']['solid_geometry']:
                             xmin, ymin, xmax, ymax = geo.bounds
@@ -305,7 +297,6 @@ class ToolPDF(FlatCAMTool):
                     # GUI feedback
                     self.app.inform.emit(_("[success] Opened: %s") % filename)
 
-
     def periodic_check(self, check_period):
         """
         This function starts an QTimer and it will periodically check if parsing was done
@@ -327,14 +318,18 @@ class ToolPDF(FlatCAMTool):
         If the parsing worker finished that start multithreaded rendering
         :return:
         """
-
+        log.debug("checking parsing --> %s" % str(self.parsing_promises))
         try:
             if not self.parsing_promises:
                 self.check_thread.stop()
                 # parsing finished start the layer rendering
                 if self.pdf_parsed:
+
                     for short_name in self.pdf_parsed:
-                        self.layer_rendering(pdf_content_dict=self.pdf_parsed[short_name])
+                        filename = self.pdf_parsed[short_name]['filename']
+                        pdf = self.pdf_parsed[short_name]['pdf']
+                        self.app.worker_task.emit({'fcn': self.layer_rendering,
+                                                   'params': [filename, pdf]})
 
                 log.debug("ToolPDF --> Periodic check finished.")
         except Exception:
@@ -369,7 +364,7 @@ class ToolPDF(FlatCAMTool):
         object_dict = {}
 
         # will serve as key in the object_dict
-        object_nr = 1
+        layer_nr = 1
 
         # store the apertures here
         apertures_dict = {}
@@ -387,14 +382,14 @@ class ToolPDF(FlatCAMTool):
         clear_apertures_dict['0']['solid_geometry'] = []
 
         # create first object
-        object_dict[object_nr] = apertures_dict
-        object_nr += 1
+        object_dict[layer_nr] = {}
+        layer_nr += 1
 
         # on stroke color change we create a new apertures dictionary and store the old one in a storage from where
         # it will be transformed into Gerber object
         old_color = [None, None ,None]
 
-        # signal that we have clear geometry and the geometry will be added to a special object_nr = 0
+        # signal that we have clear geometry and the geometry will be added to a special layer_nr = 0
         flag_clear_geo = False
 
         line_nr = 0
@@ -416,11 +411,11 @@ class ToolPDF(FlatCAMTool):
                     # same color, do nothing
                     continue
                 else:
-                    object_dict[object_nr] = deepcopy(apertures_dict)
-                    object_nr += 1
+                    object_dict[layer_nr] = deepcopy(apertures_dict)
+                    apertures_dict.clear()
+                    layer_nr += 1
 
-                    object_dict[object_nr] = dict()
-                    apertures_dict = {}
+                    object_dict[layer_nr] = dict()
                 old_color = copy(color)
                 # we make sure that the following geometry is added to the right storage
                 flag_clear_geo = False
@@ -602,7 +597,6 @@ class ToolPDF(FlatCAMTool):
                         y * self.point_to_unit_factor * scale_geo[1])
 
                 subpath['bezier'].append([start, c1, stop, stop])
-                print(subpath['bezier'])
                 current_point = stop
                 continue
 
@@ -1006,10 +1000,19 @@ class ToolPDF(FlatCAMTool):
 
         # tidy up. copy the current aperture dict to the object dict but only if it is not empty
         if apertures_dict:
-            object_dict[object_nr] = deepcopy(apertures_dict)
+            object_dict[layer_nr] = deepcopy(apertures_dict)
 
         if clear_apertures_dict['0']['solid_geometry']:
             object_dict[0] = deepcopy(clear_apertures_dict)
+
+        # delete keys (layers) with empty values
+        empty_layers = []
+        for layer in object_dict:
+            if not object_dict[layer]:
+                empty_layers.append(layer)
+        for x in empty_layers:
+            if x in object_dict:
+                object_dict.pop(x)
 
         return object_dict
 
