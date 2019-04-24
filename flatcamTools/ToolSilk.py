@@ -10,7 +10,7 @@
 from FlatCAMTool import FlatCAMTool
 # from copy import copy, deepcopy
 from ObjectCollection import *
-# import time
+import time
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -196,16 +196,19 @@ class ToolSilk(FlatCAMTool):
                             else:
                                 new_solid_geometry.append(geo_silk)
 
-        # while not self.new_apertures[aperture_id]['solid_geometry']:
         try:
-            self.new_apertures[aperture_id]['solid_geometry'] = new_solid_geometry
+            while True:
+                self.new_apertures[aperture_id]['solid_geometry'] = new_solid_geometry
+                time.sleep(0.1)
         except:
             pass
 
-        # while aperture_id in self.promises:
-        # removal from list is done in a multithreaded way therefore not always the removal can be done
         try:
-            self.promises.remove(aperture_id)
+            while True:
+                # removal from list is done in a multithreaded way therefore not always the removal can be done
+                # so we keep trying until it's done
+                self.promises.remove(aperture_id)
+                time.sleep(0.1)
         except:
             pass
 
