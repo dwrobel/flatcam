@@ -107,8 +107,18 @@ class ToolPDF(FlatCAMTool):
         self.gs['line_width'] = []   # each element is a float
 
         self.obj_dict = dict()
-        self.pdf_parsed = ''
-        self.parsed_obj_dict = dict()
+
+        self.pdf_decompressed = {}
+
+        # key = file name and extension
+        # value is a dict to store the parsed content of the PDF
+        self.pdf_parsed = {}
+
+        # QTimer for periodic check
+        self.check_thread = None
+        # Every time a parser is started we add a promise; every time a parser finished we remove a promise
+        # when empty we start the layer rendering
+        self.parsing_promises = []
 
         # conversion factor to INCH
         self.point_to_unit_factor = 0.01388888888
@@ -148,16 +158,24 @@ class ToolPDF(FlatCAMTool):
         if len(filenames) == 0:
             self.app.inform.emit(_("[WARNING_NOTCL] Open PDF cancelled."))
         else:
+            # start the parsing timer with a period of 1 second
+            self.periodic_check(1000)
+
             for filename in filenames:
                 if filename != '':
-                    self.app.worker_task.emit({'fcn': self.open_pdf, 'params': [filename]})
+                    self.app.worker_task.emit({'fcn': self.open_pdf,
+                                               'params': [filename]})
 
     def open_pdf(self, filename):
-        new_name = filename.split('/')[-1].split('\\')[-1]
+        short_name = filename.split('/')[-1].split('\\')[-1]
+        self.parsing_promises.append(short_name)
+
+        self.pdf_parsed[short_name] = {}
+        self.pdf_parsed[short_name]['pdf'] = {}
+        self.pdf_parsed[short_name]['filename'] = filename
+
         self.obj_dict.clear()
-        self.pdf_parsed = ''
-        self.parsed_obj_dict = {}
-        obj_type = 'gerber'
+        self.pdf_decompressed[short_name] = ''
 
         # the UNITS in PDF files are points and here we set the factor to convert them to real units (either MM or INCH)
         if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
@@ -177,27 +195,40 @@ class ToolPDF(FlatCAMTool):
                 log.debug(" PDF STREAM: %d\n" % stream_nr)
                 s = s.strip(b'\r\n')
                 try:
-                    self.pdf_parsed += (zlib.decompress(s).decode('UTF-8') + '\r\n')
+                    self.pdf_decompressed[short_name] += (zlib.decompress(s).decode('UTF-8') + '\r\n')
                 except Exception as e:
                     log.debug("ToolPDF.open_pdf().obj_init() --> %s" % str(e))
 
-            self.parsed_obj_dict = self.parse_pdf(pdf_content=self.pdf_parsed)
+            self.pdf_parsed[short_name]['pdf'] = self.parse_pdf(pdf_content=self.pdf_decompressed[short_name])
 
-        for k in self.parsed_obj_dict:
-            ap_dict = deepcopy(self.parsed_obj_dict[k])
+
+        # removal from list is done in a multithreaded way therefore not always the removal can be done
+        try:
+            self.parsing_promises.remove(short_name)
+        except:
+            pass
+
+    def layer_rendering(self, **kwargs):
+        filename = kwargs['filename']
+        parsed_content_dict = kwargs['pdf']
+        short_name = filename.split('/')[-1].split('\\')[-1]
+
+        for k in parsed_content_dict:
+            ap_dict = parsed_content_dict[k]
             if ap_dict:
                 if k == 0:
                     # Excellon
                     obj_type = 'excellon'
 
-                    new_name = new_name + "_exc"
-                    # store the points here until reconstitution: keys are diameters and values are list of (x,y) coords
+                    short_name = short_name + "_exc"
+                    # store the points here until reconstitution:
+                    # keys are diameters and values are list of (x,y) coords
                     points = {}
 
                     def obj_init(exc_obj, app_obj):
                         # print(self.parsed_obj_dict[0])
 
-                        for geo in self.parsed_obj_dict[0]['0']['solid_geometry']:
+                        for geo in parsed_content_dict[k]['0']['solid_geometry']:
                             xmin, ymin, xmax, ymax = geo.bounds
                             center = (((xmax - xmin) / 2) + xmin, ((ymax - ymin) / 2) + ymin)
 
@@ -235,7 +266,7 @@ class ToolPDF(FlatCAMTool):
                         for tool in exc_obj.tools:
                             if exc_obj.tools[tool]['solid_geometry']:
                                 return
-                        app_obj.inform.emit(_("[ERROR_NOTCL] No geometry found in file: %s") % new_name)
+                        app_obj.inform.emit(_("[ERROR_NOTCL] No geometry found in file: %s") % short_name)
                         return "fail"
                 else:
                     # Gerber
@@ -265,7 +296,7 @@ class ToolPDF(FlatCAMTool):
 
                 with self.app.proc_container.new(_("Rendering PDF layer #%d ...") % (int(k) - 2)):
 
-                    ret = self.app.new_object(obj_type, new_name, obj_init, autoselected=False)
+                    ret = self.app.new_object(obj_type, short_name, obj_init, autoselected=False)
                     if ret == 'fail':
                         self.app.inform.emit(_('[ERROR_NOTCL] Open PDF file failed.'))
                         return
@@ -273,6 +304,41 @@ class ToolPDF(FlatCAMTool):
                     self.app.file_opened.emit(obj_type, filename)
                     # GUI feedback
                     self.app.inform.emit(_("[success] Opened: %s") % filename)
+
+
+    def periodic_check(self, check_period):
+        """
+        This function starts an QTimer and it will periodically check if parsing was done
+
+        :param check_period: time at which to check periodically if all plots finished to be plotted
+        :return:
+        """
+
+        # self.plot_thread = threading.Thread(target=lambda: self.check_plot_finished(check_period))
+        # self.plot_thread.start()
+        log.debug("ToolPDF --> Periodic Check started.")
+        self.check_thread = QtCore.QTimer()
+        self.check_thread.setInterval(check_period)
+        self.check_thread.timeout.connect(self.periodic_check_handler)
+        self.check_thread.start()
+
+    def periodic_check_handler(self):
+        """
+        If the parsing worker finished that start multithreaded rendering
+        :return:
+        """
+
+        try:
+            if not self.parsing_promises:
+                self.check_thread.stop()
+                # parsing finished start the layer rendering
+                if self.pdf_parsed:
+                    for short_name in self.pdf_parsed:
+                        self.layer_rendering(pdf_content_dict=self.pdf_parsed[short_name])
+
+                log.debug("ToolPDF --> Periodic check finished.")
+        except Exception:
+            traceback.print_exc()
 
     def parse_pdf(self, pdf_content):
         path = dict()

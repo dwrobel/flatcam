@@ -94,8 +94,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.914
-    version_date = "2019/04/23"
+    version = 8.915
+    version_date = "2019/05/11"
     beta = True
 
     # current date now
@@ -2773,7 +2773,7 @@ class App(QtCore.QObject):
 
     def new_object(self, kind, name, initialize, active=True, fit=True, plot=True, autoselected=True):
         """
-        Creates a new specalized FlatCAMObj and attaches it to the application,
+        Creates a new specialized FlatCAMObj and attaches it to the application,
         this is, updates the GUI accordingly, any other records and plots it.
         This method is thread-safe.
 

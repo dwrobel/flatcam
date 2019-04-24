@@ -2174,10 +2174,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # flag to show if the object was modified
         self.is_modified = False
-
         self.edited_obj_name = ""
-
         self.tool_row = 0
+
+        # A QTimer
+        self.plot_thread = None
 
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
@@ -3498,6 +3499,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.shapes.add(shape=geometry, color=color, face_color=color+'AF', layer=0)
 
     def start_delayed_plot(self, check_period):
+        """
+        This function starts an QTImer and it will periodically check if all the workers finish the plotting functions
+
+        :param check_period: time at which to check periodically if all plots finished to be plotted
+        :return:
+        """
+
         # self.plot_thread = threading.Thread(target=lambda: self.check_plot_finished(check_period))
         # self.plot_thread.start()
         log.debug("FlatCAMGrbEditor --> Delayed Plot started.")
@@ -3507,7 +3515,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.plot_thread.start()
 
     def check_plot_finished(self):
-        # print(self.grb_plot_promises)
+        """
+        If all the promises made are finished then all the shapes are in shapes_storage and can be plotted safely and
+        then the UI is rebuilt accordingly.
+        :return:
+        """
+
         try:
             if not self.grb_plot_promises:
                 self.plot_thread.stop()

@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+24.04.2019
+
+- PDF import tool: working in making the PDF layer rendering multithreaded in itself (one layer rendered on each worker)
+
 23.04.2019
 
 - Gerber Editor: added two new tools: Add Disc and Add SemiDisc (porting of Circle and Arc from Geometry Editor)
