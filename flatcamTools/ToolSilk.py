@@ -197,7 +197,7 @@ class ToolSilk(FlatCAMTool):
                                 new_solid_geometry.append(geo_silk)
 
         try:
-            while True:
+            while not self.new_apertures[aperture_id]['solid_geometry']:
                 self.new_apertures[aperture_id]['solid_geometry'] = new_solid_geometry
                 time.sleep(0.1)
         except:
