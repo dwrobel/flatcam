@@ -189,6 +189,8 @@ class App(QtCore.QObject):
 
         App.log.info("FlatCAM Starting...")
 
+        self.main_thread = QtWidgets.QApplication.instance().thread()
+
         ###################
         ### OS-specific ###
         ###################
@@ -1772,7 +1774,7 @@ class App(QtCore.QObject):
             self.thr2 = QtCore.QThread()
             self.worker_task.emit({'fcn': self.version_check,
                                    'params': []})
-            self.thr2.start()
+            self.thr2.start(QtCore.QThread.LowPriority)
 
 
         ####################################
@@ -2883,7 +2885,7 @@ class App(QtCore.QObject):
         FlatCAMApp.App.log.debug("Moving new object back to main thread.")
 
         # Move the object to the main thread and let the app know that it is available.
-        obj.moveToThread(QtWidgets.QApplication.instance().thread())
+        obj.moveToThread(self.main_thread)
         self.object_created.emit(obj, obj_plot, obj_autoselected)
 
         return obj

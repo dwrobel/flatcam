@@ -113,7 +113,8 @@ class ToolPDF(FlatCAMTool):
         self.pdf_parsed = {}
 
         # QTimer for periodic check
-        self.check_thread = None
+        self.check_thread = QtCore.QTimer()
+
         # Every time a parser is started we add a promise; every time a parser finished we remove a promise
         # when empty we start the layer rendering
         self.parsing_promises = []
@@ -196,106 +197,112 @@ class ToolPDF(FlatCAMTool):
                     log.debug("ToolPDF.open_pdf().obj_init() --> %s" % str(e))
 
             self.pdf_parsed[short_name]['pdf'] = self.parse_pdf(pdf_content=self.pdf_decompressed[short_name])
+            # we used it, now we delete it
+            self.pdf_decompressed[short_name] = ''
 
         # removal from list is done in a multithreaded way therefore not always the removal can be done
         try:
             self.parsing_promises.remove(short_name)
         except:
             pass
+        self.app.inform.emit(_("[success] Opened: %s") % filename)
 
-    def layer_rendering(self, filename, parsed_content_dict):
-        short_name = filename.split('/')[-1].split('\\')[-1]
+    def layer_rendering_as_excellon(self, filename, ap_dict, layer_nr):
+        outname = filename.split('/')[-1].split('\\')[-1] + "_%s" % str(layer_nr)
 
-        for k in parsed_content_dict:
-            ap_dict = parsed_content_dict[k]
-            if parsed_content_dict[k]:
-                if k == 0:
-                    # Excellon
-                    obj_type = 'excellon'
+        # store the points here until reconstitution:
+        # keys are diameters and values are list of (x,y) coords
+        points = {}
 
-                    short_name = short_name + "_exc"
-                    # store the points here until reconstitution:
-                    # keys are diameters and values are list of (x,y) coords
-                    points = {}
+        def obj_init(exc_obj, app_obj):
 
-                    def obj_init(exc_obj, app_obj):
+            for geo in ap_dict['0']['solid_geometry']:
+                xmin, ymin, xmax, ymax = geo.bounds
+                center = (((xmax - xmin) / 2) + xmin, ((ymax - ymin) / 2) + ymin)
 
-                        for geo in parsed_content_dict[k]['0']['solid_geometry']:
-                            xmin, ymin, xmax, ymax = geo.bounds
-                            center = (((xmax - xmin) / 2) + xmin, ((ymax - ymin) / 2) + ymin)
-
-                            # for drill bits, even in INCH, it's enough 3 decimals
-                            correction_factor = 0.974
-                            dia = (xmax - xmin) * correction_factor
-                            dia = round(dia, 3)
-                            if dia in points:
-                                points[dia].append(center)
-                            else:
-                                points[dia] = [center]
-
-                        sorted_dia = sorted(points.keys())
-
-                        name_tool = 0
-                        for dia in sorted_dia:
-                            name_tool += 1
-
-                            # create tools dictionary
-                            spec = {"C": dia}
-                            spec['solid_geometry'] = []
-                            exc_obj.tools[str(name_tool)] = spec
-
-                            # create drill list of dictionaries
-                            for dia_points in points:
-                                if dia == dia_points:
-                                    for pt in points[dia_points]:
-                                        exc_obj.drills.append({'point': Point(pt), 'tool': str(name_tool)})
-                                    break
-
-                        ret = exc_obj.create_geometry()
-                        if ret == 'fail':
-                            log.debug("Could not create geometry for Excellon object.")
-                            return "fail"
-                        for tool in exc_obj.tools:
-                            if exc_obj.tools[tool]['solid_geometry']:
-                                return
-                        app_obj.inform.emit(_("[ERROR_NOTCL] No geometry found in file: %s") % short_name)
-                        return "fail"
+                # for drill bits, even in INCH, it's enough 3 decimals
+                correction_factor = 0.974
+                dia = (xmax - xmin) * correction_factor
+                dia = round(dia, 3)
+                if dia in points:
+                    points[dia].append(center)
                 else:
-                    # Gerber
-                    obj_type = 'gerber'
+                    points[dia] = [center]
 
-                    def obj_init(grb_obj, app_obj):
+            sorted_dia = sorted(points.keys())
 
-                        grb_obj.apertures = ap_dict
+            name_tool = 0
+            for dia in sorted_dia:
+                name_tool += 1
 
-                        poly_buff = []
-                        for ap in grb_obj.apertures:
-                            for k in grb_obj.apertures[ap]:
-                                if k == 'solid_geometry':
-                                    poly_buff += ap_dict[ap][k]
+                # create tools dictionary
+                spec = {"C": dia}
+                spec['solid_geometry'] = []
+                exc_obj.tools[str(name_tool)] = spec
 
-                        poly_buff = unary_union(poly_buff)
-                        try:
-                            poly_buff = poly_buff.buffer(0.0000001)
-                        except ValueError:
-                            pass
-                        try:
-                            poly_buff = poly_buff.buffer(-0.0000001)
-                        except ValueError:
-                            pass
+                # create drill list of dictionaries
+                for dia_points in points:
+                    if dia == dia_points:
+                        for pt in points[dia_points]:
+                            exc_obj.drills.append({'point': Point(pt), 'tool': str(name_tool)})
+                        break
 
-                        grb_obj.solid_geometry = deepcopy(poly_buff)
+            ret = exc_obj.create_geometry()
+            if ret == 'fail':
+                log.debug("Could not create geometry for Excellon object.")
+                return "fail"
+            for tool in exc_obj.tools:
+                if exc_obj.tools[tool]['solid_geometry']:
+                    return
+            app_obj.inform.emit(_("[ERROR_NOTCL] No geometry found in file: %s") % outname)
+            return "fail"
 
-                with self.app.proc_container.new(_("Rendering PDF layer #%d ...") % (int(k) - 2)):
+        with self.app.proc_container.new(_("Rendering PDF layer #%d ...") % int(layer_nr)):
 
-                    ret = self.app.new_object(obj_type, short_name, obj_init, autoselected=False)
-                    if ret == 'fail':
-                        self.app.inform.emit(_('[ERROR_NOTCL] Open PDF file failed.'))
-                        return
-                    # Register recent file
-                    self.app.file_opened.emit(obj_type, filename)
-                    # GUI feedback
-                    self.app.inform.emit(_("[success] Opened: %s") % filename)
+            ret = self.app.new_object("excellon", outname, obj_init, autoselected=False)
+            if ret == 'fail':
+                self.app.inform.emit(_('[ERROR_NOTCL] Open PDF file failed.'))
+                return
+            # Register recent file
+            self.app.file_opened.emit("excellon", filename)
+            # GUI feedback
+            self.app.inform.emit(_("[success] Rendered: %s") % outname)
+
+    def layer_rendering_as_gerber(self, filename, ap_dict, layer_nr):
+        outname = filename.split('/')[-1].split('\\')[-1] + "_%s" % str(layer_nr)
+
+        def obj_init(grb_obj, app_obj):
+
+            grb_obj.apertures = ap_dict
+
+            poly_buff = []
+            for ap in grb_obj.apertures:
+                for k in grb_obj.apertures[ap]:
+                    if k == 'solid_geometry':
+                        poly_buff += ap_dict[ap][k]
+
+            poly_buff = unary_union(poly_buff)
+            try:
+                poly_buff = poly_buff.buffer(0.0000001)
+            except ValueError:
+                pass
+            try:
+                poly_buff = poly_buff.buffer(-0.0000001)
+            except ValueError:
+                pass
+
+            grb_obj.solid_geometry = deepcopy(poly_buff)
+
+        with self.app.proc_container.new(_("Rendering PDF layer #%d ...") % int(layer_nr)):
+
+            ret = self.app.new_object('gerber', outname, obj_init, autoselected=False)
+            if ret == 'fail':
+                self.app.inform.emit(_('[ERROR_NOTCL] Open PDF file failed.'))
+                return
+            # Register recent file
+            self.app.file_opened.emit('gerber', filename)
+            # GUI feedback
+            self.app.inform.emit(_("[success] Rendered: %s") % outname)
 
     def periodic_check(self, check_period):
         """
@@ -308,28 +315,53 @@ class ToolPDF(FlatCAMTool):
         # self.plot_thread = threading.Thread(target=lambda: self.check_plot_finished(check_period))
         # self.plot_thread.start()
         log.debug("ToolPDF --> Periodic Check started.")
-        self.check_thread = QtCore.QTimer()
+
+        try:
+            self.check_thread.stop()
+        except:
+            pass
+
         self.check_thread.setInterval(check_period)
+        try:
+            self.check_thread.timeout.disconnect(self.periodic_check_handler)
+        except:
+            pass
+
         self.check_thread.timeout.connect(self.periodic_check_handler)
-        self.check_thread.start()
+        self.check_thread.start(QtCore.QThread.HighPriority)
 
     def periodic_check_handler(self):
         """
-        If the parsing worker finished that start multithreaded rendering
+        If the parsing worker finished then start multithreaded rendering
         :return:
         """
-        log.debug("checking parsing --> %s" % str(self.parsing_promises))
+        # log.debug("checking parsing --> %s" % str(self.parsing_promises))
+
         try:
             if not self.parsing_promises:
                 self.check_thread.stop()
                 # parsing finished start the layer rendering
                 if self.pdf_parsed:
-
-                    for short_name in self.pdf_parsed:
-                        filename = self.pdf_parsed[short_name]['filename']
-                        pdf = self.pdf_parsed[short_name]['pdf']
-                        self.app.worker_task.emit({'fcn': self.layer_rendering,
-                                                   'params': [filename, pdf]})
+                    obj_to_delete = []
+                    for object_name in self.pdf_parsed:
+                        filename = deepcopy(self.pdf_parsed[object_name]['filename'])
+                        pdf_content = deepcopy(self.pdf_parsed[object_name]['pdf'])
+                        obj_to_delete.append(object_name)
+                        for k in pdf_content:
+                            ap_dict = pdf_content[k]
+                            if ap_dict:
+                                layer_nr = k
+                                if k == 0:
+                                    self.app.worker_task.emit({'fcn': self.layer_rendering_as_excellon,
+                                                               'params': [filename, ap_dict, layer_nr]})
+                                else:
+                                    self.app.worker_task.emit({'fcn': self.layer_rendering_as_gerber,
+                                                               'params': [filename, ap_dict, layer_nr]})
+                    # delete the object already processed so it will not be processed again for other objects
+                    # that were opened at the same time; like in drag & drop on GUI
+                    for obj_name in obj_to_delete:
+                        if obj_name in self.pdf_parsed:
+                            self.pdf_parsed.pop(obj_name)
 
                 log.debug("ToolPDF --> Periodic check finished.")
         except Exception:
@@ -362,9 +394,10 @@ class ToolPDF(FlatCAMTool):
 
         # store the objects to be transformed into Gerbers
         object_dict = {}
-
         # will serve as key in the object_dict
         layer_nr = 1
+        # create first object
+        object_dict[layer_nr] = {}
 
         # store the apertures here
         apertures_dict = {}
@@ -380,10 +413,6 @@ class ToolPDF(FlatCAMTool):
         clear_apertures_dict['0']['size'] = 0.0
         clear_apertures_dict['0']['type'] = 'C'
         clear_apertures_dict['0']['solid_geometry'] = []
-
-        # create first object
-        object_dict[layer_nr] = {}
-        layer_nr += 1
 
         # on stroke color change we create a new apertures dictionary and store the old one in a storage from where
         # it will be transformed into Gerber object
@@ -411,11 +440,12 @@ class ToolPDF(FlatCAMTool):
                     # same color, do nothing
                     continue
                 else:
-                    object_dict[layer_nr] = deepcopy(apertures_dict)
-                    apertures_dict.clear()
-                    layer_nr += 1
+                    if apertures_dict:
+                        object_dict[layer_nr] = deepcopy(apertures_dict)
+                        apertures_dict.clear()
+                        layer_nr += 1
 
-                    object_dict[layer_nr] = dict()
+                        object_dict[layer_nr] = dict()
                 old_color = copy(color)
                 # we make sure that the following geometry is added to the right storage
                 flag_clear_geo = False
@@ -807,18 +837,18 @@ class ToolPDF(FlatCAMTool):
                     if path['rectangle']:
                         for subp in path['rectangle']:
                             geo = copy(subp)
-                            # close the subpath if it was not closed already
-                            if close_subpath is False and start_point is not None:
-                                geo.append(start_point)
+                            # # close the subpath if it was not closed already
+                            # if close_subpath is False and start_point is not None:
+                            #     geo.append(start_point)
                             geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
                             path_geo.append(geo_el)
                         # the path was painted therefore initialize it
                         path['rectangle'] = []
                     else:
                         geo = copy(subpath['rectangle'])
-                        # close the subpath if it was not closed already
-                        if close_subpath is False and start_point is not None:
-                            geo.append(start_point)
+                        # # close the subpath if it was not closed already
+                        # if close_subpath is False and start_point is not None:
+                        #     geo.append(start_point)
                         geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
                         path_geo.append(geo_el)
                         subpath['rectangle'] = []
@@ -929,9 +959,9 @@ class ToolPDF(FlatCAMTool):
                         # fill
                         for subp in path['rectangle']:
                             geo = copy(subp)
-                            # close the subpath if it was not closed already
-                            if close_subpath is False:
-                                geo.append(geo[0])
+                            # # close the subpath if it was not closed already
+                            # if close_subpath is False:
+                            #     geo.append(geo[0])
                             geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
                             fill_geo.append(geo_el)
                         # stroke
@@ -944,9 +974,9 @@ class ToolPDF(FlatCAMTool):
                     else:
                         # fill
                         geo = copy(subpath['rectangle'])
-                        # close the subpath if it was not closed already
-                        if close_subpath is False:
-                            geo.append(start_point)
+                        # # close the subpath if it was not closed already
+                        # if close_subpath is False:
+                        #     geo.append(start_point)
                         geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
                         fill_geo.append(geo_el)
                         # stroke

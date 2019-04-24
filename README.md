@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 24.04.2019
 
 - PDF import tool: working in making the PDF layer rendering multithreaded in itself (one layer rendered on each worker)
+- PDF import tool: solved a bug in parsing the rectangle subpath (an extra point was added to the subpath creating nonexisting geometry)
+- PDF import tool: finished layer rendering multithreading
 
 23.04.2019
 
