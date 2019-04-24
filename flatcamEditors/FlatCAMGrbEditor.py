@@ -2630,14 +2630,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.edited_obj_name = self.name_entry.get_value()
 
     def on_aptype_changed(self, current_text):
+        # 'O' is letter O not zero.
         if current_text == 'R' or current_text == 'O':
             self.apdim_lbl.show()
             self.apdim_entry.show()
-            self.apsize_entry.setReadOnly(True)
+            self.apsize_entry.setDisabled(True)
         else:
             self.apdim_lbl.hide()
             self.apdim_entry.hide()
-            self.apsize_entry.setReadOnly(False)
+            self.apsize_entry.setDisabled(False)
 
     def activate_grb_editor(self):
         # adjust the status of the menu entries related to the editor
