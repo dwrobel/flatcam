@@ -18,6 +18,7 @@ import numpy as np
 
 import zlib
 import re
+import time
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -201,8 +202,11 @@ class ToolPDF(FlatCAMTool):
             self.pdf_decompressed[short_name] = ''
 
         # removal from list is done in a multithreaded way therefore not always the removal can be done
+        # try to remove until it's done
         try:
-            self.parsing_promises.remove(short_name)
+            while True:
+                self.parsing_promises.remove(short_name)
+                time.sleep(0.1)
         except:
             pass
         self.app.inform.emit(_("[success] Opened: %s") % filename)
@@ -1057,7 +1061,7 @@ class ToolPDF(FlatCAMTool):
         # with the final point P3. Intermediate values of t generate intermediate points along the curve.
         # The curve does not, in general, pass through the two control points P1 and P2
 
-        :return: LineString geometry
+        :return: A list of point coordinates tuples (x, y)
         """
 
         # here we store the geometric points

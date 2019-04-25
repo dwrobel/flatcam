@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+25.04.2019
+
+- Geometry Editor: modified the intersection (if the selected shapes don't intersects preserve them) and substract functions (delete all shapes that were used in the process)
+- work in the ToolSilk
+
 24.04.2019
 
 - PDF import tool: working in making the PDF layer rendering multithreaded in itself (one layer rendered on each worker)

@@ -173,46 +173,48 @@ class ToolSilk(FlatCAMTool):
             ap_size = self.silk_obj.apertures[apid]['size']
             geo_list = self.silk_obj.apertures[apid]['solid_geometry']
             self.app.worker_task.emit({'fcn': self.aperture_intersection,
-                                       'params': [apid, ap_size, geo_list]})
+                                       'params': [apid, geo_list]})
 
-    def aperture_intersection(self, aperture_id, aperture_size, geo_list):
-        self.promises.append(aperture_id)
+    def aperture_intersection(self, apid, geo_list):
+        self.promises.append(apid)
         new_solid_geometry = []
+        for g in geo_list:
+            print(g.exterior.wkt)
 
-        with self.app.proc_container.new(_("Parsing aperture %s geometry ..." % str(aperture_id))):
+        with self.app.proc_container.new(_("Parsing aperture %s geometry ..." % str(apid))):
             for geo_silk in geo_list:
-                for sm_ap in self.sm_obj.apertures:
-                    for key in self.sm_obj.apertures[sm_ap]:
-                        if key == 'solid_geometry':
-                            if geo_silk.intersects(self.solder_union):
-                                new_geo = geo_silk.symmetric_difference(self.solder_union)
-                                # if the resulting geometry is not empty add it to the new_apertures solid_geometry
-                                if type(new_geo) == MultiPolygon:
-                                    for g in new_geo:
-                                        new_solid_geometry.append(g)
-                                else:
-                                    new_solid_geometry.append(new_geo)
+                if geo_silk.exterior.intersects(self.solder_union.exterior):
+                    print("yes")
+                    new_geo = geo_silk.exterior.difference(self.solder_union.exterior)
+                    # if the resulting geometry is not empty add it to the new_apertures solid_geometry
+                    try:
+                        for g in new_geo:
+                            new_solid_geometry.append(g)
+                    except TypeError:
+                        new_solid_geometry.append(new_geo)
 
-                            else:
-                                new_solid_geometry.append(geo_silk)
+                else:
+                    print("no")
+                    new_solid_geometry.append(geo_silk)
 
-        try:
-            while not self.new_apertures[aperture_id]['solid_geometry']:
-                self.new_apertures[aperture_id]['solid_geometry'] = new_solid_geometry
-                time.sleep(0.1)
-        except:
-            pass
+        if new_solid_geometry:
+            try:
+                while not self.new_apertures[apid]['solid_geometry']:
+                    self.new_apertures[apid]['solid_geometry'] = new_solid_geometry
+                    time.sleep(0.1)
+            except:
+                pass
 
         try:
             while True:
                 # removal from list is done in a multithreaded way therefore not always the removal can be done
                 # so we keep trying until it's done
-                self.promises.remove(aperture_id)
+                self.promises.remove(apid)
                 time.sleep(0.1)
         except:
             pass
 
-    def periodic_check(self, check_period):
+    def periodic_check(self, check_period, reset=False):
         """
         This function starts an QTimer and it will periodically check if intersections are done
 
@@ -227,11 +229,12 @@ class ToolSilk(FlatCAMTool):
         except:
             pass
 
-        self.check_thread.setInterval(check_period)
-        try:
-            self.check_thread.timeout.disconnect(self.periodic_check_handler)
-        except:
-            pass
+        if reset:
+            self.check_thread.setInterval(check_period)
+            try:
+                self.check_thread.timeout.disconnect(self.periodic_check_handler)
+            except:
+                pass
 
         self.check_thread.timeout.connect(self.periodic_check_handler)
         self.check_thread.start(QtCore.QThread.HighPriority)

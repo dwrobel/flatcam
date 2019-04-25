@@ -18,7 +18,7 @@ from FlatCAMTool import FlatCAMTool
 from flatcamGUI.ObjectUI import LengthEntry, RadioSet
 
 from shapely.geometry import LineString, LinearRing, MultiLineString
-from shapely.ops import cascaded_union
+from shapely.ops import cascaded_union, unary_union
 import shapely.affinity as affinity
 
 from numpy import arctan2, Inf, array, sqrt, sign, dot
@@ -3117,31 +3117,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.tool_shape.clear(update=True)
         self.tool_shape.redraw()
 
-    def cutpath(self):
-        selected = self.get_selected()
-        tools = selected[1:]
-        toolgeo = cascaded_union([shp.geo for shp in tools])
-
-        target = selected[0]
-        if type(target.geo) == Polygon:
-            for ring in poly2rings(target.geo):
-                self.add_shape(DrawToolShape(ring.difference(toolgeo)))
-            self.delete_shape(target)
-        elif type(target.geo) == LineString or type(target.geo) == LinearRing:
-            self.add_shape(DrawToolShape(target.geo.difference(toolgeo)))
-            self.delete_shape(target)
-        elif type(target.geo) == MultiLineString:
-            try:
-                for linestring in target.geo:
-                    self.add_shape(DrawToolShape(linestring.difference(toolgeo)))
-            except:
-                self.app.log.warning("Current LinearString does not intersect the target")
-            self.delete_shape(target)
-        else:
-            self.app.log.warning("Not implemented. Object type: %s" % str(type(target.geo)))
-
-        self.replot()
-
     def toolbar_tool_toggle(self, key):
         self.options[key] = self.sender().isChecked()
         if self.options[key] == True:
@@ -3781,7 +3756,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         :return: None.
         """
 
-        results = cascaded_union([t.geo for t in self.get_selected()])
+        results = unary_union([t.geo for t in self.get_selected()])
 
         # Delete originals.
         for_deletion = [s for s in self.get_selected()]
@@ -3795,9 +3770,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.replot()
 
-    def intersection(self):
+    def intersection_2(self):
         """
-        Makes intersectino of selected polygons. Original polygons are deleted.
+        Makes intersection of selected polygons. Original polygons are deleted.
 
         :return: None
         """
@@ -3827,11 +3802,67 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.replot()
 
+    def intersection(self):
+        """
+        Makes intersection of selected polygons. Original polygons are deleted.
+
+        :return: None
+        """
+
+        shapes = self.get_selected()
+        results = []
+        intact = []
+
+        try:
+            intersector = shapes[0].geo
+        except Exception as e:
+            log.debug("FlatCAMGeoEditor.intersection() --> %s" % str(e))
+            self.app.inform.emit(_("[WARNING_NOTCL] A selection of at least 2 geo items is required to do Intersection."))
+            self.select_tool('select')
+            return
+
+        for shape in shapes[1:]:
+            if intersector.intersects(shape.geo):
+                results.append(intersector.intersection(shape.geo))
+            else:
+                intact.append(shape)
+
+        if len(results) != 0:
+            # Delete originals.
+            for_deletion = [s for s in self.get_selected()]
+            for shape in for_deletion:
+                if shape not in intact:
+                    self.delete_shape(shape)
+
+            for geo in results:
+                self.add_shape(DrawToolShape(geo))
+
+        # Selected geometry is now gone!
+        self.selected = []
+        self.replot()
+
     def subtract(self):
         selected = self.get_selected()
         try:
             tools = selected[1:]
-            toolgeo = cascaded_union([shp.geo for shp in tools])
+            toolgeo = unary_union([shp.geo for shp in tools])
+            result = selected[0].geo.difference(toolgeo)
+
+            for_deletion = [s for s in self.get_selected()]
+            for shape in for_deletion:
+                self.delete_shape(shape)
+
+            self.add_shape(DrawToolShape(result))
+
+            self.replot()
+        except Exception as e:
+            log.debug(str(e))
+
+    def subtract_2(self):
+        selected = self.get_selected()
+        try:
+            tools = selected[1:]
+            toolgeo = unary_union([shp.geo for shp in tools])
             result = selected[0].geo.difference(toolgeo)
 
             self.delete_shape(selected[0])
@@ -3840,6 +3871,30 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.replot()
         except Exception as e:
             log.debug(str(e))
+
+    def cutpath(self):
+        selected = self.get_selected()
+        tools = selected[1:]
+        toolgeo = unary_union([shp.geo for shp in tools])
+
+        target = selected[0]
+        if type(target.geo) == Polygon:
+            for ring in poly2rings(target.geo):
+                self.add_shape(DrawToolShape(ring.difference(toolgeo)))
+        elif type(target.geo) == LineString or type(target.geo) == LinearRing:
+            self.add_shape(DrawToolShape(target.geo.difference(toolgeo)))
+        elif type(target.geo) == MultiLineString:
+            try:
+                for linestring in target.geo:
+                    self.add_shape(DrawToolShape(linestring.difference(toolgeo)))
+            except:
+                self.app.log.warning("Current LinearString does not intersect the target")
+        else:
+            self.app.log.warning("Not implemented. Object type: %s" % str(type(target.geo)))
+            return
+
+        self.delete_shape(target)
+        self.replot()
 
     def buffer(self, buf_distance, join_style):
         selected = self.get_selected()
