@@ -676,6 +676,16 @@ class FCButton(QtWidgets.QPushButton):
         self.setText(str(val))
 
 
+class FCMenu(QtWidgets.QMenu):
+    def __init__(self):
+        super().__init__()
+        self.mouse_is_panning = False
+
+    def popup(self, pos, action=None):
+        self.mouse_is_panning = False
+        super().popup(pos)
+
+
 class FCTab(QtWidgets.QTabWidget):
     def __init__(self, parent=None):
         super(FCTab, self).__init__(parent)

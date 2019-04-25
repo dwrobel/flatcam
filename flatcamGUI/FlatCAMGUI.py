@@ -1546,7 +1546,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         ##############################################################
         ### HERE WE BUILD THE CONTEXT MENU FOR RMB CLICK ON CANVAS ###
         ##############################################################
-        self.popMenu = QtWidgets.QMenu()
+        self.popMenu = FCMenu()
 
         self.popmenu_disable = self.popMenu.addAction(QtGui.QIcon('share/clear_plot32.png'), _("Disable"))
         self.popMenu.addSeparator()

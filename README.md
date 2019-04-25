@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+26.04.2019
+
+- small changes in GUI
+
 25.04.2019
 
 - Geometry Editor: modified the intersection (if the selected shapes don't intersects preserve them) and substract functions (delete all shapes that were used in the process)

@@ -1793,8 +1793,6 @@ class App(QtCore.QObject):
         # decide if we have a double click or single click
         self.doubleclick = False
 
-        # variable to store if there was motion before right mouse button click (panning)
-        self.panning_action = False
         # variable to store if a command is active (then the var is not None) and which one it is
         self.command_active = None
         # variable to store the status of moving selection action
@@ -5139,15 +5137,13 @@ class App(QtCore.QObject):
         self.plotcanvas.vispy_canvas.native.setFocus()
         self.pos_jump = event.pos
 
-        if origin_click is True:
-            pass
-        else:
+        self.ui.popMenu.mouse_is_panning = False
+
+        if origin_click != True:
             # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
-            if event.button == 2:
-                self.panning_action = True
+            if event.button == 2 and event.is_dragging == 1:
+                self.ui.popMenu.mouse_is_panning = True
                 return
-            else:
-                self.panning_action = False
 
         if self.rel_point1 is not None:
             try:  # May fail in case mouse not within axes
@@ -5235,12 +5231,12 @@ class App(QtCore.QObject):
         # canvas menu
         try:
             if event.button == 2:  # right click
-                if self.panning_action is True:
-                    self.panning_action = False
-                else:
+                if self.ui.popMenu.mouse_is_panning is False:
+
                     self.cursor = QtGui.QCursor()
                     self.populate_cmenu_grids()
                     self.ui.popMenu.popup(self.cursor.pos())
+
         except Exception as e:
             log.warning("Error: %s" % str(e))
             return
