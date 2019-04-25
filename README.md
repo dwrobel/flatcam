@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - Geometry Editor: modified the intersection (if the selected shapes don't intersects preserve them) and substract functions (delete all shapes that were used in the process)
 - work in the ToolSilk
+- for all objects, if in Selected the object name is changed to the same name, the rename is not done (because there is nothing changed)
 
 24.04.2019
 

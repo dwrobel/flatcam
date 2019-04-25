@@ -181,17 +181,18 @@ class FlatCAMObj(QtCore.QObject):
         old_name = copy(self.options["name"])
         new_name = self.ui.name_entry.get_value()
 
-        # update the SHELL auto-completer model data
-        try:
-            self.app.myKeywords.remove(old_name)
-            self.app.myKeywords.append(new_name)
-            self.app.shell._edit.set_model_data(self.app.myKeywords)
-            self.app.ui.code_editor.set_model_data(self.app.myKeywords)
-        except:
-            log.debug("on_name_activate() --> Could not remove the old object name from auto-completer model list")
+        if new_name != old_name:
+            # update the SHELL auto-completer model data
+            try:
+                self.app.myKeywords.remove(old_name)
+                self.app.myKeywords.append(new_name)
+                self.app.shell._edit.set_model_data(self.app.myKeywords)
+                self.app.ui.code_editor.set_model_data(self.app.myKeywords)
+            except:
+                log.debug("on_name_activate() --> Could not remove the old object name from auto-completer model list")
 
-        self.options["name"] = self.ui.name_entry.get_value()
-        self.app.inform.emit(_("[success] Name changed from {old} to {new}").format(old=old_name, new=new_name))
+            self.options["name"] = self.ui.name_entry.get_value()
+            self.app.inform.emit(_("[success] Name changed from {old} to {new}").format(old=old_name, new=new_name))
 
     def on_offset_button_click(self):
         self.app.report_usage("obj_on_offset_button")

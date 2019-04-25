@@ -209,9 +209,13 @@ class ToolSilk(FlatCAMTool):
             while True:
                 # removal from list is done in a multithreaded way therefore not always the removal can be done
                 # so we keep trying until it's done
-                self.promises.remove(apid)
+                if apid in self.promises:
+                    self.promises.remove(apid)
+                else:
+                    break
                 time.sleep(0.1)
         except:
+            log.debug("Promise fulfilled: %s" % str(apid))
             pass
 
     def periodic_check(self, check_period, reset=False):
