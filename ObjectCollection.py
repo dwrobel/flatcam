@@ -397,23 +397,25 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         if index.isValid():
             obj = index.internalPointer().obj
             if obj:
-                old_name = obj.options['name']
-                # rename the object
-                obj.options["name"] = str(data)
-                new_name = obj.options['name']
+                old_name = str(obj.options['name'])
+                new_name = str(data)
+                if old_name != new_name:
+                    # rename the object
+                    obj.options["name"] = str(data)
 
-                # update the SHELL auto-completer model data
-                try:
-                    self.app.myKeywords.remove(old_name)
-                    self.app.myKeywords.append(new_name)
-                    self.app.shell._edit.set_model_data(self.app.myKeywords)
-                    self.app.ui.code_editor.set_model_data(self.app.myKeywords)
-                except:
-                    log.debug(
-                        "setData() --> Could not remove the old object name from auto-completer model list")
+                    # update the SHELL auto-completer model data
+                    try:
+                        self.app.myKeywords.remove(old_name)
+                        self.app.myKeywords.append(new_name)
+                        self.app.shell._edit.set_model_data(self.app.myKeywords)
+                        self.app.ui.code_editor.set_model_data(self.app.myKeywords)
+                    except:
+                        log.debug(
+                            "setData() --> Could not remove the old object name from auto-completer model list")
 
-                obj.build_ui()
-                self.app.inform.emit(_("Object renamed from {old} to {new}").format(old=old_name, new=new_name))
+                    obj.build_ui()
+                    self.app.inform.emit(_("Object renamed from <b>{old}</b> to <b>{new}</b>").format(old=old_name,
+                                                                                                      new=new_name))
 
         return True
 
@@ -721,7 +723,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                     color='red', name=str(obj.options['name'])))
 
         except IndexError:
-            FlatCAMApp.App.log.debug("on_list_selection_change(): Index Error (Nothing selected?)")
+            # FlatCAMApp.App.log.debug("on_list_selection_change(): Index Error (Nothing selected?)")
             self.app.inform.emit('')
             try:
                 self.app.ui.selected_scroll_area.takeWidget()

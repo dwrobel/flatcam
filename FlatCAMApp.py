@@ -4633,9 +4633,14 @@ class App(QtCore.QObject):
             if obj.tools:
                 obj_init.tools = obj.tools
 
-        def initialize_excellon(obj, app):
-            objs = self.collection.get_selected()
-            FlatCAMGeometry.merge(objs, obj)
+        def initialize_excellon(obj_init, app):
+            # objs = self.collection.get_selected()
+            # FlatCAMGeometry.merge(objs, obj)
+            solid_geo = []
+            for tool in obj.tools:
+                for geo in obj.tools[tool]['solid_geometry']:
+                    solid_geo.append(geo)
+            obj_init.solid_geometry = deepcopy(solid_geo)
 
         for obj in self.collection.get_selected():
 

@@ -105,6 +105,13 @@ class ToolSilk(FlatCAMTool):
 
         self.solder_union = None
 
+        # object to hold a flattened geometry
+        self.flat_geometry = []
+
+        try:
+            self.intersect_btn.clicked.disconnect(self.on_intersection_click)
+        except:
+            pass
         self.intersect_btn.clicked.connect(self.on_intersection_click)
 
     def install(self, icon=None, separator=None, **kwargs):
@@ -162,10 +169,10 @@ class ToolSilk(FlatCAMTool):
             self.new_apertures[apid]['size'] = self.silk_obj.apertures[apid]['size']
             self.new_apertures[apid]['solid_geometry'] = []
 
-        geo_union_list = []
-        for apid1 in self.sm_obj.apertures:
-            geo_union_list += self.sm_obj.apertures[apid1]['solid_geometry']
-        self.solder_union = cascaded_union(geo_union_list)
+        # geo_union_list = []
+        # for apid1 in self.sm_obj.apertures:
+        #     geo_union_list += self.sm_obj.apertures[apid1]['solid_geometry']
+        # self.solder_union = cascaded_union(geo_union_list)
 
         # start the QTimer with 1 second period check
         self.periodic_check(1000)
@@ -178,30 +185,29 @@ class ToolSilk(FlatCAMTool):
     def aperture_intersection(self, apid, geo_list):
         self.promises.append(apid)
         new_solid_geometry = []
-        for g in geo_list:
-            print(g.exterior.wkt)
 
         with self.app.proc_container.new(_("Parsing aperture %s geometry ..." % str(apid))):
             for geo_silk in geo_list:
-                if geo_silk.exterior.intersects(self.solder_union.exterior):
-                    print("yes")
-                    new_geo = geo_silk.exterior.difference(self.solder_union.exterior)
-                    # if the resulting geometry is not empty add it to the new_apertures solid_geometry
-                    try:
-                        for g in new_geo:
-                            new_solid_geometry.append(g)
-                    except TypeError:
-                        new_solid_geometry.append(new_geo)
+                for ap in self.sm_obj.apertures:
+                    for solder_poly in self.sm_obj.apertures[ap]['solid_geometry']:
+                        if geo_silk.exterior.intersects(solder_poly):
 
-                else:
-                    print("no")
-                    new_solid_geometry.append(geo_silk)
-
+                            new_geo = self.subtract_polygon(geo_silk, solder_poly)
+                            if not new_geo.is_empty:
+                                print(new_geo.wkt)
+                                # if the resulting geometry is not empty add it to the new_apertures solid_geometry
+                                try:
+                                    for g in new_geo:
+                                        new_solid_geometry.append(g)
+                                except TypeError:
+                                    new_solid_geometry.append(new_geo)
+                        # else:
+                        #     new_solid_geometry.append(geo_silk)
         if new_solid_geometry:
             try:
                 while not self.new_apertures[apid]['solid_geometry']:
                     self.new_apertures[apid]['solid_geometry'] = new_solid_geometry
-                    time.sleep(0.1)
+                    time.sleep(0.5)
             except:
                 pass
 
@@ -213,10 +219,71 @@ class ToolSilk(FlatCAMTool):
                     self.promises.remove(apid)
                 else:
                     break
-                time.sleep(0.1)
+                time.sleep(0.5)
         except:
             log.debug("Promise fulfilled: %s" % str(apid))
             pass
+
+    def subtract_polygon(self, geometry, polygon):
+        """
+        Subtract polygon from the given object. This only operates on the paths in the original geometry, i.e. it converts polygons into paths.
+
+        :param points: The vertices of the polygon.
+        :return: none
+        """
+
+        # pathonly should be always True, otherwise polygons are not subtracted
+        flat_geometry = self.flatten(geometry=geometry, pathonly=True)
+        log.debug("%d paths" % len(flat_geometry))
+
+        toolgeo=cascaded_union(polygon)
+        diffs=[]
+        for target in flat_geometry:
+            if type(target) == LineString or type(target) == LinearRing:
+                diffs.append(target.difference(toolgeo))
+            else:
+                log.warning("Not implemented.")
+
+        return cascaded_union(diffs)
+
+    def flatten(self, geometry=None, reset=True, pathonly=False):
+        """
+        Creates a list of non-iterable linear geometry objects.
+        Polygons are expanded into its exterior and interiors if specified.
+
+        Results are placed in self.flat_geometry
+
+        :param geometry: Shapely type or list or list of list of such.
+        :param reset: Clears the contents of self.flat_geometry.
+        :param pathonly: Expands polygons into linear elements.
+        """
+
+        if geometry is None:
+            log.debug("ToolSilk.flatten() --> There is no Geometry to flatten")
+            return
+
+        if reset:
+            self.flat_geometry = []
+
+        ## If iterable, expand recursively.
+        try:
+            for geo in geometry:
+                if geo is not None:
+                    self.flatten(geometry=geo,
+                                 reset=False,
+                                 pathonly=pathonly)
+
+        ## Not iterable, do the actual indexing and add.
+        except TypeError:
+            if pathonly and type(geometry) == Polygon:
+                self.flat_geometry.append(geometry.exterior)
+                self.flatten(geometry=geometry.interiors,
+                             reset=False,
+                             pathonly=True)
+            else:
+                self.flat_geometry.append(geometry)
+
+        return self.flat_geometry
 
     def periodic_check(self, check_period, reset=False):
         """
@@ -259,7 +326,7 @@ class ToolSilk(FlatCAMTool):
                 self.app.worker_task.emit({'fcn': self.new_silkscreen_object,
                                            'params': [outname]})
 
-                log.debug("ToolPDF --> Periodic check finished.")
+                log.debug("ToolSilk --> Periodic check finished.")
         except Exception:
             traceback.print_exc()
 

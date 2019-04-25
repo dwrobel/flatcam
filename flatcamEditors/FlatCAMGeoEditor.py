@@ -2979,6 +2979,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.editor_active = True
 
     def deactivate(self):
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+
         # adjust the status of the menu entries related to the editor
         self.app.ui.menueditedit.setDisabled(False)
         self.app.ui.menueditok.setDisabled(True)
