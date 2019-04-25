@@ -345,7 +345,7 @@ class App(QtCore.QObject):
             # General GUI Settings
             "global_layout": self.ui.general_defaults_form.general_gui_set_group.layout_combo,
             "global_hover": self.ui.general_defaults_form.general_gui_set_group.hover_cb,
-
+            "global_selection_shape": self.ui.general_defaults_form.general_gui_set_group.selection_cb,
             # Gerber General
             "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
             "gerber_solid": self.ui.gerber_defaults_form.gerber_gen_group.solid_cb,
@@ -649,6 +649,7 @@ class App(QtCore.QObject):
 
             # General GUI Settings
             "global_hover": True,
+            "global_selection_shape": True,
             "global_layout": "compact",
             # Gerber General
             "gerber_plot": True,
@@ -4691,7 +4692,8 @@ class App(QtCore.QObject):
             self.collection.set_active(name)
             curr_sel_obj = self.collection.get_by_name(name)
             # create the selection box around the selected object
-            self.draw_selection_shape(curr_sel_obj)
+            if self.defaults['global_selection_shape'] is True:
+                self.draw_selection_shape(curr_sel_obj)
 
     def on_preferences(self):
 
@@ -5305,12 +5307,14 @@ class App(QtCore.QObject):
                     if sel_type is True:
                         if poly_obj.within(poly_selection):
                             # create the selection box around the selected object
-                            self.draw_selection_shape(obj)
+                            if self.defaults['global_selection_shape'] is True:
+                                self.draw_selection_shape(obj)
                             self.collection.set_active(obj.options['name'])
                     else:
                         if poly_selection.intersects(poly_obj):
                             # create the selection box around the selected object
-                            self.draw_selection_shape(obj)
+                            if self.defaults['global_selection_shape'] is True:
+                                self.draw_selection_shape(obj)
                             self.collection.set_active(obj.options['name'])
             except:
                 # the Exception here will happen if we try to select on screen and we have an newly (and empty)
@@ -5360,7 +5364,8 @@ class App(QtCore.QObject):
                         self.collection.set_active(objects_under_the_click_list[0])
                         # create the selection box around the selected object
                         curr_sel_obj = self.collection.get_active()
-                        self.draw_selection_shape(curr_sel_obj)
+                        if self.defaults['global_selection_shape'] is True:
+                            self.draw_selection_shape(curr_sel_obj)
 
                         # self.inform.emit('[selected] %s: %s selected' %
                         #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
@@ -5383,7 +5388,8 @@ class App(QtCore.QObject):
                         self.collection.set_active(objects_under_the_click_list[0])
                         # create the selection box around the selected object
                         curr_sel_obj = self.collection.get_active()
-                        self.draw_selection_shape(curr_sel_obj)
+                        if self.defaults['global_selection_shape'] is True:
+                            self.draw_selection_shape(curr_sel_obj)
 
                         # self.inform.emit('[selected] %s: %s selected' %
                         #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
@@ -5431,7 +5437,8 @@ class App(QtCore.QObject):
                     # delete the possible selection box around a possible selected object
                     self.delete_selection_shape()
                     # create the selection box around the selected object
-                    self.draw_selection_shape(curr_sel_obj)
+                    if self.defaults['global_selection_shape'] is True:
+                        self.draw_selection_shape(curr_sel_obj)
 
                     # self.inform.emit('[selected] %s: %s selected' %
                     #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))

@@ -16,7 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - for all objects, if in Selected the object name is changed to the same name, the rename is not done (because there is nothing changed)
 - fixed Edit -> Copy as Geom function handler to work for Excellon objects, too
 - made sure that the mouse pointer is restored to default on Editor exit
--
+- added a toggle button in Preferences to toggle on/off the display of the selection box on canvas when the user is clicking an object or selecting it by mouse dragging.
 
 24.04.2019
 

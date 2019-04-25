@@ -3603,6 +3603,16 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         )
         self.hover_cb = FCCheckBox()
 
+        # Enable Selection box
+        self.selection_label = QtWidgets.QLabel(_('Sel. Shape:'))
+        self.selection_label.setToolTip(
+            _("Enable the display of a selection shape for FlatCAM objects.\n"
+              "It is displayed whenever the mouse selects an object\n"
+              "either by clicking or dragging mouse from left to right or\n"
+              "right to left.")
+        )
+        self.selection_cb = FCCheckBox()
+
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
@@ -3614,6 +3624,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.hdpi_label, self.hdpi_cb)
         self.form_box.addRow(self.clear_label, self.clear_btn)
         self.form_box.addRow(self.hover_label, self.hover_cb)
+        self.form_box.addRow(self.selection_label, self.selection_cb)
 
         # Add the QFormLayout that holds the Application general defaults
         # to the main layout of this TAB
