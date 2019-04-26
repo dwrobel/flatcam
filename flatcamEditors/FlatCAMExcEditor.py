@@ -1646,6 +1646,13 @@ class FlatCAMExcEditor(QtCore.QObject):
         if self.app.ui.grid_snap_btn.isChecked() is False:
             self.app.ui.grid_snap_btn.trigger()
 
+        self.app.ui.popmenu_disable.setVisible(False)
+        self.app.ui.cmenu_newmenu.menuAction().setVisible(False)
+        self.app.ui.popmenu_properties.setVisible(False)
+        self.app.ui.e_editor_cmenu.menuAction().setVisible(True)
+        self.app.ui.g_editor_cmenu.menuAction().setVisible(False)
+        self.app.ui.grb_editor_cmenu.menuAction().setVisible(False)
+
         # Tell the App that the editor is active
         self.editor_active = True
 
@@ -1711,8 +1718,12 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.app.ui.update_obj_btn.setEnabled(False)
 
-        self.app.ui.g_editor_cmenu.setEnabled(False)
-        self.app.ui.e_editor_cmenu.setEnabled(False)
+        self.app.ui.popmenu_disable.setVisible(True)
+        self.app.ui.cmenu_newmenu.menuAction().setVisible(True)
+        self.app.ui.popmenu_properties.setVisible(True)
+        self.app.ui.g_editor_cmenu.menuAction().setVisible(False)
+        self.app.ui.e_editor_cmenu.menuAction().setVisible(False)
+        self.app.ui.grb_editor_cmenu.menuAction().setVisible(False)
 
         # Show original geometry
         if self.exc_obj:
@@ -1738,6 +1749,18 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app.plotcanvas.vis_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
         self.app.collection.view.clicked.disconnect()
 
+        self.app.ui.popmenu_copy.triggered.disconnect()
+        self.app.ui.popmenu_delete.triggered.disconnect()
+        self.app.ui.popmenu_move.triggered.disconnect()
+
+        self.app.ui.popmenu_copy.triggered.connect(self.exc_copy_drills)
+        self.app.ui.popmenu_delete.triggered.connect(self.on_delete_btn)
+        self.app.ui.popmenu_move.triggered.connect(self.exc_move_drills)
+
+        # Excellon Editor
+        self.app.ui.drill.triggered.connect(self.exc_add_drill)
+        self.app.ui.drill_array.triggered.connect(self.exc_add_drill_array)
+
     def disconnect_canvas_event_handlers(self):
         # we restore the key and mouse control to FlatCAMApp method
         # first connect to new, then disconnect the old handlers
@@ -1751,6 +1774,36 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
         self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
         self.canvas.vis_disconnect('mouse_release', self.on_exc_click_release)
+
+        try:
+            self.app.ui.popmenu_copy.triggered.disconnect(self.exc_copy_drills)
+        except TypeError:
+            pass
+
+        try:
+            self.app.ui.popmenu_delete.triggered.disconnect(self.on_delete_btn)
+        except TypeError:
+            pass
+
+        try:
+            self.app.ui.popmenu_move.triggered.disconnect(self.exc_move_drills)
+        except TypeError:
+            pass
+
+        self.app.ui.popmenu_copy.triggered.connect(self.app.on_copy_object)
+        self.app.ui.popmenu_delete.triggered.connect(self.app.on_delete)
+        self.app.ui.popmenu_move.triggered.connect(self.app.obj_move)
+
+        # Excellon Editor
+        try:
+            self.app.ui.drill.triggered.disconnect(self.exc_add_drill)
+        except TypeError:
+            pass
+
+        try:
+            self.app.ui.drill_array.triggered.disconnect(self.exc_add_drill_array)
+        except TypeError:
+            pass
 
     def clear(self):
         self.active_tool = None
@@ -2209,6 +2262,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                     self.app.panning_action = False
                 else:
                     self.app.cursor = QtGui.QCursor()
+                    self.app.populate_cmenu_grids()
                     self.app.ui.popMenu.popup(self.app.cursor.pos())
         except Exception as e:
             log.warning("Error: %s" % str(e))
@@ -2592,21 +2646,21 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.linear_angle_label.hide()
 
     def exc_add_drill(self):
-        self.select_tool('add')
+        self.select_tool('drill_add')
         return
 
     def exc_add_drill_array(self):
-        self.select_tool('add_array')
+        self.select_tool('drill_array')
         return
 
     def exc_resize_drills(self):
-        self.select_tool('resize')
+        self.select_tool('drill_resize')
         return
 
     def exc_copy_drills(self):
-        self.select_tool('copy')
+        self.select_tool('drill_copy')
         return
 
     def exc_move_drills(self):
-        self.select_tool('move')
+        self.select_tool('drill_move')
         return

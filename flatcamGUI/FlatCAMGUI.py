@@ -1592,15 +1592,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grb_draw_pad_array = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/padarray32.png'), _("Pad Array"))
         self.grb_draw_track = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/track32.png'), _("Track"))
         self.grb_draw_region = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/polygon32.png'), _("Region"))
-        self.grb_editor_cmenu.addSeparator()
-        self.grb_copy = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/copy.png'), _("Copy"))
-        self.grb_delete = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/trash32.png'), _("Delete"))
-        self.grb_move = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
 
         self.e_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/drill32.png'), _("Exc Editor"))
         self.drill = self.e_editor_cmenu.addAction(QtGui.QIcon('share/drill32.png'), _("Add Drill"))
         self.drill_array = self.e_editor_cmenu.addAction(QtGui.QIcon('share/addarray32.png'), _("Add Drill Array"))
-        self.drill_copy = self.e_editor_cmenu.addAction(QtGui.QIcon('share/copy32.png'), _("Copy Drill(s)"))
 
         self.popMenu.addSeparator()
         self.popmenu_copy = self.popMenu.addAction(QtGui.QIcon('share/copy32.png'), _("Copy"))
@@ -1740,9 +1735,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # start with GRID activated
         self.grid_snap_btn.trigger()
 
-        self.g_editor_cmenu.setEnabled(False)
-        self.grb_editor_cmenu.setEnabled(False)
-        self.e_editor_cmenu.setEnabled(False)
+        self.g_editor_cmenu.menuAction().setVisible(False)
+        self.grb_editor_cmenu.menuAction().setVisible(False)
+        self.e_editor_cmenu.menuAction().setVisible(False)
 
         self.general_defaults_form = GeneralPreferencesUI()
         self.gerber_defaults_form = GerberPreferencesUI()

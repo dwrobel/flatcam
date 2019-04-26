@@ -1368,26 +1368,6 @@ class App(QtCore.QObject):
         self.ui.popmenu_new_exc.triggered.connect(self.new_excellon_object)
         self.ui.popmenu_new_prj.triggered.connect(self.on_file_new)
 
-        # Geometry Editor
-        self.ui.draw_line.triggered.connect(self.geo_editor.draw_tool_path)
-        self.ui.draw_rect.triggered.connect(self.geo_editor.draw_tool_rectangle)
-        self.ui.draw_cut.triggered.connect(self.geo_editor.cutpath)
-        self.ui.draw_move.triggered.connect(self.geo_editor.on_move)
-
-        # Gerber Editor
-        self.ui.grb_draw_pad.triggered.connect(self.grb_editor.on_pad_add)
-        self.ui.grb_draw_pad_array.triggered.connect(self.grb_editor.on_pad_add_array)
-        self.ui.grb_draw_track.triggered.connect(self.grb_editor.on_track_add)
-        self.ui.grb_draw_region.triggered.connect(self.grb_editor.on_region_add)
-        self.ui.grb_copy.triggered.connect(self.grb_editor.on_copy_button)
-        self.ui.grb_delete.triggered.connect(self.grb_editor.on_delete_btn)
-        self.ui.grb_move.triggered.connect(self.grb_editor.on_move_button)
-
-        # Excellon Editor
-        self.ui.drill.triggered.connect(self.exc_editor.exc_add_drill)
-        self.ui.drill_array.triggered.connect(self.exc_editor.exc_add_drill_array)
-        self.ui.drill_copy.triggered.connect(self.exc_editor.exc_copy_drills)
-
         self.ui.zoomfit.triggered.connect(self.on_zoom_fit)
         self.ui.clearplot.triggered.connect(self.clear_plots)
         self.ui.replot.triggered.connect(self.plot_all)
@@ -2917,6 +2897,14 @@ class App(QtCore.QObject):
             grb_obj.multigeo = False
             grb_obj.follow = False
             grb_obj.apertures = {}
+
+            try:
+                grb_obj.options['xmin'] = 0
+                grb_obj.options['ymin'] = 0
+                grb_obj.options['xmax'] = 0
+                grb_obj.options['ymax'] = 0
+            except KeyError:
+                pass
 
         self.new_object('gerber', 'new_grb', initialize, plot=False)
 
@@ -4971,8 +4959,8 @@ class App(QtCore.QObject):
 
         self.ui.cmenu_gridmenu.addSeparator()
         grid_add = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/plus32.png'), "Add")
-        grid_add.triggered.connect(self.on_grid_add)
         grid_delete = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/delete32.png'), "Delete")
+        grid_add.triggered.connect(self.on_grid_add)
         grid_delete.triggered.connect(self.on_grid_delete)
 
     def set_grid(self):

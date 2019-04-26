@@ -2970,6 +2970,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.app.ui.snap_toolbar.setDisabled(False)
 
+        self.app.ui.popmenu_disable.setVisible(False)
+        self.app.ui.cmenu_newmenu.menuAction().setVisible(False)
+        self.app.ui.popmenu_properties.setVisible(False)
+        self.app.ui.g_editor_cmenu.menuAction().setVisible(True)
+
         # prevent the user to change anything in the Selected Tab while the Geo Editor is active
         sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
         for w in sel_tab_widget_list:
@@ -3038,6 +3043,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # Tell the app that the editor is no longer active
         self.editor_active = False
 
+        self.app.ui.popmenu_disable.setVisible(True)
+        self.app.ui.cmenu_newmenu.menuAction().setVisible(True)
+        self.app.ui.popmenu_properties.setVisible(True)
+        self.app.ui.grb_editor_cmenu.menuAction().setVisible(False)
+        self.app.ui.e_editor_cmenu.menuAction().setVisible(False)
+        self.app.ui.g_editor_cmenu.menuAction().setVisible(False)
+
         try:
             # re-enable all the widgets in the Selected Tab that were disabled after entering in Edit Geometry Mode
             sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
@@ -3066,7 +3078,21 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
 
-        self.app.collection.view.clicked.disconnect()
+        # self.app.collection.view.clicked.disconnect()
+        self.app.ui.popmenu_copy.triggered.disconnect()
+        self.app.ui.popmenu_delete.triggered.disconnect()
+        self.app.ui.popmenu_move.triggered.disconnect()
+
+        self.app.ui.popmenu_copy.triggered.connect(lambda: self.select_tool('copy'))
+        self.app.ui.popmenu_delete.triggered.connect(self.on_delete_btn)
+        self.app.ui.popmenu_move.triggered.connect(lambda: self.select_tool('move'))
+
+        # Geometry Editor
+        self.app.ui.draw_line.triggered.connect(self.draw_tool_path)
+        self.app.ui.draw_rect.triggered.connect(self.draw_tool_rectangle)
+        self.app.ui.draw_cut.triggered.connect(self.cutpath)
+        self.app.ui.draw_move.triggered.connect(self.on_move)
+
 
     def disconnect_canvas_event_handlers(self):
         # we restore the key and mouse control to FlatCAMApp method
@@ -3076,11 +3102,49 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
         self.app.plotcanvas.vis_connect('mouse_double_click', self.app.on_double_click_over_plot)
-        self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
+        # self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
 
         self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
         self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
         self.canvas.vis_disconnect('mouse_release', self.on_geo_click_release)
+
+        try:
+            self.app.ui.popmenu_copy.triggered.disconnect(lambda: self.select_tool('copy'))
+        except TypeError:
+            pass
+        try:
+            self.app.ui.popmenu_delete.triggered.disconnect(self.on_delete_btn)
+        except TypeError:
+            pass
+        try:
+            self.app.ui.popmenu_move.triggered.disconnect(lambda: self.select_tool('move'))
+        except TypeError:
+            pass
+
+        self.app.ui.popmenu_copy.triggered.connect(self.app.on_copy_object)
+        self.app.ui.popmenu_delete.triggered.connect(self.app.on_delete)
+        self.app.ui.popmenu_move.triggered.connect(self.app.obj_move)
+
+        # Geometry Editor
+        try:
+            self.app.ui.draw_line.triggered.disconnect(self.draw_tool_path)
+        except TypeError:
+            pass
+
+        try:
+            self.app.ui.draw_rect.triggered.disconnect(self.draw_tool_rectangle)
+        except TypeError:
+            pass
+
+        try:
+            self.app.ui.draw_cut.triggered.disconnect(self.cutpath)
+        except TypeError:
+            pass
+
+        try:
+            self.app.ui.draw_move.triggered.disconnect(self.on_move)
+        except TypeError:
+            pass
 
     def add_shape(self, shape):
         """
@@ -3248,15 +3312,20 @@ class FlatCAMGeoEditor(QtCore.QObject):
         :return: None
         """
 
+        self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
+
+        if self.app.grid_status():
+            self.pos  = self.app.geo_editor.snap(self.pos[0], self.pos[1])
+            self.app.app_cursor.enabled = True
+            # Update cursor
+            self.app.app_cursor.set_data(np.asarray([(self.pos[0], self.pos[1])]), symbol='++', edge_color='black',
+                                         size=20)
+        else:
+            self.app.app_cursor.enabled = False
+
         if event.button is 1:
             self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
-            self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
-
-            ### Snap coordinates
-            x, y = self.snap(self.pos[0], self.pos[1])
-
-            self.pos = (x, y)
 
             modifiers = QtWidgets.QApplication.keyboardModifiers()
             # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
@@ -3314,16 +3383,12 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.x = event.xdata
         self.y = event.ydata
 
-        # Prevent updates on pan
-        # if len(event.buttons) > 0:
-        #     return
+        self.app.ui.popMenu.mouse_is_panning = False
 
         # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
-        if event.button == 2:
-            self.app.panning_action = True
+        if event.button == 2 and event.is_dragging == 1:
+            self.app.ui.popMenu.mouse_is_panning = True
             return
-        else:
-            self.app.panning_action = False
 
         try:
             x = float(event.xdata)
@@ -3335,7 +3400,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
             return
 
         ### Snap coordinates
-        x, y = self.snap(x, y)
+        if self.app.grid_status():
+            x, y = self.snap(x, y)
+            self.app.app_cursor.enabled = True
+            # Update cursor
+            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
+        else:
+            self.app.app_cursor.enabled = False
 
         self.snap_x = x
         self.snap_y = y
@@ -3376,9 +3447,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
         else:
             self.app.selection_type = None
 
-        # Update cursor
-        self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
-
     def on_geo_click_release(self, event):
         pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
 
@@ -3391,11 +3459,15 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # canvas menu
         try:
             if event.button == 2:  # right click
-                if self.app.panning_action is True:
-                    self.app.panning_action = False
-                else:
+                if self.app.ui.popMenu.mouse_is_panning is False:
                     if self.in_action is False:
+                        try:
+                            QtGui.QGuiApplication.restoreOverrideCursor()
+                        except:
+                            pass
+
                         self.app.cursor = QtGui.QCursor()
+                        self.app.populate_cmenu_grids()
                         self.app.ui.popMenu.popup(self.app.cursor.pos())
                     else:
                         # if right click on canvas and the active tool need to be finished (like Path or Polygon)

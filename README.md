@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - small changes in GUI; optimized contextual menu display
 - made sure that the Project Tab is disabled while one of the Editors is active and it is restored after returning to app
+- fixed some bugs recently introduced in Editors due of the changes done to the way mouse panning is detected 
+- cleaned up the context menu's when in Editors; made some structural changes
 
 25.04.2019
 
