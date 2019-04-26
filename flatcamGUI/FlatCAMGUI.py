@@ -753,12 +753,27 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         ################
 
         ### Project ###
+        # self.project_tab = QtWidgets.QWidget()
+        # self.project_tab.setObjectName("project_tab")
+        # # project_tab.setMinimumWidth(250)  # Hack
+        # self.project_tab_layout = QtWidgets.QVBoxLayout(self.project_tab)
+        # self.project_tab_layout.setContentsMargins(2, 2, 2, 2)
+        # self.notebook.addTab(self.project_tab,_( "Project"))
+
         self.project_tab = QtWidgets.QWidget()
         self.project_tab.setObjectName("project_tab")
-        # project_tab.setMinimumWidth(250)  # Hack
-        self.project_tab_layout = QtWidgets.QVBoxLayout(self.project_tab)
+
+        self.project_frame_lay = QtWidgets.QVBoxLayout(self.project_tab)
+        self.project_frame_lay.setContentsMargins(0, 0, 0, 0)
+
+        self.project_frame = QtWidgets.QFrame()
+        self.project_frame.setContentsMargins(0, 0, 0, 0)
+        self.project_frame_lay.addWidget(self.project_frame)
+
+        self.project_tab_layout = QtWidgets.QVBoxLayout(self.project_frame)
         self.project_tab_layout.setContentsMargins(2, 2, 2, 2)
-        self.notebook.addTab(self.project_tab,_( "Project"))
+        self.notebook.addTab(self.project_tab, _("Project"))
+        self.project_frame.setDisabled(False)
 
         ### Selected ###
         self.selected_tab = QtWidgets.QWidget()

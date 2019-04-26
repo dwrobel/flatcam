@@ -2143,8 +2143,9 @@ class App(QtCore.QObject):
             # set call source to the Editor we go into
             self.call_source = 'grb_editor'
 
-        # make sure that we can't select another object while in Editor Mode:
-        self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
+        # # make sure that we can't select another object while in Editor Mode:
+        # self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
+        self.ui.project_frame.setDisabled(True)
 
         # delete any selection shape that might be active as they are not relevant in Editor
         self.delete_selection_shape()
@@ -2273,7 +2274,8 @@ class App(QtCore.QObject):
             self.ui.plot_tab_area.protectTab(0)
 
             # make sure that we reenable the selection on Project Tab after returning from Editor Mode:
-            self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+            # self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+            self.ui.project_frame.setDisabled(False)
 
     def get_last_folder(self):
         return self.defaults["global_last_folder"]

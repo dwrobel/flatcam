@@ -108,6 +108,11 @@ class ToolSilk(FlatCAMTool):
         # object to hold a flattened geometry
         self.flat_geometry = []
 
+        self.sm_obj = None
+        self.sm_obj_name = None
+        self.silk_obj = None
+        self.silk_obj_name = None
+
         try:
             self.intersect_btn.clicked.disconnect(self.on_intersection_click)
         except:
@@ -194,7 +199,6 @@ class ToolSilk(FlatCAMTool):
 
                             new_geo = self.subtract_polygon(geo_silk, solder_poly)
                             if not new_geo.is_empty:
-                                print(new_geo.wkt)
                                 # if the resulting geometry is not empty add it to the new_apertures solid_geometry
                                 try:
                                     for g in new_geo:
@@ -204,40 +208,37 @@ class ToolSilk(FlatCAMTool):
                         # else:
                         #     new_solid_geometry.append(geo_silk)
         if new_solid_geometry:
-            try:
-                while not self.new_apertures[apid]['solid_geometry']:
-                    self.new_apertures[apid]['solid_geometry'] = new_solid_geometry
-                    time.sleep(0.5)
-            except:
-                pass
-
-        try:
             while True:
-                # removal from list is done in a multithreaded way therefore not always the removal can be done
-                # so we keep trying until it's done
-                if apid in self.promises:
-                    self.promises.remove(apid)
-                else:
+                if self.new_apertures[apid]['solid_geometry']:
                     break
+                self.new_apertures[apid]['solid_geometry'] = new_solid_geometry
                 time.sleep(0.5)
-        except:
-            log.debug("Promise fulfilled: %s" % str(apid))
-            pass
+
+        while True:
+            # removal from list is done in a multithreaded way therefore not always the removal can be done
+            # so we keep trying until it's done
+            if apid not in self.promises:
+                break
+            self.promises.remove(apid)
+            time.sleep(0.5)
+
+        log.debug("Promise fulfilled: %s" % str(apid))
 
     def subtract_polygon(self, geometry, polygon):
         """
-        Subtract polygon from the given object. This only operates on the paths in the original geometry, i.e. it converts polygons into paths.
+        Subtract polygon from the given object. This only operates on the paths in the original geometry, i.e.
+        it converts polygons into paths.
 
-        :param points: The vertices of the polygon.
+        :param geometry: The geometry from which to substract.
+        :param polygon: The substractor geometry
         :return: none
         """
 
         # pathonly should be always True, otherwise polygons are not subtracted
         flat_geometry = self.flatten(geometry=geometry, pathonly=True)
-        log.debug("%d paths" % len(flat_geometry))
 
-        toolgeo=cascaded_union(polygon)
-        diffs=[]
+        toolgeo = cascaded_union(polygon)
+        diffs = []
         for target in flat_geometry:
             if type(target) == LineString or type(target) == LinearRing:
                 diffs.append(target.difference(toolgeo))
@@ -265,7 +266,7 @@ class ToolSilk(FlatCAMTool):
         if reset:
             self.flat_geometry = []
 
-        ## If iterable, expand recursively.
+        # If iterable, expand recursively. 
         try:
             for geo in geometry:
                 if geo is not None:
@@ -273,7 +274,7 @@ class ToolSilk(FlatCAMTool):
                                  reset=False,
                                  pathonly=pathonly)
 
-        ## Not iterable, do the actual indexing and add.
+        # Not iterable, do the actual indexing and add.
         except TypeError:
             if pathonly and type(geometry) == Polygon:
                 self.flat_geometry.append(geometry.exterior)
@@ -283,6 +284,7 @@ class ToolSilk(FlatCAMTool):
             else:
                 self.flat_geometry.append(geometry)
 
+        log.debug("%d paths" % len(self.flat_geometry))
         return self.flat_geometry
 
     def periodic_check(self, check_period, reset=False):
@@ -290,6 +292,7 @@ class ToolSilk(FlatCAMTool):
         This function starts an QTimer and it will periodically check if intersections are done
 
         :param check_period: time at which to check periodically
+        :param reset: will reset the timer
         :return:
         """
 
@@ -368,5 +371,3 @@ class ToolSilk(FlatCAMTool):
     def reset_fields(self):
         self.silk_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.sm_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-
-

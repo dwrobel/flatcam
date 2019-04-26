@@ -11,7 +11,8 @@ CAD program, and create G-Code for Isolation routing.
 
 26.04.2019
 
-- small changes in GUI
+- small changes in GUI; optimized contextual menu display
+- made sure that the Project Tab is disabled while one of the Editors is active and it is restored after returning to app
 
 25.04.2019
 
