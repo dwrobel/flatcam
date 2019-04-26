@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - made sure that the Project Tab is disabled while one of the Editors is active and it is restored after returning to app
 - fixed some bugs recently introduced in Editors due of the changes done to the way mouse panning is detected 
 - cleaned up the context menu's when in Editors; made some structural changes
+- updated the code in camlib.CNCJob.generate_from_excellon_by_tools() to work with the new API from Google OR-Tools
 
 25.04.2019
 

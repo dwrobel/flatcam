@@ -5288,8 +5288,13 @@ class CNCjob(Geometry):
                             y2 = locations[to_node][1]
                             self.matrix[from_node][to_node] = distance_euclidian(x1, y1, x2, y2)
 
-            def Distance(self, from_node, to_node):
-                return int(self.matrix[from_node][to_node])
+            # def Distance(self, from_node, to_node):
+            #     return int(self.matrix[from_node][to_node])
+            def Distance(self, from_index, to_index):
+                # Convert from routing variable Index to distance matrix NodeIndex.
+                from_node = manager.IndexToNode(from_index)
+                to_node = manager.IndexToNode(to_index)
+                return self.matrix[from_node][to_node]
 
         # Create the data.
         def create_data_array():
@@ -5327,8 +5332,9 @@ class CNCjob(Geometry):
                         depot = 0
                         # Create routing model.
                         if tsp_size > 0:
-                            routing = pywrapcp.RoutingModel(tsp_size, num_routes, depot)
-                            search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
+                            manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
+                            routing = pywrapcp.RoutingModel(manager)
+                            search_parameters = pywrapcp.DefaultRoutingSearchParameters()
                             search_parameters.local_search_metaheuristic = (
                                 routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
 
@@ -5343,7 +5349,8 @@ class CNCjob(Geometry):
                             # arguments (the from and to node indices) and returns the distance between them.
                             dist_between_locations = CreateDistanceCallback()
                             dist_callback = dist_between_locations.Distance
-                            routing.SetArcCostEvaluatorOfAllVehicles(dist_callback)
+                            transit_callback_index = routing.RegisterTransitCallback(dist_callback)
+                            routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
 
                             # Solve, returns a solution if any.
                             assignment = routing.SolveWithParameters(search_parameters)
@@ -5432,14 +5439,16 @@ class CNCjob(Geometry):
 
                         # Create routing model.
                         if tsp_size > 0:
-                            routing = pywrapcp.RoutingModel(tsp_size, num_routes, depot)
-                            search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
+                            manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
+                            routing = pywrapcp.RoutingModel(manager)
+                            search_parameters = pywrapcp.DefaultRoutingSearchParameters()
 
                             # Callback to the distance function. The callback takes two
                             # arguments (the from and to node indices) and returns the distance between them.
                             dist_between_locations = CreateDistanceCallback()
                             dist_callback = dist_between_locations.Distance
-                            routing.SetArcCostEvaluatorOfAllVehicles(dist_callback)
+                            transit_callback_index = routing.RegisterTransitCallback(dist_callback)
+                            routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
 
                             # Solve, returns a solution if any.
                             assignment = routing.SolveWithParameters(search_parameters)
