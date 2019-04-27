@@ -16,6 +16,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed some bugs recently introduced in Editors due of the changes done to the way mouse panning is detected 
 - cleaned up the context menu's when in Editors; made some structural changes
 - updated the code in camlib.CNCJob.generate_from_excellon_by_tools() to work with the new API from Google OR-Tools
+- all Gerber regions (G36 G37) are stored in the '0' aperture
+- fixed a bug that added geometry with clear polarity in the apertures where was not supposed to be
 
 25.04.2019
 

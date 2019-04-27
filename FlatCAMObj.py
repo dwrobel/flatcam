@@ -359,6 +359,12 @@ class FlatCAMObj(QtCore.QObject):
         except AttributeError:
             pass
 
+        # Not all object types have mark_shapes
+        # try:
+        #     self.mark_shapes.clear(update)
+        # except AttributeError:
+        #     pass
+
     def delete(self):
         # Free resources
         del self.ui
