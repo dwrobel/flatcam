@@ -3321,6 +3321,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.app.app_cursor.set_data(np.asarray([(self.pos[0], self.pos[1])]), symbol='++', edge_color='black',
                                          size=20)
         else:
+            self.pos = (self.pos[0], self.pos[1])
             self.app.app_cursor.enabled = False
 
         if event.button is 1:

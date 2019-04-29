@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+29.04.2019
+
+- soled bug in Gerber Editor: the '0' aperture (the region aperture) had no size which created errors. Made the size to be zero.
+- solved bug in editors: the canvas selection shape was not deleted on mouse release if the grid snap was OFF
+- solved bug in Excellon Editor: when selecting a drill hole on canvas the selected row in the Tools Table was not the correct onw but the next highest row
+
 26.04.2019
 
 - small changes in GUI; optimized contextual menu display

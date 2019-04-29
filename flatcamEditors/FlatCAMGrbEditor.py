@@ -3245,8 +3245,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.app.app_cursor.set_data(np.asarray([(self.pos[0], self.pos[1])]), symbol='++', edge_color='black',
                                          size=20)
         else:
+            self.pos = (self.pos[0], self.pos[1])
             self.app.app_cursor.enabled = False
-
 
         if event.button is 1:
             self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
@@ -3377,6 +3377,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :type Bool
         :return:
         """
+
         poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
         sel_aperture = set()
         self.apertures_table.clearSelection()

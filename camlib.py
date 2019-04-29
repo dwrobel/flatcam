@@ -2554,6 +2554,7 @@ class Gerber (Geometry):
                     if '0' not in self.apertures:
                         self.apertures['0'] = {}
                         self.apertures['0']['type'] = 'REG'
+                        self.apertures['0']['size'] = 0.0
                         self.apertures['0']['solid_geometry'] = []
 
                     # if D02 happened before G37 we now have a path with 1 element only so we have to add the current
@@ -2625,6 +2626,7 @@ class Gerber (Geometry):
                         # else:
                         #     if '0' not in self.apertures:
                         #         self.apertures['0'] = {}
+                        #         self.apertures['0']['size'] = 0.0
                         #         self.apertures['0']['type'] = 'REG'
                         #         self.apertures['0']['solid_geometry'] = []
                         #     used_aperture = '0'
@@ -2732,6 +2734,7 @@ class Gerber (Geometry):
                                 if '0' not in self.apertures:
                                     self.apertures['0'] = {}
                                     self.apertures['0']['type'] = 'REG'
+                                    self.apertures['0']['size'] = 0.0
                                     self.apertures['0']['solid_geometry'] = []
                                 last_path_aperture = '0'
                         else:
@@ -2751,6 +2754,7 @@ class Gerber (Geometry):
                                     if '0' not in self.apertures:
                                         self.apertures['0'] = {}
                                         self.apertures['0']['type'] = 'REG'
+                                        self.apertures['0']['size'] = 0.0
                                         self.apertures['0']['solid_geometry'] = []
                                     last_path_aperture = '0'
                                 geo = Polygon()
@@ -2784,6 +2788,7 @@ class Gerber (Geometry):
                                     if '0' not in self.apertures:
                                         self.apertures['0'] = {}
                                         self.apertures['0']['type'] = 'REG'
+                                        self.apertures['0']['size'] = 0.0
                                         self.apertures['0']['solid_geometry'] = []
                                     last_path_aperture = '0'
                                 elem = [linear_x, linear_y]

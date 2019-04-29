@@ -643,7 +643,7 @@ class FCDrillSelect(DrawTool):
                         sel_tools.add(storage)
 
             for storage in sel_tools:
-                self.exc_editor_app.tools_table_exc.selectRow(int(storage))
+                self.exc_editor_app.tools_table_exc.selectRow(int(storage) - 1)
                 self.draw_app.last_tool_selected = int(storage)
 
             self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
@@ -2129,11 +2129,16 @@ class FlatCAMExcEditor(QtCore.QObject):
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
             self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
 
-            ### Snap coordinates
-            x, y = self.app.geo_editor.snap(self.pos[0], self.pos[1])
-
-            self.pos = (x, y)
-            # print(self.active_tool)
+            # Snap coordinates
+            if self.app.grid_status():
+                self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
+                self.app.app_cursor.enabled = True
+                # Update cursor
+                self.app.app_cursor.set_data(np.asarray([(self.pos[0], self.pos[1])]), symbol='++', edge_color='black',
+                                             size=20)
+            else:
+                self.pos = (self.pos[0], self.pos[1])
+                self.app.app_cursor.enabled = False
 
             # Selection with left mouse button
             if self.active_tool is not None and event.button is 1:

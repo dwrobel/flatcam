@@ -181,32 +181,30 @@ class ToolSilk(FlatCAMTool):
 
         # start the QTimer with 1 second period check
         self.periodic_check(1000)
+
         for apid in self.silk_obj.apertures:
             ap_size = self.silk_obj.apertures[apid]['size']
-            geo_list = self.silk_obj.apertures[apid]['solid_geometry']
+            geo = self.silk_obj.apertures[apid]['solid_geometry']
             self.app.worker_task.emit({'fcn': self.aperture_intersection,
-                                       'params': [apid, geo_list]})
+                                       'params': [apid, geo]})
 
-    def aperture_intersection(self, apid, geo_list):
+    def aperture_intersection(self, apid, geo):
         self.promises.append(apid)
         new_solid_geometry = []
 
         with self.app.proc_container.new(_("Parsing aperture %s geometry ..." % str(apid))):
-            for geo_silk in geo_list:
+            for geo_silk in geo:
                 for ap in self.sm_obj.apertures:
                     for solder_poly in self.sm_obj.apertures[ap]['solid_geometry']:
-                        if geo_silk.exterior.intersects(solder_poly):
+                        if geo_silk.intersects(solder_poly):
 
-                            new_geo = self.subtract_polygon(geo_silk, solder_poly)
+                            new_geo = self.subtract_polygon(geo_silk, solder_poly.exterior)
+
                             if not new_geo.is_empty:
-                                # if the resulting geometry is not empty add it to the new_apertures solid_geometry
-                                try:
-                                    for g in new_geo:
-                                        new_solid_geometry.append(g)
-                                except TypeError:
-                                    new_solid_geometry.append(new_geo)
-                        # else:
-                        #     new_solid_geometry.append(geo_silk)
+                                new_solid_geometry.append(new_geo)
+                        else:
+                            new_solid_geometry.append(geo)
+
         if new_solid_geometry:
             while True:
                 if self.new_apertures[apid]['solid_geometry']:
@@ -224,28 +222,19 @@ class ToolSilk(FlatCAMTool):
 
         log.debug("Promise fulfilled: %s" % str(apid))
 
-    def subtract_polygon(self, geometry, polygon):
+    def subtract_polygon(self, silk_geo, sm_exterior):
         """
         Subtract polygon from the given object. This only operates on the paths in the original geometry, i.e.
         it converts polygons into paths.
 
-        :param geometry: The geometry from which to substract.
-        :param polygon: The substractor geometry
+        :param silk_geo: The geometry from which to substract.
+        :param sm_exterior: The substractor geometry
         :return: none
         """
 
-        # pathonly should be always True, otherwise polygons are not subtracted
-        flat_geometry = self.flatten(geometry=geometry, pathonly=True)
-
-        toolgeo = cascaded_union(polygon)
-        diffs = []
-        for target in flat_geometry:
-            if type(target) == LineString or type(target) == LinearRing:
-                diffs.append(target.difference(toolgeo))
-            else:
-                log.warning("Not implemented.")
-
-        return cascaded_union(diffs)
+        geo = cascaded_union(silk_geo)
+        diff_geo = geo.difference(sm_exterior)
+        return diff_geo
 
     def flatten(self, geometry=None, reset=True, pathonly=False):
         """
