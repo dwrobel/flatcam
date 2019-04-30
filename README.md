@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - in ObjectCollection class, made sure that renaming an object in Project View does not result in an empty name. If new name is blank the rename is cancelled.
 - made ObjectCollection.TreeItem() inherit KeySensitiveListVIew and implicitly QTreeView (in the hope that the theme applied on app will be applied on the tree items, too (for MacOs new DarkUI theme)
 - renamed SilkScreen Tool to Substract Tool and move it's menu location in Edit -> Conversion
+- started to modify the Substract Tool to work on Geometry objects too
 
 29.04.2019
 

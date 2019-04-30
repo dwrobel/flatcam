@@ -638,7 +638,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panel16.png'), _("Panel Tool"))
         self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'),_( "Film Tool"))
         self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'), _("SolderPaste Tool"))
-        self.silk_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Substract Tool"))
+        self.sub_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Substract Tool"))
 
         self.toolbartools.addSeparator()
 
@@ -1855,7 +1855,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'), _("Film Tool"))
         self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'),
                                                       _("SolderPaste Tool"))
-        self.silk_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Substract Tool"))
+        self.sub_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Substract Tool"))
 
         self.toolbartools.addSeparator()
 

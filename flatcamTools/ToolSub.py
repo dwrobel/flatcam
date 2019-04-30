@@ -52,42 +52,91 @@ class ToolSub(FlatCAMTool):
         form_layout = QtWidgets.QFormLayout()
         self.tools_box.addLayout(form_layout)
 
-        # Object Silkscreen
-        self.silk_object_combo = QtWidgets.QComboBox()
-        self.silk_object_combo.setModel(self.app.collection)
-        self.silk_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.silk_object_combo.setCurrentIndex(1)
+        self.gerber_title = QtWidgets.QLabel(_("<b>Gerber Objects</b>"))
+        form_layout.addRow(self.gerber_title)
 
-        self.silk_object_label = QtWidgets.QLabel("Silk Gerber:")
-        self.silk_object_label.setToolTip(
-            _("Silkscreen Gerber object to be adjusted\n"
-              "so it does not intersects the soldermask.")
+        # Target Gerber Object
+        self.target_gerber_combo = QtWidgets.QComboBox()
+        self.target_gerber_combo.setModel(self.app.collection)
+        self.target_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.target_gerber_combo.setCurrentIndex(1)
+
+        self.target_gerber_label = QtWidgets.QLabel(_("Target:"))
+        self.target_gerber_label.setToolTip(
+            _("Gerber object from which to substract\n"
+              "the substractor Gerber object.")
         )
 
-        form_layout.addRow(self.silk_object_label, self.silk_object_combo)
+        form_layout.addRow(self.target_gerber_label, self.target_gerber_combo)
 
-        # Object Soldermask
-        self.sm_object_combo = QtWidgets.QComboBox()
-        self.sm_object_combo.setModel(self.app.collection)
-        self.sm_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sm_object_combo.setCurrentIndex(1)
+        # Substractor Gerber Object
+        self.sub_gerber_combo = QtWidgets.QComboBox()
+        self.sub_gerber_combo.setModel(self.app.collection)
+        self.sub_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.sub_gerber_combo.setCurrentIndex(1)
 
-        self.sm_object_label = QtWidgets.QLabel("SM Gerber:")
-        self.sm_object_label.setToolTip(
-            _("Soldermask Gerber object that will adjust\n"
-              "the silkscreen so it does not overlap.")
+        self.sub_gerber_label = QtWidgets.QLabel(_("Substractor:"))
+        self.sub_gerber_label.setToolTip(
+            _("Gerber object that will be substracted\n"
+              "from the target Gerber object.")
         )
         e_lab_1 = QtWidgets.QLabel('')
 
-        form_layout.addRow(self.sm_object_label, self.sm_object_combo)
-        form_layout.addRow(e_lab_1)
+        form_layout.addRow(self.sub_gerber_label, self.sub_gerber_combo)
 
-        self.intersect_btn = FCButton(_('Remove overlap'))
+        self.intersect_btn = FCButton(_('Substract Gerber'))
         self.intersect_btn.setToolTip(
-            _("Remove the silkscreen geometry\n"
-              "that overlaps over the soldermask.")
+            _("Will remove the area occupied by the substractor\n"
+              "Gerber from the Target Gerber.\n"
+              "Can be used to remove the overlapping silkscreen\n"
+              "over the soldermask.")
         )
         self.tools_box.addWidget(self.intersect_btn)
+        self.tools_box.addWidget(e_lab_1)
+
+        # Form Layout
+        form_geo_layout = QtWidgets.QFormLayout()
+        self.tools_box.addLayout(form_geo_layout)
+
+        self.geo_title = QtWidgets.QLabel(_("<b>Geometry Objects</b>"))
+        form_geo_layout.addRow(self.geo_title)
+
+        # Target Geometry Object
+        self.target_geo_combo = QtWidgets.QComboBox()
+        self.target_geo_combo.setModel(self.app.collection)
+        self.target_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
+        self.target_geo_combo.setCurrentIndex(1)
+
+        self.target_geo_label = QtWidgets.QLabel(_("Target:"))
+        self.target_geo_label.setToolTip(
+            _("Geometry object from which to substract\n"
+              "the substractor Geometry object.")
+        )
+
+        form_geo_layout.addRow(self.target_geo_label, self.target_geo_combo)
+
+        # Substractor Geometry Object
+        self.sub_geo_combo = QtWidgets.QComboBox()
+        self.sub_geo_combo.setModel(self.app.collection)
+        self.sub_geo_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.sub_geo_combo.setCurrentIndex(1)
+
+        self.sub_geo_label = QtWidgets.QLabel(_("Substractor:"))
+        self.sub_geo_label.setToolTip(
+            _("Geometry object that will be substracted\n"
+              "from the target Geometry object.")
+        )
+        e_lab_1 = QtWidgets.QLabel('')
+
+        form_geo_layout.addRow(self.sub_geo_label, self.sub_geo_combo)
+
+        self.intersect_geo_btn = FCButton(_('Substract Geometry'))
+        self.intersect_geo_btn.setToolTip(
+            _("Will remove the area occupied by the substractor\n"
+              "Geometry from the Target Geometry.")
+        )
+        self.tools_box.addWidget(self.intersect_geo_btn)
+        self.tools_box.addWidget(e_lab_1)
 
         self.tools_box.addStretch()
 
@@ -99,29 +148,44 @@ class ToolSub(FlatCAMTool):
         self.promises = []
 
         self.new_apertures = {}
+        self.new_tools = {}
         self.new_solid_geometry = []
 
-        self.solder_union = None
+        self.sub_union = None
 
         # object to hold a flattened geometry
         self.flat_geometry = []
 
-        self.sm_obj = None
-        self.sm_obj_name = None
-        self.silk_obj = None
-        self.silk_obj_name = None
+        self.sub_grb_obj = None
+        self.sub_grb_obj_name = None
+        self.target_grb_obj = None
+        self.target_grb_obj_name = None
+
+        self.sub_geo_obj = None
+        self.sub_geo_obj_name = None
+        self.target_geo_obj = None
+        self.target_geo_obj_name = None
+
+        # signal which type of substraction to do: "geo" or "gerber"
+        self.sub_type = None
 
         try:
-            self.intersect_btn.clicked.disconnect(self.on_intersection_click)
+            self.intersect_btn.clicked.disconnect(self.on_grb_intersection_click)
         except:
             pass
-        self.intersect_btn.clicked.connect(self.on_intersection_click)
+        self.intersect_btn.clicked.connect(self.on_grb_intersection_click)
+
+        try:
+            self.intersect_geo_btn.clicked.disconnect(self.on_geo_intersection_click)
+        except:
+            pass
+        self.intersect_geo_btn.clicked.connect(self.on_geo_intersection_click)
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+W', **kwargs)
 
     def run(self, toggle=True):
-        self.app.report_usage("ToolNonCopperClear()")
+        self.app.report_usage("ToolSub()")
 
         if toggle:
             # if the splitter is hidden, display it, else hide it but only if the current widget is the same
@@ -141,56 +205,67 @@ class ToolSub(FlatCAMTool):
         self.set_tool_ui()
 
         self.new_apertures.clear()
+        self.new_tools.clear()
         self.new_solid_geometry = []
 
-        self.app.ui.notebook.setTabText(2, _("Silk Tool"))
+        self.app.ui.notebook.setTabText(2, _("Sub Tool"))
 
     def set_tool_ui(self):
         self.tools_frame.show()
 
-    def on_intersection_click(self):
+    def on_grb_intersection_click(self):
         # reset previous values
         self.new_apertures.clear()
         self.new_solid_geometry = []
-        self.solder_union = []
+        self.sub_union = []
 
-        self.silk_obj_name = self.silk_object_combo.currentText()
+        self.sub_type = "gerber"
+
+        self.target_grb_obj_name = self.target_gerber_combo.currentText()
+        if self.target_grb_obj_name == '':
+            self.app.inform.emit(_("[ERROR_NOTCL] No Target object loaded."))
+            return
+
         # Get source object.
         try:
-            self.silk_obj = self.app.collection.get_by_name(self.silk_obj_name)
+            self.target_grb_obj = self.app.collection.get_by_name(self.target_grb_obj_name)
         except:
             self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
-            return "Could not retrieve object: %s" % self.silk_obj_name
+            return "Could not retrieve object: %s" % self.target_grb_obj_name
 
-        self.sm_obj_name = self.sm_object_combo.currentText()
+        self.sub_grb_obj_name = self.sub_gerber_combo.currentText()
+        if self.sub_grb_obj_name == '':
+            self.app.inform.emit(_("[ERROR_NOTCL] No Substractor object loaded."))
+            return
+
         # Get source object.
         try:
-            self.sm_obj = self.app.collection.get_by_name(self.sm_obj_name)
+            self.sub_grb_obj = self.app.collection.get_by_name(self.sub_grb_obj_name)
         except:
             self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
-            return "Could not retrieve object: %s" % self.sm_obj_name
+            return "Could not retrieve object: %s" % self.sub_grb_obj_name
 
         # crate the new_apertures dict structure
-        for apid in self.silk_obj.apertures:
+        for apid in self.target_grb_obj.apertures:
             self.new_apertures[apid] = {}
             self.new_apertures[apid]['type'] = 'C'
-            self.new_apertures[apid]['size'] = self.silk_obj.apertures[apid]['size']
+            self.new_apertures[apid]['size'] = self.target_grb_obj.apertures[apid]['size']
             self.new_apertures[apid]['solid_geometry'] = []
 
         geo_union_list = []
-        for apid1 in self.sm_obj.apertures:
-            geo_union_list += self.sm_obj.apertures[apid1]['solid_geometry']
-        self.solder_union = cascaded_union(geo_union_list)
+        for apid1 in self.sub_grb_obj.apertures:
+            geo_union_list += self.sub_grb_obj.apertures[apid1]['solid_geometry']
+        self.sub_union = cascaded_union(geo_union_list)
 
         # add the promises
-        for apid in self.silk_obj.apertures:
+        for apid in self.target_grb_obj.apertures:
             self.promises.append(apid)
 
         # start the QTimer to check for promises with 1 second period check
         self.periodic_check(1000, reset=True)
 
-        for apid in self.silk_obj.apertures:
-            geo = self.silk_obj.apertures[apid]['solid_geometry']
+        for apid in self.target_grb_obj.apertures:
+            geo = self.target_grb_obj.apertures[apid]['solid_geometry']
             self.app.worker_task.emit({'fcn': self.aperture_intersection,
                                        'params': [apid, geo]})
 
@@ -200,8 +275,8 @@ class ToolSub(FlatCAMTool):
 
         with self.app.proc_container.new(_("Parsing aperture %s geometry ..." % str(apid))):
             for geo_silk in geo:
-                if geo_silk.intersects(self.solder_union):
-                    new_geo = geo_silk.difference(self.solder_union)
+                if geo_silk.intersects(self.sub_union):
+                    new_geo = geo_silk.difference(self.sub_union)
                     new_geo = new_geo.buffer(0)
                     if new_geo:
                         if not new_geo.is_empty:
@@ -229,54 +304,7 @@ class ToolSub(FlatCAMTool):
 
         log.debug("Promise fulfilled: %s" % str(apid))
 
-
-    def periodic_check(self, check_period, reset=False):
-        """
-        This function starts an QTimer and it will periodically check if intersections are done
-
-        :param check_period: time at which to check periodically
-        :param reset: will reset the timer
-        :return:
-        """
-
-        log.debug("ToolSub --> Periodic Check started.")
-
-        try:
-            self.check_thread.stop()
-        except:
-            pass
-
-        if reset:
-            self.check_thread.setInterval(check_period)
-            try:
-                self.check_thread.timeout.disconnect(self.periodic_check_handler)
-            except:
-                pass
-
-        self.check_thread.timeout.connect(self.periodic_check_handler)
-        self.check_thread.start(QtCore.QThread.HighPriority)
-
-    def periodic_check_handler(self):
-        """
-        If the intersections workers finished then start creating the solid_geometry
-        :return:
-        """
-        # log.debug("checking parsing --> %s" % str(self.parsing_promises))
-
-        outname = self.silk_object_combo.currentText() + '_cleaned'
-
-        try:
-            if not self.promises:
-                self.check_thread.stop()
-                # intersection jobs finished, start the creation of solid_geometry
-                self.app.worker_task.emit({'fcn': self.new_silkscreen_object,
-                                           'params': [outname]})
-
-                log.debug("ToolSub --> Periodic check finished.")
-        except Exception:
-            traceback.print_exc()
-
-    def new_silkscreen_object(self, outname):
+    def new_gerber_object(self, outname):
 
         def obj_init(grb_obj, app_obj):
 
@@ -299,10 +327,10 @@ class ToolSub(FlatCAMTool):
 
             grb_obj.solid_geometry = deepcopy(poly_buff)
 
-        with self.app.proc_container.new(_("Generating cleaned SS object ...")):
+        with self.app.proc_container.new(_("Generating new object ...")):
             ret = self.app.new_object('gerber', outname, obj_init, autoselected=False)
             if ret == 'fail':
-                self.app.inform.emit(_('[ERROR_NOTCL] Generating SilkScreen file failed.'))
+                self.app.inform.emit(_('[ERROR_NOTCL] Generating new object failed.'))
                 return
             # Register recent file
             self.app.file_opened.emit('gerber', outname)
@@ -312,8 +340,220 @@ class ToolSub(FlatCAMTool):
             # cleanup
             self.new_apertures.clear()
             self.new_solid_geometry[:] = []
-            self.solder_union[:] = []
+            self.sub_union[:] = []
+
+    def on_geo_intersection_click(self):
+        # reset previous values
+        self.new_tools.clear()
+        self.new_solid_geometry = []
+        self.sub_union = []
+
+        self.sub_type = "geo"
+
+        self.target_geo_obj_name = self.target_geo_combo.currentText()
+        if self.target_geo_obj_name == '':
+            self.app.inform.emit(_("[ERROR_NOTCL] No Target object loaded."))
+            return
+
+        # Get source object.
+        try:
+            self.target_geo_obj = self.app.collection.get_by_name(self.target_geo_obj_name)
+        except:
+            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.target_geo_obj_name)
+            return "Could not retrieve object: %s" % self.target_grb_obj_name
+
+        self.sub_geo_obj_name = self.sub_geo_combo.currentText()
+        if self.sub_geo_obj_name == '':
+            self.app.inform.emit(_("[ERROR_NOTCL] No Substractor object loaded."))
+            return
+
+        if self.sub_geo_obj.multigeo:
+            self.app.inform.emit(_("[ERROR_NOTCL] Currently, the Substractor geometry cannot be of type Multigeo."))
+            return
+
+        # Get source object.
+        try:
+            self.sub_geo_obj = self.app.collection.get_by_name(self.sub_geo_obj_name)
+        except:
+            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.sub_geo_obj_name)
+            return "Could not retrieve object: %s" % self.sub_geo_obj_name
+
+        geo_union_list = []
+        if self.target_grb_obj.multigeo:
+            # crate the new_tools dict structure
+            for tool in self.target_geo_obj.tools:
+                self.new_tools[tool] = {}
+                self.new_tools[tool]['solid_geometry'] = []
+
+            for t in self.sub_geo_obj.tools:
+                geo_union_list += self.sub_geo_obj.tools[t]['solid_geometry']
+
+            # add the promises
+            for tool in self.target_geo_obj.tools:
+                self.promises.append(tool)
+        else:
+            geo_union_list = self.sub_geo_obj.solid_geometry
+            # add the promise
+            self.promises.append("single")
+
+        self.sub_union = cascaded_union(geo_union_list)
+
+        if self.target_grb_obj.multigeo:
+            # start the QTimer to check for promises with 0.5 second period check
+            self.periodic_check(500, reset=True)
+
+            for tool in self.target_geo_obj.tools:
+                geo = self.target_grb_obj.tools[tool]['solid_geometry']
+                self.app.worker_task.emit({'fcn': self.toolgeo_intersection,
+                                           'params': [tool, geo]})
+        else:
+            geo = self.target_grb_obj.solid_geometry
+            self.app.worker_task.emit({'fcn': self.toolgeo_intersection,
+                                       'params': ["single", geo]})
+
+    def toolgeo_intersection(self, tool, geo):
+        new_geometry = []
+        log.debug("Working on promise: %s" % str(tool))
+
+        if tool == "single":
+            text = _("Parsing solid_geometry ...")
+        else:
+            text = _("Parsing tool %s geometry ...") % str(tool)
+
+        with self.app.proc_container.new(text):
+            for t_geo in geo:
+                if t_geo.intersects(self.sub_union):
+                    new_geo = t_geo.difference(self.sub_union)
+                    new_geo = new_geo.buffer(0)
+                    if new_geo:
+                        if not new_geo.is_empty:
+                            new_geometry.append(new_geo)
+                        else:
+                            new_geometry.append(t_geo)
+                    else:
+                        new_geometry.append(t_geo)
+                else:
+                    new_geometry.append(t_geo)
+
+        if new_geometry:
+            if tool == "single":
+                while not self.new_solid_geometry:
+                    self.new_solid_geometry = deepcopy(new_geometry)
+                    time.sleep(0.5)
+            else:
+                while not self.new_tools[tool]['solid_geometry']:
+                    self.new_tools[tool]['solid_geometry'] = deepcopy(new_geometry)
+                    time.sleep(0.5)
+
+        while True:
+            # removal from list is done in a multithreaded way therefore not always the removal can be done
+            # so we keep trying until it's done
+            if tool not in self.promises:
+                break
+
+            self.promises.remove(tool)
+            time.sleep(0.5)
+        log.debug("Promise fulfilled: %s" % str(tool))
+
+    def new_geo_object(self, outname):
+
+        def obj_init(grb_obj, app_obj):
+
+            grb_obj.apertures = deepcopy(self.new_apertures)
+
+            poly_buff = []
+            for ap in self.new_apertures:
+                for poly in self.new_apertures[ap]['solid_geometry']:
+                    poly_buff.append(poly)
+
+            work_poly_buff = cascaded_union(poly_buff)
+            try:
+                poly_buff = work_poly_buff.buffer(0.0000001)
+            except ValueError:
+                pass
+            try:
+                poly_buff = poly_buff.buffer(-0.0000001)
+            except ValueError:
+                pass
+
+            grb_obj.solid_geometry = deepcopy(poly_buff)
+
+        with self.app.proc_container.new(_("Generating new object ...")):
+            ret = self.app.new_object('gerber', outname, obj_init, autoselected=False)
+            if ret == 'fail':
+                self.app.inform.emit(_('[ERROR_NOTCL] Generating new object failed.'))
+                return
+            # Register recent file
+            self.app.file_opened.emit('gerber', outname)
+            # GUI feedback
+            self.app.inform.emit(_("[success] Created: %s") % outname)
+
+            # cleanup
+            self.new_apertures.clear()
+            self.new_solid_geometry[:] = []
+            self.sub_union[:] = []
+
+    def periodic_check(self, check_period, reset=False):
+        """
+        This function starts an QTimer and it will periodically check if intersections are done
+
+        :param check_period: time at which to check periodically
+        :param reset: will reset the timer
+        :return:
+        """
+
+        log.debug("ToolSub --> Periodic Check started.")
+
+        try:
+            self.check_thread.stop()
+        except Exception as e:
+            pass
+
+        if reset:
+            self.check_thread.setInterval(check_period)
+            try:
+                self.check_thread.timeout.disconnect(self.periodic_check_handler)
+            except Exception as e:
+                pass
+
+        self.check_thread.timeout.connect(self.periodic_check_handler)
+        self.check_thread.start(QtCore.QThread.HighPriority)
+
+    def periodic_check_handler(self):
+        """
+        If the intersections workers finished then start creating the solid_geometry
+        :return:
+        """
+        # log.debug("checking parsing --> %s" % str(self.parsing_promises))
+
+
+        try:
+            if not self.promises:
+                self.check_thread.stop()
+                if self.sub_type == "gerber":
+                    outname = self.target_gerber_combo.currentText() + '_sub'
+
+                    # intersection jobs finished, start the creation of solid_geometry
+                    self.app.worker_task.emit({'fcn': self.new_gerber_object,
+                                               'params': [outname]})
+                else:
+                    outname = self.target_geo_combo.currentText() + '_sub'
+
+                    # intersection jobs finished, start the creation of solid_geometry
+                    self.app.worker_task.emit({'fcn': self.new_geo_object,
+                                               'params': [outname]})
+
+                # reset the type of substraction for next time
+                self.sub_type = None
+
+                log.debug("ToolSub --> Periodic check finished.")
+        except Exception as e:
+            log.debug("ToolSub().periodic_check_handler() --> %s" % str(e))
+            traceback.print_exc()
 
     def reset_fields(self):
-        self.silk_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.sm_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.target_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.sub_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+
+        self.target_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
+        self.sub_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))

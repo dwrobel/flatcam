@@ -2067,7 +2067,7 @@ class App(QtCore.QObject):
         self.ui.panelize_btn.triggered.connect(lambda: self.panelize_tool.run(toggle=True))
         self.ui.film_btn.triggered.connect(lambda: self.film_tool.run(toggle=True))
         self.ui.solder_btn.triggered.connect(lambda: self.paste_tool.run(toggle=True))
-        self.ui.silk_btn.triggered.connect(lambda: self.sub_tool.run(toggle=True))
+        self.ui.sub_btn.triggered.connect(lambda: self.sub_tool.run(toggle=True))
 
         self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run(toggle=True))
         self.ui.transform_btn.triggered.connect(lambda: self.transform_tool.run(toggle=True))
