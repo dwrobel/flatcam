@@ -182,23 +182,27 @@ class ToolSilk(FlatCAMTool):
             geo_union_list += self.sm_obj.apertures[apid1]['solid_geometry']
         self.solder_union = cascaded_union(geo_union_list)
 
-        # start the QTimer with 1 second period check
+        # add the promises
+        for apid in self.silk_obj.apertures:
+            self.promises.append(apid)
+
+        # start the QTimer to check for promises with 1 second period check
         self.periodic_check(1000, reset=True)
 
         for apid in self.silk_obj.apertures:
             geo = self.silk_obj.apertures[apid]['solid_geometry']
-            while apid not in self.promises:
-                self.promises.append(apid)
             self.app.worker_task.emit({'fcn': self.aperture_intersection,
                                        'params': [apid, geo]})
 
     def aperture_intersection(self, apid, geo):
         new_solid_geometry = []
+        log.debug("Working on promise: %s" % str(apid))
 
         with self.app.proc_container.new(_("Parsing aperture %s geometry ..." % str(apid))):
             for geo_silk in geo:
                 if geo_silk.intersects(self.solder_union):
                     new_geo = geo_silk.difference(self.solder_union)
+                    new_geo = new_geo.buffer(0)
                     if new_geo:
                         if not new_geo.is_empty:
                             new_solid_geometry.append(new_geo)
@@ -224,6 +228,7 @@ class ToolSilk(FlatCAMTool):
             time.sleep(0.5)
 
         log.debug("Promise fulfilled: %s" % str(apid))
+
 
     def periodic_check(self, check_period, reset=False):
         """
@@ -282,9 +287,9 @@ class ToolSilk(FlatCAMTool):
                 for poly in self.new_apertures[ap]['solid_geometry']:
                     poly_buff.append(poly)
 
-            poly_buff = MultiPolygon(poly_buff)
+            work_poly_buff = MultiPolygon(poly_buff)
             try:
-                poly_buff = poly_buff.buffer(0.0000001)
+                poly_buff = work_poly_buff.buffer(0.0000001)
             except ValueError:
                 pass
             try:
