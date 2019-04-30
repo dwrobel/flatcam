@@ -256,6 +256,13 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # self.view.setAcceptDrops(True)
         # self.view.setDropIndicatorShown(True)
 
+        color = self.app.defaults['global_proj_item_color']
+        # set StyleSheet
+        stylesheet = "QTreeView::item {color: %s;}" % color
+
+        self.view.setStyleSheet(stylesheet)
+
+
         font = QtGui.QFont()
         font.setPixelSize(12)
         font.setFamily("Seagoe UI")

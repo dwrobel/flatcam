@@ -2875,8 +2875,12 @@ class FlatCAMGeoEditor(QtCore.QObject):
         def gridx_changed(goption, gentry):
             entry2option(option=goption, entry=gentry)
             # if the grid link is checked copy the value in the GridX field to GridY
+            try:
+                val = float(self.app.ui.grid_gap_x_entry.get_value())
+            except ValueError:
+                return
             if self.app.ui.grid_gap_link_cb.isChecked():
-                self.app.ui.grid_gap_y_entry.set_value(self.app.ui.grid_gap_x_entry.get_value())
+                self.app.ui.grid_gap_y_entry.set_value(val)
 
         self.app.ui.grid_gap_x_entry.setValidator(QtGui.QDoubleValidator())
         self.app.ui.grid_gap_x_entry.textChanged.connect(

@@ -342,6 +342,8 @@ class App(QtCore.QObject):
             "global_draw_color": self.ui.general_defaults_form.general_gui_group.draw_color_entry,
             "global_sel_draw_color": self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry,
 
+            "global_proj_item_color": self.ui.general_defaults_form.general_gui_group.proj_color_entry,
+
             # General GUI Settings
             "global_layout": self.ui.general_defaults_form.general_gui_set_group.layout_combo,
             "global_hover": self.ui.general_defaults_form.general_gui_set_group.hover_cb,
@@ -614,6 +616,7 @@ class App(QtCore.QObject):
             "global_alt_sel_line": '#006E20BF',
             "global_draw_color": '#FF0000',
             "global_sel_draw_color": '#0000FF',
+            "global_proj_item_color": '#000000',
 
             "global_toolbar_view": 511,
 
@@ -1165,7 +1168,8 @@ class App(QtCore.QObject):
             "background-color:%s" % str(self.defaults['global_sel_line'])[:7])
 
         # Init Right-Left Selection colors
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.set_value(self.defaults['global_alt_sel_fill'])
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.set_value(
+            self.defaults['global_alt_sel_fill'])
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_alt_sel_fill'])[:7])
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.set_value(
@@ -1173,18 +1177,28 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.setValue(
             int(self.defaults['global_sel_fill'][7:9], 16))
 
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.set_value(self.defaults['global_alt_sel_line'])
+        self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.set_value(
+            self.defaults['global_alt_sel_line'])
         self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_alt_sel_line'])[:7])
 
         # Init Draw color and Selection Draw Color
-        self.ui.general_defaults_form.general_gui_group.draw_color_entry.set_value(self.defaults['global_draw_color'])
+        self.ui.general_defaults_form.general_gui_group.draw_color_entry.set_value(
+            self.defaults['global_draw_color'])
         self.ui.general_defaults_form.general_gui_group.draw_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_draw_color'])[:7])
 
-        self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(self.defaults['global_sel_draw_color'])
+        self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(
+            self.defaults['global_sel_draw_color'])
         self.ui.general_defaults_form.general_gui_group.sel_draw_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_sel_draw_color'])[:7])
+
+        # Init Project Items color
+        self.ui.general_defaults_form.general_gui_group.proj_color_entry.set_value(
+            self.defaults['global_proj_item_color'])
+        self.ui.general_defaults_form.general_gui_group.proj_color_button.setStyleSheet(
+            "background-color:%s" % str(self.defaults['global_proj_item_color'])[:7])
+
         #### End of Data ####
 
         #### Plot Area ####
@@ -1401,34 +1415,59 @@ class App(QtCore.QObject):
         ###############################
 
         # Setting plot colors signals
-        self.ui.general_defaults_form.general_gui_group.pf_color_entry.editingFinished.connect(self.on_pf_color_entry)
-        self.ui.general_defaults_form.general_gui_group.pf_color_button.clicked.connect(self.on_pf_color_button)
-        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_spinner.valueChanged.connect(self.on_pf_color_spinner)
-        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.valueChanged.connect(self.on_pf_color_slider)
-        self.ui.general_defaults_form.general_gui_group.pl_color_entry.editingFinished.connect(self.on_pl_color_entry)
-        self.ui.general_defaults_form.general_gui_group.pl_color_button.clicked.connect(self.on_pl_color_button)
+        self.ui.general_defaults_form.general_gui_group.pf_color_entry.editingFinished.connect(
+            self.on_pf_color_entry)
+        self.ui.general_defaults_form.general_gui_group.pf_color_button.clicked.connect(
+            self.on_pf_color_button)
+        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_spinner.valueChanged.connect(
+            self.on_pf_color_spinner)
+        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.valueChanged.connect(
+            self.on_pf_color_slider)
+        self.ui.general_defaults_form.general_gui_group.pl_color_entry.editingFinished.connect(
+            self.on_pl_color_entry)
+        self.ui.general_defaults_form.general_gui_group.pl_color_button.clicked.connect(
+            self.on_pl_color_button)
         # Setting selection (left - right) colors signals
-        self.ui.general_defaults_form.general_gui_group.sf_color_entry.editingFinished.connect(self.on_sf_color_entry)
-        self.ui.general_defaults_form.general_gui_group.sf_color_button.clicked.connect(self.on_sf_color_button)
-        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.valueChanged.connect(self.on_sf_color_spinner)
-        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.valueChanged.connect(self.on_sf_color_slider)
-        self.ui.general_defaults_form.general_gui_group.sl_color_entry.editingFinished.connect(self.on_sl_color_entry)
-        self.ui.general_defaults_form.general_gui_group.sl_color_button.clicked.connect(self.on_sl_color_button)
+        self.ui.general_defaults_form.general_gui_group.sf_color_entry.editingFinished.connect(
+            self.on_sf_color_entry)
+        self.ui.general_defaults_form.general_gui_group.sf_color_button.clicked.connect(
+            self.on_sf_color_button)
+        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.valueChanged.connect(
+            self.on_sf_color_spinner)
+        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.valueChanged.connect(
+            self.on_sf_color_slider)
+        self.ui.general_defaults_form.general_gui_group.sl_color_entry.editingFinished.connect(
+            self.on_sl_color_entry)
+        self.ui.general_defaults_form.general_gui_group.sl_color_button.clicked.connect(
+            self.on_sl_color_button)
         # Setting selection (right - left) colors signals
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.editingFinished.connect(self.on_alt_sf_color_entry)
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.clicked.connect(self.on_alt_sf_color_button)
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.editingFinished.connect(
+            self.on_alt_sf_color_entry)
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.clicked.connect(
+            self.on_alt_sf_color_button)
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.valueChanged.connect(
             self.on_alt_sf_color_spinner)
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.valueChanged.connect(
             self.on_alt_sf_color_slider)
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.editingFinished.connect(self.on_alt_sl_color_entry)
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.clicked.connect(self.on_alt_sl_color_button)
+        self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.editingFinished.connect(
+            self.on_alt_sl_color_entry)
+        self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.clicked.connect(
+            self.on_alt_sl_color_button)
         # Setting Editor Draw colors signals
-        self.ui.general_defaults_form.general_gui_group.draw_color_entry.editingFinished.connect(self.on_draw_color_entry)
-        self.ui.general_defaults_form.general_gui_group.draw_color_button.clicked.connect(self.on_draw_color_button)
+        self.ui.general_defaults_form.general_gui_group.draw_color_entry.editingFinished.connect(
+            self.on_draw_color_entry)
+        self.ui.general_defaults_form.general_gui_group.draw_color_button.clicked.connect(
+            self.on_draw_color_button)
 
-        self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.editingFinished.connect(self.on_sel_draw_color_entry)
-        self.ui.general_defaults_form.general_gui_group.sel_draw_color_button.clicked.connect(self.on_sel_draw_color_button)
+        self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.editingFinished.connect(
+            self.on_sel_draw_color_entry)
+        self.ui.general_defaults_form.general_gui_group.sel_draw_color_button.clicked.connect(
+            self.on_sel_draw_color_button)
+
+        self.ui.general_defaults_form.general_gui_group.proj_color_entry.editingFinished.connect(
+            self.on_proj_color_entry)
+        self.ui.general_defaults_form.general_gui_group.proj_color_button.clicked.connect(
+            self.on_proj_color_button)
 
         self.ui.general_defaults_form.general_gui_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
         self.ui.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
@@ -4020,6 +4059,28 @@ class App(QtCore.QObject):
         new_val_sel = str(sel_draw_color.name())
         self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(new_val_sel)
         self.defaults['global_sel_draw_color'] = new_val_sel
+
+    def on_proj_color_entry(self):
+        self.defaults['global_proj_item_color'] = self.ui.general_defaults_form.general_gui_group \
+                                                   .proj_color_entry.get_value()
+        self.ui.general_defaults_form.general_gui_group.proj_color_button.setStyleSheet(
+            "background-color:%s" % str(self.defaults['global_proj_item_color']))
+
+    def on_proj_color_button(self):
+        current_color = QtGui.QColor(self.defaults['global_proj_item_color'])
+
+        c_dialog = QtWidgets.QColorDialog()
+        proj_color = c_dialog.getColor(initial=current_color)
+
+        if proj_color.isValid() is False:
+            return
+
+        self.ui.general_defaults_form.general_gui_group.proj_color_button.setStyleSheet(
+            "background-color:%s" % str(proj_color.name()))
+
+        new_val_sel = str(proj_color.name())
+        self.ui.general_defaults_form.general_gui_group.proj_color_entry.set_value(new_val_sel)
+        self.defaults['global_proj_item_color'] = new_val_sel
 
     def on_deselect_all(self):
         self.collection.set_all_inactive()
@@ -7603,6 +7664,7 @@ class App(QtCore.QObject):
         icons = {
             "gerber": "share/flatcam_icon16.png",
             "excellon": "share/drill16.png",
+            'geometry': "share/geometry16.png",
             "cncjob": "share/cnc16.png",
             "project": "share/project16.png",
             "svg": "share/geometry16.png",

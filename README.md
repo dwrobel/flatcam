@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - started to modify the Substract Tool to work on Geometry objects too
 - progress in the new Substract Tool for Geometry Objects
 - finished the new Substract Tool
+- added new setting for the color of the Project Tree items; it helps in providing contrast when using dark theme like the one in MacOS
 
 29.04.2019
 

@@ -3507,6 +3507,20 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_11.addWidget(self.sel_draw_color_button)
         self.form_box_child_11.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
+        # Project Tab items color
+        self.proj_color_label = QtWidgets.QLabel(_('Project Items:'))
+        self.proj_color_label.setToolTip(
+            _("Set the color of the items in Project Tab Tree.")
+        )
+        self.proj_color_entry = FCEntry()
+        self.proj_color_button = QtWidgets.QPushButton()
+        self.proj_color_button.setFixedSize(15, 15)
+
+        self.form_box_child_12 = QtWidgets.QHBoxLayout()
+        self.form_box_child_12.addWidget(self.proj_color_entry)
+        self.form_box_child_12.addWidget(self.proj_color_button)
+        self.form_box_child_12.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
@@ -3531,6 +3545,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.alt_sl_color_label, self.form_box_child_9)
         self.form_box.addRow(self.draw_color_label, self.form_box_child_10)
         self.form_box.addRow(self.sel_draw_color_label, self.form_box_child_11)
+        self.form_box.addRow(QtWidgets.QLabel(""))
+        self.form_box.addRow(self.proj_color_label, self.form_box_child_12)
 
         self.form_box.addRow(self.spacelabel, self.spacelabel)
 
