@@ -2461,7 +2461,7 @@ class Gerber (Geometry):
                 match = self.tool_re.search(gline)
                 if match:
                     current_aperture = match.group(1)
-                    log.debug("Line %d: Aperture change to (%s)" % (line_num, current_aperture))
+                    # log.debug("Line %d: Aperture change to (%s)" % (line_num, current_aperture))
 
                     # If the aperture value is zero then make it something quite small but with a non-zero value
                     # so it can be processed by FlatCAM.
@@ -2470,7 +2470,7 @@ class Gerber (Geometry):
                     if self.apertures[current_aperture]["type"] is not "AM":
                         if self.apertures[current_aperture]["size"] == 0:
                             self.apertures[current_aperture]["size"] = 1e-12
-                    log.debug(self.apertures[current_aperture])
+                    # log.debug(self.apertures[current_aperture])
 
                     # Take care of the current path with the previous tool
                     if len(path) > 1:
