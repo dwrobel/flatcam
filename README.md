@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - renamed SilkScreen Tool to Substract Tool and move it's menu location in Edit -> Conversion
 - started to modify the Substract Tool to work on Geometry objects too
 - progress in the new Substract Tool for Geometry Objects
+- finished the new Substract Tool
 
 29.04.2019
 

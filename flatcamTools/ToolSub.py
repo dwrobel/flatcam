@@ -153,9 +153,6 @@ class ToolSub(FlatCAMTool):
 
         self.sub_union = None
 
-        # object to hold a flattened geometry
-        self.flat_geometry = []
-
         self.sub_grb_obj = None
         self.sub_grb_obj_name = None
         self.target_grb_obj = None
@@ -168,6 +165,9 @@ class ToolSub(FlatCAMTool):
 
         # signal which type of substraction to do: "geo" or "gerber"
         self.sub_type = None
+
+        # store here the options from target_obj
+        self.target_options = {}
 
         try:
             self.intersect_btn.clicked.disconnect(self.on_grb_intersection_click)
@@ -207,6 +207,7 @@ class ToolSub(FlatCAMTool):
         self.new_apertures.clear()
         self.new_tools.clear()
         self.new_solid_geometry = []
+        self.target_options.clear()
 
         self.app.ui.notebook.setTabText(2, _("Sub Tool"))
 
@@ -345,6 +346,7 @@ class ToolSub(FlatCAMTool):
     def on_geo_intersection_click(self):
         # reset previous values
         self.new_tools.clear()
+        self.target_options.clear()
         self.new_solid_geometry = []
         self.sub_union = []
 
@@ -378,17 +380,26 @@ class ToolSub(FlatCAMTool):
             self.app.inform.emit(_("[ERROR_NOTCL] Currently, the Substractor geometry cannot be of type Multigeo."))
             return
 
-        if self.target_geo_obj.multigeo:
-            # crate the new_tools dict structure
-            for tool in self.target_geo_obj.tools:
-                self.new_tools[tool] = {}
-                self.new_tools[tool]['solid_geometry'] = []
+        # create the target_options obj
+        self.target_options = {}
+        for opt in self.target_geo_obj.options:
+            if opt != 'name':
+                self.target_options[opt] = deepcopy(self.target_geo_obj.options[opt])
 
-            # add the promises
+        # crate the new_tools dict structure
+        for tool in self.target_geo_obj.tools:
+            self.new_tools[tool] = {}
+            for key in self.target_geo_obj.tools[tool]:
+                if key == 'solid_geometry':
+                    self.new_tools[tool][key] = []
+                else:
+                    self.new_tools[tool][key] = deepcopy(self.target_geo_obj.tools[tool][key])
+
+        # add the promises
+        if self.target_geo_obj.multigeo:
             for tool in self.target_geo_obj.tools:
                 self.promises.append(tool)
         else:
-            # add the promise
             self.promises.append("single")
 
         self.sub_union = cascaded_union(self.sub_geo_obj.solid_geometry)
@@ -403,7 +414,6 @@ class ToolSub(FlatCAMTool):
                                            'params': [tool, geo]})
         else:
             geo = self.target_geo_obj.solid_geometry
-
             self.app.worker_task.emit({'fcn': self.toolgeo_intersection,
                                        'params': ["single", geo]})
 
@@ -417,19 +427,11 @@ class ToolSub(FlatCAMTool):
             text = _("Parsing tool %s geometry ...") % str(tool)
 
         with self.app.proc_container.new(text):
-            for t_geo in geo:
-                if t_geo.intersects(self.sub_union):
-                    new_geo = t_geo.difference(self.sub_union)
-                    new_geo = new_geo.buffer(0)
-                    if new_geo:
-                        if not new_geo.is_empty:
-                            new_geometry.append(new_geo)
-                        else:
-                            new_geometry.append(t_geo)
-                    else:
-                        new_geometry.append(t_geo)
-                else:
-                    new_geometry.append(t_geo)
+            new_geo = (cascaded_union(geo)).difference(self.sub_union)
+            if new_geo:
+                if not new_geo.is_empty:
+                    new_geometry.append(new_geo)
+
         if new_geometry:
             if tool == "single":
                 while not self.new_solid_geometry:
@@ -453,29 +455,22 @@ class ToolSub(FlatCAMTool):
     def new_geo_object(self, outname):
         def obj_init(geo_obj, app_obj):
 
-            geo_obj.solid_geometry = deepcopy(self.new_solid_geometry)
-            try:
-                geo_obj.tools = deepcopy(self.target_geo_obj.tools)
-                for tool in geo_obj.tools:
-                    geo_obj.tools[tool]['solid_geometry'] = deepcopy(self.new_solid_geometry)
-            except:
-                pass
+            geo_obj.options = deepcopy(self.target_options)
+            geo_obj.options['name'] = outname
 
-            poly_buff = []
-            for poly in geo_obj.solid_geometry:
-                poly_buff.append(poly)
-
-            work_poly_buff = cascaded_union(poly_buff)
-            try:
-                poly_buff = work_poly_buff.buffer(0.0000001)
-            except ValueError:
-                pass
-            try:
-                poly_buff = poly_buff.buffer(-0.0000001)
-            except ValueError:
-                pass
-
-            geo_obj.solid_geometry = deepcopy(poly_buff)
+            if self.target_geo_obj.multigeo:
+                geo_obj.tools = deepcopy(self.new_tools)
+                # this turn on the FlatCAMCNCJob plot for multiple tools
+                geo_obj.multigeo = True
+                geo_obj.multitool = True
+            else:
+                geo_obj.solid_geometry = deepcopy(self.new_solid_geometry)
+                try:
+                    geo_obj.tools = deepcopy(self.new_tools)
+                    for tool in geo_obj.tools:
+                        geo_obj.tools[tool]['solid_geometry'] = deepcopy(self.new_solid_geometry)
+                except:
+                    pass
 
         with self.app.proc_container.new(_("Generating new object ...")):
             ret = self.app.new_object('geometry', outname, obj_init, autoselected=False)
