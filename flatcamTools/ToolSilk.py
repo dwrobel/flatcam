@@ -287,7 +287,7 @@ class ToolSilk(FlatCAMTool):
                 for poly in self.new_apertures[ap]['solid_geometry']:
                     poly_buff.append(poly)
 
-            work_poly_buff = MultiPolygon(poly_buff)
+            work_poly_buff = cascaded_union(poly_buff)
             try:
                 poly_buff = work_poly_buff.buffer(0.0000001)
             except ValueError:

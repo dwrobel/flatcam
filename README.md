@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - solved bug in editors: the canvas selection shape was not deleted on mouse release if the grid snap was OFF
 - solved bug in Excellon Editor: when selecting a drill hole on canvas the selected row in the Tools Table was not the correct onw but the next highest row
 - finished the Silkscreen Tool but there are some limitations (some wires fragments from silkscreen are lost)
+- solved the issue in Silkscreen Tool with losing some fragments of wires from silkscreen
 
 26.04.2019
 
