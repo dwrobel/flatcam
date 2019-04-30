@@ -16,7 +16,7 @@ from flatcamTools.ToolTransform import ToolTransform
 from flatcamTools.ToolSolderPaste import SolderPaste
 from flatcamTools.ToolPcbWizard import PcbWizard
 from flatcamTools.ToolPDF import ToolPDF
-from flatcamTools.ToolSilk import ToolSilk
+from flatcamTools.ToolSub import ToolSub
 
 
 from flatcamTools.ToolShell import FCShell

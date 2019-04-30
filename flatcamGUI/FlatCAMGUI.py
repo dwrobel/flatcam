@@ -638,7 +638,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panel16.png'), _("Panel Tool"))
         self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'),_( "Film Tool"))
         self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'), _("SolderPaste Tool"))
-        self.silk_btn = self.toolbartools.addAction(QtGui.QIcon('share/silk32.png'), _("Silkscreen Tool"))
+        self.silk_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Substract Tool"))
 
         self.toolbartools.addSeparator()
 
@@ -1855,7 +1855,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'), _("Film Tool"))
         self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'),
                                                       _("SolderPaste Tool"))
-        self.silk_btn = self.toolbartools.addAction(QtGui.QIcon('share/silk32.png'), _("Silkscreen Tool"))
+        self.silk_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Substract Tool"))
 
         self.toolbartools.addSeparator()
 
@@ -2124,11 +2124,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.dblsidedtool.run(toggle=True)
                     return
 
-                # Silkscreen Tool
-                if key == QtCore.Qt.Key_E:
-                    self.app.silk_tool.run(toggle=True)
-                    return
-
                 # Solder Paste Dispensing Tool
                 if key == QtCore.Qt.Key_K:
                     self.app.paste_tool.run(toggle=True)
@@ -2167,6 +2162,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 # Cutout Tool
                 if key == QtCore.Qt.Key_U:
                     self.app.cutout_tool.run(toggle=True)
+                    return
+
+                # Substract Tool
+                if key == QtCore.Qt.Key_W:
+                    self.app.sub_tool.run(toggle=True)
                     return
 
                 # Panelize Tool

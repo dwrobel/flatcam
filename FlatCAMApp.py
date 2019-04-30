@@ -1960,11 +1960,13 @@ class App(QtCore.QObject):
         self.paste_tool = SolderPaste(self)
         self.paste_tool.install(icon=QtGui.QIcon('share/solderpastebis32.png'))
 
-        self.silk_tool = ToolSilk(self)
-        self.silk_tool.install(icon=QtGui.QIcon('share/silk32.png'), separator=True)
-
         self.calculator_tool = ToolCalculator(self)
         self.calculator_tool.install(icon=QtGui.QIcon('share/calculator24.png'))
+
+
+        self.sub_tool = ToolSub(self)
+        self.sub_tool.install(icon=QtGui.QIcon('share/sub32.png'), pos=self.ui.menuedit_convert,
+                              before=self.ui.menuedit_convert_sg2mg)
 
         self.move_tool = ToolMove(self)
         self.move_tool.install(icon=QtGui.QIcon('share/move16.png'), pos=self.ui.menuedit,
@@ -2065,7 +2067,7 @@ class App(QtCore.QObject):
         self.ui.panelize_btn.triggered.connect(lambda: self.panelize_tool.run(toggle=True))
         self.ui.film_btn.triggered.connect(lambda: self.film_tool.run(toggle=True))
         self.ui.solder_btn.triggered.connect(lambda: self.paste_tool.run(toggle=True))
-        self.ui.silk_btn.triggered.connect(lambda: self.silk_tool.run(toggle=True))
+        self.ui.silk_btn.triggered.connect(lambda: self.sub_tool.run(toggle=True))
 
         self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run(toggle=True))
         self.ui.transform_btn.triggered.connect(lambda: self.transform_tool.run(toggle=True))

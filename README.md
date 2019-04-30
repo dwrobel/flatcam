@@ -12,7 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 30.04.2019
 
 - in ObjectCollection class, made sure that renaming an object in Project View does not result in an empty name. If new name is blank the rename is cancelled.
-- made ObjectCOllection.TreeItem() inherit KeySensitiveListVIew and implicitly QTreeView (in the hope that the theme applied on app will be applied on the tree items, too (for MacOs new DarkUI theme)
+- made ObjectCollection.TreeItem() inherit KeySensitiveListVIew and implicitly QTreeView (in the hope that the theme applied on app will be applied on the tree items, too (for MacOs new DarkUI theme)
+- renamed SilkScreen Tool to Substract Tool and move it's menu location in Edit -> Conversion
 
 29.04.2019
 
@@ -35,7 +36,7 @@ CAD program, and create G-Code for Isolation routing.
 25.04.2019
 
 - Geometry Editor: modified the intersection (if the selected shapes don't intersects preserve them) and substract functions (delete all shapes that were used in the process)
-- work in the ToolSilk
+- work in the ToolSub
 - for all objects, if in Selected the object name is changed to the same name, the rename is not done (because there is nothing changed)
 - fixed Edit -> Copy as Geom function handler to work for Excellon objects, too
 - made sure that the mouse pointer is restored to default on Editor exit

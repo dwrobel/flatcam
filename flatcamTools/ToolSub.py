@@ -21,9 +21,9 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class ToolSilk(FlatCAMTool):
+class ToolSub(FlatCAMTool):
 
-    toolName = _("Silkscreen Tool")
+    toolName = _("Substract Tool")
 
     def __init__(self, app):
         self.app = app
@@ -118,7 +118,7 @@ class ToolSilk(FlatCAMTool):
         self.intersect_btn.clicked.connect(self.on_intersection_click)
 
     def install(self, icon=None, separator=None, **kwargs):
-        FlatCAMTool.install(self, icon, separator, shortcut='ALT+N', **kwargs)
+        FlatCAMTool.install(self, icon, separator, shortcut='ALT+W', **kwargs)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolNonCopperClear()")
@@ -239,7 +239,7 @@ class ToolSilk(FlatCAMTool):
         :return:
         """
 
-        log.debug("ToolSilk --> Periodic Check started.")
+        log.debug("ToolSub --> Periodic Check started.")
 
         try:
             self.check_thread.stop()
@@ -272,7 +272,7 @@ class ToolSilk(FlatCAMTool):
                 self.app.worker_task.emit({'fcn': self.new_silkscreen_object,
                                            'params': [outname]})
 
-                log.debug("ToolSilk --> Periodic check finished.")
+                log.debug("ToolSub --> Periodic check finished.")
         except Exception:
             traceback.print_exc()
 
