@@ -118,13 +118,13 @@ class KeySensitiveListView(QtWidgets.QTreeView):
             event.ignore()
 
 
-class TreeItem:
+class TreeItem(KeySensitiveListView):
     """
     Item of a tree model
     """
 
     def __init__(self, data, icon=None, obj=None, parent_item=None):
-
+        super(TreeItem, self).__init__(parent_item)
         self.parent_item = parent_item
         self.item_data = data  # Columns string data
         self.icon = icon  # Decoration
@@ -399,7 +399,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             if obj:
                 old_name = str(obj.options['name'])
                 new_name = str(data)
-                if old_name != new_name:
+                if old_name != new_name and new_name != '':
                     # rename the object
                     obj.options["name"] = str(data)
 

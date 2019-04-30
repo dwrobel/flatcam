@@ -9,11 +9,16 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+30.04.2019
+
+- in ObjectCollection class, made sure that renaming an object in Project View does not result in an empty name. If new name is blank the rename is cancelled.
+- made ObjectCOllection.TreeItem() inherit KeySensitiveListVIew and implicitly QTreeView (in the hope that the theme applied on app will be applied on the tree items, too (for MacOs new DarkUI theme)
+
 29.04.2019
 
 - solved bug in Gerber Editor: the '0' aperture (the region aperture) had no size which created errors. Made the size to be zero.
 - solved bug in editors: the canvas selection shape was not deleted on mouse release if the grid snap was OFF
-- solved bug in Excellon Editor: when selecting a drill hole on canvas the selected row in the Tools Table was not the correct onw but the next highest row
+- solved bug in Excellon Editor: when selecting a drill hole on canvas the selected row in the Tools Table was not the correct one but the next highest row
 - finished the Silkscreen Tool but there are some limitations (some wires fragments from silkscreen are lost)
 - solved the issue in Silkscreen Tool with losing some fragments of wires from silkscreen
 
