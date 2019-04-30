@@ -118,7 +118,7 @@ class ToolSub(FlatCAMTool):
         # Substractor Geometry Object
         self.sub_geo_combo = QtWidgets.QComboBox()
         self.sub_geo_combo.setModel(self.app.collection)
-        self.sub_geo_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.sub_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
         self.sub_geo_combo.setCurrentIndex(1)
 
         self.sub_geo_label = QtWidgets.QLabel(_("Substractor:"))
@@ -176,7 +176,7 @@ class ToolSub(FlatCAMTool):
         self.intersect_btn.clicked.connect(self.on_grb_intersection_click)
 
         try:
-            self.intersect_geo_btn.clicked.disconnect(self.on_geo_intersection_click)
+            self.intersect_geo_btn.clicked.disconnect()
         except:
             pass
         self.intersect_geo_btn.clicked.connect(self.on_geo_intersection_click)
@@ -262,7 +262,7 @@ class ToolSub(FlatCAMTool):
             self.promises.append(apid)
 
         # start the QTimer to check for promises with 1 second period check
-        self.periodic_check(1000, reset=True)
+        self.periodic_check(500, reset=True)
 
         for apid in self.target_grb_obj.apertures:
             geo = self.target_grb_obj.apertures[apid]['solid_geometry']
@@ -367,10 +367,6 @@ class ToolSub(FlatCAMTool):
             self.app.inform.emit(_("[ERROR_NOTCL] No Substractor object loaded."))
             return
 
-        if self.sub_geo_obj.multigeo:
-            self.app.inform.emit(_("[ERROR_NOTCL] Currently, the Substractor geometry cannot be of type Multigeo."))
-            return
-
         # Get source object.
         try:
             self.sub_geo_obj = self.app.collection.get_by_name(self.sub_geo_obj_name)
@@ -378,36 +374,36 @@ class ToolSub(FlatCAMTool):
             self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.sub_geo_obj_name)
             return "Could not retrieve object: %s" % self.sub_geo_obj_name
 
-        geo_union_list = []
-        if self.target_grb_obj.multigeo:
+        if self.sub_geo_obj.multigeo:
+            self.app.inform.emit(_("[ERROR_NOTCL] Currently, the Substractor geometry cannot be of type Multigeo."))
+            return
+
+        if self.target_geo_obj.multigeo:
             # crate the new_tools dict structure
             for tool in self.target_geo_obj.tools:
                 self.new_tools[tool] = {}
                 self.new_tools[tool]['solid_geometry'] = []
 
-            for t in self.sub_geo_obj.tools:
-                geo_union_list += self.sub_geo_obj.tools[t]['solid_geometry']
-
             # add the promises
             for tool in self.target_geo_obj.tools:
                 self.promises.append(tool)
         else:
-            geo_union_list = self.sub_geo_obj.solid_geometry
             # add the promise
             self.promises.append("single")
 
-        self.sub_union = cascaded_union(geo_union_list)
+        self.sub_union = cascaded_union(self.sub_geo_obj.solid_geometry)
 
-        if self.target_grb_obj.multigeo:
-            # start the QTimer to check for promises with 0.5 second period check
-            self.periodic_check(500, reset=True)
+        # start the QTimer to check for promises with 0.5 second period check
+        self.periodic_check(500, reset=True)
 
+        if self.target_geo_obj.multigeo:
             for tool in self.target_geo_obj.tools:
-                geo = self.target_grb_obj.tools[tool]['solid_geometry']
+                geo = self.target_geo_obj.tools[tool]['solid_geometry']
                 self.app.worker_task.emit({'fcn': self.toolgeo_intersection,
                                            'params': [tool, geo]})
         else:
-            geo = self.target_grb_obj.solid_geometry
+            geo = self.target_geo_obj.solid_geometry
+
             self.app.worker_task.emit({'fcn': self.toolgeo_intersection,
                                        'params': ["single", geo]})
 
@@ -434,7 +430,6 @@ class ToolSub(FlatCAMTool):
                         new_geometry.append(t_geo)
                 else:
                     new_geometry.append(t_geo)
-
         if new_geometry:
             if tool == "single":
                 while not self.new_solid_geometry:
@@ -456,15 +451,19 @@ class ToolSub(FlatCAMTool):
         log.debug("Promise fulfilled: %s" % str(tool))
 
     def new_geo_object(self, outname):
+        def obj_init(geo_obj, app_obj):
 
-        def obj_init(grb_obj, app_obj):
-
-            grb_obj.apertures = deepcopy(self.new_apertures)
+            geo_obj.solid_geometry = deepcopy(self.new_solid_geometry)
+            try:
+                geo_obj.tools = deepcopy(self.target_geo_obj.tools)
+                for tool in geo_obj.tools:
+                    geo_obj.tools[tool]['solid_geometry'] = deepcopy(self.new_solid_geometry)
+            except:
+                pass
 
             poly_buff = []
-            for ap in self.new_apertures:
-                for poly in self.new_apertures[ap]['solid_geometry']:
-                    poly_buff.append(poly)
+            for poly in geo_obj.solid_geometry:
+                poly_buff.append(poly)
 
             work_poly_buff = cascaded_union(poly_buff)
             try:
@@ -476,20 +475,20 @@ class ToolSub(FlatCAMTool):
             except ValueError:
                 pass
 
-            grb_obj.solid_geometry = deepcopy(poly_buff)
+            geo_obj.solid_geometry = deepcopy(poly_buff)
 
         with self.app.proc_container.new(_("Generating new object ...")):
-            ret = self.app.new_object('gerber', outname, obj_init, autoselected=False)
+            ret = self.app.new_object('geometry', outname, obj_init, autoselected=False)
             if ret == 'fail':
                 self.app.inform.emit(_('[ERROR_NOTCL] Generating new object failed.'))
                 return
             # Register recent file
-            self.app.file_opened.emit('gerber', outname)
+            self.app.file_opened.emit('geometry', outname)
             # GUI feedback
             self.app.inform.emit(_("[success] Created: %s") % outname)
 
             # cleanup
-            self.new_apertures.clear()
+            self.new_tools.clear()
             self.new_solid_geometry[:] = []
             self.sub_union[:] = []
 
