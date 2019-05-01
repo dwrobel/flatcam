@@ -638,6 +638,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panel16.png'), _("Panel Tool"))
         self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'),_( "Film Tool"))
         self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'), _("SolderPaste Tool"))
+        self.sub_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Substract Tool"))
+
         self.toolbartools.addSeparator()
 
         self.calculators_btn = self.toolbartools.addAction(QtGui.QIcon('share/calculator24.png'), _("Calculators Tool"))
@@ -699,7 +701,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grb_convert_poly_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/poligonize32.png'),
                                                                     _("Poligonize"))
 
-
         self.grb_add_semidisc_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/semidisc32.png'), _("SemiDisc"))
         self.grb_add_disc_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/disc32.png'), _("Disc"))
         self.grb_edit_toolbar.addSeparator()
@@ -752,12 +753,27 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         ################
 
         ### Project ###
+        # self.project_tab = QtWidgets.QWidget()
+        # self.project_tab.setObjectName("project_tab")
+        # # project_tab.setMinimumWidth(250)  # Hack
+        # self.project_tab_layout = QtWidgets.QVBoxLayout(self.project_tab)
+        # self.project_tab_layout.setContentsMargins(2, 2, 2, 2)
+        # self.notebook.addTab(self.project_tab,_( "Project"))
+
         self.project_tab = QtWidgets.QWidget()
         self.project_tab.setObjectName("project_tab")
-        # project_tab.setMinimumWidth(250)  # Hack
-        self.project_tab_layout = QtWidgets.QVBoxLayout(self.project_tab)
+
+        self.project_frame_lay = QtWidgets.QVBoxLayout(self.project_tab)
+        self.project_frame_lay.setContentsMargins(0, 0, 0, 0)
+
+        self.project_frame = QtWidgets.QFrame()
+        self.project_frame.setContentsMargins(0, 0, 0, 0)
+        self.project_frame_lay.addWidget(self.project_frame)
+
+        self.project_tab_layout = QtWidgets.QVBoxLayout(self.project_frame)
         self.project_tab_layout.setContentsMargins(2, 2, 2, 2)
-        self.notebook.addTab(self.project_tab,_( "Project"))
+        self.notebook.addTab(self.project_tab, _("Project"))
+        self.project_frame.setDisabled(False)
 
         ### Selected ###
         self.selected_tab = QtWidgets.QWidget()
@@ -1545,12 +1561,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         ##############################################################
         ### HERE WE BUILD THE CONTEXT MENU FOR RMB CLICK ON CANVAS ###
         ##############################################################
-        self.popMenu = QtWidgets.QMenu()
+        self.popMenu = FCMenu()
 
         self.popmenu_disable = self.popMenu.addAction(QtGui.QIcon('share/clear_plot32.png'), _("Disable"))
         self.popMenu.addSeparator()
         self.cmenu_newmenu = self.popMenu.addMenu(QtGui.QIcon('share/file32.png'), _("New"))
         self.popmenu_new_geo = self.cmenu_newmenu.addAction(QtGui.QIcon('share/new_geo32_bis.png'), _("Geometry"))
+        self.popmenu_new_grb = self.cmenu_newmenu.addAction(QtGui.QIcon('share/flatcam_icon32.png'), "Gerber")
         self.popmenu_new_exc = self.cmenu_newmenu.addAction(QtGui.QIcon('share/new_exc32.png'), _("Excellon"))
         self.cmenu_newmenu.addSeparator()
         self.popmenu_new_prj = self.cmenu_newmenu.addAction(QtGui.QIcon('share/file16.png'), _("Project"))
@@ -1576,15 +1593,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grb_draw_pad_array = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/padarray32.png'), _("Pad Array"))
         self.grb_draw_track = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/track32.png'), _("Track"))
         self.grb_draw_region = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/polygon32.png'), _("Region"))
-        self.grb_editor_cmenu.addSeparator()
-        self.grb_copy = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/copy.png'), _("Copy"))
-        self.grb_delete = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/trash32.png'), _("Delete"))
-        self.grb_move = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
 
         self.e_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/drill32.png'), _("Exc Editor"))
         self.drill = self.e_editor_cmenu.addAction(QtGui.QIcon('share/drill32.png'), _("Add Drill"))
         self.drill_array = self.e_editor_cmenu.addAction(QtGui.QIcon('share/addarray32.png'), _("Add Drill Array"))
-        self.drill_copy = self.e_editor_cmenu.addAction(QtGui.QIcon('share/copy32.png'), _("Copy Drill(s)"))
 
         self.popMenu.addSeparator()
         self.popmenu_copy = self.popMenu.addAction(QtGui.QIcon('share/copy32.png'), _("Copy"))
@@ -1724,9 +1736,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # start with GRID activated
         self.grid_snap_btn.trigger()
 
-        self.g_editor_cmenu.setEnabled(False)
-        self.grb_editor_cmenu.setEnabled(False)
-        self.e_editor_cmenu.setEnabled(False)
+        self.g_editor_cmenu.menuAction().setVisible(False)
+        self.grb_editor_cmenu.menuAction().setVisible(False)
+        self.e_editor_cmenu.menuAction().setVisible(False)
 
         self.general_defaults_form = GeneralPreferencesUI()
         self.gerber_defaults_form = GerberPreferencesUI()
@@ -1844,13 +1856,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'), _("Film Tool"))
         self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'),
                                                       _("SolderPaste Tool"))
+        self.sub_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Substract Tool"))
+
         self.toolbartools.addSeparator()
 
         self.calculators_btn = self.toolbartools.addAction(QtGui.QIcon('share/calculator24.png'),
                                                            _("Calculators Tool"))
         self.transform_btn = self.toolbartools.addAction(QtGui.QIcon('share/transform.png'), _("Transform Tool"))
 
-        ### Drill Editor Toolbar ###
+        ### Excellon Editor Toolbar ###
         self.select_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/pointer32.png'), _("Select"))
         self.add_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), _('Add Drill Hole'))
         self.add_drill_array_btn = self.exc_edit_toolbar.addAction(
@@ -1906,6 +1920,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.add_pad_ar_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/padarray32.png'), _('Add Pad Array'))
         self.grb_add_track_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/track32.png'), _("Add Track"))
         self.grb_add_region_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/polygon32.png'), _("Add Region"))
+        self.grb_convert_poly_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/poligonize32.png'),
+                                                                    _("Poligonize"))
+
+        self.grb_add_semidisc_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/semidisc32.png'), _("SemiDisc"))
+        self.grb_add_disc_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/disc32.png'), _("Disc"))
         self.grb_edit_toolbar.addSeparator()
 
         self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), _('Buffer'))
@@ -1974,7 +1993,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 self.exc_edit_toolbar.setDisabled(True)
                 self.geo_edit_toolbar.setVisible(True)
                 self.geo_edit_toolbar.setDisabled(True)
-                self.grb_edit_toolbar.setVisible(False)
+                self.grb_edit_toolbar.setVisible(True)
                 self.grb_edit_toolbar.setDisabled(True)
 
                 self.corner_snap_btn.setVisible(True)
@@ -2146,6 +2165,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.cutout_tool.run(toggle=True)
                     return
 
+                # Substract Tool
+                if key == QtCore.Qt.Key_W:
+                    self.app.sub_tool.run(toggle=True)
+                    return
+
                 # Panelize Tool
                 if key == QtCore.Qt.Key_Z:
                     self.app.panelize_tool.run(toggle=True)
@@ -2214,6 +2238,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_Space:
                     for select in selected:
                         select.ui.plot_cb.toggle()
+                    self.app.collection.update_view()
                     self.app.delete_selection_shape()
 
                 # New Geometry
@@ -2807,7 +2832,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.exc_editor.replot()
                     # self.select_btn.setChecked(True)
                     # self.on_tool_select('select')
-                    self.app.exc_editor.select_tool('select')
+                    self.app.exc_editor.select_tool('drill_select')
                     return
 
                 # Delete selected object if delete key event comes out of canvas
@@ -2943,7 +2968,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_T or key == 'T':
                     self.app.exc_editor.launched_from_shortcuts = True
                     ## Current application units in Upper Case
-                    self.units = self.general_defaults_group.general_app_group.units_radio.get_value().upper()
+                    self.units = self.general_defaults_form.general_app_group.units_radio.get_value().upper()
                     tool_add_popup = FCInputDialog(title=_("New Tool ..."),
                                                    text=_('Enter a Tool Diameter:'),
                                                    min=0.0000, max=99.9999, decimals=4)
@@ -3047,6 +3072,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                    'params': [self.filename, object_type, None]})
 
                     if extension in self.app.pdf_list:
+                        self.app.pdf_tool.periodic_check(1000)
                         self.app.worker_task.emit({'fcn': self.app.pdf_tool.open_pdf,
                                                    'params': [self.filename]})
 
@@ -3483,6 +3509,34 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_11.addWidget(self.sel_draw_color_button)
         self.form_box_child_11.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
+        # Project Tab items color
+        self.proj_color_label = QtWidgets.QLabel(_('Project Items:'))
+        self.proj_color_label.setToolTip(
+            _("Set the color of the items in Project Tab Tree.")
+        )
+        self.proj_color_entry = FCEntry()
+        self.proj_color_button = QtWidgets.QPushButton()
+        self.proj_color_button.setFixedSize(15, 15)
+
+        self.form_box_child_12 = QtWidgets.QHBoxLayout()
+        self.form_box_child_12.addWidget(self.proj_color_entry)
+        self.form_box_child_12.addWidget(self.proj_color_button)
+        self.form_box_child_12.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        self.proj_color_dis_label = QtWidgets.QLabel(_('Proj. Dis. Items:'))
+        self.proj_color_dis_label.setToolTip(
+            _("Set the color of the items in Project Tab Tree,\n"
+              "for the case when the items are disabled.")
+        )
+        self.proj_color_dis_entry = FCEntry()
+        self.proj_color_dis_button = QtWidgets.QPushButton()
+        self.proj_color_dis_button.setFixedSize(15, 15)
+
+        self.form_box_child_13 = QtWidgets.QHBoxLayout()
+        self.form_box_child_13.addWidget(self.proj_color_dis_entry)
+        self.form_box_child_13.addWidget(self.proj_color_dis_button)
+        self.form_box_child_13.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
@@ -3507,6 +3561,9 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.alt_sl_color_label, self.form_box_child_9)
         self.form_box.addRow(self.draw_color_label, self.form_box_child_10)
         self.form_box.addRow(self.sel_draw_color_label, self.form_box_child_11)
+        self.form_box.addRow(QtWidgets.QLabel(""))
+        self.form_box.addRow(self.proj_color_label, self.form_box_child_12)
+        self.form_box.addRow(self.proj_color_dis_label, self.form_box_child_13)
 
         self.form_box.addRow(self.spacelabel, self.spacelabel)
 
@@ -3589,6 +3646,16 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         )
         self.hover_cb = FCCheckBox()
 
+        # Enable Selection box
+        self.selection_label = QtWidgets.QLabel(_('Sel. Shape:'))
+        self.selection_label.setToolTip(
+            _("Enable the display of a selection shape for FlatCAM objects.\n"
+              "It is displayed whenever the mouse selects an object\n"
+              "either by clicking or dragging mouse from left to right or\n"
+              "right to left.")
+        )
+        self.selection_cb = FCCheckBox()
+
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
@@ -3600,6 +3667,7 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.hdpi_label, self.hdpi_cb)
         self.form_box.addRow(self.clear_label, self.clear_btn)
         self.form_box.addRow(self.hover_label, self.hover_cb)
+        self.form_box.addRow(self.selection_label, self.selection_cb)
 
         # Add the QFormLayout that holds the Application general defaults
         # to the main layout of this TAB
@@ -3667,8 +3735,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                         "ADVANCED level -> full functionality.\n\n"
                                         "The choice here will influence the parameters in\n"
                                         "the Selected Tab for all kinds of FlatCAM objects."))
-        self.app_level_radio = RadioSet([{'label': _('Basic'), 'value': 'b'},
-                                         {'label': _('Advanced'), 'value': 'a'}])
+        self.app_level_radio = RadioSet([{'label': 'Basic', 'value': 'b'},
+                                         {'label': 'Advanced', 'value': 'a'}])
 
         # Languages for FlatCAM
         self.languagelabel = QtWidgets.QLabel(_('<b>Languages:</b>'))
@@ -3676,6 +3744,13 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.language_cb = FCComboBox()
         self.languagespace = QtWidgets.QLabel('')
         self.language_apply_btn = FCButton(_("Apply Language"))
+        self.language_apply_btn.setToolTip(_("Set the language used throughout FlatCAM.\n"
+                                             "The app will restart after click."
+                                             "Windows: When FlatCAM is installed in Program Files\n"
+                                             "directory, it is possible that the app will not\n"
+                                             "restart after the button is clicked due of Windows\n"
+                                             "security features. In this case the language will be\n"
+                                             "applied at the next app start."))
 
         # Shell StartUp CB
         self.shell_startup_label = QtWidgets.QLabel(_('Shell at StartUp:'))
@@ -3720,14 +3795,14 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.panbuttonlabel.setToolTip(_("Select the mouse button to use for panning:\n"
                                        "- MMB --> Middle Mouse Button\n"
                                        "- RMB --> Right Mouse Button"))
-        self.pan_button_radio = RadioSet([{'label': _('MMB'), 'value': '3'},
-                                     {'label': _('RMB'), 'value': '2'}])
+        self.pan_button_radio = RadioSet([{'label': 'MMB', 'value': '3'},
+                                     {'label': 'RMB', 'value': '2'}])
 
         # Multiple Selection Modifier Key
         self.mselectlabel = QtWidgets.QLabel(_('<b>Multiple Sel:</b>'))
         self.mselectlabel.setToolTip(_("Select the key used for multiple selection."))
-        self.mselect_radio = RadioSet([{'label': _('CTRL'), 'value': 'Control'},
-                                     {'label': _('SHIFT'), 'value': 'Shift'}])
+        self.mselect_radio = RadioSet([{'label': 'CTRL', 'value': 'Control'},
+                                     {'label': 'SHIFT', 'value': 'Shift'}])
 
         # Project at StartUp CB
         self.project_startup_label = QtWidgets.QLabel(_('Project at StartUp:'))
@@ -3955,8 +4030,8 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
             "- conventional / useful when there is no backlash compensation")
         )
         grid0.addWidget(milling_type_label, 3, 0)
-        self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
-                                            {'label': _('Conv.'), 'value': 'cv'}])
+        self.milling_type_radio = RadioSet([{'label': 'Climb', 'value': 'cl'},
+                                            {'label': 'Conv.', 'value': 'cv'}])
         grid0.addWidget(self.milling_type_radio, 3, 1)
 
         # Combine passes
@@ -4224,8 +4299,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         hlay3.addWidget(self.excellon_zeros_label)
 
-        self.excellon_zeros_radio = RadioSet([{'label': _('LZ'), 'value': 'L'},
-                                     {'label': _('TZ'), 'value': 'T'}])
+        self.excellon_zeros_radio = RadioSet([{'label': 'LZ', 'value': 'L'},
+                                     {'label': 'TZ', 'value': 'T'}])
         self.excellon_zeros_radio.setToolTip(
             _("This sets the default type of Excellon zeros.\n"
             "If it is not detected in the parsed file the value here\n"
@@ -4252,8 +4327,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         hlay4.addWidget(self.excellon_units_label)
 
-        self.excellon_units_radio = RadioSet([{'label': _('INCH'), 'value': 'INCH'},
-                                              {'label': _('MM'), 'value': 'METRIC'}])
+        self.excellon_units_radio = RadioSet([{'label': 'INCH', 'value': 'INCH'},
+                                              {'label': 'MM', 'value': 'METRIC'}])
         self.excellon_units_radio.setToolTip(
             _("This sets the units of Excellon files.\n"
             "Some Excellon files don't have an header\n"
@@ -4291,8 +4366,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
             "Travelling Salesman algorithm for path optimization.")
         )
 
-        self.excellon_optimization_radio = RadioSet([{'label': _('MH'), 'value': 'M'},
-                                     {'label': _('Basic'), 'value': 'B'}])
+        self.excellon_optimization_radio = RadioSet([{'label': 'MH', 'value': 'M'},
+                                     {'label': 'Basic', 'value': 'B'}])
         self.excellon_optimization_radio.setToolTip(
             _("This sets the optimization type for the Excellon drill path.\n"
             "If MH is checked then Google OR-Tools algorithm with MetaHeuristic\n"
@@ -4457,9 +4532,9 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             "When choosing 'Slots' or 'Both', slots will be\n"
             "converted to drills.")
         )
-        self.excellon_gcode_type_radio = RadioSet([{'label': _('Drills'), 'value': 'drills'},
-                                          {'label': _('Slots'), 'value': 'slots'},
-                                          {'label': _('Both'), 'value': 'both'}])
+        self.excellon_gcode_type_radio = RadioSet([{'label': 'Drills', 'value': 'drills'},
+                                          {'label': 'Slots', 'value': 'slots'},
+                                          {'label': 'Both', 'value': 'both'}])
         grid2.addWidget(excellon_gcode_type_label, 9, 0)
         grid2.addWidget(self.excellon_gcode_type_radio, 9, 1)
 
@@ -4643,8 +4718,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
             _("The units used in the Excellon file.")
         )
 
-        self.excellon_units_radio = RadioSet([{'label': _('INCH'), 'value': 'INCH'},
-                                              {'label': _('MM'), 'value': 'METRIC'}])
+        self.excellon_units_radio = RadioSet([{'label': 'INCH', 'value': 'INCH'},
+                                              {'label': 'MM', 'value': 'METRIC'}])
         self.excellon_units_radio.setToolTip(
             _("The units used in the Excellon file.")
         )
@@ -4699,8 +4774,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
             "Also it will have to be specified if LZ = leading zeros are kept\n"
             "or TZ = trailing zeros are kept.")
         )
-        self.format_radio = RadioSet([{'label': _('Decimal'), 'value': 'dec'},
-                                      {'label': _('No-Decimal'), 'value': 'ndec'}])
+        self.format_radio = RadioSet([{'label': 'Decimal', 'value': 'dec'},
+                                      {'label': 'No-Decimal', 'value': 'ndec'}])
         self.format_radio.setToolTip(
             _("Select the kind of coordinates format used.\n"
             "Coordinates can be saved with decimal point or without.\n"
@@ -4723,8 +4798,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
             "and Leading Zeros are removed.")
         )
 
-        self.zeros_radio = RadioSet([{'label': _('LZ'), 'value': 'LZ'},
-                                     {'label': _('TZ'), 'value': 'TZ'}])
+        self.zeros_radio = RadioSet([{'label': 'LZ', 'value': 'LZ'},
+                                     {'label': 'TZ', 'value': 'TZ'}])
         self.zeros_radio.setToolTip(
             _("This sets the default type of Excellon zeros.\n"
             "If LZ then Leading Zeros are kept and\n"
@@ -5105,9 +5180,9 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         )
 
         self.cncplot_method_radio = RadioSet([
-            {"label": _("All"), "value": "all"},
-            {"label": _("Travel"), "value": "travel"},
-            {"label": _("Cut"), "value": "cut"}
+            {"label": "All", "value": "all"},
+            {"label": "Travel", "value": "travel"},
+            {"label": "Cut", "value": "cut"}
         ], stretch=False)
 
         grid0.addWidget(self.cncplot_method_label, 1, 0)
@@ -5341,9 +5416,9 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(methodlabel, 3, 0)
         self.ncc_method_radio = RadioSet([
-            {"label": _("Standard"), "value": "standard"},
-            {"label": _("Seed-based"), "value": "seed"},
-            {"label": _("Straight lines"), "value": "lines"}
+            {"label": "Standard", "value": "standard"},
+            {"label": "Seed-based", "value": "seed"},
+            {"label": "Straight lines", "value": "lines"}
         ], orientation='vertical', stretch=False)
         grid0.addWidget(self.ncc_method_radio, 3, 1)
 
@@ -5490,8 +5565,8 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.drill_dia_entry, 0, 1)
 
         ## Axis
-        self.mirror_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
-                                     {'label': _('Y'), 'value': 'Y'}])
+        self.mirror_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
+                                     {'label': 'Y', 'value': 'Y'}])
         self.mirax_label = QtWidgets.QLabel(_("Mirror Axis:"))
         self.mirax_label.setToolTip(
             _("Mirror vertically (X) or horizontally (Y).")
@@ -5503,8 +5578,8 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.mirror_axis_radio, 2, 1)
 
         ## Axis Location
-        self.axis_location_radio = RadioSet([{'label': _('Point'), 'value': 'point'},
-                                             {'label': _('Box'), 'value': 'box'}])
+        self.axis_location_radio = RadioSet([{'label': 'Point', 'value': 'point'},
+                                             {'label': 'Box', 'value': 'box'}])
         self.axloc_label = QtWidgets.QLabel(_("Axis Ref:"))
         self.axloc_label.setToolTip(
             _("The axis should pass through a <b>point</b> or cut\n "
@@ -5581,9 +5656,9 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(methodlabel, 3, 0)
         self.paintmethod_combo = RadioSet([
-            {"label": _("Standard"), "value": "standard"},
-            {"label": _("Seed-based"), "value": "seed"},
-            {"label": _("Straight lines"), "value": "lines"}
+            {"label": "Standard", "value": "standard"},
+            {"label": "Seed-based", "value": "seed"},
+            {"label": "Straight lines", "value": "lines"}
         ], orientation='vertical', stretch=False)
         grid0.addWidget(self.paintmethod_combo, 3, 1)
 
@@ -5614,8 +5689,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(selectlabel, 6, 0)
         self.selectmethod_combo = RadioSet([
-            {"label": _("Single"), "value": "single"},
-            {"label": _("All"), "value": "all"},
+            {"label": "Single", "value": "single"},
+            {"label": "All", "value": "all"},
             # {"label": "Rectangle", "value": "rectangle"}
         ])
         grid0.addWidget(self.selectmethod_combo, 6, 1)
@@ -5642,8 +5717,8 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
 
-        self.film_type_radio = RadioSet([{'label': _('Pos'), 'value': 'pos'},
-                                         {'label': _('Neg'), 'value': 'neg'}])
+        self.film_type_radio = RadioSet([{'label': 'Pos', 'value': 'pos'},
+                                         {'label': 'Neg', 'value': 'neg'}])
         ftypelbl = QtWidgets.QLabel(_('Film Type:'))
         ftypelbl.setToolTip(
             _("Generate a Positive black film or a Negative film.\n"
@@ -5742,8 +5817,8 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.prows, 3, 1)
 
         ## Type of resulting Panel object
-        self.panel_type_radio = RadioSet([{'label': _('Gerber'), 'value': 'gerber'},
-                                          {'label': _('Geo'), 'value': 'geometry'}])
+        self.panel_type_radio = RadioSet([{'label': 'Gerber', 'value': 'gerber'},
+                                          {'label': 'Geo', 'value': 'geometry'}])
         self.panel_type_label = QtWidgets.QLabel(_("Panel Type:"))
         self.panel_type_label.setToolTip(
            _( "Choose the type of object for the panel object:\n"

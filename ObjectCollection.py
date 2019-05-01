@@ -118,13 +118,13 @@ class KeySensitiveListView(QtWidgets.QTreeView):
             event.ignore()
 
 
-class TreeItem:
+class TreeItem(KeySensitiveListView):
     """
     Item of a tree model
     """
 
     def __init__(self, data, icon=None, obj=None, parent_item=None):
-
+        super(TreeItem, self).__init__(parent_item)
         self.parent_item = parent_item
         self.item_data = data  # Columns string data
         self.icon = icon  # Decoration
@@ -378,9 +378,11 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 return index.internalPointer().data(index.column())
 
         if role == Qt.ForegroundRole:
+            color = QColor(self.app.defaults['global_proj_item_color'])
+            color_disabled = QColor(self.app.defaults['global_proj_item_dis_color'])
             obj = index.internalPointer().obj
             if obj:
-                return QtGui.QBrush(QtCore.Qt.black) if obj.options["plot"] else QtGui.QBrush(QtCore.Qt.darkGray)
+                return QtGui.QBrush(color) if obj.options["plot"] else QtGui.QBrush(color_disabled)
             else:
                 return index.internalPointer().data(index.column())
 
@@ -397,23 +399,25 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         if index.isValid():
             obj = index.internalPointer().obj
             if obj:
-                old_name = obj.options['name']
-                # rename the object
-                obj.options["name"] = str(data)
-                new_name = obj.options['name']
+                old_name = str(obj.options['name'])
+                new_name = str(data)
+                if old_name != new_name and new_name != '':
+                    # rename the object
+                    obj.options["name"] = str(data)
 
-                # update the SHELL auto-completer model data
-                try:
-                    self.app.myKeywords.remove(old_name)
-                    self.app.myKeywords.append(new_name)
-                    self.app.shell._edit.set_model_data(self.app.myKeywords)
-                    self.app.ui.code_editor.set_model_data(self.app.myKeywords)
-                except:
-                    log.debug(
-                        "setData() --> Could not remove the old object name from auto-completer model list")
+                    # update the SHELL auto-completer model data
+                    try:
+                        self.app.myKeywords.remove(old_name)
+                        self.app.myKeywords.append(new_name)
+                        self.app.shell._edit.set_model_data(self.app.myKeywords)
+                        self.app.ui.code_editor.set_model_data(self.app.myKeywords)
+                    except:
+                        log.debug(
+                            "setData() --> Could not remove the old object name from auto-completer model list")
 
-                obj.build_ui()
-                self.app.inform.emit(_("Object renamed from {old} to {new}").format(old=old_name, new=new_name))
+                    obj.build_ui()
+                    self.app.inform.emit(_("Object renamed from <b>{old}</b> to <b>{new}</b>").format(old=old_name,
+                                                                                                      new=new_name))
 
         return True
 
@@ -681,6 +685,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         :param name: Name of the FlatCAM Object
         :return: None
         """
+        log.debug("ObjectCollection.set_inactive()")
+
         obj = self.get_by_name(name)
         item = obj.item
         group = self.group_items[obj.kind]
@@ -721,7 +727,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                     color='red', name=str(obj.options['name'])))
 
         except IndexError:
-            FlatCAMApp.App.log.debug("on_list_selection_change(): Index Error (Nothing selected?)")
+            # FlatCAMApp.App.log.debug("on_list_selection_change(): Index Error (Nothing selected?)")
             self.app.inform.emit('')
             try:
                 self.app.ui.selected_scroll_area.takeWidget()

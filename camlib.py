@@ -1942,6 +1942,10 @@ class Gerber (Geometry):
         # will store the Gerber geometry's as paths
         self.follow_geometry = []
 
+        # made True when the LPC command is encountered in Gerber parsing
+        # it allows adding data into the clear_geometry key of the self.apertures[aperture] dict
+        self.is_lpc = False
+
         self.source_file = ''
 
         # Attributes to be included in serialization
@@ -2174,10 +2178,6 @@ class Gerber (Geometry):
         # applying a union for every new polygon.
         poly_buffer = []
 
-        # made True when the LPC command is encountered in Gerber parsing
-        # it allows adding data into the clear_geometry key of the self.apertures[aperture] dict
-        self.is_lpc = False
-
         # store here the follow geometry
         follow_buffer = []
 
@@ -2242,6 +2242,8 @@ class Gerber (Geometry):
                 match = self.lpol_re.search(gline)
                 if match:
                     new_polarity = match.group(1)
+                    # log.info("Polarity CHANGE, LPC = %s, poly_buff = %s" % (self.is_lpc, poly_buffer))
+                    self.is_lpc = True if new_polarity == 'C' else False
                     if len(path) > 1 and current_polarity != new_polarity:
 
                         # finish the current path and add it to the storage
@@ -2258,6 +2260,7 @@ class Gerber (Geometry):
                                 self.apertures[last_path_aperture]['follow_geometry'].append(geo)
 
                         geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+
                         if not geo.is_empty:
                             poly_buffer.append(geo)
                             if self.is_lpc is True:
@@ -2280,12 +2283,10 @@ class Gerber (Geometry):
                     # TODO: Remove when bug fixed
                     if len(poly_buffer) > 0:
                         if current_polarity == 'D':
-                            self.is_lpc = True
                             # self.follow_geometry = self.follow_geometry.union(cascaded_union(follow_buffer))
                             self.solid_geometry = self.solid_geometry.union(cascaded_union(poly_buffer))
 
                         else:
-                            self.is_lpc = False
                             # self.follow_geometry = self.follow_geometry.difference(cascaded_union(follow_buffer))
                             self.solid_geometry = self.solid_geometry.difference(cascaded_union(poly_buffer))
 
@@ -2414,7 +2415,7 @@ class Gerber (Geometry):
                 ### Aperture definitions %ADD...
                 match = self.ad_re.search(gline)
                 if match:
-                    log.info("Found aperture definition. Line %d: %s" % (line_num, gline))
+                    # log.info("Found aperture definition. Line %d: %s" % (line_num, gline))
                     self.aperture_parse(match.group(1), match.group(2), match.group(3))
                     continue
 
@@ -2460,7 +2461,7 @@ class Gerber (Geometry):
                 match = self.tool_re.search(gline)
                 if match:
                     current_aperture = match.group(1)
-                    log.debug("Line %d: Aperture change to (%s)" % (line_num, match.group(1)))
+                    # log.debug("Line %d: Aperture change to (%s)" % (line_num, current_aperture))
 
                     # If the aperture value is zero then make it something quite small but with a non-zero value
                     # so it can be processed by FlatCAM.
@@ -2469,7 +2470,7 @@ class Gerber (Geometry):
                     if self.apertures[current_aperture]["type"] is not "AM":
                         if self.apertures[current_aperture]["size"] == 0:
                             self.apertures[current_aperture]["size"] = 1e-12
-                    log.debug(self.apertures[current_aperture])
+                    # log.debug(self.apertures[current_aperture])
 
                     # Take care of the current path with the previous tool
                     if len(path) > 1:
@@ -2479,7 +2480,6 @@ class Gerber (Geometry):
                         else:
                             # --- Buffered ----
                             width = self.apertures[last_path_aperture]["size"]
-
                             geo = LineString(path)
                             if not geo.is_empty:
                                 follow_buffer.append(geo)
@@ -2551,6 +2551,12 @@ class Gerber (Geometry):
                 if self.regionoff_re.search(gline):
                     making_region = False
 
+                    if '0' not in self.apertures:
+                        self.apertures['0'] = {}
+                        self.apertures['0']['type'] = 'REG'
+                        self.apertures['0']['size'] = 0.0
+                        self.apertures['0']['solid_geometry'] = []
+
                     # if D02 happened before G37 we now have a path with 1 element only so we have to add the current
                     # geo to the poly_buffer otherwise we loose it
                     if current_operation_code == 2:
@@ -2558,24 +2564,24 @@ class Gerber (Geometry):
                             if not geo.is_empty:
                                 follow_buffer.append(geo)
                                 try:
-                                    self.apertures[current_aperture]['follow_geometry'].append(geo)
+                                    self.apertures['0']['follow_geometry'].append(geo)
                                 except KeyError:
-                                    self.apertures[current_aperture]['follow_geometry'] = []
-                                    self.apertures[current_aperture]['follow_geometry'].append(geo)
+                                    self.apertures['0']['follow_geometry'] = []
+                                    self.apertures['0']['follow_geometry'].append(geo)
 
                                 poly_buffer.append(geo)
                                 if self.is_lpc is True:
                                     try:
-                                        self.apertures[current_aperture]['clear_geometry'].append(geo)
+                                        self.apertures['0']['clear_geometry'].append(geo)
                                     except KeyError:
-                                        self.apertures[current_aperture]['clear_geometry'] = []
-                                        self.apertures[current_aperture]['clear_geometry'].append(geo)
+                                        self.apertures['0']['clear_geometry'] = []
+                                        self.apertures['0']['clear_geometry'].append(geo)
                                 else:
                                     try:
-                                        self.apertures[current_aperture]['solid_geometry'].append(geo)
+                                        self.apertures['0']['solid_geometry'].append(geo)
                                     except KeyError:
-                                        self.apertures[current_aperture]['solid_geometry'] = []
-                                        self.apertures[current_aperture]['solid_geometry'].append(geo)
+                                        self.apertures['0']['solid_geometry'] = []
+                                        self.apertures['0']['solid_geometry'].append(geo)
                             continue
 
                     # Only one path defines region?
@@ -2599,10 +2605,10 @@ class Gerber (Geometry):
                     if not region.is_empty:
                         follow_buffer.append(region)
                         try:
-                            self.apertures[current_aperture]['follow_geometry'].append(region)
+                            self.apertures['0']['follow_geometry'].append(region)
                         except KeyError:
-                            self.apertures[current_aperture]['follow_geometry'] = []
-                            self.apertures[current_aperture]['follow_geometry'].append(region)
+                            self.apertures['0']['follow_geometry'] = []
+                            self.apertures['0']['follow_geometry'].append(region)
 
                     region = Polygon(path)
                     if not region.is_valid:
@@ -2613,17 +2619,18 @@ class Gerber (Geometry):
 
                         # we do this for the case that a region is done without having defined any aperture
                         # Allegro does that
-                        if current_aperture:
-                            used_aperture = current_aperture
-                        elif last_path_aperture:
-                            used_aperture = last_path_aperture
-                        else:
-                            if '0' not in self.apertures:
-                                self.apertures['0'] = {}
-                                self.apertures['0']['type'] = 'REG'
-                                self.apertures['0']['solid_geometry'] = []
-                            used_aperture = '0'
-
+                        # if current_aperture:
+                        #     used_aperture = current_aperture
+                        # elif last_path_aperture:
+                        #     used_aperture = last_path_aperture
+                        # else:
+                        #     if '0' not in self.apertures:
+                        #         self.apertures['0'] = {}
+                        #         self.apertures['0']['size'] = 0.0
+                        #         self.apertures['0']['type'] = 'REG'
+                        #         self.apertures['0']['solid_geometry'] = []
+                        #     used_aperture = '0'
+                        used_aperture = '0'
                         if self.is_lpc is True:
                             try:
                                 self.apertures[used_aperture]['clear_geometry'].append(region)
@@ -2727,6 +2734,7 @@ class Gerber (Geometry):
                                 if '0' not in self.apertures:
                                     self.apertures['0'] = {}
                                     self.apertures['0']['type'] = 'REG'
+                                    self.apertures['0']['size'] = 0.0
                                     self.apertures['0']['solid_geometry'] = []
                                 last_path_aperture = '0'
                         else:
@@ -2746,6 +2754,7 @@ class Gerber (Geometry):
                                     if '0' not in self.apertures:
                                         self.apertures['0'] = {}
                                         self.apertures['0']['type'] = 'REG'
+                                        self.apertures['0']['size'] = 0.0
                                         self.apertures['0']['solid_geometry'] = []
                                     last_path_aperture = '0'
                                 geo = Polygon()
@@ -2779,6 +2788,7 @@ class Gerber (Geometry):
                                     if '0' not in self.apertures:
                                         self.apertures['0'] = {}
                                         self.apertures['0']['type'] = 'REG'
+                                        self.apertures['0']['size'] = 0.0
                                         self.apertures['0']['solid_geometry'] = []
                                     last_path_aperture = '0'
                                 elem = [linear_x, linear_y]
@@ -5288,8 +5298,13 @@ class CNCjob(Geometry):
                             y2 = locations[to_node][1]
                             self.matrix[from_node][to_node] = distance_euclidian(x1, y1, x2, y2)
 
-            def Distance(self, from_node, to_node):
-                return int(self.matrix[from_node][to_node])
+            # def Distance(self, from_node, to_node):
+            #     return int(self.matrix[from_node][to_node])
+            def Distance(self, from_index, to_index):
+                # Convert from routing variable Index to distance matrix NodeIndex.
+                from_node = manager.IndexToNode(from_index)
+                to_node = manager.IndexToNode(to_index)
+                return self.matrix[from_node][to_node]
 
         # Create the data.
         def create_data_array():
@@ -5327,8 +5342,9 @@ class CNCjob(Geometry):
                         depot = 0
                         # Create routing model.
                         if tsp_size > 0:
-                            routing = pywrapcp.RoutingModel(tsp_size, num_routes, depot)
-                            search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
+                            manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
+                            routing = pywrapcp.RoutingModel(manager)
+                            search_parameters = pywrapcp.DefaultRoutingSearchParameters()
                             search_parameters.local_search_metaheuristic = (
                                 routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH)
 
@@ -5343,7 +5359,8 @@ class CNCjob(Geometry):
                             # arguments (the from and to node indices) and returns the distance between them.
                             dist_between_locations = CreateDistanceCallback()
                             dist_callback = dist_between_locations.Distance
-                            routing.SetArcCostEvaluatorOfAllVehicles(dist_callback)
+                            transit_callback_index = routing.RegisterTransitCallback(dist_callback)
+                            routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
 
                             # Solve, returns a solution if any.
                             assignment = routing.SolveWithParameters(search_parameters)
@@ -5432,14 +5449,16 @@ class CNCjob(Geometry):
 
                         # Create routing model.
                         if tsp_size > 0:
-                            routing = pywrapcp.RoutingModel(tsp_size, num_routes, depot)
-                            search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
+                            manager = pywrapcp.RoutingIndexManager(tsp_size, num_routes, depot)
+                            routing = pywrapcp.RoutingModel(manager)
+                            search_parameters = pywrapcp.DefaultRoutingSearchParameters()
 
                             # Callback to the distance function. The callback takes two
                             # arguments (the from and to node indices) and returns the distance between them.
                             dist_between_locations = CreateDistanceCallback()
                             dist_callback = dist_between_locations.Distance
-                            routing.SetArcCostEvaluatorOfAllVehicles(dist_callback)
+                            transit_callback_index = routing.RegisterTransitCallback(dist_callback)
+                            routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
 
                             # Solve, returns a solution if any.
                             assignment = routing.SolveWithParameters(search_parameters)

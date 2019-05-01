@@ -9,6 +9,67 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+01.05.2019
+
+- the project items color is now controlled from Foreground Role in ObjectCollection.data()
+- made again plot functions threaded but moved the dataChanged signal (update_view() ) to the main thread by using an already existing signal (plots_updated signal) to avoid the errors with register QVector
+- Enable/Disable Object toggle key ("Space" key) will trigger also the datChanged signal for the Project MVC
+- added a new setting for the color of the Project items, the color when they are disabled.
+- fixed a crash when triggering 'Jump To' menu action (shortcut key 'J' worked ok)
+- made some mods to what can be translated as some of the translations interfered with the correct functioning of FlatCAM
+- updated the translations
+- fixed bugs in Excellon Editor
+- Excellon Editor:  made Add Pad tool to work until right click
+- Excellon Editor: fixed mouse right click was always doing popup context menu
+- GUIElements.FCEntry2(): added a try-except clause
+- made sure that the Tools Tab is cleared on Editors exit
+- Geometry Editor: restored the old behavior: a tool is active until it is voluntarily exited: either by using the 'ESC' key, or selecting the Select tool or new: right click on canvas
+- RELEASE 8.915
+
+30.04.2019
+
+- in ObjectCollection class, made sure that renaming an object in Project View does not result in an empty name. If new name is blank the rename is cancelled.
+- made ObjectCollection.TreeItem() inherit KeySensitiveListVIew and implicitly QTreeView (in the hope that the theme applied on app will be applied on the tree items, too (for MacOs new DarkUI theme)
+- renamed SilkScreen Tool to Substract Tool and move it's menu location in Edit -> Conversion
+- started to modify the Substract Tool to work on Geometry objects too
+- progress in the new Substract Tool for Geometry Objects
+- finished the new Substract Tool
+- added new setting for the color of the Project Tree items; it helps in providing contrast when using dark theme like the one in MacOS
+
+29.04.2019
+
+- solved bug in Gerber Editor: the '0' aperture (the region aperture) had no size which created errors. Made the size to be zero.
+- solved bug in editors: the canvas selection shape was not deleted on mouse release if the grid snap was OFF
+- solved bug in Excellon Editor: when selecting a drill hole on canvas the selected row in the Tools Table was not the correct one but the next highest row
+- finished the Silkscreen Tool but there are some limitations (some wires fragments from silkscreen are lost)
+- solved the issue in Silkscreen Tool with losing some fragments of wires from silkscreen
+
+26.04.2019
+
+- small changes in GUI; optimized contextual menu display
+- made sure that the Project Tab is disabled while one of the Editors is active and it is restored after returning to app
+- fixed some bugs recently introduced in Editors due of the changes done to the way mouse panning is detected 
+- cleaned up the context menu's when in Editors; made some structural changes
+- updated the code in camlib.CNCJob.generate_from_excellon_by_tools() to work with the new API from Google OR-Tools
+- all Gerber regions (G36 G37) are stored in the '0' aperture
+- fixed a bug that added geometry with clear polarity in the apertures where was not supposed to be
+
+25.04.2019
+
+- Geometry Editor: modified the intersection (if the selected shapes don't intersects preserve them) and substract functions (delete all shapes that were used in the process)
+- work in the ToolSub
+- for all objects, if in Selected the object name is changed to the same name, the rename is not done (because there is nothing changed)
+- fixed Edit -> Copy as Geom function handler to work for Excellon objects, too
+- made sure that the mouse pointer is restored to default on Editor exit
+- added a toggle button in Preferences to toggle on/off the display of the selection box on canvas when the user is clicking an object or selecting it by mouse dragging.
+
+24.04.2019
+
+- PDF import tool: working in making the PDF layer rendering multithreaded in itself (one layer rendered on each worker)
+- PDF import tool: solved a bug in parsing the rectangle subpath (an extra point was added to the subpath creating nonexisting geometry)
+- PDF import tool: finished layer rendering multithreading
+- New tool: Silkscreen Tool: I am trying to remove the overlapped geo with the soldermask layer from overlay layer; layed out the class and functions - not working yet
+
 23.04.2019
 
 - Gerber Editor: added two new tools: Add Disc and Add SemiDisc (porting of Circle and Arc from Geometry Editor)

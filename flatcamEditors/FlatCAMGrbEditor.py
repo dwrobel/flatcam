@@ -1613,22 +1613,25 @@ class FCApertureSelect(DrawTool):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
 
         for storage in self.grb_editor_app.storage_dict:
-            for shape in self.grb_editor_app.storage_dict[storage]['solid_geometry']:
-                if Point(point).within(shape.geo):
-                    if (self.grb_editor_app.app.defaults["global_mselect_key"] == 'Control' and
-                        key_modifier == Qt.ControlModifier) or \
-                            (self.grb_editor_app.app.defaults["global_mselect_key"] == 'Shift' and
-                             key_modifier == Qt.ShiftModifier):
+            try:
+                for shape in self.grb_editor_app.storage_dict[storage]['solid_geometry']:
+                    if Point(point).within(shape.geo):
+                        if (self.grb_editor_app.app.defaults["global_mselect_key"] == 'Control' and
+                            key_modifier == Qt.ControlModifier) or \
+                                (self.grb_editor_app.app.defaults["global_mselect_key"] == 'Shift' and
+                                 key_modifier == Qt.ShiftModifier):
 
-                        if shape in self.draw_app.selected:
-                            self.draw_app.selected.remove(shape)
+                            if shape in self.draw_app.selected:
+                                self.draw_app.selected.remove(shape)
+                            else:
+                                # add the object to the selected shapes
+                                self.draw_app.selected.append(shape)
+                                sel_aperture.add(storage)
                         else:
-                            # add the object to the selected shapes
                             self.draw_app.selected.append(shape)
                             sel_aperture.add(storage)
-                    else:
-                        self.draw_app.selected.append(shape)
-                        sel_aperture.add(storage)
+            except KeyError:
+                pass
 
         # select the aperture in the Apertures Table that is associated with the selected shape
         try:
@@ -1980,7 +1983,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.pad_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
                                           {'label': 'Y', 'value': 'Y'},
-                                          {'label': _('Angle'), 'value': 'A'}])
+                                          {'label': 'Angle', 'value': 'A'}])
         self.pad_axis_radio.set_value('X')
         self.linear_form.addRow(self.pad_axis_label, self.pad_axis_radio)
 
@@ -2174,10 +2177,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # flag to show if the object was modified
         self.is_modified = False
-
         self.edited_obj_name = ""
-
         self.tool_row = 0
+
+        # A QTimer
+        self.plot_thread = None
 
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
@@ -2629,14 +2633,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.edited_obj_name = self.name_entry.get_value()
 
     def on_aptype_changed(self, current_text):
+        # 'O' is letter O not zero.
         if current_text == 'R' or current_text == 'O':
             self.apdim_lbl.show()
             self.apdim_entry.show()
-            self.apsize_entry.setReadOnly(True)
+            self.apsize_entry.setDisabled(True)
         else:
             self.apdim_lbl.hide()
             self.apdim_entry.hide()
-            self.apsize_entry.setReadOnly(False)
+            self.apsize_entry.setDisabled(False)
 
     def activate_grb_editor(self):
         # adjust the status of the menu entries related to the editor
@@ -2684,10 +2689,20 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.ui.popmenu_edit.setVisible(False)
         self.app.ui.popmenu_save.setVisible(True)
 
+        self.app.ui.popmenu_disable.setVisible(False)
+        self.app.ui.cmenu_newmenu.menuAction().setVisible(False)
+        self.app.ui.popmenu_properties.setVisible(False)
+        self.app.ui.grb_editor_cmenu.menuAction().setVisible(True)
+
         # Tell the App that the editor is active
         self.editor_active = True
 
     def deactivate_grb_editor(self):
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+
         # adjust the status of the menu entries related to the editor
         self.app.ui.menueditedit.setDisabled(False)
         self.app.ui.menueditok.setDisabled(True)
@@ -2741,13 +2756,16 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.app.ui.update_obj_btn.setEnabled(False)
 
-        self.app.ui.g_editor_cmenu.setEnabled(False)
-        self.app.ui.grb_editor_cmenu.setEnabled(False)
-        self.app.ui.e_editor_cmenu.setEnabled(False)
-
         # adjust the visibility of some of the canvas context menu
         self.app.ui.popmenu_edit.setVisible(True)
         self.app.ui.popmenu_save.setVisible(False)
+
+        self.app.ui.popmenu_disable.setVisible(True)
+        self.app.ui.cmenu_newmenu.menuAction().setVisible(True)
+        self.app.ui.popmenu_properties.setVisible(True)
+        self.app.ui.g_editor_cmenu.menuAction().setVisible(False)
+        self.app.ui.e_editor_cmenu.menuAction().setVisible(False)
+        self.app.ui.grb_editor_cmenu.menuAction().setVisible(False)
 
         # Show original geometry
         if self.gerber_obj:
@@ -2771,6 +2789,20 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.canvas.vis_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
         self.app.collection.view.clicked.disconnect()
 
+        self.app.ui.popmenu_copy.triggered.disconnect()
+        self.app.ui.popmenu_delete.triggered.disconnect()
+        self.app.ui.popmenu_move.triggered.disconnect()
+
+        self.app.ui.popmenu_copy.triggered.connect(self.on_copy_button)
+        self.app.ui.popmenu_delete.triggered.connect(self.on_delete_btn)
+        self.app.ui.popmenu_move.triggered.connect(self.on_move_button)
+
+        # Gerber Editor
+        self.app.ui.grb_draw_pad.triggered.connect(self.on_pad_add)
+        self.app.ui.grb_draw_pad_array.triggered.connect(self.on_pad_add_array)
+        self.app.ui.grb_draw_track.triggered.connect(self.on_track_add)
+        self.app.ui.grb_draw_region.triggered.connect(self.on_region_add)
+
     def disconnect_canvas_event_handlers(self):
 
         # we restore the key and mouse control to FlatCAMApp method
@@ -2785,6 +2817,47 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
         self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
         self.canvas.vis_disconnect('mouse_release', self.on_grb_click_release)
+
+        try:
+            self.app.ui.popmenu_copy.triggered.disconnect(self.on_copy_button)
+        except TypeError:
+            pass
+
+        try:
+            self.app.ui.popmenu_delete.triggered.disconnect(self.on_delete_btn)
+        except TypeError:
+            pass
+
+        try:
+            self.app.ui.popmenu_move.triggered.disconnect(self.on_move_button)
+        except TypeError:
+            pass
+
+        self.app.ui.popmenu_copy.triggered.connect(self.app.on_copy_object)
+        self.app.ui.popmenu_delete.triggered.connect(self.app.on_delete)
+        self.app.ui.popmenu_move.triggered.connect(self.app.obj_move)
+
+        # Gerber Editor
+
+        try:
+            self.app.ui.grb_draw_pad.triggered.disconnect(self.on_pad_add)
+        except TypeError:
+            pass
+
+        try:
+            self.app.ui.grb_draw_pad_array.triggered.disconnect(self.on_pad_add_array)
+        except TypeError:
+            pass
+
+        try:
+            self.app.ui.grb_draw_track.triggered.disconnect(self.on_track_add)
+        except TypeError:
+            pass
+
+        try:
+            self.app.ui.grb_draw_region.triggered.disconnect(self.on_region_add)
+        except TypeError:
+            pass
 
     def clear(self):
         self.active_tool = None
@@ -3160,26 +3233,31 @@ class FlatCAMGrbEditor(QtCore.QObject):
     def on_canvas_click(self, event):
         """
         event.x and .y have canvas coordinates
-        event.xdaya and .ydata have plot coordinates
+        event.xdata and .ydata have plot coordinates
 
-        :param event: Event object dispatched by Matplotlib
+        :param event: Event object dispatched by VisPy
         :return: None
         """
+
+        self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
+
+        if self.app.grid_status():
+            self.pos  = self.app.geo_editor.snap(self.pos[0], self.pos[1])
+            self.app.app_cursor.enabled = True
+            # Update cursor
+            self.app.app_cursor.set_data(np.asarray([(self.pos[0], self.pos[1])]), symbol='++', edge_color='black',
+                                         size=20)
+        else:
+            self.pos = (self.pos[0], self.pos[1])
+            self.app.app_cursor.enabled = False
 
         if event.button is 1:
             self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
-            self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
-
-            ### Snap coordinates
-            x, y = self.app.geo_editor.snap(self.pos[0], self.pos[1])
-
-            self.pos = (x, y)
 
             # Selection with left mouse button
             if self.active_tool is not None and event.button is 1:
                 # Dispatch event to active_tool
-                # msg = self.active_tool.click(self.app.geo_editor.snap(event.xdata, event.ydata))
                 msg = self.active_tool.click(self.app.geo_editor.snap(self.pos[0], self.pos[1]))
 
                 # If it is a shape generating tool
@@ -3213,10 +3291,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.app.log.debug("No active tool to respond to click!")
 
     def on_grb_click_release(self, event):
-        pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
-
         self.modifiers = QtWidgets.QApplication.keyboardModifiers()
 
+        pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
         if self.app.grid_status():
             pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
@@ -3226,9 +3303,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # canvas menu
         try:
             if event.button == 2:  # right click
-                if self.app.panning_action is True:
-                    self.app.panning_action = False
-                else:
+                if self.app.ui.popMenu.mouse_is_panning is False:
                     if self.in_action is False:
                         try:
                             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -3243,6 +3318,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                             self.select_tool('select')
                         else:
                             self.app.cursor = QtGui.QCursor()
+                            self.app.populate_cmenu_grids()
                             self.app.ui.popMenu.popup(self.app.cursor.pos())
                     else:
                         # if right click on canvas and the active tool need to be finished (like Path or Polygon)
@@ -3282,10 +3358,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     self.app.selection_type = None
 
                 elif isinstance(self.active_tool, FCApertureSelect):
-                    # Dispatch event to active_tool
-                    # msg = self.active_tool.click(self.app.geo_editor.snap(event.xdata, event.ydata))
-                    # msg = self.active_tool.click_release((self.pos[0], self.pos[1]))
-                    # self.app.inform.emit(msg)
                     self.active_tool.click_release((self.pos[0], self.pos[1]))
 
                     # if there are selected objects then plot them
@@ -3303,26 +3375,29 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :type Bool
         :return:
         """
+
         poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
         sel_aperture = set()
         self.apertures_table.clearSelection()
 
         self.app.delete_selection_shape()
         for storage in self.storage_dict:
-            for obj in self.storage_dict[storage]['solid_geometry']:
-                if (sel_type is True and poly_selection.contains(obj.geo)) or \
-                        (sel_type is False and poly_selection.intersects(obj.geo)):
-                    if self.key == self.app.defaults["global_mselect_key"]:
-                        if obj in self.selected:
-                            self.selected.remove(obj)
+            try:
+                for obj in self.storage_dict[storage]['solid_geometry']:
+                    if (sel_type is True and poly_selection.contains(obj.geo)) or \
+                            (sel_type is False and poly_selection.intersects(obj.geo)):
+                        if self.key == self.app.defaults["global_mselect_key"]:
+                            if obj in self.selected:
+                                self.selected.remove(obj)
+                            else:
+                                # add the object to the selected shapes
+                                self.selected.append(obj)
+                                sel_aperture.add(storage)
                         else:
-                            # add the object to the selected shapes
                             self.selected.append(obj)
                             sel_aperture.add(storage)
-                    else:
-                        self.selected.append(obj)
-                        sel_aperture.add(storage)
-
+            except KeyError:
+                pass
         try:
             self.apertures_table.cellPressed.disconnect()
         except:
@@ -3349,22 +3424,18 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :return: None
         """
 
-        pos = self.canvas.vispy_canvas.translate_coords(event.pos)
-        event.xdata, event.ydata = pos[0], pos[1]
+        pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
+        event.xdata, event.ydata = pos_canvas[0], pos_canvas[1]
 
         self.x = event.xdata
         self.y = event.ydata
 
-        # Prevent updates on pan
-        # if len(event.buttons) > 0:
-        #     return
+        self.app.ui.popMenu.mouse_is_panning = False
 
         # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
-        if event.button == 2:
-            self.app.panning_action = True
+        if event.button == 2 and event.is_dragging == 1:
+            self.app.ui.popMenu.mouse_is_panning = True
             return
-        else:
-            self.app.panning_action = False
 
         try:
             x = float(event.xdata)
@@ -3376,7 +3447,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
             return
 
         ### Snap coordinates
-        x, y = self.app.geo_editor.app.geo_editor.snap(x, y)
+        if self.app.grid_status():
+            x, y = self.app.geo_editor.snap(x, y)
+            self.app.app_cursor.enabled = True
+            # Update cursor
+            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
+        else:
+            self.app.app_cursor.enabled = False
 
         self.snap_x = x
         self.snap_y = y
@@ -3398,7 +3475,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
         geo = self.active_tool.utility_geometry(data=(x, y))
 
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
-
             # Remove any previous utility shape
             self.tool_shape.clear(update=True)
             self.draw_utility_geometry(geo=geo)
@@ -3410,7 +3486,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             if isinstance(self.active_tool, FCRegion) or isinstance(self.active_tool, FCTrack):
                 pass
             else:
-                dx = pos[0] - self.pos[0]
+                dx = pos_canvas[0] - self.pos[0]
                 self.app.delete_selection_shape()
                 if dx < 0:
                     self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x,y),
@@ -3422,9 +3498,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     self.app.selection_type = True
         else:
             self.app.selection_type = None
-
-        # Update cursor
-        self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
 
     def on_canvas_key_release(self, event):
         self.key = None
@@ -3459,15 +3532,18 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.shapes.clear(update=True)
 
             for storage in self.storage_dict:
-                for shape in self.storage_dict[storage]['solid_geometry']:
-                    if shape.geo is None:
-                        continue
+                try:
+                    for shape in self.storage_dict[storage]['solid_geometry']:
+                        if shape.geo is None:
+                            continue
 
-                    if shape in self.selected:
-                        self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_sel_draw_color'],
-                                        linewidth=2)
-                        continue
-                    self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_draw_color'])
+                        if shape in self.selected:
+                            self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_sel_draw_color'],
+                                            linewidth=2)
+                            continue
+                        self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_draw_color'])
+                except KeyError:
+                    pass
 
             for shape in self.utility:
                 self.plot_shape(geometry=shape.geo, linewidth=1)
@@ -3498,6 +3574,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.shapes.add(shape=geometry, color=color, face_color=color+'AF', layer=0)
 
     def start_delayed_plot(self, check_period):
+        """
+        This function starts an QTImer and it will periodically check if all the workers finish the plotting functions
+
+        :param check_period: time at which to check periodically if all plots finished to be plotted
+        :return:
+        """
+
         # self.plot_thread = threading.Thread(target=lambda: self.check_plot_finished(check_period))
         # self.plot_thread.start()
         log.debug("FlatCAMGrbEditor --> Delayed Plot started.")
@@ -3507,7 +3590,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.plot_thread.start()
 
     def check_plot_finished(self):
-        # print(self.grb_plot_promises)
+        """
+        If all the promises made are finished then all the shapes are in shapes_storage and can be plotted safely and
+        then the UI is rebuilt accordingly.
+        :return:
+        """
+
         try:
             if not self.grb_plot_promises:
                 self.plot_thread.stop()
@@ -3571,13 +3659,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
             return
 
         for storage in self.storage_dict:
-            # try:
-            #     self.storage_dict[storage].remove(shape)
-            # except:
-            #     pass
-            if shape in self.storage_dict[storage]['solid_geometry']:
-                self.storage_dict[storage]['solid_geometry'].remove(shape)
-
+            try:
+                if shape in self.storage_dict[storage]['solid_geometry']:
+                    self.storage_dict[storage]['solid_geometry'].remove(shape)
+            except KeyError:
+                pass
         if shape in self.selected:
             self.selected.remove(shape)  # TODO: Check performance
 

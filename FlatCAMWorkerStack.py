@@ -25,7 +25,7 @@ class WorkerStack(QtCore.QObject):
             thread.started.connect(worker.run)
             worker.task_completed.connect(self.on_task_completed)
 
-            thread.start()
+            thread.start(QtCore.QThread.LowPriority)
 
             self.workers.append(worker)
             self.threads.append(thread)

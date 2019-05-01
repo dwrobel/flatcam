@@ -181,17 +181,18 @@ class FlatCAMObj(QtCore.QObject):
         old_name = copy(self.options["name"])
         new_name = self.ui.name_entry.get_value()
 
-        # update the SHELL auto-completer model data
-        try:
-            self.app.myKeywords.remove(old_name)
-            self.app.myKeywords.append(new_name)
-            self.app.shell._edit.set_model_data(self.app.myKeywords)
-            self.app.ui.code_editor.set_model_data(self.app.myKeywords)
-        except:
-            log.debug("on_name_activate() --> Could not remove the old object name from auto-completer model list")
+        if new_name != old_name:
+            # update the SHELL auto-completer model data
+            try:
+                self.app.myKeywords.remove(old_name)
+                self.app.myKeywords.append(new_name)
+                self.app.shell._edit.set_model_data(self.app.myKeywords)
+                self.app.ui.code_editor.set_model_data(self.app.myKeywords)
+            except:
+                log.debug("on_name_activate() --> Could not remove the old object name from auto-completer model list")
 
-        self.options["name"] = self.ui.name_entry.get_value()
-        self.app.inform.emit(_("[success] Name changed from {old} to {new}").format(old=old_name, new=new_name))
+            self.options["name"] = self.ui.name_entry.get_value()
+            self.app.inform.emit(_("[success] Name changed from {old} to {new}").format(old=old_name, new=new_name))
 
     def on_offset_button_click(self):
         self.app.report_usage("obj_on_offset_button")
@@ -357,6 +358,12 @@ class FlatCAMObj(QtCore.QObject):
             self.annotation.clear(update)
         except AttributeError:
             pass
+
+        # Not all object types have mark_shapes
+        # try:
+        #     self.mark_shapes.clear(update)
+        # except AttributeError:
+        #     pass
 
     def delete(self):
         # Free resources
@@ -2717,7 +2724,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # those elements are the ones used for generating GCode
         self.sel_tools = {}
 
-        self.offset_item_options = [_("Path"), _("In"), _("Out"), _("Custom")]
+        self.offset_item_options = ["Path", "In", "Out", "Custom"]
         self.type_item_options = [_("Iso"), _("Rough"), _("Finish")]
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
 
@@ -2959,7 +2966,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.tools.update({
                 self.tooluid: {
                     'tooldia': float(self.options["cnctooldia"]),
-                    'offset': _('Path'),
+                    'offset': ('Path'),
                     'offset_value': 0.0,
                     'type': _('Rough'),
                     'tool_type': 'C1',
@@ -3041,7 +3048,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             tool_offset = self.ui.geo_tools_table.cellWidget(current_row, 2)
             if tool_offset is not None:
                 tool_offset_txt = tool_offset.currentText()
-                if tool_offset_txt == _('Custom'):
+                if tool_offset_txt == ('Custom'):
                     self.ui.tool_offset_entry.show()
                     self.ui.tool_offset_lbl.show()
                 else:
@@ -3246,7 +3253,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.tools.update({
                 self.tooluid: {
                     'tooldia': tooldia,
-                    'offset': _('Path'),
+                    'offset': ('Path'),
                     'offset_value': 0.0,
                     'type': _('Rough'),
                     'tool_type': 'C1',
@@ -3615,7 +3622,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 cb_txt = cw.currentText()
                 if cw_col == 2:
                     tooluid_value['offset'] = cb_txt
-                    if cb_txt == _('Custom'):
+                    if cb_txt == ('Custom'):
                         self.ui.tool_offset_entry.show()
                         self.ui.tool_offset_lbl.show()
                     else:
@@ -4088,13 +4095,13 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                             diadict_key: datadict
                         })
 
-                if dia_cnc_dict['offset'] == 'in':
+                if dia_cnc_dict['offset'] == ('in'):
                     tool_offset = -dia_cnc_dict['tooldia'] / 2
                     offset_str = 'inside'
-                elif dia_cnc_dict['offset'].lower() == 'out':
+                elif dia_cnc_dict['offset'].lower() == ('out'):
                     tool_offset = dia_cnc_dict['tooldia']  / 2
                     offset_str = 'outside'
-                elif dia_cnc_dict['offset'].lower() == 'path':
+                elif dia_cnc_dict['offset'].lower() == ('path'):
                     offset_str = 'onpath'
                     tool_offset = 0.0
                 else:
@@ -4321,13 +4328,13 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                             diadict_key: datadict
                         })
 
-                if dia_cnc_dict['offset'] == 'in':
+                if dia_cnc_dict['offset'] == ('in'):
                     tool_offset = -dia_cnc_dict['tooldia'] / 2
                     offset_str = 'inside'
-                elif dia_cnc_dict['offset'].lower() == 'out':
+                elif dia_cnc_dict['offset'].lower() == ('out'):
                     tool_offset = dia_cnc_dict['tooldia']  / 2
                     offset_str = 'outside'
-                elif dia_cnc_dict['offset'].lower() == 'path':
+                elif dia_cnc_dict['offset'].lower() == ('path'):
                     offset_str = 'onpath'
                     tool_offset = 0.0
                 else:

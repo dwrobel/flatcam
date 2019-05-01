@@ -20,7 +20,6 @@ pip3 install --upgrade Shapely
 pip3 install --upgrade vispy
 pip3 install --upgrade rtree
 pip3 install --upgrade pyopengl
-pip3 install --upgrade pyopengl-accelerate
 pip3 install --upgrade setuptools
 pip3 install --upgrade svg.path
 pip3 install --upgrade ortools

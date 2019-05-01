@@ -18,7 +18,7 @@ from FlatCAMTool import FlatCAMTool
 from flatcamGUI.ObjectUI import LengthEntry, RadioSet
 
 from shapely.geometry import LineString, LinearRing, MultiLineString
-from shapely.ops import cascaded_union
+from shapely.ops import cascaded_union, unary_union
 import shapely.affinity as affinity
 
 from numpy import arctan2, Inf, array, sqrt, sign, dot
@@ -475,9 +475,9 @@ class PaintOptionsTool(FlatCAMTool):
         )
         grid.addWidget(methodlabel, 3, 0)
         self.paintmethod_combo = RadioSet([
-            {"label": _("Standard"), "value": "standard"},
-            {"label": _("Seed-based"), "value": "seed"},
-            {"label": _("Straight lines"), "value": "lines"}
+            {"label": "Standard", "value": "standard"},
+            {"label": "Seed-based", "value": "seed"},
+            {"label": "Straight lines", "value": "lines"}
         ], orientation='vertical', stretch=False)
         grid.addWidget(self.paintmethod_combo, 3, 1)
 
@@ -2875,8 +2875,12 @@ class FlatCAMGeoEditor(QtCore.QObject):
         def gridx_changed(goption, gentry):
             entry2option(option=goption, entry=gentry)
             # if the grid link is checked copy the value in the GridX field to GridY
+            try:
+                val = float(self.app.ui.grid_gap_x_entry.get_value())
+            except ValueError:
+                return
             if self.app.ui.grid_gap_link_cb.isChecked():
-                self.app.ui.grid_gap_y_entry.set_value(self.app.ui.grid_gap_x_entry.get_value())
+                self.app.ui.grid_gap_y_entry.set_value(val)
 
         self.app.ui.grid_gap_x_entry.setValidator(QtGui.QDoubleValidator())
         self.app.ui.grid_gap_x_entry.textChanged.connect(
@@ -2970,6 +2974,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.app.ui.snap_toolbar.setDisabled(False)
 
+        self.app.ui.popmenu_disable.setVisible(False)
+        self.app.ui.cmenu_newmenu.menuAction().setVisible(False)
+        self.app.ui.popmenu_properties.setVisible(False)
+        self.app.ui.g_editor_cmenu.menuAction().setVisible(True)
+
         # prevent the user to change anything in the Selected Tab while the Geo Editor is active
         sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
         for w in sel_tab_widget_list:
@@ -2979,6 +2988,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.editor_active = True
 
     def deactivate(self):
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+
         # adjust the status of the menu entries related to the editor
         self.app.ui.menueditedit.setDisabled(False)
         self.app.ui.menueditok.setDisabled(True)
@@ -3033,6 +3047,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # Tell the app that the editor is no longer active
         self.editor_active = False
 
+        self.app.ui.popmenu_disable.setVisible(True)
+        self.app.ui.cmenu_newmenu.menuAction().setVisible(True)
+        self.app.ui.popmenu_properties.setVisible(True)
+        self.app.ui.grb_editor_cmenu.menuAction().setVisible(False)
+        self.app.ui.e_editor_cmenu.menuAction().setVisible(False)
+        self.app.ui.g_editor_cmenu.menuAction().setVisible(False)
+
         try:
             # re-enable all the widgets in the Selected Tab that were disabled after entering in Edit Geometry Mode
             sel_tab_widget_list = self.app.ui.selected_tab.findChildren(QtWidgets.QWidget)
@@ -3061,7 +3082,21 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_double_click', self.app.on_double_click_over_plot)
 
-        self.app.collection.view.clicked.disconnect()
+        # self.app.collection.view.clicked.disconnect()
+        self.app.ui.popmenu_copy.triggered.disconnect()
+        self.app.ui.popmenu_delete.triggered.disconnect()
+        self.app.ui.popmenu_move.triggered.disconnect()
+
+        self.app.ui.popmenu_copy.triggered.connect(lambda: self.select_tool('copy'))
+        self.app.ui.popmenu_delete.triggered.connect(self.on_delete_btn)
+        self.app.ui.popmenu_move.triggered.connect(lambda: self.select_tool('move'))
+
+        # Geometry Editor
+        self.app.ui.draw_line.triggered.connect(self.draw_tool_path)
+        self.app.ui.draw_rect.triggered.connect(self.draw_tool_rectangle)
+        self.app.ui.draw_cut.triggered.connect(self.cutpath)
+        self.app.ui.draw_move.triggered.connect(self.on_move)
+
 
     def disconnect_canvas_event_handlers(self):
         # we restore the key and mouse control to FlatCAMApp method
@@ -3071,11 +3106,49 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
         self.app.plotcanvas.vis_connect('mouse_double_click', self.app.on_double_click_over_plot)
-        self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
+        # self.app.collection.view.clicked.connect(self.app.collection.on_mouse_down)
 
         self.canvas.vis_disconnect('mouse_press', self.on_canvas_click)
         self.canvas.vis_disconnect('mouse_move', self.on_canvas_move)
         self.canvas.vis_disconnect('mouse_release', self.on_geo_click_release)
+
+        try:
+            self.app.ui.popmenu_copy.triggered.disconnect(lambda: self.select_tool('copy'))
+        except TypeError:
+            pass
+        try:
+            self.app.ui.popmenu_delete.triggered.disconnect(self.on_delete_btn)
+        except TypeError:
+            pass
+        try:
+            self.app.ui.popmenu_move.triggered.disconnect(lambda: self.select_tool('move'))
+        except TypeError:
+            pass
+
+        self.app.ui.popmenu_copy.triggered.connect(self.app.on_copy_object)
+        self.app.ui.popmenu_delete.triggered.connect(self.app.on_delete)
+        self.app.ui.popmenu_move.triggered.connect(self.app.obj_move)
+
+        # Geometry Editor
+        try:
+            self.app.ui.draw_line.triggered.disconnect(self.draw_tool_path)
+        except TypeError:
+            pass
+
+        try:
+            self.app.ui.draw_rect.triggered.disconnect(self.draw_tool_rectangle)
+        except TypeError:
+            pass
+
+        try:
+            self.app.ui.draw_cut.triggered.disconnect(self.cutpath)
+        except TypeError:
+            pass
+
+        try:
+            self.app.ui.draw_move.triggered.disconnect(self.on_move)
+        except TypeError:
+            pass
 
     def add_shape(self, shape):
         """
@@ -3116,31 +3189,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.tool_shape.clear(update=True)
         self.tool_shape.redraw()
-
-    def cutpath(self):
-        selected = self.get_selected()
-        tools = selected[1:]
-        toolgeo = cascaded_union([shp.geo for shp in tools])
-
-        target = selected[0]
-        if type(target.geo) == Polygon:
-            for ring in poly2rings(target.geo):
-                self.add_shape(DrawToolShape(ring.difference(toolgeo)))
-            self.delete_shape(target)
-        elif type(target.geo) == LineString or type(target.geo) == LinearRing:
-            self.add_shape(DrawToolShape(target.geo.difference(toolgeo)))
-            self.delete_shape(target)
-        elif type(target.geo) == MultiLineString:
-            try:
-                for linestring in target.geo:
-                    self.add_shape(DrawToolShape(linestring.difference(toolgeo)))
-            except:
-                self.app.log.warning("Current LinearString does not intersect the target")
-            self.delete_shape(target)
-        else:
-            self.app.log.warning("Not implemented. Object type: %s" % str(type(target.geo)))
-
-        self.replot()
 
     def toolbar_tool_toggle(self, key):
         self.options[key] = self.sender().isChecked()
@@ -3268,15 +3316,21 @@ class FlatCAMGeoEditor(QtCore.QObject):
         :return: None
         """
 
+        self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
+
+        if self.app.grid_status():
+            self.pos  = self.app.geo_editor.snap(self.pos[0], self.pos[1])
+            self.app.app_cursor.enabled = True
+            # Update cursor
+            self.app.app_cursor.set_data(np.asarray([(self.pos[0], self.pos[1])]), symbol='++', edge_color='black',
+                                         size=20)
+        else:
+            self.pos = (self.pos[0], self.pos[1])
+            self.app.app_cursor.enabled = False
+
         if event.button is 1:
             self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
-            self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
-
-            ### Snap coordinates
-            x, y = self.snap(self.pos[0], self.pos[1])
-
-            self.pos = (x, y)
 
             modifiers = QtWidgets.QApplication.keyboardModifiers()
             # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
@@ -3288,7 +3342,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
             # Selection with left mouse button
             if self.active_tool is not None and event.button is 1:
                 # Dispatch event to active_tool
-                # msg = self.active_tool.click(self.snap(event.xdata, event.ydata))
                 msg = self.active_tool.click(self.snap(self.pos[0], self.pos[1]))
 
                 # If it is a shape generating tool
@@ -3303,13 +3356,19 @@ class FlatCAMGeoEditor(QtCore.QObject):
                     else:
                         modifier_to_use = Qt.ShiftModifier
 
+                    if isinstance(self.active_tool, FCText):
+                        self.select_tool("select")
+                    else:
+                        self.select_tool(self.active_tool.name)
+
+
                     # if modifier key is pressed then we add to the selected list the current shape but if
                     # it's already in the selected list, we removed it. Therefore first click selects, second deselects.
-                    if key_modifier == modifier_to_use:
-                        self.select_tool(self.active_tool.name)
-                    else:
-                        self.select_tool("select")
-                        return
+                    # if key_modifier == modifier_to_use:
+                    #     self.select_tool(self.active_tool.name)
+                    # else:
+                    #     self.select_tool("select")
+                    #     return
 
                 if isinstance(self.active_tool, FCSelect):
                     # self.app.log.debug("Replotting after click.")
@@ -3334,16 +3393,12 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.x = event.xdata
         self.y = event.ydata
 
-        # Prevent updates on pan
-        # if len(event.buttons) > 0:
-        #     return
+        self.app.ui.popMenu.mouse_is_panning = False
 
         # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
-        if event.button == 2:
-            self.app.panning_action = True
+        if event.button == 2 and event.is_dragging == 1:
+            self.app.ui.popMenu.mouse_is_panning = True
             return
-        else:
-            self.app.panning_action = False
 
         try:
             x = float(event.xdata)
@@ -3355,7 +3410,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
             return
 
         ### Snap coordinates
-        x, y = self.snap(x, y)
+        if self.app.grid_status():
+            x, y = self.snap(x, y)
+            self.app.app_cursor.enabled = True
+            # Update cursor
+            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
+        else:
+            self.app.app_cursor.enabled = False
 
         self.snap_x = x
         self.snap_y = y
@@ -3396,9 +3457,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
         else:
             self.app.selection_type = None
 
-        # Update cursor
-        self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
-
     def on_geo_click_release(self, event):
         pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
 
@@ -3411,12 +3469,23 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # canvas menu
         try:
             if event.button == 2:  # right click
-                if self.app.panning_action is True:
-                    self.app.panning_action = False
-                else:
+                if self.app.ui.popMenu.mouse_is_panning is False:
                     if self.in_action is False:
-                        self.app.cursor = QtGui.QCursor()
-                        self.app.ui.popMenu.popup(self.app.cursor.pos())
+                        try:
+                            QtGui.QGuiApplication.restoreOverrideCursor()
+                        except:
+                            pass
+
+                        if self.active_tool.complete is False and not isinstance(self.active_tool, FCSelect):
+                            self.active_tool.complete = True
+                            self.in_action = False
+                            self.delete_utility_geometry()
+                            self.app.inform.emit(_("[success] Done."))
+                            self.select_tool('select')
+                        else:
+                            self.app.cursor = QtGui.QCursor()
+                            self.app.populate_cmenu_grids()
+                            self.app.ui.popMenu.popup(self.app.cursor.pos())
                     else:
                         # if right click on canvas and the active tool need to be finished (like Path or Polygon)
                         # right mouse click will finish the action
@@ -3426,19 +3495,20 @@ class FlatCAMGeoEditor(QtCore.QObject):
                             if self.active_tool.complete:
                                 self.on_shape_complete()
                                 self.app.inform.emit(_("[success] Done."))
+                                self.select_tool(self.active_tool.name)
 
                                 # MS: always return to the Select Tool if modifier key is not pressed
                                 # else return to the current tool
-                                key_modifier = QtWidgets.QApplication.keyboardModifiers()
-                                if self.app.defaults["global_mselect_key"] == 'Control':
-                                    modifier_to_use = Qt.ControlModifier
-                                else:
-                                    modifier_to_use = Qt.ShiftModifier
-
-                                if key_modifier == modifier_to_use:
-                                    self.select_tool(self.active_tool.name)
-                                else:
-                                    self.select_tool("select")
+                                # key_modifier = QtWidgets.QApplication.keyboardModifiers()
+                                # if self.app.defaults["global_mselect_key"] == 'Control':
+                                #     modifier_to_use = Qt.ControlModifier
+                                # else:
+                                #     modifier_to_use = Qt.ShiftModifier
+                                #
+                                # if key_modifier == modifier_to_use:
+                                #     self.select_tool(self.active_tool.name)
+                                # else:
+                                #     self.select_tool("select")
 
         except Exception as e:
             log.warning("Error: %s" % str(e))
@@ -3781,7 +3851,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         :return: None.
         """
 
-        results = cascaded_union([t.geo for t in self.get_selected()])
+        results = unary_union([t.geo for t in self.get_selected()])
 
         # Delete originals.
         for_deletion = [s for s in self.get_selected()]
@@ -3795,9 +3865,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.replot()
 
-    def intersection(self):
+    def intersection_2(self):
         """
-        Makes intersectino of selected polygons. Original polygons are deleted.
+        Makes intersection of selected polygons. Original polygons are deleted.
 
         :return: None
         """
@@ -3827,11 +3897,67 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.replot()
 
+    def intersection(self):
+        """
+        Makes intersection of selected polygons. Original polygons are deleted.
+
+        :return: None
+        """
+
+        shapes = self.get_selected()
+        results = []
+        intact = []
+
+        try:
+            intersector = shapes[0].geo
+        except Exception as e:
+            log.debug("FlatCAMGeoEditor.intersection() --> %s" % str(e))
+            self.app.inform.emit(_("[WARNING_NOTCL] A selection of at least 2 geo items is required to do Intersection."))
+            self.select_tool('select')
+            return
+
+        for shape in shapes[1:]:
+            if intersector.intersects(shape.geo):
+                results.append(intersector.intersection(shape.geo))
+            else:
+                intact.append(shape)
+
+        if len(results) != 0:
+            # Delete originals.
+            for_deletion = [s for s in self.get_selected()]
+            for shape in for_deletion:
+                if shape not in intact:
+                    self.delete_shape(shape)
+
+            for geo in results:
+                self.add_shape(DrawToolShape(geo))
+
+        # Selected geometry is now gone!
+        self.selected = []
+        self.replot()
+
     def subtract(self):
         selected = self.get_selected()
         try:
             tools = selected[1:]
-            toolgeo = cascaded_union([shp.geo for shp in tools])
+            toolgeo = unary_union([shp.geo for shp in tools])
+            result = selected[0].geo.difference(toolgeo)
+
+            for_deletion = [s for s in self.get_selected()]
+            for shape in for_deletion:
+                self.delete_shape(shape)
+
+            self.add_shape(DrawToolShape(result))
+
+            self.replot()
+        except Exception as e:
+            log.debug(str(e))
+
+    def subtract_2(self):
+        selected = self.get_selected()
+        try:
+            tools = selected[1:]
+            toolgeo = unary_union([shp.geo for shp in tools])
             result = selected[0].geo.difference(toolgeo)
 
             self.delete_shape(selected[0])
@@ -3840,6 +3966,30 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.replot()
         except Exception as e:
             log.debug(str(e))
+
+    def cutpath(self):
+        selected = self.get_selected()
+        tools = selected[1:]
+        toolgeo = unary_union([shp.geo for shp in tools])
+
+        target = selected[0]
+        if type(target.geo) == Polygon:
+            for ring in poly2rings(target.geo):
+                self.add_shape(DrawToolShape(ring.difference(toolgeo)))
+        elif type(target.geo) == LineString or type(target.geo) == LinearRing:
+            self.add_shape(DrawToolShape(target.geo.difference(toolgeo)))
+        elif type(target.geo) == MultiLineString:
+            try:
+                for linestring in target.geo:
+                    self.add_shape(DrawToolShape(linestring.difference(toolgeo)))
+            except:
+                self.app.log.warning("Current LinearString does not intersect the target")
+        else:
+            self.app.log.warning("Not implemented. Object type: %s" % str(type(target.geo)))
+            return
+
+        self.delete_shape(target)
+        self.replot()
 
     def buffer(self, buf_distance, join_style):
         selected = self.get_selected()

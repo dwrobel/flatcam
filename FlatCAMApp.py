@@ -94,8 +94,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.914
-    version_date = "2019/04/23"
+    version = 8.915
+    version_date = "2019/05/1"
     beta = True
 
     # current date now
@@ -188,6 +188,8 @@ class App(QtCore.QObject):
         """
 
         App.log.info("FlatCAM Starting...")
+
+        self.main_thread = QtWidgets.QApplication.instance().thread()
 
         ###################
         ### OS-specific ###
@@ -340,10 +342,13 @@ class App(QtCore.QObject):
             "global_draw_color": self.ui.general_defaults_form.general_gui_group.draw_color_entry,
             "global_sel_draw_color": self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry,
 
+            "global_proj_item_color": self.ui.general_defaults_form.general_gui_group.proj_color_entry,
+            "global_proj_item_dis_color": self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry,
+
             # General GUI Settings
             "global_layout": self.ui.general_defaults_form.general_gui_set_group.layout_combo,
             "global_hover": self.ui.general_defaults_form.general_gui_set_group.hover_cb,
-
+            "global_selection_shape": self.ui.general_defaults_form.general_gui_set_group.selection_cb,
             # Gerber General
             "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
             "gerber_solid": self.ui.gerber_defaults_form.gerber_gen_group.solid_cb,
@@ -612,6 +617,8 @@ class App(QtCore.QObject):
             "global_alt_sel_line": '#006E20BF',
             "global_draw_color": '#FF0000',
             "global_sel_draw_color": '#0000FF',
+            "global_proj_item_color": '#000000',
+            "global_proj_item_dis_color": '#b7b7cb',
 
             "global_toolbar_view": 511,
 
@@ -647,6 +654,7 @@ class App(QtCore.QObject):
 
             # General GUI Settings
             "global_hover": True,
+            "global_selection_shape": True,
             "global_layout": "compact",
             # Gerber General
             "gerber_plot": True,
@@ -1162,7 +1170,8 @@ class App(QtCore.QObject):
             "background-color:%s" % str(self.defaults['global_sel_line'])[:7])
 
         # Init Right-Left Selection colors
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.set_value(self.defaults['global_alt_sel_fill'])
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.set_value(
+            self.defaults['global_alt_sel_fill'])
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_alt_sel_fill'])[:7])
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.set_value(
@@ -1170,18 +1179,33 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.setValue(
             int(self.defaults['global_sel_fill'][7:9], 16))
 
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.set_value(self.defaults['global_alt_sel_line'])
+        self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.set_value(
+            self.defaults['global_alt_sel_line'])
         self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_alt_sel_line'])[:7])
 
         # Init Draw color and Selection Draw Color
-        self.ui.general_defaults_form.general_gui_group.draw_color_entry.set_value(self.defaults['global_draw_color'])
+        self.ui.general_defaults_form.general_gui_group.draw_color_entry.set_value(
+            self.defaults['global_draw_color'])
         self.ui.general_defaults_form.general_gui_group.draw_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_draw_color'])[:7])
 
-        self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(self.defaults['global_sel_draw_color'])
+        self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(
+            self.defaults['global_sel_draw_color'])
         self.ui.general_defaults_form.general_gui_group.sel_draw_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_sel_draw_color'])[:7])
+
+        # Init Project Items color
+        self.ui.general_defaults_form.general_gui_group.proj_color_entry.set_value(
+            self.defaults['global_proj_item_color'])
+        self.ui.general_defaults_form.general_gui_group.proj_color_button.setStyleSheet(
+            "background-color:%s" % str(self.defaults['global_proj_item_color'])[:7])
+
+        self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry.set_value(
+            self.defaults['global_proj_item_dis_color'])
+        self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.setStyleSheet(
+            "background-color:%s" % str(self.defaults['global_proj_item_dis_color'])[:7])
+
         #### End of Data ####
 
         #### Plot Area ####
@@ -1362,28 +1386,9 @@ class App(QtCore.QObject):
         self.ui.popmenu_disable.triggered.connect(lambda: self.disable_plots(self.collection.get_selected()))
 
         self.ui.popmenu_new_geo.triggered.connect(self.new_geometry_object)
+        self.ui.popmenu_new_grb.triggered.connect(self.new_gerber_object)
         self.ui.popmenu_new_exc.triggered.connect(self.new_excellon_object)
         self.ui.popmenu_new_prj.triggered.connect(self.on_file_new)
-
-        # Geometry Editor
-        self.ui.draw_line.triggered.connect(self.geo_editor.draw_tool_path)
-        self.ui.draw_rect.triggered.connect(self.geo_editor.draw_tool_rectangle)
-        self.ui.draw_cut.triggered.connect(self.geo_editor.cutpath)
-        self.ui.draw_move.triggered.connect(self.geo_editor.on_move)
-
-        # Gerber Editor
-        self.ui.grb_draw_pad.triggered.connect(self.grb_editor.on_pad_add)
-        self.ui.grb_draw_pad_array.triggered.connect(self.grb_editor.on_pad_add_array)
-        self.ui.grb_draw_track.triggered.connect(self.grb_editor.on_track_add)
-        self.ui.grb_draw_region.triggered.connect(self.grb_editor.on_region_add)
-        self.ui.grb_copy.triggered.connect(self.grb_editor.on_copy_button)
-        self.ui.grb_delete.triggered.connect(self.grb_editor.on_delete_btn)
-        self.ui.grb_move.triggered.connect(self.grb_editor.on_move_button)
-
-        # Excellon Editor
-        self.ui.drill.triggered.connect(self.exc_editor.exc_add_drill)
-        self.ui.drill_array.triggered.connect(self.exc_editor.exc_add_drill_array)
-        self.ui.drill_copy.triggered.connect(self.exc_editor.exc_copy_drills)
 
         self.ui.zoomfit.triggered.connect(self.on_zoom_fit)
         self.ui.clearplot.triggered.connect(self.clear_plots)
@@ -1418,34 +1423,64 @@ class App(QtCore.QObject):
         ###############################
 
         # Setting plot colors signals
-        self.ui.general_defaults_form.general_gui_group.pf_color_entry.editingFinished.connect(self.on_pf_color_entry)
-        self.ui.general_defaults_form.general_gui_group.pf_color_button.clicked.connect(self.on_pf_color_button)
-        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_spinner.valueChanged.connect(self.on_pf_color_spinner)
-        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.valueChanged.connect(self.on_pf_color_slider)
-        self.ui.general_defaults_form.general_gui_group.pl_color_entry.editingFinished.connect(self.on_pl_color_entry)
-        self.ui.general_defaults_form.general_gui_group.pl_color_button.clicked.connect(self.on_pl_color_button)
+        self.ui.general_defaults_form.general_gui_group.pf_color_entry.editingFinished.connect(
+            self.on_pf_color_entry)
+        self.ui.general_defaults_form.general_gui_group.pf_color_button.clicked.connect(
+            self.on_pf_color_button)
+        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_spinner.valueChanged.connect(
+            self.on_pf_color_spinner)
+        self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.valueChanged.connect(
+            self.on_pf_color_slider)
+        self.ui.general_defaults_form.general_gui_group.pl_color_entry.editingFinished.connect(
+            self.on_pl_color_entry)
+        self.ui.general_defaults_form.general_gui_group.pl_color_button.clicked.connect(
+            self.on_pl_color_button)
         # Setting selection (left - right) colors signals
-        self.ui.general_defaults_form.general_gui_group.sf_color_entry.editingFinished.connect(self.on_sf_color_entry)
-        self.ui.general_defaults_form.general_gui_group.sf_color_button.clicked.connect(self.on_sf_color_button)
-        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.valueChanged.connect(self.on_sf_color_spinner)
-        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.valueChanged.connect(self.on_sf_color_slider)
-        self.ui.general_defaults_form.general_gui_group.sl_color_entry.editingFinished.connect(self.on_sl_color_entry)
-        self.ui.general_defaults_form.general_gui_group.sl_color_button.clicked.connect(self.on_sl_color_button)
+        self.ui.general_defaults_form.general_gui_group.sf_color_entry.editingFinished.connect(
+            self.on_sf_color_entry)
+        self.ui.general_defaults_form.general_gui_group.sf_color_button.clicked.connect(
+            self.on_sf_color_button)
+        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.valueChanged.connect(
+            self.on_sf_color_spinner)
+        self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.valueChanged.connect(
+            self.on_sf_color_slider)
+        self.ui.general_defaults_form.general_gui_group.sl_color_entry.editingFinished.connect(
+            self.on_sl_color_entry)
+        self.ui.general_defaults_form.general_gui_group.sl_color_button.clicked.connect(
+            self.on_sl_color_button)
         # Setting selection (right - left) colors signals
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.editingFinished.connect(self.on_alt_sf_color_entry)
-        self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.clicked.connect(self.on_alt_sf_color_button)
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_entry.editingFinished.connect(
+            self.on_alt_sf_color_entry)
+        self.ui.general_defaults_form.general_gui_group.alt_sf_color_button.clicked.connect(
+            self.on_alt_sf_color_button)
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.valueChanged.connect(
             self.on_alt_sf_color_spinner)
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.valueChanged.connect(
             self.on_alt_sf_color_slider)
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.editingFinished.connect(self.on_alt_sl_color_entry)
-        self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.clicked.connect(self.on_alt_sl_color_button)
+        self.ui.general_defaults_form.general_gui_group.alt_sl_color_entry.editingFinished.connect(
+            self.on_alt_sl_color_entry)
+        self.ui.general_defaults_form.general_gui_group.alt_sl_color_button.clicked.connect(
+            self.on_alt_sl_color_button)
         # Setting Editor Draw colors signals
-        self.ui.general_defaults_form.general_gui_group.draw_color_entry.editingFinished.connect(self.on_draw_color_entry)
-        self.ui.general_defaults_form.general_gui_group.draw_color_button.clicked.connect(self.on_draw_color_button)
+        self.ui.general_defaults_form.general_gui_group.draw_color_entry.editingFinished.connect(
+            self.on_draw_color_entry)
+        self.ui.general_defaults_form.general_gui_group.draw_color_button.clicked.connect(
+            self.on_draw_color_button)
 
-        self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.editingFinished.connect(self.on_sel_draw_color_entry)
-        self.ui.general_defaults_form.general_gui_group.sel_draw_color_button.clicked.connect(self.on_sel_draw_color_button)
+        self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.editingFinished.connect(
+            self.on_sel_draw_color_entry)
+        self.ui.general_defaults_form.general_gui_group.sel_draw_color_button.clicked.connect(
+            self.on_sel_draw_color_button)
+
+        self.ui.general_defaults_form.general_gui_group.proj_color_entry.editingFinished.connect(
+            self.on_proj_color_entry)
+        self.ui.general_defaults_form.general_gui_group.proj_color_button.clicked.connect(
+            self.on_proj_color_button)
+
+        self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry.editingFinished.connect(
+            self.on_proj_color_dis_entry)
+        self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.clicked.connect(
+            self.on_proj_color_dis_button)
 
         self.ui.general_defaults_form.general_gui_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
         self.ui.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
@@ -1772,7 +1807,7 @@ class App(QtCore.QObject):
             self.thr2 = QtCore.QThread()
             self.worker_task.emit({'fcn': self.version_check,
                                    'params': []})
-            self.thr2.start()
+            self.thr2.start(QtCore.QThread.LowPriority)
 
 
         ####################################
@@ -1790,8 +1825,6 @@ class App(QtCore.QObject):
         # decide if we have a double click or single click
         self.doubleclick = False
 
-        # variable to store if there was motion before right mouse button click (panning)
-        self.panning_action = False
         # variable to store if a command is active (then the var is not None) and which one it is
         self.command_active = None
         # variable to store the status of moving selection action
@@ -1977,7 +2010,15 @@ class App(QtCore.QObject):
         self.film_tool.install(icon=QtGui.QIcon('share/film16.png'))
 
         self.paste_tool = SolderPaste(self)
-        self.paste_tool.install(icon=QtGui.QIcon('share/solderpastebis32.png'), separator=True)
+        self.paste_tool.install(icon=QtGui.QIcon('share/solderpastebis32.png'))
+
+        self.calculator_tool = ToolCalculator(self)
+        self.calculator_tool.install(icon=QtGui.QIcon('share/calculator24.png'))
+
+
+        self.sub_tool = ToolSub(self)
+        self.sub_tool.install(icon=QtGui.QIcon('share/sub32.png'), pos=self.ui.menuedit_convert,
+                              before=self.ui.menuedit_convert_sg2mg)
 
         self.move_tool = ToolMove(self)
         self.move_tool.install(icon=QtGui.QIcon('share/move16.png'), pos=self.ui.menuedit,
@@ -1994,9 +2035,6 @@ class App(QtCore.QObject):
         self.paint_tool = ToolPaint(self)
         self.paint_tool.install(icon=QtGui.QIcon('share/paint16.png'), pos=self.ui.menutool,
                                   before=self.measurement_tool.menuAction, separator=True)
-
-        self.calculator_tool = ToolCalculator(self)
-        self.calculator_tool.install(icon=QtGui.QIcon('share/calculator24.png'))
 
         self.transform_tool = ToolTransform(self)
         self.transform_tool.install(icon=QtGui.QIcon('share/transform.png'), pos=self.ui.menuoptions, separator=True)
@@ -2081,6 +2119,7 @@ class App(QtCore.QObject):
         self.ui.panelize_btn.triggered.connect(lambda: self.panelize_tool.run(toggle=True))
         self.ui.film_btn.triggered.connect(lambda: self.film_tool.run(toggle=True))
         self.ui.solder_btn.triggered.connect(lambda: self.paste_tool.run(toggle=True))
+        self.ui.sub_btn.triggered.connect(lambda: self.sub_tool.run(toggle=True))
 
         self.ui.calculators_btn.triggered.connect(lambda: self.calculator_tool.run(toggle=True))
         self.ui.transform_btn.triggered.connect(lambda: self.transform_tool.run(toggle=True))
@@ -2138,8 +2177,9 @@ class App(QtCore.QObject):
             # set call source to the Editor we go into
             self.call_source = 'grb_editor'
 
-        # make sure that we can't select another object while in Editor Mode:
-        self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
+        # # make sure that we can't select another object while in Editor Mode:
+        # self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
+        self.ui.project_frame.setDisabled(True)
 
         # delete any selection shape that might be active as they are not relevant in Editor
         self.delete_selection_shape()
@@ -2178,6 +2218,11 @@ class App(QtCore.QObject):
                 response = msgbox.clickedButton()
 
                 if response == bt_yes:
+                    # clean the Tools Tab
+                    self.ui.tool_scroll_area.takeWidget()
+                    self.ui.tool_scroll_area.setWidget(QtWidgets.QWidget())
+                    self.ui.notebook.setTabText(2, "Tool")
+
                     if isinstance(edited_obj, FlatCAMGeometry):
                         obj_type = "Geometry"
                         if cleanup is None:
@@ -2232,6 +2277,11 @@ class App(QtCore.QObject):
 
                     self.inform.emit(_("[selected] %s is updated, returning to App...") % obj_type)
                 elif response == bt_no:
+                    # clean the Tools Tab
+                    self.ui.tool_scroll_area.takeWidget()
+                    self.ui.tool_scroll_area.setWidget(QtWidgets.QWidget())
+                    self.ui.notebook.setTabText(2, "Tool")
+
                     if isinstance(edited_obj, FlatCAMGeometry):
                         self.geo_editor.deactivate()
                     elif isinstance(edited_obj, FlatCAMGerber):
@@ -2268,7 +2318,8 @@ class App(QtCore.QObject):
             self.ui.plot_tab_area.protectTab(0)
 
             # make sure that we reenable the selection on Project Tab after returning from Editor Mode:
-            self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+            # self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+            self.ui.project_frame.setDisabled(False)
 
     def get_last_folder(self):
         return self.defaults["global_last_folder"]
@@ -2773,7 +2824,7 @@ class App(QtCore.QObject):
 
     def new_object(self, kind, name, initialize, active=True, fit=True, plot=True, autoselected=True):
         """
-        Creates a new specalized FlatCAMObj and attaches it to the application,
+        Creates a new specialized FlatCAMObj and attaches it to the application,
         this is, updates the GUI accordingly, any other records and plots it.
         This method is thread-safe.
 
@@ -2883,7 +2934,7 @@ class App(QtCore.QObject):
         FlatCAMApp.App.log.debug("Moving new object back to main thread.")
 
         # Move the object to the main thread and let the app know that it is available.
-        obj.moveToThread(QtWidgets.QApplication.instance().thread())
+        obj.moveToThread(self.main_thread)
         self.object_created.emit(obj, obj_plot, obj_autoselected)
 
         return obj
@@ -2910,6 +2961,14 @@ class App(QtCore.QObject):
             grb_obj.multigeo = False
             grb_obj.follow = False
             grb_obj.apertures = {}
+
+            try:
+                grb_obj.options['xmin'] = 0
+                grb_obj.options['ymin'] = 0
+                grb_obj.options['xmax'] = 0
+                grb_obj.options['ymax'] = 0
+            except KeyError:
+                pass
 
         self.new_object('gerber', 'new_grb', initialize, plot=False)
 
@@ -4024,6 +4083,50 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry.set_value(new_val_sel)
         self.defaults['global_sel_draw_color'] = new_val_sel
 
+    def on_proj_color_entry(self):
+        self.defaults['global_proj_item_color'] = self.ui.general_defaults_form.general_gui_group \
+                                                   .proj_color_entry.get_value()
+        self.ui.general_defaults_form.general_gui_group.proj_color_button.setStyleSheet(
+            "background-color:%s" % str(self.defaults['global_proj_item_color']))
+
+    def on_proj_color_button(self):
+        current_color = QtGui.QColor(self.defaults['global_proj_item_color'])
+
+        c_dialog = QtWidgets.QColorDialog()
+        proj_color = c_dialog.getColor(initial=current_color)
+
+        if proj_color.isValid() is False:
+            return
+
+        self.ui.general_defaults_form.general_gui_group.proj_color_button.setStyleSheet(
+            "background-color:%s" % str(proj_color.name()))
+
+        new_val_sel = str(proj_color.name())
+        self.ui.general_defaults_form.general_gui_group.proj_color_entry.set_value(new_val_sel)
+        self.defaults['global_proj_item_color'] = new_val_sel
+
+    def on_proj_color_dis_entry(self):
+        self.defaults['global_proj_item_dis_color'] = self.ui.general_defaults_form.general_gui_group \
+                                                   .proj_color_dis_entry.get_value()
+        self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.setStyleSheet(
+            "background-color:%s" % str(self.defaults['global_proj_item_dis_color']))
+
+    def on_proj_color_dis_button(self):
+        current_color = QtGui.QColor(self.defaults['global_proj_item_dis_color'])
+
+        c_dialog = QtWidgets.QColorDialog()
+        proj_color = c_dialog.getColor(initial=current_color)
+
+        if proj_color.isValid() is False:
+            return
+
+        self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.setStyleSheet(
+            "background-color:%s" % str(proj_color.name()))
+
+        new_val_sel = str(proj_color.name())
+        self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry.set_value(new_val_sel)
+        self.defaults['global_proj_item_dis_color'] = new_val_sel
+
     def on_deselect_all(self):
         self.collection.set_all_inactive()
         self.delete_selection_shape()
@@ -4481,7 +4584,7 @@ class App(QtCore.QObject):
         """
         self.report_usage("on_jump_to()")
 
-        if custom_location is None:
+        if not custom_location:
             dia_box = Dialog_box(title=_("Jump to ..."),
                                  label=_("Enter the coordinates in format X,Y:"),
                                  icon=QtGui.QIcon('share/jump_to16.png'))
@@ -4627,9 +4730,14 @@ class App(QtCore.QObject):
             if obj.tools:
                 obj_init.tools = obj.tools
 
-        def initialize_excellon(obj, app):
-            objs = self.collection.get_selected()
-            FlatCAMGeometry.merge(objs, obj)
+        def initialize_excellon(obj_init, app):
+            # objs = self.collection.get_selected()
+            # FlatCAMGeometry.merge(objs, obj)
+            solid_geo = []
+            for tool in obj.tools:
+                for geo in obj.tools[tool]['solid_geometry']:
+                    solid_geo.append(geo)
+            obj_init.solid_geometry = deepcopy(solid_geo)
 
         for obj in self.collection.get_selected():
 
@@ -4680,7 +4788,8 @@ class App(QtCore.QObject):
             self.collection.set_active(name)
             curr_sel_obj = self.collection.get_by_name(name)
             # create the selection box around the selected object
-            self.draw_selection_shape(curr_sel_obj)
+            if self.defaults['global_selection_shape'] is True:
+                self.draw_selection_shape(curr_sel_obj)
 
     def on_preferences(self):
 
@@ -4915,6 +5024,7 @@ class App(QtCore.QObject):
         # self.plotcanvas.auto_adjust_axes()
         self.plotcanvas.vispy_canvas.update()           # TODO: Need update canvas?
         self.on_zoom_fit(None)
+        self.collection.update_view()
 
     # TODO: Rework toolbar 'clear', 'replot' functions
     def on_toolbar_replot(self):
@@ -4957,9 +5067,9 @@ class App(QtCore.QObject):
             action.triggered.connect(self.set_grid)
 
         self.ui.cmenu_gridmenu.addSeparator()
-        grid_add = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/plus32.png'), "Add")
+        grid_add = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/plus32.png'), _("Add"))
+        grid_delete = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/delete32.png'), _("Delete"))
         grid_add.triggered.connect(self.on_grid_add)
-        grid_delete = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/delete32.png'), "Delete")
         grid_delete.triggered.connect(self.on_grid_delete)
 
     def set_grid(self):
@@ -4970,8 +5080,8 @@ class App(QtCore.QObject):
         ## Current application units in lower Case
         units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
-        grid_add_popup = FCInputDialog(title="New Grid ...",
-                                       text='Enter a Grid VAlue:',
+        grid_add_popup = FCInputDialog(title=_("New Grid ..."),
+                                       text=_('Enter a Grid Value:'),
                                        min=0.0000, max=99.9999, decimals=4)
         grid_add_popup.setWindowIcon(QtGui.QIcon('share/plus32.png'))
 
@@ -5126,15 +5236,13 @@ class App(QtCore.QObject):
         self.plotcanvas.vispy_canvas.native.setFocus()
         self.pos_jump = event.pos
 
-        if origin_click is True:
-            pass
-        else:
+        self.ui.popMenu.mouse_is_panning = False
+
+        if origin_click != True:
             # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
-            if event.button == 2:
-                self.panning_action = True
+            if event.button == 2 and event.is_dragging == 1:
+                self.ui.popMenu.mouse_is_panning = True
                 return
-            else:
-                self.panning_action = False
 
         if self.rel_point1 is not None:
             try:  # May fail in case mouse not within axes
@@ -5222,12 +5330,12 @@ class App(QtCore.QObject):
         # canvas menu
         try:
             if event.button == 2:  # right click
-                if self.panning_action is True:
-                    self.panning_action = False
-                else:
+                if self.ui.popMenu.mouse_is_panning is False:
+
                     self.cursor = QtGui.QCursor()
                     self.populate_cmenu_grids()
                     self.ui.popMenu.popup(self.cursor.pos())
+
         except Exception as e:
             log.warning("Error: %s" % str(e))
             return
@@ -5294,12 +5402,14 @@ class App(QtCore.QObject):
                     if sel_type is True:
                         if poly_obj.within(poly_selection):
                             # create the selection box around the selected object
-                            self.draw_selection_shape(obj)
+                            if self.defaults['global_selection_shape'] is True:
+                                self.draw_selection_shape(obj)
                             self.collection.set_active(obj.options['name'])
                     else:
                         if poly_selection.intersects(poly_obj):
                             # create the selection box around the selected object
-                            self.draw_selection_shape(obj)
+                            if self.defaults['global_selection_shape'] is True:
+                                self.draw_selection_shape(obj)
                             self.collection.set_active(obj.options['name'])
             except:
                 # the Exception here will happen if we try to select on screen and we have an newly (and empty)
@@ -5349,7 +5459,8 @@ class App(QtCore.QObject):
                         self.collection.set_active(objects_under_the_click_list[0])
                         # create the selection box around the selected object
                         curr_sel_obj = self.collection.get_active()
-                        self.draw_selection_shape(curr_sel_obj)
+                        if self.defaults['global_selection_shape'] is True:
+                            self.draw_selection_shape(curr_sel_obj)
 
                         # self.inform.emit('[selected] %s: %s selected' %
                         #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
@@ -5372,7 +5483,8 @@ class App(QtCore.QObject):
                         self.collection.set_active(objects_under_the_click_list[0])
                         # create the selection box around the selected object
                         curr_sel_obj = self.collection.get_active()
-                        self.draw_selection_shape(curr_sel_obj)
+                        if self.defaults['global_selection_shape'] is True:
+                            self.draw_selection_shape(curr_sel_obj)
 
                         # self.inform.emit('[selected] %s: %s selected' %
                         #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
@@ -5420,7 +5532,8 @@ class App(QtCore.QObject):
                     # delete the possible selection box around a possible selected object
                     self.delete_selection_shape()
                     # create the selection box around the selected object
-                    self.draw_selection_shape(curr_sel_obj)
+                    if self.defaults['global_selection_shape'] is True:
+                        self.draw_selection_shape(curr_sel_obj)
 
                     # self.inform.emit('[selected] %s: %s selected' %
                     #                  (str(curr_sel_obj.kind).capitalize(), str(curr_sel_obj.options['name'])))
@@ -7597,6 +7710,7 @@ class App(QtCore.QObject):
         icons = {
             "gerber": "share/flatcam_icon16.png",
             "excellon": "share/drill16.png",
+            'geometry': "share/geometry16.png",
             "cncjob": "share/cnc16.png",
             "project": "share/project16.png",
             "svg": "share/geometry16.png",
@@ -7868,23 +7982,23 @@ The normal flow when working in FlatCAM is the following:</span></p>
     QObject::connect: Cannot queue arguments of type 'QVector<int>' 
     (Make sure 'QVector<int>' is registered using qRegisterMetaType().
     '''
-    def enable_plots(self, objects, threaded=False):
+    def enable_plots(self, objects, threaded=True):
         if threaded is True:
             def worker_task(app_obj):
-                percentage = 0.1
-                try:
-                    delta = 0.9 / len(objects)
-                except ZeroDivisionError:
-                    self.progress.emit(0)
-                    return
+                # percentage = 0.1
+                # try:
+                #     delta = 0.9 / len(objects)
+                # except ZeroDivisionError:
+                #     self.progress.emit(0)
+                #     return
                 for obj in objects:
                     obj.options['plot'] = True
-                    percentage += delta
-                    self.progress.emit(int(percentage*100))
+                    # percentage += delta
+                    # self.progress.emit(int(percentage*100))
 
-                self.progress.emit(0)
+                # self.progress.emit(0)
                 self.plots_updated.emit()
-                self.collection.update_view()
+                # self.collection.update_view()
 
             # Send to worker
             # self.worker.add_task(worker_task, [self])
@@ -7892,9 +8006,9 @@ The normal flow when working in FlatCAM is the following:</span></p>
         else:
             for obj in objects:
                 obj.options['plot'] = True
-            self.progress.emit(0)
+            # self.progress.emit(0)
             self.plots_updated.emit()
-            self.collection.update_view()
+            # self.collection.update_view()
 
     # TODO: FIX THIS
     '''
@@ -7904,7 +8018,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
     QObject::connect: Cannot queue arguments of type 'QVector<int>' 
     (Make sure 'QVector<int>' is registered using qRegisterMetaType().
     '''
-    def disable_plots(self, objects, threaded=False):
+    def disable_plots(self, objects, threaded=True):
         # TODO: This method is very similar to replot_all. Try to merge.
         """
         Disables plots
@@ -7914,23 +8028,23 @@ The normal flow when working in FlatCAM is the following:</span></p>
         """
 
         if threaded is True:
-            self.progress.emit(10)
+            # self.progress.emit(10)
             def worker_task(app_obj):
-                percentage = 0.1
-                try:
-                    delta = 0.9 / len(objects)
-                except ZeroDivisionError:
-                    self.progress.emit(0)
-                    return
+                # percentage = 0.1
+                # try:
+                #     delta = 0.9 / len(objects)
+                # except ZeroDivisionError:
+                #     self.progress.emit(0)
+                #     return
 
                 for obj in objects:
                     obj.options['plot'] = False
-                    percentage += delta
-                    self.progress.emit(int(percentage*100))
+                    # percentage += delta
+                    # self.progress.emit(int(percentage*100))
 
-                self.progress.emit(0)
+                # self.progress.emit(0)
                 self.plots_updated.emit()
-                self.collection.update_view()
+                # self.collection.update_view()
 
             # Send to worker
             self.worker_task.emit({'fcn': worker_task, 'params': [self]})
@@ -7938,7 +8052,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
             for obj in objects:
                 obj.options['plot'] = False
             self.plots_updated.emit()
-            self.collection.update_view()
+            # self.collection.update_view()
 
     def clear_plots(self):
 

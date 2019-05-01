@@ -367,7 +367,11 @@ class FCEntry2(FCEntry):
         self.readyToEdit = True
 
     def set_value(self, val):
-        self.setText('%.4f' % float(val))
+        try:
+            fval = float(val)
+        except ValueError:
+            return
+        self.setText('%.4f' % fval)
 
 
 class EvalEntry(QtWidgets.QLineEdit):
@@ -674,6 +678,16 @@ class FCButton(QtWidgets.QPushButton):
 
     def set_value(self, val):
         self.setText(str(val))
+
+
+class FCMenu(QtWidgets.QMenu):
+    def __init__(self):
+        super().__init__()
+        self.mouse_is_panning = False
+
+    def popup(self, pos, action=None):
+        self.mouse_is_panning = False
+        super().popup(pos)
 
 
 class FCTab(QtWidgets.QTabWidget):
