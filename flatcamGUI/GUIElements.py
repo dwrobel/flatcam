@@ -367,7 +367,11 @@ class FCEntry2(FCEntry):
         self.readyToEdit = True
 
     def set_value(self, val):
-        self.setText('%.4f' % float(val))
+        try:
+            fval = float(val)
+        except ValueError:
+            return
+        self.setText('%.4f' % fval)
 
 
 class EvalEntry(QtWidgets.QLineEdit):

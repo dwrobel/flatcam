@@ -2123,27 +2123,28 @@ class FlatCAMExcEditor(QtCore.QObject):
     def on_canvas_click(self, event):
         """
         event.x and .y have canvas coordinates
-        event.xdaya and .ydata have plot coordinates
+        event.xdata and .ydata have plot coordinates
 
-        :param event: Event object dispatched by Matplotlib
+        :param event: Event object dispatched by VisPy
         :return: None
         """
+
+        self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
+
+        if self.app.grid_status():
+            self.pos  = self.app.geo_editor.snap(self.pos[0], self.pos[1])
+            self.app.app_cursor.enabled = True
+            # Update cursor
+            self.app.app_cursor.set_data(np.asarray([(self.pos[0], self.pos[1])]), symbol='++', edge_color='black',
+                                         size=20)
+        else:
+            self.pos = (self.pos[0], self.pos[1])
+            self.app.app_cursor.enabled = False
 
         if event.button is 1:
             self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
             self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
-
-            # Snap coordinates
-            if self.app.grid_status():
-                self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
-                self.app.app_cursor.enabled = True
-                # Update cursor
-                self.app.app_cursor.set_data(np.asarray([(self.pos[0], self.pos[1])]), symbol='++', edge_color='black',
-                                             size=20)
-            else:
-                self.pos = (self.pos[0], self.pos[1])
-                self.app.app_cursor.enabled = False
 
             # Selection with left mouse button
             if self.active_tool is not None and event.button is 1:
@@ -2305,11 +2306,8 @@ class FlatCAMExcEditor(QtCore.QObject):
                 if self.app.selection_type is not None:
                     self.draw_selection_area_handler(self.pos, pos, self.app.selection_type)
                     self.app.selection_type = None
+
                 elif isinstance(self.active_tool, FCDrillSelect):
-                    # Dispatch event to active_tool
-                    # msg = self.active_tool.click(self.app.geo_editor.snap(event.xdata, event.ydata))
-                    # msg = self.active_tool.click_release((self.pos[0], self.pos[1]))
-                    # self.app.inform.emit(msg)
                     self.active_tool.click_release((self.pos[0], self.pos[1]))
 
                     # if there are selected objects then plot them
@@ -2379,16 +2377,12 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.x = event.xdata
         self.y = event.ydata
 
-        # Prevent updates on pan
-        # if len(event.buttons) > 0:
-        #     return
+        self.app.ui.popMenu.mouse_is_panning = False
 
         # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
-        if event.button == 2:
-            self.app.panning_action = True
+        if event.button == 2 and event.is_dragging == 1:
+            self.app.ui.popMenu.mouse_is_panning = True
             return
-        else:
-            self.app.panning_action = False
 
         try:
             x = float(event.xdata)
@@ -2400,7 +2394,13 @@ class FlatCAMExcEditor(QtCore.QObject):
             return
 
         ### Snap coordinates
-        x, y = self.app.geo_editor.app.geo_editor.snap(x, y)
+        if self.app.grid_status():
+            x, y = self.app.geo_editor.snap(x, y)
+            self.app.app_cursor.enabled = True
+            # Update cursor
+            self.app.app_cursor.set_data(np.asarray([(x, y)]), symbol='++', edge_color='black', size=20)
+        else:
+            self.app.app_cursor.enabled = False
 
         self.snap_x = x
         self.snap_y = y
@@ -2422,23 +2422,27 @@ class FlatCAMExcEditor(QtCore.QObject):
         geo = self.active_tool.utility_geometry(data=(x, y))
 
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
-
             # Remove any previous utility shape
             self.tool_shape.clear(update=True)
             self.draw_utility_geometry(geo=geo)
 
         ### Selection area on canvas section ###
-        dx = pos[0] - self.pos[0]
         if event.is_dragging == 1 and event.button == 1:
-            self.app.delete_selection_shape()
-            if dx < 0:
-                self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x,y),
-                     color=self.app.defaults["global_alt_sel_line"],
-                     face_color=self.app.defaults['global_alt_sel_fill'])
-                self.app.selection_type = False
+            # I make an exception for FCDrillAdd and FCDrillArray because clicking and dragging while making regions
+            # can create strange issues
+            if isinstance(self.active_tool, FCDrillAdd) or isinstance(self.active_tool, FCDrillArray):
+                pass
             else:
-                self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x,y))
-                self.app.selection_type = True
+                dx = pos[0] - self.pos[0]
+                self.app.delete_selection_shape()
+                if dx < 0:
+                    self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x,y),
+                         color=self.app.defaults["global_alt_sel_line"],
+                         face_color=self.app.defaults['global_alt_sel_fill'])
+                    self.app.selection_type = False
+                else:
+                    self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x,y))
+                    self.app.selection_type = True
         else:
             self.app.selection_type = None
 

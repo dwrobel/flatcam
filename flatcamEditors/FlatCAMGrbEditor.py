@@ -3233,9 +3233,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
     def on_canvas_click(self, event):
         """
         event.x and .y have canvas coordinates
-        event.xdaya and .ydata have plot coordinates
+        event.xdata and .ydata have plot coordinates
 
-        :param event: Event object dispatched by Matplotlib
+        :param event: Event object dispatched by VisPy
         :return: None
         """
 
@@ -3359,10 +3359,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     self.app.selection_type = None
 
                 elif isinstance(self.active_tool, FCApertureSelect):
-                    # Dispatch event to active_tool
-                    # msg = self.active_tool.click(self.app.geo_editor.snap(event.xdata, event.ydata))
-                    # msg = self.active_tool.click_release((self.pos[0], self.pos[1]))
-                    # self.app.inform.emit(msg)
                     self.active_tool.click_release((self.pos[0], self.pos[1]))
 
                     # if there are selected objects then plot them
