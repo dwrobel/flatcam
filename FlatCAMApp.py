@@ -1386,6 +1386,7 @@ class App(QtCore.QObject):
         self.ui.popmenu_disable.triggered.connect(lambda: self.disable_plots(self.collection.get_selected()))
 
         self.ui.popmenu_new_geo.triggered.connect(self.new_geometry_object)
+        self.ui.popmenu_new_grb.triggered.connect(self.new_gerber_object)
         self.ui.popmenu_new_exc.triggered.connect(self.new_excellon_object)
         self.ui.popmenu_new_prj.triggered.connect(self.on_file_new)
 

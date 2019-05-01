@@ -18,6 +18,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed a crash when triggering 'Jump To' menu action (shortcut key 'J' worked ok)
 - made some mods to what can be translated as some of the translations interfered with the correct functioning of FlatCAM
 - updated the translations
+- fixed bugs in Excellon Editor
+- Excellon Editor:  made Add Pad tool to work until right click
 
 30.04.2019
 

@@ -44,7 +44,7 @@ class FCDrillAdd(FCShapeTool):
 
         except KeyError:
             self.draw_app.app.inform.emit(_("[WARNING_NOTCL] To add a drill first select a tool"))
-            self.draw_app.select_tool("select")
+            self.draw_app.select_tool("drill_select")
             return
 
         try:
@@ -103,6 +103,7 @@ class FCDrillAdd(FCShapeTool):
 
         self.draw_app.current_storage = self.draw_app.storage_dict[self.selected_dia]
         self.geometry = DrawToolShape(self.util_shape(self.points))
+        self.draw_app.in_action = False
         self.complete = True
         self.draw_app.app.inform.emit(_("[success] Done. Drill added."))
 
@@ -319,7 +320,7 @@ class FCDrillArray(FCShapeTool):
                 self.geometry.append(DrawToolShape(geo))
         self.complete = True
         self.draw_app.app.inform.emit(_("[success] Done. Drill Array added."))
-        self.draw_app.in_action = True
+        self.draw_app.in_action = False
         self.draw_app.array_frame.hide()
         return
 
@@ -428,7 +429,7 @@ class FCDrillResize(FCShapeTool):
         self.complete = True
 
         # MS: always return to the Select Tool
-        self.draw_app.select_tool("select")
+        self.draw_app.select_tool("drill_select")
 
 
 class FCDrillMove(FCShapeTool):
@@ -475,7 +476,7 @@ class FCDrillMove(FCShapeTool):
             self.make()
 
             # MS: always return to the Select Tool
-            self.draw_app.select_tool("select")
+            self.draw_app.select_tool("drill_select")
             return
 
     def make(self):
@@ -643,8 +644,11 @@ class FCDrillSelect(DrawTool):
                         sel_tools.add(storage)
 
             for storage in sel_tools:
-                self.exc_editor_app.tools_table_exc.selectRow(int(storage) - 1)
-                self.draw_app.last_tool_selected = int(storage)
+                for k, v in self.draw_app.tool2tooldia.items():
+                    if v == storage:
+                        self.exc_editor_app.tools_table_exc.selectRow(int(k) - 1)
+                        self.draw_app.last_tool_selected = int(k)
+                        break
 
             self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
@@ -999,7 +1003,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         ## Toolbar events and properties
         self.tools_exc = {
-            "select": {"button": self.app.ui.select_drill_btn,
+            "drill_select": {"button": self.app.ui.select_drill_btn,
                        "constructor": FCDrillSelect},
             "drill_add": {"button": self.app.ui.add_drill_btn,
                     "constructor": FCDrillAdd},
@@ -1015,6 +1019,8 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         ### Data
         self.active_tool = None
+
+        self.in_action = False
 
         self.storage_dict = {}
         self.current_storage = []
@@ -1066,7 +1072,6 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app.ui.exc_delete_drill_menuitem.triggered.connect(self.on_delete_btn)
 
         self.app.ui.exc_move_drill_menuitem.triggered.connect(self.exc_move_drills)
-
 
         # Init GUI
         self.drill_array_size_entry.set_value(5)
@@ -1844,7 +1849,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         # Set selection tolerance
         # DrawToolShape.tolerance = fc_excellon.drawing_tolerance * 10
 
-        self.select_tool("select")
+        self.select_tool("drill_select")
 
         self.set_ui()
 
@@ -2060,10 +2065,10 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.app.log.debug("on_tool_select('%s')" % tool)
 
-        if self.last_tool_selected is None and current_tool is not 'select':
-            # self.draw_app.select_tool('select')
+        if self.last_tool_selected is None and current_tool is not 'drill_select':
+            # self.draw_app.select_tool('drill_select')
             self.complete = True
-            current_tool = 'select'
+            current_tool = 'drill_select'
             self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. There is no Tool/Drill selected"))
 
         # This is to make the group behave as radio group
@@ -2082,7 +2087,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 for t in self.tools_exc:
                     self.tools_exc[t]["button"].setChecked(False)
 
-                self.select_tool('select')
+                self.select_tool('drill_select')
                 self.active_tool = FCDrillSelect(self)
 
     def on_row_selected(self, row, col):
@@ -2100,7 +2105,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
             try:
                 selected_dia = self.tool2tooldia[self.tools_table_exc.currentRow() + 1]
-                self.last_tool_selected = copy(self.tools_table_exc.currentRow()) + 1
+                self.last_tool_selected = int(self.tools_table_exc.currentRow()) + 1
                 for obj in self.storage_dict[selected_dia].get_objects():
                     self.selected.append(obj)
             except Exception as e:
@@ -2163,7 +2168,11 @@ class FlatCAMExcEditor(QtCore.QObject):
                     if key_modifier == modifier_to_use:
                         self.select_tool(self.active_tool.name)
                     else:
-                        self.select_tool("select")
+                        # return to Select tool but not for FCPad
+                        if isinstance(self.active_tool, FCDrillAdd):
+                            self.select_tool(self.active_tool.name)
+                        else:
+                            self.select_tool("drill_select")
                         return
 
                 if isinstance(self.active_tool, FCDrillSelect):
@@ -2250,10 +2259,9 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.storage.insert(shape)  # TODO: Check performance
 
     def on_exc_click_release(self, event):
-        pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
-
         self.modifiers = QtWidgets.QApplication.keyboardModifiers()
 
+        pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
         if self.app.grid_status():
             pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
@@ -2263,12 +2271,29 @@ class FlatCAMExcEditor(QtCore.QObject):
         # canvas menu
         try:
             if event.button == 2:  # right click
-                if self.app.panning_action is True:
-                    self.app.panning_action = False
-                else:
-                    self.app.cursor = QtGui.QCursor()
-                    self.app.populate_cmenu_grids()
-                    self.app.ui.popMenu.popup(self.app.cursor.pos())
+                if self.app.ui.popMenu.mouse_is_panning is False:
+                    try:
+                        QtGui.QGuiApplication.restoreOverrideCursor()
+                    except:
+                        pass
+                    if self.active_tool.complete is False and not isinstance(self.active_tool, FCDrillSelect):
+                        self.active_tool.complete = True
+                        self.in_action = False
+                        self.delete_utility_geometry()
+                        self.app.inform.emit(_("[success] Done."))
+                        self.select_tool('drill_select')
+                    else:
+                        if isinstance(self.active_tool, FCDrillAdd):
+                            self.active_tool.complete = True
+                            self.in_action = False
+                            self.delete_utility_geometry()
+                            self.app.inform.emit(_("[success] Done."))
+                            self.select_tool('drill_select')
+
+                        self.app.cursor = QtGui.QCursor()
+                        self.app.populate_cmenu_grids()
+                        self.app.ui.popMenu.popup(self.app.cursor.pos())
+
         except Exception as e:
             log.warning("Error: %s" % str(e))
             raise
@@ -2286,7 +2311,10 @@ class FlatCAMExcEditor(QtCore.QObject):
                     # msg = self.active_tool.click_release((self.pos[0], self.pos[1]))
                     # self.app.inform.emit(msg)
                     self.active_tool.click_release((self.pos[0], self.pos[1]))
-                    self.replot()
+
+                    # if there are selected objects then plot them
+                    if self.selected:
+                        self.replot()
         except Exception as e:
             log.warning("Error: %s" % str(e))
             raise
@@ -2328,7 +2356,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                         if self.tool2tooldia[key] == storage:
                             item = self.tools_table_exc.item((key - 1), 1)
                             self.tools_table_exc.setCurrentItem(item)
-                            self.last_tool_selected = key
+                            self.last_tool_selected = int(key)
 
         self.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 

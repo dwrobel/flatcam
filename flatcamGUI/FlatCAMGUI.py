@@ -1567,6 +1567,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.popMenu.addSeparator()
         self.cmenu_newmenu = self.popMenu.addMenu(QtGui.QIcon('share/file32.png'), _("New"))
         self.popmenu_new_geo = self.cmenu_newmenu.addAction(QtGui.QIcon('share/new_geo32_bis.png'), _("Geometry"))
+        self.popmenu_new_grb = self.cmenu_newmenu.addAction(QtGui.QIcon('share/flatcam_icon32.png'), "Gerber")
         self.popmenu_new_exc = self.cmenu_newmenu.addAction(QtGui.QIcon('share/new_exc32.png'), _("Excellon"))
         self.cmenu_newmenu.addSeparator()
         self.popmenu_new_prj = self.cmenu_newmenu.addAction(QtGui.QIcon('share/file16.png'), _("Project"))
@@ -2831,7 +2832,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.exc_editor.replot()
                     # self.select_btn.setChecked(True)
                     # self.on_tool_select('select')
-                    self.app.exc_editor.select_tool('select')
+                    self.app.exc_editor.select_tool('drill_select')
                     return
 
                 # Delete selected object if delete key event comes out of canvas
@@ -2967,7 +2968,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_T or key == 'T':
                     self.app.exc_editor.launched_from_shortcuts = True
                     ## Current application units in Upper Case
-                    self.units = self.general_defaults_group.general_app_group.units_radio.get_value().upper()
+                    self.units = self.general_defaults_form.general_app_group.units_radio.get_value().upper()
                     tool_add_popup = FCInputDialog(title=_("New Tool ..."),
                                                    text=_('Enter a Tool Diameter:'),
                                                    min=0.0000, max=99.9999, decimals=4)
