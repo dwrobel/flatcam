@@ -2218,6 +2218,11 @@ class App(QtCore.QObject):
                 response = msgbox.clickedButton()
 
                 if response == bt_yes:
+                    # clean the Tools Tab
+                    self.ui.tool_scroll_area.takeWidget()
+                    self.ui.tool_scroll_area.setWidget(QtWidgets.QWidget())
+                    self.ui.notebook.setTabText(2, "Tool")
+
                     if isinstance(edited_obj, FlatCAMGeometry):
                         obj_type = "Geometry"
                         if cleanup is None:
@@ -2272,6 +2277,11 @@ class App(QtCore.QObject):
 
                     self.inform.emit(_("[selected] %s is updated, returning to App...") % obj_type)
                 elif response == bt_no:
+                    # clean the Tools Tab
+                    self.ui.tool_scroll_area.takeWidget()
+                    self.ui.tool_scroll_area.setWidget(QtWidgets.QWidget())
+                    self.ui.notebook.setTabText(2, "Tool")
+
                     if isinstance(edited_obj, FlatCAMGeometry):
                         self.geo_editor.deactivate()
                     elif isinstance(edited_obj, FlatCAMGerber):

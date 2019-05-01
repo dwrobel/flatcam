@@ -22,6 +22,7 @@ CAD program, and create G-Code for Isolation routing.
 - Excellon Editor:  made Add Pad tool to work until right click
 - Excellon Editor: fixed mouse right click was always doing popup context menu
 - GUIElements.FCEntry2(): added a try-except clause
+- made sure that the Tools Tab is cleared on Editors exit
 
 30.04.2019
 
