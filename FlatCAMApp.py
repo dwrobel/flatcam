@@ -4573,7 +4573,7 @@ class App(QtCore.QObject):
         """
         self.report_usage("on_jump_to()")
 
-        if custom_location is None:
+        if not custom_location:
             dia_box = Dialog_box(title=_("Jump to ..."),
                                  label=_("Enter the coordinates in format X,Y:"),
                                  icon=QtGui.QIcon('share/jump_to16.png'))
