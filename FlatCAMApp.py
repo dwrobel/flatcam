@@ -4979,6 +4979,7 @@ class App(QtCore.QObject):
         # self.plotcanvas.auto_adjust_axes()
         self.plotcanvas.vispy_canvas.update()           # TODO: Need update canvas?
         self.on_zoom_fit(None)
+        self.collection.update_view()
 
     # TODO: Rework toolbar 'clear', 'replot' functions
     def on_toolbar_replot(self):
@@ -7936,23 +7937,23 @@ The normal flow when working in FlatCAM is the following:</span></p>
     QObject::connect: Cannot queue arguments of type 'QVector<int>' 
     (Make sure 'QVector<int>' is registered using qRegisterMetaType().
     '''
-    def enable_plots(self, objects, threaded=False):
+    def enable_plots(self, objects, threaded=True):
         if threaded is True:
             def worker_task(app_obj):
-                percentage = 0.1
-                try:
-                    delta = 0.9 / len(objects)
-                except ZeroDivisionError:
-                    self.progress.emit(0)
-                    return
+                # percentage = 0.1
+                # try:
+                #     delta = 0.9 / len(objects)
+                # except ZeroDivisionError:
+                #     self.progress.emit(0)
+                #     return
                 for obj in objects:
                     obj.options['plot'] = True
-                    percentage += delta
-                    self.progress.emit(int(percentage*100))
+                    # percentage += delta
+                    # self.progress.emit(int(percentage*100))
 
-                self.progress.emit(0)
+                # self.progress.emit(0)
                 self.plots_updated.emit()
-                self.collection.update_view()
+                # self.collection.update_view()
 
             # Send to worker
             # self.worker.add_task(worker_task, [self])
@@ -7960,9 +7961,9 @@ The normal flow when working in FlatCAM is the following:</span></p>
         else:
             for obj in objects:
                 obj.options['plot'] = True
-            self.progress.emit(0)
+            # self.progress.emit(0)
             self.plots_updated.emit()
-            self.collection.update_view()
+            # self.collection.update_view()
 
     # TODO: FIX THIS
     '''
@@ -7972,7 +7973,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
     QObject::connect: Cannot queue arguments of type 'QVector<int>' 
     (Make sure 'QVector<int>' is registered using qRegisterMetaType().
     '''
-    def disable_plots(self, objects, threaded=False):
+    def disable_plots(self, objects, threaded=True):
         # TODO: This method is very similar to replot_all. Try to merge.
         """
         Disables plots
@@ -7982,23 +7983,23 @@ The normal flow when working in FlatCAM is the following:</span></p>
         """
 
         if threaded is True:
-            self.progress.emit(10)
+            # self.progress.emit(10)
             def worker_task(app_obj):
-                percentage = 0.1
-                try:
-                    delta = 0.9 / len(objects)
-                except ZeroDivisionError:
-                    self.progress.emit(0)
-                    return
+                # percentage = 0.1
+                # try:
+                #     delta = 0.9 / len(objects)
+                # except ZeroDivisionError:
+                #     self.progress.emit(0)
+                #     return
 
                 for obj in objects:
                     obj.options['plot'] = False
-                    percentage += delta
-                    self.progress.emit(int(percentage*100))
+                    # percentage += delta
+                    # self.progress.emit(int(percentage*100))
 
-                self.progress.emit(0)
+                # self.progress.emit(0)
                 self.plots_updated.emit()
-                self.collection.update_view()
+                # self.collection.update_view()
 
             # Send to worker
             self.worker_task.emit({'fcn': worker_task, 'params': [self]})
@@ -8006,7 +8007,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
             for obj in objects:
                 obj.options['plot'] = False
             self.plots_updated.emit()
-            self.collection.update_view()
+            # self.collection.update_view()
 
     def clear_plots(self):
 

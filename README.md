@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+01.05.2019
+
+- the project items color is now controlled from Foreground Role in ObjectCollection.data()
+- made again plot functions threaded but moved the dataChanged signal (update_view() ) to the main thread by using an already existing signal (plots_updated signal) to avoid the errors with register QVector
+
 30.04.2019
 
 - in ObjectCollection class, made sure that renaming an object in Project View does not result in an empty name. If new name is blank the rename is cancelled.

@@ -256,13 +256,6 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # self.view.setAcceptDrops(True)
         # self.view.setDropIndicatorShown(True)
 
-        color = self.app.defaults['global_proj_item_color']
-        # set StyleSheet
-        stylesheet = "QTreeView::item {color: %s;}" % color
-
-        self.view.setStyleSheet(stylesheet)
-
-
         font = QtGui.QFont()
         font.setPixelSize(12)
         font.setFamily("Seagoe UI")
@@ -385,9 +378,10 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 return index.internalPointer().data(index.column())
 
         if role == Qt.ForegroundRole:
+            color = QColor(self.app.defaults['global_proj_item_color'])
             obj = index.internalPointer().obj
             if obj:
-                return QtGui.QBrush(QtCore.Qt.black) if obj.options["plot"] else QtGui.QBrush(QtCore.Qt.darkGray)
+                return QtGui.QBrush(color) if obj.options["plot"] else QtGui.QBrush(QtCore.Qt.lightGray)
             else:
                 return index.internalPointer().data(index.column())
 
@@ -690,6 +684,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         :param name: Name of the FlatCAM Object
         :return: None
         """
+        log.debug("ObjectCollection.set_inactive()")
+
         obj = self.get_by_name(name)
         item = obj.item
         group = self.group_items[obj.kind]
@@ -769,4 +765,4 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         return obj_list
 
     def update_view(self):
-        self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())
+        self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex(), [QtCore.Qt.EditRole])
