@@ -5056,8 +5056,8 @@ class App(QtCore.QObject):
             action.triggered.connect(self.set_grid)
 
         self.ui.cmenu_gridmenu.addSeparator()
-        grid_add = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/plus32.png'), "Add")
-        grid_delete = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/delete32.png'), "Delete")
+        grid_add = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/plus32.png'), _("Add"))
+        grid_delete = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/delete32.png'), _("Delete"))
         grid_add.triggered.connect(self.on_grid_add)
         grid_delete.triggered.connect(self.on_grid_delete)
 
@@ -5069,8 +5069,8 @@ class App(QtCore.QObject):
         ## Current application units in lower Case
         units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
-        grid_add_popup = FCInputDialog(title="New Grid ...",
-                                       text='Enter a Grid VAlue:',
+        grid_add_popup = FCInputDialog(title=_("New Grid ..."),
+                                       text=_('Enter a Grid Value:'),
                                        min=0.0000, max=99.9999, decimals=4)
         grid_add_popup.setWindowIcon(QtGui.QIcon('share/plus32.png'))
 

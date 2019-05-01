@@ -16,6 +16,8 @@ CAD program, and create G-Code for Isolation routing.
 - Enable/Disable Object toggle key ("Space" key) will trigger also the datChanged signal for the Project MVC
 - added a new setting for the color of the Project items, the color when they are disabled.
 - fixed a crash when triggering 'Jump To' menu action (shortcut key 'J' worked ok)
+- made some mods to what can be translated as some of the translations interfered with the correct functioning of FlatCAM
+- updated the translations
 
 30.04.2019
 

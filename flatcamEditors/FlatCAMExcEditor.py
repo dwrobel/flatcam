@@ -931,7 +931,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.drill_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
                                           {'label': 'Y', 'value': 'Y'},
-                                          {'label': _('Angle'), 'value': 'A'}])
+                                          {'label': 'Angle', 'value': 'A'}])
         self.drill_axis_radio.set_value('X')
         self.linear_form.addRow(self.drill_axis_label, self.drill_axis_radio)
 

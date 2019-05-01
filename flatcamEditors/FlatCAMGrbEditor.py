@@ -1983,7 +1983,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.pad_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
                                           {'label': 'Y', 'value': 'Y'},
-                                          {'label': _('Angle'), 'value': 'A'}])
+                                          {'label': 'Angle', 'value': 'A'}])
         self.pad_axis_radio.set_value('X')
         self.linear_form.addRow(self.pad_axis_label, self.pad_axis_radio)
 

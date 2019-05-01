@@ -153,7 +153,7 @@ class GerberObjectUI(ObjectUI):
         grid0.addWidget(self.plot_options_label, 0, 0)
 
         # Solid CB
-        self.solid_cb = FCCheckBox(label=_('Solid   '))
+        self.solid_cb = FCCheckBox(label=_('Solid'))
         self.solid_cb.setToolTip(
             _("Solid color polygons.")
         )
@@ -161,7 +161,7 @@ class GerberObjectUI(ObjectUI):
         grid0.addWidget(self.solid_cb, 0, 1)
 
         # Multicolored CB
-        self.multicolored_cb = FCCheckBox(label=_('M-Color   '))
+        self.multicolored_cb = FCCheckBox(label=_('M-Color'))
         self.multicolored_cb.setToolTip(
             _("Draw polygons in different colors.")
         )
@@ -299,8 +299,8 @@ class GerberObjectUI(ObjectUI):
             "- conventional / useful when there is no backlash compensation")
         )
         grid1.addWidget(self.milling_type_label, 3, 0)
-        self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
-                                            {'label': _('Conv.'), 'value': 'cv'}])
+        self.milling_type_radio = RadioSet([{'label': 'Climb', 'value': 'cl'},
+                                            {'label': 'Conv.', 'value': 'cv'}])
         grid1.addWidget(self.milling_type_radio, 3, 1)
 
         # combine all passes CB
@@ -749,9 +749,9 @@ class ExcellonObjectUI(ObjectUI):
             "When choosing 'Slots' or 'Both', slots will be\n"
             "converted to a series of drills.")
         )
-        self.excellon_gcode_type_radio = RadioSet([{'label': _('Drills'), 'value': 'drills'},
-                                                   {'label': _('Slots'), 'value': 'slots'},
-                                                   {'label': _('Both'), 'value': 'both'}])
+        self.excellon_gcode_type_radio = RadioSet([{'label': 'Drills', 'value': 'drills'},
+                                                   {'label': 'Slots', 'value': 'slots'},
+                                                   {'label': 'Both', 'value': 'both'}])
         gcode_box.addRow(gcode_type_label, self.excellon_gcode_type_radio)
         self.tools_box.addLayout(gcode_box)
 
@@ -1355,9 +1355,9 @@ class CNCObjectUI(ObjectUI):
         )
 
         self.cncplot_method_combo = RadioSet([
-            {"label": _("All"), "value": "all"},
-            {"label": _("Travel"), "value": "travel"},
-            {"label": _("Cut"), "value": "cut"}
+            {"label": "All", "value": "all"},
+            {"label": "Travel", "value": "travel"},
+            {"label": "Cut", "value": "cut"}
         ], stretch=False)
 
         ## Object name

@@ -475,9 +475,9 @@ class PaintOptionsTool(FlatCAMTool):
         )
         grid.addWidget(methodlabel, 3, 0)
         self.paintmethod_combo = RadioSet([
-            {"label": _("Standard"), "value": "standard"},
-            {"label": _("Seed-based"), "value": "seed"},
-            {"label": _("Straight lines"), "value": "lines"}
+            {"label": "Standard", "value": "standard"},
+            {"label": "Seed-based", "value": "seed"},
+            {"label": "Straight lines", "value": "lines"}
         ], orientation='vertical', stretch=False)
         grid.addWidget(self.paintmethod_combo, 3, 1)
 
