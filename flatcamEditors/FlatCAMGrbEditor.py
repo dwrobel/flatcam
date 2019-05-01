@@ -1613,22 +1613,25 @@ class FCApertureSelect(DrawTool):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
 
         for storage in self.grb_editor_app.storage_dict:
-            for shape in self.grb_editor_app.storage_dict[storage]['solid_geometry']:
-                if Point(point).within(shape.geo):
-                    if (self.grb_editor_app.app.defaults["global_mselect_key"] == 'Control' and
-                        key_modifier == Qt.ControlModifier) or \
-                            (self.grb_editor_app.app.defaults["global_mselect_key"] == 'Shift' and
-                             key_modifier == Qt.ShiftModifier):
+            try:
+                for shape in self.grb_editor_app.storage_dict[storage]['solid_geometry']:
+                    if Point(point).within(shape.geo):
+                        if (self.grb_editor_app.app.defaults["global_mselect_key"] == 'Control' and
+                            key_modifier == Qt.ControlModifier) or \
+                                (self.grb_editor_app.app.defaults["global_mselect_key"] == 'Shift' and
+                                 key_modifier == Qt.ShiftModifier):
 
-                        if shape in self.draw_app.selected:
-                            self.draw_app.selected.remove(shape)
+                            if shape in self.draw_app.selected:
+                                self.draw_app.selected.remove(shape)
+                            else:
+                                # add the object to the selected shapes
+                                self.draw_app.selected.append(shape)
+                                sel_aperture.add(storage)
                         else:
-                            # add the object to the selected shapes
                             self.draw_app.selected.append(shape)
                             sel_aperture.add(storage)
-                    else:
-                        self.draw_app.selected.append(shape)
-                        sel_aperture.add(storage)
+            except KeyError:
+                pass
 
         # select the aperture in the Apertures Table that is associated with the selected shape
         try:
@@ -3384,20 +3387,22 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.app.delete_selection_shape()
         for storage in self.storage_dict:
-            for obj in self.storage_dict[storage]['solid_geometry']:
-                if (sel_type is True and poly_selection.contains(obj.geo)) or \
-                        (sel_type is False and poly_selection.intersects(obj.geo)):
-                    if self.key == self.app.defaults["global_mselect_key"]:
-                        if obj in self.selected:
-                            self.selected.remove(obj)
+            try:
+                for obj in self.storage_dict[storage]['solid_geometry']:
+                    if (sel_type is True and poly_selection.contains(obj.geo)) or \
+                            (sel_type is False and poly_selection.intersects(obj.geo)):
+                        if self.key == self.app.defaults["global_mselect_key"]:
+                            if obj in self.selected:
+                                self.selected.remove(obj)
+                            else:
+                                # add the object to the selected shapes
+                                self.selected.append(obj)
+                                sel_aperture.add(storage)
                         else:
-                            # add the object to the selected shapes
                             self.selected.append(obj)
                             sel_aperture.add(storage)
-                    else:
-                        self.selected.append(obj)
-                        sel_aperture.add(storage)
-
+            except KeyError:
+                pass
         try:
             self.apertures_table.cellPressed.disconnect()
         except:
@@ -3532,15 +3537,18 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.shapes.clear(update=True)
 
             for storage in self.storage_dict:
-                for shape in self.storage_dict[storage]['solid_geometry']:
-                    if shape.geo is None:
-                        continue
+                try:
+                    for shape in self.storage_dict[storage]['solid_geometry']:
+                        if shape.geo is None:
+                            continue
 
-                    if shape in self.selected:
-                        self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_sel_draw_color'],
-                                        linewidth=2)
-                        continue
-                    self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_draw_color'])
+                        if shape in self.selected:
+                            self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_sel_draw_color'],
+                                            linewidth=2)
+                            continue
+                        self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_draw_color'])
+                except KeyError:
+                    pass
 
             for shape in self.utility:
                 self.plot_shape(geometry=shape.geo, linewidth=1)
@@ -3656,13 +3664,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
             return
 
         for storage in self.storage_dict:
-            # try:
-            #     self.storage_dict[storage].remove(shape)
-            # except:
-            #     pass
-            if shape in self.storage_dict[storage]['solid_geometry']:
-                self.storage_dict[storage]['solid_geometry'].remove(shape)
-
+            try:
+                if shape in self.storage_dict[storage]['solid_geometry']:
+                    self.storage_dict[storage]['solid_geometry'].remove(shape)
+            except KeyError:
+                pass
         if shape in self.selected:
             self.selected.remove(shape)  # TODO: Check performance
 
