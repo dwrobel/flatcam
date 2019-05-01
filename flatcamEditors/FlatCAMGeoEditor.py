@@ -3342,7 +3342,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
             # Selection with left mouse button
             if self.active_tool is not None and event.button is 1:
                 # Dispatch event to active_tool
-                # msg = self.active_tool.click(self.snap(event.xdata, event.ydata))
                 msg = self.active_tool.click(self.snap(self.pos[0], self.pos[1]))
 
                 # If it is a shape generating tool
@@ -3357,13 +3356,19 @@ class FlatCAMGeoEditor(QtCore.QObject):
                     else:
                         modifier_to_use = Qt.ShiftModifier
 
+                    if isinstance(self.active_tool, FCText):
+                        self.select_tool("select")
+                    else:
+                        self.select_tool(self.active_tool.name)
+
+
                     # if modifier key is pressed then we add to the selected list the current shape but if
                     # it's already in the selected list, we removed it. Therefore first click selects, second deselects.
-                    if key_modifier == modifier_to_use:
-                        self.select_tool(self.active_tool.name)
-                    else:
-                        self.select_tool("select")
-                        return
+                    # if key_modifier == modifier_to_use:
+                    #     self.select_tool(self.active_tool.name)
+                    # else:
+                    #     self.select_tool("select")
+                    #     return
 
                 if isinstance(self.active_tool, FCSelect):
                     # self.app.log.debug("Replotting after click.")
@@ -3471,9 +3476,16 @@ class FlatCAMGeoEditor(QtCore.QObject):
                         except:
                             pass
 
-                        self.app.cursor = QtGui.QCursor()
-                        self.app.populate_cmenu_grids()
-                        self.app.ui.popMenu.popup(self.app.cursor.pos())
+                        if self.active_tool.complete is False and not isinstance(self.active_tool, FCSelect):
+                            self.active_tool.complete = True
+                            self.in_action = False
+                            self.delete_utility_geometry()
+                            self.app.inform.emit(_("[success] Done."))
+                            self.select_tool('select')
+                        else:
+                            self.app.cursor = QtGui.QCursor()
+                            self.app.populate_cmenu_grids()
+                            self.app.ui.popMenu.popup(self.app.cursor.pos())
                     else:
                         # if right click on canvas and the active tool need to be finished (like Path or Polygon)
                         # right mouse click will finish the action
@@ -3483,19 +3495,20 @@ class FlatCAMGeoEditor(QtCore.QObject):
                             if self.active_tool.complete:
                                 self.on_shape_complete()
                                 self.app.inform.emit(_("[success] Done."))
+                                self.select_tool(self.active_tool.name)
 
                                 # MS: always return to the Select Tool if modifier key is not pressed
                                 # else return to the current tool
-                                key_modifier = QtWidgets.QApplication.keyboardModifiers()
-                                if self.app.defaults["global_mselect_key"] == 'Control':
-                                    modifier_to_use = Qt.ControlModifier
-                                else:
-                                    modifier_to_use = Qt.ShiftModifier
-
-                                if key_modifier == modifier_to_use:
-                                    self.select_tool(self.active_tool.name)
-                                else:
-                                    self.select_tool("select")
+                                # key_modifier = QtWidgets.QApplication.keyboardModifiers()
+                                # if self.app.defaults["global_mselect_key"] == 'Control':
+                                #     modifier_to_use = Qt.ControlModifier
+                                # else:
+                                #     modifier_to_use = Qt.ShiftModifier
+                                #
+                                # if key_modifier == modifier_to_use:
+                                #     self.select_tool(self.active_tool.name)
+                                # else:
+                                #     self.select_tool("select")
 
         except Exception as e:
             log.warning("Error: %s" % str(e))

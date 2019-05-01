@@ -23,6 +23,8 @@ CAD program, and create G-Code for Isolation routing.
 - Excellon Editor: fixed mouse right click was always doing popup context menu
 - GUIElements.FCEntry2(): added a try-except clause
 - made sure that the Tools Tab is cleared on Editors exit
+- Geometry Editor: restored the old behavior: a tool is active until it is voluntarily exited: either by using the 'ESC' key, or selecting the Select tool or new: right click on canvas
+- RELEASE 8.915
 
 30.04.2019
 

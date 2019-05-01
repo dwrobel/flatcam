@@ -3258,7 +3258,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
             # Selection with left mouse button
             if self.active_tool is not None and event.button is 1:
                 # Dispatch event to active_tool
-                # msg = self.active_tool.click(self.app.geo_editor.snap(event.xdata, event.ydata))
                 msg = self.active_tool.click(self.app.geo_editor.snap(self.pos[0], self.pos[1]))
 
                 # If it is a shape generating tool
