@@ -379,9 +379,10 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         if role == Qt.ForegroundRole:
             color = QColor(self.app.defaults['global_proj_item_color'])
+            color_disabled = QColor(self.app.defaults['global_proj_item_dis_color'])
             obj = index.internalPointer().obj
             if obj:
-                return QtGui.QBrush(color) if obj.options["plot"] else QtGui.QBrush(QtCore.Qt.lightGray)
+                return QtGui.QBrush(color) if obj.options["plot"] else QtGui.QBrush(color_disabled)
             else:
                 return index.internalPointer().data(index.column())
 
@@ -765,4 +766,4 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         return obj_list
 
     def update_view(self):
-        self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex(), [QtCore.Qt.EditRole])
+        self.dataChanged.emit(QtCore.QModelIndex(), QtCore.QModelIndex())

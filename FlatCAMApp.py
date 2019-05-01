@@ -343,6 +343,7 @@ class App(QtCore.QObject):
             "global_sel_draw_color": self.ui.general_defaults_form.general_gui_group.sel_draw_color_entry,
 
             "global_proj_item_color": self.ui.general_defaults_form.general_gui_group.proj_color_entry,
+            "global_proj_item_dis_color": self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry,
 
             # General GUI Settings
             "global_layout": self.ui.general_defaults_form.general_gui_set_group.layout_combo,
@@ -617,6 +618,7 @@ class App(QtCore.QObject):
             "global_draw_color": '#FF0000',
             "global_sel_draw_color": '#0000FF',
             "global_proj_item_color": '#000000',
+            "global_proj_item_dis_color": '#b7b7cb',
 
             "global_toolbar_view": 511,
 
@@ -1199,6 +1201,11 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_gui_group.proj_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_proj_item_color'])[:7])
 
+        self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry.set_value(
+            self.defaults['global_proj_item_dis_color'])
+        self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.setStyleSheet(
+            "background-color:%s" % str(self.defaults['global_proj_item_dis_color'])[:7])
+
         #### End of Data ####
 
         #### Plot Area ####
@@ -1468,6 +1475,11 @@ class App(QtCore.QObject):
             self.on_proj_color_entry)
         self.ui.general_defaults_form.general_gui_group.proj_color_button.clicked.connect(
             self.on_proj_color_button)
+
+        self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry.editingFinished.connect(
+            self.on_proj_color_dis_entry)
+        self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.clicked.connect(
+            self.on_proj_color_dis_button)
 
         self.ui.general_defaults_form.general_gui_group.wk_cb.currentIndexChanged.connect(self.on_workspace_modified)
         self.ui.general_defaults_form.general_gui_group.workspace_cb.stateChanged.connect(self.on_workspace)
@@ -4081,6 +4093,28 @@ class App(QtCore.QObject):
         new_val_sel = str(proj_color.name())
         self.ui.general_defaults_form.general_gui_group.proj_color_entry.set_value(new_val_sel)
         self.defaults['global_proj_item_color'] = new_val_sel
+
+    def on_proj_color_dis_entry(self):
+        self.defaults['global_proj_item_dis_color'] = self.ui.general_defaults_form.general_gui_group \
+                                                   .proj_color_dis_entry.get_value()
+        self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.setStyleSheet(
+            "background-color:%s" % str(self.defaults['global_proj_item_dis_color']))
+
+    def on_proj_color_dis_button(self):
+        current_color = QtGui.QColor(self.defaults['global_proj_item_dis_color'])
+
+        c_dialog = QtWidgets.QColorDialog()
+        proj_color = c_dialog.getColor(initial=current_color)
+
+        if proj_color.isValid() is False:
+            return
+
+        self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.setStyleSheet(
+            "background-color:%s" % str(proj_color.name()))
+
+        new_val_sel = str(proj_color.name())
+        self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry.set_value(new_val_sel)
+        self.defaults['global_proj_item_dis_color'] = new_val_sel
 
     def on_deselect_all(self):
         self.collection.set_all_inactive()

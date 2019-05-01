@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - the project items color is now controlled from Foreground Role in ObjectCollection.data()
 - made again plot functions threaded but moved the dataChanged signal (update_view() ) to the main thread by using an already existing signal (plots_updated signal) to avoid the errors with register QVector
+- Enable/Disable Object toggle key ("Space" key) will trigger also the datChanged signal for the Project MVC
+- added a new setting for the color of the Porject items, the color when they are disabled.
 
 30.04.2019
 

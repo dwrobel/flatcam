@@ -2237,6 +2237,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_Space:
                     for select in selected:
                         select.ui.plot_cb.toggle()
+                    self.app.collection.update_view()
                     self.app.delete_selection_shape()
 
                 # New Geometry
@@ -3521,6 +3522,20 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box_child_12.addWidget(self.proj_color_button)
         self.form_box_child_12.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
+        self.proj_color_dis_label = QtWidgets.QLabel(_('Proj. Dis. Items:'))
+        self.proj_color_dis_label.setToolTip(
+            _("Set the color of the items in Project Tab Tree,\n"
+              "for the case when the items are disabled.")
+        )
+        self.proj_color_dis_entry = FCEntry()
+        self.proj_color_dis_button = QtWidgets.QPushButton()
+        self.proj_color_dis_button.setFixedSize(15, 15)
+
+        self.form_box_child_13 = QtWidgets.QHBoxLayout()
+        self.form_box_child_13.addWidget(self.proj_color_dis_entry)
+        self.form_box_child_13.addWidget(self.proj_color_dis_button)
+        self.form_box_child_13.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
@@ -3547,6 +3562,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.sel_draw_color_label, self.form_box_child_11)
         self.form_box.addRow(QtWidgets.QLabel(""))
         self.form_box.addRow(self.proj_color_label, self.form_box_child_12)
+        self.form_box.addRow(self.proj_color_dis_label, self.form_box_child_13)
 
         self.form_box.addRow(self.spacelabel, self.spacelabel)
 
@@ -3727,6 +3743,13 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.language_cb = FCComboBox()
         self.languagespace = QtWidgets.QLabel('')
         self.language_apply_btn = FCButton(_("Apply Language"))
+        self.language_apply_btn.setToolTip(_("Set the language used throughout FlatCAM.\n"
+                                             "The app will restart after click."
+                                             "Windows: When FlatCAM is installed in Program Files\n"
+                                             "directory, it is possible that the app will not\n"
+                                             "restart after the button is clicked due of Windows\n"
+                                             "security features. In this case the language will be\n"
+                                             "applied at the next app start."))
 
         # Shell StartUp CB
         self.shell_startup_label = QtWidgets.QLabel(_('Shell at StartUp:'))
