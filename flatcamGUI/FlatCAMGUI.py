@@ -265,13 +265,18 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
            _( "Will convert a Geometry object from multi_geometry type\n"
             "to a single_geometry type.")
         )
+        # Separator
+        self.menuedit_convert.addSeparator()
+        self.menueditconvert_any2geo = self.menuedit_convert.addAction(QtGui.QIcon('share/copy_geo.png'),
+                                                                _('Convert Any to Geo'))
+        self.menueditconvert_any2gerber = self.menuedit_convert.addAction(QtGui.QIcon('share/copy_geo.png'),
+                                                                       _('Convert Any to Gerber'))
         self.menuedit_convert.setToolTipsVisible(True)
 
         # Separator
         self.menuedit.addSeparator()
-        self.menueditcopyobject = self.menuedit.addAction(QtGui.QIcon('share/copy.png'), _('&Copy Object\tCTRL+C'))
-        self.menueditcopyobjectasgeom = self.menuedit.addAction(QtGui.QIcon('share/copy_geo.png'),
-                                                                _('Copy as &Geom'))
+        self.menueditcopyobject = self.menuedit.addAction(QtGui.QIcon('share/copy.png'), _('&Copy\tCTRL+C'))
+
         # Separator
         self.menuedit.addSeparator()
         self.menueditdelete = self.menuedit.addAction(QtGui.QIcon('share/trash16.png'), _('&Delete\tDEL'))

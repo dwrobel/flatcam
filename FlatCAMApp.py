@@ -1320,7 +1320,9 @@ class App(QtCore.QObject):
         self.ui.menueditdelete.triggered.connect(self.on_delete)
 
         self.ui.menueditcopyobject.triggered.connect(self.on_copy_object)
-        self.ui.menueditcopyobjectasgeom.triggered.connect(self.on_copy_object_as_geometry)
+        self.ui.menueditconvert_any2geo.triggered.connect(self.convert_any2geo)
+        self.ui.menueditconvert_any2gerber.triggered.connect(self.convert_any2gerber)
+
         self.ui.menueditorigin.triggered.connect(self.on_set_origin)
         self.ui.menueditjump.triggered.connect(self.on_jump_to)
 
@@ -4719,8 +4721,8 @@ class App(QtCore.QObject):
                 except:
                     log.warning("Could not rename the object in the list")
 
-    def on_copy_object_as_geometry(self):
-        self.report_usage("on_copy_object_as_geometry()")
+    def convert_any2geo(self):
+        self.report_usage("convert_any2geo()")
 
         def initialize(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
@@ -4733,8 +4735,11 @@ class App(QtCore.QObject):
             except:
                 pass
 
-            if obj.tools:
-                obj_init.tools = obj.tools
+            try:
+                if obj.tools:
+                    obj_init.tools = obj.tools
+            except AttributeError:
+                pass
 
         def initialize_excellon(obj_init, app):
             # objs = self.collection.get_selected()
@@ -4745,15 +4750,82 @@ class App(QtCore.QObject):
                     solid_geo.append(geo)
             obj_init.solid_geometry = deepcopy(solid_geo)
 
+        if not self.collection.get_selected():
+            log.warning("App.convert_any2geo --> No object selected")
+            self.inform.emit(_("[WARNING_NOTCL] No object is selected. Select an object and try again."))
+            return
+
         for obj in self.collection.get_selected():
 
             obj_name = obj.options["name"]
 
             try:
                 if isinstance(obj, FlatCAMExcellon):
-                    self.new_object("geometry", str(obj_name) + "_gcopy", initialize_excellon)
+                    self.new_object("geometry", str(obj_name) + "_conv", initialize_excellon)
                 else:
-                    self.new_object("geometry", str(obj_name) + "_gcopy", initialize)
+                    self.new_object("geometry", str(obj_name) + "_conv", initialize)
+
+            except Exception as e:
+                return "Operation failed: %s" % str(e)
+
+    def convert_any2gerber(self):
+        self.report_usage("convert_any2gerber()")
+
+        def initialize(obj_init, app):
+            apertures = {}
+            apid = 0
+
+            apertures[str(apid)] = {}
+            apertures[str(apid)]['solid_geometry'] = []
+            apertures[str(apid)]['solid_geometry'] = deepcopy(obj.solid_geometry)
+            apertures[str(apid)]['size'] = 0.0
+            apertures[str(apid)]['type'] = 'C'
+
+            obj_init.solid_geometry = deepcopy(obj.solid_geometry)
+            obj_init.apertures = deepcopy(apertures)
+
+        def initialize_excellon(obj_init, app):
+            apertures = {}
+
+            apid = 10
+            for tool in obj.tools:
+                apertures[str(apid)] = {}
+                apertures[str(apid)]['solid_geometry'] = []
+                for geo in obj.tools[tool]['solid_geometry']:
+                    apertures[str(apid)]['solid_geometry'].append(geo)
+
+                apertures[str(apid)]['size'] = float(obj.tools[tool]['C'])
+                apertures[str(apid)]['type'] = 'C'
+                apid += 1
+
+            # create solid_geometry
+            solid_geometry = []
+            for apid in apertures:
+                for geo in apertures[apid]['solid_geometry']:
+                    solid_geometry.append(geo)
+
+            solid_geometry = MultiPolygon(solid_geometry)
+            solid_geometry = solid_geometry.buffer(0.0000001)
+
+            obj_init.solid_geometry = deepcopy(solid_geometry)
+            obj_init.apertures = deepcopy(apertures)
+            # clear the working objects (perhaps not necessary due of Python GC)
+            apertures.clear()
+
+        if not self.collection.get_selected():
+            log.warning("App.convert_any2gerber --> No object selected")
+            self.inform.emit(_("[WARNING_NOTCL] No object is selected. Select an object and try again."))
+            return
+
+        for obj in self.collection.get_selected():
+
+            obj_name = obj.options["name"]
+
+            try:
+                if isinstance(obj, FlatCAMExcellon):
+                    self.new_object("gerber", str(obj_name) + "_conv", initialize_excellon)
+                else:
+                    self.new_object("gerber", str(obj_name) + "_conv", initialize)
 
             except Exception as e:
                 return "Operation failed: %s" % str(e)
