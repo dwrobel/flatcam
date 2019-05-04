@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 4.05.2019
 
 - fixed bug in camlib.parse_lines() in the clear_geometry processing section for self.apertures
+- fixed bug in parsing Gerber regions (a point was added unnecessary)
 
 01.05.2019
 

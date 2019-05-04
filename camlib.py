@@ -2447,6 +2447,14 @@ class Gerber (Geometry):
                                         self.apertures[current_aperture]['clear_geometry'].append(flash)
                                 else:
                                     try:
+                                        self.apertures[current_aperture]['follow_geometry'].append(Point(
+                                            current_x, current_y))
+                                    except KeyError:
+                                        self.apertures[current_aperture]['follow_geometry'] = []
+                                        self.apertures[current_aperture]['follow_geometry'].append(Point(
+                                            current_x, current_y))
+
+                                    try:
                                         self.apertures[current_aperture]['solid_geometry'].append(flash)
                                     except KeyError:
                                         self.apertures[current_aperture]['solid_geometry'] = []
@@ -2692,11 +2700,10 @@ class Gerber (Geometry):
                     # Pen down: add segment
                     if current_operation_code == 1:
                         # if linear_x or linear_y are None, ignore those
-                        if linear_x is not None and linear_y is not None:
+                        if current_x is not None and current_y is not None:
                             # only add the point if it's a new one otherwise skip it (harder to process)
-                            if path[-1] != [linear_x, linear_y]:
-                                path.append([linear_x, linear_y])
-
+                            if path[-1] != [current_x, current_y]:
+                                path.append([current_x, current_y])
                             if making_region is False:
                                 # if the aperture is rectangle then add a rectangular shape having as parameters the
                                 # coordinates of the start and end point and also the width and height
@@ -2791,9 +2798,9 @@ class Gerber (Geometry):
                                         self.apertures['0']['size'] = 0.0
                                         self.apertures['0']['solid_geometry'] = []
                                     last_path_aperture = '0'
-                                elem = [linear_x, linear_y]
-                                if elem != path[-1]:
-                                    path.append([linear_x, linear_y])
+                                # elem = [current_x, current_y]
+                                # if elem != path[-1]:
+                                #     path.append([current_x, current_y])
 
                                 try:
                                     geo = Polygon(path)
@@ -3200,7 +3207,7 @@ class Gerber (Geometry):
 
             conversion_factor = 25.4 if file_units == 'IN' else (1/25.4) if file_units != app_units else 1
 
-            # --- the following section is usefull for Gerber editor only --- #
+            # --- the following section is useful for Gerber editor only --- #
             # list of clear geos that are to be applied to the entire file
             global_clear_geo = []
 
@@ -3246,7 +3253,7 @@ class Gerber (Geometry):
 
             if len(poly_buffer) == 0:
                 log.error("Object is not Gerber file or empty. Aborting Object creation.")
-                return
+                return 'fail'
 
             if self.use_buffer_for_union:
                 log.debug("Union by buffer...")
