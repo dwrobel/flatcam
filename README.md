@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+4.05.2019
+
+- fixed bug in camlib.parse_lines() in the clear_geometry processing section for self.apertures
+
 01.05.2019
 
 - the project items color is now controlled from Foreground Role in ObjectCollection.data()

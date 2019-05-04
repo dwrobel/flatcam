@@ -2947,6 +2947,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                                 if geo is not None:
                                     self.add_gerber_shape(DrawToolShape(geo), follow_storage_elem)
                             self.storage_dict[apid][k] = follow_storage_elem
+                        elif k == 'clear_geometry':
+                            continue
                         else:
                             self.storage_dict[apid][k] = v
                     except Exception as e:

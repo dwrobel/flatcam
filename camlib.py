@@ -3200,24 +3200,42 @@ class Gerber (Geometry):
 
             conversion_factor = 25.4 if file_units == 'IN' else (1/25.4) if file_units != app_units else 1
 
-            # first check if we have any clear_geometry (LPC) and if yes then we need to substract it
-            # from the apertures solid_geometry
+            # --- the following section is usefull for Gerber editor only --- #
+            # list of clear geos that are to be applied to the entire file
+            global_clear_geo = []
+
+            for apid in self.apertures:
+                # first check if we have any clear_geometry (LPC) and if yes added it to the global_clear_geo
+                if 'clear_geometry' in self.apertures[apid]:
+                    for pol in self.apertures[apid]['clear_geometry']:
+                        global_clear_geo.append(pol)
+                self.apertures[apid].pop('clear_geometry', None)
+
             temp_geo = []
             for apid in self.apertures:
-                if 'clear_geometry' in self.apertures[apid]:
-                    clear_geo = MultiPolygon(self.apertures[apid]['clear_geometry'])
+                if 'solid_geometry' in self.apertures[apid]:
                     for solid_geo in self.apertures[apid]['solid_geometry']:
-                        if clear_geo.intersects(solid_geo):
-                            res_geo = solid_geo.difference(clear_geo)
-                            temp_geo.append(res_geo)
-                        else:
+                        for clear_geo in global_clear_geo:
+                            # Make sure that the solid_geo is not completely within the clear_geo otherwise we loose
+                            # the solid_geometry. We want for clear_geometry just to cut into solid_geometry not to
+                            # delete it
+                            if not solid_geo.within(clear_geo):
+                                solid_geo = solid_geo.difference(clear_geo)
+                        try:
+                            for poly in solid_geo:
+                                temp_geo.append(poly)
+                        except TypeError:
                             temp_geo.append(solid_geo)
-                    self.apertures[apid]['solid_geometry'] = deepcopy(temp_geo)
-                    self.apertures[apid].pop('clear_geometry', None)
 
+                    self.apertures[apid]['solid_geometry'] = deepcopy(temp_geo)
+                    temp_geo[:] = []
+
+            for apid in self.apertures:
+                # scale de aperture geometries according to the used units
                 for k, v in self.apertures[apid].items():
                     if k == 'size' or k == 'width' or k == 'height':
                         self.apertures[apid][k] = v * conversion_factor
+            # -------------------------------------------------------------
 
             # --- Apply buffer ---
             # this treats the case when we are storing geometry as paths
