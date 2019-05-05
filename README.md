@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - another fix for bug in clear geometry processing for Gerber apertures
 - added a protection for the case that the aperture table is part of a deleted object
 - in Script Editor added support for auto-add closing parenthesis, brace and bracket
+- in Script Editor added support for "CTRL + / " key combo to comment/uncomment line
 
 4.05.2019
 

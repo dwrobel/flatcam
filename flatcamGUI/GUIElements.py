@@ -571,6 +571,9 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
                 clip_text = clip_text.replace('\\', '/')
                 self.insertPlainText(clip_text)
 
+        if modifier & Qt.ControlModifier and key == Qt.Key_Slash:
+            self.comment()
+
         tc = self.textCursor()
         if (key == Qt.Key_Tab or key == Qt.Key_Enter or key == Qt.Key_Return) and self.completer.popup().isVisible():
             self.completer.insertText.emit(self.completer.getSelected())
@@ -627,6 +630,33 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
                 self.completer.complete(cr)
             else:
                 self.completer.popup().hide()
+
+    def comment(self):
+        """
+        Got it from here:
+        https://stackoverflow.com/questions/49898820/how-to-get-text-next-to-cursor-in-qtextedit-in-pyqt4
+        :return:
+        """
+        pos = self.textCursor().position()
+        self.moveCursor(QtGui.QTextCursor.StartOfLine)
+        line_text = self.textCursor().block().text()
+        if self.textCursor().block().text().startswith(" "):
+            # skip the white space
+            self.moveCursor(QtGui.QTextCursor.NextWord)
+        self.moveCursor(QtGui.QTextCursor.NextCharacter,QtGui.QTextCursor.KeepAnchor)
+        character = self.textCursor().selectedText()
+        if character == "#":
+            # delete #
+            self.textCursor().deletePreviousChar()
+            # delete white space 
+            self.moveCursor(QtGui.QTextCursor.NextWord,QtGui.QTextCursor.KeepAnchor)
+            self.textCursor().removeSelectedText()
+        else:
+            self.moveCursor(QtGui.QTextCursor.PreviousCharacter,QtGui.QTextCursor.KeepAnchor)
+            self.textCursor().insertText("# ")
+        cursor = QtGui.QTextCursor(self.textCursor())
+        cursor.setPosition(pos)
+        self.setTextCursor(cursor)
 
 
 class FCComboBox(QtWidgets.QComboBox):
