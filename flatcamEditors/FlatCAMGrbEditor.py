@@ -1582,7 +1582,11 @@ class FCApertureSelect(DrawTool):
         # bending modes using in FCRegion and FCTrack
         self.draw_app.bend_mode = 1
 
-        self.grb_editor_app.apertures_table.clearSelection()
+        try:
+            self.grb_editor_app.apertures_table.clearSelection()
+        except Exception as e:
+            log.error("FlatCAMGerbEditor.FCApertureSelect.__init__() --> %s" % str(e))
+
         self.grb_editor_app.hide_tool('all')
         self.grb_editor_app.hide_tool('select')
 

@@ -9,13 +9,17 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+5.05.2019
+
+- another fix for bug in clear geometry processing for Gerber apertures
+- added a protection for the case that the aperture table is part of a deleted object
+
 4.05.2019
 
 - fixed bug in camlib.parse_lines() in the clear_geometry processing section for self.apertures
 - fixed bug in parsing Gerber regions (a point was added unnecessary)
 - renamed the menu entry Edit -> Copy as Geo to Convert Any to Geo and moved it in the Edit -> Conversion
 - created a new function named Convert Any to Gerber and installed it in Edit -> Conversion. It's doing what the name say: it will convert an Geometry or Excellon FlatCAM object to a Gerber object.
-- another fix for bug in clear geometry processing for Gerber apertures
 
 01.05.2019
 
