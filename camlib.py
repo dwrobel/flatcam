@@ -3225,10 +3225,10 @@ class Gerber (Geometry):
                 if 'solid_geometry' in self.apertures[apid]:
                     for solid_geo in self.apertures[apid]['solid_geometry']:
                         for clear_geo in global_clear_geo:
-                            # Make sure that the solid_geo is not completely within the clear_geo otherwise we loose
+                            # Make sure that the clear_geo is within the solid_geo otherwise we loose
                             # the solid_geometry. We want for clear_geometry just to cut into solid_geometry not to
                             # delete it
-                            if not solid_geo.within(clear_geo):
+                            if clear_geo.within(solid_geo):
                                 solid_geo = solid_geo.difference(clear_geo)
                         try:
                             for poly in solid_geo:
