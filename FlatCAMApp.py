@@ -2257,7 +2257,7 @@ class App(QtCore.QObject):
                         self.grb_editor.deactivate_grb_editor()
 
                         # delete the old object (the source object) if it was an empty one
-                        if edited_obj.solid_geometry.is_empty:
+                        if not edited_obj.solid_geometry:
                             old_name = edited_obj.options['name']
                             self.collection.set_active(old_name)
                             self.collection.delete_active()

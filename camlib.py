@@ -3208,6 +3208,7 @@ class Gerber (Geometry):
             conversion_factor = 25.4 if file_units == 'IN' else (1/25.4) if file_units != app_units else 1
 
             # --- the following section is useful for Gerber editor only --- #
+            log.warning("Applying clear geometry in the apertures dict.")
             # list of clear geos that are to be applied to the entire file
             global_clear_geo = []
 
@@ -3217,6 +3218,7 @@ class Gerber (Geometry):
                     for pol in self.apertures[apid]['clear_geometry']:
                         global_clear_geo.append(pol)
                 self.apertures[apid].pop('clear_geometry', None)
+            log.warning("Found %d clear polygons." % len(global_clear_geo))
 
             temp_geo = []
             for apid in self.apertures:
@@ -3235,7 +3237,8 @@ class Gerber (Geometry):
                             temp_geo.append(solid_geo)
 
                     self.apertures[apid]['solid_geometry'] = deepcopy(temp_geo)
-                    temp_geo[:] = []
+                    temp_geo = []
+            log.warning("Polygon difference done for %d apertures." % len(self.apertures))
 
             for apid in self.apertures:
                 # scale de aperture geometries according to the used units
