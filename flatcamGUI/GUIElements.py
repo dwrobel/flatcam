@@ -576,6 +576,40 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
             self.completer.insertText.emit(self.completer.getSelected())
             self.completer.setCompletionMode(QCompleter.PopupCompletion)
             return
+        elif key == Qt.Key_BraceLeft:
+            tc.insertText('{}')
+            self.moveCursor(QtGui.QTextCursor.Left)
+        elif key == Qt.Key_BracketLeft:
+            tc.insertText('[]')
+            self.moveCursor(QtGui.QTextCursor.Left)
+        elif key == Qt.Key_ParenLeft:
+            tc.insertText('()')
+            self.moveCursor(QtGui.QTextCursor.Left)
+
+        elif key == Qt.Key_BraceRight:
+            tc.select(QtGui.QTextCursor.WordUnderCursor)
+            if tc.selectedText() == '}':
+                tc.movePosition(QTextCursor.Right)
+                self.setTextCursor(tc)
+            else:
+                tc.clearSelection()
+                self.textCursor().insertText('}')
+        elif key == Qt.Key_BracketRight:
+            tc.select(QtGui.QTextCursor.WordUnderCursor)
+            if tc.selectedText() == ']':
+                tc.movePosition(QTextCursor.Right)
+                self.setTextCursor(tc)
+            else:
+                tc.clearSelection()
+                self.textCursor().insertText(']')
+        elif key == Qt.Key_ParenRight:
+            tc.select(QtGui.QTextCursor.WordUnderCursor)
+            if tc.selectedText() == ')':
+                tc.movePosition(QTextCursor.Right)
+                self.setTextCursor(tc)
+            else:
+                tc.clearSelection()
+                self.textCursor().insertText(')')
         else:
             super(FCTextAreaExtended, self).keyPressEvent(event)
 
