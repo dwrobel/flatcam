@@ -2286,11 +2286,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # Change Units
                 if key == QtCore.Qt.Key_Q:
-                    if self.app.defaults["units"] == 'MM':
-                        self.app.ui.general_defaults_form.general_app_group.units_radio.set_value("IN")
-                    else:
-                        self.app.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
-                    self.app.on_toggle_units(no_pref=True)
+                    # if self.app.defaults["units"] == 'MM':
+                    #     self.app.ui.general_defaults_form.general_app_group.units_radio.set_value("IN")
+                    # else:
+                    #     self.app.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
+                    # self.app.on_toggle_units(no_pref=True)
+                    self.app.on_toggle_units_click()
 
                 # Rotate Object by 90 degree CW
                 if key == QtCore.Qt.Key_R:
@@ -3866,6 +3867,25 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         )
         self.worker_number_sb.set_range(2, 16)
 
+        # Geometric tolerance
+        tol_label = QtWidgets.QLabel("Geo Tolerance:")
+        tol_label.setToolTip(_(
+            "This value can counter the effect of the Circle Steps\n"
+            "parameter. Default value is 0.01.\n"
+            "A lower value will increase the detail both in image\n"
+            "and in Gcode for the circles, with a higher cost in\n"
+            "performance. Higher value will provide more\n"
+            "performance at the expense of level of detail."
+        ))
+        self.tol_entry = FCEntry()
+        self.tol_entry.setToolTip(_(
+            "This value can counter the effect of the Circle Steps\n"
+            "parameter. Default value is 0.01.\n"
+            "A lower value will increase the detail both in image\n"
+            "and in Gcode for the circles, with a higher cost in\n"
+            "performance. Higher value will provide more\n"
+            "performance at the expense of level of detail."
+        ))
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
@@ -3886,6 +3906,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.project_autohide_label, self.project_autohide_cb)
         self.form_box.addRow(self.toggle_tooltips_label, self.toggle_tooltips_cb)
         self.form_box.addRow(self.worker_number_label, self.worker_number_sb)
+        self.form_box.addRow(tol_label, self.tol_entry)
 
         self.form_box.addRow(self.spacelabel, self.spacelabel)
 

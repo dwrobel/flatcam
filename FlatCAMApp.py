@@ -322,6 +322,7 @@ class App(QtCore.QObject):
             "global_project_autohide": self.ui.general_defaults_form.general_app_group.project_autohide_cb,
             "global_toggle_tooltips": self.ui.general_defaults_form.general_app_group.toggle_tooltips_cb,
             "global_worker_number": self.ui.general_defaults_form.general_app_group.worker_number_sb,
+            "global_tolerance": self.ui.general_defaults_form.general_app_group.tol_entry,
 
             "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_combo,
             "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
@@ -594,6 +595,7 @@ class App(QtCore.QObject):
             "global_project_autohide": True,
             "global_toggle_tooltips": True,
             "global_worker_number": 2,
+            "global_tolerance": 0.01,
             "global_compression_level": 3,
             "global_save_compressed": True,
 
@@ -3710,7 +3712,7 @@ class App(QtCore.QObject):
         self.defaults_read_form()
 
     def on_toggle_units_click(self):
-        if self.options["units"] == 'MM':
+        if self.defaults["units"] == 'MM':
             self.ui.general_defaults_form.general_app_group.units_radio.set_value("IN")
         else:
             self.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")

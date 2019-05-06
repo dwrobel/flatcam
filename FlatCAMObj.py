@@ -81,7 +81,11 @@ class FlatCAMObj(QtCore.QObject):
         self.muted_ui = False
         self.deleted = False
 
-        self._drawing_tolerance = 0.01
+        try:
+            self._drawing_tolerance = float(self.app.defaults["global_tolerance"]) if \
+                self.app.defaults["global_tolerance"] else 0.01
+        except ValueError:
+            self._drawing_tolerance = 0.01
 
         self.isHovering = False
         self.notHovering = True
