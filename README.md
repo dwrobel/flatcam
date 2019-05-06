@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - solved a bug in Excellon Editor that caused app crash when trying to edit a tool in Tool Table due of missing a tool offset
 - updated the ToolPanelize tool so the Gerber panel of type FlatCAMGerber can be isolated like any other FlatCAMGerber object
 - updated the ToolPanelize tool so it can be edited
+- modified the default values for toolchangez and endz parameters so they are now safe in all cases
 
 5.05.2019
 
