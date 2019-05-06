@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 6.05.2019
 
 - made units change from shortcut key 'Q' not to affect the preferences
+- made units change from Edit -> Toggle Units not to affect the preferences
+- remade the way the aperture marks are plotted in Gerber Object
 
 5.05.2019
 
@@ -481,7 +483,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed mouse selection on canvas, mouse drag, mouse click and mouse double click
 - fixed Gerber Aperture Table dimensions
 - added a Mark All button in the Gerber aperture table.
-- because adding shapes to the shapes collection (when doing Mark or Mark All) is time consuming I made the plot_apertures() threaded.
+- because adding shapes to the shapes collection (when doing Mark or Mark All) is time consuming I made the plot_aperture() threaded.
 - made the polygon fusing in modified Gerber creation, a list comprehension in an attempt for optimization
 - when right clicking the files in Project tab, the Save option for Excellon no longer export it but really save the original. 
 - in ToolChange Custom Code replacement, the Text Box in the CNCJob Selected tab will be active only if there is a 'toolchange_custom' in the name of the postprocessor file. This assume that it is, or was created having as template the Toolchange Custom postprocessor file.
@@ -653,7 +655,7 @@ CAD program, and create G-Code for Isolation routing.
 - finished Gerber aperture table display
 - made the Gerber aperture table not visible as default and added a checkbox that can toggle the visibility
 - fixed issue with plotting in CNCJob; with Plot kind set to something else than 'all' when toggling Plot, it was defaulting to kind = 'all'
-- added (and commented) an experimental FlatCAMObj.FlatCAMGerber.plot_apertures()
+- added (and commented) an experimental FlatCAMObj.FlatCAMGerber.plot_aperture()
 
 12.02.2019
 

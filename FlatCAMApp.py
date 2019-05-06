@@ -3714,7 +3714,7 @@ class App(QtCore.QObject):
             self.ui.general_defaults_form.general_app_group.units_radio.set_value("IN")
         else:
             self.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
-        self.on_toggle_units()
+        self.on_toggle_units(no_pref=True)
 
     def on_fullscreen(self):
         self.report_usage("on_fullscreen()")
@@ -4561,6 +4561,13 @@ class App(QtCore.QObject):
                 self.report_usage("on_delete")
 
                 while (self.collection.get_active()):
+                    obj_active = self.collection.get_active()
+                    # if the deleted object is FlatCAMGerber then make sure to delete the possbile mark shapes
+                    if isinstance(obj_active, FlatCAMGerber):
+                        for el in obj_active.mark_shapes:
+                            obj_active.mark_shapes[el].clear(update=True)
+                            obj_active.mark_shapes[el].enabled = False
+                            obj_active.mark_shapes[el] = None
                     self.delete_first_selected()
 
                 self.inform.emit(_("Object(s) deleted ..."))
