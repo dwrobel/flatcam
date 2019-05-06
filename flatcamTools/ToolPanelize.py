@@ -13,9 +13,9 @@ import time
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
-import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
@@ -39,11 +39,11 @@ class Panelize(FlatCAMTool):
                         """)
         self.layout.addWidget(title_label)
 
-        ## Form Layout
+        # Form Layout
         form_layout = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout)
 
-        ## Type of object to be panelized
+        # Type of object to be panelized
         self.type_obj_combo = QtWidgets.QComboBox()
         self.type_obj_combo.addItem("Gerber")
         self.type_obj_combo.addItem("Excellon")
@@ -56,13 +56,13 @@ class Panelize(FlatCAMTool):
         self.type_obj_combo_label = QtWidgets.QLabel(_("Object Type:"))
         self.type_obj_combo_label.setToolTip(
             _("Specify the type of object to be panelized\n"
-            "It can be of type: Gerber, Excellon or Geometry.\n"
-            "The selection here decide the type of objects that will be\n"
-            "in the Object combobox.")
+              "It can be of type: Gerber, Excellon or Geometry.\n"
+              "The selection here decide the type of objects that will be\n"
+              "in the Object combobox.")
         )
         form_layout.addRow(self.type_obj_combo_label, self.type_obj_combo)
 
-        ## Object to be panelized
+        # Object to be panelized
         self.object_combo = QtWidgets.QComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
@@ -71,11 +71,11 @@ class Panelize(FlatCAMTool):
         self.object_label = QtWidgets.QLabel(_("Object:"))
         self.object_label.setToolTip(
             _("Object to be panelized. This means that it will\n"
-            "be duplicated in an array of rows and columns.")
+              "be duplicated in an array of rows and columns.")
         )
         form_layout.addRow(self.object_label, self.object_combo)
 
-        ## Type of Box Object to be used as an envelope for panelization
+        # Type of Box Object to be used as an envelope for panelization
         self.type_box_combo = QtWidgets.QComboBox()
         self.type_box_combo.addItem("Gerber")
         self.type_box_combo.addItem("Excellon")
@@ -89,13 +89,13 @@ class Panelize(FlatCAMTool):
         self.type_box_combo_label = QtWidgets.QLabel(_("Box Type:"))
         self.type_box_combo_label.setToolTip(
             _("Specify the type of object to be used as an container for\n"
-            "panelization. It can be: Gerber or Geometry type.\n"
-            "The selection here decide the type of objects that will be\n"
-            "in the Box Object combobox.")
+              "panelization. It can be: Gerber or Geometry type.\n"
+              "The selection here decide the type of objects that will be\n"
+              "in the Box Object combobox.")
         )
         form_layout.addRow(self.type_box_combo_label, self.type_box_combo)
 
-        ## Box
+        # Box
         self.box_combo = QtWidgets.QComboBox()
         self.box_combo.setModel(self.app.collection)
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
@@ -104,29 +104,29 @@ class Panelize(FlatCAMTool):
         self.box_combo_label = QtWidgets.QLabel(_("Box Object:"))
         self.box_combo_label.setToolTip(
             _("The actual object that is used a container for the\n "
-            "selected object that is to be panelized.")
+              "selected object that is to be panelized.")
         )
         form_layout.addRow(self.box_combo_label, self.box_combo)
 
-        ## Spacing Columns
+        # Spacing Columns
         self.spacing_columns = FCEntry()
         self.spacing_columns_label = QtWidgets.QLabel(_("Spacing cols:"))
         self.spacing_columns_label.setToolTip(
             _("Spacing between columns of the desired panel.\n"
-            "In current units.")
+              "In current units.")
         )
         form_layout.addRow(self.spacing_columns_label, self.spacing_columns)
 
-        ## Spacing Rows
+        # Spacing Rows
         self.spacing_rows = FCEntry()
         self.spacing_rows_label = QtWidgets.QLabel(_("Spacing rows:"))
         self.spacing_rows_label.setToolTip(
             _("Spacing between rows of the desired panel.\n"
-            "In current units.")
+              "In current units.")
         )
         form_layout.addRow(self.spacing_rows_label, self.spacing_rows)
 
-        ## Columns
+        # Columns
         self.columns = FCEntry()
         self.columns_label = QtWidgets.QLabel(_("Columns:"))
         self.columns_label.setToolTip(
@@ -134,7 +134,7 @@ class Panelize(FlatCAMTool):
         )
         form_layout.addRow(self.columns_label, self.columns)
 
-        ## Rows
+        # Rows
         self.rows = FCEntry()
         self.rows_label = QtWidgets.QLabel(_("Rows:"))
         self.rows_label.setToolTip(
@@ -142,26 +142,26 @@ class Panelize(FlatCAMTool):
         )
         form_layout.addRow(self.rows_label, self.rows)
 
-        ## Type of resulting Panel object
+        # Type of resulting Panel object
         self.panel_type_radio = RadioSet([{'label': 'Gerber', 'value': 'gerber'},
-                                     {'label': 'Geometry', 'value': 'geometry'}])
+                                          {'label': 'Geometry', 'value': 'geometry'}])
         self.panel_type_label = QtWidgets.QLabel(_("Panel Type:"))
         self.panel_type_label.setToolTip(
             _("Choose the type of object for the panel object:\n"
-            "- Geometry\n"
-            "- Gerber")
+              "- Geometry\n"
+              "- Gerber")
         )
         form_layout.addRow(self.panel_type_label)
         form_layout.addRow(self.panel_type_radio)
 
-        ## Constrains
+        # Constrains
         self.constrain_cb = FCCheckBox(_("Constrain panel within:"))
         self.constrain_cb.setToolTip(
             _("Area define by DX and DY within to constrain the panel.\n"
-            "DX and DY values are in current units.\n"
-            "Regardless of how many columns and rows are desired,\n"
-            "the final panel will have as many columns and rows as\n"
-            "they fit completely within selected area.")
+              "DX and DY values are in current units.\n"
+              "Regardless of how many columns and rows are desired,\n"
+              "the final panel will have as many columns and rows as\n"
+              "they fit completely within selected area.")
         )
         form_layout.addRow(self.constrain_cb)
 
@@ -169,7 +169,7 @@ class Panelize(FlatCAMTool):
         self.x_width_lbl = QtWidgets.QLabel(_("Width (DX):"))
         self.x_width_lbl.setToolTip(
             _("The width (DX) within which the panel must fit.\n"
-            "In current units.")
+              "In current units.")
         )
         form_layout.addRow(self.x_width_lbl, self.x_width_entry)
 
@@ -177,14 +177,14 @@ class Panelize(FlatCAMTool):
         self.y_height_lbl = QtWidgets.QLabel(_("Height (DY):"))
         self.y_height_lbl.setToolTip(
             _("The height (DY)within which the panel must fit.\n"
-            "In current units.")
+              "In current units.")
         )
         form_layout.addRow(self.y_height_lbl, self.y_height_entry)
 
         self.constrain_sel = OptionalInputSection(
             self.constrain_cb, [self.x_width_lbl, self.x_width_entry, self.y_height_lbl, self.y_height_entry])
 
-        ## Buttons
+        # Buttons
         hlay_2 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay_2)
 
@@ -192,14 +192,14 @@ class Panelize(FlatCAMTool):
         self.panelize_object_button = QtWidgets.QPushButton(_("Panelize Object"))
         self.panelize_object_button.setToolTip(
             _("Panelize the specified object around the specified box.\n"
-            "In other words it creates multiple copies of the source object,\n"
-            "arranged in a 2D array of rows and columns.")
+              "In other words it creates multiple copies of the source object,\n"
+              "arranged in a 2D array of rows and columns.")
         )
         hlay_2.addWidget(self.panelize_object_button)
 
         self.layout.addStretch()
 
-        ## Signals
+        # Signals
         self.panelize_object_button.clicked.connect(self.on_panelize)
         self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
         self.type_box_combo.currentIndexChanged.connect(self.on_type_box_index_changed)
@@ -387,7 +387,6 @@ class Panelize(FlatCAMTool):
 
         panel_type = str(self.panel_type_radio.get_value())
 
-
         if 0 in {columns, rows}:
             self.app.inform.emit(_("[ERROR_NOTCL] Columns or Rows are zero value. Change them to a positive integer."))
             return "Columns or Rows are zero value. Change them to a positive integer."
@@ -471,7 +470,11 @@ class Panelize(FlatCAMTool):
                         if type(geom) == list:
                             geoms = list()
                             for local_geom in geom:
-                                geoms.append(translate_recursion(local_geom))
+                                res_geo = translate_recursion(local_geom)
+                                try:
+                                    geoms += (res_geo)
+                                except TypeError:
+                                    geoms.append(res_geo)
                             return geoms
                         else:
                             return affinity.translate(geom, xoff=currentx, yoff=currenty)
@@ -485,6 +488,16 @@ class Panelize(FlatCAMTool):
                             for tool in panel_obj.tools:
                                 obj_fin.tools[tool]['solid_geometry'][:] = []
 
+                    if isinstance(panel_obj, FlatCAMGerber):
+                        obj_fin.apertures = deepcopy(panel_obj.apertures)
+                        for ap in obj_fin.apertures:
+                            if 'solid_geometry' in obj_fin.apertures[ap]:
+                                obj_fin.apertures[ap]['solid_geometry'] = []
+                            if 'clear_geometry' in obj_fin.apertures[ap]:
+                                obj_fin.apertures[ap]['clear_geometry'] = []
+                            if 'follow_geometry' in obj_fin.apertures[ap]:
+                                obj_fin.apertures[ap]['follow_geometry'] = []
+
                     self.app.progress.emit(0)
                     for row in range(rows):
                         currentx = 0.0
@@ -493,20 +506,53 @@ class Panelize(FlatCAMTool):
                             if isinstance(panel_obj, FlatCAMGeometry):
                                 if panel_obj.multigeo is True:
                                     for tool in panel_obj.tools:
-                                        obj_fin.tools[tool]['solid_geometry'].append(translate_recursion(
-                                            panel_obj.tools[tool]['solid_geometry'])
-                                        )
+                                        geo = translate_recursion(panel_obj.tools[tool]['solid_geometry'])
+                                        if isinstance(geo, list):
+                                            obj_fin.tools[tool]['solid_geometry'] += geo
+                                        else:
+                                            obj_fin.tools[tool]['solid_geometry'].append(geo)
                                 else:
-                                    obj_fin.solid_geometry.append(
-                                        translate_recursion(panel_obj.solid_geometry)
-                                    )
+                                    geo = translate_recursion(panel_obj.solid_geometry)
+                                    if isinstance(geo, list):
+                                        obj_fin.solid_geometry += geo
+                                    else:
+                                        obj_fin.solid_geometry.append(geo)
                             else:
-                                obj_fin.solid_geometry.append(
-                                    translate_recursion(panel_obj.solid_geometry)
-                                )
+                                geo = translate_recursion(panel_obj.solid_geometry)
+                                if isinstance(geo, list):
+                                    obj_fin.solid_geometry += geo
+                                else:
+                                    obj_fin.solid_geometry.append(geo)
+
+                                for apid in panel_obj.apertures:
+                                    if 'solid_geometry' in panel_obj.apertures[apid]:
+                                        geo_aper = translate_recursion(panel_obj.apertures[apid]['solid_geometry'])
+                                        if isinstance(geo_aper, list):
+                                            obj_fin.apertures[apid]['solid_geometry'] += geo_aper
+                                        else:
+                                            obj_fin.apertures[apid]['solid_geometry'].append(geo_aper)
+
+                                    if 'clear_geometry' in panel_obj.apertures[apid]:
+                                        geo_aper = translate_recursion(panel_obj.apertures[apid]['clear_geometry'])
+                                        if isinstance(geo_aper, list):
+                                            obj_fin.apertures[apid]['clear_geometry'] += geo_aper
+                                        else:
+                                            obj_fin.apertures[apid]['clear_geometry'].append(geo_aper)
+
+                                    if 'follow_geometry' in panel_obj.apertures[apid]:
+                                        geo_aper = translate_recursion(panel_obj.apertures[apid]['follow_geometry'])
+                                        if isinstance(geo_aper, list):
+                                            obj_fin.apertures[apid]['follow_geometry'] += geo_aper
+                                        else:
+                                            obj_fin.apertures[apid]['follow_geometry'].append(geo_aper)
 
                             currentx += lenghtx
                         currenty += lenghty
+
+                    app_obj.log.debug("Found %s geometries. Creating a panel geometry cascaded union ..." %
+                                      len(obj_fin.solid_geometry))
+                    obj_fin.solid_geometry = cascaded_union(obj_fin.solid_geometry)
+                    app_obj.log.debug("Finished creating a cascaded union for the panel.")
 
                 if isinstance(panel_obj, FlatCAMExcellon):
                     self.app.progress.emit(50)
@@ -520,7 +566,8 @@ class Panelize(FlatCAMTool):
             self.app.inform.emit(_("[success] Panel done..."))
         else:
             self.constrain_flag = False
-            self.app.inform.emit(_("[WARNING] Too big for the constrain area. Final panel has {col} columns and {row} rows").format(
+            self.app.inform.emit(_("[WARNING] Too big for the constrain area. "
+                                   "Final panel has {col} columns and {row} rows").format(
                 col=columns, row=rows))
 
         proc = self.app.proc_container.new(_("Generating panel ... Please wait."))

@@ -17,6 +17,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed some bugs related to moving an Gerber object with the aperture table in view
 - added a new parameter in the Edit -> Preferences -> App Preferences named Geo Tolerance. This parameter control the level of geometric detail throughout FlatCAM. It directly influence the effect of Circle Steps parameter.
 - solved a bug in Excellon Editor that caused app crash when trying to edit a tool in Tool Table due of missing a tool offset
+- updated the ToolPanelize tool so the Gerber panel of type FlatCAMGerber can be isolated like any other FlatCAMGerber object
+- updated the ToolPanelize tool so it can be edited
 
 5.05.2019
 
