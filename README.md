@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - made units change from shortcut key 'Q' not to affect the preferences
 - made units change from Edit -> Toggle Units not to affect the preferences
 - remade the way the aperture marks are plotted in Gerber Object
+- fixed some bugs related to moving an Gerber object with the aperture table in view
 
 5.05.2019
 

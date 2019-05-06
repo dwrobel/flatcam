@@ -1187,11 +1187,18 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         self.marked_rows[:] = []
 
     def on_mark_cb_click_table(self):
+        """
+        Will mark aperture geometries on canvas or delete the markings depending on the checkbox state
+        :return:
+        """
+
         self.ui_disconnect()
         cw = self.sender()
-        cw_index = self.ui.apertures_table.indexAt(cw.pos())
-        cw_row = cw_index.row()
-        check_row = 0
+        try:
+            cw_index = self.ui.apertures_table.indexAt(cw.pos())
+            cw_row = cw_index.row()
+        except AttributeError:
+            cw_row = 0
 
         self.marked_rows[:] = []
         aperture = self.ui.apertures_table.item(cw_row, 1).text()
