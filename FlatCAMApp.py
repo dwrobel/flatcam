@@ -3521,7 +3521,7 @@ class App(QtCore.QObject):
     def set_screen_units(self, units):
         self.ui.units_label.setText("[" + self.defaults["units"].lower() + "]")
 
-    def on_toggle_units(self):
+    def on_toggle_units(self, no_pref=False):
         """
         Callback for the Units radio-button change in the Options tab.
         Changes the application's default units or the current project's units.
@@ -3659,13 +3659,14 @@ class App(QtCore.QObject):
         response = msgbox.clickedButton()
 
         if response == bt_ok:
-            self.options_read_form()
-            scale_options(factor)
-            self.options_write_form()
+            if no_pref is False:
+                self.options_read_form()
+                scale_options(factor)
+                self.options_write_form()
 
-            self.defaults_read_form()
-            scale_defaults(factor)
-            self.defaults_write_form()
+                self.defaults_read_form()
+                scale_defaults(factor)
+                self.defaults_write_form()
 
             self.should_we_save = True
 

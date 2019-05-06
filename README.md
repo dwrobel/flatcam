@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+6.05.2019
+
+- made units change from shortcut key 'Q' not to affect the preferences
+
 5.05.2019
 
 - another fix for bug in clear geometry processing for Gerber apertures

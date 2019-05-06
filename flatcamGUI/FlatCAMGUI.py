@@ -2290,7 +2290,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.ui.general_defaults_form.general_app_group.units_radio.set_value("IN")
                     else:
                         self.app.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
-                    self.app.on_toggle_units()
+                    self.app.on_toggle_units(no_pref=True)
 
                 # Rotate Object by 90 degree CW
                 if key == QtCore.Qt.Key_R:
