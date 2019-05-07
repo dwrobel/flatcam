@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+7.05.2019
+
+- remade the Tool Paenlize GUI
+
 6.05.2019
 
 - made units change from shortcut key 'Q' not to affect the preferences

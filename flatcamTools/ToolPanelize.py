@@ -40,8 +40,8 @@ class Panelize(FlatCAMTool):
         self.layout.addWidget(title_label)
 
         # Form Layout
-        form_layout = QtWidgets.QFormLayout()
-        self.layout.addLayout(form_layout)
+        form_layout_0 = QtWidgets.QFormLayout()
+        self.layout.addLayout(form_layout_0)
 
         # Type of object to be panelized
         self.type_obj_combo = QtWidgets.QComboBox()
@@ -60,7 +60,7 @@ class Panelize(FlatCAMTool):
               "The selection here decide the type of objects that will be\n"
               "in the Object combobox.")
         )
-        form_layout.addRow(self.type_obj_combo_label, self.type_obj_combo)
+        form_layout_0.addRow(self.type_obj_combo_label, self.type_obj_combo)
 
         # Object to be panelized
         self.object_combo = QtWidgets.QComboBox()
@@ -73,7 +73,29 @@ class Panelize(FlatCAMTool):
             _("Object to be panelized. This means that it will\n"
               "be duplicated in an array of rows and columns.")
         )
-        form_layout.addRow(self.object_label, self.object_combo)
+        form_layout_0.addRow(self.object_label, self.object_combo)
+        form_layout_0.addRow(QtWidgets.QLabel(""))
+
+        # Form Layout
+        form_layout = QtWidgets.QFormLayout()
+        self.layout.addLayout(form_layout)
+
+        # Type of box Panel object
+        self.reference_radio = RadioSet([{'label': 'Object', 'value': 'object'},
+                                         {'label': 'Bounding Box', 'value': 'bbox'}])
+        self.box_label = QtWidgets.QLabel(_("<b>Penelization Reference:</b>"))
+        self.box_label.setToolTip(
+            _("Choose the reference for panelization:\n"
+              "- Object = the bounding box of a different object\n"
+              "- Bounding Box = the bounding box of the object to be panelized\n"
+              "\n"
+              "The reference is useful when doing panelization for more than one\n"
+              "object. The spacings (really offsets) will be applied in reference\n"
+              "to this reference object therefore maintaining the panelized\n"
+              "objects in sync.")
+        )
+        form_layout.addRow(self.box_label)
+        form_layout.addRow(self.reference_radio)
 
         # Type of Box Object to be used as an envelope for panelization
         self.type_box_combo = QtWidgets.QComboBox()
@@ -107,6 +129,18 @@ class Panelize(FlatCAMTool):
               "selected object that is to be panelized.")
         )
         form_layout.addRow(self.box_combo_label, self.box_combo)
+        form_layout.addRow(QtWidgets.QLabel(""))
+
+        panel_data_label = QtWidgets.QLabel(_("<b>Panel Data:</b>"))
+        panel_data_label.setToolTip(
+            _("This informations will shape the resulting panel.\n"
+              "The number of rows and columns will set how many\n"
+              "duplicates of the original geometry will be generated.\n"
+              "\n"
+              "The spacings will set the distance between any two\n"
+              "elements of the panel array.")
+        )
+        form_layout.addRow(panel_data_label)
 
         # Spacing Columns
         self.spacing_columns = FCEntry()
@@ -141,11 +175,12 @@ class Panelize(FlatCAMTool):
             _("Number of rows of the desired panel")
         )
         form_layout.addRow(self.rows_label, self.rows)
+        form_layout.addRow(QtWidgets.QLabel(""))
 
         # Type of resulting Panel object
         self.panel_type_radio = RadioSet([{'label': 'Gerber', 'value': 'gerber'},
                                           {'label': 'Geometry', 'value': 'geometry'}])
-        self.panel_type_label = QtWidgets.QLabel(_("Panel Type:"))
+        self.panel_type_label = QtWidgets.QLabel(_("<b>Panel Type:</b>"))
         self.panel_type_label.setToolTip(
             _("Choose the type of object for the panel object:\n"
               "- Geometry\n"
@@ -200,6 +235,7 @@ class Panelize(FlatCAMTool):
         self.layout.addStretch()
 
         # Signals
+        self.reference_radio.activated_custom.connect(self.on_reference_radio_changed)
         self.panelize_object_button.clicked.connect(self.on_panelize)
         self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
         self.type_box_combo.currentIndexChanged.connect(self.on_type_box_index_changed)
@@ -241,6 +277,8 @@ class Panelize(FlatCAMTool):
     def set_tool_ui(self):
         self.reset_fields()
 
+        self.reference_radio.set_value('bbox')
+
         sp_c = self.app.defaults["tools_panelize_spacing_columns"] if \
             self.app.defaults["tools_panelize_spacing_columns"] else 0.0
         self.spacing_columns.set_value(float(sp_c))
@@ -278,10 +316,31 @@ class Panelize(FlatCAMTool):
         self.object_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(0)
 
+        # hide the panel type for Excellons, the panel can be only of type Geometry
+        if self.type_obj_combo.currentText() != 'Excellon':
+            self.panel_type_label.setDisabled(False)
+            self.panel_type_radio.setDisabled(False)
+        else:
+            self.panel_type_label.setDisabled(True)
+            self.panel_type_radio.setDisabled(True)
+            self.panel_type_radio.set_value('geometry')
+
     def on_type_box_index_changed(self):
         obj_type = self.type_box_combo.currentIndex()
         self.box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
         self.box_combo.setCurrentIndex(0)
+
+    def on_reference_radio_changed(self, current_val):
+        if current_val == 'object':
+            self.type_box_combo.setDisabled(False)
+            self.type_box_combo_label.setDisabled(False)
+            self.box_combo.setDisabled(False)
+            self.box_combo_label.setDisabled(False)
+        else:
+            self.type_box_combo.setDisabled(True)
+            self.type_box_combo_label.setDisabled(True)
+            self.box_combo.setDisabled(True)
+            self.box_combo_label.setDisabled(True)
 
     def on_panelize(self):
         name = self.object_combo.currentText()
@@ -308,7 +367,10 @@ class Panelize(FlatCAMTool):
             return "Could not retrieve object: %s" % boxname
 
         if box is None:
-            self.app.inform.emit(_("[WARNING]No object Box. Using instead %s") % panel_obj)
+            self.app.inform.emit(_("[WARNING_NOTCL]No object Box. Using instead %s") % panel_obj)
+            self.reference_radio.set_value('bbox')
+
+        if self.reference_radio.get_value() == 'bbox':
             box = panel_obj
 
         self.outname = name + '_panelized'
