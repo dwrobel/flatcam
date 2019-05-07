@@ -373,6 +373,12 @@ class App(QtCore.QObject):
             "gerber_aperture_buffer_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.buffer_aperture_entry,
             "gerber_follow": self.ui.gerber_defaults_form.gerber_adv_opt_group.follow_cb,
 
+            # Gerber Export
+            "gerber_exp_units": self.ui.gerber_defaults_form.gerber_exp_group.gerber_units_radio,
+            "gerber_exp_integer": self.ui.gerber_defaults_form.gerber_exp_group.format_whole_entry,
+            "gerber_exp_decimals": self.ui.gerber_defaults_form.gerber_exp_group.format_dec_entry,
+            "gerber_exp_zeros": self.ui.gerber_defaults_form.gerber_exp_group.zeros_radio,
+
             # Excellon General
             "excellon_plot": self.ui.excellon_defaults_form.excellon_gen_group.plot_cb,
             "excellon_solid": self.ui.excellon_defaults_form.excellon_gen_group.solid_cb,
@@ -681,6 +687,12 @@ class App(QtCore.QObject):
             "gerber_aperture_scale_factor": 1.0,
             "gerber_aperture_buffer_factor": 0.0,
             "gerber_follow": False,
+
+            # Gerber Export
+            "gerber_exp_units": 'IN',
+            "gerber_exp_integer": 2,
+            "gerber_exp_decimals": 4,
+            "gerber_exp_zeros": 'L',
 
             # Excellon General
             "excellon_plot": True,
@@ -1299,7 +1311,7 @@ class App(QtCore.QObject):
         self.ui.menufileexportsvg.triggered.connect(self.on_file_exportsvg)
         self.ui.menufileexportpng.triggered.connect(self.on_file_exportpng)
         self.ui.menufileexportexcellon.triggered.connect(self.on_file_exportexcellon)
-
+        self.ui.menufileexportgerber.triggered.connect(self.on_file_exportgerber)
 
         self.ui.menufileexportdxf.triggered.connect(self.on_file_exportdxf)
 
@@ -6167,7 +6179,7 @@ class App(QtCore.QObject):
 
     def on_file_exportexcellon(self):
         """
-        Callback for menu item File->Export SVG.
+        Callback for menu item File->Export->Excellon.
 
         :return: None
         """
@@ -6203,6 +6215,45 @@ class App(QtCore.QObject):
         else:
             self.export_excellon(name, filename)
             self.file_saved.emit("Excellon", filename)
+
+    def on_file_exportgerber(self):
+        """
+        Callback for menu item File->Export->Gerber.
+
+        :return: None
+        """
+        self.report_usage("on_file_exportgerber")
+        App.log.debug("on_file_exportgerber()")
+
+        obj = self.collection.get_active()
+        if obj is None:
+            self.inform.emit(_("[WARNING_NOTCL] No object selected. Please Select an Gerber object to export."))
+            return
+
+        # Check for more compatible types and add as required
+        if not isinstance(obj, FlatCAMGerber):
+            self.inform.emit(_("[ERROR_NOTCL] Failed. Only Gerber objects can be saved as Gerber files..."))
+            return
+
+        name = self.collection.get_active().options["name"]
+
+        filter = "Gerber File (*.GBR);;All Files (*.*)"
+        try:
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+                caption=_("Export Gerber"),
+                directory=self.get_last_save_folder() + '/' + name,
+                filter=filter)
+        except TypeError:
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Gerber"), filter=filter)
+
+        filename = str(filename)
+
+        if filename == "":
+            self.inform.emit(_("[WARNING_NOTCL] Export Gerber cancelled."))
+            return
+        else:
+            self.export_gerber(name, filename)
+            self.file_saved.emit("Gerber", filename)
 
     def on_file_exportdxf(self):
         """
@@ -7003,6 +7054,121 @@ class App(QtCore.QObject):
             ret = make_excellon()
             if ret == 'fail':
                 self.inform.emit(_('[ERROR_NOTCL] Could not export Excellon file.'))
+                return
+
+    def export_gerber(self, obj_name, filename, use_thread=True):
+        """
+        Exports a Gerber Object to an Gerber file.
+
+        :param filename: Path to the Gerber file to save to.
+        :return:
+        """
+        self.report_usage("export_gerber()")
+
+        if filename is None:
+            filename = self.defaults["global_last_save_folder"]
+
+        self.log.debug("export_gerber()")
+
+        try:
+            obj = self.collection.get_by_name(str(obj_name))
+        except:
+            # TODO: The return behavior has not been established... should raise exception?
+            return "Could not retrieve object: %s" % obj_name
+
+        # updated units
+        gunits = self.defaults["gerber_exp_units"]
+        gwhole = self.defaults["gerber_exp_integer"]
+        gfract = self.defaults["gerber_exp_decimals"]
+        gzeros = self.defaults["gerber_exp_zeros"]
+
+        fc_units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        if fc_units == 'MM':
+            factor = 1 if gunits == 'MM' else 0.03937
+        else:
+            factor = 25.4 if gunits == 'MM' else 1
+
+        def make_gerber():
+            try:
+                time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
+
+                header = 'G04*\n'
+                header += ';GERBER GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s\n' % \
+                          (str(self.version), str(self.version_date))
+
+                header += ';Filename: %s' % str(obj_name) + '\n'
+                header += ';Created on : %s' % time_str + '\n'
+                header += '%%FS%sAX%s%sY%s%s*%%\n' % (gzeros, gwhole, gfract, gwhole, gfract)
+
+                # gerber_code = obj.export_gerber(gwhole, gfract, form='ndec', e_zeros=gzeros, factor=factor)
+
+                for apid in obj.apertures:
+                    if obj.apertures[apid]['type'] == 'C':
+                        header += "%ADD{apid}{type},{size}*%\n".format(apid=str(apid),
+                                                                       type='C',
+                                                                       size=obj.apertures[apid]['size'])
+                    elif obj.apertures[apid]['type'] == 'R':
+                        header += "%ADD{apid}{type},{width}X{height}*%\n".format(
+                            apid=str(apid),
+                            type='R',
+                            width=obj.apertures[apid]['width'],
+                            height=obj.apertures[apid]['height']
+                        )
+                    elif obj.apertures[apid]['type'] == 'O':
+                        header += "%ADD{apid}{type},{width}X{height}*%\n".format(
+                            apid=str(apid),
+                            type='O',
+                            width=obj.apertures[apid]['width'],
+                            height=obj.apertures[apid]['height']
+                        )
+
+                header += '\n'
+                header += "%MO{units}*%\n".format(units=gunits)
+                header += "G04*\n"
+                if gunits == 'IN':
+                    header += 'G71*\n'
+                else:
+                    header += 'G70*\n'
+                header += 'G75*\n'
+
+                if gunits == 'IN':
+                    header += 'G91*\n'
+                else:
+                    header += 'G90*\n'
+
+                header += 'G01*\n'
+                header += '%LPD*%\n'
+
+                footer = 'M02*\n'
+
+                exported_gerber = header
+                # exported_gerber += gerber_code
+                exported_gerber += footer
+
+                with open(filename, 'w') as fp:
+                    fp.write(exported_gerber)
+
+                self.file_saved.emit("Gerber", filename)
+                self.inform.emit(_("[success] Gerber file exported to %s") % filename)
+            except Exception as e:
+                log.debug("App.export_gerber.make_gerber() --> %s" % str(e))
+                return 'fail'
+
+        if use_thread is True:
+
+            with self.proc_container.new(_("Exporting Gerber")) as proc:
+
+                def job_thread_exc(app_obj):
+                    ret = make_gerber()
+                    if ret == 'fail':
+                        self.inform.emit(_('[ERROR_NOTCL] Could not export Gerber file.'))
+                        return
+
+                self.worker_task.emit({'fcn': job_thread_exc, 'params': [self]})
+        else:
+            ret = make_gerber()
+            if ret == 'fail':
+                self.inform.emit(_('[ERROR_NOTCL] Could not export Gerber file.'))
                 return
 
     def export_dxf(self, obj_name, filename, use_thread=True):

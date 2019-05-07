@@ -183,6 +183,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         )
         self.menufileexport.addAction(self.menufileexportexcellon)
 
+        self.menufileexportgerber = QtWidgets.QAction(QtGui.QIcon('share/flatcam_icon32.png'), _('Export &Gerber ...'),
+                                                        self)
+        self.menufileexportgerber.setToolTip(
+            _("Will export an Gerber Object as Gerber file,\n"
+              "the coordinates format, the file units and zeros\n"
+              "are set in Preferences -> Gerber Export.")
+        )
+        self.menufileexport.addAction(self.menufileexportgerber)
 
         # Separator
         self.menufile.addSeparator()
@@ -3137,11 +3145,17 @@ class GerberPreferencesUI(QtWidgets.QWidget):
         self.gerber_gen_group.setFixedWidth(250)
         self.gerber_opt_group = GerberOptPrefGroupUI()
         self.gerber_opt_group.setFixedWidth(230)
+        self.gerber_exp_group = GerberExpPrefGroupUI()
+        self.gerber_exp_group.setFixedWidth(230)
         self.gerber_adv_opt_group = GerberAdvOptPrefGroupUI()
         self.gerber_adv_opt_group.setFixedWidth(200)
 
+        self.vlay = QtWidgets.QVBoxLayout()
+        self.vlay.addWidget(self.gerber_opt_group)
+        self.vlay.addWidget(self.gerber_exp_group)
+
         self.layout.addWidget(self.gerber_gen_group)
-        self.layout.addWidget(self.gerber_opt_group)
+        self.layout.addLayout(self.vlay)
         self.layout.addWidget(self.gerber_adv_opt_group)
 
         self.layout.addStretch()
@@ -4188,6 +4202,100 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
 
         self.buffer_aperture_entry = FloatEntry2()
         grid0.addWidget(self.buffer_aperture_entry, 3, 1)
+
+        self.layout.addStretch()
+
+
+class GerberExpPrefGroupUI(OptionsGroupUI):
+
+    def __init__(self, parent=None):
+        super(GerberExpPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str(_("Gerber Export")))
+
+        # Plot options
+        self.export_options_label = QtWidgets.QLabel(_("<b>Export Options:</b>"))
+        self.export_options_label.setToolTip(
+            _("The parameters set here are used in the file exported\n"
+            "when using the File -> Export -> Export Gerber menu entry.")
+        )
+        self.layout.addWidget(self.export_options_label)
+
+        form = QtWidgets.QFormLayout()
+        self.layout.addLayout(form)
+
+        # Gerber Units
+        self.gerber_units_label = QtWidgets.QLabel(_('<b>Units</b>:'))
+        self.gerber_units_label.setToolTip(
+            _("The units used in the Gerber file.")
+        )
+
+        self.gerber_units_radio = RadioSet([{'label': 'INCH', 'value': 'IN'},
+                                              {'label': 'MM', 'value': 'MM'}])
+        self.gerber_units_radio.setToolTip(
+            _("The units used in the Gerber file.")
+        )
+
+        form.addRow(self.gerber_units_label, self.gerber_units_radio)
+
+        # Gerber format
+        self.digits_label = QtWidgets.QLabel(_("<b>Int/Decimals:</b>"))
+        self.digits_label.setToolTip(
+            _("The number of digits in the whole part of the number\n"
+              "and in the fractional part of the number.")
+        )
+
+        hlay1 = QtWidgets.QHBoxLayout()
+
+        self.format_whole_entry = IntEntry()
+        self.format_whole_entry.setMaxLength(1)
+        self.format_whole_entry.setAlignment(QtCore.Qt.AlignRight)
+        self.format_whole_entry.setFixedWidth(30)
+        self.format_whole_entry.setToolTip(
+            _("This numbers signify the number of digits in\n"
+            "the whole part of Gerber coordinates.")
+        )
+        hlay1.addWidget(self.format_whole_entry, QtCore.Qt.AlignLeft)
+
+        gerber_separator_label= QtWidgets.QLabel(':')
+        gerber_separator_label.setFixedWidth(5)
+        hlay1.addWidget(gerber_separator_label, QtCore.Qt.AlignLeft)
+
+        self.format_dec_entry = IntEntry()
+        self.format_dec_entry.setMaxLength(1)
+        self.format_dec_entry.setAlignment(QtCore.Qt.AlignRight)
+        self.format_dec_entry.setFixedWidth(30)
+        self.format_dec_entry.setToolTip(
+            _("This numbers signify the number of digits in\n"
+              "the decimal part of Gerber coordinates.")
+        )
+        hlay1.addWidget(self.format_dec_entry, QtCore.Qt.AlignLeft)
+        hlay1.addStretch()
+
+        form.addRow(self.digits_label, hlay1)
+
+        # Gerber Zeros
+        self.zeros_label = QtWidgets.QLabel(_('<b>Zeros</b>:'))
+        self.zeros_label.setAlignment(QtCore.Qt.AlignLeft)
+        self.zeros_label.setToolTip(
+            _("This sets the type of Gerber zeros.\n"
+              "If LZ then Leading Zeros are removed and\n"
+              "Trailing Zeros are kept.\n"
+              "If TZ is checked then Trailing Zeros are removed\n"
+              "and Leading Zeros are kept.")
+        )
+
+        self.zeros_radio = RadioSet([{'label': 'LZ', 'value': 'L'},
+                                     {'label': 'TZ', 'value': 'T'}])
+        self.zeros_radio.setToolTip(
+            _("This sets the type of Gerber zeros.\n"
+              "If LZ then Leading Zeros are removed and\n"
+              "Trailing Zeros are kept.\n"
+              "If TZ is checked then Trailing Zeros are removed\n"
+              "and Leading Zeros are kept.")
+        )
+
+        form.addRow(self.zeros_label, self.zeros_radio)
 
         self.layout.addStretch()
 

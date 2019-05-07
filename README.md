@@ -11,7 +11,8 @@ CAD program, and create G-Code for Isolation routing.
 
 7.05.2019
 
-- remade the Tool Paenlize GUI
+- remade the Tool Panelize GUI
+- work in Gerber Export: finished the header export
 
 6.05.2019
 
