@@ -585,12 +585,13 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             sort.append(int(k))
         sorted_apertures = sorted(sort)
 
-        sort = []
-        for k, v in list(self.aperture_macros.items()):
-            sort.append(k)
-        sorted_macros = sorted(sort)
+        # sort = []
+        # for k, v in list(self.aperture_macros.items()):
+        #     sort.append(k)
+        # sorted_macros = sorted(sort)
 
-        n = len(sorted_apertures) + len(sorted_macros)
+        # n = len(sorted_apertures) + len(sorted_macros)
+        n = len(sorted_apertures)
         self.ui.apertures_table.setRowCount(n)
 
         for ap_code in sorted_apertures:
@@ -648,28 +649,28 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             self.apertures_row += 1
 
-        for ap_code in sorted_macros:
-            ap_code = str(ap_code)
-
-            ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
-            ap_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
-
-            ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
-
-            ap_type_item = QtWidgets.QTableWidgetItem('AM')
-            ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
-
-            mark_item = FCCheckBox()
-            mark_item.setLayoutDirection(QtCore.Qt.RightToLeft)
-            # if self.ui.aperture_table_visibility_cb.isChecked():
-            #     mark_item.setChecked(True)
-
-            self.ui.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
-            self.ui.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
-            self.ui.apertures_table.setCellWidget(self.apertures_row, 5, mark_item)
-
-            self.apertures_row += 1
+        # for ap_code in sorted_macros:
+        #     ap_code = str(ap_code)
+        #
+        #     ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
+        #     ap_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        #     self.ui.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
+        #
+        #     ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
+        #
+        #     ap_type_item = QtWidgets.QTableWidgetItem('AM')
+        #     ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
+        #
+        #     mark_item = FCCheckBox()
+        #     mark_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+        #     # if self.ui.aperture_table_visibility_cb.isChecked():
+        #     #     mark_item.setChecked(True)
+        #
+        #     self.ui.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
+        #     self.ui.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
+        #     self.ui.apertures_table.setCellWidget(self.apertures_row, 5, mark_item)
+        #
+        #     self.apertures_row += 1
 
         self.ui.apertures_table.selectColumn(0)
         self.ui.apertures_table.resizeColumnsToContents()
