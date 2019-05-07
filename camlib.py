@@ -2486,17 +2486,18 @@ class Gerber (Geometry):
                             # do nothing because 'R' type moving aperture is none at once
                             pass
                         else:
-                            # --- Buffered ----
-                            width = self.apertures[last_path_aperture]["size"]
+
                             geo = LineString(path)
                             if not geo.is_empty:
                                 follow_buffer.append(geo)
                                 try:
-                                    self.apertures[current_aperture]['follow_geometry'].append(geo)
+                                    self.apertures[last_path_aperture]['follow_geometry'].append(geo)
                                 except KeyError:
-                                    self.apertures[current_aperture]['follow_geometry'] = []
-                                    self.apertures[current_aperture]['follow_geometry'].append(geo)
+                                    self.apertures[last_path_aperture]['follow_geometry'] = []
+                                    self.apertures[last_path_aperture]['follow_geometry'].append(geo)
 
+                            # --- Buffered ----
+                            width = self.apertures[last_path_aperture]["size"]
                             geo = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                             if not geo.is_empty:
                                 poly_buffer.append(geo)
@@ -2869,17 +2870,18 @@ class Gerber (Geometry):
                                     if self.apertures[last_path_aperture]["type"] != 'R':
                                         follow_buffer.append(geo)
                                         try:
-                                            self.apertures[current_aperture]['follow_geometry'].append(geo)
+                                            self.apertures[last_path_aperture]['follow_geometry'].append(geo)
                                         except KeyError:
-                                            self.apertures[current_aperture]['follow_geometry'] = []
-                                            self.apertures[current_aperture]['follow_geometry'].append(geo)
-                                except:
+                                            self.apertures[last_path_aperture]['follow_geometry'] = []
+                                            self.apertures[last_path_aperture]['follow_geometry'].append(geo)
+                                except Exception as e:
+                                    log.debug("camlib.Gerber.parse_lines() --> G01 match D03 --> %s" % str(e))
                                     follow_buffer.append(geo)
                                     try:
-                                        self.apertures[current_aperture]['follow_geometry'].append(geo)
+                                        self.apertures[last_path_aperture]['follow_geometry'].append(geo)
                                     except KeyError:
-                                        self.apertures[current_aperture]['follow_geometry'] = []
-                                        self.apertures[current_aperture]['follow_geometry'].append(geo)
+                                        self.apertures[last_path_aperture]['follow_geometry'] = []
+                                        self.apertures[last_path_aperture]['follow_geometry'].append(geo)
 
                             # this treats the case when we are storing geometry as solids
                             width = self.apertures[last_path_aperture]["size"]
@@ -3217,7 +3219,7 @@ class Gerber (Geometry):
                 if 'clear_geometry' in self.apertures[apid]:
                     for pol in self.apertures[apid]['clear_geometry']:
                         global_clear_geo.append(pol)
-                self.apertures[apid].pop('clear_geometry', None)
+                # self.apertures[apid].pop('clear_geometry', None)
             log.warning("Found %d clear polygons." % len(global_clear_geo))
 
             temp_geo = []
@@ -3496,6 +3498,8 @@ class Gerber (Geometry):
         try:
             for apid in self.apertures:
                 self.apertures[apid]['solid_geometry'] = scale_geom(self.apertures[apid]['solid_geometry'])
+                self.apertures[apid]['clear_geometry'] = scale_geom(self.apertures[apid]['clear_geometry'])
+
         except Exception as e:
             log.debug('FlatCAMGeometry.scale() --> %s' % str(e))
 

@@ -1258,160 +1258,185 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         self.ui_connect()
 
-    def export_gerber(self, whole, fract, g_zeros=None, factor=1):
+    def export_gerber(self, whole, fract, g_zeros='L', factor=1):
         """
 
         :return: Gerber_code
         """
 
+        def tz_format(x, y ,fac):
+            x_c = x * fac
+            y_c = y * fac
+
+            x_form = "{:.{dec}f}".format(x_c, dec=fract)
+            y_form = "{:.{dec}f}".format(y_c, dec=fract)
+
+            # extract whole part and decimal part
+            x_form = x_form.partition('.')
+            y_form = y_form.partition('.')
+
+            # left padd the 'whole' part with zeros
+            x_whole = x_form[0].rjust(whole, '0')
+            y_whole = y_form[0].rjust(whole, '0')
+
+            # restore the coordinate padded in the left with 0 and added the decimal part
+            # without the decinal dot
+            x_form = x_whole + x_form[2]
+            y_form = y_whole + y_form[2]
+            return x_form, y_form
+
+        def lz_format(x, y, fac):
+            x_c = x * fac
+            y_c = y * fac
+
+            x_form = "{:.{dec}f}".format(x_c, dec=fract).replace('.', '')
+            y_form = "{:.{dec}f}".format(y_c, dec=fract).replace('.', '')
+
+            # pad with rear zeros
+            x_form.ljust(length, '0')
+            y_form.ljust(length, '0')
+
+            return x_form, y_form
+
+        # Gerber code is stored here
         gerber_code = ''
 
-        # store here if the file has slots, return 1 if any slots, 0 if only drills
-        has_slots = 0
-
-        # drills processing
+        # apertures processing
         try:
-            if self.apertures:
-                length = whole + fract
-                for apid in self.apertures:
-                    if apid == '0':
+            length = whole + fract
+            if '0' in self.apertures:
+                if 'solid_geometry' in self.apertures['0']:
+                    for geo in self.apertures['0']['solid_geometry']:
                         gerber_code += 'G36*\n'
+                        geo_coords = list(geo.exterior.coords)
+                        # first command is a move with pen-up D02 at the beginning of the geo
+                        if g_zeros == 'T':
+                            x_formatted, y_formatted = tz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                           yform=y_formatted)
+                        else:
+                            x_formatted, y_formatted = lz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                           yform=y_formatted)
+                        for coord in geo_coords[1:]:
+                            if g_zeros == 'T':
+                                x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                               yform=y_formatted)
+                            else:
+                                x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                               yform=y_formatted)
                         gerber_code += 'D02*\n'
                         gerber_code += 'G37*\n'
-                    else:
-                        gerber_code += 'D%s*\n' % str(apid)
 
-                    for geo in self.apertures[apid]['follow_geometry']:
+                if 'clear_geometry' in self.apertures['0']:
+                    gerber_code += '%LPC*%\n'
+                    for geo in self.apertures['0']['clear_geometry']:
+                        gerber_code += 'G36*\n'
+                        geo_coords = list(geo.exterior.coords)
+
+                        # first command is a move with pen-up D02 at the beginning of the geo
                         if g_zeros == 'T':
-                            if isinstance(geo, Point):
-                                #TODO
-                                pass
+                            x_formatted, y_formatted = tz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                           yform=y_formatted)
+                        else:
+                            x_formatted, y_formatted = lz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                           yform=y_formatted)
+                        for coord in geo_coords[1:]:
+                            if g_zeros == 'T':
+                                x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                               yform=y_formatted)
                             else:
-                                drill_x = drill['point'].x * factor
-                                drill_y = drill['point'].y * factor
+                                x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                               yform=y_formatted)
+                        gerber_code += 'D02*\n'
+                        gerber_code += 'G37*\n'
+                    gerber_code += '%LPD*%\n'
 
-                                exc_x_formatted = "{:.{dec}f}".format(drill_x, dec=fract)
-                                exc_y_formatted = "{:.{dec}f}".format(drill_y, dec=fract)
+            for apid in self.apertures:
+                if apid == '0':
+                    continue
+                else:
+                    gerber_code += 'D%s*\n' % str(apid)
 
-                                # extract whole part and decimal part
-                                exc_x_formatted = exc_x_formatted.partition('.')
-                                exc_y_formatted = exc_y_formatted.partition('.')
+                    if 'follow_geometry' in self.apertures[apid]:
+                        for geo in self.apertures[apid]['follow_geometry']:
+                            if isinstance(geo, Point):
+                                if g_zeros == 'T':
+                                    x_formatted, y_formatted = tz_format(geo.x, geo.y, factor)
+                                    gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                                else:
+                                    x_formatted, y_formatted = lz_format(geo.x, geo.y, factor)
+                                    gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                            else:
+                                geo_coords = list(geo.coords)
+                                # first command is a move with pen-up D02 at the beginning of the geo
+                                if g_zeros == 'T':
+                                    x_formatted, y_formatted = tz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                                    gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                                else:
+                                    x_formatted, y_formatted = lz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                                    gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                                for coord in geo_coords[1:]:
+                                    if g_zeros == 'T':
+                                        x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                        gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                       yform=y_formatted)
+                                    else:
+                                        x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                        gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                       yform=y_formatted)
+                    if 'clear_follow_geometry' in self.apertures[apid]:
+                        gerber_code += '%LPC*%\n'
+                        for geo in self.apertures[apid]['clear_follow_geometry']:
+                            if isinstance(geo, Point):
+                                if g_zeros == 'T':
+                                    x_formatted, y_formatted = tz_format(geo.x, geo.y, factor)
+                                    gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                                else:
+                                    x_formatted, y_formatted = lz_format(geo.x, geo.y, factor)
+                                    gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                            else:
+                                geo_coords = list(geo.coords)
+                                # first command is a move with pen-up D02 at the beginning of the geo
+                                if g_zeros == 'T':
+                                    x_formatted, y_formatted = tz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                                    gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                                else:
+                                    x_formatted, y_formatted = lz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                                    gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                                for coord in geo_coords[1:]:
+                                    if g_zeros == 'T':
+                                        x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                        gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                       yform=y_formatted)
+                                    else:
+                                        x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                        gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                       yform=y_formatted)
+                        gerber_code += '%LPD*%\n'
 
-                                # left padd the 'whole' part with zeros
-                                x_whole = exc_x_formatted[0].rjust(whole, '0')
-                                y_whole = exc_y_formatted[0].rjust(whole, '0')
-
-                                # restore the coordinate padded in the left with 0 and added the decimal part
-                                # without the decinal dot
-                                exc_x_formatted = x_whole + exc_x_formatted[2]
-                                exc_y_formatted = y_whole + exc_y_formatted[2]
-
-                                gerber_code += "X{xform}Y{yform}\n".format(xform=exc_x_formatted,
-                                                                             yform=exc_y_formatted)
-                        elif tool == drill['tool']:
-                            drill_x = drill['point'].x * factor
-                            drill_y = drill['point'].y * factor
-
-                            exc_x_formatted = "{:.{dec}f}".format(drill_x, dec=fract).replace('.', '')
-                            exc_y_formatted = "{:.{dec}f}".format(drill_y, dec=fract).replace('.', '')
-
-                            # pad with rear zeros
-                            exc_x_formatted.ljust(length, '0')
-                            exc_y_formatted.ljust(length, '0')
-
-                            excellon_code += "X{xform}Y{yform}\n".format(xform=exc_x_formatted,
-                                                                         yform=exc_y_formatted)
         except Exception as e:
-            log.debug(str(e))
+            log.debug("FlatCAMObj.FlatCAMGerber.export_gerber() --> %s" % str(e))
 
-        # slots processing
-        try:
-            if self.slots:
-                has_slots = 1
-                for tool in self.tools:
-                    if int(tool) < 10:
-                        excellon_code += 'T0' + str(tool) + '\n'
-                    else:
-                        excellon_code += 'T' + str(tool) + '\n'
-
-                    for slot in self.slots:
-                        if form == 'dec' and tool == slot['tool']:
-                            start_slot_x = slot['start'].x * factor
-                            start_slot_y = slot['start'].y * factor
-                            stop_slot_x = slot['stop'].x * factor
-                            stop_slot_y = slot['stop'].y * factor
-
-                            excellon_code += "G00X{:.{dec}f}Y{:.{dec}f}\nM15\n".format(start_slot_x,
-                                                                                       start_slot_y,
-                                                                                       dec=fract)
-                            excellon_code += "G00X{:.{dec}f}Y{:.{dec}f}\nM16\n".format(stop_slot_x,
-                                                                                       stop_slot_y,
-                                                                                       dec=fract)
-
-                        elif e_zeros == 'LZ' and tool == slot['tool']:
-                            start_slot_x = slot['start'].x * factor
-                            start_slot_y = slot['start'].y * factor
-                            stop_slot_x = slot['stop'].x * factor
-                            stop_slot_y = slot['stop'].y * factor
-
-                            start_slot_x_formatted = "{:.{dec}f}".format(start_slot_x, dec=fract).replace('.', '')
-                            start_slot_y_formatted = "{:.{dec}f}".format(start_slot_y, dec=fract).replace('.', '')
-                            stop_slot_x_formatted = "{:.{dec}f}".format(stop_slot_x, dec=fract).replace('.', '')
-                            stop_slot_y_formatted = "{:.{dec}f}".format(stop_slot_y, dec=fract).replace('.', '')
-
-                            # extract whole part and decimal part
-                            start_slot_x_formatted = start_slot_x_formatted.partition('.')
-                            start_slot_y_formatted = start_slot_y_formatted.partition('.')
-                            stop_slot_x_formatted = stop_slot_x_formatted.partition('.')
-                            stop_slot_y_formatted = stop_slot_y_formatted.partition('.')
-
-                            # left padd the 'whole' part with zeros
-                            start_x_whole = start_slot_x_formatted[0].rjust(whole, '0')
-                            start_y_whole = start_slot_y_formatted[0].rjust(whole, '0')
-                            stop_x_whole = stop_slot_x_formatted[0].rjust(whole, '0')
-                            stop_y_whole = stop_slot_y_formatted[0].rjust(whole, '0')
-
-                            # restore the coordinate padded in the left with 0 and added the decimal part
-                            # without the decinal dot
-                            start_slot_x_formatted = start_x_whole + start_slot_x_formatted[2]
-                            start_slot_y_formatted = start_y_whole + start_slot_y_formatted[2]
-                            stop_slot_x_formatted = stop_x_whole + stop_slot_x_formatted[2]
-                            stop_slot_y_formatted = stop_y_whole + stop_slot_y_formatted[2]
-
-                            excellon_code += "G00X{xstart}Y{ystart}\nM15\n".format(xstart=start_slot_x_formatted,
-                                                                                   ystart=start_slot_y_formatted)
-                            excellon_code += "G00X{xstop}Y{ystop}\nM16\n".format(xstop=stop_slot_x_formatted,
-                                                                                 ystop=stop_slot_y_formatted)
-                        elif tool == slot['tool']:
-                            start_slot_x = slot['start'].x * factor
-                            start_slot_y = slot['start'].y * factor
-                            stop_slot_x = slot['stop'].x * factor
-                            stop_slot_y = slot['stop'].y * factor
-                            length = whole + fract
-
-                            start_slot_x_formatted = "{:.{dec}f}".format(start_slot_x, dec=fract).replace('.', '')
-                            start_slot_y_formatted = "{:.{dec}f}".format(start_slot_y, dec=fract).replace('.', '')
-                            stop_slot_x_formatted = "{:.{dec}f}".format(stop_slot_x, dec=fract).replace('.', '')
-                            stop_slot_y_formatted = "{:.{dec}f}".format(stop_slot_y, dec=fract).replace('.', '')
-
-                            # pad with rear zeros
-                            start_slot_x_formatted.ljust(length, '0')
-                            start_slot_y_formatted.ljust(length, '0')
-                            stop_slot_x_formatted.ljust(length, '0')
-                            stop_slot_y_formatted.ljust(length, '0')
-
-                            excellon_code += "G00X{xstart}Y{ystart}\nM15\n".format(xstart=start_slot_x_formatted,
-                                                                                   ystart=start_slot_y_formatted)
-                            excellon_code += "G00X{xstop}Y{ystop}\nM16\n".format(xstop=stop_slot_x_formatted,
-                                                                                 ystop=stop_slot_y_formatted)
-        except Exception as e:
-            log.debug(str(e))
-
-        if not self.drills and not self.slots:
-            log.debug("FlatCAMObj.FlatCAMExcellon.export_excellon() --> Excellon Object is empty: no drills, no slots.")
+        if not self.apertures:
+            log.debug("FlatCAMObj.FlatCAMGerber.export_gerber() --> Gerber Object is empty: no apertures.")
             return 'fail'
 
-        return has_slots, excellon_code
+        return gerber_code
 
     def mirror(self, axis, point):
         Gerber.mirror(self, axis=axis, point=point)

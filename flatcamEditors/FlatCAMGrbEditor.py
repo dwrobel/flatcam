@@ -3864,16 +3864,17 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
     def hide_tool(self, tool_name):
         # self.app.ui.notebook.setTabText(2, _("Tools"))
-
-        if tool_name == 'all':
-            self.apertures_frame.hide()
-        if tool_name == 'select':
-            self.apertures_frame.show()
-        if tool_name == 'buffer' or tool_name == 'all':
-            self.buffer_tool_frame.hide()
-        if tool_name == 'scale' or tool_name == 'all':
-            self.scale_tool_frame.hide()
-
+        try:
+            if tool_name == 'all':
+                self.apertures_frame.hide()
+            if tool_name == 'select':
+                self.apertures_frame.show()
+            if tool_name == 'buffer' or tool_name == 'all':
+                self.buffer_tool_frame.hide()
+            if tool_name == 'scale' or tool_name == 'all':
+                self.scale_tool_frame.hide()
+        except Exception as e:
+            log.debug("FlatCAMGrbEditor.hide_tool() --> %s" % str(e))
         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
 

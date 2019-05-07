@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - remade the Tool Panelize GUI
 - work in Gerber Export: finished the header export
 - fixed the Gerber Object and Gerber Editor Apertures Table to not show extra rows when there are aperture macros in the object
+- work in Gerber Export: finished the body export but have some errors with clear geometry (LPC)
 
 6.05.2019
 
