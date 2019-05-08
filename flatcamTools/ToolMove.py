@@ -130,15 +130,6 @@ class ToolMove(FlatCAMTool):
                     def job_move(app_obj):
                         obj_list = self.app.collection.get_selected()
 
-                        def offset_geom(obj):
-                            if type(obj) is list:
-                                new_obj = []
-                                for g in obj:
-                                    new_obj.append(offset_geom(g))
-                                return new_obj
-                            else:
-                                return affinity.translate(obj, xoff=dx, yoff=dy)
-
                         try:
                             if not obj_list:
                                 self.app.inform.emit(_("[WARNING_NOTCL] No object(s) selected."))
@@ -148,16 +139,6 @@ class ToolMove(FlatCAMTool):
 
                                     # offset solid_geometry
                                     sel_obj.offset((dx, dy))
-
-                                    for apid in sel_obj.apertures:
-                                        if 'solid_geometry' in sel_obj.apertures[apid]:
-                                            sel_obj.apertures[apid]['solid_geometry'] = offset_geom(
-                                                sel_obj.apertures[apid]['solid_geometry']
-                                            )
-                                        if 'follow_geometry' in sel_obj.apertures[apid]:
-                                            sel_obj.apertures[apid]['follow_geometry'] = offset_geom(
-                                                sel_obj.apertures[apid]['follow_geometry']
-                                            )
                                     sel_obj.plot()
 
                                     try:
