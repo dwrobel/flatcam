@@ -4876,6 +4876,7 @@ class App(QtCore.QObject):
                 obj.options['ymax'] = d
             # self.plot_all(zoom=False)
             self.inform.emit(_('[success] Origin set ...'))
+            self.plotcanvas.fit_view()
             self.plotcanvas.vis_disconnect('mouse_press', self.on_set_zero_click)
             self.should_we_save = True
 

@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+8.05.2019
+
+- added zoom fit for Set Origin command
+- added move action for solid_geometry stored in the gerber_obj.apertures
+
+
 7.05.2019
 
 - remade the Tool Panelize GUI
