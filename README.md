@@ -15,6 +15,10 @@ CAD program, and create G-Code for Isolation routing.
 - added move action for solid_geometry stored in the gerber_obj.apertures
 - fixed camlib.Gerber skew, rotate, offset, mirror functions to work for geometry stored in the Gerber apertures
 - fixed Gerber Editor follow_geometry reconstruction
+- Geometry Editor: made the tool to be able to continuously move until the tool is exited either by ESC key or by right mouse button click
+- Geometry Editor Move Tool: if no shape is selected when triggering this tool, now it is possible to make the selection inside the tool
+- Gerber editor Move Tool: fixed a bug that repeated the plotting function unnecessarily 
+- Gerber editor Move Tool: if no shape is selected the tool will exit
 
 7.05.2019
 

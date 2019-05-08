@@ -7269,13 +7269,13 @@ class CNCjob(Geometry):
 
         self.create_geometry()
 
+
 def get_bounds(geometry_list):
     xmin = Inf
     ymin = Inf
     xmax = -Inf
     ymax = -Inf
 
-    #print "Getting bounds of:", str(geometry_set)
     for gs in geometry_list:
         try:
             gxmin, gymin, gxmax, gymax = gs.bounds()
