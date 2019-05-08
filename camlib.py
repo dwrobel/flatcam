@@ -3219,7 +3219,7 @@ class Gerber (Geometry):
                 if 'clear_geometry' in self.apertures[apid]:
                     for pol in self.apertures[apid]['clear_geometry']:
                         global_clear_geo.append(pol)
-                # self.apertures[apid].pop('clear_geometry', None)
+                self.apertures[apid].pop('clear_geometry', None)
             log.warning("Found %d clear polygons." % len(global_clear_geo))
 
             temp_geo = []
@@ -3497,11 +3497,14 @@ class Gerber (Geometry):
         # we need to scale the geometry stored in the Gerber apertures, too
         try:
             for apid in self.apertures:
-                self.apertures[apid]['solid_geometry'] = scale_geom(self.apertures[apid]['solid_geometry'])
-                self.apertures[apid]['clear_geometry'] = scale_geom(self.apertures[apid]['clear_geometry'])
-
+                if 'solid_geometry' in self.apertures[apid]:
+                    self.apertures[apid]['solid_geometry'] = scale_geom(self.apertures[apid]['solid_geometry'])
+                if 'follow_geometry' in self.apertures[apid]:
+                    self.apertures[apid]['follow_geometry'] = scale_geom(self.apertures[apid]['follow_geometry'])
+                if 'clear_geometry' in self.apertures[apid]:
+                    self.apertures[apid]['clear_geometry'] = scale_geom(self.apertures[apid]['clear_geometry'])
         except Exception as e:
-            log.debug('FlatCAMGeometry.scale() --> %s' % str(e))
+            log.debug('camlib.Gerber.scale() Exception --> %s' % str(e))
 
         self.app.inform.emit(_("[success] Gerber Scale done."))
 

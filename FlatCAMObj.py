@@ -1330,33 +1330,34 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         gerber_code += 'D02*\n'
                         gerber_code += 'G37*\n'
 
-                if 'clear_geometry' in self.apertures['0']:
-                    gerber_code += '%LPC*%\n'
-                    for geo in self.apertures['0']['clear_geometry']:
-                        gerber_code += 'G36*\n'
-                        geo_coords = list(geo.exterior.coords)
+                        clear_list = list(geo.interiors)
+                        if clear_list:
+                            gerber_code += '%LPC*%\n'
+                            for clear_geo in clear_list:
+                                gerber_code += 'G36*\n'
+                                geo_coords = list(clear_geo.coords)
 
-                        # first command is a move with pen-up D02 at the beginning of the geo
-                        if g_zeros == 'T':
-                            x_formatted, y_formatted = tz_format(geo_coords[0][0], geo_coords[0][1], factor)
-                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
-                                                                           yform=y_formatted)
-                        else:
-                            x_formatted, y_formatted = lz_format(geo_coords[0][0], geo_coords[0][1], factor)
-                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
-                                                                           yform=y_formatted)
-                        for coord in geo_coords[1:]:
-                            if g_zeros == 'T':
-                                x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
-                                gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
-                                                                               yform=y_formatted)
-                            else:
-                                x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
-                                gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
-                                                                               yform=y_formatted)
-                        gerber_code += 'D02*\n'
-                        gerber_code += 'G37*\n'
-                    gerber_code += '%LPD*%\n'
+                                # first command is a move with pen-up D02 at the beginning of the geo
+                                if g_zeros == 'T':
+                                    x_formatted, y_formatted = tz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                                    gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                                else:
+                                    x_formatted, y_formatted = lz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                                    gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                                for coord in geo_coords[1:]:
+                                    if g_zeros == 'T':
+                                        x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                        gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                       yform=y_formatted)
+                                    else:
+                                        x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                        gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                       yform=y_formatted)
+                                gerber_code += 'D02*\n'
+                                gerber_code += 'G37*\n'
+                            gerber_code += '%LPD*%\n'
 
             for apid in self.apertures:
                 if apid == '0':

@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - work in Gerber Export: finished the header export
 - fixed the Gerber Object and Gerber Editor Apertures Table to not show extra rows when there are aperture macros in the object
 - work in Gerber Export: finished the body export but have some errors with clear geometry (LPC)
+- Gerber Export - finished
 
 6.05.2019
 
