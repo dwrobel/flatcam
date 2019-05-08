@@ -3070,7 +3070,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     elif k == 'follow_geometry':
                         grb_obj.apertures[storage_apid][k] = []
                         for geo in v:
-                            new_geo = deepcopy(geo.geo)
+                            geo = (geo.geo.buffer(-int(k) / 2)).exterior
+                            new_geo = deepcopy(geo)
                             grb_obj.apertures[storage_apid][k].append(new_geo)
                             follow_buffer.append(new_geo)
                     else:

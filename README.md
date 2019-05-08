@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - added zoom fit for Set Origin command
 - added move action for solid_geometry stored in the gerber_obj.apertures
 - fixed camlib.Gerber skew, rotate, offset, mirror functions to work for geometry stored in the Gerber apertures
+- fixed Gerber Editor follow_geometry reconstruction
 
 7.05.2019
 
