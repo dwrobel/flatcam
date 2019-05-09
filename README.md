@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+9.05.2019
+
+- rework the Gerber parser
+
 8.05.2019
 
 - added zoom fit for Set Origin command
