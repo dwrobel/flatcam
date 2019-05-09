@@ -1155,17 +1155,16 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 self.app.progress.emit(30)
                 try:
                     if aperture_to_plot_mark in self.apertures:
-                        if type(self.apertures[aperture_to_plot_mark]['solid_geometry']) is not list:
-                            self.apertures[aperture_to_plot_mark]['solid_geometry'] = \
-                                [self.apertures[aperture_to_plot_mark]['solid_geometry']]
-                        for geo in self.apertures[aperture_to_plot_mark]['solid_geometry']:
-                            if type(geo) == Polygon or type(geo) == LineString:
-                                self.add_mark_shape(apid=aperture_to_plot_mark, shape=geo, color=color,
-                                                    face_color=color, visible=visibility)
-                            else:
-                                for el in geo:
-                                    self.add_mark_shape(apid=aperture_to_plot_mark, shape=el, color=color,
+                        for elem in self.apertures[aperture_to_plot_mark]['geometry']:
+                            if 'solid' in elem:
+                                geo = elem['solid']
+                                if type(geo) == Polygon or type(geo) == LineString:
+                                    self.add_mark_shape(apid=aperture_to_plot_mark, shape=geo, color=color,
                                                         face_color=color, visible=visibility)
+                                else:
+                                    for el in geo:
+                                        self.add_mark_shape(apid=aperture_to_plot_mark, shape=el, color=color,
+                                                            face_color=color, visible=visibility)
 
                     self.mark_shapes[aperture_to_plot_mark].redraw()
                     self.app.progress.emit(100)
