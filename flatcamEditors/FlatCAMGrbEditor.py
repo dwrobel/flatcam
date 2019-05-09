@@ -2180,7 +2180,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.shapes.enabled = False
         self.tool_shape.enabled = False
 
-        ## List of selected shapes.
+        ## List of selected geometric elements.
         self.selected = []
 
         self.key = None  # Currently pressed key
@@ -2493,8 +2493,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.apsize_entry.set_value(size_val)
                 self.storage_dict[ap_id]['size'] = size_val
 
-                self.storage_dict[ap_id]['solid_geometry'] = []
-                self.storage_dict[ap_id]['follow_geometry'] = []
+                self.storage_dict[ap_id]['geometry'] = []
 
                 # self.olddia_newdia dict keeps the evidence on current aperture codes as keys and gets updated on values
                 # each time a aperture code is edited or added
@@ -2535,8 +2534,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                             return
                 self.storage_dict[ap_id]['size'] = size_val
 
-                self.storage_dict[ap_id]['solid_geometry'] = []
-                self.storage_dict[ap_id]['follow_geometry'] = []
+                self.storage_dict[ap_id]['geometry'] = []
 
                 # self.olddia_newdia dict keeps the evidence on current aperture codes as keys and gets updated on values
                 # each time a aperture code is edited or added
@@ -2978,28 +2976,27 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         def job_thread(self, apid):
             with self.app.proc_container.new(_("Adding aperture: %s geo ...") % str(apid)):
-                solid_storage_elem = []
-                follow_storage_elem = []
-
+                storage_elem = []
                 self.storage_dict[apid] = {}
 
                 # add the Gerber geometry to editor storage
                 for k, v in self.gerber_obj.apertures[apid].items():
                     try:
-                        if k == 'solid_geometry':
-                            for geo in v:
-                                if geo:
-                                    self.add_gerber_shape(DrawToolShape(geo), solid_storage_elem)
-                            self.storage_dict[apid][k] = solid_storage_elem
-                        elif k == 'follow_geometry':
-                            for geo in v:
-                                if geo is not None:
-                                    self.add_gerber_shape(DrawToolShape(geo), follow_storage_elem)
-                            self.storage_dict[apid][k] = follow_storage_elem
-                        elif k == 'clear_geometry':
-                            continue
+                        if k == 'geometry':
+                            for el_dict in v:
+                                if el_dict:
+                                    new_el_dict = dict()
+                                    if 'solid' in el_dict:
+                                        new_el_dict['solid'] =DrawToolShape(deepcopy(el_dict['solid']))
+                                    if 'follow' in el_dict:
+                                        new_el_dict['follow'] =DrawToolShape(deepcopy(el_dict['follow']))
+                                    if 'clear' in el_dict:
+                                        new_el_dict['clear'] =DrawToolShape(deepcopy(el_dict['clear']))
+                                    storage_elem.append(new_el_dict)
+                                    self.add_gerber_shape(DrawToolShape(new_el_dict['solid']))
+                            self.storage_dict[apid][k] = storage_elem
                         else:
-                            self.storage_dict[apid][k] = v
+                            self.storage_dict[apid][k] = self.gerber_obj.apertures[apid][k]
                     except Exception as e:
                         log.debug("FlatCAMGrbEditor.edit_fcgerber().job_thread() --> %s" % str(e))
                 # Check promises and clear if exists
@@ -3257,7 +3254,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             # Replot and reset tool.
             self.plot_all()
 
-    def add_gerber_shape(self, shape, storage):
+    def add_gerber_shape(self, shape):
         """
         Adds a shape to the shape storage.
 
@@ -3269,7 +3266,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         if isinstance(shape, list):
             for subshape in shape:
-                self.add_gerber_shape(subshape, storage)
+                self.add_gerber_shape(subshape)
             return
 
         assert isinstance(shape, DrawToolShape), \
@@ -3284,8 +3281,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         if isinstance(shape, DrawToolUtilityShape):
             self.utility.append(shape)
-        else:
-            storage.append(shape)  # TODO: Check performance
 
     def on_canvas_click(self, event):
         """
@@ -3590,20 +3585,21 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
             for storage in self.storage_dict:
                 try:
-                    for shape in self.storage_dict[storage]['solid_geometry']:
-                        if shape.geo is None:
+                    for elem in self.storage_dict[storage]['geometry']:
+                        if elem['solid'].geo is None:
                             continue
 
-                        if shape in self.selected:
-                            self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_sel_draw_color'],
+                        if elem['solid'] in self.selected:
+                            self.plot_shape(geometry=elem['solid'].geo,
+                                            color=self.app.defaults['global_sel_draw_color'],
                                             linewidth=2)
                             continue
-                        self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_draw_color'])
+                        self.plot_shape(geometry=elem['solid'].geo, color=self.app.defaults['global_draw_color'])
                 except KeyError:
                     pass
 
-            for shape in self.utility:
-                self.plot_shape(geometry=shape.geo, linewidth=1)
+            for elem in self.utility:
+                self.plot_shape(geometry=elem['solid'].geo, linewidth=1)
                 continue
 
             self.shapes.redraw()
@@ -3708,28 +3704,28 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.build_ui()
         self.app.inform.emit(_("[success] Done. Apertures geometry deleted."))
 
-    def delete_shape(self, shape):
+    def delete_shape(self, geo_el):
         self.is_modified = True
 
-        if shape in self.utility:
-            self.utility.remove(shape)
+        if geo_el in self.utility:
+            self.utility.remove(geo_el)
             return
 
         for storage in self.storage_dict:
             try:
-                if shape in self.storage_dict[storage]['solid_geometry']:
-                    self.storage_dict[storage]['solid_geometry'].remove(shape)
+                if geo_el in self.storage_dict[storage]['geometry']:
+                    self.storage_dict[storage]['geometry'].remove(geo_el)
             except KeyError:
                 pass
-        if shape in self.selected:
-            self.selected.remove(shape)  # TODO: Check performance
+        if geo_el in self.selected:
+            self.selected.remove(geo_el)  # TODO: Check performance
 
     def delete_utility_geometry(self):
         # for_deletion = [shape for shape in self.shape_buffer if shape.utility]
         # for_deletion = [shape for shape in self.storage.get_objects() if shape.utility]
-        for_deletion = [shape for shape in self.utility]
-        for shape in for_deletion:
-            self.delete_shape(shape)
+        for_deletion = [geo_el for geo_el in self.utility]
+        for geo_el in for_deletion:
+            self.delete_shape(geo_el)
 
         self.tool_shape.clear(update=True)
         self.tool_shape.redraw()
@@ -3748,17 +3744,17 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.tools_gerber[toolname]["button"].setChecked(True)
         self.on_tool_select(toolname)
 
-    def set_selected(self, shape):
+    def set_selected(self, geo_el):
 
         # Remove and add to the end.
-        if shape in self.selected:
-            self.selected.remove(shape)
+        if geo_el in self.selected:
+            self.selected.remove(geo_el)
 
-        self.selected.append(shape)
+        self.selected.append(geo_el)
 
-    def set_unselected(self, shape):
-        if shape in self.selected:
-            self.selected.remove(shape)
+    def set_unselected(self, geo_el):
+        if geo_el in self.selected:
+            self.selected.remove(geo_el)
 
     def on_array_type_combo(self):
         if self.array_type_combo.currentIndex() == 0:
@@ -3827,17 +3823,27 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buffer_corner_cb.currentIndex() + 1
 
-        def buffer_recursion(geom, selection):
-            if type(geom) == list or type(geom) is MultiPolygon:
+        def buffer_recursion(geom_el, selection):
+            if type(geom_el) == list:
                 geoms = list()
-                for local_geom in geom:
+                for local_geom in geom_el:
                     geoms.append(buffer_recursion(local_geom, selection=selection))
                 return geoms
             else:
-                if geom in selection:
-                    return DrawToolShape(geom.geo.buffer(buff_value, join_style=join_style))
+                if geom_el in selection:
+                    buffered_geom_el = dict()
+                    if 'solid' in geom_el:
+                        buffered_geom_el['solid'] = DrawToolShape(geom_el['solid'].geo.buffer(buff_value,
+                                                                                              join_style=join_style))
+                    if 'follow' in geom_el:
+                        buffered_geom_el['follow'] = DrawToolShape(geom_el['follow'].geo.buffer(buff_value,
+                                                                                              join_style=join_style))
+                    if 'clear' in geom_el:
+                        buffered_geom_el['clear'] = DrawToolShape(geom_el['clear'].geo.buffer(buff_value,
+                                                                                              join_style=join_style))
+                    return buffered_geom_el
                 else:
-                    return geom
+                    return geom_el
 
         if not self.apertures_table.selectedItems():
             self.app.inform.emit(_(
@@ -3849,9 +3855,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
             try:
                 apid = self.apertures_table.item(x.row(), 1).text()
 
-                temp_storage = deepcopy(buffer_recursion(self.storage_dict[apid]['solid_geometry'], self.selected))
-                self.storage_dict[apid]['solid_geometry'] = []
-                self.storage_dict[apid]['solid_geometry'] = temp_storage
+                temp_storage = deepcopy(buffer_recursion(self.storage_dict[apid]['geometry'], self.selected))
+                self.storage_dict[apid]['geometry'] = []
+                self.storage_dict[apid]['geometry'] = temp_storage
 
             except Exception as e:
                 log.debug("FlatCAMGrbEditor.buffer() --> %s" % str(e))
@@ -3874,17 +3880,28 @@ class FlatCAMGrbEditor(QtCore.QObject):
                                      "Add it and retry."))
                 return
 
-        def scale_recursion(geom, selection):
-            if type(geom) == list or type(geom) is MultiPolygon:
+        def scale_recursion(geom_el, selection):
+            if type(geom_el) == list:
                 geoms = list()
-                for local_geom in geom:
+                for local_geom in geom_el:
                     geoms.append(scale_recursion(local_geom, selection=selection))
                 return geoms
             else:
-                if geom in selection:
-                    return DrawToolShape(affinity.scale(geom.geo, scale_factor, scale_factor, origin='center'))
+                if geom_el in selection:
+                    scaled_geom_el = dict()
+                    if 'solid' in geom_el:
+                        scaled_geom_el['solid'] = DrawToolShape(
+                            affinity.scale(geom_el['solid'].geo, scale_factor, scale_factor, origin='center'))
+                    if 'follow' in geom_el:
+                        scaled_geom_el['follow'] = DrawToolShape(
+                            affinity.scale(geom_el['follow'].geo, scale_factor, scale_factor, origin='center'))
+                    if 'clear' in geom_el:
+                        scaled_geom_el['clear'] = DrawToolShape(
+                            affinity.scale(geom_el['clear'].geo, scale_factor, scale_factor, origin='center'))
+
+                    return scaled_geom_el
                 else:
-                    return geom
+                    return geom_el
 
         if not self.apertures_table.selectedItems():
             self.app.inform.emit(_(
@@ -3896,9 +3913,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
             try:
                 apid = self.apertures_table.item(x.row(), 1).text()
 
-                temp_storage = deepcopy(scale_recursion(self.storage_dict[apid]['solid_geometry'], self.selected))
-                self.storage_dict[apid]['solid_geometry'] = []
-                self.storage_dict[apid]['solid_geometry'] = temp_storage
+                temp_storage = deepcopy(scale_recursion(self.storage_dict[apid]['geometry'], self.selected))
+                self.storage_dict[apid]['geometry'] = []
+                self.storage_dict[apid]['geometry'] = temp_storage
 
             except Exception as e:
                 log.debug("FlatCAMGrbEditor.on_scale() --> %s" % str(e))
@@ -4581,21 +4598,22 @@ class TransformEditorTool(FlatCAMTool):
         return
 
     def on_rotate_action(self, num):
-        shape_list = self.draw_app.selected
+        elem_list = self.draw_app.selected
         xminlist = []
         yminlist = []
         xmaxlist = []
         ymaxlist = []
 
-        if not shape_list:
+        if not elem_list:
             self.app.inform.emit(_("[WARNING_NOTCL] No shape selected. Please Select a shape to rotate!"))
             return
         else:
             with self.app.proc_container.new(_("Appying Rotate")):
                 try:
-                    # first get a bounding box to fit all
-                    for sha in shape_list:
-                        xmin, ymin, xmax, ymax = sha.bounds()
+                    # first get a bounding box to fit all; we use only the 'solids' as those should provide the biggest
+                    # bounding box
+                    for geo_el in elem_list:
+                        xmin, ymin, xmax, ymax = geo_el..bounds()
                         xminlist.append(xmin)
                         yminlist.append(ymin)
                         xmaxlist.append(xmax)
