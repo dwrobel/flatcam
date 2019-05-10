@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+10.05.2019
+
+- Gerber Editor - working in conversion to the new data format
+
 9.05.2019
 
 - rework the Gerber parser
