@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+10.05.2019
+
+- made sure that only units toggle done in Edit -> Preferences will toggle the data in Preferences. THe menu entry Edit -> Toggle Units and the shortcut key 'Q' will change only the display units in the app
+
 8.05.2019
 
 - added zoom fit for Set Origin command

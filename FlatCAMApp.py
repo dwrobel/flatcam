@@ -95,7 +95,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.916
-    version_date = "2019/05/7"
+    version_date = "2019/05/10"
     beta = True
 
     # current date now
@@ -1432,7 +1432,8 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_app_group.language_apply_btn.clicked.connect(
             lambda: fcTranslate.on_language_apply_click(self, restart=True)
         )
-        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(self.on_toggle_units)
+        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
+            lambda :self.on_toggle_units(no_pref=False))
 
         ###############################
         ### GUI PREFERENCES SIGNALS ###
@@ -3692,8 +3693,8 @@ class App(QtCore.QObject):
             self.ui.grid_gap_x_entry.set_value(float(self.ui.grid_gap_x_entry.get_value()) * factor)
             self.ui.grid_gap_y_entry.set_value(float(self.ui.grid_gap_y_entry.get_value()) * factor)
 
+            units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
             for obj in self.collection.get_list():
-                units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
                 obj.convert_units(units)
 
                 # make that the properties stored in the object are also updated
@@ -3707,9 +3708,9 @@ class App(QtCore.QObject):
                     current.to_form()
 
             self.plot_all()
-            self.inform.emit(_("[success] Converted units to %s") % self.defaults["units"])
+            self.inform.emit(_("[success] Converted units to %s") % units)
             # self.ui.units_label.setText("[" + self.options["units"] + "]")
-            self.set_screen_units(self.defaults["units"])
+            self.set_screen_units(units)
         else:
             # Undo toggling
             self.toggle_units_ignore = True
@@ -3724,11 +3725,14 @@ class App(QtCore.QObject):
         self.defaults_read_form()
 
     def on_toggle_units_click(self):
+        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
         if self.defaults["units"] == 'MM':
             self.ui.general_defaults_form.general_app_group.units_radio.set_value("IN")
         else:
             self.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
         self.on_toggle_units(no_pref=True)
+        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
+            lambda: self.on_toggle_units(no_pref=False))
 
     def on_fullscreen(self):
         self.report_usage("on_fullscreen()")
