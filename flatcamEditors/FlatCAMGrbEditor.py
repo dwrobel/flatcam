@@ -155,10 +155,10 @@ class DrawTool(object):
                 return minx, miny, maxx, maxy
             else:
                 # it's a Shapely object, return it's bounds
-                return o.geo.bounds
+                if 'solid' in o.geo:
+                    return o.geo['solid'].bounds
 
-        bounds_coords = bounds_rec(obj)
-        return bounds_coords
+        return bounds_rec(obj)
 
 
 class FCShapeTool(DrawTool):
@@ -206,7 +206,7 @@ class FCPad(FCShapeTool):
         else:
             self.dont_execute = False
 
-        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
+        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
         # if those cause KeyError exception it means that the aperture type is not 'R'. Only 'R' type has those keys
@@ -248,7 +248,7 @@ class FCPad(FCShapeTool):
 
     def util_shape(self, point):
         # updating values here allows us to change the aperture on the fly, after the Tool has been started
-        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
+        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']
         self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
@@ -271,16 +271,27 @@ class FCPad(FCShapeTool):
 
         ap_type = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['type']
         if ap_type == 'C':
+            new_geo_el = dict()
+
             center = Point([point_x, point_y])
-            return center.buffer(self.radius)
+            new_geo_el['solid'] = center.buffer(self.radius)
+            new_geo_el['follow'] = center
+            return new_geo_el
         elif ap_type == 'R':
+            new_geo_el = dict()
+
             p1 = (point_x - self.half_width, point_y - self.half_height)
             p2 = (point_x + self.half_width, point_y - self.half_height)
             p3 = (point_x + self.half_width, point_y + self.half_height)
             p4 = (point_x - self.half_width, point_y + self.half_height)
-            return Polygon([p1, p2, p3, p4, p1])
+            center = Point([point_x, point_y])
+            new_geo_el['solid'] = Polygon([p1, p2, p3, p4, p1])
+            new_geo_el['follow'] = center
+            return new_geo_el
         elif ap_type == 'O':
             geo = []
+            new_geo_el = dict()
+
             if self.half_height > self.half_width:
                 p1 = (point_x - self.half_width, point_y - self.half_height + self.half_width)
                 p2 = (point_x + self.half_width, point_y - self.half_height + self.half_width)
@@ -305,7 +316,11 @@ class FCPad(FCShapeTool):
                 for pt in up_arc:
                     geo.append(pt)
                 geo.append(p4)
-                return Polygon(geo)
+                new_geo_el['solid'] = Polygon(geo)
+                center = Point([point_x, point_y])
+                new_geo_el['follow'] = center
+                return new_geo_el
+
             else:
                 p1 = (point_x - self.half_width + self.half_height, point_y - self.half_height)
                 p2 = (point_x + self.half_width - self.half_height, point_y - self.half_height)
@@ -330,7 +345,10 @@ class FCPad(FCShapeTool):
                 geo.append(p4)
                 for pt in left_arc:
                     geo.append(pt)
-                return Polygon(geo)
+                new_geo_el['solid'] = Polygon(geo)
+                center = Point([point_x, point_y])
+                new_geo_el['follow'] = center
+                return new_geo_el
         else:
             self.draw_app.app.inform.emit(_(
                 "Incompatible aperture type. Select an aperture with type 'C', 'R' or 'O'."))
@@ -3233,13 +3251,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
                                     new_geo[key] = geometric_data['clear']
 
                             grb_obj.apertures[storage_apid][k].append(deepcopy(new_geo))
+                    else:
+                        grb_obj.apertures[storage_apid][k] = v
 
             grb_obj.aperture_macros = deepcopy(self.gerber_obj.aperture_macros)
 
             new_poly = MultiPolygon(poly_buffer)
             new_poly = new_poly.buffer(0.00000001)
             new_poly = new_poly.buffer(-0.00000001)
-            grb_obj.solid_geometry = new_poly
+            grb_obj.solid_geometry = deepcopy(new_poly)
 
             grb_obj.follow_geometry = deepcopy(follow_buffer)
 

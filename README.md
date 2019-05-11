@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - made the Feedrate Rapids parameter to depend on the type of postprocessor choosed. It will be showed only for a postprocessor which the name contain 'marlin' and for any postprocessor's that have 'custom' in the name
 - fixed the camlib.Gerber functions of mirror, scale, offset, skew and rotate to work with the new data structure for apertures geometry
 - fixed Gerber Editor selection to work with the new Gerber data structure in self.apertures
+- fixed Gerber Editor FCPad class to work with the new Gerber data structure in self.apertures
 
 10.05.2019
 
