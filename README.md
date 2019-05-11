@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 11.05.2019
 
 - fixed issue in camlib.CNCjob.generate_from_excellon_by_tool() in the drill path optimization algorithm selection when selecting the MH algorithm. The new API's for Google OR-tools required some changes and also the time parameter can be now just an integer therefore I modified the GUI
+- made the Feedrate Rapids parameter to depend on the type of postprocessor choosed. It will be showed only for a postprocessor which the name contain 'marlin' and for any postprocessor's that have 'custom' in the name
 
 10.05.2019
 
@@ -21,7 +22,7 @@ CAD program, and create G-Code for Isolation routing.
 
 9.05.2019
 
-- rework the Gerber parser
+- reworked the Gerber parser
 
 8.05.2019
 

@@ -2448,6 +2448,13 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.feedrate_probe_entry.setVisible(False)
             self.ui.feedrate_probe_label.hide()
 
+        if 'marlin' in current_pp.lower() or 'custom' in current_pp.lower():
+            self.ui.feedrate_rapid_label.show()
+            self.ui.feedrate_rapid_entry.show()
+        else:
+            self.ui.feedrate_rapid_label.hide()
+            self.ui.feedrate_rapid_entry.hide()
+
     def on_create_cncjob_button_click(self, *args):
         self.app.report_usage("excellon_on_create_cncjob_button")
         self.read_form()
@@ -4091,6 +4098,13 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
             self.ui.feedrate_probe_entry.setVisible(False)
             self.ui.feedrate_probe_label.hide()
+
+        if 'marlin' in current_pp.lower() or 'custom' in current_pp.lower():
+            self.ui.fr_rapidlabel.show()
+            self.ui.cncfeedrate_rapid_entry.show()
+        else:
+            self.ui.fr_rapidlabel.hide()
+            self.ui.cncfeedrate_rapid_entry.hide()
 
     def on_generatecnc_button_click(self, *args):
 

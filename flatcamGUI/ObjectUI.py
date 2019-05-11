@@ -674,6 +674,9 @@ class ExcellonObjectUI(ObjectUI):
         grid1.addWidget(self.feedrate_rapid_label, 7, 0)
         self.feedrate_rapid_entry = LengthEntry()
         grid1.addWidget(self.feedrate_rapid_entry, 7, 1)
+        # default values is to hide
+        self.feedrate_rapid_label.hide()
+        self.feedrate_rapid_entry.hide()
 
         # Spindlespeed
         spdlabel = QtWidgets.QLabel(_('Spindle speed:'))
@@ -1188,6 +1191,9 @@ class GeometryObjectUI(ObjectUI):
         self.grid3.addWidget(self.fr_rapidlabel, 12, 0)
         self.cncfeedrate_rapid_entry = LengthEntry()
         self.grid3.addWidget(self.cncfeedrate_rapid_entry, 12, 1)
+        # default values is to hide
+        self.fr_rapidlabel.hide()
+        self.cncfeedrate_rapid_entry.hide()
 
         # Cut over 1st point in path
         self.extracut_cb = FCCheckBox(_('Cut over 1st pt'))
