@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed Gerber Editor FCPad class to work with the new Gerber data structure in self.apertures
 - fixed camlib.Gerber issues related to what happen after parsing rectangular apertures 
 - wip in camblib.Gerber
+- completely converted the Gerber editor to the new data structure
 
 10.05.2019
 

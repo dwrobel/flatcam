@@ -405,7 +405,7 @@ class FCPadArray(FCShapeTool):
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_array.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
-        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
+        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
         # if those cause KeyError exception it means that the aperture type is not 'R'. Only 'R' type has those keys
@@ -439,8 +439,6 @@ class FCPadArray(FCShapeTool):
         self.last_dy = 0
 
         self.pt = []
-
-        self.draw_app.app.inform.emit(self.start_msg)
 
         geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y), static=True)
 
@@ -504,31 +502,40 @@ class FCPadArray(FCShapeTool):
                 dx = data[0]
                 dy = data[1]
 
-            geo_list = []
+            geo_el_list = []
             geo = None
             self.points = [dx, dy]
 
             for item in range(self.pad_array_size):
                 if self.pad_axis == 'X':
-                    geo = self.util_shape(((dx + (self.pad_pitch * item)), dy))
+                    geo_el = self.util_shape(((dx + (self.pad_pitch * item)), dy))
                 if self.pad_axis == 'Y':
-                    geo = self.util_shape((dx, (dy + (self.pad_pitch * item))))
+                    geo_el = self.util_shape((dx, (dy + (self.pad_pitch * item))))
                 if self.pad_axis == 'A':
                     x_adj = self.pad_pitch * math.cos(math.radians(self.pad_linear_angle))
                     y_adj = self.pad_pitch * math.sin(math.radians(self.pad_linear_angle))
-                    geo = self.util_shape(
+                    geo_el = self.util_shape(
                         ((dx + (x_adj * item)), (dy + (y_adj * item)))
                     )
 
                 if static is None or static is False:
-                    geo_list.append(affinity.translate(geo, xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)))
+                    new_geo_el = dict()
+
+                    if 'solid' in geo_el:
+                        new_geo_el['solid'] = affinity.translate(geo_el['solid'], xoff=(dx - self.last_dx),
+                                                                 yoff=(dy - self.last_dy))
+                    if 'follow' in geo_el:
+                        new_geo_el['follow'] = affinity.translate(geo_el['solid'], xoff=(dx - self.last_dx),
+                                                                 yoff=(dy - self.last_dy))
+                    geo_el_list.append(new_geo_el)
+
                 else:
-                    geo_list.append(geo)
+                    geo_el_list.append(geo_el)
             # self.origin = data
 
             self.last_dx = dx
             self.last_dy = dy
-            return DrawToolUtilityShape(geo_list)
+            return DrawToolUtilityShape(geo_el_list)
         else:
             if data[0] is None and data[1] is None:
                 cdx = self.draw_app.x
@@ -544,7 +551,7 @@ class FCPadArray(FCShapeTool):
 
     def util_shape(self, point):
         # updating values here allows us to change the aperture on the fly, after the Tool has been started
-        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
+        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']
         self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
@@ -567,16 +574,26 @@ class FCPadArray(FCShapeTool):
 
         ap_type = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['type']
         if ap_type == 'C':
+            new_geo_el = dict()
+
             center = Point([point_x, point_y])
-            return center.buffer(self.radius)
+            new_geo_el['solid'] = center.buffer(self.radius)
+            new_geo_el['follow'] = center
+            return  new_geo_el
         elif ap_type == 'R':
+            new_geo_el = dict()
+
             p1 = (point_x - self.half_width, point_y - self.half_height)
             p2 = (point_x + self.half_width, point_y - self.half_height)
             p3 = (point_x + self.half_width, point_y + self.half_height)
             p4 = (point_x - self.half_width, point_y + self.half_height)
-            return Polygon([p1, p2, p3, p4, p1])
+            new_geo_el['solid'] =  Polygon([p1, p2, p3, p4, p1])
+            new_geo_el['follow'] = Point([point_x, point_y])
+            return  new_geo_el
         elif ap_type == 'O':
             geo = []
+            new_geo_el = dict()
+
             if self.half_height > self.half_width:
                 p1 = (point_x - self.half_width, point_y - self.half_height + self.half_width)
                 p2 = (point_x + self.half_width, point_y - self.half_height + self.half_width)
@@ -601,7 +618,11 @@ class FCPadArray(FCShapeTool):
                 for pt in up_arc:
                     geo.append(pt)
                 geo.append(p4)
-                return Polygon(geo)
+
+                new_geo_el['solid'] = Polygon(geo)
+                center = Point([point_x, point_y])
+                new_geo_el['follow'] = center
+                return new_geo_el
             else:
                 p1 = (point_x - self.half_width + self.half_height, point_y - self.half_height)
                 p2 = (point_x + self.half_width - self.half_height, point_y - self.half_height)
@@ -626,7 +647,11 @@ class FCPadArray(FCShapeTool):
                 geo.append(p4)
                 for pt in left_arc:
                     geo.append(pt)
-                return Polygon(geo)
+
+                new_geo_el['solid'] = Polygon(geo)
+                center = Point([point_x, point_y])
+                new_geo_el['follow'] = center
+                return new_geo_el
         else:
             self.draw_app.app.inform.emit(_(
                 "Incompatible aperture type. Select an aperture with type 'C', 'R' or 'O'."))
@@ -697,7 +722,7 @@ class FCPoligonize(FCShapeTool):
         self.name = 'poligonize'
         self.draw_app = draw_app
 
-        self.start_msg = _("Select shape(s) and then click ...")
+        self.draw_app.app.inform.emit( _("Select shape(s) and then click ..."))
         self.draw_app.in_action = True
         self.make()
 
@@ -807,12 +832,14 @@ class FCRegion(FCShapeTool):
         self.gridy_size = float(self.draw_app.app.ui.grid_gap_y_entry.get_value())
 
     def utility_geometry(self, data=None):
+        new_geo_el = dict()
 
         x = data[0]
         y = data[1]
 
         if len(self.points) == 0:
-            return DrawToolUtilityShape(Point(data).buffer(self.buf_val))
+            new_geo_el['solid'] = Point(data).buffer(self.buf_val)
+            return DrawToolUtilityShape(new_geo_el)
 
         if len(self.points) == 1:
             self.temp_points = [x for x in self.points]
@@ -873,14 +900,17 @@ class FCRegion(FCShapeTool):
                     self.inter_point = data
 
             self.temp_points.append(data)
+            new_geo_el = dict()
 
             if len(self.temp_points) > 1:
                 try:
-                    return DrawToolUtilityShape(LineString(self.temp_points).buffer(self.buf_val, join_style=1))
+                    new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val, join_style=1)
+                    return DrawToolUtilityShape(new_geo_el)
                 except:
                     pass
             else:
-                return DrawToolUtilityShape(Point(self.temp_points).buffer(self.buf_val))
+                new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val)
+                return DrawToolUtilityShape(new_geo_el)
 
         if len(self.points) > 2:
             self.temp_points = [x for x in self.points]
@@ -933,8 +963,13 @@ class FCRegion(FCShapeTool):
 
                         self.temp_points.append(self.inter_point)
             self.temp_points.append(data)
+            new_geo_el = dict()
 
-            return DrawToolUtilityShape(LinearRing(self.temp_points).buffer(self.buf_val, join_style=1))
+            new_geo_el['solid'] = LinearRing(self.temp_points).buffer(self.buf_val, join_style=1)
+            new_geo_el['follow'] = LinearRing(self.temp_points)
+
+            return DrawToolUtilityShape(new_geo_el)
+
         return None
 
     def make(self):
@@ -947,7 +982,12 @@ class FCRegion(FCShapeTool):
             else:
                 self.draw_app.last_aperture_selected = '0'
 
-            self.geometry = DrawToolShape(Polygon(self.points).buffer(self.buf_val, join_style=2))
+            new_geo_el = dict()
+
+            new_geo_el['solid'] = Polygon(self.points).buffer(self.buf_val, join_style=2)
+            new_geo_el['follow'] = Polygon(self.points).exterior
+
+            self.geometry = DrawToolShape(new_geo_el)
         self.draw_app.in_action = False
         self.complete = True
         self.draw_app.app.inform.emit(_("[success] Done."))
@@ -1038,10 +1078,15 @@ class FCTrack(FCRegion):
         self.draw_app.app.inform.emit(_('Track Mode 1: 45 degrees ...'))
 
     def make(self):
+        new_geo_el = dict()
         if len(self.temp_points) == 1:
-            self.geometry = DrawToolShape(Point(self.temp_points).buffer(self.buf_val))
+            new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val)
+            new_geo_el['follow'] = Point(self.temp_points)
         else:
-            self.geometry = DrawToolShape(LineString(self.temp_points).buffer(self.buf_val))
+            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val)
+            new_geo_el['follow'] = LineString(self.temp_points)
+
+        self.geometry = DrawToolShape(new_geo_el)
 
         self.draw_app.in_action = False
         self.complete = True
@@ -1055,13 +1100,18 @@ class FCTrack(FCRegion):
     def click(self, point):
         self.draw_app.in_action = True
         self.points.append(point)
+        new_geo_el = dict()
 
         if len(self.temp_points) == 1:
-            g = DrawToolShape(Point(self.temp_points).buffer(self.buf_val))
+            new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val)
+            new_geo_el['follow'] = Point(self.temp_points)
         else:
-            g = DrawToolShape(LineString(self.temp_points).buffer(self.buf_val))
+            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val)
+            new_geo_el['follow'] = LineString(self.temp_points)
 
-        self.draw_app.add_gerber_shape(g, self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry'])
+        self.draw_app.add_gerber_shape(DrawToolShape(new_geo_el),
+                                       self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry'])
+
         self.draw_app.plot_all()
         if len(self.points) > 0:
             self.draw_app.app.inform.emit(_("Click on next Point or click Right mouse button to complete ..."))
@@ -1071,9 +1121,12 @@ class FCTrack(FCRegion):
 
     def utility_geometry(self, data=None):
         self.update_grid_info()
+        new_geo_el = dict()
 
         if len(self.points) == 0:
-            return DrawToolUtilityShape(Point(data).buffer(self.buf_val))
+            new_geo_el['solid'] = Point(data).buffer(self.buf_val)
+
+            return DrawToolUtilityShape(new_geo_el)
         elif len(self.points) > 0:
 
             self.temp_points = [self.points[-1]]
@@ -1129,9 +1182,11 @@ class FCTrack(FCRegion):
 
             self.temp_points.append(data)
             if len(self.temp_points) == 1:
-                return DrawToolUtilityShape(Point(self.temp_points).buffer(self.buf_val))
+                new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val)
+                return DrawToolUtilityShape(new_geo_el)
 
-            return DrawToolUtilityShape(LineString(self.temp_points).buffer(self.buf_val))
+            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val)
+            return DrawToolUtilityShape(new_geo_el)
 
     def on_key(self, key):
         if key == 'Backspace' or key == QtCore.Qt.Key_Backspace:
@@ -1239,9 +1294,8 @@ class FCDisc(FCShapeTool):
         size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
         self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
 
-        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
+        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']
 
-        self.start_msg = _("Click on Center point ...")
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
 
         self.steps_per_circ = self.draw_app.app.defaults["gerber_circle_steps"]
@@ -1260,15 +1314,19 @@ class FCDisc(FCShapeTool):
         return ""
 
     def utility_geometry(self, data=None):
+        new_geo_el = dict()
         if len(self.points) == 1:
             p1 = self.points[0]
             p2 = data
             radius = sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
-            return DrawToolUtilityShape(Point(p1).buffer((radius + self.buf_val / 2), int(self.steps_per_circ / 4)))
+            new_geo_el['solid'] = Point(p1).buffer((radius + self.buf_val / 2), int(self.steps_per_circ / 4))
+            return DrawToolUtilityShape(new_geo_el)
 
         return None
 
     def make(self):
+        new_geo_el = dict()
+
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
         except:
@@ -1279,7 +1337,11 @@ class FCDisc(FCShapeTool):
         p1 = self.points[0]
         p2 = self.points[1]
         radius = distance(p1, p2)
-        self.geometry = DrawToolShape(Point(p1).buffer((radius + self.buf_val / 2), int(self.steps_per_circ / 4)))
+
+        new_geo_el['solid'] = Point(p1).buffer((radius + self.buf_val / 2), int(self.steps_per_circ / 4))
+        new_geo_el['follow'] = Point(p1).buffer((radius + self.buf_val / 2), int(self.steps_per_circ / 4)).exterior
+        self.geometry = DrawToolShape(new_geo_el)
+
         self.draw_app.in_action = False
         self.complete = True
         self.draw_app.app.inform.emit(_("[success] Done."))
@@ -1302,7 +1364,6 @@ class FCSemiDisc(FCShapeTool):
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_semidisc.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
-        self.start_msg = _("Click on Center point ...")
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
 
         # Direction of rotation between point 1 and 2.
@@ -1319,7 +1380,7 @@ class FCSemiDisc(FCShapeTool):
         size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
         self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
 
-        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
+        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']
 
         self.steps_per_circ = self.draw_app.app.defaults["gerber_circle_steps"]
 
@@ -1372,11 +1433,16 @@ class FCSemiDisc(FCShapeTool):
                 return _('Mode: Center -> Start -> Stop. Click on Center point ...')
 
     def utility_geometry(self, data=None):
+        new_geo_el = dict()
+        new_geo_el_pt1 = dict()
+        new_geo_el_pt2 = dict()
+        new_geo_el_pt3 = dict()
+
         if len(self.points) == 1:  # Show the radius
             center = self.points[0]
             p1 = data
-
-            return DrawToolUtilityShape(LineString([center, p1]))
+            new_geo_el['solid'] = LineString([center, p1])
+            return DrawToolUtilityShape(new_geo_el)
 
         if len(self.points) == 2:  # Show the arc
 
@@ -1389,9 +1455,10 @@ class FCSemiDisc(FCShapeTool):
                 startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
                 stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
 
-                return DrawToolUtilityShape([LineString(arc(center, radius, startangle, stopangle,
-                                                            self.direction, self.steps_per_circ)),
-                                             Point(center)])
+                new_geo_el['solid'] = LineString(
+                    arc(center, radius, startangle, stopangle, self.direction, self.steps_per_circ))
+                new_geo_el_pt1['solid'] = Point(center)
+                return DrawToolUtilityShape([new_geo_el, new_geo_el_pt1])
 
             elif self.mode == '132':
                 p1 = array(self.points[0])
@@ -1409,9 +1476,13 @@ class FCSemiDisc(FCShapeTool):
                 startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
                 stopangle = arctan2(p3[1] - center[1], p3[0] - center[0])
 
-                return DrawToolUtilityShape([LineString(arc(center, radius, startangle, stopangle,
-                                                            direction, self.steps_per_circ)),
-                                             Point(center), Point(p1), Point(p3)])
+                new_geo_el['solid'] = LineString(
+                    arc(center, radius, startangle, stopangle, direction, self.steps_per_circ))
+                new_geo_el_pt2['solid'] = Point(center)
+                new_geo_el_pt1['solid'] = Point(p1)
+                new_geo_el_pt3['solid'] = Point(p3)
+
+                return DrawToolUtilityShape([new_geo_el, new_geo_el_pt2, new_geo_el_pt1, new_geo_el_pt3])
 
             else:  # '12c'
                 p1 = array(self.points[0])
@@ -1441,14 +1512,17 @@ class FCSemiDisc(FCShapeTool):
                 startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
                 stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
 
-                return DrawToolUtilityShape([LineString(arc(center, radius, startangle, stopangle,
-                                                            self.direction, self.steps_per_circ)),
-                                             Point(center)])
+                new_geo_el['solid'] = LineString(
+                    arc(center, radius, startangle, stopangle, self.direction, self.steps_per_circ))
+                new_geo_el_pt2['solid'] = Point(center)
+
+                return DrawToolUtilityShape([new_geo_el, new_geo_el_pt2])
 
         return None
 
     def make(self):
         self.draw_app.current_storage = self.storage_obj
+        new_geo_el = dict()
 
         if self.mode == 'c12':
             center = self.points[0]
@@ -1458,8 +1532,11 @@ class FCSemiDisc(FCShapeTool):
             radius = distance(center, p1) + (self.buf_val / 2)
             startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
             stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
-            self.geometry = DrawToolShape(Polygon(arc(center, radius, startangle, stopangle,
-                                                         self.direction, self.steps_per_circ)))
+            new_geo_el['solid'] = Polygon(
+                arc(center, radius, startangle, stopangle, self.direction, self.steps_per_circ))
+            new_geo_el['follow'] = Polygon(
+                arc(center, radius, startangle, stopangle, self.direction, self.steps_per_circ)).exterior
+            self.geometry = DrawToolShape(new_geo_el)
 
         elif self.mode == '132':
             p1 = array(self.points[0])
@@ -1473,8 +1550,10 @@ class FCSemiDisc(FCShapeTool):
             startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
             stopangle = arctan2(p3[1] - center[1], p3[0] - center[0])
 
-            self.geometry = DrawToolShape(Polygon(arc(center, radius, startangle, stopangle,
-                                                         direction, self.steps_per_circ)))
+            new_geo_el['solid'] = Polygon(arc(center, radius, startangle, stopangle, direction, self.steps_per_circ))
+            new_geo_el['follow'] = Polygon(
+                arc(center, radius, startangle, stopangle, direction, self.steps_per_circ)).exterior
+            self.geometry = DrawToolShape(new_geo_el)
 
         else:  # self.mode == '12c'
             p1 = array(self.points[0])
@@ -1506,8 +1585,12 @@ class FCSemiDisc(FCShapeTool):
             startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
             stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
 
-            self.geometry = DrawToolShape(Polygon(arc(center, radius, startangle, stopangle,
-                                                         self.direction, self.steps_per_circ)))
+            new_geo_el['solid'] = Polygon(
+                arc(center, radius, startangle, stopangle, self.direction, self.steps_per_circ))
+            new_geo_el['follow'] = Polygon(
+                arc(center, radius, startangle, stopangle, self.direction, self.steps_per_circ)).exterior
+            self.geometry = DrawToolShape(new_geo_el)
+
         self.draw_app.in_action = False
         self.complete = True
         self.draw_app.app.inform.emit(_("[success] Done."))
@@ -1527,7 +1610,7 @@ class FCScale(FCShapeTool):
         self.draw_app = draw_app
         self.app = draw_app.app
 
-        self.start_msg = _("Scale the selected Gerber apertures ...")
+        self.draw_app.app.inform.emit(_("Scale the selected Gerber apertures ..."))
         self.origin = (0, 0)
 
         if self.draw_app.app.ui.splitter.sizes()[0] == 0:
@@ -1569,7 +1652,7 @@ class FCBuffer(FCShapeTool):
         self.draw_app = draw_app
         self.app = draw_app.app
 
-        self.start_msg = _("Buffer the selected apertures ...")
+        self.draw_app.app.inform.emit(_("Buffer the selected apertures ..."))
         self.origin = (0, 0)
 
         if self.draw_app.app.ui.splitter.sizes()[0] == 0:
@@ -1693,11 +1776,19 @@ class FCApertureMove(FCShapeTool):
         sel_shapes_to_be_deleted = []
 
         for sel_dia in self.selected_apertures:
-            self.current_storage = self.draw_app.storage_dict[sel_dia]['solid_geometry']
+            self.current_storage = self.draw_app.storage_dict[sel_dia]['geometry']
             for select_shape in self.draw_app.get_selected():
                 if select_shape in self.current_storage:
+                    geometric_data = select_shape.geo
+                    new_geo_el = dict()
+                    if 'solid' in geometric_data:
+                        new_geo_el['solid'] = affinity.translate(geometric_data['solid'], xoff=dx, yoff=dy)
+                    if 'follow' in geometric_data:
+                        new_geo_el['follow'] = affinity.translate(geometric_data['follow'], xoff=dx, yoff=dy)
+                    if 'clear' in geometric_data:
+                        new_geo_el['clear'] = affinity.translate(geometric_data['clear'], xoff=dx, yoff=dy)
 
-                    self.geometry.append(DrawToolShape(affinity.translate(select_shape.geo, xoff=dx, yoff=dy)))
+                    self.geometry.append(DrawToolShape(new_geo_el))
                     self.current_storage.remove(select_shape)
                     sel_shapes_to_be_deleted.append(select_shape)
                     self.draw_app.on_grb_shape_complete(self.current_storage, noplot=True)
@@ -1733,9 +1824,15 @@ class FCApertureMove(FCShapeTool):
 
         dx = data[0] - self.origin[0]
         dy = data[1] - self.origin[1]
-        # for geom in self.draw_app.get_selected():
-        #     geo_list.append(affinity.translate(geom.geo, xoff=dx, yoff=dy))
-        geo_list = [affinity.translate(geom.geo, xoff=dx, yoff=dy) for geom in self.draw_app.get_selected()]
+        for geom in self.draw_app.get_selected():
+            new_geo_el = dict()
+            if 'solid' in geom.geo:
+                new_geo_el['solid'] = affinity.translate(geom.geo['solid'], xoff=dx, yoff=dy)
+            if 'follow' in geom.geo:
+                new_geo_el['follow'] = affinity.translate(geom.geo['follow'], xoff=dx, yoff=dy)
+            if 'clear' in geom.geo:
+                new_geo_el['clear'] = affinity.translate(geom.geo['clear'], xoff=dx, yoff=dy)
+            geo_list.append(deepcopy(new_geo_el))
         return DrawToolUtilityShape(geo_list)
 
 
@@ -1751,10 +1848,18 @@ class FCApertureCopy(FCApertureMove):
         sel_shapes_to_be_deleted = []
 
         for sel_dia in self.selected_apertures:
-            self.current_storage = self.draw_app.storage_dict[sel_dia]['solid_geometry']
+            self.current_storage = self.draw_app.storage_dict[sel_dia]['geometry']
             for select_shape in self.draw_app.get_selected():
                 if select_shape in self.current_storage:
-                    self.geometry.append(DrawToolShape(affinity.translate(select_shape.geo, xoff=dx, yoff=dy)))
+                    geometric_data = select_shape.geo
+                    new_geo_el = dict()
+                    if 'solid' in geometric_data:
+                        new_geo_el['solid'] = affinity.translate(geometric_data['solid'], xoff=dx, yoff=dy)
+                    if 'follow' in geometric_data:
+                        new_geo_el['follow'] = affinity.translate(geometric_data['follow'], xoff=dx, yoff=dy)
+                    if 'clear' in geometric_data:
+                        new_geo_el['clear'] = affinity.translate(geometric_data['clear'], xoff=dx, yoff=dy)
+                    self.geometry.append(DrawToolShape(new_geo_el))
 
                     sel_shapes_to_be_deleted.append(select_shape)
                     self.draw_app.on_grb_shape_complete(self.current_storage)
@@ -3698,7 +3803,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.tool_shape.add(
                     shape=geometric_data, color=(self.app.defaults["global_draw_color"] + '80'),
                     # face_color=self.app.defaults['global_alt_sel_fill'],
-                    update=False, layer=0, tolerance=None)
+                    update=False, layer=0, tolerance=None
+                )
         else:
             geometric_data = geo.geo['solid']
             # Add the new utility shape
@@ -3706,7 +3812,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 shape=geometric_data,
                 color=(self.app.defaults["global_draw_color"] + '80'),
                 # face_color=self.app.defaults['global_alt_sel_fill'],
-                update=False, layer=0, tolerance=None)
+                update=False, layer=0, tolerance=None
+            )
 
         self.tool_shape.redraw()
 
@@ -3730,7 +3837,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
                         if elem in self.selected:
                             self.plot_shape(geometry=geometric_data,
-                                            color=self.app.defaults['global_sel_draw_color'])
+                                            color=self.app.defaults['global_sel_draw_color'],
+                                            linewidth=2)
                             continue
                         self.plot_shape(geometry=geometric_data,
                                         color=self.app.defaults['global_draw_color'])
@@ -3739,18 +3847,19 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
             for elem in self.utility:
                 geometric_data = elem.geo['solid']
-                self.plot_shape(geometry=geometric_data)
+                self.plot_shape(geometry=geometric_data, linewidth=1)
                 continue
 
             self.shapes.redraw()
 
-    def plot_shape(self, geometry=None, color='black'):
+    def plot_shape(self, geometry=None, color='black', linewidth=1):
         """
         Plots a geometric object or list of objects without rendering. Plotted objects
         are returned as a list. This allows for efficient/animated rendering.
 
         :param geometry: Geometry to be plotted (Any Shapely.geom kind or list of such)
         :param color: Shape color
+        :param linewidth: Width of lines in # of pixels.
         :return: List of plotted elements.
         """
         # plot_elements = []
