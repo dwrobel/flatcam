@@ -9,10 +9,14 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+11.05.2019
+
+- fixed issue in camlib.CNCjob.generate_from_excellon_by_tool() in the drill path optimization algorithm selection when selecting the MH algorithm. The new API's for Google OR-tools required some changes and also the time parameter can be now just an integer therefore I modified the GUI
+
 10.05.2019
 
 - Gerber Editor - working in conversion to the new data format
-- made sure that only units toggle done in Edit -> Preferences will toggle the data in Preferences. THe menu entry Edit -> Toggle Units and the shortcut key 'Q' will change only the display units in the app
+- made sure that only units toggle done in Edit -> Preferences will toggle the data in Preferences. The menu entry Edit -> Toggle Units and the shortcut key 'Q' will change only the display units in the app
 - optimized Transform tool
 
 9.05.2019

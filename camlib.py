@@ -5240,10 +5240,10 @@ class CNCjob(Geometry):
 
                             # Set search time limit in milliseconds.
                             if float(self.app.defaults["excellon_search_time"]) != 0:
-                                search_parameters.time_limit_ms = int(
-                                    float(self.app.defaults["excellon_search_time"]) * 1000)
+                                search_parameters.time_limit.seconds = int(
+                                    float(self.app.defaults["excellon_search_time"]))
                             else:
-                                search_parameters.time_limit_ms = 3000
+                                search_parameters.time_limit.seconds = 3
 
                             # Callback to the distance function. The callback takes two
                             # arguments (the from and to node indices) and returns the distance between them.

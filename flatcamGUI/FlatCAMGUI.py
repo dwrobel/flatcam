@@ -4525,7 +4525,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
         )
 
-        self.optimization_time_entry = LengthEntry()
+        self.optimization_time_entry = IntEntry()
+        self.optimization_time_entry.setValidator(QtGui.QIntValidator(0, 999))
         form_box_excellon.addRow(self.optimization_time_label, self.optimization_time_entry)
 
         current_platform = platform.architecture()[0]
