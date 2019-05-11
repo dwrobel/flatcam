@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed camlib.Gerber issues related to what happen after parsing rectangular apertures 
 - wip in camblib.Gerber
 - completely converted the Gerber editor to the new data structure
+- Gerber Editor: added a threshold limit for how many elements a move selection can have. If above the threshold only a bounding box Poly will be painted on canvas as utility geometry.
 
 10.05.2019
 

@@ -1719,6 +1719,9 @@ class FCApertureMove(FCShapeTool):
         # Switch notebook to Selected page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
 
+        self.sel_limit = 30
+        self.selection_shape = self.selection_bbox()
+
     def set_origin(self, origin):
         self.origin = origin
 
@@ -1768,6 +1771,22 @@ class FCApertureMove(FCShapeTool):
     #     f = open("%s.png" % 'D:\\shapely_image', "wb")
     #     f.write(c.dump())
     #     f.close()
+
+    def selection_bbox(self):
+        geo_list = []
+
+        for select_shape in self.draw_app.get_selected():
+            geometric_data = select_shape.geo
+            geo_list.append(geometric_data['solid'])
+
+        xmin, ymin, xmax, ymax = get_shapely_list_bounds(geo_list)
+
+        pt1 = (xmin, ymin)
+        pt2 = (xmax, ymin)
+        pt3 = (xmax, ymax)
+        pt4 = (xmin, ymax)
+
+        return Polygon([pt1, pt2, pt3, pt4])
 
     def make(self):
         # Create new geometry
@@ -1824,16 +1843,22 @@ class FCApertureMove(FCShapeTool):
 
         dx = data[0] - self.origin[0]
         dy = data[1] - self.origin[1]
-        for geom in self.draw_app.get_selected():
-            new_geo_el = dict()
-            if 'solid' in geom.geo:
-                new_geo_el['solid'] = affinity.translate(geom.geo['solid'], xoff=dx, yoff=dy)
-            if 'follow' in geom.geo:
-                new_geo_el['follow'] = affinity.translate(geom.geo['follow'], xoff=dx, yoff=dy)
-            if 'clear' in geom.geo:
-                new_geo_el['clear'] = affinity.translate(geom.geo['clear'], xoff=dx, yoff=dy)
-            geo_list.append(deepcopy(new_geo_el))
-        return DrawToolUtilityShape(geo_list)
+
+        if len(self.draw_app.get_selected()) <= self.sel_limit:
+            for geom in self.draw_app.get_selected():
+                new_geo_el = dict()
+                if 'solid' in geom.geo:
+                    new_geo_el['solid'] = affinity.translate(geom.geo['solid'], xoff=dx, yoff=dy)
+                if 'follow' in geom.geo:
+                    new_geo_el['follow'] = affinity.translate(geom.geo['follow'], xoff=dx, yoff=dy)
+                if 'clear' in geom.geo:
+                    new_geo_el['clear'] = affinity.translate(geom.geo['clear'], xoff=dx, yoff=dy)
+                geo_list.append(deepcopy(new_geo_el))
+            return DrawToolUtilityShape(geo_list)
+        else:
+            ss_el = dict()
+            ss_el['solid'] = affinity.translate(self.selection_shape, xoff=dx, yoff=dy)
+            return DrawToolUtilityShape(ss_el)
 
 
 class FCApertureCopy(FCApertureMove):
@@ -1991,6 +2016,7 @@ class FCTransform(FCShapeTool):
 class FlatCAMGrbEditor(QtCore.QObject):
 
     draw_shape_idx = -1
+    plot_finished = QtCore.pyqtSignal()
 
     def __init__(self, app):
         assert isinstance(app, FlatCAMApp.App), \
@@ -2541,6 +2567,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
+
+        self.set_ui()
 
     def pool_recreated(self, pool):
         self.shapes.pool = pool
@@ -3211,8 +3239,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.select_tool("select")
 
-        # we activate this after the initial build as we don't need to see the tool been populated
-        self.apertures_table.itemChanged.connect(self.on_tool_edit)
+        try:
+            # we activate this after the initial build as we don't need to see the tool been populated
+            self.apertures_table.itemChanged.connect(self.on_tool_edit)
+        except Exception as e:
+            log.debug("FlatCAMGrbEditor.edit_fcgerber() --> %s" % str(e))
 
         # and then add it to the storage elements (each storage elements is a member of a list
 
@@ -3887,6 +3918,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         log.debug("FlatCAMGrbEditor --> Delayed Plot started.")
         self.plot_thread = QtCore.QTimer()
         self.plot_thread.setInterval(check_period)
+        self.plot_finished.connect(self.setup_ui_after_delayed_plot)
         self.plot_thread.timeout.connect(self.check_plot_finished)
         self.plot_thread.start()
 
@@ -3900,20 +3932,23 @@ class FlatCAMGrbEditor(QtCore.QObject):
         try:
             if not self.grb_plot_promises:
                 self.plot_thread.stop()
-
-                self.set_ui()
-                # now that we have data, create the GUI interface and add it to the Tool Tab
-                self.build_ui(first_run=True)
-                self.plot_all()
-
-                # HACK: enabling/disabling the cursor seams to somehow update the shapes making them more 'solid'
-                # - perhaps is a bug in VisPy implementation
-                self.app.app_cursor.enabled = False
-                self.app.app_cursor.enabled = True
-
+                self.plot_finished.emit()
                 log.debug("FlatCAMGrbEditor --> delayed_plot finished")
         except Exception:
             traceback.print_exc()
+
+    def setup_ui_after_delayed_plot(self):
+        self.plot_finished.disconnect()
+
+        self.set_ui()
+        # now that we have data, create the GUI interface and add it to the Tool Tab
+        self.build_ui(first_run=True)
+        self.plot_all()
+
+        # HACK: enabling/disabling the cursor seams to somehow update the shapes making them more 'solid'
+        # - perhaps is a bug in VisPy implementation
+        self.app.app_cursor.enabled = False
+        self.app.app_cursor.enabled = True
 
     def get_selected(self):
         """
