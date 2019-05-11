@@ -3313,8 +3313,7 @@ class Gerber (Geometry):
                     new_obj.append(scale_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj, xfactor,
-                                             yfactor, origin=(px, py))
+                return affinity.scale(obj, xfactor, yfactor, origin=(px, py))
 
         self.solid_geometry = scale_geom(self.solid_geometry)
         self.follow_geometry = scale_geom(self.follow_geometry)
@@ -3322,26 +3321,20 @@ class Gerber (Geometry):
         # we need to scale the geometry stored in the Gerber apertures, too
         try:
             for apid in self.apertures:
-                if 'solid_geometry' in self.apertures[apid]:
-                    self.apertures[apid]['solid_geometry'] = scale_geom(self.apertures[apid]['solid_geometry'])
-                if 'follow_geometry' in self.apertures[apid]:
-                    self.apertures[apid]['follow_geometry'] = scale_geom(self.apertures[apid]['follow_geometry'])
-                if 'clear_geometry' in self.apertures[apid]:
-                    self.apertures[apid]['clear_geometry'] = scale_geom(self.apertures[apid]['clear_geometry'])
+                if 'geometry' in self.apertures[apid]:
+                    for geo_el in self.apertures[apid]['geometry']:
+                        if 'solid' in geo_el:
+                            geo_el['solid'] = scale_geom(geo_el['solid'])
+                        if 'follow' in geo_el:
+                            geo_el['follow'] = scale_geom(geo_el['follow'])
+                        if 'clear' in geo_el:
+                            geo_el['clear'] = scale_geom(geo_el['clear'])
+
         except Exception as e:
             log.debug('camlib.Gerber.scale() Exception --> %s' % str(e))
             return 'fail'
 
         self.app.inform.emit(_("[success] Gerber Scale done."))
-
-
-        ## solid_geometry ???
-        #  It's a cascaded union of objects.
-        # self.solid_geometry = affinity.scale(self.solid_geometry, factor,
-        #                                      factor, origin=(0, 0))
-
-        # # Now buffered_paths, flash_geometry and solid_geometry
-        # self.create_geometry()
 
     def offset(self, vect):
         """
@@ -3385,15 +3378,17 @@ class Gerber (Geometry):
         # we need to offset the geometry stored in the Gerber apertures, too
         try:
             for apid in self.apertures:
-                self.apertures[apid]['solid_geometry'] = offset_geom(self.apertures[apid]['solid_geometry'])
+                if 'geometry' in self.apertures[apid]:
+                    for geo_el in self.apertures[apid]['geometry']:
+                        if 'solid' in geo_el:
+                            geo_el['solid'] = offset_geom(geo_el['solid'])
+                        if 'follow' in geo_el:
+                            geo_el['follow'] = offset_geom(geo_el['follow'])
+                        if 'clear' in geo_el:
+                            geo_el['clear'] = offset_geom(geo_el['clear'])
+
         except Exception as e:
-            log.debug('camlib.Gerber.offset() --> %s' % str(e))
-            return 'fail'
-        try:
-            for apid in self.apertures:
-                self.apertures[apid]['follow_geometry'] = offset_geom(self.apertures[apid]['follow_geometry'])
-        except Exception as e:
-            log.debug('camlib.Gerber.offset() --> %s' % str(e))
+            log.debug('camlib.Gerber.offset() Exception --> %s' % str(e))
             return 'fail'
 
         self.app.inform.emit(_("[success] Gerber Offset done."))
@@ -3438,20 +3433,19 @@ class Gerber (Geometry):
         # we need to mirror the geometry stored in the Gerber apertures, too
         try:
             for apid in self.apertures:
-                self.apertures[apid]['solid_geometry'] = mirror_geom(self.apertures[apid]['solid_geometry'])
+                if 'geometry' in self.apertures[apid]:
+                    for geo_el in self.apertures[apid]['geometry']:
+                        if 'solid' in geo_el:
+                            geo_el['solid'] = mirror_geom(geo_el['solid'])
+                        if 'follow' in geo_el:
+                            geo_el['follow'] = mirror_geom(geo_el['follow'])
+                        if 'clear' in geo_el:
+                            geo_el['clear'] = mirror_geom(geo_el['clear'])
         except Exception as e:
-            log.debug('camlib.Gerber.mirror() --> %s' % str(e))
-            return 'fail'
-        try:
-            for apid in self.apertures:
-                self.apertures[apid]['follow_geometry'] = mirror_geom(self.apertures[apid]['follow_geometry'])
-        except Exception as e:
-            log.debug('camlib.Gerber.mirror() --> %s' % str(e))
+            log.debug('camlib.Gerber.mirror() Exception --> %s' % str(e))
             return 'fail'
 
-        #  It's a cascaded union of objects.
-        # self.solid_geometry = affinity.scale(self.solid_geometry,
-        #                                      xscale, yscale, origin=(px, py))
+        self.app.inform.emit(_("[success] Gerber Mirror done."))
 
     def skew(self, angle_x, angle_y, point):
         """
@@ -3485,18 +3479,19 @@ class Gerber (Geometry):
         # we need to skew the geometry stored in the Gerber apertures, too
         try:
             for apid in self.apertures:
-                self.apertures[apid]['solid_geometry'] = skew_geom(self.apertures[apid]['solid_geometry'])
+                if 'geometry' in self.apertures[apid]:
+                    for geo_el in self.apertures[apid]['geometry']:
+                        if 'solid' in geo_el:
+                            geo_el['solid'] = skew_geom(geo_el['solid'])
+                        if 'follow' in geo_el:
+                            geo_el['follow'] = skew_geom(geo_el['follow'])
+                        if 'clear' in geo_el:
+                            geo_el['clear'] = skew_geom(geo_el['clear'])
         except Exception as e:
-            log.debug('camlib.Gerber.skew() --> %s' % str(e))
-            return 'fail'
-        try:
-            for apid in self.apertures:
-                self.apertures[apid]['follow_geometry'] = skew_geom(self.apertures[apid]['follow_geometry'])
-        except Exception as e:
-            log.debug('camlib.Gerber.skew() --> %s' % str(e))
+            log.debug('camlib.Gerber.skew() Exception --> %s' % str(e))
             return 'fail'
 
-        # self.solid_geometry = affinity.skew(self.solid_geometry, angle_x, angle_y, origin=(px, py))
+        self.app.inform.emit(_("[success] Gerber Skew done."))
 
     def rotate(self, angle, point):
         """
@@ -3523,17 +3518,18 @@ class Gerber (Geometry):
         # we need to rotate the geometry stored in the Gerber apertures, too
         try:
             for apid in self.apertures:
-                self.apertures[apid]['solid_geometry'] = rotate_geom(self.apertures[apid]['solid_geometry'])
+                if 'geometry' in self.apertures[apid]:
+                    for geo_el in self.apertures[apid]['geometry']:
+                        if 'solid' in geo_el:
+                            geo_el['solid'] = rotate_geom(geo_el['solid'])
+                        if 'follow' in geo_el:
+                            geo_el['follow'] = rotate_geom(geo_el['follow'])
+                        if 'clear' in geo_el:
+                            geo_el['clear'] = rotate_geom(geo_el['clear'])
         except Exception as e:
-            log.debug('camlib.Gerber.rotate() --> %s' % str(e))
+            log.debug('camlib.Gerber.rotate() Exception --> %s' % str(e))
             return 'fail'
-        try:
-            for apid in self.apertures:
-                self.apertures[apid]['follow_geometry'] = rotate_geom(self.apertures[apid]['follow_geometry'])
-        except Exception as e:
-            log.debug('camlib.Gerber.rotate() --> %s' % str(e))
-            return 'fail'
-        # self.solid_geometry = affinity.rotate(self.solid_geometry, angle, origin=(px, py))
+        self.app.inform.emit(_("[success] Gerber Rotate done."))
 
 
 class Excellon(Geometry):

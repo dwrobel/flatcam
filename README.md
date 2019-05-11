@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed issue in camlib.CNCjob.generate_from_excellon_by_tool() in the drill path optimization algorithm selection when selecting the MH algorithm. The new API's for Google OR-tools required some changes and also the time parameter can be now just an integer therefore I modified the GUI
 - made the Feedrate Rapids parameter to depend on the type of postprocessor choosed. It will be showed only for a postprocessor which the name contain 'marlin' and for any postprocessor's that have 'custom' in the name
+- fixed the camlib.Gerber functions of mirror, scale, offset, skew and rotate to work with the new data structure for apertures geometry
+- fixed Gerber Editor selection to work with the new Gerber data structure in self.apertures
 
 10.05.2019
 

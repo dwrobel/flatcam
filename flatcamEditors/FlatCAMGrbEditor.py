@@ -1803,22 +1803,24 @@ class FCApertureSelect(DrawTool):
 
         for storage in self.grb_editor_app.storage_dict:
             try:
-                for shape in self.grb_editor_app.storage_dict[storage]['solid_geometry']:
-                    if Point(point).within(shape.geo):
-                        if (self.grb_editor_app.app.defaults["global_mselect_key"] == 'Control' and
-                            key_modifier == Qt.ControlModifier) or \
-                                (self.grb_editor_app.app.defaults["global_mselect_key"] == 'Shift' and
-                                 key_modifier == Qt.ShiftModifier):
+                for geo_el in self.grb_editor_app.storage_dict[storage]['geometry']:
+                    if 'solid' in geo_el.geo:
+                        geometric_data = geo_el.geo['solid']
+                        if Point(point).within(geometric_data):
+                            if (self.grb_editor_app.app.defaults["global_mselect_key"] == 'Control' and
+                                key_modifier == Qt.ControlModifier) or \
+                                    (self.grb_editor_app.app.defaults["global_mselect_key"] == 'Shift' and
+                                     key_modifier == Qt.ShiftModifier):
 
-                            if shape in self.draw_app.selected:
-                                self.draw_app.selected.remove(shape)
+                                if geo_el in self.draw_app.selected:
+                                    self.draw_app.selected.remove(geo_el)
+                                else:
+                                    # add the object to the selected shapes
+                                    self.draw_app.selected.append(geo_el)
+                                    sel_aperture.add(storage)
                             else:
-                                # add the object to the selected shapes
-                                self.draw_app.selected.append(shape)
+                                self.draw_app.selected.append(geo_el)
                                 sel_aperture.add(storage)
-                        else:
-                            self.draw_app.selected.append(shape)
-                            sel_aperture.add(storage)
             except KeyError:
                 pass
 
@@ -2803,13 +2805,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 geometric_data = geo_el.geo
                 new_geo_el = dict()
                 if 'solid' in geometric_data:
-                    new_geo_el['solid'] = deepcopy(geometric_data['solid'])
+                    new_geo_el['solid'] = deepcopy(affinity.scale(geometric_data['solid'],
+                                                                  xfact=factor, yfact=factor))
                 if 'follow' in geometric_data:
-                    new_geo_el['follow'] = deepcopy(geometric_data['follow'])
+                    new_geo_el['follow'] = deepcopy(affinity.scale(geometric_data['follow'],
+                                                                   xfact=factor, yfact=factor))
                 if 'clear' in geometric_data:
-                    new_geo_el['clear'] = deepcopy(geometric_data['clear'])
-                # geometry.append(DrawToolShape(
-                #     MultiLineString([affinity.scale(subgeo, xfact=factor, yfact=factor) for subgeo in shape.geo])))
+                    new_geo_el['clear'] = deepcopy(affinity.scale(geometric_data['clear'],
+                                                                  xfact=factor, yfact=factor))
+                geometry.append(new_geo_el)
 
             self.add_gerber_shape(geometry, self.storage_dict[current_table_dia_edited])
 
