@@ -2932,7 +2932,7 @@ class Gerber (Geometry):
 
                         # Append
                         path += this_arc
-                        # last_path_aperture = current_aperture
+                        last_path_aperture = current_aperture
 
                         continue
 
@@ -2982,7 +2982,7 @@ class Gerber (Geometry):
                                 current_x, current_y = circular_x, circular_y
 
                                 path += this_arc
-                                # last_path_aperture = current_aperture
+                                last_path_aperture = current_aperture
                                 valid = True
                                 break
 
