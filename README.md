@@ -11,8 +11,13 @@ CAD program, and create G-Code for Isolation routing.
 
 10.05.2019
 
+- Gerber Editor - working in conversion to the new data format
 - made sure that only units toggle done in Edit -> Preferences will toggle the data in Preferences. THe menu entry Edit -> Toggle Units and the shortcut key 'Q' will change only the display units in the app
 - optimized Transform tool
+
+9.05.2019
+
+- rework the Gerber parser
 
 8.05.2019
 
