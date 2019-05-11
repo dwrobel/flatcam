@@ -73,14 +73,19 @@ class FlatCAMObj(QtCore.QObject):
         # self.shapes = ShapeCollection(parent=self.app.plotcanvas.vispy_canvas.view.scene)
         self.shapes = self.app.plotcanvas.new_shape_group()
 
-        self.mark_shapes = self.app.plotcanvas.new_shape_collection(layers=2)
+        # self.mark_shapes = self.app.plotcanvas.new_shape_collection(layers=2)
+        self.mark_shapes = {}
 
         self.item = None  # Link with project view item
 
         self.muted_ui = False
         self.deleted = False
 
-        self._drawing_tolerance = 0.01
+        try:
+            self._drawing_tolerance = float(self.app.defaults["global_tolerance"]) if \
+                self.app.defaults["global_tolerance"] else 0.01
+        except ValueError:
+            self._drawing_tolerance = 0.01
 
         self.isHovering = False
         self.notHovering = True
@@ -321,11 +326,11 @@ class FlatCAMObj(QtCore.QObject):
             key = self.shapes.add(tolerance=self.drawing_tolerance, **kwargs)
         return key
 
-    def add_mark_shape(self, **kwargs):
+    def add_mark_shape(self, apid, **kwargs):
         if self.deleted:
             raise ObjectDeleted()
         else:
-            key = self.mark_shapes.add(tolerance=self.drawing_tolerance, **kwargs)
+            key = self.mark_shapes[apid].add(tolerance=self.drawing_tolerance, **kwargs)
         return key
 
     @property
@@ -555,6 +560,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             ))
             self.ui.padding_area_label.hide()
 
+        # add the shapes storage for marking apertures
+        for ap_code in self.apertures:
+            self.mark_shapes[ap_code] = self.app.plotcanvas.new_shape_collection(layers=2)
+
         # set initial state of the aperture table and associated widgets
         self.on_aperture_table_visibility_change()
 
@@ -576,12 +585,13 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             sort.append(int(k))
         sorted_apertures = sorted(sort)
 
-        sort = []
-        for k, v in list(self.aperture_macros.items()):
-            sort.append(k)
-        sorted_macros = sorted(sort)
+        # sort = []
+        # for k, v in list(self.aperture_macros.items()):
+        #     sort.append(k)
+        # sorted_macros = sorted(sort)
 
-        n = len(sorted_apertures) + len(sorted_macros)
+        # n = len(sorted_apertures) + len(sorted_macros)
+        n = len(sorted_apertures)
         self.ui.apertures_table.setRowCount(n)
 
         for ap_code in sorted_apertures:
@@ -639,28 +649,28 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             self.apertures_row += 1
 
-        for ap_code in sorted_macros:
-            ap_code = str(ap_code)
-
-            ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
-            ap_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.ui.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
-
-            ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
-
-            ap_type_item = QtWidgets.QTableWidgetItem('AM')
-            ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
-
-            mark_item = FCCheckBox()
-            mark_item.setLayoutDirection(QtCore.Qt.RightToLeft)
-            # if self.ui.aperture_table_visibility_cb.isChecked():
-            #     mark_item.setChecked(True)
-
-            self.ui.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
-            self.ui.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
-            self.ui.apertures_table.setCellWidget(self.apertures_row, 5, mark_item)
-
-            self.apertures_row += 1
+        # for ap_code in sorted_macros:
+        #     ap_code = str(ap_code)
+        #
+        #     ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
+        #     ap_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        #     self.ui.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
+        #
+        #     ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
+        #
+        #     ap_type_item = QtWidgets.QTableWidgetItem('AM')
+        #     ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
+        #
+        #     mark_item = FCCheckBox()
+        #     mark_item.setLayoutDirection(QtCore.Qt.RightToLeft)
+        #     # if self.ui.aperture_table_visibility_cb.isChecked():
+        #     #     mark_item.setChecked(True)
+        #
+        #     self.ui.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
+        #     self.ui.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
+        #     self.ui.apertures_table.setCellWidget(self.apertures_row, 5, mark_item)
+        #
+        #     self.apertures_row += 1
 
         self.ui.apertures_table.selectColumn(0)
         self.ui.apertures_table.resizeColumnsToContents()
@@ -692,7 +702,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         # update the 'mark' checkboxes state according with what is stored in the self.marked_rows list
         if self.marked_rows:
             for row in range(self.ui.apertures_table.rowCount()):
-                self.ui.apertures_table.cellWidget(row, 5).set_value(self.marked_rows[row])
+                try:
+                    self.ui.apertures_table.cellWidget(row, 5).set_value(self.marked_rows[row])
+                except IndexError:
+                    pass
 
         self.ui_connect()
 
@@ -999,6 +1012,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
     def on_aperture_table_visibility_change(self):
         if self.ui.aperture_table_visibility_cb.isChecked():
             self.ui.apertures_table.setVisible(True)
+            for ap in self.mark_shapes:
+                self.mark_shapes[ap].enabled = True
 
             self.ui.mark_all_cb.setVisible(True)
             self.ui.mark_all_cb.setChecked(False)
@@ -1011,6 +1026,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             for row in range(self.ui.apertures_table.rowCount()):
                 self.ui.apertures_table.cellWidget(row, 5).set_value(False)
             self.clear_plot_apertures()
+
+            for ap in self.mark_shapes:
+                self.mark_shapes[ap].enabled = False
 
     def convert_units(self, units):
         """
@@ -1098,14 +1116,14 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             self.shapes.clear(update=True)
 
     # experimental plot() when the solid_geometry is stored in the self.apertures
-    def plot_apertures(self, **kwargs):
+    def plot_aperture(self, **kwargs):
         """
 
         :param kwargs: color and face_color
         :return:
         """
 
-        FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMGerber.plot_apertures()")
+        FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMGerber.plot_aperture()")
 
         # Does all the required setup and returns False
         # if the 'ptint' option is set to False.
@@ -1135,7 +1153,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             def job_thread(app_obj):
                 self.app.progress.emit(30)
-
                 try:
                     if aperture_to_plot_mark in self.apertures:
                         if type(self.apertures[aperture_to_plot_mark]['solid_geometry']) is not list:
@@ -1143,12 +1160,14 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                 [self.apertures[aperture_to_plot_mark]['solid_geometry']]
                         for geo in self.apertures[aperture_to_plot_mark]['solid_geometry']:
                             if type(geo) == Polygon or type(geo) == LineString:
-                                self.add_mark_shape(shape=geo, color=color, face_color=color, visible=visibility)
+                                self.add_mark_shape(apid=aperture_to_plot_mark, shape=geo, color=color,
+                                                    face_color=color, visible=visibility)
                             else:
                                 for el in geo:
-                                    self.add_mark_shape(shape=el, color=color, face_color=color, visible=visibility)
+                                    self.add_mark_shape(apid=aperture_to_plot_mark, shape=el, color=color,
+                                                        face_color=color, visible=visibility)
 
-                    self.mark_shapes.redraw()
+                    self.mark_shapes[aperture_to_plot_mark].redraw()
                     self.app.progress.emit(100)
 
                 except (ObjectDeleted, AttributeError):
@@ -1156,34 +1175,47 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self]})
 
-    def clear_plot_apertures(self):
-        self.mark_shapes.clear(update=True)
+    def clear_plot_apertures(self, aperture='all'):
+        """
+
+        :param aperture: string; aperture for which to clear the mark shapes
+        :return:
+        """
+        if aperture == 'all':
+            for apid in self.apertures:
+                self.mark_shapes[apid].clear(update=True)
+        else:
+            self.mark_shapes[aperture].clear(update=True)
 
     def clear_mark_all(self):
         self.ui.mark_all_cb.set_value(False)
         self.marked_rows[:] = []
 
     def on_mark_cb_click_table(self):
+        """
+        Will mark aperture geometries on canvas or delete the markings depending on the checkbox state
+        :return:
+        """
+
         self.ui_disconnect()
-        # cw = self.sender()
-        # cw_index = self.ui.apertures_table.indexAt(cw.pos())
-        # cw_row = cw_index.row()
-        check_row = 0
+        cw = self.sender()
+        try:
+            cw_index = self.ui.apertures_table.indexAt(cw.pos())
+            cw_row = cw_index.row()
+        except AttributeError:
+            cw_row = 0
 
-        self.clear_plot_apertures()
         self.marked_rows[:] = []
+        aperture = self.ui.apertures_table.item(cw_row, 1).text()
 
-        for row in range(self.ui.apertures_table.rowCount()):
-            if self.ui.apertures_table.cellWidget(row, 5).isChecked():
-                self.marked_rows.append(True)
-
-                aperture = self.ui.apertures_table.item(row, 1).text()
-                # self.plot_apertures(color='#2d4606bf', marked_aperture=aperture, visible=True)
-                self.plot_apertures(color=self.app.defaults['global_sel_draw_color'], marked_aperture=aperture, visible=True)
-            else:
-                self.marked_rows.append(False)
-
-        self.mark_shapes.redraw()
+        if self.ui.apertures_table.cellWidget(cw_row, 5).isChecked():
+            self.marked_rows.append(True)
+            # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
+            self.plot_aperture(color=self.app.defaults['global_sel_draw_color'], marked_aperture=aperture, visible=True)
+            self.mark_shapes[aperture].redraw()
+        else:
+            self.marked_rows.append(False)
+            self.clear_plot_apertures(aperture=aperture)
 
         # make sure that the Mark All is disabled if one of the row mark's are disabled and
         # if all the row mark's are enabled also enable the Mark All checkbox
@@ -1215,12 +1247,197 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         if mark_all:
             for aperture in self.apertures:
-                # self.plot_apertures(color='#2d4606bf', marked_aperture=aperture, visible=True)
-                self.plot_apertures(color=self.app.defaults['global_sel_draw_color'], marked_aperture=aperture, visible=True)
+                # self.plot_aperture(color='#2d4606bf', marked_aperture=aperture, visible=True)
+                self.plot_aperture(color=self.app.defaults['global_sel_draw_color'],
+                                   marked_aperture=aperture, visible=True)
+            # HACK: enable/disable the grid for a better look
+            self.app.ui.grid_snap_btn.trigger()
+            self.app.ui.grid_snap_btn.trigger()
         else:
             self.clear_plot_apertures()
 
         self.ui_connect()
+
+    def export_gerber(self, whole, fract, g_zeros='L', factor=1):
+        """
+
+        :return: Gerber_code
+        """
+
+        def tz_format(x, y ,fac):
+            x_c = x * fac
+            y_c = y * fac
+
+            x_form = "{:.{dec}f}".format(x_c, dec=fract)
+            y_form = "{:.{dec}f}".format(y_c, dec=fract)
+
+            # extract whole part and decimal part
+            x_form = x_form.partition('.')
+            y_form = y_form.partition('.')
+
+            # left padd the 'whole' part with zeros
+            x_whole = x_form[0].rjust(whole, '0')
+            y_whole = y_form[0].rjust(whole, '0')
+
+            # restore the coordinate padded in the left with 0 and added the decimal part
+            # without the decinal dot
+            x_form = x_whole + x_form[2]
+            y_form = y_whole + y_form[2]
+            return x_form, y_form
+
+        def lz_format(x, y, fac):
+            x_c = x * fac
+            y_c = y * fac
+
+            x_form = "{:.{dec}f}".format(x_c, dec=fract).replace('.', '')
+            y_form = "{:.{dec}f}".format(y_c, dec=fract).replace('.', '')
+
+            # pad with rear zeros
+            x_form.ljust(length, '0')
+            y_form.ljust(length, '0')
+
+            return x_form, y_form
+
+        # Gerber code is stored here
+        gerber_code = ''
+
+        # apertures processing
+        try:
+            length = whole + fract
+            if '0' in self.apertures:
+                if 'solid_geometry' in self.apertures['0']:
+                    for geo in self.apertures['0']['solid_geometry']:
+                        gerber_code += 'G36*\n'
+                        geo_coords = list(geo.exterior.coords)
+                        # first command is a move with pen-up D02 at the beginning of the geo
+                        if g_zeros == 'T':
+                            x_formatted, y_formatted = tz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                           yform=y_formatted)
+                        else:
+                            x_formatted, y_formatted = lz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                           yform=y_formatted)
+                        for coord in geo_coords[1:]:
+                            if g_zeros == 'T':
+                                x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                               yform=y_formatted)
+                            else:
+                                x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                               yform=y_formatted)
+                        gerber_code += 'D02*\n'
+                        gerber_code += 'G37*\n'
+
+                        clear_list = list(geo.interiors)
+                        if clear_list:
+                            gerber_code += '%LPC*%\n'
+                            for clear_geo in clear_list:
+                                gerber_code += 'G36*\n'
+                                geo_coords = list(clear_geo.coords)
+
+                                # first command is a move with pen-up D02 at the beginning of the geo
+                                if g_zeros == 'T':
+                                    x_formatted, y_formatted = tz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                                    gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                                else:
+                                    x_formatted, y_formatted = lz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                                    gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                                for coord in geo_coords[1:]:
+                                    if g_zeros == 'T':
+                                        x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                        gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                       yform=y_formatted)
+                                    else:
+                                        x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                        gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                       yform=y_formatted)
+                                gerber_code += 'D02*\n'
+                                gerber_code += 'G37*\n'
+                            gerber_code += '%LPD*%\n'
+
+            for apid in self.apertures:
+                if apid == '0':
+                    continue
+                else:
+                    gerber_code += 'D%s*\n' % str(apid)
+
+                    if 'follow_geometry' in self.apertures[apid]:
+                        for geo in self.apertures[apid]['follow_geometry']:
+                            if isinstance(geo, Point):
+                                if g_zeros == 'T':
+                                    x_formatted, y_formatted = tz_format(geo.x, geo.y, factor)
+                                    gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                                else:
+                                    x_formatted, y_formatted = lz_format(geo.x, geo.y, factor)
+                                    gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                            else:
+                                geo_coords = list(geo.coords)
+                                # first command is a move with pen-up D02 at the beginning of the geo
+                                if g_zeros == 'T':
+                                    x_formatted, y_formatted = tz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                                    gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                                else:
+                                    x_formatted, y_formatted = lz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                                    gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                                for coord in geo_coords[1:]:
+                                    if g_zeros == 'T':
+                                        x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                        gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                       yform=y_formatted)
+                                    else:
+                                        x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                        gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                       yform=y_formatted)
+                    if 'clear_follow_geometry' in self.apertures[apid]:
+                        gerber_code += '%LPC*%\n'
+                        for geo in self.apertures[apid]['clear_follow_geometry']:
+                            if isinstance(geo, Point):
+                                if g_zeros == 'T':
+                                    x_formatted, y_formatted = tz_format(geo.x, geo.y, factor)
+                                    gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                                else:
+                                    x_formatted, y_formatted = lz_format(geo.x, geo.y, factor)
+                                    gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                            else:
+                                geo_coords = list(geo.coords)
+                                # first command is a move with pen-up D02 at the beginning of the geo
+                                if g_zeros == 'T':
+                                    x_formatted, y_formatted = tz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                                    gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                                else:
+                                    x_formatted, y_formatted = lz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                                    gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                                for coord in geo_coords[1:]:
+                                    if g_zeros == 'T':
+                                        x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                        gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                       yform=y_formatted)
+                                    else:
+                                        x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                        gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                       yform=y_formatted)
+                        gerber_code += '%LPD*%\n'
+
+        except Exception as e:
+            log.debug("FlatCAMObj.FlatCAMGerber.export_gerber() --> %s" % str(e))
+
+        if not self.apertures:
+            log.debug("FlatCAMObj.FlatCAMGerber.export_gerber() --> Gerber Object is empty: no apertures.")
+            return 'fail'
+
+        return gerber_code
 
     def mirror(self, axis, point):
         Gerber.mirror(self, axis=axis, point=point)

@@ -9,6 +9,56 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+10.05.2019
+
+- made sure that only units toggle done in Edit -> Preferences will toggle the data in Preferences. THe menu entry Edit -> Toggle Units and the shortcut key 'Q' will change only the display units in the app
+- optimized Transform tool
+
+8.05.2019
+
+- added zoom fit for Set Origin command
+- added move action for solid_geometry stored in the gerber_obj.apertures
+- fixed camlib.Gerber skew, rotate, offset, mirror functions to work for geometry stored in the Gerber apertures
+- fixed Gerber Editor follow_geometry reconstruction
+- Geometry Editor: made the tool to be able to continuously move until the tool is exited either by ESC key or by right mouse button click
+- Geometry Editor Move Tool: if no shape is selected when triggering this tool, now it is possible to make the selection inside the tool
+- Gerber editor Move Tool: fixed a bug that repeated the plotting function unnecessarily 
+- Gerber editor Move Tool: if no shape is selected the tool will exit
+
+7.05.2019
+
+- remade the Tool Panelize GUI
+- work in Gerber Export: finished the header export
+- fixed the Gerber Object and Gerber Editor Apertures Table to not show extra rows when there are aperture macros in the object
+- work in Gerber Export: finished the body export but have some errors with clear geometry (LPC)
+- Gerber Export - finished
+
+6.05.2019
+
+- made units change from shortcut key 'Q' not to affect the preferences
+- made units change from Edit -> Toggle Units not to affect the preferences
+- remade the way the aperture marks are plotted in Gerber Object
+- fixed some bugs related to moving an Gerber object with the aperture table in view
+- added a new parameter in the Edit -> Preferences -> App Preferences named Geo Tolerance. This parameter control the level of geometric detail throughout FlatCAM. It directly influence the effect of Circle Steps parameter.
+- solved a bug in Excellon Editor that caused app crash when trying to edit a tool in Tool Table due of missing a tool offset
+- updated the ToolPanelize tool so the Gerber panel of type FlatCAMGerber can be isolated like any other FlatCAMGerber object
+- updated the ToolPanelize tool so it can be edited
+- modified the default values for toolchangez and endz parameters so they are now safe in all cases
+
+5.05.2019
+
+- another fix for bug in clear geometry processing for Gerber apertures
+- added a protection for the case that the aperture table is part of a deleted object
+- in Script Editor added support for auto-add closing parenthesis, brace and bracket
+- in Script Editor added support for "CTRL + / " key combo to comment/uncomment line
+
+4.05.2019
+
+- fixed bug in camlib.parse_lines() in the clear_geometry processing section for self.apertures
+- fixed bug in parsing Gerber regions (a point was added unnecessary)
+- renamed the menu entry Edit -> Copy as Geo to Convert Any to Geo and moved it in the Edit -> Conversion
+- created a new function named Convert Any to Gerber and installed it in Edit -> Conversion. It's doing what the name say: it will convert an Geometry or Excellon FlatCAM object to a Gerber object.
+
 01.05.2019
 
 - the project items color is now controlled from Foreground Role in ObjectCollection.data()
@@ -463,7 +513,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed mouse selection on canvas, mouse drag, mouse click and mouse double click
 - fixed Gerber Aperture Table dimensions
 - added a Mark All button in the Gerber aperture table.
-- because adding shapes to the shapes collection (when doing Mark or Mark All) is time consuming I made the plot_apertures() threaded.
+- because adding shapes to the shapes collection (when doing Mark or Mark All) is time consuming I made the plot_aperture() threaded.
 - made the polygon fusing in modified Gerber creation, a list comprehension in an attempt for optimization
 - when right clicking the files in Project tab, the Save option for Excellon no longer export it but really save the original. 
 - in ToolChange Custom Code replacement, the Text Box in the CNCJob Selected tab will be active only if there is a 'toolchange_custom' in the name of the postprocessor file. This assume that it is, or was created having as template the Toolchange Custom postprocessor file.
@@ -635,7 +685,7 @@ CAD program, and create G-Code for Isolation routing.
 - finished Gerber aperture table display
 - made the Gerber aperture table not visible as default and added a checkbox that can toggle the visibility
 - fixed issue with plotting in CNCJob; with Plot kind set to something else than 'all' when toggling Plot, it was defaulting to kind = 'all'
-- added (and commented) an experimental FlatCAMObj.FlatCAMGerber.plot_apertures()
+- added (and commented) an experimental FlatCAMObj.FlatCAMGerber.plot_aperture()
 
 12.02.2019
 

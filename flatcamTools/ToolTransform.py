@@ -658,19 +658,18 @@ class ToolTransform(FlatCAMTool):
 
                     self.app.progress.emit(20)
 
+                    px = 0.5 * (xminimal + xmaximal)
+                    py = 0.5 * (yminimal + ymaximal)
                     for sel_obj in obj_list:
-                        px = 0.5 * (xminimal + xmaximal)
-                        py = 0.5 * (yminimal + ymaximal)
                         if isinstance(sel_obj, FlatCAMCNCjob):
                             self.app.inform.emit(_("CNCJob objects can't be rotated."))
                         else:
                             sel_obj.rotate(-num, point=(px, py))
-                            sel_obj.plot()
                             self.app.object_changed.emit(sel_obj)
 
                         # add information to the object that it was changed and how much
                         sel_obj.options['rotate'] = num
-
+                        sel_obj.plot()
                     self.app.inform.emit(_('[success] Rotate done ...'))
                     self.app.progress.emit(100)
 
@@ -719,31 +718,30 @@ class ToolTransform(FlatCAMTool):
                     self.app.progress.emit(20)
 
                     # execute mirroring
-                    for obj in obj_list:
-                        if isinstance(obj, FlatCAMCNCjob):
+                    for sel_obj in obj_list:
+                        if isinstance(sel_obj, FlatCAMCNCjob):
                             self.app.inform.emit(_("CNCJob objects can't be mirrored/flipped."))
                         else:
                             if axis is 'X':
-                                obj.mirror('X', (px, py))
+                                sel_obj.mirror('X', (px, py))
                                 # add information to the object that it was changed and how much
                                 # the axis is reversed because of the reference
-                                if 'mirror_y' in obj.options:
-                                    obj.options['mirror_y'] = not obj.options['mirror_y']
+                                if 'mirror_y' in sel_obj.options:
+                                    sel_obj.options['mirror_y'] = not sel_obj.options['mirror_y']
                                 else:
-                                    obj.options['mirror_y'] = True
-                                obj.plot()
+                                    sel_obj.options['mirror_y'] = True
                                 self.app.inform.emit(_('[success] Flip on the Y axis done ...'))
                             elif axis is 'Y':
-                                obj.mirror('Y', (px, py))
+                                sel_obj.mirror('Y', (px, py))
                                 # add information to the object that it was changed and how much
                                 # the axis is reversed because of the reference
-                                if 'mirror_x' in obj.options:
-                                    obj.options['mirror_x'] = not obj.options['mirror_x']
+                                if 'mirror_x' in sel_obj.options:
+                                    sel_obj.options['mirror_x'] = not sel_obj.options['mirror_x']
                                 else:
-                                    obj.options['mirror_x'] = True
-                                obj.plot()
+                                    sel_obj.options['mirror_x'] = True
                                 self.app.inform.emit(_('[success] Flip on the X axis done ...'))
-                            self.app.object_changed.emit(obj)
+                            self.app.object_changed.emit(sel_obj)
+                        sel_obj.plot()
                     self.app.progress.emit(100)
 
                 except Exception as e:
@@ -776,20 +774,20 @@ class ToolTransform(FlatCAMTool):
 
                     self.app.progress.emit(20)
 
-                    for obj in obj_list:
-                        if isinstance(obj, FlatCAMCNCjob):
+                    for sel_obj in obj_list:
+                        if isinstance(sel_obj, FlatCAMCNCjob):
                             self.app.inform.emit(_("CNCJob objects can't be skewed."))
                         else:
                             if axis is 'X':
-                                obj.skew(num, 0, point=(xminimal, yminimal))
+                                sel_obj.skew(num, 0, point=(xminimal, yminimal))
                                 # add information to the object that it was changed and how much
-                                obj.options['skew_x'] = num
+                                sel_obj.options['skew_x'] = num
                             elif axis is 'Y':
-                                obj.skew(0, num, point=(xminimal, yminimal))
+                                sel_obj.skew(0, num, point=(xminimal, yminimal))
                                 # add information to the object that it was changed and how much
-                                obj.options['skew_y'] = num
-                            obj.plot()
-                            self.app.object_changed.emit(obj)
+                                sel_obj.options['skew_y'] = num
+                            self.app.object_changed.emit(sel_obj)
+                        sel_obj.plot()
                     self.app.inform.emit(_('[success] Skew on the %s axis done ...') % str(axis))
                     self.app.progress.emit(100)
 
@@ -836,16 +834,17 @@ class ToolTransform(FlatCAMTool):
                         px = 0
                         py = 0
 
-                    for obj in obj_list:
-                        if isinstance(obj, FlatCAMCNCjob):
+                    for sel_obj in obj_list:
+                        if isinstance(sel_obj, FlatCAMCNCjob):
                             self.app.inform.emit(_("CNCJob objects can't be scaled."))
                         else:
-                            obj.scale(xfactor, yfactor, point=(px, py))
+                            sel_obj.scale(xfactor, yfactor, point=(px, py))
                             # add information to the object that it was changed and how much
-                            obj.options['scale_x'] = xfactor
-                            obj.options['scale_y'] = yfactor
-                            obj.plot()
-                            self.app.object_changed.emit(obj)
+                            sel_obj.options['scale_x'] = xfactor
+                            sel_obj.options['scale_y'] = yfactor
+                            self.app.object_changed.emit(sel_obj)
+                        sel_obj.plot()
+
                     self.app.inform.emit(_('[success] Scale on the %s axis done ...') % str(axis))
                     self.app.progress.emit(100)
                 except Exception as e:
@@ -854,8 +853,6 @@ class ToolTransform(FlatCAMTool):
 
     def on_offset(self, axis, num):
         obj_list = self.app.collection.get_selected()
-        xminlist = []
-        yminlist = []
 
         if not obj_list:
             self.app.inform.emit(_("[WARNING_NOTCL] No object selected. Please Select an object to offset!"))
@@ -863,34 +860,23 @@ class ToolTransform(FlatCAMTool):
         else:
             with self.app.proc_container.new(_("Applying Offset")):
                 try:
-                    # first get a bounding box to fit all
-                    for obj in obj_list:
-                        if isinstance(obj, FlatCAMCNCjob):
-                            pass
-                        else:
-                            xmin, ymin, xmax, ymax = obj.bounds()
-                            xminlist.append(xmin)
-                            yminlist.append(ymin)
-
-                    # get the minimum x,y and maximum x,y for all objects selected
-                    xminimal = min(xminlist)
-                    yminimal = min(yminlist)
                     self.app.progress.emit(20)
 
-                    for obj in obj_list:
-                        if isinstance(obj, FlatCAMCNCjob):
+                    for sel_obj in obj_list:
+                        if isinstance(sel_obj, FlatCAMCNCjob):
                             self.app.inform.emit(_("CNCJob objects can't be offseted."))
                         else:
                             if axis is 'X':
-                                obj.offset((num, 0))
+                                sel_obj.offset((num, 0))
                                 # add information to the object that it was changed and how much
-                                obj.options['offset_x'] = num
+                                sel_obj.options['offset_x'] = num
                             elif axis is 'Y':
-                                obj.offset((0, num))
+                                sel_obj.offset((0, num))
                                 # add information to the object that it was changed and how much
-                                obj.options['offset_y'] = num
-                            obj.plot()
-                            self.app.object_changed.emit(obj)
+                                sel_obj.options['offset_y'] = num
+                            self.app.object_changed.emit(sel_obj)
+                        sel_obj.plot()
+
                     self.app.inform.emit(_('[success] Offset on the %s axis done ...') % str(axis))
                     self.app.progress.emit(100)
 

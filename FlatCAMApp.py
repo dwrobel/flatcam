@@ -94,8 +94,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.915
-    version_date = "2019/05/1"
+    version = 8.916
+    version_date = "2019/05/10"
     beta = True
 
     # current date now
@@ -322,6 +322,7 @@ class App(QtCore.QObject):
             "global_project_autohide": self.ui.general_defaults_form.general_app_group.project_autohide_cb,
             "global_toggle_tooltips": self.ui.general_defaults_form.general_app_group.toggle_tooltips_cb,
             "global_worker_number": self.ui.general_defaults_form.general_app_group.worker_number_sb,
+            "global_tolerance": self.ui.general_defaults_form.general_app_group.tol_entry,
 
             "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_combo,
             "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
@@ -371,6 +372,12 @@ class App(QtCore.QObject):
             "gerber_aperture_scale_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.scale_aperture_entry,
             "gerber_aperture_buffer_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.buffer_aperture_entry,
             "gerber_follow": self.ui.gerber_defaults_form.gerber_adv_opt_group.follow_cb,
+
+            # Gerber Export
+            "gerber_exp_units": self.ui.gerber_defaults_form.gerber_exp_group.gerber_units_radio,
+            "gerber_exp_integer": self.ui.gerber_defaults_form.gerber_exp_group.format_whole_entry,
+            "gerber_exp_decimals": self.ui.gerber_defaults_form.gerber_exp_group.format_dec_entry,
+            "gerber_exp_zeros": self.ui.gerber_defaults_form.gerber_exp_group.zeros_radio,
 
             # Excellon General
             "excellon_plot": self.ui.excellon_defaults_form.excellon_gen_group.plot_cb,
@@ -594,6 +601,7 @@ class App(QtCore.QObject):
             "global_project_autohide": True,
             "global_toggle_tooltips": True,
             "global_worker_number": 2,
+            "global_tolerance": 0.01,
             "global_compression_level": 3,
             "global_save_compressed": True,
 
@@ -680,6 +688,12 @@ class App(QtCore.QObject):
             "gerber_aperture_buffer_factor": 0.0,
             "gerber_follow": False,
 
+            # Gerber Export
+            "gerber_exp_units": 'IN',
+            "gerber_exp_integer": 2,
+            "gerber_exp_decimals": 4,
+            "gerber_exp_zeros": 'L',
+
             # Excellon General
             "excellon_plot": True,
             "excellon_solid": True,
@@ -700,7 +714,7 @@ class App(QtCore.QObject):
             "excellon_dwell": False,
             "excellon_dwelltime": 1,
             "excellon_toolchange": False,
-            "excellon_toolchangez": 1.0,
+            "excellon_toolchangez": 0.5,
             "excellon_ppname_e": 'default',
             "excellon_tooldia": 0.016,
             "excellon_slot_tooldia": 0.016,
@@ -710,7 +724,7 @@ class App(QtCore.QObject):
             "excellon_offset": 0.0,
             "excellon_toolchangexy": "0.0, 0.0",
             "excellon_startz": None,
-            "excellon_endz": 2.0,
+            "excellon_endz": 0.5,
             "excellon_feedrate_rapid": 3.0,
             "excellon_z_pdepth": -0.02,
             "excellon_feedrate_probe": 3.0,
@@ -735,7 +749,7 @@ class App(QtCore.QObject):
             "geometry_depthperpass": 0.002,
             "geometry_travelz": 0.1,
             "geometry_toolchange": False,
-            "geometry_toolchangez": 1.0,
+            "geometry_toolchangez": 0.5,
             "geometry_feedrate": 3.0,
             "geometry_feedrate_z": 3.0,
             "geometry_spindlespeed": None,
@@ -746,7 +760,7 @@ class App(QtCore.QObject):
             # Geometry Advanced Options
             "geometry_toolchangexy": "0.0, 0.0",
             "geometry_startz": None,
-            "geometry_endz": 2.0,
+            "geometry_endz": 0.5,
             "geometry_feedrate_rapid": 3.0,
             "geometry_extracut": False,
             "geometry_z_pdepth": -0.02,
@@ -1297,7 +1311,7 @@ class App(QtCore.QObject):
         self.ui.menufileexportsvg.triggered.connect(self.on_file_exportsvg)
         self.ui.menufileexportpng.triggered.connect(self.on_file_exportpng)
         self.ui.menufileexportexcellon.triggered.connect(self.on_file_exportexcellon)
-
+        self.ui.menufileexportgerber.triggered.connect(self.on_file_exportgerber)
 
         self.ui.menufileexportdxf.triggered.connect(self.on_file_exportdxf)
 
@@ -1320,7 +1334,9 @@ class App(QtCore.QObject):
         self.ui.menueditdelete.triggered.connect(self.on_delete)
 
         self.ui.menueditcopyobject.triggered.connect(self.on_copy_object)
-        self.ui.menueditcopyobjectasgeom.triggered.connect(self.on_copy_object_as_geometry)
+        self.ui.menueditconvert_any2geo.triggered.connect(self.convert_any2geo)
+        self.ui.menueditconvert_any2gerber.triggered.connect(self.convert_any2gerber)
+
         self.ui.menueditorigin.triggered.connect(self.on_set_origin)
         self.ui.menueditjump.triggered.connect(self.on_jump_to)
 
@@ -1416,7 +1432,8 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_app_group.language_apply_btn.clicked.connect(
             lambda: fcTranslate.on_language_apply_click(self, restart=True)
         )
-        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(self.on_toggle_units)
+        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
+            lambda :self.on_toggle_units(no_pref=False))
 
         ###############################
         ### GUI PREFERENCES SIGNALS ###
@@ -2169,6 +2186,9 @@ class App(QtCore.QObject):
             # set call source to the Editor we go into
             self.call_source = 'exc_editor'
 
+            if self.ui.splitter.sizes()[0] == 0:
+                self.ui.splitter.setSizes([1, 1])
+
         elif isinstance(edited_object, FlatCAMGerber):
             # store the Gerber Editor Toolbar visibility before entering in the Editor
             self.grb_editor.toolbar_old_state = True if self.ui.grb_edit_toolbar.isVisible() else False
@@ -2176,6 +2196,9 @@ class App(QtCore.QObject):
 
             # set call source to the Editor we go into
             self.call_source = 'grb_editor'
+
+            if self.ui.splitter.sizes()[0] == 0:
+                self.ui.splitter.setSizes([1, 1])
 
         # # make sure that we can't select another object while in Editor Mode:
         # self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
@@ -2249,7 +2272,7 @@ class App(QtCore.QObject):
                         self.grb_editor.deactivate_grb_editor()
 
                         # delete the old object (the source object) if it was an empty one
-                        if edited_obj.solid_geometry.is_empty:
+                        if not edited_obj.solid_geometry:
                             old_name = edited_obj.options['name']
                             self.collection.set_active(old_name)
                             self.collection.delete_active()
@@ -3513,7 +3536,7 @@ class App(QtCore.QObject):
     def set_screen_units(self, units):
         self.ui.units_label.setText("[" + self.defaults["units"].lower() + "]")
 
-    def on_toggle_units(self):
+    def on_toggle_units(self, no_pref=False):
         """
         Callback for the Units radio-button change in the Options tab.
         Changes the application's default units or the current project's units.
@@ -3651,13 +3674,14 @@ class App(QtCore.QObject):
         response = msgbox.clickedButton()
 
         if response == bt_ok:
-            self.options_read_form()
-            scale_options(factor)
-            self.options_write_form()
+            if no_pref is False:
+                self.options_read_form()
+                scale_options(factor)
+                self.options_write_form()
 
-            self.defaults_read_form()
-            scale_defaults(factor)
-            self.defaults_write_form()
+                self.defaults_read_form()
+                scale_defaults(factor)
+                self.defaults_write_form()
 
             self.should_we_save = True
 
@@ -3669,8 +3693,8 @@ class App(QtCore.QObject):
             self.ui.grid_gap_x_entry.set_value(float(self.ui.grid_gap_x_entry.get_value()) * factor)
             self.ui.grid_gap_y_entry.set_value(float(self.ui.grid_gap_y_entry.get_value()) * factor)
 
+            units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
             for obj in self.collection.get_list():
-                units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
                 obj.convert_units(units)
 
                 # make that the properties stored in the object are also updated
@@ -3684,9 +3708,9 @@ class App(QtCore.QObject):
                     current.to_form()
 
             self.plot_all()
-            self.inform.emit(_("[success] Converted units to %s") % self.defaults["units"])
+            self.inform.emit(_("[success] Converted units to %s") % units)
             # self.ui.units_label.setText("[" + self.options["units"] + "]")
-            self.set_screen_units(self.defaults["units"])
+            self.set_screen_units(units)
         else:
             # Undo toggling
             self.toggle_units_ignore = True
@@ -3701,11 +3725,14 @@ class App(QtCore.QObject):
         self.defaults_read_form()
 
     def on_toggle_units_click(self):
-        if self.options["units"] == 'MM':
+        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
+        if self.defaults["units"] == 'MM':
             self.ui.general_defaults_form.general_app_group.units_radio.set_value("IN")
         else:
             self.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
-        self.on_toggle_units()
+        self.on_toggle_units(no_pref=True)
+        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
+            lambda: self.on_toggle_units(no_pref=False))
 
     def on_fullscreen(self):
         self.report_usage("on_fullscreen()")
@@ -4552,6 +4579,13 @@ class App(QtCore.QObject):
                 self.report_usage("on_delete")
 
                 while (self.collection.get_active()):
+                    obj_active = self.collection.get_active()
+                    # if the deleted object is FlatCAMGerber then make sure to delete the possbile mark shapes
+                    if isinstance(obj_active, FlatCAMGerber):
+                        for el in obj_active.mark_shapes:
+                            obj_active.mark_shapes[el].clear(update=True)
+                            obj_active.mark_shapes[el].enabled = False
+                            obj_active.mark_shapes[el] = None
                     self.delete_first_selected()
 
                 self.inform.emit(_("Object(s) deleted ..."))
@@ -4713,8 +4747,8 @@ class App(QtCore.QObject):
                 except:
                     log.warning("Could not rename the object in the list")
 
-    def on_copy_object_as_geometry(self):
-        self.report_usage("on_copy_object_as_geometry()")
+    def convert_any2geo(self):
+        self.report_usage("convert_any2geo()")
 
         def initialize(obj_init, app):
             obj_init.solid_geometry = obj.solid_geometry
@@ -4727,8 +4761,11 @@ class App(QtCore.QObject):
             except:
                 pass
 
-            if obj.tools:
-                obj_init.tools = obj.tools
+            try:
+                if obj.tools:
+                    obj_init.tools = obj.tools
+            except AttributeError:
+                pass
 
         def initialize_excellon(obj_init, app):
             # objs = self.collection.get_selected()
@@ -4739,15 +4776,82 @@ class App(QtCore.QObject):
                     solid_geo.append(geo)
             obj_init.solid_geometry = deepcopy(solid_geo)
 
+        if not self.collection.get_selected():
+            log.warning("App.convert_any2geo --> No object selected")
+            self.inform.emit(_("[WARNING_NOTCL] No object is selected. Select an object and try again."))
+            return
+
         for obj in self.collection.get_selected():
 
             obj_name = obj.options["name"]
 
             try:
                 if isinstance(obj, FlatCAMExcellon):
-                    self.new_object("geometry", str(obj_name) + "_gcopy", initialize_excellon)
+                    self.new_object("geometry", str(obj_name) + "_conv", initialize_excellon)
                 else:
-                    self.new_object("geometry", str(obj_name) + "_gcopy", initialize)
+                    self.new_object("geometry", str(obj_name) + "_conv", initialize)
+
+            except Exception as e:
+                return "Operation failed: %s" % str(e)
+
+    def convert_any2gerber(self):
+        self.report_usage("convert_any2gerber()")
+
+        def initialize(obj_init, app):
+            apertures = {}
+            apid = 0
+
+            apertures[str(apid)] = {}
+            apertures[str(apid)]['solid_geometry'] = []
+            apertures[str(apid)]['solid_geometry'] = deepcopy(obj.solid_geometry)
+            apertures[str(apid)]['size'] = 0.0
+            apertures[str(apid)]['type'] = 'C'
+
+            obj_init.solid_geometry = deepcopy(obj.solid_geometry)
+            obj_init.apertures = deepcopy(apertures)
+
+        def initialize_excellon(obj_init, app):
+            apertures = {}
+
+            apid = 10
+            for tool in obj.tools:
+                apertures[str(apid)] = {}
+                apertures[str(apid)]['solid_geometry'] = []
+                for geo in obj.tools[tool]['solid_geometry']:
+                    apertures[str(apid)]['solid_geometry'].append(geo)
+
+                apertures[str(apid)]['size'] = float(obj.tools[tool]['C'])
+                apertures[str(apid)]['type'] = 'C'
+                apid += 1
+
+            # create solid_geometry
+            solid_geometry = []
+            for apid in apertures:
+                for geo in apertures[apid]['solid_geometry']:
+                    solid_geometry.append(geo)
+
+            solid_geometry = MultiPolygon(solid_geometry)
+            solid_geometry = solid_geometry.buffer(0.0000001)
+
+            obj_init.solid_geometry = deepcopy(solid_geometry)
+            obj_init.apertures = deepcopy(apertures)
+            # clear the working objects (perhaps not necessary due of Python GC)
+            apertures.clear()
+
+        if not self.collection.get_selected():
+            log.warning("App.convert_any2gerber --> No object selected")
+            self.inform.emit(_("[WARNING_NOTCL] No object is selected. Select an object and try again."))
+            return
+
+        for obj in self.collection.get_selected():
+
+            obj_name = obj.options["name"]
+
+            try:
+                if isinstance(obj, FlatCAMExcellon):
+                    self.new_object("gerber", str(obj_name) + "_conv", initialize_excellon)
+                else:
+                    self.new_object("gerber", str(obj_name) + "_conv", initialize)
 
             except Exception as e:
                 return "Operation failed: %s" % str(e)
@@ -4776,6 +4880,7 @@ class App(QtCore.QObject):
                 obj.options['ymax'] = d
             # self.plot_all(zoom=False)
             self.inform.emit(_('[success] Origin set ...'))
+            self.plotcanvas.fit_view()
             self.plotcanvas.vis_disconnect('mouse_press', self.on_set_zero_click)
             self.should_we_save = True
 
@@ -6079,7 +6184,7 @@ class App(QtCore.QObject):
 
     def on_file_exportexcellon(self):
         """
-        Callback for menu item File->Export SVG.
+        Callback for menu item File->Export->Excellon.
 
         :return: None
         """
@@ -6115,6 +6220,45 @@ class App(QtCore.QObject):
         else:
             self.export_excellon(name, filename)
             self.file_saved.emit("Excellon", filename)
+
+    def on_file_exportgerber(self):
+        """
+        Callback for menu item File->Export->Gerber.
+
+        :return: None
+        """
+        self.report_usage("on_file_exportgerber")
+        App.log.debug("on_file_exportgerber()")
+
+        obj = self.collection.get_active()
+        if obj is None:
+            self.inform.emit(_("[WARNING_NOTCL] No object selected. Please Select an Gerber object to export."))
+            return
+
+        # Check for more compatible types and add as required
+        if not isinstance(obj, FlatCAMGerber):
+            self.inform.emit(_("[ERROR_NOTCL] Failed. Only Gerber objects can be saved as Gerber files..."))
+            return
+
+        name = self.collection.get_active().options["name"]
+
+        filter = "Gerber File (*.GBR);;All Files (*.*)"
+        try:
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(
+                caption=_("Export Gerber"),
+                directory=self.get_last_save_folder() + '/' + name,
+                filter=filter)
+        except TypeError:
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Gerber"), filter=filter)
+
+        filename = str(filename)
+
+        if filename == "":
+            self.inform.emit(_("[WARNING_NOTCL] Export Gerber cancelled."))
+            return
+        else:
+            self.export_gerber(name, filename)
+            self.file_saved.emit("Gerber", filename)
 
     def on_file_exportdxf(self):
         """
@@ -6915,6 +7059,122 @@ class App(QtCore.QObject):
             ret = make_excellon()
             if ret == 'fail':
                 self.inform.emit(_('[ERROR_NOTCL] Could not export Excellon file.'))
+                return
+
+    def export_gerber(self, obj_name, filename, use_thread=True):
+        """
+        Exports a Gerber Object to an Gerber file.
+
+        :param filename: Path to the Gerber file to save to.
+        :return:
+        """
+        self.report_usage("export_gerber()")
+
+        if filename is None:
+            filename = self.defaults["global_last_save_folder"]
+
+        self.log.debug("export_gerber()")
+
+        try:
+            obj = self.collection.get_by_name(str(obj_name))
+        except:
+            # TODO: The return behavior has not been established... should raise exception?
+            return "Could not retrieve object: %s" % obj_name
+
+        # updated units
+        gunits = self.defaults["gerber_exp_units"]
+        gwhole = self.defaults["gerber_exp_integer"]
+        gfract = self.defaults["gerber_exp_decimals"]
+        gzeros = self.defaults["gerber_exp_zeros"]
+
+        fc_units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        if fc_units == 'MM':
+            factor = 1 if gunits == 'MM' else 0.03937
+        else:
+            factor = 25.4 if gunits == 'MM' else 1
+
+        def make_gerber():
+            try:
+                time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
+
+                header = 'G04*\n'
+                header += 'G04 RS-274X GERBER GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s*\n' % \
+                          (str(self.version), str(self.version_date))
+
+                header += 'G04 Filename: %s*' % str(obj_name) + '\n'
+                header += 'G04 Created on : %s*' % time_str + '\n'
+                header += '%%FS%sAX%s%sY%s%s*%%\n' % (gzeros, gwhole, gfract, gwhole, gfract)
+                header += "%MO{units}*%\n".format(units=gunits)
+
+                for apid in obj.apertures:
+                    if obj.apertures[apid]['type'] == 'C':
+                        header += "%ADD{apid}{type},{size}*%\n".format(
+                            apid=str(apid),
+                            type='C',
+                            size=(factor * obj.apertures[apid]['size'])
+                        )
+                    elif obj.apertures[apid]['type'] == 'R':
+                        header += "%ADD{apid}{type},{width}X{height}*%\n".format(
+                            apid=str(apid),
+                            type='R',
+                            width=(factor * obj.apertures[apid]['width']),
+                            height=(factor * obj.apertures[apid]['height'])
+                        )
+                    elif obj.apertures[apid]['type'] == 'O':
+                        header += "%ADD{apid}{type},{width}X{height}*%\n".format(
+                            apid=str(apid),
+                            type='O',
+                            width=(factor * obj.apertures[apid]['width']),
+                            height=(factor * obj.apertures[apid]['height'])
+                        )
+
+                header += '\n'
+
+                # obsolete units but some software may need it
+                if gunits == 'IN':
+                    header += 'G70*\n'
+                else:
+                    header += 'G71*\n'
+
+                # Absolute Mode
+                header += 'G90*\n'
+
+                header += 'G01*\n'
+                # positive polarity
+                header += '%LPD*%\n'
+
+                footer = 'M02*\n'
+
+                gerber_code = obj.export_gerber(gwhole, gfract, g_zeros=gzeros, factor=factor)
+
+                exported_gerber = header
+                exported_gerber += gerber_code
+                exported_gerber += footer
+
+                with open(filename, 'w') as fp:
+                    fp.write(exported_gerber)
+
+                self.file_saved.emit("Gerber", filename)
+                self.inform.emit(_("[success] Gerber file exported to %s") % filename)
+            except Exception as e:
+                log.debug("App.export_gerber.make_gerber() --> %s" % str(e))
+                return 'fail'
+
+        if use_thread is True:
+
+            with self.proc_container.new(_("Exporting Gerber")) as proc:
+
+                def job_thread_exc(app_obj):
+                    ret = make_gerber()
+                    if ret == 'fail':
+                        self.inform.emit(_('[ERROR_NOTCL] Could not export Gerber file.'))
+                        return
+
+                self.worker_task.emit({'fcn': job_thread_exc, 'params': [self]})
+        else:
+            ret = make_gerber()
+            if ret == 'fail':
+                self.inform.emit(_('[ERROR_NOTCL] Could not export Gerber file.'))
                 return
 
     def export_dxf(self, obj_name, filename, use_thread=True):

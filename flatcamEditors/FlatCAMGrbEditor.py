@@ -2,6 +2,7 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
 
 from shapely.geometry import LineString, LinearRing, MultiLineString
+# from shapely.geometry import mapping
 from shapely.ops import cascaded_union, unary_union
 import shapely.affinity as affinity
 
@@ -18,6 +19,9 @@ from FlatCAMObj import FlatCAMGerber
 from FlatCAMTool import FlatCAMTool
 
 from numpy.linalg import norm as numpy_norm
+
+# from vispy.io import read_png
+# import pngcanvas
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -1449,11 +1453,18 @@ class FCApertureMove(FCShapeTool):
         self.destination = None
         self.selected_apertures = []
 
+        if len(self.draw_app.get_selected()) == 0:
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Nothing selected to move ..."))
+            self.complete = True
+            self.draw_app.select_tool("select")
+            return
+
         if self.draw_app.launched_from_shortcuts is True:
             self.draw_app.launched_from_shortcuts = False
             self.draw_app.app.inform.emit(_("Click on target location ..."))
         else:
             self.draw_app.app.inform.emit(_("Click on reference location ..."))
+
         self.current_storage = None
         self.geometry = []
 
@@ -1485,6 +1496,37 @@ class FCApertureMove(FCShapeTool):
             self.draw_app.select_tool("select")
             return
 
+    # def create_png(self):
+    #     """
+    #     Create a PNG file out of a list of Shapely polygons
+    #     :return:
+    #     """
+    #     if len(self.draw_app.get_selected()) == 0:
+    #         return None
+    #
+    #     geo_list = [geoms.geo for geoms in self.draw_app.get_selected()]
+    #     xmin, ymin, xmax, ymax = get_shapely_list_bounds(geo_list)
+    #
+    #     iwidth = (xmax - xmin)
+    #     iwidth = int(round(iwidth))
+    #     iheight = (ymax - ymin)
+    #     iheight = int(round(iheight))
+    #     c = pngcanvas.PNGCanvas(iwidth, iheight)
+    #
+    #     pixels = []
+    #     for geom in self.draw_app.get_selected():
+    #         m = mapping(geom.geo.exterior)
+    #         pixels += [[coord[0], coord[1]] for coord in m['coordinates']]
+    #         for g in geom.geo.interiors:
+    #             m = mapping(g)
+    #             pixels += [[coord[0], coord[1]] for coord in m['coordinates']]
+    #         c.polyline(pixels)
+    #         pixels = []
+    #
+    #     f = open("%s.png" % 'D:\\shapely_image', "wb")
+    #     f.write(c.dump())
+    #     f.close()
+
     def make(self):
         # Create new geometry
         dx = self.destination[0] - self.origin[0]
@@ -1499,13 +1541,14 @@ class FCApertureMove(FCShapeTool):
                     self.geometry.append(DrawToolShape(affinity.translate(select_shape.geo, xoff=dx, yoff=dy)))
                     self.current_storage.remove(select_shape)
                     sel_shapes_to_be_deleted.append(select_shape)
-                    self.draw_app.on_grb_shape_complete(self.current_storage)
+                    self.draw_app.on_grb_shape_complete(self.current_storage, noplot=True)
                     self.geometry = []
 
             for shp in sel_shapes_to_be_deleted:
                 self.draw_app.selected.remove(shp)
             sel_shapes_to_be_deleted = []
 
+        self.draw_app.plot_all()
         self.draw_app.build_ui()
         self.draw_app.app.inform.emit(_("[success] Done. Apertures Move completed."))
 
@@ -1531,8 +1574,9 @@ class FCApertureMove(FCShapeTool):
 
         dx = data[0] - self.origin[0]
         dy = data[1] - self.origin[1]
-        for geom in self.draw_app.get_selected():
-            geo_list.append(affinity.translate(geom.geo, xoff=dx, yoff=dy))
+        # for geom in self.draw_app.get_selected():
+        #     geo_list.append(affinity.translate(geom.geo, xoff=dx, yoff=dy))
+        geo_list = [affinity.translate(geom.geo, xoff=dx, yoff=dy) for geom in self.draw_app.get_selected()]
         return DrawToolUtilityShape(geo_list)
 
 
@@ -1582,7 +1626,11 @@ class FCApertureSelect(DrawTool):
         # bending modes using in FCRegion and FCTrack
         self.draw_app.bend_mode = 1
 
-        self.grb_editor_app.apertures_table.clearSelection()
+        try:
+            self.grb_editor_app.apertures_table.clearSelection()
+        except Exception as e:
+            log.error("FlatCAMGerbEditor.FCApertureSelect.__init__() --> %s" % str(e))
+
         self.grb_editor_app.hide_tool('all')
         self.grb_editor_app.hide_tool('select')
 
@@ -2297,12 +2345,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         sorted_apertures = sorted(sort)
 
-        sort = []
-        for k, v in list(self.gerber_obj.aperture_macros.items()):
-            sort.append(k)
-        sorted_macros = sorted(sort)
+        # sort = []
+        # for k, v in list(self.gerber_obj.aperture_macros.items()):
+        #     sort.append(k)
+        # sorted_macros = sorted(sort)
 
-        n = len(sorted_apertures) + len(sorted_macros)
+        # n = len(sorted_apertures) + len(sorted_macros)
+        n = len(sorted_apertures)
         self.apertures_table.setRowCount(n)
 
         for ap_code in sorted_apertures:
@@ -2355,25 +2404,25 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 # set now the last aperture selected
                 self.last_aperture_selected = ap_code
 
-        for ap_code in sorted_macros:
-            ap_code = str(ap_code)
-
-            ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
-            ap_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
-
-            ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
-
-            ap_type_item = QtWidgets.QTableWidgetItem('AM')
-            ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
-
-            self.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
-            self.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
-
-            self.apertures_row += 1
-            if first_run is True:
-                # set now the last aperture selected
-                self.last_aperture_selected = ap_code
+        # for ap_code in sorted_macros:
+        #     ap_code = str(ap_code)
+        #
+        #     ap_id_item = QtWidgets.QTableWidgetItem('%d' % int(self.apertures_row + 1))
+        #     ap_id_item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+        #     self.apertures_table.setItem(self.apertures_row, 0, ap_id_item)  # Tool name/id
+        #
+        #     ap_code_item = QtWidgets.QTableWidgetItem(ap_code)
+        #
+        #     ap_type_item = QtWidgets.QTableWidgetItem('AM')
+        #     ap_type_item.setFlags(QtCore.Qt.ItemIsEnabled)
+        #
+        #     self.apertures_table.setItem(self.apertures_row, 1, ap_code_item)  # Aperture Code
+        #     self.apertures_table.setItem(self.apertures_row, 2, ap_type_item)  # Aperture Type
+        #
+        #     self.apertures_row += 1
+        #     if first_run is True:
+        #         # set now the last aperture selected
+        #         self.last_aperture_selected = ap_code
 
         self.apertures_table.selectColumn(0)
         self.apertures_table.resizeColumnsToContents()
@@ -2947,6 +2996,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                                 if geo is not None:
                                     self.add_gerber_shape(DrawToolShape(geo), follow_storage_elem)
                             self.storage_dict[apid][k] = follow_storage_elem
+                        elif k == 'clear_geometry':
+                            continue
                         else:
                             self.storage_dict[apid][k] = v
                     except Exception as e:
@@ -3062,8 +3113,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
                     elif k == 'follow_geometry':
                         grb_obj.apertures[storage_apid][k] = []
-                        for geo in v:
-                            new_geo = deepcopy(geo.geo)
+                        for geo_f in v:
+                            if isinstance(geo_f.geo, Polygon):
+                                buff_val = -(int(storage_apid) / 2)
+                                geo_f = geo_f.geo.buffer(buff_val).exterior
+                                new_geo = deepcopy(geo_f)
+                            else:
+                                new_geo = deepcopy(geo_f.geo)
                             grb_obj.apertures[storage_apid][k].append(new_geo)
                             follow_buffer.append(new_geo)
                     else:
@@ -3176,7 +3232,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.options[key] = self.sender().isChecked()
         return self.options[key]
 
-    def on_grb_shape_complete(self, storage=None, specific_shape=None):
+    def on_grb_shape_complete(self, storage=None, specific_shape=None, noplot=False):
         self.app.log.debug("on_shape_complete()")
 
         if specific_shape:
@@ -3197,8 +3253,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.delete_utility_geometry()
         self.tool_shape.clear(update=True)
 
-        # Replot and reset tool.
-        self.plot_all()
+        if noplot is False:
+            # Replot and reset tool.
+            self.plot_all()
 
     def add_gerber_shape(self, shape, storage):
         """
@@ -3857,16 +3914,17 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
     def hide_tool(self, tool_name):
         # self.app.ui.notebook.setTabText(2, _("Tools"))
-
-        if tool_name == 'all':
-            self.apertures_frame.hide()
-        if tool_name == 'select':
-            self.apertures_frame.show()
-        if tool_name == 'buffer' or tool_name == 'all':
-            self.buffer_tool_frame.hide()
-        if tool_name == 'scale' or tool_name == 'all':
-            self.scale_tool_frame.hide()
-
+        try:
+            if tool_name == 'all':
+                self.apertures_frame.hide()
+            if tool_name == 'select':
+                self.apertures_frame.show()
+            if tool_name == 'buffer' or tool_name == 'all':
+                self.buffer_tool_frame.hide()
+            if tool_name == 'scale' or tool_name == 'all':
+                self.scale_tool_frame.hide()
+        except Exception as e:
+            log.debug("FlatCAMGrbEditor.hide_tool() --> %s" % str(e))
         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
 
@@ -4847,3 +4905,22 @@ class TransformEditorTool(FlatCAMTool):
         else:
             self.app.inform.emit(
                 _("[WARNING_NOTCL] Geometry shape skew Y cancelled..."))
+
+
+def get_shapely_list_bounds(geometry_list):
+    xmin = Inf
+    ymin = Inf
+    xmax = -Inf
+    ymax = -Inf
+
+    for gs in geometry_list:
+        try:
+            gxmin, gymin, gxmax, gymax = gs.bounds
+            xmin = min([xmin, gxmin])
+            ymin = min([ymin, gymin])
+            xmax = max([xmax, gxmax])
+            ymax = max([ymax, gymax])
+        except:
+            log.warning("DEVELOPMENT: Tried to get bounds of empty geometry.")
+
+    return [xmin, ymin, xmax, ymax]

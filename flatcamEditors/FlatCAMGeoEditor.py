@@ -18,6 +18,7 @@ from FlatCAMTool import FlatCAMTool
 from flatcamGUI.ObjectUI import LengthEntry, RadioSet
 
 from shapely.geometry import LineString, LinearRing, MultiLineString
+# from shapely.geometry import mapping
 from shapely.ops import cascaded_union, unary_union
 import shapely.affinity as affinity
 
@@ -29,6 +30,7 @@ from flatcamGUI.GUIElements import OptionalInputSection, FCCheckBox, FCEntry, FC
     FCTable, FCDoubleSpinner, FCButton, EvalEntry2, FCInputDialog
 from flatcamParsers.ParseFont import *
 
+# from vispy.io import read_png
 import gettext
 import FlatCAMTranslation as fcTranslate
 
@@ -1861,7 +1863,6 @@ class DrawTool(object):
     def __init__(self, draw_app):
         self.draw_app = draw_app
         self.complete = False
-        self.start_msg = "Click on 1st point..."
         self.points = []
         self.geometry = None  # DrawToolShape or None
 
@@ -1939,7 +1940,6 @@ class FCCircle(FCShapeTool):
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_circle_geo.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
-        self.start_msg = _("Click on Center point ...")
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
 
@@ -1991,7 +1991,6 @@ class FCArc(FCShapeTool):
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_arc.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
-        self.start_msg = _("Click on Center point ...")
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
 
         # Direction of rotation between point 1 and 2.
@@ -2210,12 +2209,13 @@ class FCRectangle(FCShapeTool):
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
-        self.start_msg = _("Click on 1st corner ...")
+        self.draw_app.app.inform.emit( _("Click on 1st corner ..."))
 
     def click(self, point):
         self.points.append(point)
 
         if len(self.points) == 1:
+            self.draw_app.app.inform.emit(_("Click on opposite corner to complete ..."))
             return "Click on opposite corner to complete ..."
 
         if len(self.points) == 2:
@@ -2262,14 +2262,14 @@ class FCPolygon(FCShapeTool):
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
-        self.start_msg = _("Click on 1st point ...")
+        self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
 
     def click(self, point):
         self.draw_app.in_action = True
         self.points.append(point)
 
         if len(self.points) > 0:
-            self.draw_app.app.inform.emit(_("Click on next Point or click Right mouse button to complete ..."))
+            self.draw_app.app.inform.emit(_("Click on next Point or click right mouse button to complete ..."))
             return "Click on next point or hit ENTER to complete ..."
 
         return ""
@@ -2445,21 +2445,33 @@ class FCMove(FCShapeTool):
         FCShapeTool.__init__(self, draw_app)
         self.name = 'move'
 
-        # self.shape_buffer = self.draw_app.shape_buffer
-        if not self.draw_app.selected:
-            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Move cancelled. No shape selected."))
-            return
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except:
+            pass
+
+        self.storage = self.draw_app.storage
+
         self.origin = None
         self.destination = None
-        self.start_msg = _("Click on reference point.")
+
+        if len(self.draw_app.get_selected()) == 0:
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] MOVE: No shape selected. Select a shape to move ..."))
+        else:
+            self.draw_app.app.inform.emit(_(" MOVE: Click on reference point ..."))
 
     def set_origin(self, origin):
-        self.draw_app.app.inform.emit(_("Click on destination point."))
+        self.draw_app.app.inform.emit(_(" Click on destination point ..."))
         self.origin = origin
 
     def click(self, point):
         if len(self.draw_app.get_selected()) == 0:
-            return "Nothing to move."
+            # self.complete = True
+            # self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Move cancelled. No shape selected."))
+            self.select_shapes(point)
+            self.draw_app.replot()
+            self.draw_app.app.inform.emit(_(" MOVE: Click on reference point ..."))
+            return
 
         if self.origin is None:
             self.set_origin(point)
@@ -2517,6 +2529,58 @@ class FCMove(FCShapeTool):
         # return DrawToolUtilityShape([affinity.translate(geom.geo, xoff=dx, yoff=dy)
         #                              for geom in self.draw_app.get_selected()])
 
+    def select_shapes(self, pos):
+        # list where we store the overlapped shapes under our mouse left click position
+        over_shape_list = []
+
+        try:
+            _, closest_shape = self.storage.nearest(pos)
+        except StopIteration:
+            return ""
+
+        over_shape_list.append(closest_shape)
+
+        try:
+            # if there is no shape under our click then deselect all shapes
+            # it will not work for 3rd method of click selection
+            if not over_shape_list:
+                self.draw_app.selected = []
+                self.draw_app.draw_shape_idx = -1
+            else:
+                # if there are shapes under our click then advance through the list of them, one at the time in a
+                # circular way
+                self.draw_app.draw_shape_idx = (FlatCAMGeoEditor.draw_shape_idx + 1) % len(over_shape_list)
+                try:
+                    obj_to_add = over_shape_list[int(FlatCAMGeoEditor.draw_shape_idx)]
+                except IndexError:
+                    return
+
+                key_modifier = QtWidgets.QApplication.keyboardModifiers()
+                if self.draw_app.app.defaults["global_mselect_key"] == 'Control':
+                    # if CONTROL key is pressed then we add to the selected list the current shape but if it's
+                    # already in the selected list, we removed it. Therefore first click selects, second deselects.
+                    if key_modifier == Qt.ControlModifier:
+                        if obj_to_add in self.draw_app.selected:
+                            self.draw_app.selected.remove(obj_to_add)
+                        else:
+                            self.draw_app.selected.append(obj_to_add)
+                    else:
+                        self.draw_app.selected = []
+                        self.draw_app.selected.append(obj_to_add)
+                else:
+                    if key_modifier == Qt.ShiftModifier:
+                        if obj_to_add in self.draw_app.selected:
+                            self.draw_app.selected.remove(obj_to_add)
+                        else:
+                            self.draw_app.selected.append(obj_to_add)
+                    else:
+                        self.draw_app.selected = []
+                        self.draw_app.selected.append(obj_to_add)
+
+        except Exception as e:
+            log.error("[ERROR] Something went bad. %s" % str(e))
+            raise
+
 
 class FCCopy(FCMove):
     def __init__(self, draw_app):
@@ -2550,7 +2614,7 @@ class FCText(FCShapeTool):
         self.draw_app = draw_app
         self.app = draw_app.app
 
-        self.start_msg = _("Click on the Destination point...")
+        self.draw_app.app.inform.emit(_("Click on 1st corner ..."))
         self.origin = (0, 0)
 
         self.text_gui = TextInputTool(self.app)
@@ -2602,7 +2666,7 @@ class FCBuffer(FCShapeTool):
         self.draw_app = draw_app
         self.app = draw_app.app
 
-        self.start_msg = _("Create buffer geometry ...")
+        self.draw_app.app.inform.emit(_("Create buffer geometry ..."))
         self.origin = (0, 0)
         self.buff_tool = BufferSelectionTool(self.app, self.draw_app)
         self.buff_tool.run()
@@ -2720,7 +2784,7 @@ class FCPaint(FCShapeTool):
         self.draw_app = draw_app
         self.app = draw_app.app
 
-        self.start_msg = _("Create Paint geometry ...")
+        self.draw_app.app.inform.emit(_("Create Paint geometry ..."))
         self.origin = (0, 0)
         self.draw_app.paint_tool.run()
 
@@ -2734,7 +2798,7 @@ class FCTransform(FCShapeTool):
         self.draw_app = draw_app
         self.app = draw_app.app
 
-        self.start_msg = _("Shape transformations ...")
+        self.draw_app.app.infrom.emit(_("Shape transformations ..."))
         self.origin = (0, 0)
         self.draw_app.transform_tool.run()
 
@@ -3159,6 +3223,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
         :return: None
         """
 
+        if shape is None:
+            return
+
         # List of DrawToolShape?
         if isinstance(shape, list):
             for subshape in shape:
@@ -3280,8 +3347,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
                         self.tools[t]["button"].setChecked(False)
 
                 self.active_tool = self.tools[tool]["constructor"](self)
-                if not isinstance(self.active_tool, FCSelect):
-                    self.app.inform.emit(self.active_tool.start_msg)
             else:
                 self.app.log.debug("%s is NOT checked." % tool)
                 for t in self.tools:
@@ -3341,6 +3406,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
             # Selection with left mouse button
             if self.active_tool is not None and event.button is 1:
+
                 # Dispatch event to active_tool
                 msg = self.active_tool.click(self.snap(self.pos[0], self.pos[1]))
 
@@ -3348,27 +3414,10 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 if isinstance(self.active_tool, FCShapeTool) and self.active_tool.complete:
                     self.on_shape_complete()
 
-                    # MS: always return to the Select Tool if modifier key is not pressed
-                    # else return to the current tool
-                    key_modifier = QtWidgets.QApplication.keyboardModifiers()
-                    if self.app.defaults["global_mselect_key"] == 'Control':
-                        modifier_to_use = Qt.ControlModifier
-                    else:
-                        modifier_to_use = Qt.ShiftModifier
-
                     if isinstance(self.active_tool, FCText):
                         self.select_tool("select")
                     else:
                         self.select_tool(self.active_tool.name)
-
-
-                    # if modifier key is pressed then we add to the selected list the current shape but if
-                    # it's already in the selected list, we removed it. Therefore first click selects, second deselects.
-                    # if key_modifier == modifier_to_use:
-                    #     self.select_tool(self.active_tool.name)
-                    # else:
-                    #     self.select_tool("select")
-                    #     return
 
                 if isinstance(self.active_tool, FCSelect):
                     # self.app.log.debug("Replotting after click.")
@@ -3616,13 +3665,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.selected.remove(shape)  # TODO: Check performance
 
     def on_move(self):
+        # if not self.selected:
+        #     self.app.inform.emit(_("[WARNING_NOTCL] Move cancelled. No shape selected."))
+        #     return
         self.app.ui.geo_move_btn.setChecked(True)
         self.on_tool_select('move')
 
     def on_move_click(self):
-        if not self.selected:
-            self.app.inform.emit(_("[WARNING_NOTCL] Move cancelled. No shape selected."))
-            return
         self.on_move()
         self.active_tool.set_origin(self.snap(self.x, self.y))
 
