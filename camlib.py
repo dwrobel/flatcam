@@ -2203,8 +2203,6 @@ class Gerber (Geometry):
         previous_x = None
         previous_y = None
 
-        current_d = None
-
         # Absolute or Relative/Incremental coordinates
         # Not implemented
         absolute = True
@@ -2232,7 +2230,7 @@ class Gerber (Geometry):
 
                 ### Cleanup
                 gline = gline.strip(' \r\n')
-                log.debug("Line=%3s %s" % (line_num, gline))
+                # log.debug("Line=%3s %s" % (line_num, gline))
 
                 #### Ignored lines
                 ## Comments
@@ -2256,23 +2254,23 @@ class Gerber (Geometry):
                         # --- Buffered ----
                         width = self.apertures[last_path_aperture]["size"]
 
-                        if path:
-                            geo_f = LineString(path)
-                            geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
-                            follow_buffer.append(geo_f)
-                            poly_buffer.append(geo_s)
 
-                            geo_dict = dict()
-                            geo_dict['follow'] = geo_f
-                            if self.is_lpc:
-                                geo_dict['clear'] = geo_s
-                            else:
-                                geo_dict['solid'] = geo_s
-                            try:
-                                self.apertures[last_path_aperture]['geometry'].append(geo_dict)
-                            except KeyError:
-                                self.apertures[last_path_aperture]['geometry'] = []
-                                self.apertures[last_path_aperture]['geometry'].append(geo_dict)
+                        geo_f = LineString(path)
+                        geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
+                        follow_buffer.append(geo_f)
+                        poly_buffer.append(geo_s)
+
+                        geo_dict = dict()
+                        geo_dict['follow'] = geo_f
+                        if self.is_lpc:
+                            geo_dict['clear'] = geo_s
+                        else:
+                            geo_dict['solid'] = geo_s
+                        try:
+                            self.apertures[last_path_aperture]['geometry'].append(geo_dict)
+                        except KeyError:
+                            self.apertures[last_path_aperture]['geometry'] = []
+                            self.apertures[last_path_aperture]['geometry'].append(geo_dict)
 
                         path = [path[-1]]
 
@@ -2423,7 +2421,6 @@ class Gerber (Geometry):
                 match = self.opcode_re.search(gline)
                 if match:
                     current_operation_code = int(match.group(1))
-                    current_d = current_operation_code
 
                     if current_operation_code == 3:
 
@@ -2630,7 +2627,11 @@ class Gerber (Geometry):
                         # if linear_x or linear_y are None, ignore those
                         if current_x is not None and current_y is not None:
                             # only add the point if it's a new one otherwise skip it (harder to process)
-                            if path[-1] != [current_x, current_y]:
+                            # but if it's the first point in the path in may create an exception
+                            try:
+                                if path[-1] != [current_x, current_y]:
+                                    path.append([current_x, current_y])
+                            except IndexError:
                                 path.append([current_x, current_y])
 
                             if making_region is False:
@@ -2851,11 +2852,8 @@ class Gerber (Geometry):
                         current_interpolation_mode = int(mode)
 
                     # Set operation code if provided
-                    try:
+                    if d is not None:
                         current_operation_code = int(d)
-                        current_d = current_operation_code
-                    except:
-                        current_operation_code = current_d
 
                     # Nothing created! Pen Up.
                     if current_operation_code == 2:
@@ -2863,8 +2861,16 @@ class Gerber (Geometry):
 
                         # if we have something drawn until this moment, add it
                         if len(path) > 1:
+                            # if last_path_aperture is None:
+                            #     log.warning("No aperture defined for curent path. (%d)" % line_num)
                             if last_path_aperture is None:
-                                log.warning("No aperture defined for curent path. (%d)" % line_num)
+                                if '0' not in self.apertures:
+                                    self.apertures['0'] = {}
+                                    self.apertures['0']['type'] = 'REG'
+                                    self.apertures['0']['size'] = 0.0
+                                    self.apertures['0']['geometry'] = []
+                                last_path_aperture = '0'
+                                width = 0
 
                             # --- BUFFERED ---
                             width = self.apertures[last_path_aperture]["size"]
@@ -2926,8 +2932,7 @@ class Gerber (Geometry):
 
                         # Append
                         path += this_arc
-
-                        last_path_aperture = current_aperture
+                        # last_path_aperture = current_aperture
 
                         continue
 
@@ -2977,7 +2982,7 @@ class Gerber (Geometry):
                                 current_x, current_y = circular_x, circular_y
 
                                 path += this_arc
-                                last_path_aperture = current_aperture
+                                # last_path_aperture = current_aperture
                                 valid = True
                                 break
 
@@ -3023,9 +3028,9 @@ class Gerber (Geometry):
 
             # TODO: make sure to keep track of units changes because right now it seems to happen in a weird way
             # find out the conversion factor used to convert inside the self.apertures keys: size, width, height
+
             file_units = gerber_units if gerber_units else 'IN'
             app_units = self.app.defaults['units']
-
             conversion_factor = 25.4 if file_units == 'IN' else (1/25.4) if file_units != app_units else 1
 
             # --- the following section is useful for Gerber editor only --- #
@@ -3053,15 +3058,15 @@ class Gerber (Geometry):
 
             log.warning("Polygon difference done for %d apertures." % len(self.apertures))
 
-            for apid in self.apertures:
-                # scale de aperture geometries according to the used units
-                for k, v in self.apertures[apid].items():
-                    if k == 'size' or k == 'width' or k == 'height':
-                        self.apertures[apid][k] = v * conversion_factor
+            # for apid in self.apertures:
+            #     # scale de aperture geometries according to the used units
+            #     for k, v in self.apertures[apid].items():
+            #         if k == 'size' or k == 'width' or k == 'height':
+            #             self.apertures[apid][k] = v * conversion_factor
             # -------------------------------------------------------------
 
             # for t in self.apertures:
-            #     print(t, self.apertures[t])
+            #     print(t, self.apertures[t]['size'])
 
             # --- Apply buffer ---
             # this treats the case when we are storing geometry as paths
