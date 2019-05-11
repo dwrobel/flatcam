@@ -2186,8 +2186,8 @@ class Gerber (Geometry):
         # store here the follow geometry
         follow_buffer = []
 
-        last_path_aperture = '0'
-        current_aperture = '0'
+        last_path_aperture = None
+        current_aperture = None
 
         # 1,2 or 3 from "G01", "G02" or "G03"
         current_interpolation_mode = None
@@ -2503,6 +2503,14 @@ class Gerber (Geometry):
 
                 ### G36* - Begin region
                 if self.regionon_re.search(gline):
+                    if '0' not in self.apertures:
+                        self.apertures['0'] = {}
+                        self.apertures['0']['type'] = 'REG'
+                        self.apertures['0']['size'] = 0.0
+                        self.apertures['0']['geometry'] = []
+                    last_path_aperture = '0'
+                    self.apertures[last_path_aperture]['type'] = 'REG'
+
                     if len(path) > 1:
                         # Take care of what is left in the path
                         width = self.apertures[last_path_aperture]["size"]
@@ -2518,11 +2526,8 @@ class Gerber (Geometry):
                             geo_dict['clear'] = geo_s
                         else:
                             geo_dict['solid'] = geo_s
-                        try:
-                            self.apertures[last_path_aperture]['geometry'].append(geo_dict)
-                        except KeyError:
-                            self.apertures[last_path_aperture]['geometry'] = []
-                            self.apertures[last_path_aperture]['geometry'].append(geo_dict)
+
+                        self.apertures[last_path_aperture]['geometry'].append(geo_dict)
 
                         path = [path[-1]]
 
@@ -2532,53 +2537,26 @@ class Gerber (Geometry):
                 ### G37* - End region
                 if self.regionoff_re.search(gline):
                     making_region = False
-
-                    if '0' not in self.apertures:
-                        self.apertures['0'] = {}
-                        self.apertures['0']['type'] = 'REG'
-                        self.apertures['0']['size'] = 0.0
-                        self.apertures['0']['geometry'] = []
-
                     # if D02 happened before G37 we now have a path with 1 element only so we have to add the current
                     # geo to the poly_buffer otherwise we loose it
                     # if current_operation_code == 2:
-                    #     if geo:
-                    #         if not geo.is_empty:
-                    #             follow_buffer.append(geo)
-                    #             try:
-                    #                 self.apertures['0']['follow_geometry'].append(geo)
-                    #             except KeyError:
-                    #                 self.apertures['0']['follow_geometry'] = []
-                    #                 self.apertures['0']['follow_geometry'].append(geo)
-                    #
-                    #             poly_buffer.append(geo)
-                    #             if self.is_lpc is True:
-                    #                 try:
-                    #                     self.apertures['0']['clear_geometry'].append(geo)
-                    #                 except KeyError:
-                    #                     self.apertures['0']['clear_geometry'] = []
-                    #                     self.apertures['0']['clear_geometry'].append(geo)
-                    #             else:
-                    #                 try:
-                    #                     self.apertures['0']['solid_geometry'].append(geo)
-                    #                 except KeyError:
-                    #                     self.apertures['0']['solid_geometry'] = []
-                    #                     self.apertures['0']['solid_geometry'].append(geo)
-                    #         continue
 
                     # Only one path defines region?
                     # This can happen if D02 happened before G37 and
-                    # is not and error.
+                    # is not an error.
                     if len(path) < 3:
                         continue
 
+                    # usually the D02 will add the path to the geo but if there is no D02 before G37 here comes the
+                    # rescue
                     geo_f = LineString(path)
                     geo_s = Polygon(path)
+
                     if not geo_s.is_valid:
                         geo_s = geo_s.buffer(0, int(self.steps_per_circle / 4))
-                    follow_buffer.append(geo_f)
                     if not geo_s.is_empty:
                         poly_buffer.append(geo_s)
+                    follow_buffer.append(geo_f)
 
                     geo_dict = dict()
                     geo_dict['follow'] = geo_f
@@ -2587,11 +2565,8 @@ class Gerber (Geometry):
                             geo_dict['clear'] = geo_s
                         else:
                             geo_dict['solid'] = geo_s
-                    try:
-                        self.apertures['0']['geometry'].append(geo_dict)
-                    except KeyError:
-                        self.apertures['0']['geometry'] = []
-                        self.apertures['0']['geometry'].append(geo_dict)
+
+                    self.apertures['0']['geometry'].append(geo_dict)
 
                     path = [[current_x, current_y]]  # Start new path
                     continue
@@ -2620,13 +2595,17 @@ class Gerber (Geometry):
                     # NOTE: Letting it continue allows it to react to the
                     #       operation code.
 
-                    if current_aperture is None:
+                    if current_aperture is None or last_path_aperture is None:
                         if '0' not in self.apertures:
                             self.apertures['0'] = {}
                             self.apertures['0']['type'] = 'REG'
                             self.apertures['0']['size'] = 0.0
                             self.apertures['0']['geometry'] = []
-                        current_aperture = '0'
+                        if current_aperture is None:
+                            current_aperture = '0'
+                        else:
+                            last_path_aperture = '0'
+                        width = 0
 
                     # Parse coordinates
                     if match.group(2) is not None:
@@ -2688,7 +2667,9 @@ class Gerber (Geometry):
                                             self.apertures[current_aperture]['geometry'].append(geo_dict)
                                 except:
                                     pass
-                            last_path_aperture = current_aperture
+                                last_path_aperture = current_aperture
+                            else:
+                                last_path_aperture = '0'
 
                         else:
                             self.app.inform.emit(_("[WARNING] Coordinates missing, line ignored: %s") % str(gline))
@@ -2697,7 +2678,6 @@ class Gerber (Geometry):
                     elif current_operation_code == 2:
                         # finish current path
                         if len(path) > 1:
-
                             if last_path_aperture is None:
                                 if '0' not in self.apertures:
                                     self.apertures['0'] = {}
@@ -2709,36 +2689,45 @@ class Gerber (Geometry):
                             else:
                                 width = self.apertures[last_path_aperture]["size"]
 
-                            if path and self.apertures[last_path_aperture]["type"] != 'R':
+                            if self.apertures[last_path_aperture]["type"] is not 'R':
                                 geo_f = LineString(path)
-                                geo_s = None
+                                follow_buffer.append(geo_f)
 
                                 if making_region:
                                     try:
                                         geo_s = Polygon(path)
                                         poly_buffer.append(geo_s)
                                     except ValueError:
-                                        log.warning("Problem %s %s" % (gline, line_num))
-                                        self.app.inform.emit(_("[ERROR] Region does not have enough points. "
-                                                               "File will be processed but there are parser errors. "
-                                                               "Line number: %s") % str(line_num))
+                                        log.warning(
+                                            "Not enough points in path to create a Polygon %s %s" % (gline, line_num))
                                 else:
                                     geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                                     poly_buffer.append(geo_s)
-                                follow_buffer.append(geo_f)
 
-                                geo_dict = dict()
-                                geo_dict['follow'] = geo_f
-                                if geo_s:
-                                    if self.is_lpc:
-                                        geo_dict['clear'] = geo_s
-                                    else:
-                                        geo_dict['solid'] = geo_s
-                                try:
-                                    self.apertures[last_path_aperture]['geometry'].append(geo_dict)
-                                except KeyError:
-                                    self.apertures[last_path_aperture]['geometry'] = []
-                                    self.apertures[last_path_aperture]['geometry'].append(geo_dict)
+                                if making_region:
+                                    geo_dict = dict()
+                                    geo_dict['follow'] = geo_f
+                                    if geo_s:
+                                        if self.is_lpc:
+                                            geo_dict['clear'] = geo_s
+                                        else:
+                                            geo_dict['solid'] = geo_s
+
+                                    self.apertures['0']['geometry'].append(geo_dict)
+
+                                else:
+                                    geo_dict = dict()
+                                    geo_dict['follow'] = geo_f
+                                    if geo_s:
+                                        if self.is_lpc:
+                                            geo_dict['clear'] = geo_s
+                                        else:
+                                            geo_dict['solid'] = geo_s
+                                    try:
+                                        self.apertures[last_path_aperture]['geometry'].append(geo_dict)
+                                    except KeyError:
+                                        self.apertures[last_path_aperture]['geometry'] = []
+                                        self.apertures[last_path_aperture]['geometry'].append(geo_dict)
 
                         # if linear_x or linear_y are None, ignore those
                         if linear_x is not None and linear_y is not None:
