@@ -274,6 +274,8 @@ class CutOut(FlatCAMTool):
         # true if we want to repeat the gap without clicking again on the button
         self.repeat_gap = False
 
+        self.flat_geometry = []
+
         ## Signals
         self.ff_cutout_object_btn.clicked.connect(self.on_freeform_cutout)
         self.rect_cutout_object_btn.clicked.connect(self.on_rectangular_cutout)
@@ -418,7 +420,15 @@ class CutOut(FlatCAMTool):
                     geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
                 else:
                     geo = cutout_obj.solid_geometry
-                    geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2)).exterior
+                    geo = geo.buffer(margin + abs(dia / 2))
+
+                    if isinstance(geo, Polygon):
+                        geo_obj.solid_geometry = deepcopy(geo.exterior)
+                    elif isinstance(geo, MultiPolygon):
+                        solid_geo = []
+                        for poly in geo:
+                            solid_geo.append(poly.exterior)
+                        geo_obj.solid_geometry = deepcopy(solid_geo)
 
             outname = cutout_obj.options["name"] + "_cutout"
             self.app.new_object('geometry', outname, geo_init)
@@ -541,18 +551,30 @@ class CutOut(FlatCAMTool):
             return
 
         # Get min and max data for each object as we just cut rectangles across X or Y
-        xmin, ymin, xmax, ymax = cutout_obj.bounds()
-        geo = box(xmin, ymin, xmax, ymax)
+        if isinstance(cutout_obj.solid_geometry, Polygon):
+            xmin, ymin, xmax, ymax = cutout_obj.bounds()
+            geo = box(xmin, ymin, xmax, ymax)
+        elif isinstance(cutout_obj.solid_geometry, MultiPolygon):
+            geo = []
+            for poly in cutout_obj.solid_geometry:
+                xmin, ymin, xmax, ymax = poly.bounds
+                poly_geo = box(xmin, ymin, xmax, ymax)
+                geo.append(poly_geo)
 
         px = 0.5 * (xmin + xmax) + margin
         py = 0.5 * (ymin + ymax) + margin
         lenghtx = (xmax - xmin) + (margin * 2)
         lenghty = (ymax - ymin) + (margin * 2)
-
         gapsize = gapsize / 2 + (dia / 2)
 
         def geo_init(geo_obj, app_obj):
-            geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
+            if isinstance(geo, list):
+                solid_geo = []
+                for subgeo in geo:
+                    solid_geo.append(subgeo.buffer(margin + abs(dia / 2)))
+                geo_obj.solid_geometry = deepcopy(solid_geo)
+            else:
+                geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.new_object('geometry', outname, geo_init)
@@ -745,7 +767,14 @@ class CutOut(FlatCAMTool):
                 geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
             else:
                 geo = cutout_obj.solid_geometry
-                geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2)).exterior
+                geo = geo.buffer(margin + abs(dia / 2))
+                if isinstance(geo, Polygon):
+                    geo_obj.solid_geometry = geo.exterior
+                elif isinstance(geo, MultiPolygon):
+                    solid_geo = []
+                    for poly in geo:
+                        solid_geo.append(poly.exterior)
+                    geo_obj.solid_geometry = deepcopy(solid_geo)
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.new_object('geometry', outname, geo_init)
@@ -819,5 +848,69 @@ class CutOut(FlatCAMTool):
             self.app.geo_editor.tool_shape.clear(update=True)
             self.app.geo_editor.tool_shape.enabled = False
 
+    def flatten(self, geometry=None, reset=True, pathonly=False):
+        """
+        Creates a list of non-iterable linear geometry objects.
+        Polygons are expanded into its exterior and interiors if specified.
+
+        Results are placed in self.flat_geometry
+
+        :param geometry: Shapely type or list or list of list of such.
+        :param reset: Clears the contents of self.flat_geometry.
+        :param pathonly: Expands polygons into linear elements.
+        """
+
+        if geometry is None:
+            geometry = self.solid_geometry
+
+        if reset:
+            self.flat_geometry = []
+
+        ## If iterable, expand recursively.
+        try:
+            for geo in geometry:
+                if geo is not None:
+                    self.flatten(geometry=geo,
+                                 reset=False,
+                                 pathonly=pathonly)
+
+        ## Not iterable, do the actual indexing and add.
+        except TypeError:
+            if pathonly and type(geometry) == Polygon:
+                self.flat_geometry.append(geometry.exterior)
+                self.flatten(geometry=geometry.interiors,
+                             reset=False,
+                             pathonly=True)
+            else:
+                self.flat_geometry.append(geometry)
+
+        return self.flat_geometry
+
+    def subtract_poly_from_geo(self, solid_geo, points):
+        """
+        Subtract polygon from the given object. This only operates on the paths in the original geometry,
+        i.e. it converts polygons into paths.
+
+        :param points: The vertices of the polygon.
+        :param geo: Geometry from which to substract. If none, use the solid_geomety property of the object
+        :return: none
+        """
+
+        # pathonly should be allways True, otherwise polygons are not subtracted
+        flat_geometry = self.flatten(geometry=solid_geo, pathonly=True)
+
+        log.debug("%d paths" % len(flat_geometry))
+        polygon = Polygon(points)
+        toolgeo = cascaded_union(polygon)
+        diffs = []
+        for target in flat_geometry:
+            if type(target) == LineString or type(target) == LinearRing:
+                diffs.append(target.difference(toolgeo))
+            else:
+                log.warning("Not implemented.")
+
+        return cascaded_union(diffs)
+
     def reset_fields(self):
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+

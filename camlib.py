@@ -204,7 +204,8 @@ class Geometry(object):
 
     def subtract_polygon(self, points):
         """
-        Subtract polygon from the given object. This only operates on the paths in the original geometry, i.e. it converts polygons into paths.
+        Subtract polygon from the given object. This only operates on the paths in the original geometry,
+        i.e. it converts polygons into paths.
 
         :param points: The vertices of the polygon.
         :return: none
