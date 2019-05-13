@@ -2680,6 +2680,9 @@ class Gerber (Geometry):
                     elif current_operation_code == 2:
                         # finish current path
                         if len(path) > 1:
+                            geo_s = None
+                            geo_f = None
+
                             if last_path_aperture is None:
                                 if '0' not in self.apertures:
                                     self.apertures['0'] = {}
@@ -2691,45 +2694,37 @@ class Gerber (Geometry):
                             else:
                                 width = self.apertures[last_path_aperture]["size"]
 
-                            if self.apertures[last_path_aperture]["type"] != 'R':
+                            if making_region:
+                                try:
+                                    geo_s = Polygon(path)
+                                except ValueError:
+                                    log.warning(
+                                        "Not enough points in path to create a Polygon %s %s" % (gline, line_num))
+                                try:
+                                    geo_f = LineString(path)
+                                except ValueError:
+                                    log.warning(
+                                        "Not enough points in path to create a LineString %s %s" % (gline, line_num))
+                            else:
+                                geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
                                 geo_f = LineString(path)
-                                follow_buffer.append(geo_f)
 
-                                if making_region:
-                                    try:
-                                        geo_s = Polygon(path)
-                                        poly_buffer.append(geo_s)
-                                    except ValueError:
-                                        log.warning(
-                                            "Not enough points in path to create a Polygon %s %s" % (gline, line_num))
-                                else:
-                                    geo_s = LineString(path).buffer(width / 1.999, int(self.steps_per_circle / 4))
-                                    poly_buffer.append(geo_s)
+                            if self.apertures[last_path_aperture]["type"] != 'R':
+                                poly_buffer.append(deepcopy(geo_s))
+                                follow_buffer.append(deepcopy(geo_f))
 
-                                if making_region:
-                                    geo_dict = dict()
-                                    geo_dict['follow'] = geo_f
-                                    if geo_s:
-                                        if self.is_lpc:
-                                            geo_dict['clear'] = geo_s
-                                        else:
-                                            geo_dict['solid'] = geo_s
-
-                                    self.apertures['0']['geometry'].append(geo_dict)
-
-                                else:
-                                    geo_dict = dict()
-                                    geo_dict['follow'] = geo_f
-                                    if geo_s:
-                                        if self.is_lpc:
-                                            geo_dict['clear'] = geo_s
-                                        else:
-                                            geo_dict['solid'] = geo_s
-                                    try:
-                                        self.apertures[last_path_aperture]['geometry'].append(geo_dict)
-                                    except KeyError:
-                                        self.apertures[last_path_aperture]['geometry'] = []
-                                        self.apertures[last_path_aperture]['geometry'].append(geo_dict)
+                                geo_dict = dict()
+                                geo_dict['follow'] = geo_f
+                                if geo_s:
+                                    if self.is_lpc:
+                                        geo_dict['clear'] = deepcopy(geo_s)
+                                    else:
+                                        geo_dict['solid'] = deepcopy(geo_s)
+                                try:
+                                    self.apertures[last_path_aperture]['geometry'].append(geo_dict)
+                                except KeyError:
+                                    self.apertures[last_path_aperture]['geometry'] = []
+                                    self.apertures[last_path_aperture]['geometry'].append(geo_dict)
 
                         # if linear_x or linear_y are None, ignore those
                         if linear_x is not None and linear_y is not None:
@@ -2764,7 +2759,6 @@ class Gerber (Geometry):
                                 self.apertures[last_path_aperture]['geometry'].append(geo_dict)
                         # Reset path starting point
                         path = [[linear_x, linear_y]]
-
 
                         # Draw the flash
                         geo_f = Point(linear_x, linear_y)
