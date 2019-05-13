@@ -2691,7 +2691,7 @@ class Gerber (Geometry):
                             else:
                                 width = self.apertures[last_path_aperture]["size"]
 
-                            if self.apertures[last_path_aperture]["type"] is not 'R':
+                            if self.apertures[last_path_aperture]["type"] != 'R':
                                 geo_f = LineString(path)
                                 follow_buffer.append(geo_f)
 
@@ -3026,48 +3026,6 @@ class Gerber (Geometry):
                     except KeyError:
                         self.apertures[last_path_aperture]['geometry'] = []
                         self.apertures[last_path_aperture]['geometry'].append(geo_dict)
-
-            # TODO: make sure to keep track of units changes because right now it seems to happen in a weird way
-            # find out the conversion factor used to convert inside the self.apertures keys: size, width, height
-
-            file_units = gerber_units if gerber_units else 'IN'
-            app_units = self.app.defaults['units']
-            conversion_factor = 25.4 if file_units == 'IN' else (1/25.4) if file_units != app_units else 1
-
-            # --- the following section is useful for Gerber editor only --- #
-            log.warning("Applying clear geometry in the apertures dict.")
-            # list of clear geos that are to be applied to the entire file
-            global_clear_geo = []
-
-            for apid in self.apertures:
-                if 'geometry' in self.apertures[apid]:
-                    for elem in self.apertures[apid]['geometry']:
-                        if 'clear' in elem:
-                            global_clear_geo.append(elem['clear'])
-            log.warning("Found %d clear polygons." % len(global_clear_geo))
-
-            for apid in self.apertures:
-                if 'geometry' in self.apertures[apid]:
-                    for elem in self.apertures[apid]['geometry']:
-                        if 'solid' in elem:
-                            for clear_geo in global_clear_geo:
-                                # Make sure that the clear_geo is within the solid_geo otherwise we loose
-                                # the solid_geometry. We want for clear_geometry just to cut into solid_geometry not to
-                                # delete it
-                                if clear_geo.within(elem['solid']):
-                                    elem['solid'] = elem['solid'].difference(clear_geo)
-
-            log.warning("Polygon difference done for %d apertures." % len(self.apertures))
-
-            # for apid in self.apertures:
-            #     # scale de aperture geometries according to the used units
-            #     for k, v in self.apertures[apid].items():
-            #         if k == 'size' or k == 'width' or k == 'height':
-            #             self.apertures[apid][k] = v * conversion_factor
-            # -------------------------------------------------------------
-
-            # for t in self.apertures:
-            #     print(t, self.apertures[t]['size'])
 
             # --- Apply buffer ---
             # this treats the case when we are storing geometry as paths

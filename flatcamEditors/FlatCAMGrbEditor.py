@@ -3245,6 +3245,44 @@ class FlatCAMGrbEditor(QtCore.QObject):
         except Exception as e:
             log.debug("FlatCAMGrbEditor.edit_fcgerber() --> %s" % str(e))
 
+
+        # # --- the following section is useful for Gerber editor only --- #
+        # log.warning("Applying clear geometry in the apertures dict.")
+        # # list of clear geos that are to be applied to the entire file
+        # global_clear_geo = []
+        #
+        # for apid in self.apertures:
+        #     if 'geometry' in self.apertures[apid]:
+        #         for elem in self.apertures[apid]['geometry']:
+        #             if 'clear' in elem:
+        #                 global_clear_geo.append(elem['clear'])
+        # log.warning("Found %d clear polygons." % len(global_clear_geo))
+        #
+        # for apid in self.apertures:
+        #     geo_list = []
+        #     if 'geometry' in self.apertures[apid]:
+        #         for elem in self.apertures[apid]['geometry']:
+        #             if 'solid' in elem:
+        #                 for clear_geo in global_clear_geo:
+        #                     new_elem = dict()
+        #                     # Make sure that the clear_geo is within the solid_geo otherwise we loose
+        #                     # the solid_geometry. We want for clear_geometry just to cut into solid_geometry not to
+        #                     # delete it
+        #                     if clear_geo.within(elem['solid']):
+        #                         new_elem['solid'] = elem['solid'].difference(clear_geo)
+        #                     else:
+        #                         new_elem['solid'] = elem['solid']
+        #             if 'follow' in elem:
+        #                 new_elem['follow'] = elem['follow']
+        #             if 'clear' in elem:
+        #                 new_elem['clear'] = elem['clear']
+        #             geo_list.append(deepcopy(new_elem))
+        #         self.apertures[apid]['geometry'] = deepcopy(geo_list)
+        #         geo_list[:] = []
+        #
+        # log.warning("Polygon difference done for %d apertures." % len(self.apertures))
+
+
         # and then add it to the storage elements (each storage elements is a member of a list
 
         def job_thread(self, apid):
@@ -3276,11 +3314,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.grb_plot_promises.append(apid)
             self.app.worker_task.emit({'fcn': job_thread, 'params': [self, apid]})
 
+        self.set_ui()
+
         # do the delayed plot only if there is something to plot (the gerber is not empty)
         if bool(self.gerber_obj.apertures):
             self.start_delayed_plot(check_period=1000)
         else:
-            self.set_ui()
             # now that we have data (empty data actually), create the GUI interface and add it to the Tool Tab
             self.build_ui(first_run=True)
             # and add the first aperture to have something to play with
@@ -3940,7 +3979,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
     def setup_ui_after_delayed_plot(self):
         self.plot_finished.disconnect()
 
-        self.set_ui()
         # now that we have data, create the GUI interface and add it to the Tool Tab
         self.build_ui(first_run=True)
         self.plot_all()
