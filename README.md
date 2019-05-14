@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+15.05.2019
+
+- rewrited the Gerber Parser in camlib - success
+- moved the self.apertures[aperture]['geometry'] processing for clear_geometry (geometry made with Gerber LPC command) in Gerber Editor
+
 12.05.2019
 
 - some modifications to ToolCutout
