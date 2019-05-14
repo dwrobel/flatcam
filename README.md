@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - rewrited the Gerber Parser in camlib - success
 - moved the self.apertures[aperture]['geometry'] processing for clear_geometry (geometry made with Gerber LPC command) in Gerber Editor
+- Gerber Editor: fixed the Poligonize Tool to work with new geometric structure and took care of a special case
 
 12.05.2019
 

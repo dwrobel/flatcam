@@ -737,23 +737,58 @@ class FCPoligonize(FCShapeTool):
             self.draw_app.select_tool("select")
             return
 
-        exterior_geo = [Polygon(sh.geo.exterior) for sh in self.draw_app.selected]
+        apid_set = set()
+        for elem in self.draw_app.selected:
+            for apid in self.draw_app.storage_dict:
+                if 'geometry' in self.draw_app.storage_dict[apid]:
+                    if elem in self.draw_app.storage_dict[apid]['geometry']:
+                        apid_set.add(apid)
+                        break
+
+        if len (apid_set) > 1:
+            self.draw_app.in_action = False
+            self.complete = True
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Failed. Poligonize works only on "
+                                            "geometries belonging to the same aperture."))
+            self.draw_app.select_tool("select")
+            return
+
+        # exterior_geo = [Polygon(sh.geo.exterior) for sh in self.draw_app.selected]
+
+        exterior_geo = []
+        for geo_shape in self.draw_app.selected:
+            geometric_data = geo_shape.geo
+            if 'solid' in geometric_data:
+                exterior_geo.append(Polygon(geometric_data['solid'].exterior))
+
         fused_geo = MultiPolygon(exterior_geo)
         fused_geo = fused_geo.buffer(0.0000001)
 
-        current_storage = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['solid_geometry']
+        current_storage = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']
         if isinstance(fused_geo, MultiPolygon):
             for geo in fused_geo:
-                self.draw_app.on_grb_shape_complete(current_storage, specific_shape=DrawToolShape(geo))
+                if len(geo.interiors) == 0:
+                    try:
+                        current_storage = self.draw_app.storage_dict['0']['geometry']
+                    except KeyError:
+                        self.draw_app.on_aperture_add(apid='0')
+                        current_storage = self.draw_app.storage_dict['0']['geometry']
+                new_el = dict()
+                new_el['solid'] = geo
+                new_el['follow'] = geo.exterior
+                self.draw_app.on_grb_shape_complete(current_storage, specific_shape=DrawToolShape(deepcopy(new_el)))
         else:
             if len(fused_geo.interiors) == 0 and len(exterior_geo) == 1:
                 try:
-                    current_storage = self.draw_app.storage_dict['0']['solid_geometry']
+                    current_storage = self.draw_app.storage_dict['0']['geometry']
                 except KeyError:
                     self.draw_app.on_aperture_add(apid='0')
-                    current_storage = self.draw_app.storage_dict['0']['solid_geometry']
+                    current_storage = self.draw_app.storage_dict['0']['geometry']
 
-            self.draw_app.on_grb_shape_complete(current_storage, specific_shape=DrawToolShape(fused_geo))
+            new_el = dict()
+            new_el['solid'] = fused_geo
+            new_el['follow'] = fused_geo.exterior
+            self.draw_app.on_grb_shape_complete(current_storage, specific_shape=DrawToolShape(deepcopy(new_el)))
 
         self.draw_app.delete_selected()
         self.draw_app.plot_all()
