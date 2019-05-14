@@ -3468,6 +3468,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
                                 else:
                                     new_geo_el['follow'] = geometric_data['follow']
                                 follow_buffer.append(deepcopy(new_geo_el['follow']))
+                            else:
+                                if 'solid' in geometric_data:
+                                    geo_f = geometric_data['solid'].exterior
+                                    new_geo_el['follow'] = geo_f
+                                    follow_buffer.append(deepcopy(new_geo_el['follow']))
 
                             if 'clear' in geometric_data:
                                 new_geo_el['clear'] = geometric_data['clear']
