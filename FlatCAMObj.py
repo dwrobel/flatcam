@@ -1428,6 +1428,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                             x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
                                             gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
                                                                                            yform=y_formatted)
+                                    # gerber_code += "D02*\n"
 
                             if 'clear' in geo_elem:
                                 gerber_code += '%LPC*%\n'
@@ -1461,7 +1462,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                         else:
                                             x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
                                             gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
-                                                                                           yform=y_formatted)
+                                                                                          yform=y_formatted)
+                                    # gerber_code += "D02*\n"
                                 gerber_code += '%LPD*%\n'
 
         except Exception as e:

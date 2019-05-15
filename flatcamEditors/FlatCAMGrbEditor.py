@@ -2603,6 +2603,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
 
+        self.conversion_factor = 1
+
         self.set_ui()
 
     def pool_recreated(self, pool):
@@ -2712,8 +2714,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
             try:
                 if self.storage_dict[ap_code]['size'] is not None:
-                    ap_size_item = QtWidgets.QTableWidgetItem('%.4f' %
-                                                              float(self.storage_dict[ap_code]['size']))
+                    ap_size_item = QtWidgets.QTableWidgetItem('%.4f' % float(
+                        self.storage_dict[ap_code]['size']))
                 else:
                     ap_size_item = QtWidgets.QTableWidgetItem('')
             except KeyError:
@@ -3266,6 +3268,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.gerber_obj = orig_grb_obj
         self.gerber_obj_options = orig_grb_obj.options
 
+        file_units = self.gerber_obj.gerber_units if self.gerber_obj.gerber_units else 'IN'
+        app_units = self.app.defaults['units']
+
+        self.conversion_factor = 25.4 if file_units == 'IN' else (1 / 25.4) if file_units != app_units else 1
+
         # Hide original geometry
         orig_grb_obj.visible = False
 
@@ -3279,6 +3286,23 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.apertures_table.itemChanged.connect(self.on_tool_edit)
         except Exception as e:
             log.debug("FlatCAMGrbEditor.edit_fcgerber() --> %s" % str(e))
+
+        # apply the conversion factor on the obj.apertures
+        conv_apertures = deepcopy(self.gerber_obj.apertures)
+        for apid in self.gerber_obj.apertures:
+            for key in self.gerber_obj.apertures[apid]:
+                if key == 'width':
+                    conv_apertures[apid]['width'] = self.gerber_obj.apertures[apid]['width'] * self.conversion_factor
+                elif key == 'height':
+                    conv_apertures[apid]['height'] = self.gerber_obj.apertures[apid]['height'] * self.conversion_factor
+                elif key == 'diam':
+                    conv_apertures[apid]['diam'] = self.gerber_obj.apertures[apid]['diam'] * self.conversion_factor
+                elif key == 'size':
+                    conv_apertures[apid]['size'] = self.gerber_obj.apertures[apid]['size'] * self.conversion_factor
+                else:
+                    conv_apertures[apid][key] = self.gerber_obj.apertures[apid][key]
+
+        self.gerber_obj.apertures = conv_apertures
 
         # ###############################################################
         # APPLY CLEAR_GEOMETRY on the SOLID_GEOMETRY

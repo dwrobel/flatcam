@@ -1936,6 +1936,9 @@ class Gerber (Geometry):
         }
         '''
 
+        # store the file units here:
+        self.gerber_units = 'IN'
+
         # aperture storage
         self.apertures = {}
 
@@ -2173,7 +2176,7 @@ class Gerber (Geometry):
         path = []
 
         # store the file units here:
-        gerber_units = 'IN'
+        self.gerber_units = 'IN'
 
         # this is for temporary storage of solid geometry until it is added to poly_buffer
         geo_s = None
@@ -2323,8 +2326,8 @@ class Gerber (Geometry):
                 # Example: %MOIN*%
                 match = self.mode_re.search(gline)
                 if match:
-                    gerber_units = match.group(1)
-                    log.debug("Gerber units found = %s" % gerber_units)
+                    self.gerber_units = match.group(1)
+                    log.debug("Gerber units found = %s" % self.gerber_units)
                     # Changed for issue #80
                     self.convert_units(match.group(1))
                     continue
@@ -2344,8 +2347,8 @@ class Gerber (Geometry):
                         "D-no zero suppression)" % self.gerber_zeros)
                     log.debug("Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
 
-                    gerber_units = match.group(1)
-                    log.debug("Gerber units found = %s" % gerber_units)
+                    self.gerber_units = match.group(1)
+                    log.debug("Gerber units found = %s" % self.gerber_units)
                     # Changed for issue #80
                     self.convert_units(match.group(5))
                     continue
@@ -2370,8 +2373,8 @@ class Gerber (Geometry):
                             "D-no zerosuppressionn)" % self.gerber_zeros)
                         log.debug("Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
 
-                        gerber_units = match.group(1)
-                        log.debug("Gerber units found = %s" % gerber_units)
+                        self.gerber_units = match.group(1)
+                        log.debug("Gerber units found = %s" % self.gerber_units)
                         # Changed for issue #80
                         self.convert_units(match.group(5))
                         continue
@@ -3123,7 +3126,7 @@ class Gerber (Geometry):
 
             # TODO: make sure to keep track of units changes because right now it seems to happen in a weird way
             # find out the conversion factor used to convert inside the self.apertures keys: size, width, height
-            file_units = gerber_units if gerber_units else 'IN'
+            file_units = self.gerber_units if self.gerber_units else 'IN'
             app_units = self.app.defaults['units']
 
             conversion_factor = 25.4 if file_units == 'IN' else (1/25.4) if file_units != app_units else 1
@@ -3135,9 +3138,6 @@ class Gerber (Geometry):
 
             # this treats the case when we are storing geometry as solids
             log.warning("Joining %d polygons." % len(poly_buffer))
-
-            for td in self.apertures:
-                print(td, self.apertures[td])
 
             if len(poly_buffer) == 0:
                 log.error("Object is not Gerber file or empty. Aborting Object creation.")
