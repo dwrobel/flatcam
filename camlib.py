@@ -2575,27 +2575,28 @@ class Gerber (Geometry):
                         self.apertures['0']['size'] = 0.0
                         self.apertures['0']['geometry'] = []
 
-                    # if D02 happened before G37 we now have a path with 1 element only so we have to add the current
+                    # if D02 happened before G37 we now have a path with 1 element only; we have to add the current
                     # geo to the poly_buffer otherwise we loose it
-                    # if current_operation_code == 2:
-                    #     print(path)
-                    #     geo_dict = dict()
-                    #     if geo_f:
-                    #         if not geo_f.is_empty:
-                    #             follow_buffer.append(geo_f)
-                    #             geo_dict['follow'] = geo_f
-                    #     if geo_s:
-                    #         if not geo_s.is_empty:
-                    #             poly_buffer.append(geo_s)
-                    #             if self.is_lpc is True:
-                    #                 geo_dict['clear'] = geo_s
-                    #             else:
-                    #                 geo_dict['solid'] = geo_s
-                    #
-                    #     if geo_s or geo_f:
-                    #         self.apertures['0']['geometry'].append(deepcopy(geo_dict))
-                    #
-                    #     continue
+                    if current_operation_code == 2:
+                        if len(path) == 1:
+                            # this means that the geometry was prepared previously and we just need to add it
+                            geo_dict = dict()
+                            if geo_f:
+                                if not geo_f.is_empty:
+                                    follow_buffer.append(geo_f)
+                                    geo_dict['follow'] = geo_f
+                            if geo_s:
+                                if not geo_s.is_empty:
+                                    poly_buffer.append(geo_s)
+                                    if self.is_lpc is True:
+                                        geo_dict['clear'] = geo_s
+                                    else:
+                                        geo_dict['solid'] = geo_s
+
+                            if geo_s or geo_f:
+                                self.apertures['0']['geometry'].append(deepcopy(geo_dict))
+
+                            path = [[current_x, current_y]]  # Start new path
 
                     # Only one path defines region?
                     # This can happen if D02 happened before G37 and

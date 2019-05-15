@@ -16,6 +16,9 @@ CAD program, and create G-Code for Isolation routing.
 - Gerber Editor: fixed the Poligonize Tool to work with new geometric structure and took care of a special case
 - Gerber Export is fixed to work with the new Gerber object data structure and it now works also for Gerber objects edited in Gerber Editor
 - Gerber Editor: fixed units conversion for obj.apertures keys that require it
+- camlib Gerber parser - made sure that we don't loose goemetry in regions
+- Gerber Editor - made sure that for some tools the added geometry is clean (the coordinates are non repeating)
+- covered some possible issues in Gerber Export
 
 12.05.2019
 

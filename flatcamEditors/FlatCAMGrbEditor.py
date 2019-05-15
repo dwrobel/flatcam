@@ -767,6 +767,9 @@ class FCPoligonize(FCShapeTool):
         current_storage = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']
         if isinstance(fused_geo, MultiPolygon):
             for geo in fused_geo:
+                # clean-up the geo
+                geo = geo.buffer(0)
+
                 if len(geo.interiors) == 0:
                     try:
                         current_storage = self.draw_app.storage_dict['0']['geometry']
@@ -778,6 +781,9 @@ class FCPoligonize(FCShapeTool):
                 new_el['follow'] = geo.exterior
                 self.draw_app.on_grb_shape_complete(current_storage, specific_shape=DrawToolShape(deepcopy(new_el)))
         else:
+            # clean-up the geo
+            fused_geo = fused_geo.buffer(0)
+
             if len(fused_geo.interiors) == 0 and len(exterior_geo) == 1:
                 try:
                     current_storage = self.draw_app.storage_dict['0']['geometry']
@@ -1118,7 +1124,7 @@ class FCTrack(FCRegion):
             new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val)
             new_geo_el['follow'] = Point(self.temp_points)
         else:
-            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val)
+            new_geo_el['solid'] = (LineString(self.temp_points).buffer(self.buf_val)).buffer(0)
             new_geo_el['follow'] = LineString(self.temp_points)
 
         self.geometry = DrawToolShape(new_geo_el)
@@ -1134,7 +1140,12 @@ class FCTrack(FCRegion):
 
     def click(self, point):
         self.draw_app.in_action = True
-        self.points.append(point)
+        try:
+            if point != self.points[-1]:
+                self.points.append(point)
+        except IndexError:
+            self.points.append(point)
+
         new_geo_el = dict()
 
         if len(self.temp_points) == 1:
