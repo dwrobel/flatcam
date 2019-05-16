@@ -193,10 +193,11 @@ M0""".format(x_toolchange=self.coordinate_format%(p.coords_decimals, x_toolchang
         return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, p.z_feedrate))
 
     def spindle_code(self, p):
+        sdir = {'CW': 'M03', 'CCW': 'M04'}[p.spindledir]
         if p.spindlespeed:
-            return 'M03 S' + str(p.spindlespeed)
+            return '%s S%s' % (sdir, str(p.spindlespeed))
         else:
-            return 'M03'
+            return sdir
 
     def dwell_code(self, p):
         if p.dwelltime:

@@ -4628,6 +4628,20 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.spindlespeed_entry = IntEntry(allow_empty=True)
         grid2.addWidget(self.spindlespeed_entry, 5, 1)
 
+        # Spindle direction
+        spindle_dir_label = QtWidgets.QLabel(_('Spindle dir.:'))
+        spindle_dir_label.setToolTip(
+            _("This sets the direction that the spindle is rotating.\n"
+              "It can be either:\n"
+              "- CW = clockwise or\n"
+              "- CCW = counter clockwise")
+        )
+
+        self.spindledir_radio = RadioSet([{'label': 'CW', 'value': 'CW'},
+                                          {'label': 'CCW', 'value': 'CCW'}])
+        grid2.addWidget(spindle_dir_label, 6, 0)
+        grid2.addWidget(self.spindledir_radio, 6, 1)
+
         # Dwell
         dwelllabel = QtWidgets.QLabel(_('Dwell:'))
         dwelllabel.setToolTip(
@@ -4640,10 +4654,10 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         )
         self.dwell_cb = FCCheckBox()
         self.dwelltime_entry = FCEntry()
-        grid2.addWidget(dwelllabel, 6, 0)
-        grid2.addWidget(self.dwell_cb, 6, 1)
-        grid2.addWidget(dwelltime, 7, 0)
-        grid2.addWidget(self.dwelltime_entry, 7, 1)
+        grid2.addWidget(dwelllabel, 7, 0)
+        grid2.addWidget(self.dwell_cb, 7, 1)
+        grid2.addWidget(dwelltime, 8, 0)
+        grid2.addWidget(self.dwelltime_entry, 8, 1)
 
         self.ois_dwell_exc = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
@@ -4653,10 +4667,10 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             _("The postprocessor file that dictates\n"
             "gcode output.")
         )
-        grid2.addWidget(pp_excellon_label, 8, 0)
+        grid2.addWidget(pp_excellon_label, 9, 0)
         self.pp_excellon_name_cb = FCComboBox()
         self.pp_excellon_name_cb.setFocusPolicy(Qt.StrongFocus)
-        grid2.addWidget(self.pp_excellon_name_cb, 8, 1)
+        grid2.addWidget(self.pp_excellon_name_cb, 9, 1)
 
 
         #### Choose what to use for Gcode creation: Drills, Slots or Both
@@ -4670,8 +4684,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.excellon_gcode_type_radio = RadioSet([{'label': 'Drills', 'value': 'drills'},
                                           {'label': 'Slots', 'value': 'slots'},
                                           {'label': 'Both', 'value': 'both'}])
-        grid2.addWidget(excellon_gcode_type_label, 9, 0)
-        grid2.addWidget(self.excellon_gcode_type_radio, 9, 1)
+        grid2.addWidget(excellon_gcode_type_label, 10, 0)
+        grid2.addWidget(self.excellon_gcode_type_radio, 10, 1)
 
         # until I decide to implement this feature those remain disabled
         excellon_gcode_type_label.hide()
@@ -5121,6 +5135,20 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         self.cncspindlespeed_entry = IntEntry(allow_empty=True)
         grid1.addWidget(self.cncspindlespeed_entry, 8, 1)
 
+        # Spindle direction
+        spindle_dir_label = QtWidgets.QLabel(_('Spindle dir.:'))
+        spindle_dir_label.setToolTip(
+            _("This sets the direction that the spindle is rotating.\n"
+              "It can be either:\n"
+              "- CW = clockwise or\n"
+              "- CCW = counter clockwise")
+        )
+
+        self.spindledir_radio = RadioSet([{'label': 'CW', 'value': 'CW'},
+                                          {'label': 'CCW', 'value': 'CCW'}])
+        grid1.addWidget(spindle_dir_label, 9, 0)
+        grid1.addWidget(self.spindledir_radio, 9, 1)
+
         # Dwell
         self.dwell_cb = FCCheckBox(label=_('Dwell:'))
         self.dwell_cb.setToolTip(
@@ -5132,9 +5160,9 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             _("Number of milliseconds for spindle to dwell.")
         )
         self.dwelltime_entry = FCEntry()
-        grid1.addWidget(self.dwell_cb, 9, 0)
-        grid1.addWidget(dwelltime, 10, 0)
-        grid1.addWidget(self.dwelltime_entry, 10, 1)
+        grid1.addWidget(self.dwell_cb, 10, 0)
+        grid1.addWidget(dwelltime, 11, 0)
+        grid1.addWidget(self.dwelltime_entry, 11, 1)
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
@@ -5144,10 +5172,10 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             _("The postprocessor file that dictates\n"
             "Machine Code output.")
         )
-        grid1.addWidget(pp_label, 11, 0)
+        grid1.addWidget(pp_label, 12, 0)
         self.pp_geometry_name_cb = FCComboBox()
         self.pp_geometry_name_cb.setFocusPolicy(Qt.StrongFocus)
-        grid1.addWidget(self.pp_geometry_name_cb, 11, 1)
+        grid1.addWidget(self.pp_geometry_name_cb, 12, 1)
 
         self.layout.addStretch()
 

@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+16.05.2019
+
+- Gerber Export: made sure that if some of the coordinates in a Gerber object geometry are repeating then the resulting Gerber code include only one copy
+- added a new parameter/feature: now the spindle can work in clockwise mode (CW) or counter clockwise mode (CCW)
+
 15.05.2019
 
 - rewrited the Gerber Parser in camlib - success

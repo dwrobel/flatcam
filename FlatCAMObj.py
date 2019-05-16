@@ -1350,15 +1350,20 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                                 geo_coords[0][0], geo_coords[0][1], factor)
                                             gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
                                                                                            yform=y_formatted)
+
+                                        prev_coord = geo_coords[0]
                                         for coord in geo_coords[1:]:
-                                            if g_zeros == 'T':
-                                                x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
-                                                gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
-                                                                                               yform=y_formatted)
-                                            else:
-                                                x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
-                                                gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
-                                                                                               yform=y_formatted)
+                                            if coord != prev_coord:
+                                                if g_zeros == 'T':
+                                                    x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                                    gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                                   yform=y_formatted)
+                                                else:
+                                                    x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                                    gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                                   yform=y_formatted)
+                                            prev_coord = coord
+
                                         gerber_code += 'D02*\n'
                                         gerber_code += 'G37*\n'
                                     gerber_code += '%LPD*%\n'
@@ -1377,15 +1382,20 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                     x_formatted, y_formatted = lz_format(geo_coords[0][0], geo_coords[0][1], factor)
                                     gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
                                                                                    yform=y_formatted)
+
+                                prev_coord = geo_coords[0]
                                 for coord in geo_coords[1:]:
-                                    if g_zeros == 'T':
-                                        x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
-                                        gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
-                                                                                       yform=y_formatted)
-                                    else:
-                                        x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
-                                        gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
-                                                                                       yform=y_formatted)
+                                    if coord != prev_coord:
+                                        if g_zeros == 'T':
+                                            x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                            gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                           yform=y_formatted)
+                                        else:
+                                            x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                            gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                           yform=y_formatted)
+                                    prev_coord = coord
+
                                 gerber_code += 'D02*\n'
                                 gerber_code += 'G37*\n'
                                 gerber_code += '%LPD*%\n'
@@ -1422,15 +1432,20 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                                 geo_coords[0][0], geo_coords[0][1], factor)
                                             gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
                                                                                            yform=y_formatted)
+
+                                        prev_coord = geo_coords[0]
                                         for coord in geo_coords[1:]:
-                                            if g_zeros == 'T':
-                                                x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
-                                                gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
-                                                                                               yform=y_formatted)
-                                            else:
-                                                x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
-                                                gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
-                                                                                               yform=y_formatted)
+                                            if coord != prev_coord:
+                                                if g_zeros == 'T':
+                                                    x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                                    gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                                   yform=y_formatted)
+                                                else:
+                                                    x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                                    gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                                   yform=y_formatted)
+                                            prev_coord = coord
+
                                         # gerber_code += "D02*\n"
 
                             if 'clear' in geo_elem:
@@ -1460,15 +1475,20 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                                 geo_coords[0][0], geo_coords[0][1], factor)
                                             gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
                                                                                            yform=y_formatted)
+
+                                        prev_coord = geo_coords[0]
                                         for coord in geo_coords[1:]:
-                                            if g_zeros == 'T':
-                                                x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
-                                                gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
-                                                                                               yform=y_formatted)
-                                            else:
-                                                x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
-                                                gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
-                                                                                              yform=y_formatted)
+                                            if coord != prev_coord:
+                                                if g_zeros == 'T':
+                                                    x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                                    gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                                   yform=y_formatted)
+                                                else:
+                                                    x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                                    gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                                  yform=y_formatted)
+
+                                            prev_coord = coord
                                         # gerber_code += "D02*\n"
                                     gerber_code += '%LPD*%\n'
 
@@ -2551,8 +2571,10 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.feedrate_rapid = float(self.options["feedrate_rapid"])
 
             job_obj.spindlespeed = float(self.options["spindlespeed"]) if self.options["spindlespeed"] else None
+            job_obj.spindledir = self.app.defaults['excellon_spindledir']
             job_obj.dwell = self.options["dwell"]
             job_obj.dwelltime = float(self.options["dwelltime"])
+
             job_obj.pp_excellon_name = pp_excellon_name
 
             job_obj.toolchange_xy_type = "excellon"
@@ -4406,6 +4428,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     'offset_value': tool_offset
                 })
 
+                spindledir = self.app.defaults['geometry_spindledir']
+
                 job_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
                 job_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
 
@@ -4425,7 +4449,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     self, tooldia=tooldia_val, offset=tool_offset, tolerance=0.0005,
                     z_cut=z_cut, z_move=z_move,
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
-                    spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
+                    spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
                     multidepth=multidepth, depthpercut=depthpercut,
                     extracut=extracut, startz=startz, endz=endz,
                     toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
@@ -4649,12 +4673,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
                 app_obj.progress.emit(40)
 
+                spindledir = self.app.defaults['geometry_spindledir']
+
                 tool_solid_geometry = self.tools[current_uid]['solid_geometry']
                 res = job_obj.generate_from_multitool_geometry(
                     tool_solid_geometry, tooldia=tooldia_val, offset=tool_offset,
                     tolerance=0.0005, z_cut=z_cut, z_move=z_move,
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
-                    spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
+                    spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
                     multidepth=multidepth, depthpercut=depthpercut,
                     extracut=extracut, startz=startz, endz=endz,
                     toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,

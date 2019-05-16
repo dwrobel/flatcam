@@ -4932,7 +4932,7 @@ class CNCjob(Geometry):
                  feedrate=3.0, feedrate_z=3.0, feedrate_rapid=3.0, feedrate_probe=3.0,
                  pp_geometry_name='default', pp_excellon_name='default',
                  depthpercut=0.1,z_pdepth=-0.02,
-                 spindlespeed=None, dwell=True, dwelltime=1000,
+                 spindlespeed=None, spindledir='CW', dwell=True, dwelltime=1000,
                  toolchangez=0.787402, toolchange_xy=[0.0, 0.0],
                  endz=2.0,
                  segx=None,
@@ -5000,6 +5000,7 @@ class CNCjob(Geometry):
         self.feedrate_probe = feedrate_probe if feedrate_probe else None
 
         self.spindlespeed = spindlespeed
+        self.spindledir = spindledir
         self.dwell = dwell
         self.dwelltime = dwelltime
 
@@ -5553,7 +5554,7 @@ class CNCjob(Geometry):
     def generate_from_multitool_geometry(self, geometry, append=True,
                                          tooldia=None, offset=0.0, tolerance=0, z_cut=1.0, z_move=2.0,
                                          feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
-                                         spindlespeed=None, dwell=False, dwelltime=1.0,
+                                         spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
                                          multidepth=False, depthpercut=None,
                                          toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0", extracut=False,
                                          startz=None, endz=2.0, pp_geometry_name=None, tool_no=1):
@@ -5603,6 +5604,7 @@ class CNCjob(Geometry):
         self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
 
         self.spindlespeed = int(spindlespeed) if spindlespeed else None
+        self.spindledir = spindledir
         self.dwell = dwell
         self.dwelltime = float(dwelltime) if dwelltime else None
 
@@ -5767,7 +5769,7 @@ class CNCjob(Geometry):
                                  tooldia=None, offset=0.0, tolerance=0,
                                  z_cut=1.0, z_move=2.0,
                                  feedrate=2.0, feedrate_z=2.0, feedrate_rapid=30,
-                                 spindlespeed=None, dwell=False, dwelltime=1.0,
+                                 spindlespeed=None, spindledir='CW', dwell=False, dwelltime=1.0,
                                  multidepth=False, depthpercut=None,
                                  toolchange=False, toolchangez=1.0, toolchangexy="0.0, 0.0",
                                  extracut=False, startz=None, endz=2.0,
@@ -5863,29 +5865,21 @@ class CNCjob(Geometry):
         self.tooldia = float(tooldia) if tooldia else None
 
         self.z_cut = float(z_cut) if z_cut else None
-
         self.z_move = float(z_move) if z_move else None
 
         self.feedrate = float(feedrate) if feedrate else None
-
         self.z_feedrate = float(feedrate_z) if feedrate_z else None
-
         self.feedrate_rapid = float(feedrate_rapid) if feedrate_rapid else None
 
         self.spindlespeed = int(spindlespeed) if spindlespeed else None
-
+        self.spindledir = spindledir
         self.dwell = dwell
-
         self.dwelltime = float(dwelltime) if dwelltime else None
 
         self.startz = float(startz) if startz else None
-
         self.z_end = float(endz) if endz else None
-
         self.z_depthpercut = float(depthpercut) if depthpercut else None
-
         self.multidepth = multidepth
-
         self.z_toolchange = float(toolchangez) if toolchangez else None
 
         try:
