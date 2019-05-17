@@ -95,7 +95,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.917
-    version_date = "2019/05/16"
+    version_date = "2019/05/18"
     beta = True
 
     # current date now
@@ -2272,30 +2272,18 @@ class App(QtCore.QObject):
                             self.inform.emit(_("[WARNING] Object empty after edit."))
                             log.debug("App.editor2object() --> Geometry --> %s" % str(e))
                     elif isinstance(edited_obj, FlatCAMGerber):
-                        new_obj = self.collection.get_active()
                         obj_type = "Gerber"
                         if cleanup is None:
                             self.grb_editor.update_fcgerber(edited_obj)
-                            self.grb_editor.update_options(new_obj)
+                            self.grb_editor.update_options(edited_obj)
                         self.grb_editor.deactivate_grb_editor()
 
                         # delete the old object (the source object) if it was an empty one
-                        if not edited_obj.solid_geometry:
+                        if len(edited_obj.solid_geometry) == 0:
                             old_name = edited_obj.options['name']
                             self.collection.set_active(old_name)
                             self.collection.delete_active()
-                        else:
-                            # update the geo object options so it is including the bounding box values
-                            # but don't do this for objects that are made out of empty source objects, it will fail
-                            try:
-                                xmin, ymin, xmax, ymax = new_obj.bounds()
-                                new_obj.options['xmin'] = xmin
-                                new_obj.options['ymin'] = ymin
-                                new_obj.options['xmax'] = xmax
-                                new_obj.options['ymax'] = ymax
-                            except Exception as e:
-                                self.inform.emit(_("[WARNING] Object empty after edit."))
-                                log.debug("App.editor2object() --> Gerber --> %s" % str(e))
+
                     elif isinstance(edited_obj, FlatCAMExcellon):
                         obj_type = "Excellon"
                         if cleanup is None:
@@ -2992,6 +2980,7 @@ class App(QtCore.QObject):
             grb_obj.multigeo = False
             grb_obj.follow = False
             grb_obj.apertures = {}
+            grb_obj.solid_geometry = []
 
             try:
                 grb_obj.options['xmin'] = 0

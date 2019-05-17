@@ -175,16 +175,27 @@ class Properties(FlatCAMTool):
             for ap in obj.apertures:
                 temp_ap.clear()
                 temp_ap = deepcopy(obj.apertures[ap])
-                if obj.apertures[ap]['solid_geometry']:
-                    elems = len(obj.apertures[ap]['solid_geometry'])
-                    temp_ap['solid_geometry'] = '%s Polygons' % str(elems)
-                try:
-                    if obj.apertures[ap]['follow_geometry']:
-                        elems = len(obj.apertures[ap]['follow_geometry'])
-                        temp_ap['follow_geometry'] = '%s Polygons' % str(elems)
-                except KeyError:
-                    pass
-                self.addChild(apertures, [str(ap), str(temp_ap)], True)
+                temp_ap.pop('geometry', None)
+                if obj.apertures[ap]['geometry']:
+                    solid_nr = 0
+                    follow_nr = 0
+                    clear_nr = 0
+
+                    for el in obj.apertures[ap]['geometry']:
+                        if 'solid' in el:
+                            solid_nr += 1
+                        if 'follow' in el:
+                            follow_nr += 1
+                        if 'clear' in el:
+                            clear_nr += 1
+                    temp_ap['Solid_Geo'] = '%s Polygons' % str(solid_nr)
+                    temp_ap['Follow_Geo'] = '%s Polygons' % str(follow_nr)
+                    temp_ap['Clear_Geo'] = '%s Polygons' % str(clear_nr)
+
+                apid = self.addParent(apertures, str(ap), expanded=False, color=QtGui.QColor("#000000"), font=font)
+                for key in temp_ap:
+                    self.addChild(apid, [str(key), str(temp_ap[key])], True)
+
         elif obj.kind.lower() == 'excellon':
             for tool, value in obj.tools.items():
                 self.addChild(tools, [str(tool), str(value['C'])], True)
