@@ -114,7 +114,8 @@ class CutOut(FlatCAMTool):
         self.convex_box = FCCheckBox()
         self.convex_box_label = QtWidgets.QLabel(_("Convex Sh.:"))
         self.convex_box_label.setToolTip(
-            _("Create a convex shape surrounding the entire PCB.")
+            _("Create a convex shape surrounding the entire PCB.\n"
+              "Used only if the source object type is Gerber.")
         )
         form_layout.addRow(self.convex_box_label, self.convex_box)
 
@@ -327,9 +328,9 @@ class CutOut(FlatCAMTool):
 
     def on_freeform_cutout(self):
 
-        def subtract_rectangle(obj_, x0, y0, x1, y1):
-            pts = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
-            obj_.subtract_polygon(pts)
+        # def subtract_rectangle(obj_, x0, y0, x1, y1):
+        #     pts = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+        #     obj_.subtract_polygon(pts)
 
         name = self.obj_combo.currentText()
 
@@ -400,77 +401,83 @@ class CutOut(FlatCAMTool):
 
         convex_box = self.convex_box.get_value()
 
-        # Get min and max data for each object as we just cut rectangles across X or Y
-        xmin, ymin, xmax, ymax = cutout_obj.bounds()
-        px = 0.5 * (xmin + xmax) + margin
-        py = 0.5 * (ymin + ymax) + margin
-        lenghtx = (xmax - xmin) + (margin * 2)
-        lenghty = (ymax - ymin) + (margin * 2)
-
         gapsize = gapsize / 2 + (dia / 2)
 
-        if isinstance(cutout_obj, FlatCAMGeometry):
-            # rename the obj name so it can be identified as cutout
-            cutout_obj.options["name"] += "_cutout"
-        else:
-            def geo_init(geo_obj, app_obj):
+        def geo_init(geo_obj, app_obj):
+            solid_geo = []
+
+            if isinstance(cutout_obj, FlatCAMGerber):
                 if convex_box:
-                    geo = cutout_obj.solid_geometry.convex_hull
-                    geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
+                    object_geo = cutout_obj.solid_geometry.convex_hull
                 else:
-                    geo = cutout_obj.solid_geometry
-                    geo = geo.buffer(margin + abs(dia / 2))
+                    object_geo = cutout_obj.solid_geometry
+            else:
+                object_geo = cutout_obj.solid_geometry
 
-                    if isinstance(geo, Polygon):
-                        geo_obj.solid_geometry = deepcopy(geo.exterior)
-                    elif isinstance(geo, MultiPolygon):
-                        solid_geo = []
-                        for poly in geo:
-                            solid_geo.append(poly.exterior)
-                        geo_obj.solid_geometry = deepcopy(solid_geo)
+            try:
+                _ = iter(object_geo)
+            except TypeError:
+                object_geo = [object_geo]
 
-            outname = cutout_obj.options["name"] + "_cutout"
-            self.app.new_object('geometry', outname, geo_init)
+            for geo in object_geo:
+                if isinstance(cutout_obj, FlatCAMGerber):
+                    geo = (geo.buffer(margin + abs(dia / 2))).exterior
 
-            cutout_obj = self.app.collection.get_by_name(outname)
+                # Get min and max data for each object as we just cut rectangles across X or Y
+                xmin, ymin, xmax, ymax = geo.bounds
+                px = 0.5 * (xmin + xmax) + margin
+                py = 0.5 * (ymin + ymax) + margin
+                lenx = (xmax - xmin) + (margin * 2)
+                leny = (ymax - ymin) + (margin * 2)
 
-        if gaps == '8' or gaps == '2LR':
-            subtract_rectangle(cutout_obj,
-                               xmin - gapsize,  # botleft_x
-                               py - gapsize + lenghty / 4,  # botleft_y
-                               xmax + gapsize,  # topright_x
-                               py + gapsize + lenghty / 4)  # topright_y
-            subtract_rectangle(cutout_obj,
-                               xmin - gapsize,
-                               py - gapsize - lenghty / 4,
-                               xmax + gapsize,
-                               py + gapsize - lenghty / 4)
+                if gaps == '8' or gaps == '2LR':
+                    geo = self.subtract_poly_from_geo(geo,
+                                                      xmin - gapsize,  # botleft_x
+                                                      py - gapsize + leny / 4,  # botleft_y
+                                                      xmax + gapsize,  # topright_x
+                                                      py + gapsize + leny / 4)  # topright_y
+                    geo = self.subtract_poly_from_geo(geo,
+                                                      xmin - gapsize,
+                                                      py - gapsize - leny / 4,
+                                                      xmax + gapsize,
+                                                      py + gapsize - leny / 4)
 
-        if gaps == '8' or gaps == '2TB':
-            subtract_rectangle(cutout_obj,
-                               px - gapsize + lenghtx / 4,
-                               ymin - gapsize,
-                               px + gapsize + lenghtx / 4,
-                               ymax + gapsize)
-            subtract_rectangle(cutout_obj,
-                               px - gapsize - lenghtx / 4,
-                               ymin - gapsize,
-                               px + gapsize - lenghtx / 4,
-                               ymax + gapsize)
+                if gaps == '8' or gaps == '2TB':
+                    geo = self.subtract_poly_from_geo(geo,
+                                                      px - gapsize + lenx / 4,
+                                                      ymin - gapsize,
+                                                      px + gapsize + lenx / 4,
+                                                      ymax + gapsize)
+                    geo = self.subtract_poly_from_geo(geo,
+                                                      px - gapsize - lenx / 4,
+                                                      ymin - gapsize,
+                                                      px + gapsize - lenx / 4,
+                                                      ymax + gapsize)
 
-        if gaps == '4' or gaps == 'LR':
-            subtract_rectangle(cutout_obj,
-                               xmin - gapsize,
-                               py - gapsize,
-                               xmax + gapsize,
-                               py + gapsize)
+                if gaps == '4' or gaps == 'LR':
+                    geo = self.subtract_poly_from_geo(geo,
+                                                      xmin - gapsize,
+                                                      py - gapsize,
+                                                      xmax + gapsize,
+                                                      py + gapsize)
 
-        if gaps == '4' or gaps == 'TB':
-            subtract_rectangle(cutout_obj,
-                               px - gapsize,
-                               ymin - gapsize,
-                               px + gapsize,
-                               ymax + gapsize)
+                if gaps == '4' or gaps == 'TB':
+                    geo = self.subtract_poly_from_geo(geo,
+                                                      px - gapsize,
+                                                      ymin - gapsize,
+                                                      px + gapsize,
+                                                      ymax + gapsize)
+
+                try:
+                    for g in geo:
+                        solid_geo.append(g)
+                except TypeError:
+                    solid_geo.append(geo)
+
+            geo_obj.solid_geometry = deepcopy(solid_geo)
+
+        outname = cutout_obj.options["name"] + "_cutout"
+        self.app.new_object('geometry', outname, geo_init)
 
         cutout_obj.plot()
         self.app.inform.emit(_("[success] Any form CutOut operation finished."))
@@ -479,9 +486,9 @@ class CutOut(FlatCAMTool):
 
     def on_rectangular_cutout(self):
 
-        def subtract_rectangle(obj_, x0, y0, x1, y1):
-            pts = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
-            obj_.subtract_polygon(pts)
+        # def subtract_rectangle(obj_, x0, y0, x1, y1):
+        #     pts = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+        #     obj_.subtract_polygon(pts)
 
         name = self.obj_combo.currentText()
 
@@ -550,75 +557,75 @@ class CutOut(FlatCAMTool):
             return
 
         # Get min and max data for each object as we just cut rectangles across X or Y
-        if isinstance(cutout_obj.solid_geometry, Polygon):
-            xmin, ymin, xmax, ymax = cutout_obj.bounds()
-            geo = box(xmin, ymin, xmax, ymax)
-        elif isinstance(cutout_obj.solid_geometry, MultiPolygon):
-            geo = []
-            for poly in cutout_obj.solid_geometry:
-                xmin, ymin, xmax, ymax = poly.bounds
-                poly_geo = box(xmin, ymin, xmax, ymax)
-                geo.append(poly_geo)
 
-        px = 0.5 * (xmin + xmax) + margin
-        py = 0.5 * (ymin + ymax) + margin
-        lenghtx = (xmax - xmin) + (margin * 2)
-        lenghty = (ymax - ymin) + (margin * 2)
         gapsize = gapsize / 2 + (dia / 2)
 
         def geo_init(geo_obj, app_obj):
-            if isinstance(geo, list):
-                solid_geo = []
-                for subgeo in geo:
-                    solid_geo.append(subgeo.buffer(margin + abs(dia / 2)))
-                geo_obj.solid_geometry = deepcopy(solid_geo)
-            else:
-                geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
+            solid_geo = []
+
+            for poly in cutout_obj.solid_geometry:
+                xmin, ymin, xmax, ymax = poly.bounds
+                geo = box(xmin, ymin, xmax, ymax)
+
+                # if Gerber create a buffer at a distance
+                # if Geometry then cut through the geometry
+                if isinstance(cutout_obj, FlatCAMGerber):
+                    geo = geo.buffer(margin + abs(dia / 2))
+
+                px = 0.5 * (xmin + xmax) + margin
+                py = 0.5 * (ymin + ymax) + margin
+                lenx = (xmax - xmin) + (margin * 2)
+                leny = (ymax - ymin) + (margin * 2)
+
+                if gaps == '8' or gaps == '2LR':
+                    geo = self.subtract_poly_from_geo(geo,
+                                                      xmin - gapsize,  # botleft_x
+                                                      py - gapsize + leny / 4,  # botleft_y
+                                                      xmax + gapsize,  # topright_x
+                                                      py + gapsize + leny / 4)  # topright_y
+                    geo = self.subtract_poly_from_geo(geo,
+                                                      xmin - gapsize,
+                                                      py - gapsize - leny / 4,
+                                                      xmax + gapsize,
+                                                      py + gapsize - leny / 4)
+
+                if gaps == '8' or gaps == '2TB':
+                    geo = self.subtract_poly_from_geo(geo,
+                                                      px - gapsize + lenx / 4,
+                                                      ymin - gapsize,
+                                                      px + gapsize + lenx / 4,
+                                                      ymax + gapsize)
+                    geo = self.subtract_poly_from_geo(geo,
+                                                      px - gapsize - lenx / 4,
+                                                      ymin - gapsize,
+                                                      px + gapsize - lenx / 4,
+                                                      ymax + gapsize)
+
+                if gaps == '4' or gaps == 'LR':
+                    geo = self.subtract_poly_from_geo(geo,
+                                                      xmin - gapsize,
+                                                      py - gapsize,
+                                                      xmax + gapsize,
+                                                      py + gapsize)
+
+                if gaps == '4' or gaps == 'TB':
+                    geo = self.subtract_poly_from_geo(geo,
+                                                      px - gapsize,
+                                                      ymin - gapsize,
+                                                      px + gapsize,
+                                                      ymax + gapsize)
+                try:
+                    for g in geo:
+                        solid_geo.append(g)
+                except TypeError:
+                    solid_geo.append(geo)
+
+            geo_obj.solid_geometry = deepcopy(solid_geo)
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.new_object('geometry', outname, geo_init)
 
-        cutout_obj = self.app.collection.get_by_name(outname)
-
-        if gaps == '8' or gaps == '2LR':
-            subtract_rectangle(cutout_obj,
-                               xmin - gapsize,  # botleft_x
-                               py - gapsize + lenghty / 4,  # botleft_y
-                               xmax + gapsize,  # topright_x
-                               py + gapsize + lenghty / 4)  # topright_y
-            subtract_rectangle(cutout_obj,
-                               xmin - gapsize,
-                               py - gapsize - lenghty / 4,
-                               xmax + gapsize,
-                               py + gapsize - lenghty / 4)
-
-        if gaps == '8' or gaps == '2TB':
-            subtract_rectangle(cutout_obj,
-                               px - gapsize + lenghtx / 4,
-                               ymin - gapsize,
-                               px + gapsize + lenghtx / 4,
-                               ymax + gapsize)
-            subtract_rectangle(cutout_obj,
-                               px - gapsize - lenghtx / 4,
-                               ymin - gapsize,
-                               px + gapsize - lenghtx / 4,
-                               ymax + gapsize)
-
-        if gaps == '4' or gaps == 'LR':
-            subtract_rectangle(cutout_obj,
-                               xmin - gapsize,
-                               py - gapsize,
-                               xmax + gapsize,
-                               py + gapsize)
-
-        if gaps == '4' or gaps == 'TB':
-            subtract_rectangle(cutout_obj,
-                               px - gapsize,
-                               ymin - gapsize,
-                               px + gapsize,
-                               ymax + gapsize)
-
-        cutout_obj.plot()
+        # cutout_obj.plot()
         self.app.inform.emit(_("[success] Any form CutOut operation finished."))
         self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
         self.app.should_we_save = True
@@ -847,58 +854,27 @@ class CutOut(FlatCAMTool):
             self.app.geo_editor.tool_shape.clear(update=True)
             self.app.geo_editor.tool_shape.enabled = False
 
-    def flatten(self, geometry=None, reset=True, pathonly=False):
+    def subtract_poly_from_geo(self, solid_geo, x0, y0, x1, y1):
         """
-        Creates a list of non-iterable linear geometry objects.
-        Polygons are expanded into its exterior and interiors if specified.
-
-        Results are placed in self.flat_geometry
-
-        :param geometry: Shapely type or list or list of list of such.
-        :param reset: Clears the contents of self.flat_geometry.
-        :param pathonly: Expands polygons into linear elements.
-        """
-
-        if geometry is None:
-            geometry = self.solid_geometry
-
-        if reset:
-            self.flat_geometry = []
-
-        # If iterable, expand recursively.
-        try:
-            for geo in geometry:
-                if geo is not None:
-                    self.flatten(geometry=geo,
-                                 reset=False,
-                                 pathonly=pathonly)
-
-        # Not iterable, do the actual indexing and add.
-        except TypeError:
-            if pathonly and type(geometry) == Polygon:
-                self.flat_geometry.append(geometry.exterior)
-                self.flatten(geometry=geometry.interiors,
-                             reset=False,
-                             pathonly=True)
-            else:
-                self.flat_geometry.append(geometry)
-
-        return self.flat_geometry
-
-    def subtract_poly_from_geo(self, solid_geo, points):
-        """
-        Subtract polygon from the given object. This only operates on the paths in the original geometry,
+        Subtract polygon made from points from the given object.
+        This only operates on the paths in the original geometry,
         i.e. it converts polygons into paths.
 
-        :param points: The vertices of the polygon.
+        :param x0: x coord for lower left vertice of the polygon.
+        :param y0: y coord for lower left vertice of the polygon.
+        :param x1: x coord for upper right vertice of the polygon.
+        :param y1: y coord for upper right vertice of the polygon.
+
         :param solid_geo: Geometry from which to substract. If none, use the solid_geomety property of the object
         :return: none
         """
+        points = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
 
         # pathonly should be allways True, otherwise polygons are not subtracted
-        flat_geometry = self.flatten(geometry=solid_geo, pathonly=True)
+        flat_geometry = flatten(geometry=solid_geo)
 
         log.debug("%d paths" % len(flat_geometry))
+
         polygon = Polygon(points)
         toolgeo = cascaded_union(polygon)
         diffs = []
@@ -908,7 +884,65 @@ class CutOut(FlatCAMTool):
             else:
                 log.warning("Not implemented.")
 
-        return cascaded_union(diffs)
+        return unary_union(diffs)
 
     def reset_fields(self):
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+
+
+def flatten(geometry):
+    """
+    Creates a list of non-iterable linear geometry objects.
+    Polygons are expanded into its exterior and interiors.
+
+    Results are placed in self.flat_geometry
+
+    :param geometry: Shapely type or list or list of list of such.
+    """
+    flat_geo = []
+    try:
+        for geo in geometry:
+            if type(geo) == Polygon:
+                flat_geo.append(geo.exterior)
+                for subgeo in geo.interiors:
+                    flat_geo.append(subgeo)
+            else:
+                flat_geo.append(geo)
+    except TypeError:
+        if type(geometry) == Polygon:
+            flat_geo.append(geometry.exterior)
+            for subgeo in geometry.interiors:
+                flat_geo.append(subgeo)
+        else:
+            flat_geo.append(geometry)
+
+    return flat_geo
+
+
+def recursive_bounds(geometry):
+    """
+    Returns coordinates of rectangular bounds
+    of geometry: (xmin, ymin, xmax, ymax).
+    """
+
+    # now it can get bounds for nested lists of objects
+
+    def bounds_rec(obj):
+        try:
+            minx = Inf
+            miny = Inf
+            maxx = -Inf
+            maxy = -Inf
+
+            for k in obj:
+                minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                minx = min(minx, minx_)
+                miny = min(miny, miny_)
+                maxx = max(maxx, maxx_)
+                maxy = max(maxy, maxy_)
+            return minx, miny, maxx, maxy
+        except TypeError:
+            # it's a Shapely object, return it's bounds
+            return obj.bounds
+
+    return bounds_rec(geometry)

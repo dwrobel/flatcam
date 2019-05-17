@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+17.05.2019
+
+- remade the Tool Cutout to work on panels
+- remade the Tool Cutour such that on multiple applications on the same object it will yield the same result
+
 16.05.2019
 
 - Gerber Export: made sure that if some of the coordinates in a Gerber object geometry are repeating then the resulting Gerber code include only one copy
