@@ -5,9 +5,9 @@ from shapely.geometry import box
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
-import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
@@ -23,7 +23,7 @@ class CutOut(FlatCAMTool):
         self.app = app
         self.canvas = app.plotcanvas
 
-        ## Title
+        # Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                         QLabel
@@ -34,11 +34,11 @@ class CutOut(FlatCAMTool):
                         """)
         self.layout.addWidget(title_label)
 
-        ## Form Layout
+        # Form Layout
         form_layout = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout)
 
-        ## Type of object to be cutout
+        # Type of object to be cutout
         self.type_obj_combo = QtWidgets.QComboBox()
         self.type_obj_combo.addItem("Gerber")
         self.type_obj_combo.addItem("Excellon")
@@ -53,14 +53,14 @@ class CutOut(FlatCAMTool):
         self.type_obj_combo_label = QtWidgets.QLabel(_("Obj Type:"))
         self.type_obj_combo_label.setToolTip(
             _("Specify the type of object to be cutout.\n"
-            "It can be of type: Gerber or Geometry.\n"
-            "What is selected here will dictate the kind\n"
-            "of objects that will populate the 'Object' combobox.")
+              "It can be of type: Gerber or Geometry.\n"
+              "What is selected here will dictate the kind\n"
+              "of objects that will populate the 'Object' combobox.")
         )
         self.type_obj_combo_label.setFixedWidth(60)
         form_layout.addRow(self.type_obj_combo_label, self.type_obj_combo)
 
-        ## Object to be cutout
+        # Object to be cutout
         self.obj_combo = QtWidgets.QComboBox()
         self.obj_combo.setModel(self.app.collection)
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
@@ -76,8 +76,8 @@ class CutOut(FlatCAMTool):
         self.dia = FCEntry()
         self.dia_label = QtWidgets.QLabel(_("Tool Dia:"))
         self.dia_label.setToolTip(
-           _( "Diameter of the tool used to cutout\n"
-            "the PCB shape out of the surrounding material.")
+           _("Diameter of the tool used to cutout\n"
+             "the PCB shape out of the surrounding material.")
         )
         form_layout.addRow(self.dia_label, self.dia)
 
@@ -85,9 +85,9 @@ class CutOut(FlatCAMTool):
         self.margin = FCEntry()
         self.margin_label = QtWidgets.QLabel(_("Margin:"))
         self.margin_label.setToolTip(
-           _( "Margin over bounds. A positive value here\n"
-            "will make the cutout of the PCB further from\n"
-            "the actual PCB border")
+           _("Margin over bounds. A positive value here\n"
+             "will make the cutout of the PCB further from\n"
+             "the actual PCB border")
         )
         form_layout.addRow(self.margin_label, self.margin)
 
@@ -95,10 +95,10 @@ class CutOut(FlatCAMTool):
         self.gapsize = FCEntry()
         self.gapsize_label = QtWidgets.QLabel(_("Gap size:"))
         self.gapsize_label.setToolTip(
-           _( "The size of the bridge gaps in the cutout\n"
-            "used to keep the board connected to\n"
-            "the surrounding material (the one \n"
-            "from which the PCB is cutout).")
+           _("The size of the bridge gaps in the cutout\n"
+             "used to keep the board connected to\n"
+             "the surrounding material (the one \n"
+             "from which the PCB is cutout).")
         )
         form_layout.addRow(self.gapsize_label, self.gapsize)
 
@@ -118,14 +118,14 @@ class CutOut(FlatCAMTool):
         )
         form_layout.addRow(self.convex_box_label, self.convex_box)
 
-        ## Title2
+        # Title2
         title_param_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % _('A. Automatic Bridge Gaps'))
         title_param_label.setToolTip(
             _("This section handle creation of automatic bridge gaps.")
         )
         self.layout.addWidget(title_param_label)
 
-        ## Form Layout
+        # Form Layout
         form_layout_2 = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout_2)
 
@@ -133,14 +133,14 @@ class CutOut(FlatCAMTool):
         gaps_label = QtWidgets.QLabel(_('Gaps:'))
         gaps_label.setToolTip(
             _("Number of gaps used for the Automatic cutout.\n"
-            "There can be maximum 8 bridges/gaps.\n"
-            "The choices are:\n"
-            "- lr    - left + right\n"
-            "- tb    - top + bottom\n"
-            "- 4     - left + right +top + bottom\n"
-            "- 2lr   - 2*left + 2*right\n"
-            "- 2tb  - 2*top + 2*bottom\n"
-            "- 8     - 2*left + 2*right +2*top + 2*bottom")
+              "There can be maximum 8 bridges/gaps.\n"
+              "The choices are:\n"
+              "- lr    - left + right\n"
+              "- tb    - top + bottom\n"
+              "- 4     - left + right +top + bottom\n"
+              "- 2lr   - 2*left + 2*right\n"
+              "- 2tb  - 2*top + 2*bottom\n"
+              "- 8     - 2*left + 2*right +2*top + 2*bottom")
         )
         gaps_label.setFixedWidth(60)
 
@@ -151,14 +151,14 @@ class CutOut(FlatCAMTool):
             self.gaps.setStyleSheet('background-color: rgb(255,255,255)')
         form_layout_2.addRow(gaps_label, self.gaps)
 
-        ## Buttons
+        # Buttons
         hlay = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay)
 
         title_ff_label = QtWidgets.QLabel("<b>%s</b>" % _('FreeForm:'))
         title_ff_label.setToolTip(
             _("The cutout shape can be of ny shape.\n"
-            "Useful when the PCB has a non-rectangular shape.")
+              "Useful when the PCB has a non-rectangular shape.")
         )
         hlay.addWidget(title_ff_label)
 
@@ -167,8 +167,8 @@ class CutOut(FlatCAMTool):
         self.ff_cutout_object_btn = QtWidgets.QPushButton(_("Generate Geo"))
         self.ff_cutout_object_btn.setToolTip(
             _("Cutout the selected object.\n"
-            "The cutout shape can be of any shape.\n"
-            "Useful when the PCB has a non-rectangular shape.")
+              "The cutout shape can be of any shape.\n"
+              "Useful when the PCB has a non-rectangular shape.")
         )
         hlay.addWidget(self.ff_cutout_object_btn)
 
@@ -178,8 +178,8 @@ class CutOut(FlatCAMTool):
         title_rct_label = QtWidgets.QLabel("<b>%s</b>" % _('Rectangular:'))
         title_rct_label.setToolTip(
             _("The resulting cutout shape is\n"
-            "always a rectangle shape and it will be\n"
-            "the bounding box of the Object.")
+              "always a rectangle shape and it will be\n"
+              "the bounding box of the Object.")
         )
         hlay2.addWidget(title_rct_label)
 
@@ -187,26 +187,26 @@ class CutOut(FlatCAMTool):
         self.rect_cutout_object_btn = QtWidgets.QPushButton(_("Generate Geo"))
         self.rect_cutout_object_btn.setToolTip(
             _("Cutout the selected object.\n"
-            "The resulting cutout shape is\n"
-            "always a rectangle shape and it will be\n"
-            "the bounding box of the Object.")
+              "The resulting cutout shape is\n"
+              "always a rectangle shape and it will be\n"
+              "the bounding box of the Object.")
         )
         hlay2.addWidget(self.rect_cutout_object_btn)
 
-        ## Title5
+        # Title5
         title_manual_label = QtWidgets.QLabel("<font size=4><b>%s</b></font>" % _('B. Manual Bridge Gaps'))
         title_manual_label.setToolTip(
             _("This section handle creation of manual bridge gaps.\n"
-            "This is done by mouse clicking on the perimeter of the\n"
-            "Geometry object that is used as a cutout object. ")
+              "This is done by mouse clicking on the perimeter of the\n"
+              "Geometry object that is used as a cutout object. ")
         )
         self.layout.addWidget(title_manual_label)
 
-        ## Form Layout
+        # Form Layout
         form_layout_3 = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout_3)
 
-        ## Manual Geo Object
+        # Manual Geo Object
         self.man_object_combo = QtWidgets.QComboBox()
         self.man_object_combo.setModel(self.app.collection)
         self.man_object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
@@ -228,9 +228,9 @@ class CutOut(FlatCAMTool):
         self.man_geo_label = QtWidgets.QLabel(_("Manual Geo:"))
         self.man_geo_label.setToolTip(
             _("If the object to be cutout is a Gerber\n"
-            "first create a Geometry that surrounds it,\n"
-            "to be used as the cutout, if one doesn't exist yet.\n"
-            "Select the source Gerber file in the top object combobox.")
+              "first create a Geometry that surrounds it,\n"
+              "to be used as the cutout, if one doesn't exist yet.\n"
+              "Select the source Gerber file in the top object combobox.")
         )
         hlay3.addWidget(self.man_geo_label)
 
@@ -238,9 +238,9 @@ class CutOut(FlatCAMTool):
         self.man_geo_creation_btn = QtWidgets.QPushButton(_("Generate Geo"))
         self.man_geo_creation_btn.setToolTip(
             _("If the object to be cutout is a Gerber\n"
-            "first create a Geometry that surrounds it,\n"
-            "to be used as the cutout, if one doesn't exist yet.\n"
-            "Select the source Gerber file in the top object combobox.")
+              "first create a Geometry that surrounds it,\n"
+              "to be used as the cutout, if one doesn't exist yet.\n"
+              "Select the source Gerber file in the top object combobox.")
         )
         hlay3.addWidget(self.man_geo_creation_btn)
 
@@ -250,8 +250,8 @@ class CutOut(FlatCAMTool):
         self.man_bridge_gaps_label = QtWidgets.QLabel(_("Manual Add Bridge Gaps:"))
         self.man_bridge_gaps_label.setToolTip(
             _("Use the left mouse button (LMB) click\n"
-            "to create a bridge gap to separate the PCB from\n"
-            "the surrounding material.")
+              "to create a bridge gap to separate the PCB from\n"
+              "the surrounding material.")
         )
         hlay4.addWidget(self.man_bridge_gaps_label)
 
@@ -259,10 +259,10 @@ class CutOut(FlatCAMTool):
         self.man_gaps_creation_btn = QtWidgets.QPushButton(_("Generate Gap"))
         self.man_gaps_creation_btn.setToolTip(
             _("Use the left mouse button (LMB) click\n"
-            "to create a bridge gap to separate the PCB from\n"
-            "the surrounding material.\n"
-            "The LMB click has to be done on the perimeter of\n"
-            "the Geometry object used as a cutout geometry.")
+              "to create a bridge gap to separate the PCB from\n"
+              "the surrounding material.\n"
+              "The LMB click has to be done on the perimeter of\n"
+              "the Geometry object used as a cutout geometry.")
         )
         hlay4.addWidget(self.man_gaps_creation_btn)
 
@@ -276,7 +276,7 @@ class CutOut(FlatCAMTool):
 
         self.flat_geometry = []
 
-        ## Signals
+        # Signals
         self.ff_cutout_object_btn.clicked.connect(self.on_freeform_cutout)
         self.rect_cutout_object_btn.clicked.connect(self.on_rectangular_cutout)
 
@@ -355,7 +355,6 @@ class CutOut(FlatCAMTool):
                                      "Add it and retry."))
                 return
 
-
         if 0 in {dia}:
             self.app.inform.emit(_("[WARNING_NOTCL] Tool Diameter is zero value. Change it to a positive real number."))
             return "Tool Diameter is zero value. Change it to a positive real number."
@@ -395,8 +394,8 @@ class CutOut(FlatCAMTool):
 
         if cutout_obj.multigeo is True:
             self.app.inform.emit(_("[ERROR]Cutout operation cannot be done on a multi-geo Geometry.\n"
-                                 "Optionally, this Multi-geo Geometry can be converted to Single-geo Geometry,\n"
-                                 "and after that perform Cutout."))
+                                   "Optionally, this Multi-geo Geometry can be converted to Single-geo Geometry,\n"
+                                   "and after that perform Cutout."))
             return
 
         convex_box = self.convex_box.get_value()
@@ -410,7 +409,7 @@ class CutOut(FlatCAMTool):
 
         gapsize = gapsize / 2 + (dia / 2)
 
-        if isinstance(cutout_obj,FlatCAMGeometry):
+        if isinstance(cutout_obj, FlatCAMGeometry):
             # rename the obj name so it can be identified as cutout
             cutout_obj.options["name"] += "_cutout"
         else:
@@ -866,7 +865,7 @@ class CutOut(FlatCAMTool):
         if reset:
             self.flat_geometry = []
 
-        ## If iterable, expand recursively.
+        # If iterable, expand recursively.
         try:
             for geo in geometry:
                 if geo is not None:
@@ -874,7 +873,7 @@ class CutOut(FlatCAMTool):
                                  reset=False,
                                  pathonly=pathonly)
 
-        ## Not iterable, do the actual indexing and add.
+        # Not iterable, do the actual indexing and add.
         except TypeError:
             if pathonly and type(geometry) == Polygon:
                 self.flat_geometry.append(geometry.exterior)
@@ -892,7 +891,7 @@ class CutOut(FlatCAMTool):
         i.e. it converts polygons into paths.
 
         :param points: The vertices of the polygon.
-        :param geo: Geometry from which to substract. If none, use the solid_geomety property of the object
+        :param solid_geo: Geometry from which to substract. If none, use the solid_geomety property of the object
         :return: none
         """
 
@@ -913,4 +912,3 @@ class CutOut(FlatCAMTool):
 
     def reset_fields(self):
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-
