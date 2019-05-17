@@ -562,8 +562,15 @@ class CutOut(FlatCAMTool):
 
         def geo_init(geo_obj, app_obj):
             solid_geo = []
+            object_geo = cutout_obj.solid_geometry
 
-            for poly in cutout_obj.solid_geometry:
+            try:
+                _ = iter(object_geo)
+            except TypeError:
+                object_geo = [object_geo]
+
+            for poly in object_geo:
+
                 xmin, ymin, xmax, ymax = poly.bounds
                 geo = box(xmin, ymin, xmax, ymax)
 

@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - remade the Tool Cutout to work on panels
 - remade the Tool Cutour such that on multiple applications on the same object it will yield the same result
+- fixed an issue in the remade Cutout Tool where when applied on a single Gerber object, the Freeform Cutout produced no cutout Geometry object
 
 16.05.2019
 
