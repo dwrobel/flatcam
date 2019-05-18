@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+18.05.2019
+
+- added a new toggle option in Edit -> Preferences -> General Tab -> App Preferences -> "Open" Behavior. It controls which path is used when opening a new file. If checked the last saved path is used when saving files and the last opened path is used when opening files. If unchecked then the path for the last action (either open or save) is used.
+
 17.05.2019
 
 - remade the Tool Cutout to work on panels

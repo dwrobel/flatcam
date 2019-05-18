@@ -324,6 +324,8 @@ class App(QtCore.QObject):
             "global_worker_number": self.ui.general_defaults_form.general_app_group.worker_number_sb,
             "global_tolerance": self.ui.general_defaults_form.general_app_group.tol_entry,
 
+            "global_open_style": self.ui.general_defaults_form.general_app_group.open_style_cb,
+
             "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_combo,
             "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
 
@@ -604,6 +606,7 @@ class App(QtCore.QObject):
             "global_toggle_tooltips": True,
             "global_worker_number": 2,
             "global_tolerance": 0.01,
+            "global_open_style": True,
             "global_compression_level": 3,
             "global_save_compressed": True,
 
@@ -663,7 +666,7 @@ class App(QtCore.QObject):
             "global_zdownrate": None,
 
             # General GUI Settings
-            "global_hover": True,
+            "global_hover": False,
             "global_selection_shape": True,
             "global_layout": "compact",
             # Gerber General
@@ -2776,7 +2779,8 @@ class App(QtCore.QObject):
             except:
                 self.inform.emit(_("[ERROR_NOTCL] Failed to write defaults to file."))
                 return
-
+        if self.defaults["global_open_style"] is False:
+            self.file_opened.emit("preferences", filename)
         self.file_saved.emit("preferences", filename)
         self.inform.emit("[success] Exported Defaults to %s" % filename)
 
@@ -4398,8 +4402,8 @@ class App(QtCore.QObject):
                 return
 
         # Just for adding it to the recent files list.
-        self.file_opened.emit("cncjob", filename)
-
+        if self.defaults["global_open_style"] is False:
+            self.file_opened.emit("cncjob", filename)
         self.file_saved.emit("cncjob", filename)
         self.inform.emit(_("Saved to: %s") % filename)
 
@@ -6070,6 +6074,8 @@ class App(QtCore.QObject):
             return
         else:
             self.export_svg(name, filename)
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("SVG", filename)
             self.file_saved.emit("SVG", filename)
 
     def on_file_exportpng(self):
@@ -6099,6 +6105,8 @@ class App(QtCore.QObject):
             return
         else:
             write_png(filename, data)
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("png", filename)
             self.file_saved.emit("png", filename)
 
     def on_file_savegerber(self):
@@ -6138,6 +6146,8 @@ class App(QtCore.QObject):
             return
         else:
             self.save_source_file(name, filename)
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("Gerber", filename)
             self.file_saved.emit("Gerber", filename)
 
     def on_file_saveexcellon(self):
@@ -6177,6 +6187,8 @@ class App(QtCore.QObject):
             return
         else:
             self.save_source_file(name, filename)
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("Excellon", filename)
             self.file_saved.emit("Excellon", filename)
 
     def on_file_exportexcellon(self):
@@ -6216,6 +6228,8 @@ class App(QtCore.QObject):
             return
         else:
             self.export_excellon(name, filename)
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("Excellon", filename)
             self.file_saved.emit("Excellon", filename)
 
     def on_file_exportgerber(self):
@@ -6255,6 +6269,8 @@ class App(QtCore.QObject):
             return
         else:
             self.export_gerber(name, filename)
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("Gerber", filename)
             self.file_saved.emit("Gerber", filename)
 
     def on_file_exportdxf(self):
@@ -6306,6 +6322,8 @@ class App(QtCore.QObject):
             return
         else:
             self.export_dxf(name, filename)
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("DXF", filename)
             self.file_saved.emit("DXF", filename)
 
     def on_file_importsvg(self, type_of_obj):
@@ -6560,8 +6578,8 @@ class App(QtCore.QObject):
         else:
             self.worker_task.emit({'fcn': self.save_project,
                                    'params': [self.project_filename]})
-
-            self.file_opened.emit("project", self.project_filename)
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("project", self.project_filename)
             self.file_saved.emit("project", self.project_filename)
 
         self.should_we_save = False
@@ -6606,8 +6624,8 @@ class App(QtCore.QObject):
             self.save_project(filename, quit)
 
         # self.save_project(filename)
-        self.file_opened.emit("project", filename)
-
+        if self.defaults["global_open_style"] is False:
+            self.file_opened.emit("project", filename)
         self.file_saved.emit("project", filename)
         if not make_copy:
             self.project_filename = filename
@@ -6665,7 +6683,8 @@ class App(QtCore.QObject):
             svgcode = parse_xml_string(svg_elem)
             with open(filename, 'w') as fp:
                 fp.write(svgcode.toprettyxml())
-
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("SVG", filename)
             self.file_saved.emit("SVG", filename)
             self.inform.emit(_("[success] SVG file exported to %s") % filename)
 
@@ -6770,7 +6789,8 @@ class App(QtCore.QObject):
                 fp.write(doc.toprettyxml())
 
             self.progress.emit(100)
-
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("SVG", filename)
             self.file_saved.emit("SVG", filename)
             self.inform.emit(_("[success] SVG file exported to %s") % filename)
 
@@ -6884,7 +6904,8 @@ class App(QtCore.QObject):
             with open(filename, 'w') as fp:
                 fp.write(doc.toprettyxml())
             self.progress.emit(100)
-
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("SVG", filename)
             self.file_saved.emit("SVG", filename)
             self.inform.emit(_("[success] SVG file exported to %s") % filename)
 
@@ -7034,7 +7055,8 @@ class App(QtCore.QObject):
 
                 with open(filename, 'w') as fp:
                     fp.write(exported_excellon)
-
+                if self.defaults["global_open_style"] is False:
+                    self.file_opened.emit("Excellon", filename)
                 self.file_saved.emit("Excellon", filename)
                 self.inform.emit(_("[success] Excellon file exported to %s") % filename)
             except Exception as e:
@@ -7150,7 +7172,8 @@ class App(QtCore.QObject):
 
                 with open(filename, 'w') as fp:
                     fp.write(exported_gerber)
-
+                if self.defaults["global_open_style"] is False:
+                    self.file_opened.emit("Gerber", filename)
                 self.file_saved.emit("Gerber", filename)
                 self.inform.emit(_("[success] Gerber file exported to %s") % filename)
             except Exception as e:
@@ -7208,7 +7231,8 @@ class App(QtCore.QObject):
             try:
                 dxf_code = obj.export_dxf()
                 dxf_code.saveas(filename)
-
+                if self.defaults["global_open_style"] is False:
+                    self.file_opened.emit("DXF", filename)
                 self.file_saved.emit("DXF", filename)
                 self.inform.emit(_("[success] DXF file exported to %s") % filename)
             except:

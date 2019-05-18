@@ -3336,12 +3336,12 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.workspace_lbl = QtWidgets.QLabel(_('Workspace:'))
         self.workspace_lbl.setToolTip(
            _( "Draw a delimiting rectangle on canvas.\n"
-            "The purpose is to illustrate the limits for our work.")
+              "The purpose is to illustrate the limits for our work.")
         )
         self.workspace_type_lbl = QtWidgets.QLabel(_('Wk. format:'))
         self.workspace_type_lbl.setToolTip(
            _( "Select the type of rectangle to be used on canvas,\n"
-            "as valid workspace.")
+              "as valid workspace.")
         )
         self.workspace_cb = FCCheckBox()
         self.wk_cb = FCComboBox()
@@ -3356,8 +3356,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.pf_color_label = QtWidgets.QLabel(_('Plot Fill:'))
         self.pf_color_label.setToolTip(
            _( "Set the fill color for plotted objects.\n"
-            "First 6 digits are the color and the last 2\n"
-            "digits are for alpha (transparency) level.")
+              "First 6 digits are the color and the last 2\n"
+              "digits are for alpha (transparency) level.")
         )
         self.pf_color_entry = FCEntry()
         self.pf_color_button = QtWidgets.QPushButton()
@@ -3743,18 +3743,18 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Units for FlatCAM
         self.unitslabel = QtWidgets.QLabel(_('<b>Units:</b>'))
         self.unitslabel.setToolTip(_("The default value for FlatCAM units.\n"
-                                   "Whatever is selected here is set every time\n"
-                                   "FLatCAM is started."))
+                                     "Whatever is selected here is set every time\n"
+                                     "FLatCAM is started."))
         self.units_radio = RadioSet([{'label': 'IN', 'value': 'IN'},
                                      {'label': 'MM', 'value': 'MM'}])
 
         # Application Level for FlatCAM
         self.app_level_label = QtWidgets.QLabel(_('<b>APP. LEVEL:</b>'))
         self.app_level_label.setToolTip(_("Choose the default level of usage for FlatCAM.\n"
-                                        "BASIC level -> reduced functionality, best for beginner's.\n"
-                                        "ADVANCED level -> full functionality.\n\n"
-                                        "The choice here will influence the parameters in\n"
-                                        "the Selected Tab for all kinds of FlatCAM objects."))
+                                          "BASIC level -> reduced functionality, best for beginner's.\n"
+                                          "ADVANCED level -> full functionality.\n\n"
+                                          "The choice here will influence the parameters in\n"
+                                          "the Selected Tab for all kinds of FlatCAM objects."))
         self.app_level_radio = RadioSet([{'label': 'Basic', 'value': 'b'},
                                          {'label': 'Advanced', 'value': 'a'}])
 
@@ -3776,24 +3776,24 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.shell_startup_label = QtWidgets.QLabel(_('Shell at StartUp:'))
         self.shell_startup_label.setToolTip(
             _("Check this box if you want the shell to\n"
-            "start automatically at startup.")
+              "start automatically at startup.")
         )
         self.shell_startup_cb = FCCheckBox(label='')
         self.shell_startup_cb.setToolTip(
             _("Check this box if you want the shell to\n"
-            "start automatically at startup.")
+              "start automatically at startup.")
         )
 
         # Version Check CB
         self.version_check_label = QtWidgets.QLabel(_('Version Check:'))
         self.version_check_label.setToolTip(
             _("Check this box if you want to check\n"
-            "for a new version automatically at startup.")
+              "for a new version automatically at startup.")
         )
         self.version_check_cb = FCCheckBox(label='')
         self.version_check_cb.setToolTip(
             _("Check this box if you want to check\n"
-            "for a new version automatically at startup.")
+              "for a new version automatically at startup.")
         )
 
         # Send Stats CB
@@ -3805,7 +3805,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.send_stats_cb= FCCheckBox(label='')
         self.send_stats_cb.setToolTip(
             _("Check this box if you agree to send anonymous\n"
-            "stats automatically at startup, to help improve FlatCAM.")
+              "stats automatically at startup, to help improve FlatCAM.")
         )
 
         self.ois_version_check = OptionalInputSection(self.version_check_cb, [self.send_stats_cb])
@@ -3813,8 +3813,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Select mouse pan button
         self.panbuttonlabel = QtWidgets.QLabel(_('<b>Pan Button:</b>'))
         self.panbuttonlabel.setToolTip(_("Select the mouse button to use for panning:\n"
-                                       "- MMB --> Middle Mouse Button\n"
-                                       "- RMB --> Right Mouse Button"))
+                                         "- MMB --> Middle Mouse Button\n"
+                                         "- RMB --> Right Mouse Button"))
         self.pan_button_radio = RadioSet([{'label': 'MMB', 'value': '3'},
                                      {'label': 'RMB', 'value': '2'}])
 
@@ -3822,44 +3822,44 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.mselectlabel = QtWidgets.QLabel(_('<b>Multiple Sel:</b>'))
         self.mselectlabel.setToolTip(_("Select the key used for multiple selection."))
         self.mselect_radio = RadioSet([{'label': 'CTRL', 'value': 'Control'},
-                                     {'label': 'SHIFT', 'value': 'Shift'}])
+                                       {'label': 'SHIFT', 'value': 'Shift'}])
 
         # Project at StartUp CB
         self.project_startup_label = QtWidgets.QLabel(_('Project at StartUp:'))
         self.project_startup_label.setToolTip(
             _("Check this box if you want the project/selected/tool tab area to\n"
-            "to be shown automatically at startup.")
+              "to be shown automatically at startup.")
         )
         self.project_startup_cb = FCCheckBox(label='')
         self.project_startup_cb.setToolTip(
             _("Check this box if you want the project/selected/tool tab area to\n"
-            "to be shown automatically at startup.")
+              "to be shown automatically at startup.")
         )
 
         # Project autohide CB
         self.project_autohide_label = QtWidgets.QLabel(_('Project AutoHide:'))
         self.project_autohide_label.setToolTip(
            _( "Check this box if you want the project/selected/tool tab area to\n"
-            "hide automatically when there are no objects loaded and\n"
-            "to show whenever a new object is created.")
+              "hide automatically when there are no objects loaded and\n"
+              "to show whenever a new object is created.")
         )
         self.project_autohide_cb = FCCheckBox(label='')
         self.project_autohide_cb.setToolTip(
             _("Check this box if you want the project/selected/tool tab area to\n"
-            "hide automatically when there are no objects loaded and\n"
-            "to show whenever a new object is created.")
+              "hide automatically when there are no objects loaded and\n"
+              "to show whenever a new object is created.")
         )
 
         # Enable/Disable ToolTips globally
         self.toggle_tooltips_label = QtWidgets.QLabel(_('<b>Enable ToolTips:</b>'))
         self.toggle_tooltips_label.setToolTip(
            _( "Check this box if you want to have toolTips displayed\n"
-            "when hovering with mouse over items throughout the App.")
+              "when hovering with mouse over items throughout the App.")
         )
         self.toggle_tooltips_cb = FCCheckBox(label='')
         self.toggle_tooltips_cb.setToolTip(
            _( "Check this box if you want to have toolTips displayed\n"
-            "when hovering with mouse over items throughout the App.")
+              "when hovering with mouse over items throughout the App.")
         )
         self.worker_number_label = QtWidgets.QLabel(_('Workers number:'))
         self.worker_number_label.setToolTip(
@@ -3928,15 +3928,22 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # to the main layout of this TAB
         self.layout.addLayout(self.form_box)
 
-        # hlay = QtWidgets.QHBoxLayout()
-        # self.layout.addLayout(hlay)
-        # hlay.addStretch()
+        # Save compressed project CB
+        self.open_style_cb = FCCheckBox(_('"Open" behavior'))
+        self.open_style_cb.setToolTip(
+            _("When checked the path for the last saved file is used when saving files,\n"
+              "and the path for the last opened file is used when opening files.\n\n"
+              "When unchecked the path for opening files is the one used last: either the\n"
+              "path for saving files or the path for opening files.")
+        )
+        # self.advanced_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.layout.addWidget(self.open_style_cb)
 
         # Save compressed project CB
         self.save_type_cb = FCCheckBox(_('Save Compressed Project'))
         self.save_type_cb.setToolTip(
             _("Whether to save a compressed or uncompressed project.\n"
-            "When checked it will save a compressed FlatCAM project.")
+              "When checked it will save a compressed FlatCAM project.")
         )
         # self.advanced_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.layout.addWidget(self.save_type_cb)
@@ -3949,8 +3956,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.compress_label = QtWidgets.QLabel(_('Compression Level:'))
         self.compress_label.setToolTip(
             _("The level of compression used when saving\n"
-            "a FlatCAM project. Higher value means better compression\n"
-            "but require more RAM usage and more processing time.")
+              "a FlatCAM project. Higher value means better compression\n"
+              "but require more RAM usage and more processing time.")
         )
         # self.advanced_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.compress_combo.addItems([str(i) for i in range(10)])

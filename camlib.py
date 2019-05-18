@@ -5990,7 +5990,7 @@ class CNCjob(Geometry):
             if self.dwell is True:
                 self.gcode += self.doformat(p.dwell_code)   # Dwell time
 
-        ## Iterate over geometry paths getting the nearest each time.
+        # Iterate over geometry paths getting the nearest each time.
         log.debug("Starting G-Code...")
         path_count = 0
         current_pt = (0, 0)

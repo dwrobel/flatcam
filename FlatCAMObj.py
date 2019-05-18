@@ -1096,8 +1096,13 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     elif type(g) == Point:
                         pass
                     else:
-                        for el in g:
-                            self.add_shape(shape=el, color=color,
+                        try:
+                            for el in g:
+                                self.add_shape(shape=el, color=color,
+                                               face_color=random_color() if self.options['multicolored']
+                                               else face_color, visible=self.options['plot'])
+                        except TypeError:
+                            self.add_shape(shape=g, color=color,
                                            face_color=random_color() if self.options['multicolored']
                                            else face_color, visible=self.options['plot'])
             else:
@@ -5550,6 +5555,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         if gc == 'fail':
             return
 
+        if self.app.defaults["global_open_style"] is False:
+            self.app.file_opened.emit("gcode", filename)
         self.app.file_saved.emit("gcode", filename)
         self.app.inform.emit(_("[success] Machine Code file saved to: %s") % filename)
 
@@ -5769,7 +5776,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # lines = StringIO(self.gcode)
         lines = StringIO(g)
 
-        ## Write
+        # Write
         if filename is not None:
             try:
                 with open(filename, 'w') as f:
@@ -5783,7 +5790,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 return
         elif to_file is False:
             # Just for adding it to the recent files list.
-            self.app.file_opened.emit("cncjob", filename)
+            if self.app.defaults["global_open_style"] is False:
+                self.app.file_opened.emit("cncjob", filename)
             self.app.file_saved.emit("cncjob", filename)
 
             self.app.inform.emit("[success] Saved to: " + filename)
