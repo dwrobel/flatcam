@@ -189,7 +189,7 @@ class Properties(FlatCAMTool):
                         if 'clear' in el:
                             clear_nr += 1
                     temp_ap['Solid_Geo'] = '%s Polygons' % str(solid_nr)
-                    temp_ap['Follow_Geo'] = '%s Polygons' % str(follow_nr)
+                    temp_ap['Follow_Geo'] = '%s LineStrings' % str(follow_nr)
                     temp_ap['Clear_Geo'] = '%s Polygons' % str(clear_nr)
 
                 apid = self.addParent(apertures, str(ap), expanded=False, color=QtGui.QColor("#000000"), font=font)

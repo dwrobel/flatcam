@@ -4798,13 +4798,17 @@ class App(QtCore.QObject):
     def convert_any2gerber(self):
         self.report_usage("convert_any2gerber()")
 
-        def initialize(obj_init, app):
+        def initialize_geometry(obj_init, app):
             apertures = {}
             apid = 0
 
             apertures[str(apid)] = {}
-            apertures[str(apid)]['solid_geometry'] = []
-            apertures[str(apid)]['solid_geometry'] = deepcopy(obj.solid_geometry)
+            apertures[str(apid)]['geometry'] = []
+            for obj_orig in obj.solid_geometry:
+                new_elem = dict()
+                new_elem['solid'] = obj_orig
+                new_elem['follow'] = obj_orig.exterior
+                apertures[str(apid)]['geometry'].append(deepcopy(new_elem))
             apertures[str(apid)]['size'] = 0.0
             apertures[str(apid)]['type'] = 'C'
 
@@ -4817,9 +4821,12 @@ class App(QtCore.QObject):
             apid = 10
             for tool in obj.tools:
                 apertures[str(apid)] = {}
-                apertures[str(apid)]['solid_geometry'] = []
+                apertures[str(apid)]['geometry'] = []
                 for geo in obj.tools[tool]['solid_geometry']:
-                    apertures[str(apid)]['solid_geometry'].append(geo)
+                    new_el = dict()
+                    new_el['solid'] = geo
+                    new_el['follow'] = geo.exterior
+                    apertures[str(apid)]['geometry'].append(deepcopy(new_el))
 
                 apertures[str(apid)]['size'] = float(obj.tools[tool]['C'])
                 apertures[str(apid)]['type'] = 'C'
@@ -4828,8 +4835,8 @@ class App(QtCore.QObject):
             # create solid_geometry
             solid_geometry = []
             for apid in apertures:
-                for geo in apertures[apid]['solid_geometry']:
-                    solid_geometry.append(geo)
+                for geo_el in apertures[apid]['geometry']:
+                    solid_geometry.append(geo_el['solid'])
 
             solid_geometry = MultiPolygon(solid_geometry)
             solid_geometry = solid_geometry.buffer(0.0000001)
@@ -4851,8 +4858,10 @@ class App(QtCore.QObject):
             try:
                 if isinstance(obj, FlatCAMExcellon):
                     self.new_object("gerber", str(obj_name) + "_conv", initialize_excellon)
+                elif isinstance(obj, FlatCAMGeometry):
+                    self.new_object("gerber", str(obj_name) + "_conv", initialize_geometry)
                 else:
-                    self.new_object("gerber", str(obj_name) + "_conv", initialize)
+                    log.warning("App.convert_any2gerber --> This is no vaild object for conversion.")
 
             except Exception as e:
                 return "Operation failed: %s" % str(e)

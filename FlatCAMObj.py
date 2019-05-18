@@ -17,9 +17,9 @@ import itertools
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
-import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
@@ -35,9 +35,9 @@ class ValidationError(Exception):
 
         self.errors = errors
 
-########################################
-##            FlatCAMObj              ##
-########################################
+# #######################################
+# #            FlatCAMObj              ##
+# #######################################
 
 
 class FlatCAMObj(QtCore.QObject):
@@ -122,7 +122,8 @@ class FlatCAMObj(QtCore.QObject):
                 try:
                     setattr(self, attr, d[attr])
                 except KeyError:
-                    log.debug("FlatCAMObj.from_dict() --> KeyError: %s. Means that we are loading an old project that don't"
+                    log.debug("FlatCAMObj.from_dict() --> KeyError: %s. "
+                              "Means that we are loading an old project that don't"
                               "have all attributes in the latest FlatCAM." % str(attr))
                     pass
 
@@ -203,8 +204,8 @@ class FlatCAMObj(QtCore.QObject):
         self.app.report_usage("obj_on_offset_button")
 
         self.read_form()
-        vect = self.ui.offsetvector_entry.get_value()
-        self.offset(vect)
+        vector_val = self.ui.offsetvector_entry.get_value()
+        self.offset(vector_val)
         self.plot()
         self.app.object_changed.emit(self)
 
@@ -219,9 +220,9 @@ class FlatCAMObj(QtCore.QObject):
     def on_skew_button_click(self):
         self.app.report_usage("obj_on_skew_button")
         self.read_form()
-        xangle = self.ui.xangle_entry.get_value()
-        yangle = self.ui.yangle_entry.get_value()
-        self.skew(xangle, yangle)
+        x_angle = self.ui.xangle_entry.get_value()
+        y_angle = self.ui.yangle_entry.get_value()
+        self.skew(x_angle, y_angle)
         self.plot()
         self.app.object_changed.emit(self)
 
@@ -420,7 +421,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     if option is not 'name':
                         try:
                             grb_final.options[option] = grb.options[option]
-                        except:
+                        except KeyError:
                             log.warning("Failed to copy option.", option)
 
                 try:
@@ -440,10 +441,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         # and finally made string because the apertures dict keys are strings
                         max_ap = str(max([int(k) for k in grb_final.apertures.keys()]) + 1)
                         grb_final.apertures[max_ap] = {}
-                        grb_final.apertures[max_ap]['solid_geometry'] = []
+                        grb_final.apertures[max_ap]['geometry'] = []
 
                         for k, v in grb.apertures[ap].items():
-                            grb_final.apertures[max_ap][k] = v
+                            grb_final.apertures[max_ap][k] = deepcopy(v)
 
         grb_final.solid_geometry = MultiPolygon(grb_final.solid_geometry)
         grb_final.follow_geometry = MultiPolygon(grb_final.follow_geometry)
