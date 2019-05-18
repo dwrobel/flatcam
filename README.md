@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - added a new toggle option in Edit -> Preferences -> General Tab -> App Preferences -> "Open" Behavior. It controls which path is used when opening a new file. If checked the last saved path is used when saving files and the last opened path is used when opening files. If unchecked then the path for the last action (either open or save) is used.
 - fixed App.convert_any2gerber to work with the new Gerber apertures data structure
 - fixed Tool Sub to work with the new Gerber apertures data structure
+- fixed Tool PDF to work with the new Gerber apertures data structure
 
 17.05.2019
 

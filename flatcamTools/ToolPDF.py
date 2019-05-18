@@ -97,7 +97,7 @@ class ToolPDF(FlatCAMTool):
         self.save_gs_re = re.compile(r'^q.*?$')
 
         # detect restore graphic state from graphic stack
-        self.restore_gs_re = re.compile(r'^Q.*$')
+        self.restore_gs_re = re.compile(r'^.*Q.*$')
 
         # graphic stack where we save parameters like transformation, line_width
         self.gs = dict()
@@ -219,8 +219,9 @@ class ToolPDF(FlatCAMTool):
         points = {}
 
         def obj_init(exc_obj, app_obj):
+            clear_geo = [geo_el['clear'] for geo_el in ap_dict['0']['geometry']]
 
-            for geo in ap_dict['0']['solid_geometry']:
+            for geo in clear_geo:
                 xmin, ymin, xmax, ymax = geo.bounds
                 center = (((xmax - xmin) / 2) + xmin, ((ymax - ymin) / 2) + ymin)
 
@@ -280,12 +281,48 @@ class ToolPDF(FlatCAMTool):
             grb_obj.apertures = ap_dict
 
             poly_buff = []
+            follow_buf = []
             for ap in grb_obj.apertures:
                 for k in grb_obj.apertures[ap]:
-                    if k == 'solid_geometry':
-                        poly_buff += ap_dict[ap][k]
-
+                    if k == 'geometry':
+                        for geo_el in ap_dict[ap][k]:
+                            if 'solid' in geo_el:
+                                poly_buff.append(geo_el['solid'])
+                            if 'follow' in geo_el:
+                                follow_buf.append(geo_el['follow'])
             poly_buff = unary_union(poly_buff)
+
+            if '0' in grb_obj.apertures:
+                global_clear_geo = []
+                if 'geometry' in grb_obj.apertures['0']:
+                    for geo_el in ap_dict['0']['geometry']:
+                        if 'clear' in geo_el:
+                            global_clear_geo.append(geo_el['clear'])
+
+                if global_clear_geo:
+                    solid= []
+                    for apid in grb_obj.apertures:
+                        if 'geometry' in grb_obj.apertures[apid]:
+                            for elem in grb_obj.apertures[apid]['geometry']:
+                                if 'solid' in elem:
+                                    solid_geo = deepcopy(elem['solid'])
+                                    for clear_geo in global_clear_geo:
+                                        # Make sure that the clear_geo is within the solid_geo otherwise we loose
+                                        # the solid_geometry. We want for clear_geometry just to cut into solid_geometry
+                                        # not to delete it
+                                        if clear_geo.within(solid_geo):
+                                            solid_geo = solid_geo.difference(clear_geo)
+                                        if solid_geo.is_empty:
+                                            solid_geo = elem['solid']
+                                    try:
+                                        for poly in solid_geo:
+                                            solid.append(poly)
+                                    except TypeError:
+                                        solid.append(solid_geo)
+                    poly_buff = deepcopy(MultiPolygon(solid))
+
+            follow_buf = unary_union(follow_buf)
+
             try:
                 poly_buff = poly_buff.buffer(0.0000001)
             except ValueError:
@@ -296,6 +333,7 @@ class ToolPDF(FlatCAMTool):
                 pass
 
             grb_obj.solid_geometry = deepcopy(poly_buff)
+            grb_obj.follow_geometry = deepcopy(follow_buf)
 
         with self.app.proc_container.new(_("Rendering PDF layer #%d ...") % int(layer_nr)):
 
@@ -416,7 +454,7 @@ class ToolPDF(FlatCAMTool):
         clear_apertures_dict['0'] = dict()
         clear_apertures_dict['0']['size'] = 0.0
         clear_apertures_dict['0']['type'] = 'C'
-        clear_apertures_dict['0']['solid_geometry'] = []
+        clear_apertures_dict['0']['geometry'] = []
 
         # on stroke color change we create a new apertures dictionary and store the old one in a storage from where
         # it will be transformed into Gerber object
@@ -430,7 +468,7 @@ class ToolPDF(FlatCAMTool):
 
         for pline in lines:
             line_nr += 1
-            # log.debug("line %d: %s" % (line_nr, pline))
+            log.debug("line %d: %s" % (line_nr, pline))
 
             # COLOR DETECTION / OBJECT DETECTION
             match = self.stroke_color_re.search(pline)
@@ -518,8 +556,6 @@ class ToolPDF(FlatCAMTool):
             # detect restore from graphic stack event
             match = self.restore_gs_re.search(pline)
             if match:
-                log.debug(
-                    "ToolPDF.parse_pdf() --> Restore from GS found on line: %s --> %s" % (line_nr, pline))
                 try:
                     restored_transform = self.gs['transform'].pop(-1)
                     offset_geo = restored_transform[0]
@@ -535,6 +571,11 @@ class ToolPDF(FlatCAMTool):
                     log.debug("ToolPDF.parse_pdf() --> Nothing to restore")
                     # nothing to remove
                     pass
+
+                log.debug(
+                    "ToolPDF.parse_pdf() --> Restore from GS found on line: %s --> "
+                    "restored_offset=[%f, %f] ||| restored_scale=[%f, %f]" %
+                    (line_nr, offset_geo[0], offset_geo[1], scale_geo[0], scale_geo[1]))
                 # log.debug("Restored Offset= [%f, %f]" % (offset_geo[0], offset_geo[1]))
                 # log.debug("Restored Scale= [%f, %f]" % (scale_geo[0], scale_geo[1]))
 
@@ -659,7 +700,7 @@ class ToolPDF(FlatCAMTool):
                 subpath['lines'] = []
                 subpath['bezier'] = []
                 subpath['rectangle'] = []
-                # it measns that we've already added the subpath to path and we need to delete it
+                # it means that we've already added the subpath to path and we need to delete it
                 # clipping path is usually either rectangle or lines
                 if close_subpath is True:
                     close_subpath = False
@@ -711,20 +752,25 @@ class ToolPDF(FlatCAMTool):
             if match:
                 # scale the size here; some PDF printers apply transformation after the size is declared
                 applied_size = size * scale_geo[0] * self.point_to_unit_factor
-
                 path_geo = list()
                 if current_subpath == 'lines':
                     if path['lines']:
                         for subp in path['lines']:
                             geo = copy(subp)
-                            geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
-                            path_geo.append(geo)
+                            try:
+                                geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
+                                path_geo.append(geo)
+                            except ValueError:
+                                pass
                         # the path was painted therefore initialize it
                         path['lines'] = []
                     else:
                         geo = copy(subpath['lines'])
-                        geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
-                        path_geo.append(geo)
+                        try:
+                            geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
+                            path_geo.append(geo)
+                        except ValueError:
+                            pass
                         subpath['lines'] = []
 
                 if current_subpath == 'bezier':
@@ -733,30 +779,44 @@ class ToolPDF(FlatCAMTool):
                             geo = []
                             for b in subp:
                                 geo += self.bezier_to_points(start=b[0], c1=b[1], c2=b[2], stop=b[3])
-                            geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
-                            path_geo.append(geo)
+                            try:
+                                geo = LineString(geo).buffer((float(applied_size) / 2),
+                                                             resolution=self.step_per_circles)
+                                path_geo.append(geo)
+                            except ValueError:
+                                pass
                         # the path was painted therefore initialize it
                         path['bezier'] = []
                     else:
                         geo = []
                         for b in subpath['bezier']:
                             geo += self.bezier_to_points(start=b[0], c1=b[1], c2=b[2], stop=b[3])
-                        geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
-                        path_geo.append(geo)
+                        try:
+                            geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
+                            path_geo.append(geo)
+                        except ValueError:
+                            pass
                         subpath['bezier'] = []
 
                 if current_subpath == 'rectangle':
                     if path['rectangle']:
                         for subp in path['rectangle']:
                             geo = copy(subp)
-                            geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
-                            path_geo.append(geo)
+                            try:
+                                geo = LineString(geo).buffer((float(applied_size) / 2),
+                                                             resolution=self.step_per_circles)
+                                path_geo.append(geo)
+                            except ValueError:
+                                pass
                         # the path was painted therefore initialize it
                         path['rectangle'] = []
                     else:
                         geo = copy(subpath['rectangle'])
-                        geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
-                        path_geo.append(geo)
+                        try:
+                            geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
+                            path_geo.append(geo)
+                        except ValueError:
+                            pass
                         subpath['rectangle'] = []
 
                 # store the found geometry
@@ -769,7 +829,18 @@ class ToolPDF(FlatCAMTool):
                             break
 
                     if found_aperture:
-                        apertures_dict[copy(found_aperture)]['solid_geometry'] += path_geo
+                        for pdf_geo in path_geo:
+                            if isinstance(pdf_geo, MultiPolygon):
+                                for poly in pdf_geo:
+                                    new_el = dict()
+                                    new_el['solid'] = poly
+                                    new_el['follow'] = poly.exterior
+                                    apertures_dict[copy(found_aperture)]['geometry'].append(deepcopy(new_el))
+                            else:
+                                new_el = dict()
+                                new_el['solid'] = pdf_geo
+                                new_el['follow'] = pdf_geo.exterior
+                                apertures_dict[copy(found_aperture)]['geometry'].append(deepcopy(new_el))
                         found_aperture = None
                     else:
                         if str(aperture) in apertures_dict.keys():
@@ -777,14 +848,36 @@ class ToolPDF(FlatCAMTool):
                         apertures_dict[str(aperture)] = {}
                         apertures_dict[str(aperture)]['size'] = round(applied_size, 5)
                         apertures_dict[str(aperture)]['type'] = 'C'
-                        apertures_dict[str(aperture)]['solid_geometry'] = []
-                        apertures_dict[str(aperture)]['solid_geometry'] += path_geo
+                        apertures_dict[str(aperture)]['geometry'] = []
+                        for pdf_geo in path_geo:
+                            if isinstance(pdf_geo, MultiPolygon):
+                                for poly in pdf_geo:
+                                    new_el = dict()
+                                    new_el['solid'] = poly
+                                    new_el['follow'] = poly.exterior
+                                    apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
+                            else:
+                                new_el = dict()
+                                new_el['solid'] = pdf_geo
+                                new_el['follow'] = pdf_geo.exterior
+                                apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
                 else:
                     apertures_dict[str(aperture)] = {}
                     apertures_dict[str(aperture)]['size'] = round(applied_size, 5)
                     apertures_dict[str(aperture)]['type'] = 'C'
-                    apertures_dict[str(aperture)]['solid_geometry'] = []
-                    apertures_dict[str(aperture)]['solid_geometry'] += path_geo
+                    apertures_dict[str(aperture)]['geometry'] = []
+                    for pdf_geo in path_geo:
+                        if isinstance(pdf_geo, MultiPolygon):
+                            for poly in pdf_geo:
+                                new_el = dict()
+                                new_el['solid'] = poly
+                                new_el['follow'] = poly.exterior
+                                apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
+                        else:
+                            new_el = dict()
+                            new_el['solid'] = pdf_geo
+                            new_el['follow'] = pdf_geo.exterior
+                            apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
 
                 continue
 
@@ -802,8 +895,11 @@ class ToolPDF(FlatCAMTool):
                             # close the subpath if it was not closed already
                             if close_subpath is False:
                                 geo.append(geo[0])
-                            geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
-                            path_geo.append(geo_el)
+                            try:
+                                geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                                path_geo.append(geo_el)
+                            except ValueError:
+                                pass
                         # the path was painted therefore initialize it
                         path['lines'] = []
                     else:
@@ -811,8 +907,11 @@ class ToolPDF(FlatCAMTool):
                         # close the subpath if it was not closed already
                         if close_subpath is False:
                             geo.append(start_point)
-                        geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
-                        path_geo.append(geo_el)
+                        try:
+                            geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                            path_geo.append(geo_el)
+                        except ValueError:
+                            pass
                         subpath['lines'] = []
 
                 if current_subpath == 'bezier':
@@ -824,8 +923,11 @@ class ToolPDF(FlatCAMTool):
                                 # close the subpath if it was not closed already
                                 if close_subpath is False:
                                     geo.append(geo[0])
-                                geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
-                                path_geo.append(geo_el)
+                                try:
+                                    geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                                    path_geo.append(geo_el)
+                                except ValueError:
+                                    pass
                         # the path was painted therefore initialize it
                         path['bezier'] = []
                     else:
@@ -833,8 +935,11 @@ class ToolPDF(FlatCAMTool):
                             geo += self.bezier_to_points(start=b[0], c1=b[1], c2=b[2], stop=b[3])
                         if close_subpath is False:
                             geo.append(start_point)
-                        geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
-                        path_geo.append(geo_el)
+                        try:
+                            geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                            path_geo.append(geo_el)
+                        except ValueError:
+                            pass
                         subpath['bezier'] = []
 
                 if current_subpath == 'rectangle':
@@ -844,8 +949,11 @@ class ToolPDF(FlatCAMTool):
                             # # close the subpath if it was not closed already
                             # if close_subpath is False and start_point is not None:
                             #     geo.append(start_point)
-                            geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
-                            path_geo.append(geo_el)
+                            try:
+                                geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                                path_geo.append(geo_el)
+                            except ValueError:
+                                pass
                         # the path was painted therefore initialize it
                         path['rectangle'] = []
                     else:
@@ -853,32 +961,96 @@ class ToolPDF(FlatCAMTool):
                         # # close the subpath if it was not closed already
                         # if close_subpath is False and start_point is not None:
                         #     geo.append(start_point)
-                        geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
-                        path_geo.append(geo_el)
+                        try:
+                            geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                            path_geo.append(geo_el)
+                        except ValueError:
+                            pass
                         subpath['rectangle'] = []
 
                 # we finished painting and also closed the path if it was the case
                 close_subpath = True
 
-                # if there was a fill color change we look for circular geometries from which we can make drill holes
-                # for the Excellon file
+                # in case that a color change to white (transparent) occurred
                 if flag_clear_geo is True:
-                    # we llok for circular geometries
+                    # if there was a fill color change we look for circular geometries from which we can make
+                    # drill holes for the Excellon file
                     if current_subpath == 'bezier':
                         # if there are geometries in the list
                         if path_geo:
-                            clear_apertures_dict['0']['solid_geometry'] += path_geo
-                else:
-                    # else, add the geometry as usual
+                            try:
+                                for g in path_geo:
+                                    new_el = dict()
+                                    new_el['clear'] = g
+                                    clear_apertures_dict['0']['geometry'].append(new_el)
+                            except TypeError:
+                                new_el = dict()
+                                new_el['clear'] = path_geo
+                                clear_apertures_dict['0']['geometry'].append(new_el)
+
+                    # now that we finished searching for drill holes (this is not very precise because holes in the
+                    # polygon pours may appear as drill too, but .. hey you can't have it all ...) we add
+                    # clear_geometry
                     try:
-                        apertures_dict['0']['solid_geometry'] += path_geo
+                        for pdf_geo in path_geo:
+                            if isinstance(pdf_geo, MultiPolygon):
+                                for poly in pdf_geo:
+                                    new_el = dict()
+                                    new_el['clear'] = poly
+                                    apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                            else:
+                                new_el = dict()
+                                new_el['clear'] = pdf_geo
+                                apertures_dict['0']['geometry'].append(deepcopy(new_el))
                     except KeyError:
                         # in case there is no stroke width yet therefore no aperture
                         apertures_dict['0'] = {}
                         apertures_dict['0']['size'] = applied_size
                         apertures_dict['0']['type'] = 'C'
-                        apertures_dict['0']['solid_geometry'] = []
-                        apertures_dict['0']['solid_geometry'] += path_geo
+                        apertures_dict['0']['geometry'] = []
+                        for pdf_geo in path_geo:
+                            if isinstance(pdf_geo, MultiPolygon):
+                                for poly in pdf_geo:
+                                    new_el = dict()
+                                    new_el['clear'] = poly
+                                    apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                            else:
+                                new_el = dict()
+                                new_el['clear'] = pdf_geo
+                                apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                else:
+                    # else, add the geometry as usual
+                    try:
+                        for pdf_geo in path_geo:
+                            if isinstance(pdf_geo, MultiPolygon):
+                                for poly in pdf_geo:
+                                    new_el = dict()
+                                    new_el['solid'] = poly
+                                    new_el['follow'] = poly.exterior
+                                    apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                            else:
+                                new_el = dict()
+                                new_el['solid'] = pdf_geo
+                                new_el['follow'] = pdf_geo.exterior
+                                apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                    except KeyError:
+                        # in case there is no stroke width yet therefore no aperture
+                        apertures_dict['0'] = {}
+                        apertures_dict['0']['size'] = applied_size
+                        apertures_dict['0']['type'] = 'C'
+                        apertures_dict['0']['geometry'] = []
+                        for pdf_geo in path_geo:
+                            if isinstance(pdf_geo, MultiPolygon):
+                                for poly in pdf_geo:
+                                    new_el = dict()
+                                    new_el['solid'] = poly
+                                    new_el['follow'] = poly.exterior
+                                    apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                            else:
+                                new_el = dict()
+                                new_el['solid'] = pdf_geo
+                                new_el['follow'] = pdf_geo.exterior
+                                apertures_dict['0']['geometry'].append(deepcopy(new_el))
                     continue
 
             # Fill and Stroke the path
@@ -897,8 +1069,11 @@ class ToolPDF(FlatCAMTool):
                             # close the subpath if it was not closed already
                             if close_subpath is False:
                                 geo.append(geo[0])
-                            geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
-                            fill_geo.append(geo_el)
+                            try:
+                                geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                                fill_geo.append(geo_el)
+                            except ValueError:
+                                pass
                         # stroke
                         for subp in path['lines']:
                             geo = copy(subp)
@@ -912,8 +1087,11 @@ class ToolPDF(FlatCAMTool):
                         # close the subpath if it was not closed already
                         if close_subpath is False:
                             geo.append(start_point)
-                        geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
-                        fill_geo.append(geo_el)
+                        try:
+                            geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                            fill_geo.append(geo_el)
+                        except ValueError:
+                            pass
                         # stroke
                         geo = copy(subpath['lines'])
                         geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
@@ -931,8 +1109,11 @@ class ToolPDF(FlatCAMTool):
                                 # close the subpath if it was not closed already
                                 if close_subpath is False:
                                     geo.append(geo[0])
-                                geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
-                                fill_geo.append(geo_el)
+                                try:
+                                    geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                                    fill_geo.append(geo_el)
+                                except ValueError:
+                                    pass
                         # stroke
                         for subp in path['bezier']:
                             geo = []
@@ -948,8 +1129,11 @@ class ToolPDF(FlatCAMTool):
                             geo += self.bezier_to_points(start=b[0], c1=b[1], c2=b[2], stop=b[3])
                         if close_subpath is False:
                             geo.append(start_point)
-                        geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
-                        fill_geo.append(geo_el)
+                        try:
+                            geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                            fill_geo.append(geo_el)
+                        except ValueError:
+                            pass
                         # stroke
                         geo = []
                         for b in subpath['bezier']:
@@ -966,8 +1150,11 @@ class ToolPDF(FlatCAMTool):
                             # # close the subpath if it was not closed already
                             # if close_subpath is False:
                             #     geo.append(geo[0])
-                            geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
-                            fill_geo.append(geo_el)
+                            try:
+                                geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                                fill_geo.append(geo_el)
+                            except ValueError:
+                                pass
                         # stroke
                         for subp in path['rectangle']:
                             geo = copy(subp)
@@ -981,8 +1168,11 @@ class ToolPDF(FlatCAMTool):
                         # # close the subpath if it was not closed already
                         # if close_subpath is False:
                         #     geo.append(start_point)
-                        geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
-                        fill_geo.append(geo_el)
+                        try:
+                            geo_el = Polygon(geo).buffer(0.0000001, resolution=self.step_per_circles)
+                            fill_geo.append(geo_el)
+                        except ValueError:
+                            pass
                         # stroke
                         geo = copy(subpath['rectangle'])
                         geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
@@ -1002,7 +1192,18 @@ class ToolPDF(FlatCAMTool):
                             break
 
                     if found_aperture:
-                        apertures_dict[copy(found_aperture)]['solid_geometry'] += path_geo
+                        for pdf_geo in path_geo:
+                            if isinstance(pdf_geo, MultiPolygon):
+                                for poly in pdf_geo:
+                                    new_el = dict()
+                                    new_el['solid'] = poly
+                                    new_el['follow'] = poly.exterior
+                                    apertures_dict[copy(found_aperture)]['geometry'].append(deepcopy(new_el))
+                            else:
+                                new_el = dict()
+                                new_el['solid'] = pdf_geo
+                                new_el['follow'] = pdf_geo.exterior
+                                apertures_dict[copy(found_aperture)]['geometry'].append(deepcopy(new_el))
                         found_aperture = None
                     else:
                         if str(aperture) in apertures_dict.keys():
@@ -1010,25 +1211,102 @@ class ToolPDF(FlatCAMTool):
                         apertures_dict[str(aperture)] = {}
                         apertures_dict[str(aperture)]['size'] = round(applied_size, 5)
                         apertures_dict[str(aperture)]['type'] = 'C'
-                        apertures_dict[str(aperture)]['solid_geometry'] = []
-                        apertures_dict[str(aperture)]['solid_geometry'] += path_geo
+                        apertures_dict[str(aperture)]['geometry'] = []
+                        for pdf_geo in path_geo:
+                            if isinstance(pdf_geo, MultiPolygon):
+                                for poly in pdf_geo:
+                                    new_el = dict()
+                                    new_el['solid'] = poly
+                                    new_el['follow'] = poly.exterior
+                                    apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
+                            else:
+                                new_el = dict()
+                                new_el['solid'] = pdf_geo
+                                new_el['follow'] = pdf_geo.exterior
+                                apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
                 else:
                     apertures_dict[str(aperture)] = {}
                     apertures_dict[str(aperture)]['size'] = round(applied_size, 5)
                     apertures_dict[str(aperture)]['type'] = 'C'
-                    apertures_dict[str(aperture)]['solid_geometry'] = []
-                    apertures_dict[str(aperture)]['solid_geometry'] += path_geo
+                    apertures_dict[str(aperture)]['geometry'] = []
+                    for pdf_geo in path_geo:
+                        if isinstance(pdf_geo, MultiPolygon):
+                            for poly in pdf_geo:
+                                new_el = dict()
+                                new_el['solid'] = poly
+                                new_el['follow'] = poly.exterior
+                                apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
+                        else:
+                            new_el = dict()
+                            new_el['solid'] = pdf_geo
+                            new_el['follow'] = pdf_geo.exterior
+                            apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
 
-                # store the found geometry for filling the path
-                try:
-                    apertures_dict['0']['solid_geometry'] += fill_geo
-                except KeyError:
-                    # in case there is no stroke width yet therefore no aperture
-                    apertures_dict['0'] = {}
-                    apertures_dict['0']['size'] = round(applied_size, 5)
-                    apertures_dict['0']['type'] = 'C'
-                    apertures_dict['0']['solid_geometry'] = []
-                    apertures_dict['0']['solid_geometry'] += fill_geo
+                # ###############################################
+                # store the found geometry for filling the path #
+                # ###############################################
+
+                # in case that a color change to white (transparent) occurred
+                if flag_clear_geo is True:
+                    try:
+                        for pdf_geo in path_geo:
+                            if isinstance(pdf_geo, MultiPolygon):
+                                for poly in fill_geo:
+                                    new_el = dict()
+                                    new_el['clear'] = poly
+                                    apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                            else:
+                                new_el = dict()
+                                new_el['clear'] = pdf_geo
+                                apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                    except KeyError:
+                        # in case there is no stroke width yet therefore no aperture
+                        apertures_dict['0'] = {}
+                        apertures_dict['0']['size'] = round(applied_size, 5)
+                        apertures_dict['0']['type'] = 'C'
+                        apertures_dict['0']['geometry'] = []
+                        for pdf_geo in fill_geo:
+                            if isinstance(pdf_geo, MultiPolygon):
+                                for poly in pdf_geo:
+                                    new_el = dict()
+                                    new_el['clear'] = poly
+                                    apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                            else:
+                                new_el = dict()
+                                new_el['clear'] = pdf_geo
+                                apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                else:
+                    try:
+                        for pdf_geo in path_geo:
+                            if isinstance(pdf_geo, MultiPolygon):
+                                for poly in fill_geo:
+                                    new_el = dict()
+                                    new_el['solid'] = poly
+                                    new_el['follow'] = poly.exterior
+                                    apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                            else:
+                                new_el = dict()
+                                new_el['solid'] = pdf_geo
+                                new_el['follow'] = pdf_geo.exterior
+                                apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                    except KeyError:
+                        # in case there is no stroke width yet therefore no aperture
+                        apertures_dict['0'] = {}
+                        apertures_dict['0']['size'] = round(applied_size, 5)
+                        apertures_dict['0']['type'] = 'C'
+                        apertures_dict['0']['geometry'] = []
+                        for pdf_geo in fill_geo:
+                            if isinstance(pdf_geo, MultiPolygon):
+                                for poly in pdf_geo:
+                                    new_el = dict()
+                                    new_el['solid'] = poly
+                                    new_el['follow'] = poly.exterior
+                                    apertures_dict['0']['geometry'].append(deepcopy(new_el))
+                            else:
+                                new_el = dict()
+                                new_el['solid'] = pdf_geo
+                                new_el['follow'] = pdf_geo.exterior
+                                apertures_dict['0']['geometry'].append(deepcopy(new_el))
 
                 continue
 
@@ -1036,7 +1314,7 @@ class ToolPDF(FlatCAMTool):
         if apertures_dict:
             object_dict[layer_nr] = deepcopy(apertures_dict)
 
-        if clear_apertures_dict['0']['solid_geometry']:
+        if clear_apertures_dict['0']['geometry']:
             object_dict[0] = deepcopy(clear_apertures_dict)
 
         # delete keys (layers) with empty values
