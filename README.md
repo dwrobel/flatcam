@@ -17,6 +17,8 @@ CAD program, and create G-Code for Isolation routing.
 - PEP8 corrections in FlatCAMGrbEditor.py
 - added a selection limit parameter for Geometry Editor
 - added entries in Edit -> Preferences for the new parameter Selection limit for both the Gerber and Geometry Editors.
+- set the buttons in the lower part of the Preferences Window to have a preferred minimum width instead of fixed width
+- updated the translation files
 
 18.05.2019
 

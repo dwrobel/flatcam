@@ -922,7 +922,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.pref_import_button = QtWidgets.QPushButton()
         self.pref_import_button.setText(_("Import Preferences"))
-        self.pref_import_button.setFixedWidth(130)
+        self.pref_import_button.setMinimumWidth(130)
         self.pref_import_button.setToolTip(
             _("Import a full set of FlatCAM settings from a file\n"
             "previously saved on HDD.\n\n"
@@ -932,7 +932,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.pref_export_button = QtWidgets.QPushButton()
         self.pref_export_button.setText(_("Export Preferences"))
-        self.pref_export_button.setFixedWidth(130)
+        self.pref_export_button.setMinimumWidth(130)
         self.pref_export_button.setToolTip(
            _( "Export a full set of FlatCAM settings in a file\n"
             "that is saved on HDD."))
@@ -940,7 +940,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.pref_open_button = QtWidgets.QPushButton()
         self.pref_open_button.setText(_("Open Pref Folder"))
-        self.pref_open_button.setFixedWidth(130)
+        self.pref_open_button.setMinimumWidth(130)
         self.pref_open_button.setToolTip(
             _("Open the folder where FlatCAM save the preferences files."))
         self.pref_tab_bottom_layout_1.addWidget(self.pref_open_button)
@@ -951,7 +951,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.pref_save_button = QtWidgets.QPushButton()
         self.pref_save_button.setText(_("Save Preferences"))
-        self.pref_save_button.setFixedWidth(130)
+        self.pref_save_button.setMinimumWidth(130)
         self.pref_save_button.setToolTip(
             _("Save the current settings in the 'current_defaults' file\n"
             "which is the file storing the working default preferences."))
