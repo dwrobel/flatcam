@@ -8,7 +8,8 @@ import shapely.affinity as affinity
 
 from numpy import arctan2, Inf, array, sqrt, sign, dot
 from rtree import index as rtindex
-import threading, time
+import threading
+import time
 from copy import copy, deepcopy
 
 from camlib import *
@@ -24,9 +25,9 @@ from numpy.linalg import norm as numpy_norm
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
-import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
@@ -53,13 +54,13 @@ class DrawToolShape(object):
 
         ## Iterable: descend into each item.
         try:
-            for subo in o:
-                pts += DrawToolShape.get_pts(subo)
+            for sub_o in o:
+                pts += DrawToolShape.get_pts(sub_o)
 
-        ## Non-iterable
+        # Non-iterable
         except TypeError:
             if o is not None:
-                ## DrawToolShape: descend into .geo.
+                # DrawToolShape: descend into .geo.
                 if isinstance(o, DrawToolShape):
                     pts += DrawToolShape.get_pts(o.geo)
 
@@ -87,6 +88,7 @@ class DrawToolShape(object):
         self.geo = geo
         self.utility = False
 
+
 class DrawToolUtilityShape(DrawToolShape):
     """
     Utility shapes are temporary geometry in the editor
@@ -96,7 +98,7 @@ class DrawToolUtilityShape(DrawToolShape):
     point is clicked and the final geometry is created.
     """
 
-    def __init__(self, geo={}):
+    def __init__(self, geo=None):
         super(DrawToolUtilityShape, self).__init__(geo=geo)
         self.utility = True
 
@@ -133,7 +135,8 @@ class DrawTool(object):
     def utility_geometry(self, data=None):
         return None
 
-    def bounds(self, obj):
+    @staticmethod
+    def bounds(obj):
         def bounds_rec(o):
             if type(o) is list:
                 minx = Inf
@@ -298,12 +301,12 @@ class FCPad(FCShapeTool):
                 p3 = (point_x + self.half_width, point_y + self.half_height - self.half_width)
                 p4 = (point_x - self.half_width, point_y + self.half_height - self.half_width)
 
-                down_center = (point_x, point_y - self.half_height + self.half_width)
+                down_center = [point_x, point_y - self.half_height + self.half_width]
                 d_start_angle = math.pi
                 d_stop_angle = 0.0
                 down_arc = arc(down_center, self.half_width, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
 
-                up_center = (point_x, point_y + self.half_height - self.half_width)
+                up_center = [point_x, point_y + self.half_height - self.half_width]
                 u_start_angle = 0.0
                 u_stop_angle = math.pi
                 up_arc = arc(up_center, self.half_width, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
@@ -327,12 +330,12 @@ class FCPad(FCShapeTool):
                 p3 = (point_x + self.half_width - self.half_height, point_y + self.half_height)
                 p4 = (point_x - self.half_width + self.half_height, point_y + self.half_height)
 
-                left_center = (point_x - self.half_width + self.half_height, point_y)
+                left_center = [point_x - self.half_width + self.half_height, point_y]
                 d_start_angle = math.pi / 2
                 d_stop_angle = 1.5 * math.pi
                 left_arc = arc(left_center, self.half_height, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
 
-                right_center = (point_x + self.half_width - self.half_height, point_y)
+                right_center = [point_x + self.half_width - self.half_height, point_y]
                 u_start_angle = 1.5 * math.pi
                 u_stop_angle = math.pi / 2
                 right_arc = arc(right_center, self.half_height, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
@@ -503,7 +506,7 @@ class FCPadArray(FCShapeTool):
                 dy = data[1]
 
             geo_el_list = []
-            geo = None
+            geo_el = []
             self.points = [dx, dy]
 
             for item in range(self.pad_array_size):
@@ -600,12 +603,12 @@ class FCPadArray(FCShapeTool):
                 p3 = (point_x + self.half_width, point_y + self.half_height - self.half_width)
                 p4 = (point_x - self.half_width, point_y + self.half_height - self.half_width)
 
-                down_center = (point_x, point_y - self.half_height + self.half_width)
+                down_center = [point_x, point_y - self.half_height + self.half_width]
                 d_start_angle = math.pi
                 d_stop_angle = 0.0
                 down_arc = arc(down_center, self.half_width, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
 
-                up_center = (point_x, point_y + self.half_height - self.half_width)
+                up_center = [point_x, point_y + self.half_height - self.half_width]
                 u_start_angle = 0.0
                 u_stop_angle = math.pi
                 up_arc = arc(up_center, self.half_width, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
@@ -629,12 +632,12 @@ class FCPadArray(FCShapeTool):
                 p3 = (point_x + self.half_width - self.half_height, point_y + self.half_height)
                 p4 = (point_x - self.half_width + self.half_height, point_y + self.half_height)
 
-                left_center = (point_x - self.half_width + self.half_height, point_y)
+                left_center = [point_x - self.half_width + self.half_height, point_y]
                 d_start_angle = math.pi / 2
                 d_stop_angle = 1.5 * math.pi
                 left_arc = arc(left_center, self.half_height, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
 
-                right_center = (point_x + self.half_width - self.half_height, point_y)
+                right_center = [point_x + self.half_width - self.half_height, point_y]
                 u_start_angle = 1.5 * math.pi
                 u_stop_angle = math.pi / 2
                 right_arc = arc(right_center, self.half_height, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
@@ -947,8 +950,8 @@ class FCRegion(FCShapeTool):
                 try:
                     new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val, join_style=1)
                     return DrawToolUtilityShape(new_geo_el)
-                except:
-                    pass
+                except Exception as e:
+                    log.debug("FlatCAMGrbEditor.FCRegion.utility_geometry() --> %s" % str(e))
             else:
                 new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val)
                 return DrawToolUtilityShape(new_geo_el)
@@ -1054,7 +1057,7 @@ class FCRegion(FCShapeTool):
         if key == 'T' or key == QtCore.Qt.Key_T:
             if self.draw_app.bend_mode == 1:
                 self.draw_app.bend_mode = 2
-                msg =  _('Corner Mode 2: Reverse 45 degrees ...')
+                msg = _('Corner Mode 2: Reverse 45 degrees ...')
             elif self.draw_app.bend_mode == 2:
                 self.draw_app.bend_mode = 3
                 msg = _('Corner Mode 3: 90 degrees ...')
@@ -1111,8 +1114,9 @@ class FCTrack(FCRegion):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
-            pass
+        except Exception as e:
+            log.debug("FlatCAMGrbEditor.FCTrack.__init__() --> %s" % str(e))
+
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path%s.png' % self.draw_app.bend_mode))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
@@ -1247,8 +1251,9 @@ class FCTrack(FCRegion):
         if key == 'T' or key == QtCore.Qt.Key_T:
             try:
                 QtGui.QGuiApplication.restoreOverrideCursor()
-            except:
-                pass
+            except Exception as e:
+                log.debug("FlatCAMGrbEditor.FCTrack.on_key() --> %s" % str(e))
+
             if self.draw_app.bend_mode == 1:
                 self.draw_app.bend_mode = 2
                 self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path2.png'))
@@ -1285,8 +1290,9 @@ class FCTrack(FCRegion):
         if key == 'R' or key == QtCore.Qt.Key_R:
             try:
                 QtGui.QGuiApplication.restoreOverrideCursor()
-            except:
-                pass
+            except Exception as e:
+                log.debug("FlatCAMGrbEditor.FCTrack.on_key() --> %s" % str(e))
+
             if self.draw_app.bend_mode == 1:
                 self.draw_app.bend_mode = 5
                 self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path5.png'))
@@ -1375,8 +1381,8 @@ class FCDisc(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
-            pass
+        except Exception as e:
+            log.debug("FlatCAMGrbEditor.FCDisc --> %s" % str(e))
 
         self.draw_app.current_storage = self.storage_obj
 
@@ -1405,8 +1411,9 @@ class FCSemiDisc(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
-            pass
+        except Exception as e:
+            log.debug("FlatCAMGrbEditor.FCSemiDisc --> %s" % str(e))
+
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_semidisc.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
@@ -1576,12 +1583,12 @@ class FCSemiDisc(FCShapeTool):
             p2 = self.points[2]
 
             radius = distance(center, p1) + (self.buf_val / 2)
-            startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
-            stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
+            start_angle = arctan2(p1[1] - center[1], p1[0] - center[0])
+            stop_angle = arctan2(p2[1] - center[1], p2[0] - center[0])
             new_geo_el['solid'] = Polygon(
-                arc(center, radius, startangle, stopangle, self.direction, self.steps_per_circ))
+                arc(center, radius, start_angle, stop_angle, self.direction, self.steps_per_circ))
             new_geo_el['follow'] = Polygon(
-                arc(center, radius, startangle, stopangle, self.direction, self.steps_per_circ)).exterior
+                arc(center, radius, start_angle, stop_angle, self.direction, self.steps_per_circ)).exterior
             self.geometry = DrawToolShape(new_geo_el)
 
         elif self.mode == '132':
@@ -1593,12 +1600,12 @@ class FCSemiDisc(FCShapeTool):
             direction = 'cw' if sign(t) > 0 else 'ccw'
             radius += (self.buf_val / 2)
 
-            startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
-            stopangle = arctan2(p3[1] - center[1], p3[0] - center[0])
+            start_angle = arctan2(p1[1] - center[1], p1[0] - center[0])
+            stop_angle = arctan2(p3[1] - center[1], p3[0] - center[0])
 
-            new_geo_el['solid'] = Polygon(arc(center, radius, startangle, stopangle, direction, self.steps_per_circ))
+            new_geo_el['solid'] = Polygon(arc(center, radius, start_angle, stop_angle, direction, self.steps_per_circ))
             new_geo_el['follow'] = Polygon(
-                arc(center, radius, startangle, stopangle, direction, self.steps_per_circ)).exterior
+                arc(center, radius, start_angle, stop_angle, direction, self.steps_per_circ)).exterior
             self.geometry = DrawToolShape(new_geo_el)
 
         else:  # self.mode == '12c'
@@ -1628,13 +1635,13 @@ class FCSemiDisc(FCShapeTool):
             center = a + b * t
 
             radius = numpy_norm(center - p1) + (self.buf_val / 2)
-            startangle = arctan2(p1[1] - center[1], p1[0] - center[0])
-            stopangle = arctan2(p2[1] - center[1], p2[0] - center[0])
+            start_angle = arctan2(p1[1] - center[1], p1[0] - center[0])
+            stop_angle = arctan2(p2[1] - center[1], p2[0] - center[0])
 
             new_geo_el['solid'] = Polygon(
-                arc(center, radius, startangle, stopangle, self.direction, self.steps_per_circ))
+                arc(center, radius, start_angle, stop_angle, self.direction, self.steps_per_circ))
             new_geo_el['follow'] = Polygon(
-                arc(center, radius, startangle, stopangle, self.direction, self.steps_per_circ)).exterior
+                arc(center, radius, start_angle, stop_angle, self.direction, self.steps_per_circ)).exterior
             self.geometry = DrawToolShape(new_geo_el)
 
         self.draw_app.in_action = False
@@ -1765,7 +1772,7 @@ class FCApertureMove(FCShapeTool):
         # Switch notebook to Selected page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
 
-        self.sel_limit = 30
+        self.sel_limit = self.draw_app.app.defaults["gerber_editor_sel_limit"]
         self.selection_shape = self.selection_bbox()
 
     def set_origin(self, origin):
@@ -1971,8 +1978,8 @@ class FCApertureSelect(DrawTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
-            pass
+        except Exception as e:
+            log.debug("FlatCAMGrbEditor.FCApertureSelect --> %s" % str(e))
 
     def set_origin(self, origin):
         self.origin = origin
@@ -2021,8 +2028,8 @@ class FCApertureSelect(DrawTool):
         # select the aperture in the Apertures Table that is associated with the selected shape
         try:
             self.draw_app.apertures_table.cellPressed.disconnect()
-        except:
-            pass
+        except Exception as e:
+            log.debug("FlatCAMGrbEditor.FCApertureSelect.click_release() --> %s" % str(e))
 
         self.grb_editor_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         for aper in sel_aperture:
@@ -2073,29 +2080,29 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app = app
         self.canvas = self.app.plotcanvas
 
-        ## Current application units in Upper Case
+        # Current application units in Upper Case
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         self.grb_edit_widget = QtWidgets.QWidget()
         layout = QtWidgets.QVBoxLayout()
         self.grb_edit_widget.setLayout(layout)
 
-        ## Page Title box (spacing between children)
+        # Page Title box (spacing between children)
         self.title_box = QtWidgets.QHBoxLayout()
         layout.addLayout(self.title_box)
 
-        ## Page Title icon
+        # Page Title icon
         pixmap = QtGui.QPixmap('share/flatcam_icon32.png')
         self.icon = QtWidgets.QLabel()
         self.icon.setPixmap(pixmap)
         self.title_box.addWidget(self.icon, stretch=0)
 
-        ## Title label
+        # Title label
         self.title_label = QtWidgets.QLabel("<font size=5><b>%s</b></font>" % _('Gerber Editor'))
         self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.title_box.addWidget(self.title_label, stretch=1)
 
-        ## Object name
+        # Object name
         self.name_box = QtWidgets.QHBoxLayout()
         layout.addLayout(self.name_box)
         name_label = QtWidgets.QLabel(_("Name:"))
@@ -2103,13 +2110,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.name_entry = FCEntry()
         self.name_box.addWidget(self.name_entry)
 
-        ## Box for custom widgets
+        # Box for custom widgets
         # This gets populated in offspring implementations.
         self.custom_box = QtWidgets.QVBoxLayout()
         layout.addLayout(self.custom_box)
 
 
-        #### Gerber Apertures ####
+        # ### Gerber Apertures ####
         self.apertures_table_label = QtWidgets.QLabel(_('<b>Apertures:</b>'))
         self.apertures_table_label.setToolTip(
             _("Apertures Table for the Gerber Object.")
@@ -2151,7 +2158,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.apertures_box.setContentsMargins(0, 0, 0, 0)
         self.apertures_frame.setLayout(self.apertures_box)
 
-        #### Add/Delete an new Aperture ####
+        # ### Add/Delete an new Aperture ####
 
         grid1 = QtWidgets.QGridLayout()
         self.apertures_box.addLayout(grid1)
@@ -2225,7 +2232,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         hlay_ad.addWidget(self.addaperture_btn)
         hlay_ad.addWidget(self.delaperture_btn)
 
-        ### BUFFER TOOL ###
+        # ## BUFFER TOOL ###
 
         self.buffer_tool_frame = QtWidgets.QFrame()
         self.buffer_tool_frame.setContentsMargins(0, 0, 0, 0)
@@ -2269,7 +2276,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.buffer_button = QtWidgets.QPushButton(_("Buffer"))
         hlay_buf.addWidget(self.buffer_button)
 
-        ### SCALE TOOL ###
+        # ## SCALE TOOL ###
 
         self.scale_tool_frame = QtWidgets.QFrame()
         self.scale_tool_frame.setContentsMargins(0, 0, 0, 0)
@@ -2316,7 +2323,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.array_box.setContentsMargins(0, 0, 0, 0)
         self.array_frame.setLayout(self.array_box)
 
-        #### Add Pad Array ####
+        # ### Add Pad Array ####
         self.emptyarray_label = QtWidgets.QLabel('')
         self.array_box.addWidget(self.emptyarray_label)
 
@@ -2329,7 +2336,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.array_type_combo = FCComboBox()
         self.array_type_combo.setToolTip(
            _( "Select the type of pads array to create.\n"
-            "It can be Linear X(Y) or Circular")
+              "It can be Linear X(Y) or Circular")
         )
         self.array_type_combo.addItem(_("Linear"))
         self.array_type_combo.addItem(_("Circular"))
@@ -2361,15 +2368,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.pad_axis_label = QtWidgets.QLabel(_('Direction:'))
         self.pad_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
-            "- 'X' - horizontal axis \n"
-            "- 'Y' - vertical axis or \n"
-            "- 'Angle' - a custom angle for the array inclination")
+              "- 'X' - horizontal axis \n"
+              "- 'Y' - vertical axis or \n"
+              "- 'Angle' - a custom angle for the array inclination")
         )
         self.pad_axis_label.setFixedWidth(100)
 
         self.pad_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
-                                          {'label': 'Y', 'value': 'Y'},
-                                          {'label': 'Angle', 'value': 'A'}])
+                                        {'label': 'Y', 'value': 'Y'},
+                                        {'label': 'Angle', 'value': 'A'}])
         self.pad_axis_radio.set_value('X')
         self.linear_form.addRow(self.pad_axis_label, self.pad_axis_radio)
 
@@ -2385,9 +2392,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.linear_angle_label = QtWidgets.QLabel(_('Angle:'))
         self.linear_angle_label.setToolTip(
            _( "Angle at which the linear array is placed.\n"
-            "The precision is of max 2 decimals.\n"
-            "Min value is: -359.99 degrees.\n"
-            "Max value is:  360.00 degrees.")
+              "The precision is of max 2 decimals.\n"
+              "Min value is: -359.99 degrees.\n"
+              "Max value is:  360.00 degrees.")
         )
         self.linear_angle_label.setFixedWidth(100)
 
@@ -2405,8 +2412,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.pad_direction_label = QtWidgets.QLabel(_('Direction:'))
         self.pad_direction_label.setToolTip(
-           _( "Direction for circular array."
-            "Can be CW = clockwise or CCW = counter clockwise.")
+           _("Direction for circular array."
+             "Can be CW = clockwise or CCW = counter clockwise.")
         )
         self.pad_direction_label.setFixedWidth(100)
 
@@ -2414,7 +2421,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.circular_box.addLayout(self.circular_form)
 
         self.pad_direction_radio = RadioSet([{'label': 'CW', 'value': 'CW'},
-                                               {'label': 'CCW.', 'value': 'CCW'}])
+                                             {'label': 'CCW.', 'value': 'CCW'}])
         self.pad_direction_radio.set_value('CW')
         self.circular_form.addRow(self.pad_direction_label, self.pad_direction_radio)
 
@@ -2436,28 +2443,28 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.custom_box.addStretch()
 
-        ## Toolbar events and properties
+        # Toolbar events and properties
         self.tools_gerber = {
             "select": {"button": self.app.ui.grb_select_btn,
                        "constructor": FCApertureSelect},
             "pad": {"button": self.app.ui.grb_add_pad_btn,
-                              "constructor": FCPad},
+                    "constructor": FCPad},
             "array": {"button": self.app.ui.add_pad_ar_btn,
-                    "constructor": FCPadArray},
+                      "constructor": FCPadArray},
             "track": {"button": self.app.ui.grb_add_track_btn,
-                              "constructor": FCTrack},
+                      "constructor": FCTrack},
             "region": {"button": self.app.ui.grb_add_region_btn,
-                              "constructor": FCRegion},
+                       "constructor": FCRegion},
             "poligonize": {"button": self.app.ui.grb_convert_poly_btn,
-                       "constructor": FCPoligonize},
+                           "constructor": FCPoligonize},
             "semidisc": {"button": self.app.ui.grb_add_semidisc_btn,
-                     "constructor": FCSemiDisc},
+                         "constructor": FCSemiDisc},
             "disc": {"button": self.app.ui.grb_add_disc_btn,
-                           "constructor": FCDisc},
+                     "constructor": FCDisc},
             "buffer": {"button": self.app.ui.aperture_buffer_btn,
-                                "constructor": FCBuffer},
+                       "constructor": FCBuffer},
             "scale": {"button": self.app.ui.aperture_scale_btn,
-                                "constructor": FCScale},
+                      "constructor": FCScale},
             "copy": {"button": self.app.ui.aperture_copy_btn,
                      "constructor": FCApertureCopy},
             "transform": {"button": self.app.ui.grb_transform_btn,
@@ -2466,13 +2473,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
                      "constructor": FCApertureMove},
         }
 
-        ### Data
+        # ## Data
         self.active_tool = None
 
         self.storage_dict = {}
         self.current_storage = []
 
-        self.sorted_apid =[]
+        self.sorted_apid = []
 
         self.new_apertures = {}
         self.new_aperture_macros = {}
@@ -2501,7 +2508,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.apdim_lbl.hide()
         self.apdim_entry.hide()
         self.gerber_obj = None
-        self.gerber_obj_options = {}
+        self.gerber_obj_options = dict()
 
         self.buffer_distance_entry.set_value(0.01)
         self.scale_factor_entry.set_value(1.0)
@@ -2515,7 +2522,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.shapes.enabled = False
         self.tool_shape.enabled = False
 
-        ## List of selected geometric elements.
+        # List of selected geometric elements.
         self.selected = []
 
         self.key = None  # Currently pressed key
@@ -2535,14 +2542,14 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # this will flag if the Editor "tools" are launched from key shortcuts (True) or from menu toolbar (False)
         self.launched_from_shortcuts = False
 
-        def make_callback(thetool):
+        def make_callback(the_tool):
             def f():
-                self.on_tool_select(thetool)
+                self.on_tool_select(the_tool)
             return f
 
         for tool in self.tools_gerber:
             self.tools_gerber[tool]["button"].triggered.connect(make_callback(tool))  # Events
-            self.tools_gerber[tool]["button"].setCheckable(True)  # Checkable
+            self.tools_gerber[tool]["button"].setCheckable(True)
 
         self.options = {
             "global_gridx": 0.1,
@@ -2569,8 +2576,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
 
-        def entry2option(option, entry):
-            self.options[option] = float(entry.text())
+        # def entry2option(option, entry):
+        #     self.options[option] = float(entry.text())
 
         self.transform_tool = TransformEditorTool(self.app, self)
 
@@ -2676,7 +2683,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.name_entry.set_value(self.edited_obj_name)
 
         self.apertures_row = 0
-        aper_no = self.apertures_row + 1
+        # aper_no = self.apertures_row + 1
 
         sort = []
         for k, v in list(self.storage_dict.items()):
@@ -2792,7 +2799,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # Remove anything else in the GUI Selected Tab
         self.app.ui.selected_scroll_area.takeWidget()
-        # Put ourself in the GUI Selected Tab
+        # Put ourselves in the GUI Selected Tab
         self.app.ui.selected_scroll_area.setWidget(self.grb_edit_widget)
         # Switch notebook to Selected page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
@@ -2875,8 +2882,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
                 self.storage_dict[ap_id]['geometry'] = []
 
-                # self.olddia_newdia dict keeps the evidence on current aperture codes as keys and gets updated on values
-                # each time a aperture code is edited or added
+                # self.olddia_newdia dict keeps the evidence on current aperture codes as keys and gets updated on
+                # values  each time a aperture code is edited or added
                 self.olddia_newdia[ap_id] = ap_id
             else:
                 self.app.inform.emit(_("[WARNING_NOTCL] Aperture already in the aperture table."))
@@ -2900,18 +2907,17 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 break
         self.apertures_table.selectRow(row_to_be_selected)
 
-    def on_aperture_delete(self, apid=None):
+    def on_aperture_delete(self, ap_id=None):
         self.is_modified = True
         deleted_apcode_list = []
-        deleted_tool_offset_list = []
 
         try:
-            if apid:
-                if isinstance(apid, list):
-                    for dd in apid:
+            if ap_id:
+                if isinstance(ap_id, list):
+                    for dd in ap_id:
                         deleted_apcode_list.append(dd)
                 else:
-                    deleted_apcode_list.append(apid)
+                    deleted_apcode_list.append(ap_id)
             else:
                 # deleted_tool_dia = float(self.apertures_table.item(self.apertures_table.currentRow(), 1).text())
                 if len(self.apertures_table.selectionModel().selectedRows()) == 0:
@@ -2920,8 +2926,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 for index in self.apertures_table.selectionModel().selectedRows():
                     row = index.row()
                     deleted_apcode_list.append(self.apertures_table.item(row, 1).text())
-        except:
-            self.app.inform.emit(_("[WARNING_NOTCL] Select an aperture in Aperture Table"))
+        except Exception as exc:
+            self.app.inform.emit(_("[WARNING_NOTCL] Select an aperture in Aperture Table --> %s" % str(exc)))
             return
 
         if deleted_apcode_list:
@@ -2950,8 +2956,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.plot_all()
         self.build_ui()
 
-        # if last aperture selected was in the apertures deleted than make sure to select a 'new' last aperture selected
-        # because there are tools who depend on it.
+        # if last aperture selected was in the apertures deleted than make sure to select a
+        # 'new' last aperture selected because there are tools who depend on it.
         # if there is no aperture left, then add a default one :)
         if self.last_aperture_selected in deleted_apcode_list:
             if self.apertures_table.rowCount() == 0:
@@ -2959,14 +2965,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
             else:
                 self.last_aperture_selected = self.apertures_table.item(0, 1).text()
 
-    def on_tool_edit(self, item_changed):
+    def on_tool_edit(self):
 
         # if connected, disconnect the signal from the slot on item_changed as it creates issues
         self.apertures_table.itemChanged.disconnect()
         # self.apertures_table.cellPressed.disconnect()
 
         self.is_modified = True
-        geometry = []
         current_table_dia_edited = None
 
         if self.apertures_table.currentItem() is not None:
@@ -3096,8 +3101,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
     def deactivate_grb_editor(self):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
-            pass
+        except Exception as e:
+            log.debug("FlatCAMGrbEditor.deactivate_grb_editor() --> %s" % str(e))
 
         # adjust the status of the menu entries related to the editor
         self.app.ui.menueditedit.setDisabled(False)
@@ -3168,7 +3173,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.gerber_obj.visible = True
 
     def connect_canvas_event_handlers(self):
-        ## Canvas events
+        # Canvas events
 
         # make sure that the shortcuts key and mouse events will no longer be linked to the methods from FlatCAMApp
         # but those from FlatCAMGeoEditor
@@ -3257,7 +3262,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
     def clear(self):
         self.active_tool = None
-        # self.shape_buffer = []
         self.selected = []
 
         self.shapes.clear(update=True)
@@ -3268,7 +3272,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         Imports the geometry found in self.apertures from the given FlatCAM Gerber object
         into the editor.
 
-        :param fcgeometry: FlatCAMExcellon
+        :param orig_grb_obj: FlatCAMExcellon
         :return: None
         """
 
@@ -3365,34 +3369,34 @@ class FlatCAMGrbEditor(QtCore.QObject):
         log.warning("Polygon difference done for %d apertures." % len(self.gerber_obj.apertures))
 
         # and then add it to the storage elements (each storage elements is a member of a list
-        def job_thread(self, apid):
-            with self.app.proc_container.new(_("Adding aperture: %s geo ...") % str(apid)):
+        def job_thread(aperture_id):
+            with self.app.proc_container.new(_("Adding aperture: %s geo ...") % str(aperture_id)):
                 storage_elem = []
-                self.storage_dict[apid] = {}
+                self.storage_dict[aperture_id] = {}
 
                 # add the Gerber geometry to editor storage
-                for k, v in self.gerber_obj.apertures[apid].items():
+                for k, v in self.gerber_obj.apertures[aperture_id].items():
                     try:
                         if k == 'geometry':
                             for geo_el in v:
                                 if geo_el:
                                     self.add_gerber_shape(DrawToolShape(geo_el), storage_elem)
-                            self.storage_dict[apid][k] = storage_elem
+                            self.storage_dict[aperture_id][k] = storage_elem
                         else:
-                            self.storage_dict[apid][k] = self.gerber_obj.apertures[apid][k]
+                            self.storage_dict[aperture_id][k] = self.gerber_obj.apertures[aperture_id][k]
                     except Exception as e:
                         log.debug("FlatCAMGrbEditor.edit_fcgerber().job_thread() --> %s" % str(e))
                 # Check promises and clear if exists
                 while True:
                     try:
-                        self.grb_plot_promises.remove(apid)
+                        self.grb_plot_promises.remove(aperture_id)
                         time.sleep(0.5)
                     except ValueError:
                         break
 
-        for apid in self.gerber_obj.apertures:
-            self.grb_plot_promises.append(apid)
-            self.app.worker_task.emit({'fcn': job_thread, 'params': [self, apid]})
+        for ap_id in self.gerber_obj.apertures:
+            self.grb_plot_promises.append(ap_id)
+            self.app.worker_task.emit({'fcn': job_thread, 'params': [ap_id]})
 
         self.set_ui()
 
@@ -3405,11 +3409,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
             # and add the first aperture to have something to play with
             self.on_aperture_add('10')
 
-    def update_fcgerber(self, grb_obj):
+    def update_fcgerber(self):
         """
         Create a new Gerber object that contain the edited content of the source Gerber object
 
-        :param grb_obj: FlatCAMGerber
         :return: None
         """
 
@@ -3418,13 +3421,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # if the 'delayed plot' malfunctioned stop the QTimer
         try:
             self.plot_thread.stop()
-        except:
-            pass
+        except Exception as e:
+            log.debug("FlatCAMGrbEditor.update_fcgerber() --> %s" % str(e))
 
         if "_edit" in self.edited_obj_name:
             try:
-                id = int(self.edited_obj_name[-1]) + 1
-                new_grb_name= self.edited_obj_name[:-1] + str(id)
+                _id = int(self.edited_obj_name[-1]) + 1
+                new_grb_name = self.edited_obj_name[:-1] + str(_id)
             except ValueError:
                 new_grb_name += "_1"
         else:
@@ -3445,10 +3448,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # Switch notebook to Selected page
         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
 
-    def update_options(self, obj):
+    @staticmethod
+    def update_options(obj):
         try:
             if not obj.options:
-                obj.options = {}
+                obj.options = dict()
                 obj.options['xmin'] = 0
                 obj.options['ymin'] = 0
                 obj.options['xmax'] = 0
@@ -3457,7 +3461,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             else:
                 return False
         except AttributeError:
-            obj.options = {}
+            obj.options = dict()
             return True
 
     def new_edited_gerber(self, outname):
@@ -3524,7 +3528,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             new_poly = new_poly.buffer(-0.00000001)
 
             try:
-                _ = iter(new_poly)
+                __ = iter(new_poly)
             except TypeError:
                 new_poly = [new_poly]
 
@@ -3545,14 +3549,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 grb_obj.create_geometry()
             except KeyError:
                 self.app.inform.emit(
-                   _( "[ERROR_NOTCL] There are no Aperture definitions in the file. Aborting Gerber creation.")
+                   _("[ERROR_NOTCL] There are no Aperture definitions in the file. Aborting Gerber creation.")
                 )
-            except:
-                msg = _("[ERROR] An internal error has ocurred. See shell.\n")
+            except Exception as e:
+                msg = _("[ERROR] An internal error has occurred. See shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
                 raise
-                # raise
 
         with self.app.proc_container.new(_("Creating Gerber.")):
             try:
@@ -3563,7 +3566,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 return
 
             self.app.inform.emit(_("[success] Gerber editing finished."))
-            # self.progress.emit(100)
 
     def on_tool_select(self, tool):
         """
@@ -3614,11 +3616,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.selected = []
 
             try:
-                # selected_apid = str(self.tool2tooldia[row + 1])
-                selected_apid = self.apertures_table.item(row, 1).text()
-                self.last_aperture_selected = copy(selected_apid)
+                selected_ap_id = self.apertures_table.item(row, 1).text()
+                self.last_aperture_selected = copy(selected_ap_id)
 
-                for obj in self.storage_dict[selected_apid]['geometry']:
+                for obj in self.storage_dict[selected_ap_id]['geometry']:
                     self.selected.append(obj)
             except Exception as e:
                 self.app.log.debug(str(e))
@@ -3626,10 +3627,22 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.plot_all()
 
     def toolbar_tool_toggle(self, key):
+        """
+
+        :param key: key to update in self.options dictionary
+        :return:
+        """
         self.options[key] = self.sender().isChecked()
         return self.options[key]
 
-    def on_grb_shape_complete(self, storage=None, specific_shape=None, noplot=False):
+    def on_grb_shape_complete(self, storage=None, specific_shape=None, no_plot=False):
+        """
+
+        :param storage: where to store the shape
+        :param specific_shape: optional, the shape to be stored
+        :param no_plot: use this if you want the added shape not plotted
+        :return:
+        """
         self.app.log.debug("on_grb_shape_complete()")
 
         if specific_shape:
@@ -3650,8 +3663,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.delete_utility_geometry()
         self.tool_shape.clear(update=True)
 
-        if noplot is False:
-            # Replot and reset tool.
+        if no_plot is False:
+            # Re-plot and reset tool.
             self.plot_all()
 
     def add_gerber_shape(self, shape_element, storage):
@@ -3661,6 +3674,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :param shape_element: Shape to be added.
         :type shape_element: DrawToolShape or DrawToolUtilityShape Geometry is stored as a dict with keys: solid,
         follow, clear, each value being a list of Shapely objects. The dict can have at least one of the mentioned keys
+        :param storage: Where to store the shape
         :return: None
         """
         # List of DrawToolShape?
@@ -3676,9 +3690,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         assert shape_element.geo is not None, \
             "Shape object has empty geometry (None)"
 
-        assert (isinstance(shape_element.geo, list) and len(shape_element.geo) > 0) or \
-               not isinstance(shape_element.geo, list), \
-            "Shape objects has empty geometry ([])"
+        assert(isinstance(shape_element.geo, list) and len(shape_element.geo) > 0) or not \
+            isinstance(shape_element.geo, list), "Shape objects has empty geometry ([])"
 
         if isinstance(shape_element, DrawToolUtilityShape):
             self.utility.append(shape_element)
@@ -3697,7 +3710,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
 
         if self.app.grid_status():
-            self.pos  = self.app.geo_editor.snap(self.pos[0], self.pos[1])
+            self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
             self.app.app_cursor.enabled = True
             # Update cursor
             self.app.app_cursor.set_data(np.asarray([(self.pos[0], self.pos[1])]), symbol='++', edge_color='black',
@@ -3713,7 +3726,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             # Selection with left mouse button
             if self.active_tool is not None and event.button is 1:
                 # Dispatch event to active_tool
-                msg = self.active_tool.click(self.app.geo_editor.snap(self.pos[0], self.pos[1]))
+                self.active_tool.click(self.app.geo_editor.snap(self.pos[0], self.pos[1]))
 
                 # If it is a shape generating tool
                 if isinstance(self.active_tool, FCShapeTool) and self.active_tool.complete:
@@ -3740,7 +3753,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
                         return
 
                 if isinstance(self.active_tool, FCApertureSelect):
-                    # self.app.log.debug("Replotting after click.")
                     self.plot_all()
             else:
                 self.app.log.debug("No active tool to respond to click!")
@@ -3762,8 +3774,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     if self.in_action is False:
                         try:
                             QtGui.QGuiApplication.restoreOverrideCursor()
-                        except:
-                            pass
+                        except Exception as e:
+                            log.debug("FlatCAMGrbEditor.on_grb_click_release() --> %s" % str(e))
 
                         if self.active_tool.complete is False and not isinstance(self.active_tool, FCApertureSelect):
                             self.active_tool.complete = True
@@ -3827,7 +3839,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :param start_pos: mouse position when the selection LMB click was done
         :param end_pos: mouse position when the left mouse button is released
         :param sel_type: if True it's a left to right selection (enclosure), if False it's a 'touch' selection
-        :type Bool
         :return:
         """
 
@@ -3856,8 +3867,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 pass
         try:
             self.apertures_table.cellPressed.disconnect()
-        except:
-            pass
+        except Exception as e:
+            log.debug("FlatCAMGrbEditor.draw_selection_Area_handler() --> %s" % str(e))
         # select the aperture code of the selected geometry, in the tool table
         self.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         for aper in sel_aperture:
@@ -3902,7 +3913,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         if self.active_tool is None:
             return
 
-        ### Snap coordinates
+        # ## Snap coordinates
         if self.app.grid_status():
             x, y = self.app.geo_editor.snap(x, y)
             self.app.app_cursor.enabled = True
@@ -3915,8 +3926,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.snap_y = y
 
         # update the position label in the infobar since the APP mouse event handlers are disconnected
-        self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                                       "<b>Y</b>: %.4f" % (x, y))
+        self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   " 
+                                           "<b>Y</b>: %.4f" % (x, y))
 
         if self.pos is None:
             self.pos = (0, 0)
@@ -3924,10 +3935,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
         dy = y - self.pos[1]
 
         # update the reference position label in the infobar since the APP mouse event handlers are disconnected
-        self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                           "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+        self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: " 
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
-        ### Utility geometry (animated)
+        # ## Utility geometry (animated)
         geo = self.active_tool.utility_geometry(data=(x, y))
 
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
@@ -3935,7 +3946,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.tool_shape.clear(update=True)
             self.draw_utility_geometry(geo=geo)
 
-        ### Selection area on canvas section ###
+        # ## Selection area on canvas section ###
         if event.is_dragging == 1 and event.button == 1:
             # I make an exception for FCRegion and FCTrack because clicking and dragging while making regions can
             # create strange issues like missing a point in a track/region
@@ -3945,18 +3956,15 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 dx = pos_canvas[0] - self.pos[0]
                 self.app.delete_selection_shape()
                 if dx < 0:
-                    self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x,y),
-                         color=self.app.defaults["global_alt_sel_line"],
-                         face_color=self.app.defaults['global_alt_sel_fill'])
+                    self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y),
+                                                         color=self.app.defaults["global_alt_sel_line"],
+                                                         face_color=self.app.defaults['global_alt_sel_fill'])
                     self.app.selection_type = False
                 else:
-                    self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x,y))
+                    self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y))
                     self.app.selection_type = True
         else:
             self.app.selection_type = None
-
-    def on_canvas_key_release(self, event):
-        self.key = None
 
     def draw_utility_geometry(self, geo):
         if type(geo.geo) == list:
@@ -3988,7 +3996,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :rtype: None
         """
         with self.app.proc_container.new("Plotting"):
-            # self.app.log.debug("plot_all()")
+
             self.shapes.clear(update=True)
 
             for storage in self.storage_dict:
@@ -4025,7 +4033,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
         :param linewidth: Width of lines in # of pixels.
         :return: List of plotted elements.
         """
-        # plot_elements = []
 
         if geometry is None:
             geometry = self.active_tool.geometry
@@ -4066,7 +4073,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.plot_thread.stop()
                 self.plot_finished.emit()
                 log.debug("FlatCAMGrbEditor --> delayed_plot finished")
-        except Exception:
+        except Exception as e:
             traceback.print_exc()
 
     def setup_ui_after_delayed_plot(self):
@@ -4217,10 +4224,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.buffer_distance_entry.set_value(buff_value)
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
-        # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
+        # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
         join_style = self.buffer_corner_cb.currentIndex() + 1
 
         def buffer_recursion(geom_el, selection):
@@ -4234,14 +4241,17 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     geometric_data = geom_el.geo
                     buffered_geom_el = dict()
                     if 'solid' in geom_el:
-                        buffered_geom_el['solid'] = DrawToolShape(geometric_data['solid'].buffer(buff_value,
-                                                                                              join_style=join_style))
+                        buffered_geom_el['solid'] = DrawToolShape(
+                            geometric_data['solid'].buffer(buff_value, join_style=join_style)
+                        )
                     if 'follow' in geom_el:
-                        buffered_geom_el['follow'] = DrawToolShape(geometric_data['follow'].buffer(buff_value,
-                                                                                              join_style=join_style))
+                        buffered_geom_el['follow'] = DrawToolShape(
+                            geometric_data['follow'].buffer(buff_value, join_style=join_style)
+                        )
                     if 'clear' in geom_el:
-                        buffered_geom_el['clear'] = DrawToolShape(geometric_data['clear'].buffer(buff_value,
-                                                                                              join_style=join_style))
+                        buffered_geom_el['clear'] = DrawToolShape(
+                            geometric_data['clear'].buffer(buff_value, join_style=join_style)
+                        )
                     return buffered_geom_el
                 else:
                     return geom_el
@@ -4367,7 +4377,8 @@ class TransformEditorTool(FlatCAMTool):
 
         self.transform_lay = QtWidgets.QVBoxLayout()
         self.layout.addLayout(self.transform_lay)
-        ## Title
+
+        # Title
         title_label = QtWidgets.QLabel("%s" % (_('Editor %s') % self.toolName))
         title_label.setStyleSheet("""
                 QLabel
@@ -4391,11 +4402,11 @@ class TransformEditorTool(FlatCAMTool):
         self.empty_label4.setFixedWidth(70)
         self.transform_lay.addWidget(self.empty_label)
 
-        ## Rotate Title
+        # Rotate Title
         rotate_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.rotateName)
         self.transform_lay.addWidget(rotate_title_label)
 
-        ## Layout
+        # Layout
         form_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form_layout)
         form_child = QtWidgets.QHBoxLayout()
@@ -4429,11 +4440,11 @@ class TransformEditorTool(FlatCAMTool):
 
         self.transform_lay.addWidget(self.empty_label1)
 
-        ## Skew Title
+        # Skew Title
         skew_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.skewName)
         self.transform_lay.addWidget(skew_title_label)
 
-        ## Form Layout
+        # Form Layout
         form1_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form1_layout)
         form1_child_1 = QtWidgets.QHBoxLayout()
@@ -4486,11 +4497,11 @@ class TransformEditorTool(FlatCAMTool):
 
         self.transform_lay.addWidget(self.empty_label2)
 
-        ## Scale Title
+        # Scale Title
         scale_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.scaleName)
         self.transform_lay.addWidget(scale_title_label)
 
-        ## Form Layout
+        # Form Layout
         form2_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form2_layout)
         form2_child_1 = QtWidgets.QHBoxLayout()
@@ -4561,11 +4572,11 @@ class TransformEditorTool(FlatCAMTool):
 
         self.transform_lay.addWidget(self.empty_label3)
 
-        ## Offset Title
+        # Offset Title
         offset_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.offsetName)
         self.transform_lay.addWidget(offset_title_label)
 
-        ## Form Layout
+        # Form Layout
         form3_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form3_layout)
         form3_child_1 = QtWidgets.QHBoxLayout()
@@ -4618,11 +4629,11 @@ class TransformEditorTool(FlatCAMTool):
 
         self.transform_lay.addWidget(self.empty_label4)
 
-        ## Flip Title
+        # Flip Title
         flip_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.flipName)
         self.transform_lay.addWidget(flip_title_label)
 
-        ## Form Layout
+        # Form Layout
         form4_layout = QtWidgets.QFormLayout()
         form4_child_hlay = QtWidgets.QHBoxLayout()
         self.transform_lay.addLayout(form4_child_hlay)
@@ -4695,7 +4706,7 @@ class TransformEditorTool(FlatCAMTool):
 
         self.transform_lay.addStretch()
 
-        ## Signals
+        # Signals
         self.rotate_button.clicked.connect(self.on_rotate)
         self.skewx_button.clicked.connect(self.on_skewx)
         self.skewy_button.clicked.connect(self.on_skewy)
@@ -4742,7 +4753,7 @@ class TransformEditorTool(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+T', **kwargs)
 
     def set_tool_ui(self):
-        ## Initialize form
+        # Initialize form
         if self.app.defaults["tools_transform_rotate"]:
             self.rotate_entry.set_value(self.app.defaults["tools_transform_rotate"])
         else:
@@ -4847,6 +4858,12 @@ class TransformEditorTool(FlatCAMTool):
         self.flip_ref_entry.set_value(val)
 
     def on_skewx(self, sig=None, val=None):
+        """
+
+        :param sig: here we can get the value passed by the signal
+        :param val: the amount to skew on the X axis
+        :return:
+        """
         if val:
             value = val
         else:
@@ -4868,6 +4885,12 @@ class TransformEditorTool(FlatCAMTool):
         return
 
     def on_skewy(self, sig=None, val=None):
+        """
+
+        :param sig: here we can get the value passed by the signal
+        :param val: the amount to sckew on the Y axis
+        :return:
+        """
         if val:
             value = val
         else:
@@ -4889,75 +4912,91 @@ class TransformEditorTool(FlatCAMTool):
         return
 
     def on_scalex(self, sig=None, val=None):
+        """
+
+        :param sig: here we can get the value passed by the signal
+        :param val: the amount to scale on the X axis
+        :return:
+        """
         if val:
-            xvalue = val
+            x_value = val
         else:
             try:
-                xvalue = float(self.scalex_entry.get_value())
+                x_value = float(self.scalex_entry.get_value())
             except ValueError:
                 # try to convert comma to decimal point. if it's still not working error message and return
                 try:
-                    xvalue = float(self.scalex_entry.get_value().replace(',', '.'))
+                    x_value = float(self.scalex_entry.get_value().replace(',', '.'))
                 except ValueError:
                     self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Scale X, "
                                            "use a number."))
                     return
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
-        if xvalue == 0:
-            xvalue = 1
+        if x_value == 0:
+            x_value = 1
         if self.scale_link_cb.get_value():
-            yvalue = xvalue
+            y_value = x_value
         else:
-            yvalue = 1
+            y_value = 1
 
         axis = 'X'
         point = (0, 0)
         if self.scale_zero_ref_cb.get_value():
             self.app.worker_task.emit({'fcn': self.on_scale,
-                                       'params': [axis, xvalue, yvalue, point]})
+                                       'params': [axis, x_value, y_value, point]})
             # self.on_scale("X", xvalue, yvalue, point=(0,0))
         else:
             # self.on_scale("X", xvalue, yvalue)
             self.app.worker_task.emit({'fcn': self.on_scale,
-                                       'params': [axis, xvalue, yvalue]})
-
-        return
+                                       'params': [axis, x_value, y_value]})
 
     def on_scaley(self, sig=None, val=None):
-        xvalue = 1
+        """
+
+        :param sig: here we can get the value passed by the signal
+        :param val: the amount to scale on the Y axis
+        :return:
+        """
+        x_value = 1
         if val:
-            yvalue = val
+            y_value = val
         else:
             try:
-                yvalue = float(self.scaley_entry.get_value())
+                y_value = float(self.scaley_entry.get_value())
             except ValueError:
                 # try to convert comma to decimal point. if it's still not working error message and return
                 try:
-                    yvalue = float(self.scaley_entry.get_value().replace(',', '.'))
+                    y_value = float(self.scaley_entry.get_value().replace(',', '.'))
                 except ValueError:
                     self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Scale Y, "
                                            "use a number."))
                     return
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
-        if yvalue == 0:
-            yvalue = 1
+        if y_value == 0:
+            y_value = 1
 
         axis = 'Y'
         point = (0, 0)
         if self.scale_zero_ref_cb.get_value():
             self.app.worker_task.emit({'fcn': self.on_scale,
-                                       'params': [axis, xvalue, yvalue, point]})
+                                       'params': [axis, x_value, y_value, point]})
             # self.on_scale("Y", xvalue, yvalue, point=(0,0))
         else:
             # self.on_scale("Y", xvalue, yvalue)
             self.app.worker_task.emit({'fcn': self.on_scale,
-                                       'params': [axis, xvalue, yvalue]})
+                                       'params': [axis, x_value, y_value]})
 
         return
 
     def on_offx(self, sig=None, val=None):
+        """
+
+        :param sig: here we can get the value passed by the signal
+        :param val: the amount to offset on the X axis
+        :return:
+        """
         if val:
             value = val
         else:
@@ -4976,9 +5015,14 @@ class TransformEditorTool(FlatCAMTool):
         axis = 'X'
         self.app.worker_task.emit({'fcn': self.on_offset,
                                    'params': [axis, value]})
-        return
 
     def on_offy(self, sig=None, val=None):
+        """
+
+        :param sig: here we can get the value passed by the signal
+        :param val: the amount to offset on the Y axis
+        :return:
+        """
         if val:
             value = val
         else:
@@ -5000,6 +5044,11 @@ class TransformEditorTool(FlatCAMTool):
         return
 
     def on_rotate_action(self, num):
+        """
+
+        :param num: the angle by which to rotate
+        :return:
+        """
         elem_list = self.draw_app.selected
         xminlist = []
         yminlist = []
@@ -5048,6 +5097,11 @@ class TransformEditorTool(FlatCAMTool):
                 return
 
     def on_flip(self, axis):
+        """
+
+        :param axis: axis to be used as reference for mirroring(flip)
+        :return:
+        """
         elem_list = self.draw_app.selected
         xminlist = []
         yminlist = []
@@ -5112,6 +5166,12 @@ class TransformEditorTool(FlatCAMTool):
                 return
 
     def on_skew(self, axis, num):
+        """
+
+        :param axis: axis by which to do the skeweing
+        :param num: angle value for skew
+        :return:
+        """
         elem_list = self.draw_app.selected
         xminlist = []
         yminlist = []
@@ -5161,6 +5221,14 @@ class TransformEditorTool(FlatCAMTool):
                     return
 
     def on_scale(self, axis, xfactor, yfactor, point=None):
+        """
+
+        :param axis: axis by which to scale
+        :param xfactor: the scale factor on X axis
+        :param yfactor: the scale factor on Y axis
+        :param point: point of reference for scaling
+        :return:
+        """
         elem_list = self.draw_app.selected
         xminlist = []
         yminlist = []
@@ -5214,6 +5282,12 @@ class TransformEditorTool(FlatCAMTool):
                     return
 
     def on_offset(self, axis, num):
+        """
+
+        :param axis: axis to be used as reference for offset
+        :param num: the amount by which to do the offset
+        :return:
+        """
         elem_list = self.draw_app.selected
 
         if not elem_list:
@@ -5353,7 +5427,7 @@ def get_shapely_list_bounds(geometry_list):
             ymin = min([ymin, gymin])
             xmax = max([xmax, gxmax])
             ymax = max([ymax, gymax])
-        except:
-            log.warning("DEVELOPMENT: Tried to get bounds of empty geometry.")
+        except Exception as e:
+            log.warning("DEVELOPMENT: Tried to get bounds of empty geometry. --> %s" % str(e))
 
     return [xmin, ymin, xmax, ymax]

@@ -3149,6 +3149,9 @@ class GerberPreferencesUI(QtWidgets.QWidget):
         self.gerber_exp_group.setFixedWidth(230)
         self.gerber_adv_opt_group = GerberAdvOptPrefGroupUI()
         self.gerber_adv_opt_group.setFixedWidth(200)
+        self.gerber_editor_group = GerberEditorPrefGroupUI()
+        self.gerber_editor_group.setFixedWidth(200)
+
 
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.gerber_opt_group)
@@ -3157,6 +3160,7 @@ class GerberPreferencesUI(QtWidgets.QWidget):
         self.layout.addWidget(self.gerber_gen_group)
         self.layout.addLayout(self.vlay)
         self.layout.addWidget(self.gerber_adv_opt_group)
+        self.layout.addWidget(self.gerber_editor_group)
 
         self.layout.addStretch()
 
@@ -3201,10 +3205,13 @@ class GeometryPreferencesUI(QtWidgets.QWidget):
         self.geometry_opt_group.setFixedWidth(250)
         self.geometry_adv_opt_group = GeometryAdvOptPrefGroupUI()
         self.geometry_adv_opt_group.setFixedWidth(250)
+        self.geometry_editor_group = GeometryEditorPrefGroupUI()
+        self.geometry_editor_group.setFixedWidth(250)
 
         self.layout.addWidget(self.geometry_gen_group)
         self.layout.addWidget(self.geometry_opt_group)
         self.layout.addWidget(self.geometry_adv_opt_group)
+        self.layout.addWidget(self.geometry_editor_group)
 
         self.layout.addStretch()
 
@@ -4187,28 +4194,28 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.aperture_table_visibility_cb, 1, 0)
 
         # Scale Aperture Factor
-        self.scale_aperture_label = QtWidgets.QLabel(_('Ap. Scale Factor:'))
-        self.scale_aperture_label.setToolTip(
-            _("Change the size of the selected apertures.\n"
-            "Factor by which to multiply\n"
-            "geometric features of this object.")
-        )
-        grid0.addWidget(self.scale_aperture_label, 2, 0)
-
-        self.scale_aperture_entry = FloatEntry2()
-        grid0.addWidget(self.scale_aperture_entry, 2, 1)
+        # self.scale_aperture_label = QtWidgets.QLabel(_('Ap. Scale Factor:'))
+        # self.scale_aperture_label.setToolTip(
+        #     _("Change the size of the selected apertures.\n"
+        #     "Factor by which to multiply\n"
+        #     "geometric features of this object.")
+        # )
+        # grid0.addWidget(self.scale_aperture_label, 2, 0)
+        #
+        # self.scale_aperture_entry = FloatEntry2()
+        # grid0.addWidget(self.scale_aperture_entry, 2, 1)
 
         # Buffer Aperture Factor
-        self.buffer_aperture_label = QtWidgets.QLabel(_('Ap. Buffer Factor:'))
-        self.buffer_aperture_label.setToolTip(
-            _("Change the size of the selected apertures.\n"
-            "Factor by which to expand/shrink\n"
-            "geometric features of this object.")
-        )
-        grid0.addWidget(self.buffer_aperture_label, 3, 0)
-
-        self.buffer_aperture_entry = FloatEntry2()
-        grid0.addWidget(self.buffer_aperture_entry, 3, 1)
+        # self.buffer_aperture_label = QtWidgets.QLabel(_('Ap. Buffer Factor:'))
+        # self.buffer_aperture_label.setToolTip(
+        #     _("Change the size of the selected apertures.\n"
+        #     "Factor by which to expand/shrink\n"
+        #     "geometric features of this object.")
+        # )
+        # grid0.addWidget(self.buffer_aperture_label, 3, 0)
+        #
+        # self.buffer_aperture_entry = FloatEntry2()
+        # grid0.addWidget(self.buffer_aperture_entry, 3, 1)
 
         self.layout.addStretch()
 
@@ -4303,6 +4310,40 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         )
 
         form.addRow(self.zeros_label, self.zeros_radio)
+
+        self.layout.addStretch()
+
+
+class GerberEditorPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Gerber Adv. Options Preferences", parent=parent)
+        super(GerberEditorPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str(_("Gerber Editor")))
+
+        # Advanced Gerber Parameters
+        self.param_label = QtWidgets.QLabel(_("<b>Parameters:</b>"))
+        self.param_label.setToolTip(
+            _("A list of Gerber Editor parameters.")
+        )
+        self.layout.addWidget(self.param_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        # Selection Limit
+        self.sel_limit_label = QtWidgets.QLabel(_("Selection limit:"))
+        self.sel_limit_label.setToolTip(
+            _("Set the number of selected Gerber geometry\n"
+              "items above which the utility geometry\n"
+              "becomes just a selection rectangle.\n"
+              "Increases the performance when moving a\n"
+              "large number of geometric elements.")
+        )
+        self.sel_limit_entry = IntEntry()
+
+        grid0.addWidget(self.sel_limit_label, 0, 0)
+        grid0.addWidget(self.sel_limit_entry, 0, 1)
 
         self.layout.addStretch()
 
@@ -5312,6 +5353,40 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(segy_label, 10, 0)
         self.segy_entry = FCEntry()
         grid1.addWidget(self.segy_entry, 10, 1)
+
+        self.layout.addStretch()
+
+
+class GeometryEditorPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Gerber Adv. Options Preferences", parent=parent)
+        super(GeometryEditorPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str(_("Geometry Editor")))
+
+        # Advanced Geometry Parameters
+        self.param_label = QtWidgets.QLabel(_("<b>Parameters:</b>"))
+        self.param_label.setToolTip(
+            _("A list of Geometry Editor parameters.")
+        )
+        self.layout.addWidget(self.param_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        # Selection Limit
+        self.sel_limit_label = QtWidgets.QLabel(_("Selection limit:"))
+        self.sel_limit_label.setToolTip(
+            _("Set the number of selected geometry\n"
+              "items above which the utility geometry\n"
+              "becomes just a selection rectangle.\n"
+              "Increases the performance when moving a\n"
+              "large number of geometric elements.")
+        )
+        self.sel_limit_entry = IntEntry()
+
+        grid0.addWidget(self.sel_limit_label, 0, 0)
+        grid0.addWidget(self.sel_limit_entry, 0, 1)
 
         self.layout.addStretch()
 

@@ -2454,6 +2454,8 @@ class FCMove(FCShapeTool):
 
         self.origin = None
         self.destination = None
+        self.sel_limit = self.draw_app.app.defaults["geometry_editor_sel_limit"]
+        self.selection_shape = self.selection_bbox()
 
         if len(self.draw_app.get_selected()) == 0:
             self.draw_app.app.inform.emit(_("[WARNING_NOTCL] MOVE: No shape selected. Select a shape to move ..."))
@@ -2475,29 +2477,46 @@ class FCMove(FCShapeTool):
 
         if self.origin is None:
             self.set_origin(point)
+            self.selection_shape = self.selection_bbox()
             return "Click on final location."
         else:
             self.destination = point
             self.make()
+            # self.draw_app.app.worker_task.emit(({'fcn': self.make,
+            #                                      'params': []}))
             return "Done."
 
     def make(self):
-        # Create new geometry
-        dx = self.destination[0] - self.origin[0]
-        dy = self.destination[1] - self.origin[1]
-        self.geometry = [DrawToolShape(affinity.translate(geom.geo, xoff=dx, yoff=dy))
-                         for geom in self.draw_app.get_selected()]
+        with self.draw_app.app.proc_container.new("Moving Geometry ..."):
+            # Create new geometry
+            dx = self.destination[0] - self.origin[0]
+            dy = self.destination[1] - self.origin[1]
+            self.geometry = [DrawToolShape(affinity.translate(geom.geo, xoff=dx, yoff=dy))
+                             for geom in self.draw_app.get_selected()]
 
-        # Delete old
-        self.draw_app.delete_selected()
+            # Delete old
+            self.draw_app.delete_selected()
+            self.complete = True
+            self.draw_app.app.inform.emit(_("[success] Done. Geometry(s) Move completed."))
 
-        # # Select the new
-        # for g in self.geometry:
-        #     # Note that g is not in the app's buffer yet!
-        #     self.draw_app.set_selected(g)
+    def selection_bbox(self):
+        geo_list = []
+        for select_shape in self.draw_app.get_selected():
+            geometric_data = select_shape.geo
+            try:
+                for g in geometric_data:
+                    geo_list.append(g)
+            except TypeError:
+                geo_list.append(geometric_data)
 
-        self.complete = True
-        self.draw_app.app.inform.emit(_("[success] Done. Geometry(s) Move completed."))
+        xmin, ymin, xmax, ymax = get_shapely_list_bounds(geo_list)
+
+        pt1 = (xmin, ymin)
+        pt2 = (xmax, ymin)
+        pt3 = (xmax, ymax)
+        pt4 = (xmin, ymax)
+
+        return Polygon([pt1, pt2, pt3, pt4])
 
     def utility_geometry(self, data=None):
         """
@@ -2517,17 +2536,21 @@ class FCMove(FCShapeTool):
         dx = data[0] - self.origin[0]
         dy = data[1] - self.origin[1]
 
-        try:
-            for geom in self.draw_app.get_selected():
-                geo_list.append(affinity.translate(geom.geo, xoff=dx, yoff=dy))
-        except AttributeError:
-            self.draw_app.select_tool('select')
-            self.draw_app.selected = []
-            return
-
-        return DrawToolUtilityShape(geo_list)
-        # return DrawToolUtilityShape([affinity.translate(geom.geo, xoff=dx, yoff=dy)
-        #                              for geom in self.draw_app.get_selected()])
+        if len(self.draw_app.get_selected()) <= self.sel_limit:
+            try:
+                for geom in self.draw_app.get_selected():
+                    geo_list.append(affinity.translate(geom.geo, xoff=dx, yoff=dy))
+            except AttributeError:
+                self.draw_app.select_tool('select')
+                self.draw_app.selected = []
+                return
+            return DrawToolUtilityShape(geo_list)
+        else:
+            try:
+                ss_el = affinity.translate(self.selection_shape, xoff=dx, yoff=dy)
+            except ValueError:
+                ss_el = None
+            return DrawToolUtilityShape(ss_el)
 
     def select_shapes(self, pos):
         # list where we store the overlapped shapes under our mouse left click position
@@ -4351,3 +4374,22 @@ def mag(vec):
 
 def poly2rings(poly):
     return [poly.exterior] + [interior for interior in poly.interiors]
+
+
+def get_shapely_list_bounds(geometry_list):
+    xmin = Inf
+    ymin = Inf
+    xmax = -Inf
+    ymax = -Inf
+
+    for gs in geometry_list:
+        try:
+            gxmin, gymin, gxmax, gymax = gs.bounds
+            xmin = min([xmin, gxmin])
+            ymin = min([ymin, gymin])
+            xmax = max([xmax, gxmax])
+            ymax = max([ymax, gymax])
+        except Exception as e:
+            log.warning("DEVELOPMENT: Tried to get bounds of empty geometry. --> %s" % str(e))
+
+    return [xmin, ymin, xmax, ymax]

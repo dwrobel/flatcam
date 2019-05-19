@@ -371,8 +371,8 @@ class App(QtCore.QObject):
 
             # Gerber Advanced Options
             "gerber_aperture_display": self.ui.gerber_defaults_form.gerber_adv_opt_group.aperture_table_visibility_cb,
-            "gerber_aperture_scale_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.scale_aperture_entry,
-            "gerber_aperture_buffer_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.buffer_aperture_entry,
+            # "gerber_aperture_scale_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.scale_aperture_entry,
+            # "gerber_aperture_buffer_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.buffer_aperture_entry,
             "gerber_follow": self.ui.gerber_defaults_form.gerber_adv_opt_group.follow_cb,
 
             # Gerber Export
@@ -380,6 +380,9 @@ class App(QtCore.QObject):
             "gerber_exp_integer": self.ui.gerber_defaults_form.gerber_exp_group.format_whole_entry,
             "gerber_exp_decimals": self.ui.gerber_defaults_form.gerber_exp_group.format_dec_entry,
             "gerber_exp_zeros": self.ui.gerber_defaults_form.gerber_exp_group.zeros_radio,
+
+            # Gerber Editor
+            "gerber_editor_sel_limit": self.ui.gerber_defaults_form.gerber_editor_group.sel_limit_entry,
 
             # Excellon General
             "excellon_plot": self.ui.excellon_defaults_form.excellon_gen_group.plot_cb,
@@ -457,6 +460,9 @@ class App(QtCore.QObject):
             "geometry_f_plunge": self.ui.geometry_defaults_form.geometry_adv_opt_group.fplunge_cb,
             "geometry_segx": self.ui.geometry_defaults_form.geometry_adv_opt_group.segx_entry,
             "geometry_segy": self.ui.geometry_defaults_form.geometry_adv_opt_group.segy_entry,
+
+            # Geometry Editor
+            "geometry_editor_sel_limit": self.ui.geometry_defaults_form.geometry_editor_group.sel_limit_entry,
 
             # CNCJob General
             "cncjob_plot": self.ui.cncjob_defaults_form.cncjob_gen_group.plot_cb,
@@ -699,6 +705,9 @@ class App(QtCore.QObject):
             "gerber_exp_decimals": 4,
             "gerber_exp_zeros": 'L',
 
+            # Gerber Editor
+            "gerber_editor_sel_limit": 30,
+
             # Excellon General
             "excellon_plot": True,
             "excellon_solid": True,
@@ -775,6 +784,9 @@ class App(QtCore.QObject):
             "geometry_feedrate_probe": 3.0,
             "geometry_segx": 0.0,
             "geometry_segy": 0.0,
+
+            # Geometry Editor
+            "geometry_editor_sel_limit": 30,
 
             # CNC Job General
             "cncjob_plot": True,
@@ -2277,7 +2289,7 @@ class App(QtCore.QObject):
                     elif isinstance(edited_obj, FlatCAMGerber):
                         obj_type = "Gerber"
                         if cleanup is None:
-                            self.grb_editor.update_fcgerber(edited_obj)
+                            self.grb_editor.update_fcgerber()
                             self.grb_editor.update_options(edited_obj)
                         self.grb_editor.deactivate_grb_editor()
 
