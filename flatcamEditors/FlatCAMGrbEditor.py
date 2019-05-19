@@ -2776,7 +2776,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setDefaultSectionSize(70)
         horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
-        horizontal_header.resizeSection(0, 20)
+        horizontal_header.resizeSection(0, 27)
         horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)

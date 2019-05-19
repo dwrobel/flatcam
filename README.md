@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed the Circle Steps parameter for both Gerber and Geometry objects not being applied and instead the app internal defaults were used.
 - fixed the Tcl command Geocutout issue that gave an error when using the 4 or 8 value for gaps parameter
+- made wider the '#' column for Apertures Table for Gerber Object and for Gerber Editor; in this way numbers with 3 digits can be seen
 
 18.05.2019
 
