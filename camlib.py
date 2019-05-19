@@ -86,7 +86,7 @@ class Geometry(object):
 
     defaults = {
         "units": 'in',
-        "geo_steps_per_circle": 64
+        "geo_steps_per_circle": 128
     }
 
     def __init__(self, geo_steps_per_circle=None):
@@ -1884,10 +1884,10 @@ class Gerber (Geometry):
 
     """
 
-    defaults = {
-        "steps_per_circle": 56,
-        "use_buffer_for_union": True
-    }
+    # defaults = {
+    #     "steps_per_circle": 128,
+    #     "use_buffer_for_union": True
+    # }
 
     def __init__(self, steps_per_circle=None):
         """
@@ -1899,12 +1899,12 @@ class Gerber (Geometry):
         """
 
         # How to discretize a circle.
-        if steps_per_circle is None:
-            steps_per_circle = int(Gerber.defaults['steps_per_circle'])
-        self.steps_per_circle = int(steps_per_circle)
+        # if steps_per_circle is None:
+        #     steps_per_circle = int(Gerber.defaults['steps_per_circle'])
+        self.steps_per_circle = int(self.app.defaults["gerber_circle_steps"])
 
         # Initialize parent
-        Geometry.__init__(self, geo_steps_per_circle=int(steps_per_circle))
+        Geometry.__init__(self, geo_steps_per_circle=int(self.app.defaults["gerber_circle_steps"]))
 
         # Number format
         self.int_digits = 3
@@ -2043,7 +2043,7 @@ class Gerber (Geometry):
         self.am1_re = re.compile(r'^%AM([^\*]+)\*([^%]+)?(%)?$')
         self.am2_re = re.compile(r'(.*)%$')
 
-        self.use_buffer_for_union = self.defaults["use_buffer_for_union"]
+        self.use_buffer_for_union = self.app.defaults["gerber_use_buffer_for_union"]
 
     def aperture_parse(self, apertureId, apertureType, apParameters):
         """
@@ -2455,9 +2455,9 @@ class Gerber (Geometry):
                             log.debug("Bare op-code %d." % current_operation_code)
 
                             geo_dict = dict()
-                            flash = Gerber.create_flash_geometry(
+                            flash = self.create_flash_geometry(
                                 Point(current_x, current_y), self.apertures[current_aperture],
-                                int(self.steps_per_circle))
+                                self.steps_per_circle)
 
                             geo_dict['follow'] = Point([current_x, current_y])
 
@@ -2870,10 +2870,10 @@ class Gerber (Geometry):
                         geo_dict['follow'] = geo_flash
 
                         # this treats the case when we are storing geometry as solids
-                        flash = Gerber.create_flash_geometry(
+                        flash = self.create_flash_geometry(
                             Point( [linear_x, linear_y]),
                             self.apertures[current_aperture],
-                            int(self.steps_per_circle)
+                            self.steps_per_circle
                         )
                         if not flash.is_empty:
                             poly_buffer.append(flash)
@@ -3011,7 +3011,7 @@ class Gerber (Geometry):
 
                         this_arc = arc(center, radius, start, stop,
                                        arcdir[current_interpolation_mode],
-                                       int(self.steps_per_circle))
+                                       self.steps_per_circle)
 
                         # The last point in the computed arc can have
                         # numerical errors. The exact final point is the
@@ -3065,7 +3065,7 @@ class Gerber (Geometry):
                                 log.debug("########## ACCEPTING ARC ############")
                                 this_arc = arc(center, radius, start, stop,
                                                arcdir[current_interpolation_mode],
-                                               int(self.steps_per_circle))
+                                               self.steps_per_circle)
 
                                 # Replace with exact values
                                 this_arc[-1] = (circular_x, circular_y)
@@ -3132,7 +3132,6 @@ class Gerber (Geometry):
 
             conversion_factor = 25.4 if file_units == 'IN' else (1/25.4) if file_units != app_units else 1
 
-
             # --- Apply buffer ---
             # this treats the case when we are storing geometry as paths
             self.follow_geometry = follow_buffer
@@ -3174,9 +3173,6 @@ class Gerber (Geometry):
     def create_flash_geometry(location, aperture, steps_per_circle=None):
 
         # log.debug('Flashing @%s, Aperture: %s' % (location, aperture))
-
-        if steps_per_circle is None:
-            steps_per_circle = 64
 
         if type(location) == list:
             location = Point(location)

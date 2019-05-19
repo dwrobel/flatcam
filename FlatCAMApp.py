@@ -684,7 +684,7 @@ class App(QtCore.QObject):
             "gerber_noncopperrounded": False,
             "gerber_bboxmargin": 0.1,
             "gerber_bboxrounded": False,
-            "gerber_circle_steps": 64,
+            "gerber_circle_steps": 128,
             "gerber_use_buffer_for_union": True,
 
             # Gerber Advanced Options
@@ -746,7 +746,7 @@ class App(QtCore.QObject):
 
             # Geometry General
             "geometry_plot": True,
-            "geometry_circle_steps": 64,
+            "geometry_circle_steps": 128,
             "geometry_cnctooldia": 0.016,
 
             # Geometry Options
