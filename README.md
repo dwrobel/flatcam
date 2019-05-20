@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 20.05.2019
 
 - more PEP8 changes in Gerber editor
+- Gerber Editor - started to work on a new editor tool: Eraser
 
 19.05.2019
 
