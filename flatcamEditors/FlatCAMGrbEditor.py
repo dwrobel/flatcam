@@ -82,7 +82,7 @@ class DrawToolShape(object):
                 return
         return pts
 
-    def __init__(self, geo={}):
+    def __init__(self, geo=None):
 
         # Shapely type or list of such
         self.geo = geo
@@ -525,11 +525,13 @@ class FCPadArray(FCShapeTool):
                     new_geo_el = dict()
 
                     if 'solid' in geo_el:
-                        new_geo_el['solid'] = affinity.translate(geo_el['solid'], xoff=(dx - self.last_dx),
-                                                                 yoff=(dy - self.last_dy))
+                        new_geo_el['solid'] = affinity.translate(
+                            geo_el['solid'], xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)
+                        )
                     if 'follow' in geo_el:
-                        new_geo_el['follow'] = affinity.translate(geo_el['solid'], xoff=(dx - self.last_dx),
-                                                                 yoff=(dy - self.last_dy))
+                        new_geo_el['follow'] = affinity.translate(
+                            geo_el['solid'], xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)
+                        )
                     geo_el_list.append(new_geo_el)
 
                 else:
@@ -582,7 +584,7 @@ class FCPadArray(FCShapeTool):
             center = Point([point_x, point_y])
             new_geo_el['solid'] = center.buffer(self.radius)
             new_geo_el['follow'] = center
-            return  new_geo_el
+            return new_geo_el
         elif ap_type == 'R':
             new_geo_el = dict()
 
@@ -590,9 +592,9 @@ class FCPadArray(FCShapeTool):
             p2 = (point_x + self.half_width, point_y - self.half_height)
             p3 = (point_x + self.half_width, point_y + self.half_height)
             p4 = (point_x - self.half_width, point_y + self.half_height)
-            new_geo_el['solid'] =  Polygon([p1, p2, p3, p4, p1])
+            new_geo_el['solid'] = Polygon([p1, p2, p3, p4, p1])
             new_geo_el['follow'] = Point([point_x, point_y])
-            return  new_geo_el
+            return new_geo_el
         elif ap_type == 'O':
             geo = []
             new_geo_el = dict()
@@ -725,7 +727,7 @@ class FCPoligonize(FCShapeTool):
         self.name = 'poligonize'
         self.draw_app = draw_app
 
-        self.draw_app.app.inform.emit( _("Select shape(s) and then click ..."))
+        self.draw_app.app.inform.emit(_("Select shape(s) and then click ..."))
         self.draw_app.in_action = True
         self.make()
 
@@ -748,7 +750,7 @@ class FCPoligonize(FCShapeTool):
                         apid_set.add(apid)
                         break
 
-        if len (apid_set) > 1:
+        if len(apid_set) > 1:
             self.draw_app.in_action = False
             self.complete = True
             self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Failed. Poligonize works only on "
@@ -849,8 +851,9 @@ class FCRegion(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
-            pass
+        except Exception as e:
+            log.debug("FlatCAMGrbEditor.FCRegion --> %s" % str(e))
+
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
@@ -1863,7 +1866,7 @@ class FCApertureMove(FCShapeTool):
                     self.geometry.append(DrawToolShape(new_geo_el))
                     self.current_storage.remove(select_shape)
                     sel_shapes_to_be_deleted.append(select_shape)
-                    self.draw_app.on_grb_shape_complete(self.current_storage, noplot=True)
+                    self.draw_app.on_grb_shape_complete(self.current_storage, no_plot=True)
                     self.geometry = []
 
             for shp in sel_shapes_to_be_deleted:

@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+20.05.2019
+
+- more PEP8 changes in Gerber editor
+
 19.05.2019
 
 - fixed the Circle Steps parameter for both Gerber and Geometry objects not being applied and instead the app internal defaults were used.
