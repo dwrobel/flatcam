@@ -3878,6 +3878,7 @@ class Excellon(Geometry):
                 # Header Begin (M48) #
                 if self.hbegin_re.search(eline):
                     in_header = True
+                    headerless = False
                     log.warning("Found start of the header: %s" % eline)
                     continue
 

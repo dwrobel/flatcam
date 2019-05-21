@@ -1905,7 +1905,7 @@ class App(QtCore.QObject):
                          'dim', 'mil', 'grb', 'top', 'bot', 'smt', 'smb', 'sst', 'ssb', 'spt', 'spb', 'pho', 'gdo',
                          'art', 'gbd', 'gb0', 'gb1', 'gb2', 'gb3', 'g4', 'gb5', 'gb6', 'gb7', 'gb8', 'gb9'
                          ]
-        self.exc_list = ['drl', 'txt', 'xln', 'drd', 'tap', 'exc']
+        self.exc_list = ['drl', 'txt', 'xln', 'drd', 'tap', 'exc', 'ncd']
         self.gcode_list = ['nc', 'ncc', 'tap', 'gcode', 'cnc', 'ecs', 'fnc', 'dnc', 'ncg', 'gc', 'fan', 'fgc', 'din',
                       'xpi', 'hnc', 'h', 'i', 'ncp', 'min', 'gcd', 'rol', 'mpr', 'ply', 'out', 'eia', 'plt', 'sbp',
                       'mpf']
@@ -5945,7 +5945,7 @@ class App(QtCore.QObject):
         self.report_usage("on_fileopenexcellon")
         App.log.debug("on_fileopenexcellon()")
 
-        _filter_ = "Excellon Files (*.drl *.txt *.xln *.drd *.tap *.exc);;" \
+        _filter_ = "Excellon Files (*.drl *.txt *.xln *.drd *.tap *.exc *.ncd);;" \
                    "All Files (*.*)"
 
         try:
