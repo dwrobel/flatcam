@@ -1963,11 +1963,12 @@ class FCEraser(FCShapeTool):
         self.destination = None
         self.selected_apertures = []
 
-        if self.draw_app.launched_from_shortcuts is True:
-            self.draw_app.launched_from_shortcuts = False
-            self.draw_app.app.inform.emit(_("Select a shape to act as deletion area ..."))
+        if len(self.draw_app.get_selected()) == 0:
+            if self.draw_app.launched_from_shortcuts is True:
+                self.draw_app.launched_from_shortcuts = False
+                self.draw_app.app.inform.emit(_("Select a shape to act as deletion area ..."))
         else:
-            self.draw_app.app.inform.emit(_("Click to erase ..."))
+            self.draw_app.app.inform.emit(_("Click to pick-up the erase shape..."))
 
         self.current_storage = None
         self.geometry = []
@@ -1987,39 +1988,40 @@ class FCEraser(FCShapeTool):
         self.origin = origin
 
     def click(self, point):
-        self.draw_app.apertures_table.clearSelection()
-        sel_aperture = set()
+        if len(self.draw_app.get_selected()) == 0:
+            self.draw_app.apertures_table.clearSelection()
+            sel_aperture = set()
 
-        for storage in self.draw_app.storage_dict:
+            for storage in self.draw_app.storage_dict:
+                try:
+                    for geo_el in self.draw_app.storage_dict[storage]['geometry']:
+                        if 'solid' in geo_el.geo:
+                            geometric_data = geo_el.geo['solid']
+                            if Point(point).within(geometric_data):
+                                self.draw_app.selected = []
+                                self.draw_app.selected.append(geo_el)
+                                sel_aperture.add(storage)
+                except KeyError:
+                    pass
+
+            # select the aperture in the Apertures Table that is associated with the selected shape
             try:
-                for geo_el in self.draw_app.storage_dict[storage]['geometry']:
-                    if 'solid' in geo_el.geo:
-                        geometric_data = geo_el.geo['solid']
-                        if Point(point).within(geometric_data):
-                            self.draw_app.selected = []
-                            self.draw_app.selected.append(geo_el)
-                            sel_aperture.add(storage)
-            except KeyError:
-                pass
+                self.draw_app.apertures_table.cellPressed.disconnect()
+            except Exception as e:
+                log.debug("FlatCAMGrbEditor.FCEraser.click_release() --> %s" % str(e))
 
-        # select the aperture in the Apertures Table that is associated with the selected shape
-        try:
-            self.draw_app.apertures_table.cellPressed.disconnect()
-        except Exception as e:
-            log.debug("FlatCAMGrbEditor.FCEraser.click_release() --> %s" % str(e))
+            self.draw_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+            for aper in sel_aperture:
+                for row in range(self.draw_app.apertures_table.rowCount()):
+                    if str(aper) == self.draw_app.apertures_table.item(row, 1).text():
+                        self.draw_app.apertures_table.selectRow(row)
+                        self.draw_app.last_aperture_selected = aper
+            self.draw_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
-        self.draw_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
-        for aper in sel_aperture:
-            for row in range(self.draw_app.apertures_table.rowCount()):
-                if str(aper) == self.draw_app.apertures_table.item(row, 1).text():
-                    self.draw_app.apertures_table.selectRow(row)
-                    self.draw_app.last_aperture_selected = aper
-        self.draw_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-
-        self.draw_app.apertures_table.cellPressed.connect(self.draw_app.on_row_selected)
+            self.draw_app.apertures_table.cellPressed.connect(self.draw_app.on_row_selected)
 
         if len(self.draw_app.get_selected()) == 0:
-            return "Nothing to move."
+            return "Nothing to ersase."
 
         if self.origin is None:
             self.set_origin(point)
@@ -2029,52 +2031,32 @@ class FCEraser(FCShapeTool):
             self.destination = point
             self.make()
 
-            # MS: always return to the Select Tool
-            self.draw_app.select_tool("select")
+            # self.draw_app.select_tool("select")
             return
 
-    # def click_release(self, point):
-    #     self.draw_app.apertures_table.clearSelection()
-    #     sel_aperture = set()
-    #
-    #     for storage in self.draw_app.storage_dict:
-    #         try:
-    #             for geo_el in self.draw_app.storage_dict[storage]['geometry']:
-    #                 if 'solid' in geo_el.geo:
-    #                     geometric_data = geo_el.geo['solid']
-    #                     if Point(point).within(geometric_data):
-    #                         self.draw_app.selected = []
-    #                         self.draw_app.selected.append(geo_el)
-    #                         sel_aperture.add(storage)
-    #         except KeyError:
-    #             pass
-    #
-    #     # select the aperture in the Apertures Table that is associated with the selected shape
-    #     try:
-    #         self.draw_app.apertures_table.cellPressed.disconnect()
-    #     except Exception as e:
-    #         log.debug("FlatCAMGrbEditor.FCEraser.click_release() --> %s" % str(e))
-    #
-    #     self.draw_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
-    #     for aper in sel_aperture:
-    #         for row in range(self.draw_app.apertures_table.rowCount()):
-    #             if str(aper) == self.draw_app.apertures_table.item(row, 1).text():
-    #                 self.draw_app.apertures_table.selectRow(row)
-    #                 self.draw_app.last_aperture_selected = aper
-    #     self.draw_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-    #
-    #     self.draw_app.apertures_table.cellPressed.connect(self.draw_app.on_row_selected)
-    #
-    #     return ""
-
     def make(self):
-        # Create new geometry
-        dx = self.destination[0] - self.origin[0]
-        dy = self.destination[1] - self.origin[1]
-        sel_shapes_to_be_deleted = []
+        eraser_sel_shapes = []
 
+        # create the eraser shape from selection
+        for eraser_shape in self.utility_geometry(data=self.destination).geo:
+            temp_shape = eraser_shape['solid'].buffer(0.0000001)
+            temp_shape = Polygon(temp_shape.exterior)
+            eraser_sel_shapes.append(temp_shape)
+        eraser_sel_shapes = cascaded_union(eraser_sel_shapes)
+
+        for storage in self.draw_app.storage_dict:
+            try:
+                for geo_el in self.draw_app.storage_dict[storage]['geometry']:
+                    if 'solid' in geo_el.geo:
+                        geometric_data = geo_el.geo['solid']
+                        if eraser_sel_shapes.within(geometric_data) or eraser_sel_shapes.intersects(geometric_data):
+                            geo_el.geo['solid'] = geometric_data.difference(eraser_sel_shapes)
+            except KeyError:
+                pass
+
+        self.draw_app.delete_utility_geometry()
         self.draw_app.plot_all()
-        self.draw_app.app.inform.emit(_("[success] Done. Apertures Move completed."))
+        self.draw_app.app.inform.emit(_("[success] Done. Eraser tool action completed."))
 
     def clean_up(self):
         self.draw_app.selected = []
