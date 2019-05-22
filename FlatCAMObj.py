@@ -17,9 +17,9 @@ import itertools
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
-import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
@@ -35,9 +35,9 @@ class ValidationError(Exception):
 
         self.errors = errors
 
-########################################
-##            FlatCAMObj              ##
-########################################
+# #######################################
+# #            FlatCAMObj              ##
+# #######################################
 
 
 class FlatCAMObj(QtCore.QObject):
@@ -122,7 +122,8 @@ class FlatCAMObj(QtCore.QObject):
                 try:
                     setattr(self, attr, d[attr])
                 except KeyError:
-                    log.debug("FlatCAMObj.from_dict() --> KeyError: %s. Means that we are loading an old project that don't"
+                    log.debug("FlatCAMObj.from_dict() --> KeyError: %s. "
+                              "Means that we are loading an old project that don't"
                               "have all attributes in the latest FlatCAM." % str(attr))
                     pass
 
@@ -203,8 +204,8 @@ class FlatCAMObj(QtCore.QObject):
         self.app.report_usage("obj_on_offset_button")
 
         self.read_form()
-        vect = self.ui.offsetvector_entry.get_value()
-        self.offset(vect)
+        vector_val = self.ui.offsetvector_entry.get_value()
+        self.offset(vector_val)
         self.plot()
         self.app.object_changed.emit(self)
 
@@ -219,9 +220,9 @@ class FlatCAMObj(QtCore.QObject):
     def on_skew_button_click(self):
         self.app.report_usage("obj_on_skew_button")
         self.read_form()
-        xangle = self.ui.xangle_entry.get_value()
-        yangle = self.ui.yangle_entry.get_value()
-        self.skew(xangle, yangle)
+        x_angle = self.ui.xangle_entry.get_value()
+        y_angle = self.ui.yangle_entry.get_value()
+        self.skew(x_angle, y_angle)
         self.plot()
         self.app.object_changed.emit(self)
 
@@ -420,7 +421,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     if option is not 'name':
                         try:
                             grb_final.options[option] = grb.options[option]
-                        except:
+                        except KeyError:
                             log.warning("Failed to copy option.", option)
 
                 try:
@@ -440,10 +441,10 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         # and finally made string because the apertures dict keys are strings
                         max_ap = str(max([int(k) for k in grb_final.apertures.keys()]) + 1)
                         grb_final.apertures[max_ap] = {}
-                        grb_final.apertures[max_ap]['solid_geometry'] = []
+                        grb_final.apertures[max_ap]['geometry'] = []
 
                         for k, v in grb.apertures[ap].items():
-                            grb_final.apertures[max_ap][k] = v
+                            grb_final.apertures[max_ap][k] = deepcopy(v)
 
         grb_final.solid_geometry = MultiPolygon(grb_final.solid_geometry)
         grb_final.follow_geometry = MultiPolygon(grb_final.follow_geometry)
@@ -685,7 +686,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         horizontal_header.setMinimumSectionSize(10)
         horizontal_header.setDefaultSectionSize(70)
         horizontal_header.setSectionResizeMode(0, QtWidgets.QHeaderView.Fixed)
-        horizontal_header.resizeSection(0, 20)
+        horizontal_header.resizeSection(0, 27)
         horizontal_header.setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
         horizontal_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
@@ -1096,8 +1097,13 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     elif type(g) == Point:
                         pass
                     else:
-                        for el in g:
-                            self.add_shape(shape=el, color=color,
+                        try:
+                            for el in g:
+                                self.add_shape(shape=el, color=color,
+                                               face_color=random_color() if self.options['multicolored']
+                                               else face_color, visible=self.options['plot'])
+                        except TypeError:
+                            self.add_shape(shape=g, color=color,
                                            face_color=random_color() if self.options['multicolored']
                                            else face_color, visible=self.options['plot'])
             else:
@@ -1155,17 +1161,16 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 self.app.progress.emit(30)
                 try:
                     if aperture_to_plot_mark in self.apertures:
-                        if type(self.apertures[aperture_to_plot_mark]['solid_geometry']) is not list:
-                            self.apertures[aperture_to_plot_mark]['solid_geometry'] = \
-                                [self.apertures[aperture_to_plot_mark]['solid_geometry']]
-                        for geo in self.apertures[aperture_to_plot_mark]['solid_geometry']:
-                            if type(geo) == Polygon or type(geo) == LineString:
-                                self.add_mark_shape(apid=aperture_to_plot_mark, shape=geo, color=color,
-                                                    face_color=color, visible=visibility)
-                            else:
-                                for el in geo:
-                                    self.add_mark_shape(apid=aperture_to_plot_mark, shape=el, color=color,
+                        for elem in self.apertures[aperture_to_plot_mark]['geometry']:
+                            if 'solid' in elem:
+                                geo = elem['solid']
+                                if type(geo) == Polygon or type(geo) == LineString:
+                                    self.add_mark_shape(apid=aperture_to_plot_mark, shape=geo, color=color,
                                                         face_color=color, visible=visibility)
+                                else:
+                                    for el in geo:
+                                        self.add_mark_shape(apid=aperture_to_plot_mark, shape=el, color=color,
+                                                            face_color=color, visible=visibility)
 
                     self.mark_shapes[aperture_to_plot_mark].redraw()
                     self.app.progress.emit(100)
@@ -1305,38 +1310,13 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         try:
             length = whole + fract
             if '0' in self.apertures:
-                if 'solid_geometry' in self.apertures['0']:
-                    for geo in self.apertures['0']['solid_geometry']:
-                        gerber_code += 'G36*\n'
-                        geo_coords = list(geo.exterior.coords)
-                        # first command is a move with pen-up D02 at the beginning of the geo
-                        if g_zeros == 'T':
-                            x_formatted, y_formatted = tz_format(geo_coords[0][0], geo_coords[0][1], factor)
-                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
-                                                                           yform=y_formatted)
-                        else:
-                            x_formatted, y_formatted = lz_format(geo_coords[0][0], geo_coords[0][1], factor)
-                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
-                                                                           yform=y_formatted)
-                        for coord in geo_coords[1:]:
-                            if g_zeros == 'T':
-                                x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
-                                gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
-                                                                               yform=y_formatted)
-                            else:
-                                x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
-                                gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
-                                                                               yform=y_formatted)
-                        gerber_code += 'D02*\n'
-                        gerber_code += 'G37*\n'
-
-                        clear_list = list(geo.interiors)
-                        if clear_list:
-                            gerber_code += '%LPC*%\n'
-                            for clear_geo in clear_list:
+                if 'geometry' in self.apertures['0']:
+                    for geo_elem in self.apertures['0']['geometry']:
+                        if 'solid' in geo_elem:
+                            geo = geo_elem['solid']
+                            if not geo.is_empty:
                                 gerber_code += 'G36*\n'
-                                geo_coords = list(clear_geo.coords)
-
+                                geo_coords = list(geo.exterior.coords)
                                 # first command is a move with pen-up D02 at the beginning of the geo
                                 if g_zeros == 'T':
                                     x_formatted, y_formatted = tz_format(geo_coords[0][0], geo_coords[0][1], factor)
@@ -1357,78 +1337,166 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                                                                        yform=y_formatted)
                                 gerber_code += 'D02*\n'
                                 gerber_code += 'G37*\n'
-                            gerber_code += '%LPD*%\n'
+
+                                clear_list = list(geo.interiors)
+                                if clear_list:
+                                    gerber_code += '%LPC*%\n'
+                                    for clear_geo in clear_list:
+                                        gerber_code += 'G36*\n'
+                                        geo_coords = list(clear_geo.coords)
+
+                                        # first command is a move with pen-up D02 at the beginning of the geo
+                                        if g_zeros == 'T':
+                                            x_formatted, y_formatted = tz_format(
+                                                geo_coords[0][0], geo_coords[0][1], factor)
+                                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                           yform=y_formatted)
+                                        else:
+                                            x_formatted, y_formatted = lz_format(
+                                                geo_coords[0][0], geo_coords[0][1], factor)
+                                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                           yform=y_formatted)
+
+                                        prev_coord = geo_coords[0]
+                                        for coord in geo_coords[1:]:
+                                            if coord != prev_coord:
+                                                if g_zeros == 'T':
+                                                    x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                                    gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                                   yform=y_formatted)
+                                                else:
+                                                    x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                                    gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                                   yform=y_formatted)
+                                            prev_coord = coord
+
+                                        gerber_code += 'D02*\n'
+                                        gerber_code += 'G37*\n'
+                                    gerber_code += '%LPD*%\n'
+                        if 'clear' in geo_elem:
+                            geo = geo_elem['clear']
+                            if not geo.is_empty:
+                                gerber_code += '%LPC*%\n'
+                                gerber_code += 'G36*\n'
+                                geo_coords = list(geo.exterior.coords)
+                                # first command is a move with pen-up D02 at the beginning of the geo
+                                if g_zeros == 'T':
+                                    x_formatted, y_formatted = tz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                                    gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+                                else:
+                                    x_formatted, y_formatted = lz_format(geo_coords[0][0], geo_coords[0][1], factor)
+                                    gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                   yform=y_formatted)
+
+                                prev_coord = geo_coords[0]
+                                for coord in geo_coords[1:]:
+                                    if coord != prev_coord:
+                                        if g_zeros == 'T':
+                                            x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                            gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                           yform=y_formatted)
+                                        else:
+                                            x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                            gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                           yform=y_formatted)
+                                    prev_coord = coord
+
+                                gerber_code += 'D02*\n'
+                                gerber_code += 'G37*\n'
+                                gerber_code += '%LPD*%\n'
 
             for apid in self.apertures:
                 if apid == '0':
                     continue
                 else:
                     gerber_code += 'D%s*\n' % str(apid)
+                    if 'geometry' in self.apertures[apid]:
+                        for geo_elem in self.apertures[apid]['geometry']:
+                            if 'follow' in geo_elem:
+                                geo = geo_elem['follow']
+                                if not geo.is_empty:
+                                    if isinstance(geo, Point):
+                                        if g_zeros == 'T':
+                                            x_formatted, y_formatted = tz_format(geo.x, geo.y, factor)
+                                            gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
+                                                                                           yform=y_formatted)
+                                        else:
+                                            x_formatted, y_formatted = lz_format(geo.x, geo.y, factor)
+                                            gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
+                                                                                           yform=y_formatted)
+                                    else:
+                                        geo_coords = list(geo.coords)
+                                        # first command is a move with pen-up D02 at the beginning of the geo
+                                        if g_zeros == 'T':
+                                            x_formatted, y_formatted = tz_format(
+                                                geo_coords[0][0], geo_coords[0][1], factor)
+                                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                           yform=y_formatted)
+                                        else:
+                                            x_formatted, y_formatted = lz_format(
+                                                geo_coords[0][0], geo_coords[0][1], factor)
+                                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                           yform=y_formatted)
 
-                    if 'follow_geometry' in self.apertures[apid]:
-                        for geo in self.apertures[apid]['follow_geometry']:
-                            if isinstance(geo, Point):
-                                if g_zeros == 'T':
-                                    x_formatted, y_formatted = tz_format(geo.x, geo.y, factor)
-                                    gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
-                                                                                   yform=y_formatted)
-                                else:
-                                    x_formatted, y_formatted = lz_format(geo.x, geo.y, factor)
-                                    gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
-                                                                                   yform=y_formatted)
-                            else:
-                                geo_coords = list(geo.coords)
-                                # first command is a move with pen-up D02 at the beginning of the geo
-                                if g_zeros == 'T':
-                                    x_formatted, y_formatted = tz_format(geo_coords[0][0], geo_coords[0][1], factor)
-                                    gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
-                                                                                   yform=y_formatted)
-                                else:
-                                    x_formatted, y_formatted = lz_format(geo_coords[0][0], geo_coords[0][1], factor)
-                                    gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
-                                                                                   yform=y_formatted)
-                                for coord in geo_coords[1:]:
-                                    if g_zeros == 'T':
-                                        x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
-                                        gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
-                                                                                       yform=y_formatted)
+                                        prev_coord = geo_coords[0]
+                                        for coord in geo_coords[1:]:
+                                            if coord != prev_coord:
+                                                if g_zeros == 'T':
+                                                    x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                                    gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                                   yform=y_formatted)
+                                                else:
+                                                    x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                                    gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                                   yform=y_formatted)
+                                            prev_coord = coord
+
+                                        # gerber_code += "D02*\n"
+
+                            if 'clear' in geo_elem:
+                                gerber_code += '%LPC*%\n'
+
+                                geo = geo_elem['clear']
+                                if not geo.is_empty:
+                                    if isinstance(geo, Point):
+                                        if g_zeros == 'T':
+                                            x_formatted, y_formatted = tz_format(geo.x, geo.y, factor)
+                                            gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
+                                                                                           yform=y_formatted)
+                                        else:
+                                            x_formatted, y_formatted = lz_format(geo.x, geo.y, factor)
+                                            gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
+                                                                                           yform=y_formatted)
                                     else:
-                                        x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
-                                        gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
-                                                                                       yform=y_formatted)
-                    if 'clear_follow_geometry' in self.apertures[apid]:
-                        gerber_code += '%LPC*%\n'
-                        for geo in self.apertures[apid]['clear_follow_geometry']:
-                            if isinstance(geo, Point):
-                                if g_zeros == 'T':
-                                    x_formatted, y_formatted = tz_format(geo.x, geo.y, factor)
-                                    gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
-                                                                                   yform=y_formatted)
-                                else:
-                                    x_formatted, y_formatted = lz_format(geo.x, geo.y, factor)
-                                    gerber_code += "X{xform}Y{yform}D03*\n".format(xform=x_formatted,
-                                                                                   yform=y_formatted)
-                            else:
-                                geo_coords = list(geo.coords)
-                                # first command is a move with pen-up D02 at the beginning of the geo
-                                if g_zeros == 'T':
-                                    x_formatted, y_formatted = tz_format(geo_coords[0][0], geo_coords[0][1], factor)
-                                    gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
-                                                                                   yform=y_formatted)
-                                else:
-                                    x_formatted, y_formatted = lz_format(geo_coords[0][0], geo_coords[0][1], factor)
-                                    gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
-                                                                                   yform=y_formatted)
-                                for coord in geo_coords[1:]:
-                                    if g_zeros == 'T':
-                                        x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
-                                        gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
-                                                                                       yform=y_formatted)
-                                    else:
-                                        x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
-                                        gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
-                                                                                       yform=y_formatted)
-                        gerber_code += '%LPD*%\n'
+                                        geo_coords = list(geo.coords)
+                                        # first command is a move with pen-up D02 at the beginning of the geo
+                                        if g_zeros == 'T':
+                                            x_formatted, y_formatted = tz_format(
+                                                geo_coords[0][0], geo_coords[0][1], factor)
+                                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                           yform=y_formatted)
+                                        else:
+                                            x_formatted, y_formatted = lz_format(
+                                                geo_coords[0][0], geo_coords[0][1], factor)
+                                            gerber_code += "X{xform}Y{yform}D02*\n".format(xform=x_formatted,
+                                                                                           yform=y_formatted)
+
+                                        prev_coord = geo_coords[0]
+                                        for coord in geo_coords[1:]:
+                                            if coord != prev_coord:
+                                                if g_zeros == 'T':
+                                                    x_formatted, y_formatted = tz_format(coord[0], coord[1], factor)
+                                                    gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                                   yform=y_formatted)
+                                                else:
+                                                    x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
+                                                    gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
+                                                                                                  yform=y_formatted)
+
+                                            prev_coord = coord
+                                        # gerber_code += "D02*\n"
+                                    gerber_code += '%LPD*%\n'
 
         except Exception as e:
             log.debug("FlatCAMObj.FlatCAMGerber.export_gerber() --> %s" % str(e))
@@ -2449,6 +2517,13 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.ui.feedrate_probe_entry.setVisible(False)
             self.ui.feedrate_probe_label.hide()
 
+        if 'marlin' in current_pp.lower() or 'custom' in current_pp.lower():
+            self.ui.feedrate_rapid_label.show()
+            self.ui.feedrate_rapid_entry.show()
+        else:
+            self.ui.feedrate_rapid_label.hide()
+            self.ui.feedrate_rapid_entry.hide()
+
     def on_create_cncjob_button_click(self, *args):
         self.app.report_usage("excellon_on_create_cncjob_button")
         self.read_form()
@@ -2502,8 +2577,10 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             job_obj.feedrate_rapid = float(self.options["feedrate_rapid"])
 
             job_obj.spindlespeed = float(self.options["spindlespeed"]) if self.options["spindlespeed"] else None
+            job_obj.spindledir = self.app.defaults['excellon_spindledir']
             job_obj.dwell = self.options["dwell"]
             job_obj.dwelltime = float(self.options["dwelltime"])
+
             job_obj.pp_excellon_name = pp_excellon_name
 
             job_obj.toolchange_xy_type = "excellon"
@@ -4093,6 +4170,13 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.feedrate_probe_entry.setVisible(False)
             self.ui.feedrate_probe_label.hide()
 
+        if 'marlin' in current_pp.lower() or 'custom' in current_pp.lower():
+            self.ui.fr_rapidlabel.show()
+            self.ui.cncfeedrate_rapid_entry.show()
+        else:
+            self.ui.fr_rapidlabel.hide()
+            self.ui.cncfeedrate_rapid_entry.hide()
+
     def on_generatecnc_button_click(self, *args):
 
         self.app.report_usage("geometry_on_generatecnc_button")
@@ -4350,6 +4434,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     'offset_value': tool_offset
                 })
 
+                spindledir = self.app.defaults['geometry_spindledir']
+
                 job_obj.coords_decimals = self.app.defaults["cncjob_coords_decimals"]
                 job_obj.fr_decimals = self.app.defaults["cncjob_fr_decimals"]
 
@@ -4369,7 +4455,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     self, tooldia=tooldia_val, offset=tool_offset, tolerance=0.0005,
                     z_cut=z_cut, z_move=z_move,
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
-                    spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
+                    spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
                     multidepth=multidepth, depthpercut=depthpercut,
                     extracut=extracut, startz=startz, endz=endz,
                     toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
@@ -4593,12 +4679,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
                 app_obj.progress.emit(40)
 
+                spindledir = self.app.defaults['geometry_spindledir']
+
                 tool_solid_geometry = self.tools[current_uid]['solid_geometry']
                 res = job_obj.generate_from_multitool_geometry(
                     tool_solid_geometry, tooldia=tooldia_val, offset=tool_offset,
                     tolerance=0.0005, z_cut=z_cut, z_move=z_move,
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
-                    spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
+                    spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
                     multidepth=multidepth, depthpercut=depthpercut,
                     extracut=extracut, startz=startz, endz=endz,
                     toolchange=toolchange, toolchangez=toolchangez, toolchangexy=toolchangexy,
@@ -5468,6 +5556,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         if gc == 'fail':
             return
 
+        if self.app.defaults["global_open_style"] is False:
+            self.app.file_opened.emit("gcode", filename)
         self.app.file_saved.emit("gcode", filename)
         self.app.inform.emit(_("[success] Machine Code file saved to: %s") % filename)
 
@@ -5687,7 +5777,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # lines = StringIO(self.gcode)
         lines = StringIO(g)
 
-        ## Write
+        # Write
         if filename is not None:
             try:
                 with open(filename, 'w') as f:
@@ -5701,7 +5791,8 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 return
         elif to_file is False:
             # Just for adding it to the recent files list.
-            self.app.file_opened.emit("cncjob", filename)
+            if self.app.defaults["global_open_style"] is False:
+                self.app.file_opened.emit("cncjob", filename)
             self.app.file_saved.emit("cncjob", filename)
 
             self.app.inform.emit("[success] Saved to: " + filename)

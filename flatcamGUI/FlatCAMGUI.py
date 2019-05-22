@@ -686,6 +686,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_add_text_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/text32.png'), _('Add Text'))
         self.geo_add_buffer_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), _('Add Buffer'))
         self.geo_add_paint_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/paint20_1.png'), _('Paint Shape'))
+        self.geo_eraser_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/eraser26.png'), _('Eraser'))
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_union_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/union32.png'), _('Polygon Union'))
@@ -720,6 +721,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), _('Buffer'))
         self.aperture_scale_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/scale32.png'), _('Scale'))
+        self.aperture_eraser_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/eraser26.png'), _('Eraser'))
+
         self.grb_edit_toolbar.addSeparator()
         self.aperture_copy_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _("Copy"))
         self.aperture_delete_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/trash32.png'),
@@ -922,7 +925,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.pref_import_button = QtWidgets.QPushButton()
         self.pref_import_button.setText(_("Import Preferences"))
-        self.pref_import_button.setFixedWidth(130)
+        self.pref_import_button.setMinimumWidth(130)
         self.pref_import_button.setToolTip(
             _("Import a full set of FlatCAM settings from a file\n"
             "previously saved on HDD.\n\n"
@@ -932,7 +935,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.pref_export_button = QtWidgets.QPushButton()
         self.pref_export_button.setText(_("Export Preferences"))
-        self.pref_export_button.setFixedWidth(130)
+        self.pref_export_button.setMinimumWidth(130)
         self.pref_export_button.setToolTip(
            _( "Export a full set of FlatCAM settings in a file\n"
             "that is saved on HDD."))
@@ -940,7 +943,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.pref_open_button = QtWidgets.QPushButton()
         self.pref_open_button.setText(_("Open Pref Folder"))
-        self.pref_open_button.setFixedWidth(130)
+        self.pref_open_button.setMinimumWidth(130)
         self.pref_open_button.setToolTip(
             _("Open the folder where FlatCAM save the preferences files."))
         self.pref_tab_bottom_layout_1.addWidget(self.pref_open_button)
@@ -951,7 +954,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.pref_save_button = QtWidgets.QPushButton()
         self.pref_save_button.setText(_("Save Preferences"))
-        self.pref_save_button.setFixedWidth(130)
+        self.pref_save_button.setMinimumWidth(130)
         self.pref_save_button.setToolTip(
             _("Save the current settings in the 'current_defaults' file\n"
             "which is the file storing the working default preferences."))
@@ -1908,6 +1911,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_add_buffer_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'),
                                                                   _('Add Buffer'))
         self.geo_add_paint_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/paint20_1.png'), _('Paint Shape'))
+        self.geo_eraser_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/eraser26.png'), _('Eraser'))
+
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_union_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/union32.png'), _('Polygon Union'))
@@ -1942,6 +1947,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), _('Buffer'))
         self.aperture_scale_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/scale32.png'), _('Scale'))
+        self.aperture_eraser_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/eraser26.png'), _('Eraser'))
+
         self.grb_edit_toolbar.addSeparator()
         self.aperture_copy_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _("Copy"))
         self.aperture_delete_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/trash32.png'),
@@ -3149,6 +3156,9 @@ class GerberPreferencesUI(QtWidgets.QWidget):
         self.gerber_exp_group.setFixedWidth(230)
         self.gerber_adv_opt_group = GerberAdvOptPrefGroupUI()
         self.gerber_adv_opt_group.setFixedWidth(200)
+        self.gerber_editor_group = GerberEditorPrefGroupUI()
+        self.gerber_editor_group.setFixedWidth(200)
+
 
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.gerber_opt_group)
@@ -3157,6 +3167,7 @@ class GerberPreferencesUI(QtWidgets.QWidget):
         self.layout.addWidget(self.gerber_gen_group)
         self.layout.addLayout(self.vlay)
         self.layout.addWidget(self.gerber_adv_opt_group)
+        self.layout.addWidget(self.gerber_editor_group)
 
         self.layout.addStretch()
 
@@ -3201,10 +3212,13 @@ class GeometryPreferencesUI(QtWidgets.QWidget):
         self.geometry_opt_group.setFixedWidth(250)
         self.geometry_adv_opt_group = GeometryAdvOptPrefGroupUI()
         self.geometry_adv_opt_group.setFixedWidth(250)
+        self.geometry_editor_group = GeometryEditorPrefGroupUI()
+        self.geometry_editor_group.setFixedWidth(250)
 
         self.layout.addWidget(self.geometry_gen_group)
         self.layout.addWidget(self.geometry_opt_group)
         self.layout.addWidget(self.geometry_adv_opt_group)
+        self.layout.addWidget(self.geometry_editor_group)
 
         self.layout.addStretch()
 
@@ -3336,12 +3350,12 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.workspace_lbl = QtWidgets.QLabel(_('Workspace:'))
         self.workspace_lbl.setToolTip(
            _( "Draw a delimiting rectangle on canvas.\n"
-            "The purpose is to illustrate the limits for our work.")
+              "The purpose is to illustrate the limits for our work.")
         )
         self.workspace_type_lbl = QtWidgets.QLabel(_('Wk. format:'))
         self.workspace_type_lbl.setToolTip(
            _( "Select the type of rectangle to be used on canvas,\n"
-            "as valid workspace.")
+              "as valid workspace.")
         )
         self.workspace_cb = FCCheckBox()
         self.wk_cb = FCComboBox()
@@ -3356,8 +3370,8 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.pf_color_label = QtWidgets.QLabel(_('Plot Fill:'))
         self.pf_color_label.setToolTip(
            _( "Set the fill color for plotted objects.\n"
-            "First 6 digits are the color and the last 2\n"
-            "digits are for alpha (transparency) level.")
+              "First 6 digits are the color and the last 2\n"
+              "digits are for alpha (transparency) level.")
         )
         self.pf_color_entry = FCEntry()
         self.pf_color_button = QtWidgets.QPushButton()
@@ -3743,18 +3757,18 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Units for FlatCAM
         self.unitslabel = QtWidgets.QLabel(_('<b>Units:</b>'))
         self.unitslabel.setToolTip(_("The default value for FlatCAM units.\n"
-                                   "Whatever is selected here is set every time\n"
-                                   "FLatCAM is started."))
+                                     "Whatever is selected here is set every time\n"
+                                     "FLatCAM is started."))
         self.units_radio = RadioSet([{'label': 'IN', 'value': 'IN'},
                                      {'label': 'MM', 'value': 'MM'}])
 
         # Application Level for FlatCAM
         self.app_level_label = QtWidgets.QLabel(_('<b>APP. LEVEL:</b>'))
         self.app_level_label.setToolTip(_("Choose the default level of usage for FlatCAM.\n"
-                                        "BASIC level -> reduced functionality, best for beginner's.\n"
-                                        "ADVANCED level -> full functionality.\n\n"
-                                        "The choice here will influence the parameters in\n"
-                                        "the Selected Tab for all kinds of FlatCAM objects."))
+                                          "BASIC level -> reduced functionality, best for beginner's.\n"
+                                          "ADVANCED level -> full functionality.\n\n"
+                                          "The choice here will influence the parameters in\n"
+                                          "the Selected Tab for all kinds of FlatCAM objects."))
         self.app_level_radio = RadioSet([{'label': 'Basic', 'value': 'b'},
                                          {'label': 'Advanced', 'value': 'a'}])
 
@@ -3776,24 +3790,24 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.shell_startup_label = QtWidgets.QLabel(_('Shell at StartUp:'))
         self.shell_startup_label.setToolTip(
             _("Check this box if you want the shell to\n"
-            "start automatically at startup.")
+              "start automatically at startup.")
         )
         self.shell_startup_cb = FCCheckBox(label='')
         self.shell_startup_cb.setToolTip(
             _("Check this box if you want the shell to\n"
-            "start automatically at startup.")
+              "start automatically at startup.")
         )
 
         # Version Check CB
         self.version_check_label = QtWidgets.QLabel(_('Version Check:'))
         self.version_check_label.setToolTip(
             _("Check this box if you want to check\n"
-            "for a new version automatically at startup.")
+              "for a new version automatically at startup.")
         )
         self.version_check_cb = FCCheckBox(label='')
         self.version_check_cb.setToolTip(
             _("Check this box if you want to check\n"
-            "for a new version automatically at startup.")
+              "for a new version automatically at startup.")
         )
 
         # Send Stats CB
@@ -3805,7 +3819,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.send_stats_cb= FCCheckBox(label='')
         self.send_stats_cb.setToolTip(
             _("Check this box if you agree to send anonymous\n"
-            "stats automatically at startup, to help improve FlatCAM.")
+              "stats automatically at startup, to help improve FlatCAM.")
         )
 
         self.ois_version_check = OptionalInputSection(self.version_check_cb, [self.send_stats_cb])
@@ -3813,8 +3827,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Select mouse pan button
         self.panbuttonlabel = QtWidgets.QLabel(_('<b>Pan Button:</b>'))
         self.panbuttonlabel.setToolTip(_("Select the mouse button to use for panning:\n"
-                                       "- MMB --> Middle Mouse Button\n"
-                                       "- RMB --> Right Mouse Button"))
+                                         "- MMB --> Middle Mouse Button\n"
+                                         "- RMB --> Right Mouse Button"))
         self.pan_button_radio = RadioSet([{'label': 'MMB', 'value': '3'},
                                      {'label': 'RMB', 'value': '2'}])
 
@@ -3822,44 +3836,44 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.mselectlabel = QtWidgets.QLabel(_('<b>Multiple Sel:</b>'))
         self.mselectlabel.setToolTip(_("Select the key used for multiple selection."))
         self.mselect_radio = RadioSet([{'label': 'CTRL', 'value': 'Control'},
-                                     {'label': 'SHIFT', 'value': 'Shift'}])
+                                       {'label': 'SHIFT', 'value': 'Shift'}])
 
         # Project at StartUp CB
         self.project_startup_label = QtWidgets.QLabel(_('Project at StartUp:'))
         self.project_startup_label.setToolTip(
             _("Check this box if you want the project/selected/tool tab area to\n"
-            "to be shown automatically at startup.")
+              "to be shown automatically at startup.")
         )
         self.project_startup_cb = FCCheckBox(label='')
         self.project_startup_cb.setToolTip(
             _("Check this box if you want the project/selected/tool tab area to\n"
-            "to be shown automatically at startup.")
+              "to be shown automatically at startup.")
         )
 
         # Project autohide CB
         self.project_autohide_label = QtWidgets.QLabel(_('Project AutoHide:'))
         self.project_autohide_label.setToolTip(
            _( "Check this box if you want the project/selected/tool tab area to\n"
-            "hide automatically when there are no objects loaded and\n"
-            "to show whenever a new object is created.")
+              "hide automatically when there are no objects loaded and\n"
+              "to show whenever a new object is created.")
         )
         self.project_autohide_cb = FCCheckBox(label='')
         self.project_autohide_cb.setToolTip(
             _("Check this box if you want the project/selected/tool tab area to\n"
-            "hide automatically when there are no objects loaded and\n"
-            "to show whenever a new object is created.")
+              "hide automatically when there are no objects loaded and\n"
+              "to show whenever a new object is created.")
         )
 
         # Enable/Disable ToolTips globally
         self.toggle_tooltips_label = QtWidgets.QLabel(_('<b>Enable ToolTips:</b>'))
         self.toggle_tooltips_label.setToolTip(
            _( "Check this box if you want to have toolTips displayed\n"
-            "when hovering with mouse over items throughout the App.")
+              "when hovering with mouse over items throughout the App.")
         )
         self.toggle_tooltips_cb = FCCheckBox(label='')
         self.toggle_tooltips_cb.setToolTip(
            _( "Check this box if you want to have toolTips displayed\n"
-            "when hovering with mouse over items throughout the App.")
+              "when hovering with mouse over items throughout the App.")
         )
         self.worker_number_label = QtWidgets.QLabel(_('Workers number:'))
         self.worker_number_label.setToolTip(
@@ -3928,15 +3942,22 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # to the main layout of this TAB
         self.layout.addLayout(self.form_box)
 
-        # hlay = QtWidgets.QHBoxLayout()
-        # self.layout.addLayout(hlay)
-        # hlay.addStretch()
+        # Save compressed project CB
+        self.open_style_cb = FCCheckBox(_('"Open" behavior'))
+        self.open_style_cb.setToolTip(
+            _("When checked the path for the last saved file is used when saving files,\n"
+              "and the path for the last opened file is used when opening files.\n\n"
+              "When unchecked the path for opening files is the one used last: either the\n"
+              "path for saving files or the path for opening files.")
+        )
+        # self.advanced_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
+        self.layout.addWidget(self.open_style_cb)
 
         # Save compressed project CB
         self.save_type_cb = FCCheckBox(_('Save Compressed Project'))
         self.save_type_cb.setToolTip(
             _("Whether to save a compressed or uncompressed project.\n"
-            "When checked it will save a compressed FlatCAM project.")
+              "When checked it will save a compressed FlatCAM project.")
         )
         # self.advanced_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.layout.addWidget(self.save_type_cb)
@@ -3949,8 +3970,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.compress_label = QtWidgets.QLabel(_('Compression Level:'))
         self.compress_label.setToolTip(
             _("The level of compression used when saving\n"
-            "a FlatCAM project. Higher value means better compression\n"
-            "but require more RAM usage and more processing time.")
+              "a FlatCAM project. Higher value means better compression\n"
+              "but require more RAM usage and more processing time.")
         )
         # self.advanced_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.compress_combo.addItems([str(i) for i in range(10)])
@@ -4180,28 +4201,28 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.aperture_table_visibility_cb, 1, 0)
 
         # Scale Aperture Factor
-        self.scale_aperture_label = QtWidgets.QLabel(_('Ap. Scale Factor:'))
-        self.scale_aperture_label.setToolTip(
-            _("Change the size of the selected apertures.\n"
-            "Factor by which to multiply\n"
-            "geometric features of this object.")
-        )
-        grid0.addWidget(self.scale_aperture_label, 2, 0)
-
-        self.scale_aperture_entry = FloatEntry2()
-        grid0.addWidget(self.scale_aperture_entry, 2, 1)
+        # self.scale_aperture_label = QtWidgets.QLabel(_('Ap. Scale Factor:'))
+        # self.scale_aperture_label.setToolTip(
+        #     _("Change the size of the selected apertures.\n"
+        #     "Factor by which to multiply\n"
+        #     "geometric features of this object.")
+        # )
+        # grid0.addWidget(self.scale_aperture_label, 2, 0)
+        #
+        # self.scale_aperture_entry = FloatEntry2()
+        # grid0.addWidget(self.scale_aperture_entry, 2, 1)
 
         # Buffer Aperture Factor
-        self.buffer_aperture_label = QtWidgets.QLabel(_('Ap. Buffer Factor:'))
-        self.buffer_aperture_label.setToolTip(
-            _("Change the size of the selected apertures.\n"
-            "Factor by which to expand/shrink\n"
-            "geometric features of this object.")
-        )
-        grid0.addWidget(self.buffer_aperture_label, 3, 0)
-
-        self.buffer_aperture_entry = FloatEntry2()
-        grid0.addWidget(self.buffer_aperture_entry, 3, 1)
+        # self.buffer_aperture_label = QtWidgets.QLabel(_('Ap. Buffer Factor:'))
+        # self.buffer_aperture_label.setToolTip(
+        #     _("Change the size of the selected apertures.\n"
+        #     "Factor by which to expand/shrink\n"
+        #     "geometric features of this object.")
+        # )
+        # grid0.addWidget(self.buffer_aperture_label, 3, 0)
+        #
+        # self.buffer_aperture_entry = FloatEntry2()
+        # grid0.addWidget(self.buffer_aperture_entry, 3, 1)
 
         self.layout.addStretch()
 
@@ -4296,6 +4317,40 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         )
 
         form.addRow(self.zeros_label, self.zeros_radio)
+
+        self.layout.addStretch()
+
+
+class GerberEditorPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Gerber Adv. Options Preferences", parent=parent)
+        super(GerberEditorPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str(_("Gerber Editor")))
+
+        # Advanced Gerber Parameters
+        self.param_label = QtWidgets.QLabel(_("<b>Parameters:</b>"))
+        self.param_label.setToolTip(
+            _("A list of Gerber Editor parameters.")
+        )
+        self.layout.addWidget(self.param_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        # Selection Limit
+        self.sel_limit_label = QtWidgets.QLabel(_("Selection limit:"))
+        self.sel_limit_label.setToolTip(
+            _("Set the number of selected Gerber geometry\n"
+              "items above which the utility geometry\n"
+              "becomes just a selection rectangle.\n"
+              "Increases the performance when moving a\n"
+              "large number of geometric elements.")
+        )
+        self.sel_limit_entry = IntEntry()
+
+        grid0.addWidget(self.sel_limit_label, 0, 0)
+        grid0.addWidget(self.sel_limit_entry, 0, 1)
 
         self.layout.addStretch()
 
@@ -4525,7 +4580,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
         )
 
-        self.optimization_time_entry = LengthEntry()
+        self.optimization_time_entry = IntEntry()
+        self.optimization_time_entry.setValidator(QtGui.QIntValidator(0, 999))
         form_box_excellon.addRow(self.optimization_time_label, self.optimization_time_entry)
 
         current_platform = platform.architecture()[0]
@@ -4627,6 +4683,20 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.spindlespeed_entry = IntEntry(allow_empty=True)
         grid2.addWidget(self.spindlespeed_entry, 5, 1)
 
+        # Spindle direction
+        spindle_dir_label = QtWidgets.QLabel(_('Spindle dir.:'))
+        spindle_dir_label.setToolTip(
+            _("This sets the direction that the spindle is rotating.\n"
+              "It can be either:\n"
+              "- CW = clockwise or\n"
+              "- CCW = counter clockwise")
+        )
+
+        self.spindledir_radio = RadioSet([{'label': 'CW', 'value': 'CW'},
+                                          {'label': 'CCW', 'value': 'CCW'}])
+        grid2.addWidget(spindle_dir_label, 6, 0)
+        grid2.addWidget(self.spindledir_radio, 6, 1)
+
         # Dwell
         dwelllabel = QtWidgets.QLabel(_('Dwell:'))
         dwelllabel.setToolTip(
@@ -4639,10 +4709,10 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         )
         self.dwell_cb = FCCheckBox()
         self.dwelltime_entry = FCEntry()
-        grid2.addWidget(dwelllabel, 6, 0)
-        grid2.addWidget(self.dwell_cb, 6, 1)
-        grid2.addWidget(dwelltime, 7, 0)
-        grid2.addWidget(self.dwelltime_entry, 7, 1)
+        grid2.addWidget(dwelllabel, 7, 0)
+        grid2.addWidget(self.dwell_cb, 7, 1)
+        grid2.addWidget(dwelltime, 8, 0)
+        grid2.addWidget(self.dwelltime_entry, 8, 1)
 
         self.ois_dwell_exc = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
@@ -4652,10 +4722,10 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
             _("The postprocessor file that dictates\n"
             "gcode output.")
         )
-        grid2.addWidget(pp_excellon_label, 8, 0)
+        grid2.addWidget(pp_excellon_label, 9, 0)
         self.pp_excellon_name_cb = FCComboBox()
         self.pp_excellon_name_cb.setFocusPolicy(Qt.StrongFocus)
-        grid2.addWidget(self.pp_excellon_name_cb, 8, 1)
+        grid2.addWidget(self.pp_excellon_name_cb, 9, 1)
 
 
         #### Choose what to use for Gcode creation: Drills, Slots or Both
@@ -4669,8 +4739,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.excellon_gcode_type_radio = RadioSet([{'label': 'Drills', 'value': 'drills'},
                                           {'label': 'Slots', 'value': 'slots'},
                                           {'label': 'Both', 'value': 'both'}])
-        grid2.addWidget(excellon_gcode_type_label, 9, 0)
-        grid2.addWidget(self.excellon_gcode_type_radio, 9, 1)
+        grid2.addWidget(excellon_gcode_type_label, 10, 0)
+        grid2.addWidget(self.excellon_gcode_type_radio, 10, 1)
 
         # until I decide to implement this feature those remain disabled
         excellon_gcode_type_label.hide()
@@ -5120,6 +5190,20 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
         self.cncspindlespeed_entry = IntEntry(allow_empty=True)
         grid1.addWidget(self.cncspindlespeed_entry, 8, 1)
 
+        # Spindle direction
+        spindle_dir_label = QtWidgets.QLabel(_('Spindle dir.:'))
+        spindle_dir_label.setToolTip(
+            _("This sets the direction that the spindle is rotating.\n"
+              "It can be either:\n"
+              "- CW = clockwise or\n"
+              "- CCW = counter clockwise")
+        )
+
+        self.spindledir_radio = RadioSet([{'label': 'CW', 'value': 'CW'},
+                                          {'label': 'CCW', 'value': 'CCW'}])
+        grid1.addWidget(spindle_dir_label, 9, 0)
+        grid1.addWidget(self.spindledir_radio, 9, 1)
+
         # Dwell
         self.dwell_cb = FCCheckBox(label=_('Dwell:'))
         self.dwell_cb.setToolTip(
@@ -5131,9 +5215,9 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             _("Number of milliseconds for spindle to dwell.")
         )
         self.dwelltime_entry = FCEntry()
-        grid1.addWidget(self.dwell_cb, 9, 0)
-        grid1.addWidget(dwelltime, 10, 0)
-        grid1.addWidget(self.dwelltime_entry, 10, 1)
+        grid1.addWidget(self.dwell_cb, 10, 0)
+        grid1.addWidget(dwelltime, 11, 0)
+        grid1.addWidget(self.dwelltime_entry, 11, 1)
 
         self.ois_dwell = OptionalInputSection(self.dwell_cb, [self.dwelltime_entry])
 
@@ -5143,10 +5227,10 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
             _("The postprocessor file that dictates\n"
             "Machine Code output.")
         )
-        grid1.addWidget(pp_label, 11, 0)
+        grid1.addWidget(pp_label, 12, 0)
         self.pp_geometry_name_cb = FCComboBox()
         self.pp_geometry_name_cb.setFocusPolicy(Qt.StrongFocus)
-        grid1.addWidget(self.pp_geometry_name_cb, 11, 1)
+        grid1.addWidget(self.pp_geometry_name_cb, 12, 1)
 
         self.layout.addStretch()
 
@@ -5276,6 +5360,40 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(segy_label, 10, 0)
         self.segy_entry = FCEntry()
         grid1.addWidget(self.segy_entry, 10, 1)
+
+        self.layout.addStretch()
+
+
+class GeometryEditorPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Gerber Adv. Options Preferences", parent=parent)
+        super(GeometryEditorPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str(_("Geometry Editor")))
+
+        # Advanced Geometry Parameters
+        self.param_label = QtWidgets.QLabel(_("<b>Parameters:</b>"))
+        self.param_label.setToolTip(
+            _("A list of Geometry Editor parameters.")
+        )
+        self.layout.addWidget(self.param_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        # Selection Limit
+        self.sel_limit_label = QtWidgets.QLabel(_("Selection limit:"))
+        self.sel_limit_label.setToolTip(
+            _("Set the number of selected geometry\n"
+              "items above which the utility geometry\n"
+              "becomes just a selection rectangle.\n"
+              "Increases the performance when moving a\n"
+              "large number of geometric elements.")
+        )
+        self.sel_limit_entry = IntEntry()
+
+        grid0.addWidget(self.sel_limit_label, 0, 0)
+        grid0.addWidget(self.sel_limit_entry, 0, 1)
 
         self.layout.addStretch()
 

@@ -90,7 +90,11 @@ class grbl_laser(FlatCAMPostProc):
         return 'G01 F' + str(self.feedrate_format %(p.fr_decimals, p.z_feedrate))
 
     def spindle_code(self, p):
-        return ''
+        sdir = {'CW': 'M03', 'CCW': 'M04'}[p.spindledir]
+        if p.spindlespeed:
+            return '%s S%s' % (sdir, str(p.spindlespeed))
+        else:
+            return sdir
 
     def dwell_code(self, p):
         return ''

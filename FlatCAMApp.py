@@ -94,8 +94,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.916
-    version_date = "2019/05/10"
+    version = 8.917
+    version_date = "2019/05/22"
     beta = True
 
     # current date now
@@ -324,6 +324,8 @@ class App(QtCore.QObject):
             "global_worker_number": self.ui.general_defaults_form.general_app_group.worker_number_sb,
             "global_tolerance": self.ui.general_defaults_form.general_app_group.tol_entry,
 
+            "global_open_style": self.ui.general_defaults_form.general_app_group.open_style_cb,
+
             "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_combo,
             "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
 
@@ -369,8 +371,8 @@ class App(QtCore.QObject):
 
             # Gerber Advanced Options
             "gerber_aperture_display": self.ui.gerber_defaults_form.gerber_adv_opt_group.aperture_table_visibility_cb,
-            "gerber_aperture_scale_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.scale_aperture_entry,
-            "gerber_aperture_buffer_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.buffer_aperture_entry,
+            # "gerber_aperture_scale_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.scale_aperture_entry,
+            # "gerber_aperture_buffer_factor": self.ui.gerber_defaults_form.gerber_adv_opt_group.buffer_aperture_entry,
             "gerber_follow": self.ui.gerber_defaults_form.gerber_adv_opt_group.follow_cb,
 
             # Gerber Export
@@ -378,6 +380,9 @@ class App(QtCore.QObject):
             "gerber_exp_integer": self.ui.gerber_defaults_form.gerber_exp_group.format_whole_entry,
             "gerber_exp_decimals": self.ui.gerber_defaults_form.gerber_exp_group.format_dec_entry,
             "gerber_exp_zeros": self.ui.gerber_defaults_form.gerber_exp_group.zeros_radio,
+
+            # Gerber Editor
+            "gerber_editor_sel_limit": self.ui.gerber_defaults_form.gerber_editor_group.sel_limit_entry,
 
             # Excellon General
             "excellon_plot": self.ui.excellon_defaults_form.excellon_gen_group.plot_cb,
@@ -396,6 +401,7 @@ class App(QtCore.QObject):
             "excellon_travelz": self.ui.excellon_defaults_form.excellon_opt_group.travelz_entry,
             "excellon_feedrate": self.ui.excellon_defaults_form.excellon_opt_group.feedrate_entry,
             "excellon_spindlespeed": self.ui.excellon_defaults_form.excellon_opt_group.spindlespeed_entry,
+            "excellon_spindledir": self.ui.excellon_defaults_form.excellon_opt_group.spindledir_radio,
             "excellon_dwell": self.ui.excellon_defaults_form.excellon_opt_group.dwell_cb,
             "excellon_dwelltime": self.ui.excellon_defaults_form.excellon_opt_group.dwelltime_entry,
             "excellon_toolchange": self.ui.excellon_defaults_form.excellon_opt_group.toolchange_cb,
@@ -434,6 +440,7 @@ class App(QtCore.QObject):
             "geometry_feedrate": self.ui.geometry_defaults_form.geometry_opt_group.cncfeedrate_entry,
             "geometry_feedrate_z": self.ui.geometry_defaults_form.geometry_opt_group.cncplunge_entry,
             "geometry_spindlespeed": self.ui.geometry_defaults_form.geometry_opt_group.cncspindlespeed_entry,
+            "geometry_spindledir": self.ui.geometry_defaults_form.geometry_opt_group.spindledir_radio,
             "geometry_dwell": self.ui.geometry_defaults_form.geometry_opt_group.dwell_cb,
             "geometry_dwelltime": self.ui.geometry_defaults_form.geometry_opt_group.dwelltime_entry,
             "geometry_ppname_g": self.ui.geometry_defaults_form.geometry_opt_group.pp_geometry_name_cb,
@@ -453,6 +460,9 @@ class App(QtCore.QObject):
             "geometry_f_plunge": self.ui.geometry_defaults_form.geometry_adv_opt_group.fplunge_cb,
             "geometry_segx": self.ui.geometry_defaults_form.geometry_adv_opt_group.segx_entry,
             "geometry_segy": self.ui.geometry_defaults_form.geometry_adv_opt_group.segy_entry,
+
+            # Geometry Editor
+            "geometry_editor_sel_limit": self.ui.geometry_defaults_form.geometry_editor_group.sel_limit_entry,
 
             # CNCJob General
             "cncjob_plot": self.ui.cncjob_defaults_form.cncjob_gen_group.plot_cb,
@@ -602,6 +612,7 @@ class App(QtCore.QObject):
             "global_toggle_tooltips": True,
             "global_worker_number": 2,
             "global_tolerance": 0.01,
+            "global_open_style": True,
             "global_compression_level": 3,
             "global_save_compressed": True,
 
@@ -661,7 +672,7 @@ class App(QtCore.QObject):
             "global_zdownrate": None,
 
             # General GUI Settings
-            "global_hover": True,
+            "global_hover": False,
             "global_selection_shape": True,
             "global_layout": "compact",
             # Gerber General
@@ -679,7 +690,7 @@ class App(QtCore.QObject):
             "gerber_noncopperrounded": False,
             "gerber_bboxmargin": 0.1,
             "gerber_bboxrounded": False,
-            "gerber_circle_steps": 64,
+            "gerber_circle_steps": 128,
             "gerber_use_buffer_for_union": True,
 
             # Gerber Advanced Options
@@ -693,6 +704,9 @@ class App(QtCore.QObject):
             "gerber_exp_integer": 2,
             "gerber_exp_decimals": 4,
             "gerber_exp_zeros": 'L',
+
+            # Gerber Editor
+            "gerber_editor_sel_limit": 30,
 
             # Excellon General
             "excellon_plot": True,
@@ -711,6 +725,7 @@ class App(QtCore.QObject):
             "excellon_travelz": 0.1,
             "excellon_feedrate": 3.0,
             "excellon_spindlespeed": None,
+            "excellon_spindledir": 'CW',
             "excellon_dwell": False,
             "excellon_dwelltime": 1,
             "excellon_toolchange": False,
@@ -740,7 +755,7 @@ class App(QtCore.QObject):
 
             # Geometry General
             "geometry_plot": True,
-            "geometry_circle_steps": 64,
+            "geometry_circle_steps": 128,
             "geometry_cnctooldia": 0.016,
 
             # Geometry Options
@@ -753,6 +768,7 @@ class App(QtCore.QObject):
             "geometry_feedrate": 3.0,
             "geometry_feedrate_z": 3.0,
             "geometry_spindlespeed": None,
+            "geometry_spindledir": 'CW',
             "geometry_dwell": False,
             "geometry_dwelltime": 1,
             "geometry_ppname_g": 'default',
@@ -768,6 +784,9 @@ class App(QtCore.QObject):
             "geometry_feedrate_probe": 3.0,
             "geometry_segx": 0.0,
             "geometry_segy": 0.0,
+
+            # Geometry Editor
+            "geometry_editor_sel_limit": 30,
 
             # CNC Job General
             "cncjob_plot": True,
@@ -942,6 +961,7 @@ class App(QtCore.QObject):
             "excellon_travelz": self.ui.excellon_options_form.excellon_opt_group.travelz_entry,
             "excellon_feedrate": self.ui.excellon_options_form.excellon_opt_group.feedrate_entry,
             "excellon_spindlespeed": self.ui.excellon_options_form.excellon_opt_group.spindlespeed_entry,
+            "excellon_spindledir": self.ui.excellon_options_form.excellon_opt_group.spindledir_radio,
             "excellon_dwell": self.ui.excellon_options_form.excellon_opt_group.dwell_cb,
             "excellon_dwelltime": self.ui.excellon_options_form.excellon_opt_group.dwelltime_entry,
             "excellon_toolchange": self.ui.excellon_options_form.excellon_opt_group.toolchange_cb,
@@ -963,6 +983,7 @@ class App(QtCore.QObject):
             "geometry_feedrate": self.ui.geometry_options_form.geometry_opt_group.cncfeedrate_entry,
             "geometry_feedrate_z": self.ui.geometry_options_form.geometry_opt_group.cncplunge_entry,
             "geometry_spindlespeed": self.ui.geometry_options_form.geometry_opt_group.cncspindlespeed_entry,
+            "geometry_spindledir": self.ui.geometry_options_form.geometry_opt_group.spindledir_radio,
             "geometry_dwell": self.ui.geometry_options_form.geometry_opt_group.dwell_cb,
             "geometry_dwelltime": self.ui.geometry_options_form.geometry_opt_group.dwelltime_entry,
             "geometry_ppname_g": self.ui.geometry_options_form.geometry_opt_group.pp_geometry_name_cb,
@@ -1065,6 +1086,7 @@ class App(QtCore.QObject):
             "excellon_feedrate": 3.0,
             "excellon_feedrate_rapid": 3.0,
             "excellon_spindlespeed": None,
+            "excellon_spindledir": 'CW',
             "excellon_dwell": True,
             "excellon_dwelltime": 1000,
             "excellon_toolchange": False,
@@ -1085,6 +1107,7 @@ class App(QtCore.QObject):
             "geometry_feedrate_z": 3.0,
             "geometry_feedrate_rapid": 3.0,
             "geometry_spindlespeed": None,
+            "geometry_spindledir": 'CW',
             "geometry_dwell": True,
             "geometry_dwelltime": 1000,
             "geometry_cnctooldia": 0.016,
@@ -1882,7 +1905,7 @@ class App(QtCore.QObject):
                          'dim', 'mil', 'grb', 'top', 'bot', 'smt', 'smb', 'sst', 'ssb', 'spt', 'spb', 'pho', 'gdo',
                          'art', 'gbd', 'gb0', 'gb1', 'gb2', 'gb3', 'g4', 'gb5', 'gb6', 'gb7', 'gb8', 'gb9'
                          ]
-        self.exc_list = ['drl', 'txt', 'xln', 'drd', 'tap', 'exc']
+        self.exc_list = ['drl', 'txt', 'xln', 'drd', 'tap', 'exc', 'ncd']
         self.gcode_list = ['nc', 'ncc', 'tap', 'gcode', 'cnc', 'ecs', 'fnc', 'dnc', 'ncg', 'gc', 'fan', 'fgc', 'din',
                       'xpi', 'hnc', 'h', 'i', 'ncp', 'min', 'gcd', 'rol', 'mpr', 'ply', 'out', 'eia', 'plt', 'sbp',
                       'mpf']
@@ -2264,30 +2287,18 @@ class App(QtCore.QObject):
                             self.inform.emit(_("[WARNING] Object empty after edit."))
                             log.debug("App.editor2object() --> Geometry --> %s" % str(e))
                     elif isinstance(edited_obj, FlatCAMGerber):
-                        new_obj = self.collection.get_active()
                         obj_type = "Gerber"
                         if cleanup is None:
-                            self.grb_editor.update_fcgerber(edited_obj)
-                            self.grb_editor.update_options(new_obj)
+                            self.grb_editor.update_fcgerber()
+                            self.grb_editor.update_options(edited_obj)
                         self.grb_editor.deactivate_grb_editor()
 
                         # delete the old object (the source object) if it was an empty one
-                        if not edited_obj.solid_geometry:
+                        if len(edited_obj.solid_geometry) == 0:
                             old_name = edited_obj.options['name']
                             self.collection.set_active(old_name)
                             self.collection.delete_active()
-                        else:
-                            # update the geo object options so it is including the bounding box values
-                            # but don't do this for objects that are made out of empty source objects, it will fail
-                            try:
-                                xmin, ymin, xmax, ymax = new_obj.bounds()
-                                new_obj.options['xmin'] = xmin
-                                new_obj.options['ymin'] = ymin
-                                new_obj.options['xmax'] = xmax
-                                new_obj.options['ymax'] = ymax
-                            except Exception as e:
-                                self.inform.emit(_("[WARNING] Object empty after edit."))
-                                log.debug("App.editor2object() --> Gerber --> %s" % str(e))
+
                     elif isinstance(edited_obj, FlatCAMExcellon):
                         obj_type = "Excellon"
                         if cleanup is None:
@@ -2780,7 +2791,8 @@ class App(QtCore.QObject):
             except:
                 self.inform.emit(_("[ERROR_NOTCL] Failed to write defaults to file."))
                 return
-
+        if self.defaults["global_open_style"] is False:
+            self.file_opened.emit("preferences", filename)
         self.file_saved.emit("preferences", filename)
         self.inform.emit("[success] Exported Defaults to %s" % filename)
 
@@ -2984,6 +2996,7 @@ class App(QtCore.QObject):
             grb_obj.multigeo = False
             grb_obj.follow = False
             grb_obj.apertures = {}
+            grb_obj.solid_geometry = []
 
             try:
                 grb_obj.options['xmin'] = 0
@@ -4401,8 +4414,8 @@ class App(QtCore.QObject):
                 return
 
         # Just for adding it to the recent files list.
-        self.file_opened.emit("cncjob", filename)
-
+        if self.defaults["global_open_style"] is False:
+            self.file_opened.emit("cncjob", filename)
         self.file_saved.emit("cncjob", filename)
         self.inform.emit(_("Saved to: %s") % filename)
 
@@ -4797,13 +4810,17 @@ class App(QtCore.QObject):
     def convert_any2gerber(self):
         self.report_usage("convert_any2gerber()")
 
-        def initialize(obj_init, app):
+        def initialize_geometry(obj_init, app):
             apertures = {}
             apid = 0
 
             apertures[str(apid)] = {}
-            apertures[str(apid)]['solid_geometry'] = []
-            apertures[str(apid)]['solid_geometry'] = deepcopy(obj.solid_geometry)
+            apertures[str(apid)]['geometry'] = []
+            for obj_orig in obj.solid_geometry:
+                new_elem = dict()
+                new_elem['solid'] = obj_orig
+                new_elem['follow'] = obj_orig.exterior
+                apertures[str(apid)]['geometry'].append(deepcopy(new_elem))
             apertures[str(apid)]['size'] = 0.0
             apertures[str(apid)]['type'] = 'C'
 
@@ -4816,9 +4833,12 @@ class App(QtCore.QObject):
             apid = 10
             for tool in obj.tools:
                 apertures[str(apid)] = {}
-                apertures[str(apid)]['solid_geometry'] = []
+                apertures[str(apid)]['geometry'] = []
                 for geo in obj.tools[tool]['solid_geometry']:
-                    apertures[str(apid)]['solid_geometry'].append(geo)
+                    new_el = dict()
+                    new_el['solid'] = geo
+                    new_el['follow'] = geo.exterior
+                    apertures[str(apid)]['geometry'].append(deepcopy(new_el))
 
                 apertures[str(apid)]['size'] = float(obj.tools[tool]['C'])
                 apertures[str(apid)]['type'] = 'C'
@@ -4827,8 +4847,8 @@ class App(QtCore.QObject):
             # create solid_geometry
             solid_geometry = []
             for apid in apertures:
-                for geo in apertures[apid]['solid_geometry']:
-                    solid_geometry.append(geo)
+                for geo_el in apertures[apid]['geometry']:
+                    solid_geometry.append(geo_el['solid'])
 
             solid_geometry = MultiPolygon(solid_geometry)
             solid_geometry = solid_geometry.buffer(0.0000001)
@@ -4850,8 +4870,10 @@ class App(QtCore.QObject):
             try:
                 if isinstance(obj, FlatCAMExcellon):
                     self.new_object("gerber", str(obj_name) + "_conv", initialize_excellon)
+                elif isinstance(obj, FlatCAMGeometry):
+                    self.new_object("gerber", str(obj_name) + "_conv", initialize_geometry)
                 else:
-                    self.new_object("gerber", str(obj_name) + "_conv", initialize)
+                    log.warning("App.convert_any2gerber --> This is no vaild object for conversion.")
 
             except Exception as e:
                 return "Operation failed: %s" % str(e)
@@ -5923,7 +5945,7 @@ class App(QtCore.QObject):
         self.report_usage("on_fileopenexcellon")
         App.log.debug("on_fileopenexcellon()")
 
-        _filter_ = "Excellon Files (*.drl *.txt *.xln *.drd *.tap *.exc);;" \
+        _filter_ = "Excellon Files (*.drl *.txt *.xln *.drd *.tap *.exc *.ncd);;" \
                    "All Files (*.*)"
 
         try:
@@ -6073,6 +6095,8 @@ class App(QtCore.QObject):
             return
         else:
             self.export_svg(name, filename)
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("SVG", filename)
             self.file_saved.emit("SVG", filename)
 
     def on_file_exportpng(self):
@@ -6102,6 +6126,8 @@ class App(QtCore.QObject):
             return
         else:
             write_png(filename, data)
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("png", filename)
             self.file_saved.emit("png", filename)
 
     def on_file_savegerber(self):
@@ -6141,6 +6167,8 @@ class App(QtCore.QObject):
             return
         else:
             self.save_source_file(name, filename)
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("Gerber", filename)
             self.file_saved.emit("Gerber", filename)
 
     def on_file_saveexcellon(self):
@@ -6180,6 +6208,8 @@ class App(QtCore.QObject):
             return
         else:
             self.save_source_file(name, filename)
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("Excellon", filename)
             self.file_saved.emit("Excellon", filename)
 
     def on_file_exportexcellon(self):
@@ -6219,6 +6249,8 @@ class App(QtCore.QObject):
             return
         else:
             self.export_excellon(name, filename)
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("Excellon", filename)
             self.file_saved.emit("Excellon", filename)
 
     def on_file_exportgerber(self):
@@ -6258,6 +6290,8 @@ class App(QtCore.QObject):
             return
         else:
             self.export_gerber(name, filename)
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("Gerber", filename)
             self.file_saved.emit("Gerber", filename)
 
     def on_file_exportdxf(self):
@@ -6309,6 +6343,8 @@ class App(QtCore.QObject):
             return
         else:
             self.export_dxf(name, filename)
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("DXF", filename)
             self.file_saved.emit("DXF", filename)
 
     def on_file_importsvg(self, type_of_obj):
@@ -6563,8 +6599,8 @@ class App(QtCore.QObject):
         else:
             self.worker_task.emit({'fcn': self.save_project,
                                    'params': [self.project_filename]})
-
-            self.file_opened.emit("project", self.project_filename)
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("project", self.project_filename)
             self.file_saved.emit("project", self.project_filename)
 
         self.should_we_save = False
@@ -6609,8 +6645,8 @@ class App(QtCore.QObject):
             self.save_project(filename, quit)
 
         # self.save_project(filename)
-        self.file_opened.emit("project", filename)
-
+        if self.defaults["global_open_style"] is False:
+            self.file_opened.emit("project", filename)
         self.file_saved.emit("project", filename)
         if not make_copy:
             self.project_filename = filename
@@ -6668,7 +6704,8 @@ class App(QtCore.QObject):
             svgcode = parse_xml_string(svg_elem)
             with open(filename, 'w') as fp:
                 fp.write(svgcode.toprettyxml())
-
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("SVG", filename)
             self.file_saved.emit("SVG", filename)
             self.inform.emit(_("[success] SVG file exported to %s") % filename)
 
@@ -6773,7 +6810,8 @@ class App(QtCore.QObject):
                 fp.write(doc.toprettyxml())
 
             self.progress.emit(100)
-
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("SVG", filename)
             self.file_saved.emit("SVG", filename)
             self.inform.emit(_("[success] SVG file exported to %s") % filename)
 
@@ -6887,7 +6925,8 @@ class App(QtCore.QObject):
             with open(filename, 'w') as fp:
                 fp.write(doc.toprettyxml())
             self.progress.emit(100)
-
+            if self.defaults["global_open_style"] is False:
+                self.file_opened.emit("SVG", filename)
             self.file_saved.emit("SVG", filename)
             self.inform.emit(_("[success] SVG file exported to %s") % filename)
 
@@ -7037,7 +7076,8 @@ class App(QtCore.QObject):
 
                 with open(filename, 'w') as fp:
                     fp.write(exported_excellon)
-
+                if self.defaults["global_open_style"] is False:
+                    self.file_opened.emit("Excellon", filename)
                 self.file_saved.emit("Excellon", filename)
                 self.inform.emit(_("[success] Excellon file exported to %s") % filename)
             except Exception as e:
@@ -7153,7 +7193,8 @@ class App(QtCore.QObject):
 
                 with open(filename, 'w') as fp:
                     fp.write(exported_gerber)
-
+                if self.defaults["global_open_style"] is False:
+                    self.file_opened.emit("Gerber", filename)
                 self.file_saved.emit("Gerber", filename)
                 self.inform.emit(_("[success] Gerber file exported to %s") % filename)
             except Exception as e:
@@ -7211,7 +7252,8 @@ class App(QtCore.QObject):
             try:
                 dxf_code = obj.export_dxf()
                 dxf_code.saveas(filename)
-
+                if self.defaults["global_open_style"] is False:
+                    self.file_opened.emit("DXF", filename)
                 self.file_saved.emit("DXF", filename)
                 self.inform.emit(_("[success] DXF file exported to %s") % filename)
             except:

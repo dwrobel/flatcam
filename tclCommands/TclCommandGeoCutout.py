@@ -2,6 +2,7 @@ from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
 from copy import deepcopy
 
+
 class TclCommandGeoCutout(TclCommandSignaled):
     """
         Tcl shell command to create a board cutout geometry. Allow cutout for any shape. Cuts holding gaps from geometry.
@@ -65,14 +66,12 @@ class TclCommandGeoCutout(TclCommandSignaled):
         :return:
         """
 
-
         def subtract_rectangle(obj_, x0, y0, x1, y1):
             pts = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
             obj_.subtract_polygon(pts)
 
         def substract_rectangle_geo(geo, x0, y0, x1, y1):
             pts = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
-
 
             def flatten(geometry=None, reset=True, pathonly=False):
                 """
@@ -89,15 +88,15 @@ class TclCommandGeoCutout(TclCommandSignaled):
                 if reset:
                     self.flat_geometry = []
 
-                ## If iterable, expand recursively.
+                # If iterable, expand recursively.
                 try:
-                    for geo in geometry:
-                        if geo is not None:
-                            flatten(geometry=geo,
+                    for geo_el in geometry:
+                        if geo_el is not None:
+                            flatten(geometry=geo_el,
                                     reset=False,
                                     pathonly=pathonly)
 
-                ## Not iterable, do the actual indexing and add.
+                # Not iterable, do the actual indexing and add.
                 except TypeError:
                     if pathonly and type(geometry) == Polygon:
                         self.flat_geometry.append(geometry.exterior)
@@ -151,14 +150,15 @@ class TclCommandGeoCutout(TclCommandSignaled):
         # Get source object.
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
-        except:
+        except Exception as e:
+            log.debug("TclCommandGeoCutout --> %s" % str(e))
             return "Could not retrieve object: %s" % name
 
         if 0 in {dia}:
             self.app.inform.emit("[WARNING]Tool Diameter is zero value. Change it to a positive real number.")
             return "Tool Diameter is zero value. Change it to a positive real number."
 
-        if gaps not in ['lr', 'tb', '2lr', '2tb', 4, 8]:
+        if gaps not in ['lr', 'tb', '2lr', '2tb', '4', '8']:
             self.app.inform.emit("[WARNING]Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
                                  "Fill in a correct value and retry. ")
             return
@@ -226,47 +226,47 @@ class TclCommandGeoCutout(TclCommandSignaled):
             def geo_init(geo_obj, app_obj):
                 try:
                     geo = cutout_obj.isolation_geometry((dia / 2), iso_type=0, corner=2, follow=None)
-                except Exception as e:
-                    log.debug("TclCommandGeoCutout.execute() --> %s" % str(e))
+                except Exception as exc:
+                    log.debug("TclCommandGeoCutout.execute() --> %s" % str(exc))
                     return 'fail'
 
                 if gaps_u == 8 or gaps_u == '2lr':
                     geo = substract_rectangle_geo(geo,
-                                       xmin - gapsize,  # botleft_x
-                                       py - gapsize + lenghty / 4,  # botleft_y
-                                       xmax + gapsize,  # topright_x
-                                       py + gapsize + lenghty / 4)  # topright_y
+                                                  xmin - gapsize,  # botleft_x
+                                                  py - gapsize + lenghty / 4,  # botleft_y
+                                                  xmax + gapsize,  # topright_x
+                                                  py + gapsize + lenghty / 4)  # topright_y
                     geo = substract_rectangle_geo(geo,
-                                       xmin - gapsize,
-                                       py - gapsize - lenghty / 4,
-                                       xmax + gapsize,
-                                       py + gapsize - lenghty / 4)
+                                                  xmin - gapsize,
+                                                  py - gapsize - lenghty / 4,
+                                                  xmax + gapsize,
+                                                  py + gapsize - lenghty / 4)
 
                 if gaps_u == 8 or gaps_u == '2tb':
                     geo = substract_rectangle_geo(geo,
-                                       px - gapsize + lenghtx / 4,
-                                       ymin - gapsize,
-                                       px + gapsize + lenghtx / 4,
-                                       ymax + gapsize)
+                                                  px - gapsize + lenghtx / 4,
+                                                  ymin - gapsize,
+                                                  px + gapsize + lenghtx / 4,
+                                                  ymax + gapsize)
                     geo = substract_rectangle_geo(geo,
-                                       px - gapsize - lenghtx / 4,
-                                       ymin - gapsize,
-                                       px + gapsize - lenghtx / 4,
-                                       ymax + gapsize)
+                                                  px - gapsize - lenghtx / 4,
+                                                  ymin - gapsize,
+                                                  px + gapsize - lenghtx / 4,
+                                                  ymax + gapsize)
 
                 if gaps_u == 4 or gaps_u == 'lr':
                     geo = substract_rectangle_geo(geo,
-                                       xmin - gapsize,
-                                       py - gapsize,
-                                       xmax + gapsize,
-                                       py + gapsize)
+                                                  xmin - gapsize,
+                                                  py - gapsize,
+                                                  xmax + gapsize,
+                                                  py + gapsize)
 
                 if gaps_u == 4 or gaps_u == 'tb':
                     geo = substract_rectangle_geo(geo,
-                                       px - gapsize,
-                                       ymin - gapsize,
-                                       px + gapsize,
-                                       ymax + gapsize)
+                                                  px - gapsize,
+                                                  ymin - gapsize,
+                                                  px + gapsize,
+                                                  ymax + gapsize)
                 geo_obj.solid_geometry = geo
 
             outname = cutout_obj.options["name"] + "_cutout"
@@ -276,7 +276,3 @@ class TclCommandGeoCutout(TclCommandSignaled):
         else:
             self.app.inform.emit("[ERROR]Cancelled. Object type is not supported.")
             return
-
-
-
-

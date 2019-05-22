@@ -795,7 +795,11 @@ class ToolPaint(FlatCAMTool, Gerber):
                 if event.button == 1:
                     self.app.inform.emit(_("Painting polygon..."))
                     self.app.plotcanvas.vis_disconnect('mouse_press', doit)
+
                     pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+                    if self.app.grid_status():
+                        pos = self.app.geo_editor.snap(pos[0], pos[1])
+
                     self.paint_poly(self.paint_obj,
                                     inside_pt=[pos[0], pos[1]],
                                     tooldia=tooldia,
@@ -827,7 +831,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         # Which polygon.
         # poly = find_polygon(self.solid_geometry, inside_pt)
-        poly = obj.find_polygon(inside_pt)
+        poly = self.find_polygon(point=inside_pt, geoset=obj.solid_geometry)
         paint_method = self.paintmethod_combo.get_value()
 
         try:
