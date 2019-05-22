@@ -9,12 +9,18 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+23.05.2019
+
+- fixed bug in Gerber editor FCDisk and FCSemiDisc that the resulting geometry was not stored into the '0' aperture where all the solids are stored
+- fixed minor issue in Gerber Editor where apertures were included in the saved object even if there was no geometric data for that aperture
+
 22.05.2019
 
 - Geo Editor - added a new editor tool, Eraser
 - some PEP8 cleanup of the Geo Editor
 - fixed some selection issues in the new tool Eraser in Geometry Editor
 - updated the translation files
+- RELEASE 8.917
 
 21.05.2019
 

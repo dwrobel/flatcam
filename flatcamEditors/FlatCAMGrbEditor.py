@@ -1349,7 +1349,14 @@ class FCDisc(FCShapeTool):
         size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
         self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
 
-        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']
+        if '0' in self.draw_app.storage_dict:
+            self.storage_obj = self.draw_app.storage_dict['0']['geometry']
+        else:
+            self.draw_app.storage_dict['0'] = dict()
+            self.draw_app.storage_dict['0']['type'] = 'C'
+            self.draw_app.storage_dict['0']['size'] = 0.0
+            self.draw_app.storage_dict['0']['geometry'] = list()
+            self.storage_obj = self.draw_app.storage_dict['0']['geometry']
 
         self.draw_app.app.inform.emit(_("Click on Center point ..."))
 
@@ -1436,7 +1443,14 @@ class FCSemiDisc(FCShapeTool):
         size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
         self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
 
-        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']
+        if '0' in self.draw_app.storage_dict:
+            self.storage_obj = self.draw_app.storage_dict['0']['geometry']
+        else:
+            self.draw_app.storage_dict['0'] = dict()
+            self.draw_app.storage_dict['0']['type'] = 'C'
+            self.draw_app.storage_dict['0']['size'] = 0.0
+            self.draw_app.storage_dict['0']['geometry'] = list()
+            self.storage_obj = self.draw_app.storage_dict['0']['geometry']
 
         self.steps_per_circ = self.draw_app.app.defaults["gerber_circle_steps"]
 
@@ -2050,7 +2064,9 @@ class FCEraser(FCShapeTool):
                     if 'solid' in geo_el.geo:
                         geometric_data = geo_el.geo['solid']
                         if eraser_sel_shapes.within(geometric_data) or eraser_sel_shapes.intersects(geometric_data):
-                            geo_el.geo['solid'] = geometric_data.difference(eraser_sel_shapes)
+                            geos = geometric_data.difference(eraser_sel_shapes)
+                            geos = geos.buffer(0)
+                            geo_el.geo['solid'] = deepcopy(geos)
             except KeyError:
                 pass
 
@@ -3621,7 +3637,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
                            self.gerber_obj.options['name'].upper())
 
         out_name = outname
-        local_storage_dict = deepcopy(self.storage_dict)
+
+        local_storage_dict = dict()
+        for aperture in self.storage_dict:
+            if 'geometry' in self.storage_dict[aperture]:
+                # add aperture only if it has geometry
+                if len(self.storage_dict[aperture]['geometry']) > 0:
+                    local_storage_dict[aperture] = deepcopy(self.storage_dict[aperture])
 
         # How the object should be initialized
         def obj_init(grb_obj, app_obj):
