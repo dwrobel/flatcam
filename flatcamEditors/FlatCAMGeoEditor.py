@@ -1,15 +1,15 @@
-############################################################
+# ###########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
-############################################################
+# ###########################################################
 
-############################################################                                      #
+# ###########################################################                                      #
 # File Modified: Marius Adrian Stanciu (c)                 #
 # Date: 3/10/2019                                          #
-############################################################
+# ###########################################################
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
@@ -33,9 +33,9 @@ from flatcamParsers.ParseFont import *
 # from vispy.io import read_png
 import gettext
 import FlatCAMTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
-import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
@@ -81,9 +81,9 @@ class BufferSelectionTool(FlatCAMTool):
         self.buffer_corner_lbl = QtWidgets.QLabel(_("Buffer corner:"))
         self.buffer_corner_lbl.setToolTip(
             _("There are 3 types of corners:\n"
-            " - 'Round': the corner is rounded for exterior buffer.\n"
-            " - 'Square:' the corner is met in a sharp angle for exterior buffer.\n"
-            " - 'Beveled:' the corner is a line that directly connects the features meeting in the corner")
+              " - 'Round': the corner is rounded for exterior buffer.\n"
+              " - 'Square:' the corner is met in a sharp angle for exterior buffer.\n"
+              " - 'Beveled:' the corner is a line that directly connects the features meeting in the corner")
         )
         self.buffer_corner_cb = FCComboBox()
         self.buffer_corner_cb.addItem(_("Round"))
@@ -136,7 +136,7 @@ class BufferSelectionTool(FlatCAMTool):
                 self.buffer_distance_entry.set_value(buffer_distance)
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
@@ -153,7 +153,7 @@ class BufferSelectionTool(FlatCAMTool):
                 self.buffer_distance_entry.set_value(buffer_distance)
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
@@ -170,7 +170,7 @@ class BufferSelectionTool(FlatCAMTool):
                 self.buffer_distance_entry.set_value(buffer_distance)
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Buffer distance value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (which is really an INT)
@@ -283,9 +283,9 @@ class TextInputTool(FlatCAMTool):
         self.font_size_cb.setMaximumWidth(70)
 
         font_sizes = ['6', '7', '8', '9', '10', '11', '12', '13', '14',
-                     '15', '16', '18', '20', '22', '24', '26', '28',
-                     '32', '36', '40', '44', '48', '54', '60', '66',
-                     '72', '80', '88', '96']
+                      '15', '16', '18', '20', '22', '24', '26', '28',
+                      '32', '36', '40', '44', '48', '54', '60', '66',
+                      '72', '80', '88', '96']
 
         for i in font_sizes:
             self.font_size_cb.addItem(i)
@@ -414,7 +414,7 @@ class PaintOptionsTool(FlatCAMTool):
         self.app = app
         self.fcdraw = fcdraw
 
-        ## Title
+        # Title
         title_label = QtWidgets.QLabel("%s" % ('Editor ' + self.toolName))
         title_label.setStyleSheet("""
                         QLabel
@@ -431,8 +431,8 @@ class PaintOptionsTool(FlatCAMTool):
         # Tool dia
         ptdlabel = QtWidgets.QLabel(_('Tool dia:'))
         ptdlabel.setToolTip(
-           _( "Diameter of the tool to\n"
-            "be used in the operation.")
+           _("Diameter of the tool to\n"
+             "be used in the operation.")
         )
         grid.addWidget(ptdlabel, 0, 0)
 
@@ -443,14 +443,14 @@ class PaintOptionsTool(FlatCAMTool):
         ovlabel = QtWidgets.QLabel(_('Overlap Rate:'))
         ovlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
-            "Example:\n"
-            "A value here of 0.25 means 25% from the tool diameter found above.\n\n"
-            "Adjust the value starting with lower values\n"
-            "and increasing it if areas that should be painted are still \n"
-            "not painted.\n"
-            "Lower values = faster processing, faster execution on PCB.\n"
-            "Higher values = slow processing and slow execution on CNC\n"
-            "due of too many paths.")
+              "Example:\n"
+              "A value here of 0.25 means 25% from the tool diameter found above.\n\n"
+              "Adjust the value starting with lower values\n"
+              "and increasing it if areas that should be painted are still \n"
+              "not painted.\n"
+              "Lower values = faster processing, faster execution on PCB.\n"
+              "Higher values = slow processing and slow execution on CNC\n"
+              "due of too many paths.")
         )
         grid.addWidget(ovlabel, 1, 0)
         self.paintoverlap_entry = FCEntry()
@@ -460,9 +460,9 @@ class PaintOptionsTool(FlatCAMTool):
         # Margin
         marginlabel = QtWidgets.QLabel(_('Margin:'))
         marginlabel.setToolTip(
-           _( "Distance by which to avoid\n"
-            "the edges of the polygon to\n"
-            "be painted.")
+           _("Distance by which to avoid\n"
+             "the edges of the polygon to\n"
+             "be painted.")
         )
         grid.addWidget(marginlabel, 2, 0)
         self.paintmargin_entry = FCEntry()
@@ -472,8 +472,8 @@ class PaintOptionsTool(FlatCAMTool):
         methodlabel = QtWidgets.QLabel(_('Method:'))
         methodlabel.setToolTip(
             _("Algorithm to paint the polygon:<BR>"
-            "<B>Standard</B>: Fixed step inwards.<BR>"
-            "<B>Seed-based</B>: Outwards from seed.")
+              "<B>Standard</B>: Fixed step inwards.<BR>"
+              "<B>Seed-based</B>: Outwards from seed.")
         )
         grid.addWidget(methodlabel, 3, 0)
         self.paintmethod_combo = RadioSet([
@@ -486,8 +486,8 @@ class PaintOptionsTool(FlatCAMTool):
         # Connect lines
         pathconnectlabel = QtWidgets.QLabel(_("Connect:"))
         pathconnectlabel.setToolTip(
-           _( "Draw lines between resulting\n"
-            "segments to minimize tool lifts.")
+           _("Draw lines between resulting\n"
+             "segments to minimize tool lifts.")
         )
         grid.addWidget(pathconnectlabel, 4, 0)
         self.pathconnect_cb = FCCheckBox()
@@ -496,14 +496,13 @@ class PaintOptionsTool(FlatCAMTool):
         contourlabel = QtWidgets.QLabel(_("Contour:"))
         contourlabel.setToolTip(
             _("Cut around the perimeter of the polygon\n"
-            "to trim rough edges.")
+              "to trim rough edges.")
         )
         grid.addWidget(contourlabel, 5, 0)
         self.paintcontour_cb = FCCheckBox()
         grid.addWidget(self.paintcontour_cb, 5, 1)
 
-
-        ## Buttons
+        # Buttons
         hlay = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay)
         hlay.addStretch()
@@ -512,7 +511,7 @@ class PaintOptionsTool(FlatCAMTool):
 
         self.layout.addStretch()
 
-        ## Signals
+        # Signals
         self.paint_button.clicked.connect(self.on_paint)
 
         self.set_tool_ui()
@@ -528,7 +527,7 @@ class PaintOptionsTool(FlatCAMTool):
         self.app.ui.notebook.setTabText(2, _("Paint Tool"))
 
     def set_tool_ui(self):
-        ## Init GUI
+        # Init GUI
         if self.app.defaults["tools_painttooldia"]:
             self.painttooldia_entry.set_value(self.app.defaults["tools_painttooldia"])
         else:
@@ -573,7 +572,7 @@ class PaintOptionsTool(FlatCAMTool):
                 self.painttooldia_entry.set_value(tooldia)
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
         try:
             overlap = float(self.paintoverlap_entry.get_value())
@@ -584,7 +583,7 @@ class PaintOptionsTool(FlatCAMTool):
                 self.paintoverlap_entry.set_value(overlap)
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Overlap value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
 
         try:
@@ -596,7 +595,7 @@ class PaintOptionsTool(FlatCAMTool):
                 self.paintmargin_entry.set_value(margin)
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Margin distance value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
         method = self.paintmethod_combo.get_value()
         contour = self.paintcontour_cb.get_value()
@@ -654,21 +653,21 @@ class TransformEditorTool(FlatCAMTool):
         self.empty_label4.setFixedWidth(70)
         self.transform_lay.addWidget(self.empty_label)
 
-        ## Rotate Title
+        # Rotate Title
         rotate_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.rotateName)
         self.transform_lay.addWidget(rotate_title_label)
 
-        ## Layout
+        # Layout
         form_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form_layout)
         form_child = QtWidgets.QHBoxLayout()
 
         self.rotate_label = QtWidgets.QLabel(_("Angle:"))
         self.rotate_label.setToolTip(
-           _( "Angle for Rotation action, in degrees.\n"
-            "Float number between -360 and 359.\n"
-            "Positive numbers for CW motion.\n"
-            "Negative numbers for CCW motion.")
+           _("Angle for Rotation action, in degrees.\n"
+             "Float number between -360 and 359.\n"
+             "Positive numbers for CW motion.\n"
+             "Negative numbers for CCW motion.")
         )
         self.rotate_label.setFixedWidth(50)
 
@@ -692,11 +691,11 @@ class TransformEditorTool(FlatCAMTool):
 
         self.transform_lay.addWidget(self.empty_label1)
 
-        ## Skew Title
+        # Skew Title
         skew_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.skewName)
         self.transform_lay.addWidget(skew_title_label)
 
-        ## Form Layout
+        # Form Layout
         form1_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form1_layout)
         form1_child_1 = QtWidgets.QHBoxLayout()
@@ -704,7 +703,7 @@ class TransformEditorTool(FlatCAMTool):
 
         self.skewx_label = QtWidgets.QLabel(_("Angle X:"))
         self.skewx_label.setToolTip(
-          _(  "Angle for Skew action, in degrees.\n"
+          _("Angle for Skew action, in degrees.\n"
             "Float number between -360 and 359.")
         )
         self.skewx_label.setFixedWidth(50)
@@ -715,15 +714,15 @@ class TransformEditorTool(FlatCAMTool):
         self.skewx_button = FCButton()
         self.skewx_button.set_value(_("Skew X"))
         self.skewx_button.setToolTip(
-           _( "Skew/shear the selected shape(s).\n"
-            "The point of reference is the middle of\n"
-            "the bounding box for all selected shapes."))
+           _("Skew/shear the selected shape(s).\n"
+             "The point of reference is the middle of\n"
+             "the bounding box for all selected shapes."))
         self.skewx_button.setFixedWidth(60)
 
         self.skewy_label = QtWidgets.QLabel(_("Angle Y:"))
         self.skewy_label.setToolTip(
-           _( "Angle for Skew action, in degrees.\n"
-            "Float number between -360 and 359.")
+           _("Angle for Skew action, in degrees.\n"
+             "Float number between -360 and 359.")
         )
         self.skewy_label.setFixedWidth(50)
         self.skewy_entry = FCEntry()
@@ -734,8 +733,8 @@ class TransformEditorTool(FlatCAMTool):
         self.skewy_button.set_value(_("Skew Y"))
         self.skewy_button.setToolTip(
             _("Skew/shear the selected shape(s).\n"
-            "The point of reference is the middle of\n"
-            "the bounding box for all selected shapes."))
+              "The point of reference is the middle of\n"
+              "the bounding box for all selected shapes."))
         self.skewy_button.setFixedWidth(60)
 
         form1_child_1.addWidget(self.skewx_entry)
@@ -749,11 +748,11 @@ class TransformEditorTool(FlatCAMTool):
 
         self.transform_lay.addWidget(self.empty_label2)
 
-        ## Scale Title
+        # Scale Title
         scale_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.scaleName)
         self.transform_lay.addWidget(scale_title_label)
 
-        ## Form Layout
+        # Form Layout
         form2_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form2_layout)
         form2_child_1 = QtWidgets.QHBoxLayout()
@@ -771,9 +770,9 @@ class TransformEditorTool(FlatCAMTool):
         self.scalex_button = FCButton()
         self.scalex_button.set_value(_("Scale X"))
         self.scalex_button.setToolTip(
-           _( "Scale the selected shape(s).\n"
-            "The point of reference depends on \n"
-            "the Scale reference checkbox state."))
+           _("Scale the selected shape(s).\n"
+             "The point of reference depends on \n"
+             "the Scale reference checkbox state."))
         self.scalex_button.setFixedWidth(60)
 
         self.scaley_label = QtWidgets.QLabel(_("Factor Y:"))
@@ -788,9 +787,9 @@ class TransformEditorTool(FlatCAMTool):
         self.scaley_button = FCButton()
         self.scaley_button.set_value(_("Scale Y"))
         self.scaley_button.setToolTip(
-           _( "Scale the selected shape(s).\n"
-            "The point of reference depends on \n"
-            "the Scale reference checkbox state."))
+           _("Scale the selected shape(s).\n"
+             "The point of reference depends on \n"
+             "the Scale reference checkbox state."))
         self.scaley_button.setFixedWidth(60)
 
         self.scale_link_cb = FCCheckBox()
@@ -798,7 +797,7 @@ class TransformEditorTool(FlatCAMTool):
         self.scale_link_cb.setText(_("Link"))
         self.scale_link_cb.setToolTip(
             _("Scale the selected shape(s)\n"
-            "using the Scale Factor X for both axis."))
+             "using the Scale Factor X for both axis."))
         self.scale_link_cb.setFixedWidth(50)
 
         self.scale_zero_ref_cb = FCCheckBox()
@@ -806,9 +805,9 @@ class TransformEditorTool(FlatCAMTool):
         self.scale_zero_ref_cb.setText(_("Scale Reference"))
         self.scale_zero_ref_cb.setToolTip(
             _("Scale the selected shape(s)\n"
-            "using the origin reference when checked,\n"
-            "and the center of the biggest bounding box\n"
-            "of the selected shapes when unchecked."))
+              "using the origin reference when checked,\n"
+              "and the center of the biggest bounding box\n"
+              "of the selected shapes when unchecked."))
 
         form2_child_1.addWidget(self.scalex_entry)
         form2_child_1.addWidget(self.scalex_button)
@@ -823,11 +822,11 @@ class TransformEditorTool(FlatCAMTool):
 
         self.transform_lay.addWidget(self.empty_label3)
 
-        ## Offset Title
+        # Offset Title
         offset_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.offsetName)
         self.transform_lay.addWidget(offset_title_label)
 
-        ## Form Layout
+        # Form Layout
         form3_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form3_layout)
         form3_child_1 = QtWidgets.QHBoxLayout()
@@ -845,9 +844,9 @@ class TransformEditorTool(FlatCAMTool):
         self.offx_button = FCButton()
         self.offx_button.set_value(_("Offset X"))
         self.offx_button.setToolTip(
-           _( "Offset the selected shape(s).\n"
-            "The point of reference is the middle of\n"
-            "the bounding box for all selected shapes.\n")
+           _("Offset the selected shape(s).\n"
+             "The point of reference is the middle of\n"
+             "the bounding box for all selected shapes.\n")
         )
         self.offx_button.setFixedWidth(60)
 
@@ -864,8 +863,8 @@ class TransformEditorTool(FlatCAMTool):
         self.offy_button.set_value(_("Offset Y"))
         self.offy_button.setToolTip(
             _("Offset the selected shape(s).\n"
-            "The point of reference is the middle of\n"
-            "the bounding box for all selected shapes.\n")
+              "The point of reference is the middle of\n"
+              "the bounding box for all selected shapes.\n")
         )
         self.offy_button.setFixedWidth(60)
 
@@ -880,11 +879,11 @@ class TransformEditorTool(FlatCAMTool):
 
         self.transform_lay.addWidget(self.empty_label4)
 
-        ## Flip Title
+        # Flip Title
         flip_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.flipName)
         self.transform_lay.addWidget(flip_title_label)
 
-        ## Form Layout
+        # Form Layout
         form4_layout = QtWidgets.QFormLayout()
         form4_child_hlay = QtWidgets.QHBoxLayout()
         self.transform_lay.addLayout(form4_child_hlay)
@@ -895,7 +894,7 @@ class TransformEditorTool(FlatCAMTool):
         self.flipx_button.set_value(_("Flip on X"))
         self.flipx_button.setToolTip(
             _("Flip the selected shape(s) over the X axis.\n"
-            "Does not create a new shape.")
+              "Does not create a new shape.")
         )
         self.flipx_button.setFixedWidth(60)
 
@@ -903,7 +902,7 @@ class TransformEditorTool(FlatCAMTool):
         self.flipy_button.set_value(_("Flip on Y"))
         self.flipy_button.setToolTip(
             _("Flip the selected shape(s) over the X axis.\n"
-            "Does not create a new shape.")
+              "Does not create a new shape.")
         )
         self.flipy_button.setFixedWidth(60)
 
@@ -912,22 +911,22 @@ class TransformEditorTool(FlatCAMTool):
         self.flip_ref_cb.setText(_("Ref Pt"))
         self.flip_ref_cb.setToolTip(
             _("Flip the selected shape(s)\n"
-            "around the point in Point Entry Field.\n"
-            "\n"
-            "The point coordinates can be captured by\n"
-            "left click on canvas together with pressing\n"
-            "SHIFT key. \n"
-            "Then click Add button to insert coordinates.\n"
-            "Or enter the coords in format (x, y) in the\n"
-            "Point Entry field and click Flip on X(Y)")
+              "around the point in Point Entry Field.\n"
+              "\n"
+              "The point coordinates can be captured by\n"
+              "left click on canvas together with pressing\n"
+              "SHIFT key. \n"
+              "Then click Add button to insert coordinates.\n"
+              "Or enter the coords in format (x, y) in the\n"
+              "Point Entry field and click Flip on X(Y)")
         )
         self.flip_ref_cb.setFixedWidth(50)
 
         self.flip_ref_label = QtWidgets.QLabel(_("Point:"))
         self.flip_ref_label.setToolTip(
             _("Coordinates in format (x, y) used as reference for mirroring.\n"
-            "The 'x' in (x, y) will be used when using Flip on X and\n"
-            "the 'y' in (x, y) will be used when using Flip on Y.")
+              "The 'x' in (x, y) will be used when using Flip on X and\n"
+              "the 'y' in (x, y) will be used when using Flip on Y.")
         )
         self.flip_ref_label.setFixedWidth(50)
         self.flip_ref_entry = EvalEntry2("(0, 0)")
@@ -937,9 +936,9 @@ class TransformEditorTool(FlatCAMTool):
         self.flip_ref_button = FCButton()
         self.flip_ref_button.set_value(_("Add"))
         self.flip_ref_button.setToolTip(
-           _( "The point coordinates can be captured by\n"
-            "left click on canvas together with pressing\n"
-            "SHIFT key. Then click Add button to insert.")
+           _("The point coordinates can be captured by\n"
+             "left click on canvas together with pressing\n"
+             "SHIFT key. Then click Add button to insert.")
            )
         self.flip_ref_button.setFixedWidth(60)
 
@@ -957,7 +956,7 @@ class TransformEditorTool(FlatCAMTool):
 
         self.transform_lay.addStretch()
 
-        ## Signals
+        # Signals
         self.rotate_button.clicked.connect(self.on_rotate)
         self.skewx_button.clicked.connect(self.on_skewx)
         self.skewy_button.clicked.connect(self.on_skewy)
@@ -994,7 +993,7 @@ class TransformEditorTool(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+T', **kwargs)
 
     def set_tool_ui(self):
-        ## Initialize form
+        # Initialize form
         if self.app.defaults["tools_transform_rotate"]:
             self.rotate_entry.set_value(self.app.defaults["tools_transform_rotate"])
         else:
@@ -1111,7 +1110,7 @@ class TransformEditorTool(FlatCAMTool):
                     value = float(self.skewx_entry.get_value().replace(',', '.'))
                 except ValueError:
                     self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Skew X, "
-                                         "use a number."))
+                                           "use a number."))
                     return
 
         # self.on_skew("X", value)
@@ -1132,7 +1131,7 @@ class TransformEditorTool(FlatCAMTool):
                     value = float(self.skewy_entry.get_value().replace(',', '.'))
                 except ValueError:
                     self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Skew Y, "
-                                         "use a number."))
+                                           "use a number."))
                     return
 
         # self.on_skew("Y", value)
@@ -1153,7 +1152,7 @@ class TransformEditorTool(FlatCAMTool):
                     xvalue = float(self.scalex_entry.get_value().replace(',', '.'))
                 except ValueError:
                     self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Scale X, "
-                                         "use a number."))
+                                           "use a number."))
                     return
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
@@ -1190,7 +1189,7 @@ class TransformEditorTool(FlatCAMTool):
                     yvalue = float(self.scaley_entry.get_value().replace(',', '.'))
                 except ValueError:
                     self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Scale Y, "
-                                         "use a number."))
+                                           "use a number."))
                     return
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
@@ -1222,7 +1221,7 @@ class TransformEditorTool(FlatCAMTool):
                     value = float(self.offx_entry.get_value().replace(',', '.'))
                 except ValueError:
                     self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Offset X, "
-                                         "use a number."))
+                                           "use a number."))
                     return
 
         # self.on_offset("X", value)
@@ -1243,7 +1242,7 @@ class TransformEditorTool(FlatCAMTool):
                     value = float(self.offy_entry.get_value().replace(',', '.'))
                 except ValueError:
                     self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Offset Y, "
-                                         "use a number."))
+                                           "use a number."))
                     return
 
         # self.on_offset("Y", value)
@@ -1458,15 +1457,6 @@ class TransformEditorTool(FlatCAMTool):
         else:
             with self.app.proc_container.new(_("Applying Offset")):
                 try:
-                    # first get a bounding box to fit all
-                    for sha in shape_list:
-                        xmin, ymin, xmax, ymax = sha.bounds()
-                        xminlist.append(xmin)
-                        yminlist.append(ymin)
-
-                    # get the minimum x,y and maximum x,y for all objects selected
-                    xminimal = min(xminlist)
-                    yminimal = min(yminlist)
                     self.app.progress.emit(20)
 
                     for sha in shape_list:
@@ -1475,10 +1465,6 @@ class TransformEditorTool(FlatCAMTool):
                         elif axis is 'Y':
                             sha.offset((0, num))
                         self.draw_app.replot()
-
-                    #     self.draw_app.add_shape(DrawToolShape(sha.geo))
-                    #
-                    # self.draw_app.transform_complete.emit()
 
                     self.app.inform.emit(_('[success] Offset on the %s axis done ...') % str(axis))
                     self.app.progress.emit(100)
@@ -1559,7 +1545,7 @@ class TransformEditorTool(FlatCAMTool):
             return
         else:
             self.app.inform.emit(
-               _( "[WARNING_NOTCL] Geometry shape skew X cancelled..."))
+               _("[WARNING_NOTCL] Geometry shape skew X cancelled..."))
 
     def on_skewy_key(self):
         val_box = FCInputDialog(title=_("Skew on Y axis ..."),
@@ -1572,7 +1558,7 @@ class TransformEditorTool(FlatCAMTool):
         if ok:
             self.on_skewx(val=val)
             self.app.inform.emit(
-               _( "[success] Geometry shape skew on Y axis done..."))
+               _("[success] Geometry shape skew on Y axis done..."))
             return
         else:
             self.app.inform.emit(
@@ -1599,19 +1585,19 @@ class DrawToolShape(object):
         """
         pts = []
 
-        ## Iterable: descend into each item.
+        # Iterable: descend into each item.
         try:
             for subo in o:
                 pts += DrawToolShape.get_pts(subo)
 
-        ## Non-iterable
+        # Non-iterable
         except TypeError:
             if o is not None:
-                ## DrawToolShape: descend into .geo.
+                # DrawToolShape: descend into .geo.
                 if isinstance(o, DrawToolShape):
                     pts += DrawToolShape.get_pts(o.geo)
 
-                ## Descend into .exerior and .interiors
+                # Descend into .exerior and .interiors
                 elif type(o) == Polygon:
                     pts += DrawToolShape.get_pts(o.exterior)
                     for i in o.interiors:
@@ -1619,7 +1605,7 @@ class DrawToolShape(object):
                 elif type(o) == MultiLineString:
                     for line in o:
                         pts += DrawToolShape.get_pts(line)
-                ## Has .coords: list them.
+                # Has .coords: list them.
                 else:
                     if DrawToolShape.tolerance is not None:
                         pts += list(o.simplify(DrawToolShape.tolerance).coords)
@@ -1645,14 +1631,14 @@ class DrawToolShape(object):
                 """
         # fixed issue of getting bounds only for one level lists of objects
         # now it can get bounds for nested lists of objects
-        def bounds_rec(shape):
-            if type(shape) is list:
+        def bounds_rec(shape_el):
+            if type(shape_el) is list:
                 minx = Inf
                 miny = Inf
                 maxx = -Inf
                 maxy = -Inf
 
-                for k in shape:
+                for k in shape_el:
                     minx_, miny_, maxx_, maxy_ = bounds_rec(k)
                     minx = min(minx, minx_)
                     miny = min(miny, miny_)
@@ -1661,7 +1647,7 @@ class DrawToolShape(object):
                 return minx, miny, maxx, maxy
             else:
                 # it's a Shapely object, return it's bounds
-                return shape.bounds
+                return shape_el.bounds
 
         bounds_coords = bounds_rec(self.geo)
         return bounds_coords
@@ -1681,14 +1667,14 @@ class DrawToolShape(object):
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
-        def mirror_geom(shape):
-            if type(shape) is list:
+        def mirror_geom(shape_el):
+            if type(shape_el) is list:
                 new_obj = []
-                for g in shape:
+                for g in shape_el:
                     new_obj.append(mirror_geom(g))
                 return new_obj
             else:
-                return affinity.scale(shape, xscale, yscale, origin=(px,py))
+                return affinity.scale(shape_el, xscale, yscale, origin=(px, py))
 
         try:
             self.geo = mirror_geom(self.geo)
@@ -1714,14 +1700,14 @@ class DrawToolShape(object):
 
         px, py = point
 
-        def rotate_geom(shape):
-            if type(shape) is list:
+        def rotate_geom(shape_el):
+            if type(shape_el) is list:
                 new_obj = []
-                for g in shape:
+                for g in shape_el:
                     new_obj.append(rotate_geom(g))
                 return new_obj
             else:
-                return affinity.rotate(shape, angle, origin=(px, py))
+                return affinity.rotate(shape_el, angle, origin=(px, py))
 
         try:
             self.geo = rotate_geom(self.geo)
@@ -1745,14 +1731,14 @@ class DrawToolShape(object):
         """
         px, py = point
 
-        def skew_geom(shape):
-            if type(shape) is list:
+        def skew_geom(shape_el):
+            if type(shape_el) is list:
                 new_obj = []
-                for g in shape:
+                for g in shape_el:
                     new_obj.append(skew_geom(g))
                 return new_obj
             else:
-                return affinity.skew(shape, angle_x, angle_y, origin=(px, py))
+                return affinity.skew(shape_el, angle_x, angle_y, origin=(px, py))
 
         try:
             self.geo = skew_geom(self.geo)
@@ -1778,12 +1764,12 @@ class DrawToolShape(object):
 
         def translate_recursion(geom):
             if type(geom) == list:
-                geoms=list()
+                geoms = list()
                 for local_geom in geom:
                     geoms.append(translate_recursion(local_geom))
                 return geoms
             else:
-                return  affinity.translate(geom, xoff=dx, yoff=dy)
+                return affinity.translate(geom, xoff=dx, yoff=dy)
 
         try:
             self.geo = translate_recursion(self.geo)
@@ -1805,7 +1791,7 @@ class DrawToolShape(object):
         try:
             xfactor = float(xfactor)
         except:
-            log.debug("DrawToolShape.offset() -->  Scale factor has to be a number: integer or float.")
+            log.debug("DrawToolShape.offset() --> Scale factor has to be a number: integer or float.")
             return
 
         if yfactor is None:
@@ -1814,7 +1800,7 @@ class DrawToolShape(object):
             try:
                 yfactor = float(yfactor)
             except:
-                log.debug("DrawToolShape.offset() -->  Scale factor has to be a number: integer or float.")
+                log.debug("DrawToolShape.offset() --> Scale factor has to be a number: integer or float.")
                 return
 
         if point is None:
@@ -1825,7 +1811,7 @@ class DrawToolShape(object):
 
         def scale_recursion(geom):
             if type(geom) == list:
-                geoms=list()
+                geoms = list()
                 for local_geom in geom:
                     geoms.append(scale_recursion(local_geom))
                 return geoms
@@ -2928,9 +2914,9 @@ class FCTransform(FCShapeTool):
         self.draw_app.transform_tool.run()
 
 
-########################
-### Main Application ###
-########################
+# #######################
+# ## Main Application ###
+# #######################
 class FlatCAMGeoEditor(QtCore.QObject):
 
     transform_complete = QtCore.pyqtSignal()
@@ -2976,7 +2962,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                      "constructor": FCCopy}
         }
 
-        ### Data
+        # ## Data
         self.active_tool = None
 
         self.storage = FlatCAMGeoEditor.make_storage()
@@ -2992,7 +2978,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.shapes.enabled = False
         self.tool_shape.enabled = False
 
-        ## List of selected shapes.
+        # List of selected shapes.
         self.selected = []
 
         self.flat_geo = []
@@ -3258,7 +3244,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.fcgeometry.visible = True
 
     def connect_canvas_event_handlers(self):
-        ## Canvas events
+        # Canvas events
 
         # first connect to new, then disconnect the old handlers
         # don't ask why but if there is nothing connected I've seen issues
@@ -3287,7 +3273,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.draw_rect.triggered.connect(self.draw_tool_rectangle)
         self.app.ui.draw_cut.triggered.connect(self.cutpath)
         self.app.ui.draw_move.triggered.connect(self.on_move)
-
 
     def disconnect_canvas_event_handlers(self):
         # we restore the key and mouse control to FlatCAMApp method
@@ -3366,8 +3351,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             "Shape object has empty geometry (None)"
 
         assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or \
-               not isinstance(shape.geo, list), \
-            "Shape objects has empty geometry ([])"
+               not isinstance(shape.geo, list), "Shape objects has empty geometry ([])"
 
         if isinstance(shape, DrawToolUtilityShape):
             self.utility.append(shape)
@@ -3407,6 +3391,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         into the editor.
 
         :param fcgeometry: FlatCAMGeometry
+        :param multigeo_tool: a tool for the case of multigeo
         :return: None
         """
         assert isinstance(fcgeometry, Geometry), \
@@ -3444,9 +3429,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.replot()
 
-
         # start with GRID toolbar activated
-        if self.app.ui.grid_snap_btn.isChecked() == False:
+        if self.app.ui.grid_snap_btn.isChecked() is False:
             self.app.ui.grid_snap_btn.trigger()
 
     def on_buffer_tool(self):
@@ -3511,7 +3495,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
 
         if self.app.grid_status():
-            self.pos  = self.app.geo_editor.snap(self.pos[0], self.pos[1])
+            self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
             self.app.app_cursor.enabled = True
             # Update cursor
             self.app.app_cursor.set_data(np.asarray([(self.pos[0], self.pos[1])]), symbol='++', edge_color='black',
@@ -3535,7 +3519,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             if self.active_tool is not None and event.button is 1:
 
                 # Dispatch event to active_tool
-                msg = self.active_tool.click(self.snap(self.pos[0], self.pos[1]))
+                self.active_tool.click(self.snap(self.pos[0], self.pos[1]))
 
                 # If it is a shape generating tool
                 if isinstance(self.active_tool, FCShapeTool) and self.active_tool.complete:
@@ -3585,7 +3569,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         if self.active_tool is None:
             return
 
-        ### Snap coordinates
+        # ## Snap coordinates
         if self.app.grid_status():
             x, y = self.snap(x, y)
             self.app.app_cursor.enabled = True
@@ -3610,7 +3594,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                            "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
-        ### Utility geometry (animated)
+        # ## Utility geometry (animated)
         geo = self.active_tool.utility_geometry(data=(x, y))
 
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
@@ -3618,17 +3602,17 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.tool_shape.clear(update=True)
             self.draw_utility_geometry(geo=geo)
 
-        ### Selection area on canvas section ###
+        # ## Selection area on canvas section ###
         dx = pos[0] - self.pos[0]
         if event.is_dragging == 1 and event.button == 1:
             self.app.delete_selection_shape()
             if dx < 0:
-                self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x,y),
+                self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y),
                      color=self.app.defaults["global_alt_sel_line"],
                      face_color=self.app.defaults['global_alt_sel_fill'])
                 self.app.selection_type = False
             else:
-                self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x,y))
+                self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y))
                 self.app.selection_type = True
         else:
             self.app.selection_type = None
@@ -3700,7 +3684,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 elif isinstance(self.active_tool, FCSelect):
                     # Dispatch event to active_tool
                     # msg = self.active_tool.click(self.snap(event.xdata, event.ydata))
-                    msg = self.active_tool.click_release((self.pos[0], self.pos[1]))
+                    self.active_tool.click_release((self.pos[0], self.pos[1]))
                     # self.app.inform.emit(msg)
                     self.replot()
         except Exception as e:
@@ -3713,15 +3697,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
         :param start_pos: mouse position when the selection LMB click was done
         :param end_pos: mouse position when the left mouse button is released
         :param sel_type: if True it's a left to right selection (enclosure), if False it's a 'touch' selection
-        :type Bool
         :return:
         """
         poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
 
         self.app.delete_selection_shape()
         for obj in self.storage.get_objects():
-            if (sel_type is True and poly_selection.contains(obj.geo)) or \
-                    (sel_type is False and poly_selection.intersects(obj.geo)):
+            if (sel_type is True and poly_selection.contains(obj.geo)) or (sel_type is False and
+                                                                           poly_selection.intersects(obj.geo)):
                     if self.key == self.app.defaults["global_mselect_key"]:
                         if obj in self.selected:
                             self.selected.remove(obj)
@@ -3734,42 +3717,42 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.replot()
 
     def draw_utility_geometry(self, geo):
-            # Add the new utility shape
-            try:
-                # this case is for the Font Parse
-                for el in list(geo.geo):
-                    if type(el) == MultiPolygon:
-                        for poly in el:
-                            self.tool_shape.add(
-                                shape=poly,
-                                color=(self.app.defaults["global_draw_color"] + '80'),
-                                update=False,
-                                layer=0,
-                                tolerance=None
-                            )
-                    elif type(el) == MultiLineString:
-                        for linestring in el:
-                            self.tool_shape.add(
-                                shape=linestring,
-                                color=(self.app.defaults["global_draw_color"] + '80'),
-                                update=False,
-                                layer=0,
-                                tolerance=None
-                            )
-                    else:
+        # Add the new utility shape
+        try:
+            # this case is for the Font Parse
+            for el in list(geo.geo):
+                if type(el) == MultiPolygon:
+                    for poly in el:
                         self.tool_shape.add(
-                            shape=el,
+                            shape=poly,
                             color=(self.app.defaults["global_draw_color"] + '80'),
                             update=False,
                             layer=0,
                             tolerance=None
                         )
-            except TypeError:
-                self.tool_shape.add(
-                    shape=geo.geo, color=(self.app.defaults["global_draw_color"] + '80'),
-                    update=False, layer=0, tolerance=None)
+                elif type(el) == MultiLineString:
+                    for linestring in el:
+                        self.tool_shape.add(
+                            shape=linestring,
+                            color=(self.app.defaults["global_draw_color"] + '80'),
+                            update=False,
+                            layer=0,
+                            tolerance=None
+                        )
+                else:
+                    self.tool_shape.add(
+                        shape=el,
+                        color=(self.app.defaults["global_draw_color"] + '80'),
+                        update=False,
+                        layer=0,
+                        tolerance=None
+                    )
+        except TypeError:
+            self.tool_shape.add(
+                shape=geo.geo, color=(self.app.defaults["global_draw_color"] + '80'),
+                update=False, layer=0, tolerance=None)
 
-            self.tool_shape.redraw()
+        self.tool_shape.redraw()
 
     def on_delete_btn(self):
         self.delete_selected()
@@ -3844,14 +3827,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
             for geo in geometry:
                 plot_elements += self.plot_shape(geometry=geo, color=color, linewidth=linewidth)
 
-        ## Non-iterable
+        # Non-iterable
         except TypeError:
 
-            ## DrawToolShape
+            # DrawToolShape
             if isinstance(geometry, DrawToolShape):
                 plot_elements += self.plot_shape(geometry=geometry.geo, color=color, linewidth=linewidth)
 
-            ## Polygon: Descend into exterior and each interior.
+            # Polygon: Descend into exterior and each interior.
             if type(geometry) == Polygon:
                 plot_elements += self.plot_shape(geometry=geometry.exterior, color=color, linewidth=linewidth)
                 plot_elements += self.plot_shape(geometry=geometry.interiors, color=color, linewidth=linewidth)
@@ -3912,7 +3895,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
     @staticmethod
     def make_storage():
 
-        ## Shape storage.
+        # Shape storage.
         storage = FlatCAMRTreeStorage()
         storage.get_points = DrawToolShape.get_pts
 
@@ -3952,9 +3935,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
         snap_x, snap_y = (x, y)
         snap_distance = Inf
 
-        ### Object (corner?) snap
-        ### No need for the objects, just the coordinates
-        ### in the index.
+        # ## Object (corner?) snap
+        # ## No need for the objects, just the coordinates
+        # ## in the index.
         if self.options["corner_snap"]:
             try:
                 nearest_pt, shape = self.storage.nearest((x, y))
@@ -3966,7 +3949,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             except (StopIteration, AssertionError):
                 pass
 
-        ### Grid snap
+        # ## Grid snap
         if self.options["grid_snap"]:
             if self.options["global_gridx"] != 0:
                 snap_x_ = round(x / self.options["global_gridx"]) * self.options['global_gridx']
@@ -4048,23 +4031,24 @@ class FlatCAMGeoEditor(QtCore.QObject):
         :return: None
         """
 
-        shapes = self.get_selected()
+        geo_shapes = self.get_selected()
 
         try:
-            results = shapes[0].geo
+            results = geo_shapes[0].geo
         except Exception as e:
             log.debug("FlatCAMGeoEditor.intersection() --> %s" % str(e))
-            self.app.inform.emit(_("[WARNING_NOTCL] A selection of at least 2 geo items is required to do Intersection."))
+            self.app.inform.emit(
+                _("[WARNING_NOTCL] A selection of at least 2 geo items is required to do Intersection."))
             self.select_tool('select')
             return
 
-        for shape in shapes[1:]:
-            results = results.intersection(shape.geo)
+        for shape_el in geo_shapes[1:]:
+            results = results.intersection(shape_el.geo)
 
         # Delete originals.
         for_deletion = [s for s in self.get_selected()]
-        for shape in for_deletion:
-            self.delete_shape(shape)
+        for shape_el in for_deletion:
+            self.delete_shape(shape_el)
 
         # Selected geometry is now gone!
         self.selected = []
@@ -4080,30 +4064,31 @@ class FlatCAMGeoEditor(QtCore.QObject):
         :return: None
         """
 
-        shapes = self.get_selected()
+        geo_shapes = self.get_selected()
         results = []
         intact = []
 
         try:
-            intersector = shapes[0].geo
+            intersector = geo_shapes[0].geo
         except Exception as e:
             log.debug("FlatCAMGeoEditor.intersection() --> %s" % str(e))
-            self.app.inform.emit(_("[WARNING_NOTCL] A selection of at least 2 geo items is required to do Intersection."))
+            self.app.inform.emit(
+                _("[WARNING_NOTCL] A selection of at least 2 geo items is required to do Intersection."))
             self.select_tool('select')
             return
 
-        for shape in shapes[1:]:
-            if intersector.intersects(shape.geo):
-                results.append(intersector.intersection(shape.geo))
+        for shape_el in geo_shapes[1:]:
+            if intersector.intersects(shape_el.geo):
+                results.append(intersector.intersection(shape_el.geo))
             else:
-                intact.append(shape)
+                intact.append(shape_el)
 
         if len(results) != 0:
             # Delete originals.
             for_deletion = [s for s in self.get_selected()]
-            for shape in for_deletion:
-                if shape not in intact:
-                    self.delete_shape(shape)
+            for shape_el in for_deletion:
+                if shape_el not in intact:
+                    self.delete_shape(shape_el)
 
             for geo in results:
                 self.add_shape(DrawToolShape(geo))
@@ -4158,8 +4143,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
             try:
                 for linestring in target.geo:
                     self.add_shape(DrawToolShape(linestring.difference(toolgeo)))
-            except:
-                self.app.log.warning("Current LinearString does not intersect the target")
+            except Exception as e:
+                self.app.log.warning("Current LinearString does not intersect the target. %s" % str(e))
         else:
             self.app.log.warning("Not implemented. Object type: %s" % str(type(target.geo)))
             return
@@ -4172,7 +4157,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         if buf_distance < 0:
             self.app.inform.emit(
-               _( "[ERROR_NOTCL] Negative buffer value is not accepted. Use Buffer interior to generate an 'inside' shape"))
+               _("[ERROR_NOTCL] Negative buffer value is not accepted. "
+                 "Use Buffer interior to generate an 'inside' shape"))
 
             # deselect everything
             self.selected = []
@@ -4210,7 +4196,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         if buf_distance < 0:
             self.app.inform.emit(
                 _("[ERROR_NOTCL] Negative buffer value is not accepted. "
-                    "Use Buffer interior to generate an 'inside' shape")
+                  "Use Buffer interior to generate an 'inside' shape")
             )
             # deselect everything
             self.selected = []
@@ -4286,7 +4272,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         if buf_distance < 0:
             self.app.inform.emit(_("[ERROR_NOTCL] Negative buffer value is not accepted. "
-                                 "Use Buffer interior to generate an 'inside' shape"))
+                                   "Use Buffer interior to generate an 'inside' shape"))
             # deselect everything
             self.selected = []
             self.replot()
@@ -4412,13 +4398,13 @@ class FlatCAMGeoEditor(QtCore.QObject):
             if reset:
                 self.flat_geo = []
 
-            ## If iterable, expand recursively.
+            # If iterable, expand recursively.
             try:
-                for geo in geometry:
-                    if geo is not None:
-                        recurse(geometry=geo, reset=False)
+                for geo_el in geometry:
+                    if geo_el is not None:
+                        recurse(geometry=geo_el, reset=False)
 
-            ## Not iterable, do the actual indexing and add.
+            # Not iterable, do the actual indexing and add.
             except TypeError:
                 self.flat_geo.append(geometry)
 
@@ -4436,17 +4422,17 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
                     if method == "seed":
                         cp = Geometry.clear_polygon2(poly_buf,
-                                                 tooldia, self.app.defaults["geometry_circle_steps"],
-                                                 overlap=overlap, contour=contour, connect=connect)
+                                                     tooldia, self.app.defaults["geometry_circle_steps"],
+                                                     overlap=overlap, contour=contour, connect=connect)
                     elif method == "lines":
                         cp = Geometry.clear_polygon3(poly_buf,
-                                                 tooldia, self.app.defaults["geometry_circle_steps"],
-                                                 overlap=overlap, contour=contour, connect=connect)
+                                                     tooldia, self.app.defaults["geometry_circle_steps"],
+                                                     overlap=overlap, contour=contour, connect=connect)
 
                     else:
                         cp = Geometry.clear_polygon(poly_buf,
-                                                tooldia, self.app.defaults["geometry_circle_steps"],
-                                                overlap=overlap, contour=contour, connect=connect)
+                                                    tooldia, self.app.defaults["geometry_circle_steps"],
+                                                    overlap=overlap, contour=contour, connect=connect)
 
                     if cp is not None:
                         local_results += list(cp.get_objects())
@@ -4454,7 +4440,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                     log.debug("Could not Paint the polygons. %s" % str(e))
                     self.app.inform.emit(
                         _("[ERROR] Could not do Paint. Try a different combination of parameters. "
-                        "Or a different method of Paint\n%s") % str(e))
+                          "Or a different method of Paint\n%s") % str(e))
                     return
 
                 # add the result to the results list
