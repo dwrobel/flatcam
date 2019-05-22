@@ -1565,8 +1565,9 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.tool2tooldia[key_in_tool2tooldia] = current_table_dia_edited
 
             # update the tool offset
-            modified_offset = self.exc_obj.tool_offset.pop(dia_changed)
-            self.exc_obj.tool_offset[current_table_dia_edited] = modified_offset
+            modified_offset = self.exc_obj.tool_offset.pop(dia_changed ,None)
+            if modified_offset is not None:
+                self.exc_obj.tool_offset[current_table_dia_edited] = modified_offset
 
             self.replot()
         else:

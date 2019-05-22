@@ -151,7 +151,10 @@ class ToolSub(FlatCAMTool):
         self.new_tools = {}
         self.new_solid_geometry = []
 
-        self.sub_union = None
+        self.sub_solid_union = None
+        self.sub_follow_union = None
+        self.sub_clear_union = None
+
 
         self.sub_grb_obj = None
         self.sub_grb_obj_name = None
@@ -251,12 +254,25 @@ class ToolSub(FlatCAMTool):
             self.new_apertures[apid] = {}
             self.new_apertures[apid]['type'] = 'C'
             self.new_apertures[apid]['size'] = self.target_grb_obj.apertures[apid]['size']
-            self.new_apertures[apid]['solid_geometry'] = []
+            self.new_apertures[apid]['geometry'] = []
 
-        geo_union_list = []
+        geo_solid_union_list = []
+        geo_follow_union_list = []
+        geo_clear_union_list = []
+
         for apid1 in self.sub_grb_obj.apertures:
-            geo_union_list += self.sub_grb_obj.apertures[apid1]['solid_geometry']
-        self.sub_union = cascaded_union(geo_union_list)
+            if 'geometry' in self.sub_grb_obj.apertures[apid1]:
+                for elem in self.sub_grb_obj.apertures[apid1]['geometry']:
+                    if 'solid' in elem:
+                        geo_solid_union_list.append(elem['solid'])
+                    if 'follow' in elem:
+                        geo_follow_union_list.append(elem['follow'])
+                    if 'clear' in elem:
+                        geo_clear_union_list.append(elem['clear'])
+
+        self.sub_solid_union = cascaded_union(geo_solid_union_list)
+        self.sub_follow_union = cascaded_union(geo_follow_union_list)
+        self.sub_clear_union = cascaded_union(geo_clear_union_list)
 
         # add the promises
         for apid in self.target_grb_obj.apertures:
@@ -266,32 +282,78 @@ class ToolSub(FlatCAMTool):
         self.periodic_check(500, reset=True)
 
         for apid in self.target_grb_obj.apertures:
-            geo = self.target_grb_obj.apertures[apid]['solid_geometry']
+            geo = self.target_grb_obj.apertures[apid]['geometry']
             self.app.worker_task.emit({'fcn': self.aperture_intersection,
                                        'params': [apid, geo]})
 
     def aperture_intersection(self, apid, geo):
-        new_solid_geometry = []
+        new_geometry = []
+
         log.debug("Working on promise: %s" % str(apid))
 
         with self.app.proc_container.new(_("Parsing aperture %s geometry ..." % str(apid))):
-            for geo_silk in geo:
-                if geo_silk.intersects(self.sub_union):
-                    new_geo = geo_silk.difference(self.sub_union)
-                    new_geo = new_geo.buffer(0)
-                    if new_geo:
-                        if not new_geo.is_empty:
-                            new_solid_geometry.append(new_geo)
-                        else:
-                            new_solid_geometry.append(geo_silk)
-                    else:
-                        new_solid_geometry.append(geo_silk)
-                else:
-                    new_solid_geometry.append(geo_silk)
+            for geo_el in geo:
+                new_el = dict()
 
-        if new_solid_geometry:
-            while not self.new_apertures[apid]['solid_geometry']:
-                self.new_apertures[apid]['solid_geometry'] = deepcopy(new_solid_geometry)
+                if 'solid' in geo_el:
+                    work_geo = geo_el['solid']
+                    if self.sub_solid_union:
+                        if work_geo.intersects(self.sub_solid_union):
+                            new_geo = work_geo.difference(self.sub_solid_union)
+                            new_geo = new_geo.buffer(0)
+                            if new_geo:
+                                if not new_geo.is_empty:
+                                    new_el['solid'] = new_geo
+                                else:
+                                    new_el['solid'] = work_geo
+                            else:
+                                new_el['solid'] = work_geo
+                        else:
+                            new_el['solid'] = work_geo
+                    else:
+                        new_el['solid'] = work_geo
+
+                if 'follow' in geo_el:
+                    work_geo = geo_el['follow']
+                    if self.sub_follow_union:
+                        if work_geo.intersects(self.sub_follow_union):
+                            new_geo = work_geo.difference(self.sub_follow_union)
+                            new_geo = new_geo.buffer(0)
+                            if new_geo:
+                                if not new_geo.is_empty:
+                                    new_el['follow'] = new_geo
+                                else:
+                                    new_el['follow'] = work_geo
+                            else:
+                                new_el['follow'] = work_geo
+                        else:
+                            new_el['follow'] = work_geo
+                    else:
+                        new_el['follow'] = work_geo
+
+                if 'clear' in geo_el:
+                    work_geo = geo_el['clear']
+                    if self.sub_clear_union:
+                        if work_geo.intersects(self.sub_clear_union):
+                            new_geo = work_geo.difference(self.sub_clear_union)
+                            new_geo = new_geo.buffer(0)
+                            if new_geo:
+                                if not new_geo.is_empty:
+                                    new_el['clear'] = new_geo
+                                else:
+                                    new_el['clear'] = work_geo
+                            else:
+                                new_el['clear'] = work_geo
+                        else:
+                            new_el['clear'] = work_geo
+                    else:
+                        new_el['clear'] = work_geo
+
+                new_geometry.append(deepcopy(new_el))
+
+        if new_geometry:
+            while not self.new_apertures[apid]['geometry']:
+                self.new_apertures[apid]['geometry'] = deepcopy(new_geometry)
                 time.sleep(0.5)
 
         while True:
@@ -312,9 +374,11 @@ class ToolSub(FlatCAMTool):
             grb_obj.apertures = deepcopy(self.new_apertures)
 
             poly_buff = []
+            follow_buff = []
             for ap in self.new_apertures:
-                for poly in self.new_apertures[ap]['solid_geometry']:
-                    poly_buff.append(poly)
+                for elem in self.new_apertures[ap]['geometry']:
+                    poly_buff.append(elem['solid'])
+                    follow_buff.append(elem['follow'])
 
             work_poly_buff = cascaded_union(poly_buff)
             try:
@@ -327,14 +391,14 @@ class ToolSub(FlatCAMTool):
                 pass
 
             grb_obj.solid_geometry = deepcopy(poly_buff)
+            grb_obj.follow_geometry = deepcopy(follow_buff)
 
         with self.app.proc_container.new(_("Generating new object ...")):
             ret = self.app.new_object('gerber', outname, obj_init, autoselected=False)
             if ret == 'fail':
                 self.app.inform.emit(_('[ERROR_NOTCL] Generating new object failed.'))
                 return
-            # Register recent file
-            self.app.file_opened.emit('gerber', outname)
+
             # GUI feedback
             self.app.inform.emit(_("[success] Created: %s") % outname)
 

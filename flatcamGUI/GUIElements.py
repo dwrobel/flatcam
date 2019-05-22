@@ -571,11 +571,48 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
                 clip_text = clip_text.replace('\\', '/')
                 self.insertPlainText(clip_text)
 
+        if modifier & Qt.ControlModifier and key == Qt.Key_Slash:
+            self.comment()
+
         tc = self.textCursor()
         if (key == Qt.Key_Tab or key == Qt.Key_Enter or key == Qt.Key_Return) and self.completer.popup().isVisible():
             self.completer.insertText.emit(self.completer.getSelected())
             self.completer.setCompletionMode(QCompleter.PopupCompletion)
             return
+        elif key == Qt.Key_BraceLeft:
+            tc.insertText('{}')
+            self.moveCursor(QtGui.QTextCursor.Left)
+        elif key == Qt.Key_BracketLeft:
+            tc.insertText('[]')
+            self.moveCursor(QtGui.QTextCursor.Left)
+        elif key == Qt.Key_ParenLeft:
+            tc.insertText('()')
+            self.moveCursor(QtGui.QTextCursor.Left)
+
+        elif key == Qt.Key_BraceRight:
+            tc.select(QtGui.QTextCursor.WordUnderCursor)
+            if tc.selectedText() == '}':
+                tc.movePosition(QTextCursor.Right)
+                self.setTextCursor(tc)
+            else:
+                tc.clearSelection()
+                self.textCursor().insertText('}')
+        elif key == Qt.Key_BracketRight:
+            tc.select(QtGui.QTextCursor.WordUnderCursor)
+            if tc.selectedText() == ']':
+                tc.movePosition(QTextCursor.Right)
+                self.setTextCursor(tc)
+            else:
+                tc.clearSelection()
+                self.textCursor().insertText(']')
+        elif key == Qt.Key_ParenRight:
+            tc.select(QtGui.QTextCursor.WordUnderCursor)
+            if tc.selectedText() == ')':
+                tc.movePosition(QTextCursor.Right)
+                self.setTextCursor(tc)
+            else:
+                tc.clearSelection()
+                self.textCursor().insertText(')')
         else:
             super(FCTextAreaExtended, self).keyPressEvent(event)
 
@@ -593,6 +630,33 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
                 self.completer.complete(cr)
             else:
                 self.completer.popup().hide()
+
+    def comment(self):
+        """
+        Got it from here:
+        https://stackoverflow.com/questions/49898820/how-to-get-text-next-to-cursor-in-qtextedit-in-pyqt4
+        :return:
+        """
+        pos = self.textCursor().position()
+        self.moveCursor(QtGui.QTextCursor.StartOfLine)
+        line_text = self.textCursor().block().text()
+        if self.textCursor().block().text().startswith(" "):
+            # skip the white space
+            self.moveCursor(QtGui.QTextCursor.NextWord)
+        self.moveCursor(QtGui.QTextCursor.NextCharacter,QtGui.QTextCursor.KeepAnchor)
+        character = self.textCursor().selectedText()
+        if character == "#":
+            # delete #
+            self.textCursor().deletePreviousChar()
+            # delete white space 
+            self.moveCursor(QtGui.QTextCursor.NextWord,QtGui.QTextCursor.KeepAnchor)
+            self.textCursor().removeSelectedText()
+        else:
+            self.moveCursor(QtGui.QTextCursor.PreviousCharacter,QtGui.QTextCursor.KeepAnchor)
+            self.textCursor().insertText("# ")
+        cursor = QtGui.QTextCursor(self.textCursor())
+        cursor.setPosition(pos)
+        self.setTextCursor(cursor)
 
 
 class FCComboBox(QtWidgets.QComboBox):

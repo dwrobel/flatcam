@@ -137,7 +137,7 @@ class ToolMove(FlatCAMTool):
                             else:
                                 for sel_obj in obj_list:
 
-                                    # offset
+                                    # offset solid_geometry
                                     sel_obj.offset((dx, dy))
                                     sel_obj.plot()
 

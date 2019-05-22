@@ -1390,6 +1390,8 @@ class SolderPaste(FlatCAMTool):
                 self.app.inform.emit(_("[WARNING_NOTCL] No such file or directory"))
                 return
 
+        if self.app.defaults["global_open_style"] is False:
+            self.app.file_opened.emit("gcode", filename)
         self.app.file_saved.emit("gcode", filename)
         self.app.inform.emit(_("[success] Solder paste dispenser GCode file saved to: %s") % filename)
 
