@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+22.05.2019
+
+- Geo Editor - added a new editor tool, Eraser
+
 21.05.2019
 
 - added the file extension .ncd to the Excellon file extension list

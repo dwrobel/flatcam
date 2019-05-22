@@ -686,6 +686,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_add_text_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/text32.png'), _('Add Text'))
         self.geo_add_buffer_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), _('Add Buffer'))
         self.geo_add_paint_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/paint20_1.png'), _('Paint Shape'))
+        self.geo_eraser_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/eraser26.png'), _('Eraser'))
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_union_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/union32.png'), _('Polygon Union'))
@@ -1910,6 +1911,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_add_buffer_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'),
                                                                   _('Add Buffer'))
         self.geo_add_paint_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/paint20_1.png'), _('Paint Shape'))
+        self.geo_eraser_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/eraser26.png'), _('Eraser'))
+
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_union_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/union32.png'), _('Polygon Union'))

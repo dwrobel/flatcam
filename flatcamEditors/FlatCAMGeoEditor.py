@@ -2798,6 +2798,108 @@ class FCBuffer(FCShapeTool):
         self.buff_tool.hide_tool()
 
 
+class FCEraser(FCShapeTool):
+    def __init__(self, draw_app):
+        DrawTool.__init__(self, draw_app)
+        self.name = 'eraser'
+
+        self.origin = None
+        self.destination = None
+
+        if len(self.draw_app.get_selected()) == 0:
+            if self.draw_app.launched_from_shortcuts is True:
+                self.draw_app.launched_from_shortcuts = False
+            self.draw_app.app.inform.emit(_("Select a shape to act as deletion area ..."))
+        else:
+            self.draw_app.app.inform.emit(_("Click to pick-up the erase shape..."))
+
+        self.geometry = []
+        self.storage = self.draw_app.storage
+
+        # Switch notebook to Selected page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+
+    def set_origin(self, origin):
+        self.origin = origin
+
+    def click(self, point):
+        if len(self.draw_app.get_selected()) == 0:
+
+            for obj_shape in self.storage.get_objects():
+                try:
+                    __, closest_shape = self.storage.nearest(point)
+                    self.draw_app.selected.append(closest_shape)
+                except StopIteration:
+                    return ""
+
+        if len(self.draw_app.get_selected()) == 0:
+            return "Nothing to ersase."
+
+        if self.origin is None:
+            self.set_origin(point)
+            self.draw_app.app.inform.emit(_("Click to erase ..."))
+            return
+        else:
+            self.destination = point
+            self.make()
+
+            # self.draw_app.select_tool("select")
+            return
+
+    def make(self):
+        eraser_sel_shapes = []
+
+        # create the eraser shape from selection
+        for eraser_shape in self.utility_geometry(data=self.destination).geo:
+            temp_shape = eraser_shape.buffer(0.0000001)
+            temp_shape = Polygon(temp_shape.exterior)
+            eraser_sel_shapes.append(temp_shape)
+        eraser_sel_shapes = cascaded_union(eraser_sel_shapes)
+
+        for obj_shape in self.storage.get_objects():
+            try:
+                geometric_data = obj_shape.geo
+                if eraser_sel_shapes.intersects(geometric_data):
+                    obj_shape.geo = geometric_data.difference(eraser_sel_shapes)
+            except KeyError:
+                pass
+
+        self.draw_app.delete_utility_geometry()
+        self.draw_app.plot_all()
+        self.draw_app.app.inform.emit(_("[success] Done. Eraser tool action completed."))
+
+    def utility_geometry(self, data=None):
+        """
+        Temporary geometry on screen while using this tool.
+
+        :param data:
+        :return:
+        """
+        geo_list = []
+
+        if self.origin is None:
+            return None
+
+        if len(self.draw_app.get_selected()) == 0:
+            return None
+
+        dx = data[0] - self.origin[0]
+        dy = data[1] - self.origin[1]
+
+        try:
+            for geom in self.draw_app.get_selected():
+                geo_list.append(affinity.translate(geom.geo, xoff=dx, yoff=dy))
+        except AttributeError:
+            self.draw_app.select_tool('select')
+            self.draw_app.selected = []
+            return
+        return DrawToolUtilityShape(geo_list)
+
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.plot_all()
+
+
 class FCPaint(FCShapeTool):
     def __init__(self, draw_app):
         FCShapeTool.__init__(self, draw_app)
@@ -2864,6 +2966,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
                      "constructor": FCBuffer},
             "paint": {"button": self.app.ui.geo_add_paint_btn,
                        "constructor": FCPaint},
+            "eraser": {"button": self.app.ui.geo_eraser_btn,
+                       "constructor": FCEraser},
             "move": {"button": self.app.ui.geo_move_btn,
                      "constructor": FCMove},
             "transform": {"button": self.app.ui.geo_transform_btn,
