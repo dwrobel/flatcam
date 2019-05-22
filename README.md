@@ -12,7 +12,9 @@ CAD program, and create G-Code for Isolation routing.
 22.05.2019
 
 - Geo Editor - added a new editor tool, Eraser
-- PEP8 cleanup of the Geo Editor
+- some PEP8 cleanup of the Geo Editor
+- fixed some selection issues in the new tool Eraser in Geometry Editor
+- updated the translation files
 
 21.05.2019
 

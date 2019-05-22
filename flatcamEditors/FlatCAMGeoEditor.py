@@ -2810,16 +2810,19 @@ class FCEraser(FCShapeTool):
 
     def click(self, point):
         if len(self.draw_app.get_selected()) == 0:
-
             for obj_shape in self.storage.get_objects():
                 try:
                     __, closest_shape = self.storage.nearest(point)
                     self.draw_app.selected.append(closest_shape)
                 except StopIteration:
+                    if len(self.draw_app.selected) > 0:
+                        self.draw_app.app.inform.emit(_("Click to pick-up the erase shape..."))
                     return ""
 
         if len(self.draw_app.get_selected()) == 0:
             return "Nothing to ersase."
+        else:
+            self.draw_app.app.inform.emit(_("Click to pick-up the erase shape..."))
 
         if self.origin is None:
             self.set_origin(point)
@@ -3594,13 +3597,15 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                            "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
-        # ## Utility geometry (animated)
-        geo = self.active_tool.utility_geometry(data=(x, y))
-
-        if isinstance(geo, DrawToolShape) and geo.geo is not None:
-            # Remove any previous utility shape
-            self.tool_shape.clear(update=True)
-            self.draw_utility_geometry(geo=geo)
+        if event.button == 1 and event.is_dragging == 1 and isinstance(self.active_tool, FCEraser):
+            pass
+        else:
+            # ## Utility geometry (animated)
+            geo = self.active_tool.utility_geometry(data=(x, y))
+            if isinstance(geo, DrawToolShape) and geo.geo is not None:
+                # Remove any previous utility shape
+                self.tool_shape.clear(update=True)
+                self.draw_utility_geometry(geo=geo)
 
         # ## Selection area on canvas section ###
         dx = pos[0] - self.pos[0]
@@ -3687,6 +3692,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                     self.active_tool.click_release((self.pos[0], self.pos[1]))
                     # self.app.inform.emit(msg)
                     self.replot()
+
         except Exception as e:
             log.warning("Error: %s" % str(e))
             return

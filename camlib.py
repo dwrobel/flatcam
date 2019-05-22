@@ -7738,7 +7738,10 @@ class FlatCAMRTree(object):
     def remove_obj(self, objid, obj):
         # Use all ptids to delete from index
         for i, pt in enumerate(self.get_points(obj)):
-            self.rti.delete(self.obj2points[objid][i], (pt[0], pt[1], pt[0], pt[1]))
+            try:
+                self.rti.delete(self.obj2points[objid][i], (pt[0], pt[1], pt[0], pt[1]))
+            except IndexError:
+                pass
 
     def nearest(self, pt):
         """
