@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed bug in Gerber editor FCDisk and FCSemiDisc that the resulting geometry was not stored into the '0' aperture where all the solids are stored
 - fixed minor issue in Gerber Editor where apertures were included in the saved object even if there was no geometric data for that aperture
+- some PEP8 cleanup in FlatCAMApp.py
 
 22.05.2019
 
