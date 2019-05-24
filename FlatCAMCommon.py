@@ -6,6 +6,7 @@
 # MIT Licence                                              #
 ############################################################
 
+
 class LoudDict(dict):
     """
     A Dictionary with a callback for

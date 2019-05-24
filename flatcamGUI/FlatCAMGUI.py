@@ -516,9 +516,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.exc_editor_menu.menuAction().setVisible(False)
         self.exc_editor_menu.setDisabled(True)
 
-        ################################
-        ### Project Tab Context menu ###
-        ################################
+        # ###############################
+        # ## Project Tab Context menu ###
+        # ###############################
 
         self.menuproject = QtWidgets.QMenu()
         self.menuprojectenable = self.menuproject.addAction(QtGui.QIcon('share/replot32.png'), _('Enable Plot'))
@@ -535,9 +535,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.menuprojectproperties = self.menuproject.addAction(QtGui.QIcon('share/properties32.png'), _('Properties'))
 
-        ################
-        ### Splitter ###
-        ################
+        # ###############
+        # ## Splitter ###
+        # ###############
 
         # IMPORTANT #
         # The order: SPITTER -> NOTEBOOK -> SNAP TOOLBAR is important and without it the GUI will not be initialized as
@@ -1574,9 +1574,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.sh_hlay.addWidget(self.sh_editor)
 
 
-        ##############################################################
-        ### HERE WE BUILD THE CONTEXT MENU FOR RMB CLICK ON CANVAS ###
-        ##############################################################
+        # #############################################################
+        # ## HERE WE BUILD THE CONTEXT MENU FOR RMB CLICK ON CANVAS ###
+        # #############################################################
         self.popMenu = FCMenu()
 
         self.popmenu_disable = self.popMenu.addAction(QtGui.QIcon('share/clear_plot32.png'), _("Disable"))

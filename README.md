@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+24.05.2019
+
+- added a toggle Grid button to the canvas context menu in the Grids submenu
+
 23.05.2019
 
 - fixed bug in Gerber editor FCDisk and FCSemiDisc that the resulting geometry was not stored into the '0' aperture where all the solids are stored

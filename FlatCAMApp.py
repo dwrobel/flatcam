@@ -5193,6 +5193,14 @@ class App(QtCore.QObject):
         self.ui.cmenu_gridmenu.clear()
         sorted_list = sorted(self.defaults["global_grid_context_menu"][str(units)])
 
+        grid_toggle = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/grid32_menu.png'), _("Grid On/Off"))
+        grid_toggle.setCheckable(True)
+        if self.grid_status():
+            grid_toggle.setChecked(True)
+        else:
+            grid_toggle.setChecked(False)
+
+        self.ui.cmenu_gridmenu.addSeparator()
         for grid in sorted_list:
             action = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/grid32_menu.png'), "%s" % str(grid))
             action.triggered.connect(self.set_grid)
@@ -5202,6 +5210,7 @@ class App(QtCore.QObject):
         grid_delete = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/delete32.png'), _("Delete"))
         grid_add.triggered.connect(self.on_grid_add)
         grid_delete.triggered.connect(self.on_grid_delete)
+        grid_toggle.triggered.connect(lambda: self.ui.grid_snap_btn.trigger())
 
     def set_grid(self):
         self.ui.grid_gap_x_entry.setText(self.sender().text())

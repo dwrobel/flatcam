@@ -3373,10 +3373,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
     def toolbar_tool_toggle(self, key):
         self.options[key] = self.sender().isChecked()
-        if self.options[key] == True:
-            return 1
-        else:
-            return 0
+        return 1 if self.options[key] == True else 0
 
     def clear(self):
         self.active_tool = None
