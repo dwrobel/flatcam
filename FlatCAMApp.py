@@ -1419,6 +1419,7 @@ class App(QtCore.QObject):
 
         # Context Menu
         self.ui.popmenu_disable.triggered.connect(lambda: self.disable_plots(self.collection.get_selected()))
+        self.ui.popmenu_panel_toggle.triggered.connect(self.on_toggle_notebook)
 
         self.ui.popmenu_new_geo.triggered.connect(self.new_geometry_object)
         self.ui.popmenu_new_grb.triggered.connect(self.new_gerber_object)

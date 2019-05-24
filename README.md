@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 24.05.2019
 
 - added a toggle Grid button to the canvas context menu in the Grids submenu
+- added a toggle left panel button to the canvas context menu
 
 23.05.2019
 

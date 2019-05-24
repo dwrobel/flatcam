@@ -732,7 +732,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grb_edit_toolbar.addSeparator()
         self.aperture_move_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
 
-        ### Snap Toolbar ###
+        # ## Snap Toolbar ###
         # Snap GRID toolbar is always active to facilitate usage of measurements done on GRID
         # self.addToolBar(self.snap_toolbar)
 
@@ -1579,7 +1579,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # #############################################################
         self.popMenu = FCMenu()
 
-        self.popmenu_disable = self.popMenu.addAction(QtGui.QIcon('share/clear_plot32.png'), _("Disable"))
+        self.popmenu_disable = self.popMenu.addAction(QtGui.QIcon('share/disable32.png'), _("Disable Plot"))
+        self.popmenu_panel_toggle = self.popMenu.addAction(QtGui.QIcon('share/notebook16.png'), _("Toggle Panel"))
+
         self.popMenu.addSeparator()
         self.cmenu_newmenu = self.popMenu.addMenu(QtGui.QIcon('share/file32.png'), _("New"))
         self.popmenu_new_geo = self.cmenu_newmenu.addAction(QtGui.QIcon('share/new_geo32_bis.png'), _("Geometry"))
