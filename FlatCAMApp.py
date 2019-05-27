@@ -6042,7 +6042,7 @@ class App(QtCore.QObject):
                                                                  filter = _filter_)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL Open Config cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Open Config cancelled."))
         else:
             self.open_config_file(filename)
 
@@ -8280,8 +8280,8 @@ The normal flow when working in FlatCAM is the following:</span></p>
     '''
     By default this is not threaded
     If threaded the app give warnings like this:
-    
-    QObject::connect: Cannot queue arguments of type 'QVector<int>' 
+
+    QObject::connect: Cannot queue arguments of type 'QVector<int>'
     (Make sure 'QVector<int>' is registered using qRegisterMetaType().
     '''
     def enable_plots(self, objects, threaded=True):
@@ -8317,7 +8317,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
     By default this is not threaded
     If threaded the app give warnings like this:
 
-    QObject::connect: Cannot queue arguments of type 'QVector<int>' 
+    QObject::connect: Cannot queue arguments of type 'QVector<int>'
     (Make sure 'QVector<int>' is registered using qRegisterMetaType().
     '''
     def disable_plots(self, objects, threaded=True):
