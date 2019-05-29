@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-05-22 18:30+0300\n"
-"PO-Revision-Date: 2019-05-27 13:55+0400\n"
+"PO-Revision-Date: 2019-05-29 13:29+0400\n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -1784,7 +1784,7 @@ msgstr "№ сверла:"
 
 #: flatcamEditors/FlatCAMExcEditor.py:910
 msgid "Specify how many drills to be in the array."
-msgstr ""
+msgstr "Укажите, сколько свёрел должно быть в массиве."
 
 #: flatcamEditors/FlatCAMExcEditor.py:927
 #: flatcamEditors/FlatCAMExcEditor.py:972
@@ -1801,6 +1801,10 @@ msgid ""
 "- 'Y' - vertical axis or \n"
 "- 'Angle' - a custom angle for the array inclination"
 msgstr ""
+"Направление, на которое ориентируется линейный массив:\n"
+"- 'X' - горизонтальная ось\n"
+"- 'Y' - вертикальная ось или\n"
+"- 'Угол' - произвольный угол наклона массива"
 
 #: flatcamEditors/FlatCAMExcEditor.py:942
 #: flatcamEditors/FlatCAMGrbEditor.py:2525
@@ -1893,7 +1897,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMExcEditor.py:2675
 #: flatcamEditors/FlatCAMGrbEditor.py:4318
 msgid "Click on the circular array Center position"
-msgstr ""
+msgstr "Нажмите на центральную позицию кругового массива"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:80
 #: flatcamEditors/FlatCAMGrbEditor.py:2400
@@ -1913,6 +1917,10 @@ msgid ""
 " - 'Beveled:' the corner is a line that directly connects the features "
 "meeting in the corner"
 msgstr ""
+"Есть 3 типа углов:\n"
+" - 'Округление': угол округляется для внешнего буфера.\n"
+" - 'Квадрат:' угол встречается под острым углом для внешнего буфера.\n"
+" - 'Скошенный:' линия, напрямую соединяющая элементы, встречающиеся в углу"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:89
 #: flatcamEditors/FlatCAMGrbEditor.py:2409
@@ -2005,8 +2013,8 @@ msgstr ""
 "Пример:\n"
 "Здесь значение 0.25 означает 25% от диаметра инструмента, указанного выше.\n"
 "\n"
-"Отрегулируйте значение, начиная с более низких значений\n"
-"и увеличивая его, если области, которые должны быть нарисованы, все еще\n"
+"Отрегулируйте значения, начиная с более низких значений\n"
+"и увеличивая его, если области, которые должны быть закрашены, всё ещё\n"
 "не окрашены.\n"
 "Более низкие значения = более быстрая обработка, более быстрое выполнение на "
 "печатной плате.\n"
@@ -2170,6 +2178,10 @@ msgid ""
 "Positive numbers for CW motion.\n"
 "Negative numbers for CCW motion."
 msgstr ""
+"Угол поворота в градусах.\n"
+"Число с плавающей запятой от -360 до 359.\n"
+"Положительные числа для движения по часовой стрелке.\n"
+"Отрицательные числа для движения против часовой стрелки."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:681
 #: flatcamEditors/FlatCAMGrbEditor.py:4574
@@ -2178,6 +2190,9 @@ msgid ""
 "The point of reference is the middle of\n"
 "the bounding box for all selected shapes."
 msgstr ""
+"Поворачивает выбранные фигуры.\n"
+"Точка отсчета - середина\n"
+"ограничительной рамки для всех выбранных фигур."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:704
 #: flatcamEditors/FlatCAMGrbEditor.py:4597 flatcamTools/ToolTransform.py:107
@@ -2193,6 +2208,8 @@ msgid ""
 "Angle for Skew action, in degrees.\n"
 "Float number between -360 and 359."
 msgstr ""
+"Угол наклона в градусах.\n"
+"Число с плавающей запятой между -360 и 359."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:715
 #: flatcamEditors/FlatCAMGrbEditor.py:4608 flatcamTools/ToolTransform.py:118
@@ -2208,6 +2225,9 @@ msgid ""
 "The point of reference is the middle of\n"
 "the bounding box for all selected shapes."
 msgstr ""
+"Наклоняет/сдвигает выбранные фигуры.\n"
+"Точка отсчета - середина\n"
+"ограничительной рамки для всех выбранных фигур."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:722
 #: flatcamEditors/FlatCAMGrbEditor.py:4615 flatcamTools/ToolTransform.py:125
@@ -2222,12 +2242,12 @@ msgstr "Наклон Y"
 #: flatcamEditors/FlatCAMGeoEditor.py:761
 #: flatcamEditors/FlatCAMGrbEditor.py:4654 flatcamTools/ToolTransform.py:164
 msgid "Factor X:"
-msgstr ""
+msgstr "Множитель X:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:763
 #: flatcamEditors/FlatCAMGrbEditor.py:4656 flatcamTools/ToolTransform.py:166
 msgid "Factor for Scale action over X axis."
-msgstr ""
+msgstr "Множитель масштабирования по оси X."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:771
 #: flatcamEditors/FlatCAMGrbEditor.py:4664 flatcamTools/ToolTransform.py:174
@@ -2243,16 +2263,19 @@ msgid ""
 "The point of reference depends on \n"
 "the Scale reference checkbox state."
 msgstr ""
+"Масштабировать выбранные фигуры.\n"
+"Точка отсчета зависит от\n"
+"состояние флажка Scale Reference."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:778
 #: flatcamEditors/FlatCAMGrbEditor.py:4671 flatcamTools/ToolTransform.py:181
 msgid "Factor Y:"
-msgstr ""
+msgstr "Множитель Y:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:780
 #: flatcamEditors/FlatCAMGrbEditor.py:4673 flatcamTools/ToolTransform.py:183
 msgid "Factor for Scale action over Y axis."
-msgstr ""
+msgstr "Множитель масштабирования по оси Y."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:788
 #: flatcamEditors/FlatCAMGrbEditor.py:4681 flatcamTools/ToolTransform.py:191
@@ -2271,12 +2294,14 @@ msgid ""
 "Scale the selected shape(s)\n"
 "using the Scale Factor X for both axis."
 msgstr ""
+"Масштабирует выбранные фигуры\n"
+"используя множитель X для обеих осей."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:805
 #: flatcamEditors/FlatCAMGrbEditor.py:4698 flatcamGUI/FlatCAMGUI.py:6285
 #: flatcamTools/ToolTransform.py:208
 msgid "Scale Reference"
-msgstr ""
+msgstr "Указание масштабирования"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:807
 #: flatcamEditors/FlatCAMGrbEditor.py:4700
@@ -2290,17 +2315,17 @@ msgstr ""
 #: flatcamEditors/FlatCAMGeoEditor.py:835
 #: flatcamEditors/FlatCAMGrbEditor.py:4729 flatcamTools/ToolTransform.py:238
 msgid "Value X:"
-msgstr ""
+msgstr "Значение X:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:837
 #: flatcamEditors/FlatCAMGrbEditor.py:4731 flatcamTools/ToolTransform.py:240
 msgid "Value for Offset action on X axis."
-msgstr ""
+msgstr "Значение для смещения по оси X."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:845
 #: flatcamEditors/FlatCAMGrbEditor.py:4739 flatcamTools/ToolTransform.py:248
 msgid "Offset X"
-msgstr ""
+msgstr "Смещение Х"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:847
 #: flatcamEditors/FlatCAMGeoEditor.py:865
@@ -2311,26 +2336,29 @@ msgid ""
 "The point of reference is the middle of\n"
 "the bounding box for all selected shapes.\n"
 msgstr ""
+"Смещяет выбранные фигуры.\n"
+"Точка отсчета - середина\n"
+"ограничительной рамки для всех выбранных фигур.\n"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:853
 #: flatcamEditors/FlatCAMGrbEditor.py:4747 flatcamTools/ToolTransform.py:255
 msgid "Value Y:"
-msgstr ""
+msgstr "Значение Y:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:855
 #: flatcamEditors/FlatCAMGrbEditor.py:4749 flatcamTools/ToolTransform.py:257
 msgid "Value for Offset action on Y axis."
-msgstr ""
+msgstr "Значение для смещения по оси Y."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:863
 #: flatcamEditors/FlatCAMGrbEditor.py:4757 flatcamTools/ToolTransform.py:265
 msgid "Offset Y"
-msgstr ""
+msgstr "Смещение Y"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:894
 #: flatcamEditors/FlatCAMGrbEditor.py:4788 flatcamTools/ToolTransform.py:295
 msgid "Flip on X"
-msgstr ""
+msgstr "Отразить по X"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:896
 #: flatcamEditors/FlatCAMGeoEditor.py:904
@@ -2340,11 +2368,13 @@ msgid ""
 "Flip the selected shape(s) over the X axis.\n"
 "Does not create a new shape."
 msgstr ""
+"Отражает выбранные фигуры по оси X.\n"
+"Не создает новую фугуру."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:902
 #: flatcamEditors/FlatCAMGrbEditor.py:4796 flatcamTools/ToolTransform.py:303
 msgid "Flip on Y"
-msgstr ""
+msgstr "Отразить по Y"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:911
 #: flatcamEditors/FlatCAMGrbEditor.py:4805 flatcamTools/ToolTransform.py:312
@@ -2364,6 +2394,15 @@ msgid ""
 "Or enter the coords in format (x, y) in the\n"
 "Point Entry field and click Flip on X(Y)"
 msgstr ""
+"Отражает выбранные фигуры (ы)\n"
+"вокруг точки, указанной в поле ввода координат.\n"
+"\n"
+"Координаты точки могут быть записаны с помощью\n"
+"щелчка левой кнопкой мыши на холсте одновременно с нажатием\n"
+"клавиши SHIFT.\n"
+"Затем нажмите кнопку 'Добавить', чтобы вставить координаты.\n"
+"Или введите координаты в формате (x, y) в\n"
+"поле ввода и нажмите «Отразить по X (Y)»"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:925
 #: flatcamEditors/FlatCAMGrbEditor.py:4819 flatcamTools/ToolTransform.py:325
@@ -2377,6 +2416,10 @@ msgid ""
 "The 'x' in (x, y) will be used when using Flip on X and\n"
 "the 'y' in (x, y) will be used when using Flip on Y."
 msgstr ""
+"Координаты в формате (x, y), используемые в качестве указателя для "
+"отражения.\n"
+"'x' в (x, y) будет использоваться при отражении по X и\n"
+"'y' в (x, y) будет использоваться при отражении по Y."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:939
 #: flatcamEditors/FlatCAMGrbEditor.py:4833 flatcamTools/ToolTransform.py:339
@@ -2385,6 +2428,9 @@ msgid ""
 "left click on canvas together with pressing\n"
 "SHIFT key. Then click Add button to insert."
 msgstr ""
+"Координаты точки могут быть записаны с помощью\n"
+"щелчка левой кнопкой мыши на холсте одновременно с нажатием\n"
+"клавиши SHIFT. Затем нажмите кнопку 'Добавить', чтобы вставить координаты."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1054
 #: flatcamEditors/FlatCAMGrbEditor.py:4958
@@ -2434,12 +2480,12 @@ msgstr ""
 #: flatcamEditors/FlatCAMGeoEditor.py:1265
 #: flatcamEditors/FlatCAMGrbEditor.py:5206 flatcamTools/ToolTransform.py:640
 msgid "Appying Rotate"
-msgstr ""
+msgstr "Применение поворота"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1293
 #: flatcamEditors/FlatCAMGrbEditor.py:5237
 msgid "[success] Done. Rotate completed."
-msgstr ""
+msgstr "[success] Готово. Поворот выполнен."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1309
 #: flatcamEditors/FlatCAMGrbEditor.py:5256
@@ -2449,7 +2495,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMGeoEditor.py:1312
 #: flatcamEditors/FlatCAMGrbEditor.py:5259 flatcamTools/ToolTransform.py:691
 msgid "Applying Flip"
-msgstr ""
+msgstr "Применение отражения"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1342
 #: flatcamEditors/FlatCAMGrbEditor.py:5296 flatcamTools/ToolTransform.py:733
@@ -2469,7 +2515,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMGeoEditor.py:1367
 #: flatcamEditors/FlatCAMGrbEditor.py:5327 flatcamTools/ToolTransform.py:760
 msgid "Applying Skew"
-msgstr ""
+msgstr "Применение наклона"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1392
 #: flatcamEditors/FlatCAMGrbEditor.py:5360 flatcamTools/ToolTransform.py:791
@@ -2491,7 +2537,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMGeoEditor.py:1410
 #: flatcamEditors/FlatCAMGrbEditor.py:5386 flatcamTools/ToolTransform.py:809
 msgid "Applying Scale"
-msgstr ""
+msgstr "Применение масштабирования"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1443
 #: flatcamEditors/FlatCAMGrbEditor.py:5422 flatcamTools/ToolTransform.py:848
@@ -2513,7 +2559,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMGeoEditor.py:1458
 #: flatcamEditors/FlatCAMGrbEditor.py:5441 flatcamTools/ToolTransform.py:861
 msgid "Applying Offset"
-msgstr ""
+msgstr "Применение смещения"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1469
 #: flatcamEditors/FlatCAMGrbEditor.py:5462 flatcamTools/ToolTransform.py:880
@@ -2530,7 +2576,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMGeoEditor.py:1477
 #: flatcamEditors/FlatCAMGrbEditor.py:5470
 msgid "Rotate ..."
-msgstr ""
+msgstr "Поворот ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1478
 #: flatcamEditors/FlatCAMGeoEditor.py:1535
@@ -2539,7 +2585,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMGrbEditor.py:5528
 #: flatcamEditors/FlatCAMGrbEditor.py:5545
 msgid "Enter an Angle Value (degrees):"
-msgstr ""
+msgstr "Введите значение угла (градусы):"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1487
 #: flatcamEditors/FlatCAMGrbEditor.py:5480
@@ -2554,7 +2600,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMGeoEditor.py:1498
 #: flatcamEditors/FlatCAMGrbEditor.py:5491
 msgid "Offset on X axis ..."
-msgstr ""
+msgstr "Смещение по оси X ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1499
 #: flatcamEditors/FlatCAMGeoEditor.py:1518
@@ -2562,7 +2608,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMGrbEditor.py:5511
 #, python-format
 msgid "Enter a distance Value (%s):"
-msgstr ""
+msgstr "Введите значение расстояния (%s):"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1508
 #: flatcamEditors/FlatCAMGrbEditor.py:5501
@@ -2577,7 +2623,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMGeoEditor.py:1517
 #: flatcamEditors/FlatCAMGrbEditor.py:5510
 msgid "Offset on Y axis ..."
-msgstr ""
+msgstr "Смещение по оси Y ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1527
 #: flatcamEditors/FlatCAMGrbEditor.py:5520
@@ -2592,7 +2638,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMGeoEditor.py:1534
 #: flatcamEditors/FlatCAMGrbEditor.py:5527
 msgid "Skew on X axis ..."
-msgstr ""
+msgstr "Наклон по оси X ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1544
 #: flatcamEditors/FlatCAMGrbEditor.py:5537
@@ -2607,7 +2653,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMGeoEditor.py:1551
 #: flatcamEditors/FlatCAMGrbEditor.py:5544
 msgid "Skew on Y axis ..."
-msgstr ""
+msgstr "Наклон по оси Y ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1561
 #: flatcamEditors/FlatCAMGrbEditor.py:5554
@@ -2624,12 +2670,12 @@ msgstr ""
 #: flatcamEditors/FlatCAMGrbEditor.py:1354
 #: flatcamEditors/FlatCAMGrbEditor.py:1423
 msgid "Click on Center point ..."
-msgstr ""
+msgstr "Нажмите на  центральную точку ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1936
 #: flatcamEditors/FlatCAMGrbEditor.py:1362
 msgid "Click on Perimeter point to complete ..."
-msgstr ""
+msgstr "Для завершения щелкните по периметру ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1965
 msgid "[success] Done. Adding Circle completed."
@@ -2638,53 +2684,53 @@ msgstr ""
 #: flatcamEditors/FlatCAMGeoEditor.py:2000
 #: flatcamEditors/FlatCAMGrbEditor.py:1448
 msgid "Click on Start point ..."
-msgstr ""
+msgstr "Нажмите на точку начала отсчета..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2002
 #: flatcamEditors/FlatCAMGrbEditor.py:1450
 msgid "Click on Point3 ..."
-msgstr ""
+msgstr "Нажмите на 3-ю точку ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2004
 #: flatcamEditors/FlatCAMGrbEditor.py:1452
 msgid "Click on Stop point ..."
-msgstr ""
+msgstr "Нажмите на конечную точку ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2009
 #: flatcamEditors/FlatCAMGrbEditor.py:1457
 msgid "Click on Stop point to complete ..."
-msgstr ""
+msgstr "Нажмите на конечную точку для завершения ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2011
 #: flatcamEditors/FlatCAMGrbEditor.py:1459
 msgid "Click on Point2 to complete ..."
-msgstr ""
+msgstr "Нажмите на 2-ю точку для завершения ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2013
 #: flatcamEditors/FlatCAMGrbEditor.py:1461
 msgid "Click on Center point to complete ..."
-msgstr ""
+msgstr "Нажмите на  центральную точку для завершения..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2025
 #: flatcamEditors/FlatCAMGrbEditor.py:1473
 #, python-format
 msgid "Direction: %s"
-msgstr ""
+msgstr "Направление: %s"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2035
 #: flatcamEditors/FlatCAMGrbEditor.py:1483
 msgid "Mode: Start -> Stop -> Center. Click on Start point ..."
-msgstr ""
+msgstr "Режим: Старт -> Стоп -> Центр. Нажмите на начальную точку ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2038
 #: flatcamEditors/FlatCAMGrbEditor.py:1486
 msgid "Mode: Point1 -> Point3 -> Point2. Click on Point1 ..."
-msgstr ""
+msgstr "Режим: Точка1 -> Точка3 -> Точка2. Нажмите на Точку1 ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2041
 #: flatcamEditors/FlatCAMGrbEditor.py:1489
 msgid "Mode: Center -> Start -> Stop. Click on Center point ..."
-msgstr ""
+msgstr "Режим: Центр -> Старт -> Стоп. Нажмите на центральную точку ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2179
 msgid "[success] Done. Arc completed."
@@ -2707,6 +2753,8 @@ msgstr ""
 #: flatcamEditors/FlatCAMGeoEditor.py:2258
 msgid "Click on next Point or click right mouse button to complete ..."
 msgstr ""
+"Нажмите на следующую точку или щелкните правой кнопкой мыши для "
+"завершения ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2286
 msgid "[success] Done. Polygon completed."
@@ -2921,6 +2969,7 @@ msgstr ""
 msgid ""
 "Incompatible aperture type. Select an aperture with type 'C', 'R' or 'O'."
 msgstr ""
+"Несовместимый тип отверстия. Выберите отверстие с типом 'C', 'R' или 'O'."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:369
 msgid "[success] Done. Adding Pad completed."
@@ -2945,7 +2994,7 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGrbEditor.py:730
 msgid "Select shape(s) and then click ..."
-msgstr ""
+msgstr "Выберите фигуры, а затем нажмите ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:741
 msgid "[ERROR_NOTCL] Failed. Nothing selected."
@@ -2965,7 +3014,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMGrbEditor.py:1075
 #: flatcamEditors/FlatCAMGrbEditor.py:1099
 msgid "Corner Mode 1: 45 degrees ..."
-msgstr ""
+msgstr "Угловой режим 1: 45 градусов ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:862
 msgid "Click on 1st point ..."
@@ -2975,26 +3024,28 @@ msgstr "Нажмите на 1-й точке ..."
 #: flatcamEditors/FlatCAMGrbEditor.py:1170
 msgid "Click on next Point or click Right mouse button to complete ..."
 msgstr ""
+"Нажмите на следующую точку или щелкните правой кнопкой мыши для "
+"завершения ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1063
 #: flatcamEditors/FlatCAMGrbEditor.py:1096
 msgid "Corner Mode 2: Reverse 45 degrees ..."
-msgstr ""
+msgstr "Угловой режим 4: реверс 90 градусов ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1066
 #: flatcamEditors/FlatCAMGrbEditor.py:1093
 msgid "Corner Mode 3: 90 degrees ..."
-msgstr ""
+msgstr "Угловой режим 3: 90 градусов ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1069
 #: flatcamEditors/FlatCAMGrbEditor.py:1090
 msgid "Corner Mode 4: Reverse 90 degrees ..."
-msgstr ""
+msgstr "Угловой режим 4: реверс 90 градусов ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1072
 #: flatcamEditors/FlatCAMGrbEditor.py:1087
 msgid "Corner Mode 5: Free angle ..."
-msgstr ""
+msgstr "Угловой режим 5: свободный угол ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1126
 #: flatcamEditors/FlatCAMGrbEditor.py:1284
@@ -3024,7 +3075,7 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1669
 msgid "Scale the selected Gerber apertures ..."
-msgstr ""
+msgstr "Масштабирование выбранных отверстий Gerber ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1711
 msgid "Buffer the selected apertures ..."
@@ -3045,20 +3096,20 @@ msgstr ""
 #: flatcamEditors/FlatCAMGrbEditor.py:2243 flatcamGUI/FlatCAMGUI.py:1607
 #: flatcamGUI/FlatCAMGUI.py:4329
 msgid "Gerber Editor"
-msgstr ""
+msgstr "Редактор Gerber"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2262 flatcamGUI/ObjectUI.py:192
 msgid "<b>Apertures:</b>"
-msgstr ""
+msgstr "<b>Отверстия:</b>"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2264 flatcamGUI/ObjectUI.py:194
 msgid "Apertures Table for the Gerber Object."
-msgstr ""
+msgstr "Таблица отверстий для объекта Gerber."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2275
 #: flatcamEditors/FlatCAMGrbEditor.py:3586 flatcamGUI/ObjectUI.py:228
 msgid "Code"
-msgstr ""
+msgstr "Код"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2275
 #: flatcamEditors/FlatCAMGrbEditor.py:3586 flatcamGUI/ObjectUI.py:228
@@ -3074,15 +3125,15 @@ msgstr "Размер"
 #: flatcamEditors/FlatCAMGrbEditor.py:2275
 #: flatcamEditors/FlatCAMGrbEditor.py:3586 flatcamGUI/ObjectUI.py:228
 msgid "Dim"
-msgstr ""
+msgstr "Размер"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2279 flatcamGUI/ObjectUI.py:232
 msgid "Index"
-msgstr ""
+msgstr "Индекс"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2281 flatcamGUI/ObjectUI.py:234
 msgid "Aperture Code"
-msgstr ""
+msgstr "Код отверстия"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2283 flatcamGUI/ObjectUI.py:236
 msgid "Type of aperture: circular, rectangle, macros etc"
@@ -3091,7 +3142,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMGrbEditor.py:2285
 #: flatcamEditors/FlatCAMGrbEditor.py:2318 flatcamGUI/ObjectUI.py:238
 msgid "Aperture Size:"
-msgstr ""
+msgstr "Размер отверстия:"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2287 flatcamGUI/ObjectUI.py:240
 msgid ""
@@ -3099,14 +3150,17 @@ msgid ""
 " - (width, height) for R, O type.\n"
 " - (dia, nVertices) for P type"
 msgstr ""
+"Размеры отверстия:\n"
+" - (ширина, высота) для типа R, O.\n"
+" - (диам., nVertices) для типа P"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2308
 msgid "Aperture Code:"
-msgstr ""
+msgstr "Код отверстия:"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2310
 msgid "Code for the new aperture"
-msgstr ""
+msgstr "Код для нового отверстия"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2320
 msgid ""
@@ -3116,10 +3170,15 @@ msgid ""
 "calculated as:\n"
 "sqrt(width**2 + height**2)"
 msgstr ""
+"Размер нового отверстия.\n"
+"Если тип отверстия 'R' или 'O', то\n"
+"это значение автоматически\n"
+"рассчитывается как:\n"
+"sqrt(ширина ** 2 + высота ** 2)"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2332
 msgid "Aperture Type:"
-msgstr ""
+msgstr "Тип отверстия:"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2334
 msgid ""
@@ -3128,10 +3187,14 @@ msgid ""
 "R = rectangular\n"
 "O = oblong"
 msgstr ""
+"Выбор типа нового отверстия. Варианты:\n"
+"C = круговое\n"
+"R = прямоугольное\n"
+"O = продолговатое"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2345
 msgid "Aperture Dim:"
-msgstr ""
+msgstr "Разм. отверстия:"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2347
 msgid ""
@@ -3139,22 +3202,25 @@ msgid ""
 "Active only for rectangular apertures (type R).\n"
 "The format is (width, height)"
 msgstr ""
+"Размеры для нового отверстия.\n"
+"Активен только для прямоугольных отверстий (тип R).\n"
+"Формат (ширина, высота)"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2356
 msgid "Add/Delete Aperture:"
-msgstr ""
+msgstr "Добавить/Удалить отверстие:"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2358
 msgid "Add/Delete an aperture in the aperture table"
-msgstr ""
+msgstr "Добавляет/Удаляет отверстие в таблице отверстий"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2367
 msgid "Add a new aperture to the aperture list."
-msgstr ""
+msgstr "Добавляет новое отверстие в список отверстий."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2372
 msgid "Delete a aperture in the aperture list"
-msgstr ""
+msgstr "Удаляет отверстие в таблице отверстий"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2388
 msgid "Buffer Aperture:"
@@ -3278,7 +3344,7 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3704
 msgid "Creating Gerber."
-msgstr ""
+msgstr "Создание Gerber."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:3712
 msgid "[success] Gerber editing finished."
@@ -3328,7 +3394,7 @@ msgstr "&Новый проект ...\tCTRL+N"
 
 #: flatcamGUI/FlatCAMGUI.py:57
 msgid "Will create a new, blank project"
-msgstr ""
+msgstr "Создаёт новый пустой проект"
 
 #: flatcamGUI/FlatCAMGUI.py:62
 msgid "&New"
@@ -3336,40 +3402,40 @@ msgstr "&Новый"
 
 #: flatcamGUI/FlatCAMGUI.py:65
 msgid "Geometry\tN"
-msgstr ""
+msgstr "Geometry\tN"
 
 #: flatcamGUI/FlatCAMGUI.py:67
 msgid "Will create a new, empty Geometry Object."
-msgstr ""
+msgstr "Создаёт новый объект Geometry."
 
 #: flatcamGUI/FlatCAMGUI.py:69
 msgid "Gerber\tB"
-msgstr ""
+msgstr "Gerber\tB"
 
 #: flatcamGUI/FlatCAMGUI.py:71
 msgid "Will create a new, empty Gerber Object."
-msgstr ""
+msgstr "Создаёт новый объект Gerber."
 
 #: flatcamGUI/FlatCAMGUI.py:73
 msgid "Excellon\tL"
-msgstr ""
+msgstr "Excellon\tL"
 
 #: flatcamGUI/FlatCAMGUI.py:75
 msgid "Will create a new, empty Excellon Object."
-msgstr ""
+msgstr "Создаёт новый объект Excellon."
 
 #: flatcamGUI/FlatCAMGUI.py:78 flatcamTools/ToolPcbWizard.py:63
 #: flatcamTools/ToolPcbWizard.py:71
 msgid "Open"
-msgstr "Открытие"
+msgstr "Открыть"
 
 #: flatcamGUI/FlatCAMGUI.py:83
 msgid "Open &Gerber ...\tCTRL+G"
-msgstr ""
+msgstr "Открыть &Gerber...\tCTRL+G"
 
 #: flatcamGUI/FlatCAMGUI.py:90
 msgid "Open &Excellon ...\tCTRL+E"
-msgstr ""
+msgstr "Открыть &Excellon ...\tCTRL+E"
 
 #: flatcamGUI/FlatCAMGUI.py:95
 msgid "Open G-&Code ..."
@@ -3381,7 +3447,7 @@ msgstr "Открыть &проект..."
 
 #: flatcamGUI/FlatCAMGUI.py:105
 msgid "Open Config ..."
-msgstr ""
+msgstr "Открыть конфигурацию ..."
 
 #: flatcamGUI/FlatCAMGUI.py:109
 msgid "Recent files"
@@ -3416,19 +3482,19 @@ msgstr "Импорт"
 
 #: flatcamGUI/FlatCAMGUI.py:140
 msgid "&SVG as Geometry Object ..."
-msgstr ""
+msgstr "&SVG как объект Geometry ..."
 
 #: flatcamGUI/FlatCAMGUI.py:143
 msgid "&SVG as Gerber Object ..."
-msgstr ""
+msgstr "&SVG как объект Gerber ..."
 
 #: flatcamGUI/FlatCAMGUI.py:148
 msgid "&DXF as Geometry Object ..."
-msgstr ""
+msgstr "&DXF как объект Geometry ..."
 
 #: flatcamGUI/FlatCAMGUI.py:151
 msgid "&DXF as Gerber Object ..."
-msgstr ""
+msgstr "&DXF как объект Gerber ..."
 
 #: flatcamGUI/FlatCAMGUI.py:156
 msgid "Export"
@@ -3440,11 +3506,11 @@ msgstr "Экспорт &SVG ..."
 
 #: flatcamGUI/FlatCAMGUI.py:162
 msgid "Export DXF ..."
-msgstr ""
+msgstr "Экспорт DXF ..."
 
 #: flatcamGUI/FlatCAMGUI.py:167
 msgid "Export &PNG ..."
-msgstr ""
+msgstr "Экспорт &PNG ..."
 
 #: flatcamGUI/FlatCAMGUI.py:169
 msgid ""
@@ -3452,10 +3518,13 @@ msgid ""
 "the saved image will contain the visual \n"
 "information currently in FlatCAM Plot Area."
 msgstr ""
+"Экспортирует изображение в формате PNG,\n"
+"сохраненное изображение будет содержать визуальную\n"
+"информацию, открытую в настоящее время в рабочем пространстве FlatCAM."
 
 #: flatcamGUI/FlatCAMGUI.py:177
 msgid "Export &Excellon ..."
-msgstr ""
+msgstr "Экспорт &Excellon ..."
 
 #: flatcamGUI/FlatCAMGUI.py:180
 msgid ""
@@ -3505,15 +3574,15 @@ msgstr "&Правка"
 
 #: flatcamGUI/FlatCAMGUI.py:233
 msgid "Edit Object\tE"
-msgstr ""
+msgstr "Редактировать объект\tE"
 
 #: flatcamGUI/FlatCAMGUI.py:234
 msgid "Close Editor\tCTRL+S"
-msgstr ""
+msgstr "Закрыть редактор\tCTRL+S"
 
 #: flatcamGUI/FlatCAMGUI.py:242
 msgid "Conversion"
-msgstr ""
+msgstr "Конвертация"
 
 #: flatcamGUI/FlatCAMGUI.py:244
 msgid "&Join Geo/Gerber/Exc -> Geo"
@@ -3586,11 +3655,11 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:295
 msgid "Jump to Location\tJ"
-msgstr ""
+msgstr "Перейти к расположению\tJ"
 
 #: flatcamGUI/FlatCAMGUI.py:300
 msgid "Toggle Units\tQ"
-msgstr ""
+msgstr "Переключить единицы измерения\tQ"
 
 #: flatcamGUI/FlatCAMGUI.py:302
 msgid "&Select All\tCTRL+A"
@@ -3598,7 +3667,7 @@ msgstr "&Выбрать все\tCTRL+A"
 
 #: flatcamGUI/FlatCAMGUI.py:306
 msgid "&Preferences\tSHIFT+P"
-msgstr ""
+msgstr "&Настройки\tSHIFT+P"
 
 #: flatcamGUI/FlatCAMGUI.py:309
 msgid "&Options"
@@ -3814,7 +3883,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:473
 msgid ">Gerber Editor<"
-msgstr ""
+msgstr ">Редактор Gerber<"
 
 #: flatcamGUI/FlatCAMGUI.py:477
 msgid "Add Pad\tP"
@@ -7280,7 +7349,7 @@ msgstr "Нет заданий."
 
 #: flatcamGUI/FlatCAMGUI.py:6563
 msgid "Application started ..."
-msgstr ""
+msgstr "Запуск приложения ..."
 
 #: flatcamGUI/FlatCAMGUI.py:6564
 msgid "Hello!"
@@ -7356,7 +7425,7 @@ msgstr "Объект Gerber"
 #: flatcamGUI/ObjectUI.py:182 flatcamGUI/ObjectUI.py:517
 #: flatcamGUI/ObjectUI.py:839 flatcamGUI/ObjectUI.py:1372
 msgid "<b>Name:</b>"
-msgstr ""
+msgstr "<b>Имя:</b>"
 
 #: flatcamGUI/ObjectUI.py:203
 msgid ""
@@ -7391,11 +7460,11 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:273
 msgid "Passes:"
-msgstr ""
+msgstr "Проходы:"
 
 #: flatcamGUI/ObjectUI.py:307
 msgid "Combine"
-msgstr ""
+msgstr "Комбинации"
 
 #: flatcamGUI/ObjectUI.py:323
 msgid "<b>Generate Isolation Geometry:</b>"
@@ -7456,6 +7525,8 @@ msgid ""
 "Create the Geometry Object\n"
 "for non-copper routing."
 msgstr ""
+"Создаёт объект геометрии\n"
+"для безмедного полигона."
 
 #: flatcamGUI/ObjectUI.py:400
 msgid "<b>Board cutout:</b>"
@@ -7463,7 +7534,7 @@ msgstr "<b>Обрезка контура платы:</b>"
 
 #: flatcamGUI/ObjectUI.py:408
 msgid "Cutout Tool"
-msgstr ""
+msgstr "Обрезка контура платы"
 
 #: flatcamGUI/ObjectUI.py:410
 msgid ""
@@ -7525,19 +7596,19 @@ msgstr "Закрашенные круги."
 
 #: flatcamGUI/ObjectUI.py:536 flatcamGUI/ObjectUI.py:858
 msgid "<b>Tools Table</b>"
-msgstr ""
+msgstr "<b>Таблица инструментов</b>"
 
 #: flatcamGUI/ObjectUI.py:556
 msgid "Drills"
-msgstr ""
+msgstr "Свёрла"
 
 #: flatcamGUI/ObjectUI.py:556
 msgid "Slots"
-msgstr ""
+msgstr "Ячейки"
 
 #: flatcamGUI/ObjectUI.py:557
 msgid "Offset Z"
-msgstr ""
+msgstr "Смещение Z"
 
 #: flatcamGUI/ObjectUI.py:561
 msgid ""
@@ -7680,7 +7751,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:829
 msgid "Geometry Object"
-msgstr "Объект геометрии"
+msgstr "Объект Geometry"
 
 #: flatcamGUI/ObjectUI.py:860
 msgid ""
@@ -7893,7 +7964,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:1243
 msgid "PostProcessor:"
-msgstr ""
+msgstr "Постпроцессор:"
 
 #: flatcamGUI/ObjectUI.py:1246
 msgid ""
@@ -7910,15 +7981,15 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:1291
 msgid "Generate"
-msgstr "Создать объект"
+msgstr "Создать"
 
 #: flatcamGUI/ObjectUI.py:1294
 msgid "Generate the CNC Job object."
-msgstr "Будет создан объект геометрии для генерации программы для ЧПУ."
+msgstr "Будет создан объект программы для ЧПУ."
 
 #: flatcamGUI/ObjectUI.py:1302
 msgid "<b>Paint Area:</b>"
-msgstr "<b>Создание безмедного полигона:</b>"
+msgstr "<b>Область рисования:</b>"
 
 #: flatcamGUI/ObjectUI.py:1317
 msgid "Launch Paint Tool in Tools Tab."
@@ -8036,7 +8107,7 @@ msgstr ""
 
 #: flatcamTools/ToolCalculators.py:24
 msgid "Calculators"
-msgstr ""
+msgstr "Калькуляторы"
 
 #: flatcamTools/ToolCalculators.py:25
 msgid "V-Shape Tool Calculator"
@@ -8044,11 +8115,11 @@ msgstr ""
 
 #: flatcamTools/ToolCalculators.py:26
 msgid "Units Calculator"
-msgstr ""
+msgstr "Калькулятор единиц"
 
 #: flatcamTools/ToolCalculators.py:27
 msgid "ElectroPlating Calculator"
-msgstr ""
+msgstr "Калькулятор электронных плат"
 
 #: flatcamTools/ToolCalculators.py:68
 msgid "Here you enter the value to be converted from INCH to MM"
@@ -8066,7 +8137,7 @@ msgstr ""
 
 #: flatcamTools/ToolCalculators.py:101
 msgid "Tip Angle:"
-msgstr ""
+msgstr "Угол наклона:"
 
 #: flatcamTools/ToolCalculators.py:105
 msgid ""
@@ -8835,28 +8906,28 @@ msgstr ""
 
 #: flatcamTools/ToolMeasurement.py:86
 msgid "Measure"
-msgstr ""
+msgstr "Измерение"
 
 #: flatcamTools/ToolMeasurement.py:132
 msgid "Meas. Tool"
-msgstr ""
+msgstr "Инструмент измерения"
 
 #: flatcamTools/ToolMeasurement.py:177
 msgid "MEASURING: Click on the Start point ..."
-msgstr ""
+msgstr "ИЗМЕРЕНИЕ: Нажмите на точку начала отсчета ..."
 
 #: flatcamTools/ToolMeasurement.py:270
 msgid "MEASURING: Click on the Destination point ..."
-msgstr ""
+msgstr "ИЗМЕРЕНИЕ: Нажмите на конечную точку ..."
 
 #: flatcamTools/ToolMeasurement.py:278
 #, python-brace-format
 msgid "MEASURING: Result D(x) = {d_x} | D(y) = {d_y} | Distance = {d_z}"
-msgstr ""
+msgstr "ИЗМЕРЕНИЕ: Результат D(x) = {d_x} | D(y) = {d_y} | Расстояние = {d_z}"
 
 #: flatcamTools/ToolMove.py:81
 msgid "MOVE: Click on the Start point ..."
-msgstr ""
+msgstr "Перемещение: Нажмите на исходную точку ..."
 
 #: flatcamTools/ToolMove.py:88
 msgid "[WARNING_NOTCL] MOVE action cancelled. No object(s) to move."
@@ -8864,7 +8935,7 @@ msgstr ""
 
 #: flatcamTools/ToolMove.py:110
 msgid "MOVE: Click on the Destination point ..."
-msgstr ""
+msgstr "Перемещение: Нажмите на конечную точку ..."
 
 #: flatcamTools/ToolMove.py:128
 msgid "Moving ..."
@@ -9048,11 +9119,11 @@ msgstr ""
 
 #: flatcamTools/ToolPDF.py:38
 msgid "PDF Import Tool"
-msgstr ""
+msgstr "Импорт PDF"
 
 #: flatcamTools/ToolPDF.py:152 flatcamTools/ToolPDF.py:156
 msgid "Open PDF"
-msgstr ""
+msgstr "Открыть PDF"
 
 #: flatcamTools/ToolPDF.py:159
 msgid "[WARNING_NOTCL] Open PDF cancelled."
@@ -9060,12 +9131,12 @@ msgstr ""
 
 #: flatcamTools/ToolPDF.py:186
 msgid "Parsing PDF file ..."
-msgstr ""
+msgstr "Разбор PDF-файла ..."
 
 #: flatcamTools/ToolPDF.py:265 flatcamTools/ToolPDF.py:338
 #, python-format
 msgid "Rendering PDF layer #%d ..."
-msgstr ""
+msgstr "Отрисовка слоя PDF #%d ..."
 
 #: flatcamTools/ToolPDF.py:269 flatcamTools/ToolPDF.py:342
 msgid "[ERROR_NOTCL] Open PDF file failed."
@@ -9078,7 +9149,7 @@ msgstr ""
 
 #: flatcamTools/ToolPaint.py:24
 msgid "Paint Area"
-msgstr ""
+msgstr "Область рисования"
 
 #: flatcamTools/ToolPaint.py:60
 msgid "Geometry:"
@@ -9086,7 +9157,7 @@ msgstr "Geometry:"
 
 #: flatcamTools/ToolPaint.py:62
 msgid "Geometry object to be painted.                        "
-msgstr ""
+msgstr "Объект Geometry для рисования.                        "
 
 #: flatcamTools/ToolPaint.py:71
 msgid ""
@@ -9218,7 +9289,7 @@ msgstr ""
 
 #: flatcamTools/ToolPanelize.py:25
 msgid "Panelize PCB"
-msgstr ""
+msgstr "Панелизация"
 
 #: flatcamTools/ToolPanelize.py:58
 msgid ""
@@ -9266,7 +9337,7 @@ msgstr ""
 
 #: flatcamTools/ToolPanelize.py:134
 msgid "<b>Panel Data:</b>"
-msgstr ""
+msgstr "<b>Данные панели:</b>"
 
 #: flatcamTools/ToolPanelize.py:136
 msgid ""
@@ -9277,10 +9348,16 @@ msgid ""
 "The spacings will set the distance between any two\n"
 "elements of the panel array."
 msgstr ""
+"Эта информация будет формировать получившуюся панель.\n"
+"Количество строк и столбцов будет определять, сколько\n"
+"будут сгенерировано дубликатов исходной геометрии.\n"
+"\n"
+"Расстояние устанавливает дистанцию между любыми двумя\n"
+"элементами массива панели."
 
 #: flatcamTools/ToolPanelize.py:183
 msgid "<b>Panel Type:</b>"
-msgstr ""
+msgstr "<b>Тип панели:</b>"
 
 #: flatcamTools/ToolPanelize.py:185
 msgid ""
@@ -9288,14 +9365,17 @@ msgid ""
 "- Geometry\n"
 "- Gerber"
 msgstr ""
+"Выбор типа объекта для объекта панелизации:\n"
+"- Geometry\n"
+"- Gerber"
 
 #: flatcamTools/ToolPanelize.py:193
 msgid "Constrain panel within:"
-msgstr ""
+msgstr "Ограничить панель внутри:"
 
 #: flatcamTools/ToolPanelize.py:227
 msgid "Panelize Object"
-msgstr ""
+msgstr "Объект панелизации"
 
 #: flatcamTools/ToolPanelize.py:229
 msgid ""
@@ -9303,6 +9383,9 @@ msgid ""
 "In other words it creates multiple copies of the source object,\n"
 "arranged in a 2D array of rows and columns."
 msgstr ""
+"Панелизация указанного объекта вокруг указанного поля.\n"
+"Другими словами, он создает несколько копий исходного объекта,\n"
+"расположеных в 2D массиве строк и столбцов."
 
 #: flatcamTools/ToolPanelize.py:370
 #, python-format
@@ -9317,7 +9400,7 @@ msgstr ""
 
 #: flatcamTools/ToolPanelize.py:478 flatcamTools/ToolPanelize.py:635
 msgid "Generating panel ... Please wait."
-msgstr ""
+msgstr "Выполняется панелизация ... Пожалуйста, подождите."
 
 #: flatcamTools/ToolPanelize.py:628
 msgid "[success] Panel done..."
@@ -9336,33 +9419,35 @@ msgstr ""
 
 #: flatcamTools/ToolPcbWizard.py:32
 msgid "PcbWizard Import Tool"
-msgstr ""
+msgstr "Инструмент импорта PcbWizard"
 
 #: flatcamTools/ToolPcbWizard.py:40
 msgid "Import 2-file Excellon"
-msgstr ""
+msgstr "Импорт 2-х файлов Excellon"
 
 #: flatcamTools/ToolPcbWizard.py:57
 msgid "Excellon file:"
-msgstr ""
+msgstr "Excellon файл:"
 
 #: flatcamTools/ToolPcbWizard.py:59
 msgid ""
 "Load the Excellon file.\n"
 "Usually it has a .DRL extension"
 msgstr ""
+"Загружает файл Excellon.\n"
+"Обычно он имеет расширение .DRL"
 
 #: flatcamTools/ToolPcbWizard.py:66
 msgid "INF file:"
-msgstr ""
+msgstr "INF файл:"
 
 #: flatcamTools/ToolPcbWizard.py:68
 msgid "Load the INF file."
-msgstr ""
+msgstr "Загружает INF-файл."
 
 #: flatcamTools/ToolPcbWizard.py:81
 msgid "Tool Number"
-msgstr ""
+msgstr "Номер инструмента"
 
 #: flatcamTools/ToolPcbWizard.py:83
 msgid "Tool diameter in file units."
@@ -9409,7 +9494,7 @@ msgstr ""
 
 #: flatcamTools/ToolPcbWizard.py:138
 msgid "Import Excellon"
-msgstr ""
+msgstr "Импорт Excellon"
 
 #: flatcamTools/ToolPcbWizard.py:140
 msgid ""
@@ -9421,15 +9506,15 @@ msgstr ""
 
 #: flatcamTools/ToolPcbWizard.py:194
 msgid "PCBWizard Tool"
-msgstr ""
+msgstr "Инструмент PCBWizard"
 
 #: flatcamTools/ToolPcbWizard.py:288 flatcamTools/ToolPcbWizard.py:292
 msgid "Load PcbWizard Excellon file"
-msgstr ""
+msgstr "Загрузить Excellon-файл PcbWizard"
 
 #: flatcamTools/ToolPcbWizard.py:312 flatcamTools/ToolPcbWizard.py:316
 msgid "Load PcbWizard INF file"
-msgstr ""
+msgstr "Загрузить INF-файл PcbWizard"
 
 #: flatcamTools/ToolPcbWizard.py:363
 msgid ""
@@ -9453,7 +9538,7 @@ msgstr ""
 
 #: flatcamTools/ToolPcbWizard.py:447
 msgid "Importing Excellon."
-msgstr ""
+msgstr "Импортирование Excellon."
 
 #: flatcamTools/ToolPcbWizard.py:454
 msgid "[ERROR_NOTCL] Import Excellon file failed."
@@ -9482,7 +9567,7 @@ msgstr ""
 
 #: flatcamTools/ToolProperties.py:111
 msgid "Properties Tool"
-msgstr ""
+msgstr "Свойства инструмента"
 
 #: flatcamTools/ToolShell.py:69
 msgid "...proccessing..."
@@ -9495,7 +9580,7 @@ msgstr "...обработка... [%s]"
 
 #: flatcamTools/ToolSolderPaste.py:37
 msgid "Solder Paste Tool"
-msgstr ""
+msgstr "Инструмент для паяльной пасты"
 
 #: flatcamTools/ToolSolderPaste.py:65
 msgid "Gerber Solder paste object.                        "
@@ -9538,7 +9623,7 @@ msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:142
 msgid "STEP 1"
-msgstr ""
+msgstr "ШАГ 1:"
 
 #: flatcamTools/ToolSolderPaste.py:144
 msgid ""
@@ -9564,7 +9649,7 @@ msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:308
 msgid "STEP 2:"
-msgstr ""
+msgstr "ШАГ 2:"
 
 #: flatcamTools/ToolSolderPaste.py:310
 msgid ""
@@ -9585,7 +9670,7 @@ msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:337
 msgid "STEP 3:"
-msgstr ""
+msgstr "ШАГ 3:"
 
 #: flatcamTools/ToolSolderPaste.py:339
 msgid ""
@@ -9611,37 +9696,43 @@ msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:371
 msgid "View GCode"
-msgstr ""
+msgstr "Посмотреть GCode"
 
 #: flatcamTools/ToolSolderPaste.py:373
 msgid ""
 "View the generated GCode for Solder Paste dispensing\n"
 "on PCB pads."
 msgstr ""
+"Просмотр сгенерированного GCode для подачи паяльной пасты\n"
+"на печатную платау."
 
 #: flatcamTools/ToolSolderPaste.py:377
 msgid "Save GCode"
-msgstr ""
+msgstr "Сохранить GCode"
 
 #: flatcamTools/ToolSolderPaste.py:379
 msgid ""
 "Save the generated GCode for Solder Paste dispensing\n"
 "on PCB pads, to a file."
 msgstr ""
+"Сохранение сгенерированного GCode для подачи паяльной пасты\n"
+"на печатную платау, в файл."
 
 #: flatcamTools/ToolSolderPaste.py:383
 msgid "STEP 4:"
-msgstr ""
+msgstr "ШАГ 4:"
 
 #: flatcamTools/ToolSolderPaste.py:385
 msgid ""
 "Fourth step (and last) is to select a CNCJob made from \n"
 "a solder paste dispensing geometry, and then view/save it's GCode."
 msgstr ""
+"Четвертый шаг (и последний) - выбор CNCJob, сделанного из \n"
+"геометрии распределения паяльной пасты, а затем просмотр/сохранение ее GCode."
 
 #: flatcamTools/ToolSolderPaste.py:413
 msgid "Delete Object"
-msgstr ""
+msgstr "Удалить объект"
 
 #: flatcamTools/ToolSolderPaste.py:789
 msgid ""
@@ -9670,7 +9761,7 @@ msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:969
 msgid "Creating Solder Paste dispensing geometry."
-msgstr ""
+msgstr "Создание геометрии дозирования паяльной пасты."
 
 #: flatcamTools/ToolSolderPaste.py:981
 msgid "[WARNING_NOTCL] No Nozzle tools in the tool table."
@@ -9688,7 +9779,7 @@ msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:1130
 msgid "Generating Solder Paste dispensing geometry..."
-msgstr ""
+msgstr "Генерация геометрии дозирования паяльной пасты ..."
 
 #: flatcamTools/ToolSolderPaste.py:1150
 msgid "[WARNING_NOTCL] There is no Geometry object available."
@@ -9723,7 +9814,7 @@ msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:1356
 msgid "Export GCode ..."
-msgstr ""
+msgstr "Экспорт GCode ..."
 
 #: flatcamTools/ToolSolderPaste.py:1396
 #, python-format
@@ -9746,7 +9837,7 @@ msgstr ""
 
 #: flatcamTools/ToolSub.py:78 flatcamTools/ToolSub.py:124
 msgid "Substractor:"
-msgstr ""
+msgstr "Вычитатель:"
 
 #: flatcamTools/ToolSub.py:80
 msgid ""
@@ -9768,33 +9859,39 @@ msgstr ""
 
 #: flatcamTools/ToolSub.py:101
 msgid "<b>Geometry Objects</b>"
-msgstr ""
+msgstr "<b>Объекты Geometry</b>"
 
 #: flatcamTools/ToolSub.py:112
 msgid ""
 "Geometry object from which to substract\n"
 "the substractor Geometry object."
 msgstr ""
+"Объект геометрии, из которого будет вычетать\n"
+"вычитатель объекта Geometry."
 
 #: flatcamTools/ToolSub.py:126
 msgid ""
 "Geometry object that will be substracted\n"
 "from the target Geometry object."
 msgstr ""
+"Объект Geometry, который будет вычтен\n"
+"от целевого объекта Geometry."
 
 #: flatcamTools/ToolSub.py:133
 msgid "Substract Geometry"
-msgstr ""
+msgstr "Вычесть геометрию"
 
 #: flatcamTools/ToolSub.py:135
 msgid ""
 "Will remove the area occupied by the substractor\n"
 "Geometry from the Target Geometry."
 msgstr ""
+"Удалит область, занятую вычитателем\n"
+"из целевой геометрии."
 
 #: flatcamTools/ToolSub.py:215
 msgid "Sub Tool"
-msgstr ""
+msgstr "Инструмент вычитания"
 
 #: flatcamTools/ToolSub.py:230 flatcamTools/ToolSub.py:421
 msgid "[ERROR_NOTCL] No Target object loaded."
@@ -9811,7 +9908,7 @@ msgstr ""
 
 #: flatcamTools/ToolSub.py:396 flatcamTools/ToolSub.py:539
 msgid "Generating new object ..."
-msgstr ""
+msgstr "Генерация нового объекта ..."
 
 #: flatcamTools/ToolSub.py:399 flatcamTools/ToolSub.py:542
 msgid "[ERROR_NOTCL] Generating new object failed."
@@ -9838,7 +9935,7 @@ msgstr ""
 
 #: flatcamTools/ToolTransform.py:23
 msgid "Object Transform"
-msgstr ""
+msgstr "Преобразование объекта"
 
 #: flatcamTools/ToolTransform.py:84
 msgid ""
@@ -9891,7 +9988,7 @@ msgstr ""
 
 #: flatcamTools/ToolTransform.py:673
 msgid "[success] Rotate done ..."
-msgstr ""
+msgstr "[success] Поворот выполнен ..."
 
 #: flatcamTools/ToolTransform.py:688
 msgid "[WARNING_NOTCL] No object selected. Please Select an object to flip!"
@@ -9899,7 +9996,7 @@ msgstr ""
 
 #: flatcamTools/ToolTransform.py:723
 msgid "CNCJob objects can't be mirrored/flipped."
-msgstr ""
+msgstr "Объекты CNCJob не могут быть зеркалировны/отражены."
 
 #: flatcamTools/ToolTransform.py:757
 msgid ""
@@ -9908,7 +10005,7 @@ msgstr ""
 
 #: flatcamTools/ToolTransform.py:779
 msgid "CNCJob objects can't be skewed."
-msgstr ""
+msgstr "CNCJob объекты не могут быть наклонены."
 
 #: flatcamTools/ToolTransform.py:806
 msgid "[WARNING_NOTCL] No object selected. Please Select an object to scale!"
@@ -9916,7 +10013,7 @@ msgstr ""
 
 #: flatcamTools/ToolTransform.py:839
 msgid "CNCJob objects can't be scaled."
-msgstr ""
+msgstr "CNCJob объекты не могут быть масштабированы."
 
 #: flatcamTools/ToolTransform.py:858
 msgid "[WARNING_NOTCL] No object selected. Please Select an object to offset!"
@@ -9924,7 +10021,7 @@ msgstr ""
 
 #: flatcamTools/ToolTransform.py:867
 msgid "CNCJob objects can't be offseted."
-msgstr ""
+msgstr "Объекты CNCJob не могут быть смещены."
 
 #~ msgid ""
 #~ "How much (fraction) of the tool width to overlap each tool pass.\n"
