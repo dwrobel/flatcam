@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - the name for the saved projects are updated to the current time and not to the time of the app startup
 - some PEP8 changes related to comments starting with only one '#' symbol
 - more PEP8 cleanup
+- solved issue where after the opening of an object the file path is not saved for further open operations
 
 24.05.2019
 
