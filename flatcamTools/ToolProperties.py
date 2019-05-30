@@ -1,10 +1,10 @@
-############################################################
+# ########################################################## ##
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-############################################################
+# ########################################################## ##
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt
@@ -37,7 +37,7 @@ class Properties(FlatCAMTool):
         self.properties_box.setContentsMargins(0, 0, 0, 0)
         self.properties_frame.setLayout(self.properties_box)
 
-        ## Title
+        # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                         QLabel

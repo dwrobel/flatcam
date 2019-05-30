@@ -1,10 +1,10 @@
-# ###########################################################
+# ######################################################### ##
 # FlatCAM: 2D Post-processing for Manufacturing             #
 # http://flatcam.org                                        #
 # Author: Juan Pablo Caram (c)                              #
 # Date: 2/5/2014                                            #
 # MIT Licence                                               #
-# ###########################################################
+# ######################################################### ##
 
 import urllib.request, urllib.parse, urllib.error
 import getopt
@@ -25,9 +25,9 @@ import gc
 
 from xml.dom.minidom import parseString as parse_xml_string
 
-# #######################################
-# #      Imports part of FlatCAM       ##
-# #######################################
+# ##################################### ##
+# #      Imports part of FlatCAM       # ##
+# ##################################### ##
 from ObjectCollection import *
 from FlatCAMObj import *
 from flatcamGUI.PlotCanvas import *
@@ -58,9 +58,9 @@ fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
-# #######################################
-# #                App                 ##
-# #######################################
+# ##################################### ##
+# #                App                 # ##
+# ##################################### ##
 
 
 class App(QtCore.QObject):
@@ -84,7 +84,7 @@ class App(QtCore.QObject):
         elif opt == '--shellfile':
             cmd_line_shellfile = arg
 
-    # Logging ##
+    # Logging # ##
     log = logging.getLogger('base')
     log.setLevel(logging.DEBUG)
     # log.setLevel(logging.WARNING)
@@ -94,8 +94,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.917
-    version_date = "2019/05/22"
+    version = 8.918
+    version_date = "2019/06/11"
     beta = True
 
     # current date now
@@ -120,9 +120,9 @@ class App(QtCore.QObject):
     # flag is True if saving action has been triggered
     save_in_progress = False
 
-    # #################
-    # #    Signals   ##
-    # #################
+    # ############### ##
+    # #    Signals   # ##
+    # ############### ##
 
     # Inform the user
     # Handled by:
@@ -191,9 +191,9 @@ class App(QtCore.QObject):
 
         self.main_thread = QtWidgets.QApplication.instance().thread()
 
-        # ##################
-        # ## OS-specific ###
-        # ##################
+        # ################ ##
+        # # ## OS-specific # ##
+        # ################ ##
 
         # Folder for user settings.
         if sys.platform == 'win32':
@@ -209,9 +209,9 @@ class App(QtCore.QObject):
             self.data_path = os.path.expanduser('~') + '/.FlatCAM'
             self.os = 'unix'
 
-        # ##############################
-        # ## Setup folders and files ###
-        # ##############################
+        # ############################ ##
+        # # ## Setup folders and files # ##
+        # ############################ ##
 
         if not os.path.exists(self.data_path):
             os.makedirs(self.data_path)
@@ -272,9 +272,9 @@ class App(QtCore.QObject):
         # variable to store mouse coordinates
         self.mouse = [0, 0]
 
-        # ###################
-        # # Initialize GUI ##
-        # ###################
+        # ################# ##
+        # # Initialize GUI # ##
+        # ################# ##
 
         # FlatCAM colors used in plotting
         self.FC_light_green = '#BBF268BF'
@@ -291,9 +291,9 @@ class App(QtCore.QObject):
         self.ui.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.ui.final_save.connect(self.final_save)
 
-        # #############
-        # ### Data ####
-        # #############
+        # ########### ##
+        # # ## Data ## ##
+        # ########### ##
         self.recent = []
         self.clipboard = QtWidgets.QApplication.clipboard()
         self.proc_container = FCVisibleProcessContainer(self.ui.activity_view)
@@ -566,9 +566,9 @@ class App(QtCore.QObject):
 
         }
 
-        # ############################
-        # ### LOAD POSTPROCESSORS ####
-        # ############################
+        # ########################## ##
+        # # ## LOAD POSTPROCESSORS ## ##
+        # ########################## ##
 
         self.postprocessors = load_postprocessors(self)
 
@@ -585,9 +585,9 @@ class App(QtCore.QObject):
 
             self.ui.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb.addItem(name)
 
-        # ############################
-        # ### LOAD LANGUAGES ####
-        # ############################
+        # ########################## ##
+        # # ## LOAD LANGUAGES ## ##
+        # ########################## ##
 
         self.languages = fcTranslate.load_languages()
         for name in sorted(self.languages.values()):
@@ -880,16 +880,16 @@ class App(QtCore.QObject):
             "tools_solderpaste_pp": 'Paste_1'
         })
 
-        # ##############################
-        # ## Load defaults from file ###
-        # ##############################
+        # ############################ ##
+        # # ## Load defaults from file # ##
+        # ############################ ##
 
         if user_defaults:
             self.load_defaults(filename='current_defaults')
 
-        # ###########################
-        # #### APPLY APP LANGUAGE ###
-        # ###########################
+        # ######################### ##
+        # #### APPLY APP LANGUAGE # ##
+        # ######################### ##
 
         ret_val = fcTranslate.apply_language('strings')
 
@@ -902,9 +902,9 @@ class App(QtCore.QObject):
             log.debug("App.__init__() --> Applied %s language." % str(ret_val).capitalize())
 
 
-        # ##################################
-        # ## CREATE UNIQUE SERIAL NUMBER ###
-        # ##################################
+        # ################################ ##
+        # # ## CREATE UNIQUE SERIAL NUMBER # ##
+        # ################################ ##
 
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
         if self.defaults['global_serial'] == 0 or len(str(self.defaults['global_serial'])) < 10:
@@ -1171,14 +1171,14 @@ class App(QtCore.QObject):
         self.tools_form = None
         self.on_options_combo_change(0)  # Will show the initial form
 
-        # ## Define OBJECT COLLECTION ###
+        # # ## Define OBJECT COLLECTION # ##
         self.collection = ObjectCollection(self)
         self.ui.project_tab_layout.addWidget(self.collection.view)
-        # ##
+        # # ##
 
         self.log.debug("Finished creating Object Collection.")
 
-        # ## Initialize the color box's color in Preferences -> Global -> Color
+        # # ## Initialize the color box's color in Preferences -> Global -> Color
         # Init Plot Colors
         self.ui.general_defaults_form.general_gui_group.pf_color_entry.set_value(self.defaults['global_plot_fill'])
         self.ui.general_defaults_form.general_gui_group.pf_color_button.setStyleSheet(
@@ -1241,9 +1241,9 @@ class App(QtCore.QObject):
             self.defaults['global_proj_item_dis_color'])
         self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_proj_item_dis_color'])[:7])
-        # ### End of Data ####
+        # # ## End of Data ## ##
 
-        # ### Plot Area ####
+        # # ## Plot Area ## ##
         start_plot_time = time.time()   # debug
         self.plotcanvas = PlotCanvas(self.ui.right_layout, self)
 
@@ -1270,27 +1270,27 @@ class App(QtCore.QObject):
         end_plot_time = time.time()
         self.log.debug("Finished Canvas initialization in %s seconds." % (str(end_plot_time - start_plot_time)))
 
-        # ## EDITOR section
+        # # ## EDITOR section
         self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
         self.exc_editor = FlatCAMExcEditor(self)
         self.grb_editor = FlatCAMGrbEditor(self)
 
-        # ### Adjust tabs width ####
+        # # ## Adjust tabs width ## ##
         # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
         #     self.ui.options_scroll_area.verticalScrollBar().sizeHint().width())
         self.collection.view.setMinimumWidth(290)
 
         self.log.debug("Finished adding FlatCAM Editor's.")
 
-        # ### Worker ####
+        # # ## Worker ## ##
         if self.defaults["global_worker_number"]:
             self.workers = WorkerStack(workers_number=int(self.defaults["global_worker_number"]))
         else:
             self.workers = WorkerStack(workers_number=2)
         self.worker_task.connect(self.workers.add_task)
 
-        # ## Signal handling ###
-        # ## Custom signals
+        # # ## Signal handling # ##
+        # # ## Custom signals
         self.inform.connect(self.info)
         self.app_quit.connect(self.quit_application)
         self.message.connect(self.message_dialog)
@@ -1303,8 +1303,8 @@ class App(QtCore.QObject):
         self.file_opened.connect(lambda kind, filename: self.register_folder(filename))
         self.file_saved.connect(lambda kind, filename: self.register_save_folder(filename))
 
-        # ## Standard signals
-        # ## Menu
+        # # ## Standard signals
+        # # ## Menu
         self.ui.menufilenewproject.triggered.connect(self.on_file_new_click)
         self.ui.menufilenewgeo.triggered.connect(self.new_geometry_object)
         self.ui.menufilenewgrb.triggered.connect(self.new_gerber_object)
@@ -1445,9 +1445,9 @@ class App(QtCore.QObject):
         self.ui.pref_export_button.clicked.connect(self.on_export_preferences)
         self.ui.pref_open_button.clicked.connect(self.on_preferences_open_folder)
 
-        # ##############################
-        # ## GUI PREFERENCES SIGNALS ###
-        # ##############################
+        # ############################ ##
+        # # ## GUI PREFERENCES SIGNALS # ##
+        # ############################ ##
         self.ui.general_options_form.general_app_group.units_radio.group_toggle_fn = self.on_toggle_units
         self.ui.general_defaults_form.general_app_group.language_apply_btn.clicked.connect(
             lambda: fcTranslate.on_language_apply_click(self, restart=True)
@@ -1455,9 +1455,9 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
             lambda: self.on_toggle_units(no_pref=False))
 
-        # ##############################
-        # ## GUI PREFERENCES SIGNALS ###
-        # ##############################
+        # ############################ ##
+        # # ## GUI PREFERENCES SIGNALS # ##
+        # ############################ ##
 
         # Setting plot colors signals
         self.ui.general_defaults_form.general_gui_group.pf_color_entry.editingFinished.connect(
@@ -1559,20 +1559,20 @@ class App(QtCore.QObject):
         else:
             self.ui.splitter.setSizes([0, 1])
 
-        # ###################
-        # ## Other setups ###
-        # ###################
+        # ################# ##
+        # # ## Other setups # ##
+        # ################# ##
         # Sets up FlatCAMObj, FCProcess and FCProcessContainer.
         self.setup_obj_classes()
 
         self.setup_recent_items()
         self.setup_component_editor()
 
-        # ############
-        # ## Shell ###
-        # ############
+        # ########## ##
+        # # ## Shell # ##
+        # ########## ##
 
-        # ##
+        # # ##
         # Auto-complete KEYWORDS
         self.tcl_commands_list = ['add_circle', 'add_poly', 'add_polygon', 'add_polyline', 'add_rectangle',
                                   'aligndrill', 'clear',
@@ -1809,9 +1809,9 @@ class App(QtCore.QObject):
         else:
             self.ui.shell_dock.hide()
 
-        # ########################
-        # ## Tools and Plugins ###
-        # ########################
+        # ###################### ##
+        # # ## Tools and Plugins # ##
+        # ###################### ##
 
         self.dblsidedtool = None
         self.measurement_tool = None
@@ -1833,7 +1833,7 @@ class App(QtCore.QObject):
         # always install tools only after the shell is initialized because the self.inform.emit() depends on shell
         self.install_tools()
 
-        # ## System Font Parsing ###
+        # # ## System Font Parsing # ##
         # self.f_parse = ParseFont(self)
         # self.parse_system_fonts()
 
@@ -1847,9 +1847,9 @@ class App(QtCore.QObject):
                 print("ERROR: ", ext)
                 sys.exit(2)
 
-        # ##########################
-        # ### Check for updates ####
-        # ##########################
+        # ######################## ##
+        # # ## Check for updates ## ##
+        # ######################## ##
 
         # Separate thread (Not worker)
         # Check for updates on startup but only if the user consent and the app is not in Beta version
@@ -1862,9 +1862,9 @@ class App(QtCore.QObject):
                                    'params': []})
             self.thr2.start(QtCore.QThread.LowPriority)
 
-        # ###################################
-        # ### Variables for global usage ####
-        # ###################################
+        # ################################# ##
+        # # ## Variables for global usage ## ##
+        # ################################# ##
 
         # coordinates for relative position display
         self.rel_point1 = (0, 0)
@@ -1936,8 +1936,8 @@ class App(QtCore.QObject):
         self.isHovering = False
         self.notHovering = True
 
-        # ## Save defaults to factory_defaults.FlatConfig file ###
-        # ## It's done only once after install #############
+        # # ## Save defaults to factory_defaults.FlatConfig file # ##
+        # # ## It's done only once after install ########### ##
         factory_file = open(self.data_path + '/factory_defaults.FlatConfig')
         fac_def_from_file = factory_file.read()
         factory_defaults = json.loads(fac_def_from_file)
@@ -2754,6 +2754,10 @@ class App(QtCore.QObject):
 
         defaults_file_content = None
 
+        self.date = str(datetime.today()).rpartition('.')[0]
+        self.date = ''.join(c for c in self.date if c not in ':-')
+        self.date = self.date.replace(' ', '_')
+
         filter = "Config File (*.FlatConfig);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
@@ -2894,7 +2898,7 @@ class App(QtCore.QObject):
 
         t0 = time.time()  # Debug
 
-        ## Create object
+        # ## Create object
         classdict = {
             "gerber": FlatCAMGerber,
             "excellon": FlatCAMExcellon,
@@ -4229,7 +4233,7 @@ class App(QtCore.QObject):
             pass
 
         if current_layout == 'standard':
-            ### TOOLBAR INSTALLATION ###
+            # ## TOOLBAR INSTALLATION # ##
             self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
             self.ui.toolbarfile.setObjectName('File_TB')
             self.ui.addToolBar(self.ui.toolbarfile)
@@ -4273,7 +4277,7 @@ class App(QtCore.QObject):
             self.ui.corner_snap_btn.setVisible(False)
             self.ui.snap_magnet.setVisible(False)
         elif current_layout == 'compact':
-            ### TOOLBAR INSTALLATION ###
+            # ## TOOLBAR INSTALLATION # ##
             self.ui.toolbarfile = QtWidgets.QToolBar('File Toolbar')
             self.ui.toolbarfile.setObjectName('File_TB')
             self.ui.addToolBar(Qt.LeftToolBarArea, self.ui.toolbarfile)
@@ -4379,7 +4383,7 @@ class App(QtCore.QObject):
                 self.ui.code_editor.setPlainText(self.gcode_edited)
                 file.close()
 
-    def handleSaveGCode(self,name=None, filt=None):
+    def handleSaveGCode(self, name=None, filt=None):
         self.report_usage("handleSaveGCode()")
 
         if filt:
@@ -4469,7 +4473,7 @@ class App(QtCore.QObject):
             cursor.endEditBlock()
 
     def on_tool_add_keypress(self):
-        ## Current application units in Upper Case
+        # ## Current application units in Upper Case
         self.units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         notebook_widget_name = self.ui.notebook.currentWidget().objectName()
@@ -5218,7 +5222,7 @@ class App(QtCore.QObject):
         self.ui.grid_gap_y_entry.setText(self.sender().text())
 
     def on_grid_add(self):
-        ## Current application units in lower Case
+        # ## Current application units in lower Case
         units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
         grid_add_popup = FCInputDialog(title=_("New Grid ..."),
@@ -5245,7 +5249,7 @@ class App(QtCore.QObject):
                 _("[WARNING_NOTCL] Adding New Grid cancelled ..."))
 
     def on_grid_delete(self):
-        ## Current application units in lower Case
+        # ## Current application units in lower Case
         units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
         grid_del_popup = FCInputDialog(title="Delete Grid ...",
@@ -5843,7 +5847,7 @@ class App(QtCore.QObject):
 
         if self.call_source != 'app':
             self.editor2object(cleanup=True)
-            ### EDITOR section
+            # ## EDITOR section
             self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
             self.exc_editor = FlatCAMExcEditor(self)
             self.grb_editor = FlatCAMGrbEditor(self)
@@ -6114,9 +6118,12 @@ class App(QtCore.QObject):
             self.file_saved.emit("SVG", filename)
 
     def on_file_exportpng(self):
-
         self.report_usage("on_file_exportpng")
         App.log.debug("on_file_exportpng()")
+
+        self.date = str(datetime.today()).rpartition('.')[0]
+        self.date = ''.join(c for c in self.date if c not in ':-')
+        self.date = self.date.replace(' ', '_')
 
         image = _screenshot()
         data = np.asarray(image)
@@ -6425,9 +6432,9 @@ class App(QtCore.QObject):
                     self.worker_task.emit({'fcn': self.import_dxf,
                                            'params': [filename, type_of_obj]})
 
-    # ##################################################################################################################
-    # ## The following section has the functions that are displayed and call the Editor tab CNCJob Tab #################
-    # ##################################################################################################################
+    # ################################################################################################################ ##
+    # # ## The following section has the functions that are displayed and call the Editor tab CNCJob Tab ############### ##
+    # ################################################################################################################ ##
 
     def init_code_editor(self, name):
         # Signals section
@@ -6633,6 +6640,10 @@ class App(QtCore.QObject):
         """
 
         self.report_usage("on_file_saveprojectas")
+
+        self.date = str(datetime.today()).rpartition('.')[0]
+        self.date = ''.join(c for c in self.date if c not in ':-')
+        self.date = self.date.replace(' ', '_')
 
         filter_ = "FlatCAM Project (*.FlatPrj);; All Files (*.*)"
         try:
@@ -7481,7 +7492,7 @@ class App(QtCore.QObject):
             # Object name
             name = outname or filename.split('/')[-1].split('\\')[-1]
 
-            # ## Object creation ###
+            # # ## Object creation # ##
             ret = self.new_object("gerber", name, obj_init, autoselected=False)
             if ret == 'fail':
                 self.inform.emit(_('[ERROR_NOTCL] Open Gerber failed. Probable not a Gerber file.'))
@@ -7696,7 +7707,7 @@ class App(QtCore.QObject):
         self.file_opened.emit("project", filename)
 
         # Clear the current project
-        # # NOT THREAD SAFE ##
+        # # NOT THREAD SAFE # ##
         if run_from_arg is True:
             pass
         else:
@@ -7896,7 +7907,7 @@ class App(QtCore.QObject):
             if timeout is not None:
                 QtCore.QTimer.singleShot(timeout, report_quit)
 
-            # ### Block ####
+            # # ## Block ## ##
             loop.exec_()
 
             # Restore exception management
@@ -8201,7 +8212,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
                        "&" + urllib.parse.urlencode(no_ststs_dict["global_ststs"])
 
         App.log.debug("Checking for updates @ %s" % full_url)
-        ### Get the data
+        # ## Get the data
         try:
             f = urllib.request.urlopen(full_url)
         except:
@@ -8221,7 +8232,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
 
         f.close()
 
-        ### Latest version?
+        # ## Latest version?
         if self.version >= data["version"]:
             App.log.debug("FlatCAM is up to date!")
             self.inform.emit(_("[success] FlatCAM is up to date!"))
@@ -8375,7 +8386,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
         self.save_in_progress = True
 
         with self.proc_container.new(_("Saving FlatCAM Project")) as proc:
-            ## Capture the latest changes
+            # Capture the latest changes
             # Current object
             try:
                 self.collection.get_active().read_form()

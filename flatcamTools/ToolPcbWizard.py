@@ -1,10 +1,10 @@
-############################################################
+# ########################################################## ##
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 4/15/2019                                          #
 # MIT Licence                                              #
-############################################################
+# ########################################################## ##
 
 from FlatCAMTool import FlatCAMTool
 
@@ -152,7 +152,7 @@ class PcbWizard(FlatCAMTool):
 
         self.modified_excellon_file = ''
 
-        ## Signals
+        # ## Signals
         self.excellon_brn.clicked.connect(self.on_load_excellon_click)
         self.inf_btn.clicked.connect(self.on_load_inf_click)
         self.import_button.clicked.connect(lambda: self.on_import_excellon(
@@ -207,7 +207,7 @@ class PcbWizard(FlatCAMTool):
         self.exc_file_content = None
         self.tools_from_inf = {}
 
-        ## Initialize form
+        # ## Initialize form
         self.int_entry.set_value(self.integral)
         self.frac_entry.set_value(self.fractional)
         self.zeros_radio.set_value(self.zeros)

@@ -1,10 +1,10 @@
-############################################################
+# ########################################################## ##
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-############################################################
+# ########################################################## ##
 
 from FlatCAMTool import FlatCAMTool
 
@@ -165,7 +165,7 @@ class Film(FlatCAMTool):
 
         self.layout.addStretch()
 
-        ## Signals
+        # ## Signals
         self.film_object_button.clicked.connect(self.on_film_creation)
         self.tf_type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
         self.tf_type_box_combo.currentIndexChanged.connect(self.on_type_box_index_changed)

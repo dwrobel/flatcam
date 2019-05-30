@@ -726,11 +726,11 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app = app
         self.canvas = self.app.plotcanvas
 
-        ## Current application units in Upper Case
+        # ## Current application units in Upper Case
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         self.exc_edit_widget = QtWidgets.QWidget()
-        ## Box for custom widgets
+        # ## Box for custom widgets
         # This gets populated in offspring implementations.
         layout = QtWidgets.QVBoxLayout()
         self.exc_edit_widget.setLayout(layout)
@@ -744,22 +744,22 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.tools_box.setContentsMargins(0, 0, 0, 0)
         self.drills_frame.setLayout(self.tools_box)
 
-        ## Page Title box (spacing between children)
+        # ## Page Title box (spacing between children)
         self.title_box = QtWidgets.QHBoxLayout()
         self.tools_box.addLayout(self.title_box)
 
-        ## Page Title icon
+        # ## Page Title icon
         pixmap = QtGui.QPixmap('share/flatcam_icon32.png')
         self.icon = QtWidgets.QLabel()
         self.icon.setPixmap(pixmap)
         self.title_box.addWidget(self.icon, stretch=0)
 
-        ## Title label
+        # ## Title label
         self.title_label = QtWidgets.QLabel("<font size=5><b>%s</b></font>" % _('Excellon Editor'))
         self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.title_box.addWidget(self.title_label, stretch=1)
 
-        ## Object name
+        # ## Object name
         self.name_box = QtWidgets.QHBoxLayout()
         self.tools_box.addLayout(self.name_box)
         name_label = QtWidgets.QLabel(_("Name:"))
@@ -767,7 +767,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.name_entry = FCEntry()
         self.name_box.addWidget(self.name_entry)
 
-        #### Tools Drills ####
+        #### Tools Drills ## ##
         self.tools_table_label = QtWidgets.QLabel("<b>%s</b>" % _('Tools Table'))
         self.tools_table_label.setToolTip(
            _( "Tools in this Excellon object\n"
@@ -789,7 +789,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.empty_label = QtWidgets.QLabel('')
         self.tools_box.addWidget(self.empty_label)
 
-        #### Add a new Tool ####
+        #### Add a new Tool ## ##
         self.addtool_label = QtWidgets.QLabel('<b>%s</b>' % _('Add/Delete Tool'))
         self.addtool_label.setToolTip(
             _("Add/Delete a tool to the tool list\n"
@@ -839,7 +839,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.resize_box.setContentsMargins(0, 0, 0, 0)
         self.resize_frame.setLayout(self.resize_box)
 
-        #### Resize a  drill ####
+        #### Resize a  drill ## ##
         self.emptyresize_label = QtWidgets.QLabel('')
         self.resize_box.addWidget(self.emptyresize_label)
 
@@ -882,7 +882,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.array_box.setContentsMargins(0, 0, 0, 0)
         self.array_frame.setLayout(self.array_box)
 
-        #### Add DRILL Array ####
+        #### Add DRILL Array ## ##
         self.emptyarray_label = QtWidgets.QLabel('')
         self.array_box.addWidget(self.emptyarray_label)
 
@@ -1001,7 +1001,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.array_frame.hide()
         self.tools_box.addStretch()
 
-        ## Toolbar events and properties
+        # ## Toolbar events and properties
         self.tools_exc = {
             "drill_select": {"button": self.app.ui.select_drill_btn,
                        "constructor": FCDrillSelect},
@@ -1017,7 +1017,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                      "constructor": FCDrillMove},
         }
 
-        ### Data
+        # ## Data
         self.active_tool = None
 
         self.in_action = False
@@ -1090,7 +1090,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.shapes.enabled = False
         self.tool_shape.enabled = False
 
-        ## List of selected shapes.
+        # ## List of selected shapes.
         self.selected = []
 
         self.move_timer = QtCore.QTimer()
@@ -1160,7 +1160,7 @@ class FlatCAMExcEditor(QtCore.QObject):
     @staticmethod
     def make_storage():
 
-        ## Shape storage.
+        # ## Shape storage.
         storage = FlatCAMRTreeStorage()
         storage.get_points = DrawToolShape.get_pts
 
@@ -1739,7 +1739,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.drills_frame.hide()
 
     def connect_canvas_event_handlers(self):
-        ## Canvas events
+        # ## Canvas events
 
         # first connect to new, then disconnect the old handlers
         # don't ask why but if there is nothing connected I've seen issues
@@ -2394,7 +2394,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         if self.active_tool is None:
             return
 
-        ### Snap coordinates
+        # ## Snap coordinates
         if self.app.grid_status():
             x, y = self.app.geo_editor.snap(x, y)
             self.app.app_cursor.enabled = True
@@ -2419,7 +2419,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                            "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
-        ### Utility geometry (animated)
+        # ## Utility geometry (animated)
         geo = self.active_tool.utility_geometry(data=(x, y))
 
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
@@ -2427,7 +2427,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.tool_shape.clear(update=True)
             self.draw_utility_geometry(geo=geo)
 
-        ### Selection area on canvas section ###
+        # ## Selection area on canvas section # ##
         if event.is_dragging == 1 and event.button == 1:
             # I make an exception for FCDrillAdd and FCDrillArray because clicking and dragging while making regions
             # can create strange issues
@@ -2553,13 +2553,13 @@ class FlatCAMExcEditor(QtCore.QObject):
             for geo in geometry:
                 plot_elements += self.plot_shape(geometry=geo, color=color, linewidth=linewidth)
 
-        ## Non-iterable
+        # ## Non-iterable
         except TypeError:
-            ## DrawToolShape
+            # ## DrawToolShape
             if isinstance(geometry, DrawToolShape):
                 plot_elements += self.plot_shape(geometry=geometry.geo, color=color, linewidth=linewidth)
 
-            ## Polygon: Descend into exterior and each interior.
+            # ## Polygon: Descend into exterior and each interior.
             if type(geometry) == Polygon:
                 plot_elements += self.plot_shape(geometry=geometry.exterior, color=color, linewidth=linewidth)
                 plot_elements += self.plot_shape(geometry=geometry.interiors, color=color, linewidth=linewidth)

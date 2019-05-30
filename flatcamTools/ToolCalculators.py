@@ -1,10 +1,10 @@
-############################################################
+# ########################################################## ##
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-############################################################
+# ########################################################## ##
 
 from FlatCAMTool import FlatCAMTool
 from FlatCAMObj import *
@@ -31,7 +31,7 @@ class ToolCalculator(FlatCAMTool):
 
         self.app = app
 
-        ## Title
+        # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                         QLabel
@@ -42,14 +42,14 @@ class ToolCalculator(FlatCAMTool):
                         """)
         self.layout.addWidget(title_label)
 
-        ######################
-        ## Units Calculator ##
-        ######################
+        #################### ##
+        # ## Units Calculator # ##
+        #################### ##
 
         self.unists_spacer_label = QtWidgets.QLabel(" ")
         self.layout.addWidget(self.unists_spacer_label)
 
-        ## Title of the Units Calculator
+        # ## Title of the Units Calculator
         units_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.unitsName)
         self.layout.addWidget(units_label)
 
@@ -76,18 +76,18 @@ class ToolCalculator(FlatCAMTool):
         grid_units_layout.addWidget(self.inch_entry, 1, 1)
 
 
-        ############################
-        ## V-shape Tool Calculator ##
-        ############################
+        ########################## ##
+        # ## V-shape Tool Calculator # ##
+        ########################## ##
 
         self.v_shape_spacer_label = QtWidgets.QLabel(" ")
         self.layout.addWidget(self.v_shape_spacer_label)
 
-        ## Title of the V-shape Tools Calculator
+        # ## Title of the V-shape Tools Calculator
         v_shape_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.v_shapeName)
         self.layout.addWidget(v_shape_title_label)
 
-        ## Form Layout
+        # ## Form Layout
         form_layout = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout)
 
@@ -127,7 +127,7 @@ class ToolCalculator(FlatCAMTool):
         form_layout.addRow(self.cutDepth_label, self.cutDepth_entry)
         form_layout.addRow(self.effectiveToolDia_label, self.effectiveToolDia_entry)
 
-        ## Buttons
+        # ## Buttons
         self.calculate_vshape_button = QtWidgets.QPushButton(_("Calculate"))
         # self.calculate_button.setFixedWidth(70)
         self.calculate_vshape_button.setToolTip(
@@ -139,14 +139,14 @@ class ToolCalculator(FlatCAMTool):
         form_layout.addRow(self.empty_label, self.calculate_vshape_button)
 
 
-        ####################################
-        ## ElectroPlating Tool Calculator ##
-        ####################################
+        ################################## ##
+        # ## ElectroPlating Tool Calculator # ##
+        ################################## ##
 
         self.plate_spacer_label = QtWidgets.QLabel(" ")
         self.layout.addWidget(self.plate_spacer_label)
 
-        ## Title of the ElectroPlating Tools Calculator
+        # ## Title of the ElectroPlating Tools Calculator
         plate_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.eplateName)
         plate_title_label.setToolTip(
             _("This calculator is useful for those who plate the via/pad/drill holes,\n"
@@ -154,7 +154,7 @@ class ToolCalculator(FlatCAMTool):
         )
         self.layout.addWidget(plate_title_label)
 
-        ## Plate Form Layout
+        # ## Plate Form Layout
         plate_form_layout = QtWidgets.QFormLayout()
         self.layout.addLayout(plate_form_layout)
 
@@ -210,7 +210,7 @@ class ToolCalculator(FlatCAMTool):
         plate_form_layout.addRow(self.cvaluelabel, self.cvalue_entry)
         plate_form_layout.addRow(self.timelabel, self.time_entry)
 
-        ## Buttons
+        # ## Buttons
         self.calculate_plate_button = QtWidgets.QPushButton(_("Calculate"))
         # self.calculate_button.setFixedWidth(70)
         self.calculate_plate_button.setToolTip(
@@ -223,7 +223,7 @@ class ToolCalculator(FlatCAMTool):
 
         self.layout.addStretch()
 
-        ## Signals
+        # ## Signals
         self.cutDepth_entry.textChanged.connect(self.on_calculate_tool_dia)
         self.cutDepth_entry.editingFinished.connect(self.on_calculate_tool_dia)
         self.tipDia_entry.editingFinished.connect(self.on_calculate_tool_dia)
@@ -264,7 +264,7 @@ class ToolCalculator(FlatCAMTool):
     def set_tool_ui(self):
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
-        ## Initialize form
+        # ## Initialize form
         self.mm_entry.set_value('0')
         self.inch_entry.set_value('0')
 

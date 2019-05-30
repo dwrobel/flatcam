@@ -1,10 +1,10 @@
-############################################################
+# ########################################################## ##
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-############################################################
+# ########################################################## ##
 
 from FlatCAMTool import FlatCAMTool
 
@@ -144,7 +144,7 @@ class ToolImage(FlatCAMTool):
 
         self.layout.addStretch()
 
-        ## Signals
+        # ## Signals
         self.import_button.clicked.connect(self.on_file_importimage)
 
     def run(self, toggle=True):
@@ -173,7 +173,7 @@ class ToolImage(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, **kwargs)
 
     def set_tool_ui(self):
-        ## Initialize form
+        # ## Initialize form
         self.dpi_entry.set_value(96)
         self.image_type.set_value('black')
         self.mask_bw_entry.set_value(250)

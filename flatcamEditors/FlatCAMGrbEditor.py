@@ -52,7 +52,7 @@ class DrawToolShape(object):
         """
         pts = []
 
-        ## Iterable: descend into each item.
+        # ## Iterable: descend into each item.
         try:
             for sub_o in o:
                 pts += DrawToolShape.get_pts(sub_o)
@@ -64,7 +64,7 @@ class DrawToolShape(object):
                 if isinstance(o, DrawToolShape):
                     pts += DrawToolShape.get_pts(o.geo)
 
-                ## Descend into .exerior and .interiors
+                # ## Descend into .exerior and .interiors
                 elif type(o) == Polygon:
                     pts += DrawToolShape.get_pts(o.exterior)
                     for i in o.interiors:
@@ -72,7 +72,7 @@ class DrawToolShape(object):
                 elif type(o) == MultiLineString:
                     for line in o:
                         pts += DrawToolShape.get_pts(line)
-                ## Has .coords: list them.
+                # ## Has .coords: list them.
                 else:
                     if DrawToolShape.tolerance is not None:
                         pts += list(o.simplify(DrawToolShape.tolerance).coords)
@@ -2274,7 +2274,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         layout.addLayout(self.custom_box)
 
 
-        # ### Gerber Apertures ####
+        # # ## Gerber Apertures ## ##
         self.apertures_table_label = QtWidgets.QLabel(_('<b>Apertures:</b>'))
         self.apertures_table_label.setToolTip(
             _("Apertures Table for the Gerber Object.")
@@ -2316,7 +2316,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.apertures_box.setContentsMargins(0, 0, 0, 0)
         self.apertures_frame.setLayout(self.apertures_box)
 
-        # ### Add/Delete an new Aperture ####
+        # # ## Add/Delete an new Aperture ## ##
 
         grid1 = QtWidgets.QGridLayout()
         self.apertures_box.addLayout(grid1)
@@ -2390,7 +2390,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         hlay_ad.addWidget(self.addaperture_btn)
         hlay_ad.addWidget(self.delaperture_btn)
 
-        # ## BUFFER TOOL ###
+        # # ## BUFFER TOOL # ##
 
         self.buffer_tool_frame = QtWidgets.QFrame()
         self.buffer_tool_frame.setContentsMargins(0, 0, 0, 0)
@@ -2434,7 +2434,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.buffer_button = QtWidgets.QPushButton(_("Buffer"))
         hlay_buf.addWidget(self.buffer_button)
 
-        # ## SCALE TOOL ###
+        # # ## SCALE TOOL # ##
 
         self.scale_tool_frame = QtWidgets.QFrame()
         self.scale_tool_frame.setContentsMargins(0, 0, 0, 0)
@@ -2481,7 +2481,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.array_box.setContentsMargins(0, 0, 0, 0)
         self.array_frame.setLayout(self.array_box)
 
-        # ### Add Pad Array ####
+        # # ## Add Pad Array ## ##
         self.emptyarray_label = QtWidgets.QLabel('')
         self.array_box.addWidget(self.emptyarray_label)
 
@@ -2633,7 +2633,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                      "constructor": FCApertureMove},
         }
 
-        # ## Data
+        # # ## Data
         self.active_tool = None
 
         self.storage_dict = {}
@@ -3479,9 +3479,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.gerber_obj.apertures = conv_apertures
 
-        # ###############################################################
+        # ############################################################# ##
         # APPLY CLEAR_GEOMETRY on the SOLID_GEOMETRY
-        # ###############################################################
+        # ############################################################# ##
 
         # log.warning("Applying clear geometry in the apertures dict.")
         # list of clear geos that are to be applied to the entire file
@@ -4079,7 +4079,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         if self.active_tool is None:
             return
 
-        # ## Snap coordinates
+        # # ## Snap coordinates
         if self.app.grid_status():
             x, y = self.app.geo_editor.snap(x, y)
             self.app.app_cursor.enabled = True
@@ -4104,7 +4104,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: " 
                                                "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
-        # ## Utility geometry (animated)
+        # # ## Utility geometry (animated)
         geo = self.active_tool.utility_geometry(data=(x, y))
 
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
@@ -4112,7 +4112,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.tool_shape.clear(update=True)
             self.draw_utility_geometry(geo=geo)
 
-        # ## Selection area on canvas section ###
+        # # ## Selection area on canvas section # ##
         if event.is_dragging == 1 and event.button == 1:
             # I make an exception for FCRegion and FCTrack because clicking and dragging while making regions can
             # create strange issues like missing a point in a track/region

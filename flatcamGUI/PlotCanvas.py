@@ -1,10 +1,10 @@
-############################################################
+# ########################################################## ##
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://caram.cl/software/flatcam                         #
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
-############################################################
+# ########################################################## ##
 
 from PyQt5 import QtCore
 
@@ -51,7 +51,7 @@ class PlotCanvas(QtCore.QObject):
         self.vispy_canvas.native.setParent(self.app.ui)
         self.container.addWidget(self.vispy_canvas.native)
 
-        ### AXIS ###
+        # ## AXIS # ##
         self.v_line = InfiniteLine(pos=0, color=(0.70, 0.3, 0.3, 1.0), vertical=True,
                                    parent=self.vispy_canvas.view.scene)
 

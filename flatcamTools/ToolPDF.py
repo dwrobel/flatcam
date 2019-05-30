@@ -1,10 +1,10 @@
-############################################################
+# ########################################################## ##
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 4/23/2019                                          #
 # MIT Licence                                              #
-############################################################
+# ########################################################## ##
 
 from FlatCAMTool import FlatCAMTool
 from shapely.geometry import Point, Polygon, LineString
@@ -1242,9 +1242,9 @@ class ToolPDF(FlatCAMTool):
                             new_el['follow'] = pdf_geo.exterior
                             apertures_dict[str(aperture)]['geometry'].append(deepcopy(new_el))
 
-                # ###############################################
+                # ############################################# ##
                 # store the found geometry for filling the path #
-                # ###############################################
+                # ############################################# ##
 
                 # in case that a color change to white (transparent) occurred
                 if flag_clear_geo is True:

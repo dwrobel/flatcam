@@ -9,6 +9,13 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+30.05.2019
+
+- editing a multi geometry will no longer pop-up a Tcl window
+- solved issue #292 where a new geometry renamed with many underscores failed to store the name in a saved project
+- the name for the saved projects are updated to the current time and not to the time of the app startup
+- some PEP8 changes related to comments starting with only one '#' symbol
+
 24.05.2019
 
 - added a toggle Grid button to the canvas context menu in the Grids submenu
