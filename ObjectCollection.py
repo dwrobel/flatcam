@@ -20,9 +20,9 @@ from PyQt5.QtCore import Qt
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
-import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
@@ -526,8 +526,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 ymin = min([ymin, gymin])
                 xmax = max([xmax, gxmax])
                 ymax = max([ymax, gymax])
-            except:
-                FlatCAMApp.App.log.warning("DEV WARNING: Tried to get bounds of empty geometry.")
+            except Exception as e:
+                FlatCAMApp.App.log.warning("DEV WARNING: Tried to get bounds of empty geometry. %s" % str(e))
 
         return [xmin, ymin, xmax, ymax]
 
@@ -537,11 +537,11 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         :param name: The name of the object.
         :type name: str
+        :param isCaseSensitive: whether searching of the object is done by name where the name is case sensitive
         :return: The requested object or None if no such object.
         :rtype: FlatCAMObj or None
         """
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.get_by_name()")
-
 
         if isCaseSensitive is None or isCaseSensitive is True:
             for obj in self.get_list():
@@ -570,10 +570,9 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.app.myKeywords.remove(name)
             self.app.shell._edit.set_model_data(self.app.myKeywords)
             self.app.ui.code_editor.set_model_data(self.app.myKeywords)
-        except:
+        except Exception as e:
             log.debug(
-                "delete_active() --> Could not remove the old object name from auto-completer model list")
-
+                "delete_active() --> Could not remove the old object name from auto-completer model list. %s" % str(e))
 
         self.beginRemoveRows(self.index(group.row(), 0, QtCore.QModelIndex()), active.row(), active.row())
 
@@ -650,12 +649,12 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         :return: List of objects
         """
 
-        l = self.get_list()
+        obj_list = self.get_list()
 
         for sel in self.get_selected():
-            l.remove(sel)
+            obj_list.remove(sel)
 
-        return l
+        return obj_list
 
     def set_active(self, name):
         """
@@ -732,8 +731,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.app.inform.emit('')
             try:
                 self.app.ui.selected_scroll_area.takeWidget()
-            except:
-                FlatCAMApp.App.log.debug("Nothing to remove")
+            except Exception as e:
+                FlatCAMApp.App.log.debug("Nothing to remove. %s" % str(e))
 
             self.app.setup_component_editor()
             return

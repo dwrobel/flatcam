@@ -3036,6 +3036,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.old_pp_state = ''
         self.old_toolchangeg_state = ''
 
+        # store here the default data for Geometry Data
+        self.default_data = {}
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -3394,11 +3397,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             try:
                 # works for CheckBoxes
                 self.ui.grid3.itemAt(i).widget().stateChanged.connect(self.gui_form_to_storage)
-            except:
+            except Exception as e:
                 # works for ComboBoxes
                 try:
                     self.ui.grid3.itemAt(i).widget().currentIndexChanged.connect(self.gui_form_to_storage)
-                except:
+                except Exception as e2:
                     # works for Entry
                     try:
                         self.ui.grid3.itemAt(i).widget().editingFinished.connect(self.gui_form_to_storage)
@@ -3495,13 +3498,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
     def on_tool_add(self, dia=None):
         self.ui_disconnect()
 
-        last_offset = None
-        last_offset_value = None
-        last_type = None
-        last_tool_type = None
-        last_data = None
-        last_solid_geometry = []
-
         # if a Tool diameter entered is a char instead a number the final message of Tool adding is changed
         # because the Default value for Tool is used.
         change_message = False
@@ -3550,7 +3546,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.tools.update({
                 self.tooluid: {
                     'tooldia': tooldia,
-                    'offset': ('Path'),
+                    'offset': 'Path',
                     'offset_value': 0.0,
                     'type': _('Rough'),
                     'tool_type': 'C1',
@@ -3559,7 +3555,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 }
             })
         else:
-            # print("LAST", self.tools[maxuid])
             last_data = self.tools[max_uid]['data']
             last_offset = self.tools[max_uid]['offset']
             last_offset_value = self.tools[max_uid]['offset_value']
@@ -3583,7 +3578,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     'solid_geometry': deepcopy(last_solid_geometry)
                 }
             })
-            # print("CURRENT", self.tools[-1])
 
         self.ui.tool_offset_entry.hide()
         self.ui.tool_offset_lbl.hide()

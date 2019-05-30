@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - solved issue #292 where a new geometry renamed with many underscores failed to store the name in a saved project
 - the name for the saved projects are updated to the current time and not to the time of the app startup
 - some PEP8 changes related to comments starting with only one '#' symbol
+- more PEP8 cleanup
 
 24.05.2019
 
