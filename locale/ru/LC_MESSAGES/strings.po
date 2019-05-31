@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-05-22 18:30+0300\n"
-"PO-Revision-Date: 2019-05-29 13:29+0400\n"
+"PO-Revision-Date: 2019-05-31 13:46+0400\n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -3787,7 +3787,7 @@ msgstr "О программе"
 
 #: flatcamGUI/FlatCAMGUI.py:405
 msgid "Add Circle\tO"
-msgstr ""
+msgstr "Добавить круг\tO"
 
 #: flatcamGUI/FlatCAMGUI.py:407
 msgid "Add Arc\tA"
@@ -3795,19 +3795,19 @@ msgstr "Добавить дугу\tA"
 
 #: flatcamGUI/FlatCAMGUI.py:410
 msgid "Add Rectangle\tR"
-msgstr ""
+msgstr "Добавить прямоугольник\tR"
 
 #: flatcamGUI/FlatCAMGUI.py:413
 msgid "Add Polygon\tN"
-msgstr ""
+msgstr "Добавить полигон\tN"
 
 #: flatcamGUI/FlatCAMGUI.py:415
 msgid "Add Path\tP"
-msgstr ""
+msgstr "Добавить дорожку\tP"
 
 #: flatcamGUI/FlatCAMGUI.py:417
 msgid "Add Text\tT"
-msgstr ""
+msgstr "Добавить текст\tT"
 
 #: flatcamGUI/FlatCAMGUI.py:420
 msgid "Polygon Union\tU"
@@ -3855,15 +3855,15 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:450
 msgid ">Excellon Editor<"
-msgstr ""
+msgstr ">Редактор Excellon<"
 
 #: flatcamGUI/FlatCAMGUI.py:454
 msgid "Add Drill Array\tA"
-msgstr ""
+msgstr "Добавить группу свёрел\tA"
 
 #: flatcamGUI/FlatCAMGUI.py:456
 msgid "Add Drill\tD"
-msgstr ""
+msgstr "Добавить сверло\tD"
 
 #: flatcamGUI/FlatCAMGUI.py:460
 msgid "Resize Drill(S)\tR"
@@ -3895,11 +3895,11 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:481
 msgid "Add Track\tT"
-msgstr ""
+msgstr "Добавить маршрут\tT"
 
 #: flatcamGUI/FlatCAMGUI.py:483
 msgid "Add Region\tN"
-msgstr ""
+msgstr "Добавить регион\tN"
 
 #: flatcamGUI/FlatCAMGUI.py:487
 msgid "Poligonize\tALT+N"
@@ -3907,11 +3907,11 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:489
 msgid "Add SemiDisc\tE"
-msgstr ""
+msgstr "Добавить полукруг\tE"
 
 #: flatcamGUI/FlatCAMGUI.py:491
 msgid "Add Disc\tD"
-msgstr ""
+msgstr "Добавить диск\tD"
 
 #: flatcamGUI/FlatCAMGUI.py:493
 msgid "Buffer\tB"
@@ -4045,7 +4045,7 @@ msgstr "&Командная строка"
 
 #: flatcamGUI/FlatCAMGUI.py:645 flatcamGUI/FlatCAMGUI.py:1865
 msgid "2Sided Tool"
-msgstr ""
+msgstr "2-х стор. платы"
 
 #: flatcamGUI/FlatCAMGUI.py:646 flatcamGUI/FlatCAMGUI.py:1866
 msgid "&Cutout Tool"
@@ -4130,7 +4130,7 @@ msgstr "Добавить полигон"
 
 #: flatcamGUI/FlatCAMGUI.py:686 flatcamGUI/FlatCAMGUI.py:1910
 msgid "Add Text"
-msgstr ""
+msgstr "Добавить текст"
 
 #: flatcamGUI/FlatCAMGUI.py:687 flatcamGUI/FlatCAMGUI.py:1912
 msgid "Add Buffer"
@@ -4184,11 +4184,11 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:713 flatcamGUI/FlatCAMGUI.py:1939
 msgid "Add Track"
-msgstr ""
+msgstr "Добавить маршрут"
 
 #: flatcamGUI/FlatCAMGUI.py:714 flatcamGUI/FlatCAMGUI.py:1940
 msgid "Add Region"
-msgstr ""
+msgstr "Добавить регион"
 
 #: flatcamGUI/FlatCAMGUI.py:716 flatcamGUI/FlatCAMGUI.py:1942
 msgid "Poligonize"
@@ -4253,7 +4253,7 @@ msgstr "Общие"
 
 #: flatcamGUI/FlatCAMGUI.py:861
 msgid "APP.  DEFAULTS"
-msgstr ""
+msgstr "СТАНД. НАСТРОЙКИ"
 
 #: flatcamGUI/FlatCAMGUI.py:862
 msgid "PROJ. OPTIONS "
@@ -4990,7 +4990,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:1614
 msgid "Add Drill"
-msgstr ""
+msgstr "Добавить сверло"
 
 #: flatcamGUI/FlatCAMGUI.py:1646
 msgid "Print Preview"
@@ -5168,7 +5168,7 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:3386 flatcamGUI/FlatCAMGUI.py:3436
 #: flatcamGUI/FlatCAMGUI.py:3486
 msgid "Alpha Level:"
-msgstr ""
+msgstr "Уровень прозрачности:"
 
 #: flatcamGUI/FlatCAMGUI.py:3388
 msgid "Set the fill transparency for plotted objects."
@@ -5337,7 +5337,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3728
 msgid "Are you sure you want to delete the GUI Settings? \n"
-msgstr ""
+msgstr "Вы уверены, что хотите удалить настройки графического интерфейса?\n"
 
 #: flatcamGUI/FlatCAMGUI.py:3731
 msgid "Clear GUI Settings"
@@ -5345,11 +5345,11 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3752
 msgid "App Preferences"
-msgstr ""
+msgstr "Параметры приложения"
 
 #: flatcamGUI/FlatCAMGUI.py:3758
 msgid "<b>Units:</b>"
-msgstr ""
+msgstr "<b>Единицы:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:3759
 msgid ""
@@ -5360,7 +5360,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3766
 msgid "<b>APP. LEVEL:</b>"
-msgstr ""
+msgstr "<b>РЕЖИМ:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:3767
 msgid ""
@@ -5374,7 +5374,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3776
 msgid "<b>Languages:</b>"
-msgstr ""
+msgstr "<b>Язык:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:3777
 msgid "Set the language used throughout FlatCAM."
@@ -5382,7 +5382,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3780
 msgid "Apply Language"
-msgstr ""
+msgstr "Применить язык"
 
 #: flatcamGUI/FlatCAMGUI.py:3781
 msgid ""
@@ -5427,7 +5427,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3828
 msgid "<b>Pan Button:</b>"
-msgstr ""
+msgstr "<b>Pan Button:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:3829
 msgid ""
@@ -5438,7 +5438,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3836
 msgid "<b>Multiple Sel:</b>"
-msgstr ""
+msgstr "<b>Мультивыбор:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:3837
 msgid "Select the key used for multiple selection."
@@ -5467,7 +5467,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3868
 msgid "<b>Enable ToolTips:</b>"
-msgstr ""
+msgstr "<b>Показывать всплывающие подсказки:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:3870 flatcamGUI/FlatCAMGUI.py:3875
 msgid ""
@@ -5716,7 +5716,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4172
 msgid "<b>Advanced Param.:</b>"
-msgstr ""
+msgstr "<b>Дополнительные парам.:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:4174
 msgid ""
@@ -5724,6 +5724,9 @@ msgid ""
 "Those parameters are available only for\n"
 "Advanced App. Level."
 msgstr ""
+"Список расширенных параметров Gerber.\n"
+"Эти параметры доступны только для\n"
+"расширенного режима приложения."
 
 #: flatcamGUI/FlatCAMGUI.py:4184 flatcamGUI/ObjectUI.py:314
 msgid "\"Follow\""
@@ -5753,7 +5756,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4238 flatcamGUI/FlatCAMGUI.py:4909
 msgid "<b>Export Options:</b>"
-msgstr ""
+msgstr "<b>Параметры экспорта:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:4240
 msgid ""
@@ -5763,7 +5766,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4249 flatcamGUI/FlatCAMGUI.py:4920
 msgid "<b>Units</b>:"
-msgstr ""
+msgstr "<b>Единицы</b>:"
 
 #: flatcamGUI/FlatCAMGUI.py:4251 flatcamGUI/FlatCAMGUI.py:4257
 msgid "The units used in the Gerber file."
@@ -5771,7 +5774,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4263 flatcamGUI/FlatCAMGUI.py:4934
 msgid "<b>Int/Decimals:</b>"
-msgstr ""
+msgstr "<b>Int/Decimals:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:4265
 msgid ""
@@ -5793,7 +5796,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4299 flatcamGUI/FlatCAMGUI.py:4995
 msgid "<b>Zeros</b>:"
-msgstr ""
+msgstr "<b>Нули</b>:"
 
 #: flatcamGUI/FlatCAMGUI.py:4302 flatcamGUI/FlatCAMGUI.py:4312
 msgid ""
@@ -5810,11 +5813,11 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:5961 flatcamGUI/FlatCAMGUI.py:6022
 #: flatcamGUI/FlatCAMGUI.py:6221 flatcamGUI/FlatCAMGUI.py:6348
 msgid "<b>Parameters:</b>"
-msgstr ""
+msgstr "<b>Параметры:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:4334
 msgid "A list of Gerber Editor parameters."
-msgstr ""
+msgstr "Список параметров редактора Gerber."
 
 #: flatcamGUI/FlatCAMGUI.py:4342 flatcamGUI/FlatCAMGUI.py:5385
 msgid "Selection limit:"
@@ -5835,7 +5838,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4386
 msgid "<b>Excellon Format:</b>"
-msgstr ""
+msgstr "<b>Формат Excellon:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:4388
 msgid ""
@@ -5934,7 +5937,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4538
 msgid "<b>Excellon Optimization:</b>"
-msgstr ""
+msgstr "<b>Оптимизация Excellon:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:4545
 msgid "Algorithm:   "
@@ -6099,7 +6102,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4732
 msgid "<b>Gcode:    </b>"
-msgstr ""
+msgstr "<b>Gcode:    </b>"
 
 #: flatcamGUI/FlatCAMGUI.py:4734
 msgid ""
@@ -6141,7 +6144,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4798 flatcamGUI/FlatCAMGUI.py:5248
 msgid "<b>Advanced Options:</b>"
-msgstr ""
+msgstr "<b>Дополнительные настройки:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:4800
 msgid ""
@@ -6276,7 +6279,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4972
 msgid "<b>Format:</b>"
-msgstr ""
+msgstr "<b>Формат:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:4974 flatcamGUI/FlatCAMGUI.py:4984
 msgid ""
@@ -6475,7 +6478,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5377
 msgid "A list of Geometry Editor parameters."
-msgstr ""
+msgstr "Список параметров редактора Geometry."
 
 #: flatcamGUI/FlatCAMGUI.py:5387
 msgid ""
@@ -6617,6 +6620,9 @@ msgid ""
 "in the Toolchange event.\n"
 "They have to be surrounded by the '%' symbol"
 msgstr ""
+"Список переменных FlatCAM, которые можно использовать\n"
+"при смене инструмента.\n"
+"Они должны быть окружены '%' символом"
 
 #: flatcamGUI/FlatCAMGUI.py:5581 flatcamGUI/ObjectUI.py:1551
 msgid "Parameters"
@@ -6785,13 +6791,15 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5796
 msgid "2Sided Tool Options"
-msgstr ""
+msgstr "Параметры 2-х сторонней платы"
 
 #: flatcamGUI/FlatCAMGUI.py:5801
 msgid ""
 "A tool to help in creating a double sided\n"
 "PCB using alignment holes."
 msgstr ""
+"Инструмент, помогающий создать двухстороннюю\n"
+"печатную плату с использованием центрирующих отверстий."
 
 #: flatcamGUI/FlatCAMGUI.py:5811 flatcamTools/ToolDblSided.py:235
 msgid "Drill diam.:"
@@ -7204,6 +7212,8 @@ msgid ""
 "A tool to create GCode for dispensing\n"
 "solder paste onto a PCB."
 msgstr ""
+"Инструмент для создания GCode для дозирования\n"
+"нанесения паяльной пасты на печатную плату."
 
 #: flatcamGUI/FlatCAMGUI.py:6361
 msgid "Diameters of nozzle tools, separated by ','"
@@ -7211,7 +7221,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6368
 msgid "<b>New Nozzle Dia:</b>"
-msgstr ""
+msgstr "<b>Новый диам. насадки:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:6370 flatcamTools/ToolSolderPaste.py:103
 msgid "Diameter for the new Nozzle tool to add in the Tool Table"
@@ -7697,7 +7707,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:748
 msgid "<b>Type:    </b>"
-msgstr ""
+msgstr "<b>Тип:    </b>"
 
 #: flatcamGUI/ObjectUI.py:750
 msgid ""
@@ -7848,7 +7858,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:975
 msgid "<b>Tool Dia:</b>"
-msgstr ""
+msgstr "<b>Диам. инструмента:</b>"
 
 #: flatcamGUI/ObjectUI.py:994 flatcamTools/ToolNonCopperClear.py:136
 #: flatcamTools/ToolPaint.py:133
@@ -7871,7 +7881,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:1026
 msgid "<b>Tool Data</b>"
-msgstr ""
+msgstr "<b>Данные инструмента</b>"
 
 #: flatcamGUI/ObjectUI.py:1029
 msgid ""
@@ -8001,11 +8011,11 @@ msgstr "Объект программы для ЧПУ"
 
 #: flatcamGUI/ObjectUI.py:1353
 msgid "<b>Plot kind:</b>"
-msgstr ""
+msgstr "<b>Plot kind:</b>"
 
 #: flatcamGUI/ObjectUI.py:1378
 msgid "<b>Travelled dist.:</b>"
-msgstr ""
+msgstr "<b>Расст. прохода:</b>"
 
 #: flatcamGUI/ObjectUI.py:1381 flatcamGUI/ObjectUI.py:1388
 msgid ""
@@ -8044,7 +8054,7 @@ msgstr "Обновление контура."
 
 #: flatcamGUI/ObjectUI.py:1468
 msgid "<b>Export CNC Code:</b>"
-msgstr ""
+msgstr "<b>Экспорт CNC Code:</b>"
 
 #: flatcamGUI/ObjectUI.py:1476
 msgid "Prepend to CNC Code:"
@@ -8060,7 +8070,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:1489
 msgid "Append to CNC Code"
-msgstr ""
+msgstr "Добавить в CNC Code"
 
 #: flatcamGUI/ObjectUI.py:1513
 msgid ""
@@ -8471,7 +8481,7 @@ msgstr ""
 
 #: flatcamTools/ToolDblSided.py:18
 msgid "2-Sided PCB"
-msgstr ""
+msgstr "2-х сторонняя плата"
 
 #: flatcamTools/ToolDblSided.py:52 flatcamTools/ToolDblSided.py:76
 #: flatcamTools/ToolDblSided.py:100
@@ -8540,7 +8550,7 @@ msgstr ""
 
 #: flatcamTools/ToolDblSided.py:193
 msgid "Alignment Drill Coordinates:"
-msgstr ""
+msgstr "Координаты выравнивающего отверстия:"
 
 #: flatcamTools/ToolDblSided.py:195
 msgid ""
@@ -8569,7 +8579,7 @@ msgstr ""
 
 #: flatcamTools/ToolDblSided.py:224
 msgid "Alignment Drill Diameter"
-msgstr ""
+msgstr "Диаметр выравнивающего отверстия"
 
 #: flatcamTools/ToolDblSided.py:247
 msgid "Create Excellon Object"
@@ -8595,7 +8605,7 @@ msgstr ""
 
 #: flatcamTools/ToolDblSided.py:302
 msgid "2-Sided Tool"
-msgstr ""
+msgstr "Инструмент 2-х сторонних плат"
 
 #: flatcamTools/ToolDblSided.py:327
 msgid ""
@@ -9307,7 +9317,7 @@ msgstr ""
 
 #: flatcamTools/ToolPanelize.py:86
 msgid "<b>Penelization Reference:</b>"
-msgstr ""
+msgstr "<b>Характеристики пенелизации:</b>"
 
 #: flatcamTools/ToolPanelize.py:88
 msgid ""
@@ -9623,7 +9633,7 @@ msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:142
 msgid "STEP 1"
-msgstr "ШАГ 1:"
+msgstr "ШАГ 1"
 
 #: flatcamTools/ToolSolderPaste.py:144
 msgid ""
@@ -9823,7 +9833,7 @@ msgstr ""
 
 #: flatcamTools/ToolSub.py:55
 msgid "<b>Gerber Objects</b>"
-msgstr ""
+msgstr "<b>Объекты Gerber</b>"
 
 #: flatcamTools/ToolSub.py:64 flatcamTools/ToolSub.py:110
 msgid "Target:"
