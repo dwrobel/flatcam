@@ -6487,6 +6487,7 @@ class CNCjob(Geometry):
         :param tool_tolerance: Tolerance when drawing the toolshape.
         :return: None
         """
+        # units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         gcode_parsed = gcode_parsed if gcode_parsed else self.gcode_parsed
         path_num = 0
@@ -6504,7 +6505,6 @@ class CNCjob(Geometry):
                 elif kind == 'cut':
                     if geo['kind'][0] == 'C':
                         obj.add_shape(shape=geo['geom'], color=color['C'][1], visible=visible)
-
         else:
             text = []
             pos = []
@@ -6512,7 +6512,12 @@ class CNCjob(Geometry):
                 path_num += 1
 
                 text.append(str(path_num))
-                pos.append(geo['geom'].coords[0])
+                current_position = geo['geom'].coords[0]
+                if current_position in pos:
+                    corrected_position = (current_position[0], current_position[1] + tooldia)
+                    pos.append(corrected_position)
+                else:
+                    pos.append(current_position)
 
                 # plot the geometry of Excellon objects
                 if self.origin_kind == 'excellon':

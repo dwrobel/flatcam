@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+31.05.2019
+
+- added the possibility to display text annotation for the CNC travel lines. The setting is both in Preferences and in the CNC object properties
+
 30.05.2019
 
 - editing a multi geometry will no longer pop-up a Tcl window

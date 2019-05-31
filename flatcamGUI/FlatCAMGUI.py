@@ -5443,15 +5443,30 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.cncplot_method_radio, 1, 1)
         grid0.addWidget(QtWidgets.QLabel(''), 1, 2)
 
+        # Display Annotation
+        self.annotation_label = QtWidgets.QLabel(_("Display Annotation:"))
+        self.annotation_label.setToolTip(
+            _(
+                "This selects if to display text annotation on the plot.\n"
+                "When checked it will display numbers in order for each end\n"
+                "of a travel line."
+            )
+        )
+        self.annotation_cb = FCCheckBox()
+
+        grid0.addWidget(self.annotation_label, 2, 0)
+        grid0.addWidget(self.annotation_cb, 2, 1)
+        grid0.addWidget(QtWidgets.QLabel(''), 2, 2)
+
         # Number of circle steps for circular aperture linear approximation
         self.steps_per_circle_label = QtWidgets.QLabel(_("Circle Steps:"))
         self.steps_per_circle_label.setToolTip(
             _("The number of circle steps for <b>GCode</b> \n"
             "circle and arc shapes linear approximation.")
         )
-        grid0.addWidget(self.steps_per_circle_label, 2, 0)
+        grid0.addWidget(self.steps_per_circle_label, 3, 0)
         self.steps_per_circle_entry = IntEntry()
-        grid0.addWidget(self.steps_per_circle_entry, 2, 1)
+        grid0.addWidget(self.steps_per_circle_entry, 3, 1)
 
         # Tool dia for plot
         tdlabel = QtWidgets.QLabel(_('Tool dia:'))
@@ -5459,9 +5474,9 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
             _("Diameter of the tool to be\n"
             "rendered in the plot.")
         )
-        grid0.addWidget(tdlabel, 3, 0)
+        grid0.addWidget(tdlabel, 4, 0)
         self.tooldia_entry = LengthEntry()
-        grid0.addWidget(self.tooldia_entry, 3, 1)
+        grid0.addWidget(self.tooldia_entry,4, 1)
 
         # Number of decimals to use in GCODE coordinates
         cdeclabel = QtWidgets.QLabel(_('Coords dec.:'))
@@ -5469,9 +5484,9 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
             _("The number of decimals to be used for \n"
             "the X, Y, Z coordinates in CNC code (GCODE, etc.)")
         )
-        grid0.addWidget(cdeclabel, 4, 0)
+        grid0.addWidget(cdeclabel, 5, 0)
         self.coords_dec_entry = IntEntry()
-        grid0.addWidget(self.coords_dec_entry, 4, 1)
+        grid0.addWidget(self.coords_dec_entry, 5, 1)
 
         # Number of decimals to use in GCODE feedrate
         frdeclabel = QtWidgets.QLabel(_('Feedrate dec.:'))
@@ -5479,9 +5494,9 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
             _("The number of decimals to be used for \n"
             "the Feedrate parameter in CNC code (GCODE, etc.)")
         )
-        grid0.addWidget(frdeclabel, 5, 0)
+        grid0.addWidget(frdeclabel, 6, 0)
         self.fr_dec_entry = IntEntry()
-        grid0.addWidget(self.fr_dec_entry, 5, 1)
+        grid0.addWidget(self.fr_dec_entry, 6, 1)
 
         self.layout.addStretch()
 

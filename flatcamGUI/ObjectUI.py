@@ -1366,6 +1366,16 @@ class CNCObjectUI(ObjectUI):
             {"label": "Cut", "value": "cut"}
         ], stretch=False)
 
+        self.annotation_label = QtWidgets.QLabel(_("<b>Display Annotation:</b>"))
+        self.annotation_label.setToolTip(
+            _(
+                "This selects if to display text annotation on the plot.\n"
+                "When checked it will display numbers in order for each end\n"
+                "of a travel line."
+            )
+        )
+        self.annotation_cb = FCCheckBox()
+
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(self.name_hlay)
@@ -1399,9 +1409,12 @@ class CNCObjectUI(ObjectUI):
         f_lay.addWidget(self.cncplot_method_label, 0, 0)
         f_lay.addWidget(self.cncplot_method_combo, 0, 1)
         f_lay.addWidget(QtWidgets.QLabel(''), 0, 2)
-        f_lay.addWidget(self.t_distance_label, 1, 0)
-        f_lay.addWidget(self.t_distance_entry, 1, 1)
-        f_lay.addWidget(self.units_label, 1, 2)
+        f_lay.addWidget(self.annotation_label, 1, 0)
+        f_lay.addWidget(self.annotation_cb, 1, 1)
+        f_lay.addWidget(QtWidgets.QLabel(''), 1, 2)
+        f_lay.addWidget(self.t_distance_label, 2, 0)
+        f_lay.addWidget(self.t_distance_entry, 2, 1)
+        f_lay.addWidget(self.units_label, 2, 2)
 
         self.t_distance_label.hide()
         self.t_distance_entry.setVisible(False)

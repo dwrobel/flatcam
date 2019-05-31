@@ -90,6 +90,8 @@ class FlatCAMObj(QtCore.QObject):
         self.isHovering = False
         self.notHovering = True
 
+        self.units = 'IN'
+
         # assert isinstance(self.ui, ObjectUI)
         # self.ui.name_entry.returnPressed.connect(self.on_name_activate)
         # self.ui.offset_button.clicked.connect(self.on_offset_button_click)
@@ -4274,6 +4276,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # Object initialization function for app.new_object()
         # RUNNING ON SEPARATE THREAD!
         def job_init_single_geometry(job_obj, app_obj):
+            log.debug("Creating a CNCJob out of a single-geometry")
+
             assert isinstance(job_obj, FlatCAMCNCjob), \
                 "Initializer expected a FlatCAMCNCjob, got %s" % type(job_obj)
 
@@ -4485,6 +4489,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # Object initialization function for app.new_object()
         # RUNNING ON SEPARATE THREAD!
         def job_init_multi_geometry(job_obj, app_obj):
+            log.debug("Creating a CNCJob out of a multi-geometry")
+
             assert isinstance(job_obj, FlatCAMCNCjob), \
                 "Initializer expected a FlatCAMCNCjob, got %s" % type(job_obj)
 
@@ -5461,6 +5467,15 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # set the kind of geometries are plotted by default with plot2() from camlib.CNCJob
         self.ui.cncplot_method_combo.set_value(self.app.defaults["cncjob_plot_kind"])
 
+        try:
+            self.ui.annotation_cb.stateChanged.disconnect(self.on_annotation_change)
+        except:
+            pass
+        self.ui.annotation_cb.stateChanged.connect(self.on_annotation_change)
+
+        # set if to display text annotations
+        self.ui.annotation_cb.set_value(self.app.defaults["cncjob_annotation"])
+
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
             self.ui.level.setText(_(
@@ -5909,6 +5924,14 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
             self.annotation.clear(update=True)
+
+    def on_annotation_change(self):
+        if self.ui.annotation_cb.get_value():
+            self.app.plotcanvas.text_collection.enabled = True
+        else:
+            self.app.plotcanvas.text_collection.enabled = False
+        kind = self.ui.cncplot_method_combo.get_value()
+        self.plot(kind=kind)
 
     def convert_units(self, units):
         factor = CNCjob.convert_units(self, units)

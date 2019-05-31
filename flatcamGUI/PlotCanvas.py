@@ -74,7 +74,7 @@ class PlotCanvas(QtCore.QObject):
         self.text_collection = self.new_text_collection()
 
         # TODO: Should be setting to show/hide CNC job annotations (global or per object)
-        self.text_collection.enabled = False
+        self.text_collection.enabled = True
 
     # draw a rectangle made out of 4 lines on the canvas to serve as a hint for the work area
     # all CNC have a limited workspace

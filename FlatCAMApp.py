@@ -466,6 +466,7 @@ class App(QtCore.QObject):
             # CNCJob General
             "cncjob_plot": self.ui.cncjob_defaults_form.cncjob_gen_group.plot_cb,
             "cncjob_plot_kind": self.ui.cncjob_defaults_form.cncjob_gen_group.cncplot_method_radio,
+            "cncjob_annotation": self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_cb,
             "cncjob_tooldia": self.ui.cncjob_defaults_form.cncjob_gen_group.tooldia_entry,
             "cncjob_coords_decimals": self.ui.cncjob_defaults_form.cncjob_gen_group.coords_dec_entry,
             "cncjob_fr_decimals": self.ui.cncjob_defaults_form.cncjob_gen_group.fr_dec_entry,
@@ -790,6 +791,7 @@ class App(QtCore.QObject):
             # CNC Job General
             "cncjob_plot": True,
             "cncjob_plot_kind": 'all',
+            "cncjob_annotation": True,
             "cncjob_tooldia": 0.0393701,
             "cncjob_coords_decimals": 4,
             "cncjob_fr_decimals": 2,
