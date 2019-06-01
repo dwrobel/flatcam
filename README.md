@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+1.06.2019
+
+- fixed text annotation for CNC job so there are no overlapping numbers when 2 lines meet on the same point
+- fixed issue in CNC job plotting where some of the isolation polygons are painted incorrectly
+- fixed issue in CNCJob where the set circle steps is not used 
+
 31.05.2019
 
 - added the possibility to display text annotation for the CNC travel lines. The setting is both in Preferences and in the CNC object properties

@@ -4909,7 +4909,6 @@ class CNCjob(Geometry):
         "pp_geometry_name":'default',
         "pp_excellon_name":'default',
         "excellon_optimization_type": "B",
-        "steps_per_circle": 64
     }
 
     def __init__(self,
@@ -4926,11 +4925,9 @@ class CNCjob(Geometry):
                  steps_per_circle=None):
 
         # Used when parsing G-code arcs
-        if steps_per_circle is None:
-            steps_per_circle = int(CNCjob.defaults["steps_per_circle"])
-        self.steps_per_circle = int(steps_per_circle)
+        self.steps_per_circle = int(self.app.defaults['cncjob_steps_per_circle'])
 
-        Geometry.__init__(self, geo_steps_per_circle=int(steps_per_circle))
+        Geometry.__init__(self, geo_steps_per_circle=self.steps_per_circle)
 
         self.kind = kind
         self.origin_kind = None
@@ -6420,9 +6417,7 @@ class CNCjob(Geometry):
                     radius = sqrt(gobj['I']**2 + gobj['J']**2)
                     start = arctan2(-gobj['J'], -gobj['I'])
                     stop = arctan2(-center[1] + y, -center[0] + x)
-                    path += arc(center, radius, start, stop,
-                                arcdir[current['G']],
-                                int(self.steps_per_circle / 4))
+                    path += arc(center, radius, start, stop, arcdir[current['G']], int(self.steps_per_circle / 4))
 
             # Update current instruction
             for code in gobj:
@@ -6509,15 +6504,17 @@ class CNCjob(Geometry):
             text = []
             pos = []
             for geo in gcode_parsed:
-                path_num += 1
-
-                text.append(str(path_num))
-                current_position = geo['geom'].coords[0]
-                if current_position in pos:
-                    corrected_position = (current_position[0], current_position[1] + tooldia)
-                    pos.append(corrected_position)
-                else:
-                    pos.append(current_position)
+                if geo['kind'][0] == 'T':
+                    current_position = geo['geom'].coords[0]
+                    if current_position not in pos:
+                        pos.append(current_position)
+                        path_num += 1
+                        text.append(str(path_num))
+                    current_position = geo['geom'].coords[-1]
+                    if current_position not in pos:
+                        pos.append(current_position)
+                        path_num += 1
+                        text.append(str(path_num))
 
                 # plot the geometry of Excellon objects
                 if self.origin_kind == 'excellon':
@@ -6525,10 +6522,12 @@ class CNCjob(Geometry):
                         poly = Polygon(geo['geom'])
                     except ValueError:
                         # if the geos are travel lines it will enter into Exception
-                        poly = geo['geom'].buffer(tooldia / 2.0).simplify(tool_tolerance)
+                        poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
+                        poly = poly.simplify(tool_tolerance)
                 else:
                     # plot the geometry of any objects other than Excellon
-                    poly = geo['geom'].buffer(tooldia / 2.0).simplify(tool_tolerance)
+                    poly = geo['geom'].buffer(distance=(tooldia / 1.99999999), resolution=self.steps_per_circle)
+                    poly = poly.simplify(tool_tolerance)
 
                 if kind == 'all':
                     obj.add_shape(shape=poly, color=color[geo['kind'][0]][1], face_color=color[geo['kind'][0]][0],

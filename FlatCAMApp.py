@@ -795,7 +795,7 @@ class App(QtCore.QObject):
             "cncjob_tooldia": 0.0393701,
             "cncjob_coords_decimals": 4,
             "cncjob_fr_decimals": 2,
-            "cncjob_steps_per_circle": 64,
+            "cncjob_steps_per_circle": 128,
 
             # CNC Job Options
             "cncjob_prepend": "",
