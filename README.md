@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+2.06.2019
+
+- fixed issue with geometry name not being updated immediately after change while doing geocutout TclCommand
+- some changes to enable/disable project context menu entry handlers
+
 1.06.2019
 
 - fixed text annotation for CNC job so there are no overlapping numbers when 2 lines meet on the same point

@@ -221,6 +221,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
 
             cutout_obj.plot()
             self.app.inform.emit("[success] Any-form Cutout operation finished.")
+            self.app.plots_updated.emit()
         elif isinstance(cutout_obj, FlatCAMGerber):
 
             def geo_init(geo_obj, app_obj):
@@ -267,7 +268,7 @@ class TclCommandGeoCutout(TclCommandSignaled):
                                                   ymin - gapsize,
                                                   px + gapsize,
                                                   ymax + gapsize)
-                geo_obj.solid_geometry = geo
+                geo_obj.solid_geometry = deepcopy(geo)
 
             outname = cutout_obj.options["name"] + "_cutout"
             self.app.new_object('geometry', outname, geo_init)

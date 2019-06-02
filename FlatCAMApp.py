@@ -1404,8 +1404,8 @@ class App(QtCore.QObject):
         self.ui.menuhelp_videohelp.triggered.connect(lambda: webbrowser.open(self.video_url))
         self.ui.menuhelp_shortcut_list.triggered.connect(self.on_shortcut_list)
 
-        self.ui.menuprojectenable.triggered.connect(lambda: self.enable_plots(self.collection.get_selected()))
-        self.ui.menuprojectdisable.triggered.connect(lambda: self.disable_plots(self.collection.get_selected()))
+        self.ui.menuprojectenable.triggered.connect(self.on_enable_sel_plots)
+        self.ui.menuprojectdisable.triggered.connect(self.on_disable_sel_plots)
         self.ui.menuprojectgeneratecnc.triggered.connect(lambda: self.generate_cnc_job(self.collection.get_selected()))
         self.ui.menuprojectviewsource.triggered.connect(self.on_view_source)
 
@@ -5159,7 +5159,6 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        # self.plotcanvas.auto_adjust_axes()
         self.plotcanvas.vispy_canvas.update()           # TODO: Need update canvas?
         self.on_zoom_fit(None)
         self.collection.update_view()
@@ -8278,85 +8277,52 @@ The normal flow when working in FlatCAM is the following:</span></p>
         self.enable_plots(self.collection.get_list())
         self.inform.emit(_("[success] All plots enabled."))
 
-    # TODO: FIX THIS
-    '''
-    By default this is not threaded
-    If threaded the app give warnings like this:
-    
-    QObject::connect: Cannot queue arguments of type 'QVector<int>' 
-    (Make sure 'QVector<int>' is registered using qRegisterMetaType().
-    '''
-    def enable_plots(self, objects, threaded=True):
-        if threaded is True:
-            def worker_task(app_obj):
-                # percentage = 0.1
-                # try:
-                #     delta = 0.9 / len(objects)
-                # except ZeroDivisionError:
-                #     self.progress.emit(0)
-                #     return
-                for obj in objects:
-                    obj.options['plot'] = True
-                    # percentage += delta
-                    # self.progress.emit(int(percentage*100))
+    def on_enable_sel_plots(self):
+        object_list = self.collection.get_selected()
+        self.enable_plots(objects=object_list)
+        self.inform.emit(_("[success] Selected plots enabled..."))
 
-                # self.progress.emit(0)
-                self.plots_updated.emit()
-                # self.collection.update_view()
+    def on_disable_sel_plots(self):
+        # self.inform.emit(_("Disabling plots ..."))
+        object_list = self.collection.get_selected()
+        self.disable_plots(objects=object_list)
+        self.inform.emit(_("[success] Selected plots disabled..."))
 
-            # Send to worker
-            # self.worker.add_task(worker_task, [self])
-            self.worker_task.emit({'fcn': worker_task, 'params': [self]})
-        else:
-            for obj in objects:
-                obj.options['plot'] = True
-            # self.progress.emit(0)
-            self.plots_updated.emit()
-            # self.collection.update_view()
-
-    # TODO: FIX THIS
-    '''
-    By default this is not threaded
-    If threaded the app give warnings like this:
-
-    QObject::connect: Cannot queue arguments of type 'QVector<int>' 
-    (Make sure 'QVector<int>' is registered using qRegisterMetaType().
-    '''
-    def disable_plots(self, objects, threaded=True):
-        # TODO: This method is very similar to replot_all. Try to merge.
+    def enable_plots(self, objects):
         """
         Disables plots
-        :param objects: list
-            Objects to be disabled
+        :param objects: list of Objects to be enabled
         :return:
         """
 
-        if threaded is True:
-            # self.progress.emit(10)
-            def worker_task(app_obj):
-                # percentage = 0.1
-                # try:
-                #     delta = 0.9 / len(objects)
-                # except ZeroDivisionError:
-                #     self.progress.emit(0)
-                #     return
+        log.debug("Enabling plots ...")
 
-                for obj in objects:
-                    obj.options['plot'] = False
-                    # percentage += delta
-                    # self.progress.emit(int(percentage*100))
+        def worker_task(app_obj):
+            # app_obj.inform.emit(_("Enabling plots ..."))
+            for obj in objects:
+                obj.options['plot'] = True
+            self.plots_updated.emit()
 
-                # self.progress.emit(0)
-                self.plots_updated.emit()
-                # self.collection.update_view()
+        # Send to worker
+        self.worker_task.emit({'fcn': worker_task, 'params': [self]})
 
-            # Send to worker
-            self.worker_task.emit({'fcn': worker_task, 'params': [self]})
-        else:
+    def disable_plots(self, objects):
+        """
+        Disables plots
+        :param objects: list of Objects to be disabled
+        :return:
+        """
+
+        log.debug("Disabling plots ...")
+
+        def worker_task(app_obj):
+            self.inform.emit(_("Disabling plots ..."))
             for obj in objects:
                 obj.options['plot'] = False
             self.plots_updated.emit()
-            # self.collection.update_view()
+
+        # Send to worker
+        self.worker_task.emit({'fcn': worker_task, 'params': [self]})
 
     def clear_plots(self):
 

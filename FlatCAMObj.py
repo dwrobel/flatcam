@@ -137,7 +137,6 @@ class FlatCAMObj(QtCore.QObject):
         if key == 'plot':
             self.visible = self.options['plot']
 
-        # self.emit(QtCore.SIGNAL("optionChanged"), key)
         self.optionChanged.emit(key)
 
     def set_ui(self, ui):
