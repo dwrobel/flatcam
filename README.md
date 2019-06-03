@@ -12,6 +12,9 @@ CAD program, and create G-Code for Isolation routing.
 3.06.2019
 
 - TclCommand Geocutout is now creating a new geometry object when working on a geometry, preserving also the origin object
+- added a new parameter in Edit -> Preferences -> CNCJob named Annotation Color; it controls the color of the font used for annotations
+- added a new parameter in Edit -> Preferences -> CNCJob named Annotation Size; it controls the size of the font used for annotations
+- made visibility change threaded in FlatCAMObj()
 
 2.06.2019
 

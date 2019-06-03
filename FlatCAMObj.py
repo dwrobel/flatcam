@@ -339,13 +339,18 @@ class FlatCAMObj(QtCore.QObject):
 
     @visible.setter
     def visible(self, value):
-        self.shapes.visible = value
+        log.debug("FlatCAMObj.visible()")
 
-        # Not all object types has annotations
-        try:
-            self.annotation.visible = value
-        except Exception as e:
-            pass
+        def worker_task(app_obj):
+            app_obj.shapes.visible = value
+
+            # Not all object types has annotations
+            try:
+                app_obj.annotation.visible = value
+            except Exception as e:
+                pass
+
+        self.app.worker_task.emit({'fcn': worker_task, 'params': [self]})
 
     @property
     def drawing_tolerance(self):

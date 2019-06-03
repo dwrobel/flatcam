@@ -456,20 +456,26 @@ class TextCollectionVisual(TextVisual):
         self.data = {}
         self.last_key = -1
         self.lock = threading.Lock()
-
+        self.method = 'gpu'
         super(TextCollectionVisual, self).__init__(**kwargs)
 
         self.freeze()
 
-    def add(self, text, pos, visible=True, update=True):
+    def add(self, text, pos, visible=True, update=True, font_size=9, color='black'):
         """
         Adds array of text to collection
         :param text: list
             Array of strings ['str1', 'str2', ... ]
         :param pos: list
             Array of string positions   [(0, 0), (10, 10), ... ]
+        :param visible: bool
+        |   Set True to make it visible
         :param update: bool
             Set True to redraw collection
+        :param font_size: int
+            Set font size to redraw collection
+        :param color: string
+            Set font color to redraw collection
         :return: int
             Index of array
         """
@@ -480,7 +486,7 @@ class TextCollectionVisual(TextVisual):
         self.lock.release()
 
         # Prepare data for translation
-        self.data[key] = {'text': text, 'pos': pos, 'visible': visible}
+        self.data[key] = {'text': text, 'pos': pos, 'visible': visible,'font_size': font_size, 'color': color}
 
         if update:
             self.redraw()
@@ -516,6 +522,8 @@ class TextCollectionVisual(TextVisual):
         """
         labels = []
         pos = []
+        font_s = 9
+        color = 'black'
 
         # Merge buffers
         for data in list(self.data.values()):
@@ -523,6 +531,8 @@ class TextCollectionVisual(TextVisual):
                 try:
                     labels += data['text']
                     pos += data['pos']
+                    font_s = data['font_size']
+                    color = data['color']
                 except Exception as e:
                     print("Data error", e)
 
@@ -530,6 +540,8 @@ class TextCollectionVisual(TextVisual):
         if len(labels) > 0:
             self.text = labels
             self.pos = pos
+            self.font_size = font_s
+            self.color = color
         else:
             self.text = None
             self.pos = (0, 0)

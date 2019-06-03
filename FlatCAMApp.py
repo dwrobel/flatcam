@@ -467,6 +467,9 @@ class App(QtCore.QObject):
             "cncjob_plot": self.ui.cncjob_defaults_form.cncjob_gen_group.plot_cb,
             "cncjob_plot_kind": self.ui.cncjob_defaults_form.cncjob_gen_group.cncplot_method_radio,
             "cncjob_annotation": self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_cb,
+            "cncjob_annotation_fontsize": self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontsize_sp,
+            "cncjob_annotation_fontcolor": self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_entry,
+
             "cncjob_tooldia": self.ui.cncjob_defaults_form.cncjob_gen_group.tooldia_entry,
             "cncjob_coords_decimals": self.ui.cncjob_defaults_form.cncjob_gen_group.coords_dec_entry,
             "cncjob_fr_decimals": self.ui.cncjob_defaults_form.cncjob_gen_group.fr_dec_entry,
@@ -792,6 +795,8 @@ class App(QtCore.QObject):
             "cncjob_plot": True,
             "cncjob_plot_kind": 'all',
             "cncjob_annotation": True,
+            "cncjob_annotation_fontsize": 9,
+            "cncjob_annotation_fontcolor": '#990000',
             "cncjob_tooldia": 0.0393701,
             "cncjob_coords_decimals": 4,
             "cncjob_fr_decimals": 2,
@@ -1176,11 +1181,11 @@ class App(QtCore.QObject):
         # # ## Define OBJECT COLLECTION # ##
         self.collection = ObjectCollection(self)
         self.ui.project_tab_layout.addWidget(self.collection.view)
-        # # ##
+        # ###
 
         self.log.debug("Finished creating Object Collection.")
 
-        # # ## Initialize the color box's color in Preferences -> Global -> Color
+        # ### Initialize the color box's color in Preferences -> Global -> Color
         # Init Plot Colors
         self.ui.general_defaults_form.general_gui_group.pf_color_entry.set_value(self.defaults['global_plot_fill'])
         self.ui.general_defaults_form.general_gui_group.pf_color_button.setStyleSheet(
@@ -1243,9 +1248,15 @@ class App(QtCore.QObject):
             self.defaults['global_proj_item_dis_color'])
         self.ui.general_defaults_form.general_gui_group.proj_color_dis_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_proj_item_dis_color'])[:7])
-        # # ## End of Data ## ##
 
-        # # ## Plot Area ## ##
+        # Init the Annotation CNC Job color
+        self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_entry.set_value(
+            self.defaults['cncjob_annotation_fontcolor'])
+        self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_button.setStyleSheet(
+            "background-color:%s" % str(self.defaults['cncjob_annotation_fontcolor'])[:7])
+        # ### End of Data ## ##
+
+        # ### Plot Area ## ##
         start_plot_time = time.time()   # debug
         self.plotcanvas = PlotCanvas(self.ui.right_layout, self)
 
@@ -1528,6 +1539,10 @@ class App(QtCore.QObject):
 
         self.ui.cncjob_defaults_form.cncjob_adv_opt_group.tc_variable_combo.currentIndexChanged[str].connect(
             self.on_cnc_custom_parameters)
+        self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_entry.editingFinished.connect(
+            self.on_annotation_fontcolor_entry)
+        self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_button.clicked.connect(
+            self.on_annotation_fontcolor_button)
 
         # Modify G-CODE Plot Area TAB
         self.ui.code_editor.textChanged.connect(self.handleTextChanged)
@@ -4179,6 +4194,28 @@ class App(QtCore.QObject):
 
         new_val_sel = str(proj_color.name())
         self.ui.general_defaults_form.general_gui_group.proj_color_dis_entry.set_value(new_val_sel)
+        self.defaults['global_proj_item_dis_color'] = new_val_sel
+
+    def on_annotation_fontcolor_entry(self):
+        self.defaults['cncjob_annotation_fontcolor'] = \
+            self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_entry.get_value()
+        self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_button.setStyleSheet(
+            "background-color:%s" % str(self.defaults['cncjob_annotation_fontcolor']))
+
+    def on_annotation_fontcolor_button(self):
+        current_color = QtGui.QColor(self.defaults['cncjob_annotation_fontcolor'])
+
+        c_dialog = QtWidgets.QColorDialog()
+        annotation_color = c_dialog.getColor(initial=current_color)
+
+        if annotation_color.isValid() is False:
+            return
+
+        self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_button.setStyleSheet(
+            "background-color:%s" % str(annotation_color.name()))
+
+        new_val_sel = str(annotation_color.name())
+        self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_entry.set_value(new_val_sel)
         self.defaults['global_proj_item_dis_color'] = new_val_sel
 
     def on_deselect_all(self):
@@ -8299,7 +8336,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
         """
 
         log.debug("Enabling plots ...")
-
+        self.inform.emit(_("Working ..."))
         for obj in objects:
             obj.options['plot'] = True
         self.plots_updated.emit()
@@ -8312,7 +8349,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
         """
 
         log.debug("Disabling plots ...")
-
+        self.inform.emit(_("Working ..."))
         for obj in objects:
             obj.options['plot'] = False
         self.plots_updated.emit()

@@ -6541,7 +6541,9 @@ class CNCjob(Geometry):
                         obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
                                       visible=visible, layer=1)
 
-            obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'])
+            obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
+                               font_size=self.app.defaults["cncjob_annotation_fontsize"],
+                               color=self.app.defaults["cncjob_annotation_fontcolor"])
 
     def create_geometry(self):
         # TODO: This takes forever. Too much data?

@@ -5458,45 +5458,77 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.annotation_cb, 2, 1)
         grid0.addWidget(QtWidgets.QLabel(''), 2, 2)
 
-        # Number of circle steps for circular aperture linear approximation
+        # Annotation Font Size
+        self.annotation_fontsize_label = QtWidgets.QLabel(_("Annotation Size:"))
+        self.annotation_fontsize_label.setToolTip(
+            _("The font size of the annotation text. In pixels.")
+        )
+        grid0.addWidget(self.annotation_fontsize_label, 3, 0)
+        self.annotation_fontsize_sp = FCSpinner()
+        grid0.addWidget(self.annotation_fontsize_sp, 3, 1)
+        grid0.addWidget(QtWidgets.QLabel(''), 3, 2)
+
+        # Annotation Font Color
+        self.annotation_color_label = QtWidgets.QLabel(_('Annotation Color:'))
+        self.annotation_color_label.setToolTip(
+            _("Set the font color for the annotation texts.\n")
+        )
+        self.annotation_fontcolor_entry = FCEntry()
+        self.annotation_fontcolor_button = QtWidgets.QPushButton()
+        self.annotation_fontcolor_button.setFixedSize(15, 15)
+
+        self.form_box_child = QtWidgets.QHBoxLayout()
+        self.form_box_child.addWidget(self.annotation_fontcolor_entry)
+        self.form_box_child.addWidget(self.annotation_fontcolor_button)
+        self.form_box_child.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+
+        color_widget = QtWidgets.QWidget()
+        color_widget.setLayout(self.form_box_child)
+        grid0.addWidget(self.annotation_color_label, 4, 0)
+        grid0.addWidget(color_widget, 4, 1)
+        grid0.addWidget(QtWidgets.QLabel(''), 4, 2)
+
+        # ###################################################################
+        # Number of circle steps for circular aperture linear approximation #
+        # ###################################################################
         self.steps_per_circle_label = QtWidgets.QLabel(_("Circle Steps:"))
         self.steps_per_circle_label.setToolTip(
             _("The number of circle steps for <b>GCode</b> \n"
-            "circle and arc shapes linear approximation.")
+              "circle and arc shapes linear approximation.")
         )
-        grid0.addWidget(self.steps_per_circle_label, 3, 0)
+        grid0.addWidget(self.steps_per_circle_label, 5, 0)
         self.steps_per_circle_entry = IntEntry()
-        grid0.addWidget(self.steps_per_circle_entry, 3, 1)
+        grid0.addWidget(self.steps_per_circle_entry, 5, 1)
 
         # Tool dia for plot
         tdlabel = QtWidgets.QLabel(_('Tool dia:'))
         tdlabel.setToolTip(
             _("Diameter of the tool to be\n"
-            "rendered in the plot.")
+              "rendered in the plot.")
         )
-        grid0.addWidget(tdlabel, 4, 0)
+        grid0.addWidget(tdlabel, 6, 0)
         self.tooldia_entry = LengthEntry()
-        grid0.addWidget(self.tooldia_entry,4, 1)
+        grid0.addWidget(self.tooldia_entry,6, 1)
 
         # Number of decimals to use in GCODE coordinates
         cdeclabel = QtWidgets.QLabel(_('Coords dec.:'))
         cdeclabel.setToolTip(
             _("The number of decimals to be used for \n"
-            "the X, Y, Z coordinates in CNC code (GCODE, etc.)")
+              "the X, Y, Z coordinates in CNC code (GCODE, etc.)")
         )
-        grid0.addWidget(cdeclabel, 5, 0)
+        grid0.addWidget(cdeclabel, 7, 0)
         self.coords_dec_entry = IntEntry()
-        grid0.addWidget(self.coords_dec_entry, 5, 1)
+        grid0.addWidget(self.coords_dec_entry, 7, 1)
 
         # Number of decimals to use in GCODE feedrate
         frdeclabel = QtWidgets.QLabel(_('Feedrate dec.:'))
         frdeclabel.setToolTip(
             _("The number of decimals to be used for \n"
-            "the Feedrate parameter in CNC code (GCODE, etc.)")
+              "the Feedrate parameter in CNC code (GCODE, etc.)")
         )
-        grid0.addWidget(frdeclabel, 6, 0)
+        grid0.addWidget(frdeclabel, 8, 0)
         self.fr_dec_entry = IntEntry()
-        grid0.addWidget(self.fr_dec_entry, 6, 1)
+        grid0.addWidget(self.fr_dec_entry, 8, 1)
 
         self.layout.addStretch()
 
