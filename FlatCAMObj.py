@@ -137,7 +137,7 @@ class FlatCAMObj(QtCore.QObject):
         if key == 'plot':
             self.visible = self.options['plot']
 
-        self.optionChanged.emit(key)
+        # self.optionChanged.emit(key)
 
     def set_ui(self, ui):
         self.ui = ui
@@ -297,8 +297,6 @@ class FlatCAMObj(QtCore.QObject):
             return False
 
         self.clear()
-
-
         return True
 
     def serialize(self):
@@ -346,7 +344,7 @@ class FlatCAMObj(QtCore.QObject):
         # Not all object types has annotations
         try:
             self.annotation.visible = value
-        except AttributeError:
+        except Exception as e:
             pass
 
     @property
@@ -365,12 +363,6 @@ class FlatCAMObj(QtCore.QObject):
             self.annotation.clear(update)
         except AttributeError:
             pass
-
-        # Not all object types have mark_shapes
-        # try:
-        #     self.mark_shapes.clear(update)
-        # except AttributeError:
-        #     pass
 
     def delete(self):
         # Free resources
@@ -1054,7 +1046,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :param kwargs: color and face_color
         :return:
         """
-
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMGerber.plot()")
 
         # Does all the required setup and returns False
@@ -1066,6 +1057,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             color = kwargs['color']
         else:
             color = self.app.defaults['global_plot_line']
+
         if 'face_color' in kwargs:
             face_color = kwargs['face_color']
         else:
@@ -1079,7 +1071,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         # Make sure geometry is iterable.
         try:
-            _ = iter(geometry)
+            __ = iter(geometry)
         except TypeError:
             geometry = [geometry]
 
@@ -2796,7 +2788,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         # this stays for compatibility reasons, in case we try to open old projects
         try:
-            _ = iter(self.solid_geometry)
+            __ = iter(self.solid_geometry)
         except TypeError:
             self.solid_geometry = [self.solid_geometry]
 

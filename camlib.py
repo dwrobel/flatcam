@@ -7294,7 +7294,7 @@ def dict2obj(d):
 
 # def plotg(geo, solid_poly=False, color="black"):
 #     try:
-#         _ = iter(geo)
+#         __ = iter(geo)
 #     except:
 #         geo = [geo]
 #
@@ -7327,7 +7327,7 @@ def dict2obj(d):
 #             continue
 #
 #         try:
-#             _ = iter(g)
+#             __ = iter(g)
 #             plotg(g, color=color)
 #         except:
 #             log.error("Cannot plot: " + str(type(g)))
@@ -7633,7 +7633,7 @@ def parse_gerber_number(strnumber, int_digits, frac_digits, zeros):
 
 def autolist(obj):
     try:
-        _ = iter(obj)
+        __ = iter(obj)
         return obj
     except TypeError:
         return [obj]

@@ -8278,11 +8278,14 @@ The normal flow when working in FlatCAM is the following:</span></p>
         self.inform.emit(_("[success] All plots enabled."))
 
     def on_enable_sel_plots(self):
+        log.debug("App.on_enable_sel_plot()")
         object_list = self.collection.get_selected()
         self.enable_plots(objects=object_list)
         self.inform.emit(_("[success] Selected plots enabled..."))
 
     def on_disable_sel_plots(self):
+        log.debug("App.on_disable_sel_plot()")
+
         # self.inform.emit(_("Disabling plots ..."))
         object_list = self.collection.get_selected()
         self.disable_plots(objects=object_list)
@@ -8297,14 +8300,9 @@ The normal flow when working in FlatCAM is the following:</span></p>
 
         log.debug("Enabling plots ...")
 
-        def worker_task(app_obj):
-            # app_obj.inform.emit(_("Enabling plots ..."))
-            for obj in objects:
-                obj.options['plot'] = True
-            self.plots_updated.emit()
-
-        # Send to worker
-        self.worker_task.emit({'fcn': worker_task, 'params': [self]})
+        for obj in objects:
+            obj.options['plot'] = True
+        self.plots_updated.emit()
 
     def disable_plots(self, objects):
         """
@@ -8315,14 +8313,9 @@ The normal flow when working in FlatCAM is the following:</span></p>
 
         log.debug("Disabling plots ...")
 
-        def worker_task(app_obj):
-            self.inform.emit(_("Disabling plots ..."))
-            for obj in objects:
-                obj.options['plot'] = False
-            self.plots_updated.emit()
-
-        # Send to worker
-        self.worker_task.emit({'fcn': worker_task, 'params': [self]})
+        for obj in objects:
+            obj.options['plot'] = False
+        self.plots_updated.emit()
 
     def clear_plots(self):
 

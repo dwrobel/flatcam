@@ -415,7 +415,7 @@ class CutOut(FlatCAMTool):
                 object_geo = cutout_obj.solid_geometry
 
             try:
-                _ = iter(object_geo)
+                __ = iter(object_geo)
             except TypeError:
                 object_geo = [object_geo]
 
@@ -565,7 +565,7 @@ class CutOut(FlatCAMTool):
             object_geo = cutout_obj.solid_geometry
 
             try:
-                _ = iter(object_geo)
+                __ = iter(object_geo)
             except TypeError:
                 object_geo = [object_geo]
 

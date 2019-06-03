@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+3.06.2019
+
+- TclCommand Geocutout is now creating a new geometry object when working on a geometry, preserving also the origin object
+
 2.06.2019
 
 - fixed issue with geometry name not being updated immediately after change while doing geocutout TclCommand
