@@ -2697,7 +2697,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 # we do this so we can reuse the following keys while inside a Tool
                 # the above keys are general enough so were left outside
-                if self.app.grb_editor.active_tool is not None and self.grb_select_btn.isChecked() == False:
+                if self.app.grb_editor.active_tool is not None and self.grb_select_btn.isChecked() is False:
                     response = self.app.grb_editor.active_tool.on_key(key=key)
                     if response is not None:
                         self.app.inform.emit(response)
@@ -5119,7 +5119,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         # Circular Drill Array direction
         self.drill_circular_direction_label = QtWidgets.QLabel(_('Circular Dir.:'))
         self.drill_circular_direction_label.setToolTip(
-            _("Direction for circular array."
+            _("Direction for circular array.\n"
               "Can be CW = clockwise or CCW = counter clockwise.")
         )
 
