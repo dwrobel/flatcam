@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+4.06.2019
+
+- PEP8 updates in FlatCAMExcEditor.py
+- added the Excellon Editor parameters to the Edit -> Preferences -> Excellon
+- fixed a small bug in Excellon Editor
+
 3.06.2019
 
 - TclCommand Geocutout is now creating a new geometry object when working on a geometry, preserving also the origin object

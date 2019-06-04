@@ -3189,6 +3189,8 @@ class ExcellonPreferencesUI(QtWidgets.QWidget):
         self.excellon_exp_group.setFixedWidth(250)
         self.excellon_adv_opt_group = ExcellonAdvOptPrefGroupUI()
         self.excellon_adv_opt_group.setFixedWidth(250)
+        self.excellon_editor_group = ExcellonEditorPrefGroupUI()
+        self.excellon_editor_group.setFixedWidth(220)
 
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.excellon_opt_group)
@@ -3197,6 +3199,7 @@ class ExcellonPreferencesUI(QtWidgets.QWidget):
         self.layout.addWidget(self.excellon_gen_group)
         self.layout.addLayout(self.vlay)
         self.layout.addWidget(self.excellon_adv_opt_group)
+        self.layout.addWidget(self.excellon_editor_group)
 
         self.layout.addStretch()
 
@@ -5028,6 +5031,96 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
             self.zeros_radio.setDisabled(False)
 
 
+class ExcellonEditorPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        super(ExcellonEditorPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str(_("Excellon Editor")))
+
+        # Excellon Editor Parameters
+        self.param_label = QtWidgets.QLabel(_("<b>Parameters:</b>"))
+        self.param_label.setToolTip(
+            _("A list of Excellon Editor parameters.")
+        )
+        self.layout.addWidget(self.param_label)
+
+        grid0 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid0)
+
+        # Selection Limit
+        self.sel_limit_label = QtWidgets.QLabel(_("Selection limit:"))
+        self.sel_limit_label.setToolTip(
+            _("Set the number of selected Excellon geometry\n"
+              "items above which the utility geometry\n"
+              "becomes just a selection rectangle.\n"
+              "Increases the performance when moving a\n"
+              "large number of geometric elements.")
+        )
+        self.sel_limit_entry = IntEntry()
+
+        grid0.addWidget(self.sel_limit_label, 0, 0)
+        grid0.addWidget(self.sel_limit_entry, 0, 1)
+
+        # New tool diameter
+        self.addtool_entry_lbl = QtWidgets.QLabel(_('New Tool Dia:'))
+        self.addtool_entry_lbl.setToolTip(
+            _("Diameter for the new tool")
+        )
+
+        self.addtool_entry = FCEntry()
+        self.addtool_entry.setValidator(QtGui.QDoubleValidator(0.0001, 99.9999, 4))
+
+        grid0.addWidget(self.addtool_entry_lbl, 1, 0)
+        grid0.addWidget(self.addtool_entry, 1, 1)
+
+        # Number of drill holes in a drill array
+        self.drill_array_size_label = QtWidgets.QLabel(_('Nr of drills:'))
+        self.drill_array_size_label.setToolTip(
+            _("Specify how many drills to be in the array.")
+        )
+        # self.drill_array_size_label.setFixedWidth(100)
+
+        self.drill_array_size_entry = LengthEntry()
+
+        grid0.addWidget(self.drill_array_size_label, 2, 0)
+        grid0.addWidget(self.drill_array_size_entry, 2, 1)
+
+        self.drill_array_linear_label = QtWidgets.QLabel(_('<b>Linear Drill Array:</b>'))
+        grid0.addWidget(self.drill_array_linear_label, 3, 0, 1, 2)
+
+        # Linear Drill Array direction
+        self.drill_axis_label = QtWidgets.QLabel(_('Direction:'))
+        self.drill_axis_label.setToolTip(
+            _("Direction on which the linear array is oriented:\n"
+              "- 'X' - horizontal axis \n"
+              "- 'Y' - vertical axis or \n"
+              "- 'Angle' - a custom angle for the array inclination")
+        )
+        # self.drill_axis_label.setFixedWidth(100)
+        self.drill_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
+                                          {'label': 'Y', 'value': 'Y'},
+                                          {'label': 'Angle', 'value': 'A'}])
+
+        grid0.addWidget(self.drill_axis_label, 4, 0)
+        grid0.addWidget(self.drill_axis_radio, 4, 1)
+
+        # Linear Drill Array pitch distance
+        self.drill_pitch_label = QtWidgets.QLabel(_('Pitch:'))
+        self.drill_pitch_label.setToolTip(
+            _("Pitch = Distance between elements of the array.")
+        )
+        # self.drill_pitch_label.setFixedWidth(100)
+        self.drill_pitch_entry = LengthEntry()
+
+        grid0.addWidget(self.drill_pitch_label, 5, 0)
+        grid0.addWidget(self.drill_pitch_entry, 5, 1)
+
+        self.drill_array_circ_label = QtWidgets.QLabel(_('<b>Circular Drill Array:</b>'))
+        grid0.addWidget(self.drill_array_circ_label, 7, 0, 1, 2)
+
+        self.layout.addStretch()
+
+
 class GeometryGenPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):
         # OptionsGroupUI.__init__(self, "Geometry General Preferences", parent=parent)
@@ -5471,15 +5564,16 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         # Annotation Font Color
         self.annotation_color_label = QtWidgets.QLabel(_('Annotation Color:'))
         self.annotation_color_label.setToolTip(
-            _("Set the font color for the annotation texts.\n")
+            _("Set the font color for the annotation texts.")
         )
         self.annotation_fontcolor_entry = FCEntry()
         self.annotation_fontcolor_button = QtWidgets.QPushButton()
         self.annotation_fontcolor_button.setFixedSize(15, 15)
 
         self.form_box_child = QtWidgets.QHBoxLayout()
+        self.form_box_child.setContentsMargins(0, 0, 0, 0)
         self.form_box_child.addWidget(self.annotation_fontcolor_entry)
-        self.form_box_child.addWidget(self.annotation_fontcolor_button)
+        self.form_box_child.addWidget(self.annotation_fontcolor_button, alignment=Qt.AlignRight)
         self.form_box_child.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
 
         color_widget = QtWidgets.QWidget()
