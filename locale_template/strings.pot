@@ -946,6 +946,10 @@ msgstr ""
 msgid "[ERROR_NOTCL] Failed to parse recent item list."
 msgstr ""
 
+#: FlatCAMApp.py:8093
+msgid "Clear Recent files"
+msgstr ""
+
 #: FlatCAMApp.py:8110 flatcamGUI/FlatCAMGUI.py:973
 msgid "<b>Shortcut Key List</b>"
 msgstr ""
@@ -1933,6 +1937,18 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:5903 flatcamTools/ToolNonCopperClear.py:190
 #: flatcamTools/ToolPaint.py:188
 msgid "Method:"
+msgstr ""
+
+#: flatcamTools/ToolNonCopperClear.py:199
+msgid "Standard"
+msgstr ""
+
+#: flatcamTools/ToolNonCopperClear.py:200
+msgid "Seed-based"
+msgstr ""
+
+#: flatcamTools/ToolNonCopperClear.py:201
+msgid "Straight lines"
 msgstr ""
 
 #: flatcamEditors/FlatCAMGeoEditor.py:474 flatcamGUI/FlatCAMGUI.py:5905
@@ -4940,6 +4956,10 @@ msgstr ""
 msgid "Measurement Tool exit..."
 msgstr ""
 
+#: flatcamGUI/FlatCAMGUI.py:3325
+msgid "GUI Preferences"
+msgstr ""
+
 #: flatcamGUI/FlatCAMGUI.py:3331
 msgid "Grid X value:"
 msgstr ""
@@ -5444,7 +5464,7 @@ msgstr ""
 msgid ""
 "How much (fraction) of the tool width to overlap each tool pass.\n"
 "Example:\n"
-"A value here of 0.25 means an overlap of 25%% from the tool diameter found "
+"A value here of 0.25 means an overlap of 25% from the tool diameter found "
 "above."
 msgstr ""
 

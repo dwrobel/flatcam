@@ -8090,7 +8090,7 @@ class App(QtCore.QObject):
                 App.log.error("Unsupported file type: %s" % recent["kind"])
 
         # Last action in Recent Files menu is one that Clear the content
-        clear_action = QtWidgets.QAction(QtGui.QIcon('share/trash32.png'), "Clear Recent files", self)
+        clear_action = QtWidgets.QAction(QtGui.QIcon('share/trash32.png'), (_("Clear Recent files")), self)
         clear_action.triggered.connect(reset_recent)
         self.ui.recent.addSeparator()
         self.ui.recent.addAction(clear_action)

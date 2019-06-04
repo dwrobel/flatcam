@@ -160,14 +160,14 @@ class ToolPaint(FlatCAMTool, Gerber):
         ovlabel = QtWidgets.QLabel(_('Overlap Rate:'))
         ovlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
-            "Example:\n"
-            "A value here of 0.25 means 25% from the tool diameter found above.\n\n"
-            "Adjust the value starting with lower values\n"
-            "and increasing it if areas that should be painted are still \n"
-            "not painted.\n"
-            "Lower values = faster processing, faster execution on PCB.\n"
-            "Higher values = slow processing and slow execution on CNC\n"
-            "due of too many paths.")
+              "Example:\n"
+              "A value here of 0.25 means 25% from the tool diameter found above.\n\n"
+              "Adjust the value starting with lower values\n"
+              "and increasing it if areas that should be painted are still \n"
+              "not painted.\n"
+              "Lower values = faster processing, faster execution on PCB.\n"
+              "Higher values = slow processing and slow execution on CNC\n"
+              "due of too many paths.")
         )
         grid3.addWidget(ovlabel, 1, 0)
         self.paintoverlap_entry = FCEntry()

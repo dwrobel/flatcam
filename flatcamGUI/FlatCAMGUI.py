@@ -1255,7 +1255,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     </tr>
                 </tbody>
             </table>
-    
+
             '''
         )
 
@@ -1270,7 +1270,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             '''<b>Editor Shortcut list</b><br>
             <br>
             <strong><span style="color:#0000ff">GEOMETRY EDITOR</span></strong><br>
-    
+
             <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
                 <tbody>
                     <tr height="20">
@@ -3322,7 +3322,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):
         super(GeneralGUIPrefGroupUI, self).__init__(self)
 
-        self.setTitle(str("GUI Preferences"))
+        self.setTitle(str(_("GUI Preferences")))
 
         # Create a form layout for the Application general settings
         self.form_box = QtWidgets.QFormLayout()
@@ -4078,7 +4078,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         overlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
             "Example:\n"
-            "A value here of 0.25 means an overlap of 25%% from the tool diameter found above.")
+            "A value here of 0.25 means an overlap of 25% from the tool diameter found above.")
         )
         grid0.addWidget(overlabel, 2, 0)
         self.iso_overlap_entry = FloatEntry()

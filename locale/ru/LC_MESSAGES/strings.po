@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-05-22 18:30+0300\n"
-"PO-Revision-Date: 2019-06-03 00:08+0400\n"
+"PO-Revision-Date: 2019-06-04 23:36+0400\n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -325,7 +325,7 @@ msgid ""
 "Adding Tool works only when Advanced is checked.\n"
 "Go to Preferences -> General - Show Advanced Options."
 msgstr ""
-"Добавления инструмента работает только тогда, когда установлен флажок "
+"Добавление инструмента работает только тогда, когда установлен флажок "
 "«Дополнительно».\n"
 "Перейдите в Настройки -> Общие - Показать дополнительные параметры."
 
@@ -412,7 +412,7 @@ msgstr "[WARNING_NOTCL] Не выбран ни один объект для вр
 
 #: FlatCAMApp.py:5027 FlatCAMApp.py:5072 FlatCAMApp.py:5103
 msgid "Transform"
-msgstr "Преобразование"
+msgstr "Трансформация"
 
 #: FlatCAMApp.py:5027 FlatCAMApp.py:5072 FlatCAMApp.py:5103
 msgid "Enter the Angle value:"
@@ -579,7 +579,7 @@ msgstr "[WARNING_NOTCL] Открытие конфигурации заверше
 #: FlatCAMApp.py:6060 FlatCAMApp.py:6308 FlatCAMApp.py:8519 FlatCAMApp.py:8539
 #: FlatCAMApp.py:8560 FlatCAMApp.py:8582
 msgid "[WARNING_NOTCL] No object selected."
-msgstr ""
+msgstr "[WARNING_NOTCL] Нет выбранных объектов."
 
 #: FlatCAMApp.py:6061 FlatCAMApp.py:6309
 msgid "Please Select a Geometry object to export"
@@ -613,6 +613,8 @@ msgstr "Экспорт PNG завершён."
 msgid ""
 "[WARNING_NOTCL] No object selected. Please select an Gerber object to export."
 msgstr ""
+"[WARNING_NOTCL] Нет выбранных объектов. Пожалуйста, выберите Gerber объект "
+"для экспорта."
 
 #: FlatCAMApp.py:6149 FlatCAMApp.py:6272
 msgid ""
@@ -1012,6 +1014,10 @@ msgstr ""
 #: FlatCAMApp.py:8049
 msgid "[ERROR_NOTCL] Failed to parse recent item list."
 msgstr ""
+
+#: FlatCAMApp.py:8093
+msgid "Clear Recent files"
+msgstr "Очистить список"
 
 #: FlatCAMApp.py:8110 flatcamGUI/FlatCAMGUI.py:973
 msgid "<b>Shortcut Key List</b>"
@@ -2013,8 +2019,8 @@ msgstr ""
 "Пример:\n"
 "Здесь значение 0.25 означает 25% от диаметра инструмента, указанного выше.\n"
 "\n"
-"Отрегулируйте значения, начиная с более низких значений\n"
-"и увеличивая его, если области, которые должны быть закрашены, всё ещё\n"
+"Отрегулируйте значение, начиная с более низких значений\n"
+"и увеличивая его, если области, которые должны быть нарисованы, все еще\n"
 "не окрашены.\n"
 "Более низкие значения = более быстрая обработка, более быстрое выполнение на "
 "печатной плате.\n"
@@ -2042,13 +2048,25 @@ msgstr "Расстояние, которое не закрашивать до к
 msgid "Method:"
 msgstr "Метод:"
 
+#: flatcamTools/ToolNonCopperClear.py:199
+msgid "Standard"
+msgstr "Стандартный"
+
+#: flatcamTools/ToolNonCopperClear.py:200
+msgid "Seed-based"
+msgstr "От центра по кругу"
+
+#: flatcamTools/ToolNonCopperClear.py:201
+msgid "Straight lines"
+msgstr "Прямая линия"
+
 #: flatcamEditors/FlatCAMGeoEditor.py:474 flatcamGUI/FlatCAMGUI.py:5905
 msgid ""
 "Algorithm to paint the polygon:<BR><B>Standard</B>: Fixed step inwards."
 "<BR><B>Seed-based</B>: Outwards from seed."
 msgstr ""
 "Алгоритм отрисовки полигона:<BR><B>Стандартный</B>: Фиксированный шаг внутрь."
-"<BR><B>По кругу</B>:  От центра наружу."
+"<BR><B>По кругу</B>: От центра наружу."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:487 flatcamGUI/FlatCAMGUI.py:5678
 #: flatcamGUI/FlatCAMGUI.py:5918 flatcamTools/ToolNonCopperClear.py:206
@@ -2150,7 +2168,7 @@ msgstr "Наклон/Сдвиг"
 #: flatcamGUI/FlatCAMGUI.py:1949 flatcamGUI/ObjectUI.py:100
 #: flatcamTools/ToolTransform.py:26
 msgid "Scale"
-msgstr "Масштабировать"
+msgstr "Масштабирование"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:621
 #: flatcamEditors/FlatCAMGrbEditor.py:4513 flatcamTools/ToolTransform.py:27
@@ -2242,12 +2260,12 @@ msgstr "Наклон Y"
 #: flatcamEditors/FlatCAMGeoEditor.py:761
 #: flatcamEditors/FlatCAMGrbEditor.py:4654 flatcamTools/ToolTransform.py:164
 msgid "Factor X:"
-msgstr "Множитель X:"
+msgstr "Коэф. X:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:763
 #: flatcamEditors/FlatCAMGrbEditor.py:4656 flatcamTools/ToolTransform.py:166
 msgid "Factor for Scale action over X axis."
-msgstr "Множитель масштабирования по оси X."
+msgstr "Коэффициент масштабирования по оси X."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:771
 #: flatcamEditors/FlatCAMGrbEditor.py:4664 flatcamTools/ToolTransform.py:174
@@ -2270,12 +2288,12 @@ msgstr ""
 #: flatcamEditors/FlatCAMGeoEditor.py:778
 #: flatcamEditors/FlatCAMGrbEditor.py:4671 flatcamTools/ToolTransform.py:181
 msgid "Factor Y:"
-msgstr "Множитель Y:"
+msgstr "Коэф Y:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:780
 #: flatcamEditors/FlatCAMGrbEditor.py:4673 flatcamTools/ToolTransform.py:183
 msgid "Factor for Scale action over Y axis."
-msgstr "Множитель масштабирования по оси Y."
+msgstr "Коэффициент масштабирования по оси Y."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:788
 #: flatcamEditors/FlatCAMGrbEditor.py:4681 flatcamTools/ToolTransform.py:191
@@ -2295,13 +2313,13 @@ msgid ""
 "using the Scale Factor X for both axis."
 msgstr ""
 "Масштабирует выбранные фигуры\n"
-"используя множитель X для обеих осей."
+"используя коэффициент X для обеих осей."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:805
 #: flatcamEditors/FlatCAMGrbEditor.py:4698 flatcamGUI/FlatCAMGUI.py:6285
 #: flatcamTools/ToolTransform.py:208
 msgid "Scale Reference"
-msgstr "Указание масштабирования"
+msgstr ""
 
 #: flatcamEditors/FlatCAMGeoEditor.py:807
 #: flatcamEditors/FlatCAMGrbEditor.py:4700
@@ -3030,7 +3048,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMGrbEditor.py:1063
 #: flatcamEditors/FlatCAMGrbEditor.py:1096
 msgid "Corner Mode 2: Reverse 45 degrees ..."
-msgstr "Угловой режим 4: реверс 90 градусов ..."
+msgstr "Угловой режим 2: реверс 45 градусов ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1066
 #: flatcamEditors/FlatCAMGrbEditor.py:1093
@@ -3695,7 +3713,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:343
 msgid "View source\tALT+S"
-msgstr ""
+msgstr "Просмотреть код\tALT+S"
 
 #: flatcamGUI/FlatCAMGUI.py:348
 msgid "&View"
@@ -3847,7 +3865,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:443
 msgid "Transform Tool\tALT+R"
-msgstr ""
+msgstr "Трансформация\tALT+R"
 
 #: flatcamGUI/FlatCAMGUI.py:447
 msgid "Toggle Corner Snap\tK"
@@ -3923,7 +3941,7 @@ msgstr "Масштабировать\tS"
 
 #: flatcamGUI/FlatCAMGUI.py:497
 msgid "Transform\tALT+R"
-msgstr ""
+msgstr "Трансформировать\tALT+R"
 
 #: flatcamGUI/FlatCAMGUI.py:524
 msgid "Enable Plot"
@@ -3939,7 +3957,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:528
 msgid "View Source"
-msgstr ""
+msgstr "Просмотреть код"
 
 #: flatcamGUI/FlatCAMGUI.py:530 flatcamGUI/FlatCAMGUI.py:1620
 msgid "Edit"
@@ -4067,7 +4085,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:653 flatcamGUI/FlatCAMGUI.py:1874
 msgid "SolderPaste Tool"
-msgstr ""
+msgstr "Паяльная паста"
 
 #: flatcamGUI/FlatCAMGUI.py:654 flatcamGUI/FlatCAMGUI.py:1875
 #: flatcamTools/ToolSub.py:26
@@ -4094,7 +4112,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:666 flatcamGUI/FlatCAMGUI.py:1888
 msgid "Resize Drill"
-msgstr ""
+msgstr "Изменить размер сверла"
 
 #: flatcamGUI/FlatCAMGUI.py:669 flatcamGUI/FlatCAMGUI.py:1891
 msgid "Copy Drill"
@@ -4172,7 +4190,7 @@ msgstr "Удалить фигуру '-'"
 #: flatcamGUI/FlatCAMGUI.py:705 flatcamGUI/FlatCAMGUI.py:731
 #: flatcamGUI/FlatCAMGUI.py:1930 flatcamGUI/FlatCAMGUI.py:1957
 msgid "Transformations"
-msgstr ""
+msgstr "Трансформация"
 
 #: flatcamGUI/FlatCAMGUI.py:707
 msgid "Move Objects "
@@ -4281,7 +4299,7 @@ msgstr "ИНСТР-ТЫ"
 
 #: flatcamGUI/FlatCAMGUI.py:927
 msgid "Import Preferences"
-msgstr ""
+msgstr "Импорт настроек"
 
 #: flatcamGUI/FlatCAMGUI.py:930
 msgid ""
@@ -4304,7 +4322,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:945
 msgid "Open Pref Folder"
-msgstr ""
+msgstr "Открыть папку настроек"
 
 #: flatcamGUI/FlatCAMGUI.py:948
 msgid "Open the folder where FlatCAM save the preferences files."
@@ -4984,7 +5002,7 @@ msgstr "Трек"
 
 #: flatcamGUI/FlatCAMGUI.py:1611
 msgid "Region"
-msgstr ""
+msgstr "Регион"
 
 #: flatcamGUI/FlatCAMGUI.py:1613
 msgid "Exc Editor"
@@ -5022,7 +5040,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:1662
 msgid "Open Code"
-msgstr "От"
+msgstr "Открыть файл"
 
 #: flatcamGUI/FlatCAMGUI.py:1663
 msgid "Save Code"
@@ -5054,7 +5072,7 @@ msgstr "Удалить фигуру"
 
 #: flatcamGUI/FlatCAMGUI.py:1933
 msgid "Move Objects"
-msgstr "Переместить объект "
+msgstr "Переместить объект"
 
 #: flatcamGUI/FlatCAMGUI.py:2365
 msgid ""
@@ -5116,6 +5134,10 @@ msgstr "Введите диаметр инструмента:"
 msgid "Measurement Tool exit..."
 msgstr ""
 
+#: flatcamGUI/FlatCAMGUI.py:3325
+msgid "GUI Preferences"
+msgstr "Параметры интерфейса"
+
 #: flatcamGUI/FlatCAMGUI.py:3331
 msgid "Grid X value:"
 msgstr ""
@@ -5138,7 +5160,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3350
 msgid "Workspace:"
-msgstr ""
+msgstr "Рабочая среда:"
 
 #: flatcamGUI/FlatCAMGUI.py:3352
 msgid ""
@@ -5272,7 +5294,7 @@ msgstr "Настройки интерфейса"
 
 #: flatcamGUI/FlatCAMGUI.py:3620
 msgid "Layout:"
-msgstr "Раскладка:"
+msgstr "Макет:"
 
 #: flatcamGUI/FlatCAMGUI.py:3622
 msgid ""
@@ -5304,17 +5326,19 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3666
 msgid "Clear GUI Settings:"
-msgstr "Очистка настроек интерфейса:"
+msgstr "Сброс настроек:"
 
 #: flatcamGUI/FlatCAMGUI.py:3668
 msgid ""
 "Clear the GUI settings for FlatCAM,\n"
 "such as: layout, gui state, style, hdpi support etc."
 msgstr ""
+"Сброс настроек интерфейса FlatCAM,\n"
+"таких как: макет, состояние интерфейса, стиль, поддержка hdpi и т. д."
 
 #: flatcamGUI/FlatCAMGUI.py:3671
 msgid "Clear"
-msgstr "Очистить"
+msgstr "Сбросить"
 
 #: flatcamGUI/FlatCAMGUI.py:3675
 msgid "Hover Shape:"
@@ -5341,11 +5365,11 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3728
 msgid "Are you sure you want to delete the GUI Settings? \n"
-msgstr "Вы уверены, что хотите удалить настройки графического интерфейса?\n"
+msgstr "Вы уверены, что хотите сбросить настройки интерфейса?\n"
 
 #: flatcamGUI/FlatCAMGUI.py:3731
 msgid "Clear GUI Settings"
-msgstr "Очистка настроек интерфейса"
+msgstr "Сброс настроек интерфейса"
 
 #: flatcamGUI/FlatCAMGUI.py:3752
 msgid "App Preferences"
@@ -5386,7 +5410,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3780
 msgid "Apply Language"
-msgstr "Применить язык"
+msgstr "Применить"
 
 #: flatcamGUI/FlatCAMGUI.py:3781
 msgid ""
@@ -5411,27 +5435,31 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3802
 msgid "Version Check:"
-msgstr ""
+msgstr "Проверять обновления:"
 
 #: flatcamGUI/FlatCAMGUI.py:3804 flatcamGUI/FlatCAMGUI.py:3809
 msgid ""
 "Check this box if you want to check\n"
 "for a new version automatically at startup."
 msgstr ""
+"Установите этот флажок, если вы хотите автоматически\n"
+"проверять обновление программы при запуске."
 
 #: flatcamGUI/FlatCAMGUI.py:3814
 msgid "Send Stats:"
-msgstr ""
+msgstr "Отправлять статистику:"
 
 #: flatcamGUI/FlatCAMGUI.py:3816 flatcamGUI/FlatCAMGUI.py:3821
 msgid ""
 "Check this box if you agree to send anonymous\n"
 "stats automatically at startup, to help improve FlatCAM."
 msgstr ""
+"Установите этот флажок, если вы согласны автоматически отправлять\n"
+"анонимную статистику при запуске, чтобы помочь улучшить FlatCAM."
 
 #: flatcamGUI/FlatCAMGUI.py:3828
 msgid "<b>Pan Button:</b>"
-msgstr "<b>Pan Button:</b>"
+msgstr "<b>Кнопка панарам.:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:3829
 msgid ""
@@ -5439,6 +5467,9 @@ msgid ""
 "- MMB --> Middle Mouse Button\n"
 "- RMB --> Right Mouse Button"
 msgstr ""
+"Выбор кнопки мыши для панорамирования:\n"
+"- MMB --> Средняя кнопка мыши\n"
+"- RMB --> Правая кнопка мыши"
 
 #: flatcamGUI/FlatCAMGUI.py:3836
 msgid "<b>Multiple Sel:</b>"
@@ -5627,7 +5658,7 @@ msgstr "Перекрытие за проход:"
 msgid ""
 "How much (fraction) of the tool width to overlap each tool pass.\n"
 "Example:\n"
-"A value here of 0.25 means an overlap of 25%% from the tool diameter found "
+"A value here of 0.25 means an overlap of 25% from the tool diameter found "
 "above."
 msgstr ""
 
@@ -5652,7 +5683,7 @@ msgstr "Объединить все проходы в один объект"
 
 #: flatcamGUI/FlatCAMGUI.py:4106
 msgid "<b>Clear non-copper:</b>"
-msgstr ""
+msgstr "<b>Очистка от меди:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:4108 flatcamGUI/FlatCAMGUI.py:5621
 #: flatcamGUI/ObjectUI.py:386
@@ -5664,7 +5695,7 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:4117 flatcamGUI/FlatCAMGUI.py:4143
 #: flatcamGUI/ObjectUI.py:430 flatcamGUI/ObjectUI.py:464
 msgid "Boundary Margin:"
-msgstr "Предельный отступ:"
+msgstr "Отступ от дорожек:"
 
 #: flatcamGUI/FlatCAMGUI.py:4119 flatcamGUI/ObjectUI.py:432
 msgid ""
@@ -6096,7 +6127,7 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:4720 flatcamGUI/FlatCAMGUI.py:5225
 #: flatcamGUI/ObjectUI.py:707
 msgid "Postprocessor:"
-msgstr ""
+msgstr "Постпроцессор:"
 
 #: flatcamGUI/FlatCAMGUI.py:4722
 msgid ""
@@ -6158,7 +6189,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4808
 msgid "Offset Z:"
-msgstr ""
+msgstr "Смещение Z:"
 
 #: flatcamGUI/FlatCAMGUI.py:4810 flatcamGUI/ObjectUI.py:574
 msgid ""
@@ -6322,7 +6353,7 @@ msgstr "<b>Инструменты</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:5067
 msgid "Tool dia:                   "
-msgstr ""
+msgstr "Диам. инстр.:                   "
 
 #: flatcamGUI/FlatCAMGUI.py:5069
 msgid ""
@@ -6720,6 +6751,9 @@ msgid ""
 "<BR><B>Seed-based</B>: Outwards from seed.<BR><B>Line-based</B>: Parallel "
 "lines."
 msgstr ""
+"Алгоритм очисти от меди:<BR><B>Стандартный</B>: Движение фрезы сужающимися "
+"контурами, повторяющими контур полигона.<BR><B>По кругу</B>: Обработка "
+"правильными окружностями.<BR><B>Линейный</B>: Паралельными линиями."
 
 #: flatcamGUI/FlatCAMGUI.py:5696 flatcamTools/ToolNonCopperClear.py:224
 #: flatcamTools/ToolPaint.py:222
@@ -6772,7 +6806,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5758 flatcamTools/ToolCutOut.py:134
 msgid "Gaps:"
-msgstr "Тип перемычек:"
+msgstr "Вариант:"
 
 #: flatcamGUI/FlatCAMGUI.py:5760
 msgid ""
@@ -6786,10 +6820,19 @@ msgid ""
 "- 2tb  - 2*top + 2*bottom\n"
 "- 8     - 2*left + 2*right +2*top + 2*bottom"
 msgstr ""
+"Количество перемычек, оставляемых при обрезке платы.\n"
+"Может быть максимум 8 мостов/перемычек.\n"
+"Варианты:\n"
+"- lr      - слева + справа\n"
+"- tb    - сверху + снизу\n"
+"- 4      - слева + справа +сверху + снизу\n"
+"- 2lr   - 2*слева + 2*справа\n"
+"- 2tb  - 2*сверху + 2*снизу \n"
+"- 8      - 2*слева + 2*справа + 2*сверху + 2*снизу"
 
 #: flatcamGUI/FlatCAMGUI.py:5781 flatcamTools/ToolCutOut.py:115
 msgid "Convex Sh.:"
-msgstr ""
+msgstr "Выпуклая форма:"
 
 #: flatcamGUI/FlatCAMGUI.py:5783
 msgid "Create a convex shape surrounding the entire PCB."
@@ -6924,7 +6967,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6019
 msgid "Panelize Tool Options"
-msgstr ""
+msgstr "Параметры панелизации"
 
 #: flatcamGUI/FlatCAMGUI.py:6024
 msgid ""
@@ -6935,7 +6978,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6035 flatcamTools/ToolPanelize.py:147
 msgid "Spacing cols:"
-msgstr ""
+msgstr "Интервал столбцов:"
 
 #: flatcamGUI/FlatCAMGUI.py:6037 flatcamTools/ToolPanelize.py:149
 msgid ""
@@ -6945,7 +6988,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6045 flatcamTools/ToolPanelize.py:156
 msgid "Spacing rows:"
-msgstr ""
+msgstr "Интервал строк:"
 
 #: flatcamGUI/FlatCAMGUI.py:6047 flatcamTools/ToolPanelize.py:158
 msgid ""
@@ -6971,7 +7014,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6074
 msgid "Panel Type:"
-msgstr ""
+msgstr "Тип панели:"
 
 #: flatcamGUI/FlatCAMGUI.py:6076
 msgid ""
@@ -7040,7 +7083,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6147
 msgid "Tip angle:"
-msgstr ""
+msgstr "Угол наклона:"
 
 #: flatcamGUI/FlatCAMGUI.py:6149
 msgid ""
@@ -7093,7 +7136,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6202 flatcamTools/ToolCalculators.py:181
 msgid "Copper Growth:"
-msgstr ""
+msgstr "Медный слой:"
 
 #: flatcamGUI/FlatCAMGUI.py:6205 flatcamTools/ToolCalculators.py:185
 msgid ""
@@ -7103,7 +7146,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6218
 msgid "Transform Tool Options"
-msgstr ""
+msgstr "Параметры трансформации"
 
 #: flatcamGUI/FlatCAMGUI.py:6223
 msgid ""
@@ -7141,7 +7184,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6262
 msgid "Factor for scaling on X axis."
-msgstr "Множитель масштабирования по оси X."
+msgstr "Коэффициент масштабирования по оси X."
 
 #: flatcamGUI/FlatCAMGUI.py:6269
 msgid "Scale_Y factor:"
@@ -7149,7 +7192,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6271
 msgid "Factor for scaling on Y axis."
-msgstr "Множитель масштабирования по оси Y."
+msgstr "Коэффициент масштабирования по оси Y."
 
 #: flatcamGUI/FlatCAMGUI.py:6279
 msgid ""
@@ -7200,7 +7243,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6326
 msgid " Mirror Ref. Point:"
-msgstr "Точка зеркалирования:"
+msgstr " Точка зеркалирования:"
 
 #: flatcamGUI/FlatCAMGUI.py:6328 flatcamTools/ToolTransform.py:327
 msgid ""
@@ -7208,10 +7251,14 @@ msgid ""
 "The 'x' in (x, y) will be used when using Flip on X and\n"
 "the 'y' in (x, y) will be used when using Flip on Y and"
 msgstr ""
+"Координаты в формате (x, y), используемые в качестве указателя для "
+"отражения.\n"
+"'x' в (x, y) будет использоваться при отражении по X и\n"
+"'y' в (x, y) будет использоваться при отражении по Y"
 
 #: flatcamGUI/FlatCAMGUI.py:6345
 msgid "SolderPaste Tool Options"
-msgstr ""
+msgstr "Параметры нанесения паяльной пасты"
 
 #: flatcamGUI/FlatCAMGUI.py:6350
 msgid ""
@@ -7396,7 +7443,7 @@ msgstr "Изменение размера объекта."
 
 #: flatcamGUI/ObjectUI.py:89
 msgid "Factor:"
-msgstr "Множитель:"
+msgstr "Коэффициент:"
 
 #: flatcamGUI/ObjectUI.py:91
 msgid ""
@@ -7480,7 +7527,7 @@ msgstr "Проходы:"
 
 #: flatcamGUI/ObjectUI.py:307
 msgid "Combine"
-msgstr "Комбинации"
+msgstr "Комбинировать"
 
 #: flatcamGUI/ObjectUI.py:323
 msgid "<b>Generate Isolation Geometry:</b>"
@@ -7534,7 +7581,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:384
 msgid "<b>Clear N-copper:</b>"
-msgstr ""
+msgstr "<b>Очистка от меди:</b>"
 
 #: flatcamGUI/ObjectUI.py:394 flatcamTools/ToolNonCopperClear.py:240
 msgid ""
@@ -8169,7 +8216,7 @@ msgstr ""
 
 #: flatcamTools/ToolCalculators.py:115
 msgid "Tool Diameter:"
-msgstr ""
+msgstr "Диаметр инструмента:"
 
 #: flatcamTools/ToolCalculators.py:119
 msgid ""
@@ -8220,7 +8267,7 @@ msgstr "Обрезка контура платы"
 
 #: flatcamTools/ToolCutOut.py:53
 msgid "Obj Type:"
-msgstr ""
+msgstr "Тип объекта:"
 
 #: flatcamTools/ToolCutOut.py:55
 msgid ""
@@ -8232,7 +8279,7 @@ msgstr ""
 
 #: flatcamTools/ToolCutOut.py:69 flatcamTools/ToolPanelize.py:71
 msgid "Object:"
-msgstr ""
+msgstr "Объект:"
 
 #: flatcamTools/ToolCutOut.py:71
 msgid "Object to be cutout.                        "
@@ -8267,7 +8314,7 @@ msgstr ""
 
 #: flatcamTools/ToolCutOut.py:123
 msgid "A. Automatic Bridge Gaps"
-msgstr ""
+msgstr "А. Автоматическое размещение перемычек"
 
 #: flatcamTools/ToolCutOut.py:125
 msgid "This section handle creation of automatic bridge gaps."
@@ -8288,7 +8335,7 @@ msgstr ""
 
 #: flatcamTools/ToolCutOut.py:159
 msgid "FreeForm:"
-msgstr ""
+msgstr "Свободная форма:"
 
 #: flatcamTools/ToolCutOut.py:161
 msgid ""
@@ -8305,7 +8352,7 @@ msgstr ""
 
 #: flatcamTools/ToolCutOut.py:179
 msgid "Rectangular:"
-msgstr ""
+msgstr "Прямоугольная:"
 
 #: flatcamTools/ToolCutOut.py:181
 msgid ""
@@ -8324,7 +8371,7 @@ msgstr ""
 
 #: flatcamTools/ToolCutOut.py:198
 msgid "B. Manual Bridge Gaps"
-msgstr ""
+msgstr "Б. Ручное размещение перемычек"
 
 #: flatcamTools/ToolCutOut.py:200
 msgid ""
@@ -8697,7 +8744,7 @@ msgstr ""
 #: flatcamTools/ToolFilm.py:56 flatcamTools/ToolImage.py:53
 #: flatcamTools/ToolPanelize.py:56
 msgid "Object Type:"
-msgstr ""
+msgstr "Тип объекта:"
 
 #: flatcamTools/ToolFilm.py:58
 msgid ""
@@ -9095,7 +9142,7 @@ msgstr ""
 #: flatcamTools/ToolNonCopperClear.py:711
 #: flatcamTools/ToolNonCopperClear.py:833
 msgid "Clearing Non-Copper areas."
-msgstr ""
+msgstr "Очистка областей от меди."
 
 #: flatcamTools/ToolNonCopperClear.py:729
 #, python-format
@@ -9193,7 +9240,7 @@ msgstr ""
 
 #: flatcamTools/ToolPaint.py:119
 msgid "Diameter for the new tool."
-msgstr ""
+msgstr "Диаметр нового инструмента."
 
 #: flatcamTools/ToolPaint.py:224
 msgid ""
@@ -9596,7 +9643,7 @@ msgstr "...обработка... [%s]"
 
 #: flatcamTools/ToolSolderPaste.py:37
 msgid "Solder Paste Tool"
-msgstr "Инструмент для паяльной пасты"
+msgstr "Паяльная паста"
 
 #: flatcamTools/ToolSolderPaste.py:65
 msgid "Gerber Solder paste object.                        "
@@ -9951,7 +9998,7 @@ msgstr ""
 
 #: flatcamTools/ToolTransform.py:23
 msgid "Object Transform"
-msgstr "Преобразование объекта"
+msgstr "Объект Transform"
 
 #: flatcamTools/ToolTransform.py:84
 msgid ""
@@ -9973,12 +10020,17 @@ msgid ""
 "The point of reference depends on \n"
 "the Scale reference checkbox state."
 msgstr ""
+"Масштабирование выбранных объектов.\n"
+"Точка отсчета зависит от\n"
+"состояние флажка Scale Reference."
 
 #: flatcamTools/ToolTransform.py:202
 msgid ""
 "Scale the selected object(s)\n"
 "using the Scale Factor X for both axis."
 msgstr ""
+"Масштабирование выбранных объектов\n"
+"используя коэффициент X для обеих осей."
 
 #: flatcamTools/ToolTransform.py:250 flatcamTools/ToolTransform.py:267
 msgid ""
@@ -9986,6 +10038,9 @@ msgid ""
 "The point of reference is the middle of\n"
 "the bounding box for all selected objects.\n"
 msgstr ""
+"Смещение выбранных объектов.\n"
+"Точка отсчета - середина\n"
+"ограничительной рамки для всех выбранных объектов.\n"
 
 #: flatcamTools/ToolTransform.py:297 flatcamTools/ToolTransform.py:305
 msgid ""
@@ -10000,7 +10055,7 @@ msgstr ""
 
 #: flatcamTools/ToolTransform.py:665
 msgid "CNCJob objects can't be rotated."
-msgstr ""
+msgstr "Объекты CNCJob не могут вращаться."
 
 #: flatcamTools/ToolTransform.py:673
 msgid "[success] Rotate done ..."
@@ -10039,6 +10094,18 @@ msgstr ""
 msgid "CNCJob objects can't be offseted."
 msgstr "Объекты CNCJob не могут быть смещены."
 
+#, fuzzy
+#~| msgid ""
+#~| "How much (fraction) of the tool width to overlap each tool pass.\n"
+#~| "Example:\n"
+#~| "A value here of 0.25 means 25% from the tool diameter found above.\n"
+#~| "\n"
+#~| "Adjust the value starting with lower values\n"
+#~| "and increasing it if areas that should be painted are still \n"
+#~| "not painted.\n"
+#~| "Lower values = faster processing, faster execution on PCB.\n"
+#~| "Higher values = slow processing and slow execution on CNC\n"
+#~| "due of too many paths."
 #~ msgid ""
 #~ "How much (fraction) of the tool width to overlap each tool pass.\n"
 #~ "Example:\n"
@@ -10051,16 +10118,20 @@ msgstr "Объекты CNCJob не могут быть смещены."
 #~ "Higher values = slow processing and slow execution on CNC\n"
 #~ "due of too many paths."
 #~ msgstr ""
-#~ "How much (fraction) of the tool width to overlap each tool pass.\n"
-#~ "Example:\n"
-#~ "A value here of 0.25 means 25\\% from the tool diameter found above.\n"
+#~ "Какая часть ширины инструмента будет перекрываться за каждый проход "
+#~ "инструмента.\n"
+#~ "Пример:\n"
+#~ "Здесь значение 0.25 означает 25% от диаметра инструмента, указанного "
+#~ "выше.\n"
 #~ "\n"
-#~ "Adjust the value starting with lower values\n"
-#~ "and increasing it if areas that should be painted are still \n"
-#~ "not painted.\n"
-#~ "Lower values = faster processing, faster execution on PCB.\n"
-#~ "Higher values = slow processing and slow execution on CNC\n"
-#~ "due of too many paths."
+#~ "Отрегулируйте значение, начиная с более низких значений\n"
+#~ "и увеличивая его, если области, которые должны быть нарисованы, все еще\n"
+#~ "не окрашены.\n"
+#~ "Более низкие значения = более быстрая обработка, более быстрое выполнение "
+#~ "на печатной плате.\n"
+#~ "Более высокие значения = медленная обработка и медленное выполнение на "
+#~ "ЧПУ\n"
+#~ "из-за большого количества путей."
 
 #~ msgid "z_cut = Z coord for Toolchange"
 #~ msgstr "z_cut = Z coord for Toolchange"
