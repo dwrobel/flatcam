@@ -58,9 +58,9 @@ fcTranslate.apply_language('strings')
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
-# ##################################### ##
-# #                App                 # ##
-# ##################################### ##
+# ########################################
+# #                App                 ###
+# ########################################
 
 
 class App(QtCore.QObject):
@@ -428,6 +428,17 @@ class App(QtCore.QObject):
             "excellon_exp_decimals": self.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry,
             "excellon_exp_zeros": self.ui.excellon_defaults_form.excellon_exp_group.zeros_radio,
 
+            # Excellon Editor
+            "excellon_editor_sel_limit": self.ui.excellon_defaults_form.excellon_editor_group.sel_limit_entry,
+            "excellon_editor_newdia": self.ui.excellon_defaults_form.excellon_editor_group.addtool_entry,
+            "excellon_editor_array_size": self.ui.excellon_defaults_form.excellon_editor_group.drill_array_size_entry,
+            "excellon_editor_lin_dir": self.ui.excellon_defaults_form.excellon_editor_group.drill_axis_radio,
+            "excellon_editor_lin_pitch": self.ui.excellon_defaults_form.excellon_editor_group.drill_pitch_entry,
+            "excellon_editor_lin_angle": self.ui.excellon_defaults_form.excellon_editor_group.drill_angle_entry,
+            "excellon_editor_circ_dir": self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_dir_radio,
+            "excellon_editor_circ_angle":
+                self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_angle_entry,
+
             # Geometry General
             "geometry_plot": self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,
             "geometry_circle_steps": self.ui.geometry_defaults_form.geometry_gen_group.circle_steps_entry,
@@ -755,6 +766,16 @@ class App(QtCore.QObject):
             "excellon_exp_integer": 2,
             "excellon_exp_decimals": 4,
             "excellon_exp_zeros": 'LZ',
+
+            # Excellon Editor
+            "excellon_editor_sel_limit": 30,
+            "excellon_editor_newdia": 0.039,
+            "excellon_editor_array_size": 5,
+            "excellon_editor_lin_dir": 'X',
+            "excellon_editor_lin_pitch": 0.1,
+            "excellon_editor_lin_angle": 0.0,
+            "excellon_editor_circ_dir": 'CW',
+            "excellon_editor_circ_angle": 12,
 
             # Geometry General
             "geometry_plot": True,

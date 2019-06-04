@@ -12,8 +12,10 @@ CAD program, and create G-Code for Isolation routing.
 4.06.2019
 
 - PEP8 updates in FlatCAMExcEditor.py
-- added the Excellon Editor parameters to the Edit -> Preferences -> Excellon
+- added the Excellon Editor parameters to the Edit -> Preferences -> Excellon GUI
 - fixed a small bug in Excellon Editor
+- PEP8 cleanup in FlatCAMGui
+- finished adding the Excellon Editor parameters into the app logic and added a selection limit within Excellon Editor just like in the other editors
 
 3.06.2019
 

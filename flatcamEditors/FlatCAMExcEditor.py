@@ -441,6 +441,8 @@ class FCDrillMove(FCShapeTool):
         # self.shape_buffer = self.draw_app.shape_buffer
         self.origin = None
         self.destination = None
+        self.sel_limit = self.draw_app.app.defaults["excellon_editor_sel_limit"]
+        self.selection_shape = self.selection_bbox()
         self.selected_dia_list = []
 
         if self.draw_app.launched_from_shortcuts is True:
@@ -504,6 +506,25 @@ class FCDrillMove(FCShapeTool):
         self.draw_app.build_ui()
         self.draw_app.app.inform.emit(_("[success] Done. Drill(s) Move completed."))
 
+    def selection_bbox(self):
+        geo_list = []
+        for select_shape in self.draw_app.get_selected():
+            geometric_data = select_shape.geo
+            try:
+                for g in geometric_data:
+                    geo_list.append(g)
+            except TypeError:
+                geo_list.append(geometric_data)
+
+        xmin, ymin, xmax, ymax = get_shapely_list_bounds(geo_list)
+
+        pt1 = (xmin, ymin)
+        pt2 = (xmax, ymin)
+        pt3 = (xmax, ymax)
+        pt4 = (xmin, ymax)
+
+        return Polygon([pt1, pt2, pt3, pt4])
+
     def utility_geometry(self, data=None):
         """
         Temporary geometry on screen while using this tool.
@@ -521,9 +542,22 @@ class FCDrillMove(FCShapeTool):
 
         dx = data[0] - self.origin[0]
         dy = data[1] - self.origin[1]
-        for geom in self.draw_app.get_selected():
-            geo_list.append(affinity.translate(geom.geo, xoff=dx, yoff=dy))
-        return DrawToolUtilityShape(geo_list)
+
+        if len(self.draw_app.get_selected()) <= self.sel_limit:
+            try:
+                for geom in self.draw_app.get_selected():
+                    geo_list.append(affinity.translate(geom.geo, xoff=dx, yoff=dy))
+            except AttributeError:
+                self.draw_app.select_tool('drill_select')
+                self.draw_app.selected = []
+                return
+            return DrawToolUtilityShape(geo_list)
+        else:
+            try:
+                ss_el = affinity.translate(self.selection_shape, xoff=dx, yoff=dy)
+            except ValueError:
+                ss_el = None
+            return DrawToolUtilityShape(ss_el)
 
 
 class FCDrillCopy(FCDrillMove):
@@ -985,7 +1019,6 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.drill_direction_radio = RadioSet([{'label': 'CW', 'value': 'CW'},
                                                {'label': 'CCW.', 'value': 'CCW'}])
-        self.drill_direction_radio.set_value('CW')
         self.circular_form.addRow(self.drill_direction_label, self.drill_direction_radio)
 
         self.drill_angle_label = QtWidgets.QLabel(_('Angle:'))
@@ -1077,13 +1110,6 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.app.ui.exc_move_drill_menuitem.triggered.connect(self.exc_move_drills)
 
-        # Init GUI
-        self.drill_array_size_entry.set_value(5)
-        self.drill_pitch_entry.set_value(2.54)
-        self.drill_angle_entry.set_value(12)
-        self.drill_direction_radio.set_value('CW')
-        self.drill_axis_radio.set_value('X')
-
         self.exc_obj = None
 
         # VisPy Visuals
@@ -1166,7 +1192,6 @@ class FlatCAMExcEditor(QtCore.QObject):
 
     @staticmethod
     def make_storage():
-
         # ## Shape storage.
         storage = FlatCAMRTreeStorage()
         storage.get_points = DrawToolShape.get_pts
@@ -1174,7 +1199,6 @@ class FlatCAMExcEditor(QtCore.QObject):
         return storage
 
     def set_ui(self):
-
         # updated units
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
@@ -1193,6 +1217,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                     self.points_edit[tool_dia].append(drill['point'])
                 except KeyError:
                     self.points_edit[tool_dia] = [drill['point']]
+
         # update the olddia_newdia dict to make sure we have an updated state of the tool_table
         for key in self.points_edit:
             self.olddia_newdia[key] = key
@@ -1218,6 +1243,15 @@ class FlatCAMExcEditor(QtCore.QObject):
                     tool_dia = float('%.2f' % v['C'])
                 self.tool2tooldia[int(k)] = tool_dia
 
+        # Init GUI
+        self.addtool_entry.set_value(float(self.app.defaults['excellon_editor_newdia']))
+        self.drill_array_size_entry.set_value(int(self.app.defaults['excellon_editor_array_size']))
+        self.drill_axis_radio.set_value(self.app.defaults['excellon_editor_lin_dir'])
+        self.drill_pitch_entry.set_value(float(self.app.defaults['excellon_editor_lin_pitch']))
+        self.linear_angle_spinner.set_value(float(self.app.defaults['excellon_editor_lin_angle']))
+        self.drill_direction_radio.set_value(self.app.defaults['excellon_editor_circ_dir'])
+        self.drill_angle_entry.set_value(float(self.app.defaults['excellon_editor_circ_angle']))
+
     def build_ui(self, first_run=None):
 
         try:
@@ -1237,11 +1271,6 @@ class FlatCAMExcEditor(QtCore.QObject):
         # make a new name for the new Excellon object (the one with edited content)
         self.edited_obj_name = self.exc_obj.options['name']
         self.name_entry.set_value(self.edited_obj_name)
-
-        if self.units == "IN":
-            self.addtool_entry.set_value(0.039)
-        else:
-            self.addtool_entry.set_value(1.00)
 
         sort_temp = []
 
@@ -1886,7 +1915,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # add a first tool in the Tool Table but only if the Excellon Object is empty
         if not self.tool2tooldia:
-            self.on_tool_add(tooldia=1.00)
+            self.on_tool_add(tooldia=float(self.app.defaults['excellon_editor_newdia']))
 
     def update_fcexcellon(self, exc_obj):
         """
@@ -2324,13 +2353,15 @@ class FlatCAMExcEditor(QtCore.QObject):
             log.warning("Error: %s" % str(e))
             raise
 
-    def draw_selection_area_handler(self, start_pos, end_pos, sel_type):
+    def draw_selection_area_handler(self, start, end, sel_type):
         """
         :param start_pos: mouse position when the selection LMB click was done
         :param end_pos: mouse position when the left mouse button is released
         :param sel_type: if True it's a left to right selection (enclosure), if False it's a 'touch' selection
         :return:
         """
+        start_pos = (start[0], start[1])
+        end_pos = (end[0], end[1])
         poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
 
         self.app.delete_selection_shape()
@@ -2701,5 +2732,24 @@ class FlatCAMExcEditor(QtCore.QObject):
     def exc_move_drills(self):
         self.select_tool('drill_move')
         return
+
+
+def get_shapely_list_bounds(geometry_list):
+    xmin = Inf
+    ymin = Inf
+    xmax = -Inf
+    ymax = -Inf
+
+    for gs in geometry_list:
+        try:
+            gxmin, gymin, gxmax, gymax = gs.bounds
+            xmin = min([xmin, gxmin])
+            ymin = min([ymin, gymin])
+            xmax = max([xmax, gxmax])
+            ymax = max([ymax, gymax])
+        except Exception as e:
+            log.warning("DEVELOPMENT: Tried to get bounds of empty geometry. --> %s" % str(e))
+
+    return [xmin, ymin, xmax, ymax]
 
 # EOF
