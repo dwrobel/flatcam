@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+5.06.2019
+
+- updated translations
+
 4.06.2019
 
 - PEP8 updates in FlatCAMExcEditor.py
