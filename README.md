@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 5.06.2019
 
 - updated translations
+- some layout changes in Edit -> Preferences such that the German translation (longer words than English) to fit correctly
 
 4.06.2019
 

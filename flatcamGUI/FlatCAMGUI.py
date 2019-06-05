@@ -3122,7 +3122,7 @@ class GeneralPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.general_app_group = GeneralAppPrefGroupUI()
-        self.general_app_group.setFixedWidth(250)
+        self.general_app_group.setFixedWidth(280)
 
         self.general_gui_group = GeneralGUIPrefGroupUI()
         self.general_gui_group.setFixedWidth(250)
@@ -3177,13 +3177,13 @@ class ExcellonPreferencesUI(QtWidgets.QWidget):
         self.excellon_gen_group = ExcellonGenPrefGroupUI()
         self.excellon_gen_group.setFixedWidth(220)
         self.excellon_opt_group = ExcellonOptPrefGroupUI()
-        self.excellon_opt_group.setFixedWidth(250)
+        self.excellon_opt_group.setFixedWidth(290)
         self.excellon_exp_group = ExcellonExpPrefGroupUI()
         self.excellon_exp_group.setFixedWidth(250)
         self.excellon_adv_opt_group = ExcellonAdvOptPrefGroupUI()
         self.excellon_adv_opt_group.setFixedWidth(250)
         self.excellon_editor_group = ExcellonEditorPrefGroupUI()
-        self.excellon_editor_group.setFixedWidth(220)
+        self.excellon_editor_group.setFixedWidth(260)
 
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.excellon_opt_group)
@@ -3207,9 +3207,9 @@ class GeometryPreferencesUI(QtWidgets.QWidget):
         self.geometry_gen_group = GeometryGenPrefGroupUI()
         self.geometry_gen_group.setFixedWidth(220)
         self.geometry_opt_group = GeometryOptPrefGroupUI()
-        self.geometry_opt_group.setFixedWidth(250)
+        self.geometry_opt_group.setFixedWidth(300)
         self.geometry_adv_opt_group = GeometryAdvOptPrefGroupUI()
-        self.geometry_adv_opt_group.setFixedWidth(250)
+        self.geometry_adv_opt_group.setFixedWidth(270)
         self.geometry_editor_group = GeometryEditorPrefGroupUI()
         self.geometry_editor_group.setFixedWidth(250)
 
@@ -3287,7 +3287,7 @@ class CNCJobPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.cncjob_gen_group = CNCJobGenPrefGroupUI()
-        self.cncjob_gen_group.setFixedWidth(270)
+        self.cncjob_gen_group.setFixedWidth(320)
         self.cncjob_opt_group = CNCJobOptPrefGroupUI()
         self.cncjob_opt_group.setFixedWidth(260)
         self.cncjob_adv_opt_group = CNCJobAdvOptPrefGroupUI()
