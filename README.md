@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - updated translations
 - some layout changes in Edit -> Preferences such that the German translation (longer words than English) to fit correctly
+- after editing an parameter the focus is lost so the user knows that something happened
 
 4.06.2019
 

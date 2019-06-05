@@ -159,6 +159,10 @@ class LengthEntry(QtWidgets.QLineEdit):
                    'MM': 1.0}
         }
         self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+
+    def on_edit_finished(self):
+        self.clearFocus()
 
     def mousePressEvent(self, e, Parent=None):
         super(LengthEntry, self).mousePressEvent(e)  # required to deselect on 2e click
@@ -209,6 +213,10 @@ class FloatEntry(QtWidgets.QLineEdit):
     def __init__(self, parent=None):
         super(FloatEntry, self).__init__(parent)
         self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+
+    def on_edit_finished(self):
+        self.clearFocus()
 
     def mousePressEvent(self, e, Parent=None):
         super(FloatEntry, self).mousePressEvent(e)  # required to deselect on 2e click
@@ -256,6 +264,10 @@ class FloatEntry2(QtWidgets.QLineEdit):
     def __init__(self, parent=None):
         super(FloatEntry2, self).__init__(parent)
         self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+
+    def on_edit_finished(self):
+        self.clearFocus()
 
     def mousePressEvent(self, e, Parent=None):
         super(FloatEntry2, self).mousePressEvent(e)  # required to deselect on 2e click
@@ -295,6 +307,10 @@ class IntEntry(QtWidgets.QLineEdit):
         self.allow_empty = allow_empty
         self.empty_val = empty_val
         self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+
+    def on_edit_finished(self):
+        self.clearFocus()
 
     def mousePressEvent(self, e, Parent=None):
         super(IntEntry, self).mousePressEvent(e)  # required to deselect on 2e click
@@ -335,6 +351,10 @@ class FCEntry(QtWidgets.QLineEdit):
     def __init__(self, parent=None):
         super(FCEntry, self).__init__(parent)
         self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+
+    def on_edit_finished(self):
+        self.clearFocus()
 
     def mousePressEvent(self, e, Parent=None):
         super(FCEntry, self).mousePressEvent(e)  # required to deselect on 2e click
@@ -365,6 +385,10 @@ class FCEntry2(FCEntry):
     def __init__(self, parent=None):
         super(FCEntry2, self).__init__(parent)
         self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+
+    def on_edit_finished(self):
+        self.clearFocus()
 
     def set_value(self, val):
         try:
@@ -378,6 +402,10 @@ class EvalEntry(QtWidgets.QLineEdit):
     def __init__(self, parent=None):
         super(EvalEntry, self).__init__(parent)
         self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+
+    def on_edit_finished(self):
+        self.clearFocus()
 
     def mousePressEvent(self, e, Parent=None):
         super(EvalEntry, self).mousePressEvent(e)  # required to deselect on 2e click
@@ -420,6 +448,10 @@ class EvalEntry2(QtWidgets.QLineEdit):
     def __init__(self, parent=None):
         super(EvalEntry2, self).__init__(parent)
         self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+
+    def on_edit_finished(self):
+        self.clearFocus()
 
     def mousePressEvent(self, e, Parent=None):
         super(EvalEntry2, self).mousePressEvent(e)  # required to deselect on 2e click
@@ -1462,6 +1494,10 @@ class FCSpinner(QtWidgets.QSpinBox):
     def __init__(self, parent=None):
         super(FCSpinner, self).__init__(parent)
         self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+
+    def on_edit_finished(self):
+        self.clearFocus()
 
     def mousePressEvent(self, e, parent=None):
         super(FCSpinner, self).mousePressEvent(e)  # required to deselect on 2e click
@@ -1497,6 +1533,10 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
     def __init__(self, parent=None):
         super(FCDoubleSpinner, self).__init__(parent)
         self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+
+    def on_edit_finished(self):
+        self.clearFocus()
 
     def mousePressEvent(self, e, parent=None):
         super(FCDoubleSpinner, self).mousePressEvent(e)  # required to deselect on 2e click
