@@ -6119,7 +6119,7 @@ class App(QtCore.QObject):
                                                                  filter = _filter_)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL Open Config cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Open Config cancelled."))
         else:
             self.open_config_file(filename)
 
