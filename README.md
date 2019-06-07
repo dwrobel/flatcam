@@ -15,7 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed bug in cncjob TclCommand where the gcode could not be correctly generated due of missing bounds params in obj.options dict
 - fixed a hardcoded tolerance in FlatCAMGeometry.generatecncjob() and in FlatCAMGeometry.mtool_gen_cncjob() to use the parameter from Preferences
 - updated translations
-
+- RELEASE 8.918
 
 5.06.2019
 

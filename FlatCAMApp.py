@@ -95,7 +95,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.918
-    version_date = "2019/06/11"
+    version_date = "2019/06/07"
     beta = True
 
     # current date now
@@ -120,9 +120,9 @@ class App(QtCore.QObject):
     # flag is True if saving action has been triggered
     save_in_progress = False
 
-    # ############### ##
-    # #    Signals   # ##
-    # ############### ##
+    # #################
+    # #    Signals   ##
+    # #################
 
     # Inform the user
     # Handled by:
