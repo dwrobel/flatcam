@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-06-05 12:38+0300\n"
+"POT-Creation-Date: 2019-06-07 23:14+0300\n"
 "PO-Revision-Date: 2019-03-25 15:08+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -689,7 +689,7 @@ msgstr ""
 msgid "[ERROR]App.on_view_source() -->%s"
 msgstr ""
 
-#: FlatCAMApp.py:6562 FlatCAMApp.py:7704 FlatCAMObj.py:5581
+#: FlatCAMApp.py:6562 FlatCAMApp.py:7704 FlatCAMObj.py:5587
 msgid "Code Editor"
 msgstr ""
 
@@ -1083,11 +1083,11 @@ msgstr ""
 msgid "[success] Name changed from {old} to {new}"
 msgstr ""
 
-#: FlatCAMObj.py:546 FlatCAMObj.py:2031 FlatCAMObj.py:3311 FlatCAMObj.py:5478
+#: FlatCAMObj.py:546 FlatCAMObj.py:2031 FlatCAMObj.py:3311 FlatCAMObj.py:5484
 msgid "<span style=\"color:green;\"><b>Basic</b></span>"
 msgstr ""
 
-#: FlatCAMObj.py:558 FlatCAMObj.py:2047 FlatCAMObj.py:3333 FlatCAMObj.py:5484
+#: FlatCAMObj.py:558 FlatCAMObj.py:2047 FlatCAMObj.py:3333 FlatCAMObj.py:5490
 msgid "<span style=\"color:red;\"><b>Advanced</b></span>"
 msgstr ""
 
@@ -1109,8 +1109,8 @@ msgid "Total Slots"
 msgstr ""
 
 #: FlatCAMObj.py:2103 FlatCAMObj.py:3384 FlatCAMObj.py:3682 FlatCAMObj.py:3869
-#: FlatCAMObj.py:3882 FlatCAMObj.py:3999 FlatCAMObj.py:4416 FlatCAMObj.py:4653
-#: FlatCAMObj.py:5061 flatcamEditors/FlatCAMExcEditor.py:1474
+#: FlatCAMObj.py:3882 FlatCAMObj.py:3999 FlatCAMObj.py:4416 FlatCAMObj.py:4654
+#: FlatCAMObj.py:5067 flatcamEditors/FlatCAMExcEditor.py:1474
 #: flatcamTools/ToolCalculators.py:307 flatcamTools/ToolCalculators.py:318
 #: flatcamTools/ToolCalculators.py:330 flatcamTools/ToolCalculators.py:345
 #: flatcamTools/ToolCalculators.py:358 flatcamTools/ToolCalculators.py:372
@@ -1164,24 +1164,24 @@ msgid ""
 "[ERROR_NOTCL] Milling tool for SLOTS is larger than hole size. Cancelled."
 msgstr ""
 
-#: FlatCAMObj.py:2602 FlatCAMObj.py:4304 FlatCAMObj.py:4519 FlatCAMObj.py:4836
+#: FlatCAMObj.py:2602 FlatCAMObj.py:4304 FlatCAMObj.py:4520 FlatCAMObj.py:4837
 msgid ""
 "[ERROR_NOTCL] Wrong value format for self.defaults[\"z_pdepth\"] or self."
 "options[\"z_pdepth\"]"
 msgstr ""
 
-#: FlatCAMObj.py:2614 FlatCAMObj.py:4316 FlatCAMObj.py:4531 FlatCAMObj.py:4848
+#: FlatCAMObj.py:2614 FlatCAMObj.py:4316 FlatCAMObj.py:4532 FlatCAMObj.py:4849
 msgid ""
 "[ERROR_NOTCL] Wrong value format for self.defaults[\"feedrate_probe\"] or "
 "self.options[\"feedrate_probe\"]"
 msgstr ""
 
-#: FlatCAMObj.py:2646 FlatCAMObj.py:4723 FlatCAMObj.py:4728 FlatCAMObj.py:4874
+#: FlatCAMObj.py:2646 FlatCAMObj.py:4725 FlatCAMObj.py:4730 FlatCAMObj.py:4880
 msgid "Generating CNC Code"
 msgstr ""
 
-#: FlatCAMObj.py:2672 FlatCAMObj.py:5020 camlib.py:5152 camlib.py:5611
-#: camlib.py:5874
+#: FlatCAMObj.py:2672 FlatCAMObj.py:5026 camlib.py:5151 camlib.py:5610
+#: camlib.py:5873
 msgid ""
 "[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be in the "
 "format (x, y) \n"
@@ -1257,85 +1257,85 @@ msgstr ""
 msgid "FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s"
 msgstr ""
 
-#: FlatCAMObj.py:4425 FlatCAMObj.py:4662
+#: FlatCAMObj.py:4425 FlatCAMObj.py:4663
 msgid ""
 "[WARNING] Tool Offset is selected in Tool Table but no value is provided.\n"
 "Add a Tool Offset or change the Offset Type."
 msgstr ""
 
-#: FlatCAMObj.py:4543 flatcamTools/ToolSolderPaste.py:1107
+#: FlatCAMObj.py:4544 flatcamTools/ToolSolderPaste.py:1107
 #: flatcamTools/ToolSolderPaste.py:1162
 msgid "[ERROR_NOTCL] Cancelled. Empty file, it has no geometry..."
 msgstr ""
 
-#: FlatCAMObj.py:4907 FlatCAMObj.py:4917 camlib.py:3335 camlib.py:3344
+#: FlatCAMObj.py:4913 FlatCAMObj.py:4923 camlib.py:3335 camlib.py:3344
 msgid "[ERROR_NOTCL] Scale factor has to be a number: integer or float."
 msgstr ""
 
-#: FlatCAMObj.py:4955
+#: FlatCAMObj.py:4961
 msgid "[success] Geometry Scale done."
 msgstr ""
 
-#: FlatCAMObj.py:4972 camlib.py:3414
+#: FlatCAMObj.py:4978 camlib.py:3414
 msgid ""
 "[ERROR_NOTCL] An (x,y) pair of values are needed. Probable you entered only "
 "one value in the Offset field."
 msgstr ""
 
-#: FlatCAMObj.py:4992
+#: FlatCAMObj.py:4998
 msgid "[success] Geometry Offset done."
 msgstr ""
 
-#: FlatCAMObj.py:5546 FlatCAMObj.py:5551 flatcamTools/ToolSolderPaste.py:1361
+#: FlatCAMObj.py:5552 FlatCAMObj.py:5557 flatcamTools/ToolSolderPaste.py:1361
 msgid "Export Machine Code ..."
 msgstr ""
 
-#: FlatCAMObj.py:5557 flatcamTools/ToolSolderPaste.py:1364
+#: FlatCAMObj.py:5563 flatcamTools/ToolSolderPaste.py:1364
 msgid "[WARNING_NOTCL] Export Machine Code cancelled ..."
 msgstr ""
 
-#: FlatCAMObj.py:5570
+#: FlatCAMObj.py:5576
 #, python-format
 msgid "[success] Machine Code file saved to: %s"
 msgstr ""
 
-#: FlatCAMObj.py:5592
+#: FlatCAMObj.py:5598
 #, python-format
 msgid "[ERROR]FlatCAMCNNJob.on_edit_code_click() -->%s"
 msgstr ""
 
-#: FlatCAMObj.py:5709
+#: FlatCAMObj.py:5715
 #, python-format
 msgid ""
 "[WARNING_NOTCL] This CNCJob object can't be processed because it is a %s "
 "CNCJob object."
 msgstr ""
 
-#: FlatCAMObj.py:5762
+#: FlatCAMObj.py:5768
 msgid "[ERROR_NOTCL] G-code does not have a units code: either G20 or G21"
 msgstr ""
 
-#: FlatCAMObj.py:5775
+#: FlatCAMObj.py:5781
 msgid ""
 "[ERROR_NOTCL] Cancelled. The Toolchange Custom code is enabled but it's "
 "empty."
 msgstr ""
 
-#: FlatCAMObj.py:5782
+#: FlatCAMObj.py:5788
 msgid "[success] Toolchange G-code was replaced by a custom code."
 msgstr ""
 
-#: FlatCAMObj.py:5797 flatcamTools/ToolSolderPaste.py:1390
+#: FlatCAMObj.py:5803 flatcamTools/ToolSolderPaste.py:1390
 msgid "[WARNING_NOTCL] No such file or directory"
 msgstr ""
 
-#: FlatCAMObj.py:5817 FlatCAMObj.py:5829
+#: FlatCAMObj.py:5823 FlatCAMObj.py:5835
 msgid ""
 "[WARNING_NOTCL] The used postprocessor file has to have in it's name: "
 "'toolchange_custom'"
 msgstr ""
 
-#: FlatCAMObj.py:5835
+#: FlatCAMObj.py:5841
 msgid "[ERROR] There is no postprocessor file."
 msgstr ""
 
@@ -1450,12 +1450,12 @@ msgid ""
 "Check the resulting GCode."
 msgstr ""
 
-#: camlib.py:5061
+#: camlib.py:5060
 #, python-format
 msgid "[ERROR] There is no such parameter: %s"
 msgstr ""
 
-#: camlib.py:5131
+#: camlib.py:5130
 msgid ""
 "[WARNING] The Cut Z parameter has positive value. It is the depth value to "
 "drill into material.\n"
@@ -1464,27 +1464,27 @@ msgid ""
 "CNC code (Gcode etc)."
 msgstr ""
 
-#: camlib.py:5138 camlib.py:5634 camlib.py:5897
+#: camlib.py:5137 camlib.py:5633 camlib.py:5896
 #, python-format
 msgid ""
 "[WARNING] The Cut Z parameter is zero. There will be no cut, skipping %s file"
 msgstr ""
 
-#: camlib.py:5367 camlib.py:5464 camlib.py:5522
+#: camlib.py:5366 camlib.py:5463 camlib.py:5521
 msgid "[ERROR_NOTCL] The loaded Excellon file has no drills ..."
 msgstr ""
 
-#: camlib.py:5469
+#: camlib.py:5468
 msgid "[ERROR_NOTCL] Wrong optimization type selected."
 msgstr ""
 
-#: camlib.py:5622 camlib.py:5885
+#: camlib.py:5621 camlib.py:5884
 msgid ""
 "[ERROR_NOTCL] Cut_Z parameter is None or zero. Most likely a bad "
 "combinations of other parameters."
 msgstr ""
 
-#: camlib.py:5627 camlib.py:5890
+#: camlib.py:5626 camlib.py:5889
 msgid ""
 "[WARNING] The Cut Z parameter has positive value. It is the depth value to "
 "cut into material.\n"
@@ -1493,11 +1493,11 @@ msgid ""
 "code (Gcode etc)."
 msgstr ""
 
-#: camlib.py:5639 camlib.py:5902
+#: camlib.py:5638 camlib.py:5901
 msgid "[ERROR_NOTCL] Travel Z parameter is None or zero."
 msgstr ""
 
-#: camlib.py:5643 camlib.py:5906
+#: camlib.py:5642 camlib.py:5905
 msgid ""
 "[WARNING] The Travel Z parameter has negative value. It is the height value "
 "to travel between cuts.\n"
@@ -1506,31 +1506,31 @@ msgid ""
 "code (Gcode etc)."
 msgstr ""
 
-#: camlib.py:5650 camlib.py:5913
+#: camlib.py:5649 camlib.py:5912
 #, python-format
 msgid ""
 "[WARNING] The Z Travel parameter is zero. This is dangerous, skipping %s file"
 msgstr ""
 
-#: camlib.py:5780
+#: camlib.py:5779
 #, python-format
 msgid "[ERROR]Expected a Geometry, got %s"
 msgstr ""
 
-#: camlib.py:5786
+#: camlib.py:5785
 msgid ""
 "[ERROR_NOTCL] Trying to generate a CNC Job from a Geometry object without "
 "solid_geometry."
 msgstr ""
 
-#: camlib.py:5825
+#: camlib.py:5824
 msgid ""
 "[ERROR_NOTCL] The Tool Offset value is too negative to use for the "
 "current_geometry.\n"
 "Raise the value (in module) and try again."
 msgstr ""
 
-#: camlib.py:6039
+#: camlib.py:6036
 msgid "[ERROR_NOTCL] There is no tool data in the SolderPaste geometry."
 msgstr ""
 
@@ -2009,8 +2009,8 @@ msgid "[WARNING_NOTCL] Paint cancelled. No shape selected."
 msgstr ""
 
 #: flatcamEditors/FlatCAMGeoEditor.py:574 flatcamTools/ToolCutOut.py:355
-#: flatcamTools/ToolCutOut.py:512 flatcamTools/ToolCutOut.py:651
-#: flatcamTools/ToolCutOut.py:756 flatcamTools/ToolDblSided.py:363
+#: flatcamTools/ToolCutOut.py:518 flatcamTools/ToolCutOut.py:657
+#: flatcamTools/ToolCutOut.py:762 flatcamTools/ToolDblSided.py:363
 msgid ""
 "[WARNING_NOTCL] Tool diameter value is missing or wrong format. Add it and "
 "retry."
@@ -8209,7 +8209,7 @@ msgid ""
 "the Geometry object used as a cutout geometry."
 msgstr ""
 
-#: flatcamTools/ToolCutOut.py:341 flatcamTools/ToolCutOut.py:499
+#: flatcamTools/ToolCutOut.py:341 flatcamTools/ToolCutOut.py:505
 #: flatcamTools/ToolNonCopperClear.py:666 flatcamTools/ToolPaint.py:764
 #: flatcamTools/ToolPanelize.py:352 flatcamTools/ToolPanelize.py:366
 #: flatcamTools/ToolSub.py:237 flatcamTools/ToolSub.py:249
@@ -8230,29 +8230,29 @@ msgid ""
 "number."
 msgstr ""
 
-#: flatcamTools/ToolCutOut.py:370 flatcamTools/ToolCutOut.py:527
-#: flatcamTools/ToolCutOut.py:771
+#: flatcamTools/ToolCutOut.py:370 flatcamTools/ToolCutOut.py:533
+#: flatcamTools/ToolCutOut.py:777
 msgid ""
 "[WARNING_NOTCL] Margin value is missing or wrong format. Add it and retry."
 msgstr ""
 
-#: flatcamTools/ToolCutOut.py:381 flatcamTools/ToolCutOut.py:538
-#: flatcamTools/ToolCutOut.py:666
+#: flatcamTools/ToolCutOut.py:381 flatcamTools/ToolCutOut.py:544
+#: flatcamTools/ToolCutOut.py:672
 msgid ""
 "[WARNING_NOTCL] Gap size value is missing or wrong format. Add it and retry."
 msgstr ""
 
-#: flatcamTools/ToolCutOut.py:388 flatcamTools/ToolCutOut.py:545
+#: flatcamTools/ToolCutOut.py:388 flatcamTools/ToolCutOut.py:551
 msgid "[WARNING_NOTCL] Number of gaps value is missing. Add it and retry."
 msgstr ""
 
-#: flatcamTools/ToolCutOut.py:392 flatcamTools/ToolCutOut.py:549
+#: flatcamTools/ToolCutOut.py:392 flatcamTools/ToolCutOut.py:555
 msgid ""
 "[WARNING_NOTCL] Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 "
 "or 8. Fill in a correct value and retry. "
 msgstr ""
 
-#: flatcamTools/ToolCutOut.py:397 flatcamTools/ToolCutOut.py:554
+#: flatcamTools/ToolCutOut.py:397 flatcamTools/ToolCutOut.py:560
 msgid ""
 "[ERROR]Cutout operation cannot be done on a multi-geo Geometry.\n"
 "Optionally, this Multi-geo Geometry can be converted to Single-geo "
@@ -8260,58 +8260,58 @@ msgid ""
 "and after that perform Cutout."
 msgstr ""
 
-#: flatcamTools/ToolCutOut.py:483 flatcamTools/ToolCutOut.py:636
+#: flatcamTools/ToolCutOut.py:489 flatcamTools/ToolCutOut.py:642
 msgid "[success] Any form CutOut operation finished."
 msgstr ""
 
-#: flatcamTools/ToolCutOut.py:503 flatcamTools/ToolPaint.py:768
+#: flatcamTools/ToolCutOut.py:509 flatcamTools/ToolPaint.py:768
 #: flatcamTools/ToolPanelize.py:358
 #, python-format
 msgid "[ERROR_NOTCL] Object not found: %s"
 msgstr ""
 
-#: flatcamTools/ToolCutOut.py:517 flatcamTools/ToolCutOut.py:656
-#: flatcamTools/ToolCutOut.py:761
+#: flatcamTools/ToolCutOut.py:523 flatcamTools/ToolCutOut.py:662
+#: flatcamTools/ToolCutOut.py:767
 msgid ""
 "[ERROR_NOTCL] Tool Diameter is zero value. Change it to a positive real "
 "number."
 msgstr ""
 
-#: flatcamTools/ToolCutOut.py:641
+#: flatcamTools/ToolCutOut.py:647
 msgid ""
 "Click on the selected geometry object perimeter to create a bridge gap ..."
 msgstr ""
 
-#: flatcamTools/ToolCutOut.py:682
+#: flatcamTools/ToolCutOut.py:688
 msgid "Making manual bridge gap..."
 msgstr ""
 
-#: flatcamTools/ToolCutOut.py:705
+#: flatcamTools/ToolCutOut.py:711
 #, python-format
 msgid "[ERROR_NOTCL] Could not retrieve Geometry object: %s"
 msgstr ""
 
-#: flatcamTools/ToolCutOut.py:709
+#: flatcamTools/ToolCutOut.py:715
 #, python-format
 msgid "[ERROR_NOTCL] Geometry object for manual cutout not found: %s"
 msgstr ""
 
-#: flatcamTools/ToolCutOut.py:719
+#: flatcamTools/ToolCutOut.py:725
 msgid "[success] Added manual Bridge Gap."
 msgstr ""
 
-#: flatcamTools/ToolCutOut.py:736
+#: flatcamTools/ToolCutOut.py:742
 #, python-format
 msgid "[ERROR_NOTCL] Could not retrieve Gerber object: %s"
 msgstr ""
 
-#: flatcamTools/ToolCutOut.py:740
+#: flatcamTools/ToolCutOut.py:746
 msgid ""
 "[ERROR_NOTCL] There is no Gerber object selected for Cutout.\n"
 "Select one and try again."
 msgstr ""
 
-#: flatcamTools/ToolCutOut.py:745
+#: flatcamTools/ToolCutOut.py:751
 msgid ""
 "[ERROR_NOTCL] The selected object has to be of Gerber type.\n"
 "Select a Gerber file and try again."
