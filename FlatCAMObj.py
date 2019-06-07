@@ -4448,8 +4448,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
                 app_obj.progress.emit(40)
 
+                tol = float(self.app.defaults['global_tolerance'])
                 res = job_obj.generate_from_geometry_2(
-                    self, tooldia=tooldia_val, offset=tool_offset, tolerance=0.0005,
+                    self, tooldia=tooldia_val, offset=tool_offset, tolerance=tol,
                     z_cut=z_cut, z_move=z_move,
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                     spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
@@ -4681,9 +4682,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 spindledir = self.app.defaults['geometry_spindledir']
 
                 tool_solid_geometry = self.tools[current_uid]['solid_geometry']
+                tol = float(self.app.defaults['global_tolerance'])
                 res = job_obj.generate_from_multitool_geometry(
                     tool_solid_geometry, tooldia=tooldia_val, offset=tool_offset,
-                    tolerance=0.0005, z_cut=z_cut, z_move=z_move,
+                    tolerance=tol, z_cut=z_cut, z_move=z_move,
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                     spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
                     multidepth=multidepth, depthpercut=depthpercut,
@@ -4739,7 +4741,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 self.app.new_object("cncjob", outname, job_init_single_geometry)
             else:
                 self.app.new_object("cncjob", outname, job_init_multi_geometry)
-
 
     def generatecncjob(self, outname=None,
                        tooldia=None, offset=None,
@@ -4849,8 +4850,13 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                             'or self.options["feedrate_probe"]'
                         ))
 
-            # TODO: The tolerance should not be hard coded. Just for testing.
-            job_obj.generate_from_geometry_2(self, tooldia=tooldia, offset=offset, tolerance=0.0005,
+            job_obj.options['xmin'] = self.options['xmin']
+            job_obj.options['ymin'] = self.options['ymin']
+            job_obj.options['xmax'] = self.options['xmax']
+            job_obj.options['ymax'] = self.options['ymax']
+
+            tol = float(self.app.defaults['global_tolerance'])
+            job_obj.generate_from_geometry_2(self, tooldia=tooldia, offset=offset, tolerance=tol,
                                              z_cut=z_cut, z_move=z_move,
                                              feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                                              spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,

@@ -4969,7 +4969,6 @@ class CNCjob(Geometry):
 
         self.pp_solderpaste_name = None
 
-
         # Controls if the move from Z_Toolchange to Z_Move is done fast with G0 or normally with G1
         self.f_plunge = None
 
@@ -5817,7 +5816,7 @@ class CNCjob(Geometry):
         if offset != 0.0:
             offset_for_use = offset
 
-            if offset <0:
+            if offset < 0:
                 a, b, c, d = bounds_rec(geometry.solid_geometry)
                 # if the offset is less than half of the total length or less than half of the total width of the
                 # solid geometry it's obvious we can't do the offset
@@ -5928,8 +5927,6 @@ class CNCjob(Geometry):
         for shape in flat_geometry:
             if shape is not None:  # TODO: This shouldn't have happened.
                 storage.insert(shape)
-
-        # self.input_geometry_bounds = geometry.bounds()
 
         if not append:
             self.gcode = ""
