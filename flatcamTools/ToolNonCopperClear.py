@@ -1,10 +1,10 @@
-############################################################
+# ########################################################## ##
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Modified by: Marius Adrian Stanciu (c)              #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-############################################################
+# ########################################################## ##
 
 from FlatCAMTool import FlatCAMTool
 from copy import copy,deepcopy
@@ -38,7 +38,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.tools_box.setContentsMargins(0, 0, 0, 0)
         self.tools_frame.setLayout(self.tools_box)
 
-        ## Title
+        # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                         QLabel
@@ -49,11 +49,11 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         """)
         self.tools_box.addWidget(title_label)
 
-        ## Form Layout
+        # ## Form Layout
         form_layout = QtWidgets.QFormLayout()
         self.tools_box.addLayout(form_layout)
 
-        ## Object
+        # ## Object
         self.object_combo = QtWidgets.QComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
@@ -68,7 +68,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         form_layout.addRow(self.object_label, self.object_combo)
         form_layout.addRow(e_lab_0)
 
-        #### Tools ####
+        #### Tools ## ##
         self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Tools Table'))
         self.tools_table_label.setToolTip(
             _("Tools pool from which the algorithm\n"
@@ -113,7 +113,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.empty_label = QtWidgets.QLabel('')
         self.tools_box.addWidget(self.empty_label)
 
-        #### Add a new Tool ####
+        #### Add a new Tool ## ##
         hlay = QtWidgets.QHBoxLayout()
         self.tools_box.addLayout(hlay)
 
@@ -420,7 +420,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     self.tools_table.setItem(row_no, 1, dia)  # Diameter
                     self.tools_table.setCellWidget(row_no, 2, tool_type_item)
 
-                    ### REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY ###
+                    # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
                     self.tools_table.setItem(row_no, 3, tool_uid_item)  # Tool unique ID
 
         # make the diameter column editable

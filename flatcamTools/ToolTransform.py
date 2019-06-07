@@ -1,10 +1,10 @@
-############################################################
+# ########################################################## ##
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-############################################################
+# ########################################################## ##
 
 from FlatCAMTool import FlatCAMTool
 from FlatCAMObj import *
@@ -32,7 +32,7 @@ class ToolTransform(FlatCAMTool):
 
         self.transform_lay = QtWidgets.QVBoxLayout()
         self.layout.addLayout(self.transform_lay)
-        ## Title
+        # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                         QLabel
@@ -56,11 +56,11 @@ class ToolTransform(FlatCAMTool):
         self.empty_label4.setFixedWidth(70)
         self.transform_lay.addWidget(self.empty_label)
 
-        ## Rotate Title
+        # ## Rotate Title
         rotate_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.rotateName)
         self.transform_lay.addWidget(rotate_title_label)
 
-        ## Layout
+        # ## Layout
         form_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form_layout)
         form_child = QtWidgets.QHBoxLayout()
@@ -94,11 +94,11 @@ class ToolTransform(FlatCAMTool):
 
         self.transform_lay.addWidget(self.empty_label1)
 
-        ## Skew Title
+        # ## Skew Title
         skew_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.skewName)
         self.transform_lay.addWidget(skew_title_label)
 
-        ## Form Layout
+        # ## Form Layout
         form1_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form1_layout)
         form1_child_1 = QtWidgets.QHBoxLayout()
@@ -151,11 +151,11 @@ class ToolTransform(FlatCAMTool):
 
         self.transform_lay.addWidget(self.empty_label2)
 
-        ## Scale Title
+        # ## Scale Title
         scale_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.scaleName)
         self.transform_lay.addWidget(scale_title_label)
 
-        ## Form Layout
+        # ## Form Layout
         form2_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form2_layout)
         form2_child_1 = QtWidgets.QHBoxLayout()
@@ -225,11 +225,11 @@ class ToolTransform(FlatCAMTool):
 
         self.transform_lay.addWidget(self.empty_label3)
 
-        ## Offset Title
+        # ## Offset Title
         offset_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.offsetName)
         self.transform_lay.addWidget(offset_title_label)
 
-        ## Form Layout
+        # ## Form Layout
         form3_layout = QtWidgets.QFormLayout()
         self.transform_lay.addLayout(form3_layout)
         form3_child_1 = QtWidgets.QHBoxLayout()
@@ -280,11 +280,11 @@ class ToolTransform(FlatCAMTool):
 
         self.transform_lay.addWidget(self.empty_label4)
 
-        ## Flip Title
+        # ## Flip Title
         flip_title_label = QtWidgets.QLabel("<font size=3><b>%s</b></font>" % self.flipName)
         self.transform_lay.addWidget(flip_title_label)
 
-        ## Form Layout
+        # ## Form Layout
         form4_layout = QtWidgets.QFormLayout()
         form4_child_hlay = QtWidgets.QHBoxLayout()
         self.transform_lay.addLayout(form4_child_hlay)
@@ -355,7 +355,7 @@ class ToolTransform(FlatCAMTool):
 
         self.transform_lay.addStretch()
 
-        ## Signals
+        # ## Signals
         self.rotate_button.clicked.connect(self.on_rotate)
         self.skewx_button.clicked.connect(self.on_skewx)
         self.skewy_button.clicked.connect(self.on_skewy)
@@ -401,7 +401,7 @@ class ToolTransform(FlatCAMTool):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+R', **kwargs)
 
     def set_tool_ui(self):
-        ## Initialize form
+        # ## Initialize form
         if self.app.defaults["tools_transform_rotate"]:
             self.rotate_entry.set_value(self.app.defaults["tools_transform_rotate"])
         else:

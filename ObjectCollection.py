@@ -1,14 +1,14 @@
-############################################################
+# ########################################################## ##
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
-############################################################
+# ########################################################## ##
 
-############################################################
+# ########################################################## ##
 # File modified by: Dennis Hayrullin                       #
-############################################################
+# ########################################################## ##
 
 # from PyQt5.QtCore import QModelIndex
 from FlatCAMObj import *
@@ -20,9 +20,9 @@ from PyQt5.QtCore import Qt
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
-import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
@@ -210,7 +210,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         QtCore.QAbstractItemModel.__init__(self)
 
-        ### Icons for the list view
+        # ## Icons for the list view
         self.icons = {}
         for kind in ObjectCollection.icon_files:
             self.icons[kind] = QtGui.QPixmap(ObjectCollection.icon_files[kind])
@@ -230,7 +230,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         #     print i.data(0)
         #     i.append_child(TreeItem(["empty"]))
 
-        ### Data ###
+        # ## Data # ##
         self.checked_indexes = []
 
         # Names of objects that are expected to become available.
@@ -245,7 +245,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         self.app = app
 
-        ### View
+        # ## View
         self.view = KeySensitiveListView(app)
         self.view.setModel(self)
 
@@ -261,7 +261,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         font.setFamily("Seagoe UI")
         self.view.setFont(font)
 
-        ## GUI Events
+        # ## GUI Events
         self.view.selectionModel().selectionChanged.connect(self.on_list_selection_change)
         self.view.activated.connect(self.on_item_activated)
         # self.view.keyPressed.connect(self.on_key)
@@ -399,11 +399,11 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         if index.isValid():
             obj = index.internalPointer().obj
             if obj:
-                old_name = str(obj.options['name'])
+                old_name = obj.options['name']
                 new_name = str(data)
                 if old_name != new_name and new_name != '':
                     # rename the object
-                    obj.options["name"] = str(data)
+                    obj.options["name"] = deepcopy(data)
 
                     # update the SHELL auto-completer model data
                     try:
@@ -411,11 +411,12 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                         self.app.myKeywords.append(new_name)
                         self.app.shell._edit.set_model_data(self.app.myKeywords)
                         self.app.ui.code_editor.set_model_data(self.app.myKeywords)
-                    except:
+                    except Exception as e:
                         log.debug(
-                            "setData() --> Could not remove the old object name from auto-completer model list")
+                            "setData() --> Could not remove the old object name from auto-completer model list. %s" %
+                            str(e))
 
-                    obj.build_ui()
+                    # obj.build_ui()
                     self.app.inform.emit(_("Object renamed from <b>{old}</b> to <b>{new}</b>").format(old=old_name,
                                                                                                       new=new_name))
 
@@ -452,7 +453,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         # Prevent same name
         while name in self.get_names():
-            ## Create a new name
+            # ## Create a new name
             # Ends with number?
             FlatCAMApp.App.log.debug("new_object(): Object name (%s) exists, changing." % name)
             match = re.search(r'(.*[^\d])?(\d+)$', name)
@@ -525,8 +526,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
                 ymin = min([ymin, gymin])
                 xmax = max([xmax, gxmax])
                 ymax = max([ymax, gymax])
-            except:
-                FlatCAMApp.App.log.warning("DEV WARNING: Tried to get bounds of empty geometry.")
+            except Exception as e:
+                FlatCAMApp.App.log.warning("DEV WARNING: Tried to get bounds of empty geometry. %s" % str(e))
 
         return [xmin, ymin, xmax, ymax]
 
@@ -536,11 +537,11 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         :param name: The name of the object.
         :type name: str
+        :param isCaseSensitive: whether searching of the object is done by name where the name is case sensitive
         :return: The requested object or None if no such object.
         :rtype: FlatCAMObj or None
         """
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + "--> OC.get_by_name()")
-
 
         if isCaseSensitive is None or isCaseSensitive is True:
             for obj in self.get_list():
@@ -569,10 +570,9 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.app.myKeywords.remove(name)
             self.app.shell._edit.set_model_data(self.app.myKeywords)
             self.app.ui.code_editor.set_model_data(self.app.myKeywords)
-        except:
+        except Exception as e:
             log.debug(
-                "delete_active() --> Could not remove the old object name from auto-completer model list")
-
+                "delete_active() --> Could not remove the old object name from auto-completer model list. %s" % str(e))
 
         self.beginRemoveRows(self.index(group.row(), 0, QtCore.QModelIndex()), active.row(), active.row())
 
@@ -649,12 +649,12 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         :return: List of objects
         """
 
-        l = self.get_list()
+        obj_list = self.get_list()
 
         for sel in self.get_selected():
-            l.remove(sel)
+            obj_list.remove(sel)
 
-        return l
+        return obj_list
 
     def set_active(self, name):
         """
@@ -731,8 +731,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             self.app.inform.emit('')
             try:
                 self.app.ui.selected_scroll_area.takeWidget()
-            except:
-                FlatCAMApp.App.log.debug("Nothing to remove")
+            except Exception as e:
+                FlatCAMApp.App.log.debug("Nothing to remove. %s" % str(e))
 
             self.app.setup_component_editor()
             return

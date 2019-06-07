@@ -1,4 +1,4 @@
-############################################################
+# ########################################################## ##
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
@@ -17,7 +17,7 @@
 #  * All transformations                                   #
 #                                                          #
 #  Reference: www.w3.org/TR/SVG/Overview.html              #
-############################################################
+# ########################################################## ##
 
 # import xml.etree.ElementTree as ET
 from svg.path import Line, Arc, CubicBezier, QuadraticBezier, parse_path

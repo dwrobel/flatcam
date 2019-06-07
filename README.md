@@ -9,12 +9,77 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+7.06.2019
+
+- fixed bug in ToolCutout where creating a cutout object geometry from another external isolation geometry failed
+- fixed bug in cncjob TclCommand where the gcode could not be correctly generated due of missing bounds params in obj.options dict
+- fixed a hardcoded tolerance in FlatCAMGeometry.generatecncjob() and in FlatCAMGeometry.mtool_gen_cncjob() to use the parameter from Preferences
+- updated translations
+- RELEASE 8.918
+
+5.06.2019
+
+- updated translations
+- some layout changes in Edit -> Preferences such that the German translation (longer words than English) to fit correctly
+- after editing an parameter the focus is lost so the user knows that something happened
+
+4.06.2019
+
+- PEP8 updates in FlatCAMExcEditor.py
+- added the Excellon Editor parameters to the Edit -> Preferences -> Excellon GUI
+- fixed a small bug in Excellon Editor
+- PEP8 cleanup in FlatCAMGui
+- finished adding the Excellon Editor parameters into the app logic and added a selection limit within Excellon Editor just like in the other editors
+
+3.06.2019
+
+- TclCommand Geocutout is now creating a new geometry object when working on a geometry, preserving also the origin object
+- added a new parameter in Edit -> Preferences -> CNCJob named Annotation Color; it controls the color of the font used for annotations
+- added a new parameter in Edit -> Preferences -> CNCJob named Annotation Size; it controls the size of the font used for annotations
+- made visibility change threaded in FlatCAMObj()
+
+2.06.2019
+
+- fixed issue with geometry name not being updated immediately after change while doing geocutout TclCommand
+- some changes to enable/disable project context menu entry handlers
+
+1.06.2019
+
+- fixed text annotation for CNC job so there are no overlapping numbers when 2 lines meet on the same point
+- fixed issue in CNC job plotting where some of the isolation polygons are painted incorrectly
+- fixed issue in CNCJob where the set circle steps is not used 
+
+31.05.2019
+
+- added the possibility to display text annotation for the CNC travel lines. The setting is both in Preferences and in the CNC object properties
+
+30.05.2019
+
+- editing a multi geometry will no longer pop-up a Tcl window
+- solved issue #292 where a new geometry renamed with many underscores failed to store the name in a saved project
+- the name for the saved projects are updated to the current time and not to the time of the app startup
+- some PEP8 changes related to comments starting with only one '#' symbol
+- more PEP8 cleanup
+- solved issue where after the opening of an object the file path is not saved for further open operations
+
+24.05.2019
+
+- added a toggle Grid button to the canvas context menu in the Grids submenu
+- added a toggle left panel button to the canvas context menu
+
+23.05.2019
+
+- fixed bug in Gerber editor FCDisk and FCSemiDisc that the resulting geometry was not stored into the '0' aperture where all the solids are stored
+- fixed minor issue in Gerber Editor where apertures were included in the saved object even if there was no geometric data for that aperture
+- some PEP8 cleanup in FlatCAMApp.py
+
 22.05.2019
 
 - Geo Editor - added a new editor tool, Eraser
 - some PEP8 cleanup of the Geo Editor
 - fixed some selection issues in the new tool Eraser in Geometry Editor
 - updated the translation files
+- RELEASE 8.917
 
 21.05.2019
 

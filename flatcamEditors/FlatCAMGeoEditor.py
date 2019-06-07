@@ -1,15 +1,15 @@
-# ###########################################################
+# ######################################################### ##
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
-# ###########################################################
+# ######################################################### ##
 
 # ###########################################################                                      #
 # File Modified: Marius Adrian Stanciu (c)                 #
 # Date: 3/10/2019                                          #
-# ###########################################################
+# ######################################################### ##
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
@@ -629,7 +629,7 @@ class TransformEditorTool(FlatCAMTool):
 
         self.transform_lay = QtWidgets.QVBoxLayout()
         self.layout.addLayout(self.transform_lay)
-        ## Title
+        # ## Title
         title_label = QtWidgets.QLabel("%s" % (_('Editor %s') % self.toolName))
         title_label.setStyleSheet("""
                 QLabel
@@ -2917,9 +2917,9 @@ class FCTransform(FCShapeTool):
         self.draw_app.transform_tool.run()
 
 
-# #######################
-# ## Main Application ###
-# #######################
+# ##################### ##
+# # ## Main Application # ##
+# ##################### ##
 class FlatCAMGeoEditor(QtCore.QObject):
 
     transform_complete = QtCore.pyqtSignal()
@@ -2935,7 +2935,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app = app
         self.canvas = app.plotcanvas
 
-        ## Toolbar events and properties
+        # ## Toolbar events and properties
         self.tools = {
             "select": {"button": self.app.ui.geo_select_btn,
                        "constructor": FCSelect},
@@ -2965,7 +2965,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                      "constructor": FCCopy}
         }
 
-        # ## Data
+        # # ## Data
         self.active_tool = None
 
         self.storage = FlatCAMGeoEditor.make_storage()
@@ -3373,10 +3373,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
     def toolbar_tool_toggle(self, key):
         self.options[key] = self.sender().isChecked()
-        if self.options[key] == True:
-            return 1
-        else:
-            return 0
+        return 1 if self.options[key] == True else 0
 
     def clear(self):
         self.active_tool = None
@@ -3416,7 +3413,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         if multigeo_tool:
             self.multigeo_tool = multigeo_tool
             geo_to_edit = fcgeometry.flatten(geometry=fcgeometry.tools[self.multigeo_tool]['solid_geometry'])
-            self.app.inform.emit(_("[WARNING] Editing MultiGeo Geometry, tool: {tool} with diameter: {dia}").
+            self.app.inform.emit(_("[WARNING_NOTCL] Editing MultiGeo Geometry, tool: {tool} with diameter: {dia}").
                                  format(tool=self.multigeo_tool, dia=fcgeometry.tools[self.multigeo_tool]['tooldia']))
         else:
             geo_to_edit = fcgeometry.flatten()
@@ -3572,7 +3569,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         if self.active_tool is None:
             return
 
-        # ## Snap coordinates
+        # # ## Snap coordinates
         if self.app.grid_status():
             x, y = self.snap(x, y)
             self.app.app_cursor.enabled = True
@@ -3600,14 +3597,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
         if event.button == 1 and event.is_dragging == 1 and isinstance(self.active_tool, FCEraser):
             pass
         else:
-            # ## Utility geometry (animated)
+            # # ## Utility geometry (animated)
             geo = self.active_tool.utility_geometry(data=(x, y))
             if isinstance(geo, DrawToolShape) and geo.geo is not None:
                 # Remove any previous utility shape
                 self.tool_shape.clear(update=True)
                 self.draw_utility_geometry(geo=geo)
 
-        # ## Selection area on canvas section ###
+        # # ## Selection area on canvas section # ##
         dx = pos[0] - self.pos[0]
         if event.is_dragging == 1 and event.button == 1:
             self.app.delete_selection_shape()
@@ -3941,9 +3938,9 @@ class FlatCAMGeoEditor(QtCore.QObject):
         snap_x, snap_y = (x, y)
         snap_distance = Inf
 
-        # ## Object (corner?) snap
-        # ## No need for the objects, just the coordinates
-        # ## in the index.
+        # # ## Object (corner?) snap
+        # # ## No need for the objects, just the coordinates
+        # # ## in the index.
         if self.options["corner_snap"]:
             try:
                 nearest_pt, shape = self.storage.nearest((x, y))
@@ -3955,7 +3952,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             except (StopIteration, AssertionError):
                 pass
 
-        # ## Grid snap
+        # # ## Grid snap
         if self.options["grid_snap"]:
             if self.options["global_gridx"] != 0:
                 snap_x_ = round(x / self.options["global_gridx"]) * self.options['global_gridx']

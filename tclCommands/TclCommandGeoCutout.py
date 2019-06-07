@@ -165,6 +165,11 @@ class TclCommandGeoCutout(TclCommandSignaled):
 
         # Get min and max data for each object as we just cut rectangles across X or Y
         xmin, ymin, xmax, ymax = cutout_obj.bounds()
+        cutout_obj.options['xmin'] = xmin
+        cutout_obj.options['ymin'] = ymin
+        cutout_obj.options['xmax'] = xmax
+        cutout_obj.options['ymax'] = ymax
+
         px = 0.5 * (xmin + xmax) + margin
         py = 0.5 * (ymin + ymax) + margin
         lenghtx = (xmax - xmin) + (margin * 2)
@@ -179,48 +184,102 @@ class TclCommandGeoCutout(TclCommandSignaled):
 
         if isinstance(cutout_obj, FlatCAMGeometry):
             # rename the obj name so it can be identified as cutout
-            cutout_obj.options["name"] += "_cutout"
+            # cutout_obj.options["name"] += "_cutout"
 
-            if gaps_u == 8 or gaps_u == '2lr':
-                subtract_rectangle(cutout_obj,
-                                   xmin - gapsize,  # botleft_x
-                                   py - gapsize + lenghty / 4,  # botleft_y
-                                   xmax + gapsize,  # topright_x
-                                   py + gapsize + lenghty / 4)  # topright_y
-                subtract_rectangle(cutout_obj,
-                                   xmin - gapsize,
-                                   py - gapsize - lenghty / 4,
-                                   xmax + gapsize,
-                                   py + gapsize - lenghty / 4)
+            # if gaps_u == 8 or gaps_u == '2lr':
+            #     subtract_rectangle(cutout_obj,
+            #                        xmin - gapsize,  # botleft_x
+            #                        py - gapsize + lenghty / 4,  # botleft_y
+            #                        xmax + gapsize,  # topright_x
+            #                        py + gapsize + lenghty / 4)  # topright_y
+            #     subtract_rectangle(cutout_obj,
+            #                        xmin - gapsize,
+            #                        py - gapsize - lenghty / 4,
+            #                        xmax + gapsize,
+            #                        py + gapsize - lenghty / 4)
+            #
+            # if gaps_u == 8 or gaps_u == '2tb':
+            #     subtract_rectangle(cutout_obj,
+            #                        px - gapsize + lenghtx / 4,
+            #                        ymin - gapsize,
+            #                        px + gapsize + lenghtx / 4,
+            #                        ymax + gapsize)
+            #     subtract_rectangle(cutout_obj,
+            #                        px - gapsize - lenghtx / 4,
+            #                        ymin - gapsize,
+            #                        px + gapsize - lenghtx / 4,
+            #                        ymax + gapsize)
+            #
+            # if gaps_u == 4 or gaps_u == 'lr':
+            #     subtract_rectangle(cutout_obj,
+            #                        xmin - gapsize,
+            #                        py - gapsize,
+            #                        xmax + gapsize,
+            #                        py + gapsize)
+            #
+            # if gaps_u == 4 or gaps_u == 'tb':
+            #     subtract_rectangle(cutout_obj,
+            #                        px - gapsize,
+            #                        ymin - gapsize,
+            #                        px + gapsize,
+            #                        ymax + gapsize)
 
-            if gaps_u == 8 or gaps_u == '2tb':
-                subtract_rectangle(cutout_obj,
-                                   px - gapsize + lenghtx / 4,
-                                   ymin - gapsize,
-                                   px + gapsize + lenghtx / 4,
-                                   ymax + gapsize)
-                subtract_rectangle(cutout_obj,
-                                   px - gapsize - lenghtx / 4,
-                                   ymin - gapsize,
-                                   px + gapsize - lenghtx / 4,
-                                   ymax + gapsize)
+            def geo_init(geo_obj, app_obj):
+                geo = deepcopy(cutout_obj.solid_geometry)
 
-            if gaps_u == 4 or gaps_u == 'lr':
-                subtract_rectangle(cutout_obj,
-                                   xmin - gapsize,
-                                   py - gapsize,
-                                   xmax + gapsize,
-                                   py + gapsize)
+                if gaps_u == 8 or gaps_u == '2lr':
+                    geo = substract_rectangle_geo(geo,
+                                                  xmin - gapsize,  # botleft_x
+                                                  py - gapsize + lenghty / 4,  # botleft_y
+                                                  xmax + gapsize,  # topright_x
+                                                  py + gapsize + lenghty / 4)  # topright_y
+                    geo = substract_rectangle_geo(geo,
+                                                  xmin - gapsize,
+                                                  py - gapsize - lenghty / 4,
+                                                  xmax + gapsize,
+                                                  py + gapsize - lenghty / 4)
 
-            if gaps_u == 4 or gaps_u == 'tb':
-                subtract_rectangle(cutout_obj,
-                                   px - gapsize,
-                                   ymin - gapsize,
-                                   px + gapsize,
-                                   ymax + gapsize)
+                if gaps_u == 8 or gaps_u == '2tb':
+                    geo = substract_rectangle_geo(geo,
+                                                  px - gapsize + lenghtx / 4,
+                                                  ymin - gapsize,
+                                                  px + gapsize + lenghtx / 4,
+                                                  ymax + gapsize)
+                    geo = substract_rectangle_geo(geo,
+                                                  px - gapsize - lenghtx / 4,
+                                                  ymin - gapsize,
+                                                  px + gapsize - lenghtx / 4,
+                                                  ymax + gapsize)
 
-            cutout_obj.plot()
-            self.app.inform.emit("[success] Any-form Cutout operation finished.")
+                if gaps_u == 4 or gaps_u == 'lr':
+                    geo = substract_rectangle_geo(geo,
+                                                  xmin - gapsize,
+                                                  py - gapsize,
+                                                  xmax + gapsize,
+                                                  py + gapsize)
+
+                if gaps_u == 4 or gaps_u == 'tb':
+                    geo = substract_rectangle_geo(geo,
+                                                  px - gapsize,
+                                                  ymin - gapsize,
+                                                  px + gapsize,
+                                                  ymax + gapsize)
+                geo_obj.solid_geometry = deepcopy(geo)
+                geo_obj.options['xmin'] = cutout_obj.options['xmin']
+                geo_obj.options['ymin'] = cutout_obj.options['ymin']
+                geo_obj.options['xmax'] = cutout_obj.options['xmax']
+                geo_obj.options['ymax'] = cutout_obj.options['ymax']
+
+                app_obj.disable_plots(objects=[cutout_obj])
+
+                app_obj.inform.emit("[success] Any-form Cutout operation finished.")
+
+            outname = cutout_obj.options["name"] + "_cutout"
+            self.app.new_object('geometry', outname, geo_init)
+
+            # cutout_obj.plot()
+            # self.app.inform.emit("[success] Any-form Cutout operation finished.")
+            # self.app.plots_updated.emit()
         elif isinstance(cutout_obj, FlatCAMGerber):
 
             def geo_init(geo_obj, app_obj):
@@ -267,7 +326,12 @@ class TclCommandGeoCutout(TclCommandSignaled):
                                                   ymin - gapsize,
                                                   px + gapsize,
                                                   ymax + gapsize)
-                geo_obj.solid_geometry = geo
+                geo_obj.solid_geometry = deepcopy(geo)
+                geo_obj.options['xmin'] = cutout_obj.options['xmin']
+                geo_obj.options['ymin'] = cutout_obj.options['ymin']
+                geo_obj.options['xmax'] = cutout_obj.options['xmax']
+                geo_obj.options['ymax'] = cutout_obj.options['ymax']
+                app_obj.inform.emit("[success] Any-form Cutout operation finished.")
 
             outname = cutout_obj.options["name"] + "_cutout"
             self.app.new_object('geometry', outname, geo_init)

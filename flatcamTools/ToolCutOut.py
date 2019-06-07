@@ -415,7 +415,7 @@ class CutOut(FlatCAMTool):
                 object_geo = cutout_obj.solid_geometry
 
             try:
-                _ = iter(object_geo)
+                __ = iter(object_geo)
             except TypeError:
                 object_geo = [object_geo]
 
@@ -424,7 +424,8 @@ class CutOut(FlatCAMTool):
                     geo = (geo.buffer(margin + abs(dia / 2))).exterior
 
                 # Get min and max data for each object as we just cut rectangles across X or Y
-                xmin, ymin, xmax, ymax = geo.bounds
+                xmin, ymin, xmax, ymax = recursive_bounds(geo)
+
                 px = 0.5 * (xmin + xmax) + margin
                 py = 0.5 * (ymin + ymax) + margin
                 lenx = (xmax - xmin) + (margin * 2)
@@ -475,6 +476,11 @@ class CutOut(FlatCAMTool):
                     solid_geo.append(geo)
 
             geo_obj.solid_geometry = deepcopy(solid_geo)
+            xmin, ymin, xmax, ymax = recursive_bounds(geo_obj.solid_geometry)
+            geo_obj.options['xmin'] = xmin
+            geo_obj.options['ymin'] = ymin
+            geo_obj.options['xmax'] = xmax
+            geo_obj.options['ymax'] = ymax
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.new_object('geometry', outname, geo_init)
@@ -565,7 +571,7 @@ class CutOut(FlatCAMTool):
             object_geo = cutout_obj.solid_geometry
 
             try:
-                _ = iter(object_geo)
+                __ = iter(object_geo)
             except TypeError:
                 object_geo = [object_geo]
 

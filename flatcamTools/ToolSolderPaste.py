@@ -1,10 +1,10 @@
-############################################################
+# ########################################################## ##
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-############################################################
+# ########################################################## ##
 
 from FlatCAMTool import FlatCAMTool
 from FlatCAMCommon import LoudDict
@@ -39,7 +39,7 @@ class SolderPaste(FlatCAMTool):
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
 
-        ## Title
+        # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                         QLabel
@@ -50,11 +50,11 @@ class SolderPaste(FlatCAMTool):
                         """)
         self.layout.addWidget(title_label)
 
-        ## Form Layout
+        # ## Form Layout
         obj_form_layout = QtWidgets.QFormLayout()
         self.layout.addLayout(obj_form_layout)
 
-        ## Gerber Object to be used for solderpaste dispensing
+        # ## Gerber Object to be used for solderpaste dispensing
         self.obj_combo = FCComboBox(callback=self.on_rmb_combo)
         self.obj_combo.setModel(self.app.collection)
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
@@ -66,7 +66,7 @@ class SolderPaste(FlatCAMTool):
         )
         obj_form_layout.addRow(self.object_label, self.obj_combo)
 
-        #### Tools ####
+        #### Tools ## ##
         self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Tools Table'))
         self.tools_table_label.setToolTip(
             _("Tools pool from which the algorithm\n"
@@ -94,7 +94,7 @@ class SolderPaste(FlatCAMTool):
            _( "Nozzle tool Diameter. It's value (in current FlatCAM units)\n"
             "is the width of the solder paste dispensed."))
 
-        #### Add a new Tool ####
+        #### Add a new Tool ## ##
         hlay_tools = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay_tools)
 
@@ -135,7 +135,7 @@ class SolderPaste(FlatCAMTool):
 
         self.layout.addSpacing(10)
 
-        ## Buttons
+        # ## Buttons
         grid0_1 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0_1)
 
@@ -157,7 +157,7 @@ class SolderPaste(FlatCAMTool):
         self.gcode_box.setContentsMargins(0, 0, 0, 0)
         self.gcode_frame.setLayout(self.gcode_box)
 
-        ## Form Layout
+        # ## Form Layout
         self.gcode_form_layout = QtWidgets.QFormLayout()
         self.gcode_box.addLayout(self.gcode_form_layout)
 
@@ -283,7 +283,7 @@ class SolderPaste(FlatCAMTool):
         self.pp_combo.setStyleSheet('background-color: rgb(255,255,255)')
         self.gcode_form_layout.addRow(pp_label, self.pp_combo)
 
-        ## Buttons
+        # ## Buttons
         grid1 = QtWidgets.QGridLayout()
         self.gcode_box.addLayout(grid1)
 
@@ -301,7 +301,7 @@ class SolderPaste(FlatCAMTool):
         self.generation_frame.setLayout(self.generation_box)
 
 
-        ## Buttons
+        # ## Buttons
         grid2 = QtWidgets.QGridLayout()
         self.generation_box.addLayout(grid2)
 
@@ -313,11 +313,11 @@ class SolderPaste(FlatCAMTool):
         grid2.addWidget(step2_lbl, 0, 0)
         grid2.addWidget(self.soldergeo_btn, 0, 2)
 
-        ## Form Layout
+        # ## Form Layout
         geo_form_layout = QtWidgets.QFormLayout()
         self.generation_box.addLayout(geo_form_layout)
 
-        ## Geometry Object to be used for solderpaste dispensing
+        # ## Geometry Object to be used for solderpaste dispensing
         self.geo_obj_combo = FCComboBox(callback=self.on_rmb_combo)
         self.geo_obj_combo.setModel(self.app.collection)
         self.geo_obj_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
@@ -346,11 +346,11 @@ class SolderPaste(FlatCAMTool):
         grid3.addWidget(step3_lbl, 0, 0)
         grid3.addWidget(self.solder_gcode_btn, 0, 2)
 
-        ## Form Layout
+        # ## Form Layout
         cnc_form_layout = QtWidgets.QFormLayout()
         self.generation_box.addLayout(cnc_form_layout)
 
-        ## Gerber Object to be used for solderpaste dispensing
+        # ## Gerber Object to be used for solderpaste dispensing
         self.cnc_obj_combo = FCComboBox(callback=self.on_rmb_combo)
         self.cnc_obj_combo.setModel(self.app.collection)
         self.cnc_obj_combo.setRootModelIndex(self.app.collection.index(3, 0, QtCore.QModelIndex()))
@@ -412,7 +412,7 @@ class SolderPaste(FlatCAMTool):
         # action to be added in the combobox context menu
         self.combo_context_del_action = QtWidgets.QAction(QtGui.QIcon('share/trash16.png'), _("Delete Object"))
 
-        ## Signals
+        # ## Signals
         self.combo_context_del_action.triggered.connect(self.on_delete_object)
         self.addtool_btn.clicked.connect(self.on_tool_add)
         self.addtool_entry.returnPressed.connect(self.on_tool_add)
@@ -995,7 +995,7 @@ class SolderPaste(FlatCAMTool):
 
             if reset:
                 self.flat_geometry = []
-            ## If iterable, expand recursively.
+            # ## If iterable, expand recursively.
             try:
                 for geo in geometry:
                     if geo is not None:
@@ -1003,7 +1003,7 @@ class SolderPaste(FlatCAMTool):
                                 reset=False,
                                 pathonly=pathonly)
 
-            ## Not iterable, do the actual indexing and add.
+            # ## Not iterable, do the actual indexing and add.
             except TypeError:
                 if pathonly and type(geometry) == Polygon:
                     self.flat_geometry.append(geometry.exterior)
@@ -1226,7 +1226,7 @@ class SolderPaste(FlatCAMTool):
                 job_obj.options["tooldia"] = tool_dia
                 job_obj.options['tool_dia'] = tool_dia
 
-                ### CREATE GCODE ###
+                # ## CREATE GCODE # ##
                 res = job_obj.generate_gcode_from_solderpaste_geo(**tooluid_value)
 
                 if res == 'fail':
@@ -1235,7 +1235,7 @@ class SolderPaste(FlatCAMTool):
                 else:
                     tool_cnc_dict['gcode'] = res
 
-                ### PARSE GCODE ###
+                # ## PARSE GCODE # ##
                 tool_cnc_dict['gcode_parsed'] = job_obj.gcode_parse()
 
                 # TODO this serve for bounding box creation only; should be optimized
@@ -1380,7 +1380,7 @@ class SolderPaste(FlatCAMTool):
             gcode += obj.cnc_tools[tool]['gcode']
         lines = StringIO(gcode)
 
-        ## Write
+        # ## Write
         if filename is not None:
             try:
                 with open(filename, 'w') as f:
