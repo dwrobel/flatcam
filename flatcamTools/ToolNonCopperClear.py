@@ -196,9 +196,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
         )
         grid3.addWidget(methodlabel, 3, 0)
         self.ncc_method_radio = RadioSet([
-            {"label": "Standard", "value": "standard"},
-            {"label": "Seed-based", "value": "seed"},
-            {"label": "Straight lines", "value": "lines"}
+            {"label": _("Standard"), "value": "standard"},
+            {"label": _("Seed-based"), "value": "seed"},
+            {"label": _("Straight lines"), "value": "lines"}
         ], orientation='vertical', stretch=False)
         grid3.addWidget(self.ncc_method_radio, 3, 1)
 

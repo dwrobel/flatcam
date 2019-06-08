@@ -139,7 +139,7 @@ class SolderPaste(FlatCAMTool):
         grid0_1 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0_1)
 
-        step1_lbl = QtWidgets.QLabel("<b>%s:</b>" % _('STEP 1'))
+        step1_lbl = QtWidgets.QLabel("<b>%s:</b>" % _('STEP 1:'))
         step1_lbl.setToolTip(
             _("First step is to select a number of nozzle tools for usage\n"
             "and then optionally modify the GCode parameters bellow.")
