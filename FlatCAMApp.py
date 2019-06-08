@@ -8335,54 +8335,6 @@ The normal flow when working in FlatCAM is the following:</span></p>
         self.enable_plots(self.collection.get_list())
         self.inform.emit(_("[success] All plots enabled."))
 
-<<<<<<< HEAD
-    # TODO: FIX THIS
-    '''
-    By default this is not threaded
-    If threaded the app give warnings like this:
-
-    QObject::connect: Cannot queue arguments of type 'QVector<int>'
-    (Make sure 'QVector<int>' is registered using qRegisterMetaType().
-    '''
-    def enable_plots(self, objects, threaded=True):
-        if threaded is True:
-            def worker_task(app_obj):
-                # percentage = 0.1
-                # try:
-                #     delta = 0.9 / len(objects)
-                # except ZeroDivisionError:
-                #     self.progress.emit(0)
-                #     return
-                for obj in objects:
-                    obj.options['plot'] = True
-                    # percentage += delta
-                    # self.progress.emit(int(percentage*100))
-
-                # self.progress.emit(0)
-                self.plots_updated.emit()
-                # self.collection.update_view()
-
-            # Send to worker
-            # self.worker.add_task(worker_task, [self])
-            self.worker_task.emit({'fcn': worker_task, 'params': [self]})
-        else:
-            for obj in objects:
-                obj.options['plot'] = True
-            # self.progress.emit(0)
-            self.plots_updated.emit()
-            # self.collection.update_view()
-
-    # TODO: FIX THIS
-    '''
-    By default this is not threaded
-    If threaded the app give warnings like this:
-
-    QObject::connect: Cannot queue arguments of type 'QVector<int>'
-    (Make sure 'QVector<int>' is registered using qRegisterMetaType().
-    '''
-    def disable_plots(self, objects, threaded=True):
-        # TODO: This method is very similar to replot_all. Try to merge.
-=======
     def on_enable_sel_plots(self):
         log.debug("App.on_enable_sel_plot()")
         object_list = self.collection.get_selected()
@@ -8398,7 +8350,6 @@ The normal flow when working in FlatCAM is the following:</span></p>
         self.inform.emit(_("[success] Selected plots disabled..."))
 
     def enable_plots(self, objects):
->>>>>>> remotes/jpcgt/flatcam/Beta
         """
         Disables plots
         :param objects: list of Objects to be enabled

@@ -1250,7 +1250,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     </tr>
                 </tbody>
             </table>
-
+    
             '''
         )
 
@@ -1265,7 +1265,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             '''<b>Editor Shortcut list</b><br>
             <br>
             <strong><span style="color:#0000ff">GEOMETRY EDITOR</span></strong><br>
-
+    
             <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
                 <tbody>
                     <tr height="20">
@@ -4073,13 +4073,8 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         overlabel = QtWidgets.QLabel(_('Pass overlap:'))
         overlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
-<<<<<<< HEAD
-            "Example:\n"
-            "A value here of 0.25 means an overlap of 25% from the tool diameter found above.")
-=======
               "Example:\n"
-              "A value here of 0.25 means an overlap of 25%% from the tool diameter found above.")
->>>>>>> remotes/jpcgt/flatcam/Beta
+              "A value here of 0.25 means an overlap of 25% from the tool diameter found above.")
         )
         grid0.addWidget(overlabel, 2, 0)
         self.iso_overlap_entry = FloatEntry()
