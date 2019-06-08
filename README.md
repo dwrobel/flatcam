@@ -9,13 +9,19 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+8.06.2019
+
+- make sure that the annotation shapes are deleted on creation of a new project
+- added folder for the Russian translation
+- made sure that visibility for TextGroup is set only if index is not None in VisPyVisuals.TextGroup.visible() setter
+- RELEASE 8.918
+
 7.06.2019
 
 - fixed bug in ToolCutout where creating a cutout object geometry from another external isolation geometry failed
 - fixed bug in cncjob TclCommand where the gcode could not be correctly generated due of missing bounds params in obj.options dict
 - fixed a hardcoded tolerance in FlatCAMGeometry.generatecncjob() and in FlatCAMGeometry.mtool_gen_cncjob() to use the parameter from Preferences
 - updated translations
-- RELEASE 8.918
 
 5.06.2019
 
