@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-05-22 18:30+0300\n"
-"PO-Revision-Date: 2019-06-04 23:36+0400\n"
+"PO-Revision-Date: 2019-06-05 23:00+0400\n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -1161,7 +1161,7 @@ msgstr ""
 
 #: FlatCAMObj.py:1872 flatcamEditors/FlatCAMExcEditor.py:1332
 msgid "Total Drills"
-msgstr "Всего свёрел"
+msgstr "Всего отверстий"
 
 #: FlatCAMObj.py:1898 flatcamEditors/FlatCAMExcEditor.py:1364
 msgid "Total Slots"
@@ -2108,7 +2108,7 @@ msgstr "Нарисовать"
 #: flatcamGUI/FlatCAMGUI.py:1868 flatcamGUI/ObjectUI.py:1314
 #: flatcamTools/ToolPaint.py:341
 msgid "Paint Tool"
-msgstr "Инструмент рисования"
+msgstr "Рисование"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:563
 msgid "[WARNING_NOTCL] Paint cancelled. No shape selected."
@@ -2147,7 +2147,7 @@ msgstr "Инструменты"
 #: flatcamEditors/FlatCAMGrbEditor.py:4894 flatcamGUI/FlatCAMGUI.py:659
 #: flatcamGUI/FlatCAMGUI.py:1881 flatcamTools/ToolTransform.py:398
 msgid "Transform Tool"
-msgstr "Инструмент трансформации"
+msgstr "Трансформация"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:618
 #: flatcamEditors/FlatCAMGeoEditor.py:679
@@ -4063,7 +4063,7 @@ msgstr "&Командная строка"
 
 #: flatcamGUI/FlatCAMGUI.py:645 flatcamGUI/FlatCAMGUI.py:1865
 msgid "2Sided Tool"
-msgstr "2-х стор. платы"
+msgstr "2-х стор. плата"
 
 #: flatcamGUI/FlatCAMGUI.py:646 flatcamGUI/FlatCAMGUI.py:1866
 msgid "&Cutout Tool"
@@ -4072,11 +4072,11 @@ msgstr "&Обрезка контура платы"
 #: flatcamGUI/FlatCAMGUI.py:647 flatcamGUI/FlatCAMGUI.py:1867
 #: flatcamGUI/ObjectUI.py:392 flatcamTools/ToolNonCopperClear.py:285
 msgid "NCC Tool"
-msgstr ""
+msgstr "Очистка от меди"
 
 #: flatcamGUI/FlatCAMGUI.py:651 flatcamGUI/FlatCAMGUI.py:1871
 msgid "Panel Tool"
-msgstr ""
+msgstr "Панелизация"
 
 #: flatcamGUI/FlatCAMGUI.py:652 flatcamGUI/FlatCAMGUI.py:1872
 #: flatcamTools/ToolFilm.py:204
@@ -4094,7 +4094,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:658 flatcamGUI/FlatCAMGUI.py:1880
 msgid "Calculators Tool"
-msgstr ""
+msgstr "Калькулятор"
 
 #: flatcamGUI/FlatCAMGUI.py:662 flatcamGUI/FlatCAMGUI.py:676
 #: flatcamGUI/FlatCAMGUI.py:710 flatcamGUI/FlatCAMGUI.py:1884
@@ -4161,7 +4161,7 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:689 flatcamGUI/FlatCAMGUI.py:724
 #: flatcamGUI/FlatCAMGUI.py:1914 flatcamGUI/FlatCAMGUI.py:1950
 msgid "Eraser"
-msgstr ""
+msgstr "Стёрка"
 
 #: flatcamGUI/FlatCAMGUI.py:692 flatcamGUI/FlatCAMGUI.py:1918
 msgid "Polygon Union"
@@ -4958,7 +4958,7 @@ msgstr "Excellon"
 
 #: flatcamGUI/FlatCAMGUI.py:1592
 msgid "Grids"
-msgstr ""
+msgstr "Сетка"
 
 #: flatcamGUI/FlatCAMGUI.py:1594
 msgid "View"
@@ -6715,7 +6715,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5616
 msgid "NCC Tool Options"
-msgstr ""
+msgstr "Параметры очистки от меди"
 
 #: flatcamGUI/FlatCAMGUI.py:5629 flatcamGUI/FlatCAMGUI.py:6359
 msgid "Tools dia:"
@@ -6832,7 +6832,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5781 flatcamTools/ToolCutOut.py:115
 msgid "Convex Sh.:"
-msgstr "Выпуклая форма:"
+msgstr "Закруглять углы:"
 
 #: flatcamGUI/FlatCAMGUI.py:5783
 msgid "Create a convex shape surrounding the entire PCB."
@@ -7058,7 +7058,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6121
 msgid "Calculators Tool Options"
-msgstr ""
+msgstr "Параметры калькулятора"
 
 #: flatcamGUI/FlatCAMGUI.py:6124
 msgid "<b>V-Shape Tool Calculator:</b>"
@@ -8933,11 +8933,11 @@ msgstr ""
 
 #: flatcamTools/ToolMeasurement.py:49
 msgid "Start"
-msgstr "Старт"
+msgstr "Начальн."
 
 #: flatcamTools/ToolMeasurement.py:49 flatcamTools/ToolMeasurement.py:52
 msgid "Coords"
-msgstr ""
+msgstr "координаты"
 
 #: flatcamTools/ToolMeasurement.py:50 flatcamTools/ToolMeasurement.py:66
 msgid "This is measuring Start point coordinates."
@@ -8945,7 +8945,7 @@ msgstr ""
 
 #: flatcamTools/ToolMeasurement.py:52
 msgid "Stop"
-msgstr "Стоп"
+msgstr "Конечн."
 
 #: flatcamTools/ToolMeasurement.py:53 flatcamTools/ToolMeasurement.py:70
 msgid "This is the measuring Stop point coordinates."
@@ -9998,7 +9998,7 @@ msgstr ""
 
 #: flatcamTools/ToolTransform.py:23
 msgid "Object Transform"
-msgstr "Объект Transform"
+msgstr "Трансформация"
 
 #: flatcamTools/ToolTransform.py:84
 msgid ""
