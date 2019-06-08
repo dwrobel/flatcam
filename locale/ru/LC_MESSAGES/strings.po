@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-06-07 23:14+0300\n"
-"PO-Revision-Date: 2019-06-09 01:31+0400\n"
+"PO-Revision-Date: 2019-06-09 01:51+0400\n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -3749,11 +3749,11 @@ msgstr "&Вид"
 
 #: flatcamGUI/FlatCAMGUI.py:350
 msgid "Enable all plots\tALT+1"
-msgstr "Включить все участки\tALT+1"
+msgstr "Включить все чертежи\tALT+1"
 
 #: flatcamGUI/FlatCAMGUI.py:352
 msgid "Disable all plots\tALT+2"
-msgstr "Отключить все участки\tALT+2"
+msgstr "Отключить все чертежи\tALT+2"
 
 #: flatcamGUI/FlatCAMGUI.py:354
 msgid "Disable non-selected\tALT+3"
@@ -9093,7 +9093,9 @@ msgstr "ИЗМЕРИТЕЛЬ: Нажмите на конечную точку ..
 #: flatcamTools/ToolMeasurement.py:278
 #, python-brace-format
 msgid "MEASURING: Result D(x) = {d_x} | D(y) = {d_y} | Distance = {d_z}"
-msgstr "ИЗМЕРИТЕЛЬ: Результат D(x) = {d_x} | D(y) = {d_y} | Расстояние = {d_z}"
+msgstr ""
+"ИЗМЕРИТЕЛЬ: Результат расстояние(x) = {d_x} | расстояние(y) = {d_y} | "
+"Расстояние = {d_z}"
 
 #: flatcamTools/ToolMove.py:81
 msgid "MOVE: Click on the Start point ..."
