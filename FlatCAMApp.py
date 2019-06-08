@@ -5914,19 +5914,27 @@ class App(QtCore.QObject):
         # Clear pool
         self.clear_pool()
 
-        #delete shapes left drawn from mark shape_collections, if any
         for obj in self.collection.get_list():
-            try:
-                obj.mark_shapes.enabled = False
-                obj.mark_shapes.clear(update=True)
-            except:
-                pass
+            # delete shapes left drawn from mark shape_collections, if any
+            if isinstance(obj, FlatCAMGerber):
+                try:
+                    obj.mark_shapes.enabled = False
+                    obj.mark_shapes.clear(update=True)
+                except AttributeError:
+                    pass
+
+            # also delete annotation shapes, if any
+            elif isinstance(obj, FlatCAMCNCjob):
+                try:
+                    obj.annotation.enabled = False
+                    obj.annotation.clear(update=True)
+                except AttributeError:
+                    pass
 
         # tcl needs to be reinitialized, otherwise  old shell variables etc  remains
         self.init_tcl()
 
         self.delete_selection_shape()
-
         self.collection.delete_all()
 
         self.setup_component_editor()
@@ -6119,7 +6127,7 @@ class App(QtCore.QObject):
                                                                  filter = _filter_)
 
         if filename == "":
-            self.inform.emit(_("[WARNING_NOTCL Open Config cancelled."))
+            self.inform.emit(_("[WARNING_NOTCL] Open Config cancelled."))
         else:
             self.open_config_file(filename)
 
