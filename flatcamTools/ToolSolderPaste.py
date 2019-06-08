@@ -448,7 +448,7 @@ class SolderPaste(FlatCAMTool):
         self.set_tool_ui()
         self.build_ui()
 
-        self.app.ui.notebook.setTabText(2, "SolderPaste Tool")
+        self.app.ui.notebook.setTabText(2, _("SolderPaste Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+K', **kwargs)
@@ -1275,7 +1275,7 @@ class SolderPaste(FlatCAMTool):
         time_str = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
 
         # add the tab if it was closed
-        self.app.ui.plot_tab_area.addTab(self.app.ui.cncjob_tab, "Code Editor")
+        self.app.ui.plot_tab_area.addTab(self.app.ui.cncjob_tab, _("Code Editor"))
 
         # first clear previous text in text editor (if any)
         self.app.ui.code_editor.clear()

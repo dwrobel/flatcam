@@ -690,6 +690,7 @@ msgid "[ERROR]App.on_view_source() -->%s"
 msgstr ""
 
 #: FlatCAMApp.py:6562 FlatCAMApp.py:7704 FlatCAMObj.py:5587
+#: flatcamTools/ToolSolderPaste.py:1278
 msgid "Code Editor"
 msgstr ""
 
@@ -3941,6 +3942,7 @@ msgid "Film Tool"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:648 flatcamGUI/FlatCAMGUI.py:1872
+#: flatcamTools/ToolSolderPaste.py:451
 msgid "SolderPaste Tool"
 msgstr ""
 
