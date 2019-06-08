@@ -1,10 +1,10 @@
-############################################################
+# ########################################################## ##
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-############################################################
+# ########################################################## ##
 
 from FlatCAMTool import FlatCAMTool
 from FlatCAMObj import *
@@ -32,11 +32,11 @@ class Measurement(FlatCAMTool):
         self.canvas = self.app.plotcanvas
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
 
-        ## Title
+        # ## Title
         title_label = QtWidgets.QLabel("<font size=4><b>%s</b></font><br>" % self.toolName)
         self.layout.addWidget(title_label)
 
-        ## Form Layout
+        # ## Form Layout
         form_layout = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout)
 

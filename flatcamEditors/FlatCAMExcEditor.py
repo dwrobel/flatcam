@@ -16,9 +16,9 @@ from copy import copy, deepcopy
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
-import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
@@ -34,9 +34,9 @@ class FCDrillAdd(FCShapeTool):
 
         self.selected_dia = None
         try:
-            self.draw_app.app.inform.emit(self.start_msg)
-            # self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.tools_table_exc.currentRow() + 1]
+            self.draw_app.app.inform.emit(_("Click to place ..."))
             self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
+
             # as a visual marker, select again in tooltable the actual tool that we are using
             # remember that it was deselected when clicking on canvas
             item = self.draw_app.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
@@ -140,7 +140,7 @@ class FCDrillArray(FCShapeTool):
         self.pt = []
 
         try:
-            self.draw_app.app.inform.emit(self.start_msg)
+            self.draw_app.app.inform.emit(_("Click to place ..."))
             self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
             # as a visual marker, select again in tooltable the actual tool that we are using
             # remember that it was deselected when clicking on canvas
@@ -204,7 +204,7 @@ class FCDrillArray(FCShapeTool):
                     _("[ERROR_NOTCL] The value is not Float. Check for comma instead of dot separator."))
                 return
         except Exception as e:
-            self.draw_app.app.inform.emit(_("[ERROR_NOTCL] The value is mistyped. Check the value."))
+            self.draw_app.app.inform.emit(_("[ERROR_NOTCL] The value is mistyped. Check the value. %s") % str(e))
             return
 
         if self.drill_array == 'Linear':
@@ -350,7 +350,9 @@ class FCDrillResize(FCShapeTool):
         try:
             new_dia = self.draw_app.resdrill_entry.get_value()
         except:
-            self.draw_app.app.inform.emit(_("[ERROR_NOTCL] Resize drill(s) failed. Please enter a diameter for resize."))
+            self.draw_app.app.inform.emit(
+                _("[ERROR_NOTCL] Resize drill(s) failed. Please enter a diameter for resize.")
+            )
             return
 
         if new_dia not in self.draw_app.olddia_newdia:
@@ -406,7 +408,7 @@ class FCDrillResize(FCShapeTool):
                         if new_dia not in self.draw_app.points_edit:
                             self.draw_app.points_edit[new_dia] = [(0, 0)]
                         else:
-                            self.draw_app.points_edit[new_dia].append((0,0))
+                            self.draw_app.points_edit[new_dia].append((0, 0))
                         self.geometry = []
 
                         # if following the resize of the drills there will be no more drills for the selected tool then
@@ -416,7 +418,6 @@ class FCDrillResize(FCShapeTool):
 
             for shp in sel_shapes_to_be_deleted:
                 self.draw_app.selected.remove(shp)
-            sel_shapes_to_be_deleted = []
 
             self.draw_app.build_ui()
             self.draw_app.replot()
@@ -440,6 +441,8 @@ class FCDrillMove(FCShapeTool):
         # self.shape_buffer = self.draw_app.shape_buffer
         self.origin = None
         self.destination = None
+        self.sel_limit = self.draw_app.app.defaults["excellon_editor_sel_limit"]
+        self.selection_shape = self.selection_bbox()
         self.selected_dia_list = []
 
         if self.draw_app.launched_from_shortcuts is True:
@@ -503,6 +506,25 @@ class FCDrillMove(FCShapeTool):
         self.draw_app.build_ui()
         self.draw_app.app.inform.emit(_("[success] Done. Drill(s) Move completed."))
 
+    def selection_bbox(self):
+        geo_list = []
+        for select_shape in self.draw_app.get_selected():
+            geometric_data = select_shape.geo
+            try:
+                for g in geometric_data:
+                    geo_list.append(g)
+            except TypeError:
+                geo_list.append(geometric_data)
+
+        xmin, ymin, xmax, ymax = get_shapely_list_bounds(geo_list)
+
+        pt1 = (xmin, ymin)
+        pt2 = (xmax, ymin)
+        pt3 = (xmax, ymax)
+        pt4 = (xmin, ymax)
+
+        return Polygon([pt1, pt2, pt3, pt4])
+
     def utility_geometry(self, data=None):
         """
         Temporary geometry on screen while using this tool.
@@ -520,9 +542,22 @@ class FCDrillMove(FCShapeTool):
 
         dx = data[0] - self.origin[0]
         dy = data[1] - self.origin[1]
-        for geom in self.draw_app.get_selected():
-            geo_list.append(affinity.translate(geom.geo, xoff=dx, yoff=dy))
-        return DrawToolUtilityShape(geo_list)
+
+        if len(self.draw_app.get_selected()) <= self.sel_limit:
+            try:
+                for geom in self.draw_app.get_selected():
+                    geo_list.append(affinity.translate(geom.geo, xoff=dx, yoff=dy))
+            except AttributeError:
+                self.draw_app.select_tool('drill_select')
+                self.draw_app.selected = []
+                return
+            return DrawToolUtilityShape(geo_list)
+        else:
+            try:
+                ss_el = affinity.translate(self.selection_shape, xoff=dx, yoff=dy)
+            except ValueError:
+                ss_el = None
+            return DrawToolUtilityShape(ss_el)
 
 
 class FCDrillCopy(FCDrillMove):
@@ -595,8 +630,8 @@ class FCDrillSelect(DrawTool):
 
         try:
             for storage in self.exc_editor_app.storage_dict:
-                for shape in self.exc_editor_app.storage_dict[storage].get_objects():
-                    self.sel_storage.insert(shape)
+                for sh in self.exc_editor_app.storage_dict[storage].get_objects():
+                    self.sel_storage.insert(sh)
 
             _, closest_shape = self.sel_storage.nearest(pos)
 
@@ -718,19 +753,18 @@ class FlatCAMExcEditor(QtCore.QObject):
     draw_shape_idx = -1
 
     def __init__(self, app):
-        assert isinstance(app, FlatCAMApp.App), \
-            "Expected the app to be a FlatCAMApp.App, got %s" % type(app)
+        assert isinstance(app, FlatCAMApp.App), "Expected the app to be a FlatCAMApp.App, got %s" % type(app)
 
         super(FlatCAMExcEditor, self).__init__()
 
         self.app = app
         self.canvas = self.app.plotcanvas
 
-        ## Current application units in Upper Case
+        # ## Current application units in Upper Case
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         self.exc_edit_widget = QtWidgets.QWidget()
-        ## Box for custom widgets
+        # ## Box for custom widgets
         # This gets populated in offspring implementations.
         layout = QtWidgets.QVBoxLayout()
         self.exc_edit_widget.setLayout(layout)
@@ -744,22 +778,22 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.tools_box.setContentsMargins(0, 0, 0, 0)
         self.drills_frame.setLayout(self.tools_box)
 
-        ## Page Title box (spacing between children)
+        # ## Page Title box (spacing between children)
         self.title_box = QtWidgets.QHBoxLayout()
         self.tools_box.addLayout(self.title_box)
 
-        ## Page Title icon
+        # ## Page Title icon
         pixmap = QtGui.QPixmap('share/flatcam_icon32.png')
         self.icon = QtWidgets.QLabel()
         self.icon.setPixmap(pixmap)
         self.title_box.addWidget(self.icon, stretch=0)
 
-        ## Title label
+        # ## Title label
         self.title_label = QtWidgets.QLabel("<font size=5><b>%s</b></font>" % _('Excellon Editor'))
         self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.title_box.addWidget(self.title_label, stretch=1)
 
-        ## Object name
+        # ## Object name
         self.name_box = QtWidgets.QHBoxLayout()
         self.tools_box.addLayout(self.name_box)
         name_label = QtWidgets.QLabel(_("Name:"))
@@ -767,11 +801,11 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.name_entry = FCEntry()
         self.name_box.addWidget(self.name_entry)
 
-        #### Tools Drills ####
+        # ### Tools Drills ## ##
         self.tools_table_label = QtWidgets.QLabel("<b>%s</b>" % _('Tools Table'))
         self.tools_table_label.setToolTip(
-           _( "Tools in this Excellon object\n"
-            "when are used for drilling.")
+           _("Tools in this Excellon object\n"
+             "when are used for drilling.")
         )
         self.tools_box.addWidget(self.tools_table_label)
 
@@ -789,11 +823,11 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.empty_label = QtWidgets.QLabel('')
         self.tools_box.addWidget(self.empty_label)
 
-        #### Add a new Tool ####
+        # ### Add a new Tool ## ##
         self.addtool_label = QtWidgets.QLabel('<b>%s</b>' % _('Add/Delete Tool'))
         self.addtool_label.setToolTip(
             _("Add/Delete a tool to the tool list\n"
-            "for this Excellon object.")
+              "for this Excellon object.")
         )
         self.tools_box.addWidget(self.addtool_label)
 
@@ -802,9 +836,8 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         addtool_entry_lbl = QtWidgets.QLabel(_('Tool Dia:'))
         addtool_entry_lbl.setToolTip(
-        _("Diameter for the new tool")
+            _("Diameter for the new tool")
         )
-        grid1.addWidget(addtool_entry_lbl, 0, 0)
 
         hlay = QtWidgets.QHBoxLayout()
         self.addtool_entry = FCEntry()
@@ -813,11 +846,13 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.addtool_btn = QtWidgets.QPushButton(_('Add Tool'))
         self.addtool_btn.setToolTip(
-           _( "Add a new tool to the tool list\n"
-            "with the diameter specified above.")
+           _("Add a new tool to the tool list\n"
+             "with the diameter specified above.")
         )
         self.addtool_btn.setFixedWidth(80)
         hlay.addWidget(self.addtool_btn)
+
+        grid1.addWidget(addtool_entry_lbl, 0, 0)
         grid1.addLayout(hlay, 0, 1)
 
         grid2 = QtWidgets.QGridLayout()
@@ -825,8 +860,8 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.deltool_btn = QtWidgets.QPushButton(_('Delete Tool'))
         self.deltool_btn.setToolTip(
-           _( "Delete a tool in the tool list\n"
-            "by selecting a row in the tool table.")
+           _("Delete a tool in the tool list\n"
+             "by selecting a row in the tool table.")
         )
         grid2.addWidget(self.deltool_btn, 0, 1)
 
@@ -839,7 +874,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.resize_box.setContentsMargins(0, 0, 0, 0)
         self.resize_frame.setLayout(self.resize_box)
 
-        #### Resize a  drill ####
+        # ### Resize a  drill ## ##
         self.emptyresize_label = QtWidgets.QLabel('')
         self.resize_box.addWidget(self.emptyresize_label)
 
@@ -882,7 +917,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.array_box.setContentsMargins(0, 0, 0, 0)
         self.array_frame.setLayout(self.array_box)
 
-        #### Add DRILL Array ####
+        # ### Add DRILL Array ## ##
         self.emptyarray_label = QtWidgets.QLabel('')
         self.array_box.addWidget(self.emptyarray_label)
 
@@ -895,7 +930,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.array_type_combo = FCComboBox()
         self.array_type_combo.setToolTip(
            _( "Select the type of drills array to create.\n"
-            "It can be Linear X(Y) or Circular")
+              "It can be Linear X(Y) or Circular")
         )
         self.array_type_combo.addItem(_("Linear"))
         self.array_type_combo.addItem(_("Circular"))
@@ -905,6 +940,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.array_form = QtWidgets.QFormLayout()
         self.array_box.addLayout(self.array_form)
 
+        # Set the number of drill holes in the drill array
         self.drill_array_size_label = QtWidgets.QLabel(_('Nr of drills:'))
         self.drill_array_size_label.setToolTip(
             _("Specify how many drills to be in the array.")
@@ -924,21 +960,22 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.linear_form = QtWidgets.QFormLayout()
         self.linear_box.addLayout(self.linear_form)
 
+        # Linear Drill Array direction
         self.drill_axis_label = QtWidgets.QLabel(_('Direction:'))
         self.drill_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
-            "- 'X' - horizontal axis \n"
-            "- 'Y' - vertical axis or \n"
-            "- 'Angle' - a custom angle for the array inclination")
+              "- 'X' - horizontal axis \n"
+              "- 'Y' - vertical axis or \n"
+              "- 'Angle' - a custom angle for the array inclination")
         )
         self.drill_axis_label.setFixedWidth(100)
 
         self.drill_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
                                           {'label': 'Y', 'value': 'Y'},
                                           {'label': 'Angle', 'value': 'A'}])
-        self.drill_axis_radio.set_value('X')
         self.linear_form.addRow(self.drill_axis_label, self.drill_axis_radio)
 
+        # Linear Drill Array pitch distance
         self.drill_pitch_label = QtWidgets.QLabel(_('Pitch:'))
         self.drill_pitch_label.setToolTip(
             _("Pitch = Distance between elements of the array.")
@@ -948,12 +985,13 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.drill_pitch_entry = LengthEntry()
         self.linear_form.addRow(self.drill_pitch_label, self.drill_pitch_entry)
 
+        # Linear Drill Array angle
         self.linear_angle_label = QtWidgets.QLabel(_('Angle:'))
         self.linear_angle_label.setToolTip(
            _( "Angle at which the linear array is placed.\n"
-            "The precision is of max 2 decimals.\n"
-            "Min value is: -359.99 degrees.\n"
-            "Max value is:  360.00 degrees.")
+              "The precision is of max 2 decimals.\n"
+              "Min value is: -359.99 degrees.\n"
+              "Max value is:  360.00 degrees.")
         )
         self.linear_angle_label.setFixedWidth(100)
 
@@ -972,7 +1010,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.drill_direction_label = QtWidgets.QLabel(_('Direction:'))
         self.drill_direction_label.setToolTip(
            _( "Direction for circular array."
-            "Can be CW = clockwise or CCW = counter clockwise.")
+              "Can be CW = clockwise or CCW = counter clockwise.")
         )
         self.drill_direction_label.setFixedWidth(100)
 
@@ -981,7 +1019,6 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.drill_direction_radio = RadioSet([{'label': 'CW', 'value': 'CW'},
                                                {'label': 'CCW.', 'value': 'CCW'}])
-        self.drill_direction_radio.set_value('CW')
         self.circular_form.addRow(self.drill_direction_label, self.drill_direction_radio)
 
         self.drill_angle_label = QtWidgets.QLabel(_('Angle:'))
@@ -1001,23 +1038,23 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.array_frame.hide()
         self.tools_box.addStretch()
 
-        ## Toolbar events and properties
+        # ## Toolbar events and properties
         self.tools_exc = {
             "drill_select": {"button": self.app.ui.select_drill_btn,
-                       "constructor": FCDrillSelect},
+                             "constructor": FCDrillSelect},
             "drill_add": {"button": self.app.ui.add_drill_btn,
-                    "constructor": FCDrillAdd},
+                          "constructor": FCDrillAdd},
             "drill_array": {"button": self.app.ui.add_drill_array_btn,
-                          "constructor": FCDrillArray},
+                            "constructor": FCDrillArray},
             "drill_resize": {"button": self.app.ui.resize_drill_btn,
-                       "constructor": FCDrillResize},
+                             "constructor": FCDrillResize},
             "drill_copy": {"button": self.app.ui.copy_drill_btn,
-                     "constructor": FCDrillCopy},
+                           "constructor": FCDrillCopy},
             "drill_move": {"button": self.app.ui.move_drill_btn,
-                     "constructor": FCDrillMove},
+                           "constructor": FCDrillMove},
         }
 
-        ### Data
+        # ## Data
         self.active_tool = None
 
         self.in_action = False
@@ -1073,12 +1110,6 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.app.ui.exc_move_drill_menuitem.triggered.connect(self.exc_move_drills)
 
-        # Init GUI
-        self.drill_array_size_entry.set_value(5)
-        self.drill_pitch_entry.set_value(2.54)
-        self.drill_angle_entry.set_value(12)
-        self.drill_direction_radio.set_value('CW')
-        self.drill_axis_radio.set_value('X')
         self.exc_obj = None
 
         # VisPy Visuals
@@ -1090,7 +1121,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.shapes.enabled = False
         self.tool_shape.enabled = False
 
-        ## List of selected shapes.
+        # ## List of selected shapes.
         self.selected = []
 
         self.move_timer = QtCore.QTimer()
@@ -1104,6 +1135,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.snap_x = None
         self.snap_y = None
         self.pos = None
+
+        self.complete = False
 
         def make_callback(thetool):
             def f():
@@ -1159,15 +1192,13 @@ class FlatCAMExcEditor(QtCore.QObject):
 
     @staticmethod
     def make_storage():
-
-        ## Shape storage.
+        # ## Shape storage.
         storage = FlatCAMRTreeStorage()
         storage.get_points = DrawToolShape.get_pts
 
         return storage
 
     def set_ui(self):
-
         # updated units
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
@@ -1186,6 +1217,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                     self.points_edit[tool_dia].append(drill['point'])
                 except KeyError:
                     self.points_edit[tool_dia] = [drill['point']]
+
         # update the olddia_newdia dict to make sure we have an updated state of the tool_table
         for key in self.points_edit:
             self.olddia_newdia[key] = key
@@ -1211,6 +1243,15 @@ class FlatCAMExcEditor(QtCore.QObject):
                     tool_dia = float('%.2f' % v['C'])
                 self.tool2tooldia[int(k)] = tool_dia
 
+        # Init GUI
+        self.addtool_entry.set_value(float(self.app.defaults['excellon_editor_newdia']))
+        self.drill_array_size_entry.set_value(int(self.app.defaults['excellon_editor_array_size']))
+        self.drill_axis_radio.set_value(self.app.defaults['excellon_editor_lin_dir'])
+        self.drill_pitch_entry.set_value(float(self.app.defaults['excellon_editor_lin_pitch']))
+        self.linear_angle_spinner.set_value(float(self.app.defaults['excellon_editor_lin_angle']))
+        self.drill_direction_radio.set_value(self.app.defaults['excellon_editor_circ_dir'])
+        self.drill_angle_entry.set_value(float(self.app.defaults['excellon_editor_circ_angle']))
+
     def build_ui(self, first_run=None):
 
         try:
@@ -1230,11 +1271,6 @@ class FlatCAMExcEditor(QtCore.QObject):
         # make a new name for the new Excellon object (the one with edited content)
         self.edited_obj_name = self.exc_obj.options['name']
         self.name_entry.set_value(self.edited_obj_name)
-
-        if self.units == "IN":
-            self.addtool_entry.set_value(0.039)
-        else:
-            self.addtool_entry.set_value(1.00)
 
         sort_temp = []
 
@@ -1278,9 +1314,9 @@ class FlatCAMExcEditor(QtCore.QObject):
                 # slot editing not implemented
                 pass
 
-            id = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
-            id.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
-            self.tools_table_exc.setItem(self.tool_row, 0, id)  # Tool name/id
+            idd = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
+            idd.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+            self.tools_table_exc.setItem(self.tool_row, 0, idd)  # Tool name/id
 
             # Make sure that the drill diameter when in MM is with no more than 2 decimals
             # There are no drill bits in MM with more than 3 decimals diameter
@@ -1375,7 +1411,6 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.tools_table_exc.item(self.tool_row, kl).setFont(font)
             self.tools_table_exc.item(self.tool_row, kl).setForeground(QtGui.QColor(0, 70, 255))
 
-
         # all the tools are selected by default
         self.tools_table_exc.selectColumn(0)
         #
@@ -1458,7 +1493,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         # we add a new entry in the tool2tooldia dict
         self.tool2tooldia[len(self.olddia_newdia)] = tool_dia
 
-        self.app.inform.emit(_("[success] Added new tool with dia: {dia} {units}").format(dia=str(tool_dia), units=str(self.units)))
+        self.app.inform.emit(_("[success] Added new tool with dia: {dia} {units}").format(dia=str(tool_dia),
+                                                                                          units=str(self.units)))
 
         self.build_ui()
 
@@ -1475,7 +1511,6 @@ class FlatCAMExcEditor(QtCore.QObject):
     def on_tool_delete(self, dia=None):
         self.is_modified = True
         deleted_tool_dia_list = []
-        deleted_tool_offset_list = []
 
         try:
             if dia is None or dia is False:
@@ -1516,14 +1551,15 @@ class FlatCAMExcEditor(QtCore.QObject):
                     # delete the tool
                     self.tool2tooldia.pop(tool_to_be_deleted, None)
 
-                    # delete also the drills from points_edit dict just in case we add the tool again, we don't want to show the
-                    # number of drills from before was deleter
+                    # delete also the drills from points_edit dict just in case we add the tool again,
+                    # we don't want to show the number of drills from before was deleter
                     self.points_edit[deleted_tool_dia] = []
-                flag_del = []
 
             self.olddia_newdia.pop(deleted_tool_dia, None)
 
-            self.app.inform.emit(_("[success] Deleted tool with dia: {del_dia} {units}").format(del_dia=str(deleted_tool_dia), units=str(self.units)))
+            self.app.inform.emit(_("[success] Deleted tool with dia: {del_dia} {units}").format(
+                del_dia=str(deleted_tool_dia),
+                units=str(self.units)))
 
         self.replot()
         # self.app.inform.emit("Could not delete selected tool")
@@ -1539,7 +1575,6 @@ class FlatCAMExcEditor(QtCore.QObject):
         # self.tools_table_exc.selectionModel().currentChanged.disconnect()
 
         self.is_modified = True
-        geometry = []
         current_table_dia_edited = None
 
         if self.tools_table_exc.currentItem() is not None:
@@ -1565,7 +1600,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.tool2tooldia[key_in_tool2tooldia] = current_table_dia_edited
 
             # update the tool offset
-            modified_offset = self.exc_obj.tool_offset.pop(dia_changed ,None)
+            modified_offset = self.exc_obj.tool_offset.pop(dia_changed, None)
             if modified_offset is not None:
                 self.exc_obj.tool_offset[current_table_dia_edited] = modified_offset
 
@@ -1575,10 +1610,11 @@ class FlatCAMExcEditor(QtCore.QObject):
             factor = current_table_dia_edited / dia_changed
             geometry = []
 
-            for shape in self.storage_dict[dia_changed].get_objects():
-                geometry.append(DrawToolShape(
-                    MultiLineString([affinity.scale(subgeo, xfact=factor, yfact=factor, origin='center')
-                                     for subgeo in shape.geo])))
+            for shape_exc in self.storage_dict[dia_changed].get_objects():
+                scaled_geo = MultiLineString(
+                    [affinity.scale(subgeo, xfact=factor, yfact=factor, origin='center') for subgeo in shape_exc.geo]
+                )
+                geometry.append(DrawToolShape(scaled_geo))
 
                 # add bogus drill points (for total count of drills)
                 for k, v in self.olddia_newdia.items():
@@ -1586,8 +1622,8 @@ class FlatCAMExcEditor(QtCore.QObject):
                         self.points_edit[k].append((0, 0))
                         break
 
-            # search for the oldia that correspond to the newdia and add the drills in it's storage
-            # everything will be sort out later, when the edited excellon is updated
+            # search for the old dia that correspond to the new dia and add the drills in it's storage
+            # everything will be sort out later, when the edited Excellon is updated
             for k, v in self.olddia_newdia.items():
                 if v == current_table_dia_edited:
                     self.add_exc_shape(geometry, self.storage_dict[k])
@@ -1739,7 +1775,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.drills_frame.hide()
 
     def connect_canvas_event_handlers(self):
-        ## Canvas events
+        # ## Canvas events
 
         # first connect to new, then disconnect the old handlers
         # don't ask why but if there is nothing connected I've seen issues
@@ -1833,7 +1869,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         Imports the geometry from the given FlatCAM Excellon object
         into the editor.
 
-        :param fcgeometry: FlatCAMExcellon
+        :param exc_obj: FlatCAMExcellon object
         :return: None
         """
 
@@ -1870,16 +1906,16 @@ class FlatCAMExcEditor(QtCore.QObject):
                 stop_hor_line = ((point.x + (tool_dia / 2)), point.y)
                 start_vert_line = (point.x, (point.y - (tool_dia / 2)))
                 stop_vert_line = (point.x, (point.y + (tool_dia / 2)))
-                shape = MultiLineString([(start_hor_line, stop_hor_line),(start_vert_line, stop_vert_line)])
-                if shape is not None:
-                    self.add_exc_shape(DrawToolShape(shape), storage_elem)
+                shape_geo = MultiLineString([(start_hor_line, stop_hor_line), (start_vert_line, stop_vert_line)])
+                if shape_geo is not None:
+                    self.add_exc_shape(DrawToolShape(shape_geo), storage_elem)
             self.storage_dict[tool_dia] = storage_elem
 
         self.replot()
 
         # add a first tool in the Tool Table but only if the Excellon Object is empty
         if not self.tool2tooldia:
-            self.on_tool_add(tooldia=1.00)
+            self.on_tool_add(tooldia=float(self.app.defaults['excellon_editor_newdia']))
 
     def update_fcexcellon(self, exc_obj):
         """
@@ -1907,7 +1943,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 # create a tuple with the coordinates (x, y) and add it to the list that is the value of the
                 # edited_points dictionary
                 point = (x_coord, y_coord)
-                if not storage_tooldia in edited_points:
+                if storage_tooldia not in edited_points:
                     edited_points[storage_tooldia] = [point]
                 else:
                     edited_points[storage_tooldia].append(point)
@@ -1964,8 +2000,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         if self.is_modified is True:
             if "_edit" in self.edited_obj_name:
                 try:
-                    id = int(self.edited_obj_name[-1]) + 1
-                    self.edited_obj_name = self.edited_obj_name[:-1] + str(id)
+                    idd = int(self.edited_obj_name[-1]) + 1
+                    self.edited_obj_name = self.edited_obj_name[:-1] + str(idd)
                 except ValueError:
                     self.edited_obj_name += "_1"
             else:
@@ -2035,7 +2071,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 excellon_obj.create_geometry()
             except KeyError:
                 self.app.inform.emit(
-                   _( "[ERROR_NOTCL] There are no Tools definitions in the file. Aborting Excellon creation.")
+                   _("[ERROR_NOTCL] There are no Tools definitions in the file. Aborting Excellon creation.")
                 )
             except:
                 msg = _("[ERROR] An internal error has ocurred. See shell.\n")
@@ -2116,7 +2152,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
     def toolbar_tool_toggle(self, key):
         self.options[key] = self.sender().isChecked()
-        if self.options[key] == True:
+        if self.options[key] is True:
             return 1
         else:
             return 0
@@ -2151,7 +2187,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             if self.active_tool is not None and event.button is 1:
                 # Dispatch event to active_tool
                 # msg = self.active_tool.click(self.app.geo_editor.snap(event.xdata, event.ydata))
-                msg = self.active_tool.click(self.app.geo_editor.snap(self.pos[0], self.pos[1]))
+                self.active_tool.click(self.app.geo_editor.snap(self.pos[0], self.pos[1]))
 
                 # If it is a shape generating tool
                 if isinstance(self.active_tool, FCShapeTool) and self.active_tool.complete:
@@ -2207,6 +2243,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         :param shape: Shape to be added.
         :type shape: DrawToolShape
+        :param storage: object where to store the shapes
         :return: None
         """
         # List of DrawToolShape?
@@ -2221,8 +2258,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         assert shape.geo is not None, \
             "Shape object has empty geometry (None)"
 
-        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or \
-               not isinstance(shape.geo, list), \
+        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
             "Shape objects has empty geometry ([])"
 
         if isinstance(shape, DrawToolUtilityShape):
@@ -2251,8 +2287,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         assert shape.geo is not None, \
             "Shape object has empty geometry (None)"
 
-        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or \
-               not isinstance(shape.geo, list), \
+        assert (isinstance(shape.geo, list) and len(shape.geo) > 0) or not isinstance(shape.geo, list), \
             "Shape objects has empty geometry ([])"
 
         if isinstance(shape, DrawToolUtilityShape):
@@ -2318,14 +2353,15 @@ class FlatCAMExcEditor(QtCore.QObject):
             log.warning("Error: %s" % str(e))
             raise
 
-    def draw_selection_area_handler(self, start_pos, end_pos, sel_type):
+    def draw_selection_area_handler(self, start, end, sel_type):
         """
         :param start_pos: mouse position when the selection LMB click was done
         :param end_pos: mouse position when the left mouse button is released
         :param sel_type: if True it's a left to right selection (enclosure), if False it's a 'touch' selection
-        :type Bool
         :return:
         """
+        start_pos = (start[0], start[1])
+        end_pos = (end[0], end[1])
         poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
 
         self.app.delete_selection_shape()
@@ -2394,7 +2430,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         if self.active_tool is None:
             return
 
-        ### Snap coordinates
+        # ## Snap coordinates
         if self.app.grid_status():
             x, y = self.app.geo_editor.snap(x, y)
             self.app.app_cursor.enabled = True
@@ -2408,7 +2444,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # update the position label in the infobar since the APP mouse event handlers are disconnected
         self.app.ui.position_label.setText("&nbsp;&nbsp;&nbsp;&nbsp;<b>X</b>: %.4f&nbsp;&nbsp;   "
-                                       "<b>Y</b>: %.4f" % (x, y))
+                                           "<b>Y</b>: %.4f" % (x, y))
 
         if self.pos is None:
             self.pos = (0, 0)
@@ -2417,9 +2453,9 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # update the reference position label in the infobar since the APP mouse event handlers are disconnected
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
-                                           "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
+                                               "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
-        ### Utility geometry (animated)
+        # ## Utility geometry (animated)
         geo = self.active_tool.utility_geometry(data=(x, y))
 
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
@@ -2427,7 +2463,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.tool_shape.clear(update=True)
             self.draw_utility_geometry(geo=geo)
 
-        ### Selection area on canvas section ###
+        # ## Selection area on canvas section # ##
         if event.is_dragging == 1 and event.button == 1:
             # I make an exception for FCDrillAdd and FCDrillArray because clicking and dragging while making regions
             # can create strange issues
@@ -2437,12 +2473,12 @@ class FlatCAMExcEditor(QtCore.QObject):
                 dx = pos[0] - self.pos[0]
                 self.app.delete_selection_shape()
                 if dx < 0:
-                    self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x,y),
-                         color=self.app.defaults["global_alt_sel_line"],
-                         face_color=self.app.defaults['global_alt_sel_fill'])
+                    self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y),
+                                                         color=self.app.defaults["global_alt_sel_line"],
+                                                         face_color=self.app.defaults['global_alt_sel_fill'])
                     self.app.selection_type = False
                 else:
-                    self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x,y))
+                    self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y))
                     self.app.selection_type = True
         else:
             self.app.selection_type = None
@@ -2454,43 +2490,41 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.key = None
 
     def draw_utility_geometry(self, geo):
-            # Add the new utility shape
-            try:
-                # this case is for the Font Parse
-                for el in list(geo.geo):
-                    if type(el) == MultiPolygon:
-                        for poly in el:
-                            self.tool_shape.add(
-                                shape=poly,
-                                color=(self.app.defaults["global_draw_color"] + '80'),
-                                update=False,
-                                layer=0,
-                                tolerance=None
-                            )
-                    elif type(el) == MultiLineString:
-                        for linestring in el:
-                            self.tool_shape.add(
-                                shape=linestring,
-                                color=(self.app.defaults["global_draw_color"] + '80'),
-                                update=False,
-                                layer=0,
-                                tolerance=None
-                            )
-                    else:
+        # Add the new utility shape
+        try:
+            # this case is for the Font Parse
+            for el in list(geo.geo):
+                if type(el) == MultiPolygon:
+                    for poly in el:
                         self.tool_shape.add(
-                            shape=el,
+                            shape=poly,
                             color=(self.app.defaults["global_draw_color"] + '80'),
                             update=False,
                             layer=0,
                             tolerance=None
                         )
-            except TypeError:
-                self.tool_shape.add(
-                    shape=geo.geo, color=(self.app.defaults["global_draw_color"] + '80'),
-                    update=False, layer=0, tolerance=None)
-
-            self.tool_shape.redraw()
-
+                elif type(el) == MultiLineString:
+                    for linestring in el:
+                        self.tool_shape.add(
+                            shape=linestring,
+                            color=(self.app.defaults["global_draw_color"] + '80'),
+                            update=False,
+                            layer=0,
+                            tolerance=None
+                        )
+                else:
+                    self.tool_shape.add(
+                        shape=el,
+                        color=(self.app.defaults["global_draw_color"] + '80'),
+                        update=False,
+                        layer=0,
+                        tolerance=None
+                    )
+        except TypeError:
+            self.tool_shape.add(
+                shape=geo.geo, color=(self.app.defaults["global_draw_color"] + '80'),
+                update=False, layer=0, tolerance=None)
+        self.tool_shape.redraw()
 
     def replot(self):
         self.plot_all()
@@ -2526,10 +2560,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         #
         #     self.plot_shape(geometry=shape.geo, color=self.app.defaults['global_draw_color'])
 
-
-
-        for shape in self.utility:
-            self.plot_shape(geometry=shape.geo, linewidth=1)
+        for shape_form in self.utility:
+            self.plot_shape(geometry=shape_form.geo, linewidth=1)
             continue
 
         self.shapes.redraw()
@@ -2553,13 +2585,13 @@ class FlatCAMExcEditor(QtCore.QObject):
             for geo in geometry:
                 plot_elements += self.plot_shape(geometry=geo, color=color, linewidth=linewidth)
 
-        ## Non-iterable
+        # ## Non-iterable
         except TypeError:
-            ## DrawToolShape
+            # ## DrawToolShape
             if isinstance(geometry, DrawToolShape):
                 plot_elements += self.plot_shape(geometry=geometry.geo, color=color, linewidth=linewidth)
 
-            ## Polygon: Descend into exterior and each interior.
+            # ## Polygon: Descend into exterior and each interior.
             if type(geometry) == Polygon:
                 plot_elements += self.plot_shape(geometry=geometry.exterior, color=color, linewidth=linewidth)
                 plot_elements += self.plot_shape(geometry=geometry.interiors, color=color, linewidth=linewidth)
@@ -2604,11 +2636,11 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.build_ui()
         self.app.inform.emit(_("[success] Done. Drill(s) deleted."))
 
-    def delete_shape(self, shape):
+    def delete_shape(self, del_shape):
         self.is_modified = True
 
-        if shape in self.utility:
-            self.utility.remove(shape)
+        if del_shape in self.utility:
+            self.utility.remove(del_shape)
             return
 
         for storage in self.storage_dict:
@@ -2616,8 +2648,8 @@ class FlatCAMExcEditor(QtCore.QObject):
             #     self.storage_dict[storage].remove(shape)
             # except:
             #     pass
-            if shape in self.storage_dict[storage].get_objects():
-                self.storage_dict[storage].remove(shape)
+            if del_shape in self.storage_dict[storage].get_objects():
+                self.storage_dict[storage].remove(del_shape)
                 # a hack to make the tool_table display less drills per diameter
                 # self.points_edit it's only useful first time when we load the data into the storage
                 # but is still used as referecen when building tool_table in self.build_ui()
@@ -2625,15 +2657,13 @@ class FlatCAMExcEditor(QtCore.QObject):
                 # deleting self.points_edit elements (doesn't matter who but just the number) solved the display issue.
                 del self.points_edit[storage][0]
 
-        if shape in self.selected:
-            self.selected.remove(shape)  # TODO: Check performance
+        if del_shape in self.selected:
+            self.selected.remove(del_shape)  # TODO: Check performance
 
     def delete_utility_geometry(self):
-        # for_deletion = [shape for shape in self.shape_buffer if shape.utility]
-        # for_deletion = [shape for shape in self.storage.get_objects() if shape.utility]
-        for_deletion = [shape for shape in self.utility]
-        for shape in for_deletion:
-            self.delete_shape(shape)
+        for_deletion = [util_shape for util_shape in self.utility]
+        for util_shape in for_deletion:
+            self.delete_shape(util_shape)
 
         self.tool_shape.clear(update=True)
         self.tool_shape.redraw()
@@ -2652,17 +2682,17 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.tools_exc[toolname]["button"].setChecked(True)
         self.on_tool_select(toolname)
 
-    def set_selected(self, shape):
+    def set_selected(self, sel_shape):
 
         # Remove and add to the end.
-        if shape in self.selected:
-            self.selected.remove(shape)
+        if sel_shape in self.selected:
+            self.selected.remove(sel_shape)
 
-        self.selected.append(shape)
+        self.selected.append(sel_shape)
 
-    def set_unselected(self, shape):
-        if shape in self.selected:
-            self.selected.remove(shape)
+    def set_unselected(self, unsel_shape):
+        if unsel_shape in self.selected:
+            self.selected.remove(unsel_shape)
 
     def on_array_type_combo(self):
         if self.array_type_combo.currentIndex() == 0:
@@ -2702,3 +2732,24 @@ class FlatCAMExcEditor(QtCore.QObject):
     def exc_move_drills(self):
         self.select_tool('drill_move')
         return
+
+
+def get_shapely_list_bounds(geometry_list):
+    xmin = Inf
+    ymin = Inf
+    xmax = -Inf
+    ymax = -Inf
+
+    for gs in geometry_list:
+        try:
+            gxmin, gymin, gxmax, gymax = gs.bounds
+            xmin = min([xmin, gxmin])
+            ymin = min([ymin, gymin])
+            xmax = max([xmax, gxmax])
+            ymax = max([ymax, gymax])
+        except Exception as e:
+            log.warning("DEVELOPMENT: Tried to get bounds of empty geometry. --> %s" % str(e))
+
+    return [xmin, ymin, xmax, ymax]
+
+# EOF

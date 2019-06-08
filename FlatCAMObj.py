@@ -1,10 +1,10 @@
-############################################################
+# ########################################################## ##
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
-############################################################
+# ########################################################## ##
 
 import copy
 import inspect  # TODO: For debugging only.
@@ -35,9 +35,9 @@ class ValidationError(Exception):
 
         self.errors = errors
 
-# #######################################
-# #            FlatCAMObj              ##
-# #######################################
+# ##################################### ##
+# #            FlatCAMObj              # ##
+# ##################################### ##
 
 
 class FlatCAMObj(QtCore.QObject):
@@ -90,6 +90,8 @@ class FlatCAMObj(QtCore.QObject):
         self.isHovering = False
         self.notHovering = True
 
+        self.units = 'IN'
+
         # assert isinstance(self.ui, ObjectUI)
         # self.ui.name_entry.returnPressed.connect(self.on_name_activate)
         # self.ui.offset_button.clicked.connect(self.on_offset_button_click)
@@ -135,8 +137,7 @@ class FlatCAMObj(QtCore.QObject):
         if key == 'plot':
             self.visible = self.options['plot']
 
-        # self.emit(QtCore.SIGNAL("optionChanged"), key)
-        self.optionChanged.emit(key)
+        # self.optionChanged.emit(key)
 
     def set_ui(self, ui):
         self.ui = ui
@@ -296,8 +297,6 @@ class FlatCAMObj(QtCore.QObject):
             return False
 
         self.clear()
-
-
         return True
 
     def serialize(self):
@@ -340,13 +339,18 @@ class FlatCAMObj(QtCore.QObject):
 
     @visible.setter
     def visible(self, value):
-        self.shapes.visible = value
+        log.debug("FlatCAMObj.visible()")
 
-        # Not all object types has annotations
-        try:
-            self.annotation.visible = value
-        except AttributeError:
-            pass
+        def worker_task(app_obj):
+            app_obj.shapes.visible = value
+
+            # Not all object types has annotations
+            try:
+                app_obj.annotation.visible = value
+            except Exception as e:
+                pass
+
+        self.app.worker_task.emit({'fcn': worker_task, 'params': [self]})
 
     @property
     def drawing_tolerance(self):
@@ -364,12 +368,6 @@ class FlatCAMObj(QtCore.QObject):
             self.annotation.clear(update)
         except AttributeError:
             pass
-
-        # Not all object types have mark_shapes
-        # try:
-        #     self.mark_shapes.clear(update)
-        # except AttributeError:
-        #     pass
 
     def delete(self):
         # Free resources
@@ -1053,7 +1051,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :param kwargs: color and face_color
         :return:
         """
-
         FlatCAMApp.App.log.debug(str(inspect.stack()[1][3]) + " --> FlatCAMGerber.plot()")
 
         # Does all the required setup and returns False
@@ -1065,6 +1062,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             color = kwargs['color']
         else:
             color = self.app.defaults['global_plot_line']
+
         if 'face_color' in kwargs:
             face_color = kwargs['face_color']
         else:
@@ -1078,7 +1076,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         # Make sure geometry is iterable.
         try:
-            _ = iter(geometry)
+            __ = iter(geometry)
         except TypeError:
             geometry = [geometry]
 
@@ -2342,7 +2340,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
             app_obj.progress.emit(20)
 
-            ### Add properties to the object
+            # ## Add properties to the object
 
             # get the tool_table items in a list of row items
             tool_table_items = self.get_selected_tools_table_items()
@@ -2436,7 +2434,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
             app_obj.progress.emit(20)
 
-            ### Add properties to the object
+            # ## Add properties to the object
 
             # get the tool_table items in a list of row items
             tool_table_items = self.get_selected_tools_table_items()
@@ -2561,7 +2559,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             # insert an information only element in the front
             tool_table_items.insert(0, [_("Tool_nr"), _("Diameter"), _("Drills_Nr"), _("Slots_Nr")])
 
-            ### Add properties to the object
+            # ## Add properties to the object
 
             job_obj.origin_kind = 'excellon'
 
@@ -2795,7 +2793,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         # this stays for compatibility reasons, in case we try to open old projects
         try:
-            _ = iter(self.solid_geometry)
+            __ = iter(self.solid_geometry)
         except TypeError:
             self.solid_geometry = [self.solid_geometry]
 
@@ -2932,18 +2930,18 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         """
         pts = []
 
-        ## Iterable: descend into each item.
+        # Iterable: descend into each item.
         try:
             for subo in o:
                 pts += FlatCAMGeometry.get_pts(subo)
 
-        ## Non-iterable
+        # Non-iterable
         except TypeError:
             if o is not None:
                 if type(o) == MultiPolygon:
                     for poly in o:
                         pts += FlatCAMGeometry.get_pts(poly)
-                ## Descend into .exerior and .interiors
+                # ## Descend into .exerior and .interiors
                 elif type(o) == Polygon:
                     pts += FlatCAMGeometry.get_pts(o.exterior)
                     for i in o.interiors:
@@ -2951,7 +2949,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 elif type(o) == MultiLineString:
                     for line in o:
                         pts += FlatCAMGeometry.get_pts(line)
-                ## Has .coords: list them.
+                # ## Has .coords: list them.
                 else:
                     pts += list(o.coords)
             else:
@@ -3033,6 +3031,12 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # engine of FlatCAM. Most likely are generated by some of tools and are special cases of geometries.
         self. special_group = None
 
+        self.old_pp_state = ''
+        self.old_toolchangeg_state = ''
+
+        # store here the default data for Geometry Data
+        self.default_data = {}
+
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -3101,7 +3105,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.setCellWidget(row_no, 3, type_item)
             self.ui.geo_tools_table.setCellWidget(row_no, 4, tool_type_item)
 
-            ### REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY ###
+            # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
             self.ui.geo_tools_table.setItem(row_no, 5, tool_uid_item)  # Tool unique ID
             self.ui.geo_tools_table.setCellWidget(row_no, 6, plot_item)
 
@@ -3391,11 +3395,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             try:
                 # works for CheckBoxes
                 self.ui.grid3.itemAt(i).widget().stateChanged.connect(self.gui_form_to_storage)
-            except:
+            except Exception as e:
                 # works for ComboBoxes
                 try:
                     self.ui.grid3.itemAt(i).widget().currentIndexChanged.connect(self.gui_form_to_storage)
-                except:
+                except Exception as e2:
                     # works for Entry
                     try:
                         self.ui.grid3.itemAt(i).widget().editingFinished.connect(self.gui_form_to_storage)
@@ -3492,13 +3496,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
     def on_tool_add(self, dia=None):
         self.ui_disconnect()
 
-        last_offset = None
-        last_offset_value = None
-        last_type = None
-        last_tool_type = None
-        last_data = None
-        last_solid_geometry = []
-
         # if a Tool diameter entered is a char instead a number the final message of Tool adding is changed
         # because the Default value for Tool is used.
         change_message = False
@@ -3547,7 +3544,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.tools.update({
                 self.tooluid: {
                     'tooldia': tooldia,
-                    'offset': ('Path'),
+                    'offset': 'Path',
                     'offset_value': 0.0,
                     'type': _('Rough'),
                     'tool_type': 'C1',
@@ -3556,7 +3553,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 }
             })
         else:
-            # print("LAST", self.tools[maxuid])
             last_data = self.tools[max_uid]['data']
             last_offset = self.tools[max_uid]['offset']
             last_offset_value = self.tools[max_uid]['offset_value']
@@ -3580,7 +3576,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     'solid_geometry': deepcopy(last_solid_geometry)
                 }
             })
-            # print("CURRENT", self.tools[-1])
 
         self.ui.tool_offset_entry.hide()
         self.ui.tool_offset_lbl.hide()
@@ -4277,6 +4272,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # Object initialization function for app.new_object()
         # RUNNING ON SEPARATE THREAD!
         def job_init_single_geometry(job_obj, app_obj):
+            log.debug("Creating a CNCJob out of a single-geometry")
+
             assert isinstance(job_obj, FlatCAMCNCjob), \
                 "Initializer expected a FlatCAMCNCjob, got %s" % type(job_obj)
 
@@ -4451,8 +4448,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
                 app_obj.progress.emit(40)
 
+                tol = float(self.app.defaults['global_tolerance'])
                 res = job_obj.generate_from_geometry_2(
-                    self, tooldia=tooldia_val, offset=tool_offset, tolerance=0.0005,
+                    self, tooldia=tooldia_val, offset=tool_offset, tolerance=tol,
                     z_cut=z_cut, z_move=z_move,
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                     spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
@@ -4488,6 +4486,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # Object initialization function for app.new_object()
         # RUNNING ON SEPARATE THREAD!
         def job_init_multi_geometry(job_obj, app_obj):
+            log.debug("Creating a CNCJob out of a multi-geometry")
+
             assert isinstance(job_obj, FlatCAMCNCjob), \
                 "Initializer expected a FlatCAMCNCjob, got %s" % type(job_obj)
 
@@ -4682,9 +4682,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 spindledir = self.app.defaults['geometry_spindledir']
 
                 tool_solid_geometry = self.tools[current_uid]['solid_geometry']
+                tol = float(self.app.defaults['global_tolerance'])
                 res = job_obj.generate_from_multitool_geometry(
                     tool_solid_geometry, tooldia=tooldia_val, offset=tool_offset,
-                    tolerance=0.0005, z_cut=z_cut, z_move=z_move,
+                    tolerance=tol, z_cut=z_cut, z_move=z_move,
                     feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                     spindlespeed=spindlespeed, spindledir=spindledir, dwell=dwell, dwelltime=dwelltime,
                     multidepth=multidepth, depthpercut=depthpercut,
@@ -4740,7 +4741,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 self.app.new_object("cncjob", outname, job_init_single_geometry)
             else:
                 self.app.new_object("cncjob", outname, job_init_multi_geometry)
-
 
     def generatecncjob(self, outname=None,
                        tooldia=None, offset=None,
@@ -4850,8 +4850,13 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                             'or self.options["feedrate_probe"]'
                         ))
 
-            # TODO: The tolerance should not be hard coded. Just for testing.
-            job_obj.generate_from_geometry_2(self, tooldia=tooldia, offset=offset, tolerance=0.0005,
+            job_obj.options['xmin'] = self.options['xmin']
+            job_obj.options['ymin'] = self.options['ymin']
+            job_obj.options['xmax'] = self.options['xmax']
+            job_obj.options['ymax'] = self.options['ymax']
+
+            tol = float(self.app.defaults['global_tolerance'])
+            job_obj.generate_from_geometry_2(self, tooldia=tooldia, offset=offset, tolerance=tol,
                                              z_cut=z_cut, z_move=z_move,
                                              feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
                                              spindlespeed=spindlespeed, dwell=dwell, dwelltime=dwelltime,
@@ -5379,7 +5384,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             self.ui.cnc_tools_table.setItem(row_no, 3, type_item)  # Toolpath Type
             self.ui.cnc_tools_table.setItem(row_no, 4, tool_type_item)  # Tool Type
 
-            ### REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY ###
+            # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
             self.ui.cnc_tools_table.setItem(row_no, 5, tool_uid_item)  # Tool unique ID)
             self.ui.cnc_tools_table.setCellWidget(row_no, 6, plot_item)
 
@@ -5463,6 +5468,15 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         # set the kind of geometries are plotted by default with plot2() from camlib.CNCJob
         self.ui.cncplot_method_combo.set_value(self.app.defaults["cncjob_plot_kind"])
+
+        try:
+            self.ui.annotation_cb.stateChanged.disconnect(self.on_annotation_change)
+        except:
+            pass
+        self.ui.annotation_cb.stateChanged.connect(self.on_annotation_change)
+
+        # set if to display text annotations
+        self.ui.annotation_cb.set_value(self.app.defaults["cncjob_annotation"])
 
         # Show/Hide Advanced Options
         if self.app.defaults["global_app_level"] == 'b':
@@ -5912,6 +5926,14 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
             self.annotation.clear(update=True)
+
+    def on_annotation_change(self):
+        if self.ui.annotation_cb.get_value():
+            self.app.plotcanvas.text_collection.enabled = True
+        else:
+            self.app.plotcanvas.text_collection.enabled = False
+        kind = self.ui.cncplot_method_combo.get_value()
+        self.plot(kind=kind)
 
     def convert_units(self, units):
         factor = CNCjob.convert_units(self, units)

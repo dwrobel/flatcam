@@ -1,10 +1,10 @@
-############################################################
+# ########################################################## ##
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Modified: Marius Adrian Stanciu (c)                 #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-############################################################
+# ########################################################## ##
 
 from FlatCAMTool import FlatCAMTool
 from copy import copy,deepcopy
@@ -29,7 +29,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         FlatCAMTool.__init__(self, app)
         Geometry.__init__(self, geo_steps_per_circle=self.app.defaults["geometry_circle_steps"])
 
-        ## Title
+        # ## Title
         title_label = QtWidgets.QLabel("%s" % self.toolName)
         title_label.setStyleSheet("""
                         QLabel
@@ -47,11 +47,11 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tools_box.setContentsMargins(0, 0, 0, 0)
         self.tools_frame.setLayout(self.tools_box)
 
-        ## Form Layout
+        # ## Form Layout
         form_layout = QtWidgets.QFormLayout()
         self.tools_box.addLayout(form_layout)
 
-        ## Object
+        # ## Object
         self.object_combo = QtWidgets.QComboBox()
         self.object_combo.setModel(self.app.collection)
         self.object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
@@ -65,7 +65,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         form_layout.addRow(self.object_label, self.object_combo)
         form_layout.addRow(e_lab_0)
 
-        #### Tools ####
+        #### Tools ## ##
         self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Tools Table'))
         self.tools_table_label.setToolTip(
             _("Tools pool from which the algorithm\n"
@@ -110,7 +110,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.empty_label = QtWidgets.QLabel('')
         self.tools_box.addWidget(self.empty_label)
 
-        #### Add a new Tool ####
+        #### Add a new Tool ## ##
         hlay = QtWidgets.QHBoxLayout()
         self.tools_box.addLayout(hlay)
 
@@ -305,7 +305,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
 
-        ## Signals
+        # ## Signals
         self.addtool_btn.clicked.connect(self.on_tool_add)
         self.addtool_entry.returnPressed.connect(self.on_tool_add)
         # self.copytool_btn.clicked.connect(lambda: self.on_tool_copy())
@@ -365,7 +365,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tools_frame.show()
         self.reset_fields()
 
-        ## Init the GUI interface
+        # ## Init the GUI interface
         self.paintmargin_entry.set_value(self.default_data["paintmargin"])
         self.paintmethod_combo.set_value(self.default_data["paintmethod"])
         self.selectmethod_combo.set_value(self.default_data["selectmethod"])
@@ -484,7 +484,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     self.tools_table.setItem(row_no, 1, dia)  # Diameter
                     self.tools_table.setCellWidget(row_no, 2, tool_type_item)
 
-                    ### REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY ###
+                    # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
                     self.tools_table.setItem(row_no, 3, tool_uid_item)  # Tool unique ID
 
         # make the diameter column editable
@@ -1035,13 +1035,13 @@ class ToolPaint(FlatCAMTool, Gerber):
             if reset:
                 self.flat_geometry = []
 
-            ## If iterable, expand recursively.
+            # ## If iterable, expand recursively.
             try:
                 for geo in geometry:
                     if geo is not None:
                         recurse(geometry=geo, reset=False)
 
-            ## Not iterable, do the actual indexing and add.
+            # ## Not iterable, do the actual indexing and add.
             except TypeError:
                 self.flat_geometry.append(geometry)
 

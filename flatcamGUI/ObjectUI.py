@@ -1,15 +1,15 @@
-############################################################
+# ########################################################## ##
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
-############################################################
+# ########################################################## ##
 
-############################################################
+# ########################################################## ##
 # File Modified (major mod): Marius Adrian Stanciu         #
 # Date: 3/10/2019                                          #
-############################################################
+# ########################################################## ##
 
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt
@@ -36,22 +36,22 @@ class ObjectUI(QtWidgets.QWidget):
         layout = QtWidgets.QVBoxLayout()
         self.setLayout(layout)
 
-        ## Page Title box (spacing between children)
+        # ## Page Title box (spacing between children)
         self.title_box = QtWidgets.QHBoxLayout()
         layout.addLayout(self.title_box)
 
-        ## Page Title icon
+        # ## Page Title icon
         pixmap = QtGui.QPixmap(icon_file)
         self.icon = QtWidgets.QLabel()
         self.icon.setPixmap(pixmap)
         self.title_box.addWidget(self.icon, stretch=0)
 
-        ## Title label
+        # ## Title label
         self.title_label = QtWidgets.QLabel("<font size=5><b>%s</b></font>" % title)
         self.title_label.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.title_box.addWidget(self.title_label, stretch=1)
 
-        ## App Level label
+        # ## App Level label
         self.level = QtWidgets.QLabel("")
         self.level.setToolTip(
             _(
@@ -66,16 +66,16 @@ class ObjectUI(QtWidgets.QWidget):
         self.level.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.title_box.addWidget(self.level)
 
-        ## Box box for custom widgets
+        # ## Box box for custom widgets
         # This gets populated in offspring implementations.
         self.custom_box = QtWidgets.QVBoxLayout()
         layout.addLayout(self.custom_box)
 
-        ###########################
-        ## Common to all objects ##
-        ###########################
+        ######################### ##
+        # ## Common to all objects # ##
+        ######################### ##
 
-        #### Scale ####
+        #### Scale ## ##
         self.scale_label = QtWidgets.QLabel(_('<b>Scale:</b>'))
         self.scale_label.setToolTip(
             _("Change the size of the object.")
@@ -104,7 +104,7 @@ class ObjectUI(QtWidgets.QWidget):
         self.scale_button.setFixedWidth(70)
         self.scale_grid.addWidget(self.scale_button, 0, 2)
 
-        #### Offset ####
+        #### Offset ## ##
         self.offset_label = QtWidgets.QLabel(_('<b>Offset:</b>'))
         self.offset_label.setToolTip(
             _("Change the position of this object.")
@@ -176,7 +176,7 @@ class GerberObjectUI(ObjectUI):
         self.plot_cb.setFixedWidth(59)
         grid0.addWidget(self.plot_cb, 0, 3)
 
-        ## Object name
+        # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(self.name_hlay)
         name_label = QtWidgets.QLabel(_("<b>Name:</b>"))
@@ -188,7 +188,7 @@ class GerberObjectUI(ObjectUI):
         hlay_plot = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(hlay_plot)
 
-        #### Gerber Apertures ####
+        #### Gerber Apertures ## ##
         self.apertures_table_label = QtWidgets.QLabel(_('<b>Apertures:</b>'))
         self.apertures_table_label.setToolTip(
             _("Apertures Table for the Gerber Object.")
@@ -380,7 +380,7 @@ class GerberObjectUI(ObjectUI):
         grid2 = QtWidgets.QGridLayout()
         self.custom_box.addLayout(grid2)
 
-        ## Clear non-copper regions
+        # ## Clear non-copper regions
         self.clearcopper_label = QtWidgets.QLabel(_("<b>Clear N-copper:</b>"))
         self.clearcopper_label.setToolTip(
             _("Create a Geometry object with\n"
@@ -396,7 +396,7 @@ class GerberObjectUI(ObjectUI):
         )
         grid2.addWidget(self.generate_ncc_button, 0, 1)
 
-        ## Board cutout
+        # ## Board cutout
         self.board_cutout_label = QtWidgets.QLabel(_("<b>Board cutout:</b>"))
         self.board_cutout_label.setToolTip(
             _("Create toolpaths to cut around\n"
@@ -412,7 +412,7 @@ class GerberObjectUI(ObjectUI):
         )
         grid2.addWidget(self.generate_cutout_button, 1, 1)
 
-        ## Non-copper regions
+        # ## Non-copper regions
         self.noncopper_label = QtWidgets.QLabel(_("<b>Non-copper regions:</b>"))
         self.noncopper_label.setToolTip(
             _("Create polygons covering the\n"
@@ -450,7 +450,7 @@ class GerberObjectUI(ObjectUI):
         self.generate_noncopper_button = QtWidgets.QPushButton(_('Generate Geo'))
         grid4.addWidget(self.generate_noncopper_button, 1, 1)
 
-        ## Bounding box
+        # ## Bounding box
         self.boundingbox_label = QtWidgets.QLabel(_('<b>Bounding Box:</b>'))
         self.boundingbox_label.setToolTip(
             _("Create a geometry surrounding the Gerber object.\n"
@@ -498,7 +498,7 @@ class ExcellonObjectUI(ObjectUI):
                           icon_file='share/drill32.png',
                           parent=parent)
 
-        #### Plot options ####
+        #### Plot options ## ##
         hlay_plot = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(hlay_plot)
 
@@ -511,7 +511,7 @@ class ExcellonObjectUI(ObjectUI):
         hlay_plot.addStretch()
         hlay_plot.addWidget(self.solid_cb)
 
-        ## Object name
+        # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(self.name_hlay)
         name_label = QtWidgets.QLabel(_("<b>Name:</b>"))
@@ -532,7 +532,7 @@ class ExcellonObjectUI(ObjectUI):
         hlay_plot = QtWidgets.QHBoxLayout()
         self.tools_box.addLayout(hlay_plot)
 
-        #### Tools Drills ####
+        #### Tools Drills ## ##
         self.tools_table_label = QtWidgets.QLabel(_('<b>Tools Table</b>'))
         self.tools_table_label.setToolTip(
             _("Tools in this Excellon object\n"
@@ -580,7 +580,7 @@ class ExcellonObjectUI(ObjectUI):
         self.empty_label = QtWidgets.QLabel('')
         self.tools_box.addWidget(self.empty_label)
 
-        #### Create CNC Job ####
+        #### Create CNC Job ## ##
         self.cncjob_label = QtWidgets.QLabel(_('<b>Create CNC Job</b>'))
         self.cncjob_label.setToolTip(
             _("Create a CNC Job object\n"
@@ -768,7 +768,7 @@ class ExcellonObjectUI(ObjectUI):
         )
         self.tools_box.addWidget(self.generate_cnc_button)
 
-        #### Milling Holes Drills####
+        #### Milling Holes Drills## ##
         self.mill_hole_label = QtWidgets.QLabel(_('<b>Mill Holes</b>'))
         self.mill_hole_label.setToolTip(
             _("Create Geometry for milling holes.")
@@ -833,7 +833,7 @@ class GeometryObjectUI(ObjectUI):
         self.plot_options_label = QtWidgets.QLabel(_("<b>Plot Options:</b>"))
         self.custom_box.addWidget(self.plot_options_label)
 
-        ## Object name
+        # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(self.name_hlay)
         name_label = QtWidgets.QLabel(_("<b>Name:</b>"))
@@ -854,7 +854,7 @@ class GeometryObjectUI(ObjectUI):
         hlay_plot = QtWidgets.QHBoxLayout()
         self.geo_tools_box.addLayout(hlay_plot)
 
-        #### Tools ####
+        #### Tools ## ##
         self.tools_table_label = QtWidgets.QLabel(_('<b>Tools Table</b>'))
         self.tools_table_label.setToolTip(
             _("Tools in this Geometry object used for cutting.\n"
@@ -964,7 +964,7 @@ class GeometryObjectUI(ObjectUI):
         self.grid1.addWidget(self.tool_offset_entry, 0, 1)
         self.grid1.addWidget(spacer_lbl, 0, 2)
 
-        #### Add a new Tool ####
+        #### Add a new Tool ## ##
         hlay = QtWidgets.QHBoxLayout()
         self.geo_tools_box.addLayout(hlay)
 
@@ -1022,7 +1022,7 @@ class GeometryObjectUI(ObjectUI):
         #-----------------------------------
         # Create CNC Job
         #-----------------------------------
-        #### Tools Data ####
+        #### Tools Data ## ##
         self.tool_data_label = QtWidgets.QLabel(_('<b>Tool Data</b>'))
         self.tool_data_label.setToolTip(
             _(
@@ -1346,7 +1346,7 @@ class CNCObjectUI(ObjectUI):
         self.offset_label.hide()
         self.offset_button.hide()
 
-        ## Plot options
+        # ## Plot options
         self.plot_options_label = QtWidgets.QLabel(_("<b>Plot Options:</b>"))
         self.custom_box.addWidget(self.plot_options_label)
 
@@ -1366,7 +1366,17 @@ class CNCObjectUI(ObjectUI):
             {"label": "Cut", "value": "cut"}
         ], stretch=False)
 
-        ## Object name
+        self.annotation_label = QtWidgets.QLabel(_("<b>Display Annotation:</b>"))
+        self.annotation_label.setToolTip(
+            _(
+                "This selects if to display text annotation on the plot.\n"
+                "When checked it will display numbers in order for each end\n"
+                "of a travel line."
+            )
+        )
+        self.annotation_cb = FCCheckBox()
+
+        # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(self.name_hlay)
         name_label = QtWidgets.QLabel(_("<b>Name:</b>"))
@@ -1399,9 +1409,12 @@ class CNCObjectUI(ObjectUI):
         f_lay.addWidget(self.cncplot_method_label, 0, 0)
         f_lay.addWidget(self.cncplot_method_combo, 0, 1)
         f_lay.addWidget(QtWidgets.QLabel(''), 0, 2)
-        f_lay.addWidget(self.t_distance_label, 1, 0)
-        f_lay.addWidget(self.t_distance_entry, 1, 1)
-        f_lay.addWidget(self.units_label, 1, 2)
+        f_lay.addWidget(self.annotation_label, 1, 0)
+        f_lay.addWidget(self.annotation_cb, 1, 1)
+        f_lay.addWidget(QtWidgets.QLabel(''), 1, 2)
+        f_lay.addWidget(self.t_distance_label, 2, 0)
+        f_lay.addWidget(self.t_distance_entry, 2, 1)
+        f_lay.addWidget(self.units_label, 2, 2)
 
         self.t_distance_label.hide()
         self.t_distance_entry.setVisible(False)
@@ -1462,9 +1475,9 @@ class CNCObjectUI(ObjectUI):
         )
         self.custom_box.addWidget(self.updateplot_button)
 
-        ##################
-        ## Export G-Code
-        ##################
+        ################ ##
+        # ## Export G-Code
+        ################ ##
         self.export_gcode_label = QtWidgets.QLabel(_("<b>Export CNC Code:</b>"))
         self.export_gcode_label.setToolTip(
             _("Export and save G-Code to\n"
