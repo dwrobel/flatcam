@@ -583,6 +583,8 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         self.endRemoveRows()
 
+        self.app.plotcanvas.redraw()
+
         if select_project:
             # always go to the Project Tab after object deletion as it may be done with a shortcut key
             self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)

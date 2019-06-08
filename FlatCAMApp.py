@@ -95,7 +95,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.918
-    version_date = "2019/06/07"
+    version_date = "2019/06/09"
     beta = True
 
     # current date now
@@ -5914,19 +5914,27 @@ class App(QtCore.QObject):
         # Clear pool
         self.clear_pool()
 
-        #delete shapes left drawn from mark shape_collections, if any
         for obj in self.collection.get_list():
-            try:
-                obj.mark_shapes.enabled = False
-                obj.mark_shapes.clear(update=True)
-            except:
-                pass
+            # delete shapes left drawn from mark shape_collections, if any
+            if isinstance(obj, FlatCAMGerber):
+                try:
+                    obj.mark_shapes.enabled = False
+                    obj.mark_shapes.clear(update=True)
+                except AttributeError:
+                    pass
+
+            # also delete annotation shapes, if any
+            elif isinstance(obj, FlatCAMCNCjob):
+                try:
+                    obj.annotation.enabled = False
+                    obj.annotation.clear(update=True)
+                except AttributeError:
+                    pass
 
         # tcl needs to be reinitialized, otherwise  old shell variables etc  remains
         self.init_tcl()
 
         self.delete_selection_shape()
-
         self.collection.delete_all()
 
         self.setup_component_editor()
