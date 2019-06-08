@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-06-07 23:14+0300\n"
-"PO-Revision-Date: 2019-06-09 01:51+0400\n"
+"PO-Revision-Date: 2019-06-09 03:33+0400\n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -2011,7 +2011,7 @@ msgstr "Инструменты"
 #: flatcamGUI/FlatCAMGUI.py:5618 flatcamGUI/FlatCAMGUI.py:5895
 #: flatcamGUI/FlatCAMGUI.py:6035 flatcamGUI/ObjectUI.py:260
 msgid "Tool dia:"
-msgstr "Диаметр инструмента:"
+msgstr "Диам. инструм.:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:434 flatcamGUI/FlatCAMGUI.py:6037
 msgid ""
@@ -5429,6 +5429,14 @@ msgid ""
 "the Selected Tab for all kinds of FlatCAM objects."
 msgstr ""
 
+#: flatcamGUI/FlatCAMGUI.py:3769
+msgid "Basic"
+msgstr "Баз."
+
+#: flatcamGUI/FlatCAMGUI.py:3770
+msgid "Advanced"
+msgstr "Расш."
+
 #: flatcamGUI/FlatCAMGUI.py:3773
 msgid "<b>Languages:</b>"
 msgstr "<b>Язык:</b>"
@@ -5597,6 +5605,10 @@ msgid ""
 "but require more RAM usage and more processing time."
 msgstr ""
 
+#: flatcamGUI/FlatCAMGUI.py:3992
+msgid "Gerber General"
+msgstr "Gerber основные"
+
 #: flatcamGUI/FlatCAMGUI.py:3995 flatcamGUI/FlatCAMGUI.py:4361
 #: flatcamGUI/FlatCAMGUI.py:5153 flatcamGUI/FlatCAMGUI.py:5525
 #: flatcamGUI/ObjectUI.py:150 flatcamGUI/ObjectUI.py:505
@@ -5668,7 +5680,7 @@ msgstr "Диаметр режущего инструмента."
 
 #: flatcamGUI/FlatCAMGUI.py:4063
 msgid "Width (# passes):"
-msgstr "Количество проходов:"
+msgstr "Кол-во проходов:"
 
 #: flatcamGUI/FlatCAMGUI.py:4065 flatcamGUI/ObjectUI.py:275
 msgid ""
@@ -5680,7 +5692,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4073 flatcamGUI/ObjectUI.py:283
 msgid "Pass overlap:"
-msgstr "Перекрытие за проход:"
+msgstr "Перекр. за прох.:"
 
 #: flatcamGUI/FlatCAMGUI.py:4075 flatcamGUI/ObjectUI.py:285
 #, python-format
@@ -5704,7 +5716,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4095
 msgid "Combine Passes"
-msgstr "Объединить проходы"
+msgstr "Объед. проходы"
 
 #: flatcamGUI/FlatCAMGUI.py:4097 flatcamGUI/ObjectUI.py:309
 msgid "Combine all passes into one object"
@@ -5776,11 +5788,11 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4164
 msgid "Gerber Adv. Options"
-msgstr ""
+msgstr "Gerber дополн."
 
 #: flatcamGUI/FlatCAMGUI.py:4167
 msgid "<b>Advanced Param.:</b>"
-msgstr "<b>Дополнительные парам.:</b>"
+msgstr "<b>Дополнительные настройки:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:4169
 msgid ""
@@ -5900,7 +5912,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4358
 msgid "Excellon General"
-msgstr "Основные парам. Excellon"
+msgstr "Excellon основные"
 
 #: flatcamGUI/FlatCAMGUI.py:4380
 msgid "<b>Excellon Format:</b>"
@@ -6035,7 +6047,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4612
 msgid "Excellon Options"
-msgstr "Параметры сверловки отверстий"
+msgstr "Параметры Excellon"
 
 #: flatcamGUI/FlatCAMGUI.py:4615 flatcamGUI/ObjectUI.py:584
 msgid "<b>Create CNC Job</b>"
@@ -6109,7 +6121,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4671
 msgid "Spindle Speed:"
-msgstr "Скорость вращения шпинделя:"
+msgstr "Скорость вр. шпинделя:"
 
 #: flatcamGUI/FlatCAMGUI.py:4673 flatcamGUI/FlatCAMGUI.py:5302
 #: flatcamGUI/ObjectUI.py:684
@@ -6122,7 +6134,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4681 flatcamGUI/FlatCAMGUI.py:5310
 msgid "Spindle dir.:"
-msgstr ""
+msgstr "Напр. вращения:"
 
 #: flatcamGUI/FlatCAMGUI.py:4683 flatcamGUI/FlatCAMGUI.py:5312
 msgid ""
@@ -6131,6 +6143,10 @@ msgid ""
 "- CW = clockwise or\n"
 "- CCW = counter clockwise"
 msgstr ""
+"Устанавка направления вращения шпинделя.\n"
+"Варианты:\n"
+"- CW = по часовой стрелке или\n"
+"- CCW = против часовой стрелки"
 
 #: flatcamGUI/FlatCAMGUI.py:4695 flatcamGUI/FlatCAMGUI.py:5324
 #: flatcamGUI/ObjectUI.py:692 flatcamGUI/ObjectUI.py:1224
@@ -6206,7 +6222,7 @@ msgstr "Значения по умолчанию"
 
 #: flatcamGUI/FlatCAMGUI.py:4785
 msgid "Excellon Adv. Options"
-msgstr "Доп. параметры Excellon"
+msgstr "Excellon дополн."
 
 #: flatcamGUI/FlatCAMGUI.py:4791 flatcamGUI/FlatCAMGUI.py:5364
 msgid "<b>Advanced Options:</b>"
@@ -6415,7 +6431,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5150
 msgid "Geometry General"
-msgstr "Основные парам. Geometry"
+msgstr "Geometry основные"
 
 #: flatcamGUI/FlatCAMGUI.py:5168
 msgid ""
@@ -6441,7 +6457,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5200
 msgid "Geometry Options"
-msgstr "Параметры геометрии"
+msgstr "Параметры Geometry"
 
 #: flatcamGUI/FlatCAMGUI.py:5205
 msgid "<b>Create CNC Job:</b>"
@@ -6467,7 +6483,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5227
 msgid "Multidepth"
-msgstr ""
+msgstr "Мультипроход"
 
 #: flatcamGUI/FlatCAMGUI.py:5229
 msgid "Multidepth usage: True or False."
@@ -6518,7 +6534,7 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:5300 flatcamGUI/ObjectUI.py:682
 #: flatcamGUI/ObjectUI.py:1211
 msgid "Spindle speed:"
-msgstr "Скорость вращения шпинделя:"
+msgstr "Скорость вр. шпинделя:"
 
 #: flatcamGUI/FlatCAMGUI.py:5343
 msgid ""
@@ -6528,7 +6544,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5359
 msgid "Geometry Adv. Options"
-msgstr ""
+msgstr "Geometry дополн."
 
 #: flatcamGUI/FlatCAMGUI.py:5366
 msgid ""
@@ -6604,7 +6620,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5522
 msgid "CNC Job General"
-msgstr "Основные парам. CNC Job"
+msgstr "CNC Job основные"
 
 #: flatcamGUI/FlatCAMGUI.py:5535 flatcamGUI/ObjectUI.py:544
 #: flatcamGUI/ObjectUI.py:877 flatcamGUI/ObjectUI.py:1447
@@ -6686,7 +6702,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5655
 msgid "CNC Job Options"
-msgstr "Параметры программы для ЧПУ"
+msgstr "Параметры CNC Job"
 
 #: flatcamGUI/FlatCAMGUI.py:5658 flatcamGUI/FlatCAMGUI.py:5699
 msgid "<b>Export G-Code:</b>"
@@ -6730,7 +6746,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5696
 msgid "CNC Job Adv. Options"
-msgstr ""
+msgstr "CNC Job дополн."
 
 #: flatcamGUI/FlatCAMGUI.py:5707 flatcamGUI/ObjectUI.py:1523
 msgid "Toolchange G-Code:"
@@ -6818,7 +6834,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5780
 msgid "NCC Tool Options"
-msgstr "Параметры очистки от меди"
+msgstr "Очистка от меди"
 
 #: flatcamGUI/FlatCAMGUI.py:5793 flatcamGUI/FlatCAMGUI.py:6523
 msgid "Tools dia:"
@@ -6875,7 +6891,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5881
 msgid "Cutout Tool Options"
-msgstr "Параметры обрезки контура платы"
+msgstr "Обрезка контура платы"
 
 #: flatcamGUI/FlatCAMGUI.py:5886 flatcamGUI/ObjectUI.py:402
 msgid ""
@@ -6943,7 +6959,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5960
 msgid "2Sided Tool Options"
-msgstr "Параметры 2-х сторонней платы"
+msgstr " 2-х сторонняя плата"
 
 #: flatcamGUI/FlatCAMGUI.py:5965
 msgid ""
@@ -7070,7 +7086,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6183
 msgid "Panelize Tool Options"
-msgstr "Параметры панелизации"
+msgstr "Панелизация"
 
 #: flatcamGUI/FlatCAMGUI.py:6188
 msgid ""
@@ -7161,7 +7177,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6285
 msgid "Calculators Tool Options"
-msgstr "Параметры калькулятора"
+msgstr "Калькулятор"
 
 #: flatcamGUI/FlatCAMGUI.py:6288
 msgid "<b>V-Shape Tool Calculator:</b>"
@@ -7249,7 +7265,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6382
 msgid "Transform Tool Options"
-msgstr "Параметры трансформации"
+msgstr "Трансформация"
 
 #: flatcamGUI/FlatCAMGUI.py:6387
 msgid ""
@@ -7361,7 +7377,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6509
 msgid "SolderPaste Tool Options"
-msgstr "Параметры нанесения паяльной пасты"
+msgstr "Паяльная паста"
 
 #: flatcamGUI/FlatCAMGUI.py:6514
 msgid ""
