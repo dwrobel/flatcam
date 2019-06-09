@@ -9,12 +9,17 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+9.06.2019
+
+- updated translations
+- fixed the the labels for shortcut keys for zoom in and zoom out both in the Menu links and in the Shortcut list
+- made sure the zoom functions use the global_zoom_ratio parameter from App.self.defaults dictionary.
+
 8.06.2019
 
 - make sure that the annotation shapes are deleted on creation of a new project
 - added folder for the Russian translation
 - made sure that visibility for TextGroup is set only if index is not None in VisPyVisuals.TextGroup.visible() setter
-- RELEASE 8.918
 
 7.06.2019
 
