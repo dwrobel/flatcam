@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - updated translations
 - fixed the the labels for shortcut keys for zoom in and zoom out both in the Menu links and in the Shortcut list
 - made sure the zoom functions use the global_zoom_ratio parameter from App.self.defaults dictionary.
+- some PEP8 cleanup
 
 8.06.2019
 

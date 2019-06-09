@@ -1,10 +1,10 @@
-# ######################################################### ##
+# ###########################################################
 # FlatCAM: 2D Post-processing for Manufacturing             #
 # http://flatcam.org                                        #
 # Author: Juan Pablo Caram (c)                              #
 # Date: 2/5/2014                                            #
 # MIT Licence                                               #
-# ######################################################### ##
+# ###########################################################
 
 import urllib.request, urllib.parse, urllib.error
 import getopt
@@ -25,9 +25,9 @@ import gc
 
 from xml.dom.minidom import parseString as parse_xml_string
 
-# ##################################### ##
-# #      Imports part of FlatCAM       # ##
-# ##################################### ##
+# #######################################
+# #      Imports part of FlatCAM       ##
+# #######################################
 from ObjectCollection import *
 from FlatCAMObj import *
 from flatcamGUI.PlotCanvas import *
@@ -875,7 +875,7 @@ class App(QtCore.QObject):
             "tools_calc_vshape_cut_z": 0.000787,
             "tools_calc_electro_length": 10.0,
             "tools_calc_electro_width": 10.0,
-            "tools_calc_electro_cdensity":13.0,
+            "tools_calc_electro_cdensity": 13.0,
             "tools_calc_electro_growth": 10.0,
 
             "tools_transform_rotate": 90,
@@ -929,10 +929,9 @@ class App(QtCore.QObject):
             self.ui.general_defaults_form.general_app_group.language_cb.setCurrentText(ret_val)
             log.debug("App.__init__() --> Applied %s language." % str(ret_val).capitalize())
 
-
-        # ################################ ##
-        # # ## CREATE UNIQUE SERIAL NUMBER # ##
-        # ################################ ##
+        # ##################################
+        # ### CREATE UNIQUE SERIAL NUMBER ##
+        # ##################################
 
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
         if self.defaults['global_serial'] == 0 or len(str(self.defaults['global_serial'])) < 10:
@@ -2790,7 +2789,7 @@ class App(QtCore.QObject):
                 self.inform.emit(_("[ERROR_NOTCL] Failed to parse defaults file."))
                 return
             self.defaults.update(defaults_from_file)
-            self.inform.emit(_("[success] Imported Defaults from %s") %filename)
+            self.inform.emit(_("[success] Imported Defaults from %s") % filename)
 
     def on_export_preferences(self):
         self.report_usage("on_export_preferences")
@@ -2802,16 +2801,16 @@ class App(QtCore.QObject):
         self.date = ''.join(c for c in self.date if c not in ':-')
         self.date = self.date.replace(' ', '_')
 
-        filter = "Config File (*.FlatConfig);;All Files (*.*)"
+        filter__ = "Config File (*.FlatConfig);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Export FlatCAM Preferences"),
                 directory=self.data_path + '/preferences_' + self.date,
-                filter=filter
+                filter=filter__
             )
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export FlatCAM Preferences"),
-                                                                 filter=filter)
+                                                                 filter=filter__)
 
         filename = str(filename)
         defaults_from_file = {}
@@ -3467,11 +3466,11 @@ class App(QtCore.QObject):
         # if len(set(geo_type_list)) == 1 means that all list elements are the same
         if len(set(geo_type_list)) != 1:
             self.inform.emit(_("[ERROR] Failed join. The Geometry objects are of different types.\n"
-                             "At least one is MultiGeo type and the other is SingleGeo type. A possibility is to "
-                             "convert from one to another and retry joining \n"
-                             "but in the case of converting from MultiGeo to SingleGeo, informations may be lost and "
-                             "the result may not be what was expected. \n"
-                             "Check the generated GCODE."))
+                               "At least one is MultiGeo type and the other is SingleGeo type. A possibility is to "
+                               "convert from one to another and retry joining \n"
+                               "but in the case of converting from MultiGeo to SingleGeo, informations may be lost and "
+                               "the result may not be what was expected. \n"
+                               "Check the generated GCODE."))
             return
 
         # if at least one True object is in the list then due of the previous check, all list elements are True objects

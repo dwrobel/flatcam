@@ -1,4 +1,5 @@
-import sys, os
+import sys
+import os
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings, Qt
@@ -10,22 +11,22 @@ if sys.platform == "win32":
     # cx_freeze 'module win32' workaround
     pass
 
+
 def debug_trace():
     """
     Set a tracepoint in the Python debugger that works with Qt
     :return: None
     """
     from PyQt5.QtCore import pyqtRemoveInputHook
-    #from pdb import set_trace
+    # from pdb import set_trace
     pyqtRemoveInputHook()
-    #set_trace()
-
-# All X11 calling should be thread safe otherwise we have strange issues
-# QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_X11InitThreads)
-# NOTE: Never talk to the GUI from threads! This is why I commented the above.
+    # set_trace()
 
 
 if __name__ == '__main__':
+    # All X11 calling should be thread safe otherwise we have strange issues
+    # QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_X11InitThreads)
+    # NOTE: Never talk to the GUI from threads! This is why I commented the above.
     freeze_support()
 
     debug_trace()
@@ -59,4 +60,3 @@ if __name__ == '__main__':
     fc = App()
 
     sys.exit(app.exec_())
-
