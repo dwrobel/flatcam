@@ -310,7 +310,7 @@ class CutOut(FlatCAMTool):
         FlatCAMTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, "Cutout Tool")
+        self.app.ui.notebook.setTabText(2, _("Cutout Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+U', **kwargs)
