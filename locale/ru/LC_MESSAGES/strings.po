@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-06-07 23:14+0300\n"
-"PO-Revision-Date: 2019-06-09 03:33+0400\n"
+"PO-Revision-Date: 2019-06-09 13:25+0400\n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -1737,7 +1737,7 @@ msgstr "Диаметр нового инструмента"
 
 #: flatcamEditors/FlatCAMExcEditor.py:847
 msgid "Add Tool"
-msgstr "Добавить инструмент"
+msgstr "Доб. инструм."
 
 #: flatcamEditors/FlatCAMExcEditor.py:849
 msgid ""
@@ -1785,7 +1785,7 @@ msgstr "Изменить размер сверла"
 
 #: flatcamEditors/FlatCAMExcEditor.py:924 flatcamGUI/FlatCAMGUI.py:1612
 msgid "Add Drill Array"
-msgstr "Добавить массив свёрел"
+msgstr "Добавить массив отверстий"
 
 #: flatcamEditors/FlatCAMExcEditor.py:926
 msgid "Add an array of drills (linear or circular array)"
@@ -1811,7 +1811,7 @@ msgstr "Круговой"
 
 #: flatcamEditors/FlatCAMExcEditor.py:944 flatcamGUI/FlatCAMGUI.py:5065
 msgid "Nr of drills:"
-msgstr "№ сверла:"
+msgstr "Кол-во отверстий:"
 
 #: flatcamEditors/FlatCAMExcEditor.py:946 flatcamGUI/FlatCAMGUI.py:5067
 msgid "Specify how many drills to be in the array."
@@ -1840,7 +1840,7 @@ msgstr ""
 #: flatcamEditors/FlatCAMExcEditor.py:979
 #: flatcamEditors/FlatCAMGrbEditor.py:2541 flatcamGUI/FlatCAMGUI.py:5096
 msgid "Pitch:"
-msgstr "Подача:"
+msgstr "Шаг:"
 
 #: flatcamEditors/FlatCAMExcEditor.py:981
 #: flatcamEditors/FlatCAMGrbEditor.py:2543 flatcamGUI/FlatCAMGUI.py:5098
@@ -4042,15 +4042,15 @@ msgstr "Сохранить проект"
 
 #: flatcamGUI/FlatCAMGUI.py:615 flatcamGUI/FlatCAMGUI.py:1839
 msgid "New Blank Geometry"
-msgstr "Новый Geometry"
+msgstr "Создать Geometry"
 
 #: flatcamGUI/FlatCAMGUI.py:616
 msgid "New Blank Gerber"
-msgstr "Новый Gerber"
+msgstr "Создать Gerber"
 
 #: flatcamGUI/FlatCAMGUI.py:617 flatcamGUI/FlatCAMGUI.py:1840
 msgid "New Blank Excellon"
-msgstr "Новый Excellon"
+msgstr "Создать Excellon"
 
 #: flatcamGUI/FlatCAMGUI.py:619 flatcamGUI/FlatCAMGUI.py:1842
 msgid "Editor"
@@ -4058,7 +4058,7 @@ msgstr "Редактор"
 
 #: flatcamGUI/FlatCAMGUI.py:621 flatcamGUI/FlatCAMGUI.py:1844
 msgid "Save Object and close the Editor"
-msgstr ""
+msgstr "Сохранить объект и закрыть редактор"
 
 #: flatcamGUI/FlatCAMGUI.py:625 flatcamGUI/FlatCAMGUI.py:1848
 msgid "&Delete"
@@ -4119,7 +4119,7 @@ msgstr "Паяльная паста"
 #: flatcamGUI/FlatCAMGUI.py:649 flatcamGUI/FlatCAMGUI.py:1873
 #: flatcamTools/ToolSub.py:26
 msgid "Substract Tool"
-msgstr ""
+msgstr "Вычитатель"
 
 #: flatcamGUI/FlatCAMGUI.py:653 flatcamGUI/FlatCAMGUI.py:1878
 msgid "Calculators Tool"
@@ -4133,27 +4133,27 @@ msgstr "Выбрать"
 
 #: flatcamGUI/FlatCAMGUI.py:658 flatcamGUI/FlatCAMGUI.py:1883
 msgid "Add Drill Hole"
-msgstr ""
+msgstr "Добавить отверстие"
 
 #: flatcamGUI/FlatCAMGUI.py:660 flatcamGUI/FlatCAMGUI.py:1885
 msgid "Add Drill Hole Array"
-msgstr ""
+msgstr "Добавить массив отверстий"
 
 #: flatcamGUI/FlatCAMGUI.py:661 flatcamGUI/FlatCAMGUI.py:1886
 msgid "Resize Drill"
-msgstr "Изменить размер сверла"
+msgstr "Изменить размер отверстия"
 
 #: flatcamGUI/FlatCAMGUI.py:664 flatcamGUI/FlatCAMGUI.py:1889
 msgid "Copy Drill"
-msgstr "Копировать сверло"
+msgstr "Копировать отверстие"
 
 #: flatcamGUI/FlatCAMGUI.py:665 flatcamGUI/FlatCAMGUI.py:1891
 msgid "Delete Drill"
-msgstr "Удалить сверло"
+msgstr "Удалить отверстие"
 
 #: flatcamGUI/FlatCAMGUI.py:668 flatcamGUI/FlatCAMGUI.py:1894
 msgid "Move Drill"
-msgstr "Переместить сверло"
+msgstr "Переместить отверстие"
 
 #: flatcamGUI/FlatCAMGUI.py:672 flatcamGUI/FlatCAMGUI.py:1898
 msgid "Add Circle"
@@ -5614,7 +5614,7 @@ msgstr "Gerber основные"
 #: flatcamGUI/ObjectUI.py:150 flatcamGUI/ObjectUI.py:505
 #: flatcamGUI/ObjectUI.py:833 flatcamGUI/ObjectUI.py:1350
 msgid "<b>Plot Options:</b>"
-msgstr "<b>Параметры чертёжа:</b>"
+msgstr "<b>Отрисовка:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:4002 flatcamGUI/FlatCAMGUI.py:4373
 #: flatcamGUI/ObjectUI.py:156 flatcamGUI/ObjectUI.py:506
@@ -5627,7 +5627,7 @@ msgstr "Сплошной цвет полигонов."
 
 #: flatcamGUI/FlatCAMGUI.py:4009 flatcamGUI/ObjectUI.py:164
 msgid "M-Color"
-msgstr ""
+msgstr "Мн.цветн"
 
 #: flatcamGUI/FlatCAMGUI.py:4011 flatcamGUI/ObjectUI.py:166
 msgid "Draw polygons in different colors."
@@ -5692,7 +5692,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4073 flatcamGUI/ObjectUI.py:283
 msgid "Pass overlap:"
-msgstr "Перекр. за прох.:"
+msgstr "Перекрытие:"
 
 #: flatcamGUI/FlatCAMGUI.py:4075 flatcamGUI/ObjectUI.py:285
 #, python-format
@@ -5736,7 +5736,7 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:4113 flatcamGUI/FlatCAMGUI.py:4139
 #: flatcamGUI/ObjectUI.py:430 flatcamGUI/ObjectUI.py:464
 msgid "Boundary Margin:"
-msgstr "Отступ от дорожек:"
+msgstr "Отст. от дорож.:"
 
 #: flatcamGUI/FlatCAMGUI.py:4115 flatcamGUI/ObjectUI.py:432
 msgid ""
@@ -6403,7 +6403,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5076
 msgid "<b>Linear Drill Array:</b>"
-msgstr ""
+msgstr "<b>Линейный массив:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:5080
 msgid "Linear Dir.:"
@@ -6411,7 +6411,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5116
 msgid "<b>Circular Drill Array:</b>"
-msgstr ""
+msgstr "<b>Круговой массив:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:5120
 msgid "Circular Dir.:"
@@ -7746,7 +7746,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:443 flatcamGUI/ObjectUI.py:474
 msgid "Rounded Geo"
-msgstr ""
+msgstr "Закруглять"
 
 #: flatcamGUI/ObjectUI.py:445
 msgid "Resulting geometry will have rounded corners."
@@ -9755,7 +9755,7 @@ msgstr ""
 
 #: flatcamTools/ToolProperties.py:111
 msgid "Properties Tool"
-msgstr "Свойства инструмента"
+msgstr "Свойства"
 
 #: flatcamTools/ToolShell.py:69
 msgid "...proccessing..."
@@ -10041,7 +10041,7 @@ msgstr ""
 
 #: flatcamTools/ToolSub.py:87
 msgid "Substract Gerber"
-msgstr ""
+msgstr "Вычесть Gerber"
 
 #: flatcamTools/ToolSub.py:89
 msgid ""
@@ -10073,7 +10073,7 @@ msgstr ""
 
 #: flatcamTools/ToolSub.py:133
 msgid "Substract Geometry"
-msgstr "Вычесть геометрию"
+msgstr "Вычесть Geometry"
 
 #: flatcamTools/ToolSub.py:135
 msgid ""
@@ -10085,7 +10085,7 @@ msgstr ""
 
 #: flatcamTools/ToolSub.py:215
 msgid "Sub Tool"
-msgstr "Инструмент вычитания"
+msgstr "Вычитатель"
 
 #: flatcamTools/ToolSub.py:230 flatcamTools/ToolSub.py:421
 msgid "[ERROR_NOTCL] No Target object loaded."
