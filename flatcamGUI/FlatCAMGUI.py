@@ -355,8 +355,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # Separator
         self.menuview.addSeparator()
         self.menuview_zoom_fit = self.menuview.addAction(QtGui.QIcon('share/zoom_fit32.png'), _("&Zoom Fit\tV"))
-        self.menuview_zoom_in = self.menuview.addAction(QtGui.QIcon('share/zoom_in32.png'), _("&Zoom In\t-"))
-        self.menuview_zoom_out = self.menuview.addAction(QtGui.QIcon('share/zoom_out32.png'), _("&Zoom Out\t="))
+        self.menuview_zoom_in = self.menuview.addAction(QtGui.QIcon('share/zoom_in32.png'), _("&Zoom In\t="))
+        self.menuview_zoom_out = self.menuview.addAction(QtGui.QIcon('share/zoom_out32.png'), _("&Zoom Out\t-"))
         self.menuview.addSeparator()
 
         self.menuview_toggle_code_editor = self.menuview.addAction(QtGui.QIcon('share/code_editor32.png'),
@@ -1069,11 +1069,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;Flip on Y_axis</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>&#39;=&#39;</strong></td>
+                        <td height="20"><strong>&#39;-&#39;</strong></td>
                         <td>&nbsp;Zoom Out</td>
                     </tr>
                     <tr height="20">
-                        <td height="20"><strong>&#39;-&#39;</strong></td>
+                        <td height="20"><strong>&#39;=&#39;</strong></td>
                         <td>&nbsp;Zoom In</td>
                     </tr>
                     <tr height="20">
@@ -2289,7 +2289,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.on_set_origin()
                     return
 
-                # Set Origin
+                # Properties Tool
                 if key == QtCore.Qt.Key_P:
                     self.app.properties_tool.run()
                     return
@@ -2328,8 +2328,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.on_flipy()
 
                 # Zoom In
+<<<<<<< HEAD
+=======
+                if key == QtCore.Qt.Key_Equal:
+                    self.app.plotcanvas.zoom(1 / self.app.defaults['global_zoom_ratio'], self.app.mouse)
+
+                # Zoom Out
+>>>>>>> remotes/jpcgt/flatcam/Beta
                 if key == QtCore.Qt.Key_Minus:
-                    self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'], self.app.mouse)
+                    self.app.plotcanvas.zoom(self.app.defaults['global_zoom_ratio'], self.app.mouse)
 
                 # Zoom Out
                 if key == QtCore.Qt.Key_Equal:
@@ -2455,11 +2462,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.geo_editor.transform_tool.on_rotate_key()
 
                 if key == QtCore.Qt.Key_Minus or key == '-':
-                    self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'],
+                    self.app.plotcanvas.zoom(1 / self.app.defaults['global_zoom_ratio'],
                                              [self.app.geo_editor.snap_x, self.app.geo_editor.snap_y])
 
                 if key == QtCore.Qt.Key_Equal or key == '=':
-                    self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'],
+                    self.app.plotcanvas.zoom(self.app.defaults['global_zoom_ratio'],
                                              [self.app.geo_editor.snap_x, self.app.geo_editor.snap_y])
 
                 # Switch to Project Tab
@@ -2657,13 +2664,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 if key == QtCore.Qt.Key_Minus or key == '-':
                     self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'],
+                    self.app.plotcanvas.zoom(1 / self.app.defaults['global_zoom_ratio'],
                                              [self.app.grb_editor.snap_x, self.app.grb_editor.snap_y])
                     return
 
                 if key == QtCore.Qt.Key_Equal or key == '=':
                     self.app.grb_editor.launched_from_shortcuts = True
-                    self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'],
+                    self.app.plotcanvas.zoom(self.app.defaults['global_zoom_ratio'],
                                              [self.app.grb_editor.snap_x, self.app.grb_editor.snap_y])
                     return
 
@@ -2869,13 +2876,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
                 if key == QtCore.Qt.Key_Minus or key == '-':
                     self.app.exc_editor.launched_from_shortcuts = True
-                    self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'],
+                    self.app.plotcanvas.zoom(1 / self.app.defaults['global_zoom_ratio'],
                                              [self.app.exc_editor.snap_x, self.app.exc_editor.snap_y])
                     return
 
                 if key == QtCore.Qt.Key_Equal or key == '=':
                     self.app.exc_editor.launched_from_shortcuts = True
-                    self.app.plotcanvas.zoom(self.app.defaults['zoom_ratio'],
+                    self.app.plotcanvas.zoom(self.app.defaults['global_zoom_ratio'],
                                              [self.app.exc_editor.snap_x, self.app.exc_editor.snap_y])
                     return
 
