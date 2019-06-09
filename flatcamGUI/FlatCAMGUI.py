@@ -1250,7 +1250,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     </tr>
                 </tbody>
             </table>
-
+    
             '''
         )
 
@@ -1265,7 +1265,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             '''<b>Editor Shortcut list</b><br>
             <br>
             <strong><span style="color:#0000ff">GEOMETRY EDITOR</span></strong><br>
-
+    
             <table border="0" cellpadding="0" cellspacing="0" style="width:283px">
                 <tbody>
                     <tr height="20">
@@ -2328,19 +2328,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.on_flipy()
 
                 # Zoom In
-<<<<<<< HEAD
-=======
                 if key == QtCore.Qt.Key_Equal:
                     self.app.plotcanvas.zoom(1 / self.app.defaults['global_zoom_ratio'], self.app.mouse)
 
                 # Zoom Out
->>>>>>> remotes/jpcgt/flatcam/Beta
                 if key == QtCore.Qt.Key_Minus:
                     self.app.plotcanvas.zoom(self.app.defaults['global_zoom_ratio'], self.app.mouse)
-
-                # Zoom Out
-                if key == QtCore.Qt.Key_Equal:
-                    self.app.plotcanvas.zoom(1 / self.app.defaults['zoom_ratio'], self.app.mouse)
 
                 # toggle display of Notebook area
                 if key == QtCore.Qt.Key_QuoteLeft:

@@ -1417,10 +1417,6 @@ class App(QtCore.QObject):
         self.ui.menuviewenable.triggered.connect(self.enable_all_plots)
 
         self.ui.menuview_zoom_fit.triggered.connect(self.on_zoom_fit)
-<<<<<<< HEAD
-        self.ui.menuview_zoom_in.triggered.connect(lambda: self.plotcanvas.zoom(1.5))
-        self.ui.menuview_zoom_out.triggered.connect(lambda: self.plotcanvas.zoom(1 / 1.5))
-=======
         self.ui.menuview_zoom_in.triggered.connect(
             lambda: self.plotcanvas.zoom(1 / float(self.defaults['global_zoom_ratio']))
         )
@@ -1428,7 +1424,6 @@ class App(QtCore.QObject):
             lambda: self.plotcanvas.zoom(float(self.defaults['global_zoom_ratio']))
         )
 
->>>>>>> remotes/jpcgt/flatcam/Beta
         self.ui.menuview_toggle_code_editor.triggered.connect(self.on_toggle_code_editor)
         self.ui.menuview_toggle_fscreen.triggered.connect(self.on_fullscreen)
         self.ui.menuview_toggle_parea.triggered.connect(self.on_toggle_plotarea)
@@ -8049,7 +8044,7 @@ class App(QtCore.QObject):
 
             This behavior works only within main thread,
             errors with promissed tasks can be catched and detected only with log.
-            TODO: this problem have to be addressed somehow, maybe rewrite promissing to be blocking somehow for
+            TODO: this problem have to be addressed somehow, maybe rewrite promissing to be blocking somehow for 
             TCL shell.
 
             Kamil's comment: I will rewrite existing TCL commands from time to time to follow this rules.
