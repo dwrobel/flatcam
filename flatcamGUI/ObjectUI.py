@@ -1499,7 +1499,7 @@ class CNCObjectUI(ObjectUI):
         self.custom_box.addWidget(self.prepend_text)
 
         # Append text to GCode
-        appendlabel = QtWidgets.QLabel(_('Append to CNC Code'))
+        appendlabel = QtWidgets.QLabel(_('Append to CNC Code:'))
         appendlabel.setToolTip(
             _(
                 "Type here any G-Code commands you would\n"

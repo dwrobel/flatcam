@@ -3766,8 +3766,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                           "ADVANCED level -> full functionality.\n\n"
                                           "The choice here will influence the parameters in\n"
                                           "the Selected Tab for all kinds of FlatCAM objects."))
-        self.app_level_radio = RadioSet([{'label': 'Basic', 'value': 'b'},
-                                         {'label': 'Advanced', 'value': 'a'}])
+        self.app_level_radio = RadioSet([{'label': _('Basic'), 'value': 'b'},
+                                         {'label': _('Advanced'), 'value': 'a'}])
 
         # Languages for FlatCAM
         self.languagelabel = QtWidgets.QLabel(_('<b>Languages:</b>'))
@@ -3989,7 +3989,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         # OptionsGroupUI.__init__(self, "Gerber General Preferences", parent=parent)
         super(GerberGenPrefGroupUI, self).__init__(self)
 
-        self.setTitle(str("Gerber General"))
+        self.setTitle(str(_("Gerber General")))
 
         # ## Plot options
         self.plot_options_label = QtWidgets.QLabel(_("<b>Plot Options:</b>"))

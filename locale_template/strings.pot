@@ -5233,6 +5233,14 @@ msgid ""
 "the Selected Tab for all kinds of FlatCAM objects."
 msgstr ""
 
+#: flatcamGUI/FlatCAMGUI.py:3769
+msgid "Basic"
+msgstr ""
+
+#: flatcamGUI/FlatCAMGUI.py:3770
+msgid "Advanced"
+msgstr ""
+
 #: flatcamGUI/FlatCAMGUI.py:3773
 msgid "<b>Languages:</b>"
 msgstr ""
@@ -5392,6 +5400,10 @@ msgid ""
 "The level of compression used when saving\n"
 "a FlatCAM project. Higher value means better compression\n"
 "but require more RAM usage and more processing time."
+msgstr ""
+
+#: flatcamGUI/FlatCAMGUI.py:3992
+msgid "Gerber General"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3995 flatcamGUI/FlatCAMGUI.py:4361
@@ -7397,7 +7409,7 @@ msgstr ""
 msgid "<b>Board cutout:</b>"
 msgstr ""
 
-#: flatcamGUI/ObjectUI.py:408
+#: flatcamGUI/ObjectUI.py:408 flatcamTools/ToolCutOut.py:313
 msgid "Cutout Tool"
 msgstr ""
 
@@ -7919,7 +7931,7 @@ msgid ""
 msgstr ""
 
 #: flatcamGUI/ObjectUI.py:1502
-msgid "Append to CNC Code"
+msgid "Append to CNC Code:"
 msgstr ""
 
 #: flatcamGUI/ObjectUI.py:1526
@@ -8734,6 +8746,14 @@ msgstr ""
 
 #: flatcamTools/ToolMeasurement.py:52
 msgid "Stop"
+msgstr ""
+
+#: flatcamTools/ToolMeasurement.py:55
+msgid "Dx:"
+msgstr ""
+
+#: flatcamTools/ToolMeasurement.py:58
+msgid "Dy:"
 msgstr ""
 
 #: flatcamTools/ToolMeasurement.py:53 flatcamTools/ToolMeasurement.py:70

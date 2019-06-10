@@ -52,10 +52,10 @@ class Measurement(FlatCAMTool):
         self.stop_label = QtWidgets.QLabel("<b>%s</b> %s:" % (_('Stop'), _('Coords')))
         self.stop_label.setToolTip(_("This is the measuring Stop point coordinates."))
 
-        self.distance_x_label = QtWidgets.QLabel("Dx:")
+        self.distance_x_label = QtWidgets.QLabel(_("Dx:"))
         self.distance_x_label.setToolTip(_("This is the distance measured over the X axis."))
 
-        self.distance_y_label = QtWidgets.QLabel("Dy:")
+        self.distance_y_label = QtWidgets.QLabel(_("Dy:"))
         self.distance_y_label.setToolTip(_("This is the distance measured over the Y axis."))
 
         self.total_distance_label = QtWidgets.QLabel("<b>%s:</b>" % _('DISTANCE'))
