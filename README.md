@@ -9,6 +9,14 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+11.06.2019
+
+- fixed the Edit -> Conversion -> Join ... functions (merge() functions)
+- updated translations
+- Russian translate by @camellan is not finished yet
+- some PEP8 cleanup in camlib.py
+- RELEASE 8.918
+
 9.06.2019
 
 - updated translations

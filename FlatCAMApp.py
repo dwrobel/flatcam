@@ -95,7 +95,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.918
-    version_date = "2019/06/09"
+    version_date = "2019/06/11"
     beta = True
 
     # current date now
@@ -3457,14 +3457,14 @@ class App(QtCore.QObject):
         obj_name_multi = str(name) if name else "Combo_MultiGeo"
 
         tooldias = []
-        geo_type_list = []
+        geo_type_list = set()
 
         objs = self.collection.get_selected()
         for obj in objs:
-            geo_type_list.append(obj.multigeo)
+            geo_type_list.add(obj.multigeo)
 
-        # if len(set(geo_type_list)) == 1 means that all list elements are the same
-        if len(set(geo_type_list)) != 1:
+        # if len(geo_type_list) == 1 means that all list elements are the same
+        if len(geo_type_list) != 1:
             self.inform.emit(_("[ERROR] Failed join. The Geometry objects are of different types.\n"
                                "At least one is MultiGeo type and the other is SingleGeo type. A possibility is to "
                                "convert from one to another and retry joining \n"
@@ -3476,7 +3476,7 @@ class App(QtCore.QObject):
         # if at least one True object is in the list then due of the previous check, all list elements are True objects
         if True in geo_type_list:
             def initialize(obj, app):
-                FlatCAMGeometry.merge(objs, obj, multigeo=True)
+                FlatCAMGeometry.merge(self, geo_list=objs, geo_final=obj, multigeo=True)
 
                 # rename all the ['name] key in obj.tools[tooluid]['data'] to the obj_name_multi
                 for v in obj.tools.values():
@@ -3484,7 +3484,7 @@ class App(QtCore.QObject):
             self.new_object("geometry", obj_name_multi, initialize)
         else:
             def initialize(obj, app):
-                FlatCAMGeometry.merge(objs, obj, multigeo=False)
+                FlatCAMGeometry.merge(self, geo_list=objs, geo_final=obj, multigeo=False)
 
                 # rename all the ['name] key in obj.tools[tooluid]['data'] to the obj_name_multi
                 for v in obj.tools.values():
@@ -3510,7 +3510,7 @@ class App(QtCore.QObject):
                 return
 
         def initialize(obj, app):
-            FlatCAMExcellon.merge(objs, obj)
+            FlatCAMExcellon.merge(self, exc_list=objs, exc_final=obj)
 
         self.new_object("excellon", 'Combo_Excellon', initialize)
         self.should_we_save = True
@@ -3532,7 +3532,7 @@ class App(QtCore.QObject):
                 return
 
         def initialize(obj, app):
-            FlatCAMGerber.merge(objs, obj)
+            FlatCAMGerber.merge(self, grb_list=objs, grb_final=obj)
 
         self.new_object("gerber", 'Combo_Gerber', initialize)
         self.should_we_save = True

@@ -387,8 +387,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
     ui_type = GerberObjectUI
 
-    @staticmethod
-    def merge(grb_list, grb_final):
+    def merge(self, grb_list, grb_final):
         """
         Merges the geometry of objects in geo_list into
         the geometry of geo_final.
@@ -1590,15 +1589,14 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # store the source file here
         self.source_file = ""
 
-        self.multigeo = True
+        self.multigeo = False
 
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
         self.ser_attrs += ['options', 'kind']
 
-    @staticmethod
-    def merge(exc_list, exc_final):
+    def merge(self, exc_list, exc_final):
         """
         Merge Excellon objects found in exc_list parameter into exc_final object.
         Options are always copied from source .
@@ -1659,10 +1657,13 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             exc_final.zeros = exc.zeros
             exc_final.units = exc.units
 
+        # ##########################################
+        # Here we add data to the exc_final object #
+        # ##########################################
+
         # variable to make tool_name for the tools
         current_tool = 0
-        # Here we add data to the exc_final object
-        # the tools diameter are now the keys in the drill_dia dict and the values are the Shapely Points in case of
+        # The tools diameter are now the keys in the drill_dia dict and the values are the Shapely Points in case of
         # drills
         for tool_dia in custom_dict_drills:
             # we create a tool name for each key in the drill_dia dict (the key is a unique drill diameter)
@@ -1681,8 +1682,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                     }
                 )
 
-        # Here we add data to the exc_final object
-        # the tools diameter are now the keys in the drill_dia dict and the values are a list ([start, stop])
+        # The tools diameter are now the keys in the drill_dia dict and the values are a list ([start, stop])
         # of two Shapely Points in case of slots
         for tool_dia in custom_dict_slots:
             # we create a tool name for each key in the slot_dia dict (the key is a unique slot diameter)
@@ -2771,25 +2771,25 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         if not FlatCAMObj.plot(self):
             return
 
-        try:
-            # Plot excellon (All polygons?)
-            if self.options["solid"]:
-                for tool in self.tools:
-                    for geo in self.tools[tool]['solid_geometry']:
-                        self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF',
-                                       visible=self.options['plot'],
-                                       layer=2)
-            else:
-                for tool in self.tools:
-                    for geo in self.tools[tool]['solid_geometry']:
-                        self.add_shape(shape=geo.exterior, color='red', visible=self.options['plot'])
-                        for ints in geo.interiors:
-                            self.add_shape(shape=ints, color='green', visible=self.options['plot'])
-
-            self.shapes.redraw()
-            return
-        except (ObjectDeleted, AttributeError, KeyError):
-            self.shapes.clear(update=True)
+        # try:
+        #     # Plot Excellon (All polygons?)
+        #     if self.options["solid"]:
+        #         for tool in self.tools:
+        #             for geo in self.tools[tool]['solid_geometry']:
+        #                 self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF',
+        #                                visible=self.options['plot'],
+        #                                layer=2)
+        #     else:
+        #         for tool in self.tools:
+        #             for geo in self.tools[tool]['solid_geometry']:
+        #                 self.add_shape(shape=geo.exterior, color='red', visible=self.options['plot'])
+        #                 for ints in geo.interiors:
+        #                     self.add_shape(shape=ints, color='orange', visible=self.options['plot'])
+        #
+        #     self.shapes.redraw()
+        #     return
+        # except (ObjectDeleted, AttributeError, KeyError):
+        #     self.shapes.clear(update=True)
 
         # this stays for compatibility reasons, in case we try to open old projects
         try:
@@ -2798,54 +2798,21 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             self.solid_geometry = [self.solid_geometry]
 
         try:
-            # Plot excellon (All polygons?)
+            # Plot Excellon (All polygons?)
             if self.options["solid"]:
                 for geo in self.solid_geometry:
-                    self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF', visible=self.options['plot'],
+                    self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF',
+                                   visible=self.options['plot'],
                                    layer=2)
             else:
                 for geo in self.solid_geometry:
                     self.add_shape(shape=geo.exterior, color='red', visible=self.options['plot'])
                     for ints in geo.interiors:
-                        self.add_shape(shape=ints, color='green', visible=self.options['plot'])
+                        self.add_shape(shape=ints, color='orange', visible=self.options['plot'])
 
             self.shapes.redraw()
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
-
-        # try:
-        #     # Plot excellon (All polygons?)
-        #     if self.options["solid"]:
-        #         for geo_type in self.solid_geometry:
-        #             if geo_type is not None:
-        #                 if type(geo_type) is dict:
-        #                     for tooldia in geo_type:
-        #                         geo_list = geo_type[tooldia]
-        #                         for geo in geo_list:
-        #                             self.add_shape(shape=geo, color='#750000BF', face_color='#C40000BF',
-        #                                            visible=self.options['plot'],
-        #                                            layer=2)
-        #                 else:
-        #                     self.add_shape(shape=geo_type, color='#750000BF', face_color='#C40000BF',
-        #                                    visible=self.options['plot'],
-        #                                    layer=2)
-        #     else:
-        #         for geo_type in self.solid_geometry:
-        #             if geo_type is not None:
-        #                 if type(geo_type) is dict:
-        #                     for tooldia in geo_type:
-        #                         geo_list = geo_type[tooldia]
-        #                         for geo in geo_list:
-        #                             self.add_shape(shape=geo.exterior, color='red', visible=self.options['plot'])
-        #                             for ints in geo.interiors:
-        #                                 self.add_shape(shape=ints, color='green', visible=self.options['plot'])
-        #                 else:
-        #                     self.add_shape(shape=geo_type.exterior, color='red', visible=self.options['plot'])
-        #                     for ints in geo_type.interiors:
-        #                         self.add_shape(shape=ints, color='green', visible=self.options['plot'])
-        #     self.shapes.redraw()
-        # except (ObjectDeleted, AttributeError):
-        #     self.shapes.clear(update=True)
 
 
 class FlatCAMGeometry(FlatCAMObj, Geometry):
@@ -2856,8 +2823,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
     optionChanged = QtCore.pyqtSignal(str)
     ui_type = GeometryObjectUI
 
-    @staticmethod
-    def merge(geo_list, geo_final, multigeo=None):
+    def merge(self, geo_list, geo_final, multigeo=None):
         """
         Merges the geometry of objects in grb_list into
         the geometry of geo_final.
@@ -2873,8 +2839,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         if type(geo_final.solid_geometry) is not list:
             geo_final.solid_geometry = [geo_final.solid_geometry]
 
-
-
         for geo in geo_list:
             for option in geo.options:
                 if option is not 'name':
@@ -2885,11 +2849,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
             # Expand lists
             if type(geo) is list:
-                FlatCAMGeometry.merge(geo, geo_final)
+                FlatCAMGeometry.merge(self, geo_list=geo, geo_final=geo_final)
             # If not list, just append
             else:
                 # merge solid_geometry, useful for singletool geometry, for multitool each is empty
-                if multigeo is None or multigeo == False:
+                if multigeo is None or multigeo is False:
                     geo_final.multigeo = False
                     try:
                         geo_final.solid_geometry.append(geo.solid_geometry)
