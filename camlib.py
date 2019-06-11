@@ -52,16 +52,15 @@ from flatcamParsers.ParseDXF import *
 
 import logging
 import FlatCAMApp
+import gettext
+import FlatCAMTranslation as fcTranslate
+import builtins
 
 if platform.architecture()[0] == '64bit':
     from ortools.constraint_solver import pywrapcp
     from ortools.constraint_solver import routing_enums_pb2
 
-import gettext
-import FlatCAMTranslation as fcTranslate
-
 fcTranslate.apply_language('strings')
-import builtins
 
 log = logging.getLogger('base2')
 log.setLevel(logging.DEBUG)
@@ -513,8 +512,8 @@ class Geometry(object):
         :param offset: Offset distance.
         :type offset: float
         :param iso_type: type of isolation, can be 0 = exteriors or 1 = interiors or 2 = both (complete)
-        :type integer
         :param corner: type of corner for the isolation: 0 = round; 1 = square; 2= beveled (line that connects the ends)
+        :param follow: whether the geometry to be isolated is a follow_geometry
         :return: The buffered geometry.
         :rtype: Shapely.MultiPolygon or Shapely.Polygon
         """
@@ -533,7 +532,6 @@ class Geometry(object):
         #         geo_iso.append(self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
         # return geo_iso
 
-
         # commented this because of the bug with multiple passes cutting out of the copper
         # geo_iso = []
         # flattened_geo = self.flatten_list(self.solid_geometry)
@@ -542,7 +540,6 @@ class Geometry(object):
         #         geo_iso.append(mp_geo.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
         # except TypeError:
         #     geo_iso.append(self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
-
 
         # the previously commented block is replaced with this block - regression - to solve the bug with multiple
         # isolation passes cutting from the copper features
@@ -587,8 +584,10 @@ class Geometry(object):
 
         :param filename: Path to the SVG file.
         :type filename: str
+        :param object_type: parameter passed further along
         :param flip: Flip the vertically.
         :type flip: bool
+        :param units: FlatCAM units
         :return: None
         """
 
@@ -682,6 +681,10 @@ class Geometry(object):
         :type filename: str
         :param flip: Flip the object vertically.
         :type flip: bool
+        :param units: FlatCAM units
+        :param dpi: dots per inch on the imported image
+        :param mode: how to import the image: as 'black' or 'color'
+        :param mask: level of detail for the import
         :return: None
         """
         scale_factor = 0.264583333
@@ -780,8 +783,7 @@ class Geometry(object):
         return boundary.difference(self.solid_geometry)
         
     @staticmethod
-    def clear_polygon(polygon, tooldia, steps_per_circle, overlap=0.15, connect=True,
-                        contour=True):
+    def clear_polygon(polygon, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True):
         """
         Creates geometry inside a polygon for a tool to cover
         the whole area.
@@ -791,6 +793,7 @@ class Geometry(object):
 
         :param polygon: Polygon to clear.
         :param tooldia: Diameter of the tool.
+        :param steps_per_circle: number of linear segments to be used to approximate a circle
         :param overlap: Overlap of toolpasses.
         :param connect: Draw lines between disjoint segments to
                         minimize tool lifts.
@@ -875,6 +878,7 @@ class Geometry(object):
         the polygon.
 
         :param polygon_to_clear: Shapely.geometry.Polygon
+        :param steps_per_circle: how many linear segments to use to approximate a circle
         :param tooldia: Diameter of the tool
         :param seedpoint: Shapely.geometry.Point or None
         :param overlap: Tool fraction overlap bewteen passes
@@ -916,8 +920,8 @@ class Geometry(object):
             if path.is_empty:
                 break
             else:
-                #geoms.append(path)
-                #geoms.insert(path)
+                # geoms.append(path)
+                # geoms.insert(path)
                 # path can be a collection of paths.
                 try:
                     for p in path:
@@ -929,12 +933,14 @@ class Geometry(object):
 
         # Clean inside edges (contours) of the original polygon
         if contour:
-            outer_edges = [x.exterior for x in autolist(polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle / 4)))]
+            outer_edges = [x.exterior for x in autolist(
+                polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle / 4)))]
             inner_edges = []
-            for x in autolist(polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle / 4))):  # Over resulting polygons
+            # Over resulting polygons
+            for x in autolist(polygon_to_clear.buffer(-tooldia / 2, int(steps_per_circle / 4))):
                 for y in x.interiors:  # Over interiors of each polygon
                     inner_edges.append(y)
-            #geoms += outer_edges + inner_edges
+            # geoms += outer_edges + inner_edges
             for g in outer_edges + inner_edges:
                 geoms.insert(g)
 
@@ -950,8 +956,7 @@ class Geometry(object):
         return geoms
 
     @staticmethod
-    def clear_polygon3(polygon, tooldia, steps_per_circle, overlap=0.15, connect=True,
-                       contour=True):
+    def clear_polygon3(polygon, tooldia, steps_per_circle, overlap=0.15, connect=True, contour=True):
         """
         Creates geometry inside a polygon for a tool to cover
         the whole area.
@@ -961,6 +966,7 @@ class Geometry(object):
         :param polygon: The polygon being painted.
         :type polygon: shapely.geometry.Polygon
         :param tooldia: Tool diameter.
+        :param steps_per_circle: how many linear segments to use to approximate a circle
         :param overlap: Tool path overlap percentage.
         :param connect: Connect lines to avoid tool lifts.
         :param contour: Paint around the edges.
@@ -1026,8 +1032,11 @@ class Geometry(object):
         """
         Scales all of the object's geometry by a given factor. Override
         this method.
-        :param factor: Number by which to scale.
-        :type factor: float
+        :param xfactor: Number by which to scale on X axis.
+        :type xfactor: float
+        :param yfactor: Number by which to scale on Y axis.
+        :type yfactor: float
+        :param point: point to be used as reference for scaling; a tuple
         :return: None
         :rtype: None
         """
@@ -1055,6 +1064,7 @@ class Geometry(object):
         :type boundary: Polygon
         :param tooldia: Tool diameter.
         :rtype tooldia: float
+        :param steps_per_circle: how many linear segments to use to approximate a circle
         :param max_walk: Maximum allowable distance without lifting tool.
         :type max_walk: float or None
         :return: Optimized geometry.
@@ -1094,7 +1104,7 @@ class Geometry(object):
         try:
             while True:
                 path_count += 1
-                #log.debug("Path %d" % path_count)
+                # log.debug("Path %d" % path_count)
 
                 pt, candidate = storage.nearest(current_pt)
                 storage.remove(candidate)
@@ -1112,7 +1122,7 @@ class Geometry(object):
                 walk_cut = walk_path.buffer(tooldia / 2, int(steps_per_circle / 4))
 
                 if walk_cut.within(boundary) and walk_path.length < max_walk:
-                    #log.debug("Walk to path #%d is inside. Joining." % path_count)
+                    # log.debug("Walk to path #%d is inside. Joining." % path_count)
 
                     # Completely inside. Append...
                     geo.coords = list(geo.coords) + list(candidate.coords)
@@ -1136,7 +1146,7 @@ class Geometry(object):
                 # pt, geo = storage.nearest(current_pt)
 
         except StopIteration:  # Nothing left in storage.
-            #pass
+            # pass
             optimized_paths.insert(geo)
 
         return optimized_paths
@@ -1273,7 +1283,7 @@ class Geometry(object):
             return 1.0
 
         self.units = units
-        self.scale(factor)
+        self.scale(factor, factor)
         self.file_units_factor = factor
         return factor
 
@@ -1370,7 +1380,7 @@ class Geometry(object):
                     new_obj.append(mirror_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj, xscale, yscale, origin=(px,py))
+                return affinity.scale(obj, xscale, yscale, origin=(px, py))
 
         try:
             if self.multigeo is True:
@@ -1534,7 +1544,7 @@ class ApertureMacro:
         # Separate parts
         parts = self.raw.split('*')
 
-        #### Every part in the macro ## ##
+        # ### Every part in the macro ####
         for part in parts:
             # ## Comments. Ignored.
             match = ApertureMacro.amcomm_re.search(part)
@@ -2404,7 +2414,7 @@ class Gerber (Geometry):
                         if match.group(2):  # Append
                             self.aperture_macros[current_macro].append(match.group(2))
                         if match.group(3):  # Finish macro
-                            #self.aperture_macros[current_macro].parse_content()
+                            # self.aperture_macros[current_macro].parse_content()
                             current_macro = None
                             log.debug("Macro complete in 1 line.")
                         continue
@@ -2414,7 +2424,7 @@ class Gerber (Geometry):
                     if match:  # Finish macro
                         log.debug("End of macro. Line %d." % line_num)
                         self.aperture_macros[current_macro].append(match.group(1))
-                        #self.aperture_macros[current_macro].parse_content()
+                        # self.aperture_macros[current_macro].parse_content()
                         current_macro = None
                     else:  # Append
                         self.aperture_macros[current_macro].append(gline)
@@ -2592,7 +2602,7 @@ class Gerber (Geometry):
                     # is not and error.
                     if len(path) < 3:
                         # print "ERROR: Path contains less than 3 points:"
-                        #path = [[current_x, current_y]]
+                        # path = [[current_x, current_y]]
                         continue
 
                     # For regions we may ignore an aperture that is None
@@ -2765,8 +2775,8 @@ class Gerber (Geometry):
                                 except ValueError:
                                     log.warning("Problem %s %s" % (gline, line_num))
                                     self.app.inform.emit(_("[ERROR] Region does not have enough points. "
-                                                         "File will be processed but there are parser errors. "
-                                                         "Line number: %s") % str(line_num))
+                                                           "File will be processed but there are parser errors. "
+                                                           "Line number: %s") % str(line_num))
                             else:
                                 if last_path_aperture is None:
                                     log.warning("No aperture defined for curent path. (%d)" % line_num)
@@ -2860,7 +2870,7 @@ class Gerber (Geometry):
 
                         # this treats the case when we are storing geometry as solids
                         flash = self.create_flash_geometry(
-                            Point( [linear_x, linear_y]),
+                            Point([linear_x, linear_y]),
                             self.apertures[current_aperture],
                             self.steps_per_circle
                         )
@@ -3152,7 +3162,7 @@ class Gerber (Geometry):
         except Exception as err:
             ex_type, ex, tb = sys.exc_info()
             traceback.print_tb(tb)
-            #print traceback.format_exc()
+            # print traceback.format_exc()
 
             log.error("Gerber PARSING FAILED. Line %d: %s" % (line_num, gline))
             loc = 'Gerber Line #%d Gerber Line Content: %s\n' % (line_num, gline) + repr(err)
@@ -3323,8 +3333,10 @@ class Gerber (Geometry):
         are recreated, the scaling will be lost. This behavior was modified
         because of the complexity reached in this class.
 
-        :param factor: Number by which to scale.
-        :type factor: float
+        :param xfactor: Number by which to scale on X axis.
+        :type xfactor: float
+        :param yfactor: Number by which to scale on Y axis.
+        :type yfactor: float
         :rtype : None
         """
         log.debug("camlib.Gerber.scale()")
@@ -3379,7 +3391,6 @@ class Gerber (Geometry):
             return 'fail'
 
         self.app.inform.emit(_("[success] Gerber Scale done."))
-
 
         # ## solid_geometry ???
         #  It's a cascaded union of objects.
@@ -3506,7 +3517,7 @@ class Gerber (Geometry):
 
         Parameters
         ----------
-        xs, ys : float, float
+        angle_x, angle_y : float, float
             The shear angle(s) for the x and y axes respectively. These can be
             specified in either degrees (default) or radians by setting
             use_radians=True.
@@ -3697,7 +3708,7 @@ class Excellon(Geometry):
                            'excellon_format_upper_in', 'excellon_format_lower_in', 'excellon_units', 'slots',
                            'source_file']
 
-        #### Patterns ## ##
+        # ### Patterns ####
         # Regex basics:
         # ^ - beginning
         # $ - end
@@ -4509,24 +4520,26 @@ class Excellon(Geometry):
         :return: None
         """
         self.solid_geometry = []
-
         try:
             # clear the solid_geometry in self.tools
             for tool in self.tools:
-                self.tools[tool]['solid_geometry'][:] = []
+                try:
+                    self.tools[tool]['solid_geometry'][:] = []
+                except KeyError:
+                    self.tools[tool]['solid_geometry'] = []
 
             for drill in self.drills:
                 # poly = drill['point'].buffer(self.tools[drill['tool']]["C"]/2.0)
                 if drill['tool'] is '':
                     self.app.inform.emit(_("[WARNING] Excellon.create_geometry() -> a drill location was skipped "
-                                         "due of not having a tool associated.\n"
-                                         "Check the resulting GCode."))
+                                           "due of not having a tool associated.\n"
+                                           "Check the resulting GCode."))
                     log.debug("Excellon.create_geometry() -> a drill location was skipped "
                               "due of not having a tool associated")
                     continue
                 tooldia = self.tools[drill['tool']]['C']
                 poly = drill['point'].buffer(tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
-                # self.solid_geometry.append(poly)
+                self.solid_geometry.append(poly)
                 self.tools[drill['tool']]['solid_geometry'].append(poly)
 
             for slot in self.slots:
@@ -4536,7 +4549,7 @@ class Excellon(Geometry):
 
                 lines_string = LineString([start, stop])
                 poly = lines_string.buffer(slot_tooldia / 2.0, int(int(self.geo_steps_per_circle) / 4))
-                # self.solid_geometry.append(poly)
+                self.solid_geometry.append(poly)
                 self.tools[slot['tool']]['solid_geometry'].append(poly)
 
         except Exception as e:
