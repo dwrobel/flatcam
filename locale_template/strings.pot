@@ -27,6 +27,10 @@ msgstr ""
 msgid "[ERROR] Could not find the Language files. The App strings are missing."
 msgstr ""
 
+#: FlatCAMApp.py:1836
+msgid "(Type help to get started)\n\n"
+msgstr ""
+
 #: FlatCAMApp.py:2018 ObjectCollection.py:80 flatcamTools/ToolImage.py:213
 #: flatcamTools/ToolPcbWizard.py:299 flatcamTools/ToolPcbWizard.py:322
 msgid "Open cancelled."

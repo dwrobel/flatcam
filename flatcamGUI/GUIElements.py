@@ -680,7 +680,7 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
         if character == "#":
             # delete #
             self.textCursor().deletePreviousChar()
-            # delete white space 
+            # delete white space
             self.moveCursor(QtGui.QTextCursor.NextWord,QtGui.QTextCursor.KeepAnchor)
             self.textCursor().removeSelectedText()
         else:

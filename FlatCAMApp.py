@@ -1833,7 +1833,7 @@ class App(QtCore.QObject):
         self.shell.setWindowTitle("FlatCAM Shell")
         self.shell.resize(*self.defaults["global_shell_shape"])
         self.shell.append_output("FlatCAM %s (c)2014-2019 Juan Pablo Caram " % self.version)
-        self.shell.append_output("(Type help to get started)\n\n")
+        self.shell.append_output(_("(Type help to get started)\n\n"))
 
         self.init_tcl()
 
@@ -8044,7 +8044,7 @@ class App(QtCore.QObject):
 
             This behavior works only within main thread,
             errors with promissed tasks can be catched and detected only with log.
-            TODO: this problem have to be addressed somehow, maybe rewrite promissing to be blocking somehow for 
+            TODO: this problem have to be addressed somehow, maybe rewrite promissing to be blocking somehow for
             TCL shell.
 
             Kamil's comment: I will rewrite existing TCL commands from time to time to follow this rules.
