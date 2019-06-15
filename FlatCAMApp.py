@@ -94,8 +94,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.918
-    version_date = "2019/06/11"
+    version = 8.919
+    version_date = "2019/06/21"
     beta = True
 
     # current date now

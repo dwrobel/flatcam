@@ -2452,7 +2452,6 @@ class Gerber (Geometry):
                         # --- Buffered ---
                         try:
                             log.debug("Bare op-code %d." % current_operation_code)
-
                             geo_dict = dict()
                             flash = self.create_flash_geometry(
                                 Point(current_x, current_y), self.apertures[current_aperture],
@@ -2467,7 +2466,7 @@ class Gerber (Geometry):
                                 else:
                                     geo_dict['solid'] = flash
 
-                                if last_path_aperture not in self.apertures:
+                                if current_aperture not in self.apertures:
                                     self.apertures[current_aperture] = dict()
                                 if 'geometry' not in self.apertures[current_aperture]:
                                     self.apertures[current_aperture]['geometry'] = []

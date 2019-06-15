@@ -1059,7 +1059,6 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             # Re-attach the tab at the given index
             self.attachTab(contentWidget, name, icon, index)
 
-
         # If the drop did not occur on an existing tab, determine if the drop
         # occurred in the tab bar area (the area to the side of the QTabBar)
         else:
@@ -1227,14 +1226,17 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             :return:
             """
             # Determine if the current movement is detected as a drag
-            if not self.dragStartPos.isNull() and ((event.pos() - self.dragStartPos).manhattanLength() < QtWidgets.QApplication.startDragDistance()):
+            if not self.dragStartPos.isNull() and \
+                    ((event.pos() - self.dragStartPos).manhattanLength() < QtWidgets.QApplication.startDragDistance()):
                 self.dragInitiated = True
 
             # If the current movement is a drag initiated by the left button
             if (((event.buttons() & QtCore.Qt.LeftButton)) and self.dragInitiated):
 
                 # Stop the move event
-                finishMoveEvent = QtGui.QMouseEvent(QtCore.QEvent.MouseMove, event.pos(), QtCore.Qt.NoButton, QtCore.Qt.NoButton, QtCore.Qt.NoModifier)
+                finishMoveEvent = QtGui.QMouseEvent(
+                    QtCore.QEvent.MouseMove, event.pos(), QtCore.Qt.NoButton, QtCore.Qt.NoButton, QtCore.Qt.NoModifier
+                )
                 QtWidgets.QTabBar.mouseMoveEvent(self, finishMoveEvent)
 
                 # Convert the move event into a drag
@@ -1261,12 +1263,10 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                 # Initiate the drag
                 dropAction = drag.exec_(QtCore.Qt.MoveAction | QtCore.Qt.CopyAction)
 
-
                 # For Linux:  Here, drag.exec_() will not return MoveAction on Linux.  So it
                 #             must be set manually
                 if self.dragDropedPos.x() != 0 and self.dragDropedPos.y() != 0:
                     dropAction = QtCore.Qt.MoveAction
-
 
                 # If the drag completed outside of the tab bar, detach the tab and move
                 # the content to the current cursor position
