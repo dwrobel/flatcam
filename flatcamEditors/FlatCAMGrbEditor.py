@@ -3445,7 +3445,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         file_units = self.gerber_obj.gerber_units if self.gerber_obj.gerber_units else 'IN'
         app_units = self.app.defaults['units']
-
         self.conversion_factor = 25.4 if file_units == 'IN' else (1 / 25.4) if file_units != app_units else 1
 
         # Hide original geometry
@@ -3478,6 +3477,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
                     conv_apertures[apid][key] = self.gerber_obj.apertures[apid][key]
 
         self.gerber_obj.apertures = conv_apertures
+        self.gerber_obj.gerber_units = app_units
 
         # ############################################################# ##
         # APPLY CLEAR_GEOMETRY on the SOLID_GEOMETRY
@@ -3575,7 +3575,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         :return: None
         """
-
         new_grb_name = self.edited_obj_name
 
         # if the 'delayed plot' malfunctioned stop the QTimer
@@ -3710,6 +3709,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             grb_obj.source_file = []
             grb_obj.multigeo = False
             grb_obj.follow = False
+            grb_obj.gerber_units = app_obj.defaults['units']
 
             try:
                 grb_obj.create_geometry()
