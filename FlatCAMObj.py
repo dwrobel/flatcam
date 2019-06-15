@@ -199,6 +199,7 @@ class FlatCAMObj(QtCore.QObject):
                 log.debug("on_name_activate() --> Could not remove the old object name from auto-completer model list")
 
             self.options["name"] = self.ui.name_entry.get_value()
+            self.app.collection.update_view()
             self.app.inform.emit(_("[success] Name changed from {old} to {new}").format(old=old_name, new=new_name))
 
     def on_offset_button_click(self):
@@ -338,7 +339,7 @@ class FlatCAMObj(QtCore.QObject):
         return self.shapes.visible
 
     @visible.setter
-    def visible(self, value):
+    def visible(self, value, threaded=False):
         log.debug("FlatCAMObj.visible()")
 
         def worker_task(app_obj):
@@ -350,7 +351,10 @@ class FlatCAMObj(QtCore.QObject):
             except Exception as e:
                 pass
 
-        self.app.worker_task.emit({'fcn': worker_task, 'params': [self]})
+        if threaded is False:
+            worker_task(self)
+        else:
+            self.app.worker_task.emit({'fcn': worker_task, 'params': [self]})
 
     @property
     def drawing_tolerance(self):

@@ -112,9 +112,9 @@ class Geometry(object):
 
         self.geo_steps_per_circle = geo_steps_per_circle
 
-        if geo_steps_per_circle is None:
-            geo_steps_per_circle = int(Geometry.defaults["geo_steps_per_circle"])
-        self.geo_steps_per_circle = geo_steps_per_circle
+        # if geo_steps_per_circle is None:
+        #     geo_steps_per_circle = int(Geometry.defaults["geo_steps_per_circle"])
+        # self.geo_steps_per_circle = geo_steps_per_circle
 
     def make_index(self):
         self.flatten()
@@ -1849,6 +1849,8 @@ class ApertureMacro:
 
 class Gerber (Geometry):
     """
+    Here it is done all the Gerber parsing.
+
     **ATTRIBUTES**
 
     * ``apertures`` (dict): The keys are names/identifiers of each aperture.
@@ -3597,6 +3599,8 @@ class Gerber (Geometry):
 
 class Excellon(Geometry):
     """
+    Here it is done all the Excellon parsing.
+
     *ATTRIBUTES*
 
     * ``tools`` (dict): The key is the tool name and the value is

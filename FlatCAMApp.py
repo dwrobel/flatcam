@@ -8252,7 +8252,10 @@ The normal flow when working in FlatCAM is the following:</span></p>
         """
         FlatCAMObj.app = self
         ObjectCollection.app = self
-
+        Gerber.app = self
+        Excellon.app = self
+        Geometry.app = self
+        CNCjob.app = self
         FCProcess.app = self
         FCProcessContainer.app = self
 
