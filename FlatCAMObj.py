@@ -68,6 +68,9 @@ class FlatCAMObj(QtCore.QObject):
 
         self.form_fields = {}
 
+        # store here the default data for Geometry Data
+        self.default_data = {}
+
         self.kind = None  # Override with proper name
 
         # self.shapes = ShapeCollection(parent=self.app.plotcanvas.vispy_canvas.view.scene)
@@ -137,7 +140,7 @@ class FlatCAMObj(QtCore.QObject):
         if key == 'plot':
             self.visible = self.options['plot']
 
-        # self.optionChanged.emit(key)
+        self.optionChanged.emit(key)
 
     def set_ui(self, ui):
         self.ui = ui
@@ -199,6 +202,7 @@ class FlatCAMObj(QtCore.QObject):
                 log.debug("on_name_activate() --> Could not remove the old object name from auto-completer model list")
 
             self.options["name"] = self.ui.name_entry.get_value()
+            self.default_data["name"] = self.ui.name_entry.get_value()
             self.app.collection.update_view()
             self.app.inform.emit(_("[success] Name changed from {old} to {new}").format(old=old_name, new=new_name))
 
@@ -1938,10 +1942,6 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.ui.tools_table.setColumnWidth(5, 17)
 
         # horizontal_header.setStretchLastSection(True)
-
-
-
-
         # horizontal_header.setColumnWidth(2, QtWidgets.QHeaderView.ResizeToContents)
 
         # horizontal_header.setStretchLastSection(True)
@@ -3002,9 +3002,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.old_pp_state = ''
         self.old_toolchangeg_state = ''
 
-        # store here the default data for Geometry Data
-        self.default_data = {}
-
         # Attributes to be included in serialization
         # Always append to it because it carries contents
         # from predecessors.
@@ -3013,7 +3010,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
     def build_ui(self):
 
         self.ui_disconnect()
-
         FlatCAMObj.build_ui(self)
 
         offset = 0
@@ -3151,6 +3147,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.set_tool_offset_visibility(selected_row)
         self.ui_connect()
 
+        # HACK: for whatever reasons the name in Selected tab is reverted to the original one after a successful rename
+        # done in the collection view but only for Geometry objects. Perhaps some references remains. Should be fixed.
+        self.ui.name_entry.set_value(self.options['name'])
+
     def set_ui(self, ui):
         FlatCAMObj.set_ui(self, ui)
 
@@ -3225,7 +3225,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         for def_key in self.default_data:
             for opt_key, opt_val in self.options.items():
                 if def_key == opt_key:
-                    self.default_data[def_key] = opt_val
+                    self.default_data[def_key] = deepcopy(opt_val)
 
         self.tooluid += 1
         if not self.tools:
@@ -3325,10 +3325,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             return
 
     def on_offset_value_edited(self):
-        '''
-        This will save the offset_value into self.tools storage whenever the oofset value is edited
+        """
+        This will save the offset_value into self.tools storage whenever the offset value is edited
         :return:
-        '''
+        """
+
         for current_row in self.ui.geo_tools_table.selectedItems():
             # sometime the header get selected and it has row number -1
             # we don't want to do anything with the header :)
@@ -3371,7 +3372,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     # works for Entry
                     try:
                         self.ui.grid3.itemAt(i).widget().editingFinished.connect(self.gui_form_to_storage)
-                    except:
+                    except Exception as e3:
                         pass
 
         for row in range(self.ui.geo_tools_table.rowCount()):
@@ -3409,56 +3410,56 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         isinstance(self.ui.grid3.itemAt(i).widget(), IntEntry) or \
                         isinstance(self.ui.grid3.itemAt(i).widget(), FCEntry):
                     self.ui.grid3.itemAt(i).widget().editingFinished.disconnect()
-        except:
+        except Exception as e:
             pass
 
         try:
             for row in range(self.ui.geo_tools_table.rowCount()):
                 for col in [2, 3, 4]:
                     self.ui.geo_tools_table.cellWidget(row, col).currentIndexChanged.disconnect()
-        except:
+        except Exception as e:
             pass
 
         # I use lambda's because the connected functions have parameters that could be used in certain scenarios
         try:
             self.ui.addtool_btn.clicked.disconnect()
-        except:
+        except Exception as e:
             pass
 
         try:
             self.ui.copytool_btn.clicked.disconnect()
-        except:
+        except Exception as e:
             pass
 
         try:
             self.ui.deltool_btn.clicked.disconnect()
-        except:
+        except Exception as e:
             pass
 
         try:
             self.ui.geo_tools_table.currentItemChanged.disconnect()
-        except:
+        except Exception as e:
             pass
 
         try:
             self.ui.geo_tools_table.itemChanged.disconnect()
-        except:
+        except Exception as e:
             pass
 
         try:
             self.ui.tool_offset_entry.editingFinished.disconnect()
-        except:
+        except Exception as e:
             pass
 
         for row in range(self.ui.geo_tools_table.rowCount()):
             try:
                 self.ui.geo_tools_table.cellWidget(row, 6).clicked.disconnect()
-            except:
+            except Exception as e:
                 pass
 
         try:
             self.ui.plot_cb.stateChanged.disconnect()
-        except:
+        except Exception as e:
             pass
 
     def on_tool_add(self, dia=None):
@@ -3544,6 +3545,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     'solid_geometry': deepcopy(last_solid_geometry)
                 }
             })
+
+        self.tools[self.tooluid]['data']['name'] = self.options['name']
 
         self.ui.tool_offset_entry.hide()
         self.ui.tool_offset_lbl.hide()

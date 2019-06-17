@@ -5249,6 +5249,7 @@ class App(QtCore.QObject):
         if index.isValid():
             if index.internalPointer().parent_item != self.collection.root_item:
                 self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
+        self.collection.on_item_activated(index)
 
     def grid_status(self):
         if self.ui.grid_snap_btn.isChecked():
