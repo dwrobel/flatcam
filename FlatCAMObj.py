@@ -2353,6 +2353,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
             geo_obj.options['Tools_in_use'] = tool_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
+            geo_obj.options["cnctooldia"] = float(tooldia)
 
             geo_obj.solid_geometry = []
 
@@ -2447,6 +2448,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
             geo_obj.options['Tools_in_use'] = tool_table_items
             geo_obj.options['type'] = 'Excellon Geometry'
+            geo_obj.options["cnctooldia"] = float(tooldia)
 
             geo_obj.solid_geometry = []
 

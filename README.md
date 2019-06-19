@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+19.06.2019
+
+- milling an Excellon file (holes and/or slots) will now transfer the chosen milling bit diameter to the resulting Geometry object
+
 17.06.2019
 
 - fixed bug where for Geometry objects after a successful object rename done in the Object collection view (Project tab), deselect the object and reselect it and then in the Selected tab the name is not the new one but the old one
