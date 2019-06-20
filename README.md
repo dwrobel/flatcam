@@ -11,6 +11,7 @@ CAD program, and create G-Code for Isolation routing.
 
 20.06.2019
 
+- fixed Scale and Buffer Tool in Gerber Editor
 - fixed Editor Transform Tool in Gerber Editor
 - added a message in the status bar when copying coordinates to clipboard with SHIFT + LMB click combo
 - languages update
