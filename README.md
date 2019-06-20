@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+20.06.2019
+
+- fixed Editor Transform Tool in Gerber Editor
+- added a message in the status bar when copying coordinates to clipboard with SHIFT + LMB click combo
+- languages update
+
 19.06.2019
 
 - milling an Excellon file (holes and/or slots) will now transfer the chosen milling bit diameter to the resulting Geometry object

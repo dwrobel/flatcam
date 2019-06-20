@@ -5424,6 +5424,7 @@ class App(QtCore.QObject):
                     self.click_noproject = True
 
                     self.clipboard.setText(self.defaults["global_point_clipboard_format"] % (self.pos[0], self.pos[1]))
+                    self.inform.emit(_("[success] Coordinates copied to clipboard."))
                     return
 
             self.on_mouse_move_over_plot(event, origin_click=True)
@@ -5580,6 +5581,10 @@ class App(QtCore.QObject):
                             if self.command_active is None:
                                 self.select_objects(key='CTRL')
                                 self.delete_hover_shape()
+                        elif modifiers == QtCore.Qt.ShiftModifier:
+                            # if SHIFT was pressed and LMB is clicked then we have a coordinates copy to clipboard
+                            # therefore things should stay as they are
+                            pass
                         else:
                             # If there is no active command (self.command_active is None) then we check if we clicked
                             # on a object by checking the bounding limits against mouse click position

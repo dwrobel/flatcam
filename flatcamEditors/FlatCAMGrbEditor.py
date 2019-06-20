@@ -3890,7 +3890,17 @@ class FlatCAMGrbEditor(QtCore.QObject):
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
 
             # Selection with left mouse button
-            if self.active_tool is not None and event.button is 1:
+            if self.active_tool is not None:
+                modifiers = QtWidgets.QApplication.keyboardModifiers()
+
+                # If the SHIFT key is pressed when LMB is clicked then the coordinates are copied to clipboard
+                if modifiers == QtCore.Qt.ShiftModifier:
+                    self.app.clipboard.setText(
+                        self.app.defaults["global_point_clipboard_format"] % (self.pos[0], self.pos[1])
+                    )
+                    self.app.inform.emit(_("[success] Coordinates copied to clipboard."))
+                    return
+
                 # Dispatch event to active_tool
                 self.active_tool.click(self.app.geo_editor.snap(self.pos[0], self.pos[1]))
 
@@ -4406,19 +4416,13 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 if geom_el in selection:
                     geometric_data = geom_el.geo
                     buffered_geom_el = dict()
-                    if 'solid' in geom_el:
-                        buffered_geom_el['solid'] = DrawToolShape(
-                            geometric_data['solid'].buffer(buff_value, join_style=join_style)
-                        )
-                    if 'follow' in geom_el:
-                        buffered_geom_el['follow'] = DrawToolShape(
-                            geometric_data['follow'].buffer(buff_value, join_style=join_style)
-                        )
-                    if 'clear' in geom_el:
-                        buffered_geom_el['clear'] = DrawToolShape(
-                            geometric_data['clear'].buffer(buff_value, join_style=join_style)
-                        )
-                    return buffered_geom_el
+                    if 'solid' in geometric_data:
+                        buffered_geom_el['solid'] = geometric_data['solid'].buffer(buff_value, join_style=join_style)
+                    if 'follow' in geometric_data:
+                        buffered_geom_el['follow'] = geometric_data['follow'].buffer(buff_value, join_style=join_style)
+                    if 'clear' in geometric_data:
+                        buffered_geom_el['clear'] = geometric_data['clear'].buffer(buff_value, join_style=join_style)
+                    return DrawToolShape(buffered_geom_el)
                 else:
                     return geom_el
 
@@ -4468,17 +4472,20 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 if geom_el in selection:
                     geometric_data = geom_el.geo
                     scaled_geom_el = dict()
-                    if 'solid' in geom_el:
-                        scaled_geom_el['solid'] = DrawToolShape(
-                            affinity.scale(geometric_data['solid'], scale_factor, scale_factor, origin='center'))
-                    if 'follow' in geom_el:
-                        scaled_geom_el['follow'] = DrawToolShape(
-                            affinity.scale(geometric_data['follow'], scale_factor, scale_factor, origin='center'))
-                    if 'clear' in geom_el:
-                        scaled_geom_el['clear'] = DrawToolShape(
-                            affinity.scale(geometric_data['clear'], scale_factor, scale_factor, origin='center'))
+                    if 'solid' in geometric_data:
+                        scaled_geom_el['solid'] = affinity.scale(
+                            geometric_data['solid'], scale_factor, scale_factor, origin='center'
+                        )
+                    if 'follow' in geometric_data:
+                        scaled_geom_el['follow'] = affinity.scale(
+                            geometric_data['follow'], scale_factor, scale_factor, origin='center'
+                        )
+                    if 'clear' in geometric_data:
+                        scaled_geom_el['clear'] = affinity.scale(
+                            geometric_data['clear'], scale_factor, scale_factor, origin='center'
+                        )
 
-                    return scaled_geom_el
+                    return DrawToolShape(scaled_geom_el)
                 else:
                     return geom_el
 
@@ -5230,9 +5237,10 @@ class TransformEditorTool(FlatCAMTool):
             try:
                 # first get a bounding box to fit all; we use only the 'solids' as those should provide the biggest
                 # bounding box
-                for el in elem_list:
+                for el_shape in elem_list:
+                    el = el_shape.geo
                     if 'solid' in el:
-                        xmin, ymin, xmax, ymax = el['solid'].bounds()
+                        xmin, ymin, xmax, ymax = el['solid'].bounds
                         xminlist.append(xmin)
                         yminlist.append(ymin)
                         xmaxlist.append(xmax)
@@ -5248,13 +5256,14 @@ class TransformEditorTool(FlatCAMTool):
                 px = 0.5 * (xminimal + xmaximal)
                 py = 0.5 * (yminimal + ymaximal)
 
-                for sel_el in elem_list:
+                for sel_el_shape in elem_list:
+                    sel_el = sel_el_shape.geo
                     if 'solid' in sel_el:
-                        sel_el['solid'].rotate(-num, point=(px, py))
+                        sel_el['solid'] = affinity.rotate(sel_el['solid'], angle=-num, origin=(px, py))
                     if 'follow' in sel_el:
-                        sel_el['follow'].rotate(-num, point=(px, py))
+                        sel_el['follow'] = affinity.rotate(sel_el['follow'], angle=-num, origin=(px, py))
                     if 'clear' in sel_el:
-                        sel_el['clear'].rotate(-num, point=(px, py))
+                        sel_el['clear'] = affinity.rotate(sel_el['clear'], angle=-num, origin=(px, py))
                 self.draw_app.plot_all()
 
                 self.app.inform.emit(_("[success] Done. Rotate completed."))
@@ -5288,9 +5297,10 @@ class TransformEditorTool(FlatCAMTool):
                 else:
                     # first get a bounding box to fit all; we use only the 'solids' as those should provide the biggest
                     # bounding box
-                    for el in elem_list:
+                    for el_shape in elem_list:
+                        el = el_shape.geo
                         if 'solid' in el:
-                            xmin, ymin, xmax, ymax = el['solid'].bounds()
+                            xmin, ymin, xmax, ymax = el['solid'].bounds
                             xminlist.append(xmin)
                             yminlist.append(ymin)
                             xmaxlist.append(xmax)
@@ -5308,22 +5318,23 @@ class TransformEditorTool(FlatCAMTool):
                 self.app.progress.emit(20)
 
                 # execute mirroring
-                for sel_el in elem_list:
+                for sel_el_shape in elem_list:
+                    sel_el = sel_el_shape.geo
                     if axis is 'X':
                         if 'solid' in sel_el:
-                            sel_el['solid'].mirror('X', (px, py))
+                            sel_el['solid'] = affinity.scale(sel_el['solid'], xfact=1, yfact=-1, origin=(px, py))
                         if 'follow' in sel_el:
-                            sel_el['follow'].mirror('X', (px, py))
+                            sel_el['follow'] = affinity.scale(sel_el['follow'], xfact=1, yfact=-1, origin=(px, py))
                         if 'clear' in sel_el:
-                            sel_el['clear'].mirror('X', (px, py))
+                            sel_el['clear'] = affinity.scale(sel_el['clear'], xfact=1, yfact=-1, origin=(px, py))
                         self.app.inform.emit(_('[success] Flip on the Y axis done ...'))
                     elif axis is 'Y':
                         if 'solid' in sel_el:
-                            sel_el['solid'].mirror('Y', (px, py))
+                            sel_el['solid'] = affinity.scale(sel_el['solid'], xfact=-1, yfact=1, origin=(px, py))
                         if 'follow' in sel_el:
-                            sel_el['follow'].mirror('Y', (px, py))
+                            sel_el['follow'] = affinity.scale(sel_el['follow'], xfact=-1, yfact=1, origin=(px, py))
                         if 'clear' in sel_el:
-                            sel_el['clear'].mirror('Y', (px, py))
+                            sel_el['clear'] = affinity.scale(sel_el['clear'], xfact=-1, yfact=1, origin=(px, py))
                         self.app.inform.emit(_('[success] Flip on the X axis done ...'))
                 self.draw_app.plot_all()
                 self.app.progress.emit(100)
@@ -5351,9 +5362,10 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     # first get a bounding box to fit all; we use only the 'solids' as those should provide the biggest
                     # bounding box
-                    for el in elem_list:
+                    for el_shape in elem_list:
+                        el = el_shape.geo
                         if 'solid' in el:
-                            xmin, ymin, xmax, ymax = el['solid'].bounds()
+                            xmin, ymin, xmax, ymax = el['solid'].bounds
                             xminlist.append(xmin)
                             yminlist.append(ymin)
 
@@ -5363,21 +5375,22 @@ class TransformEditorTool(FlatCAMTool):
 
                     self.app.progress.emit(20)
 
-                    for sel_el in elem_list:
+                    for sel_el_shape in elem_list:
+                        sel_el = sel_el_shape.geo
                         if axis is 'X':
                             if 'solid' in sel_el:
-                                sel_el['solid'].skew(num, 0, point=(xminimal, yminimal))
+                                sel_el['solid'] = affinity.skew(sel_el['solid'], num, 0, origin=(xminimal, yminimal))
                             if 'follow' in sel_el:
-                                sel_el['follow'].skew(num, 0, point=(xminimal, yminimal))
+                                sel_el['follow'] = affinity.skew(sel_el['follow'], num, 0, origin=(xminimal, yminimal))
                             if 'clear' in sel_el:
-                                sel_el['clear'].skew(num, 0, point=(xminimal, yminimal))
+                                sel_el['clear'] = affinity.skew(sel_el['clear'], num, 0, origin=(xminimal, yminimal))
                         elif axis is 'Y':
                             if 'solid' in sel_el:
-                                sel_el['solid'].skew(0, num, point=(xminimal, yminimal))
+                                sel_el['solid'] = affinity.skew(sel_el['solid'], 0, num, origin=(xminimal, yminimal))
                             if 'follow' in sel_el:
-                                sel_el['follow'].skew(0, num, point=(xminimal, yminimal))
+                                sel_el['follow'] = affinity.skew(sel_el['follow'], 0, num, origin=(xminimal, yminimal))
                             if 'clear' in sel_el:
-                                sel_el['clear'].skew(0, num, point=(xminimal, yminimal))
+                                sel_el['clear'] = affinity.skew(sel_el['clear'], 0, num, origin=(xminimal, yminimal))
                     self.draw_app.plot_all()
 
                     self.app.inform.emit(_('[success] Skew on the %s axis done ...') % str(axis))
@@ -5410,9 +5423,10 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     # first get a bounding box to fit all; we use only the 'solids' as those should provide the biggest
                     # bounding box
-                    for el in elem_list:
+                    for el_shape in elem_list:
+                        el = el_shape.geo
                         if 'solid' in el:
-                            xmin, ymin, xmax, ymax = el['solid'].bounds()
+                            xmin, ymin, xmax, ymax = el['solid'].bounds
                             xminlist.append(xmin)
                             yminlist.append(ymin)
                             xmaxlist.append(xmax)
@@ -5433,13 +5447,14 @@ class TransformEditorTool(FlatCAMTool):
                         px = 0
                         py = 0
 
-                    for sel_el in elem_list:
+                    for sel_el_shape in elem_list:
+                        sel_el = sel_el_shape.geo
                         if 'solid' in sel_el:
-                            sel_el['solid'].scale(xfactor, yfactor, point=(px, py))
+                            sel_el['solid'] = affinity.scale(sel_el['solid'], xfactor, yfactor, origin=(px, py))
                         if 'follow' in sel_el:
-                            sel_el['follow'].scale(xfactor, yfactor, point=(px, py))
+                            sel_el['follow'] = affinity.scale(sel_el['follow'], xfactor, yfactor, origin=(px, py))
                         if 'clear' in sel_el:
-                            sel_el['clear'].scale(xfactor, yfactor, point=(px, py))
+                            sel_el['clear'] = affinity.scale(sel_el['clear'], xfactor, yfactor, origin=(px, py))
                     self.draw_app.plot_all()
 
                     self.app.inform.emit(_('[success] Scale on the %s axis done ...') % str(axis))
@@ -5465,21 +5480,22 @@ class TransformEditorTool(FlatCAMTool):
                 try:
                     self.app.progress.emit(20)
 
-                    for sel_el in elem_list:
+                    for sel_el_shape in elem_list:
+                        sel_el = sel_el_shape.geo
                         if axis is 'X':
                             if 'solid' in sel_el:
-                                sel_el['solid'].offset((num, 0))
+                                sel_el['solid'] = affinity.translate(sel_el['solid'], num, 0)
                             if 'follow' in sel_el:
-                                sel_el['follow'].offset((num, 0))
+                                sel_el['follow'] = affinity.translate(sel_el['follow'], num, 0)
                             if 'clear' in sel_el:
-                                sel_el['clear'].offset((num, 0))
+                                sel_el['clear'] = affinity.translate(sel_el['clear'], num, 0)
                         elif axis is 'Y':
                             if 'solid' in sel_el:
-                                sel_el['solid'].offset((0, num))
+                                sel_el['solid'] = affinity.translate(sel_el['solid'], 0, num)
                             if 'follow' in sel_el:
-                                sel_el['follow'].offset((0, num))
+                                sel_el['follow'] = affinity.translate(sel_el['follow'], 0, num)
                             if 'clear' in sel_el:
-                                sel_el['clear'].offset((0, num))
+                                sel_el['clear'] = affinity.translate(sel_el['clear'], 0, num)
                         self.draw_app.plot_all()
 
                     self.app.inform.emit(_('[success] Offset on the %s axis done ...') % str(axis))
