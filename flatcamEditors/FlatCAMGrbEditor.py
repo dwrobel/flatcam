@@ -4435,9 +4435,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 temp_storage = deepcopy(buffer_recursion(self.storage_dict[apid]['geometry'], self.selected))
                 self.storage_dict[apid]['geometry'] = []
                 self.storage_dict[apid]['geometry'] = temp_storage
-
             except Exception as e:
-                log.debug("FlatCAMGrbEditor.buffer() --> %s" % str(e))
+                log.debug("FlatCAMGrbEditor.buffer() --> %s\n%s" % str(e))
+                self.app.inform.emit(_("[ERROR_NOTCL] Failed.\n%s") % str(traceback.print_exc()))
+                return
         self.plot_all()
         self.app.inform.emit(_("[success] Done. Buffer Tool completed."))
 
