@@ -2244,7 +2244,18 @@ class App(QtCore.QObject):
                     self.inform.emit(_("[WARNING_NOTCL] Simultanoeus editing of tools geometry in a MultiGeo Geometry "
                                        "is not possible.\n"
                                        "Edit only one geometry at a time."))
-                self.geo_editor.edit_fcgeometry(edited_object, multigeo_tool=edited_tools[0])
+
+                # determine the tool dia of the selected tool
+                selected_tooldia = float(edited_object.ui.geo_tools_table.item((edited_tools[0] - 1), 1).text())
+
+                # now find the key in the edited_object.tools that has this tooldia
+                multi_tool = 1
+                for tool in edited_object.tools:
+                    if edited_object.tools[tool]['tooldia'] == selected_tooldia:
+                        multi_tool = tool
+                        break
+
+                self.geo_editor.edit_fcgeometry(edited_object, multigeo_tool=multi_tool)
             else:
                 self.geo_editor.edit_fcgeometry(edited_object)
 

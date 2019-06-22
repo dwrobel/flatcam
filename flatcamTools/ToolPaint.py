@@ -920,7 +920,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 log.debug("Could not Paint the polygons. %s" % str(e))
                 self.app.inform.emit(
                     _("[ERROR] Could not do Paint. Try a different combination of parameters. "
-                    "Or a different strategy of paint\n%s") % str(e))
+                      "Or a different strategy of paint\n%s") % str(e))
                 return
 
             if cp is not None:
@@ -930,7 +930,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 else:
                     geo_obj.solid_geometry = list(cp.get_objects())
 
-            geo_obj.options["cnctooldia"] = tooldia
+            geo_obj.options["cnctooldia"] = str(tooldia)
             # this turn on the FlatCAMCNCJob plot for multiple tools
             geo_obj.multigeo = False
             geo_obj.multitool = True
@@ -1043,7 +1043,11 @@ class ToolPaint(FlatCAMTool, Gerber):
 
             # ## Not iterable, do the actual indexing and add.
             except TypeError:
-                self.flat_geometry.append(geometry)
+                if isinstance(geometry, LinearRing):
+                    g = Polygon(geometry)
+                    self.flat_geometry.append(g)
+                else:
+                    self.flat_geometry.append(geometry)
 
             return self.flat_geometry
 
@@ -1127,7 +1131,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 self.paint_tools[current_uid]['data']['name'] = name
                 total_geometry[:] = []
 
-            geo_obj.options["cnctooldia"] = tool_dia
+            geo_obj.options["cnctooldia"] = str(tool_dia)
             # this turn on the FlatCAMCNCJob plot for multiple tools
             geo_obj.multigeo = True
             geo_obj.multitool = True
@@ -1141,8 +1145,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                     has_solid_geo += 1
             if has_solid_geo == 0:
                 self.app.inform.emit(_("[ERROR] There is no Painting Geometry in the file.\n"
-                                      "Usually it means that the tool diameter is too big for the painted geometry.\n"
-                                      "Change the painting parameters and try again."))
+                                       "Usually it means that the tool diameter is too big for the painted geometry.\n"
+                                       "Change the painting parameters and try again."))
                 return
 
             # Experimental...
@@ -1222,7 +1226,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 self.paint_tools[current_uid]['data']['name'] = name
                 cleared_geo[:] = []
 
-            geo_obj.options["cnctooldia"] = tool_dia
+            geo_obj.options["cnctooldia"] = str(tool_dia)
             # this turn on the FlatCAMCNCJob plot for multiple tools
             geo_obj.multigeo = True
             geo_obj.multitool = True

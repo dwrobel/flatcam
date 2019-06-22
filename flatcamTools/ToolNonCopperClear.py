@@ -787,7 +787,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         else:
                             log.debug("There are no geometries in the cleared polygon.")
 
-            geo_obj.options["cnctooldia"] = tool
+            geo_obj.options["cnctooldia"] = str(tool)
             geo_obj.multigeo = True
 
         def job_thread(app_obj):
@@ -929,7 +929,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                             log.debug("There are no geometries in the cleared polygon.")
 
             geo_obj.multigeo = True
-            geo_obj.options["cnctooldia"] = tool
+            geo_obj.options["cnctooldia"] = str(tool)
 
             # check to see if geo_obj.tools is empty
             # it will be updated only if there is a solid_geometry for tools

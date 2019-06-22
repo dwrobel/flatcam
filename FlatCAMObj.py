@@ -818,7 +818,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         def follow_init(follow_obj, app):
             # Propagate options
-            follow_obj.options["cnctooldia"] = float(self.options["isotooldia"])
+            follow_obj.options["cnctooldia"] = str(self.options["isotooldia"])
             follow_obj.solid_geometry = self.follow_geometry
 
         # TODO: Do something if this is None. Offer changing name?
@@ -839,7 +839,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :param outname: Base name of the output object
         :return: None
         """
-
 
         if dia is None:
             dia = float(self.options["isotooldia"])
@@ -901,7 +900,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             # TODO: This is ugly. Create way to pass data into init function.
             def iso_init(geo_obj, app_obj):
                 # Propagate options
-                geo_obj.options["cnctooldia"] = float(self.options["isotooldia"])
+                geo_obj.options["cnctooldia"] = str(self.options["isotooldia"])
                 geo_obj.solid_geometry = []
                 for i in range(passes):
                     iso_offset = (((2 * i + 1) / 2.0) * dia) - (i * overlap * dia)
@@ -958,7 +957,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 # TODO: This is ugly. Create way to pass data into init function.
                 def iso_init(geo_obj, app_obj):
                     # Propagate options
-                    geo_obj.options["cnctooldia"] = float(self.options["isotooldia"])
+                    geo_obj.options["cnctooldia"] = str(self.options["isotooldia"])
 
                     # if milling type is climb then the move is counter-clockwise around features
                     if milling_type == 'cl':
@@ -2958,15 +2957,15 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         })
 
         if "cnctooldia" not in self.options:
-            # self.options["cnctooldia"] =  self.app.defaults["geometry_cnctooldia"]
-            try:
-                self.options["cnctooldia"] = [
-                    float(eval(dia)) for dia in str(self.app.defaults["geometry_cnctooldia"]).split(",")
-                ]
-            except Exception as e:
-                log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> Geometry General -> "
-                          "Tool dia. %s" % str(e))
-                return
+            self.options["cnctooldia"] =  self.app.defaults["geometry_cnctooldia"]
+            # try:
+            #     self.options["cnctooldia"] = [
+            #         float(eval(dia)) for dia in str(self.app.defaults["geometry_cnctooldia"]).split(",")
+            #     ]
+            # except Exception as e:
+            #     log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> Geometry General -> "
+            #               "Tool dia. %s" % str(e))
+            #     return
 
         self.options["startz"] = self.app.defaults["geometry_startz"]
 
@@ -3801,7 +3800,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         # populate the form with the data from the tool associated with the row parameter
         try:
-            tooluid = int(self.ui.geo_tools_table.item(current_row, 5).text())
+            item = self.ui.geo_tools_table.item(current_row, 5)
+            if item is not None:
+                tooluid = int(item.text())
+            else:
+                return
         except Exception as e:
             log.debug("Tool missing. Add a tool in Geo Tool Table. %s" % str(e))
             return
@@ -3809,8 +3812,12 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # update the form with the V-Shape fields if V-Shape selected in the geo_tool_table
         # also modify the Cut Z form entry to reflect the calculated Cut Z from values got from V-Shape Fields
         try:
-            tool_type_txt = self.ui.geo_tools_table.cellWidget(current_row, 4).currentText()
-            self.ui_update_v_shape(tool_type_txt=tool_type_txt)
+            item = self.ui.geo_tools_table.cellWidget(current_row, 4)
+            if item is not None:
+                tool_type_txt = item.currentText()
+                self.ui_update_v_shape(tool_type_txt=tool_type_txt)
+            else:
+                return
         except Exception as e:
             log.debug("Tool missing. Add a tool in Geo Tool Table. %s" % str(e))
             return
@@ -4166,7 +4173,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.cncfeedrate_rapid_entry.hide()
 
     def on_generatecnc_button_click(self, *args):
-
+        log.debug("Generating CNCJob from Geometry ...")
         self.app.report_usage("geometry_on_generatecnc_button")
         self.read_form()
 

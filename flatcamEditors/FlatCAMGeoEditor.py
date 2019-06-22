@@ -4002,7 +4002,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
     def update_options(self, obj):
         if self.paint_tooldia:
-            obj.options['cnctooldia'] = self.paint_tooldia
+            obj.options['cnctooldia'] = deepcopy(str(self.paint_tooldia))
             self.paint_tooldia = None
             return True
         else:
