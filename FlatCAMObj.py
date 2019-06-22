@@ -1646,7 +1646,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                         exc.app.log.warning("Failed to copy option.", option)
 
             for drill in exc.drills:
-                exc_tool_dia = float('%.3f' % exc.tools[drill['tool']]['C'])
+                exc_tool_dia = float('%.4f' % exc.tools[drill['tool']]['C'])
 
                 if exc_tool_dia not in custom_dict_drills:
                     custom_dict_drills[exc_tool_dia] = [drill['point']]
@@ -1654,7 +1654,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                     custom_dict_drills[exc_tool_dia].append(drill['point'])
 
             for slot in exc.slots:
-                exc_tool_dia = float('%.3f' % exc.tools[slot['tool']]['C'])
+                exc_tool_dia = float('%.4f' % exc.tools[slot['tool']]['C'])
 
                 if exc_tool_dia not in custom_dict_slots:
                     custom_dict_slots[exc_tool_dia] = [[slot['start'], slot['stop']]]
@@ -1747,7 +1747,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 temp_tools[tool_name_temp] = spec_temp
 
                 for drill in exc_final.drills:
-                    exc_tool_dia = float('%.3f' % exc_final.tools[drill['tool']]['C'])
+                    exc_tool_dia = float('%.4f' % exc_final.tools[drill['tool']]['C'])
                     if exc_tool_dia == ordered_dia:
                         temp_drills.append(
                             {
@@ -1757,7 +1757,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                         )
 
                 for slot in exc_final.slots:
-                    slot_tool_dia = float('%.3f' % exc_final.tools[slot['tool']]['C'])
+                    slot_tool_dia = float('%.4f' % exc_final.tools[slot['tool']]['C'])
                     if slot_tool_dia == ordered_dia:
                         temp_slots.append(
                             {
@@ -1833,7 +1833,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             if self.units == 'MM':
                 dia = QtWidgets.QTableWidgetItem('%.2f' % (self.tools[tool_no]['C']))
             else:
-                dia = QtWidgets.QTableWidgetItem('%.3f' % (self.tools[tool_no]['C']))
+                dia = QtWidgets.QTableWidgetItem('%.4f' % (self.tools[tool_no]['C']))
 
             dia.setFlags(QtCore.Qt.ItemIsEnabled)
 
@@ -1851,7 +1851,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 if self.units == 'MM':
                     t_offset = self.tool_offset[float('%.2f' % float(self.tools[tool_no]['C']))]
                 else:
-                    t_offset = self.tool_offset[float('%.3f' % float(self.tools[tool_no]['C']))]
+                    t_offset = self.tool_offset[float('%.4f' % float(self.tools[tool_no]['C']))]
             except KeyError:
                     t_offset = self.app.defaults['excellon_offset']
             tool_offset_item = QtWidgets.QTableWidgetItem('%s' % str(t_offset))
@@ -2026,7 +2026,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 if self.units == 'MM':
                     dia = float('%.2f' % float(value['C']))
                 else:
-                    dia = float('%.3f' % float(value['C']))
+                    dia = float('%.4f' % float(value['C']))
                 self.tool_offset[dia] = t_default_offset
 
         # Show/Hide Advanced Options
@@ -2090,7 +2090,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         if self.units == 'MM':
             dia = float('%.2f' % float(self.ui.tools_table.item(row_of_item_changed, 1).text()))
         else:
-            dia = float('%.3f' % float(self.ui.tools_table.item(row_of_item_changed, 1).text()))
+            dia = float('%.4f' % float(self.ui.tools_table.item(row_of_item_changed, 1).text()))
 
         current_table_offset_edited = None
         if self.ui.tools_table.currentItem() is not None:
@@ -2958,7 +2958,15 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         })
 
         if "cnctooldia" not in self.options:
-            self.options["cnctooldia"] =  self.app.defaults["geometry_cnctooldia"]
+            # self.options["cnctooldia"] =  self.app.defaults["geometry_cnctooldia"]
+            try:
+                self.options["cnctooldia"] = [
+                    float(eval(dia)) for dia in str(self.app.defaults["geometry_cnctooldia"]).split(",")
+                ]
+            except Exception as e:
+                log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> Geometry General -> "
+                          "Tool dia. %s" % str(e))
+                return
 
         self.options["startz"] = self.app.defaults["geometry_startz"]
 
@@ -3229,19 +3237,31 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 if def_key == opt_key:
                     self.default_data[def_key] = deepcopy(opt_val)
 
+        try:
+            tools_list = [
+                float(eval(dia)) for dia in self.options["cnctooldia"].split(",")
+            ]
+        except Exception as e:
+            log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> Geometry General -> "
+                      "Tool dia. %s" % str(e))
+            return
+
         self.tooluid += 1
+
         if not self.tools:
-            self.tools.update({
-                self.tooluid: {
-                    'tooldia': float(self.options["cnctooldia"]),
-                    'offset': ('Path'),
-                    'offset_value': 0.0,
-                    'type': _('Rough'),
-                    'tool_type': 'C1',
-                    'data': self.default_data,
-                    'solid_geometry': self.solid_geometry
-                }
-            })
+            for toold in tools_list:
+                self.tools.update({
+                    self.tooluid: {
+                        'tooldia': float(toold),
+                        'offset': ('Path'),
+                        'offset_value': 0.0,
+                        'type': _('Rough'),
+                        'tool_type': 'C1',
+                        'data': self.default_data,
+                        'solid_geometry': self.solid_geometry
+                    }
+                })
+                self.tooluid += 1
         else:
             # if self.tools is not empty then it can safely be assumed that it comes from an opened project.
             # Because of the serialization the self.tools list on project save, the dict keys (members of self.tools
@@ -3482,7 +3502,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     tooldia = float(self.ui.addtool_entry.get_value().replace(',', '.'))
                 except ValueError:
                     change_message = True
-                    tooldia = float(self.app.defaults["geometry_cnctooldia"])
+                    tooldia = self.options["cnctooldia"][0]
 
             if tooldia is None:
                 self.build_ui()
@@ -5300,6 +5320,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         else:
             self.ui.cnc_tools_table.hide()
 
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         offset = 0
         tool_idx = 0

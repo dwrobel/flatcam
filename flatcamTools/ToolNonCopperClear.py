@@ -404,7 +404,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     if self.units == 'MM':
                         dia = QtWidgets.QTableWidgetItem('%.2f' % tooluid_value['tooldia'])
                     else:
-                        dia = QtWidgets.QTableWidgetItem('%.3f' % tooluid_value['tooldia'])
+                        dia = QtWidgets.QTableWidgetItem('%.4f' % tooluid_value['tooldia'])
 
                     dia.setFlags(QtCore.Qt.ItemIsEnabled)
 

@@ -9,6 +9,18 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+22.06.2019
+
+- some GUI layout optimizations in Edit -> Preferences
+- added the possibility for multiple tool diameters in the Edit -> Preferences -> Geometry -> Geometry General -> Tool dia separated by comma
+- fixed scaling for the multiple tool diameters in Edit -> Preferences -> Geometry -> Geometry General -> Tool dia, for NCC tools more than 2 and for Solderpaste nozzles more than 2
+- fixed bug in CNCJob where the CNC Tools table will show always only 2 decimals for Tool diameters regardless of the current measuring units
+- made the tools diameters decimals in case of INCH FlatCAM units to be 4 instead of 3
+- fixed bug in updating Grid values whenever toggling the FlatCAM units and the X, Y Grid values are linked, bugs which caused the Y value to be scaled incorrectly
+- set the decimals for Grid values to be set to 6 if the units of FlatCAM is INCH and to set to 4 if FlatCAM units are METRIC
+- updated translations
+- updated the Russian translate from 51% complete to 69% complete using the Yandex translation engine
+
 20.06.2019
 
 - fixed Scale and Buffer Tool in Gerber Editor

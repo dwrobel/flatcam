@@ -5353,7 +5353,7 @@ class CNCjob(Geometry):
                             if self.units == 'MM':
                                 current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
                             else:
-                                current_tooldia = float('%.3f' % float(exobj.tools[tool]["C"]))
+                                current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
 
                             # TODO apply offset only when using the GUI, for TclCommand this will create an error
                             # because the values for Z offset are created in build_ui()
@@ -5451,7 +5451,7 @@ class CNCjob(Geometry):
                             if self.units == 'MM':
                                 current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
                             else:
-                                current_tooldia = float('%.3f' % float(exobj.tools[tool]["C"]))
+                                current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
 
                             # TODO apply offset only when using the GUI, for TclCommand this will create an error
                             # because the values for Z offset are created in build_ui()
@@ -5507,7 +5507,7 @@ class CNCjob(Geometry):
                         if self.units == 'MM':
                             current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
                         else:
-                            current_tooldia = float('%.3f' % float(exobj.tools[tool]["C"]))
+                            current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
 
                         # TODO apply offset only when using the GUI, for TclCommand this will create an error
                         # because the values for Z offset are created in build_ui()

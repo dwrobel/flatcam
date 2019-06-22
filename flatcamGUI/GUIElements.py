@@ -390,12 +390,13 @@ class FCEntry2(FCEntry):
     def on_edit_finished(self):
         self.clearFocus()
 
-    def set_value(self, val):
+    def set_value(self, val, decimals=4):
         try:
             fval = float(val)
         except ValueError:
             return
-        self.setText('%.4f' % fval)
+
+        self.setText('%.*f' % (decimals, fval))
 
 
 class EvalEntry(QtWidgets.QLineEdit):

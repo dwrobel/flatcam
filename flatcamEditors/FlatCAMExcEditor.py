@@ -1209,7 +1209,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         for drill in self.exc_obj.drills:
             if drill['tool'] in self.exc_obj.tools:
                 if self.units == 'IN':
-                    tool_dia = float('%.3f' % self.exc_obj.tools[drill['tool']]['C'])
+                    tool_dia = float('%.4f' % self.exc_obj.tools[drill['tool']]['C'])
                 else:
                     tool_dia = float('%.2f' % self.exc_obj.tools[drill['tool']]['C'])
 
@@ -1238,7 +1238,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             # but use the real order found in the exc_obj.tools
             for k, v in self.exc_obj.tools.items():
                 if self.units == 'IN':
-                    tool_dia = float('%.3f' % v['C'])
+                    tool_dia = float('%.4f' % v['C'])
                 else:
                     tool_dia = float('%.2f' % v['C'])
                 self.tool2tooldia[int(k)] = tool_dia
@@ -1324,7 +1324,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             if self.units == 'MM':
                 dia = QtWidgets.QTableWidgetItem('%.2f' % self.olddia_newdia[tool_no])
             else:
-                dia = QtWidgets.QTableWidgetItem('%.3f' % self.olddia_newdia[tool_no])
+                dia = QtWidgets.QTableWidgetItem('%.4f' % self.olddia_newdia[tool_no])
 
             dia.setFlags(QtCore.Qt.ItemIsEnabled)
 

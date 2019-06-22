@@ -95,7 +95,7 @@ class App(QtCore.QObject):
 
     # Version
     version = 8.919
-    version_date = "2019/06/21"
+    version_date = "2019/06/22"
     beta = True
 
     # current date now
@@ -3618,9 +3618,10 @@ class App(QtCore.QObject):
         if self.toggle_units_ignore:
             return
 
+        new_units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
         # If option is the same, then ignore
-        if self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == \
-                self.defaults["units"].upper():
+        if new_units == self.defaults["units"].upper():
             self.log.debug("on_toggle_units(): Same as defaults, so ignoring.")
             return
 
@@ -3667,16 +3668,24 @@ class App(QtCore.QObject):
                     coords_xy[0] *= sfactor
                     coords_xy[1] *= sfactor
                     self.options['geometry_toolchangexy'] = "%f, %f" % (coords_xy[0], coords_xy[1])
+                elif dim == 'geometry_cnctooldia':
+                    self.options['geometry_cnctooldia'] = ''
+                    tools_diameters = [float(eval(a)) for a in self.defaults["geometry_cnctooldia"].split(",")]
+                    for t in range(len(tools_diameters)):
+                        tools_diameters[t] *= sfactor
+                        self.options['geometry_cnctooldia'] += "%f, " % tools_diameters[t]
                 elif dim == 'tools_ncctools':
+                    self.options['tools_ncctools'] = ''
                     ncctols = [float(eval(a)) for a in self.defaults["tools_ncctools"].split(",")]
-                    ncctols[0] *= sfactor
-                    ncctols[1] *= sfactor
-                    self.options['tools_ncctools'] = "%f, %f" % (ncctols[0], ncctols[1])
+                    for t in range(len(ncctols)):
+                        ncctols[t] *= sfactor
+                        self.options['tools_ncctools'] += "%f, " % ncctols[t]
                 elif dim == 'tools_solderpaste_tools':
+                    self.options['tools_solderpaste_tools'] = ""
                     sp_tools = [float(eval(a)) for a in self.defaults["tools_solderpaste_tools"].split(",")]
-                    sp_tools[0] *= sfactor
-                    sp_tools[1] *= sfactor
-                    self.options['tools_solderpaste_tools'] = "%f, %f" % (sp_tools[0], sp_tools[1])
+                    for t in range(len(sp_tools)):
+                        sp_tools[t] *= sfactor
+                        self.options['tools_solderpaste_tools'] = "%f, " % sp_tools[t]
                 elif dim == 'tools_solderpaste_xy_toolchange':
                     sp_coords = [float(eval(a)) for a in self.defaults["tools_solderpaste_xy_toolchange"].split(",")]
                     sp_coords[0] *= sfactor
@@ -3700,16 +3709,24 @@ class App(QtCore.QObject):
                     coords_xy[0] *= sfactor
                     coords_xy[1] *= sfactor
                     self.defaults['geometry_toolchangexy'] = "%.4f, %.4f" % (coords_xy[0], coords_xy[1])
+                elif dim == 'geometry_cnctooldia':
+                    self.defaults['geometry_cnctooldia'] = ''
+                    tools_diameters = [float(eval(a)) for a in self.defaults["geometry_cnctooldia"].split(",")]
+                    for t in range(len(tools_diameters)):
+                        tools_diameters[t] *= sfactor
+                        self.defaults['geometry_cnctooldia'] += "%.4f, " % tools_diameters[t]
                 elif dim == 'tools_ncctools':
+                    self.defaults['tools_ncctools'] = ''
                     ncctols = [float(eval(a)) for a in self.defaults["tools_ncctools"].split(",")]
-                    ncctols[0] *= sfactor
-                    ncctols[1] *= sfactor
-                    self.defaults['tools_ncctools'] = "%.4f, %.4f" % (ncctols[0], ncctols[1])
+                    for t in range(len(ncctols)):
+                        ncctols[t] *= sfactor
+                        self.defaults['tools_ncctools'] += "%.4f, " % ncctols[t]
                 elif dim == 'tools_solderpaste_tools':
+                    self.defaults['tools_solderpaste_tools'] = ""
                     sp_tools = [float(eval(a)) for a in self.defaults["tools_solderpaste_tools"].split(",")]
-                    sp_tools[0] *= sfactor
-                    sp_tools[1] *= sfactor
-                    self.defaults['tools_solderpaste_tools'] = "%.4f, %.4f" % (sp_tools[0], sp_tools[1])
+                    for t in range(len(sp_tools)):
+                        sp_tools[t] *= sfactor
+                        self.defaults['tools_solderpaste_tools'] = "%.4f, " % sp_tools[t]
                 elif dim == 'tools_solderpaste_xy_toolchange':
                     sp_coords = [float(eval(a)) for a in self.defaults["tools_solderpaste_xy_toolchange"].split(",")]
                     sp_coords[0] *= sfactor
@@ -3723,7 +3740,7 @@ class App(QtCore.QObject):
 
         # The scaling factor depending on choice of units.
         factor = 1/25.4
-        if self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
+        if new_units == 'MM':
             factor = 25.4
 
         # Changing project units. Warn user.
@@ -3757,8 +3774,12 @@ class App(QtCore.QObject):
                 self.plotcanvas.draw_workspace()
 
             # adjust the grid values on the main toolbar
-            self.ui.grid_gap_x_entry.set_value(float(self.ui.grid_gap_x_entry.get_value()) * factor)
-            self.ui.grid_gap_y_entry.set_value(float(self.ui.grid_gap_y_entry.get_value()) * factor)
+            dec = 6 if new_units == 'IN'else 4
+            val_x = float(self.ui.grid_gap_x_entry.get_value()) * factor
+            self.ui.grid_gap_x_entry.set_value(val_x, decimals=dec)
+            if not self.ui.grid_gap_link_cb.isChecked():
+                val_y = float(self.ui.grid_gap_y_entry.get_value()) * factor
+                self.ui.grid_gap_y_entry.set_value(val_y, decimals=dec)
 
             units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
             for obj in self.collection.get_list():
