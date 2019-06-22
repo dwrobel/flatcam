@@ -112,9 +112,9 @@ class Geometry(object):
 
         self.geo_steps_per_circle = geo_steps_per_circle
 
-        if geo_steps_per_circle is None:
-            geo_steps_per_circle = int(Geometry.defaults["geo_steps_per_circle"])
-        self.geo_steps_per_circle = geo_steps_per_circle
+        # if geo_steps_per_circle is None:
+        #     geo_steps_per_circle = int(Geometry.defaults["geo_steps_per_circle"])
+        # self.geo_steps_per_circle = geo_steps_per_circle
 
     def make_index(self):
         self.flatten()
@@ -1849,6 +1849,8 @@ class ApertureMacro:
 
 class Gerber (Geometry):
     """
+    Here it is done all the Gerber parsing.
+
     **ATTRIBUTES**
 
     * ``apertures`` (dict): The keys are names/identifiers of each aperture.
@@ -2452,7 +2454,6 @@ class Gerber (Geometry):
                         # --- Buffered ---
                         try:
                             log.debug("Bare op-code %d." % current_operation_code)
-
                             geo_dict = dict()
                             flash = self.create_flash_geometry(
                                 Point(current_x, current_y), self.apertures[current_aperture],
@@ -2467,7 +2468,7 @@ class Gerber (Geometry):
                                 else:
                                     geo_dict['solid'] = flash
 
-                                if last_path_aperture not in self.apertures:
+                                if current_aperture not in self.apertures:
                                     self.apertures[current_aperture] = dict()
                                 if 'geometry' not in self.apertures[current_aperture]:
                                     self.apertures[current_aperture]['geometry'] = []
@@ -3598,6 +3599,8 @@ class Gerber (Geometry):
 
 class Excellon(Geometry):
     """
+    Here it is done all the Excellon parsing.
+
     *ATTRIBUTES*
 
     * ``tools`` (dict): The key is the tool name and the value is
@@ -5350,7 +5353,7 @@ class CNCjob(Geometry):
                             if self.units == 'MM':
                                 current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
                             else:
-                                current_tooldia = float('%.3f' % float(exobj.tools[tool]["C"]))
+                                current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
 
                             # TODO apply offset only when using the GUI, for TclCommand this will create an error
                             # because the values for Z offset are created in build_ui()
@@ -5448,7 +5451,7 @@ class CNCjob(Geometry):
                             if self.units == 'MM':
                                 current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
                             else:
-                                current_tooldia = float('%.3f' % float(exobj.tools[tool]["C"]))
+                                current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
 
                             # TODO apply offset only when using the GUI, for TclCommand this will create an error
                             # because the values for Z offset are created in build_ui()
@@ -5504,7 +5507,7 @@ class CNCjob(Geometry):
                         if self.units == 'MM':
                             current_tooldia = float('%.2f' % float(exobj.tools[tool]["C"]))
                         else:
-                            current_tooldia = float('%.3f' % float(exobj.tools[tool]["C"]))
+                            current_tooldia = float('%.4f' % float(exobj.tools[tool]["C"]))
 
                         # TODO apply offset only when using the GUI, for TclCommand this will create an error
                         # because the values for Z offset are created in build_ui()

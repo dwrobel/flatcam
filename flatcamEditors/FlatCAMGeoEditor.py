@@ -3059,8 +3059,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 val = float(self.app.ui.grid_gap_x_entry.get_value())
             except ValueError:
                 return
+
+            units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+            dec = 6 if units == 'IN' else 4
             if self.app.ui.grid_gap_link_cb.isChecked():
-                self.app.ui.grid_gap_y_entry.set_value(val)
+                self.app.ui.grid_gap_y_entry.set_value(val, decimals=dec)
 
         self.app.ui.grid_gap_x_entry.setValidator(QtGui.QDoubleValidator())
         self.app.ui.grid_gap_x_entry.textChanged.connect(
@@ -3999,7 +4002,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
     def update_options(self, obj):
         if self.paint_tooldia:
-            obj.options['cnctooldia'] = self.paint_tooldia
+            obj.options['cnctooldia'] = deepcopy(str(self.paint_tooldia))
             self.paint_tooldia = None
             return True
         else:
