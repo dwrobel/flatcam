@@ -6142,7 +6142,7 @@ class CNCjob(Geometry):
             gcode += self.doformat(p.down_z_start_code)
             gcode += self.doformat(p.spindle_fwd_code) # Start dispensing
             gcode += self.doformat(p.dwell_fwd_code)
-            gcode += self.doformat(p.z_feedrate_dispense_code)
+            gcode += self.doformat(p.feedrate_z_dispense_code)
             gcode += self.doformat(p.lift_z_dispense_code)
             gcode += self.doformat(p.feedrate_xy_code)
 
@@ -6161,7 +6161,7 @@ class CNCjob(Geometry):
         elif type(geometry) == Point:
             gcode += self.doformat(p.linear_code, x=path[0][0], y=path[0][1])  # Move to first point
 
-            gcode += self.doformat(p.z_feedrate_dispense_code)
+            gcode += self.doformat(p.feedrate_z_dispense_code)
             gcode += self.doformat(p.down_z_start_code)
             gcode += self.doformat(p.spindle_fwd_code) # Start dispensing
             gcode += self.doformat(p.dwell_fwd_code)

@@ -343,7 +343,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         })
 
         try:
-            dias = [float(eval(dia)) for dia in self.app.defaults["tools_ncctools"].split(",")]
+            dias = [float(eval(dia)) for dia in self.app.defaults["tools_ncctools"].split(",") if dia != '']
         except:
             log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> TOOLS -> NCC Tools.")
             return
