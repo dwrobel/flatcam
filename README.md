@@ -20,6 +20,7 @@ CAD program, and create G-Code for Isolation routing.
 - set the decimals for Grid values to be set to 6 if the units of FlatCAM is INCH and to set to 4 if FlatCAM units are METRIC
 - updated translations
 - updated the Russian translate from 51% complete to 69% complete using the Yandex translation engine
+- fixed recently introduced bug in milling drills/slots functions
 
 20.06.2019
 
