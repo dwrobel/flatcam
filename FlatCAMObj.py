@@ -5928,13 +5928,19 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             self.shapes.clear(update=True)
             self.annotation.clear(update=True)
 
+        if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
+            self.app.plotcanvas.text_collection.enabled = True
+        else:
+            self.app.plotcanvas.text_collection.enabled = False
+
     def on_annotation_change(self):
         if self.ui.annotation_cb.get_value():
             self.app.plotcanvas.text_collection.enabled = True
         else:
             self.app.plotcanvas.text_collection.enabled = False
-        kind = self.ui.cncplot_method_combo.get_value()
-        self.plot(kind=kind)
+        # kind = self.ui.cncplot_method_combo.get_value()
+        # self.plot(kind=kind)
+        self.annotation.redraw()
 
     def convert_units(self, units):
         factor = CNCjob.convert_units(self, units)
