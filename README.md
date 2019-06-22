@@ -19,8 +19,9 @@ CAD program, and create G-Code for Isolation routing.
 - fixed bug in updating Grid values whenever toggling the FlatCAM units and the X, Y Grid values are linked, bugs which caused the Y value to be scaled incorrectly
 - set the decimals for Grid values to be set to 6 if the units of FlatCAM is INCH and to set to 4 if FlatCAM units are METRIC
 - updated translations
-- updated the Russian translate from 51% complete to 69% complete using the Yandex translation engine
+- updated the Russian translation from 51% complete to 69% complete using the Yandex translation engine
 - fixed recently introduced bug in milling drills/slots functions
+- moved Substract Tool from Menu -> Edit -> Conversions to Menu -> Tool
 
 20.06.2019
 

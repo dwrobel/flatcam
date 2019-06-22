@@ -2108,11 +2108,10 @@ class App(QtCore.QObject):
         self.paste_tool.install(icon=QtGui.QIcon('share/solderpastebis32.png'))
 
         self.calculator_tool = ToolCalculator(self)
-        self.calculator_tool.install(icon=QtGui.QIcon('share/calculator24.png'))
+        self.calculator_tool.install(icon=QtGui.QIcon('share/calculator24.png'), separator=True)
 
         self.sub_tool = ToolSub(self)
-        self.sub_tool.install(icon=QtGui.QIcon('share/sub32.png'), pos=self.ui.menuedit_convert,
-                              before=self.ui.menuedit_convert_sg2mg)
+        self.sub_tool.install(icon=QtGui.QIcon('share/sub32.png'), pos=self.ui.menutool, separator=True)
 
         self.move_tool = ToolMove(self)
         self.move_tool.install(icon=QtGui.QIcon('share/move16.png'), pos=self.ui.menuedit,
