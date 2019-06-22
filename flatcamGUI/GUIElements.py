@@ -190,7 +190,7 @@ class LengthEntry(QtWidgets.QLineEdit):
             units = raw[-2:]
             units = self.scales[self.output_units][units.upper()]
             value = raw[:-2]
-            return float(eval(value))*units
+            return float(eval(value))*  units
         except IndexError:
             value = raw
             return float(eval(value))
@@ -397,6 +397,33 @@ class FCEntry2(FCEntry):
             return
 
         self.setText('%.*f' % (decimals, fval))
+
+
+class FCEntry3(FCEntry):
+    def __init__(self, parent=None):
+        super(FCEntry3, self).__init__(parent)
+        self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+
+    def on_edit_finished(self):
+        self.clearFocus()
+
+    def set_value(self, val, decimals=4):
+        try:
+            fval = float(val)
+        except ValueError:
+            return
+
+        self.setText('%.*f' % (decimals, fval))
+
+    def get_value(self):
+        value = str(self.text()).strip(' ')
+
+        try:
+            return float(eval(value))
+        except Exception as e:
+            log.warning("Could not parse value in entry: %s" % str(e))
+            return None
 
 
 class EvalEntry(QtWidgets.QLineEdit):

@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+23.06.2019
+
+- fixes issues with units conversion when the tool diameters are a list of comma separated values (NCC Tool, SolderPaste Tool and Geometry Object)
+- fixed a "typo" kind of bug in SolderPaste Tool
+- RELEASE 8.919
+
 22.06.2019
 
 - some GUI layout optimizations in Edit -> Preferences
@@ -28,7 +34,6 @@ CAD program, and create G-Code for Isolation routing.
 - optimized the toggle of annotations; now there is no need to replot the entire CNCJob object too on toggling of the annotations
 - on toggling off the plot visibility the annotations are turned off too
 - updated translations; Russian translation at 76% (using Yandex translator engine - needs verification by a native speaker of Russian)
-- RELEASE 8.919
 
 20.06.2019
 

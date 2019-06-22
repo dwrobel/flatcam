@@ -3330,14 +3330,14 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.gridx_label.setToolTip(
            _("This is the Grid snap value on X axis.")
         )
-        self.gridx_entry = LengthEntry()
+        self.gridx_entry = FCEntry3()
 
         # Grid Y Entry
         self.gridy_label = QtWidgets.QLabel(_('Grid Y value:'))
         self.gridy_label.setToolTip(
             _("This is the Grid snap value on Y axis.")
         )
-        self.gridy_entry = LengthEntry()
+        self.gridy_entry = FCEntry3()
 
         # Snap Max Entry
         self.snap_max_label = QtWidgets.QLabel(_('Snap Max:'))
