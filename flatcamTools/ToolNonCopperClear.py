@@ -343,7 +343,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         })
 
         try:
-            dias = [float(eval(dia)) for dia in self.app.defaults["tools_ncctools"].split(",")]
+            dias = [float(eval(dia)) for dia in self.app.defaults["tools_ncctools"].split(",") if dia != '']
         except:
             log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> TOOLS -> NCC Tools.")
             return
@@ -404,7 +404,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     if self.units == 'MM':
                         dia = QtWidgets.QTableWidgetItem('%.2f' % tooluid_value['tooldia'])
                     else:
-                        dia = QtWidgets.QTableWidgetItem('%.3f' % tooluid_value['tooldia'])
+                        dia = QtWidgets.QTableWidgetItem('%.4f' % tooluid_value['tooldia'])
 
                     dia.setFlags(QtCore.Qt.ItemIsEnabled)
 
@@ -787,7 +787,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         else:
                             log.debug("There are no geometries in the cleared polygon.")
 
-            geo_obj.options["cnctooldia"] = tool
+            geo_obj.options["cnctooldia"] = str(tool)
             geo_obj.multigeo = True
 
         def job_thread(app_obj):
@@ -929,7 +929,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                             log.debug("There are no geometries in the cleared polygon.")
 
             geo_obj.multigeo = True
-            geo_obj.options["cnctooldia"] = tool
+            geo_obj.options["cnctooldia"] = str(tool)
 
             # check to see if geo_obj.tools is empty
             # it will be updated only if there is a solid_geometry for tools

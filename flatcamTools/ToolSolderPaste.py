@@ -482,7 +482,7 @@ class SolderPaste(FlatCAMTool):
             self.on_tool_delete(rows_to_delete=None, all=None), icon=QtGui.QIcon("share/delete32.png"))
 
         try:
-            dias = [float(eval(dia)) for dia in self.app.defaults["tools_solderpaste_tools"].split(",")]
+            dias = [float(eval(dia)) for dia in self.app.defaults["tools_solderpaste_tools"].split(",") if dia != '']
         except:
             log.error("At least one Nozzle tool diameter needed. "
                       "Verify in Edit -> Preferences -> TOOLS -> Solder Paste Tools.")
@@ -548,7 +548,7 @@ class SolderPaste(FlatCAMTool):
                     if self.units == 'MM':
                         dia = QtWidgets.QTableWidgetItem('%.2f' % tooluid_value['tooldia'])
                     else:
-                        dia = QtWidgets.QTableWidgetItem('%.3f' % tooluid_value['tooldia'])
+                        dia = QtWidgets.QTableWidgetItem('%.4f' % tooluid_value['tooldia'])
 
                     dia.setFlags(QtCore.Qt.ItemIsEnabled)
 

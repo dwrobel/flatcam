@@ -3330,14 +3330,14 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.gridx_label.setToolTip(
            _("This is the Grid snap value on X axis.")
         )
-        self.gridx_entry = LengthEntry()
+        self.gridx_entry = FCEntry3()
 
         # Grid Y Entry
         self.gridy_label = QtWidgets.QLabel(_('Grid Y value:'))
         self.gridy_label.setToolTip(
             _("This is the Grid snap value on Y axis.")
         )
-        self.gridy_entry = LengthEntry()
+        self.gridy_entry = FCEntry3()
 
         # Snap Max Entry
         self.snap_max_label = QtWidgets.QLabel(_('Snap Max:'))
@@ -4096,7 +4096,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         self.combine_passes_cb.setToolTip(
             _("Combine all passes into one object")
         )
-        grid0.addWidget(self.combine_passes_cb, 4, 0)
+        grid0.addWidget(self.combine_passes_cb, 4, 0, 1, 2)
 
         # ## Clear non-copper regions
         self.clearcopper_label = QtWidgets.QLabel(_("<b>Clear non-copper:</b>"))
@@ -4468,8 +4468,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         hlay2.addWidget(self.excellon_format_lower_mm_entry, QtCore.Qt.AlignLeft)
         hlay2.addStretch()
 
-        hlay3 = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(hlay3)
+        grid2 = QtWidgets.QGridLayout()
+        self.layout.addLayout(grid2)
 
         self.excellon_zeros_label = QtWidgets.QLabel(_('Default <b>Zeros</b>:'))
         self.excellon_zeros_label.setAlignment(QtCore.Qt.AlignLeft)
@@ -4480,7 +4480,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "If TZ is checked then Trailing Zeros are kept\n"
               "and Leading Zeros are removed.")
         )
-        hlay3.addWidget(self.excellon_zeros_label)
+        grid2.addWidget(self.excellon_zeros_label, 0, 0)
 
         self.excellon_zeros_radio = RadioSet([{'label': 'LZ', 'value': 'L'},
                                               {'label': 'TZ', 'value': 'T'}])
@@ -4493,11 +4493,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "If TZ is checked then Trailing Zeros are kept\n"
               "and Leading Zeros are removed.")
         )
-        hlay3.addStretch()
-        hlay3.addWidget(self.excellon_zeros_radio, QtCore.Qt.AlignRight)
-
-        hlay4 = QtWidgets.QHBoxLayout()
-        self.layout.addLayout(hlay4)
+        grid2.addWidget(self.excellon_zeros_radio, 0, 1)
 
         self.excellon_units_label = QtWidgets.QLabel(_('Default <b>Units</b>:'))
         self.excellon_units_label.setAlignment(QtCore.Qt.AlignLeft)
@@ -4508,7 +4504,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "Some Excellon files don't have an header\n"
               "therefore this parameter will be used.")
         )
-        hlay4.addWidget(self.excellon_units_label)
+        grid2.addWidget(self.excellon_units_label, 1, 0)
 
         self.excellon_units_radio = RadioSet([{'label': 'INCH', 'value': 'INCH'},
                                               {'label': 'MM', 'value': 'METRIC'}])
@@ -4517,27 +4513,14 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "Some Excellon files don't have an header\n"
               "therefore this parameter will be used.")
         )
-        hlay4.addStretch()
-        hlay4.addWidget(self.excellon_units_radio, QtCore.Qt.AlignRight)
+        grid2.addWidget(self.excellon_units_radio, 1, 1)
 
-        hlay5 = QtWidgets.QVBoxLayout()
-        self.layout.addLayout(hlay5)
-
-        self.empty_label = QtWidgets.QLabel("")
-        hlay5.addWidget(self.empty_label)
-
-        hlay6 = QtWidgets.QVBoxLayout()
-        self.layout.addLayout(hlay6)
+        grid2.addWidget(QtWidgets.QLabel(""), 2, 0)
 
         self.excellon_general_label = QtWidgets.QLabel(_("<b>Excellon Optimization:</b>"))
-        hlay6.addWidget(self.excellon_general_label)
-
-        # Create a form layout for the Excellon general settings
-        form_box_excellon = QtWidgets.QFormLayout()
-        hlay6.addLayout(form_box_excellon)
+        grid2.addWidget(self.excellon_general_label, 3, 0, 1, 2)
 
         self.excellon_optimization_label = QtWidgets.QLabel(_('Algorithm:   '))
-        self.excellon_optimization_label.setAlignment(QtCore.Qt.AlignLeft)
         self.excellon_optimization_label.setToolTip(
             _("This sets the optimization type for the Excellon drill path.\n"
               "If MH is checked then Google OR-Tools algorithm with MetaHeuristic\n"
@@ -4548,6 +4531,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "If DISABLED, then FlatCAM works in 32bit mode and it uses \n"
               "Travelling Salesman algorithm for path optimization.")
         )
+        grid2.addWidget(self.excellon_optimization_label, 4, 0)
 
         self.excellon_optimization_radio = RadioSet([{'label': 'MH', 'value': 'M'},
                                      {'label': 'Basic', 'value': 'B'}])
@@ -4561,8 +4545,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "If DISABLED, then FlatCAM works in 32bit mode and it uses \n"
               "Travelling Salesman algorithm for path optimization.")
         )
-
-        form_box_excellon.addRow(self.excellon_optimization_label, self.excellon_optimization_radio)
+        grid2.addWidget(self.excellon_optimization_radio, 4, 1)
 
         self.optimization_time_label = QtWidgets.QLabel(_('Optimization Time:   '))
         self.optimization_time_label.setAlignment(QtCore.Qt.AlignLeft)
@@ -4573,10 +4556,11 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
               "In seconds.")
 
         )
+        grid2.addWidget(self.optimization_time_label, 5, 0)
 
         self.optimization_time_entry = IntEntry()
         self.optimization_time_entry.setValidator(QtGui.QIntValidator(0, 999))
-        form_box_excellon.addRow(self.optimization_time_label, self.optimization_time_entry)
+        grid2.addWidget(self.optimization_time_entry, 5, 1)
 
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
@@ -4744,25 +4728,23 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         self.mill_hole_label.setToolTip(
             _("Create Geometry for milling holes.")
         )
-        self.layout.addWidget(self.mill_hole_label)
+        grid2.addWidget(excellon_gcode_type_label, 11, 0, 1, 2)
 
-        grid3 = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid3)
         tdlabel = QtWidgets.QLabel(_('Drill Tool dia:'))
         tdlabel.setToolTip(
             _("Diameter of the cutting tool.")
         )
-        grid3.addWidget(tdlabel, 0, 0)
+        grid2.addWidget(tdlabel, 12, 0)
         self.tooldia_entry = LengthEntry()
-        grid3.addWidget(self.tooldia_entry, 0, 1)
+        grid2.addWidget(self.tooldia_entry, 12, 1)
         stdlabel = QtWidgets.QLabel(_('Slot Tool dia:'))
         stdlabel.setToolTip(
             _("Diameter of the cutting tool\n"
               "when milling slots.")
         )
-        grid3.addWidget(stdlabel, 1, 0)
+        grid2.addWidget(stdlabel, 13, 0)
         self.slot_tooldia_entry = LengthEntry()
-        grid3.addWidget(self.slot_tooldia_entry, 1, 1)
+        grid2.addWidget(self.slot_tooldia_entry, 13, 1)
 
         grid4 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid4)
@@ -5162,6 +5144,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
 
         grid0 = QtWidgets.QGridLayout()
         self.layout.addLayout(grid0)
+
         # Number of circle steps for circular aperture linear approximation
         self.circle_steps_label = QtWidgets.QLabel(_("Circle Steps:"))
         self.circle_steps_label.setToolTip(
@@ -5173,21 +5156,17 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.circle_steps_entry, 1, 1)
 
         # Tools
-        self.tools_label = QtWidgets.QLabel(_("<b>Tools</b>"))
-        self.layout.addWidget(self.tools_label)
-
-        grid0_b = QtWidgets.QGridLayout()
-        self.layout.addLayout(grid0_b)
+        self.tools_label = QtWidgets.QLabel(_("<b>Tools:</b>"))
+        grid0.addWidget(self.tools_label, 2, 0, 1, 2)
 
         # Tooldia
-        tdlabel = QtWidgets.QLabel(_('Tool dia:                   '))
+        tdlabel = QtWidgets.QLabel(_('Tool dia:'))
         tdlabel.setToolTip(
-            _("The diameter of the cutting\n"
-              "tool..")
+            _("Diameters of the cutting tools, separated by ','")
         )
-        grid0_b.addWidget(tdlabel, 0, 0)
-        self.cnctooldia_entry = LengthEntry()
-        grid0_b.addWidget(self.cnctooldia_entry, 0, 1)
+        grid0.addWidget(tdlabel, 3, 0)
+        self.cnctooldia_entry = FCEntry()
+        grid0.addWidget(self.cnctooldia_entry, 3, 1)
 
         self.layout.addStretch()
 

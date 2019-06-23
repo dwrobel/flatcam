@@ -190,7 +190,7 @@ class LengthEntry(QtWidgets.QLineEdit):
             units = raw[-2:]
             units = self.scales[self.output_units][units.upper()]
             value = raw[:-2]
-            return float(eval(value))*units
+            return float(eval(value))*  units
         except IndexError:
             value = raw
             return float(eval(value))
@@ -390,12 +390,40 @@ class FCEntry2(FCEntry):
     def on_edit_finished(self):
         self.clearFocus()
 
-    def set_value(self, val):
+    def set_value(self, val, decimals=4):
         try:
             fval = float(val)
         except ValueError:
             return
-        self.setText('%.4f' % fval)
+
+        self.setText('%.*f' % (decimals, fval))
+
+
+class FCEntry3(FCEntry):
+    def __init__(self, parent=None):
+        super(FCEntry3, self).__init__(parent)
+        self.readyToEdit = True
+        self.editingFinished.connect(self.on_edit_finished)
+
+    def on_edit_finished(self):
+        self.clearFocus()
+
+    def set_value(self, val, decimals=4):
+        try:
+            fval = float(val)
+        except ValueError:
+            return
+
+        self.setText('%.*f' % (decimals, fval))
+
+    def get_value(self):
+        value = str(self.text()).strip(' ')
+
+        try:
+            return float(eval(value))
+        except Exception as e:
+            log.warning("Could not parse value in entry: %s" % str(e))
+            return None
 
 
 class EvalEntry(QtWidgets.QLineEdit):
@@ -680,7 +708,7 @@ class FCTextAreaExtended(QtWidgets.QTextEdit):
         if character == "#":
             # delete #
             self.textCursor().deletePreviousChar()
-            # delete white space
+            # delete white space 
             self.moveCursor(QtGui.QTextCursor.NextWord,QtGui.QTextCursor.KeepAnchor)
             self.textCursor().removeSelectedText()
         else:
@@ -1059,7 +1087,6 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             # Re-attach the tab at the given index
             self.attachTab(contentWidget, name, icon, index)
 
-
         # If the drop did not occur on an existing tab, determine if the drop
         # occurred in the tab bar area (the area to the side of the QTabBar)
         else:
@@ -1227,14 +1254,17 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             :return:
             """
             # Determine if the current movement is detected as a drag
-            if not self.dragStartPos.isNull() and ((event.pos() - self.dragStartPos).manhattanLength() < QtWidgets.QApplication.startDragDistance()):
+            if not self.dragStartPos.isNull() and \
+                    ((event.pos() - self.dragStartPos).manhattanLength() < QtWidgets.QApplication.startDragDistance()):
                 self.dragInitiated = True
 
             # If the current movement is a drag initiated by the left button
             if (((event.buttons() & QtCore.Qt.LeftButton)) and self.dragInitiated):
 
                 # Stop the move event
-                finishMoveEvent = QtGui.QMouseEvent(QtCore.QEvent.MouseMove, event.pos(), QtCore.Qt.NoButton, QtCore.Qt.NoButton, QtCore.Qt.NoModifier)
+                finishMoveEvent = QtGui.QMouseEvent(
+                    QtCore.QEvent.MouseMove, event.pos(), QtCore.Qt.NoButton, QtCore.Qt.NoButton, QtCore.Qt.NoModifier
+                )
                 QtWidgets.QTabBar.mouseMoveEvent(self, finishMoveEvent)
 
                 # Convert the move event into a drag
@@ -1261,12 +1291,10 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                 # Initiate the drag
                 dropAction = drag.exec_(QtCore.Qt.MoveAction | QtCore.Qt.CopyAction)
 
-
                 # For Linux:  Here, drag.exec_() will not return MoveAction on Linux.  So it
                 #             must be set manually
                 if self.dragDropedPos.x() != 0 and self.dragDropedPos.y() != 0:
                     dropAction = QtCore.Qt.MoveAction
-
 
                 # If the drag completed outside of the tab bar, detach the tab and move
                 # the content to the current cursor position

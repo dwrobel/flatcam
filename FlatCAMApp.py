@@ -94,8 +94,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.918
-    version_date = "2019/06/11"
+    version = 8.919
+    version_date = "2019/06/23"
     beta = True
 
     # current date now
@@ -780,7 +780,7 @@ class App(QtCore.QObject):
             # Geometry General
             "geometry_plot": True,
             "geometry_circle_steps": 128,
-            "geometry_cnctooldia": 0.016,
+            "geometry_cnctooldia": "0.016",
 
             # Geometry Options
             "geometry_cutz": -0.002,
@@ -2059,9 +2059,9 @@ class App(QtCore.QObject):
             except Exception as e:
                 log.debug("App.defaults_read_form() --> %s" % str(e))
 
-    def defaults_write_form(self, factor=None):
+    def defaults_write_form(self, factor=None, fl_units=None):
         for option in self.defaults:
-            self.defaults_write_form_field(option, factor=factor)
+            self.defaults_write_form_field(option, factor=factor, units=fl_units)
             # try:
             #     self.defaults_form_fields[option].set_value(self.defaults[option])
             # except KeyError:
@@ -2069,12 +2069,22 @@ class App(QtCore.QObject):
             #     # TODO: Rethink this?
             #     pass
 
-    def defaults_write_form_field(self, field, factor=None):
+    def defaults_write_form_field(self, field, factor=None, units=None):
         try:
             if factor is None:
-                self.defaults_form_fields[field].set_value(self.defaults[field])
+                if units is None:
+                    self.defaults_form_fields[field].set_value(self.defaults[field])
+                elif units == 'IN' and (field == 'global_gridx' or field == 'global_gridy'):
+                    self.defaults_form_fields[field].set_value(self.defaults[field], decimals=6)
+                elif units == 'MM' and (field == 'global_gridx' or field == 'global_gridy'):
+                    self.defaults_form_fields[field].set_value(self.defaults[field], decimals=4)
             else:
-                self.defaults_form_fields[field].set_value(self.defaults[field] * factor)
+                if units is None:
+                    self.defaults_form_fields[field].set_value(self.defaults[field] * factor)
+                elif units == 'IN' and (field == 'global_gridx' or field == 'global_gridy'):
+                    self.defaults_form_fields[field].set_value((self.defaults[field] * factor), decimals=6)
+                elif units == 'MM' and (field == 'global_gridx' or field == 'global_gridy'):
+                    self.defaults_form_fields[field].set_value((self.defaults[field] * factor), decimals=4)
         except KeyError:
             # self.log.debug("defaults_write_form(): No field for: %s" % option)
             # TODO: Rethink this?
@@ -2108,11 +2118,10 @@ class App(QtCore.QObject):
         self.paste_tool.install(icon=QtGui.QIcon('share/solderpastebis32.png'))
 
         self.calculator_tool = ToolCalculator(self)
-        self.calculator_tool.install(icon=QtGui.QIcon('share/calculator24.png'))
+        self.calculator_tool.install(icon=QtGui.QIcon('share/calculator24.png'), separator=True)
 
         self.sub_tool = ToolSub(self)
-        self.sub_tool.install(icon=QtGui.QIcon('share/sub32.png'), pos=self.ui.menuedit_convert,
-                              before=self.ui.menuedit_convert_sg2mg)
+        self.sub_tool.install(icon=QtGui.QIcon('share/sub32.png'), pos=self.ui.menutool, separator=True)
 
         self.move_tool = ToolMove(self)
         self.move_tool.install(icon=QtGui.QIcon('share/move16.png'), pos=self.ui.menuedit,
@@ -2245,7 +2254,18 @@ class App(QtCore.QObject):
                     self.inform.emit(_("[WARNING_NOTCL] Simultanoeus editing of tools geometry in a MultiGeo Geometry "
                                        "is not possible.\n"
                                        "Edit only one geometry at a time."))
-                self.geo_editor.edit_fcgeometry(edited_object, multigeo_tool=edited_tools[0])
+
+                # determine the tool dia of the selected tool
+                selected_tooldia = float(edited_object.ui.geo_tools_table.item((edited_tools[0] - 1), 1).text())
+
+                # now find the key in the edited_object.tools that has this tooldia
+                multi_tool = 1
+                for tool in edited_object.tools:
+                    if edited_object.tools[tool]['tooldia'] == selected_tooldia:
+                        multi_tool = tool
+                        break
+
+                self.geo_editor.edit_fcgeometry(edited_object, multigeo_tool=multi_tool)
             else:
                 self.geo_editor.edit_fcgeometry(edited_object)
 
@@ -3618,9 +3638,10 @@ class App(QtCore.QObject):
         if self.toggle_units_ignore:
             return
 
+        new_units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
         # If option is the same, then ignore
-        if self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == \
-                self.defaults["units"].upper():
+        if new_units == self.defaults["units"].upper():
             self.log.debug("on_toggle_units(): Same as defaults, so ignoring.")
             return
 
@@ -3667,21 +3688,60 @@ class App(QtCore.QObject):
                     coords_xy[0] *= sfactor
                     coords_xy[1] *= sfactor
                     self.options['geometry_toolchangexy'] = "%f, %f" % (coords_xy[0], coords_xy[1])
+                elif dim == 'geometry_cnctooldia':
+                    tools_diameters = []
+                    try:
+                        tools_string = self.defaults["geometry_cnctooldia"].split(",")
+                        tools_diameters = [eval(a) for a in tools_string if a != '']
+                    except Exception as e:
+                        log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
+
+                    self.options['geometry_cnctooldia'] = ''
+                    for t in range(len(tools_diameters)):
+                        tools_diameters[t] *= sfactor
+                        self.options['geometry_cnctooldia'] += "%f," % tools_diameters[t]
                 elif dim == 'tools_ncctools':
-                    ncctols = [float(eval(a)) for a in self.defaults["tools_ncctools"].split(",")]
-                    ncctols[0] *= sfactor
-                    ncctols[1] *= sfactor
-                    self.options['tools_ncctools'] = "%f, %f" % (ncctols[0], ncctols[1])
+                    ncctools = []
+                    try:
+                        tools_string = self.defaults["tools_ncctools"].split(",")
+                        ncctools = [eval(a) for a in tools_string if a != '']
+                    except Exception as e:
+                        log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
+
+                    self.options['tools_ncctools'] = ''
+                    for t in range(len(ncctools)):
+                        ncctools[t] *= sfactor
+                        self.options['tools_ncctools'] += "%f," % ncctools[t]
                 elif dim == 'tools_solderpaste_tools':
-                    sp_tools = [float(eval(a)) for a in self.defaults["tools_solderpaste_tools"].split(",")]
-                    sp_tools[0] *= sfactor
-                    sp_tools[1] *= sfactor
-                    self.options['tools_solderpaste_tools'] = "%f, %f" % (sp_tools[0], sp_tools[1])
+                    sptools = []
+                    try:
+                        tools_string = self.defaults["tools_solderpaste_tools"].split(",")
+                        sptools = [eval(a) for a in tools_string if a != '']
+                    except Exception as e:
+                        log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
+
+                    self.options['tools_solderpaste_tools'] = ""
+                    for t in range(len(sptools)):
+                        sptools[t] *= sfactor
+                        self.options['tools_solderpaste_tools'] += "%f," % sptools[t]
                 elif dim == 'tools_solderpaste_xy_toolchange':
                     sp_coords = [float(eval(a)) for a in self.defaults["tools_solderpaste_xy_toolchange"].split(",")]
                     sp_coords[0] *= sfactor
                     sp_coords[1] *= sfactor
                     self.options['tools_solderpaste_xy_toolchange'] = "%f, %f" % (sp_coords[0], sp_coords[1])
+                elif dim == 'global_gridx' or dim == 'global_gridy':
+                    if new_units == 'IN':
+                        try:
+                            val = float(self.defaults[dim]) * sfactor
+                            self.options[dim] = float('%.6f' % val)
+                        except Exception as e:
+                            log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
+                    else:
+                        try:
+                            val = float(self.defaults[dim]) * sfactor
+                            self.options[dim] = float('%.4f' % val)
+                        except Exception as e:
+                            log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
                 else:
                     try:
                         self.options[dim] = float(self.options[dim]) * sfactor
@@ -3700,21 +3760,60 @@ class App(QtCore.QObject):
                     coords_xy[0] *= sfactor
                     coords_xy[1] *= sfactor
                     self.defaults['geometry_toolchangexy'] = "%.4f, %.4f" % (coords_xy[0], coords_xy[1])
+                elif dim == 'geometry_cnctooldia':
+                    tools_diameters = []
+                    try:
+                        tools_string = self.defaults["geometry_cnctooldia"].split(",")
+                        tools_diameters = [eval(a) for a in tools_string if a != '']
+                    except Exception as e:
+                        log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
+
+                    self.defaults['geometry_cnctooldia'] = ''
+                    for t in range(len(tools_diameters)):
+                        tools_diameters[t] *= sfactor
+                        self.defaults['geometry_cnctooldia'] += "%.4f," % tools_diameters[t]
                 elif dim == 'tools_ncctools':
-                    ncctols = [float(eval(a)) for a in self.defaults["tools_ncctools"].split(",")]
-                    ncctols[0] *= sfactor
-                    ncctols[1] *= sfactor
-                    self.defaults['tools_ncctools'] = "%.4f, %.4f" % (ncctols[0], ncctols[1])
+                    ncctools = []
+                    try:
+                        tools_string = self.defaults["tools_ncctools"].split(",")
+                        ncctools = [eval(a) for a in tools_string if a != '']
+                    except Exception as e:
+                        log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
+
+                    self.defaults['tools_ncctools'] = ''
+                    for t in range(len(ncctools)):
+                        ncctools[t] *= sfactor
+                        self.defaults['tools_ncctools'] += "%.4f," % ncctools[t]
                 elif dim == 'tools_solderpaste_tools':
-                    sp_tools = [float(eval(a)) for a in self.defaults["tools_solderpaste_tools"].split(",")]
-                    sp_tools[0] *= sfactor
-                    sp_tools[1] *= sfactor
-                    self.defaults['tools_solderpaste_tools'] = "%.4f, %.4f" % (sp_tools[0], sp_tools[1])
+                    sptools = []
+                    try:
+                        tools_string = self.defaults["tools_solderpaste_tools"].split(",")
+                        sptools = [eval(a) for a in tools_string if a != '']
+                    except Exception as e:
+                        log.debug("App.on_toggle_units().scale_options() --> %s" % str(e))
+
+                    self.defaults['tools_solderpaste_tools'] = ""
+                    for t in range(len(sptools)):
+                        sptools[t] *= sfactor
+                        self.defaults['tools_solderpaste_tools'] += "%.4f," % sptools[t]
                 elif dim == 'tools_solderpaste_xy_toolchange':
                     sp_coords = [float(eval(a)) for a in self.defaults["tools_solderpaste_xy_toolchange"].split(",")]
                     sp_coords[0] *= sfactor
                     sp_coords[1] *= sfactor
                     self.defaults['tools_solderpaste_xy_toolchange'] = "%.4f, %.4f" % (sp_coords[0], sp_coords[1])
+                elif dim == 'global_gridx' or dim == 'global_gridy':
+                    if new_units == 'IN':
+                        try:
+                            val = float(self.defaults[dim]) * sfactor
+                            self.defaults[dim] = float('%.6f' % val)
+                        except Exception as e:
+                            log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
+                    else:
+                        try:
+                            val = float(self.defaults[dim]) * sfactor
+                            self.defaults[dim] = float('%.4f' % val)
+                        except Exception as e:
+                            log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
                 else:
                     try:
                         self.defaults[dim] = float(self.defaults[dim]) * sfactor
@@ -3723,7 +3822,7 @@ class App(QtCore.QObject):
 
         # The scaling factor depending on choice of units.
         factor = 1/25.4
-        if self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper() == 'MM':
+        if new_units == 'MM':
             factor = 25.4
 
         # Changing project units. Warn user.
@@ -3748,7 +3847,7 @@ class App(QtCore.QObject):
 
                 self.defaults_read_form()
                 scale_defaults(factor)
-                self.defaults_write_form()
+                self.defaults_write_form(fl_units=new_units)
 
             self.should_we_save = True
 
@@ -3757,12 +3856,15 @@ class App(QtCore.QObject):
                 self.plotcanvas.draw_workspace()
 
             # adjust the grid values on the main toolbar
-            self.ui.grid_gap_x_entry.set_value(float(self.ui.grid_gap_x_entry.get_value()) * factor)
-            self.ui.grid_gap_y_entry.set_value(float(self.ui.grid_gap_y_entry.get_value()) * factor)
+            dec = 6 if new_units == 'IN'else 4
+            val_x = float(self.ui.grid_gap_x_entry.get_value()) * factor
+            self.ui.grid_gap_x_entry.set_value(val_x, decimals=dec)
+            if not self.ui.grid_gap_link_cb.isChecked():
+                val_y = float(self.ui.grid_gap_y_entry.get_value()) * factor
+                self.ui.grid_gap_y_entry.set_value(val_y, decimals=dec)
 
-            units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
             for obj in self.collection.get_list():
-                obj.convert_units(units)
+                obj.convert_units(new_units)
 
                 # make that the properties stored in the object are also updated
                 self.object_changed.emit(obj)
@@ -3775,9 +3877,9 @@ class App(QtCore.QObject):
                     current.to_form()
 
             self.plot_all()
-            self.inform.emit(_("[success] Converted units to %s") % units)
+            self.inform.emit(_("[success] Converted units to %s") % new_units)
             # self.ui.units_label.setText("[" + self.options["units"] + "]")
-            self.set_screen_units(units)
+            self.set_screen_units(new_units)
         else:
             # Undo toggling
             self.toggle_units_ignore = True
@@ -5249,6 +5351,7 @@ class App(QtCore.QObject):
         if index.isValid():
             if index.internalPointer().parent_item != self.collection.root_item:
                 self.ui.notebook.setCurrentWidget(self.ui.selected_tab)
+        self.collection.on_item_activated(index)
 
     def grid_status(self):
         if self.ui.grid_snap_btn.isChecked():
@@ -5423,6 +5526,7 @@ class App(QtCore.QObject):
                     self.click_noproject = True
 
                     self.clipboard.setText(self.defaults["global_point_clipboard_format"] % (self.pos[0], self.pos[1]))
+                    self.inform.emit(_("[success] Coordinates copied to clipboard."))
                     return
 
             self.on_mouse_move_over_plot(event, origin_click=True)
@@ -5579,6 +5683,10 @@ class App(QtCore.QObject):
                             if self.command_active is None:
                                 self.select_objects(key='CTRL')
                                 self.delete_hover_shape()
+                        elif modifiers == QtCore.Qt.ShiftModifier:
+                            # if SHIFT was pressed and LMB is clicked then we have a coordinates copy to clipboard
+                            # therefore things should stay as they are
+                            pass
                         else:
                             # If there is no active command (self.command_active is None) then we check if we clicked
                             # on a object by checking the bounding limits against mouse click position
@@ -8044,7 +8152,7 @@ class App(QtCore.QObject):
 
             This behavior works only within main thread,
             errors with promissed tasks can be catched and detected only with log.
-            TODO: this problem have to be addressed somehow, maybe rewrite promissing to be blocking somehow for
+            TODO: this problem have to be addressed somehow, maybe rewrite promissing to be blocking somehow for 
             TCL shell.
 
             Kamil's comment: I will rewrite existing TCL commands from time to time to follow this rules.
@@ -8252,7 +8360,10 @@ The normal flow when working in FlatCAM is the following:</span></p>
         """
         FlatCAMObj.app = self
         ObjectCollection.app = self
-
+        Gerber.app = self
+        Excellon.app = self
+        Geometry.app = self
+        CNCjob.app = self
         FCProcess.app = self
         FCProcessContainer.app = self
 

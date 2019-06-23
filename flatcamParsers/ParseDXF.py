@@ -91,7 +91,7 @@ def dxfarc2shapely(arc, n_points=100):
     #     angle += step_angle
     #
     #
-    # log.debug("X = %.3f, Y = %.3f, Radius = %.3f, start_angle = %.1f, stop_angle = %.1f, step_angle = %.3f, dir=%s" %
+    # log.debug("X = %.4f, Y = %.4f, Radius = %.4f, start_angle = %.1f, stop_angle = %.1f, step_angle = %.4f, dir=%s" %
     #           (center_x, center_y, radius, start_angle, end_angle, step_angle, dir))
     #
     # geo = LineString(point_list)
@@ -142,7 +142,7 @@ def dxfarc2shapely(arc, n_points=100):
             y = center_y + radius * math.sin(math.radians(- end_angle))
         point_list.append((x, y))
 
-    # log.debug("X = %.3f, Y = %.3f, Radius = %.3f, start_angle = %.1f, stop_angle = %.1f, step_angle = %.3f" %
+    # log.debug("X = %.4f, Y = %.4f, Radius = %.4f, start_angle = %.1f, stop_angle = %.1f, step_angle = %.4f" %
     #           (center_x, center_y, radius, start_angle, end_angle, step_angle))
 
     geo = LineString(point_list)

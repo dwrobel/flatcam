@@ -263,10 +263,9 @@ class ObjectCollection(QtCore.QAbstractItemModel):
 
         # ## GUI Events
         self.view.selectionModel().selectionChanged.connect(self.on_list_selection_change)
-        self.view.activated.connect(self.on_item_activated)
-        # self.view.keyPressed.connect(self.on_key)
+        # self.view.activated.connect(self.on_item_activated)
         self.view.keyPressed.connect(self.app.ui.keyPressEvent)
-        self.view.clicked.connect(self.on_mouse_down)
+        # self.view.clicked.connect(self.on_mouse_down)
         self.view.customContextMenuRequested.connect(self.on_menu_request)
 
         self.click_modifier = None
@@ -398,8 +397,9 @@ class ObjectCollection(QtCore.QAbstractItemModel):
     def setData(self, index, data, role=None):
         if index.isValid():
             obj = index.internalPointer().obj
+
             if obj:
-                old_name = obj.options['name']
+                old_name = deepcopy(obj.options['name'])
                 new_name = str(data)
                 if old_name != new_name and new_name != '':
                     # rename the object
