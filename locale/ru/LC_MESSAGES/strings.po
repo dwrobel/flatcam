@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2019-06-22 23:56+0300\n"
-"PO-Revision-Date: 2019-06-23 21:04+0400\n"
+"PO-Revision-Date: 2019-06-25 14:08+0400\n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -1682,7 +1682,7 @@ msgstr ""
 "отрицательное. Проверьте полученный CNC code (Gcode и т. д.)."
 
 #: camlib.py:5153 camlib.py:5649 camlib.py:5912
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "[WARNING] The Cut Z parameter is zero. There will be no cut, skipping %s file"
 msgstr ""
@@ -2202,7 +2202,7 @@ msgid "Overlap Rate:"
 msgstr "Частота перекрытия:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:445 flatcamTools/ToolPaint.py:162
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "How much (fraction) of the tool width to overlap each tool pass.\n"
 "Example:\n"
@@ -3650,12 +3650,13 @@ msgstr ""
 "отверстие и повторите попытку."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4444
-#, fuzzy, python-format
-#| msgid "[ERROR_NOTCL] Failed to open %s"
+#, python-format
 msgid ""
 "[ERROR_NOTCL] Failed.\n"
 "%s"
-msgstr "[ERROR_NOTCL] Не удалось открыть %s"
+msgstr ""
+"[ERROR_NOTCL] Ошибка.\n"
+"%s"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4461
 msgid ""
@@ -3828,6 +3829,9 @@ msgid ""
 "the coordinates format, the file units and zeros\n"
 "are set in Preferences -> Excellon Export."
 msgstr ""
+"Экспортирует объект Excellon как файл Excellon,\n"
+"формат координат, единицы измерения и нули\n"
+"устанавливаются в Настройки -> Экспорт Excellon."
 
 #: flatcamGUI/FlatCAMGUI.py:186
 msgid "Export &Gerber ..."
@@ -3839,6 +3843,9 @@ msgid ""
 "the coordinates format, the file units and zeros\n"
 "are set in Preferences -> Gerber Export."
 msgstr ""
+"Экспортирует объект Gerber как файл Gerber,\n"
+"формат координат, единицы измерения и нули\n"
+"устанавливается в Настройки -> Экспорт Gerber."
 
 #: flatcamGUI/FlatCAMGUI.py:199
 msgid "Save &Defaults"
@@ -3918,6 +3925,8 @@ msgid ""
 "Will convert a Geometry object from single_geometry type\n"
 "to a multi_geometry type."
 msgstr ""
+"Преобразует объект Geometry из типа single_geometry\n"
+"в multi_geometry.."
 
 #: flatcamGUI/FlatCAMGUI.py:272
 msgid "Convert Multi to SingleGeo"
@@ -3928,6 +3937,8 @@ msgid ""
 "Will convert a Geometry object from multi_geometry type\n"
 "to a single_geometry type."
 msgstr ""
+"Преобразует объект Geometry из типа multi_geometry\n"
+"в single_geometry.."
 
 #: flatcamGUI/FlatCAMGUI.py:280
 msgid "Convert Any to Geo"
@@ -4359,7 +4370,7 @@ msgstr "Панелизация"
 #: flatcamGUI/FlatCAMGUI.py:647 flatcamGUI/FlatCAMGUI.py:1870
 #: flatcamTools/ToolFilm.py:204
 msgid "Film Tool"
-msgstr ""
+msgstr "Плёнка"
 
 #: flatcamGUI/FlatCAMGUI.py:648 flatcamGUI/FlatCAMGUI.py:1872
 #: flatcamTools/ToolSolderPaste.py:451
@@ -5458,7 +5469,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3353
 msgid "Wk. format:"
-msgstr ""
+msgstr "Формат обработчика:"
 
 #: flatcamGUI/FlatCAMGUI.py:3355
 msgid ""
@@ -5808,7 +5819,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3875
 msgid "Workers number:"
-msgstr ""
+msgstr "Обработчики:"
 
 #: flatcamGUI/FlatCAMGUI.py:3877 flatcamGUI/FlatCAMGUI.py:3886
 msgid ""
@@ -6706,10 +6717,8 @@ msgid ""
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5159
-#, fuzzy
-#| msgid "<b>Tools</b>"
 msgid "<b>Tools:</b>"
-msgstr "<b>Инструменты</b>"
+msgstr "<b>Инструменты:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:5165 flatcamGUI/FlatCAMGUI.py:5774
 msgid "Diameters of the cutting tools, separated by ','"
@@ -7054,7 +7063,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5728 flatcamGUI/ObjectUI.py:1569
 msgid "tooldia = tool diameter"
-msgstr ""
+msgstr "tooldia = диаметр инструмента"
 
 #: flatcamGUI/FlatCAMGUI.py:5729 flatcamGUI/ObjectUI.py:1570
 msgid "t_drills = for Excellon, total number of drills"
@@ -7074,15 +7083,15 @@ msgstr "z_toolchange = координата Z для смены инструме
 
 #: flatcamGUI/FlatCAMGUI.py:5733
 msgid "z_cut = Z depth for the cut"
-msgstr ""
+msgstr "z_cut = Z глубина распила"
 
 #: flatcamGUI/FlatCAMGUI.py:5734
 msgid "z_move = Z height for travel"
-msgstr ""
+msgstr "z_move = высота Z для перемещения"
 
 #: flatcamGUI/FlatCAMGUI.py:5735 flatcamGUI/ObjectUI.py:1576
 msgid "z_depthpercut = the step value for multidepth cut"
-msgstr ""
+msgstr "z_depthpercut = значение шага для мультипроходного разреза"
 
 #: flatcamGUI/FlatCAMGUI.py:5736 flatcamGUI/ObjectUI.py:1577
 msgid "spindlesspeed = the value for the spindle speed"
@@ -7098,7 +7107,7 @@ msgstr "Очистка меди"
 
 #: flatcamGUI/FlatCAMGUI.py:5772 flatcamGUI/FlatCAMGUI.py:6502
 msgid "Tools dia:"
-msgstr ""
+msgstr "Диам. инстр.:"
 
 #: flatcamGUI/FlatCAMGUI.py:5782 flatcamTools/ToolNonCopperClear.py:167
 #, python-format
@@ -7413,7 +7422,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6239 flatcamTools/ToolPanelize.py:204
 msgid "Width (DX):"
-msgstr ""
+msgstr "Ширина (DX):"
 
 #: flatcamGUI/FlatCAMGUI.py:6241 flatcamTools/ToolPanelize.py:206
 msgid ""
@@ -7657,7 +7666,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6521 flatcamTools/ToolSolderPaste.py:166
 msgid "Z Dispense Start:"
-msgstr ""
+msgstr "Z начала нанесения:"
 
 #: flatcamGUI/FlatCAMGUI.py:6523 flatcamTools/ToolSolderPaste.py:168
 msgid "The height (Z) when solder paste dispensing starts."
@@ -7665,7 +7674,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6530 flatcamTools/ToolSolderPaste.py:174
 msgid "Z Dispense:"
-msgstr ""
+msgstr "Z нанесения:"
 
 #: flatcamGUI/FlatCAMGUI.py:6532 flatcamTools/ToolSolderPaste.py:176
 msgid "The height (Z) when doing solder paste dispensing."
@@ -7673,7 +7682,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6539 flatcamTools/ToolSolderPaste.py:183
 msgid "Z Dispense Stop:"
-msgstr ""
+msgstr "Z конца нанесения:"
 
 #: flatcamGUI/FlatCAMGUI.py:6541 flatcamTools/ToolSolderPaste.py:185
 msgid "The height (Z) when solder paste dispensing stops."
@@ -7681,7 +7690,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6548 flatcamTools/ToolSolderPaste.py:191
 msgid "Z Travel:"
-msgstr ""
+msgstr "Z перемещения:"
 
 #: flatcamGUI/FlatCAMGUI.py:6550 flatcamTools/ToolSolderPaste.py:193
 msgid ""
@@ -8109,6 +8118,8 @@ msgid ""
 "Z-axis position (height) for\n"
 "the last move."
 msgstr ""
+"Положение оси Z (высота) для\n"
+"следующего прохода."
 
 #: flatcamGUI/ObjectUI.py:654
 msgid "Feedrate (Plunge):"
@@ -8274,7 +8285,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:949
 msgid "Tool Offset:"
-msgstr ""
+msgstr "Смещение:"
 
 #: flatcamGUI/ObjectUI.py:952
 msgid ""
@@ -8438,9 +8449,8 @@ msgid "CNC Job Object"
 msgstr "Объект программы для ЧПУ"
 
 #: flatcamGUI/ObjectUI.py:1353
-#, fuzzy
 msgid "<b>Plot kind:</b>"
-msgstr "<b>Plot kind:</b>"
+msgstr ""
 
 #: flatcamGUI/ObjectUI.py:1369
 msgid "<b>Display Annotation:</b>"
@@ -8520,11 +8530,11 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:1574
 msgid "z_cut = depth where to cut"
-msgstr ""
+msgstr "z_cut = глубина резания"
 
 #: flatcamGUI/ObjectUI.py:1575
 msgid "z_move = height where to travel"
-msgstr ""
+msgstr "z_move = высота перемещения"
 
 #: flatcamGUI/ObjectUI.py:1593
 msgid "View CNC Code"
@@ -8827,7 +8837,6 @@ msgstr ""
 
 #: flatcamTools/ToolCutOut.py:370 flatcamTools/ToolCutOut.py:533
 #: flatcamTools/ToolCutOut.py:777
-#, fuzzy
 msgid ""
 "[WARNING_NOTCL] Margin value is missing or wrong format. Add it and retry."
 msgstr ""
@@ -8989,7 +8998,6 @@ msgid "Alignment Drill Coordinates:"
 msgstr "Координаты выравнивающего отверстия:"
 
 #: flatcamTools/ToolDblSided.py:195
-#, fuzzy
 msgid ""
 "Alignment holes (x1, y1), (x2, y2), ... on one side of the mirror axis. For "
 "each set of (x, y) coordinates\n"
@@ -8999,13 +9007,6 @@ msgid ""
 "- one drill in mirror position over the axis selected above in the 'Mirror "
 "Axis'."
 msgstr ""
-"Выравнивающие отверстия (x1, y1), (x2, y2), ... на одной стороне оси "
-"зеркала. Для каждого набора (x, y) координат \n"
-"здесь, пара упражнений будет создана:\n"
-"\\ п\n"
-"- одно упражнение по координатам с поля \\ n\n"
-"- одно сверление в положении зеркала над осью, выбранной выше в «Оси "
-"зеркала»."
 
 #: flatcamTools/ToolDblSided.py:210
 msgid ""
@@ -9949,7 +9950,7 @@ msgstr ""
 
 #: flatcamTools/ToolPcbWizard.py:116
 msgid "Zeros supp.:"
-msgstr ""
+msgstr "Подд. нулей:"
 
 #: flatcamTools/ToolPcbWizard.py:118
 msgid ""
@@ -10342,6 +10343,10 @@ msgid ""
 "Can be used to remove the overlapping silkscreen\n"
 "over the soldermask."
 msgstr ""
+"Удалит область, занятую вычитателем\n"
+"Gerber от целевого Gerber.\n"
+"Может использоваться для удаления перекрывающей шелкографии\n"
+"над маской припоя."
 
 #: flatcamTools/ToolSub.py:101
 msgid "<b>Geometry Objects</b>"
