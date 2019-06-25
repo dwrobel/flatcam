@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-06-11 23:02+0300\n"
-"PO-Revision-Date: 2019-06-11 23:02+0300\n"
+"POT-Creation-Date: 2019-06-22 23:56+0300\n"
+"PO-Revision-Date: 2019-06-22 23:56+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -40,11 +40,11 @@ msgstr "Open Config file failed."
 msgid "Open Script file failed."
 msgstr "Open Script file failed."
 
-#: FlatCAMApp.py:2235
+#: FlatCAMApp.py:2244
 msgid "[WARNING_NOTCL] Select a Geometry, Gerber or Excellon Object to edit."
 msgstr "[WARNING_NOTCL] Select a Geometry, Gerber or Excellon Object to edit."
 
-#: FlatCAMApp.py:2245
+#: FlatCAMApp.py:2254
 msgid ""
 "[WARNING_NOTCL] Simultanoeus editing of tools geometry in a MultiGeo "
 "Geometry is not possible.\n"
@@ -54,96 +54,96 @@ msgstr ""
 "Geometry is not possible.\n"
 "Edit only one geometry at a time."
 
-#: FlatCAMApp.py:2289
+#: FlatCAMApp.py:2309
 msgid "[WARNING_NOTCL] Editor is activated ..."
 msgstr "[WARNING_NOTCL] Editor is activated ..."
 
-#: FlatCAMApp.py:2307
+#: FlatCAMApp.py:2327
 msgid "Do you want to save the edited object?"
 msgstr "Do you want to save the edited object?"
 
-#: FlatCAMApp.py:2308 flatcamGUI/FlatCAMGUI.py:1618
+#: FlatCAMApp.py:2328 flatcamGUI/FlatCAMGUI.py:1618
 msgid "Close Editor"
 msgstr "Close Editor"
 
-#: FlatCAMApp.py:2311 FlatCAMApp.py:3403 FlatCAMApp.py:5881
+#: FlatCAMApp.py:2331 FlatCAMApp.py:3423 FlatCAMApp.py:5989
 #: FlatCAMTranslation.py:89 flatcamGUI/FlatCAMGUI.py:3730
 msgid "Yes"
 msgstr "Yes"
 
-#: FlatCAMApp.py:2312 FlatCAMApp.py:3404 FlatCAMApp.py:5882
+#: FlatCAMApp.py:2332 FlatCAMApp.py:3424 FlatCAMApp.py:5990
 #: FlatCAMTranslation.py:90 flatcamGUI/FlatCAMGUI.py:3731
 msgid "No"
 msgstr "No"
 
-#: FlatCAMApp.py:2313 FlatCAMApp.py:3405 FlatCAMApp.py:3737 FlatCAMApp.py:5883
+#: FlatCAMApp.py:2333 FlatCAMApp.py:3425 FlatCAMApp.py:3836 FlatCAMApp.py:5991
 msgid "Cancel"
 msgstr "Cancel"
 
-#: FlatCAMApp.py:2340
+#: FlatCAMApp.py:2360
 msgid "[WARNING] Object empty after edit."
 msgstr "[WARNING] Object empty after edit."
 
-#: FlatCAMApp.py:2362 FlatCAMApp.py:2381 FlatCAMApp.py:2393
+#: FlatCAMApp.py:2382 FlatCAMApp.py:2401 FlatCAMApp.py:2413
 msgid "[WARNING_NOTCL] Select a Gerber, Geometry or Excellon Object to update."
 msgstr ""
 "[WARNING_NOTCL] Select a Gerber, Geometry or Excellon Object to update."
 
-#: FlatCAMApp.py:2365
+#: FlatCAMApp.py:2385
 #, python-format
 msgid "[selected] %s is updated, returning to App..."
 msgstr "[selected] %s is updated, returning to App..."
 
-#: FlatCAMApp.py:2730
+#: FlatCAMApp.py:2750
 msgid "[ERROR] Could not load defaults file."
 msgstr "[ERROR] Could not load defaults file."
 
-#: FlatCAMApp.py:2742
+#: FlatCAMApp.py:2762
 msgid "[ERROR] Failed to parse defaults file."
 msgstr "[ERROR] Failed to parse defaults file."
 
-#: FlatCAMApp.py:2763 FlatCAMApp.py:2767
+#: FlatCAMApp.py:2783 FlatCAMApp.py:2787
 msgid "Import FlatCAM Preferences"
 msgstr "Import FlatCAM Preferences"
 
-#: FlatCAMApp.py:2773
+#: FlatCAMApp.py:2793
 msgid "[WARNING_NOTCL] FlatCAM preferences import cancelled."
 msgstr "[WARNING_NOTCL] FlatCAM preferences import cancelled."
 
-#: FlatCAMApp.py:2781 FlatCAMApp.py:2835 FlatCAMApp.py:3282
+#: FlatCAMApp.py:2801 FlatCAMApp.py:2855 FlatCAMApp.py:3302
 msgid "[ERROR_NOTCL] Could not load defaults file."
 msgstr "[ERROR_NOTCL] Could not load defaults file."
 
-#: FlatCAMApp.py:2789 FlatCAMApp.py:3291
+#: FlatCAMApp.py:2809 FlatCAMApp.py:3311
 msgid "[ERROR_NOTCL] Failed to parse defaults file."
 msgstr "[ERROR_NOTCL] Failed to parse defaults file."
 
-#: FlatCAMApp.py:2792
+#: FlatCAMApp.py:2812
 #, python-format
 msgid "[success] Imported Defaults from %s"
 msgstr "[success] Imported Defaults from %s"
 
-#: FlatCAMApp.py:2807 FlatCAMApp.py:2812
+#: FlatCAMApp.py:2827 FlatCAMApp.py:2832
 msgid "Export FlatCAM Preferences"
 msgstr "Export FlatCAM Preferences"
 
-#: FlatCAMApp.py:2819
+#: FlatCAMApp.py:2839
 msgid "[WARNING_NOTCL] FlatCAM preferences export cancelled."
 msgstr "[WARNING_NOTCL] FlatCAM preferences export cancelled."
 
-#: FlatCAMApp.py:2854 FlatCAMApp.py:3336
+#: FlatCAMApp.py:2874 FlatCAMApp.py:3356
 msgid "[ERROR_NOTCL] Failed to write defaults to file."
 msgstr "[ERROR_NOTCL] Failed to write defaults to file."
 
-#: FlatCAMApp.py:2907
+#: FlatCAMApp.py:2927
 msgid "[ERROR_NOTCL] Failed to open recent files file for writing."
 msgstr "[ERROR_NOTCL] Failed to open recent files file for writing."
 
-#: FlatCAMApp.py:2984 camlib.py:4454
+#: FlatCAMApp.py:3004 camlib.py:4457
 msgid "[ERROR_NOTCL] An internal error has ocurred. See shell.\n"
 msgstr "[ERROR_NOTCL] An internal error has ocurred. See shell.\n"
 
-#: FlatCAMApp.py:2985
+#: FlatCAMApp.py:3005
 #, python-brace-format
 msgid ""
 "Object ({kind}) failed because: {error} \n"
@@ -152,11 +152,11 @@ msgstr ""
 "Object ({kind}) failed because: {error} \n"
 "\n"
 
-#: FlatCAMApp.py:3005
+#: FlatCAMApp.py:3025
 msgid "Converting units to "
 msgstr "Converting units to "
 
-#: FlatCAMApp.py:3084 FlatCAMApp.py:3087 FlatCAMApp.py:3090 FlatCAMApp.py:3093
+#: FlatCAMApp.py:3104 FlatCAMApp.py:3107 FlatCAMApp.py:3110 FlatCAMApp.py:3113
 #, python-brace-format
 msgid ""
 "[selected] {kind} created/selected: <span style=\"color:{color};\">{name}</"
@@ -165,7 +165,7 @@ msgstr ""
 "[selected] {kind} created/selected: <span style=\"color:{color};\">{name}</"
 "span>"
 
-#: FlatCAMApp.py:3187
+#: FlatCAMApp.py:3207
 #, python-brace-format
 msgid ""
 "<font size=8><B>FlatCAM</B></font><BR>Version {version} {beta} ({date}) - "
@@ -188,31 +188,31 @@ msgstr ""
 "a><BR>DOWNLOAD area <a href = \"https://bitbucket.org/jpcgt/flatcam/"
 "downloads/\">here.</a><BR>"
 
-#: FlatCAMApp.py:3340
+#: FlatCAMApp.py:3360
 msgid "[success] Defaults saved."
 msgstr "[success] Defaults saved."
 
-#: FlatCAMApp.py:3361
+#: FlatCAMApp.py:3381
 msgid "[ERROR_NOTCL] Could not load factory defaults file."
 msgstr "[ERROR_NOTCL] Could not load factory defaults file."
 
-#: FlatCAMApp.py:3370
+#: FlatCAMApp.py:3390
 msgid "[ERROR_NOTCL] Failed to parse factory defaults file."
 msgstr "[ERROR_NOTCL] Failed to parse factory defaults file."
 
-#: FlatCAMApp.py:3384
+#: FlatCAMApp.py:3404
 msgid "[ERROR_NOTCL] Failed to write factory defaults to file."
 msgstr "[ERROR_NOTCL] Failed to write factory defaults to file."
 
-#: FlatCAMApp.py:3388
+#: FlatCAMApp.py:3408
 msgid "Factory defaults saved."
 msgstr "Factory defaults saved."
 
-#: FlatCAMApp.py:3393 flatcamGUI/FlatCAMGUI.py:3106
+#: FlatCAMApp.py:3413 flatcamGUI/FlatCAMGUI.py:3106
 msgid "[WARNING_NOTCL] Application is saving the project. Please wait ..."
 msgstr "[WARNING_NOTCL] Application is saving the project. Please wait ..."
 
-#: FlatCAMApp.py:3398
+#: FlatCAMApp.py:3418
 msgid ""
 "There are files/objects modified in FlatCAM. \n"
 "Do you want to Save the project?"
@@ -220,11 +220,11 @@ msgstr ""
 "There are files/objects modified in FlatCAM. \n"
 "Do you want to Save the project?"
 
-#: FlatCAMApp.py:3401 FlatCAMApp.py:5879
+#: FlatCAMApp.py:3421 FlatCAMApp.py:5987
 msgid "Save changes"
 msgstr "Save changes"
 
-#: FlatCAMApp.py:3468
+#: FlatCAMApp.py:3488
 msgid ""
 "[ERROR] Failed join. The Geometry objects are of different types.\n"
 "At least one is MultiGeo type and the other is SingleGeo type. A possibility "
@@ -240,67 +240,67 @@ msgstr ""
 "be lost and the result may not be what was expected. \n"
 "Check the generated GCODE."
 
-#: FlatCAMApp.py:3509
+#: FlatCAMApp.py:3529
 msgid "[ERROR_NOTCL] Failed. Excellon joining works only on Excellon objects."
 msgstr "[ERROR_NOTCL] Failed. Excellon joining works only on Excellon objects."
 
-#: FlatCAMApp.py:3531
+#: FlatCAMApp.py:3551
 msgid "[ERROR_NOTCL] Failed. Gerber joining works only on Gerber objects."
 msgstr "[ERROR_NOTCL] Failed. Gerber joining works only on Gerber objects."
 
-#: FlatCAMApp.py:3546 FlatCAMApp.py:3571
+#: FlatCAMApp.py:3566 FlatCAMApp.py:3591
 msgid "[ERROR_NOTCL] Failed. Select a Geometry Object and try again."
 msgstr "[ERROR_NOTCL] Failed. Select a Geometry Object and try again."
 
-#: FlatCAMApp.py:3550 FlatCAMApp.py:3575
+#: FlatCAMApp.py:3570 FlatCAMApp.py:3595
 #, python-format
 msgid "[ERROR_NOTCL] Expected a FlatCAMGeometry, got %s"
 msgstr "[ERROR_NOTCL] Expected a FlatCAMGeometry, got %s"
 
-#: FlatCAMApp.py:3563
+#: FlatCAMApp.py:3583
 msgid "[success] A Geometry object was converted to MultiGeo type."
 msgstr "[success] A Geometry object was converted to MultiGeo type."
 
-#: FlatCAMApp.py:3589
+#: FlatCAMApp.py:3609
 msgid "[success] A Geometry object was converted to SingleGeo type."
 msgstr "[success] A Geometry object was converted to SingleGeo type."
 
-#: FlatCAMApp.py:3736 FlatCAMApp.py:4572 FlatCAMApp.py:6154 FlatCAMApp.py:6165
-#: FlatCAMApp.py:6405 FlatCAMApp.py:6415
+#: FlatCAMApp.py:3835 FlatCAMApp.py:4674 FlatCAMApp.py:6262 FlatCAMApp.py:6273
+#: FlatCAMApp.py:6513 FlatCAMApp.py:6523
 msgid "Ok"
 msgstr "Ok"
 
-#: FlatCAMApp.py:3778
+#: FlatCAMApp.py:3880
 #, python-format
 msgid "[success] Converted units to %s"
 msgstr "[success] Converted units to %s"
 
-#: FlatCAMApp.py:3789
+#: FlatCAMApp.py:3891
 msgid "[WARNING_NOTCL] Units conversion cancelled."
 msgstr "[WARNING_NOTCL] Units conversion cancelled."
 
-#: FlatCAMApp.py:4441
+#: FlatCAMApp.py:4543
 msgid "Open file"
 msgstr "Open file"
 
-#: FlatCAMApp.py:4472 FlatCAMApp.py:4477
+#: FlatCAMApp.py:4574 FlatCAMApp.py:4579
 msgid "Export G-Code ..."
 msgstr "Export G-Code ..."
 
-#: FlatCAMApp.py:4480
+#: FlatCAMApp.py:4582
 msgid "[WARNING_NOTCL] Export Code cancelled."
 msgstr "[WARNING_NOTCL] Export Code cancelled."
 
-#: FlatCAMApp.py:4490
+#: FlatCAMApp.py:4592
 msgid "[WARNING] No such file or directory"
 msgstr "[WARNING] No such file or directory"
 
-#: FlatCAMApp.py:4497
+#: FlatCAMApp.py:4599
 #, python-format
 msgid "Saved to: %s"
 msgstr "Saved to: %s"
 
-#: FlatCAMApp.py:4560 FlatCAMApp.py:4593 FlatCAMApp.py:4604 FlatCAMApp.py:4615
+#: FlatCAMApp.py:4662 FlatCAMApp.py:4695 FlatCAMApp.py:4706 FlatCAMApp.py:4717
 #: flatcamTools/ToolNonCopperClear.py:489 flatcamTools/ToolSolderPaste.py:765
 msgid ""
 "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float "
@@ -309,12 +309,12 @@ msgstr ""
 "[WARNING_NOTCL] Please enter a tool diameter with non-zero value, in Float "
 "format."
 
-#: FlatCAMApp.py:4565 FlatCAMApp.py:4598 FlatCAMApp.py:4609 FlatCAMApp.py:4620
+#: FlatCAMApp.py:4667 FlatCAMApp.py:4700 FlatCAMApp.py:4711 FlatCAMApp.py:4722
 #: flatcamGUI/FlatCAMGUI.py:3001
 msgid "[WARNING_NOTCL] Adding Tool cancelled ..."
 msgstr "[WARNING_NOTCL] Adding Tool cancelled ..."
 
-#: FlatCAMApp.py:4568
+#: FlatCAMApp.py:4670
 msgid ""
 "Adding Tool works only when Advanced is checked.\n"
 "Go to Preferences -> General - Show Advanced Options."
@@ -322,128 +322,128 @@ msgstr ""
 "Adding Tool works only when Advanced is checked.\n"
 "Go to Preferences -> General - Show Advanced Options."
 
-#: FlatCAMApp.py:4681
+#: FlatCAMApp.py:4783
 msgid "Object(s) deleted ..."
 msgstr "Object(s) deleted ..."
 
-#: FlatCAMApp.py:4685
+#: FlatCAMApp.py:4787
 msgid "Failed. No object(s) selected..."
 msgstr "Failed. No object(s) selected..."
 
-#: FlatCAMApp.py:4687
+#: FlatCAMApp.py:4789
 msgid "Save the work in Editor and try again ..."
 msgstr "Save the work in Editor and try again ..."
 
-#: FlatCAMApp.py:4700
+#: FlatCAMApp.py:4802
 msgid "Click to set the origin ..."
 msgstr "Click to set the origin ..."
 
-#: FlatCAMApp.py:4712
+#: FlatCAMApp.py:4814
 msgid "Jump to ..."
 msgstr "Jump to ..."
 
-#: FlatCAMApp.py:4713
+#: FlatCAMApp.py:4815
 msgid "Enter the coordinates in format X,Y:"
 msgstr "Enter the coordinates in format X,Y:"
 
-#: FlatCAMApp.py:4720
+#: FlatCAMApp.py:4822
 msgid "Wrong coordinates. Enter coordinates in format: X,Y"
 msgstr "Wrong coordinates. Enter coordinates in format: X,Y"
 
-#: FlatCAMApp.py:4738 flatcamEditors/FlatCAMExcEditor.py:2320
+#: FlatCAMApp.py:4840 flatcamEditors/FlatCAMExcEditor.py:2320
 #: flatcamEditors/FlatCAMExcEditor.py:2327
-#: flatcamEditors/FlatCAMGeoEditor.py:3645
-#: flatcamEditors/FlatCAMGeoEditor.py:3659
+#: flatcamEditors/FlatCAMGeoEditor.py:3648
+#: flatcamEditors/FlatCAMGeoEditor.py:3662
 #: flatcamEditors/FlatCAMGrbEditor.py:1040
 #: flatcamEditors/FlatCAMGrbEditor.py:1141
 #: flatcamEditors/FlatCAMGrbEditor.py:1409
 #: flatcamEditors/FlatCAMGrbEditor.py:1666
-#: flatcamEditors/FlatCAMGrbEditor.py:3950
-#: flatcamEditors/FlatCAMGrbEditor.py:3964 flatcamGUI/FlatCAMGUI.py:2414
+#: flatcamEditors/FlatCAMGrbEditor.py:3960
+#: flatcamEditors/FlatCAMGrbEditor.py:3974 flatcamGUI/FlatCAMGUI.py:2414
 #: flatcamGUI/FlatCAMGUI.py:2426
 msgid "[success] Done."
 msgstr "[success] Done."
 
-#: FlatCAMApp.py:4870 FlatCAMApp.py:4937
+#: FlatCAMApp.py:4972 FlatCAMApp.py:5039
 msgid "[WARNING_NOTCL] No object is selected. Select an object and try again."
 msgstr "[WARNING_NOTCL] No object is selected. Select an object and try again."
 
-#: FlatCAMApp.py:4978
+#: FlatCAMApp.py:5080
 msgid "[success] Origin set ..."
 msgstr "[success] Origin set ..."
 
-#: FlatCAMApp.py:4998
+#: FlatCAMApp.py:5100
 msgid "Preferences"
 msgstr "Preferences"
 
-#: FlatCAMApp.py:5018
+#: FlatCAMApp.py:5120
 msgid "[WARNING_NOTCL] No object selected to Flip on Y axis."
 msgstr "[WARNING_NOTCL] No object selected to Flip on Y axis."
 
-#: FlatCAMApp.py:5043
+#: FlatCAMApp.py:5145
 msgid "[success] Flip on Y axis done."
 msgstr "[success] Flip on Y axis done."
 
-#: FlatCAMApp.py:5045 FlatCAMApp.py:5085
+#: FlatCAMApp.py:5147 FlatCAMApp.py:5187
 #: flatcamEditors/FlatCAMGeoEditor.py:1355
-#: flatcamEditors/FlatCAMGrbEditor.py:5331 flatcamTools/ToolTransform.py:748
+#: flatcamEditors/FlatCAMGrbEditor.py:5343 flatcamTools/ToolTransform.py:748
 #, python-format
 msgid "[ERROR_NOTCL] Due of %s, Flip action was not executed."
 msgstr "[ERROR_NOTCL] Due of %s, Flip action was not executed."
 
-#: FlatCAMApp.py:5058
+#: FlatCAMApp.py:5160
 msgid "[WARNING_NOTCL] No object selected to Flip on X axis."
 msgstr "[WARNING_NOTCL] No object selected to Flip on X axis."
 
-#: FlatCAMApp.py:5083
+#: FlatCAMApp.py:5185
 msgid "[success] Flip on X axis done."
 msgstr "[success] Flip on X axis done."
 
-#: FlatCAMApp.py:5098
+#: FlatCAMApp.py:5200
 msgid "[WARNING_NOTCL] No object selected to Rotate."
 msgstr "[WARNING_NOTCL] No object selected to Rotate."
 
-#: FlatCAMApp.py:5101 FlatCAMApp.py:5146 FlatCAMApp.py:5177
+#: FlatCAMApp.py:5203 FlatCAMApp.py:5248 FlatCAMApp.py:5279
 msgid "Transform"
 msgstr "Transform"
 
-#: FlatCAMApp.py:5101 FlatCAMApp.py:5146 FlatCAMApp.py:5177
+#: FlatCAMApp.py:5203 FlatCAMApp.py:5248 FlatCAMApp.py:5279
 msgid "Enter the Angle value:"
 msgstr "Enter the Angle value:"
 
-#: FlatCAMApp.py:5131
+#: FlatCAMApp.py:5233
 msgid "[success] Rotation done."
 msgstr "[success] Rotation done."
 
-#: FlatCAMApp.py:5133 flatcamEditors/FlatCAMGeoEditor.py:1298
-#: flatcamEditors/FlatCAMGrbEditor.py:5262 flatcamTools/ToolTransform.py:677
+#: FlatCAMApp.py:5235 flatcamEditors/FlatCAMGeoEditor.py:1298
+#: flatcamEditors/FlatCAMGrbEditor.py:5272 flatcamTools/ToolTransform.py:677
 #, python-format
 msgid "[ERROR_NOTCL] Due of %s, rotation movement was not executed."
 msgstr "[ERROR_NOTCL] Due of %s, rotation movement was not executed."
 
-#: FlatCAMApp.py:5144
+#: FlatCAMApp.py:5246
 msgid "[WARNING_NOTCL] No object selected to Skew/Shear on X axis."
 msgstr "[WARNING_NOTCL] No object selected to Skew/Shear on X axis."
 
-#: FlatCAMApp.py:5165
+#: FlatCAMApp.py:5267
 msgid "[success] Skew on X axis done."
 msgstr "[success] Skew on X axis done."
 
-#: FlatCAMApp.py:5175
+#: FlatCAMApp.py:5277
 msgid "[WARNING_NOTCL] No object selected to Skew/Shear on Y axis."
 msgstr "[WARNING_NOTCL] No object selected to Skew/Shear on Y axis."
 
-#: FlatCAMApp.py:5196
+#: FlatCAMApp.py:5298
 msgid "[success] Skew on Y axis done."
 msgstr "[success] Skew on Y axis done."
 
-#: FlatCAMApp.py:5265
+#: FlatCAMApp.py:5368
 msgid "Grid On/Off"
 msgstr "Grid On/Off"
 
-#: FlatCAMApp.py:5278 flatcamEditors/FlatCAMGeoEditor.py:937
+#: FlatCAMApp.py:5381 flatcamEditors/FlatCAMGeoEditor.py:937
 #: flatcamEditors/FlatCAMGrbEditor.py:2381
-#: flatcamEditors/FlatCAMGrbEditor.py:4853 flatcamGUI/ObjectUI.py:991
+#: flatcamEditors/FlatCAMGrbEditor.py:4861 flatcamGUI/ObjectUI.py:991
 #: flatcamTools/ToolDblSided.py:160 flatcamTools/ToolDblSided.py:208
 #: flatcamTools/ToolNonCopperClear.py:134 flatcamTools/ToolPaint.py:131
 #: flatcamTools/ToolSolderPaste.py:115 flatcamTools/ToolSolderPaste.py:479
@@ -451,7 +451,7 @@ msgstr "Grid On/Off"
 msgid "Add"
 msgstr "Add"
 
-#: FlatCAMApp.py:5279 FlatCAMObj.py:3270
+#: FlatCAMApp.py:5382 FlatCAMObj.py:3295
 #: flatcamEditors/FlatCAMGrbEditor.py:2386 flatcamGUI/FlatCAMGUI.py:527
 #: flatcamGUI/FlatCAMGUI.py:724 flatcamGUI/FlatCAMGUI.py:1616
 #: flatcamGUI/FlatCAMGUI.py:1953 flatcamGUI/ObjectUI.py:1007
@@ -460,15 +460,15 @@ msgstr "Add"
 msgid "Delete"
 msgstr "Delete"
 
-#: FlatCAMApp.py:5292
+#: FlatCAMApp.py:5395
 msgid "New Grid ..."
 msgstr "New Grid ..."
 
-#: FlatCAMApp.py:5293
+#: FlatCAMApp.py:5396
 msgid "Enter a Grid Value:"
 msgstr "Enter a Grid Value:"
 
-#: FlatCAMApp.py:5301 FlatCAMApp.py:5328
+#: FlatCAMApp.py:5404 FlatCAMApp.py:5431
 msgid ""
 "[WARNING_NOTCL] Please enter a grid value with non-zero value, in Float "
 "format."
@@ -476,48 +476,52 @@ msgstr ""
 "[WARNING_NOTCL] Please enter a grid value with non-zero value, in Float "
 "format."
 
-#: FlatCAMApp.py:5307
+#: FlatCAMApp.py:5410
 msgid "[success] New Grid added ..."
 msgstr "[success] New Grid added ..."
 
-#: FlatCAMApp.py:5310
+#: FlatCAMApp.py:5413
 msgid "[WARNING_NOTCL] Grid already exists ..."
 msgstr "[WARNING_NOTCL] Grid already exists ..."
 
-#: FlatCAMApp.py:5313
+#: FlatCAMApp.py:5416
 msgid "[WARNING_NOTCL] Adding New Grid cancelled ..."
 msgstr "[WARNING_NOTCL] Adding New Grid cancelled ..."
 
-#: FlatCAMApp.py:5335
+#: FlatCAMApp.py:5438
 msgid "[ERROR_NOTCL] Grid Value does not exist ..."
 msgstr "[ERROR_NOTCL] Grid Value does not exist ..."
 
-#: FlatCAMApp.py:5338
+#: FlatCAMApp.py:5441
 msgid "[success] Grid Value deleted ..."
 msgstr "[success] Grid Value deleted ..."
 
-#: FlatCAMApp.py:5341
+#: FlatCAMApp.py:5444
 msgid "[WARNING_NOTCL] Delete Grid value cancelled ..."
 msgstr "[WARNING_NOTCL] Delete Grid value cancelled ..."
 
-#: FlatCAMApp.py:5380
+#: FlatCAMApp.py:5483
 msgid "[WARNING_NOTCL] No object selected to copy it's name"
 msgstr "[WARNING_NOTCL] No object selected to copy it's name"
 
-#: FlatCAMApp.py:5384
+#: FlatCAMApp.py:5487
 msgid "Name copied on clipboard ..."
 msgstr "Name copied on clipboard ..."
 
-#: FlatCAMApp.py:5677 FlatCAMApp.py:5680 FlatCAMApp.py:5683 FlatCAMApp.py:5686
-#: FlatCAMApp.py:5701 FlatCAMApp.py:5704 FlatCAMApp.py:5707 FlatCAMApp.py:5710
-#: FlatCAMApp.py:5750 FlatCAMApp.py:5753 FlatCAMApp.py:5756 FlatCAMApp.py:5759
+#: FlatCAMApp.py:5529 flatcamEditors/FlatCAMGrbEditor.py:3901
+msgid "[success] Coordinates copied to clipboard."
+msgstr "[success] Coordinates copied to clipboard."
+
+#: FlatCAMApp.py:5785 FlatCAMApp.py:5788 FlatCAMApp.py:5791 FlatCAMApp.py:5794
+#: FlatCAMApp.py:5809 FlatCAMApp.py:5812 FlatCAMApp.py:5815 FlatCAMApp.py:5818
+#: FlatCAMApp.py:5858 FlatCAMApp.py:5861 FlatCAMApp.py:5864 FlatCAMApp.py:5867
 #: ObjectCollection.py:719 ObjectCollection.py:722 ObjectCollection.py:725
 #: ObjectCollection.py:728
 #, python-brace-format
 msgid "[selected]<span style=\"color:{color};\">{name}</span> selected"
 msgstr "[selected]<span style=\"color:{color};\">{name}</span> selected"
 
-#: FlatCAMApp.py:5876
+#: FlatCAMApp.py:5984
 msgid ""
 "There are files/objects opened in FlatCAM.\n"
 "Creating a New project will delete them.\n"
@@ -527,106 +531,106 @@ msgstr ""
 "Creating a New project will delete them.\n"
 "Do you want to Save the project?"
 
-#: FlatCAMApp.py:5897
+#: FlatCAMApp.py:6005
 msgid "[success] New Project created..."
 msgstr "[success] New Project created..."
 
-#: FlatCAMApp.py:6013 FlatCAMApp.py:6016 flatcamGUI/FlatCAMGUI.py:608
+#: FlatCAMApp.py:6121 FlatCAMApp.py:6124 flatcamGUI/FlatCAMGUI.py:608
 #: flatcamGUI/FlatCAMGUI.py:1832
 msgid "Open Gerber"
 msgstr "Open Gerber"
 
-#: FlatCAMApp.py:6021
+#: FlatCAMApp.py:6129
 msgid "[WARNING_NOTCL] Open Gerber cancelled."
 msgstr "[WARNING_NOTCL] Open Gerber cancelled."
 
-#: FlatCAMApp.py:6042 FlatCAMApp.py:6045 flatcamGUI/FlatCAMGUI.py:609
+#: FlatCAMApp.py:6150 FlatCAMApp.py:6153 flatcamGUI/FlatCAMGUI.py:609
 #: flatcamGUI/FlatCAMGUI.py:1833
 msgid "Open Excellon"
 msgstr "Open Excellon"
 
-#: FlatCAMApp.py:6050
+#: FlatCAMApp.py:6158
 msgid "[WARNING_NOTCL] Open Excellon cancelled."
 msgstr "[WARNING_NOTCL] Open Excellon cancelled."
 
-#: FlatCAMApp.py:6072 FlatCAMApp.py:6075
+#: FlatCAMApp.py:6180 FlatCAMApp.py:6183
 msgid "Open G-Code"
 msgstr "Open G-Code"
 
-#: FlatCAMApp.py:6080
+#: FlatCAMApp.py:6188
 msgid "[WARNING_NOTCL] Open G-Code cancelled."
 msgstr "[WARNING_NOTCL] Open G-Code cancelled."
 
-#: FlatCAMApp.py:6098 FlatCAMApp.py:6101
+#: FlatCAMApp.py:6206 FlatCAMApp.py:6209
 msgid "Open Project"
 msgstr "Open Project"
 
-#: FlatCAMApp.py:6109
+#: FlatCAMApp.py:6217
 msgid "[WARNING_NOTCL] Open Project cancelled."
 msgstr "[WARNING_NOTCL] Open Project cancelled."
 
-#: FlatCAMApp.py:6128 FlatCAMApp.py:6131
+#: FlatCAMApp.py:6236 FlatCAMApp.py:6239
 msgid "Open Configuration File"
 msgstr "Open Configuration File"
 
-#: FlatCAMApp.py:6135
+#: FlatCAMApp.py:6243
 msgid "[WARNING_NOTCL] Open Config cancelled."
 msgstr "[WARNING_NOTCL] Open Config cancelled."
 
-#: FlatCAMApp.py:6150 FlatCAMApp.py:6401 FlatCAMApp.py:8551 FlatCAMApp.py:8571
-#: FlatCAMApp.py:8592 FlatCAMApp.py:8614
+#: FlatCAMApp.py:6258 FlatCAMApp.py:6509 FlatCAMApp.py:8662 FlatCAMApp.py:8682
+#: FlatCAMApp.py:8703 FlatCAMApp.py:8725
 msgid "[WARNING_NOTCL] No object selected."
 msgstr "[WARNING_NOTCL] No object selected."
 
-#: FlatCAMApp.py:6151 FlatCAMApp.py:6402
+#: FlatCAMApp.py:6259 FlatCAMApp.py:6510
 msgid "Please Select a Geometry object to export"
 msgstr "Please Select a Geometry object to export"
 
-#: FlatCAMApp.py:6162
+#: FlatCAMApp.py:6270
 msgid "[ERROR_NOTCL] Only Geometry, Gerber and CNCJob objects can be used."
 msgstr "[ERROR_NOTCL] Only Geometry, Gerber and CNCJob objects can be used."
 
-#: FlatCAMApp.py:6175 FlatCAMApp.py:6179
+#: FlatCAMApp.py:6283 FlatCAMApp.py:6287
 msgid "Export SVG"
 msgstr "Export SVG"
 
-#: FlatCAMApp.py:6184
+#: FlatCAMApp.py:6292
 msgid "[WARNING_NOTCL] Export SVG cancelled."
 msgstr "[WARNING_NOTCL] Export SVG cancelled."
 
-#: FlatCAMApp.py:6203
+#: FlatCAMApp.py:6311
 msgid "[[WARNING_NOTCL]] Data must be a 3D array with last dimension 3 or 4"
 msgstr "[[WARNING_NOTCL]] Data must be a 3D array with last dimension 3 or 4"
 
-#: FlatCAMApp.py:6209 FlatCAMApp.py:6213
+#: FlatCAMApp.py:6317 FlatCAMApp.py:6321
 msgid "Export PNG Image"
 msgstr "Export PNG Image"
 
-#: FlatCAMApp.py:6218
+#: FlatCAMApp.py:6326
 msgid "Export PNG cancelled."
 msgstr "Export PNG cancelled."
 
-#: FlatCAMApp.py:6237
+#: FlatCAMApp.py:6345
 msgid ""
 "[WARNING_NOTCL] No object selected. Please select an Gerber object to export."
 msgstr ""
 "[WARNING_NOTCL] No object selected. Please select an Gerber object to export."
 
-#: FlatCAMApp.py:6242 FlatCAMApp.py:6365
+#: FlatCAMApp.py:6350 FlatCAMApp.py:6473
 msgid ""
 "[ERROR_NOTCL] Failed. Only Gerber objects can be saved as Gerber files..."
 msgstr ""
 "[ERROR_NOTCL] Failed. Only Gerber objects can be saved as Gerber files..."
 
-#: FlatCAMApp.py:6254
+#: FlatCAMApp.py:6362
 msgid "Save Gerber source file"
 msgstr "Save Gerber source file"
 
-#: FlatCAMApp.py:6259
+#: FlatCAMApp.py:6367
 msgid "[WARNING_NOTCL] Save Gerber source file cancelled."
 msgstr "[WARNING_NOTCL] Save Gerber source file cancelled."
 
-#: FlatCAMApp.py:6278
+#: FlatCAMApp.py:6386
 msgid ""
 "[WARNING_NOTCL] No object selected. Please select an Excellon object to "
 "export."
@@ -634,21 +638,21 @@ msgstr ""
 "[WARNING_NOTCL] No object selected. Please select an Excellon object to "
 "export."
 
-#: FlatCAMApp.py:6283 FlatCAMApp.py:6324
+#: FlatCAMApp.py:6391 FlatCAMApp.py:6432
 msgid ""
 "[ERROR_NOTCL] Failed. Only Excellon objects can be saved as Excellon files..."
 msgstr ""
 "[ERROR_NOTCL] Failed. Only Excellon objects can be saved as Excellon files..."
 
-#: FlatCAMApp.py:6291 FlatCAMApp.py:6295
+#: FlatCAMApp.py:6399 FlatCAMApp.py:6403
 msgid "Save Excellon source file"
 msgstr "Save Excellon source file"
 
-#: FlatCAMApp.py:6300
+#: FlatCAMApp.py:6408
 msgid "[WARNING_NOTCL] Saving Excellon source file cancelled."
 msgstr "[WARNING_NOTCL] Saving Excellon source file cancelled."
 
-#: FlatCAMApp.py:6319
+#: FlatCAMApp.py:6427
 msgid ""
 "[WARNING_NOTCL] No object selected. Please Select an Excellon object to "
 "export."
@@ -656,68 +660,68 @@ msgstr ""
 "[WARNING_NOTCL] No object selected. Please Select an Excellon object to "
 "export."
 
-#: FlatCAMApp.py:6332 FlatCAMApp.py:6336
+#: FlatCAMApp.py:6440 FlatCAMApp.py:6444
 msgid "Export Excellon"
 msgstr "Export Excellon"
 
-#: FlatCAMApp.py:6341
+#: FlatCAMApp.py:6449
 msgid "[WARNING_NOTCL] Export Excellon cancelled."
 msgstr "[WARNING_NOTCL] Export Excellon cancelled."
 
-#: FlatCAMApp.py:6360
+#: FlatCAMApp.py:6468
 msgid ""
 "[WARNING_NOTCL] No object selected. Please Select an Gerber object to export."
 msgstr ""
 "[WARNING_NOTCL] No object selected. Please Select an Gerber object to export."
 
-#: FlatCAMApp.py:6373 FlatCAMApp.py:6377
+#: FlatCAMApp.py:6481 FlatCAMApp.py:6485
 msgid "Export Gerber"
 msgstr "Export Gerber"
 
-#: FlatCAMApp.py:6382
+#: FlatCAMApp.py:6490
 msgid "[WARNING_NOTCL] Export Gerber cancelled."
 msgstr "[WARNING_NOTCL] Export Gerber cancelled."
 
-#: FlatCAMApp.py:6412
+#: FlatCAMApp.py:6520
 msgid "[ERROR_NOTCL] Only Geometry objects can be used."
 msgstr "[ERROR_NOTCL] Only Geometry objects can be used."
 
-#: FlatCAMApp.py:6426 FlatCAMApp.py:6430
+#: FlatCAMApp.py:6534 FlatCAMApp.py:6538
 msgid "Export DXF"
 msgstr "Export DXF"
 
-#: FlatCAMApp.py:6436
+#: FlatCAMApp.py:6544
 msgid "[WARNING_NOTCL] Export DXF cancelled."
 msgstr "[WARNING_NOTCL] Export DXF cancelled."
 
-#: FlatCAMApp.py:6456 FlatCAMApp.py:6459
+#: FlatCAMApp.py:6564 FlatCAMApp.py:6567
 msgid "Import SVG"
 msgstr "Import SVG"
 
-#: FlatCAMApp.py:6468
+#: FlatCAMApp.py:6576
 msgid "[WARNING_NOTCL] Open SVG cancelled."
 msgstr "[WARNING_NOTCL] Open SVG cancelled."
 
-#: FlatCAMApp.py:6487 FlatCAMApp.py:6491
+#: FlatCAMApp.py:6595 FlatCAMApp.py:6599
 msgid "Import DXF"
 msgstr "Import DXF"
 
-#: FlatCAMApp.py:6500
+#: FlatCAMApp.py:6608
 msgid "[WARNING_NOTCL] Open DXF cancelled."
 msgstr "[WARNING_NOTCL] Open DXF cancelled."
 
-#: FlatCAMApp.py:6518
+#: FlatCAMApp.py:6626
 #, python-format
 msgid "%s"
 msgstr "%s"
 
-#: FlatCAMApp.py:6538
+#: FlatCAMApp.py:6646
 msgid ""
 "[WARNING_NOTCL] Select an Gerber or Excellon file to view it's source file."
 msgstr ""
 "[WARNING_NOTCL] Select an Gerber or Excellon file to view it's source file."
 
-#: FlatCAMApp.py:6545
+#: FlatCAMApp.py:6653
 msgid ""
 "[WARNING_NOTCL] There is no selected object for which to see it's source "
 "file code."
@@ -725,25 +729,25 @@ msgstr ""
 "[WARNING_NOTCL] There is no selected object for which to see it's source "
 "file code."
 
-#: FlatCAMApp.py:6553
+#: FlatCAMApp.py:6661
 msgid "Source Editor"
 msgstr "Source Editor"
 
-#: FlatCAMApp.py:6563
+#: FlatCAMApp.py:6671
 #, python-format
 msgid "[ERROR]App.on_view_source() -->%s"
 msgstr "[ERROR]App.on_view_source() -->%s"
 
-#: FlatCAMApp.py:6575 FlatCAMApp.py:7717 FlatCAMObj.py:5551
+#: FlatCAMApp.py:6683 FlatCAMApp.py:7825 FlatCAMObj.py:5588
 #: flatcamTools/ToolSolderPaste.py:1278
 msgid "Code Editor"
 msgstr "Code Editor"
 
-#: FlatCAMApp.py:6587
+#: FlatCAMApp.py:6695
 msgid "Script Editor"
 msgstr "Script Editor"
 
-#: FlatCAMApp.py:6590
+#: FlatCAMApp.py:6698
 msgid ""
 "#\n"
 "# CREATE A NEW FLATCAM TCL SCRIPT\n"
@@ -787,98 +791,98 @@ msgstr ""
 "#\n"
 "\n"
 
-#: FlatCAMApp.py:6613 FlatCAMApp.py:6616
+#: FlatCAMApp.py:6721 FlatCAMApp.py:6724
 msgid "Open TCL script"
 msgstr "Open TCL script"
 
-#: FlatCAMApp.py:6624
+#: FlatCAMApp.py:6732
 msgid "[WARNING_NOTCL] Open TCL script cancelled."
 msgstr "[WARNING_NOTCL] Open TCL script cancelled."
 
-#: FlatCAMApp.py:6636
+#: FlatCAMApp.py:6744
 #, python-format
 msgid "[ERROR]App.on_fileopenscript() -->%s"
 msgstr "[ERROR]App.on_fileopenscript() -->%s"
 
-#: FlatCAMApp.py:6662 FlatCAMApp.py:6665
+#: FlatCAMApp.py:6770 FlatCAMApp.py:6773
 msgid "Run TCL script"
 msgstr "Run TCL script"
 
-#: FlatCAMApp.py:6673
+#: FlatCAMApp.py:6781
 msgid "[WARNING_NOTCL] Run TCL script cancelled."
 msgstr "[WARNING_NOTCL] Run TCL script cancelled."
 
-#: FlatCAMApp.py:6723 FlatCAMApp.py:6727
+#: FlatCAMApp.py:6831 FlatCAMApp.py:6835
 msgid "Save Project As ..."
 msgstr "Save Project As ..."
 
-#: FlatCAMApp.py:6724
+#: FlatCAMApp.py:6832
 #, python-brace-format
 msgid "{l_save}/Project_{date}"
 msgstr "{l_save}/Project_{date}"
 
-#: FlatCAMApp.py:6732
+#: FlatCAMApp.py:6840
 msgid "[WARNING_NOTCL] Save Project cancelled."
 msgstr "[WARNING_NOTCL] Save Project cancelled."
 
-#: FlatCAMApp.py:6776
+#: FlatCAMApp.py:6884
 msgid "Exporting SVG"
 msgstr "Exporting SVG"
 
-#: FlatCAMApp.py:6810 FlatCAMApp.py:6916 FlatCAMApp.py:7031
+#: FlatCAMApp.py:6918 FlatCAMApp.py:7024 FlatCAMApp.py:7139
 #, python-format
 msgid "[success] SVG file exported to %s"
 msgstr "[success] SVG file exported to %s"
 
-#: FlatCAMApp.py:6841 FlatCAMApp.py:6962
+#: FlatCAMApp.py:6949 FlatCAMApp.py:7070
 #, python-format
 msgid "[WARNING_NOTCL] No object Box. Using instead %s"
 msgstr "[WARNING_NOTCL] No object Box. Using instead %s"
 
-#: FlatCAMApp.py:6919 FlatCAMApp.py:7034
+#: FlatCAMApp.py:7027 FlatCAMApp.py:7142
 msgid "Generating Film ... Please wait."
 msgstr "Generating Film ... Please wait."
 
-#: FlatCAMApp.py:7182
+#: FlatCAMApp.py:7290
 #, python-format
 msgid "[success] Excellon file exported to %s"
 msgstr "[success] Excellon file exported to %s"
 
-#: FlatCAMApp.py:7189
+#: FlatCAMApp.py:7297
 msgid "Exporting Excellon"
 msgstr "Exporting Excellon"
 
-#: FlatCAMApp.py:7194 FlatCAMApp.py:7201
+#: FlatCAMApp.py:7302 FlatCAMApp.py:7309
 msgid "[ERROR_NOTCL] Could not export Excellon file."
 msgstr "[ERROR_NOTCL] Could not export Excellon file."
 
-#: FlatCAMApp.py:7299
+#: FlatCAMApp.py:7407
 #, python-format
 msgid "[success] Gerber file exported to %s"
 msgstr "[success] Gerber file exported to %s"
 
-#: FlatCAMApp.py:7306
+#: FlatCAMApp.py:7414
 msgid "Exporting Gerber"
 msgstr "Exporting Gerber"
 
-#: FlatCAMApp.py:7311 FlatCAMApp.py:7318
+#: FlatCAMApp.py:7419 FlatCAMApp.py:7426
 msgid "[ERROR_NOTCL] Could not export Gerber file."
 msgstr "[ERROR_NOTCL] Could not export Gerber file."
 
-#: FlatCAMApp.py:7358
+#: FlatCAMApp.py:7466
 #, python-format
 msgid "[success] DXF file exported to %s"
 msgstr "[success] DXF file exported to %s"
 
-#: FlatCAMApp.py:7364
+#: FlatCAMApp.py:7472
 msgid "Exporting DXF"
 msgstr "Exporting DXF"
 
-#: FlatCAMApp.py:7369 FlatCAMApp.py:7376
+#: FlatCAMApp.py:7477 FlatCAMApp.py:7484
 msgid "[[WARNING_NOTCL]] Could not export DXF file."
 msgstr "[[WARNING_NOTCL]] Could not export DXF file."
 
-#: FlatCAMApp.py:7396 FlatCAMApp.py:7438 FlatCAMApp.py:7482
+#: FlatCAMApp.py:7504 FlatCAMApp.py:7546 FlatCAMApp.py:7590
 msgid ""
 "[ERROR_NOTCL] Not supported type is picked as parameter. Only Geometry and "
 "Gerber are supported"
@@ -886,95 +890,95 @@ msgstr ""
 "[ERROR_NOTCL] Not supported type is picked as parameter. Only Geometry and "
 "Gerber are supported"
 
-#: FlatCAMApp.py:7406
+#: FlatCAMApp.py:7514
 msgid "Importing SVG"
 msgstr "Importing SVG"
 
-#: FlatCAMApp.py:7417 FlatCAMApp.py:7459 FlatCAMApp.py:7502 FlatCAMApp.py:7579
-#: FlatCAMApp.py:7640 FlatCAMApp.py:7703 flatcamTools/ToolPDF.py:212
+#: FlatCAMApp.py:7525 FlatCAMApp.py:7567 FlatCAMApp.py:7610 FlatCAMApp.py:7687
+#: FlatCAMApp.py:7748 FlatCAMApp.py:7811 flatcamTools/ToolPDF.py:212
 #, python-format
 msgid "[success] Opened: %s"
 msgstr "[success] Opened: %s"
 
-#: FlatCAMApp.py:7448
+#: FlatCAMApp.py:7556
 msgid "Importing DXF"
 msgstr "Importing DXF"
 
-#: FlatCAMApp.py:7490
+#: FlatCAMApp.py:7598
 msgid "Importing Image"
 msgstr "Importing Image"
 
-#: FlatCAMApp.py:7531 FlatCAMApp.py:7533
+#: FlatCAMApp.py:7639 FlatCAMApp.py:7641
 #, python-format
 msgid "[ERROR_NOTCL] Failed to open file: %s"
 msgstr "[ERROR_NOTCL] Failed to open file: %s"
 
-#: FlatCAMApp.py:7536
+#: FlatCAMApp.py:7644
 #, python-brace-format
 msgid "[ERROR_NOTCL] Failed to parse file: {name}. {error}"
 msgstr "[ERROR_NOTCL] Failed to parse file: {name}. {error}"
 
-#: FlatCAMApp.py:7543 FlatCAMObj.py:4230
+#: FlatCAMApp.py:7651 FlatCAMObj.py:4266
 #: flatcamEditors/FlatCAMExcEditor.py:2077
 msgid "[ERROR] An internal error has ocurred. See shell.\n"
 msgstr "[ERROR] An internal error has ocurred. See shell.\n"
 
-#: FlatCAMApp.py:7552
+#: FlatCAMApp.py:7660
 msgid ""
 "[ERROR_NOTCL] Object is not Gerber file or empty. Aborting object creation."
 msgstr ""
 "[ERROR_NOTCL] Object is not Gerber file or empty. Aborting object creation."
 
-#: FlatCAMApp.py:7560
+#: FlatCAMApp.py:7668
 msgid "Opening Gerber"
 msgstr "Opening Gerber"
 
-#: FlatCAMApp.py:7570
+#: FlatCAMApp.py:7678
 msgid "[ERROR_NOTCL] Open Gerber failed. Probable not a Gerber file."
 msgstr "[ERROR_NOTCL] Open Gerber failed. Probable not a Gerber file."
 
-#: FlatCAMApp.py:7603 flatcamTools/ToolPcbWizard.py:421
+#: FlatCAMApp.py:7711 flatcamTools/ToolPcbWizard.py:421
 msgid "[ERROR_NOTCL] This is not Excellon file."
 msgstr "[ERROR_NOTCL] This is not Excellon file."
 
-#: FlatCAMApp.py:7606
+#: FlatCAMApp.py:7714
 #, python-format
 msgid "[ERROR_NOTCL] Cannot open file: %s"
 msgstr "[ERROR_NOTCL] Cannot open file: %s"
 
-#: FlatCAMApp.py:7611 flatcamTools/ToolPcbWizard.py:429
+#: FlatCAMApp.py:7719 flatcamTools/ToolPcbWizard.py:429
 msgid "[ERROR_NOTCL] An internal error has occurred. See shell.\n"
 msgstr "[ERROR_NOTCL] An internal error has occurred. See shell.\n"
 
-#: FlatCAMApp.py:7624 flatcamTools/ToolPDF.py:262
+#: FlatCAMApp.py:7732 flatcamTools/ToolPDF.py:262
 #: flatcamTools/ToolPcbWizard.py:442
 #, python-format
 msgid "[ERROR_NOTCL] No geometry found in file: %s"
 msgstr "[ERROR_NOTCL] No geometry found in file: %s"
 
-#: FlatCAMApp.py:7627
+#: FlatCAMApp.py:7735
 msgid "Opening Excellon."
 msgstr "Opening Excellon."
 
-#: FlatCAMApp.py:7633
+#: FlatCAMApp.py:7741
 msgid "[ERROR_NOTCL] Open Excellon file failed. Probable not an Excellon file."
 msgstr ""
 "[ERROR_NOTCL] Open Excellon file failed. Probable not an Excellon file."
 
-#: FlatCAMApp.py:7670
+#: FlatCAMApp.py:7778
 #, python-format
 msgid "[ERROR_NOTCL] Failed to open %s"
 msgstr "[ERROR_NOTCL] Failed to open %s"
 
-#: FlatCAMApp.py:7680
+#: FlatCAMApp.py:7788
 msgid "[ERROR_NOTCL] This is not GCODE"
 msgstr "[ERROR_NOTCL] This is not GCODE"
 
-#: FlatCAMApp.py:7686
+#: FlatCAMApp.py:7794
 msgid "Opening G-Code."
 msgstr "Opening G-Code."
 
-#: FlatCAMApp.py:7694
+#: FlatCAMApp.py:7802
 msgid ""
 "[ERROR_NOTCL] Failed to create CNCJob Object. Probable not a GCode file.\n"
 " Attempting to create a FlatCAM CNCJob Object from G-Code file failed during "
@@ -984,26 +988,26 @@ msgstr ""
 " Attempting to create a FlatCAM CNCJob Object from G-Code file failed during "
 "processing"
 
-#: FlatCAMApp.py:7734
+#: FlatCAMApp.py:7842
 #, python-format
 msgid "[ERROR_NOTCL] Failed to open config file: %s"
 msgstr "[ERROR_NOTCL] Failed to open config file: %s"
 
-#: FlatCAMApp.py:7760 FlatCAMApp.py:7777
+#: FlatCAMApp.py:7868 FlatCAMApp.py:7885
 #, python-format
 msgid "[ERROR_NOTCL] Failed to open project file: %s"
 msgstr "[ERROR_NOTCL] Failed to open project file: %s"
 
-#: FlatCAMApp.py:7800
+#: FlatCAMApp.py:7908
 #, python-format
 msgid "[success] Project loaded from: %s"
 msgstr "[success] Project loaded from: %s"
 
-#: FlatCAMApp.py:7905
+#: FlatCAMApp.py:8013
 msgid "Available commands:\n"
 msgstr "Available commands:\n"
 
-#: FlatCAMApp.py:7907
+#: FlatCAMApp.py:8015
 msgid ""
 "\n"
 "\n"
@@ -1015,27 +1019,27 @@ msgstr ""
 "Type help <command_name> for usage.\n"
 " Example: help open_gerber"
 
-#: FlatCAMApp.py:8057
+#: FlatCAMApp.py:8165
 msgid "Shows list of commands."
 msgstr "Shows list of commands."
 
-#: FlatCAMApp.py:8114
+#: FlatCAMApp.py:8222
 msgid "[ERROR_NOTCL] Failed to load recent item list."
 msgstr "[ERROR_NOTCL] Failed to load recent item list."
 
-#: FlatCAMApp.py:8121
+#: FlatCAMApp.py:8229
 msgid "[ERROR_NOTCL] Failed to parse recent item list."
 msgstr "[ERROR_NOTCL] Failed to parse recent item list."
 
-#: FlatCAMApp.py:8165
+#: FlatCAMApp.py:8273
 msgid "Clear Recent files"
 msgstr "Clear Recent files"
 
-#: FlatCAMApp.py:8182 flatcamGUI/FlatCAMGUI.py:968
+#: FlatCAMApp.py:8290 flatcamGUI/FlatCAMGUI.py:968
 msgid "<b>Shortcut Key List</b>"
 msgstr "<b>Shortcut Key List</b>"
 
-#: FlatCAMApp.py:8189
+#: FlatCAMApp.py:8297
 msgid ""
 "\n"
 "<p><span style=\"font-size:14px\"><strong>Selected Tab - Choose an Item from "
@@ -1131,23 +1135,23 @@ msgstr ""
 "\n"
 "        "
 
-#: FlatCAMApp.py:8293
+#: FlatCAMApp.py:8404
 msgid "[WARNING_NOTCL] Failed checking for latest version. Could not connect."
 msgstr "[WARNING_NOTCL] Failed checking for latest version. Could not connect."
 
-#: FlatCAMApp.py:8300
+#: FlatCAMApp.py:8411
 msgid "[ERROR_NOTCL] Could not parse information about latest version."
 msgstr "[ERROR_NOTCL] Could not parse information about latest version."
 
-#: FlatCAMApp.py:8310
+#: FlatCAMApp.py:8421
 msgid "[success] FlatCAM is up to date!"
 msgstr "[success] FlatCAM is up to date!"
 
-#: FlatCAMApp.py:8315
+#: FlatCAMApp.py:8426
 msgid "Newer Version Available"
 msgstr "Newer Version Available"
 
-#: FlatCAMApp.py:8316
+#: FlatCAMApp.py:8427
 msgid ""
 "There is a newer version of FlatCAM available for download:\n"
 "\n"
@@ -1155,92 +1159,92 @@ msgstr ""
 "There is a newer version of FlatCAM available for download:\n"
 "\n"
 
-#: FlatCAMApp.py:8318
+#: FlatCAMApp.py:8429
 msgid "info"
 msgstr "info"
 
-#: FlatCAMApp.py:8337
+#: FlatCAMApp.py:8448
 msgid "[success] All plots disabled."
 msgstr "[success] All plots disabled."
 
-#: FlatCAMApp.py:8343
+#: FlatCAMApp.py:8454
 msgid "[success] All non selected plots disabled."
 msgstr "[success] All non selected plots disabled."
 
-#: FlatCAMApp.py:8349
+#: FlatCAMApp.py:8460
 msgid "[success] All plots enabled."
 msgstr "[success] All plots enabled."
 
-#: FlatCAMApp.py:8355
+#: FlatCAMApp.py:8466
 msgid "[success] Selected plots enabled..."
 msgstr "[success] Selected plots enabled..."
 
-#: FlatCAMApp.py:8363
+#: FlatCAMApp.py:8474
 msgid "[success] Selected plots disabled..."
 msgstr "[success] Selected plots disabled..."
 
-#: FlatCAMApp.py:8373 FlatCAMApp.py:8386
+#: FlatCAMApp.py:8484 FlatCAMApp.py:8497
 msgid "Working ..."
 msgstr "Working ..."
 
-#: FlatCAMApp.py:8420
+#: FlatCAMApp.py:8531
 msgid "Saving FlatCAM Project"
 msgstr "Saving FlatCAM Project"
 
-#: FlatCAMApp.py:8441 FlatCAMApp.py:8472
+#: FlatCAMApp.py:8552 FlatCAMApp.py:8583
 #, python-format
 msgid "[success] Project saved to: %s"
 msgstr "[success] Project saved to: %s"
 
-#: FlatCAMApp.py:8459
+#: FlatCAMApp.py:8570
 #, python-format
 msgid "[ERROR_NOTCL] Failed to verify project file: %s. Retry to save it."
 msgstr "[ERROR_NOTCL] Failed to verify project file: %s. Retry to save it."
 
-#: FlatCAMApp.py:8466
+#: FlatCAMApp.py:8577
 #, python-format
 msgid "[ERROR_NOTCL] Failed to parse saved project file: %s. Retry to save it."
 msgstr ""
 "[ERROR_NOTCL] Failed to parse saved project file: %s. Retry to save it."
 
-#: FlatCAMApp.py:8474
+#: FlatCAMApp.py:8585
 #, python-format
 msgid "[ERROR_NOTCL] Failed to save project file: %s. Retry to save it."
 msgstr "[ERROR_NOTCL] Failed to save project file: %s. Retry to save it."
 
-#: FlatCAMObj.py:202
+#: FlatCAMObj.py:207
 #, python-brace-format
 msgid "[success] Name changed from {old} to {new}"
 msgstr "[success] Name changed from {old} to {new}"
 
-#: FlatCAMObj.py:545 FlatCAMObj.py:2031 FlatCAMObj.py:3275 FlatCAMObj.py:5448
+#: FlatCAMObj.py:553 FlatCAMObj.py:2034 FlatCAMObj.py:3300 FlatCAMObj.py:5485
 msgid "<span style=\"color:green;\"><b>Basic</b></span>"
 msgstr "<span style=\"color:green;\"><b>Basic</b></span>"
 
-#: FlatCAMObj.py:557 FlatCAMObj.py:2047 FlatCAMObj.py:3297 FlatCAMObj.py:5454
+#: FlatCAMObj.py:565 FlatCAMObj.py:2050 FlatCAMObj.py:3322 FlatCAMObj.py:5491
 msgid "<span style=\"color:red;\"><b>Advanced</b></span>"
 msgstr "<span style=\"color:red;\"><b>Advanced</b></span>"
 
-#: FlatCAMObj.py:920 FlatCAMObj.py:975
+#: FlatCAMObj.py:927 FlatCAMObj.py:982
 #, python-format
 msgid "[success] Isolation geometry created: %s"
 msgstr "[success] Isolation geometry created: %s"
 
-#: FlatCAMObj.py:1154
+#: FlatCAMObj.py:1161
 msgid "Plotting Apertures"
 msgstr "Plotting Apertures"
 
-#: FlatCAMObj.py:1870 flatcamEditors/FlatCAMExcEditor.py:1368
+#: FlatCAMObj.py:1877 flatcamEditors/FlatCAMExcEditor.py:1368
 msgid "Total Drills"
 msgstr "Total Drills"
 
-#: FlatCAMObj.py:1896 flatcamEditors/FlatCAMExcEditor.py:1400
+#: FlatCAMObj.py:1903 flatcamEditors/FlatCAMExcEditor.py:1400
 msgid "Total Slots"
 msgstr "Total Slots"
 
-#: FlatCAMObj.py:2103 FlatCAMObj.py:3348 FlatCAMObj.py:3646 FlatCAMObj.py:3833
-#: FlatCAMObj.py:3846 FlatCAMObj.py:3963 FlatCAMObj.py:4380 FlatCAMObj.py:4618
-#: FlatCAMObj.py:5031 flatcamEditors/FlatCAMExcEditor.py:1474
+#: FlatCAMObj.py:2106 FlatCAMObj.py:3374 FlatCAMObj.py:3674 FlatCAMObj.py:3869
+#: FlatCAMObj.py:3882 FlatCAMObj.py:3999 FlatCAMObj.py:4416 FlatCAMObj.py:4654
+#: FlatCAMObj.py:5067 flatcamEditors/FlatCAMExcEditor.py:1474
 #: flatcamTools/ToolCalculators.py:307 flatcamTools/ToolCalculators.py:318
 #: flatcamTools/ToolCalculators.py:330 flatcamTools/ToolCalculators.py:345
 #: flatcamTools/ToolCalculators.py:358 flatcamTools/ToolCalculators.py:372
@@ -1259,23 +1263,23 @@ msgstr "Total Slots"
 msgid "[ERROR_NOTCL] Wrong value format entered, use a number."
 msgstr "[ERROR_NOTCL] Wrong value format entered, use a number."
 
-#: FlatCAMObj.py:2327 FlatCAMObj.py:2418 FlatCAMObj.py:2540
+#: FlatCAMObj.py:2330 FlatCAMObj.py:2422 FlatCAMObj.py:2545
 msgid ""
 "[ERROR_NOTCL] Please select one or more tools from the list and try again."
 msgstr ""
 "[ERROR_NOTCL] Please select one or more tools from the list and try again."
 
-#: FlatCAMObj.py:2334
+#: FlatCAMObj.py:2337
 msgid ""
 "[ERROR_NOTCL] Milling tool for DRILLS is larger than hole size. Cancelled."
 msgstr ""
 "[ERROR_NOTCL] Milling tool for DRILLS is larger than hole size. Cancelled."
 
-#: FlatCAMObj.py:2348 FlatCAMObj.py:2442 FlatCAMObj.py:2560
+#: FlatCAMObj.py:2351 FlatCAMObj.py:2446 FlatCAMObj.py:2565
 msgid "Tool_nr"
 msgstr "Tool_nr"
 
-#: FlatCAMObj.py:2348 FlatCAMObj.py:2442 FlatCAMObj.py:2560
+#: FlatCAMObj.py:2351 FlatCAMObj.py:2446 FlatCAMObj.py:2565
 #: flatcamEditors/FlatCAMExcEditor.py:819
 #: flatcamEditors/FlatCAMExcEditor.py:2020 flatcamGUI/ObjectUI.py:556
 #: flatcamTools/ToolNonCopperClear.py:83 flatcamTools/ToolPaint.py:80
@@ -1283,21 +1287,21 @@ msgstr "Tool_nr"
 msgid "Diameter"
 msgstr "Diameter"
 
-#: FlatCAMObj.py:2348 FlatCAMObj.py:2442 FlatCAMObj.py:2560
+#: FlatCAMObj.py:2351 FlatCAMObj.py:2446 FlatCAMObj.py:2565
 msgid "Drills_Nr"
 msgstr "Drills_Nr"
 
-#: FlatCAMObj.py:2348 FlatCAMObj.py:2442 FlatCAMObj.py:2560
+#: FlatCAMObj.py:2351 FlatCAMObj.py:2446 FlatCAMObj.py:2565
 msgid "Slots_Nr"
 msgstr "Slots_Nr"
 
-#: FlatCAMObj.py:2428
+#: FlatCAMObj.py:2432
 msgid ""
 "[ERROR_NOTCL] Milling tool for SLOTS is larger than hole size. Cancelled."
 msgstr ""
 "[ERROR_NOTCL] Milling tool for SLOTS is larger than hole size. Cancelled."
 
-#: FlatCAMObj.py:2602 FlatCAMObj.py:4268 FlatCAMObj.py:4484 FlatCAMObj.py:4801
+#: FlatCAMObj.py:2607 FlatCAMObj.py:4304 FlatCAMObj.py:4520 FlatCAMObj.py:4837
 msgid ""
 "[ERROR_NOTCL] Wrong value format for self.defaults[\"z_pdepth\"] or self."
 "options[\"z_pdepth\"]"
@@ -1305,7 +1309,7 @@ msgstr ""
 "[ERROR_NOTCL] Wrong value format for self.defaults[\"z_pdepth\"] or self."
 "options[\"z_pdepth\"]"
 
-#: FlatCAMObj.py:2614 FlatCAMObj.py:4280 FlatCAMObj.py:4496 FlatCAMObj.py:4813
+#: FlatCAMObj.py:2619 FlatCAMObj.py:4316 FlatCAMObj.py:4532 FlatCAMObj.py:4849
 msgid ""
 "[ERROR_NOTCL] Wrong value format for self.defaults[\"feedrate_probe\"] or "
 "self.options[\"feedrate_probe\"]"
@@ -1313,12 +1317,12 @@ msgstr ""
 "[ERROR_NOTCL] Wrong value format for self.defaults[\"feedrate_probe\"] or "
 "self.options[\"feedrate_probe\"]"
 
-#: FlatCAMObj.py:2646 FlatCAMObj.py:4689 FlatCAMObj.py:4694 FlatCAMObj.py:4844
+#: FlatCAMObj.py:2651 FlatCAMObj.py:4725 FlatCAMObj.py:4730 FlatCAMObj.py:4880
 msgid "Generating CNC Code"
 msgstr "Generating CNC Code"
 
-#: FlatCAMObj.py:2672 FlatCAMObj.py:4990 camlib.py:5164 camlib.py:5623
-#: camlib.py:5886
+#: FlatCAMObj.py:2677 FlatCAMObj.py:5026 camlib.py:5167 camlib.py:5626
+#: camlib.py:5889
 msgid ""
 "[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be in the "
 "format (x, y) \n"
@@ -1328,77 +1332,77 @@ msgstr ""
 "format (x, y) \n"
 "but now there is only one value, not two. "
 
-#: FlatCAMObj.py:2984 FlatCAMObj.py:3889 FlatCAMObj.py:3890 FlatCAMObj.py:3899
+#: FlatCAMObj.py:2997 FlatCAMObj.py:3925 FlatCAMObj.py:3926 FlatCAMObj.py:3935
 msgid "Iso"
 msgstr "Iso"
 
-#: FlatCAMObj.py:2984 FlatCAMObj.py:3233 FlatCAMObj.py:3513
+#: FlatCAMObj.py:2997 FlatCAMObj.py:3257 FlatCAMObj.py:3539
 msgid "Rough"
 msgstr "Rough"
 
-#: FlatCAMObj.py:2984
+#: FlatCAMObj.py:2997
 msgid "Finish"
 msgstr "Finish"
 
-#: FlatCAMObj.py:3268 flatcamGUI/FlatCAMGUI.py:526 flatcamGUI/FlatCAMGUI.py:722
+#: FlatCAMObj.py:3293 flatcamGUI/FlatCAMGUI.py:526 flatcamGUI/FlatCAMGUI.py:722
 #: flatcamGUI/FlatCAMGUI.py:1615 flatcamGUI/FlatCAMGUI.py:1951
 #: flatcamGUI/ObjectUI.py:999
 msgid "Copy"
 msgstr "Copy"
 
-#: FlatCAMObj.py:3483
+#: FlatCAMObj.py:3509
 msgid "[ERROR_NOTCL] Please enter the desired tool diameter in Float format."
 msgstr "[ERROR_NOTCL] Please enter the desired tool diameter in Float format."
 
-#: FlatCAMObj.py:3556
+#: FlatCAMObj.py:3584
 msgid "[success] Tool added in Tool Table."
 msgstr "[success] Tool added in Tool Table."
 
-#: FlatCAMObj.py:3561
+#: FlatCAMObj.py:3589
 msgid "[ERROR_NOTCL] Default Tool added. Wrong value format entered."
 msgstr "[ERROR_NOTCL] Default Tool added. Wrong value format entered."
 
-#: FlatCAMObj.py:3591 FlatCAMObj.py:3601
+#: FlatCAMObj.py:3619 FlatCAMObj.py:3629
 msgid "[WARNING_NOTCL] Failed. Select a tool to copy."
 msgstr "[WARNING_NOTCL] Failed. Select a tool to copy."
 
-#: FlatCAMObj.py:3630
+#: FlatCAMObj.py:3658
 msgid "[success] Tool was copied in Tool Table."
 msgstr "[success] Tool was copied in Tool Table."
 
-#: FlatCAMObj.py:3663
+#: FlatCAMObj.py:3691
 msgid "[success] Tool was edited in Tool Table."
 msgstr "[success] Tool was edited in Tool Table."
 
-#: FlatCAMObj.py:3694 FlatCAMObj.py:3704
+#: FlatCAMObj.py:3722 FlatCAMObj.py:3732
 msgid "[WARNING_NOTCL] Failed. Select a tool to delete."
 msgstr "[WARNING_NOTCL] Failed. Select a tool to delete."
 
-#: FlatCAMObj.py:3728
+#: FlatCAMObj.py:3756
 msgid "[success] Tool was deleted in Tool Table."
 msgstr "[success] Tool was deleted in Tool Table."
 
-#: FlatCAMObj.py:4149
+#: FlatCAMObj.py:4185
 #, python-format
 msgid ""
 "[WARNING_NOTCL] This Geometry can't be processed because it is %s geometry."
 msgstr ""
 "[WARNING_NOTCL] This Geometry can't be processed because it is %s geometry."
 
-#: FlatCAMObj.py:4166
+#: FlatCAMObj.py:4202
 msgid "[ERROR_NOTCL] Wrong Tool Dia value format entered, use a number."
 msgstr "[ERROR_NOTCL] Wrong Tool Dia value format entered, use a number."
 
-#: FlatCAMObj.py:4193
+#: FlatCAMObj.py:4229
 msgid "[ERROR_NOTCL] Failed. No tool selected in the tool table ..."
 msgstr "[ERROR_NOTCL] Failed. No tool selected in the tool table ..."
 
-#: FlatCAMObj.py:4231
+#: FlatCAMObj.py:4267
 #, python-format
 msgid "FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s"
 msgstr "FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s"
 
-#: FlatCAMObj.py:4389 FlatCAMObj.py:4627
+#: FlatCAMObj.py:4425 FlatCAMObj.py:4663
 msgid ""
 "[WARNING] Tool Offset is selected in Tool Table but no value is provided.\n"
 "Add a Tool Offset or change the Offset Type."
@@ -1406,20 +1410,20 @@ msgstr ""
 "[WARNING] Tool Offset is selected in Tool Table but no value is provided.\n"
 "Add a Tool Offset or change the Offset Type."
 
-#: FlatCAMObj.py:4508 flatcamTools/ToolSolderPaste.py:1107
+#: FlatCAMObj.py:4544 flatcamTools/ToolSolderPaste.py:1107
 #: flatcamTools/ToolSolderPaste.py:1162
 msgid "[ERROR_NOTCL] Cancelled. Empty file, it has no geometry..."
 msgstr "[ERROR_NOTCL] Cancelled. Empty file, it has no geometry..."
 
-#: FlatCAMObj.py:4877 FlatCAMObj.py:4887 camlib.py:3347 camlib.py:3356
+#: FlatCAMObj.py:4913 FlatCAMObj.py:4923 camlib.py:3348 camlib.py:3357
 msgid "[ERROR_NOTCL] Scale factor has to be a number: integer or float."
 msgstr "[ERROR_NOTCL] Scale factor has to be a number: integer or float."
 
-#: FlatCAMObj.py:4925
+#: FlatCAMObj.py:4961
 msgid "[success] Geometry Scale done."
 msgstr "[success] Geometry Scale done."
 
-#: FlatCAMObj.py:4942 camlib.py:3425
+#: FlatCAMObj.py:4978 camlib.py:3426
 msgid ""
 "[ERROR_NOTCL] An (x,y) pair of values are needed. Probable you entered only "
 "one value in the Offset field."
@@ -1427,29 +1431,29 @@ msgstr ""
 "[ERROR_NOTCL] An (x,y) pair of values are needed. Probable you entered only "
 "one value in the Offset field."
 
-#: FlatCAMObj.py:4962
+#: FlatCAMObj.py:4998
 msgid "[success] Geometry Offset done."
 msgstr "[success] Geometry Offset done."
 
-#: FlatCAMObj.py:5516 FlatCAMObj.py:5521 flatcamTools/ToolSolderPaste.py:1361
+#: FlatCAMObj.py:5553 FlatCAMObj.py:5558 flatcamTools/ToolSolderPaste.py:1361
 msgid "Export Machine Code ..."
 msgstr "Export Machine Code ..."
 
-#: FlatCAMObj.py:5527 flatcamTools/ToolSolderPaste.py:1364
+#: FlatCAMObj.py:5564 flatcamTools/ToolSolderPaste.py:1364
 msgid "[WARNING_NOTCL] Export Machine Code cancelled ..."
 msgstr "[WARNING_NOTCL] Export Machine Code cancelled ..."
 
-#: FlatCAMObj.py:5540
+#: FlatCAMObj.py:5577
 #, python-format
 msgid "[success] Machine Code file saved to: %s"
 msgstr "[success] Machine Code file saved to: %s"
 
-#: FlatCAMObj.py:5562
+#: FlatCAMObj.py:5599
 #, python-format
 msgid "[ERROR]FlatCAMCNNJob.on_edit_code_click() -->%s"
 msgstr "[ERROR]FlatCAMCNNJob.on_edit_code_click() -->%s"
 
-#: FlatCAMObj.py:5679
+#: FlatCAMObj.py:5716
 #, python-format
 msgid ""
 "[WARNING_NOTCL] This CNCJob object can't be processed because it is a %s "
@@ -1458,11 +1462,11 @@ msgstr ""
 "[WARNING_NOTCL] This CNCJob object can't be processed because it is a %s "
 "CNCJob object."
 
-#: FlatCAMObj.py:5732
+#: FlatCAMObj.py:5769
 msgid "[ERROR_NOTCL] G-code does not have a units code: either G20 or G21"
 msgstr "[ERROR_NOTCL] G-code does not have a units code: either G20 or G21"
 
-#: FlatCAMObj.py:5745
+#: FlatCAMObj.py:5782
 msgid ""
 "[ERROR_NOTCL] Cancelled. The Toolchange Custom code is enabled but it's "
 "empty."
@@ -1470,15 +1474,15 @@ msgstr ""
 "[ERROR_NOTCL] Cancelled. The Toolchange Custom code is enabled but it's "
 "empty."
 
-#: FlatCAMObj.py:5752
+#: FlatCAMObj.py:5789
 msgid "[success] Toolchange G-code was replaced by a custom code."
 msgstr "[success] Toolchange G-code was replaced by a custom code."
 
-#: FlatCAMObj.py:5767 flatcamTools/ToolSolderPaste.py:1390
+#: FlatCAMObj.py:5804 flatcamTools/ToolSolderPaste.py:1390
 msgid "[WARNING_NOTCL] No such file or directory"
 msgstr "[WARNING_NOTCL] No such file or directory"
 
-#: FlatCAMObj.py:5787 FlatCAMObj.py:5799
+#: FlatCAMObj.py:5824 FlatCAMObj.py:5836
 msgid ""
 "[WARNING_NOTCL] The used postprocessor file has to have in it's name: "
 "'toolchange_custom'"
@@ -1486,7 +1490,7 @@ msgstr ""
 "[WARNING_NOTCL] The used postprocessor file has to have in it's name: "
 "'toolchange_custom'"
 
-#: FlatCAMObj.py:5805
+#: FlatCAMObj.py:5842
 msgid "[ERROR] There is no postprocessor file."
 msgstr "[ERROR] There is no postprocessor file."
 
@@ -1528,16 +1532,16 @@ msgstr "[success] Object was skewed ..."
 msgid "[ERROR_NOTCL] Failed to skew. No object selected"
 msgstr "[ERROR_NOTCL] Failed to skew. No object selected"
 
-#: camlib.py:2727 camlib.py:2812
+#: camlib.py:2728 camlib.py:2813
 #, python-format
 msgid "[WARNING] Coordinates missing, line ignored: %s"
 msgstr "[WARNING] Coordinates missing, line ignored: %s"
 
-#: camlib.py:2728 camlib.py:2813
+#: camlib.py:2729 camlib.py:2814
 msgid "[WARNING_NOTCL] GERBER file might be CORRUPT. Check the file !!!"
 msgstr "[WARNING_NOTCL] GERBER file might be CORRUPT. Check the file !!!"
 
-#: camlib.py:2777
+#: camlib.py:2778
 #, python-format
 msgid ""
 "[ERROR] Region does not have enough points. File will be processed but there "
@@ -1546,7 +1550,7 @@ msgstr ""
 "[ERROR] Region does not have enough points. File will be processed but there "
 "are parser errors. Line number: %s"
 
-#: camlib.py:3169
+#: camlib.py:3170
 #, python-format
 msgid ""
 "[ERROR]Gerber Parser ERROR.\n"
@@ -1555,32 +1559,32 @@ msgstr ""
 "[ERROR]Gerber Parser ERROR.\n"
 "%s:"
 
-#: camlib.py:3393
+#: camlib.py:3394
 msgid "[success] Gerber Scale done."
 msgstr "[success] Gerber Scale done."
 
-#: camlib.py:3458
+#: camlib.py:3459
 msgid "[success] Gerber Offset done."
 msgstr "[success] Gerber Offset done."
 
-#: camlib.py:3512
+#: camlib.py:3513
 msgid "[success] Gerber Mirror done."
 msgstr "[success] Gerber Mirror done."
 
-#: camlib.py:3558
+#: camlib.py:3559
 msgid "[success] Gerber Skew done."
 msgstr "[success] Gerber Skew done."
 
-#: camlib.py:3596
+#: camlib.py:3597
 msgid "[success] Gerber Rotate done."
 msgstr "[success] Gerber Rotate done."
 
-#: camlib.py:3875
+#: camlib.py:3878
 #, python-format
 msgid "[ERROR_NOTCL] This is GCODE mark: %s"
 msgstr "[ERROR_NOTCL] This is GCODE mark: %s"
 
-#: camlib.py:3990
+#: camlib.py:3993
 #, python-format
 msgid ""
 "[WARNING] No tool diameter info's. See shell.\n"
@@ -1597,7 +1601,7 @@ msgstr ""
 "The user needs to edit the resulting Excellon object and change the "
 "diameters to reflect the real diameters."
 
-#: camlib.py:4455
+#: camlib.py:4458
 #, python-brace-format
 msgid ""
 "[ERROR] Excellon Parser error.\n"
@@ -1606,7 +1610,7 @@ msgstr ""
 "[ERROR] Excellon Parser error.\n"
 "Parsing Failed. Line {l_nr}: {line}\n"
 
-#: camlib.py:4534
+#: camlib.py:4537
 msgid ""
 "[WARNING] Excellon.create_geometry() -> a drill location was skipped due of "
 "not having a tool associated.\n"
@@ -1616,12 +1620,12 @@ msgstr ""
 "not having a tool associated.\n"
 "Check the resulting GCode."
 
-#: camlib.py:5073
+#: camlib.py:5076
 #, python-format
 msgid "[ERROR] There is no such parameter: %s"
 msgstr "[ERROR] There is no such parameter: %s"
 
-#: camlib.py:5143
+#: camlib.py:5146
 msgid ""
 "[WARNING] The Cut Z parameter has positive value. It is the depth value to "
 "drill into material.\n"
@@ -1635,22 +1639,22 @@ msgstr ""
 "therefore the app will convert the value to negative. Check the resulting "
 "CNC code (Gcode etc)."
 
-#: camlib.py:5150 camlib.py:5646 camlib.py:5909
+#: camlib.py:5153 camlib.py:5649 camlib.py:5912
 #, python-format
 msgid ""
 "[WARNING] The Cut Z parameter is zero. There will be no cut, skipping %s file"
 msgstr ""
 "[WARNING] The Cut Z parameter is zero. There will be no cut, skipping %s file"
 
-#: camlib.py:5379 camlib.py:5476 camlib.py:5534
+#: camlib.py:5382 camlib.py:5479 camlib.py:5537
 msgid "[ERROR_NOTCL] The loaded Excellon file has no drills ..."
 msgstr "[ERROR_NOTCL] The loaded Excellon file has no drills ..."
 
-#: camlib.py:5481
+#: camlib.py:5484
 msgid "[ERROR_NOTCL] Wrong optimization type selected."
 msgstr "[ERROR_NOTCL] Wrong optimization type selected."
 
-#: camlib.py:5634 camlib.py:5897
+#: camlib.py:5637 camlib.py:5900
 msgid ""
 "[ERROR_NOTCL] Cut_Z parameter is None or zero. Most likely a bad "
 "combinations of other parameters."
@@ -1658,7 +1662,7 @@ msgstr ""
 "[ERROR_NOTCL] Cut_Z parameter is None or zero. Most likely a bad "
 "combinations of other parameters."
 
-#: camlib.py:5639 camlib.py:5902
+#: camlib.py:5642 camlib.py:5905
 msgid ""
 "[WARNING] The Cut Z parameter has positive value. It is the depth value to "
 "cut into material.\n"
@@ -1672,11 +1676,11 @@ msgstr ""
 "therefore the app will convert the value to negative.Check the resulting CNC "
 "code (Gcode etc)."
 
-#: camlib.py:5651 camlib.py:5914
+#: camlib.py:5654 camlib.py:5917
 msgid "[ERROR_NOTCL] Travel Z parameter is None or zero."
 msgstr "[ERROR_NOTCL] Travel Z parameter is None or zero."
 
-#: camlib.py:5655 camlib.py:5918
+#: camlib.py:5658 camlib.py:5921
 msgid ""
 "[WARNING] The Travel Z parameter has negative value. It is the height value "
 "to travel between cuts.\n"
@@ -1690,19 +1694,19 @@ msgstr ""
 "therefore the app will convert the value to positive.Check the resulting CNC "
 "code (Gcode etc)."
 
-#: camlib.py:5662 camlib.py:5925
+#: camlib.py:5665 camlib.py:5928
 #, python-format
 msgid ""
 "[WARNING] The Z Travel parameter is zero. This is dangerous, skipping %s file"
 msgstr ""
 "[WARNING] The Z Travel parameter is zero. This is dangerous, skipping %s file"
 
-#: camlib.py:5792
+#: camlib.py:5795
 #, python-format
 msgid "[ERROR]Expected a Geometry, got %s"
 msgstr "[ERROR]Expected a Geometry, got %s"
 
-#: camlib.py:5798
+#: camlib.py:5801
 msgid ""
 "[ERROR_NOTCL] Trying to generate a CNC Job from a Geometry object without "
 "solid_geometry."
@@ -1710,7 +1714,7 @@ msgstr ""
 "[ERROR_NOTCL] Trying to generate a CNC Job from a Geometry object without "
 "solid_geometry."
 
-#: camlib.py:5837
+#: camlib.py:5840
 msgid ""
 "[ERROR_NOTCL] The Tool Offset value is too negative to use for the "
 "current_geometry.\n"
@@ -1720,7 +1724,7 @@ msgstr ""
 "current_geometry.\n"
 "Raise the value (in module) and try again."
 
-#: camlib.py:6049
+#: camlib.py:6052
 msgid "[ERROR_NOTCL] There is no tool data in the SolderPaste geometry."
 msgstr "[ERROR_NOTCL] There is no tool data in the SolderPaste geometry."
 
@@ -1809,7 +1813,7 @@ msgstr "[success] Done. Drill(s) Move completed."
 msgid "[success] Done. Drill(s) copied."
 msgstr "[success] Done. Drill(s) copied."
 
-#: flatcamEditors/FlatCAMExcEditor.py:792 flatcamGUI/FlatCAMGUI.py:5026
+#: flatcamEditors/FlatCAMExcEditor.py:792 flatcamGUI/FlatCAMGUI.py:5008
 msgid "Excellon Editor"
 msgstr "Excellon Editor"
 
@@ -1847,7 +1851,7 @@ msgstr ""
 msgid "Tool Dia:"
 msgstr "Tool Dia:"
 
-#: flatcamEditors/FlatCAMExcEditor.py:839 flatcamGUI/FlatCAMGUI.py:5055
+#: flatcamEditors/FlatCAMExcEditor.py:839 flatcamGUI/FlatCAMGUI.py:5037
 #: flatcamGUI/ObjectUI.py:978
 msgid "Diameter for the new tool"
 msgstr "Diameter for the new tool"
@@ -1926,11 +1930,11 @@ msgstr "Linear"
 msgid "Circular"
 msgstr "Circular"
 
-#: flatcamEditors/FlatCAMExcEditor.py:944 flatcamGUI/FlatCAMGUI.py:5065
+#: flatcamEditors/FlatCAMExcEditor.py:944 flatcamGUI/FlatCAMGUI.py:5047
 msgid "Nr of drills:"
 msgstr "Nr of drills:"
 
-#: flatcamEditors/FlatCAMExcEditor.py:946 flatcamGUI/FlatCAMGUI.py:5067
+#: flatcamEditors/FlatCAMExcEditor.py:946 flatcamGUI/FlatCAMGUI.py:5049
 msgid "Specify how many drills to be in the array."
 msgstr "Specify how many drills to be in the array."
 
@@ -1942,7 +1946,7 @@ msgid "Direction:"
 msgstr "Direction:"
 
 #: flatcamEditors/FlatCAMExcEditor.py:966
-#: flatcamEditors/FlatCAMGrbEditor.py:2528 flatcamGUI/FlatCAMGUI.py:5082
+#: flatcamEditors/FlatCAMGrbEditor.py:2528 flatcamGUI/FlatCAMGUI.py:5064
 msgid ""
 "Direction on which the linear array is oriented:\n"
 "- 'X' - horizontal axis \n"
@@ -1955,12 +1959,12 @@ msgstr ""
 "- 'Angle' - a custom angle for the array inclination"
 
 #: flatcamEditors/FlatCAMExcEditor.py:979
-#: flatcamEditors/FlatCAMGrbEditor.py:2541 flatcamGUI/FlatCAMGUI.py:5096
+#: flatcamEditors/FlatCAMGrbEditor.py:2541 flatcamGUI/FlatCAMGUI.py:5078
 msgid "Pitch:"
 msgstr "Pitch:"
 
 #: flatcamEditors/FlatCAMExcEditor.py:981
-#: flatcamEditors/FlatCAMGrbEditor.py:2543 flatcamGUI/FlatCAMGUI.py:5098
+#: flatcamEditors/FlatCAMGrbEditor.py:2543 flatcamGUI/FlatCAMGUI.py:5080
 msgid "Pitch = Distance between elements of the array."
 msgstr "Pitch = Distance between elements of the array."
 
@@ -1969,7 +1973,7 @@ msgstr "Pitch = Distance between elements of the array."
 #: flatcamEditors/FlatCAMGeoEditor.py:665
 #: flatcamEditors/FlatCAMGrbEditor.py:2550
 #: flatcamEditors/FlatCAMGrbEditor.py:2586
-#: flatcamEditors/FlatCAMGrbEditor.py:4580 flatcamGUI/FlatCAMGUI.py:5107
+#: flatcamEditors/FlatCAMGrbEditor.py:4588 flatcamGUI/FlatCAMGUI.py:5089
 #: flatcamTools/ToolTransform.py:68
 msgid "Angle:"
 msgstr "Angle:"
@@ -1997,8 +2001,8 @@ msgstr ""
 "clockwise."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1026
-#: flatcamEditors/FlatCAMGrbEditor.py:2588 flatcamGUI/FlatCAMGUI.py:5109
-#: flatcamGUI/FlatCAMGUI.py:5135
+#: flatcamEditors/FlatCAMGrbEditor.py:2588 flatcamGUI/FlatCAMGUI.py:5091
+#: flatcamGUI/FlatCAMGUI.py:5117
 msgid "Angle at which each element in circular array is placed."
 msgstr "Angle at which each element in circular array is placed."
 
@@ -2049,7 +2053,7 @@ msgid "[success] Done. Drill(s) deleted."
 msgstr "[success] Done. Drill(s) deleted."
 
 #: flatcamEditors/FlatCAMExcEditor.py:2705
-#: flatcamEditors/FlatCAMGrbEditor.py:4340
+#: flatcamEditors/FlatCAMGrbEditor.py:4350
 msgid "Click on the circular array Center position"
 msgstr "Click on the circular array Center position"
 
@@ -2115,7 +2119,7 @@ msgstr "Buffer Tool"
 #: flatcamEditors/FlatCAMGeoEditor.py:2700
 #: flatcamEditors/FlatCAMGeoEditor.py:2726
 #: flatcamEditors/FlatCAMGeoEditor.py:2752
-#: flatcamEditors/FlatCAMGrbEditor.py:4392
+#: flatcamEditors/FlatCAMGrbEditor.py:4402
 msgid ""
 "[WARNING_NOTCL] Buffer distance value is missing or wrong format. Add it and "
 "retry."
@@ -2132,12 +2136,13 @@ msgid "Tool"
 msgstr "Tool"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:432 flatcamGUI/FlatCAMGUI.py:4054
-#: flatcamGUI/FlatCAMGUI.py:5618 flatcamGUI/FlatCAMGUI.py:5895
-#: flatcamGUI/FlatCAMGUI.py:6035 flatcamGUI/ObjectUI.py:260
+#: flatcamGUI/FlatCAMGUI.py:5163 flatcamGUI/FlatCAMGUI.py:5597
+#: flatcamGUI/FlatCAMGUI.py:5874 flatcamGUI/FlatCAMGUI.py:6014
+#: flatcamGUI/ObjectUI.py:260
 msgid "Tool dia:"
 msgstr "Tool dia:"
 
-#: flatcamEditors/FlatCAMGeoEditor.py:434 flatcamGUI/FlatCAMGUI.py:6037
+#: flatcamEditors/FlatCAMGeoEditor.py:434 flatcamGUI/FlatCAMGUI.py:6016
 msgid ""
 "Diameter of the tool to\n"
 "be used in the operation."
@@ -2145,8 +2150,8 @@ msgstr ""
 "Diameter of the tool to\n"
 "be used in the operation."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:443 flatcamGUI/FlatCAMGUI.py:5801
-#: flatcamGUI/FlatCAMGUI.py:6046 flatcamTools/ToolNonCopperClear.py:165
+#: flatcamEditors/FlatCAMGeoEditor.py:443 flatcamGUI/FlatCAMGUI.py:5780
+#: flatcamGUI/FlatCAMGUI.py:6025 flatcamTools/ToolNonCopperClear.py:165
 #: flatcamTools/ToolPaint.py:160
 msgid "Overlap Rate:"
 msgstr "Overlap Rate:"
@@ -2176,14 +2181,14 @@ msgstr ""
 "Higher values = slow processing and slow execution on CNC\n"
 "due of too many paths."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:461 flatcamGUI/FlatCAMGUI.py:5817
-#: flatcamGUI/FlatCAMGUI.py:5903 flatcamGUI/FlatCAMGUI.py:6056
+#: flatcamEditors/FlatCAMGeoEditor.py:461 flatcamGUI/FlatCAMGUI.py:5796
+#: flatcamGUI/FlatCAMGUI.py:5882 flatcamGUI/FlatCAMGUI.py:6035
 #: flatcamTools/ToolCutOut.py:86 flatcamTools/ToolNonCopperClear.py:181
 #: flatcamTools/ToolPaint.py:177
 msgid "Margin:"
 msgstr "Margin:"
 
-#: flatcamEditors/FlatCAMGeoEditor.py:463 flatcamGUI/FlatCAMGUI.py:6058
+#: flatcamEditors/FlatCAMGeoEditor.py:463 flatcamGUI/FlatCAMGUI.py:6037
 #: flatcamTools/ToolPaint.py:179
 msgid ""
 "Distance by which to avoid\n"
@@ -2194,13 +2199,13 @@ msgstr ""
 "the edges of the polygon to\n"
 "be painted."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:472 flatcamGUI/FlatCAMGUI.py:5826
-#: flatcamGUI/FlatCAMGUI.py:6067 flatcamTools/ToolNonCopperClear.py:190
+#: flatcamEditors/FlatCAMGeoEditor.py:472 flatcamGUI/FlatCAMGUI.py:5805
+#: flatcamGUI/FlatCAMGUI.py:6046 flatcamTools/ToolNonCopperClear.py:190
 #: flatcamTools/ToolPaint.py:188
 msgid "Method:"
 msgstr "Method:"
 
-#: flatcamEditors/FlatCAMGeoEditor.py:474 flatcamGUI/FlatCAMGUI.py:6069
+#: flatcamEditors/FlatCAMGeoEditor.py:474 flatcamGUI/FlatCAMGUI.py:6048
 msgid ""
 "Algorithm to paint the polygon:<BR><B>Standard</B>: Fixed step inwards."
 "<BR><B>Seed-based</B>: Outwards from seed."
@@ -2208,14 +2213,14 @@ msgstr ""
 "Algorithm to paint the polygon:<BR><B>Standard</B>: Fixed step inwards."
 "<BR><B>Seed-based</B>: Outwards from seed."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:487 flatcamGUI/FlatCAMGUI.py:5842
-#: flatcamGUI/FlatCAMGUI.py:6082 flatcamTools/ToolNonCopperClear.py:206
+#: flatcamEditors/FlatCAMGeoEditor.py:487 flatcamGUI/FlatCAMGUI.py:5821
+#: flatcamGUI/FlatCAMGUI.py:6061 flatcamTools/ToolNonCopperClear.py:206
 #: flatcamTools/ToolPaint.py:204
 msgid "Connect:"
 msgstr "Connect:"
 
-#: flatcamEditors/FlatCAMGeoEditor.py:489 flatcamGUI/FlatCAMGUI.py:5844
-#: flatcamGUI/FlatCAMGUI.py:6084 flatcamTools/ToolNonCopperClear.py:208
+#: flatcamEditors/FlatCAMGeoEditor.py:489 flatcamGUI/FlatCAMGUI.py:5823
+#: flatcamGUI/FlatCAMGUI.py:6063 flatcamTools/ToolNonCopperClear.py:208
 #: flatcamTools/ToolPaint.py:206
 msgid ""
 "Draw lines between resulting\n"
@@ -2224,14 +2229,14 @@ msgstr ""
 "Draw lines between resulting\n"
 "segments to minimize tool lifts."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:496 flatcamGUI/FlatCAMGUI.py:5851
-#: flatcamGUI/FlatCAMGUI.py:6092 flatcamTools/ToolNonCopperClear.py:215
+#: flatcamEditors/FlatCAMGeoEditor.py:496 flatcamGUI/FlatCAMGUI.py:5830
+#: flatcamGUI/FlatCAMGUI.py:6071 flatcamTools/ToolNonCopperClear.py:215
 #: flatcamTools/ToolPaint.py:213
 msgid "Contour:"
 msgstr "Contour:"
 
-#: flatcamEditors/FlatCAMGeoEditor.py:498 flatcamGUI/FlatCAMGUI.py:5853
-#: flatcamGUI/FlatCAMGUI.py:6094 flatcamTools/ToolNonCopperClear.py:217
+#: flatcamEditors/FlatCAMGeoEditor.py:498 flatcamGUI/FlatCAMGUI.py:5832
+#: flatcamGUI/FlatCAMGUI.py:6073 flatcamTools/ToolNonCopperClear.py:217
 #: flatcamTools/ToolPaint.py:215
 msgid ""
 "Cut around the perimeter of the polygon\n"
@@ -2288,53 +2293,53 @@ msgstr "Tools"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:617
 #: flatcamEditors/FlatCAMGeoEditor.py:990
-#: flatcamEditors/FlatCAMGrbEditor.py:4531
-#: flatcamEditors/FlatCAMGrbEditor.py:4916 flatcamGUI/FlatCAMGUI.py:654
+#: flatcamEditors/FlatCAMGrbEditor.py:4539
+#: flatcamEditors/FlatCAMGrbEditor.py:4924 flatcamGUI/FlatCAMGUI.py:654
 #: flatcamGUI/FlatCAMGUI.py:1879 flatcamTools/ToolTransform.py:398
 msgid "Transform Tool"
 msgstr "Transform Tool"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:618
 #: flatcamEditors/FlatCAMGeoEditor.py:679
-#: flatcamEditors/FlatCAMGrbEditor.py:4532
-#: flatcamEditors/FlatCAMGrbEditor.py:4594 flatcamTools/ToolTransform.py:24
+#: flatcamEditors/FlatCAMGrbEditor.py:4540
+#: flatcamEditors/FlatCAMGrbEditor.py:4602 flatcamTools/ToolTransform.py:24
 #: flatcamTools/ToolTransform.py:82
 msgid "Rotate"
 msgstr "Rotate"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:619
-#: flatcamEditors/FlatCAMGrbEditor.py:4533 flatcamTools/ToolTransform.py:25
+#: flatcamEditors/FlatCAMGrbEditor.py:4541 flatcamTools/ToolTransform.py:25
 msgid "Skew/Shear"
 msgstr "Skew/Shear"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:620
 #: flatcamEditors/FlatCAMGrbEditor.py:2471
-#: flatcamEditors/FlatCAMGrbEditor.py:4534 flatcamGUI/FlatCAMGUI.py:718
+#: flatcamEditors/FlatCAMGrbEditor.py:4542 flatcamGUI/FlatCAMGUI.py:718
 #: flatcamGUI/FlatCAMGUI.py:1947 flatcamGUI/ObjectUI.py:100
 #: flatcamTools/ToolTransform.py:26
 msgid "Scale"
 msgstr "Scale"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:621
-#: flatcamEditors/FlatCAMGrbEditor.py:4535 flatcamTools/ToolTransform.py:27
+#: flatcamEditors/FlatCAMGrbEditor.py:4543 flatcamTools/ToolTransform.py:27
 msgid "Mirror (Flip)"
 msgstr "Mirror (Flip)"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:622
-#: flatcamEditors/FlatCAMGrbEditor.py:4536 flatcamGUI/ObjectUI.py:127
+#: flatcamEditors/FlatCAMGrbEditor.py:4544 flatcamGUI/ObjectUI.py:127
 #: flatcamGUI/ObjectUI.py:891 flatcamGUI/ObjectUI.py:1465
 #: flatcamTools/ToolTransform.py:28
 msgid "Offset"
 msgstr "Offset"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:633
-#: flatcamEditors/FlatCAMGrbEditor.py:4548
+#: flatcamEditors/FlatCAMGrbEditor.py:4556
 #, python-format
 msgid "Editor %s"
 msgstr "Editor %s"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:667
-#: flatcamEditors/FlatCAMGrbEditor.py:4582 flatcamTools/ToolTransform.py:70
+#: flatcamEditors/FlatCAMGrbEditor.py:4590 flatcamTools/ToolTransform.py:70
 msgid ""
 "Angle for Rotation action, in degrees.\n"
 "Float number between -360 and 359.\n"
@@ -2347,7 +2352,7 @@ msgstr ""
 "Negative numbers for CCW motion."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:681
-#: flatcamEditors/FlatCAMGrbEditor.py:4596
+#: flatcamEditors/FlatCAMGrbEditor.py:4604
 msgid ""
 "Rotate the selected shape(s).\n"
 "The point of reference is the middle of\n"
@@ -2358,14 +2363,14 @@ msgstr ""
 "the bounding box for all selected shapes."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:704
-#: flatcamEditors/FlatCAMGrbEditor.py:4619 flatcamTools/ToolTransform.py:107
+#: flatcamEditors/FlatCAMGrbEditor.py:4627 flatcamTools/ToolTransform.py:107
 msgid "Angle X:"
 msgstr "Angle X:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:706
 #: flatcamEditors/FlatCAMGeoEditor.py:724
-#: flatcamEditors/FlatCAMGrbEditor.py:4621
-#: flatcamEditors/FlatCAMGrbEditor.py:4639 flatcamTools/ToolTransform.py:109
+#: flatcamEditors/FlatCAMGrbEditor.py:4629
+#: flatcamEditors/FlatCAMGrbEditor.py:4647 flatcamTools/ToolTransform.py:109
 #: flatcamTools/ToolTransform.py:127
 msgid ""
 "Angle for Skew action, in degrees.\n"
@@ -2375,14 +2380,14 @@ msgstr ""
 "Float number between -360 and 359."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:715
-#: flatcamEditors/FlatCAMGrbEditor.py:4630 flatcamTools/ToolTransform.py:118
+#: flatcamEditors/FlatCAMGrbEditor.py:4638 flatcamTools/ToolTransform.py:118
 msgid "Skew X"
 msgstr "Skew X"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:717
 #: flatcamEditors/FlatCAMGeoEditor.py:735
-#: flatcamEditors/FlatCAMGrbEditor.py:4632
-#: flatcamEditors/FlatCAMGrbEditor.py:4650
+#: flatcamEditors/FlatCAMGrbEditor.py:4640
+#: flatcamEditors/FlatCAMGrbEditor.py:4658
 msgid ""
 "Skew/shear the selected shape(s).\n"
 "The point of reference is the middle of\n"
@@ -2393,34 +2398,34 @@ msgstr ""
 "the bounding box for all selected shapes."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:722
-#: flatcamEditors/FlatCAMGrbEditor.py:4637 flatcamTools/ToolTransform.py:125
+#: flatcamEditors/FlatCAMGrbEditor.py:4645 flatcamTools/ToolTransform.py:125
 msgid "Angle Y:"
 msgstr "Angle Y:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:733
-#: flatcamEditors/FlatCAMGrbEditor.py:4648 flatcamTools/ToolTransform.py:136
+#: flatcamEditors/FlatCAMGrbEditor.py:4656 flatcamTools/ToolTransform.py:136
 msgid "Skew Y"
 msgstr "Skew Y"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:761
-#: flatcamEditors/FlatCAMGrbEditor.py:4676 flatcamTools/ToolTransform.py:164
+#: flatcamEditors/FlatCAMGrbEditor.py:4684 flatcamTools/ToolTransform.py:164
 msgid "Factor X:"
 msgstr "Factor X:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:763
-#: flatcamEditors/FlatCAMGrbEditor.py:4678 flatcamTools/ToolTransform.py:166
+#: flatcamEditors/FlatCAMGrbEditor.py:4686 flatcamTools/ToolTransform.py:166
 msgid "Factor for Scale action over X axis."
 msgstr "Factor for Scale action over X axis."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:771
-#: flatcamEditors/FlatCAMGrbEditor.py:4686 flatcamTools/ToolTransform.py:174
+#: flatcamEditors/FlatCAMGrbEditor.py:4694 flatcamTools/ToolTransform.py:174
 msgid "Scale X"
 msgstr "Scale X"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:773
 #: flatcamEditors/FlatCAMGeoEditor.py:790
-#: flatcamEditors/FlatCAMGrbEditor.py:4688
-#: flatcamEditors/FlatCAMGrbEditor.py:4705
+#: flatcamEditors/FlatCAMGrbEditor.py:4696
+#: flatcamEditors/FlatCAMGrbEditor.py:4713
 msgid ""
 "Scale the selected shape(s).\n"
 "The point of reference depends on \n"
@@ -2431,28 +2436,28 @@ msgstr ""
 "the Scale reference checkbox state."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:778
-#: flatcamEditors/FlatCAMGrbEditor.py:4693 flatcamTools/ToolTransform.py:181
+#: flatcamEditors/FlatCAMGrbEditor.py:4701 flatcamTools/ToolTransform.py:181
 msgid "Factor Y:"
 msgstr "Factor Y:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:780
-#: flatcamEditors/FlatCAMGrbEditor.py:4695 flatcamTools/ToolTransform.py:183
+#: flatcamEditors/FlatCAMGrbEditor.py:4703 flatcamTools/ToolTransform.py:183
 msgid "Factor for Scale action over Y axis."
 msgstr "Factor for Scale action over Y axis."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:788
-#: flatcamEditors/FlatCAMGrbEditor.py:4703 flatcamTools/ToolTransform.py:191
+#: flatcamEditors/FlatCAMGrbEditor.py:4711 flatcamTools/ToolTransform.py:191
 msgid "Scale Y"
 msgstr "Scale Y"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:797
-#: flatcamEditors/FlatCAMGrbEditor.py:4712 flatcamGUI/FlatCAMGUI.py:6441
+#: flatcamEditors/FlatCAMGrbEditor.py:4720 flatcamGUI/FlatCAMGUI.py:6420
 #: flatcamTools/ToolTransform.py:200
 msgid "Link"
 msgstr "Link"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:799
-#: flatcamEditors/FlatCAMGrbEditor.py:4714
+#: flatcamEditors/FlatCAMGrbEditor.py:4722
 msgid ""
 "Scale the selected shape(s)\n"
 "using the Scale Factor X for both axis."
@@ -2461,13 +2466,13 @@ msgstr ""
 "using the Scale Factor X for both axis."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:805
-#: flatcamEditors/FlatCAMGrbEditor.py:4720 flatcamGUI/FlatCAMGUI.py:6449
+#: flatcamEditors/FlatCAMGrbEditor.py:4728 flatcamGUI/FlatCAMGUI.py:6428
 #: flatcamTools/ToolTransform.py:208
 msgid "Scale Reference"
 msgstr "Scale Reference"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:807
-#: flatcamEditors/FlatCAMGrbEditor.py:4722
+#: flatcamEditors/FlatCAMGrbEditor.py:4730
 msgid ""
 "Scale the selected shape(s)\n"
 "using the origin reference when checked,\n"
@@ -2480,24 +2485,24 @@ msgstr ""
 "of the selected shapes when unchecked."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:835
-#: flatcamEditors/FlatCAMGrbEditor.py:4751 flatcamTools/ToolTransform.py:238
+#: flatcamEditors/FlatCAMGrbEditor.py:4759 flatcamTools/ToolTransform.py:238
 msgid "Value X:"
 msgstr "Value X:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:837
-#: flatcamEditors/FlatCAMGrbEditor.py:4753 flatcamTools/ToolTransform.py:240
+#: flatcamEditors/FlatCAMGrbEditor.py:4761 flatcamTools/ToolTransform.py:240
 msgid "Value for Offset action on X axis."
 msgstr "Value for Offset action on X axis."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:845
-#: flatcamEditors/FlatCAMGrbEditor.py:4761 flatcamTools/ToolTransform.py:248
+#: flatcamEditors/FlatCAMGrbEditor.py:4769 flatcamTools/ToolTransform.py:248
 msgid "Offset X"
 msgstr "Offset X"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:847
 #: flatcamEditors/FlatCAMGeoEditor.py:865
-#: flatcamEditors/FlatCAMGrbEditor.py:4763
-#: flatcamEditors/FlatCAMGrbEditor.py:4781
+#: flatcamEditors/FlatCAMGrbEditor.py:4771
+#: flatcamEditors/FlatCAMGrbEditor.py:4789
 msgid ""
 "Offset the selected shape(s).\n"
 "The point of reference is the middle of\n"
@@ -2508,29 +2513,29 @@ msgstr ""
 "the bounding box for all selected shapes.\n"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:853
-#: flatcamEditors/FlatCAMGrbEditor.py:4769 flatcamTools/ToolTransform.py:255
+#: flatcamEditors/FlatCAMGrbEditor.py:4777 flatcamTools/ToolTransform.py:255
 msgid "Value Y:"
 msgstr "Value Y:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:855
-#: flatcamEditors/FlatCAMGrbEditor.py:4771 flatcamTools/ToolTransform.py:257
+#: flatcamEditors/FlatCAMGrbEditor.py:4779 flatcamTools/ToolTransform.py:257
 msgid "Value for Offset action on Y axis."
 msgstr "Value for Offset action on Y axis."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:863
-#: flatcamEditors/FlatCAMGrbEditor.py:4779 flatcamTools/ToolTransform.py:265
+#: flatcamEditors/FlatCAMGrbEditor.py:4787 flatcamTools/ToolTransform.py:265
 msgid "Offset Y"
 msgstr "Offset Y"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:894
-#: flatcamEditors/FlatCAMGrbEditor.py:4810 flatcamTools/ToolTransform.py:295
+#: flatcamEditors/FlatCAMGrbEditor.py:4818 flatcamTools/ToolTransform.py:295
 msgid "Flip on X"
 msgstr "Flip on X"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:896
 #: flatcamEditors/FlatCAMGeoEditor.py:904
-#: flatcamEditors/FlatCAMGrbEditor.py:4812
 #: flatcamEditors/FlatCAMGrbEditor.py:4820
+#: flatcamEditors/FlatCAMGrbEditor.py:4828
 msgid ""
 "Flip the selected shape(s) over the X axis.\n"
 "Does not create a new shape."
@@ -2539,17 +2544,17 @@ msgstr ""
 "Does not create a new shape."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:902
-#: flatcamEditors/FlatCAMGrbEditor.py:4818 flatcamTools/ToolTransform.py:303
+#: flatcamEditors/FlatCAMGrbEditor.py:4826 flatcamTools/ToolTransform.py:303
 msgid "Flip on Y"
 msgstr "Flip on Y"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:911
-#: flatcamEditors/FlatCAMGrbEditor.py:4827 flatcamTools/ToolTransform.py:312
+#: flatcamEditors/FlatCAMGrbEditor.py:4835 flatcamTools/ToolTransform.py:312
 msgid "Ref Pt"
 msgstr "Ref Pt"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:913
-#: flatcamEditors/FlatCAMGrbEditor.py:4829
+#: flatcamEditors/FlatCAMGrbEditor.py:4837
 msgid ""
 "Flip the selected shape(s)\n"
 "around the point in Point Entry Field.\n"
@@ -2572,12 +2577,12 @@ msgstr ""
 "Point Entry field and click Flip on X(Y)"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:925
-#: flatcamEditors/FlatCAMGrbEditor.py:4841 flatcamTools/ToolTransform.py:325
+#: flatcamEditors/FlatCAMGrbEditor.py:4849 flatcamTools/ToolTransform.py:325
 msgid "Point:"
 msgstr "Point:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:927
-#: flatcamEditors/FlatCAMGrbEditor.py:4843
+#: flatcamEditors/FlatCAMGrbEditor.py:4851
 msgid ""
 "Coordinates in format (x, y) used as reference for mirroring.\n"
 "The 'x' in (x, y) will be used when using Flip on X and\n"
@@ -2588,7 +2593,7 @@ msgstr ""
 "the 'y' in (x, y) will be used when using Flip on Y."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:939
-#: flatcamEditors/FlatCAMGrbEditor.py:4855 flatcamTools/ToolTransform.py:339
+#: flatcamEditors/FlatCAMGrbEditor.py:4863 flatcamTools/ToolTransform.py:339
 msgid ""
 "The point coordinates can be captured by\n"
 "left click on canvas together with pressing\n"
@@ -2599,236 +2604,236 @@ msgstr ""
 "SHIFT key. Then click Add button to insert."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1054
-#: flatcamEditors/FlatCAMGrbEditor.py:4980
+#: flatcamEditors/FlatCAMGrbEditor.py:4988
 msgid "[WARNING_NOTCL] Transformation cancelled. No shape selected."
 msgstr "[WARNING_NOTCL] Transformation cancelled. No shape selected."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1075
-#: flatcamEditors/FlatCAMGrbEditor.py:5000 flatcamTools/ToolTransform.py:468
+#: flatcamEditors/FlatCAMGrbEditor.py:5008 flatcamTools/ToolTransform.py:468
 msgid "[ERROR_NOTCL] Wrong value format entered for Rotate, use a number."
 msgstr "[ERROR_NOTCL] Wrong value format entered for Rotate, use a number."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1112
-#: flatcamEditors/FlatCAMGrbEditor.py:5043 flatcamTools/ToolTransform.py:502
+#: flatcamEditors/FlatCAMGrbEditor.py:5051 flatcamTools/ToolTransform.py:502
 msgid "[ERROR_NOTCL] Wrong value format entered for Skew X, use a number."
 msgstr "[ERROR_NOTCL] Wrong value format entered for Skew X, use a number."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1133
-#: flatcamEditors/FlatCAMGrbEditor.py:5070 flatcamTools/ToolTransform.py:520
+#: flatcamEditors/FlatCAMGrbEditor.py:5078 flatcamTools/ToolTransform.py:520
 msgid "[ERROR_NOTCL] Wrong value format entered for Skew Y, use a number."
 msgstr "[ERROR_NOTCL] Wrong value format entered for Skew Y, use a number."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1154
-#: flatcamEditors/FlatCAMGrbEditor.py:5097 flatcamTools/ToolTransform.py:538
+#: flatcamEditors/FlatCAMGrbEditor.py:5105 flatcamTools/ToolTransform.py:538
 msgid "[ERROR_NOTCL] Wrong value format entered for Scale X, use a number."
 msgstr "[ERROR_NOTCL] Wrong value format entered for Scale X, use a number."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1191
-#: flatcamEditors/FlatCAMGrbEditor.py:5138 flatcamTools/ToolTransform.py:572
+#: flatcamEditors/FlatCAMGrbEditor.py:5146 flatcamTools/ToolTransform.py:572
 msgid "[ERROR_NOTCL] Wrong value format entered for Scale Y, use a number."
 msgstr "[ERROR_NOTCL] Wrong value format entered for Scale Y, use a number."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1223
-#: flatcamEditors/FlatCAMGrbEditor.py:5176 flatcamTools/ToolTransform.py:601
+#: flatcamEditors/FlatCAMGrbEditor.py:5184 flatcamTools/ToolTransform.py:601
 msgid "[ERROR_NOTCL] Wrong value format entered for Offset X, use a number."
 msgstr "[ERROR_NOTCL] Wrong value format entered for Offset X, use a number."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1244
-#: flatcamEditors/FlatCAMGrbEditor.py:5202 flatcamTools/ToolTransform.py:619
+#: flatcamEditors/FlatCAMGrbEditor.py:5210 flatcamTools/ToolTransform.py:619
 msgid "[ERROR_NOTCL] Wrong value format entered for Offset Y, use a number."
 msgstr "[ERROR_NOTCL] Wrong value format entered for Offset Y, use a number."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1262
-#: flatcamEditors/FlatCAMGrbEditor.py:5225
+#: flatcamEditors/FlatCAMGrbEditor.py:5233
 msgid "[WARNING_NOTCL] No shape selected. Please Select a shape to rotate!"
 msgstr "[WARNING_NOTCL] No shape selected. Please Select a shape to rotate!"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1265
-#: flatcamEditors/FlatCAMGrbEditor.py:5228 flatcamTools/ToolTransform.py:640
+#: flatcamEditors/FlatCAMGrbEditor.py:5236 flatcamTools/ToolTransform.py:640
 msgid "Appying Rotate"
 msgstr "Appying Rotate"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1293
-#: flatcamEditors/FlatCAMGrbEditor.py:5259
+#: flatcamEditors/FlatCAMGrbEditor.py:5269
 msgid "[success] Done. Rotate completed."
 msgstr "[success] Done. Rotate completed."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1309
-#: flatcamEditors/FlatCAMGrbEditor.py:5278
+#: flatcamEditors/FlatCAMGrbEditor.py:5288
 msgid "[WARNING_NOTCL] No shape selected. Please Select a shape to flip!"
 msgstr "[WARNING_NOTCL] No shape selected. Please Select a shape to flip!"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1312
-#: flatcamEditors/FlatCAMGrbEditor.py:5281 flatcamTools/ToolTransform.py:691
+#: flatcamEditors/FlatCAMGrbEditor.py:5291 flatcamTools/ToolTransform.py:691
 msgid "Applying Flip"
 msgstr "Applying Flip"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1342
-#: flatcamEditors/FlatCAMGrbEditor.py:5318 flatcamTools/ToolTransform.py:733
+#: flatcamEditors/FlatCAMGrbEditor.py:5330 flatcamTools/ToolTransform.py:733
 msgid "[success] Flip on the Y axis done ..."
 msgstr "[success] Flip on the Y axis done ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1345
-#: flatcamEditors/FlatCAMGrbEditor.py:5326 flatcamTools/ToolTransform.py:742
+#: flatcamEditors/FlatCAMGrbEditor.py:5338 flatcamTools/ToolTransform.py:742
 msgid "[success] Flip on the X axis done ..."
 msgstr "[success] Flip on the X axis done ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1364
-#: flatcamEditors/FlatCAMGrbEditor.py:5346
+#: flatcamEditors/FlatCAMGrbEditor.py:5358
 msgid "[WARNING_NOTCL] No shape selected. Please Select a shape to shear/skew!"
 msgstr ""
 "[WARNING_NOTCL] No shape selected. Please Select a shape to shear/skew!"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1367
-#: flatcamEditors/FlatCAMGrbEditor.py:5349 flatcamTools/ToolTransform.py:760
+#: flatcamEditors/FlatCAMGrbEditor.py:5361 flatcamTools/ToolTransform.py:760
 msgid "Applying Skew"
 msgstr "Applying Skew"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1392
-#: flatcamEditors/FlatCAMGrbEditor.py:5382 flatcamTools/ToolTransform.py:791
+#: flatcamEditors/FlatCAMGrbEditor.py:5396 flatcamTools/ToolTransform.py:791
 #, python-format
 msgid "[success] Skew on the %s axis done ..."
 msgstr "[success] Skew on the %s axis done ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1396
-#: flatcamEditors/FlatCAMGrbEditor.py:5386 flatcamTools/ToolTransform.py:795
+#: flatcamEditors/FlatCAMGrbEditor.py:5400 flatcamTools/ToolTransform.py:795
 #, python-format
 msgid "[ERROR_NOTCL] Due of %s, Skew action was not executed."
 msgstr "[ERROR_NOTCL] Due of %s, Skew action was not executed."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1407
-#: flatcamEditors/FlatCAMGrbEditor.py:5405
+#: flatcamEditors/FlatCAMGrbEditor.py:5419
 msgid "[WARNING_NOTCL] No shape selected. Please Select a shape to scale!"
 msgstr "[WARNING_NOTCL] No shape selected. Please Select a shape to scale!"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1410
-#: flatcamEditors/FlatCAMGrbEditor.py:5408 flatcamTools/ToolTransform.py:809
+#: flatcamEditors/FlatCAMGrbEditor.py:5422 flatcamTools/ToolTransform.py:809
 msgid "Applying Scale"
 msgstr "Applying Scale"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1443
-#: flatcamEditors/FlatCAMGrbEditor.py:5444 flatcamTools/ToolTransform.py:848
+#: flatcamEditors/FlatCAMGrbEditor.py:5460 flatcamTools/ToolTransform.py:848
 #, python-format
 msgid "[success] Scale on the %s axis done ..."
 msgstr "[success] Scale on the %s axis done ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1446
-#: flatcamEditors/FlatCAMGrbEditor.py:5447 flatcamTools/ToolTransform.py:851
+#: flatcamEditors/FlatCAMGrbEditor.py:5463 flatcamTools/ToolTransform.py:851
 #, python-format
 msgid "[ERROR_NOTCL] Due of %s, Scale action was not executed."
 msgstr "[ERROR_NOTCL] Due of %s, Scale action was not executed."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1455
-#: flatcamEditors/FlatCAMGrbEditor.py:5460
+#: flatcamEditors/FlatCAMGrbEditor.py:5476
 msgid "[WARNING_NOTCL] No shape selected. Please Select a shape to offset!"
 msgstr "[WARNING_NOTCL] No shape selected. Please Select a shape to offset!"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1458
-#: flatcamEditors/FlatCAMGrbEditor.py:5463 flatcamTools/ToolTransform.py:861
+#: flatcamEditors/FlatCAMGrbEditor.py:5479 flatcamTools/ToolTransform.py:861
 msgid "Applying Offset"
 msgstr "Applying Offset"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1469
-#: flatcamEditors/FlatCAMGrbEditor.py:5484 flatcamTools/ToolTransform.py:880
+#: flatcamEditors/FlatCAMGrbEditor.py:5501 flatcamTools/ToolTransform.py:880
 #, python-format
 msgid "[success] Offset on the %s axis done ..."
 msgstr "[success] Offset on the %s axis done ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1473
-#: flatcamEditors/FlatCAMGrbEditor.py:5488 flatcamTools/ToolTransform.py:884
+#: flatcamEditors/FlatCAMGrbEditor.py:5505 flatcamTools/ToolTransform.py:884
 #, python-format
 msgid "[ERROR_NOTCL] Due of %s, Offset action was not executed."
 msgstr "[ERROR_NOTCL] Due of %s, Offset action was not executed."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1477
-#: flatcamEditors/FlatCAMGrbEditor.py:5492
+#: flatcamEditors/FlatCAMGrbEditor.py:5509
 msgid "Rotate ..."
 msgstr "Rotate ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1478
 #: flatcamEditors/FlatCAMGeoEditor.py:1535
 #: flatcamEditors/FlatCAMGeoEditor.py:1552
-#: flatcamEditors/FlatCAMGrbEditor.py:5493
-#: flatcamEditors/FlatCAMGrbEditor.py:5550
+#: flatcamEditors/FlatCAMGrbEditor.py:5510
 #: flatcamEditors/FlatCAMGrbEditor.py:5567
+#: flatcamEditors/FlatCAMGrbEditor.py:5584
 msgid "Enter an Angle Value (degrees):"
 msgstr "Enter an Angle Value (degrees):"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1487
-#: flatcamEditors/FlatCAMGrbEditor.py:5502
+#: flatcamEditors/FlatCAMGrbEditor.py:5519
 msgid "[success] Geometry shape rotate done..."
 msgstr "[success] Geometry shape rotate done..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1492
-#: flatcamEditors/FlatCAMGrbEditor.py:5507
+#: flatcamEditors/FlatCAMGrbEditor.py:5524
 msgid "[WARNING_NOTCL] Geometry shape rotate cancelled..."
 msgstr "[WARNING_NOTCL] Geometry shape rotate cancelled..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1498
-#: flatcamEditors/FlatCAMGrbEditor.py:5513
+#: flatcamEditors/FlatCAMGrbEditor.py:5530
 msgid "Offset on X axis ..."
 msgstr "Offset on X axis ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1499
 #: flatcamEditors/FlatCAMGeoEditor.py:1518
-#: flatcamEditors/FlatCAMGrbEditor.py:5514
-#: flatcamEditors/FlatCAMGrbEditor.py:5533
+#: flatcamEditors/FlatCAMGrbEditor.py:5531
+#: flatcamEditors/FlatCAMGrbEditor.py:5550
 #, python-format
 msgid "Enter a distance Value (%s):"
 msgstr "Enter a distance Value (%s):"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1508
-#: flatcamEditors/FlatCAMGrbEditor.py:5523
+#: flatcamEditors/FlatCAMGrbEditor.py:5540
 msgid "[success] Geometry shape offset on X axis done..."
 msgstr "[success] Geometry shape offset on X axis done..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1512
-#: flatcamEditors/FlatCAMGrbEditor.py:5527
+#: flatcamEditors/FlatCAMGrbEditor.py:5544
 msgid "[WARNING_NOTCL] Geometry shape offset X cancelled..."
 msgstr "[WARNING_NOTCL] Geometry shape offset X cancelled..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1517
-#: flatcamEditors/FlatCAMGrbEditor.py:5532
+#: flatcamEditors/FlatCAMGrbEditor.py:5549
 msgid "Offset on Y axis ..."
 msgstr "Offset on Y axis ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1527
-#: flatcamEditors/FlatCAMGrbEditor.py:5542
+#: flatcamEditors/FlatCAMGrbEditor.py:5559
 msgid "[success] Geometry shape offset on Y axis done..."
 msgstr "[success] Geometry shape offset on Y axis done..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1531
-#: flatcamEditors/FlatCAMGrbEditor.py:5546
+#: flatcamEditors/FlatCAMGrbEditor.py:5563
 msgid "[WARNING_NOTCL] Geometry shape offset Y cancelled..."
 msgstr "[WARNING_NOTCL] Geometry shape offset Y cancelled..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1534
-#: flatcamEditors/FlatCAMGrbEditor.py:5549
+#: flatcamEditors/FlatCAMGrbEditor.py:5566
 msgid "Skew on X axis ..."
 msgstr "Skew on X axis ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1544
-#: flatcamEditors/FlatCAMGrbEditor.py:5559
+#: flatcamEditors/FlatCAMGrbEditor.py:5576
 msgid "[success] Geometry shape skew on X axis done..."
 msgstr "[success] Geometry shape skew on X axis done..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1548
-#: flatcamEditors/FlatCAMGrbEditor.py:5563
+#: flatcamEditors/FlatCAMGrbEditor.py:5580
 msgid "[WARNING_NOTCL] Geometry shape skew X cancelled..."
 msgstr "[WARNING_NOTCL] Geometry shape skew X cancelled..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1551
-#: flatcamEditors/FlatCAMGrbEditor.py:5566
+#: flatcamEditors/FlatCAMGrbEditor.py:5583
 msgid "Skew on Y axis ..."
 msgstr "Skew on Y axis ..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1561
-#: flatcamEditors/FlatCAMGrbEditor.py:5576
+#: flatcamEditors/FlatCAMGrbEditor.py:5593
 msgid "[success] Geometry shape skew on Y axis done..."
 msgstr "[success] Geometry shape skew on Y axis done..."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:1565
-#: flatcamEditors/FlatCAMGrbEditor.py:5580
+#: flatcamEditors/FlatCAMGrbEditor.py:5597
 msgid "[WARNING_NOTCL] Geometry shape skew Y cancelled..."
 msgstr "[WARNING_NOTCL] Geometry shape skew Y cancelled..."
 
@@ -2981,7 +2986,7 @@ msgid "[WARNING_NOTCL] Buffer cancelled. No shape selected."
 msgstr "[WARNING_NOTCL] Buffer cancelled. No shape selected."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2711
-#: flatcamEditors/FlatCAMGrbEditor.py:4442
+#: flatcamEditors/FlatCAMGrbEditor.py:4447
 msgid "[success] Done. Buffer Tool completed."
 msgstr "[success] Done. Buffer Tool completed."
 
@@ -3024,26 +3029,26 @@ msgstr "Create Paint geometry ..."
 msgid "Shape transformations ..."
 msgstr "Shape transformations ..."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:3416
+#: flatcamEditors/FlatCAMGeoEditor.py:3419
 #, python-brace-format
 msgid ""
 "[WARNING_NOTCL] Editing MultiGeo Geometry, tool: {tool} with diameter: {dia}"
 msgstr ""
 "[WARNING_NOTCL] Editing MultiGeo Geometry, tool: {tool} with diameter: {dia}"
 
-#: flatcamEditors/FlatCAMGeoEditor.py:3793
+#: flatcamEditors/FlatCAMGeoEditor.py:3796
 msgid "[WARNING_NOTCL] Copy cancelled. No shape selected."
 msgstr "[WARNING_NOTCL] Copy cancelled. No shape selected."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:3800 flatcamGUI/FlatCAMGUI.py:2727
+#: flatcamEditors/FlatCAMGeoEditor.py:3803 flatcamGUI/FlatCAMGUI.py:2727
 #: flatcamGUI/FlatCAMGUI.py:2773 flatcamGUI/FlatCAMGUI.py:2791
 #: flatcamGUI/FlatCAMGUI.py:2922 flatcamGUI/FlatCAMGUI.py:2934
 #: flatcamGUI/FlatCAMGUI.py:2968
 msgid "Click on target point."
 msgstr "Click on target point."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4044
-#: flatcamEditors/FlatCAMGeoEditor.py:4079
+#: flatcamEditors/FlatCAMGeoEditor.py:4047
+#: flatcamEditors/FlatCAMGeoEditor.py:4082
 msgid ""
 "[WARNING_NOTCL] A selection of at least 2 geo items is required to do "
 "Intersection."
@@ -3051,9 +3056,9 @@ msgstr ""
 "[WARNING_NOTCL] A selection of at least 2 geo items is required to do "
 "Intersection."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4163
-#: flatcamEditors/FlatCAMGeoEditor.py:4201
-#: flatcamEditors/FlatCAMGeoEditor.py:4277
+#: flatcamEditors/FlatCAMGeoEditor.py:4166
+#: flatcamEditors/FlatCAMGeoEditor.py:4204
+#: flatcamEditors/FlatCAMGeoEditor.py:4280
 msgid ""
 "[ERROR_NOTCL] Negative buffer value is not accepted. Use Buffer interior to "
 "generate an 'inside' shape"
@@ -3061,52 +3066,52 @@ msgstr ""
 "[ERROR_NOTCL] Negative buffer value is not accepted. Use Buffer interior to "
 "generate an 'inside' shape"
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4172
-#: flatcamEditors/FlatCAMGeoEditor.py:4210
-#: flatcamEditors/FlatCAMGeoEditor.py:4285
+#: flatcamEditors/FlatCAMGeoEditor.py:4175
+#: flatcamEditors/FlatCAMGeoEditor.py:4213
+#: flatcamEditors/FlatCAMGeoEditor.py:4288
 msgid "[WARNING_NOTCL] Nothing selected for buffering."
 msgstr "[WARNING_NOTCL] Nothing selected for buffering."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4176
-#: flatcamEditors/FlatCAMGeoEditor.py:4214
-#: flatcamEditors/FlatCAMGeoEditor.py:4289
+#: flatcamEditors/FlatCAMGeoEditor.py:4179
+#: flatcamEditors/FlatCAMGeoEditor.py:4217
+#: flatcamEditors/FlatCAMGeoEditor.py:4292
 msgid "[WARNING_NOTCL] Invalid distance for buffering."
 msgstr "[WARNING_NOTCL] Invalid distance for buffering."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4186
-#: flatcamEditors/FlatCAMGeoEditor.py:4298
+#: flatcamEditors/FlatCAMGeoEditor.py:4189
+#: flatcamEditors/FlatCAMGeoEditor.py:4301
 msgid ""
 "[ERROR_NOTCL] Failed, the result is empty. Choose a different buffer value."
 msgstr ""
 "[ERROR_NOTCL] Failed, the result is empty. Choose a different buffer value."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4194
+#: flatcamEditors/FlatCAMGeoEditor.py:4197
 msgid "[success] Full buffer geometry created."
 msgstr "[success] Full buffer geometry created."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4224
+#: flatcamEditors/FlatCAMGeoEditor.py:4227
 msgid ""
 "[ERROR_NOTCL] Failed, the result is empty. Choose a smaller buffer value."
 msgstr ""
 "[ERROR_NOTCL] Failed, the result is empty. Choose a smaller buffer value."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4239
+#: flatcamEditors/FlatCAMGeoEditor.py:4242
 msgid "[success] Interior buffer geometry created."
 msgstr "[success] Interior buffer geometry created."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4310
+#: flatcamEditors/FlatCAMGeoEditor.py:4313
 msgid "[success] Exterior buffer geometry created."
 msgstr "[success] Exterior buffer geometry created."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4374
+#: flatcamEditors/FlatCAMGeoEditor.py:4377
 msgid "[WARNING_NOTCL] Nothing selected for painting."
 msgstr "[WARNING_NOTCL] Nothing selected for painting."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4380
+#: flatcamEditors/FlatCAMGeoEditor.py:4383
 msgid "[WARNING] Invalid value for {}"
 msgstr "[WARNING] Invalid value for {}"
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4386
+#: flatcamEditors/FlatCAMGeoEditor.py:4389
 msgid ""
 "[ERROR_NOTCL] Could not do Paint. Overlap value has to be less than 1.00 "
 "(100%)."
@@ -3114,7 +3119,7 @@ msgstr ""
 "[ERROR_NOTCL] Could not do Paint. Overlap value has to be less than 1.00 "
 "(100%)."
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4445
+#: flatcamEditors/FlatCAMGeoEditor.py:4448
 #, python-format
 msgid ""
 "[ERROR] Could not do Paint. Try a different combination of parameters. Or a "
@@ -3125,7 +3130,7 @@ msgstr ""
 "different method of Paint\n"
 "%s"
 
-#: flatcamEditors/FlatCAMGeoEditor.py:4456
+#: flatcamEditors/FlatCAMGeoEditor.py:4459
 msgid "[success] Paint done."
 msgstr "[success] Paint done."
 
@@ -3289,23 +3294,23 @@ msgid "Apertures Table for the Gerber Object."
 msgstr "Apertures Table for the Gerber Object."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2291
-#: flatcamEditors/FlatCAMGrbEditor.py:3602 flatcamGUI/ObjectUI.py:228
+#: flatcamEditors/FlatCAMGrbEditor.py:3601 flatcamGUI/ObjectUI.py:228
 msgid "Code"
 msgstr "Code"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2291
-#: flatcamEditors/FlatCAMGrbEditor.py:3602 flatcamGUI/ObjectUI.py:228
+#: flatcamEditors/FlatCAMGrbEditor.py:3601 flatcamGUI/ObjectUI.py:228
 #: flatcamGUI/ObjectUI.py:891 flatcamGUI/ObjectUI.py:1465
 msgid "Type"
 msgstr "Type"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2291
-#: flatcamEditors/FlatCAMGrbEditor.py:3602 flatcamGUI/ObjectUI.py:228
+#: flatcamEditors/FlatCAMGrbEditor.py:3601 flatcamGUI/ObjectUI.py:228
 msgid "Size"
 msgstr "Size"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2291
-#: flatcamEditors/FlatCAMGrbEditor.py:3602 flatcamGUI/ObjectUI.py:228
+#: flatcamEditors/FlatCAMGrbEditor.py:3601 flatcamGUI/ObjectUI.py:228
 msgid "Dim"
 msgstr "Dim"
 
@@ -3553,15 +3558,15 @@ msgstr "[success] Gerber editing finished."
 msgid "[WARNING_NOTCL] Cancelled. No aperture is selected"
 msgstr "[WARNING_NOTCL] Cancelled. No aperture is selected"
 
-#: flatcamEditors/FlatCAMGrbEditor.py:4270
+#: flatcamEditors/FlatCAMGrbEditor.py:4280
 msgid "[ERROR_NOTCL] Failed. No aperture geometry is selected."
 msgstr "[ERROR_NOTCL] Failed. No aperture geometry is selected."
 
-#: flatcamEditors/FlatCAMGrbEditor.py:4278
+#: flatcamEditors/FlatCAMGrbEditor.py:4288
 msgid "[success] Done. Apertures geometry deleted."
 msgstr "[success] Done. Apertures geometry deleted."
 
-#: flatcamEditors/FlatCAMGrbEditor.py:4427
+#: flatcamEditors/FlatCAMGrbEditor.py:4431
 msgid ""
 "[WARNING_NOTCL] No aperture to buffer. Select at least one aperture and try "
 "again."
@@ -3569,7 +3574,16 @@ msgstr ""
 "[WARNING_NOTCL] No aperture to buffer. Select at least one aperture and try "
 "again."
 
-#: flatcamEditors/FlatCAMGrbEditor.py:4456
+#: flatcamEditors/FlatCAMGrbEditor.py:4444
+#, python-format
+msgid ""
+"[ERROR_NOTCL] Failed.\n"
+"%s"
+msgstr ""
+"[ERROR_NOTCL] Failed.\n"
+"%s"
+
+#: flatcamEditors/FlatCAMGrbEditor.py:4461
 msgid ""
 "[WARNING_NOTCL] Scale factor value is missing or wrong format. Add it and "
 "retry."
@@ -3577,7 +3591,7 @@ msgstr ""
 "[WARNING_NOTCL] Scale factor value is missing or wrong format. Add it and "
 "retry."
 
-#: flatcamEditors/FlatCAMGrbEditor.py:4486
+#: flatcamEditors/FlatCAMGrbEditor.py:4494
 msgid ""
 "[WARNING_NOTCL] No aperture to scale. Select at least one aperture and try "
 "again."
@@ -3585,7 +3599,7 @@ msgstr ""
 "[WARNING_NOTCL] No aperture to scale. Select at least one aperture and try "
 "again."
 
-#: flatcamEditors/FlatCAMGrbEditor.py:4502
+#: flatcamEditors/FlatCAMGrbEditor.py:4510
 msgid "[success] Done. Scale Tool completed."
 msgstr "[success] Done. Scale Tool completed."
 
@@ -6476,12 +6490,11 @@ msgstr ""
 "but require more RAM usage and more processing time."
 
 #: flatcamGUI/FlatCAMGUI.py:3992
-#| msgid "Geometry General"
 msgid "Gerber General"
 msgstr "Gerber General"
 
 #: flatcamGUI/FlatCAMGUI.py:3995 flatcamGUI/FlatCAMGUI.py:4361
-#: flatcamGUI/FlatCAMGUI.py:5153 flatcamGUI/FlatCAMGUI.py:5525
+#: flatcamGUI/FlatCAMGUI.py:5135 flatcamGUI/FlatCAMGUI.py:5504
 #: flatcamGUI/ObjectUI.py:150 flatcamGUI/ObjectUI.py:505
 #: flatcamGUI/ObjectUI.py:833 flatcamGUI/ObjectUI.py:1350
 msgid "<b>Plot Options:</b>"
@@ -6505,18 +6518,18 @@ msgid "Draw polygons in different colors."
 msgstr "Draw polygons in different colors."
 
 #: flatcamGUI/FlatCAMGUI.py:4016 flatcamGUI/FlatCAMGUI.py:4367
-#: flatcamGUI/FlatCAMGUI.py:5157 flatcamGUI/ObjectUI.py:172
+#: flatcamGUI/FlatCAMGUI.py:5139 flatcamGUI/ObjectUI.py:172
 msgid "Plot"
 msgstr "Plot"
 
-#: flatcamGUI/FlatCAMGUI.py:4018 flatcamGUI/FlatCAMGUI.py:5159
+#: flatcamGUI/FlatCAMGUI.py:4018 flatcamGUI/FlatCAMGUI.py:5141
 #: flatcamGUI/ObjectUI.py:174 flatcamGUI/ObjectUI.py:546
 #: flatcamGUI/ObjectUI.py:879 flatcamGUI/ObjectUI.py:1450
 msgid "Plot (show) this object."
 msgstr "Plot (show) this object."
 
-#: flatcamGUI/FlatCAMGUI.py:4023 flatcamGUI/FlatCAMGUI.py:5166
-#: flatcamGUI/FlatCAMGUI.py:5608
+#: flatcamGUI/FlatCAMGUI.py:4023 flatcamGUI/FlatCAMGUI.py:5149
+#: flatcamGUI/FlatCAMGUI.py:5587
 msgid "Circle Steps:"
 msgstr "Circle Steps:"
 
@@ -6544,8 +6557,8 @@ msgstr ""
 "Create a Geometry object with\n"
 "toolpaths to cut outside polygons."
 
-#: flatcamGUI/FlatCAMGUI.py:4056 flatcamGUI/FlatCAMGUI.py:4753
-#: flatcamGUI/FlatCAMGUI.py:5897 flatcamGUI/ObjectUI.py:788
+#: flatcamGUI/FlatCAMGUI.py:4056 flatcamGUI/FlatCAMGUI.py:4735
+#: flatcamGUI/FlatCAMGUI.py:5876 flatcamGUI/ObjectUI.py:788
 #: flatcamGUI/ObjectUI.py:804
 msgid "Diameter of the cutting tool."
 msgstr "Diameter of the cutting tool."
@@ -6605,7 +6618,7 @@ msgstr "Combine all passes into one object"
 msgid "<b>Clear non-copper:</b>"
 msgstr "<b>Clear non-copper:</b>"
 
-#: flatcamGUI/FlatCAMGUI.py:4104 flatcamGUI/FlatCAMGUI.py:5785
+#: flatcamGUI/FlatCAMGUI.py:4104 flatcamGUI/FlatCAMGUI.py:5764
 #: flatcamGUI/ObjectUI.py:386
 msgid ""
 "Create a Geometry object with\n"
@@ -6717,7 +6730,7 @@ msgstr ""
 msgid "Gerber Export"
 msgstr "Gerber Export"
 
-#: flatcamGUI/FlatCAMGUI.py:4232 flatcamGUI/FlatCAMGUI.py:4902
+#: flatcamGUI/FlatCAMGUI.py:4232 flatcamGUI/FlatCAMGUI.py:4884
 msgid "<b>Export Options:</b>"
 msgstr "<b>Export Options:</b>"
 
@@ -6729,7 +6742,7 @@ msgstr ""
 "The parameters set here are used in the file exported\n"
 "when using the File -> Export -> Export Gerber menu entry."
 
-#: flatcamGUI/FlatCAMGUI.py:4243 flatcamGUI/FlatCAMGUI.py:4913
+#: flatcamGUI/FlatCAMGUI.py:4243 flatcamGUI/FlatCAMGUI.py:4895
 msgid "<b>Units</b>:"
 msgstr "<b>Units</b>:"
 
@@ -6737,7 +6750,7 @@ msgstr "<b>Units</b>:"
 msgid "The units used in the Gerber file."
 msgstr "The units used in the Gerber file."
 
-#: flatcamGUI/FlatCAMGUI.py:4257 flatcamGUI/FlatCAMGUI.py:4927
+#: flatcamGUI/FlatCAMGUI.py:4257 flatcamGUI/FlatCAMGUI.py:4909
 msgid "<b>Int/Decimals:</b>"
 msgstr "<b>Int/Decimals:</b>"
 
@@ -6765,7 +6778,7 @@ msgstr ""
 "This numbers signify the number of digits in\n"
 "the decimal part of Gerber coordinates."
 
-#: flatcamGUI/FlatCAMGUI.py:4293 flatcamGUI/FlatCAMGUI.py:4988
+#: flatcamGUI/FlatCAMGUI.py:4293 flatcamGUI/FlatCAMGUI.py:4970
 msgid "<b>Zeros</b>:"
 msgstr "<b>Zeros</b>:"
 
@@ -6783,12 +6796,12 @@ msgstr ""
 "If TZ is checked then Trailing Zeros are removed\n"
 "and Leading Zeros are kept."
 
-#: flatcamGUI/FlatCAMGUI.py:4326 flatcamGUI/FlatCAMGUI.py:5029
-#: flatcamGUI/FlatCAMGUI.py:5491 flatcamGUI/FlatCAMGUI.py:5783
-#: flatcamGUI/FlatCAMGUI.py:5884 flatcamGUI/FlatCAMGUI.py:5963
-#: flatcamGUI/FlatCAMGUI.py:6022 flatcamGUI/FlatCAMGUI.py:6125
-#: flatcamGUI/FlatCAMGUI.py:6186 flatcamGUI/FlatCAMGUI.py:6385
-#: flatcamGUI/FlatCAMGUI.py:6512
+#: flatcamGUI/FlatCAMGUI.py:4326 flatcamGUI/FlatCAMGUI.py:5011
+#: flatcamGUI/FlatCAMGUI.py:5470 flatcamGUI/FlatCAMGUI.py:5762
+#: flatcamGUI/FlatCAMGUI.py:5863 flatcamGUI/FlatCAMGUI.py:5942
+#: flatcamGUI/FlatCAMGUI.py:6001 flatcamGUI/FlatCAMGUI.py:6104
+#: flatcamGUI/FlatCAMGUI.py:6165 flatcamGUI/FlatCAMGUI.py:6364
+#: flatcamGUI/FlatCAMGUI.py:6491
 msgid "<b>Parameters:</b>"
 msgstr "<b>Parameters:</b>"
 
@@ -6796,8 +6809,8 @@ msgstr "<b>Parameters:</b>"
 msgid "A list of Gerber Editor parameters."
 msgstr "A list of Gerber Editor parameters."
 
-#: flatcamGUI/FlatCAMGUI.py:4336 flatcamGUI/FlatCAMGUI.py:5039
-#: flatcamGUI/FlatCAMGUI.py:5501
+#: flatcamGUI/FlatCAMGUI.py:4336 flatcamGUI/FlatCAMGUI.py:5021
+#: flatcamGUI/FlatCAMGUI.py:5480
 msgid "Selection limit:"
 msgstr "Selection limit:"
 
@@ -6874,7 +6887,7 @@ msgid "Default values for INCH are 2:4"
 msgstr "Default values for INCH are 2:4"
 
 #: flatcamGUI/FlatCAMGUI.py:4418 flatcamGUI/FlatCAMGUI.py:4451
-#: flatcamGUI/FlatCAMGUI.py:4942
+#: flatcamGUI/FlatCAMGUI.py:4924
 msgid ""
 "This numbers signify the number of digits in\n"
 "the whole part of Excellon coordinates."
@@ -6883,7 +6896,7 @@ msgstr ""
 "the whole part of Excellon coordinates."
 
 #: flatcamGUI/FlatCAMGUI.py:4432 flatcamGUI/FlatCAMGUI.py:4465
-#: flatcamGUI/FlatCAMGUI.py:4956
+#: flatcamGUI/FlatCAMGUI.py:4938
 msgid ""
 "This numbers signify the number of digits in\n"
 "the decimal part of Excellon coordinates."
@@ -6903,7 +6916,7 @@ msgstr "Default values for METRIC are 3:3"
 msgid "Default <b>Zeros</b>:"
 msgstr "Default <b>Zeros</b>:"
 
-#: flatcamGUI/FlatCAMGUI.py:4477 flatcamGUI/FlatCAMGUI.py:4991
+#: flatcamGUI/FlatCAMGUI.py:4477 flatcamGUI/FlatCAMGUI.py:4973
 msgid ""
 "This sets the type of Excellon zeros.\n"
 "If LZ then Leading Zeros are kept and\n"
@@ -6933,11 +6946,11 @@ msgstr ""
 "If TZ is checked then Trailing Zeros are kept\n"
 "and Leading Zeros are removed."
 
-#: flatcamGUI/FlatCAMGUI.py:4502
+#: flatcamGUI/FlatCAMGUI.py:4498
 msgid "Default <b>Units</b>:"
 msgstr "Default <b>Units</b>:"
 
-#: flatcamGUI/FlatCAMGUI.py:4505
+#: flatcamGUI/FlatCAMGUI.py:4501
 msgid ""
 "This sets the default units of Excellon files.\n"
 "If it is not detected in the parsed file the value here\n"
@@ -6949,7 +6962,7 @@ msgstr ""
 "will be used.Some Excellon files don't have an header\n"
 "therefore this parameter will be used."
 
-#: flatcamGUI/FlatCAMGUI.py:4516
+#: flatcamGUI/FlatCAMGUI.py:4512
 msgid ""
 "This sets the units of Excellon files.\n"
 "Some Excellon files don't have an header\n"
@@ -6959,15 +6972,15 @@ msgstr ""
 "Some Excellon files don't have an header\n"
 "therefore this parameter will be used."
 
-#: flatcamGUI/FlatCAMGUI.py:4532
+#: flatcamGUI/FlatCAMGUI.py:4520
 msgid "<b>Excellon Optimization:</b>"
 msgstr "<b>Excellon Optimization:</b>"
 
-#: flatcamGUI/FlatCAMGUI.py:4539
+#: flatcamGUI/FlatCAMGUI.py:4523
 msgid "Algorithm:   "
 msgstr "Algorithm:   "
 
-#: flatcamGUI/FlatCAMGUI.py:4542 flatcamGUI/FlatCAMGUI.py:4555
+#: flatcamGUI/FlatCAMGUI.py:4525 flatcamGUI/FlatCAMGUI.py:4539
 msgid ""
 "This sets the optimization type for the Excellon drill path.\n"
 "If MH is checked then Google OR-Tools algorithm with MetaHeuristic\n"
@@ -6987,11 +7000,11 @@ msgstr ""
 "If DISABLED, then FlatCAM works in 32bit mode and it uses \n"
 "Travelling Salesman algorithm for path optimization."
 
-#: flatcamGUI/FlatCAMGUI.py:4567
+#: flatcamGUI/FlatCAMGUI.py:4550
 msgid "Optimization Time:   "
 msgstr "Optimization Time:   "
 
-#: flatcamGUI/FlatCAMGUI.py:4570
+#: flatcamGUI/FlatCAMGUI.py:4553
 msgid ""
 "When OR-Tools Metaheuristic (MH) is enabled there is a\n"
 "maximum threshold for how much time is spent doing the\n"
@@ -7003,15 +7016,15 @@ msgstr ""
 "path optimization. This max duration is set here.\n"
 "In seconds."
 
-#: flatcamGUI/FlatCAMGUI.py:4612
+#: flatcamGUI/FlatCAMGUI.py:4596
 msgid "Excellon Options"
 msgstr "Excellon Options"
 
-#: flatcamGUI/FlatCAMGUI.py:4615 flatcamGUI/ObjectUI.py:584
+#: flatcamGUI/FlatCAMGUI.py:4599 flatcamGUI/ObjectUI.py:584
 msgid "<b>Create CNC Job</b>"
 msgstr "<b>Create CNC Job</b>"
 
-#: flatcamGUI/FlatCAMGUI.py:4617
+#: flatcamGUI/FlatCAMGUI.py:4601
 msgid ""
 "Parameters used to create a CNC Job object\n"
 "for this drill object."
@@ -7019,13 +7032,13 @@ msgstr ""
 "Parameters used to create a CNC Job object\n"
 "for this drill object."
 
-#: flatcamGUI/FlatCAMGUI.py:4625 flatcamGUI/FlatCAMGUI.py:5217
-#: flatcamGUI/FlatCAMGUI.py:6321 flatcamGUI/ObjectUI.py:595
+#: flatcamGUI/FlatCAMGUI.py:4609 flatcamGUI/FlatCAMGUI.py:5196
+#: flatcamGUI/FlatCAMGUI.py:6300 flatcamGUI/ObjectUI.py:595
 #: flatcamGUI/ObjectUI.py:1062 flatcamTools/ToolCalculators.py:108
 msgid "Cut Z:"
 msgstr "Cut Z:"
 
-#: flatcamGUI/FlatCAMGUI.py:4627 flatcamGUI/ObjectUI.py:597
+#: flatcamGUI/FlatCAMGUI.py:4611 flatcamGUI/ObjectUI.py:597
 msgid ""
 "Drill depth (negative)\n"
 "below the copper surface."
@@ -7033,12 +7046,12 @@ msgstr ""
 "Drill depth (negative)\n"
 "below the copper surface."
 
-#: flatcamGUI/FlatCAMGUI.py:4634 flatcamGUI/FlatCAMGUI.py:5250
+#: flatcamGUI/FlatCAMGUI.py:4618 flatcamGUI/FlatCAMGUI.py:5229
 #: flatcamGUI/ObjectUI.py:605 flatcamGUI/ObjectUI.py:1098
 msgid "Travel Z:"
 msgstr "Travel Z:"
 
-#: flatcamGUI/FlatCAMGUI.py:4636 flatcamGUI/ObjectUI.py:607
+#: flatcamGUI/FlatCAMGUI.py:4620 flatcamGUI/ObjectUI.py:607
 msgid ""
 "Tool height when travelling\n"
 "across the XY plane."
@@ -7046,11 +7059,11 @@ msgstr ""
 "Tool height when travelling\n"
 "across the XY plane."
 
-#: flatcamGUI/FlatCAMGUI.py:4644 flatcamGUI/FlatCAMGUI.py:5260
+#: flatcamGUI/FlatCAMGUI.py:4628 flatcamGUI/FlatCAMGUI.py:5239
 msgid "Tool change:"
 msgstr "Tool change:"
 
-#: flatcamGUI/FlatCAMGUI.py:4646 flatcamGUI/FlatCAMGUI.py:5262
+#: flatcamGUI/FlatCAMGUI.py:4630 flatcamGUI/FlatCAMGUI.py:5241
 #: flatcamGUI/ObjectUI.py:617
 msgid ""
 "Include tool-change sequence\n"
@@ -7059,19 +7072,19 @@ msgstr ""
 "Include tool-change sequence\n"
 "in G-Code (Pause for tool change)."
 
-#: flatcamGUI/FlatCAMGUI.py:4653 flatcamGUI/FlatCAMGUI.py:5270
+#: flatcamGUI/FlatCAMGUI.py:4637 flatcamGUI/FlatCAMGUI.py:5249
 msgid "Toolchange Z:"
 msgstr "Toolchange Z:"
 
-#: flatcamGUI/FlatCAMGUI.py:4655 flatcamGUI/FlatCAMGUI.py:5272
+#: flatcamGUI/FlatCAMGUI.py:4639 flatcamGUI/FlatCAMGUI.py:5251
 msgid "Toolchange Z position."
 msgstr "Toolchange Z position."
 
-#: flatcamGUI/FlatCAMGUI.py:4661
+#: flatcamGUI/FlatCAMGUI.py:4645
 msgid "Feedrate:"
 msgstr "Feedrate:"
 
-#: flatcamGUI/FlatCAMGUI.py:4663
+#: flatcamGUI/FlatCAMGUI.py:4647
 msgid ""
 "Tool speed while drilling\n"
 "(in units per minute)."
@@ -7079,11 +7092,11 @@ msgstr ""
 "Tool speed while drilling\n"
 "(in units per minute)."
 
-#: flatcamGUI/FlatCAMGUI.py:4671
+#: flatcamGUI/FlatCAMGUI.py:4655
 msgid "Spindle Speed:"
 msgstr "Spindle Speed:"
 
-#: flatcamGUI/FlatCAMGUI.py:4673 flatcamGUI/FlatCAMGUI.py:5302
+#: flatcamGUI/FlatCAMGUI.py:4657 flatcamGUI/FlatCAMGUI.py:5281
 #: flatcamGUI/ObjectUI.py:684
 msgid ""
 "Speed of the spindle\n"
@@ -7092,11 +7105,11 @@ msgstr ""
 "Speed of the spindle\n"
 "in RPM (optional)"
 
-#: flatcamGUI/FlatCAMGUI.py:4681 flatcamGUI/FlatCAMGUI.py:5310
+#: flatcamGUI/FlatCAMGUI.py:4665 flatcamGUI/FlatCAMGUI.py:5289
 msgid "Spindle dir.:"
 msgstr "Spindle dir.:"
 
-#: flatcamGUI/FlatCAMGUI.py:4683 flatcamGUI/FlatCAMGUI.py:5312
+#: flatcamGUI/FlatCAMGUI.py:4667 flatcamGUI/FlatCAMGUI.py:5291
 msgid ""
 "This sets the direction that the spindle is rotating.\n"
 "It can be either:\n"
@@ -7108,12 +7121,12 @@ msgstr ""
 "- CW = clockwise or\n"
 "- CCW = counter clockwise"
 
-#: flatcamGUI/FlatCAMGUI.py:4695 flatcamGUI/FlatCAMGUI.py:5324
+#: flatcamGUI/FlatCAMGUI.py:4679 flatcamGUI/FlatCAMGUI.py:5303
 #: flatcamGUI/ObjectUI.py:692 flatcamGUI/ObjectUI.py:1224
 msgid "Dwell:"
 msgstr "Dwell:"
 
-#: flatcamGUI/FlatCAMGUI.py:4697 flatcamGUI/FlatCAMGUI.py:5326
+#: flatcamGUI/FlatCAMGUI.py:4681 flatcamGUI/FlatCAMGUI.py:5305
 #: flatcamGUI/ObjectUI.py:694 flatcamGUI/ObjectUI.py:1227
 msgid ""
 "Pause to allow the spindle to reach its\n"
@@ -7122,21 +7135,21 @@ msgstr ""
 "Pause to allow the spindle to reach its\n"
 "speed before cutting."
 
-#: flatcamGUI/FlatCAMGUI.py:4700 flatcamGUI/FlatCAMGUI.py:5329
+#: flatcamGUI/FlatCAMGUI.py:4684 flatcamGUI/FlatCAMGUI.py:5308
 msgid "Duration:"
 msgstr "Duration:"
 
-#: flatcamGUI/FlatCAMGUI.py:4702 flatcamGUI/FlatCAMGUI.py:5331
+#: flatcamGUI/FlatCAMGUI.py:4686 flatcamGUI/FlatCAMGUI.py:5310
 #: flatcamGUI/ObjectUI.py:699 flatcamGUI/ObjectUI.py:1234
 msgid "Number of milliseconds for spindle to dwell."
 msgstr "Number of milliseconds for spindle to dwell."
 
-#: flatcamGUI/FlatCAMGUI.py:4714 flatcamGUI/FlatCAMGUI.py:5341
+#: flatcamGUI/FlatCAMGUI.py:4698 flatcamGUI/FlatCAMGUI.py:5320
 #: flatcamGUI/ObjectUI.py:707
 msgid "Postprocessor:"
 msgstr "Postprocessor:"
 
-#: flatcamGUI/FlatCAMGUI.py:4716
+#: flatcamGUI/FlatCAMGUI.py:4700
 msgid ""
 "The postprocessor file that dictates\n"
 "gcode output."
@@ -7144,11 +7157,11 @@ msgstr ""
 "The postprocessor file that dictates\n"
 "gcode output."
 
-#: flatcamGUI/FlatCAMGUI.py:4725
+#: flatcamGUI/FlatCAMGUI.py:4709
 msgid "<b>Gcode:    </b>"
 msgstr "<b>Gcode:    </b>"
 
-#: flatcamGUI/FlatCAMGUI.py:4727
+#: flatcamGUI/FlatCAMGUI.py:4711
 msgid ""
 "Choose what to use for GCode generation:\n"
 "'Drills', 'Slots' or 'Both'.\n"
@@ -7160,23 +7173,23 @@ msgstr ""
 "When choosing 'Slots' or 'Both', slots will be\n"
 "converted to drills."
 
-#: flatcamGUI/FlatCAMGUI.py:4743 flatcamGUI/ObjectUI.py:772
+#: flatcamGUI/FlatCAMGUI.py:4727 flatcamGUI/ObjectUI.py:772
 msgid "<b>Mill Holes</b>"
 msgstr "<b>Mill Holes</b>"
 
-#: flatcamGUI/FlatCAMGUI.py:4745 flatcamGUI/ObjectUI.py:774
+#: flatcamGUI/FlatCAMGUI.py:4729 flatcamGUI/ObjectUI.py:774
 msgid "Create Geometry for milling holes."
 msgstr "Create Geometry for milling holes."
 
-#: flatcamGUI/FlatCAMGUI.py:4751
+#: flatcamGUI/FlatCAMGUI.py:4733
 msgid "Drill Tool dia:"
 msgstr "Drill Tool dia:"
 
-#: flatcamGUI/FlatCAMGUI.py:4758
+#: flatcamGUI/FlatCAMGUI.py:4740
 msgid "Slot Tool dia:"
 msgstr "Slot Tool dia:"
 
-#: flatcamGUI/FlatCAMGUI.py:4760
+#: flatcamGUI/FlatCAMGUI.py:4742
 msgid ""
 "Diameter of the cutting tool\n"
 "when milling slots."
@@ -7184,19 +7197,19 @@ msgstr ""
 "Diameter of the cutting tool\n"
 "when milling slots."
 
-#: flatcamGUI/FlatCAMGUI.py:4772
+#: flatcamGUI/FlatCAMGUI.py:4754
 msgid "Defaults"
 msgstr "Defaults"
 
-#: flatcamGUI/FlatCAMGUI.py:4785
+#: flatcamGUI/FlatCAMGUI.py:4767
 msgid "Excellon Adv. Options"
 msgstr "Excellon Adv. Options"
 
-#: flatcamGUI/FlatCAMGUI.py:4791 flatcamGUI/FlatCAMGUI.py:5364
+#: flatcamGUI/FlatCAMGUI.py:4773 flatcamGUI/FlatCAMGUI.py:5343
 msgid "<b>Advanced Options:</b>"
 msgstr "<b>Advanced Options:</b>"
 
-#: flatcamGUI/FlatCAMGUI.py:4793
+#: flatcamGUI/FlatCAMGUI.py:4775
 msgid ""
 "Parameters used to create a CNC Job object\n"
 "for this drill object that are shown when App Level is Advanced."
@@ -7204,11 +7217,11 @@ msgstr ""
 "Parameters used to create a CNC Job object\n"
 "for this drill object that are shown when App Level is Advanced."
 
-#: flatcamGUI/FlatCAMGUI.py:4801
+#: flatcamGUI/FlatCAMGUI.py:4783
 msgid "Offset Z:"
 msgstr "Offset Z:"
 
-#: flatcamGUI/FlatCAMGUI.py:4803 flatcamGUI/ObjectUI.py:574
+#: flatcamGUI/FlatCAMGUI.py:4785 flatcamGUI/ObjectUI.py:574
 msgid ""
 "Some drill bits (the larger ones) need to drill deeper\n"
 "to create the desired exit hole diameter due of the tip shape.\n"
@@ -7218,20 +7231,20 @@ msgstr ""
 "to create the desired exit hole diameter due of the tip shape.\n"
 "The value here can compensate the Cut Z parameter."
 
-#: flatcamGUI/FlatCAMGUI.py:4810 flatcamGUI/FlatCAMGUI.py:5375
+#: flatcamGUI/FlatCAMGUI.py:4792 flatcamGUI/FlatCAMGUI.py:5354
 msgid "Toolchange X,Y:"
 msgstr "Toolchange X,Y:"
 
-#: flatcamGUI/FlatCAMGUI.py:4812 flatcamGUI/FlatCAMGUI.py:5377
+#: flatcamGUI/FlatCAMGUI.py:4794 flatcamGUI/FlatCAMGUI.py:5356
 msgid "Toolchange X,Y position."
 msgstr "Toolchange X,Y position."
 
-#: flatcamGUI/FlatCAMGUI.py:4818 flatcamGUI/FlatCAMGUI.py:5384
+#: flatcamGUI/FlatCAMGUI.py:4800 flatcamGUI/FlatCAMGUI.py:5363
 #: flatcamGUI/ObjectUI.py:634
 msgid "Start move Z:"
 msgstr "Start move Z:"
 
-#: flatcamGUI/FlatCAMGUI.py:4820
+#: flatcamGUI/FlatCAMGUI.py:4802
 msgid ""
 "Height of the tool just after start.\n"
 "Delete the value if you don't need this feature."
@@ -7239,12 +7252,12 @@ msgstr ""
 "Height of the tool just after start.\n"
 "Delete the value if you don't need this feature."
 
-#: flatcamGUI/FlatCAMGUI.py:4827 flatcamGUI/FlatCAMGUI.py:5394
+#: flatcamGUI/FlatCAMGUI.py:4809 flatcamGUI/FlatCAMGUI.py:5373
 #: flatcamGUI/ObjectUI.py:644 flatcamGUI/ObjectUI.py:1144
 msgid "End move Z:"
 msgstr "End move Z:"
 
-#: flatcamGUI/FlatCAMGUI.py:4829 flatcamGUI/FlatCAMGUI.py:5396
+#: flatcamGUI/FlatCAMGUI.py:4811 flatcamGUI/FlatCAMGUI.py:5375
 msgid ""
 "Height of the tool after\n"
 "the last move at the end of the job."
@@ -7252,12 +7265,12 @@ msgstr ""
 "Height of the tool after\n"
 "the last move at the end of the job."
 
-#: flatcamGUI/FlatCAMGUI.py:4836 flatcamGUI/FlatCAMGUI.py:5404
+#: flatcamGUI/FlatCAMGUI.py:4818 flatcamGUI/FlatCAMGUI.py:5383
 #: flatcamGUI/ObjectUI.py:665
 msgid "Feedrate Rapids:"
 msgstr "Feedrate Rapids:"
 
-#: flatcamGUI/FlatCAMGUI.py:4838 flatcamGUI/ObjectUI.py:667
+#: flatcamGUI/FlatCAMGUI.py:4820 flatcamGUI/ObjectUI.py:667
 msgid ""
 "Tool speed while drilling\n"
 "(in units per minute).\n"
@@ -7271,12 +7284,12 @@ msgstr ""
 "It is useful only for Marlin,\n"
 "ignore for any other cases."
 
-#: flatcamGUI/FlatCAMGUI.py:4849 flatcamGUI/FlatCAMGUI.py:5428
+#: flatcamGUI/FlatCAMGUI.py:4831 flatcamGUI/FlatCAMGUI.py:5407
 #: flatcamGUI/ObjectUI.py:718 flatcamGUI/ObjectUI.py:1256
 msgid "Probe Z depth:"
 msgstr "Probe Z depth:"
 
-#: flatcamGUI/FlatCAMGUI.py:4851 flatcamGUI/FlatCAMGUI.py:5430
+#: flatcamGUI/FlatCAMGUI.py:4833 flatcamGUI/FlatCAMGUI.py:5409
 #: flatcamGUI/ObjectUI.py:720 flatcamGUI/ObjectUI.py:1259
 msgid ""
 "The maximum depth that the probe is allowed\n"
@@ -7285,21 +7298,21 @@ msgstr ""
 "The maximum depth that the probe is allowed\n"
 "to probe. Negative value, in current units."
 
-#: flatcamGUI/FlatCAMGUI.py:4859 flatcamGUI/FlatCAMGUI.py:5438
+#: flatcamGUI/FlatCAMGUI.py:4841 flatcamGUI/FlatCAMGUI.py:5417
 #: flatcamGUI/ObjectUI.py:730 flatcamGUI/ObjectUI.py:1270
 msgid "Feedrate Probe:"
 msgstr "Feedrate Probe:"
 
-#: flatcamGUI/FlatCAMGUI.py:4861 flatcamGUI/FlatCAMGUI.py:5440
+#: flatcamGUI/FlatCAMGUI.py:4843 flatcamGUI/FlatCAMGUI.py:5419
 #: flatcamGUI/ObjectUI.py:732 flatcamGUI/ObjectUI.py:1273
 msgid "The feedrate used while the probe is probing."
 msgstr "The feedrate used while the probe is probing."
 
-#: flatcamGUI/FlatCAMGUI.py:4867 flatcamGUI/FlatCAMGUI.py:5447
+#: flatcamGUI/FlatCAMGUI.py:4849 flatcamGUI/FlatCAMGUI.py:5426
 msgid "Fast Plunge:"
 msgstr "Fast Plunge:"
 
-#: flatcamGUI/FlatCAMGUI.py:4869 flatcamGUI/FlatCAMGUI.py:5449
+#: flatcamGUI/FlatCAMGUI.py:4851 flatcamGUI/FlatCAMGUI.py:5428
 msgid ""
 "By checking this, the vertical move from\n"
 "Z_Toolchange to Z_move is done with G0,\n"
@@ -7311,11 +7324,11 @@ msgstr ""
 "meaning the fastest speed available.\n"
 "WARNING: the move is done at Toolchange X,Y coords."
 
-#: flatcamGUI/FlatCAMGUI.py:4878
+#: flatcamGUI/FlatCAMGUI.py:4860
 msgid "Fast Retract:"
 msgstr "Fast Retract:"
 
-#: flatcamGUI/FlatCAMGUI.py:4880
+#: flatcamGUI/FlatCAMGUI.py:4862
 msgid ""
 "Exit hole strategy.\n"
 " - When uncheked, while exiting the drilled hole the drill bit\n"
@@ -7331,11 +7344,11 @@ msgstr ""
 " - When checked the travel from Z cut (cut depth) to Z_move\n"
 "(travel height) is done as fast as possible (G0) in one move."
 
-#: flatcamGUI/FlatCAMGUI.py:4899
+#: flatcamGUI/FlatCAMGUI.py:4881
 msgid "Excellon Export"
 msgstr "Excellon Export"
 
-#: flatcamGUI/FlatCAMGUI.py:4904
+#: flatcamGUI/FlatCAMGUI.py:4886
 msgid ""
 "The parameters set here are used in the file exported\n"
 "when using the File -> Export -> Export Excellon menu entry."
@@ -7343,11 +7356,11 @@ msgstr ""
 "The parameters set here are used in the file exported\n"
 "when using the File -> Export -> Export Excellon menu entry."
 
-#: flatcamGUI/FlatCAMGUI.py:4915 flatcamGUI/FlatCAMGUI.py:4921
+#: flatcamGUI/FlatCAMGUI.py:4897 flatcamGUI/FlatCAMGUI.py:4903
 msgid "The units used in the Excellon file."
 msgstr "The units used in the Excellon file."
 
-#: flatcamGUI/FlatCAMGUI.py:4929
+#: flatcamGUI/FlatCAMGUI.py:4911
 msgid ""
 "The NC drill files, usually named Excellon files\n"
 "are files that can be found in different formats.\n"
@@ -7359,11 +7372,11 @@ msgstr ""
 "Here we set the format used when the provided\n"
 "coordinates are not using period."
 
-#: flatcamGUI/FlatCAMGUI.py:4965
+#: flatcamGUI/FlatCAMGUI.py:4947
 msgid "<b>Format:</b>"
 msgstr "<b>Format:</b>"
 
-#: flatcamGUI/FlatCAMGUI.py:4967 flatcamGUI/FlatCAMGUI.py:4977
+#: flatcamGUI/FlatCAMGUI.py:4949 flatcamGUI/FlatCAMGUI.py:4959
 msgid ""
 "Select the kind of coordinates format used.\n"
 "Coordinates can be saved with decimal point or without.\n"
@@ -7379,7 +7392,7 @@ msgstr ""
 "Also it will have to be specified if LZ = leading zeros are kept\n"
 "or TZ = trailing zeros are kept."
 
-#: flatcamGUI/FlatCAMGUI.py:5001
+#: flatcamGUI/FlatCAMGUI.py:4983
 msgid ""
 "This sets the default type of Excellon zeros.\n"
 "If LZ then Leading Zeros are kept and\n"
@@ -7393,11 +7406,11 @@ msgstr ""
 "If TZ is checked then Trailing Zeros are kept\n"
 "and Leading Zeros are removed."
 
-#: flatcamGUI/FlatCAMGUI.py:5031
+#: flatcamGUI/FlatCAMGUI.py:5013
 msgid "A list of Excellon Editor parameters."
 msgstr "A list of Excellon Editor parameters."
 
-#: flatcamGUI/FlatCAMGUI.py:5041
+#: flatcamGUI/FlatCAMGUI.py:5023
 msgid ""
 "Set the number of selected Excellon geometry\n"
 "items above which the utility geometry\n"
@@ -7411,27 +7424,27 @@ msgstr ""
 "Increases the performance when moving a\n"
 "large number of geometric elements."
 
-#: flatcamGUI/FlatCAMGUI.py:5053
+#: flatcamGUI/FlatCAMGUI.py:5035
 msgid "New Tool Dia:"
 msgstr "New Tool Dia:"
 
-#: flatcamGUI/FlatCAMGUI.py:5076
+#: flatcamGUI/FlatCAMGUI.py:5058
 msgid "<b>Linear Drill Array:</b>"
 msgstr "<b>Linear Drill Array:</b>"
 
-#: flatcamGUI/FlatCAMGUI.py:5080
+#: flatcamGUI/FlatCAMGUI.py:5062
 msgid "Linear Dir.:"
 msgstr "Linear Dir.:"
 
-#: flatcamGUI/FlatCAMGUI.py:5116
+#: flatcamGUI/FlatCAMGUI.py:5098
 msgid "<b>Circular Drill Array:</b>"
 msgstr "<b>Circular Drill Array:</b>"
 
-#: flatcamGUI/FlatCAMGUI.py:5120
+#: flatcamGUI/FlatCAMGUI.py:5102
 msgid "Circular Dir.:"
 msgstr "Circular Dir.:"
 
-#: flatcamGUI/FlatCAMGUI.py:5122
+#: flatcamGUI/FlatCAMGUI.py:5104
 msgid ""
 "Direction for circular array.\n"
 "Can be CW = clockwise or CCW = counter clockwise."
@@ -7439,15 +7452,15 @@ msgstr ""
 "Direction for circular array.\n"
 "Can be CW = clockwise or CCW = counter clockwise."
 
-#: flatcamGUI/FlatCAMGUI.py:5133
+#: flatcamGUI/FlatCAMGUI.py:5115
 msgid "Circ. Angle:"
 msgstr "Circ. Angle:"
 
-#: flatcamGUI/FlatCAMGUI.py:5150
+#: flatcamGUI/FlatCAMGUI.py:5132
 msgid "Geometry General"
 msgstr "Geometry General"
 
-#: flatcamGUI/FlatCAMGUI.py:5168
+#: flatcamGUI/FlatCAMGUI.py:5151
 msgid ""
 "The number of circle steps for <b>Geometry</b> \n"
 "circle and arc shapes linear approximation."
@@ -7455,31 +7468,23 @@ msgstr ""
 "The number of circle steps for <b>Geometry</b> \n"
 "circle and arc shapes linear approximation."
 
-#: flatcamGUI/FlatCAMGUI.py:5176
-msgid "<b>Tools</b>"
-msgstr "<b>Tools</b>"
+#: flatcamGUI/FlatCAMGUI.py:5159
+msgid "<b>Tools:</b>"
+msgstr "<b>Tools:</b>"
 
-#: flatcamGUI/FlatCAMGUI.py:5183
-msgid "Tool dia:                   "
-msgstr "Tool dia:                   "
+#: flatcamGUI/FlatCAMGUI.py:5165 flatcamGUI/FlatCAMGUI.py:5774
+msgid "Diameters of the cutting tools, separated by ','"
+msgstr "Diameters of the cutting tools, separated by ','"
 
-#: flatcamGUI/FlatCAMGUI.py:5185
-msgid ""
-"The diameter of the cutting\n"
-"tool.."
-msgstr ""
-"The diameter of the cutting\n"
-"tool.."
-
-#: flatcamGUI/FlatCAMGUI.py:5200
+#: flatcamGUI/FlatCAMGUI.py:5179
 msgid "Geometry Options"
 msgstr "Geometry Options"
 
-#: flatcamGUI/FlatCAMGUI.py:5205
+#: flatcamGUI/FlatCAMGUI.py:5184
 msgid "<b>Create CNC Job:</b>"
 msgstr "<b>Create CNC Job:</b>"
 
-#: flatcamGUI/FlatCAMGUI.py:5207
+#: flatcamGUI/FlatCAMGUI.py:5186
 msgid ""
 "Create a CNC Job object\n"
 "tracing the contours of this\n"
@@ -7489,7 +7494,7 @@ msgstr ""
 "tracing the contours of this\n"
 "Geometry object."
 
-#: flatcamGUI/FlatCAMGUI.py:5219 flatcamGUI/ObjectUI.py:1065
+#: flatcamGUI/FlatCAMGUI.py:5198 flatcamGUI/ObjectUI.py:1065
 msgid ""
 "Cutting depth (negative)\n"
 "below the copper surface."
@@ -7497,19 +7502,19 @@ msgstr ""
 "Cutting depth (negative)\n"
 "below the copper surface."
 
-#: flatcamGUI/FlatCAMGUI.py:5227
+#: flatcamGUI/FlatCAMGUI.py:5206
 msgid "Multidepth"
 msgstr "Multidepth"
 
-#: flatcamGUI/FlatCAMGUI.py:5229
+#: flatcamGUI/FlatCAMGUI.py:5208
 msgid "Multidepth usage: True or False."
 msgstr "Multidepth usage: True or False."
 
-#: flatcamGUI/FlatCAMGUI.py:5234
+#: flatcamGUI/FlatCAMGUI.py:5213
 msgid "Depth/Pass:"
 msgstr "Depth/Pass:"
 
-#: flatcamGUI/FlatCAMGUI.py:5236
+#: flatcamGUI/FlatCAMGUI.py:5215
 msgid ""
 "The depth to cut on each pass,\n"
 "when multidepth is enabled.\n"
@@ -7523,7 +7528,7 @@ msgstr ""
 "it is a fraction from the depth\n"
 "which has negative value."
 
-#: flatcamGUI/FlatCAMGUI.py:5252 flatcamGUI/ObjectUI.py:1101
+#: flatcamGUI/FlatCAMGUI.py:5231 flatcamGUI/ObjectUI.py:1101
 msgid ""
 "Height of the tool when\n"
 "moving without cutting."
@@ -7531,11 +7536,11 @@ msgstr ""
 "Height of the tool when\n"
 "moving without cutting."
 
-#: flatcamGUI/FlatCAMGUI.py:5279 flatcamGUI/ObjectUI.py:1156
+#: flatcamGUI/FlatCAMGUI.py:5258 flatcamGUI/ObjectUI.py:1156
 msgid "Feed Rate X-Y:"
 msgstr "Feed Rate X-Y:"
 
-#: flatcamGUI/FlatCAMGUI.py:5281 flatcamGUI/ObjectUI.py:1159
+#: flatcamGUI/FlatCAMGUI.py:5260 flatcamGUI/ObjectUI.py:1159
 msgid ""
 "Cutting speed in the XY\n"
 "plane in units per minute"
@@ -7543,11 +7548,11 @@ msgstr ""
 "Cutting speed in the XY\n"
 "plane in units per minute"
 
-#: flatcamGUI/FlatCAMGUI.py:5289
+#: flatcamGUI/FlatCAMGUI.py:5268
 msgid "Feed Rate Z:"
 msgstr "Feed Rate Z:"
 
-#: flatcamGUI/FlatCAMGUI.py:5291
+#: flatcamGUI/FlatCAMGUI.py:5270
 msgid ""
 "Cutting speed in the XY\n"
 "plane in units per minute.\n"
@@ -7557,12 +7562,12 @@ msgstr ""
 "plane in units per minute.\n"
 "It is called also Plunge."
 
-#: flatcamGUI/FlatCAMGUI.py:5300 flatcamGUI/ObjectUI.py:682
+#: flatcamGUI/FlatCAMGUI.py:5279 flatcamGUI/ObjectUI.py:682
 #: flatcamGUI/ObjectUI.py:1211
 msgid "Spindle speed:"
 msgstr "Spindle speed:"
 
-#: flatcamGUI/FlatCAMGUI.py:5343
+#: flatcamGUI/FlatCAMGUI.py:5322
 msgid ""
 "The postprocessor file that dictates\n"
 "Machine Code output."
@@ -7570,11 +7575,11 @@ msgstr ""
 "The postprocessor file that dictates\n"
 "Machine Code output."
 
-#: flatcamGUI/FlatCAMGUI.py:5359
+#: flatcamGUI/FlatCAMGUI.py:5338
 msgid "Geometry Adv. Options"
 msgstr "Geometry Adv. Options"
 
-#: flatcamGUI/FlatCAMGUI.py:5366
+#: flatcamGUI/FlatCAMGUI.py:5345
 msgid ""
 "Parameters to create a CNC Job object\n"
 "tracing the contours of a Geometry object."
@@ -7582,7 +7587,7 @@ msgstr ""
 "Parameters to create a CNC Job object\n"
 "tracing the contours of a Geometry object."
 
-#: flatcamGUI/FlatCAMGUI.py:5386
+#: flatcamGUI/FlatCAMGUI.py:5365
 msgid ""
 "Height of the tool just after starting the work.\n"
 "Delete the value if you don't need this feature."
@@ -7590,7 +7595,7 @@ msgstr ""
 "Height of the tool just after starting the work.\n"
 "Delete the value if you don't need this feature."
 
-#: flatcamGUI/FlatCAMGUI.py:5406
+#: flatcamGUI/FlatCAMGUI.py:5385
 msgid ""
 "Cutting speed in the XY plane\n"
 "(in units per minute).\n"
@@ -7604,11 +7609,11 @@ msgstr ""
 "It is useful only for Marlin,\n"
 "ignore for any other cases."
 
-#: flatcamGUI/FlatCAMGUI.py:5418
+#: flatcamGUI/FlatCAMGUI.py:5397
 msgid "Re-cut 1st pt."
 msgstr "Re-cut 1st pt."
 
-#: flatcamGUI/FlatCAMGUI.py:5420 flatcamGUI/ObjectUI.py:1202
+#: flatcamGUI/FlatCAMGUI.py:5399 flatcamGUI/ObjectUI.py:1202
 msgid ""
 "In order to remove possible\n"
 "copper leftovers where first cut\n"
@@ -7620,11 +7625,11 @@ msgstr ""
 "meet with last cut, we generate an\n"
 "extended cut over the first cut section."
 
-#: flatcamGUI/FlatCAMGUI.py:5459
+#: flatcamGUI/FlatCAMGUI.py:5438
 msgid "Seg. X size:"
 msgstr "Seg. X size:"
 
-#: flatcamGUI/FlatCAMGUI.py:5461
+#: flatcamGUI/FlatCAMGUI.py:5440
 msgid ""
 "The size of the trace segment on the X axis.\n"
 "Useful for auto-leveling.\n"
@@ -7634,11 +7639,11 @@ msgstr ""
 "Useful for auto-leveling.\n"
 "A value of 0 means no segmentation on the X axis."
 
-#: flatcamGUI/FlatCAMGUI.py:5470
+#: flatcamGUI/FlatCAMGUI.py:5449
 msgid "Seg. Y size:"
 msgstr "Seg. Y size:"
 
-#: flatcamGUI/FlatCAMGUI.py:5472
+#: flatcamGUI/FlatCAMGUI.py:5451
 msgid ""
 "The size of the trace segment on the Y axis.\n"
 "Useful for auto-leveling.\n"
@@ -7648,15 +7653,15 @@ msgstr ""
 "Useful for auto-leveling.\n"
 "A value of 0 means no segmentation on the Y axis."
 
-#: flatcamGUI/FlatCAMGUI.py:5488
+#: flatcamGUI/FlatCAMGUI.py:5467
 msgid "Geometry Editor"
 msgstr "Geometry Editor"
 
-#: flatcamGUI/FlatCAMGUI.py:5493
+#: flatcamGUI/FlatCAMGUI.py:5472
 msgid "A list of Geometry Editor parameters."
 msgstr "A list of Geometry Editor parameters."
 
-#: flatcamGUI/FlatCAMGUI.py:5503
+#: flatcamGUI/FlatCAMGUI.py:5482
 msgid ""
 "Set the number of selected geometry\n"
 "items above which the utility geometry\n"
@@ -7670,20 +7675,20 @@ msgstr ""
 "Increases the performance when moving a\n"
 "large number of geometric elements."
 
-#: flatcamGUI/FlatCAMGUI.py:5522
+#: flatcamGUI/FlatCAMGUI.py:5501
 msgid "CNC Job General"
 msgstr "CNC Job General"
 
-#: flatcamGUI/FlatCAMGUI.py:5535 flatcamGUI/ObjectUI.py:544
+#: flatcamGUI/FlatCAMGUI.py:5514 flatcamGUI/ObjectUI.py:544
 #: flatcamGUI/ObjectUI.py:877 flatcamGUI/ObjectUI.py:1447
 msgid "Plot Object"
 msgstr "Plot Object"
 
-#: flatcamGUI/FlatCAMGUI.py:5542
+#: flatcamGUI/FlatCAMGUI.py:5521
 msgid "Plot kind:"
 msgstr "Plot kind:"
 
-#: flatcamGUI/FlatCAMGUI.py:5544 flatcamGUI/ObjectUI.py:1356
+#: flatcamGUI/FlatCAMGUI.py:5523 flatcamGUI/ObjectUI.py:1356
 msgid ""
 "This selects the kind of geometries on the canvas to plot.\n"
 "Those can be either of type 'Travel' which means the moves\n"
@@ -7695,11 +7700,11 @@ msgstr ""
 "above the work piece or it can be of type 'Cut',\n"
 "which means the moves that cut into the material."
 
-#: flatcamGUI/FlatCAMGUI.py:5561
+#: flatcamGUI/FlatCAMGUI.py:5540
 msgid "Display Annotation:"
 msgstr "Display Annotation:"
 
-#: flatcamGUI/FlatCAMGUI.py:5563 flatcamGUI/ObjectUI.py:1372
+#: flatcamGUI/FlatCAMGUI.py:5542 flatcamGUI/ObjectUI.py:1372
 msgid ""
 "This selects if to display text annotation on the plot.\n"
 "When checked it will display numbers in order for each end\n"
@@ -7709,23 +7714,23 @@ msgstr ""
 "When checked it will display numbers in order for each end\n"
 "of a travel line."
 
-#: flatcamGUI/FlatCAMGUI.py:5575
+#: flatcamGUI/FlatCAMGUI.py:5554
 msgid "Annotation Size:"
 msgstr "Annotation Size:"
 
-#: flatcamGUI/FlatCAMGUI.py:5577
+#: flatcamGUI/FlatCAMGUI.py:5556
 msgid "The font size of the annotation text. In pixels."
 msgstr "The font size of the annotation text. In pixels."
 
-#: flatcamGUI/FlatCAMGUI.py:5585
+#: flatcamGUI/FlatCAMGUI.py:5564
 msgid "Annotation Color:"
 msgstr "Annotation Color:"
 
-#: flatcamGUI/FlatCAMGUI.py:5587
+#: flatcamGUI/FlatCAMGUI.py:5566
 msgid "Set the font color for the annotation texts."
 msgstr "Set the font color for the annotation texts."
 
-#: flatcamGUI/FlatCAMGUI.py:5610
+#: flatcamGUI/FlatCAMGUI.py:5589
 msgid ""
 "The number of circle steps for <b>GCode</b> \n"
 "circle and arc shapes linear approximation."
@@ -7733,7 +7738,7 @@ msgstr ""
 "The number of circle steps for <b>GCode</b> \n"
 "circle and arc shapes linear approximation."
 
-#: flatcamGUI/FlatCAMGUI.py:5620
+#: flatcamGUI/FlatCAMGUI.py:5599
 msgid ""
 "Diameter of the tool to be\n"
 "rendered in the plot."
@@ -7741,11 +7746,11 @@ msgstr ""
 "Diameter of the tool to be\n"
 "rendered in the plot."
 
-#: flatcamGUI/FlatCAMGUI.py:5628
+#: flatcamGUI/FlatCAMGUI.py:5607
 msgid "Coords dec.:"
 msgstr "Coords dec.:"
 
-#: flatcamGUI/FlatCAMGUI.py:5630
+#: flatcamGUI/FlatCAMGUI.py:5609
 msgid ""
 "The number of decimals to be used for \n"
 "the X, Y, Z coordinates in CNC code (GCODE, etc.)"
@@ -7753,11 +7758,11 @@ msgstr ""
 "The number of decimals to be used for \n"
 "the X, Y, Z coordinates in CNC code (GCODE, etc.)"
 
-#: flatcamGUI/FlatCAMGUI.py:5638
+#: flatcamGUI/FlatCAMGUI.py:5617
 msgid "Feedrate dec.:"
 msgstr "Feedrate dec.:"
 
-#: flatcamGUI/FlatCAMGUI.py:5640
+#: flatcamGUI/FlatCAMGUI.py:5619
 msgid ""
 "The number of decimals to be used for \n"
 "the Feedrate parameter in CNC code (GCODE, etc.)"
@@ -7765,15 +7770,15 @@ msgstr ""
 "The number of decimals to be used for \n"
 "the Feedrate parameter in CNC code (GCODE, etc.)"
 
-#: flatcamGUI/FlatCAMGUI.py:5655
+#: flatcamGUI/FlatCAMGUI.py:5634
 msgid "CNC Job Options"
 msgstr "CNC Job Options"
 
-#: flatcamGUI/FlatCAMGUI.py:5658 flatcamGUI/FlatCAMGUI.py:5699
+#: flatcamGUI/FlatCAMGUI.py:5637 flatcamGUI/FlatCAMGUI.py:5678
 msgid "<b>Export G-Code:</b>"
 msgstr "<b>Export G-Code:</b>"
 
-#: flatcamGUI/FlatCAMGUI.py:5660 flatcamGUI/FlatCAMGUI.py:5701
+#: flatcamGUI/FlatCAMGUI.py:5639 flatcamGUI/FlatCAMGUI.py:5680
 #: flatcamGUI/ObjectUI.py:1483
 msgid ""
 "Export and save G-Code to\n"
@@ -7782,11 +7787,11 @@ msgstr ""
 "Export and save G-Code to\n"
 "make this object to a file."
 
-#: flatcamGUI/FlatCAMGUI.py:5666
+#: flatcamGUI/FlatCAMGUI.py:5645
 msgid "Prepend to G-Code:"
 msgstr "Prepend to G-Code:"
 
-#: flatcamGUI/FlatCAMGUI.py:5668
+#: flatcamGUI/FlatCAMGUI.py:5647
 msgid ""
 "Type here any G-Code commands you would\n"
 "like to add at the beginning of the G-Code file."
@@ -7794,11 +7799,11 @@ msgstr ""
 "Type here any G-Code commands you would\n"
 "like to add at the beginning of the G-Code file."
 
-#: flatcamGUI/FlatCAMGUI.py:5677
+#: flatcamGUI/FlatCAMGUI.py:5656
 msgid "Append to G-Code:"
 msgstr "Append to G-Code:"
 
-#: flatcamGUI/FlatCAMGUI.py:5679 flatcamGUI/ObjectUI.py:1505
+#: flatcamGUI/FlatCAMGUI.py:5658 flatcamGUI/ObjectUI.py:1505
 msgid ""
 "Type here any G-Code commands you would\n"
 "like to append to the generated file.\n"
@@ -7808,15 +7813,15 @@ msgstr ""
 "like to append to the generated file.\n"
 "I.e.: M2 (End of program)"
 
-#: flatcamGUI/FlatCAMGUI.py:5696
+#: flatcamGUI/FlatCAMGUI.py:5675
 msgid "CNC Job Adv. Options"
 msgstr "CNC Job Adv. Options"
 
-#: flatcamGUI/FlatCAMGUI.py:5707 flatcamGUI/ObjectUI.py:1523
+#: flatcamGUI/FlatCAMGUI.py:5686 flatcamGUI/ObjectUI.py:1523
 msgid "Toolchange G-Code:"
 msgstr "Toolchange G-Code:"
 
-#: flatcamGUI/FlatCAMGUI.py:5709
+#: flatcamGUI/FlatCAMGUI.py:5688
 msgid ""
 "Type here any G-Code commands you would\n"
 "like to be executed when Toolchange event is encountered.\n"
@@ -7828,11 +7833,11 @@ msgstr ""
 "This will constitute a Custom Toolchange GCode,\n"
 "or a Toolchange Macro."
 
-#: flatcamGUI/FlatCAMGUI.py:5723 flatcamGUI/ObjectUI.py:1545
+#: flatcamGUI/FlatCAMGUI.py:5702 flatcamGUI/ObjectUI.py:1545
 msgid "Use Toolchange Macro"
 msgstr "Use Toolchange Macro"
 
-#: flatcamGUI/FlatCAMGUI.py:5725 flatcamGUI/ObjectUI.py:1548
+#: flatcamGUI/FlatCAMGUI.py:5704 flatcamGUI/ObjectUI.py:1548
 msgid ""
 "Check this box if you want to use\n"
 "a Custom Toolchange GCode (macro)."
@@ -7840,7 +7845,7 @@ msgstr ""
 "Check this box if you want to use\n"
 "a Custom Toolchange GCode (macro)."
 
-#: flatcamGUI/FlatCAMGUI.py:5737 flatcamGUI/ObjectUI.py:1557
+#: flatcamGUI/FlatCAMGUI.py:5716 flatcamGUI/ObjectUI.py:1557
 msgid ""
 "A list of the FlatCAM variables that can be used\n"
 "in the Toolchange event.\n"
@@ -7850,71 +7855,67 @@ msgstr ""
 "in the Toolchange event.\n"
 "They have to be surrounded by the '%' symbol"
 
-#: flatcamGUI/FlatCAMGUI.py:5744 flatcamGUI/ObjectUI.py:1564
+#: flatcamGUI/FlatCAMGUI.py:5723 flatcamGUI/ObjectUI.py:1564
 msgid "Parameters"
 msgstr "Parameters"
 
-#: flatcamGUI/FlatCAMGUI.py:5747 flatcamGUI/ObjectUI.py:1567
+#: flatcamGUI/FlatCAMGUI.py:5726 flatcamGUI/ObjectUI.py:1567
 msgid "FlatCAM CNC parameters"
 msgstr "FlatCAM CNC parameters"
 
-#: flatcamGUI/FlatCAMGUI.py:5748 flatcamGUI/ObjectUI.py:1568
+#: flatcamGUI/FlatCAMGUI.py:5727 flatcamGUI/ObjectUI.py:1568
 msgid "tool = tool number"
 msgstr "tool = tool number"
 
-#: flatcamGUI/FlatCAMGUI.py:5749 flatcamGUI/ObjectUI.py:1569
+#: flatcamGUI/FlatCAMGUI.py:5728 flatcamGUI/ObjectUI.py:1569
 msgid "tooldia = tool diameter"
 msgstr "tooldia = tool diameter"
 
-#: flatcamGUI/FlatCAMGUI.py:5750 flatcamGUI/ObjectUI.py:1570
+#: flatcamGUI/FlatCAMGUI.py:5729 flatcamGUI/ObjectUI.py:1570
 msgid "t_drills = for Excellon, total number of drills"
 msgstr "t_drills = for Excellon, total number of drills"
 
-#: flatcamGUI/FlatCAMGUI.py:5751 flatcamGUI/ObjectUI.py:1571
+#: flatcamGUI/FlatCAMGUI.py:5730 flatcamGUI/ObjectUI.py:1571
 msgid "x_toolchange = X coord for Toolchange"
 msgstr "x_toolchange = X coord for Toolchange"
 
-#: flatcamGUI/FlatCAMGUI.py:5752 flatcamGUI/ObjectUI.py:1572
+#: flatcamGUI/FlatCAMGUI.py:5731 flatcamGUI/ObjectUI.py:1572
 msgid "y_toolchange = Y coord for Toolchange"
 msgstr "y_toolchange = Y coord for Toolchange"
 
-#: flatcamGUI/FlatCAMGUI.py:5753 flatcamGUI/ObjectUI.py:1573
+#: flatcamGUI/FlatCAMGUI.py:5732 flatcamGUI/ObjectUI.py:1573
 msgid "z_toolchange = Z coord for Toolchange"
 msgstr "z_toolchange = Z coord for Toolchange"
 
-#: flatcamGUI/FlatCAMGUI.py:5754
+#: flatcamGUI/FlatCAMGUI.py:5733
 msgid "z_cut = Z depth for the cut"
 msgstr "z_cut = Z depth for the cut"
 
-#: flatcamGUI/FlatCAMGUI.py:5755
+#: flatcamGUI/FlatCAMGUI.py:5734
 msgid "z_move = Z height for travel"
 msgstr "z_move = Z height for travel"
 
-#: flatcamGUI/FlatCAMGUI.py:5756 flatcamGUI/ObjectUI.py:1576
+#: flatcamGUI/FlatCAMGUI.py:5735 flatcamGUI/ObjectUI.py:1576
 msgid "z_depthpercut = the step value for multidepth cut"
 msgstr "z_depthpercut = the step value for multidepth cut"
 
-#: flatcamGUI/FlatCAMGUI.py:5757 flatcamGUI/ObjectUI.py:1577
+#: flatcamGUI/FlatCAMGUI.py:5736 flatcamGUI/ObjectUI.py:1577
 msgid "spindlesspeed = the value for the spindle speed"
 msgstr "spindlesspeed = the value for the spindle speed"
 
-#: flatcamGUI/FlatCAMGUI.py:5759 flatcamGUI/ObjectUI.py:1578
+#: flatcamGUI/FlatCAMGUI.py:5738 flatcamGUI/ObjectUI.py:1578
 msgid "dwelltime = time to dwell to allow the spindle to reach it's set RPM"
 msgstr "dwelltime = time to dwell to allow the spindle to reach it's set RPM"
 
-#: flatcamGUI/FlatCAMGUI.py:5780
+#: flatcamGUI/FlatCAMGUI.py:5759
 msgid "NCC Tool Options"
 msgstr "NCC Tool Options"
 
-#: flatcamGUI/FlatCAMGUI.py:5793 flatcamGUI/FlatCAMGUI.py:6523
+#: flatcamGUI/FlatCAMGUI.py:5772 flatcamGUI/FlatCAMGUI.py:6502
 msgid "Tools dia:"
 msgstr "Tools dia:"
 
-#: flatcamGUI/FlatCAMGUI.py:5795
-msgid "Diameters of the cutting tools, separated by ','"
-msgstr "Diameters of the cutting tools, separated by ','"
-
-#: flatcamGUI/FlatCAMGUI.py:5803 flatcamTools/ToolNonCopperClear.py:167
+#: flatcamGUI/FlatCAMGUI.py:5782 flatcamTools/ToolNonCopperClear.py:167
 #, python-format
 msgid ""
 "How much (fraction) of the tool width to overlap each tool pass.\n"
@@ -7939,11 +7940,11 @@ msgstr ""
 "Higher values = slow processing and slow execution on CNC\n"
 "due of too many paths."
 
-#: flatcamGUI/FlatCAMGUI.py:5819 flatcamTools/ToolNonCopperClear.py:183
+#: flatcamGUI/FlatCAMGUI.py:5798 flatcamTools/ToolNonCopperClear.py:183
 msgid "Bounding box margin."
 msgstr "Bounding box margin."
 
-#: flatcamGUI/FlatCAMGUI.py:5828 flatcamTools/ToolNonCopperClear.py:192
+#: flatcamGUI/FlatCAMGUI.py:5807 flatcamTools/ToolNonCopperClear.py:192
 #: flatcamTools/ToolPaint.py:190
 msgid ""
 "Algorithm for non-copper clearing:<BR><B>Standard</B>: Fixed step inwards."
@@ -7954,12 +7955,12 @@ msgstr ""
 "<BR><B>Seed-based</B>: Outwards from seed.<BR><B>Line-based</B>: Parallel "
 "lines."
 
-#: flatcamGUI/FlatCAMGUI.py:5860 flatcamTools/ToolNonCopperClear.py:224
+#: flatcamGUI/FlatCAMGUI.py:5839 flatcamTools/ToolNonCopperClear.py:224
 #: flatcamTools/ToolPaint.py:222
 msgid "Rest M.:"
 msgstr "Rest M.:"
 
-#: flatcamGUI/FlatCAMGUI.py:5862
+#: flatcamGUI/FlatCAMGUI.py:5841
 msgid ""
 "If checked, use 'rest machining'.\n"
 "Basically it will clear copper outside PCB features,\n"
@@ -7975,11 +7976,11 @@ msgstr ""
 "could not be cleared by previous tool.\n"
 "If not checked, use the standard algorithm."
 
-#: flatcamGUI/FlatCAMGUI.py:5881
+#: flatcamGUI/FlatCAMGUI.py:5860
 msgid "Cutout Tool Options"
 msgstr "Cutout Tool Options"
 
-#: flatcamGUI/FlatCAMGUI.py:5886 flatcamGUI/ObjectUI.py:402
+#: flatcamGUI/FlatCAMGUI.py:5865 flatcamGUI/ObjectUI.py:402
 msgid ""
 "Create toolpaths to cut around\n"
 "the PCB and separate it from\n"
@@ -7989,7 +7990,7 @@ msgstr ""
 "the PCB and separate it from\n"
 "the original board."
 
-#: flatcamGUI/FlatCAMGUI.py:5905
+#: flatcamGUI/FlatCAMGUI.py:5884
 msgid ""
 "Distance from objects at which\n"
 "to draw the cutout."
@@ -7997,11 +7998,11 @@ msgstr ""
 "Distance from objects at which\n"
 "to draw the cutout."
 
-#: flatcamGUI/FlatCAMGUI.py:5912 flatcamTools/ToolCutOut.py:96
+#: flatcamGUI/FlatCAMGUI.py:5891 flatcamTools/ToolCutOut.py:96
 msgid "Gap size:"
 msgstr "Gap size:"
 
-#: flatcamGUI/FlatCAMGUI.py:5914
+#: flatcamGUI/FlatCAMGUI.py:5893
 msgid ""
 "Size of the gaps in the toolpath\n"
 "that will remain to hold the\n"
@@ -8011,11 +8012,11 @@ msgstr ""
 "that will remain to hold the\n"
 "board in place."
 
-#: flatcamGUI/FlatCAMGUI.py:5922 flatcamTools/ToolCutOut.py:134
+#: flatcamGUI/FlatCAMGUI.py:5901 flatcamTools/ToolCutOut.py:134
 msgid "Gaps:"
 msgstr "Gaps:"
 
-#: flatcamGUI/FlatCAMGUI.py:5924
+#: flatcamGUI/FlatCAMGUI.py:5903
 msgid ""
 "Number of bridge gaps used for the cutout.\n"
 "There can be maximum 8 bridges/gaps.\n"
@@ -8037,19 +8038,19 @@ msgstr ""
 "- 2tb  - 2*top + 2*bottom\n"
 "- 8     - 2*left + 2*right +2*top + 2*bottom"
 
-#: flatcamGUI/FlatCAMGUI.py:5945 flatcamTools/ToolCutOut.py:115
+#: flatcamGUI/FlatCAMGUI.py:5924 flatcamTools/ToolCutOut.py:115
 msgid "Convex Sh.:"
 msgstr "Convex Sh.:"
 
-#: flatcamGUI/FlatCAMGUI.py:5947
+#: flatcamGUI/FlatCAMGUI.py:5926
 msgid "Create a convex shape surrounding the entire PCB."
 msgstr "Create a convex shape surrounding the entire PCB."
 
-#: flatcamGUI/FlatCAMGUI.py:5960
+#: flatcamGUI/FlatCAMGUI.py:5939
 msgid "2Sided Tool Options"
 msgstr "2Sided Tool Options"
 
-#: flatcamGUI/FlatCAMGUI.py:5965
+#: flatcamGUI/FlatCAMGUI.py:5944
 msgid ""
 "A tool to help in creating a double sided\n"
 "PCB using alignment holes."
@@ -8057,28 +8058,28 @@ msgstr ""
 "A tool to help in creating a double sided\n"
 "PCB using alignment holes."
 
-#: flatcamGUI/FlatCAMGUI.py:5975 flatcamTools/ToolDblSided.py:235
+#: flatcamGUI/FlatCAMGUI.py:5954 flatcamTools/ToolDblSided.py:235
 msgid "Drill diam.:"
 msgstr "Drill diam.:"
 
-#: flatcamGUI/FlatCAMGUI.py:5977 flatcamTools/ToolDblSided.py:226
+#: flatcamGUI/FlatCAMGUI.py:5956 flatcamTools/ToolDblSided.py:226
 #: flatcamTools/ToolDblSided.py:237
 msgid "Diameter of the drill for the alignment holes."
 msgstr "Diameter of the drill for the alignment holes."
 
-#: flatcamGUI/FlatCAMGUI.py:5986 flatcamTools/ToolDblSided.py:120
+#: flatcamGUI/FlatCAMGUI.py:5965 flatcamTools/ToolDblSided.py:120
 msgid "Mirror Axis:"
 msgstr "Mirror Axis:"
 
-#: flatcamGUI/FlatCAMGUI.py:5988 flatcamTools/ToolDblSided.py:122
+#: flatcamGUI/FlatCAMGUI.py:5967 flatcamTools/ToolDblSided.py:122
 msgid "Mirror vertically (X) or horizontally (Y)."
 msgstr "Mirror vertically (X) or horizontally (Y)."
 
-#: flatcamGUI/FlatCAMGUI.py:5999 flatcamTools/ToolDblSided.py:133
+#: flatcamGUI/FlatCAMGUI.py:5978 flatcamTools/ToolDblSided.py:133
 msgid "Axis Ref:"
 msgstr "Axis Ref:"
 
-#: flatcamGUI/FlatCAMGUI.py:6001
+#: flatcamGUI/FlatCAMGUI.py:5980
 msgid ""
 "The axis should pass through a <b>point</b> or cut\n"
 " a specified <b>box</b> (in a Geometry object) in \n"
@@ -8088,11 +8089,11 @@ msgstr ""
 " a specified <b>box</b> (in a Geometry object) in \n"
 "the middle."
 
-#: flatcamGUI/FlatCAMGUI.py:6017
+#: flatcamGUI/FlatCAMGUI.py:5996
 msgid "Paint Tool Options"
 msgstr "Paint Tool Options"
 
-#: flatcamGUI/FlatCAMGUI.py:6024 flatcamGUI/ObjectUI.py:1305
+#: flatcamGUI/FlatCAMGUI.py:6003 flatcamGUI/ObjectUI.py:1305
 msgid ""
 "Creates tool paths to cover the\n"
 "whole area of a polygon (remove\n"
@@ -8104,7 +8105,7 @@ msgstr ""
 "all copper). You will be asked\n"
 "to click on the desired polygon."
 
-#: flatcamGUI/FlatCAMGUI.py:6048
+#: flatcamGUI/FlatCAMGUI.py:6027
 msgid ""
 "How much (fraction) of the tool\n"
 "width to overlap each tool pass."
@@ -8112,19 +8113,19 @@ msgstr ""
 "How much (fraction) of the tool\n"
 "width to overlap each tool pass."
 
-#: flatcamGUI/FlatCAMGUI.py:6102 flatcamTools/ToolPaint.py:237
+#: flatcamGUI/FlatCAMGUI.py:6081 flatcamTools/ToolPaint.py:237
 msgid "Selection:"
 msgstr "Selection:"
 
-#: flatcamGUI/FlatCAMGUI.py:6104
+#: flatcamGUI/FlatCAMGUI.py:6083
 msgid "How to select the polygons to paint."
 msgstr "How to select the polygons to paint."
 
-#: flatcamGUI/FlatCAMGUI.py:6122
+#: flatcamGUI/FlatCAMGUI.py:6101
 msgid "Film Tool Options"
 msgstr "Film Tool Options"
 
-#: flatcamGUI/FlatCAMGUI.py:6127
+#: flatcamGUI/FlatCAMGUI.py:6106
 msgid ""
 "Create a PCB film from a Gerber or Geometry\n"
 "FlatCAM object.\n"
@@ -8134,11 +8135,11 @@ msgstr ""
 "FlatCAM object.\n"
 "The file is saved in SVG format."
 
-#: flatcamGUI/FlatCAMGUI.py:6138 flatcamTools/ToolFilm.py:116
+#: flatcamGUI/FlatCAMGUI.py:6117 flatcamTools/ToolFilm.py:116
 msgid "Film Type:"
 msgstr "Film Type:"
 
-#: flatcamGUI/FlatCAMGUI.py:6140 flatcamTools/ToolFilm.py:118
+#: flatcamGUI/FlatCAMGUI.py:6119 flatcamTools/ToolFilm.py:118
 msgid ""
 "Generate a Positive black film or a Negative film.\n"
 "Positive means that it will print the features\n"
@@ -8154,11 +8155,11 @@ msgstr ""
 "with white on a black canvas.\n"
 "The Film format is SVG."
 
-#: flatcamGUI/FlatCAMGUI.py:6151 flatcamTools/ToolFilm.py:130
+#: flatcamGUI/FlatCAMGUI.py:6130 flatcamTools/ToolFilm.py:130
 msgid "Border:"
 msgstr "Border:"
 
-#: flatcamGUI/FlatCAMGUI.py:6153 flatcamTools/ToolFilm.py:132
+#: flatcamGUI/FlatCAMGUI.py:6132 flatcamTools/ToolFilm.py:132
 msgid ""
 "Specify a border around the object.\n"
 "Only for negative film.\n"
@@ -8178,11 +8179,11 @@ msgstr ""
 "white color like the rest and which may confound with the\n"
 "surroundings if not for this border."
 
-#: flatcamGUI/FlatCAMGUI.py:6166 flatcamTools/ToolFilm.py:144
+#: flatcamGUI/FlatCAMGUI.py:6145 flatcamTools/ToolFilm.py:144
 msgid "Scale Stroke:"
 msgstr "Scale Stroke:"
 
-#: flatcamGUI/FlatCAMGUI.py:6168 flatcamTools/ToolFilm.py:146
+#: flatcamGUI/FlatCAMGUI.py:6147 flatcamTools/ToolFilm.py:146
 msgid ""
 "Scale the line stroke thickness of each feature in the SVG file.\n"
 "It means that the line that envelope each SVG feature will be thicker or "
@@ -8194,11 +8195,11 @@ msgstr ""
 "thinner,\n"
 "therefore the fine features may be more affected by this parameter."
 
-#: flatcamGUI/FlatCAMGUI.py:6183
+#: flatcamGUI/FlatCAMGUI.py:6162
 msgid "Panelize Tool Options"
 msgstr "Panelize Tool Options"
 
-#: flatcamGUI/FlatCAMGUI.py:6188
+#: flatcamGUI/FlatCAMGUI.py:6167
 msgid ""
 "Create an object that contains an array of (x, y) elements,\n"
 "each element is a copy of the source object spaced\n"
@@ -8208,11 +8209,11 @@ msgstr ""
 "each element is a copy of the source object spaced\n"
 "at a X distance, Y distance of each other."
 
-#: flatcamGUI/FlatCAMGUI.py:6199 flatcamTools/ToolPanelize.py:147
+#: flatcamGUI/FlatCAMGUI.py:6178 flatcamTools/ToolPanelize.py:147
 msgid "Spacing cols:"
 msgstr "Spacing cols:"
 
-#: flatcamGUI/FlatCAMGUI.py:6201 flatcamTools/ToolPanelize.py:149
+#: flatcamGUI/FlatCAMGUI.py:6180 flatcamTools/ToolPanelize.py:149
 msgid ""
 "Spacing between columns of the desired panel.\n"
 "In current units."
@@ -8220,11 +8221,11 @@ msgstr ""
 "Spacing between columns of the desired panel.\n"
 "In current units."
 
-#: flatcamGUI/FlatCAMGUI.py:6209 flatcamTools/ToolPanelize.py:156
+#: flatcamGUI/FlatCAMGUI.py:6188 flatcamTools/ToolPanelize.py:156
 msgid "Spacing rows:"
 msgstr "Spacing rows:"
 
-#: flatcamGUI/FlatCAMGUI.py:6211 flatcamTools/ToolPanelize.py:158
+#: flatcamGUI/FlatCAMGUI.py:6190 flatcamTools/ToolPanelize.py:158
 msgid ""
 "Spacing between rows of the desired panel.\n"
 "In current units."
@@ -8232,27 +8233,27 @@ msgstr ""
 "Spacing between rows of the desired panel.\n"
 "In current units."
 
-#: flatcamGUI/FlatCAMGUI.py:6219 flatcamTools/ToolPanelize.py:165
+#: flatcamGUI/FlatCAMGUI.py:6198 flatcamTools/ToolPanelize.py:165
 msgid "Columns:"
 msgstr "Columns:"
 
-#: flatcamGUI/FlatCAMGUI.py:6221 flatcamTools/ToolPanelize.py:167
+#: flatcamGUI/FlatCAMGUI.py:6200 flatcamTools/ToolPanelize.py:167
 msgid "Number of columns of the desired panel"
 msgstr "Number of columns of the desired panel"
 
-#: flatcamGUI/FlatCAMGUI.py:6228 flatcamTools/ToolPanelize.py:173
+#: flatcamGUI/FlatCAMGUI.py:6207 flatcamTools/ToolPanelize.py:173
 msgid "Rows:"
 msgstr "Rows:"
 
-#: flatcamGUI/FlatCAMGUI.py:6230 flatcamTools/ToolPanelize.py:175
+#: flatcamGUI/FlatCAMGUI.py:6209 flatcamTools/ToolPanelize.py:175
 msgid "Number of rows of the desired panel"
 msgstr "Number of rows of the desired panel"
 
-#: flatcamGUI/FlatCAMGUI.py:6238
+#: flatcamGUI/FlatCAMGUI.py:6217
 msgid "Panel Type:"
 msgstr "Panel Type:"
 
-#: flatcamGUI/FlatCAMGUI.py:6240
+#: flatcamGUI/FlatCAMGUI.py:6219
 msgid ""
 "Choose the type of object for the panel object:\n"
 "- Gerber\n"
@@ -8262,11 +8263,11 @@ msgstr ""
 "- Gerber\n"
 "- Geometry"
 
-#: flatcamGUI/FlatCAMGUI.py:6249
+#: flatcamGUI/FlatCAMGUI.py:6228
 msgid "Constrain within:"
 msgstr "Constrain within:"
 
-#: flatcamGUI/FlatCAMGUI.py:6251 flatcamTools/ToolPanelize.py:195
+#: flatcamGUI/FlatCAMGUI.py:6230 flatcamTools/ToolPanelize.py:195
 msgid ""
 "Area define by DX and DY within to constrain the panel.\n"
 "DX and DY values are in current units.\n"
@@ -8280,11 +8281,11 @@ msgstr ""
 "the final panel will have as many columns and rows as\n"
 "they fit completely within selected area."
 
-#: flatcamGUI/FlatCAMGUI.py:6260 flatcamTools/ToolPanelize.py:204
+#: flatcamGUI/FlatCAMGUI.py:6239 flatcamTools/ToolPanelize.py:204
 msgid "Width (DX):"
 msgstr "Width (DX):"
 
-#: flatcamGUI/FlatCAMGUI.py:6262 flatcamTools/ToolPanelize.py:206
+#: flatcamGUI/FlatCAMGUI.py:6241 flatcamTools/ToolPanelize.py:206
 msgid ""
 "The width (DX) within which the panel must fit.\n"
 "In current units."
@@ -8292,11 +8293,11 @@ msgstr ""
 "The width (DX) within which the panel must fit.\n"
 "In current units."
 
-#: flatcamGUI/FlatCAMGUI.py:6269 flatcamTools/ToolPanelize.py:212
+#: flatcamGUI/FlatCAMGUI.py:6248 flatcamTools/ToolPanelize.py:212
 msgid "Height (DY):"
 msgstr "Height (DY):"
 
-#: flatcamGUI/FlatCAMGUI.py:6271 flatcamTools/ToolPanelize.py:214
+#: flatcamGUI/FlatCAMGUI.py:6250 flatcamTools/ToolPanelize.py:214
 msgid ""
 "The height (DY)within which the panel must fit.\n"
 "In current units."
@@ -8304,15 +8305,15 @@ msgstr ""
 "The height (DY)within which the panel must fit.\n"
 "In current units."
 
-#: flatcamGUI/FlatCAMGUI.py:6285
+#: flatcamGUI/FlatCAMGUI.py:6264
 msgid "Calculators Tool Options"
 msgstr "Calculators Tool Options"
 
-#: flatcamGUI/FlatCAMGUI.py:6288
+#: flatcamGUI/FlatCAMGUI.py:6267
 msgid "<b>V-Shape Tool Calculator:</b>"
 msgstr "<b>V-Shape Tool Calculator:</b>"
 
-#: flatcamGUI/FlatCAMGUI.py:6290
+#: flatcamGUI/FlatCAMGUI.py:6269
 msgid ""
 "Calculate the tool diameter for a given V-shape tool,\n"
 "having the tip diameter, tip angle and\n"
@@ -8322,11 +8323,11 @@ msgstr ""
 "having the tip diameter, tip angle and\n"
 "depth-of-cut as parameters."
 
-#: flatcamGUI/FlatCAMGUI.py:6301 flatcamTools/ToolCalculators.py:94
+#: flatcamGUI/FlatCAMGUI.py:6280 flatcamTools/ToolCalculators.py:94
 msgid "Tip Diameter:"
 msgstr "Tip Diameter:"
 
-#: flatcamGUI/FlatCAMGUI.py:6303
+#: flatcamGUI/FlatCAMGUI.py:6282
 msgid ""
 "This is the tool tip diameter.\n"
 "It is specified by manufacturer."
@@ -8334,11 +8335,11 @@ msgstr ""
 "This is the tool tip diameter.\n"
 "It is specified by manufacturer."
 
-#: flatcamGUI/FlatCAMGUI.py:6311
+#: flatcamGUI/FlatCAMGUI.py:6290
 msgid "Tip angle:"
 msgstr "Tip angle:"
 
-#: flatcamGUI/FlatCAMGUI.py:6313
+#: flatcamGUI/FlatCAMGUI.py:6292
 msgid ""
 "This is the angle on the tip of the tool.\n"
 "It is specified by manufacturer."
@@ -8346,7 +8347,7 @@ msgstr ""
 "This is the angle on the tip of the tool.\n"
 "It is specified by manufacturer."
 
-#: flatcamGUI/FlatCAMGUI.py:6323
+#: flatcamGUI/FlatCAMGUI.py:6302
 msgid ""
 "This is depth to cut into material.\n"
 "In the CNCJob object it is the CutZ parameter."
@@ -8354,11 +8355,11 @@ msgstr ""
 "This is depth to cut into material.\n"
 "In the CNCJob object it is the CutZ parameter."
 
-#: flatcamGUI/FlatCAMGUI.py:6330
+#: flatcamGUI/FlatCAMGUI.py:6309
 msgid "<b>ElectroPlating Calculator:</b>"
 msgstr "<b>ElectroPlating Calculator:</b>"
 
-#: flatcamGUI/FlatCAMGUI.py:6332 flatcamTools/ToolCalculators.py:152
+#: flatcamGUI/FlatCAMGUI.py:6311 flatcamTools/ToolCalculators.py:152
 msgid ""
 "This calculator is useful for those who plate the via/pad/drill holes,\n"
 "using a method like grahite ink or calcium hypophosphite ink or palladium "
@@ -8368,27 +8369,27 @@ msgstr ""
 "using a method like grahite ink or calcium hypophosphite ink or palladium "
 "chloride."
 
-#: flatcamGUI/FlatCAMGUI.py:6342 flatcamTools/ToolCalculators.py:161
+#: flatcamGUI/FlatCAMGUI.py:6321 flatcamTools/ToolCalculators.py:161
 msgid "Board Length:"
 msgstr "Board Length:"
 
-#: flatcamGUI/FlatCAMGUI.py:6344 flatcamTools/ToolCalculators.py:165
+#: flatcamGUI/FlatCAMGUI.py:6323 flatcamTools/ToolCalculators.py:165
 msgid "This is the board length. In centimeters."
 msgstr "This is the board length. In centimeters."
 
-#: flatcamGUI/FlatCAMGUI.py:6350 flatcamTools/ToolCalculators.py:167
+#: flatcamGUI/FlatCAMGUI.py:6329 flatcamTools/ToolCalculators.py:167
 msgid "Board Width:"
 msgstr "Board Width:"
 
-#: flatcamGUI/FlatCAMGUI.py:6352 flatcamTools/ToolCalculators.py:171
+#: flatcamGUI/FlatCAMGUI.py:6331 flatcamTools/ToolCalculators.py:171
 msgid "This is the board width.In centimeters."
 msgstr "This is the board width.In centimeters."
 
-#: flatcamGUI/FlatCAMGUI.py:6357 flatcamTools/ToolCalculators.py:173
+#: flatcamGUI/FlatCAMGUI.py:6336 flatcamTools/ToolCalculators.py:173
 msgid "Current Density:"
 msgstr "Current Density:"
 
-#: flatcamGUI/FlatCAMGUI.py:6360 flatcamTools/ToolCalculators.py:177
+#: flatcamGUI/FlatCAMGUI.py:6339 flatcamTools/ToolCalculators.py:177
 msgid ""
 "Current density to pass through the board. \n"
 "In Amps per Square Feet ASF."
@@ -8396,11 +8397,11 @@ msgstr ""
 "Current density to pass through the board. \n"
 "In Amps per Square Feet ASF."
 
-#: flatcamGUI/FlatCAMGUI.py:6366 flatcamTools/ToolCalculators.py:181
+#: flatcamGUI/FlatCAMGUI.py:6345 flatcamTools/ToolCalculators.py:181
 msgid "Copper Growth:"
 msgstr "Copper Growth:"
 
-#: flatcamGUI/FlatCAMGUI.py:6369 flatcamTools/ToolCalculators.py:185
+#: flatcamGUI/FlatCAMGUI.py:6348 flatcamTools/ToolCalculators.py:185
 msgid ""
 "How thick the copper growth is intended to be.\n"
 "In microns."
@@ -8408,11 +8409,11 @@ msgstr ""
 "How thick the copper growth is intended to be.\n"
 "In microns."
 
-#: flatcamGUI/FlatCAMGUI.py:6382
+#: flatcamGUI/FlatCAMGUI.py:6361
 msgid "Transform Tool Options"
 msgstr "Transform Tool Options"
 
-#: flatcamGUI/FlatCAMGUI.py:6387
+#: flatcamGUI/FlatCAMGUI.py:6366
 msgid ""
 "Various transformations that can be applied\n"
 "on a FlatCAM object."
@@ -8420,47 +8421,47 @@ msgstr ""
 "Various transformations that can be applied\n"
 "on a FlatCAM object."
 
-#: flatcamGUI/FlatCAMGUI.py:6397
+#: flatcamGUI/FlatCAMGUI.py:6376
 msgid "Rotate Angle:"
 msgstr "Rotate Angle:"
 
-#: flatcamGUI/FlatCAMGUI.py:6399
+#: flatcamGUI/FlatCAMGUI.py:6378
 msgid "Angle for rotation. In degrees."
 msgstr "Angle for rotation. In degrees."
 
-#: flatcamGUI/FlatCAMGUI.py:6406
+#: flatcamGUI/FlatCAMGUI.py:6385
 msgid "Skew_X angle:"
 msgstr "Skew_X angle:"
 
-#: flatcamGUI/FlatCAMGUI.py:6408
+#: flatcamGUI/FlatCAMGUI.py:6387
 msgid "Angle for Skew/Shear on X axis. In degrees."
 msgstr "Angle for Skew/Shear on X axis. In degrees."
 
-#: flatcamGUI/FlatCAMGUI.py:6415
+#: flatcamGUI/FlatCAMGUI.py:6394
 msgid "Skew_Y angle:"
 msgstr "Skew_Y angle:"
 
-#: flatcamGUI/FlatCAMGUI.py:6417
+#: flatcamGUI/FlatCAMGUI.py:6396
 msgid "Angle for Skew/Shear on Y axis. In degrees."
 msgstr "Angle for Skew/Shear on Y axis. In degrees."
 
-#: flatcamGUI/FlatCAMGUI.py:6424
+#: flatcamGUI/FlatCAMGUI.py:6403
 msgid "Scale_X factor:"
 msgstr "Scale_X factor:"
 
-#: flatcamGUI/FlatCAMGUI.py:6426
+#: flatcamGUI/FlatCAMGUI.py:6405
 msgid "Factor for scaling on X axis."
 msgstr "Factor for scaling on X axis."
 
-#: flatcamGUI/FlatCAMGUI.py:6433
+#: flatcamGUI/FlatCAMGUI.py:6412
 msgid "Scale_Y factor:"
 msgstr "Scale_Y factor:"
 
-#: flatcamGUI/FlatCAMGUI.py:6435
+#: flatcamGUI/FlatCAMGUI.py:6414
 msgid "Factor for scaling on Y axis."
 msgstr "Factor for scaling on Y axis."
 
-#: flatcamGUI/FlatCAMGUI.py:6443
+#: flatcamGUI/FlatCAMGUI.py:6422
 msgid ""
 "Scale the selected object(s)\n"
 "using the Scale_X factor for both axis."
@@ -8468,7 +8469,7 @@ msgstr ""
 "Scale the selected object(s)\n"
 "using the Scale_X factor for both axis."
 
-#: flatcamGUI/FlatCAMGUI.py:6451 flatcamTools/ToolTransform.py:210
+#: flatcamGUI/FlatCAMGUI.py:6430 flatcamTools/ToolTransform.py:210
 msgid ""
 "Scale the selected object(s)\n"
 "using the origin reference when checked,\n"
@@ -8480,27 +8481,27 @@ msgstr ""
 "and the center of the biggest bounding box\n"
 "of the selected objects when unchecked."
 
-#: flatcamGUI/FlatCAMGUI.py:6460
+#: flatcamGUI/FlatCAMGUI.py:6439
 msgid "Offset_X val:"
 msgstr "Offset_X val:"
 
-#: flatcamGUI/FlatCAMGUI.py:6462
+#: flatcamGUI/FlatCAMGUI.py:6441
 msgid "Distance to offset on X axis. In current units."
 msgstr "Distance to offset on X axis. In current units."
 
-#: flatcamGUI/FlatCAMGUI.py:6469
+#: flatcamGUI/FlatCAMGUI.py:6448
 msgid "Offset_Y val:"
 msgstr "Offset_Y val:"
 
-#: flatcamGUI/FlatCAMGUI.py:6471
+#: flatcamGUI/FlatCAMGUI.py:6450
 msgid "Distance to offset on Y axis. In current units."
 msgstr "Distance to offset on Y axis. In current units."
 
-#: flatcamGUI/FlatCAMGUI.py:6477
+#: flatcamGUI/FlatCAMGUI.py:6456
 msgid "Mirror Reference"
 msgstr "Mirror Reference"
 
-#: flatcamGUI/FlatCAMGUI.py:6479 flatcamTools/ToolTransform.py:314
+#: flatcamGUI/FlatCAMGUI.py:6458 flatcamTools/ToolTransform.py:314
 msgid ""
 "Flip the selected object(s)\n"
 "around the point in Point Entry Field.\n"
@@ -8522,11 +8523,11 @@ msgstr ""
 "Or enter the coords in format (x, y) in the\n"
 "Point Entry field and click Flip on X(Y)"
 
-#: flatcamGUI/FlatCAMGUI.py:6490
+#: flatcamGUI/FlatCAMGUI.py:6469
 msgid " Mirror Ref. Point:"
 msgstr " Mirror Ref. Point:"
 
-#: flatcamGUI/FlatCAMGUI.py:6492 flatcamTools/ToolTransform.py:327
+#: flatcamGUI/FlatCAMGUI.py:6471 flatcamTools/ToolTransform.py:327
 msgid ""
 "Coordinates in format (x, y) used as reference for mirroring.\n"
 "The 'x' in (x, y) will be used when using Flip on X and\n"
@@ -8536,11 +8537,11 @@ msgstr ""
 "The 'x' in (x, y) will be used when using Flip on X and\n"
 "the 'y' in (x, y) will be used when using Flip on Y and"
 
-#: flatcamGUI/FlatCAMGUI.py:6509
+#: flatcamGUI/FlatCAMGUI.py:6488
 msgid "SolderPaste Tool Options"
 msgstr "SolderPaste Tool Options"
 
-#: flatcamGUI/FlatCAMGUI.py:6514
+#: flatcamGUI/FlatCAMGUI.py:6493
 msgid ""
 "A tool to create GCode for dispensing\n"
 "solder paste onto a PCB."
@@ -8548,47 +8549,47 @@ msgstr ""
 "A tool to create GCode for dispensing\n"
 "solder paste onto a PCB."
 
-#: flatcamGUI/FlatCAMGUI.py:6525
+#: flatcamGUI/FlatCAMGUI.py:6504
 msgid "Diameters of nozzle tools, separated by ','"
 msgstr "Diameters of nozzle tools, separated by ','"
 
-#: flatcamGUI/FlatCAMGUI.py:6532
+#: flatcamGUI/FlatCAMGUI.py:6511
 msgid "<b>New Nozzle Dia:</b>"
 msgstr "<b>New Nozzle Dia:</b>"
 
-#: flatcamGUI/FlatCAMGUI.py:6534 flatcamTools/ToolSolderPaste.py:103
+#: flatcamGUI/FlatCAMGUI.py:6513 flatcamTools/ToolSolderPaste.py:103
 msgid "Diameter for the new Nozzle tool to add in the Tool Table"
 msgstr "Diameter for the new Nozzle tool to add in the Tool Table"
 
-#: flatcamGUI/FlatCAMGUI.py:6542 flatcamTools/ToolSolderPaste.py:166
+#: flatcamGUI/FlatCAMGUI.py:6521 flatcamTools/ToolSolderPaste.py:166
 msgid "Z Dispense Start:"
 msgstr "Z Dispense Start:"
 
-#: flatcamGUI/FlatCAMGUI.py:6544 flatcamTools/ToolSolderPaste.py:168
+#: flatcamGUI/FlatCAMGUI.py:6523 flatcamTools/ToolSolderPaste.py:168
 msgid "The height (Z) when solder paste dispensing starts."
 msgstr "The height (Z) when solder paste dispensing starts."
 
-#: flatcamGUI/FlatCAMGUI.py:6551 flatcamTools/ToolSolderPaste.py:174
+#: flatcamGUI/FlatCAMGUI.py:6530 flatcamTools/ToolSolderPaste.py:174
 msgid "Z Dispense:"
 msgstr "Z Dispense:"
 
-#: flatcamGUI/FlatCAMGUI.py:6553 flatcamTools/ToolSolderPaste.py:176
+#: flatcamGUI/FlatCAMGUI.py:6532 flatcamTools/ToolSolderPaste.py:176
 msgid "The height (Z) when doing solder paste dispensing."
 msgstr "The height (Z) when doing solder paste dispensing."
 
-#: flatcamGUI/FlatCAMGUI.py:6560 flatcamTools/ToolSolderPaste.py:183
+#: flatcamGUI/FlatCAMGUI.py:6539 flatcamTools/ToolSolderPaste.py:183
 msgid "Z Dispense Stop:"
 msgstr "Z Dispense Stop:"
 
-#: flatcamGUI/FlatCAMGUI.py:6562 flatcamTools/ToolSolderPaste.py:185
+#: flatcamGUI/FlatCAMGUI.py:6541 flatcamTools/ToolSolderPaste.py:185
 msgid "The height (Z) when solder paste dispensing stops."
 msgstr "The height (Z) when solder paste dispensing stops."
 
-#: flatcamGUI/FlatCAMGUI.py:6569 flatcamTools/ToolSolderPaste.py:191
+#: flatcamGUI/FlatCAMGUI.py:6548 flatcamTools/ToolSolderPaste.py:191
 msgid "Z Travel:"
 msgstr "Z Travel:"
 
-#: flatcamGUI/FlatCAMGUI.py:6571 flatcamTools/ToolSolderPaste.py:193
+#: flatcamGUI/FlatCAMGUI.py:6550 flatcamTools/ToolSolderPaste.py:193
 msgid ""
 "The height (Z) for travel between pads\n"
 "(without dispensing solder paste)."
@@ -8596,19 +8597,19 @@ msgstr ""
 "The height (Z) for travel between pads\n"
 "(without dispensing solder paste)."
 
-#: flatcamGUI/FlatCAMGUI.py:6579 flatcamTools/ToolSolderPaste.py:200
+#: flatcamGUI/FlatCAMGUI.py:6558 flatcamTools/ToolSolderPaste.py:200
 msgid "Z Toolchange:"
 msgstr "Z Toolchange:"
 
-#: flatcamGUI/FlatCAMGUI.py:6581 flatcamTools/ToolSolderPaste.py:202
+#: flatcamGUI/FlatCAMGUI.py:6560 flatcamTools/ToolSolderPaste.py:202
 msgid "The height (Z) for tool (nozzle) change."
 msgstr "The height (Z) for tool (nozzle) change."
 
-#: flatcamGUI/FlatCAMGUI.py:6588 flatcamTools/ToolSolderPaste.py:208
+#: flatcamGUI/FlatCAMGUI.py:6567 flatcamTools/ToolSolderPaste.py:208
 msgid "XY Toolchange:"
 msgstr "XY Toolchange:"
 
-#: flatcamGUI/FlatCAMGUI.py:6590 flatcamTools/ToolSolderPaste.py:210
+#: flatcamGUI/FlatCAMGUI.py:6569 flatcamTools/ToolSolderPaste.py:210
 msgid ""
 "The X,Y location for tool (nozzle) change.\n"
 "The format is (x, y) where x and y are real numbers."
@@ -8616,19 +8617,19 @@ msgstr ""
 "The X,Y location for tool (nozzle) change.\n"
 "The format is (x, y) where x and y are real numbers."
 
-#: flatcamGUI/FlatCAMGUI.py:6598 flatcamTools/ToolSolderPaste.py:217
+#: flatcamGUI/FlatCAMGUI.py:6577 flatcamTools/ToolSolderPaste.py:217
 msgid "Feedrate X-Y:"
 msgstr "Feedrate X-Y:"
 
-#: flatcamGUI/FlatCAMGUI.py:6600 flatcamTools/ToolSolderPaste.py:219
+#: flatcamGUI/FlatCAMGUI.py:6579 flatcamTools/ToolSolderPaste.py:219
 msgid "Feedrate (speed) while moving on the X-Y plane."
 msgstr "Feedrate (speed) while moving on the X-Y plane."
 
-#: flatcamGUI/FlatCAMGUI.py:6607 flatcamTools/ToolSolderPaste.py:225
+#: flatcamGUI/FlatCAMGUI.py:6586 flatcamTools/ToolSolderPaste.py:225
 msgid "Feedrate Z:"
 msgstr "Feedrate Z:"
 
-#: flatcamGUI/FlatCAMGUI.py:6609 flatcamTools/ToolSolderPaste.py:227
+#: flatcamGUI/FlatCAMGUI.py:6588 flatcamTools/ToolSolderPaste.py:227
 msgid ""
 "Feedrate (speed) while moving vertically\n"
 "(on Z plane)."
@@ -8636,11 +8637,11 @@ msgstr ""
 "Feedrate (speed) while moving vertically\n"
 "(on Z plane)."
 
-#: flatcamGUI/FlatCAMGUI.py:6617 flatcamTools/ToolSolderPaste.py:234
+#: flatcamGUI/FlatCAMGUI.py:6596 flatcamTools/ToolSolderPaste.py:234
 msgid "Feedrate Z Dispense:"
 msgstr "Feedrate Z Dispense:"
 
-#: flatcamGUI/FlatCAMGUI.py:6619
+#: flatcamGUI/FlatCAMGUI.py:6598
 msgid ""
 "Feedrate (speed) while moving up vertically\n"
 "to Dispense position (on Z plane)."
@@ -8648,11 +8649,11 @@ msgstr ""
 "Feedrate (speed) while moving up vertically\n"
 "to Dispense position (on Z plane)."
 
-#: flatcamGUI/FlatCAMGUI.py:6627 flatcamTools/ToolSolderPaste.py:243
+#: flatcamGUI/FlatCAMGUI.py:6606 flatcamTools/ToolSolderPaste.py:243
 msgid "Spindle Speed FWD:"
 msgstr "Spindle Speed FWD:"
 
-#: flatcamGUI/FlatCAMGUI.py:6629 flatcamTools/ToolSolderPaste.py:245
+#: flatcamGUI/FlatCAMGUI.py:6608 flatcamTools/ToolSolderPaste.py:245
 msgid ""
 "The dispenser speed while pushing solder paste\n"
 "through the dispenser nozzle."
@@ -8660,19 +8661,19 @@ msgstr ""
 "The dispenser speed while pushing solder paste\n"
 "through the dispenser nozzle."
 
-#: flatcamGUI/FlatCAMGUI.py:6637 flatcamTools/ToolSolderPaste.py:252
+#: flatcamGUI/FlatCAMGUI.py:6616 flatcamTools/ToolSolderPaste.py:252
 msgid "Dwell FWD:"
 msgstr "Dwell FWD:"
 
-#: flatcamGUI/FlatCAMGUI.py:6639 flatcamTools/ToolSolderPaste.py:254
+#: flatcamGUI/FlatCAMGUI.py:6618 flatcamTools/ToolSolderPaste.py:254
 msgid "Pause after solder dispensing."
 msgstr "Pause after solder dispensing."
 
-#: flatcamGUI/FlatCAMGUI.py:6646 flatcamTools/ToolSolderPaste.py:260
+#: flatcamGUI/FlatCAMGUI.py:6625 flatcamTools/ToolSolderPaste.py:260
 msgid "Spindle Speed REV:"
 msgstr "Spindle Speed REV:"
 
-#: flatcamGUI/FlatCAMGUI.py:6648 flatcamTools/ToolSolderPaste.py:262
+#: flatcamGUI/FlatCAMGUI.py:6627 flatcamTools/ToolSolderPaste.py:262
 msgid ""
 "The dispenser speed while retracting solder paste\n"
 "through the dispenser nozzle."
@@ -8680,11 +8681,11 @@ msgstr ""
 "The dispenser speed while retracting solder paste\n"
 "through the dispenser nozzle."
 
-#: flatcamGUI/FlatCAMGUI.py:6656 flatcamTools/ToolSolderPaste.py:269
+#: flatcamGUI/FlatCAMGUI.py:6635 flatcamTools/ToolSolderPaste.py:269
 msgid "Dwell REV:"
 msgstr "Dwell REV:"
 
-#: flatcamGUI/FlatCAMGUI.py:6658 flatcamTools/ToolSolderPaste.py:271
+#: flatcamGUI/FlatCAMGUI.py:6637 flatcamTools/ToolSolderPaste.py:271
 msgid ""
 "Pause after solder paste dispenser retracted,\n"
 "to allow pressure equilibrium."
@@ -8692,23 +8693,23 @@ msgstr ""
 "Pause after solder paste dispenser retracted,\n"
 "to allow pressure equilibrium."
 
-#: flatcamGUI/FlatCAMGUI.py:6665 flatcamTools/ToolSolderPaste.py:277
+#: flatcamGUI/FlatCAMGUI.py:6644 flatcamTools/ToolSolderPaste.py:277
 msgid "PostProcessors:"
 msgstr "PostProcessors:"
 
-#: flatcamGUI/FlatCAMGUI.py:6667 flatcamTools/ToolSolderPaste.py:279
+#: flatcamGUI/FlatCAMGUI.py:6646 flatcamTools/ToolSolderPaste.py:279
 msgid "Files that control the GCode generation."
 msgstr "Files that control the GCode generation."
 
-#: flatcamGUI/FlatCAMGUI.py:6697 flatcamGUI/FlatCAMGUI.py:6703
+#: flatcamGUI/FlatCAMGUI.py:6676 flatcamGUI/FlatCAMGUI.py:6682
 msgid "Idle."
 msgstr "Idle."
 
-#: flatcamGUI/FlatCAMGUI.py:6727
+#: flatcamGUI/FlatCAMGUI.py:6706
 msgid "Application started ..."
 msgstr "Application started ..."
 
-#: flatcamGUI/FlatCAMGUI.py:6728
+#: flatcamGUI/FlatCAMGUI.py:6707
 msgid "Hello!"
 msgstr "Hello!"
 
@@ -9592,7 +9593,6 @@ msgstr ""
 "like to add to the beginning of the generated file."
 
 #: flatcamGUI/ObjectUI.py:1502
-#| msgid "Append to CNC Code"
 msgid "Append to CNC Code:"
 msgstr "Append to CNC Code:"
 
@@ -11046,11 +11046,11 @@ msgstr ""
 msgid "[ERROR_NOTCL] PaintTool.paint_poly() --> %s"
 msgstr "[ERROR_NOTCL] PaintTool.paint_poly() --> %s"
 
-#: flatcamTools/ToolPaint.py:970 flatcamTools/ToolPaint.py:1263
+#: flatcamTools/ToolPaint.py:970 flatcamTools/ToolPaint.py:1267
 msgid "Polygon Paint started ..."
 msgstr "Polygon Paint started ..."
 
-#: flatcamTools/ToolPaint.py:1119 flatcamTools/ToolPaint.py:1208
+#: flatcamTools/ToolPaint.py:1123 flatcamTools/ToolPaint.py:1212
 #, python-format
 msgid ""
 "[ERROR] Could not do Paint All. Try a different combination of parameters. "
@@ -11061,7 +11061,7 @@ msgstr ""
 "Or a different Method of paint\n"
 "%s"
 
-#: flatcamTools/ToolPaint.py:1143
+#: flatcamTools/ToolPaint.py:1147
 msgid ""
 "[ERROR] There is no Painting Geometry in the file.\n"
 "Usually it means that the tool diameter is too big for the painted "
@@ -11073,11 +11073,11 @@ msgstr ""
 "geometry.\n"
 "Change the painting parameters and try again."
 
-#: flatcamTools/ToolPaint.py:1152
+#: flatcamTools/ToolPaint.py:1156
 msgid "[success] Paint All Done."
 msgstr "[success] Paint All Done."
 
-#: flatcamTools/ToolPaint.py:1238
+#: flatcamTools/ToolPaint.py:1242
 msgid ""
 "[ERROR_NOTCL] There is no Painting Geometry in the file.\n"
 "Usually it means that the tool diameter is too big for the painted "
@@ -11089,7 +11089,7 @@ msgstr ""
 "geometry.\n"
 "Change the painting parameters and try again."
 
-#: flatcamTools/ToolPaint.py:1247
+#: flatcamTools/ToolPaint.py:1251
 msgid "[success] Paint All with Rest-Machining done."
 msgstr "[success] Paint All with Rest-Machining done."
 
@@ -11940,6 +11940,16 @@ msgstr "[WARNING_NOTCL] No object selected. Please Select an object to offset!"
 #: flatcamTools/ToolTransform.py:867
 msgid "CNCJob objects can't be offseted."
 msgstr "CNCJob objects can't be offseted."
+
+#~ msgid "Tool dia:                   "
+#~ msgstr "Tool dia:                   "
+
+#~ msgid ""
+#~ "The diameter of the cutting\n"
+#~ "tool.."
+#~ msgstr ""
+#~ "The diameter of the cutting\n"
+#~ "tool.."
 
 #~ msgid "Disable"
 #~ msgstr "Disable"
