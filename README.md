@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+27.06.2019
+
+- added new translation: Spanish. Finished 10%
+
 23.06.2019
 
 - fixes issues with units conversion when the tool diameters are a list of comma separated values (NCC Tool, SolderPaste Tool and Geometry Object)

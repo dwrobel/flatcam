@@ -94,8 +94,8 @@ class App(QtCore.QObject):
     log.addHandler(handler)
 
     # Version
-    version = 8.919
-    version_date = "2019/06/23"
+    version = 8.920
+    version_date = "2019/06/28"
     beta = True
 
     # current date now
@@ -272,9 +272,9 @@ class App(QtCore.QObject):
         # variable to store mouse coordinates
         self.mouse = [0, 0]
 
-        # ################# ##
-        # # Initialize GUI # ##
-        # ################# ##
+        # ###################
+        # # Initialize GUI ##
+        # ###################
 
         # FlatCAM colors used in plotting
         self.FC_light_green = '#BBF268BF'
@@ -285,15 +285,12 @@ class App(QtCore.QObject):
         QtCore.QObject.__init__(self)
         self.ui = FlatCAMGUI(self.version, self.beta, self)
 
-        # self.connect(self.ui,
-        #              QtCore.SIGNAL("geomUpdate(int, int, int, int, int)"),
-        #              self.save_geometry) PyQt4
         self.ui.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.ui.final_save.connect(self.final_save)
 
-        # ########### ##
-        # # ## Data ## ##
-        # ########### ##
+        # #############
+        # ### Data ####
+        # #############
         self.recent = []
         self.clipboard = QtWidgets.QApplication.clipboard()
         self.proc_container = FCVisibleProcessContainer(self.ui.activity_view)
@@ -581,9 +578,9 @@ class App(QtCore.QObject):
 
         }
 
-        # ########################## ##
-        # # ## LOAD POSTPROCESSORS ## ##
-        # ########################## ##
+        # ############################
+        # ### LOAD POSTPROCESSORS ####
+        # ############################
 
         self.postprocessors = load_postprocessors(self)
 
@@ -600,9 +597,9 @@ class App(QtCore.QObject):
 
             self.ui.excellon_defaults_form.excellon_opt_group.pp_excellon_name_cb.addItem(name)
 
-        # ########################## ##
-        # # ## LOAD LANGUAGES ## ##
-        # ########################## ##
+        # ############################
+        # ### LOAD LANGUAGES      ####
+        # ############################
 
         self.languages = fcTranslate.load_languages()
         for name in sorted(self.languages.values()):
@@ -908,16 +905,16 @@ class App(QtCore.QObject):
             "tools_solderpaste_pp": 'Paste_1'
         })
 
-        # ############################ ##
-        # # ## Load defaults from file # ##
-        # ############################ ##
+        # ##############################
+        # ## Load defaults from file ###
+        # ##############################
 
         if user_defaults:
             self.load_defaults(filename='current_defaults')
 
-        # ######################### ##
-        # #### APPLY APP LANGUAGE # ##
-        # ######################### ##
+        # ###########################
+        # #### APPLY APP LANGUAGE ###
+        # ###########################
 
         ret_val = fcTranslate.apply_language('strings')
 
@@ -1198,10 +1195,10 @@ class App(QtCore.QObject):
         self.tools_form = None
         self.on_options_combo_change(0)  # Will show the initial form
 
-        # # ## Define OBJECT COLLECTION # ##
+        # ### Define OBJECT COLLECTION ###
         self.collection = ObjectCollection(self)
         self.ui.project_tab_layout.addWidget(self.collection.view)
-        # ###
+        # ################################
 
         self.log.debug("Finished creating Object Collection.")
 
@@ -1274,9 +1271,9 @@ class App(QtCore.QObject):
             self.defaults['cncjob_annotation_fontcolor'])
         self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['cncjob_annotation_fontcolor'])[:7])
-        # ### End of Data ## ##
+        # ### End of Data ####
 
-        # ### Plot Area ## ##
+        # ### Plot Area ####
         start_plot_time = time.time()   # debug
         self.plotcanvas = PlotCanvas(self.ui.right_layout, self)
 
@@ -1303,27 +1300,27 @@ class App(QtCore.QObject):
         end_plot_time = time.time()
         self.log.debug("Finished Canvas initialization in %s seconds." % (str(end_plot_time - start_plot_time)))
 
-        # # ## EDITOR section
+        # ### EDITOR section
         self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
         self.exc_editor = FlatCAMExcEditor(self)
         self.grb_editor = FlatCAMGrbEditor(self)
 
-        # # ## Adjust tabs width ## ##
+        # ### Adjust tabs width ## ##
         # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
         #     self.ui.options_scroll_area.verticalScrollBar().sizeHint().width())
         self.collection.view.setMinimumWidth(290)
 
         self.log.debug("Finished adding FlatCAM Editor's.")
 
-        # # ## Worker ## ##
+        # ### Worker ####
         if self.defaults["global_worker_number"]:
             self.workers = WorkerStack(workers_number=int(self.defaults["global_worker_number"]))
         else:
             self.workers = WorkerStack(workers_number=2)
         self.worker_task.connect(self.workers.add_task)
 
-        # # ## Signal handling # ##
-        # # ## Custom signals
+        # ### Signal handling ###
+        # ### Custom signals  ###
         self.inform.connect(self.info)
         self.app_quit.connect(self.quit_application)
         self.message.connect(self.message_dialog)
@@ -1336,8 +1333,8 @@ class App(QtCore.QObject):
         self.file_opened.connect(lambda kind, filename: self.register_folder(filename))
         self.file_saved.connect(lambda kind, filename: self.register_save_folder(filename))
 
-        # # ## Standard signals
-        # # ## Menu
+        # ### Standard signals
+        # ### Menu
         self.ui.menufilenewproject.triggered.connect(self.on_file_new_click)
         self.ui.menufilenewgeo.triggered.connect(self.new_geometry_object)
         self.ui.menufilenewgrb.triggered.connect(self.new_gerber_object)
@@ -1484,9 +1481,9 @@ class App(QtCore.QObject):
         self.ui.pref_export_button.clicked.connect(self.on_export_preferences)
         self.ui.pref_open_button.clicked.connect(self.on_preferences_open_folder)
 
-        # ############################ ##
-        # # ## GUI PREFERENCES SIGNALS # ##
-        # ############################ ##
+        # ##############################
+        # ### GUI PREFERENCES SIGNALS ##
+        # ##############################
         self.ui.general_options_form.general_app_group.units_radio.group_toggle_fn = self.on_toggle_units
         self.ui.general_defaults_form.general_app_group.language_apply_btn.clicked.connect(
             lambda: fcTranslate.on_language_apply_click(self, restart=True)
@@ -1494,9 +1491,9 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
             lambda: self.on_toggle_units(no_pref=False))
 
-        # ############################ ##
-        # # ## GUI PREFERENCES SIGNALS # ##
-        # ############################ ##
+        # ##############################
+        # ### GUI PREFERENCES SIGNALS ##
+        # ##############################
 
         # Setting plot colors signals
         self.ui.general_defaults_form.general_gui_group.pf_color_entry.editingFinished.connect(
@@ -1602,21 +1599,21 @@ class App(QtCore.QObject):
         else:
             self.ui.splitter.setSizes([0, 1])
 
-        # ################# ##
-        # # ## Other setups # ##
-        # ################# ##
+        # ###################
+        # ### Other setups ##
+        # ###################
         # Sets up FlatCAMObj, FCProcess and FCProcessContainer.
         self.setup_obj_classes()
-
         self.setup_recent_items()
         self.setup_component_editor()
 
-        # ########## ##
-        # # ## Shell # ##
-        # ########## ##
+        # ############
+        # ### Shell ##
+        # ############
 
-        # # ##
-        # Auto-complete KEYWORDS
+        # #########################
+        # Auto-complete KEYWORDS ##
+        # #########################
         self.tcl_commands_list = ['add_circle', 'add_poly', 'add_polygon', 'add_polyline', 'add_rectangle',
                                   'aligndrill', 'clear',
                                   'aligndrillgrid', 'cncjob', 'cutout', 'delete', 'drillcncjob',
@@ -1852,9 +1849,9 @@ class App(QtCore.QObject):
         else:
             self.ui.shell_dock.hide()
 
-        # ###################### ##
-        # # ## Tools and Plugins # ##
-        # ###################### ##
+        # ########################
+        # ### Tools and Plugins ##
+        # ########################
 
         self.dblsidedtool = None
         self.measurement_tool = None
@@ -1876,7 +1873,7 @@ class App(QtCore.QObject):
         # always install tools only after the shell is initialized because the self.inform.emit() depends on shell
         self.install_tools()
 
-        # # ## System Font Parsing # ##
+        # ### System Font Parsing ###
         # self.f_parse = ParseFont(self)
         # self.parse_system_fonts()
 
@@ -1890,9 +1887,9 @@ class App(QtCore.QObject):
                 print("ERROR: ", ext)
                 sys.exit(2)
 
-        # ######################## ##
-        # # ## Check for updates ## ##
-        # ######################## ##
+        # ##########################
+        # ### Check for updates ####
+        # ##########################
 
         # Separate thread (Not worker)
         # Check for updates on startup but only if the user consent and the app is not in Beta version
@@ -1905,9 +1902,9 @@ class App(QtCore.QObject):
                                    'params': []})
             self.thr2.start(QtCore.QThread.LowPriority)
 
-        # ################################# ##
-        # # ## Variables for global usage ## ##
-        # ################################# ##
+        # ###################################
+        # ### Variables for global usage ####
+        # ###################################
 
         # coordinates for relative position display
         self.rel_point1 = (0, 0)
@@ -1979,8 +1976,10 @@ class App(QtCore.QObject):
         self.isHovering = False
         self.notHovering = True
 
-        # # ## Save defaults to factory_defaults.FlatConfig file # ##
-        # # ## It's done only once after install ########### ##
+        # #########################################################
+        # ### Save defaults to factory_defaults.FlatConfig file ###
+        # ### It's done only once after install ###################
+        # #########################################################
         factory_file = open(self.data_path + '/factory_defaults.FlatConfig')
         fac_def_from_file = factory_file.read()
         factory_defaults = json.loads(fac_def_from_file)
@@ -1994,6 +1993,7 @@ class App(QtCore.QObject):
             # Set the combobox in Preferences to the current layout
             idx = self.ui.general_defaults_form.general_gui_set_group.layout_combo.findText(initial_lay)
             self.ui.general_defaults_form.general_gui_set_group.layout_combo.setCurrentIndex(idx)
+
         factory_file.close()
 
         # and then make the  factory_defaults.FlatConfig file read_only os it can't be modified after creation.
