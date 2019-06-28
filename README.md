@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+28.06.2019
+
+- Spanish translation (Google Translate) at 21%
+
 27.06.2019
 
 - added new translation: Spanish. Finished 10%
