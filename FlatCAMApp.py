@@ -1833,7 +1833,7 @@ class App(QtCore.QObject):
         self.shell.setWindowTitle("FlatCAM Shell")
         self.shell.resize(*self.defaults["global_shell_shape"])
         self.shell.append_output("FlatCAM %s (c)2014-2019 Juan Pablo Caram " % self.version)
-        self.shell.append_output("(Type help to get started)\n\n")
+        self.shell.append_output(_("(Type help to get started)\n\n"))
 
         self.init_tcl()
 
