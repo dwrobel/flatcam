@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+5.07.2019
+
+- fixed bug in CutOut Tool
+
 1.07.2019
 
 - Spanish translation at 36%
