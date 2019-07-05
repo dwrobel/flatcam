@@ -414,18 +414,19 @@ class CutOut(FlatCAMTool):
             else:
                 object_geo = cutout_obj.solid_geometry
 
-            try:
-                __ = iter(object_geo)
-            except TypeError:
-                object_geo = [object_geo]
+            # try:
+            #     __ = iter(object_geo)
+            # except TypeError:
+            #     object_geo = [object_geo]
+
+            object_geo = unary_union(object_geo)
+
 
             # for geo in object_geo:
             if isinstance(cutout_obj, FlatCAMGerber):
                 geo = (object_geo.buffer(margin + abs(dia / 2))).exterior
             else:
                 geo = object_geo
-
-            geo = unary_union(geo)
 
             # Get min and max data for each object as we just cut rectangles across X or Y
             xmin, ymin, xmax, ymax = recursive_bounds(geo)
@@ -785,11 +786,13 @@ class CutOut(FlatCAMTool):
         convex_box = self.convex_box.get_value()
 
         def geo_init(geo_obj, app_obj):
+            geo_union = unary_union(cutout_obj.solid_geometry)
+
             if convex_box:
-                geo = cutout_obj.solid_geometry.convex_hull
+                geo = geo_union.convex_hull
                 geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
             else:
-                geo = cutout_obj.solid_geometry
+                geo = geo_union
                 geo = geo.buffer(margin + abs(dia / 2))
                 if isinstance(geo, Polygon):
                     geo_obj.solid_geometry = geo.exterior
