@@ -421,10 +421,10 @@ class CutOut(FlatCAMTool):
 
             object_geo = unary_union(object_geo)
 
-
             # for geo in object_geo:
             if isinstance(cutout_obj, FlatCAMGerber):
-                geo = (object_geo.buffer(margin + abs(dia / 2))).exterior
+                geo = object_geo.buffer(margin + abs(dia / 2))
+                geo = geo.exterior
             else:
                 geo = object_geo
 
@@ -438,9 +438,9 @@ class CutOut(FlatCAMTool):
 
             if gaps == '8' or gaps == '2LR':
                 geo = self.subtract_poly_from_geo(geo,
-                                                  xmin - gapsize,  # botleft_x
+                                                  xmin - gapsize,           # botleft_x
                                                   py - gapsize + leny / 4,  # botleft_y
-                                                  xmax + gapsize,  # topright_x
+                                                  xmax + gapsize,           # topright_x
                                                   py + gapsize + leny / 4)  # topright_y
                 geo = self.subtract_poly_from_geo(geo,
                                                   xmin - gapsize,

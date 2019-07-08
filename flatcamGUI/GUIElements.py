@@ -243,7 +243,7 @@ class FloatEntry(QtWidgets.QLineEdit):
         try:
             evaled = eval(raw)
         except Exception as e:
-            if evaled is not None:
+            if raw is not '':
                 log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
             return None
 
@@ -286,7 +286,7 @@ class FloatEntry2(QtWidgets.QLineEdit):
         try:
             evaled = eval(raw)
         except Exception as e:
-            if evaled is not None:
+            if raw is not '':
                 log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
             return None
 
@@ -459,7 +459,7 @@ class EvalEntry(QtWidgets.QLineEdit):
         try:
             evaled = eval(raw)
         except Exception as e:
-            if evaled is not None:
+            if raw is not '':
                 log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
             return None
         return evaled
@@ -498,7 +498,7 @@ class EvalEntry2(QtWidgets.QLineEdit):
         try:
             evaled = eval(raw)
         except Exception as e:
-            if evaled is not None:
+            if raw is not '':
                 log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
             return None
         return evaled
@@ -785,7 +785,7 @@ class FCInputDialog(QtWidgets.QInputDialog):
 
     def get_value(self):
         self.val, self.ok = self.getDouble(self, self.title, self.text, min=self.min,
-                                                      max=self.max, decimals=self.decimals, value=self.init_value)
+                                           max=self.max, decimals=self.decimals, value=self.init_value)
         return [self.val, self.ok]
 
     # "Transform", "Enter the Angle value:"
@@ -1449,7 +1449,7 @@ class FCTable(QtWidgets.QTableWidget):
             width += self.columnWidth(i)
         return width
 
-    # color is in format QtGui.Qcolor(r, g, b, alfa) with or without alfa
+    # color is in format QtGui.Qcolor(r, g, b, alpha) with or without alpfa
     def setColortoRow(self, rowIndex, color):
         for j in range(self.columnCount()):
             self.item(rowIndex, j).setBackground(color)
@@ -1625,7 +1625,6 @@ class Dialog_box(QtWidgets.QWidget):
         self.readyToEdit = True
 
 
-
 class _BrowserTextEdit(QTextEdit):
 
     def __init__(self, version):
@@ -1640,7 +1639,6 @@ class _BrowserTextEdit(QTextEdit):
         self.menu.addAction(clear_action)
         clear_action.triggered.connect(self.clear)
         self.menu.exec_(event.globalPos())
-
 
     def clear(self):
         QTextEdit.clear(self)
