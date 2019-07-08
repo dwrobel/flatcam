@@ -1184,7 +1184,7 @@ msgstr "[success] Все участки отключены."
 
 #: FlatCAMApp.py:8454
 msgid "[success] All non selected plots disabled."
-msgstr "[success] Все невыбранные участки отключены.."
+msgstr "[success] Все невыбранные участки отключены."
 
 #: FlatCAMApp.py:8460
 msgid "[success] All plots enabled."
@@ -6888,7 +6888,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5035
 msgid "New Tool Dia:"
-msgstr ""
+msgstr "Новый диам. инструм.:"
 
 #: flatcamGUI/FlatCAMGUI.py:5058
 msgid "<b>Linear Drill Array:</b>"
@@ -7032,6 +7032,8 @@ msgid ""
 "Parameters to create a CNC Job object\n"
 "tracing the contours of a Geometry object."
 msgstr ""
+"Параметры для создания объекта зCNC Job\n"
+"трассировки контуров объекта Geometry."
 
 #: flatcamGUI/FlatCAMGUI.py:5365
 msgid ""
@@ -7240,6 +7242,10 @@ msgid ""
 "This will constitute a Custom Toolchange GCode,\n"
 "or a Toolchange Macro."
 msgstr ""
+"Введите здесь любые G-Code команды, которые вам понадобится\n"
+"выполнить при смене инструмента.\n"
+"Это будет представлять собой пользовательский GCode смены инструмента,\n"
+"или макрос смены инструмента."
 
 #: flatcamGUI/FlatCAMGUI.py:5702 flatcamGUI/ObjectUI.py:1545
 msgid "Use Toolchange Macro"
@@ -7267,7 +7273,7 @@ msgstr "Параметры"
 
 #: flatcamGUI/FlatCAMGUI.py:5726 flatcamGUI/ObjectUI.py:1567
 msgid "FlatCAM CNC parameters"
-msgstr ""
+msgstr "Параметры CNC FlatCAM"
 
 #: flatcamGUI/FlatCAMGUI.py:5727 flatcamGUI/ObjectUI.py:1568
 msgid "tool = tool number"
@@ -7510,7 +7516,7 @@ msgstr "Как выбирать полигоны для рисования."
 
 #: flatcamGUI/FlatCAMGUI.py:6101
 msgid "Film Tool Options"
-msgstr ""
+msgstr "Плёнка"
 
 #: flatcamGUI/FlatCAMGUI.py:6106
 msgid ""
@@ -7612,7 +7618,7 @@ msgstr "Строки:"
 
 #: flatcamGUI/FlatCAMGUI.py:6209 flatcamTools/ToolPanelize.py:175
 msgid "Number of rows of the desired panel"
-msgstr ""
+msgstr "Количество строк нужной панели"
 
 #: flatcamGUI/FlatCAMGUI.py:6217
 msgid "Panel Type:"
@@ -7664,7 +7670,7 @@ msgstr "Калькулятор"
 
 #: flatcamGUI/FlatCAMGUI.py:6267
 msgid "<b>V-Shape Tool Calculator:</b>"
-msgstr ""
+msgstr "<b>V-Shape Tool Calculator:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:6269
 msgid ""
@@ -7701,7 +7707,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6309
 msgid "<b>ElectroPlating Calculator:</b>"
-msgstr ""
+msgstr "<b>Калькулятор электронных плат:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:6311 flatcamTools/ToolCalculators.py:152
 msgid ""
@@ -7876,7 +7882,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6511
 msgid "<b>New Nozzle Dia:</b>"
-msgstr "<b>Новый диам. насадки:</b>"
+msgstr "<b>Новый диам. сопла:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:6513 flatcamTools/ToolSolderPaste.py:103
 msgid "Diameter for the new Nozzle tool to add in the Tool Table"
@@ -7978,7 +7984,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6618 flatcamTools/ToolSolderPaste.py:254
 msgid "Pause after solder dispensing."
-msgstr ""
+msgstr "Пауза после выдачи паяльной пасты."
 
 #: flatcamGUI/FlatCAMGUI.py:6625 flatcamTools/ToolSolderPaste.py:260
 msgid "Spindle Speed REV:"
@@ -7999,10 +8005,12 @@ msgid ""
 "Pause after solder paste dispenser retracted,\n"
 "to allow pressure equilibrium."
 msgstr ""
+"Пауза после того, как дозатор паяльной пасты будет убран,\n"
+"чтобы обеспечить равномерное выдавливание."
 
 #: flatcamGUI/FlatCAMGUI.py:6644 flatcamTools/ToolSolderPaste.py:277
 msgid "PostProcessors:"
-msgstr ""
+msgstr "Постпроцессоры:"
 
 #: flatcamGUI/FlatCAMGUI.py:6646 flatcamTools/ToolSolderPaste.py:279
 msgid "Files that control the GCode generation."
@@ -8109,6 +8117,9 @@ msgid ""
 "When unchecked, it will delete all mark shapes\n"
 "that are drawn on canvas."
 msgstr ""
+"При включенном флажке будут отображаться все отверстия.\n"
+"Когда флажок снят, он удалит все отмеченные фигуры\n"
+"которые нарисованы на холсте."
 
 #: flatcamGUI/ObjectUI.py:244
 msgid "Mark the aperture instances on canvas."
@@ -8442,7 +8453,7 @@ msgstr "Диам"
 
 #: flatcamGUI/ObjectUI.py:891 flatcamGUI/ObjectUI.py:1465
 msgid "TT"
-msgstr ""
+msgstr "TT"
 
 #: flatcamGUI/ObjectUI.py:898
 msgid ""
@@ -8577,6 +8588,12 @@ msgid ""
 "To the right, input the depth of \n"
 "each pass (positive value)."
 msgstr ""
+"Используйте несколько проходов, чтобы ограничить\n"
+"глубина реза за каждый проход. Будет\n"
+"вырезаться несколько раз, пока не будет\n"
+"достигнута глубина резания \n"
+"Справа введите глубину \n"
+"за каждый проход (положительное значение)."
 
 #: flatcamGUI/ObjectUI.py:1090
 msgid "Depth of each pass (positive)."
@@ -8686,7 +8703,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:1429
 msgid "<b>CNC Tools Table</b>"
-msgstr ""
+msgstr "<b>Таблица инструментов</b>"
 
 #: flatcamGUI/ObjectUI.py:1432
 msgid ""
@@ -8703,7 +8720,7 @@ msgstr ""
 
 #: flatcamGUI/ObjectUI.py:1466
 msgid "P"
-msgstr ""
+msgstr "P"
 
 #: flatcamGUI/ObjectUI.py:1472
 msgid "Update Plot"
@@ -8745,6 +8762,15 @@ msgid ""
 "that has 'toolchange_custom' in it's name and this is built\n"
 "having as template the 'Toolchange Custom' posprocessor file."
 msgstr ""
+"Введите здесь любые G-Code команды, которые вам понадобится\n"
+"выполнить при смене инструмента.\n"
+"Это будет представлять собой пользовательский GCode смены инструмента,\n"
+"или макрос смены инструмента.\n"
+"Переменные FlatCAM окружены символом\"%\".\n"
+"\n"
+"Предупреждение: это можно использовать только с файлом постпроцессора\n"
+"и иметь \"toolchange_custom\" в имени, и будет построено\n"
+"используя в качестве шаблона файл постпроцессора \"Tool change Custom\"."
 
 #: flatcamGUI/ObjectUI.py:1574
 msgid "z_cut = depth where to cut"
@@ -8762,7 +8788,7 @@ msgstr "Просмотр CNC Code"
 msgid ""
 "Opens TAB to view/modify/print G-Code\n"
 "file."
-msgstr ""
+msgstr "Открывает вкладку для просмотра/изменения/печати файла G-Code."
 
 #: flatcamGUI/ObjectUI.py:1602
 msgid "Save CNC Code"
@@ -8891,7 +8917,7 @@ msgstr "Объект:"
 
 #: flatcamTools/ToolCutOut.py:71
 msgid "Object to be cutout.                        "
-msgstr ""
+msgstr "Объект, который нужно вырезать.                         "
 
 #: flatcamTools/ToolCutOut.py:79
 msgid ""
@@ -9010,7 +9036,7 @@ msgstr ""
 
 #: flatcamTools/ToolCutOut.py:251
 msgid "Manual Add Bridge Gaps:"
-msgstr ""
+msgstr "Ручное добавление перемычек:"
 
 #: flatcamTools/ToolCutOut.py:253
 msgid ""
@@ -9018,6 +9044,8 @@ msgid ""
 "to create a bridge gap to separate the PCB from\n"
 "the surrounding material."
 msgstr ""
+"Используйте левую кнопку мыши (ЛКМ) \n"
+"чтобы создать перемычку на печатной плате."
 
 #: flatcamTools/ToolCutOut.py:260
 msgid "Generate Gap"
@@ -9031,6 +9059,10 @@ msgid ""
 "The LMB click has to be done on the perimeter of\n"
 "the Geometry object used as a cutout geometry."
 msgstr ""
+"Используйте левую кнопку мыши (ЛКМ)\n"
+"чтобы создать перемычку на печатной плате.\n"
+"Щелчок ЛКМ должен быть сделан по периметру\n"
+"объекта геометрии, используемой в качестве геометрии выреза."
 
 #: flatcamTools/ToolCutOut.py:341 flatcamTools/ToolCutOut.py:505
 #: flatcamTools/ToolNonCopperClear.py:666 flatcamTools/ToolPaint.py:764
@@ -9039,13 +9071,15 @@ msgstr ""
 #: flatcamTools/ToolSub.py:428 flatcamTools/ToolSub.py:440
 #, python-format
 msgid "[ERROR_NOTCL] Could not retrieve object: %s"
-msgstr ""
+msgstr "[ERROR_NOTCL] Не удалось получить объект: %s"
 
 #: flatcamTools/ToolCutOut.py:345
 msgid ""
 "[ERROR_NOTCL] There is no object selected for Cutout.\n"
 "Select one and try again."
 msgstr ""
+"[ERROR_NOTCL] Не выбран объект для обрезки.\n"
+"Выберите один и повторите попытку."
 
 #: flatcamTools/ToolCutOut.py:360
 msgid ""
@@ -9070,6 +9104,8 @@ msgstr ""
 #: flatcamTools/ToolCutOut.py:388 flatcamTools/ToolCutOut.py:551
 msgid "[WARNING_NOTCL] Number of gaps value is missing. Add it and retry."
 msgstr ""
+"[WARNING_NOTCL] Значение количества перемычек отсутствует. Добавьте его и "
+"повторите попытку.."
 
 #: flatcamTools/ToolCutOut.py:392 flatcamTools/ToolCutOut.py:555
 msgid ""
@@ -9084,16 +9120,20 @@ msgid ""
 "Geometry,\n"
 "and after that perform Cutout."
 msgstr ""
+"[ERROR]Операция обрезки не может быть выполнена из-за multi-geo Geometry.\n"
+"Как вариант, эта multi-geo Geometry может быть преобразована в Single-geo "
+"Geometry,\n"
+"а после этого выполнена обрезка."
 
 #: flatcamTools/ToolCutOut.py:489 flatcamTools/ToolCutOut.py:642
 msgid "[success] Any form CutOut operation finished."
-msgstr ""
+msgstr "[success] Операция обрезки закончена."
 
 #: flatcamTools/ToolCutOut.py:509 flatcamTools/ToolPaint.py:768
 #: flatcamTools/ToolPanelize.py:358
 #, python-format
 msgid "[ERROR_NOTCL] Object not found: %s"
-msgstr ""
+msgstr "[ERROR_NOTCL] Объект не найден: %s"
 
 #: flatcamTools/ToolCutOut.py:523 flatcamTools/ToolCutOut.py:662
 #: flatcamTools/ToolCutOut.py:767
@@ -9101,6 +9141,8 @@ msgid ""
 "[ERROR_NOTCL] Tool Diameter is zero value. Change it to a positive real "
 "number."
 msgstr ""
+"[ERROR_NOTCL] Диаметр инструмента имеет нулевое значение. Измените его на "
+"положительное целое число."
 
 #: flatcamTools/ToolCutOut.py:647
 msgid ""
@@ -9109,38 +9151,42 @@ msgstr ""
 
 #: flatcamTools/ToolCutOut.py:688
 msgid "Making manual bridge gap..."
-msgstr ""
+msgstr "Создание перемычки вручную..."
 
 #: flatcamTools/ToolCutOut.py:711
 #, python-format
 msgid "[ERROR_NOTCL] Could not retrieve Geometry object: %s"
-msgstr ""
+msgstr "[ERROR_NOTCL] Не удалось получить объект Geometry: %s"
 
 #: flatcamTools/ToolCutOut.py:715
 #, python-format
 msgid "[ERROR_NOTCL] Geometry object for manual cutout not found: %s"
-msgstr ""
+msgstr "[ERROR_NOTCL] Объект геометрии для ручного выреза не найден: %s"
 
 #: flatcamTools/ToolCutOut.py:725
 msgid "[success] Added manual Bridge Gap."
-msgstr ""
+msgstr "[success] Премычка добавлена вручная."
 
 #: flatcamTools/ToolCutOut.py:742
 #, python-format
 msgid "[ERROR_NOTCL] Could not retrieve Gerber object: %s"
-msgstr ""
+msgstr "[ERROR_NOTCL] Не удалось получить объект Gerber: %s"
 
 #: flatcamTools/ToolCutOut.py:746
 msgid ""
 "[ERROR_NOTCL] There is no Gerber object selected for Cutout.\n"
 "Select one and try again."
 msgstr ""
+"[ERROR_NOTCL] Для обрезки не выбран объект Gerber.\n"
+"Выберите один и повторите попытку."
 
 #: flatcamTools/ToolCutOut.py:751
 msgid ""
 "[ERROR_NOTCL] The selected object has to be of Gerber type.\n"
 "Select a Gerber file and try again."
 msgstr ""
+"[ERROR_NOTCL] Выбранный объект должен быть типа Gerber.\n"
+"Выберите файл Gerber и повторите попытку."
 
 #: flatcamTools/ToolDblSided.py:18
 msgid "2-Sided PCB"
@@ -9286,6 +9332,8 @@ msgid ""
 "[WARNING_NOTCL] No value or wrong format in Drill Dia entry. Add it and "
 "retry."
 msgstr ""
+"[WARNING_NOTCL] Нет значения либо неправильный формат значения диаметра "
+"сверла. Добавьте его и повторите попытку."
 
 #: flatcamTools/ToolDblSided.py:375
 msgid ""
@@ -9295,7 +9343,7 @@ msgstr ""
 
 #: flatcamTools/ToolDblSided.py:397
 msgid "[success] Excellon object with alignment drills created..."
-msgstr ""
+msgstr "[success] Объект Excellon с выравнивающими отверстиями создан..."
 
 #: flatcamTools/ToolDblSided.py:406
 msgid "[WARNING_NOTCL] There is no Gerber object loaded ..."
@@ -9306,6 +9354,8 @@ msgstr ""
 msgid ""
 "[ERROR_NOTCL] Only Gerber, Excellon and Geometry objects can be mirrored."
 msgstr ""
+"[ERROR_NOTCL] Зеркальное отображение доступно только для объектов Gerber, "
+"Excellon и Geometry."
 
 #: flatcamTools/ToolDblSided.py:420
 msgid ""
@@ -9321,7 +9371,7 @@ msgstr ""
 #: flatcamTools/ToolDblSided.py:440
 #, python-format
 msgid "[success] Gerber %s was mirrored..."
-msgstr ""
+msgstr "[success] Gerber %s отзеркалирован..."
 
 #: flatcamTools/ToolDblSided.py:449
 msgid "[WARNING_NOTCL] There is no Excellon object loaded ..."
@@ -9336,7 +9386,7 @@ msgstr ""
 #: flatcamTools/ToolDblSided.py:484
 #, python-format
 msgid "[success] Excellon %s was mirrored..."
-msgstr ""
+msgstr "[success] Excellon %s отзеркалирован..."
 
 #: flatcamTools/ToolDblSided.py:493
 msgid "[WARNING_NOTCL] There is no Geometry object loaded ..."
@@ -9345,7 +9395,7 @@ msgstr ""
 #: flatcamTools/ToolDblSided.py:521
 #, python-format
 msgid "[success] Geometry %s was mirrored..."
-msgstr ""
+msgstr "[success] Geometry %s отзеркалирован..."
 
 #: flatcamTools/ToolFilm.py:25
 msgid "Film PCB"
@@ -9412,11 +9462,15 @@ msgstr ""
 msgid ""
 "[ERROR_NOTCL] No FlatCAM object selected. Load an object for Film and retry."
 msgstr ""
+"[ERROR_NOTCL] Объект FlatCAM не выбран. Загрузите объект для Плёнки и "
+"повторите попытку."
 
 #: flatcamTools/ToolFilm.py:231
 msgid ""
 "[ERROR_NOTCL] No FlatCAM object selected. Load an object for Box and retry."
 msgstr ""
+"[ERROR_NOTCL] Объект FlatCAM не выбран. Загрузите объект для Рамки и "
+"повторите попытку."
 
 #: flatcamTools/ToolFilm.py:255
 msgid "Generating Film ..."
@@ -9444,7 +9498,7 @@ msgstr "Изображение как Object"
 
 #: flatcamTools/ToolImage.py:31
 msgid "Image to PCB"
-msgstr ""
+msgstr "Изображение в PCB"
 
 #: flatcamTools/ToolImage.py:55
 msgid ""
@@ -9466,7 +9520,7 @@ msgstr "Уровень детализации"
 
 #: flatcamTools/ToolImage.py:81
 msgid "Image type"
-msgstr ""
+msgstr "Тип изображения"
 
 #: flatcamTools/ToolImage.py:83
 msgid ""
@@ -9627,21 +9681,23 @@ msgstr "Перемещение ..."
 
 #: flatcamTools/ToolMove.py:135
 msgid "[WARNING_NOTCL] No object(s) selected."
-msgstr ""
+msgstr "[WARNING_NOTCL] Нет выбранных объектов."
 
 #: flatcamTools/ToolMove.py:158
 #, python-format
 msgid "[ERROR_NOTCL] ToolMove.on_left_click() --> %s"
-msgstr ""
+msgstr "[ERROR_NOTCL] ToolMove.on_left_click() --> %s"
 
 #: flatcamTools/ToolMove.py:164
 #, python-format
 msgid "[success] %s object was moved ..."
-msgstr ""
+msgstr "[success] %s объект был перемещен ..."
 
 #: flatcamTools/ToolMove.py:174
 msgid "[ERROR_NOTCL] ToolMove.on_left_click() --> Error when mouse left click."
 msgstr ""
+"[ERROR_NOTCL] ToolMove.on_left_click() --> Ошибка при щелчке левой кнопкой "
+"мыши."
 
 #: flatcamTools/ToolMove.py:202
 msgid "[WARNING_NOTCL] Move action cancelled."
@@ -9649,7 +9705,7 @@ msgstr ""
 
 #: flatcamTools/ToolMove.py:214
 msgid "[WARNING_NOTCL] Object(s) not selected"
-msgstr ""
+msgstr "[WARNING_NOTCL] Нет выбранных объектов."
 
 #: flatcamTools/ToolNonCopperClear.py:26
 msgid "Non-Copper Clearing"
@@ -9743,11 +9799,11 @@ msgstr ""
 
 #: flatcamTools/ToolNonCopperClear.py:518 flatcamTools/ToolPaint.py:573
 msgid "[success] New tool added to Tool Table."
-msgstr ""
+msgstr "[success] Новый инструмент добавлен в таблицу инструментов."
 
 #: flatcamTools/ToolNonCopperClear.py:560 flatcamTools/ToolPaint.py:616
 msgid "[success] Tool from Tool Table was edited."
-msgstr ""
+msgstr "[success] Инструмент был изменён в таблице инструментов."
 
 #: flatcamTools/ToolNonCopperClear.py:571 flatcamTools/ToolPaint.py:627
 #: flatcamTools/ToolSolderPaste.py:847
@@ -9762,16 +9818,18 @@ msgstr ""
 
 #: flatcamTools/ToolNonCopperClear.py:615 flatcamTools/ToolPaint.py:729
 msgid "[success] Tool(s) deleted from Tool Table."
-msgstr ""
+msgstr "[success] Инструмент удалён из таблицы инструментов."
 
 #: flatcamTools/ToolNonCopperClear.py:633 flatcamTools/ToolPaint.py:748
 msgid ""
 "[ERROR_NOTCL] Overlap value must be between 0 (inclusive) and 1 (exclusive), "
 msgstr ""
+"[ERROR_NOTCL] Значение перекрытия должно быть от 0 (включитение) до 1 "
+"(исключение),"
 
 #: flatcamTools/ToolNonCopperClear.py:673
 msgid "[ERROR_NOTCL] No Gerber file available."
-msgstr ""
+msgstr "[ERROR_NOTCL] Нет доступных Gerber-файлов ."
 
 #: flatcamTools/ToolNonCopperClear.py:711
 #: flatcamTools/ToolNonCopperClear.py:833
@@ -9782,15 +9840,16 @@ msgstr "Очистка областей от меди."
 #, python-format
 msgid "[success] Non-Copper Clearing with ToolDia = %s started."
 msgstr ""
+"[success] Началась очистка от меди с помощью инструмента диаметром = %s."
 
 #: flatcamTools/ToolNonCopperClear.py:798
 #, python-format
 msgid "[ERROR_NOTCL] NCCTool.clear_non_copper() --> %s"
-msgstr ""
+msgstr "[ERROR_NOTCL] NCCTool.clear_non_copper() --> %s"
 
 #: flatcamTools/ToolNonCopperClear.py:803
 msgid "[success] NCC Tool finished."
-msgstr ""
+msgstr "[success] NCC Tool завершён."
 
 #: flatcamTools/ToolNonCopperClear.py:805
 msgid ""
@@ -9802,17 +9861,21 @@ msgstr ""
 #, python-format
 msgid "[success] Non-Copper Rest Clearing with ToolDia = %s started."
 msgstr ""
+"[success] Началась очистка от остатков меди с помощью инструмента диаметром "
+"= %s."
 
 #: flatcamTools/ToolNonCopperClear.py:949
 #, python-format
 msgid "[ERROR_NOTCL] NCCTool.clear_non_copper_rest() --> %s"
-msgstr ""
+msgstr "[ERROR_NOTCL] NCCTool.clear_non_copper_rest() --> %s"
 
 #: flatcamTools/ToolNonCopperClear.py:957
 msgid ""
 "[ERROR_NOTCL] NCC Tool finished but could not clear the object with current "
 "settings."
 msgstr ""
+"[ERROR_NOTCL] NCC Tool завершён, но не смог очистить объект с текущими "
+"настройками."
 
 #: flatcamTools/ToolPDF.py:38
 msgid "PDF Import Tool"
@@ -9824,7 +9887,7 @@ msgstr "Открыть PDF"
 
 #: flatcamTools/ToolPDF.py:159
 msgid "[WARNING_NOTCL] Open PDF cancelled."
-msgstr ""
+msgstr "[WARNING_NOTCL] Открытие PDF отменено."
 
 #: flatcamTools/ToolPDF.py:186
 msgid "Parsing PDF file ..."
@@ -9837,12 +9900,12 @@ msgstr "Отрисовка слоя PDF #%d ..."
 
 #: flatcamTools/ToolPDF.py:269 flatcamTools/ToolPDF.py:342
 msgid "[ERROR_NOTCL] Open PDF file failed."
-msgstr ""
+msgstr "[ERROR_NOTCL] Не удалось открыть PDF-файл."
 
 #: flatcamTools/ToolPDF.py:274 flatcamTools/ToolPDF.py:347
 #, python-format
 msgid "[success] Rendered: %s"
-msgstr ""
+msgstr "[success] Отрисовка: %s"
 
 #: flatcamTools/ToolPaint.py:24
 msgid "Paint Area"
@@ -9917,7 +9980,7 @@ msgstr ""
 
 #: flatcamTools/ToolPaint.py:774
 msgid "[ERROR_NOTCL] Can't do Paint on MultiGeo geometries ..."
-msgstr ""
+msgstr "[ERROR_NOTCL] Невозможно окрашивание multi-geo Geometries ..."
 
 #: flatcamTools/ToolPaint.py:796 flatcamTools/ToolPaint.py:1003
 msgid "Painting polygon..."
@@ -9933,7 +9996,7 @@ msgstr "Отрисовка безмедного полигона."
 
 #: flatcamTools/ToolPaint.py:896
 msgid "[ERROR_NOTCL] Geometry could not be painted completely"
-msgstr ""
+msgstr "[ERROR_NOTCL] Геометрия не может быть окрашена полностью"
 
 #: flatcamTools/ToolPaint.py:922
 #, python-format
@@ -9942,11 +10005,14 @@ msgid ""
 "different strategy of paint\n"
 "%s"
 msgstr ""
+"[ERROR] Окраска не выполнена. Попробуйте другую комбинацию параметров. Или "
+"другой способ рисования\n"
+"%s"
 
 #: flatcamTools/ToolPaint.py:964
 #, python-format
 msgid "[ERROR_NOTCL] PaintTool.paint_poly() --> %s"
-msgstr ""
+msgstr "[ERROR_NOTCL] PaintTool.paint_poly() --> %s"
 
 #: flatcamTools/ToolPaint.py:970 flatcamTools/ToolPaint.py:1267
 msgid "Polygon Paint started ..."
@@ -9959,6 +10025,9 @@ msgid ""
 "Or a different Method of paint\n"
 "%s"
 msgstr ""
+"[ERROR] Окраска не выполнена. Попробуйте другую комбинацию параметров. Или "
+"другой способ рисования\n"
+"%s"
 
 #: flatcamTools/ToolPaint.py:1147
 msgid ""
@@ -9967,10 +10036,14 @@ msgid ""
 "geometry.\n"
 "Change the painting parameters and try again."
 msgstr ""
+"[ERROR] В файле нет Painting Geometry.\n"
+"Обычно это означает, что диаметр инструмента слишком велик для Painting "
+"Geometry .\n"
+"Измените параметры рисования и повторите попытку."
 
 #: flatcamTools/ToolPaint.py:1156
 msgid "[success] Paint All Done."
-msgstr ""
+msgstr "[success] Paint All выполнено."
 
 #: flatcamTools/ToolPaint.py:1242
 msgid ""
@@ -9979,10 +10052,14 @@ msgid ""
 "geometry.\n"
 "Change the painting parameters and try again."
 msgstr ""
+"[ERROR_NOTCL] В файле нет Painting Geometry.\n"
+"Обычно это означает, что диаметр инструмента слишком велик для Painting "
+"Geometry.\n"
+"Измените параметры рисования и повторите попытку."
 
 #: flatcamTools/ToolPaint.py:1251
 msgid "[success] Paint All with Rest-Machining done."
-msgstr ""
+msgstr "[success] Paint All with Rest-Machining done."
 
 #: flatcamTools/ToolPanelize.py:25
 msgid "Panelize PCB"
@@ -10094,6 +10171,8 @@ msgid ""
 "[ERROR_NOTCL] Columns or Rows are zero value. Change them to a positive "
 "integer."
 msgstr ""
+"[ERROR_NOTCL] Столбцы или строки имеют нулевое значение. Измените их на "
+"положительное целое число."
 
 #: flatcamTools/ToolPanelize.py:478 flatcamTools/ToolPanelize.py:635
 msgid "Generating panel ... Please wait."
@@ -10101,7 +10180,7 @@ msgstr "Выполняется панелизация ... Пожалуйста, 
 
 #: flatcamTools/ToolPanelize.py:628
 msgid "[success] Panel done..."
-msgstr ""
+msgstr "[success] Панель готова..."
 
 #: flatcamTools/ToolPanelize.py:631
 #, python-brace-format
@@ -10112,7 +10191,7 @@ msgstr ""
 
 #: flatcamTools/ToolPanelize.py:640
 msgid "[success] Panel created successfully."
-msgstr ""
+msgstr "[success] Панелизация успешно выполнена."
 
 #: flatcamTools/ToolPcbWizard.py:32
 msgid "PcbWizard Import Tool"
@@ -10219,19 +10298,22 @@ msgid ""
 "Try to open the Excellon file from File -> Open -> Excellon\n"
 "and edit the drill diameters manually."
 msgstr ""
+"[ERROR] INF-файл не содержит таблицы инструментов.\n"
+"Попробуйте открыть Excellon из меню Файл- > Открыть - > Открыть Excellon\n"
+"и отредактируйте диаметр сверла вручную."
 
 #: flatcamTools/ToolPcbWizard.py:383
 msgid "[success] PcbWizard .INF file loaded."
-msgstr ""
+msgstr "[success] Inf-файл PcbWizard загружен."
 
 #: flatcamTools/ToolPcbWizard.py:387
 msgid "[success] Main PcbWizard Excellon file loaded."
-msgstr ""
+msgstr "[success] Файл PcbWizard Excellon загружен."
 
 #: flatcamTools/ToolPcbWizard.py:424
 #, python-format
 msgid "[ERROR_NOTCL] Cannot parse file: %s"
-msgstr ""
+msgstr "[ERROR_NOTCL] Не удается прочитать файл: %s"
 
 #: flatcamTools/ToolPcbWizard.py:447
 msgid "Importing Excellon."
@@ -10239,12 +10321,12 @@ msgstr "Импортирование Excellon."
 
 #: flatcamTools/ToolPcbWizard.py:454
 msgid "[ERROR_NOTCL] Import Excellon file failed."
-msgstr ""
+msgstr "[ERROR_NOTCL] Не удалось импортировать файл Excellon."
 
 #: flatcamTools/ToolPcbWizard.py:461
 #, python-format
 msgid "[success] Imported: %s"
-msgstr ""
+msgstr "[success] Импортирован: %s"
 
 #: flatcamTools/ToolPcbWizard.py:464
 msgid "[WARNING_NOTCL] Excellon merging is in progress. Please wait..."
@@ -10252,15 +10334,16 @@ msgstr ""
 
 #: flatcamTools/ToolPcbWizard.py:466
 msgid "[ERROR_NOTCL] The imported Excellon file is None."
-msgstr ""
+msgstr "[ERROR_NOTCL] Импортированный файл Excellon есть None."
 
 #: flatcamTools/ToolProperties.py:103
 msgid "[ERROR_NOTCL] Properties Tool was not displayed. No object selected."
 msgstr ""
+"[ERROR_NOTCL] Инструмент \"Свойства\" не отображается. Объект не выбран."
 
 #: flatcamTools/ToolProperties.py:110
 msgid "[success] Object Properties are displayed."
-msgstr ""
+msgstr "[success] Отображены свойства объекта."
 
 #: flatcamTools/ToolProperties.py:111
 msgid "Properties Tool"
@@ -10281,7 +10364,7 @@ msgstr "Паяльная паста"
 
 #: flatcamTools/ToolSolderPaste.py:65
 msgid "Gerber Solder paste object.                        "
-msgstr ""
+msgstr "Gerber объект паяльной пасты.                        "
 
 #: flatcamTools/ToolSolderPaste.py:72
 msgid ""
@@ -10306,7 +10389,7 @@ msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:101
 msgid "New Nozzle Tool"
-msgstr "Новая насадка"
+msgstr "Новое сопло"
 
 #: flatcamTools/ToolSolderPaste.py:117
 msgid ""
@@ -10446,11 +10529,11 @@ msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:794
 msgid "[success] New Nozzle tool added to Tool Table."
-msgstr ""
+msgstr "[success] Новое сопло добавлено в таблицу инструментов."
 
 #: flatcamTools/ToolSolderPaste.py:836
 msgid "[success] Nozzle tool from Tool Table was edited."
-msgstr ""
+msgstr "[success] Сопло было изменено в таблице инструментов."
 
 #: flatcamTools/ToolSolderPaste.py:892
 msgid "[WARNING_NOTCL] Delete failed. Select a Nozzle tool to delete."
@@ -10458,11 +10541,11 @@ msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:897
 msgid "[success] Nozzle tool(s) deleted from Tool Table."
-msgstr ""
+msgstr "[success] Сопло удалено из таблицы инструментов."
 
 #: flatcamTools/ToolSolderPaste.py:952
 msgid "[WARNING_NOTCL] No SolderPaste mask Gerber object loaded."
-msgstr ""
+msgstr "[WARNING_NOTCL] Нет загруженного Gerber объекта маски паяльной пасты."
 
 #: flatcamTools/ToolSolderPaste.py:969
 msgid "Creating Solder Paste dispensing geometry."
@@ -10474,7 +10557,7 @@ msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:1110
 msgid "[success] Solder Paste geometry generated successfully..."
-msgstr ""
+msgstr "[success] Геометрия дозатора паяльной пасты успешно создана..."
 
 #: flatcamTools/ToolSolderPaste.py:1116
 msgid ""
@@ -10499,7 +10582,7 @@ msgstr ""
 #: flatcamTools/ToolSolderPaste.py:1259
 #, python-format
 msgid "[success] ToolSolderPaste CNCjob created: %s"
-msgstr ""
+msgstr "[success] CNCjob дозатора паяльной пасты создан: %s"
 
 #: flatcamTools/ToolSolderPaste.py:1291 flatcamTools/ToolSolderPaste.py:1295
 #: flatcamTools/ToolSolderPaste.py:1346
@@ -10510,12 +10593,12 @@ msgstr ""
 
 #: flatcamTools/ToolSolderPaste.py:1318
 msgid "[ERROR_NOTCL] No Gcode in the object..."
-msgstr ""
+msgstr "[ERROR_NOTCL] Нет Gcode в этом объекте......"
 
 #: flatcamTools/ToolSolderPaste.py:1327
 #, python-format
 msgid "[ERROR] ToolSolderPaste.on_view_gcode() -->%s"
-msgstr ""
+msgstr "[ERROR] ToolSolderPaste.on_view_gcode() -->%s"
 
 #: flatcamTools/ToolSolderPaste.py:1356
 msgid "Export GCode ..."
@@ -10524,7 +10607,7 @@ msgstr "Экспорт GCode ..."
 #: flatcamTools/ToolSolderPaste.py:1396
 #, python-format
 msgid "[success] Solder paste dispenser GCode file saved to: %s"
-msgstr ""
+msgstr "[success] Файл GCode дозатора паяльной пасты сохранён в: %s"
 
 #: flatcamTools/ToolSub.py:55
 msgid "<b>Gerber Objects</b>"
@@ -10604,11 +10687,11 @@ msgstr "Вычитатель"
 
 #: flatcamTools/ToolSub.py:230 flatcamTools/ToolSub.py:421
 msgid "[ERROR_NOTCL] No Target object loaded."
-msgstr ""
+msgstr "[ERROR_NOTCL] Нет загруженного целевого объекта."
 
 #: flatcamTools/ToolSub.py:242 flatcamTools/ToolSub.py:433
 msgid "[ERROR_NOTCL] No Substractor object loaded."
-msgstr ""
+msgstr "[ERROR_NOTCL] Нет загруженного объекта Вычитателя."
 
 #: flatcamTools/ToolSub.py:294
 #, python-format
@@ -10621,26 +10704,28 @@ msgstr "Генерация нового объекта ..."
 
 #: flatcamTools/ToolSub.py:399 flatcamTools/ToolSub.py:542
 msgid "[ERROR_NOTCL] Generating new object failed."
-msgstr ""
+msgstr "[ERROR_NOTCL] Не удалось создать новый объект."
 
 #: flatcamTools/ToolSub.py:403 flatcamTools/ToolSub.py:547
 #, python-format
 msgid "[success] Created: %s"
-msgstr ""
+msgstr "[success] Создан: %s"
 
 #: flatcamTools/ToolSub.py:444
 msgid ""
 "[ERROR_NOTCL] Currently, the Substractor geometry cannot be of type Multigeo."
 msgstr ""
+"[ERROR_NOTCL] В настоящее время Substractor geometry не может иметь тип "
+"Multigeo."
 
 #: flatcamTools/ToolSub.py:489
 msgid "Parsing solid_geometry ..."
-msgstr ""
+msgstr "Разбор solid_geometry ..."
 
 #: flatcamTools/ToolSub.py:491
 #, python-format
 msgid "Parsing tool %s geometry ..."
-msgstr ""
+msgstr "Разбор инструмента %s геометрии ..."
 
 #: flatcamTools/ToolTransform.py:23
 msgid "Object Transform"
