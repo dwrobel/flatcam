@@ -486,6 +486,7 @@ class CutOut(FlatCAMTool):
             geo_obj.options['ymin'] = ymin
             geo_obj.options['xmax'] = xmax
             geo_obj.options['ymax'] = ymax
+            geo_obj.options['cnctooldia'] = str(dia)
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.new_object('geometry', outname, geo_init)
@@ -639,6 +640,8 @@ class CutOut(FlatCAMTool):
                 solid_geo.append(geo)
 
             geo_obj.solid_geometry = deepcopy(solid_geo)
+            geo_obj.options['cnctooldia'] = str(dia)
+
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.new_object('geometry', outname, geo_init)
@@ -801,6 +804,7 @@ class CutOut(FlatCAMTool):
                     for poly in geo:
                         solid_geo.append(poly.exterior)
                     geo_obj.solid_geometry = deepcopy(solid_geo)
+            geo_obj.options['cnctooldia'] = str(dia)
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.new_object('geometry', outname, geo_init)

@@ -3237,8 +3237,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     self.default_data[def_key] = deepcopy(opt_val)
 
         try:
+            temp_tools = self.options["cnctooldia"].split(",")
             tools_list = [
-                float(eval(dia)) for dia in self.options["cnctooldia"].split(",")
+                float(eval(dia)) for dia in temp_tools if dia != ''
             ]
         except Exception as e:
             log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> Geometry General -> "

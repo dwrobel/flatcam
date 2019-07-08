@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+8.07.2019
+
+- fixed bug that allowed empty tool in the tools generated in Geometry object
+- fixed bug in Tool Cutout that did not allow the transfer of used cutout tool diameter to the cutout geometry object
+
 5.07.2019
 
 - fixed bug in CutOut Tool
