@@ -3679,12 +3679,14 @@ class App(QtCore.QObject):
         def scale_options(sfactor):
             for dim in dimensions:
                 if dim == 'excellon_toolchangexy':
-                    coords_xy = [float(eval(a)) for a in self.defaults["excellon_toolchangexy"].split(",")]
+                    coordinates = self.defaults["excellon_toolchangexy"].split(",")
+                    coords_xy = [float(eval(a)) for a in coordinates if a != '']
                     coords_xy[0] *= sfactor
                     coords_xy[1] *= sfactor
                     self.options['excellon_toolchangexy'] = "%f, %f" % (coords_xy[0], coords_xy[1])
                 elif dim == 'geometry_toolchangexy':
-                    coords_xy = [float(eval(a)) for a in self.defaults["geometry_toolchangexy"].split(",")]
+                    coordinates = self.defaults["geometry_toolchangexy"].split(",")
+                    coords_xy = [float(eval(a)) for a in coordinates if a != '']
                     coords_xy[0] *= sfactor
                     coords_xy[1] *= sfactor
                     self.options['geometry_toolchangexy'] = "%f, %f" % (coords_xy[0], coords_xy[1])
@@ -3725,38 +3727,48 @@ class App(QtCore.QObject):
                         sptools[t] *= sfactor
                         self.options['tools_solderpaste_tools'] += "%f," % sptools[t]
                 elif dim == 'tools_solderpaste_xy_toolchange':
-                    sp_coords = [float(eval(a)) for a in self.defaults["tools_solderpaste_xy_toolchange"].split(",")]
+                    coordinates = self.defaults["tools_solderpaste_xy_toolchange"].split(",")
+                    sp_coords = [float(eval(a)) for a in coordinates if a != '']
                     sp_coords[0] *= sfactor
                     sp_coords[1] *= sfactor
                     self.options['tools_solderpaste_xy_toolchange'] = "%f, %f" % (sp_coords[0], sp_coords[1])
                 elif dim == 'global_gridx' or dim == 'global_gridy':
                     if new_units == 'IN':
+                        val = 0.1
                         try:
                             val = float(self.defaults[dim]) * sfactor
-                            self.options[dim] = float('%.6f' % val)
                         except Exception as e:
                             log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
+
+                        self.options[dim] = float('%.6f' % val)
                     else:
+                        val = 0.1
                         try:
                             val = float(self.defaults[dim]) * sfactor
-                            self.options[dim] = float('%.4f' % val)
                         except Exception as e:
                             log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
+
+                        self.options[dim] = float('%.4f' % val)
                 else:
+                    val = 0.1
                     try:
-                        self.options[dim] = float(self.options[dim]) * sfactor
+                        val = float(self.options[dim]) * sfactor
                     except Exception as e:
                         log.debug('App.on_toggle_units().scale_options() --> %s' % str(e))
+
+                    self.options[dim] = val
 
         def scale_defaults(sfactor):
             for dim in dimensions:
                 if dim == 'excellon_toolchangexy':
-                    coords_xy = [float(eval(a)) for a in self.defaults["excellon_toolchangexy"].split(",")]
+                    coordinates = self.defaults["excellon_toolchangexy"].split(",")
+                    coords_xy = [float(eval(a)) for a in coordinates if a != '']
                     coords_xy[0] *= sfactor
                     coords_xy[1] *= sfactor
                     self.defaults['excellon_toolchangexy'] = "%.4f, %.4f" % (coords_xy[0], coords_xy[1])
                 elif dim == 'geometry_toolchangexy':
-                    coords_xy = [float(eval(a)) for a in self.defaults["geometry_toolchangexy"].split(",")]
+                    coordinates = self.defaults["geometry_toolchangexy"].split(",")
+                    coords_xy = [float(eval(a)) for a in coordinates if a != '']
                     coords_xy[0] *= sfactor
                     coords_xy[1] *= sfactor
                     self.defaults['geometry_toolchangexy'] = "%.4f, %.4f" % (coords_xy[0], coords_xy[1])
@@ -3797,28 +3809,36 @@ class App(QtCore.QObject):
                         sptools[t] *= sfactor
                         self.defaults['tools_solderpaste_tools'] += "%.4f," % sptools[t]
                 elif dim == 'tools_solderpaste_xy_toolchange':
-                    sp_coords = [float(eval(a)) for a in self.defaults["tools_solderpaste_xy_toolchange"].split(",")]
+                    coordinates = self.defaults["tools_solderpaste_xy_toolchange"].split(",")
+                    sp_coords = [float(eval(a)) for a in coordinates if a != '']
                     sp_coords[0] *= sfactor
                     sp_coords[1] *= sfactor
                     self.defaults['tools_solderpaste_xy_toolchange'] = "%.4f, %.4f" % (sp_coords[0], sp_coords[1])
                 elif dim == 'global_gridx' or dim == 'global_gridy':
                     if new_units == 'IN':
+                        val = 0.1
                         try:
                             val = float(self.defaults[dim]) * sfactor
-                            self.defaults[dim] = float('%.6f' % val)
                         except Exception as e:
                             log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
+
+                        self.defaults[dim] = float('%.6f' % val)
                     else:
+                        val = 0.1
                         try:
                             val = float(self.defaults[dim]) * sfactor
-                            self.defaults[dim] = float('%.4f' % val)
                         except Exception as e:
                             log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
+
+                        self.defaults[dim] = float('%.4f' % val)
                 else:
+                    val = 0.1
                     try:
-                        self.defaults[dim] = float(self.defaults[dim]) * sfactor
+                        val = float(self.defaults[dim]) * sfactor
                     except Exception as e:
                         log.debug('App.on_toggle_units().scale_defaults() --> %s' % str(e))
+
+                    self.defaults[dim] = val
 
         # The scaling factor depending on choice of units.
         factor = 1/25.4

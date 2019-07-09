@@ -1,5 +1,7 @@
 from ObjectCollection import *
 from tclCommands.TclCommand import TclCommand
+from shapely.ops import cascaded_union
+from shapely.geometry import LineString
 
 
 class TclCommandCutout(TclCommand):
@@ -81,11 +83,12 @@ class TclCommandCutout(TclCommand):
 
         try:
             obj = self.app.collection.get_by_name(str(name))
-        except:
+        except Exception as e:
+            log.debug("TclCommandCutout.execute() --> %s" % str(e))
             return "Could not retrieve object: %s" % name
 
         def geo_init_me(geo_obj, app_obj):
-            margin =  margin_par + dia_par / 2
+            margin = margin_par + dia_par / 2
             gap_size = dia_par + gapsize_par
 
             minx, miny, maxx, maxy = obj.bounds()

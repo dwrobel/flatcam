@@ -2,6 +2,7 @@ from FlatCAMTool import FlatCAMTool
 from ObjectCollection import *
 from FlatCAMApp import *
 from shapely.geometry import box
+from shapely.ops import cascaded_union, unary_union
 
 import gettext
 import FlatCAMTranslation as fcTranslate

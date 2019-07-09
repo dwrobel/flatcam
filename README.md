@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+9.07.2019
+
+- some changes in the app.on_togle_units() to make sure we don't try to convert empty parameters which may cause crashes on FlatCAM units change
+- updated setup_ubuntu.sh file
+- made sure to import certain libraries in some of the FlatCAM files and not to rely on chained imports
+
 8.07.2019
 
 - fixed bug that allowed empty tool in the tools generated in Geometry object
