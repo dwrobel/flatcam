@@ -1755,6 +1755,48 @@ class FCBuffer(FCShapeTool):
         self.draw_app.plot_all()
 
 
+class FCMarkArea(FCShapeTool):
+    def __init__(self, draw_app):
+        FCShapeTool.__init__(self, draw_app)
+        self.name = 'markarea'
+
+        # self.shape_buffer = self.draw_app.shape_buffer
+        self.draw_app = draw_app
+        self.app = draw_app.app
+
+        self.draw_app.app.inform.emit(_("Mark polygon areas in the edited Gerber ..."))
+        self.origin = (0, 0)
+
+        if self.draw_app.app.ui.splitter.sizes()[0] == 0:
+            self.draw_app.app.ui.splitter.setSizes([1, 1])
+        self.activate_markarea()
+
+    def activate_markarea(self):
+        self.draw_app.hide_tool('all')
+        self.draw_app.ma_tool_frame.show()
+
+        try:
+            self.draw_app.ma_threshold__button.clicked.disconnect()
+        except TypeError:
+            pass
+        self.draw_app.ma_threshold__button.clicked.connect(self.on_markarea_click)
+
+    def deactivate_markarea(self):
+        self.draw_app.ma_threshold__button.clicked.disconnect()
+        self.complete = True
+        self.draw_app.select_tool("select")
+        self.draw_app.hide_tool(self.name)
+
+    def on_markarea_click(self):
+        self.draw_app.on_markarea()
+        self.deactivate_markarea()
+
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.apertures_table.clearSelection()
+        self.draw_app.plot_all()
+
+
 class FCApertureMove(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
@@ -2273,8 +2315,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.custom_box = QtWidgets.QVBoxLayout()
         layout.addLayout(self.custom_box)
 
-
-        # # ## Gerber Apertures ## ##
+        # #########################
+        # ### Gerber Apertures ####
+        # #########################
         self.apertures_table_label = QtWidgets.QLabel(_('<b>Apertures:</b>'))
         self.apertures_table_label.setToolTip(
             _("Apertures Table for the Gerber Object.")
@@ -2390,8 +2433,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         hlay_ad.addWidget(self.addaperture_btn)
         hlay_ad.addWidget(self.delaperture_btn)
 
-        # # ## BUFFER TOOL # ##
-
+        # ###################
+        # ### BUFFER TOOL ###
+        # ###################
         self.buffer_tool_frame = QtWidgets.QFrame()
         self.buffer_tool_frame.setContentsMargins(0, 0, 0, 0)
         self.custom_box.addWidget(self.buffer_tool_frame)
@@ -2434,8 +2478,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.buffer_button = QtWidgets.QPushButton(_("Buffer"))
         hlay_buf.addWidget(self.buffer_button)
 
-        # # ## SCALE TOOL # ##
-
+        # ##################
+        # ### SCALE TOOL ###
+        # ##################
         self.scale_tool_frame = QtWidgets.QFrame()
         self.scale_tool_frame.setContentsMargins(0, 0, 0, 0)
         self.custom_box.addWidget(self.scale_tool_frame)
@@ -2471,6 +2516,58 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.scale_button = QtWidgets.QPushButton(_("Scale"))
         hlay_scale.addWidget(self.scale_button)
 
+        # ######################
+        # ### Mark Area TOOL ###
+        # ######################
+        self.ma_tool_frame = QtWidgets.QFrame()
+        self.ma_tool_frame.setContentsMargins(0, 0, 0, 0)
+        self.custom_box.addWidget(self.ma_tool_frame)
+        self.ma_tools_box = QtWidgets.QVBoxLayout()
+        self.ma_tools_box.setContentsMargins(0, 0, 0, 0)
+        self.ma_tool_frame.setLayout(self.ma_tools_box)
+        self.ma_tool_frame.hide()
+
+        # Title
+        ma_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Mark polygon areas:'))
+        ma_title_lbl.setToolTip(
+            _("Mark the polygon areas.")
+        )
+        self.ma_tools_box.addWidget(ma_title_lbl)
+
+        # Form Layout
+        ma_form_layout = QtWidgets.QFormLayout()
+        self.ma_tools_box.addLayout(ma_form_layout)
+
+        self.ma_upper_threshold_lbl = QtWidgets.QLabel(_("Area UPPER threshold:"))
+        self.ma_upper_threshold_lbl.setToolTip(
+            _("The threshold value, all areas less than this are marked.\n"
+              "Can have a value between 0.0000 and 9999.9999")
+        )
+        self.ma_upper_threshold_entry = FCEntry()
+        self.ma_upper_threshold_entry.setValidator(QtGui.QDoubleValidator(0.0000, 9999.9999, 4))
+
+        self.ma_lower_threshold_lbl = QtWidgets.QLabel(_("Area LOWER threshold:"))
+        self.ma_lower_threshold_lbl.setToolTip(
+            _("The threshold value, all areas more than this are marked.\n"
+              "Can have a value between 0.0000 and 9999.9999")
+        )
+        self.ma_lower_threshold_entry = FCEntry()
+        self.ma_lower_threshold_entry.setValidator(QtGui.QDoubleValidator(0.0000, 9999.9999, 4))
+
+        ma_form_layout.addRow(self.ma_upper_threshold_lbl, self.ma_upper_threshold_entry)
+        ma_form_layout.addRow(self.ma_lower_threshold_lbl, self.ma_lower_threshold_entry)
+
+        # Buttons
+        hlay_ma = QtWidgets.QHBoxLayout()
+        self.ma_tools_box.addLayout(hlay_ma)
+
+        self.ma_threshold__button = QtWidgets.QPushButton(_("Go"))
+        hlay_ma.addWidget(self.ma_threshold__button)
+
+        # ######################
+        # ### Add Pad Array ####
+        # ######################
+
         # add a frame and inside add a vertical box layout. Inside this vbox layout I add
         # all the add Pad array  widgets
         # this way I can hide/show the frame
@@ -2481,7 +2578,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.array_box.setContentsMargins(0, 0, 0, 0)
         self.array_frame.setLayout(self.array_box)
 
-        # # ## Add Pad Array ## ##
         self.emptyarray_label = QtWidgets.QLabel('')
         self.array_box.addWidget(self.emptyarray_label)
 
@@ -2623,6 +2719,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                        "constructor": FCBuffer},
             "scale": {"button": self.app.ui.aperture_scale_btn,
                       "constructor": FCScale},
+            "markarea": {"button": self.app.ui.aperture_markarea_btn,
+                      "constructor": FCMarkArea},
             "eraser": {"button": self.app.ui.aperture_eraser_btn,
                       "constructor": FCEraser},
             "copy": {"button": self.app.ui.aperture_copy_btn,
@@ -2670,12 +2768,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.gerber_obj = None
         self.gerber_obj_options = dict()
 
-        self.buffer_distance_entry.set_value(0.01)
-        self.scale_factor_entry.set_value(1.0)
-
         # VisPy Visuals
         self.shapes = self.canvas.new_shape_collection(layers=1)
         self.tool_shape = self.canvas.new_shape_collection(layers=1)
+        self.ma_annotation = self.canvas.new_text_group()
+
         self.app.pool_recreated.connect(self.pool_recreated)
 
         # Remove from scene
@@ -2768,6 +2865,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.ui.grb_add_disc_menuitem.triggered.connect(self.on_disc_add)
         self.app.ui.grb_add_buffer_menuitem.triggered.connect(self.on_buffer)
         self.app.ui.grb_add_scale_menuitem.triggered.connect(self.on_scale)
+        self.app.ui.grb_add_eraser_menuitem.triggered.connect(self.on_eraser)
+        self.app.ui.grb_add_markarea_menuitem.triggered.connect(self.on_markarea)
+
         self.app.ui.grb_transform_menuitem.triggered.connect(self.transform_tool.run)
 
         self.app.ui.grb_copy_menuitem.triggered.connect(self.on_copy_button)
@@ -2810,12 +2910,19 @@ class FlatCAMGrbEditor(QtCore.QObject):
             tt_aperture = self.sorted_apid[i]
             self.tool2tooldia[i + 1] = tt_aperture
 
-        if self.units == "IN":
-            self.apsize_entry.set_value(0.039)
-        else:
-            self.apsize_entry.set_value(1.00)
-
         # Init GUI
+        if self.units == 'MM':
+            self.buffer_distance_entry.set_value(0.01)
+            self.scale_factor_entry.set_value(1.0)
+            self.ma_upper_threshold_entry.set_value(1.0)
+            self.apsize_entry.set_value(1.00)
+        else:
+            self.buffer_distance_entry.set_value(0.0003937)
+            self.scale_factor_entry.set_value(0.03937)
+            self.ma_upper_threshold_entry.set_value(0.00155)
+            self.apsize_entry.set_value(0.039)
+        self.ma_lower_threshold_entry.set_value(0.0)
+
         self.pad_array_size_entry.set_value(5)
         self.pad_pitch_entry.set_value(2.54)
         self.pad_angle_entry.set_value(12)
@@ -2827,12 +2934,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.apertures_table.itemChanged.disconnect()
-        except:
+        except Exception as e:
             pass
 
         try:
             self.apertures_table.cellPressed.disconnect()
-        except:
+        except Exception as e:
             pass
 
         # updated units
@@ -3426,6 +3533,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.shapes.clear(update=True)
         self.tool_shape.clear(update=True)
+        self.ma_annotation.clear(update=True)
 
     def edit_fcgerber(self, orig_grb_obj):
         """
@@ -3561,9 +3669,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.set_ui()
 
         # do the delayed plot only if there is something to plot (the gerber is not empty)
-        if bool(self.gerber_obj.apertures):
-            self.start_delayed_plot(check_period=1000)
-        else:
+        try:
+            if bool(self.gerber_obj.apertures):
+                self.start_delayed_plot(check_period=1000)
+            else:
+                raise AttributeError
+        except AttributeError:
             # now that we have data (empty data actually), create the GUI interface and add it to the Tool Tab
             self.build_ui(first_run=True)
             # and add the first aperture to have something to play with
@@ -4509,6 +4620,48 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.plot_all()
         self.app.inform.emit(_("[success] Done. Scale Tool completed."))
 
+    def on_markarea(self):
+        # clear previous marking
+        self.ma_annotation.clear(update=True)
+
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        upper_threshold_val = None
+        lower_threshold_val = None
+        text = []
+        position = []
+
+        for apid in self.gerber_obj.apertures:
+            if 'geometry' in self.gerber_obj.apertures[apid]:
+                for geo_el in self.gerber_obj.apertures[apid]['geometry']:
+                    if 'solid' in geo_el:
+                        area = geo_el['solid'].area
+                        try:
+                            upper_threshold_val = self.ma_upper_threshold_entry.get_value()
+                        except Exception as e:
+                            return
+
+                        try:
+                            lower_threshold_val = self.ma_lower_threshold_entry.get_value()
+                        except Exception as e:
+                            lower_threshold_val = 0.0
+
+                        if area < float(upper_threshold_val) and area > float(lower_threshold_val):
+                            current_pos = geo_el['solid'].exterior.coords[-1]
+                            text_elem = '%.4f' % area
+                            text.append(text_elem)
+                            position.append(current_pos)
+
+        if text:
+            self.ma_annotation.set(text=text, pos=position, visible=True,
+                                   font_size=self.app.defaults["cncjob_annotation_fontsize"],
+                                   color=self.app.defaults["global_sel_draw_color"])
+            self.app.inform.emit(_("[success] Polygon areas marked."))
+        else:
+            self.app.inform.emit(_("[WARNING_NOTCL] There are no polygons to mark area."))
+
+    def on_eraser(self):
+        self.select_tool('eraser')
+
     def on_transform(self):
         if type(self.active_tool) == FCTransform:
             self.select_tool('select')
@@ -4526,6 +4679,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
                 self.buffer_tool_frame.hide()
             if tool_name == 'scale' or tool_name == 'all':
                 self.scale_tool_frame.hide()
+            if tool_name == 'markarea' or tool_name == 'all':
+                self.ma_tool_frame.hide()
         except Exception as e:
             log.debug("FlatCAMGrbEditor.hide_tool() --> %s" % str(e))
         self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)

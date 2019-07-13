@@ -1215,7 +1215,11 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             cw_row = 0
 
         self.marked_rows[:] = []
-        aperture = self.ui.apertures_table.item(cw_row, 1).text()
+
+        try:
+            aperture = self.ui.apertures_table.item(cw_row, 1).text()
+        except AttributeError:
+            return
 
         if self.ui.apertures_table.cellWidget(cw_row, 5).isChecked():
             self.marked_rows.append(True)

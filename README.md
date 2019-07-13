@@ -9,6 +9,13 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+13.07.2019
+
+- fixed a possible issue in Gerber Object class
+- added a new tool in Gerber Editor: Mark Area Tool. It will mark the polygons in a edited Gerber object with areas within a defined range, allowing to delete some of the not necessary  copper features
+- added new menu links in the Gerber Editor menu for Eraser Tool and Mark Area Tool
+- added key shortcuts for Eraser Tool (CTRL+E) and Mark Area Tool (ALT+A) and updated the shortcuts list
+
 9.07.2019
 
 - some changes in the app.on_togle_units() to make sure we don't try to convert empty parameters which may cause crashes on FlatCAM units change

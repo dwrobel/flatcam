@@ -488,6 +488,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                                       _('Buffer\tB'))
         self.grb_add_scale_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/scale32.png'),
                                                                      _('Scale\tS'))
+        self.grb_add_markarea_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/markarea32.png'),
+                                                                     _('Mark Area\tALT+A'))
+        self.grb_add_eraser_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/eraser26.png'),
+                                                                     _('Eraser\tCTRL+E'))
         self.grb_transform_menuitem = self.grb_editor_menu.addAction(
             QtGui.QIcon('share/transform.png'),_( "Transform\tALT+R")
         )
@@ -716,6 +720,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), _('Buffer'))
         self.aperture_scale_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/scale32.png'), _('Scale'))
+        self.aperture_markarea_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/markarea32.png'),
+                                                                     _('Mark Area'))
+
         self.aperture_eraser_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/eraser26.png'), _('Eraser'))
 
         self.grb_edit_toolbar.addSeparator()
@@ -1547,12 +1554,24 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;Abort and return to Select</td>
                     </tr>
                     <tr height="20">
+                        <td height="20"><strong>CTRL+E</strong></td>
+                        <td>&nbsp;Eraser Tool</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>CTRL+S</strong></td>
                         <td>&nbsp;Save Object and Exit Editor</td>
                     </tr>
                     <tr height="20">
                         <td height="20">&nbsp;</td>
                         <td>&nbsp;</td>
+                    </tr>
+                     <tr height="20">
+                        <td height="20"><strong>ALT+A</strong></td>
+                        <td>&nbsp;Mark Area Tool</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20"><strong>ALT+N</strong></td>
+                        <td>&nbsp;Poligonize Tool</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>ALT+R</strong></td>
@@ -1945,6 +1964,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.aperture_buffer_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), _('Buffer'))
         self.aperture_scale_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/scale32.png'), _('Scale'))
+        self.aperture_markarea_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/markarea32.png'),
+                                                                     _('Mark Area'))
         self.aperture_eraser_btn = self.grb_edit_toolbar.addAction(QtGui.QIcon('share/eraser26.png'), _('Eraser'))
 
         self.grb_edit_toolbar.addSeparator()
@@ -2604,6 +2625,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.on_shortcut_list()
         elif self.app.call_source == 'grb_editor':
             if modifiers == QtCore.Qt.ControlModifier:
+                # Eraser Tool
+                if key == QtCore.Qt.Key_E or key == 'E':
+                    self.app.grb_editor.on_eraser()
+                    return
+
                 # save (update) the current geometry and return to the App
                 if key == QtCore.Qt.Key_S or key == 'S':
                     self.app.editor2object()
@@ -2617,11 +2643,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             elif modifiers == QtCore.Qt.ShiftModifier:
                 pass
             elif modifiers == QtCore.Qt.AltModifier:
+                # Mark Area Tool
+                if key == QtCore.Qt.Key_A or key == 'A':
+                    self.app.grb_editor.on_markarea()
+                    return
+
                 # Poligonize Tool
                 if key == QtCore.Qt.Key_N or key == 'N':
                     self.app.grb_editor.on_poligonize()
                     return
-
                 # Transformation Tool
                 if key == QtCore.Qt.Key_R or key == 'R':
                     self.app.grb_editor.on_transform()
