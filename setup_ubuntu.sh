@@ -1,20 +1,21 @@
 #!/bin/sh -e
 # "-e" exists on first error.
 
-apt-get install libpng-dev \
+sudo apt-get install libpng-dev \
                 libfreetype6 \
 				libfreetype6-dev \
-				python-dev \
-				python-simplejson \
-				python-qt4 \
-				python-numpy \
-				python-scipy \
-				python-matplotlib \
+				python3-dev \
+				python3-simplejson \
+				python3-pyqt4 \
+				python3-numpy \
+				python3-scipy \
+				python3-matplotlib \
 				libgeos-dev \
 				python-shapely \
 				python-pip \
-				libspatialindex-dev
-easy_install -U distribute
-pip install --upgrade matplotlib Shapely
-pip install rtree
-pip install svg.path
+				libspatialindex-dev \
+				python3-tk \
+				python3-shapely \
+				python3-rtree \
+				python3-svg.path
+
