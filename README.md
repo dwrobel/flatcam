@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+15.07.2019
+
+- some PEP8 corrections
+
 13.07.2019
 
 - fixed a possible issue in Gerber Object class

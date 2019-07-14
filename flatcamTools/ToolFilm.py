@@ -13,9 +13,9 @@ from PyQt5 import QtGui, QtCore, QtWidgets
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
-import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
@@ -56,9 +56,9 @@ class Film(FlatCAMTool):
         self.tf_type_obj_combo_label = QtWidgets.QLabel(_("Object Type:"))
         self.tf_type_obj_combo_label.setToolTip(
             _("Specify the type of object for which to create the film.\n"
-            "The object can be of type: Gerber or Geometry.\n"
-            "The selection here decide the type of objects that will be\n"
-            "in the Film Object combobox.")
+              "The object can be of type: Gerber or Geometry.\n"
+              "The selection here decide the type of objects that will be\n"
+              "in the Film Object combobox.")
         )
         tf_form_layout.addRow(self.tf_type_obj_combo_label, self.tf_type_obj_combo)
 
@@ -89,9 +89,9 @@ class Film(FlatCAMTool):
         self.tf_type_box_combo_label = QtWidgets.QLabel(_("Box Type:"))
         self.tf_type_box_combo_label.setToolTip(
             _("Specify the type of object to be used as an container for\n"
-            "film creation. It can be: Gerber or Geometry type."
-            "The selection here decide the type of objects that will be\n"
-            "in the Box Object combobox.")
+              "film creation. It can be: Gerber or Geometry type."
+              "The selection here decide the type of objects that will be\n"
+              "in the Box Object combobox.")
         )
         tf_form_layout.addRow(self.tf_type_box_combo_label, self.tf_type_box_combo)
 
@@ -104,23 +104,23 @@ class Film(FlatCAMTool):
         self.tf_box_combo_label = QtWidgets.QLabel(_("Box Object:"))
         self.tf_box_combo_label.setToolTip(
             _("The actual object that is used a container for the\n "
-            "selected object for which we create the film.\n"
-            "Usually it is the PCB outline but it can be also the\n"
-            "same object for which the film is created.")
+              "selected object for which we create the film.\n"
+              "Usually it is the PCB outline but it can be also the\n"
+              "same object for which the film is created.")
         )
         tf_form_layout.addRow(self.tf_box_combo_label, self.tf_box_combo)
 
         # Film Type
         self.film_type = RadioSet([{'label': 'Positive', 'value': 'pos'},
-                                     {'label': 'Negative', 'value': 'neg'}])
+                                   {'label': 'Negative', 'value': 'neg'}])
         self.film_type_label = QtWidgets.QLabel(_("Film Type:"))
         self.film_type_label.setToolTip(
             _("Generate a Positive black film or a Negative film.\n"
-            "Positive means that it will print the features\n"
-            "with black on a white canvas.\n"
-            "Negative means that it will print the features\n"
-            "with white on a black canvas.\n"
-            "The Film format is SVG.")
+              "Positive means that it will print the features\n"
+              "with black on a white canvas.\n"
+              "Negative means that it will print the features\n"
+              "with white on a black canvas.\n"
+              "The Film format is SVG.")
         )
         tf_form_layout.addRow(self.film_type_label, self.film_type)
 
@@ -130,13 +130,13 @@ class Film(FlatCAMTool):
         self.boundary_label = QtWidgets.QLabel(_("Border:"))
         self.boundary_label.setToolTip(
             _("Specify a border around the object.\n"
-            "Only for negative film.\n"
-            "It helps if we use as a Box Object the same \n"
-            "object as in Film Object. It will create a thick\n"
-            "black bar around the actual print allowing for a\n"
-            "better delimitation of the outline features which are of\n"
-            "white color like the rest and which may confound with the\n"
-            "surroundings if not for this border.")
+              "Only for negative film.\n"
+              "It helps if we use as a Box Object the same \n"
+              "object as in Film Object. It will create a thick\n"
+              "black bar around the actual print allowing for a\n"
+              "better delimitation of the outline features which are of\n"
+              "white color like the rest and which may confound with the\n"
+              "surroundings if not for this border.")
         )
         tf_form_layout.addRow(self.boundary_label, self.boundary_entry)
 
@@ -144,8 +144,8 @@ class Film(FlatCAMTool):
         self.film_scale_label = QtWidgets.QLabel(_("Scale Stroke:"))
         self.film_scale_label.setToolTip(
             _("Scale the line stroke thickness of each feature in the SVG file.\n"
-            "It means that the line that envelope each SVG feature will be thicker or thinner,\n"
-            "therefore the fine features may be more affected by this parameter.")
+              "It means that the line that envelope each SVG feature will be thicker or thinner,\n"
+              "therefore the fine features may be more affected by this parameter.")
         )
         tf_form_layout.addRow(self.film_scale_label, self.film_scale_entry)
 
@@ -157,9 +157,9 @@ class Film(FlatCAMTool):
         self.film_object_button = QtWidgets.QPushButton(_("Save Film"))
         self.film_object_button.setToolTip(
             _("Create a Film for the selected object, within\n"
-            "the specified box. Does not create a new \n "
-            "FlatCAM object, but directly save it in SVG format\n"
-            "which can be opened with Inkscape.")
+              "the specified box. Does not create a new \n "
+              "FlatCAM object, but directly save it in SVG format\n"
+              "which can be opened with Inkscape.")
         )
         hlay.addWidget(self.film_object_button)
 
@@ -221,13 +221,13 @@ class Film(FlatCAMTool):
     def on_film_creation(self):
         try:
             name = self.tf_object_combo.currentText()
-        except:
+        except Exception as e:
             self.app.inform.emit(_("[ERROR_NOTCL] No FlatCAM object selected. Load an object for Film and retry."))
             return
 
         try:
             boxname = self.tf_box_combo.currentText()
-        except:
+        except Exception as e:
             self.app.inform.emit(_("[ERROR_NOTCL] No FlatCAM object selected. Load an object for Box and retry."))
             return
 

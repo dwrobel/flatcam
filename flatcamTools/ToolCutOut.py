@@ -354,7 +354,7 @@ class CutOut(FlatCAMTool):
                 dia = float(self.dia.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
 
         if 0 in {dia}:
@@ -369,7 +369,7 @@ class CutOut(FlatCAMTool):
                 margin = float(self.margin.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Margin value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
 
         try:
@@ -380,7 +380,7 @@ class CutOut(FlatCAMTool):
                 gapsize = float(self.gapsize.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Gap size value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
 
         try:
@@ -391,7 +391,7 @@ class CutOut(FlatCAMTool):
 
         if gaps not in ['LR', 'TB', '2LR', '2TB', '4', '8']:
             self.app.inform.emit(_("[WARNING_NOTCL] Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
-                                 "Fill in a correct value and retry. "))
+                                   "Fill in a correct value and retry. "))
             return
 
         if cutout_obj.multigeo is True:
@@ -523,7 +523,7 @@ class CutOut(FlatCAMTool):
                 dia = float(self.dia.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
 
         if 0 in {dia}:
@@ -538,7 +538,7 @@ class CutOut(FlatCAMTool):
                 margin = float(self.margin.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Margin value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
 
         try:
@@ -549,7 +549,7 @@ class CutOut(FlatCAMTool):
                 gapsize = float(self.gapsize.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Gap size value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
 
         try:
@@ -560,13 +560,13 @@ class CutOut(FlatCAMTool):
 
         if gaps not in ['LR', 'TB', '2LR', '2TB', '4', '8']:
             self.app.inform.emit(_("[WARNING_NOTCL] Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
-                                 "Fill in a correct value and retry. "))
+                                   "Fill in a correct value and retry. "))
             return
 
         if cutout_obj.multigeo is True:
             self.app.inform.emit(_("[ERROR]Cutout operation cannot be done on a multi-geo Geometry.\n"
-                                 "Optionally, this Multi-geo Geometry can be converted to Single-geo Geometry,\n"
-                                 "and after that perform Cutout."))
+                                   "Optionally, this Multi-geo Geometry can be converted to Single-geo Geometry,\n"
+                                   "and after that perform Cutout."))
             return
 
         # Get min and max data for each object as we just cut rectangles across X or Y
@@ -642,7 +642,6 @@ class CutOut(FlatCAMTool):
 
             geo_obj.solid_geometry = deepcopy(solid_geo)
             geo_obj.options['cnctooldia'] = str(dia)
-
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.new_object('geometry', outname, geo_init)

@@ -14,9 +14,9 @@ from copy import copy
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
-import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
@@ -97,7 +97,7 @@ class ToolMove(FlatCAMTool):
                 pos_canvas = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
 
                 # if GRID is active we need to get the snapped positions
-                if self.app.grid_status() == True:
+                if self.app.grid_status() is True:
                     pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
                 else:
                     pos = pos_canvas
@@ -117,7 +117,7 @@ class ToolMove(FlatCAMTool):
                     self.delete_shape()
 
                     # if GRID is active we need to get the snapped positions
-                    if self.app.grid_status() == True:
+                    if self.app.grid_status() is True:
                         pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
                     else:
                         pos = pos_canvas
@@ -143,11 +143,11 @@ class ToolMove(FlatCAMTool):
 
                                     try:
                                         sel_obj.replotApertures.emit()
-                                    except:
+                                    except Exception as e:
                                         pass
 
                                     # Update the object bounding box options
-                                    a,b,c,d = sel_obj.bounds()
+                                    a, b, c, d = sel_obj.bounds()
                                     sel_obj.options['xmin'] = a
                                     sel_obj.options['ymin'] = b
                                     sel_obj.options['xmax'] = c
@@ -181,7 +181,7 @@ class ToolMove(FlatCAMTool):
         pos_canvas = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
 
         # if GRID is active we need to get the snapped positions
-        if self.app.grid_status() == True:
+        if self.app.grid_status() is True:
             pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
             pos = pos_canvas

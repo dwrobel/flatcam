@@ -13,9 +13,9 @@ from PyQt5 import QtGui, QtWidgets
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
-import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
@@ -52,8 +52,8 @@ class ToolImage(FlatCAMTool):
 
         self.tf_type_obj_combo_label = QtWidgets.QLabel(_("Object Type:"))
         self.tf_type_obj_combo_label.setToolTip(
-           _( "Specify the type of object to create from the image.\n"
-            "It can be of type: Gerber or Geometry.")
+           _("Specify the type of object to create from the image.\n"
+             "It can be of type: Gerber or Geometry.")
 
         )
         ti_form_layout.addRow(self.tf_type_obj_combo_label, self.tf_type_obj_combo)
@@ -62,7 +62,7 @@ class ToolImage(FlatCAMTool):
         self.dpi_entry = IntEntry()
         self.dpi_label = QtWidgets.QLabel(_("DPI value:"))
         self.dpi_label.setToolTip(
-           _( "Specify a DPI value for the image.")
+           _("Specify a DPI value for the image.")
         )
         ti_form_layout.addRow(self.dpi_label, self.dpi_entry)
 
@@ -77,11 +77,11 @@ class ToolImage(FlatCAMTool):
 
         # Type of image interpretation
         self.image_type = RadioSet([{'label': 'B/W', 'value': 'black'},
-                                     {'label': 'Color', 'value': 'color'}])
+                                    {'label': 'Color', 'value': 'color'}])
         self.image_type_label = QtWidgets.QLabel("<b>%s:</b>" % _('Image type'))
         self.image_type_label.setToolTip(
             _("Choose a method for the image interpretation.\n"
-            "B/W means a black & white image. Color means a colored image.")
+              "B/W means a black & white image. Color means a colored image.")
         )
         ti2_form_layout.addRow(self.image_type_label, self.image_type)
 
@@ -90,11 +90,11 @@ class ToolImage(FlatCAMTool):
         self.mask_bw_label = QtWidgets.QLabel("%s <b>B/W</b>:" % _('Mask value'))
         self.mask_bw_label.setToolTip(
             _("Mask for monochrome image.\n"
-            "Takes values between [0 ... 255].\n"
-            "Decides the level of details to include\n"
-            "in the resulting geometry.\n"
-            "0 means no detail and 255 means everything \n"
-            "(which is totally black).")
+              "Takes values between [0 ... 255].\n"
+              "Decides the level of details to include\n"
+              "in the resulting geometry.\n"
+              "0 means no detail and 255 means everything \n"
+              "(which is totally black).")
         )
         ti2_form_layout.addRow(self.mask_bw_label, self.mask_bw_entry)
 
@@ -103,9 +103,9 @@ class ToolImage(FlatCAMTool):
         self.mask_r_label = QtWidgets.QLabel("%s <b>R:</b>" % _('Mask value'))
         self.mask_r_label.setToolTip(
             _("Mask for RED color.\n"
-            "Takes values between [0 ... 255].\n"
-            "Decides the level of details to include\n"
-            "in the resulting geometry.")
+              "Takes values between [0 ... 255].\n"
+              "Decides the level of details to include\n"
+              "in the resulting geometry.")
         )
         ti2_form_layout.addRow(self.mask_r_label, self.mask_r_entry)
 
@@ -114,9 +114,9 @@ class ToolImage(FlatCAMTool):
         self.mask_g_label = QtWidgets.QLabel("%s <b>G:</b>" % _('Mask value'))
         self.mask_g_label.setToolTip(
             _("Mask for GREEN color.\n"
-            "Takes values between [0 ... 255].\n"
-            "Decides the level of details to include\n"
-            "in the resulting geometry.")
+              "Takes values between [0 ... 255].\n"
+              "Decides the level of details to include\n"
+              "in the resulting geometry.")
         )
         ti2_form_layout.addRow(self.mask_g_label, self.mask_g_entry)
 
@@ -125,9 +125,9 @@ class ToolImage(FlatCAMTool):
         self.mask_b_label = QtWidgets.QLabel("%s <b>B:</b>" % _('Mask value'))
         self.mask_b_label.setToolTip(
             _("Mask for BLUE color.\n"
-            "Takes values between [0 ... 255].\n"
-            "Decides the level of details to include\n"
-            "in the resulting geometry.")
+              "Takes values between [0 ... 255].\n"
+              "Decides the level of details to include\n"
+              "in the resulting geometry.")
         )
         ti2_form_layout.addRow(self.mask_b_label, self.mask_b_entry)
 
@@ -191,27 +191,27 @@ class ToolImage(FlatCAMTool):
         mask = []
         self.app.log.debug("on_file_importimage()")
 
-        filter = "Image Files(*.BMP *.PNG *.JPG *.JPEG);;" \
-                 "Bitmap File (*.BMP);;" \
-                 "PNG File (*.PNG);;" \
-                 "Jpeg File (*.JPG);;" \
-                 "All Files (*.*)"
+        _filter = "Image Files(*.BMP *.PNG *.JPG *.JPEG);;" \
+                  "Bitmap File (*.BMP);;" \
+                  "PNG File (*.PNG);;" \
+                  "Jpeg File (*.JPG);;" \
+                  "All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import IMAGE"),
-                                                         directory=self.app.get_last_folder(), filter=filter)
+                                                                 directory=self.app.get_last_folder(), filter=_filter)
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Import IMAGE"), filter=filter)
 
         filename = str(filename)
-        type = self.tf_type_obj_combo.get_value().lower()
+        type_obj = self.tf_type_obj_combo.get_value().lower()
         dpi = self.dpi_entry.get_value()
         mode = self.image_type.get_value()
-        mask = [self.mask_bw_entry.get_value(), self.mask_r_entry.get_value(),self.mask_g_entry.get_value(),
+        mask = [self.mask_bw_entry.get_value(), self.mask_r_entry.get_value(), self.mask_g_entry.get_value(),
                 self.mask_b_entry.get_value()]
 
         if filename == "":
             self.app.inform.emit(_("Open cancelled."))
         else:
             self.app.worker_task.emit({'fcn': self.app.import_image,
-                                       'params': [filename, type, dpi, mode, mask]})
+                                       'params': [filename, type_obj, dpi, mode, mask]})
             #  self.import_svg(filename, "geometry")

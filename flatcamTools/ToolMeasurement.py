@@ -14,9 +14,9 @@ from math import sqrt
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
-import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
@@ -39,7 +39,6 @@ class Measurement(FlatCAMTool):
         # ## Form Layout
         form_layout = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout)
-
 
         self.units_label = QtWidgets.QLabel(_("Units:"))
         self.units_label.setToolTip(_("Those are the units in which the distance is measured."))
@@ -73,11 +72,9 @@ class Measurement(FlatCAMTool):
         self.distance_x_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.distance_x_entry.setToolTip(_("This is the distance measured over the X axis."))
 
-
         self.distance_y_entry = FCEntry()
         self.distance_y_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.distance_y_entry.setToolTip(_("This is the distance measured over the Y axis."))
-
 
         self.total_distance_entry = FCEntry()
         self.total_distance_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
@@ -110,6 +107,8 @@ class Measurement(FlatCAMTool):
         self.rel_point2 = None
 
         self.active = False
+        self.clicked_meas = None
+        self.meas_line = None
 
         self.original_call_source = 'app'
 
@@ -312,7 +311,7 @@ class Measurement(FlatCAMTool):
             # update utility geometry
             if len(self.points) == 1:
                 self.utility_geometry(pos=pos)
-        except:
+        except Exception as e:
             self.app.ui.position_label.setText("")
             self.app.ui.rel_position_label.setText("")
 
