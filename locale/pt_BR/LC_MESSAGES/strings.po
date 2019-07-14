@@ -1894,7 +1894,7 @@ msgstr "Pintura"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:527 flatcamGUI/FlatCAMGUI.py:643 flatcamGUI/FlatCAMGUI.py:1866 flatcamGUI/ObjectUI.py:1314 flatcamTools/ToolPaint.py:341
 msgid "Paint Tool"
-msgstr "Ferramenta de pintura"
+msgstr "Ferramenta de Pintura"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:563
 msgid "[WARNING_NOTCL] Paint cancelled. No shape selected."
@@ -1918,7 +1918,7 @@ msgstr "Ferramentas"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:617 flatcamEditors/FlatCAMGeoEditor.py:990 flatcamEditors/FlatCAMGrbEditor.py:4539 flatcamEditors/FlatCAMGrbEditor.py:4924 flatcamGUI/FlatCAMGUI.py:654 flatcamGUI/FlatCAMGUI.py:1879 flatcamTools/ToolTransform.py:398
 msgid "Transform Tool"
-msgstr "Transformar Ferramenta"
+msgstr "Ferramenta Transformar"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:618 flatcamEditors/FlatCAMGeoEditor.py:679 flatcamEditors/FlatCAMGrbEditor.py:4540 flatcamEditors/FlatCAMGrbEditor.py:4602 flatcamTools/ToolTransform.py:24 flatcamTools/ToolTransform.py:82
 msgid "Rotate"
@@ -1930,15 +1930,15 @@ msgstr "Inclinar"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:620 flatcamEditors/FlatCAMGrbEditor.py:2471 flatcamEditors/FlatCAMGrbEditor.py:4542 flatcamGUI/FlatCAMGUI.py:718 flatcamGUI/FlatCAMGUI.py:1947 flatcamGUI/ObjectUI.py:100 flatcamTools/ToolTransform.py:26
 msgid "Scale"
-msgstr "Escala"
+msgstr "Redimensionar"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:621 flatcamEditors/FlatCAMGrbEditor.py:4543 flatcamTools/ToolTransform.py:27
 msgid "Mirror (Flip)"
-msgstr "Espelho (Flip)"
+msgstr "Espelhar (Flip)"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:622 flatcamEditors/FlatCAMGrbEditor.py:4544 flatcamGUI/ObjectUI.py:127 flatcamGUI/ObjectUI.py:891 flatcamGUI/ObjectUI.py:1465 flatcamTools/ToolTransform.py:28
 msgid "Offset"
-msgstr "Deslocamento"
+msgstr "Deslocar"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:633 flatcamEditors/FlatCAMGrbEditor.py:4556
 #, python-format
@@ -1981,7 +1981,7 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGeoEditor.py:715 flatcamEditors/FlatCAMGrbEditor.py:4638 flatcamTools/ToolTransform.py:118
 msgid "Skew X"
-msgstr "Inclinação X"
+msgstr "Inclinar X"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:717 flatcamEditors/FlatCAMGeoEditor.py:735 flatcamEditors/FlatCAMGrbEditor.py:4640 flatcamEditors/FlatCAMGrbEditor.py:4658
 msgid ""
@@ -1999,7 +1999,7 @@ msgstr "Ângulo Y:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:733 flatcamEditors/FlatCAMGrbEditor.py:4656 flatcamTools/ToolTransform.py:136
 msgid "Skew Y"
-msgstr "Inclinação Y"
+msgstr "Inclinar Y"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:761 flatcamEditors/FlatCAMGrbEditor.py:4684 flatcamTools/ToolTransform.py:164
 msgid "Factor X:"
@@ -2011,7 +2011,7 @@ msgstr "Fator de escala sobre o eixo X."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:771 flatcamEditors/FlatCAMGrbEditor.py:4694 flatcamTools/ToolTransform.py:174
 msgid "Scale X"
-msgstr "Escala X"
+msgstr "Redimensionar X"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:773 flatcamEditors/FlatCAMGeoEditor.py:790 flatcamEditors/FlatCAMGrbEditor.py:4696 flatcamEditors/FlatCAMGrbEditor.py:4713
 msgid ""
@@ -2033,11 +2033,11 @@ msgstr "Fator para ação de escala no eixo Y."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:788 flatcamEditors/FlatCAMGrbEditor.py:4711 flatcamTools/ToolTransform.py:191
 msgid "Scale Y"
-msgstr "Escala Y"
+msgstr "Redimensionar Y"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:797 flatcamEditors/FlatCAMGrbEditor.py:4720 flatcamGUI/FlatCAMGUI.py:6420 flatcamTools/ToolTransform.py:200
 msgid "Link"
-msgstr "Ligação"
+msgstr "Fixar Taxa"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:799 flatcamEditors/FlatCAMGrbEditor.py:4722
 msgid ""
@@ -2072,7 +2072,7 @@ msgstr "Valor para o deslocamento no eixo X."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:845 flatcamEditors/FlatCAMGrbEditor.py:4769 flatcamTools/ToolTransform.py:248
 msgid "Offset X"
-msgstr "Deslocamento X"
+msgstr "Deslocar X"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:847 flatcamEditors/FlatCAMGeoEditor.py:865 flatcamEditors/FlatCAMGrbEditor.py:4771 flatcamEditors/FlatCAMGrbEditor.py:4789
 msgid ""
@@ -2094,11 +2094,11 @@ msgstr "Valor para a ação de deslocamento no eixo Y."
 
 #: flatcamEditors/FlatCAMGeoEditor.py:863 flatcamEditors/FlatCAMGrbEditor.py:4787 flatcamTools/ToolTransform.py:265
 msgid "Offset Y"
-msgstr "Deslocamento Y"
+msgstr "Deslocar Y"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:894 flatcamEditors/FlatCAMGrbEditor.py:4818 flatcamTools/ToolTransform.py:295
 msgid "Flip on X"
-msgstr "Espelha no X"
+msgstr "Espelhar no X"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:896 flatcamEditors/FlatCAMGeoEditor.py:904 flatcamEditors/FlatCAMGrbEditor.py:4820 flatcamEditors/FlatCAMGrbEditor.py:4828
 msgid ""
@@ -2110,11 +2110,11 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGeoEditor.py:902 flatcamEditors/FlatCAMGrbEditor.py:4826 flatcamTools/ToolTransform.py:303
 msgid "Flip on Y"
-msgstr "Espelha no Y"
+msgstr "Espelhar no Y"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:911 flatcamEditors/FlatCAMGrbEditor.py:4835 flatcamTools/ToolTransform.py:312
 msgid "Ref Pt"
-msgstr "Pt Ref"
+msgstr "Ponto de Referência"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:913 flatcamEditors/FlatCAMGrbEditor.py:4837
 msgid ""
@@ -2128,19 +2128,18 @@ msgid ""
 "Or enter the coords in format (x, y) in the\n"
 "Point Entry field and click Flip on X(Y)"
 msgstr ""
-"Espelha a(s) forma(s) selecionada(s) \n"
-"em relação ao ponto do Campo de Entrada do Ponto. \n"
+"Espelha a(s) forma(s) selecionada(s)\n"
+"em relação às coordenadas abaixo. \n"
 "\n"
-"As coordenadas do ponto podem ser capturadas \n"
-"classificadas na tela com a tecla \n"
-"SHIFT pressionada. \n"
-"Após clicar no botão Adicionar para inserir as coordenadas. \n"
-"Ou digite as coordenadas no formato (x, y) no campo \n"
-"Posição de entrada e clique em Espelhar no X (Y)"
+"As coordenadas do ponto podem ser inseridas:\n"
+"- com clique no botão esquerdo junto com a tecla\n"
+"  SHIFT pressionada, e clicar no botão Adicionar.\n"
+"- ou digitar as coordenadas no formato (x, y) no campo\n"
+"  Ponto de Ref. e clicar em Espelhar no X(Y)"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:925 flatcamEditors/FlatCAMGrbEditor.py:4849 flatcamTools/ToolTransform.py:325
 msgid "Point:"
-msgstr "Ponto:"
+msgstr "Ponto de Ref.:"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:927 flatcamEditors/FlatCAMGrbEditor.py:4851
 msgid ""
@@ -2703,7 +2702,7 @@ msgstr "Editor Gerber"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2278 flatcamGUI/ObjectUI.py:192
 msgid "<b>Apertures:</b>"
-msgstr "<b> Aberturas: </ b>"
+msgstr "<b> Aberturas: </b>"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2280 flatcamGUI/ObjectUI.py:194
 msgid "Apertures Table for the Gerber Object."
@@ -2841,7 +2840,7 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2434 flatcamGUI/FlatCAMGUI.py:717 flatcamGUI/FlatCAMGUI.py:1946
 msgid "Buffer"
-msgstr "Amortecedor"
+msgstr "Buffer"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2448
 msgid "Scale Aperture:"
@@ -3612,7 +3611,7 @@ msgstr "Nova Geometria em Branco"
 
 #: flatcamGUI/FlatCAMGUI.py:616
 msgid "New Blank Gerber"
-msgstr "Gerber novo em branco"
+msgstr "Novo Gerber em branco"
 
 #: flatcamGUI/FlatCAMGUI.py:617 flatcamGUI/FlatCAMGUI.py:1840
 msgid "New Blank Excellon"
@@ -3656,7 +3655,7 @@ msgstr "Linha de &Comando"
 
 #: flatcamGUI/FlatCAMGUI.py:640 flatcamGUI/FlatCAMGUI.py:1863
 msgid "2Sided Tool"
-msgstr "Ferramenta de 2 Faces"
+msgstr "PCB de 2 Faces"
 
 #: flatcamGUI/FlatCAMGUI.py:641 flatcamGUI/FlatCAMGUI.py:1864
 msgid "&Cutout Tool"
@@ -3684,11 +3683,11 @@ msgstr "Ferramenta Subtrair"
 
 #: flatcamGUI/FlatCAMGUI.py:653 flatcamGUI/FlatCAMGUI.py:1878
 msgid "Calculators Tool"
-msgstr "Ferramenta de Calculadoras"
+msgstr "Calculadoras"
 
 #: flatcamGUI/FlatCAMGUI.py:657 flatcamGUI/FlatCAMGUI.py:671 flatcamGUI/FlatCAMGUI.py:705 flatcamGUI/FlatCAMGUI.py:1882 flatcamGUI/FlatCAMGUI.py:1934
 msgid "Select"
-msgstr "Selecione"
+msgstr "Selecionar"
 
 #: flatcamGUI/FlatCAMGUI.py:658 flatcamGUI/FlatCAMGUI.py:1883
 msgid "Add Drill Hole"
@@ -3736,7 +3735,7 @@ msgstr "Adicionar Polígono"
 
 #: flatcamGUI/FlatCAMGUI.py:681 flatcamGUI/FlatCAMGUI.py:1908
 msgid "Add Text"
-msgstr "Adicione Texto"
+msgstr "Adicionar Texto"
 
 #: flatcamGUI/FlatCAMGUI.py:682 flatcamGUI/FlatCAMGUI.py:1910
 msgid "Add Buffer"
@@ -3800,7 +3799,7 @@ msgstr "Poligonizar"
 
 #: flatcamGUI/FlatCAMGUI.py:713 flatcamGUI/FlatCAMGUI.py:1942
 msgid "SemiDisc"
-msgstr "SemiDisc"
+msgstr "SemiDisco"
 
 #: flatcamGUI/FlatCAMGUI.py:714 flatcamGUI/FlatCAMGUI.py:1943
 msgid "Disc"
@@ -5209,11 +5208,11 @@ msgid ""
 "Reference is (X=0, Y= 0) position"
 msgstr ""
 "Medição absoluta.\n"
-" Em referência à posição (X = 0, Y = 0)"
+" Em referência à posição (X=0, Y=0)"
 
 #: flatcamGUI/FlatCAMGUI.py:1897
 msgid "Select 'Esc'"
-msgstr "Selecione 'Esc'"
+msgstr "Selecionar 'Esc'"
 
 #: flatcamGUI/FlatCAMGUI.py:1924
 msgid "Copy Objects"
@@ -7163,7 +7162,7 @@ msgstr "dwelltime = tempo de espera para o spindle atingir sua vel. RPM"
 
 #: flatcamGUI/FlatCAMGUI.py:5759
 msgid "NCC Tool Options"
-msgstr "Opções Retirada de Cobre (NCC)"
+msgstr "Opções Área Sem Cobre (NCC)"
 
 #: flatcamGUI/FlatCAMGUI.py:5772 flatcamGUI/FlatCAMGUI.py:6502
 msgid "Tools dia:"
@@ -7290,7 +7289,7 @@ msgstr "Crie uma forma convexa ao redor de toda a PCB."
 
 #: flatcamGUI/FlatCAMGUI.py:5939
 msgid "2Sided Tool Options"
-msgstr "Opções de Ferramentas 2 Faces"
+msgstr "Opções de PCB 2 Faces"
 
 #: flatcamGUI/FlatCAMGUI.py:5944
 msgid ""
@@ -7543,11 +7542,11 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6264
 msgid "Calculators Tool Options"
-msgstr "Opções das Ferramentas Calculadoras"
+msgstr "Opções das Calculadoras"
 
 #: flatcamGUI/FlatCAMGUI.py:6267
 msgid "<b>V-Shape Tool Calculator:</b>"
-msgstr "<b>Calculadora Ferramenta Forma-V:</b>"
+msgstr "<b>Calculadora Ferramenta Ponta-em-V:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:6269
 msgid ""
@@ -7744,18 +7743,17 @@ msgid ""
 "Point Entry field and click Flip on X(Y)"
 msgstr ""
 "Espelha o(s) objeto(s) selecionado(s)\n"
-"em relação ao ponto no campo de Entrada do Ponto.\n"
+"em relação às coordenadas abaixo. \n"
 "\n"
-"As coordenadas do ponto podem ser inseridas\n"
-"com clique no botão esquerdo junto com a tecla\n"
-"SHIFT pressionada,\n"
-"e clicar no botão Adicionar para inserir as coordenadas.\n"
-"Ou digitar as coordenadas no formato (x, y) no campo\n"
-"Posição de entrada e clicar em Espelhar no X (Y)"
+"As coordenadas do ponto podem ser inseridas:\n"
+"- com clique no botão esquerdo junto com a tecla\n"
+"  SHIFT pressionada, e clicar no botão Adicionar.\n"
+"- ou digitar as coordenadas no formato (x, y) no campo\n"
+"  Ponto de Ref. e clicar em Espelhar no X(Y)"
 
 #: flatcamGUI/FlatCAMGUI.py:6469
 msgid " Mirror Ref. Point:"
-msgstr " Ponto Ref. Espelho:"
+msgstr "Ponto Ref. Espelho:"
 
 #: flatcamGUI/FlatCAMGUI.py:6471 flatcamTools/ToolTransform.py:327
 msgid ""
@@ -8824,7 +8822,7 @@ msgstr "Calculadoras"
 
 #: flatcamTools/ToolCalculators.py:25
 msgid "V-Shape Tool Calculator"
-msgstr "Calculadora Ferramenta Forma-V"
+msgstr "Calculadora Ferramenta Ponta-em-V"
 
 #: flatcamTools/ToolCalculators.py:26
 msgid "Units Calculator"
@@ -9367,7 +9365,7 @@ msgstr "Redefine todos os campos."
 
 #: flatcamTools/ToolDblSided.py:302
 msgid "2-Sided Tool"
-msgstr "Ferramenta 2 Faces"
+msgstr "PCB 2 Faces"
 
 #: flatcamTools/ToolDblSided.py:327
 msgid "[WARNING_NOTCL] 'Point' reference is selected and 'Point' coordinates are missing. Add them and retry."
@@ -9766,7 +9764,7 @@ msgstr "[WARNING_NOTCL] Objeto(s) não selecionado(s)"
 
 #: flatcamTools/ToolNonCopperClear.py:26
 msgid "Non-Copper Clearing"
-msgstr "Área Sem Cobre"
+msgstr "Área Sem Cobre (NCC)"
 
 #: flatcamTools/ToolNonCopperClear.py:64
 msgid "Gerber object to be cleared of excess copper.                        "
@@ -10010,7 +10008,7 @@ msgstr ""
 
 #: flatcamTools/ToolPaint.py:239
 msgid "How to select the polygons to paint.<BR>Options:<BR>- <B>Single</B>: left mouse click on the polygon to be painted.<BR>- <B>All</B>: paint all polygons."
-msgstr "Como selecionar os polígonos para pintar.<BR>Opções:<BR> - <B>Único</ B>: clique com o botão esquerdo do mouse no polígono a ser pintado.<BR> - <B>Todos</ B>: pintar todos os polígonos."
+msgstr "Como selecionar os polígonos para pintar.<BR>Opções:<BR> - <B>Único</B>: clique com o botão esquerdo do mouse no polígono a ser pintado.<BR> - <B>Todos</B>: pintar todos os polígonos."
 
 #: flatcamTools/ToolPaint.py:254
 msgid "Create Paint Geometry"
@@ -10424,7 +10422,7 @@ msgstr "...processando... [%s]"
 
 #: flatcamTools/ToolSolderPaste.py:37
 msgid "Solder Paste Tool"
-msgstr "Ferramenta de Pasta de Solda"
+msgstr "Pasta de Solda"
 
 #: flatcamTools/ToolSolderPaste.py:65
 msgid "Gerber Solder paste object.                        "
