@@ -26,6 +26,7 @@ languages_dict = {
     'it': 'Italian',
     'ro': 'Romanian',
     'ru': 'Russian',
+    'pt_BR': 'Brazilian Portuguese',
 }
 
 translations = {}
