@@ -18,9 +18,9 @@ from io import StringIO
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
-import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
@@ -56,9 +56,8 @@ class PcbWizard(FlatCAMTool):
 
         self.excellon_label = QtWidgets.QLabel(_("Excellon file:"))
         self.excellon_label.setToolTip(
-           _( "Load the Excellon file.\n"
-              "Usually it has a .DRL extension")
-
+           _("Load the Excellon file.\n"
+             "Usually it has a .DRL extension")
         )
         self.excellon_brn = FCButton(_("Open"))
         form_layout.addRow(self.excellon_label, self.excellon_brn)
@@ -66,7 +65,6 @@ class PcbWizard(FlatCAMTool):
         self.inf_label = QtWidgets.QLabel(_("INF file:"))
         self.inf_label.setToolTip(
             _("Load the INF file.")
-
         )
         self.inf_btn = FCButton(_("Open"))
         form_layout.addRow(self.inf_label, self.inf_btn)
@@ -96,7 +94,7 @@ class PcbWizard(FlatCAMTool):
         self.int_entry.set_range(1, 10)
         self.int_label = QtWidgets.QLabel(_("Int. digits:"))
         self.int_label.setToolTip(
-           _( "The number of digits for the integral part of the coordinates.")
+           _("The number of digits for the integral part of the coordinates.")
         )
         form_layout1.addRow(self.int_label, self.int_entry)
 
@@ -283,17 +281,16 @@ class PcbWizard(FlatCAMTool):
         """
         self.app.log.debug("on_load_excellon_click()")
 
-        filter = "Excellon Files(*.DRL *.DRD *.TXT);;All Files (*.*)"
+        _filter = "Excellon Files(*.DRL *.DRD *.TXT);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Load PcbWizard Excellon file"),
                                                                  directory=self.app.get_last_folder(),
-                                                                 filter=filter)
+                                                                 filter=_filter)
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Load PcbWizard Excellon file"),
-                                                                 filter=filter)
+                                                                 filter=_filter)
 
         filename = str(filename)
-
 
         if filename == "":
             self.app.inform.emit(_("Open cancelled."))
@@ -307,14 +304,14 @@ class PcbWizard(FlatCAMTool):
                 """
         self.app.log.debug("on_load_inf_click()")
 
-        filter = "INF Files(*.INF);;All Files (*.*)"
+        _filter = "INF Files(*.INF);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Load PcbWizard INF file"),
                                                                  directory=self.app.get_last_folder(),
-                                                                 filter=filter)
+                                                                 filter=_filter)
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Load PcbWizard INF file"),
-                                                                 filter=filter)
+                                                                 filter=_filter)
 
         filename = str(filename)
 
@@ -338,7 +335,7 @@ class PcbWizard(FlatCAMTool):
 
             match = tool_re.search(eline)
             if match:
-                tool =int( match.group(1))
+                tool = int(match.group(1))
                 dia = float(match.group(2))
                 # if dia < 0.1:
                 #     # most likely the file is in INCH
@@ -396,7 +393,7 @@ class PcbWizard(FlatCAMTool):
                               (str(self.app.version), str(self.app.version_date))
                     header += ';Created on : %s' % time_str + '\n'
                     header += ';FILE_FORMAT={integral}:{fractional}\n'.format(integral=self.integral,
-                                                                               fractional=self.fractional)
+                                                                              fractional=self.fractional)
                     header += '{units},{zeros}\n'.format(units=self.units, zeros=self.zeros)
                     for k, v in self.tools_from_inf.items():
                         header += 'T{tool}C{dia}\n'.format(tool=int(k), dia=float(v))
@@ -425,7 +422,8 @@ class PcbWizard(FlatCAMTool):
                 app_obj.log.debug("Could not import Excellon object.")
                 app_obj.progress.emit(0)
                 return "fail"
-            except:
+            except Exception as e:
+                app_obj.log.debug("PcbWizard.on_import_excellon().obj_init() %s" % str(e))
                 msg = _("[ERROR_NOTCL] An internal error has occurred. See shell.\n")
                 msg += app_obj.traceback.format_exc()
                 app_obj.inform.emit(msg)
@@ -449,8 +447,8 @@ class PcbWizard(FlatCAMTool):
                     # Object name
                     name = self.outname
 
-                    ret = self.app.new_object("excellon", name, obj_init, autoselected=False)
-                    if ret == 'fail':
+                    ret_val = self.app.new_object("excellon", name, obj_init, autoselected=False)
+                    if ret_val == 'fail':
                         self.app.inform.emit(_('[ERROR_NOTCL] Import Excellon file failed.'))
                         return
 

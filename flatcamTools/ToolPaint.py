@@ -7,14 +7,14 @@
 # ########################################################## ##
 
 from FlatCAMTool import FlatCAMTool
-from copy import copy,deepcopy
+from copy import copy, deepcopy
 from ObjectCollection import *
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
-import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
@@ -65,11 +65,11 @@ class ToolPaint(FlatCAMTool, Gerber):
         form_layout.addRow(self.object_label, self.object_combo)
         form_layout.addRow(e_lab_0)
 
-        #### Tools ## ##
+        # ### Tools ## ##
         self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Tools Table'))
         self.tools_table_label.setToolTip(
             _("Tools pool from which the algorithm\n"
-            "will pick the ones used for painting.")
+              "will pick the ones used for painting.")
         )
         self.tools_box.addWidget(self.tools_table_label)
 
@@ -84,33 +84,33 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         self.tools_table.horizontalHeaderItem(0).setToolTip(
             _("This is the Tool Number.\n"
-            "Painting will start with the tool with the biggest diameter,\n"
-            "continuing until there are no more tools.\n"
-            "Only tools that create painting geometry will still be present\n"
-            "in the resulting geometry. This is because with some tools\n"
-            "this function will not be able to create painting geometry.")
+              "Painting will start with the tool with the biggest diameter,\n"
+              "continuing until there are no more tools.\n"
+              "Only tools that create painting geometry will still be present\n"
+              "in the resulting geometry. This is because with some tools\n"
+              "this function will not be able to create painting geometry.")
             )
         self.tools_table.horizontalHeaderItem(1).setToolTip(
             _("Tool Diameter. It's value (in current FlatCAM units) \n"
-            "is the cut width into the material."))
+              "is the cut width into the material."))
 
         self.tools_table.horizontalHeaderItem(2).setToolTip(
             _("The Tool Type (TT) can be:<BR>"
-            "- <B>Circular</B> with 1 ... 4 teeth -> it is informative only. Being circular, <BR>"
-            "the cut width in material is exactly the tool diameter.<BR>"
-            "- <B>Ball</B> -> informative only and make reference to the Ball type endmill.<BR>"
-            "- <B>V-Shape</B> -> it will disable de Z-Cut parameter in the resulting geometry UI form "
-            "and enable two additional UI form fields in the resulting geometry: V-Tip Dia and "
-            "V-Tip Angle. Adjusting those two values will adjust the Z-Cut parameter such "
-            "as the cut width into material will be equal with the value in the Tool Diameter "
-            "column of this table.<BR>"
-            "Choosing the <B>V-Shape</B> Tool Type automatically will select the Operation Type "
-            "in the resulting geometry as Isolation."))
+              "- <B>Circular</B> with 1 ... 4 teeth -> it is informative only. Being circular, <BR>"
+              "the cut width in material is exactly the tool diameter.<BR>"
+              "- <B>Ball</B> -> informative only and make reference to the Ball type endmill.<BR>"
+              "- <B>V-Shape</B> -> it will disable de Z-Cut parameter in the resulting geometry UI form "
+              "and enable two additional UI form fields in the resulting geometry: V-Tip Dia and "
+              "V-Tip Angle. Adjusting those two values will adjust the Z-Cut parameter such "
+              "as the cut width into material will be equal with the value in the Tool Diameter "
+              "column of this table.<BR>"
+              "Choosing the <B>V-Shape</B> Tool Type automatically will select the Operation Type "
+              "in the resulting geometry as Isolation."))
 
         self.empty_label = QtWidgets.QLabel('')
         self.tools_box.addWidget(self.empty_label)
 
-        #### Add a new Tool ## ##
+        # ### Add a new Tool ## ##
         hlay = QtWidgets.QHBoxLayout()
         self.tools_box.addLayout(hlay)
 
@@ -131,7 +131,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.addtool_btn = QtWidgets.QPushButton(_('Add'))
         self.addtool_btn.setToolTip(
             _("Add a new tool to the Tool Table\n"
-            "with the diameter specified above.")
+              "with the diameter specified above.")
         )
 
         # self.copytool_btn = QtWidgets.QPushButton('Copy')
@@ -143,12 +143,12 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.deltool_btn = QtWidgets.QPushButton(_('Delete'))
         self.deltool_btn.setToolTip(
             _("Delete a selection of tools in the Tool Table\n"
-            "by first selecting a row(s) in the Tool Table.")
+              "by first selecting a row(s) in the Tool Table.")
         )
 
         grid2.addWidget(self.addtool_btn, 0, 0)
         # grid2.addWidget(self.copytool_btn, 0, 1)
-        grid2.addWidget(self.deltool_btn, 0,2)
+        grid2.addWidget(self.deltool_btn, 0, 2)
 
         self.empty_label_0 = QtWidgets.QLabel('')
         self.tools_box.addWidget(self.empty_label_0)
@@ -177,8 +177,8 @@ class ToolPaint(FlatCAMTool, Gerber):
         marginlabel = QtWidgets.QLabel(_('Margin:'))
         marginlabel.setToolTip(
             _("Distance by which to avoid\n"
-            "the edges of the polygon to\n"
-            "be painted.")
+              "the edges of the polygon to\n"
+              "be painted.")
         )
         grid3.addWidget(marginlabel, 2, 0)
         self.paintmargin_entry = FCEntry()
@@ -188,9 +188,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         methodlabel = QtWidgets.QLabel(_('Method:'))
         methodlabel.setToolTip(
             _("Algorithm for non-copper clearing:<BR>"
-            "<B>Standard</B>: Fixed step inwards.<BR>"
-            "<B>Seed-based</B>: Outwards from seed.<BR>"
-            "<B>Line-based</B>: Parallel lines.")
+              "<B>Standard</B>: Fixed step inwards.<BR>"
+              "<B>Seed-based</B>: Outwards from seed.<BR>"
+              "<B>Line-based</B>: Parallel lines.")
         )
         grid3.addWidget(methodlabel, 3, 0)
         self.paintmethod_combo = RadioSet([
@@ -204,7 +204,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         pathconnectlabel = QtWidgets.QLabel(_("Connect:"))
         pathconnectlabel.setToolTip(
             _("Draw lines between resulting\n"
-            "segments to minimize tool lifts.")
+              "segments to minimize tool lifts.")
         )
         grid3.addWidget(pathconnectlabel, 4, 0)
         self.pathconnect_cb = FCCheckBox()
@@ -213,7 +213,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         contourlabel = QtWidgets.QLabel(_("Contour:"))
         contourlabel.setToolTip(
             _("Cut around the perimeter of the polygon\n"
-            "to trim rough edges.")
+              "to trim rough edges.")
         )
         grid3.addWidget(contourlabel, 5, 0)
         self.paintcontour_cb = FCCheckBox()
@@ -222,12 +222,12 @@ class ToolPaint(FlatCAMTool, Gerber):
         restlabel = QtWidgets.QLabel(_("Rest M.:"))
         restlabel.setToolTip(
             _("If checked, use 'rest machining'.\n"
-            "Basically it will clear copper outside PCB features,\n"
-            "using the biggest tool and continue with the next tools,\n"
-            "from bigger to smaller, to clear areas of copper that\n"
-            "could not be cleared by previous tool, until there is\n"
-            "no more copper to clear or there are no more tools.\n\n"
-            "If not checked, use the standard algorithm.")
+              "Basically it will clear copper outside PCB features,\n"
+              "using the biggest tool and continue with the next tools,\n"
+              "from bigger to smaller, to clear areas of copper that\n"
+              "could not be cleared by previous tool, until there is\n"
+              "no more copper to clear or there are no more tools.\n\n"
+              "If not checked, use the standard algorithm.")
         )
         grid3.addWidget(restlabel, 6, 0)
         self.rest_cb = FCCheckBox()
@@ -237,9 +237,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         selectlabel = QtWidgets.QLabel(_('Selection:'))
         selectlabel.setToolTip(
             _("How to select the polygons to paint.<BR>"
-            "Options:<BR>"
-            "- <B>Single</B>: left mouse click on the polygon to be painted.<BR>"
-            "- <B>All</B>: paint all polygons.")
+              "Options:<BR>"
+              "- <B>Single</B>: left mouse click on the polygon to be painted.<BR>"
+              "- <B>All</B>: paint all polygons.")
         )
         grid3.addWidget(selectlabel, 7, 0)
         # grid3 = QtWidgets.QGridLayout()
@@ -254,10 +254,10 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.generate_paint_button = QtWidgets.QPushButton(_('Create Paint Geometry'))
         self.generate_paint_button.setToolTip(
             _("After clicking here, click inside<BR>"
-            "the polygon you wish to be painted if <B>Single</B> is selected.<BR>"
-            "If <B>All</B>  is selected then the Paint will start after click.<BR>"
-            "A new Geometry object with the tool<BR>"
-            "paths will be created.")
+              "the polygon you wish to be painted if <B>Single</B> is selected.<BR>"
+              "If <B>All</B>  is selected then the Paint will start after click.<BR>"
+              "A new Geometry object with the tool<BR>"
+              "paths will be created.")
         )
         self.tools_box.addWidget(self.generate_paint_button)
 
@@ -313,7 +313,6 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.deltool_btn.clicked.connect(self.on_tool_delete)
         self.generate_paint_button.clicked.connect(self.on_paint_button_click)
         self.selectmethod_combo.activated_custom.connect(self.on_radio_selection)
-
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+P', **kwargs)
@@ -430,7 +429,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.on_tool_add(self.app.defaults["tools_painttooldia"], muted=True)
 
         # if the Paint Method is "Single" disable the tool table context menu
-        if  self.default_data["selectmethod"] == "single":
+        if self.default_data["selectmethod"] == "single":
             self.tools_table.setContextMenuPolicy(Qt.NoContextMenu)
 
     def build_ui(self):
@@ -522,8 +521,8 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         try:
             self.tools_table.itemChanged.disconnect()
-        except:
-            pass
+        except Exception as e:
+            log.debug("ToolPaint.on_tool_add() --> %s" % str(e))
 
         if dia:
             tool_dia = dia
@@ -586,10 +585,12 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.build_ui()
 
     def on_tool_edit(self):
+        old_tool_dia = ''
+
         try:
             self.tools_table.itemChanged.disconnect()
-        except:
-            pass
+        except Exception as e:
+            log.debug("ToolPaint.on_tool_edit() --> %s" % str(e))
 
         tool_dias = []
         for k, v in self.paint_tools.items():
@@ -624,7 +625,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                         break
                 restore_dia_item = self.tools_table.item(row, 1)
                 restore_dia_item.setText(str(old_tool_dia))
-                self.app.inform.emit(_("[WARNING_NOTCL] Edit cancelled. New diameter value is already in the Tool Table."))
+                self.app.inform.emit(_("[WARNING_NOTCL] Edit cancelled. "
+                                       "New diameter value is already in the Tool Table."))
         self.build_ui()
 
     # def on_tool_copy(self, all=None):
@@ -685,7 +687,8 @@ class ToolPaint(FlatCAMTool, Gerber):
     def on_tool_delete(self, rows_to_delete=None, all=None):
         try:
             self.tools_table.itemChanged.disconnect()
-        except:
+        except Exception as e:
+            log.debug("ToolPaint.on_tool_delete() --> %s" % str(e))
             pass
 
         deleted_tools_list = []
@@ -741,12 +744,12 @@ class ToolPaint(FlatCAMTool, Gerber):
                 overlap = float(self.paintoverlap_entry.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                     "use a number."))
+                                       "use a number."))
                 return
 
         if overlap >= 1 or overlap < 0:
             self.app.inform.emit(_("[ERROR_NOTCL] Overlap value must be between "
-                                  "0 (inclusive) and 1 (exclusive), "))
+                                   "0 (inclusive) and 1 (exclusive), "))
             return
 
         self.app.inform.emit(_("[WARNING_NOTCL] Click inside the desired polygon."))
@@ -760,7 +763,8 @@ class ToolPaint(FlatCAMTool, Gerber):
         # Get source object.
         try:
             self.paint_obj = self.app.collection.get_by_name(str(self.obj_name))
-        except:
+        except Exception as e:
+            log.debug("ToolPaint.on_paint_button_click() --> %s" % str(e))
             self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
             return
 
@@ -774,7 +778,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.app.inform.emit(_("[ERROR_NOTCL] Can't do Paint on MultiGeo geometries ..."))
             return 'Fail'
 
-        o_name = '%s_multitool_paint' % (self.obj_name)
+        o_name = '%s_multitool_paint' % self.obj_name
 
         if select_method == "all":
             self.paint_poly_all(self.paint_obj,
@@ -811,15 +815,13 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
             self.app.plotcanvas.vis_connect('mouse_press', doit)
 
-    def paint_poly(self, obj, inside_pt, tooldia, overlap,
-                    outname=None, connect=True,
-                    contour=True):
+    def paint_poly(self, obj, inside_pt, tooldia, overlap, outname=None, connect=True, contour=True):
         """
         Paints a polygon selected by clicking on its interior.
 
         Note:
             * The margin is taken directly from the form.
-
+        :param obj: painted object
         :param inside_pt: [x, y]
         :param tooldia: Diameter of the painting tool
         :param overlap: Overlap of the tool between passes.
@@ -864,34 +866,34 @@ class ToolPaint(FlatCAMTool, Gerber):
             def paint_p(polyg):
                 if paint_method == "seed":
                     # Type(cp) == FlatCAMRTreeStorage | None
-                    cp = self.clear_polygon2(polyg,
-                                             tooldia=tooldia,
-                                             steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                             overlap=overlap,
-                                             contour=contour,
-                                             connect=connect)
+                    cpoly = self.clear_polygon2(polyg,
+                                                tooldia=tooldia,
+                                                steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                overlap=overlap,
+                                                contour=contour,
+                                                connect=connect)
 
                 elif paint_method == "lines":
                     # Type(cp) == FlatCAMRTreeStorage | None
-                    cp = self.clear_polygon3(polyg,
-                                             tooldia=tooldia,
-                                             steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                             overlap=overlap,
-                                             contour=contour,
-                                             connect=connect)
+                    cpoly = self.clear_polygon3(polyg,
+                                                tooldia=tooldia,
+                                                steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                overlap=overlap,
+                                                contour=contour,
+                                                connect=connect)
 
                 else:
                     # Type(cp) == FlatCAMRTreeStorage | None
-                    cp = self.clear_polygon(polyg,
-                                             tooldia=tooldia,
-                                             steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                             overlap=overlap,
-                                             contour=contour,
-                                             connect=connect)
+                    cpoly = self.clear_polygon(polyg,
+                                               tooldia=tooldia,
+                                               steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                               overlap=overlap,
+                                               contour=contour,
+                                               connect=connect)
 
-                if cp is not None:
-                    geo_obj.solid_geometry += list(cp.get_objects())
-                    return cp
+                if cpoly is not None:
+                    geo_obj.solid_geometry += list(cpoly.get_objects())
+                    return cpoly
                 else:
                     self.app.inform.emit(_('[ERROR_NOTCL] Geometry could not be painted completely'))
                     return None
@@ -975,12 +977,11 @@ class ToolPaint(FlatCAMTool, Gerber):
         # Background
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
-    def paint_poly_all(self, obj, overlap, outname=None,
-                       connect=True, contour=True):
+    def paint_poly_all(self, obj, overlap, outname=None, connect=True, contour=True):
         """
         Paints all polygons in this object.
 
-        :param tooldia:
+        :param obj: painted object
         :param overlap:
         :param outname:
         :param connect: Connect lines to avoid tool lifts.
@@ -1055,6 +1056,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         def gen_paintarea(geo_obj, app_obj):
             assert isinstance(geo_obj, FlatCAMGeometry), \
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+            tool_dia = None
 
             sorted_tools = []
             for row in range(self.tools_table.rowCount()):
@@ -1083,7 +1085,7 @@ class ToolPaint(FlatCAMTool, Gerber):
 
                 for geo in recurse(obj.solid_geometry):
                     try:
-                        #Polygons are the only really paintable geometries, lines in theory have no area to be painted
+                        # Polygons are the only really paintable geometries, lines in theory have no area to be painted
                         if not isinstance(geo, Polygon):
                             continue
                         poly_buf = geo.buffer(-paint_margin)
@@ -1109,11 +1111,11 @@ class ToolPaint(FlatCAMTool, Gerber):
                         else:
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon(poly_buf,
-                                                     tooldia=tool_dia,
-                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                     overlap=over,
-                                                     contour=cont,
-                                                     connect=conn)
+                                                    tooldia=tool_dia,
+                                                    steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                    overlap=over,
+                                                    contour=cont,
+                                                    connect=conn)
 
                         if cp is not None:
                             total_geometry += list(cp.get_objects())
@@ -1121,7 +1123,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         log.debug("Could not Paint the polygons. %s" % str(e))
                         self.app.inform.emit(
                             _("[ERROR] Could not do Paint All. Try a different combination of parameters. "
-                            "Or a different Method of paint\n%s") % str(e))
+                              "Or a different Method of paint\n%s") % str(e))
                         return
 
                 # add the solid_geometry to the current too in self.paint_tools dictionary and then reset the
@@ -1160,6 +1162,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             assert isinstance(geo_obj, FlatCAMGeometry), \
                 "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
+            tool_dia = None
             sorted_tools = []
             for row in range(self.tools_table.rowCount()):
                 sorted_tools.append(float(self.tools_table.item(row, 1).text()))
@@ -1184,12 +1187,13 @@ class ToolPaint(FlatCAMTool, Gerber):
                     try:
                         geo = Polygon(geo) if not isinstance(geo, Polygon) else geo
                         poly_buf = geo.buffer(-paint_margin)
+                        cp = None
 
                         if paint_method == "standard":
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon(poly_buf, tooldia=tool_dia,
-                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                     overlap=over, contour=cont, connect=conn)
+                                                    steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                    overlap=over, contour=cont, connect=conn)
 
                         elif paint_method == "seed":
                             # Type(cp) == FlatCAMRTreeStorage | None
@@ -1200,8 +1204,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                         elif paint_method == "lines":
                             # Type(cp) == FlatCAMRTreeStorage | None
                             cp = self.clear_polygon3(poly_buf, tooldia=tool_dia,
-                                                    steps_per_circle=self.app.defaults["geometry_circle_steps"],
-                                                    overlap=over, contour=cont, connect=conn)
+                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                     overlap=over, contour=cont, connect=conn)
 
                         if cp is not None:
                             cleared_geo += list(cp.get_objects())
@@ -1210,7 +1214,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         log.debug("Could not Paint the polygons. %s" % str(e))
                         self.app.inform.emit(
                             _("[ERROR] Could not do Paint All. Try a different combination of parameters. "
-                            "Or a different Method of paint\n%s") % str(e))
+                              "Or a different Method of paint\n%s") % str(e))
                         return
 
                 # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
@@ -1240,8 +1244,8 @@ class ToolPaint(FlatCAMTool, Gerber):
                     has_solid_geo += 1
             if has_solid_geo == 0:
                 self.app.inform.emit(_("[ERROR_NOTCL] There is no Painting Geometry in the file.\n"
-                                      "Usually it means that the tool diameter is too big for the painted geometry.\n"
-                                      "Change the painting parameters and try again."))
+                                       "Usually it means that the tool diameter is too big for the painted geometry.\n"
+                                       "Change the painting parameters and try again."))
                 return
 
             # Experimental...

@@ -13,9 +13,9 @@ from FlatCAMObj import *
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
-import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
@@ -49,7 +49,7 @@ class Properties(FlatCAMTool):
         self.properties_box.addWidget(title_label)
 
         # self.layout.setMargin(0)  # PyQt4
-        self.properties_box.setContentsMargins(0, 0, 0, 0) # PyQt5
+        self.properties_box.setContentsMargins(0, 0, 0, 0)  # PyQt5
 
         self.vlay = QtWidgets.QVBoxLayout()
 
@@ -62,7 +62,7 @@ class Properties(FlatCAMTool):
         self.treeWidget.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Expanding)
 
         self.vlay.addWidget(self.treeWidget)
-        self.vlay.setStretch(0,0)
+        self.vlay.setStretch(0, 0)
 
     def run(self, toggle=True):
         self.app.report_usage("ToolProperties()")
@@ -130,9 +130,14 @@ class Properties(FlatCAMTool):
 
         self.addChild(obj_type, ['Object Type:', ('%s' % (obj.kind.capitalize()))], True)
         try:
-            self.addChild(obj_type, ['Geo Type:', ('%s' % ({False: "Single-Geo", True: "Multi-Geo"}[obj.multigeo]))], True)
+            self.addChild(obj_type,
+                          ['Geo Type:',
+                           ('%s' % ({False: "Single-Geo", True: "Multi-Geo"}[obj.multigeo]))
+                           ],
+                          True
+                          )
         except Exception as e:
-            pass
+            log.debug("Properties.addItems() --> %s" % str(e))
 
         self.addChild(obj_name, [obj.options['name']])
 
@@ -163,7 +168,10 @@ class Properties(FlatCAMTool):
                            'in': 'Inch',
                            'mm': 'Metric'
                        }
-                       [str(self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower())]], True)
+                       [str(self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower())]
+                       ],
+                      True
+                      )
 
         for option in obj.options:
             if option is 'name':

@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+16.07.2019
+
+- PEP8 correction in flatcamTools
+- merged the Brazilian-portuguese language from a pull request made by Carlos Stein
+
 15.07.2019
 
 - some PEP8 corrections
