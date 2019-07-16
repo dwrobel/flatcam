@@ -1,10 +1,10 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # Author: Juan Pablo Caram (c)                             #
 # Date: 2/5/2014                                           #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
 from flatcamGUI.FlatCAMGUI import FlatCAMActivityView
 from PyQt5 import QtCore

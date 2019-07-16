@@ -36,7 +36,7 @@ class Worker(QtCore.QObject):
                 import pydevd
                 pydevd.settrace(suspend=False, trace_only_current_thread=True)
             except ImportError:
-                self.pydevd_failed=True
+                self.pydevd_failed = True
 
     def run(self):
 
