@@ -299,8 +299,8 @@ class GerberObjectUI(ObjectUI):
             "- conventional / useful when there is no backlash compensation")
         )
         grid1.addWidget(self.milling_type_label, 3, 0)
-        self.milling_type_radio = RadioSet([{'label': 'Climb', 'value': 'cl'},
-                                            {'label': 'Conv.', 'value': 'cv'}])
+        self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
+                                            {'label': _('Conv.'), 'value': 'cv'}])
         grid1.addWidget(self.milling_type_radio, 3, 1)
 
         # combine all passes CB
@@ -1361,9 +1361,9 @@ class CNCObjectUI(ObjectUI):
         )
 
         self.cncplot_method_combo = RadioSet([
-            {"label": "All", "value": "all"},
-            {"label": "Travel", "value": "travel"},
-            {"label": "Cut", "value": "cut"}
+            {"label": _("All"), "value": "all"},
+            {"label": _("Travel"), "value": "travel"},
+            {"label": _("Cut"), "value": "cut"}
         ], stretch=False)
 
         self.annotation_label = QtWidgets.QLabel(_("<b>Display Annotation:</b>"))

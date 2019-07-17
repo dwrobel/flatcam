@@ -2,6 +2,7 @@ from FlatCAMTool import FlatCAMTool
 from ObjectCollection import *
 from FlatCAMApp import *
 from shapely.geometry import box
+from shapely.ops import cascaded_union, unary_union
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -353,7 +354,7 @@ class CutOut(FlatCAMTool):
                 dia = float(self.dia.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
 
         if 0 in {dia}:
@@ -368,7 +369,7 @@ class CutOut(FlatCAMTool):
                 margin = float(self.margin.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Margin value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
 
         try:
@@ -379,7 +380,7 @@ class CutOut(FlatCAMTool):
                 gapsize = float(self.gapsize.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Gap size value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
 
         try:
@@ -390,7 +391,7 @@ class CutOut(FlatCAMTool):
 
         if gaps not in ['LR', 'TB', '2LR', '2TB', '4', '8']:
             self.app.inform.emit(_("[WARNING_NOTCL] Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
-                                 "Fill in a correct value and retry. "))
+                                   "Fill in a correct value and retry. "))
             return
 
         if cutout_obj.multigeo is True:
@@ -414,66 +415,71 @@ class CutOut(FlatCAMTool):
             else:
                 object_geo = cutout_obj.solid_geometry
 
+            # try:
+            #     __ = iter(object_geo)
+            # except TypeError:
+            #     object_geo = [object_geo]
+
+            object_geo = unary_union(object_geo)
+
+            # for geo in object_geo:
+            if isinstance(cutout_obj, FlatCAMGerber):
+                geo = object_geo.buffer(margin + abs(dia / 2))
+                geo = geo.exterior
+            else:
+                geo = object_geo
+
+            # Get min and max data for each object as we just cut rectangles across X or Y
+            xmin, ymin, xmax, ymax = recursive_bounds(geo)
+
+            px = 0.5 * (xmin + xmax) + margin
+            py = 0.5 * (ymin + ymax) + margin
+            lenx = (xmax - xmin) + (margin * 2)
+            leny = (ymax - ymin) + (margin * 2)
+
+            if gaps == '8' or gaps == '2LR':
+                geo = self.subtract_poly_from_geo(geo,
+                                                  xmin - gapsize,           # botleft_x
+                                                  py - gapsize + leny / 4,  # botleft_y
+                                                  xmax + gapsize,           # topright_x
+                                                  py + gapsize + leny / 4)  # topright_y
+                geo = self.subtract_poly_from_geo(geo,
+                                                  xmin - gapsize,
+                                                  py - gapsize - leny / 4,
+                                                  xmax + gapsize,
+                                                  py + gapsize - leny / 4)
+
+            if gaps == '8' or gaps == '2TB':
+                geo = self.subtract_poly_from_geo(geo,
+                                                  px - gapsize + lenx / 4,
+                                                  ymin - gapsize,
+                                                  px + gapsize + lenx / 4,
+                                                  ymax + gapsize)
+                geo = self.subtract_poly_from_geo(geo,
+                                                  px - gapsize - lenx / 4,
+                                                  ymin - gapsize,
+                                                  px + gapsize - lenx / 4,
+                                                  ymax + gapsize)
+
+            if gaps == '4' or gaps == 'LR':
+                geo = self.subtract_poly_from_geo(geo,
+                                                  xmin - gapsize,
+                                                  py - gapsize,
+                                                  xmax + gapsize,
+                                                  py + gapsize)
+
+            if gaps == '4' or gaps == 'TB':
+                geo = self.subtract_poly_from_geo(geo,
+                                                  px - gapsize,
+                                                  ymin - gapsize,
+                                                  px + gapsize,
+                                                  ymax + gapsize)
+
             try:
-                __ = iter(object_geo)
+                for g in geo:
+                    solid_geo.append(g)
             except TypeError:
-                object_geo = [object_geo]
-
-            for geo in object_geo:
-                if isinstance(cutout_obj, FlatCAMGerber):
-                    geo = (geo.buffer(margin + abs(dia / 2))).exterior
-
-                # Get min and max data for each object as we just cut rectangles across X or Y
-                xmin, ymin, xmax, ymax = recursive_bounds(geo)
-
-                px = 0.5 * (xmin + xmax) + margin
-                py = 0.5 * (ymin + ymax) + margin
-                lenx = (xmax - xmin) + (margin * 2)
-                leny = (ymax - ymin) + (margin * 2)
-
-                if gaps == '8' or gaps == '2LR':
-                    geo = self.subtract_poly_from_geo(geo,
-                                                      xmin - gapsize,  # botleft_x
-                                                      py - gapsize + leny / 4,  # botleft_y
-                                                      xmax + gapsize,  # topright_x
-                                                      py + gapsize + leny / 4)  # topright_y
-                    geo = self.subtract_poly_from_geo(geo,
-                                                      xmin - gapsize,
-                                                      py - gapsize - leny / 4,
-                                                      xmax + gapsize,
-                                                      py + gapsize - leny / 4)
-
-                if gaps == '8' or gaps == '2TB':
-                    geo = self.subtract_poly_from_geo(geo,
-                                                      px - gapsize + lenx / 4,
-                                                      ymin - gapsize,
-                                                      px + gapsize + lenx / 4,
-                                                      ymax + gapsize)
-                    geo = self.subtract_poly_from_geo(geo,
-                                                      px - gapsize - lenx / 4,
-                                                      ymin - gapsize,
-                                                      px + gapsize - lenx / 4,
-                                                      ymax + gapsize)
-
-                if gaps == '4' or gaps == 'LR':
-                    geo = self.subtract_poly_from_geo(geo,
-                                                      xmin - gapsize,
-                                                      py - gapsize,
-                                                      xmax + gapsize,
-                                                      py + gapsize)
-
-                if gaps == '4' or gaps == 'TB':
-                    geo = self.subtract_poly_from_geo(geo,
-                                                      px - gapsize,
-                                                      ymin - gapsize,
-                                                      px + gapsize,
-                                                      ymax + gapsize)
-
-                try:
-                    for g in geo:
-                        solid_geo.append(g)
-                except TypeError:
-                    solid_geo.append(geo)
+                solid_geo.append(geo)
 
             geo_obj.solid_geometry = deepcopy(solid_geo)
             xmin, ymin, xmax, ymax = recursive_bounds(geo_obj.solid_geometry)
@@ -481,6 +487,7 @@ class CutOut(FlatCAMTool):
             geo_obj.options['ymin'] = ymin
             geo_obj.options['xmax'] = xmax
             geo_obj.options['ymax'] = ymax
+            geo_obj.options['cnctooldia'] = str(dia)
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.new_object('geometry', outname, geo_init)
@@ -516,7 +523,7 @@ class CutOut(FlatCAMTool):
                 dia = float(self.dia.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
 
         if 0 in {dia}:
@@ -531,7 +538,7 @@ class CutOut(FlatCAMTool):
                 margin = float(self.margin.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Margin value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
 
         try:
@@ -542,7 +549,7 @@ class CutOut(FlatCAMTool):
                 gapsize = float(self.gapsize.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Gap size value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
 
         try:
@@ -553,13 +560,13 @@ class CutOut(FlatCAMTool):
 
         if gaps not in ['LR', 'TB', '2LR', '2TB', '4', '8']:
             self.app.inform.emit(_("[WARNING_NOTCL] Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
-                                 "Fill in a correct value and retry. "))
+                                   "Fill in a correct value and retry. "))
             return
 
         if cutout_obj.multigeo is True:
             self.app.inform.emit(_("[ERROR]Cutout operation cannot be done on a multi-geo Geometry.\n"
-                                 "Optionally, this Multi-geo Geometry can be converted to Single-geo Geometry,\n"
-                                 "and after that perform Cutout."))
+                                   "Optionally, this Multi-geo Geometry can be converted to Single-geo Geometry,\n"
+                                   "and after that perform Cutout."))
             return
 
         # Get min and max data for each object as we just cut rectangles across X or Y
@@ -575,65 +582,66 @@ class CutOut(FlatCAMTool):
             except TypeError:
                 object_geo = [object_geo]
 
-            for poly in object_geo:
+            object_geo = unary_union(object_geo)
 
-                xmin, ymin, xmax, ymax = poly.bounds
-                geo = box(xmin, ymin, xmax, ymax)
+            xmin, ymin, xmax, ymax = object_geo.bounds
+            geo = box(xmin, ymin, xmax, ymax)
 
-                # if Gerber create a buffer at a distance
-                # if Geometry then cut through the geometry
-                if isinstance(cutout_obj, FlatCAMGerber):
-                    geo = geo.buffer(margin + abs(dia / 2))
+            # if Gerber create a buffer at a distance
+            # if Geometry then cut through the geometry
+            if isinstance(cutout_obj, FlatCAMGerber):
+                geo = geo.buffer(margin + abs(dia / 2))
 
-                px = 0.5 * (xmin + xmax) + margin
-                py = 0.5 * (ymin + ymax) + margin
-                lenx = (xmax - xmin) + (margin * 2)
-                leny = (ymax - ymin) + (margin * 2)
+            px = 0.5 * (xmin + xmax) + margin
+            py = 0.5 * (ymin + ymax) + margin
+            lenx = (xmax - xmin) + (margin * 2)
+            leny = (ymax - ymin) + (margin * 2)
 
-                if gaps == '8' or gaps == '2LR':
-                    geo = self.subtract_poly_from_geo(geo,
-                                                      xmin - gapsize,  # botleft_x
-                                                      py - gapsize + leny / 4,  # botleft_y
-                                                      xmax + gapsize,  # topright_x
-                                                      py + gapsize + leny / 4)  # topright_y
-                    geo = self.subtract_poly_from_geo(geo,
-                                                      xmin - gapsize,
-                                                      py - gapsize - leny / 4,
-                                                      xmax + gapsize,
-                                                      py + gapsize - leny / 4)
+            if gaps == '8' or gaps == '2LR':
+                geo = self.subtract_poly_from_geo(geo,
+                                                  xmin - gapsize,  # botleft_x
+                                                  py - gapsize + leny / 4,  # botleft_y
+                                                  xmax + gapsize,  # topright_x
+                                                  py + gapsize + leny / 4)  # topright_y
+                geo = self.subtract_poly_from_geo(geo,
+                                                  xmin - gapsize,
+                                                  py - gapsize - leny / 4,
+                                                  xmax + gapsize,
+                                                  py + gapsize - leny / 4)
 
-                if gaps == '8' or gaps == '2TB':
-                    geo = self.subtract_poly_from_geo(geo,
-                                                      px - gapsize + lenx / 4,
-                                                      ymin - gapsize,
-                                                      px + gapsize + lenx / 4,
-                                                      ymax + gapsize)
-                    geo = self.subtract_poly_from_geo(geo,
-                                                      px - gapsize - lenx / 4,
-                                                      ymin - gapsize,
-                                                      px + gapsize - lenx / 4,
-                                                      ymax + gapsize)
+            if gaps == '8' or gaps == '2TB':
+                geo = self.subtract_poly_from_geo(geo,
+                                                  px - gapsize + lenx / 4,
+                                                  ymin - gapsize,
+                                                  px + gapsize + lenx / 4,
+                                                  ymax + gapsize)
+                geo = self.subtract_poly_from_geo(geo,
+                                                  px - gapsize - lenx / 4,
+                                                  ymin - gapsize,
+                                                  px + gapsize - lenx / 4,
+                                                  ymax + gapsize)
 
-                if gaps == '4' or gaps == 'LR':
-                    geo = self.subtract_poly_from_geo(geo,
-                                                      xmin - gapsize,
-                                                      py - gapsize,
-                                                      xmax + gapsize,
-                                                      py + gapsize)
+            if gaps == '4' or gaps == 'LR':
+                geo = self.subtract_poly_from_geo(geo,
+                                                  xmin - gapsize,
+                                                  py - gapsize,
+                                                  xmax + gapsize,
+                                                  py + gapsize)
 
-                if gaps == '4' or gaps == 'TB':
-                    geo = self.subtract_poly_from_geo(geo,
-                                                      px - gapsize,
-                                                      ymin - gapsize,
-                                                      px + gapsize,
-                                                      ymax + gapsize)
-                try:
-                    for g in geo:
-                        solid_geo.append(g)
-                except TypeError:
-                    solid_geo.append(geo)
+            if gaps == '4' or gaps == 'TB':
+                geo = self.subtract_poly_from_geo(geo,
+                                                  px - gapsize,
+                                                  ymin - gapsize,
+                                                  px + gapsize,
+                                                  ymax + gapsize)
+            try:
+                for g in geo:
+                    solid_geo.append(g)
+            except TypeError:
+                solid_geo.append(geo)
 
             geo_obj.solid_geometry = deepcopy(solid_geo)
+            geo_obj.options['cnctooldia'] = str(dia)
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.new_object('geometry', outname, geo_init)
@@ -781,11 +789,13 @@ class CutOut(FlatCAMTool):
         convex_box = self.convex_box.get_value()
 
         def geo_init(geo_obj, app_obj):
+            geo_union = unary_union(cutout_obj.solid_geometry)
+
             if convex_box:
-                geo = cutout_obj.solid_geometry.convex_hull
+                geo = geo_union.convex_hull
                 geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
             else:
-                geo = cutout_obj.solid_geometry
+                geo = geo_union
                 geo = geo.buffer(margin + abs(dia / 2))
                 if isinstance(geo, Polygon):
                     geo_obj.solid_geometry = geo.exterior
@@ -794,6 +804,7 @@ class CutOut(FlatCAMTool):
                     for poly in geo:
                         solid_geo.append(poly.exterior)
                     geo_obj.solid_geometry = deepcopy(solid_geo)
+            geo_obj.options['cnctooldia'] = str(dia)
 
         outname = cutout_obj.options["name"] + "_cutout"
         self.app.new_object('geometry', outname, geo_init)

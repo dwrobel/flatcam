@@ -1,10 +1,10 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Matthieu Berthomé                           #
 # Date: 5/26/2017                                          #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
 from importlib.machinery import SourceFileLoader
 import os
@@ -12,19 +12,19 @@ from abc import ABCMeta, abstractmethod
 from datetime import datetime
 import math
 
-#module-root dictionary of postprocessors
+# module-root dictionary of postprocessors
 import FlatCAMApp
 
 postprocessors = {}
 
 
 class ABCPostProcRegister(ABCMeta):
-    #handles postprocessors registration on instantation
+    # handles postprocessors registration on instantation
     def __new__(cls, clsname, bases, attrs):
         newclass = super(ABCPostProcRegister, cls).__new__(cls, clsname, bases, attrs)
         if object not in bases:
             if newclass.__name__ in postprocessors:
-                FlatCAMApp.App.log.warning('Postprocessor %s has been overriden'%(newclass.__name__))
+                FlatCAMApp.App.log.warning('Postprocessor %s has been overriden' % newclass.__name__)
             postprocessors[newclass.__name__] = newclass()  # here is your register function
         return newclass
 
@@ -67,11 +67,11 @@ class FlatCAMPostProc(object, metaclass=ABCPostProcRegister):
         pass
 
     @abstractmethod
-    def spindle_code(self,p):
+    def spindle_code(self, p):
         pass
 
     @abstractmethod
-    def spindle_stop_code(self,p):
+    def spindle_stop_code(self, p):
         pass
 
 
@@ -121,32 +121,32 @@ class FlatCAMPostProc_Tools(object, metaclass=ABCPostProcRegister):
         pass
 
     @abstractmethod
-    def feedrate_z_dispense_code(self,p):
+    def feedrate_z_dispense_code(self, p):
         pass
 
     @abstractmethod
-    def spindle_fwd_code(self,p):
+    def spindle_fwd_code(self, p):
         pass
 
     @abstractmethod
-    def spindle_rev_code(self,p):
+    def spindle_rev_code(self, p):
         pass
 
     @abstractmethod
-    def spindle_off_code(self,p):
+    def spindle_off_code(self, p):
         pass
 
     @abstractmethod
-    def dwell_fwd_code(self,p):
+    def dwell_fwd_code(self, p):
         pass
 
     @abstractmethod
-    def dwell_rev_code(self,p):
+    def dwell_rev_code(self, p):
         pass
 
 
 def load_postprocessors(app):
-    postprocessors_path_search = [os.path.join(app.data_path,'postprocessors','*.py'),
+    postprocessors_path_search = [os.path.join(app.data_path, 'postprocessors', '*.py'),
                                   os.path.join('postprocessors', '*.py')]
     import glob
     for path_search in postprocessors_path_search:

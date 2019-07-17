@@ -81,8 +81,8 @@ class Panelize(FlatCAMTool):
         self.layout.addLayout(form_layout)
 
         # Type of box Panel object
-        self.reference_radio = RadioSet([{'label': 'Object', 'value': 'object'},
-                                         {'label': 'Bounding Box', 'value': 'bbox'}])
+        self.reference_radio = RadioSet([{'label': _('Object'), 'value': 'object'},
+                                         {'label': _('Bounding Box'), 'value': 'bbox'}])
         self.box_label = QtWidgets.QLabel(_("<b>Penelization Reference:</b>"))
         self.box_label.setToolTip(
             _("Choose the reference for panelization:\n"
@@ -178,8 +178,8 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(QtWidgets.QLabel(""))
 
         # Type of resulting Panel object
-        self.panel_type_radio = RadioSet([{'label': 'Gerber', 'value': 'gerber'},
-                                          {'label': 'Geometry', 'value': 'geometry'}])
+        self.panel_type_radio = RadioSet([{'label': _('Gerber'), 'value': 'gerber'},
+                                          {'label': _('Geo'), 'value': 'geometry'}])
         self.panel_type_label = QtWidgets.QLabel(_("<b>Panel Type:</b>"))
         self.panel_type_label.setToolTip(
             _("Choose the type of object for the panel object:\n"
@@ -269,7 +269,7 @@ class Panelize(FlatCAMTool):
         FlatCAMTool.run(self)
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, "Panel. Tool")
+        self.app.ui.notebook.setTabText(2, _("Panel. Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+Z', **kwargs)

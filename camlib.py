@@ -7691,6 +7691,7 @@ def three_point_circle(p1, p2, p3):
 def distance(pt1, pt2):
     return sqrt((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2)
 
+
 def distance_euclidian(x1, y1, x2, y2):
     return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
@@ -7792,7 +7793,7 @@ class FlatCAMRTreeStorage(FlatCAMRTree):
         # super(FlatCAMRTreeStorage, self).insert(idx, obj)
         super().insert(idx, obj)
 
-    #@profile
+    # @profile
     def remove(self, obj):
         # See note about self.indexes in insert().
         # objidx = self.indexes[obj]

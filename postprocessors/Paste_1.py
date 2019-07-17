@@ -16,7 +16,7 @@ class Paste_1(FlatCAMPostProc_Tools):
 
     def start_code(self, p):
         units = ' ' + str(p['units']).lower()
-        coords_xy = [float(eval(a)) for a in p['xy_toolchange'].split(",")]
+        coords_xy = [float(eval(a)) for a in p['xy_toolchange'].split(",") if a != '']
 
         gcode = ''
 
@@ -68,7 +68,7 @@ class Paste_1(FlatCAMPostProc_Tools):
 
     def toolchange_code(self, p):
         z_toolchange = float(p['z_toolchange'])
-        toolchangexy = [float(eval(a)) for a in p['xy_toolchange'].split(",")]
+        toolchangexy = [float(eval(a)) for a in p['xy_toolchange'].split(",") if a != '']
         gcode = ''
 
         if toolchangexy is not None:
@@ -119,7 +119,7 @@ M0
         return ('G01 ' + self.position_code(p)).format(**p)
 
     def end_code(self, p):
-        coords_xy = [float(eval(a)) for a in p['xy_toolchange'].split(",")]
+        coords_xy = [float(eval(a)) for a in p['xy_toolchange'].split(",") if a != '']
         gcode = ('G00 Z' + self.feedrate_format %(p.fr_decimals, float(p['z_toolchange'])) + "\n")
 
         if coords_xy is not None:

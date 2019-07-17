@@ -16,6 +16,11 @@ from PyQt5.QtCore import QSettings
 from flatcamGUI.GUIElements import log
 import gettext
 
+import builtins
+
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
+
 # ISO639-1 codes from here: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 languages_dict = {
     'zh': 'Chinese',
@@ -26,6 +31,7 @@ languages_dict = {
     'it': 'Italian',
     'ro': 'Romanian',
     'ru': 'Russian',
+    'pt_BR': 'Brazilian Portuguese',
 }
 
 translations = {}
@@ -82,12 +88,13 @@ def on_language_apply_click(app, restart=False):
 
     if restart:
         msgbox = QtWidgets.QMessageBox()
-        msgbox.setText("The application will restart.")
-        msgbox.setInformativeText("Are you sure do you want to change the current language to %s?" % name.capitalize())
-        msgbox.setWindowTitle("Apply Language ...")
+        msgbox.setText(_("The application will restart."))
+        msgbox.setInformativeText(_("Are you sure do you want to change the current language to %s?") %
+                                  name.capitalize())
+        msgbox.setWindowTitle(_("Apply Language ..."))
         msgbox.setWindowIcon(QtGui.QIcon('share/language32.png'))
-        bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
-        bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+        bt_yes = msgbox.addButton('Yes', QtWidgets.QMessageBox.YesRole)
+        bt_no = msgbox.addButton('No', QtWidgets.QMessageBox.NoRole)
 
         msgbox.setDefaultButton(bt_yes)
         msgbox.exec_()
@@ -155,5 +162,3 @@ def restart_program(app):
     app.save_defaults()
     python = sys.executable
     os.execl(python, python, *sys.argv)
-
-

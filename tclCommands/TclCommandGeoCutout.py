@@ -1,11 +1,15 @@
 from ObjectCollection import *
 from tclCommands.TclCommand import TclCommandSignaled
 from copy import deepcopy
+from shapely.ops import cascaded_union
+from shapely.geometry import Polygon, LineString, LinearRing
 
 
 class TclCommandGeoCutout(TclCommandSignaled):
     """
-        Tcl shell command to create a board cutout geometry. Allow cutout for any shape. Cuts holding gaps from geometry.
+        Tcl shell command to create a board cutout geometry.
+        Allow cutout for any shape.
+        Cuts holding gaps from geometry.
 
         example:
 
@@ -66,9 +70,9 @@ class TclCommandGeoCutout(TclCommandSignaled):
         :return:
         """
 
-        def subtract_rectangle(obj_, x0, y0, x1, y1):
-            pts = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
-            obj_.subtract_polygon(pts)
+        # def subtract_rectangle(obj_, x0, y0, x1, y1):
+        #     pts = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+        #     obj_.subtract_polygon(pts)
 
         def substract_rectangle_geo(geo, x0, y0, x1, y1):
             pts = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]

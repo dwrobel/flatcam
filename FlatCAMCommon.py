@@ -46,4 +46,3 @@ class LoudDict(dict):
         """
 
         self.callback = callback
-
