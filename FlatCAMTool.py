@@ -90,4 +90,3 @@ class FlatCAMTool(QtWidgets.QWidget):
         self.app.ui.tool_scroll_area.widget().setObjectName(self.toolName)
 
         self.show()
-
