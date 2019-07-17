@@ -207,8 +207,8 @@ class ToolPDF(FlatCAMTool):
             while True:
                 self.parsing_promises.remove(short_name)
                 time.sleep(0.1)
-        except:
-            pass
+        except Exception as e:
+            log.debug("ToolPDF.open_pdf() --> %s" % str(e))
         self.app.inform.emit(_("[success] Opened: %s") % filename)
 
     def layer_rendering_as_excellon(self, filename, ap_dict, layer_nr):
@@ -264,8 +264,8 @@ class ToolPDF(FlatCAMTool):
 
         with self.app.proc_container.new(_("Rendering PDF layer #%d ...") % int(layer_nr)):
 
-            ret = self.app.new_object("excellon", outname, obj_init, autoselected=False)
-            if ret == 'fail':
+            ret_val = self.app.new_object("excellon", outname, obj_init, autoselected=False)
+            if ret_val == 'fail':
                 self.app.inform.emit(_('[ERROR_NOTCL] Open PDF file failed.'))
                 return
             # Register recent file
@@ -300,7 +300,7 @@ class ToolPDF(FlatCAMTool):
                             global_clear_geo.append(geo_el['clear'])
 
                 if global_clear_geo:
-                    solid= []
+                    solid = []
                     for apid in grb_obj.apertures:
                         if 'geometry' in grb_obj.apertures[apid]:
                             for elem in grb_obj.apertures[apid]['geometry']:
@@ -360,7 +360,7 @@ class ToolPDF(FlatCAMTool):
 
         try:
             self.check_thread.stop()
-        except:
+        except Exception as e:
             pass
 
         self.check_thread.setInterval(check_period)
@@ -458,7 +458,7 @@ class ToolPDF(FlatCAMTool):
 
         # on stroke color change we create a new apertures dictionary and store the old one in a storage from where
         # it will be transformed into Gerber object
-        old_color = [None, None ,None]
+        old_color = [None, None, None]
 
         # signal that we have clear geometry and the geometry will be added to a special layer_nr = 0
         flag_clear_geo = False
@@ -681,10 +681,8 @@ class ToolPDF(FlatCAMTool):
                 current_subpath = 'rectangle'
                 x = (float(match.group(1)) + offset_geo[0]) * self.point_to_unit_factor * scale_geo[0]
                 y = (float(match.group(2)) + offset_geo[1]) * self.point_to_unit_factor * scale_geo[1]
-                width = (float(match.group(3)) + offset_geo[0]) * \
-                        self.point_to_unit_factor * scale_geo[0]
-                height = (float(match.group(4)) + offset_geo[1]) * \
-                         self.point_to_unit_factor * scale_geo[1]
+                width = (float(match.group(3)) + offset_geo[0]) * self.point_to_unit_factor * scale_geo[0]
+                height = (float(match.group(4)) + offset_geo[1]) * self.point_to_unit_factor * scale_geo[1]
                 pt1 = (x, y)
                 pt2 = (x+width, y)
                 pt3 = (x+width, y+height)
@@ -758,7 +756,8 @@ class ToolPDF(FlatCAMTool):
                         for subp in path['lines']:
                             geo = copy(subp)
                             try:
-                                geo = LineString(geo).buffer((float(applied_size) / 2), resolution=self.step_per_circles)
+                                geo = LineString(geo).buffer((float(applied_size) / 2),
+                                                             resolution=self.step_per_circles)
                                 path_geo.append(geo)
                             except ValueError:
                                 pass

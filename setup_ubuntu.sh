@@ -14,7 +14,6 @@ apt-get install python3-tk
 apt-get install libspatialindex-dev
 apt-get install python3-gdal
 apt-get install python3-lxml
-easy_install3 -U distribute
 pip3 install --upgrade dill
 pip3 install --upgrade Shapely
 pip3 install --upgrade vispy

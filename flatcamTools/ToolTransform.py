@@ -11,9 +11,9 @@ from FlatCAMObj import *
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
-import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
@@ -68,9 +68,9 @@ class ToolTransform(FlatCAMTool):
         self.rotate_label = QtWidgets.QLabel(_("Angle:"))
         self.rotate_label.setToolTip(
             _("Angle for Rotation action, in degrees.\n"
-            "Float number between -360 and 359.\n"
-            "Positive numbers for CW motion.\n"
-            "Negative numbers for CCW motion.")
+              "Float number between -360 and 359.\n"
+              "Positive numbers for CW motion.\n"
+              "Negative numbers for CCW motion.")
         )
         self.rotate_label.setFixedWidth(70)
 
@@ -82,8 +82,8 @@ class ToolTransform(FlatCAMTool):
         self.rotate_button.set_value(_("Rotate"))
         self.rotate_button.setToolTip(
             _("Rotate the selected object(s).\n"
-            "The point of reference is the middle of\n"
-            "the bounding box for all selected objects.")
+              "The point of reference is the middle of\n"
+              "the bounding box for all selected objects.")
         )
         self.rotate_button.setFixedWidth(90)
 
@@ -107,7 +107,7 @@ class ToolTransform(FlatCAMTool):
         self.skewx_label = QtWidgets.QLabel(_("Angle X:"))
         self.skewx_label.setToolTip(
             _("Angle for Skew action, in degrees.\n"
-            "Float number between -360 and 359.")
+              "Float number between -360 and 359.")
         )
         self.skewx_label.setFixedWidth(70)
         self.skewx_entry = FCEntry()
@@ -118,14 +118,14 @@ class ToolTransform(FlatCAMTool):
         self.skewx_button.set_value(_("Skew X"))
         self.skewx_button.setToolTip(
             _("Skew/shear the selected object(s).\n"
-            "The point of reference is the middle of\n"
-            "the bounding box for all selected objects."))
+              "The point of reference is the middle of\n"
+              "the bounding box for all selected objects."))
         self.skewx_button.setFixedWidth(90)
 
         self.skewy_label = QtWidgets.QLabel(_("Angle Y:"))
         self.skewy_label.setToolTip(
             _("Angle for Skew action, in degrees.\n"
-            "Float number between -360 and 359.")
+              "Float number between -360 and 359.")
         )
         self.skewy_label.setFixedWidth(70)
         self.skewy_entry = FCEntry()
@@ -136,8 +136,8 @@ class ToolTransform(FlatCAMTool):
         self.skewy_button.set_value(_("Skew Y"))
         self.skewy_button.setToolTip(
             _("Skew/shear the selected object(s).\n"
-            "The point of reference is the middle of\n"
-            "the bounding box for all selected objects."))
+              "The point of reference is the middle of\n"
+              "the bounding box for all selected objects."))
         self.skewy_button.setFixedWidth(90)
 
         form1_child_1.addWidget(self.skewx_entry)
@@ -174,8 +174,8 @@ class ToolTransform(FlatCAMTool):
         self.scalex_button.set_value(_("Scale X"))
         self.scalex_button.setToolTip(
             _("Scale the selected object(s).\n"
-            "The point of reference depends on \n"
-            "the Scale reference checkbox state."))
+              "The point of reference depends on \n"
+              "the Scale reference checkbox state."))
         self.scalex_button.setFixedWidth(90)
 
         self.scaley_label = QtWidgets.QLabel(_("Factor Y:"))
@@ -191,8 +191,8 @@ class ToolTransform(FlatCAMTool):
         self.scaley_button.set_value(_("Scale Y"))
         self.scaley_button.setToolTip(
             _("Scale the selected object(s).\n"
-            "The point of reference depends on \n"
-            "the Scale reference checkbox state."))
+              "The point of reference depends on \n"
+              "the Scale reference checkbox state."))
         self.scaley_button.setFixedWidth(90)
 
         self.scale_link_cb = FCCheckBox()
@@ -200,7 +200,7 @@ class ToolTransform(FlatCAMTool):
         self.scale_link_cb.setText(_("Link"))
         self.scale_link_cb.setToolTip(
             _("Scale the selected object(s)\n"
-            "using the Scale Factor X for both axis."))
+              "using the Scale Factor X for both axis."))
         self.scale_link_cb.setFixedWidth(70)
 
         self.scale_zero_ref_cb = FCCheckBox()
@@ -208,9 +208,9 @@ class ToolTransform(FlatCAMTool):
         self.scale_zero_ref_cb.setText(_("Scale Reference"))
         self.scale_zero_ref_cb.setToolTip(
             _("Scale the selected object(s)\n"
-            "using the origin reference when checked,\n"
-            "and the center of the biggest bounding box\n"
-            "of the selected objects when unchecked."))
+              "using the origin reference when checked,\n"
+              "and the center of the biggest bounding box\n"
+              "of the selected objects when unchecked."))
 
         form2_child_1.addWidget(self.scalex_entry)
         form2_child_1.addWidget(self.scalex_button)
@@ -248,8 +248,8 @@ class ToolTransform(FlatCAMTool):
         self.offx_button.set_value(_("Offset X"))
         self.offx_button.setToolTip(
             _("Offset the selected object(s).\n"
-            "The point of reference is the middle of\n"
-            "the bounding box for all selected objects.\n"))
+              "The point of reference is the middle of\n"
+              "the bounding box for all selected objects.\n"))
         self.offx_button.setFixedWidth(90)
 
         self.offy_label = QtWidgets.QLabel(_("Value Y:"))
@@ -265,8 +265,8 @@ class ToolTransform(FlatCAMTool):
         self.offy_button.set_value(_("Offset Y"))
         self.offy_button.setToolTip(
             _("Offset the selected object(s).\n"
-            "The point of reference is the middle of\n"
-            "the bounding box for all selected objects.\n"))
+              "The point of reference is the middle of\n"
+              "the bounding box for all selected objects.\n"))
         self.offy_button.setFixedWidth(90)
 
         form3_child_1.addWidget(self.offx_entry)
@@ -295,7 +295,7 @@ class ToolTransform(FlatCAMTool):
         self.flipx_button.set_value(_("Flip on X"))
         self.flipx_button.setToolTip(
             _("Flip the selected object(s) over the X axis.\n"
-            "Does not create a new object.\n ")
+              "Does not create a new object.\n ")
         )
         self.flipx_button.setFixedWidth(100)
 
@@ -303,7 +303,7 @@ class ToolTransform(FlatCAMTool):
         self.flipy_button.set_value(_("Flip on Y"))
         self.flipy_button.setToolTip(
             _("Flip the selected object(s) over the X axis.\n"
-            "Does not create a new object.\n ")
+              "Does not create a new object.\n ")
         )
         self.flipy_button.setFixedWidth(90)
 
@@ -312,21 +312,21 @@ class ToolTransform(FlatCAMTool):
         self.flip_ref_cb.setText(_("Ref Pt"))
         self.flip_ref_cb.setToolTip(
             _("Flip the selected object(s)\n"
-            "around the point in Point Entry Field.\n"
-            "\n"
-            "The point coordinates can be captured by\n"
-            "left click on canvas together with pressing\n"
-            "SHIFT key. \n"
-            "Then click Add button to insert coordinates.\n"
-            "Or enter the coords in format (x, y) in the\n"
-            "Point Entry field and click Flip on X(Y)"))
+              "around the point in Point Entry Field.\n"
+              "\n"
+              "The point coordinates can be captured by\n"
+              "left click on canvas together with pressing\n"
+              "SHIFT key. \n"
+              "Then click Add button to insert coordinates.\n"
+              "Or enter the coords in format (x, y) in the\n"
+              "Point Entry field and click Flip on X(Y)"))
         self.flip_ref_cb.setFixedWidth(70)
 
         self.flip_ref_label = QtWidgets.QLabel(_("Point:"))
         self.flip_ref_label.setToolTip(
             _("Coordinates in format (x, y) used as reference for mirroring.\n"
-            "The 'x' in (x, y) will be used when using Flip on X and\n"
-            "the 'y' in (x, y) will be used when using Flip on Y and")
+              "The 'x' in (x, y) will be used when using Flip on X and\n"
+              "the 'y' in (x, y) will be used when using Flip on Y and")
         )
         self.flip_ref_label.setFixedWidth(70)
         self.flip_ref_entry = EvalEntry2("(0, 0)")
@@ -337,8 +337,8 @@ class ToolTransform(FlatCAMTool):
         self.flip_ref_button.set_value(_("Add"))
         self.flip_ref_button.setToolTip(
             _("The point coordinates can be captured by\n"
-            "left click on canvas together with pressing\n"
-            "SHIFT key. Then click Add button to insert."))
+              "left click on canvas together with pressing\n"
+              "SHIFT key. Then click Add button to insert."))
         self.flip_ref_button.setFixedWidth(90)
 
         form4_child_hlay.addStretch()
@@ -350,8 +350,7 @@ class ToolTransform(FlatCAMTool):
 
         form4_layout.addRow(self.flip_ref_cb)
         form4_layout.addRow(self.flip_ref_label, form4_child_1)
-        self.ois_flip = OptionalInputSection(self.flip_ref_cb,
-                                              [self.flip_ref_entry, self.flip_ref_button], logic=True)
+        self.ois_flip = OptionalInputSection(self.flip_ref_cb, [self.flip_ref_entry, self.flip_ref_button], logic=True)
 
         self.transform_lay.addStretch()
 
@@ -455,7 +454,7 @@ class ToolTransform(FlatCAMTool):
         if self.app.defaults["tools_transform_mirror_point"]:
             self.flip_ref_entry.set_value(self.app.defaults["tools_transform_mirror_point"])
         else:
-            self.flip_ref_entry.set_value((0,0))
+            self.flip_ref_entry.set_value((0, 0))
 
     def on_rotate(self):
         try:
@@ -466,10 +465,10 @@ class ToolTransform(FlatCAMTool):
                 value = float(self.rotate_entry.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Rotate, "
-                                     "use a number."))
+                                       "use a number."))
                 return
         self.app.worker_task.emit({'fcn': self.on_rotate_action,
-                                       'params': [value]})
+                                   'params': [value]})
         # self.on_rotate_action(value)
         return
 
@@ -500,7 +499,7 @@ class ToolTransform(FlatCAMTool):
                 value = float(self.skewx_entry.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Skew X, "
-                                     "use a number."))
+                                       "use a number."))
                 return
 
         # self.on_skew("X", value)
@@ -518,7 +517,7 @@ class ToolTransform(FlatCAMTool):
                 value = float(self.skewy_entry.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Skew Y, "
-                                     "use a number."))
+                                       "use a number."))
                 return
 
         # self.on_skew("Y", value)
@@ -536,7 +535,7 @@ class ToolTransform(FlatCAMTool):
                 xvalue = float(self.scalex_entry.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Scale X, "
-                                     "use a number."))
+                                       "use a number."))
                 return
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
@@ -570,7 +569,7 @@ class ToolTransform(FlatCAMTool):
                 yvalue = float(self.scaley_entry.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Scale Y, "
-                                     "use a number."))
+                                       "use a number."))
                 return
 
         # scaling to zero has no sense so we remove it, because scaling with 1 does nothing
@@ -599,7 +598,7 @@ class ToolTransform(FlatCAMTool):
                 value = float(self.offx_entry.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Offset X, "
-                                     "use a number."))
+                                       "use a number."))
                 return
 
         # self.on_offset("X", value)
@@ -617,7 +616,7 @@ class ToolTransform(FlatCAMTool):
                 value = float(self.offy_entry.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered for Offset Y, "
-                                     "use a number."))
+                                       "use a number."))
                 return
 
         # self.on_offset("Y", value)

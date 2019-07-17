@@ -9,6 +9,57 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+17.07.2019
+
+- added some more strings to the translateable ones, especially the radio button labels
+- updated the .POT file and the available translations
+- 51% progress in Spanish Google translation
+
+16.07.2019
+
+- PEP8 correction in flatcamTools
+- merged the Brazilian-portuguese language from a pull request made by Carlos Stein
+- more PEP8 corrections
+
+15.07.2019
+
+- some PEP8 corrections
+
+13.07.2019
+
+- fixed a possible issue in Gerber Object class
+- added a new tool in Gerber Editor: Mark Area Tool. It will mark the polygons in a edited Gerber object with areas within a defined range, allowing to delete some of the not necessary  copper features
+- added new menu links in the Gerber Editor menu for Eraser Tool and Mark Area Tool
+- added key shortcuts for Eraser Tool (CTRL+E) and Mark Area Tool (ALT+A) and updated the shortcuts list
+
+9.07.2019
+
+- some changes in the app.on_togle_units() to make sure we don't try to convert empty parameters which may cause crashes on FlatCAM units change
+- updated setup_ubuntu.sh file
+- made sure to import certain libraries in some of the FlatCAM files and not to rely on chained imports
+
+8.07.2019
+
+- fixed bug that allowed empty tool in the tools generated in Geometry object
+- fixed bug in Tool Cutout that did not allow the transfer of used cutout tool diameter to the cutout geometry object
+
+5.07.2019
+
+- fixed bug in CutOut Tool
+- some other bug in CutOut tool fixed
+
+1.07.2019
+
+- Spanish translation at 36%
+
+28.06.2019
+
+- Spanish translation (Google Translate) at 21%
+
+27.06.2019
+
+- added new translation: Spanish. Finished 10%
+
 23.06.2019
 
 - fixes issues with units conversion when the tool diameters are a list of comma separated values (NCC Tool, SolderPaste Tool and Geometry Object)

@@ -155,7 +155,6 @@ class ToolSub(FlatCAMTool):
         self.sub_follow_union = None
         self.sub_clear_union = None
 
-
         self.sub_grb_obj = None
         self.sub_grb_obj_name = None
         self.target_grb_obj = None
@@ -172,16 +171,18 @@ class ToolSub(FlatCAMTool):
         # store here the options from target_obj
         self.target_options = {}
 
+        self.sub_union = []
+
         try:
             self.intersect_btn.clicked.disconnect(self.on_grb_intersection_click)
-        except:
-            pass
+        except Exception as e:
+            log.debug("ToolSub.__init__() --> %s" % str(e))
         self.intersect_btn.clicked.connect(self.on_grb_intersection_click)
 
         try:
             self.intersect_geo_btn.clicked.disconnect()
-        except:
-            pass
+        except Exception as e:
+            log.debug("ToolSub.__init__() --> %s" % str(e))
         self.intersect_geo_btn.clicked.connect(self.on_geo_intersection_click)
 
     def install(self, icon=None, separator=None, **kwargs):
@@ -233,7 +234,8 @@ class ToolSub(FlatCAMTool):
         # Get source object.
         try:
             self.target_grb_obj = self.app.collection.get_by_name(self.target_grb_obj_name)
-        except:
+        except Exception as e:
+            log.debug("ToolSub.on_grb_intersection_click() --> %s" % str(e))
             self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
             return "Could not retrieve object: %s" % self.target_grb_obj_name
 
@@ -245,7 +247,8 @@ class ToolSub(FlatCAMTool):
         # Get source object.
         try:
             self.sub_grb_obj = self.app.collection.get_by_name(self.sub_grb_obj_name)
-        except:
+        except Exception as e:
+            log.debug("ToolSub.on_grb_intersection_click() --> %s" % str(e))
             self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
             return "Could not retrieve object: %s" % self.sub_grb_obj_name
 
@@ -424,7 +427,8 @@ class ToolSub(FlatCAMTool):
         # Get source object.
         try:
             self.target_geo_obj = self.app.collection.get_by_name(self.target_geo_obj_name)
-        except:
+        except Exception as e:
+            log.debug("ToolSub.on_geo_intersection_click() --> %s" % str(e))
             self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.target_geo_obj_name)
             return "Could not retrieve object: %s" % self.target_grb_obj_name
 
@@ -436,7 +440,8 @@ class ToolSub(FlatCAMTool):
         # Get source object.
         try:
             self.sub_geo_obj = self.app.collection.get_by_name(self.sub_geo_obj_name)
-        except:
+        except Exception as e:
+            log.debug("ToolSub.on_geo_intersection_click() --> %s" % str(e))
             self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.sub_geo_obj_name)
             return "Could not retrieve object: %s" % self.sub_geo_obj_name
 
@@ -533,8 +538,8 @@ class ToolSub(FlatCAMTool):
                     geo_obj.tools = deepcopy(self.new_tools)
                     for tool in geo_obj.tools:
                         geo_obj.tools[tool]['solid_geometry'] = deepcopy(self.new_solid_geometry)
-                except:
-                    pass
+                except Exception as e:
+                    log.debug("ToolSub.new_geo_object() --> %s" % str(e))
 
         with self.app.proc_container.new(_("Generating new object ...")):
             ret = self.app.new_object('geometry', outname, obj_init, autoselected=False)
@@ -584,7 +589,6 @@ class ToolSub(FlatCAMTool):
         """
         # log.debug("checking parsing --> %s" % str(self.parsing_promises))
 
-
         try:
             if not self.promises:
                 self.check_thread.stop()
@@ -615,3 +619,5 @@ class ToolSub(FlatCAMTool):
 
         self.target_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
         self.sub_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
+
+# end of file
