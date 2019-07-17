@@ -97,7 +97,7 @@ class ToolMove(FlatCAMTool):
                 pos_canvas = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
 
                 # if GRID is active we need to get the snapped positions
-                if self.app.grid_status() is True:
+                if self.app.grid_status() == True:
                     pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
                 else:
                     pos = pos_canvas
@@ -117,7 +117,7 @@ class ToolMove(FlatCAMTool):
                     self.delete_shape()
 
                     # if GRID is active we need to get the snapped positions
-                    if self.app.grid_status() is True:
+                    if self.app.grid_status() == True:
                         pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
                     else:
                         pos = pos_canvas
@@ -181,7 +181,7 @@ class ToolMove(FlatCAMTool):
         pos_canvas = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
 
         # if GRID is active we need to get the snapped positions
-        if self.app.grid_status() is True:
+        if self.app.grid_status() == True:
             pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
             pos = pos_canvas
