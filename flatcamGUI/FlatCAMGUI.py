@@ -3786,8 +3786,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.unitslabel.setToolTip(_("The default value for FlatCAM units.\n"
                                      "Whatever is selected here is set every time\n"
                                      "FLatCAM is started."))
-        self.units_radio = RadioSet([{'label': 'IN', 'value': 'IN'},
-                                     {'label': 'MM', 'value': 'MM'}])
+        self.units_radio = RadioSet([{'label': _('IN'), 'value': 'IN'},
+                                     {'label': _('MM'), 'value': 'MM'}])
 
         # Application Level for FlatCAM
         self.app_level_label = QtWidgets.QLabel(_('<b>APP. LEVEL:</b>'))
@@ -3856,8 +3856,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.panbuttonlabel.setToolTip(_("Select the mouse button to use for panning:\n"
                                          "- MMB --> Middle Mouse Button\n"
                                          "- RMB --> Right Mouse Button"))
-        self.pan_button_radio = RadioSet([{'label': 'MMB', 'value': '3'},
-                                          {'label': 'RMB', 'value': '2'}])
+        self.pan_button_radio = RadioSet([{'label': _('MMB'), 'value': '3'},
+                                          {'label': _('RMB'), 'value': '2'}])
 
         # Multiple Selection Modifier Key
         self.mselectlabel = QtWidgets.QLabel(_('<b>Multiple Sel:</b>'))
@@ -3923,7 +3923,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.worker_number_sb.set_range(2, 16)
 
         # Geometric tolerance
-        tol_label = QtWidgets.QLabel("Geo Tolerance:")
+        tol_label = QtWidgets.QLabel(_("Geo Tolerance:"))
         tol_label.setToolTip(_(
             "This value can counter the effect of the Circle Steps\n"
             "parameter. Default value is 0.01.\n"
@@ -4117,8 +4117,8 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
               "- conventional / useful when there is no backlash compensation")
         )
         grid0.addWidget(milling_type_label, 3, 0)
-        self.milling_type_radio = RadioSet([{'label': 'Climb', 'value': 'cl'},
-                                            {'label': 'Conv.', 'value': 'cv'}])
+        self.milling_type_radio = RadioSet([{'label': _('Climb'), 'value': 'cl'},
+                                            {'label': _('Conv.'), 'value': 'cv'}])
         grid0.addWidget(self.milling_type_radio, 3, 1)
 
         # Combine passes
@@ -4275,8 +4275,8 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
             _("The units used in the Gerber file.")
         )
 
-        self.gerber_units_radio = RadioSet([{'label': 'INCH', 'value': 'IN'},
-                                            {'label': 'MM', 'value': 'MM'}])
+        self.gerber_units_radio = RadioSet([{'label': _('INCH'), 'value': 'IN'},
+                                            {'label': _('MM'), 'value': 'MM'}])
         self.gerber_units_radio.setToolTip(
             _("The units used in the Gerber file.")
         )
@@ -4330,8 +4330,8 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
               "and Leading Zeros are kept.")
         )
 
-        self.zeros_radio = RadioSet([{'label': 'LZ', 'value': 'L'},
-                                     {'label': 'TZ', 'value': 'T'}])
+        self.zeros_radio = RadioSet([{'label': _('LZ'), 'value': 'L'},
+                                     {'label': _('TZ'), 'value': 'T'}])
         self.zeros_radio.setToolTip(
             _("This sets the type of Gerber zeros.\n"
               "If LZ then Leading Zeros are removed and\n"
@@ -4512,8 +4512,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         grid2.addWidget(self.excellon_zeros_label, 0, 0)
 
-        self.excellon_zeros_radio = RadioSet([{'label': 'LZ', 'value': 'L'},
-                                              {'label': 'TZ', 'value': 'T'}])
+        self.excellon_zeros_radio = RadioSet([{'label': _('LZ'), 'value': 'L'},
+                                              {'label': _('TZ'), 'value': 'T'}])
         self.excellon_zeros_radio.setToolTip(
             _("This sets the default type of Excellon zeros.\n"
               "If it is not detected in the parsed file the value here\n"
@@ -4536,8 +4536,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         grid2.addWidget(self.excellon_units_label, 1, 0)
 
-        self.excellon_units_radio = RadioSet([{'label': 'INCH', 'value': 'INCH'},
-                                              {'label': 'MM', 'value': 'METRIC'}])
+        self.excellon_units_radio = RadioSet([{'label': _('INCH'), 'value': 'INCH'},
+                                              {'label': _('MM'), 'value': 'METRIC'}])
         self.excellon_units_radio.setToolTip(
             _("This sets the units of Excellon files.\n"
               "Some Excellon files don't have an header\n"
@@ -4563,8 +4563,8 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         grid2.addWidget(self.excellon_optimization_label, 4, 0)
 
-        self.excellon_optimization_radio = RadioSet([{'label': 'MH', 'value': 'M'},
-                                     {'label': 'Basic', 'value': 'B'}])
+        self.excellon_optimization_radio = RadioSet([{'label': _('MH'), 'value': 'M'},
+                                                     {'label': _('Basic'), 'value': 'B'}])
         self.excellon_optimization_radio.setToolTip(
             _("This sets the optimization type for the Excellon drill path.\n"
               "If MH is checked then Google OR-Tools algorithm with MetaHeuristic\n"
@@ -4700,8 +4700,8 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
               "- CCW = counter clockwise")
         )
 
-        self.spindledir_radio = RadioSet([{'label': 'CW', 'value': 'CW'},
-                                          {'label': 'CCW', 'value': 'CCW'}])
+        self.spindledir_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
+                                          {'label': _('CCW'), 'value': 'CCW'}])
         grid2.addWidget(spindle_dir_label, 6, 0)
         grid2.addWidget(self.spindledir_radio, 6, 1)
 
@@ -4927,8 +4927,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
             _("The units used in the Excellon file.")
         )
 
-        self.excellon_units_radio = RadioSet([{'label': 'INCH', 'value': 'INCH'},
-                                              {'label': 'MM', 'value': 'METRIC'}])
+        self.excellon_units_radio = RadioSet([{'label': _('INCH'), 'value': 'INCH'},
+                                              {'label': _('MM'), 'value': 'METRIC'}])
         self.excellon_units_radio.setToolTip(
             _("The units used in the Excellon file.")
         )
@@ -4983,8 +4983,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
               "Also it will have to be specified if LZ = leading zeros are kept\n"
               "or TZ = trailing zeros are kept.")
         )
-        self.format_radio = RadioSet([{'label': 'Decimal', 'value': 'dec'},
-                                      {'label': 'No-Decimal', 'value': 'ndec'}])
+        self.format_radio = RadioSet([{'label': _('Decimal'), 'value': 'dec'},
+                                      {'label': _('No-Decimal'), 'value': 'ndec'}])
         self.format_radio.setToolTip(
             _("Select the kind of coordinates format used.\n"
               "Coordinates can be saved with decimal point or without.\n"
@@ -5007,8 +5007,8 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
               "and Leading Zeros are removed.")
         )
 
-        self.zeros_radio = RadioSet([{'label': 'LZ', 'value': 'LZ'},
-                                     {'label': 'TZ', 'value': 'TZ'}])
+        self.zeros_radio = RadioSet([{'label': _('LZ'), 'value': 'LZ'},
+                                     {'label': _('TZ'), 'value': 'TZ'}])
         self.zeros_radio.setToolTip(
             _("This sets the default type of Excellon zeros.\n"
               "If LZ then Leading Zeros are kept and\n"
@@ -5097,9 +5097,9 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
               "- 'Angle' - a custom angle for the array inclination")
         )
         # self.drill_axis_label.setFixedWidth(100)
-        self.drill_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
-                                          {'label': 'Y', 'value': 'Y'},
-                                          {'label': 'Angle', 'value': 'A'}])
+        self.drill_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
+                                          {'label': _('Y'), 'value': 'Y'},
+                                          {'label': _('Angle'), 'value': 'A'}])
 
         grid0.addWidget(self.drill_axis_label, 4, 0)
         grid0.addWidget(self.drill_axis_radio, 4, 1)
@@ -5135,8 +5135,8 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
               "Can be CW = clockwise or CCW = counter clockwise.")
         )
 
-        self.drill_circular_dir_radio = RadioSet([{'label': 'CW', 'value': 'CW'},
-                                                  {'label': 'CCW.', 'value': 'CCW'}])
+        self.drill_circular_dir_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
+                                                  {'label': _('CCW'), 'value': 'CCW'}])
 
         grid0.addWidget(self.drill_circular_direction_label, 8, 0)
         grid0.addWidget(self.drill_circular_dir_radio, 8, 1)
@@ -5324,8 +5324,8 @@ class GeometryOptPrefGroupUI(OptionsGroupUI):
               "- CCW = counter clockwise")
         )
 
-        self.spindledir_radio = RadioSet([{'label': 'CW', 'value': 'CW'},
-                                          {'label': 'CCW', 'value': 'CCW'}])
+        self.spindledir_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
+                                          {'label': _('CCW'), 'value': 'CCW'}])
         grid1.addWidget(spindle_dir_label, 9, 0)
         grid1.addWidget(self.spindledir_radio, 9, 1)
 
@@ -5557,9 +5557,9 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         )
 
         self.cncplot_method_radio = RadioSet([
-            {"label": "All", "value": "all"},
-            {"label": "Travel", "value": "travel"},
-            {"label": "Cut", "value": "cut"}
+            {"label": _("All"), "value": "all"},
+            {"label": _("Travel"), "value": "travel"},
+            {"label": _("Cut"), "value": "cut"}
         ], stretch=False)
 
         grid0.addWidget(self.cncplot_method_label, 1, 0)
@@ -5841,9 +5841,9 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(methodlabel, 3, 0)
         self.ncc_method_radio = RadioSet([
-            {"label": "Standard", "value": "standard"},
-            {"label": "Seed-based", "value": "seed"},
-            {"label": "Straight lines", "value": "lines"}
+            {"label": _("Standard"), "value": "standard"},
+            {"label": _("Seed-based"), "value": "seed"},
+            {"label": _("Straight lines"), "value": "lines"}
         ], orientation='vertical', stretch=False)
         grid0.addWidget(self.ncc_method_radio, 3, 1)
 
@@ -6003,8 +6003,8 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.mirror_axis_radio, 2, 1)
 
         # ## Axis Location
-        self.axis_location_radio = RadioSet([{'label': 'Point', 'value': 'point'},
-                                             {'label': 'Box', 'value': 'box'}])
+        self.axis_location_radio = RadioSet([{'label': _('Point'), 'value': 'point'},
+                                             {'label': _('Box'), 'value': 'box'}])
         self.axloc_label = QtWidgets.QLabel(_("Axis Ref:"))
         self.axloc_label.setToolTip(
             _("The axis should pass through a <b>point</b> or cut\n "
@@ -6081,9 +6081,9 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(methodlabel, 3, 0)
         self.paintmethod_combo = RadioSet([
-            {"label": "Standard", "value": "standard"},
-            {"label": "Seed-based", "value": "seed"},
-            {"label": "Straight lines", "value": "lines"}
+            {"label": _("Standard"), "value": "standard"},
+            {"label": _("Seed-based"), "value": "seed"},
+            {"label": _("Straight lines"), "value": "lines"}
         ], orientation='vertical', stretch=False)
         grid0.addWidget(self.paintmethod_combo, 3, 1)
 
@@ -6114,8 +6114,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(selectlabel, 6, 0)
         self.selectmethod_combo = RadioSet([
-            {"label": "Single", "value": "single"},
-            {"label": "All", "value": "all"},
+            {"label": _("Single"), "value": "single"},
+            {"label": _("All"), "value": "all"},
             # {"label": "Rectangle", "value": "rectangle"}
         ])
         grid0.addWidget(self.selectmethod_combo, 6, 1)
@@ -6242,8 +6242,8 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.prows, 3, 1)
 
         # ## Type of resulting Panel object
-        self.panel_type_radio = RadioSet([{'label': 'Gerber', 'value': 'gerber'},
-                                          {'label': 'Geo', 'value': 'geometry'}])
+        self.panel_type_radio = RadioSet([{'label': _('Gerber'), 'value': 'gerber'},
+                                          {'label': _('Geo'), 'value': 'geometry'}])
         self.panel_type_label = QtWidgets.QLabel(_("Panel Type:"))
         self.panel_type_label.setToolTip(
            _( "Choose the type of object for the panel object:\n"

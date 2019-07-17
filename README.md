@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+17.07.2019
+
+- added some more strings to the translateable ones, especially the radio button labels
+- updated the .POT file and the available translations
+- 51% progress in Spanish Google translation
+
 16.07.2019
 
 - PEP8 correction in flatcamTools

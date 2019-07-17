@@ -57,8 +57,8 @@ class ToolCalculator(FlatCAMTool):
         grid_units_layout = QtWidgets.QGridLayout()
         self.layout.addLayout(grid_units_layout)
 
-        inch_label = QtWidgets.QLabel("INCH")
-        mm_label = QtWidgets.QLabel("MM")
+        inch_label = QtWidgets.QLabel(_("INCH"))
+        mm_label = QtWidgets.QLabel(_("MM"))
         grid_units_layout.addWidget(mm_label, 0, 0)
         grid_units_layout.addWidget(inch_label, 0, 1)
 
@@ -253,7 +253,7 @@ class ToolCalculator(FlatCAMTool):
 
         self.set_tool_ui()
 
-        self.app.ui.notebook.setTabText(2, "Calc. Tool")
+        self.app.ui.notebook.setTabText(2, _("Calc. Tool"))
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+C', **kwargs)

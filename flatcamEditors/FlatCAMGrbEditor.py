@@ -2628,9 +2628,9 @@ class FlatCAMGrbEditor(QtCore.QObject):
         )
         self.pad_axis_label.setFixedWidth(100)
 
-        self.pad_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
-                                        {'label': 'Y', 'value': 'Y'},
-                                        {'label': 'Angle', 'value': 'A'}])
+        self.pad_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
+                                        {'label': _('Y'), 'value': 'Y'},
+                                        {'label': _('Angle'), 'value': 'A'}])
         self.pad_axis_radio.set_value('X')
         self.linear_form.addRow(self.pad_axis_label, self.pad_axis_radio)
 
@@ -2674,8 +2674,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.circular_form = QtWidgets.QFormLayout()
         self.circular_box.addLayout(self.circular_form)
 
-        self.pad_direction_radio = RadioSet([{'label': 'CW', 'value': 'CW'},
-                                             {'label': 'CCW.', 'value': 'CCW'}])
+        self.pad_direction_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
+                                             {'label': _('CCW'), 'value': 'CCW'}])
         self.pad_direction_radio.set_value('CW')
         self.circular_form.addRow(self.pad_direction_label, self.pad_direction_radio)
 

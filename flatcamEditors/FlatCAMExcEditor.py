@@ -970,9 +970,9 @@ class FlatCAMExcEditor(QtCore.QObject):
         )
         self.drill_axis_label.setFixedWidth(100)
 
-        self.drill_axis_radio = RadioSet([{'label': 'X', 'value': 'X'},
-                                          {'label': 'Y', 'value': 'Y'},
-                                          {'label': 'Angle', 'value': 'A'}])
+        self.drill_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
+                                          {'label': _('Y'), 'value': 'Y'},
+                                          {'label': _('Angle'), 'value': 'A'}])
         self.linear_form.addRow(self.drill_axis_label, self.drill_axis_radio)
 
         # Linear Drill Array pitch distance
@@ -1017,8 +1017,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.circular_form = QtWidgets.QFormLayout()
         self.circular_box.addLayout(self.circular_form)
 
-        self.drill_direction_radio = RadioSet([{'label': 'CW', 'value': 'CW'},
-                                               {'label': 'CCW.', 'value': 'CCW'}])
+        self.drill_direction_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
+                                               {'label': _('CCW'), 'value': 'CCW'}])
         self.circular_form.addRow(self.drill_direction_label, self.drill_direction_radio)
 
         self.drill_angle_label = QtWidgets.QLabel(_('Angle:'))

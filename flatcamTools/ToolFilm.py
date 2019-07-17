@@ -111,8 +111,8 @@ class Film(FlatCAMTool):
         tf_form_layout.addRow(self.tf_box_combo_label, self.tf_box_combo)
 
         # Film Type
-        self.film_type = RadioSet([{'label': 'Positive', 'value': 'pos'},
-                                   {'label': 'Negative', 'value': 'neg'}])
+        self.film_type = RadioSet([{'label': _('Positive'), 'value': 'pos'},
+                                   {'label': _('Negative'), 'value': 'neg'}])
         self.film_type_label = QtWidgets.QLabel(_("Film Type:"))
         self.film_type_label.setToolTip(
             _("Generate a Positive black film or a Negative film.\n"

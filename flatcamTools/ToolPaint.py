@@ -194,9 +194,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         )
         grid3.addWidget(methodlabel, 3, 0)
         self.paintmethod_combo = RadioSet([
-            {"label": "Standard", "value": "standard"},
-            {"label": "Seed-based", "value": "seed"},
-            {"label": "Straight lines", "value": "lines"}
+            {"label": _("Standard"), "value": "standard"},
+            {"label": _("Seed-based"), "value": "seed"},
+            {"label": _("Straight lines"), "value": "lines"}
         ], orientation='vertical', stretch=False)
         grid3.addWidget(self.paintmethod_combo, 3, 1)
 
@@ -244,8 +244,8 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid3.addWidget(selectlabel, 7, 0)
         # grid3 = QtWidgets.QGridLayout()
         self.selectmethod_combo = RadioSet([
-            {"label": "Single", "value": "single"},
-            {"label": "All", "value": "all"},
+            {"label": _("Single"), "value": "single"},
+            {"label": _("All"), "value": "all"},
             # {"label": "Rectangle", "value": "rectangle"}
         ])
         grid3.addWidget(self.selectmethod_combo, 7, 1)

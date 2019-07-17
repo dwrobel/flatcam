@@ -3847,11 +3847,11 @@ class App(QtCore.QObject):
 
         # Changing project units. Warn user.
         msgbox = QtWidgets.QMessageBox()
-        msgbox.setWindowTitle("Toggle Units")
+        msgbox.setWindowTitle(_("Toggle Units"))
         msgbox.setWindowIcon(QtGui.QIcon('share/toggle_units32.png'))
-        msgbox.setText("<B>Change project units ...</B>")
-        msgbox.setInformativeText("Changing the units of the project causes all geometrical "
-                                  "properties of all objects to be scaled accordingly.\nContinue?")
+        msgbox.setText(_("<B>Change project units ...</B>"))
+        msgbox.setInformativeText(_("Changing the units of the project causes all geometrical "
+                                    "properties of all objects to be scaled accordingly.\nContinue?"))
         bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
         bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
@@ -5467,7 +5467,7 @@ class App(QtCore.QObject):
         self.report_usage("on_shortcut_list()")
 
         # add the tab if it was closed
-        self.ui.plot_tab_area.addTab(self.ui.shortcuts_tab, "Key Shortcut List")
+        self.ui.plot_tab_area.addTab(self.ui.shortcuts_tab, _("Key Shortcut List"))
 
         # delete the absolute and relative position and messages in the infobar
         self.ui.position_label.setText("")

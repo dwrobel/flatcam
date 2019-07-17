@@ -108,9 +108,9 @@ class PcbWizard(FlatCAMTool):
         form_layout1.addRow(self.frac_label, self.frac_entry)
 
         # Zeros suppression for coordinates
-        self.zeros_radio = RadioSet([{'label': 'LZ', 'value': 'LZ'},
-                                     {'label': 'TZ', 'value': 'TZ'},
-                                     {'label': 'No Suppression', 'value': 'D'}])
+        self.zeros_radio = RadioSet([{'label': _('LZ'), 'value': 'LZ'},
+                                     {'label': _('TZ'), 'value': 'TZ'},
+                                     {'label': _('No Suppression'), 'value': 'D'}])
         self.zeros_label = QtWidgets.QLabel(_("Zeros supp.:"))
         self.zeros_label.setToolTip(
             _("The type of zeros suppression used.\n"
@@ -122,8 +122,8 @@ class PcbWizard(FlatCAMTool):
         form_layout1.addRow(self.zeros_label, self.zeros_radio)
 
         # Units type
-        self.units_radio = RadioSet([{'label': 'INCH', 'value': 'INCH'},
-                                    {'label': 'MM', 'value': 'METRIC'}])
+        self.units_radio = RadioSet([{'label': _('INCH'), 'value': 'INCH'},
+                                    {'label': _('MM'), 'value': 'METRIC'}])
         self.units_label = QtWidgets.QLabel("<b>%s:</b>" % _('Units'))
         self.units_label.setToolTip(
             _("The type of units that the coordinates and tool\n"
