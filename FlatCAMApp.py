@@ -84,7 +84,7 @@ class App(QtCore.QObject):
         elif opt == '--shellfile':
             cmd_line_shellfile = arg
 
-    # Logging # ##
+    # ## Logging ###
     log = logging.getLogger('base')
     log.setLevel(logging.DEBUG)
     # log.setLevel(logging.WARNING)
@@ -93,9 +93,11 @@ class App(QtCore.QObject):
     handler.setFormatter(formatter)
     log.addHandler(handler)
 
-    # Version
+    # ####################################
+    # Version and VERSION DATE ###########
+    # ####################################
     version = 8.920
-    version_date = "2019/07/14"
+    version_date = "2019/07/21"
     beta = True
 
     # current date now

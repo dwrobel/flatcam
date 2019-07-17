@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - added some more strings to the translateable ones, especially the radio button labels
 - updated the .POT file and the available translations
 - 51% progress in Spanish Google translation
+- version date change
 
 16.07.2019
 
