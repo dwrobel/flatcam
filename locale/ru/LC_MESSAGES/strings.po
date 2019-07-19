@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-07-20 00:42+0300\n"
+"POT-Creation-Date: 2019-07-20 01:22+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
@@ -75,12 +75,12 @@ msgid "Close Editor"
 msgstr "Закрыть редактор"
 
 #: FlatCAMApp.py:2333 FlatCAMApp.py:3425 FlatCAMApp.py:6011
-#: flatcamGUI/FlatCAMGUI.py:3760
+#: FlatCAMTranslation.py:97 flatcamGUI/FlatCAMGUI.py:3760
 msgid "Yes"
 msgstr "Да"
 
 #: FlatCAMApp.py:2334 FlatCAMApp.py:3426 FlatCAMApp.py:6012
-#: flatcamGUI/FlatCAMGUI.py:3761
+#: FlatCAMTranslation.py:98 flatcamGUI/FlatCAMGUI.py:3761
 msgid "No"
 msgstr "Нет"
 

@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-07-20 00:40+0300\n"
-"PO-Revision-Date: 2019-07-20 01:16+0300\n"
+"POT-Creation-Date: 2019-07-20 01:20+0300\n"
+"PO-Revision-Date: 2019-07-20 01:20+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: es\n"
@@ -77,12 +77,12 @@ msgid "Close Editor"
 msgstr "Cerrar Editor"
 
 #: FlatCAMApp.py:2333 FlatCAMApp.py:3425 FlatCAMApp.py:6011
-#: flatcamGUI/FlatCAMGUI.py:3760
+#: FlatCAMTranslation.py:97 flatcamGUI/FlatCAMGUI.py:3760
 msgid "Yes"
 msgstr "Sí"
 
 #: FlatCAMApp.py:2334 FlatCAMApp.py:3426 FlatCAMApp.py:6012
-#: flatcamGUI/FlatCAMGUI.py:3761
+#: FlatCAMTranslation.py:98 flatcamGUI/FlatCAMGUI.py:3761
 msgid "No"
 msgstr "No"
 
