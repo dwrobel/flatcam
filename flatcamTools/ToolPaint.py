@@ -437,7 +437,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.tools_table.itemChanged.disconnect()
-        except:
+        except TypeError:
             pass
 
         # updated units

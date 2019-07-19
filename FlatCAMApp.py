@@ -4418,7 +4418,7 @@ class App(QtCore.QObject):
             self.ui.removeToolBar(self.ui.grb_edit_toolbar)
             self.ui.removeToolBar(self.ui.snap_toolbar)
             self.ui.removeToolBar(self.ui.toolbarshell)
-        except:
+        except Exception as e:
             pass
 
         if current_layout == 'standard':

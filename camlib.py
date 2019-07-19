@@ -710,12 +710,12 @@ class Geometry(object):
 
             try:
                 green = src.read(2)
-            except:
+            except Exception as e:
                 pass
 
             try:
                 blue = src.read(3)
-            except:
+            except Exception as e:
                 pass
 
         if mode == 'black':
@@ -2713,7 +2713,7 @@ class Gerber (Geometry):
                                         if 'geometry' not in self.apertures[current_aperture]:
                                             self.apertures[current_aperture]['geometry'] = []
                                         self.apertures[current_aperture]['geometry'].append(deepcopy(geo_dict))
-                                except:
+                                except Exception as e:
                                     pass
                             last_path_aperture = current_aperture
                             # we do this for the case that a region is done without having defined any aperture
@@ -4086,7 +4086,7 @@ class Excellon(Geometry):
                             slot_dia = 0.05
                             try:
                                 slot_dia = float(self.tools[current_tool]['C'])
-                            except:
+                            except Exception as e:
                                 pass
                             log.debug(
                                 'Milling/Drilling slot with tool %s, diam=%f' % (
@@ -4155,7 +4155,7 @@ class Excellon(Geometry):
                             slot_dia = 0.05
                             try:
                                 slot_dia = float(self.tools[current_tool]['C'])
-                            except:
+                            except Exception as e:
                                 pass
                             log.debug(
                                 'Milling/Drilling slot with tool %s, diam=%f' % (

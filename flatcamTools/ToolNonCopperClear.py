@@ -461,7 +461,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.tools_table.itemChanged.disconnect(self.on_tool_edit)
-        except:
+        except TypeError:
             pass
 
     def on_tool_add(self, dia=None, muted=None):
@@ -861,7 +861,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 for poly in cleared_by_last_tool:
                     try:
                         area = area.difference(poly)
-                    except:
+                    except Exception as e:
                         pass
                 cleared_by_last_tool[:] = []
 

@@ -569,14 +569,14 @@ class ToolSub(FlatCAMTool):
 
         try:
             self.check_thread.stop()
-        except Exception as e:
+        except TypeError:
             pass
 
         if reset:
             self.check_thread.setInterval(check_period)
             try:
                 self.check_thread.timeout.disconnect(self.periodic_check_handler)
-            except Exception as e:
+            except TypeError:
                 pass
 
         self.check_thread.timeout.connect(self.periodic_check_handler)

@@ -2266,7 +2266,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     # try to disconnect the slot from Set Origin
                     try:
                         self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_set_zero_click)
-                    except:
+                    except TypeError:
                         pass
                     self.app.inform.emit("")
 

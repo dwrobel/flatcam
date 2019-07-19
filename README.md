@@ -9,9 +9,15 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+19.07.2019
+
+- fixed bug in FlatCAMObj.FlatCAMGeometry.ui_disconnect(); the widgets signals were not disconnected from handlers when required therefore the signals were connected in an exponential way
+- some changes in the widgets used in the Selected tab for Geometry object
+- some PEP8 cleanup in FlatCAMObj.py
+
 17.07.2019
 
-- added some more strings to the translateable ones, especially the radio button labels
+- added some more strings to the translatable ones, especially the radio button labels
 - updated the .POT file and the available translations
 - 51% progress in Spanish Google translation
 - version date change

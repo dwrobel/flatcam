@@ -188,7 +188,7 @@ class FCPad(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_circle.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -403,7 +403,7 @@ class FCPadArray(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_array.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -1341,7 +1341,7 @@ class FCDisc(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_disc.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -2934,12 +2934,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.apertures_table.itemChanged.disconnect()
-        except Exception as e:
+        except TypeError:
             pass
 
         try:
             self.apertures_table.cellPressed.disconnect()
-        except Exception as e:
+        except TypeError:
             pass
 
         # updated units
