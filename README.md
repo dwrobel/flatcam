@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed bug in FlatCAMObj.FlatCAMGeometry.ui_disconnect(); the widgets signals were not disconnected from handlers when required therefore the signals were connected in an exponential way
 - some changes in the widgets used in the Selected tab for Geometry object
 - some PEP8 cleanup in FlatCAMObj.py
+- updated languages
+- 60% progress in Spanish Google translation
 
 17.07.2019
 

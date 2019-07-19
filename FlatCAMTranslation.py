@@ -16,10 +16,11 @@ from PyQt5.QtCore import QSettings
 from flatcamGUI.GUIElements import log
 import gettext
 
-import builtins
 
-if '_' not in builtins.__dict__:
-    _ = gettext.gettext
+# import builtins
+#
+# if '_' not in builtins.__dict__:
+#     _ = gettext.gettext
 
 # ISO639-1 codes from here: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 languages_dict = {

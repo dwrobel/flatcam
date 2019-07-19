@@ -3152,7 +3152,7 @@ class GeneralPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.general_app_group = GeneralAppPrefGroupUI()
-        self.general_app_group.setFixedWidth(280)
+        self.general_app_group.setFixedWidth(290)
 
         self.general_gui_group = GeneralGUIPrefGroupUI()
         self.general_gui_group.setFixedWidth(250)
@@ -3177,7 +3177,7 @@ class GerberPreferencesUI(QtWidgets.QWidget):
         self.gerber_gen_group = GerberGenPrefGroupUI()
         self.gerber_gen_group.setFixedWidth(250)
         self.gerber_opt_group = GerberOptPrefGroupUI()
-        self.gerber_opt_group.setFixedWidth(230)
+        self.gerber_opt_group.setFixedWidth(250)
         self.gerber_exp_group = GerberExpPrefGroupUI()
         self.gerber_exp_group.setFixedWidth(230)
         self.gerber_adv_opt_group = GerberAdvOptPrefGroupUI()
