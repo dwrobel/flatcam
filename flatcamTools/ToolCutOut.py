@@ -73,6 +73,20 @@ class CutOut(FlatCAMTool):
         )
         form_layout.addRow(self.object_label, self.obj_combo)
 
+        # Object kind
+        self.kindlabel = QtWidgets.QLabel(_('Obj kind:'))
+        self.kindlabel.setToolTip(
+            _("Choice of what kind the object we want to cutout is.<BR>"
+              "- <B>Single</B>: contain a single PCB Gerber outline object.<BR>"
+              "- <B>Panel</B>: a panel PCB Gerber object, which is made\n"
+              "out of many individual PCB outlines.")
+        )
+        self.obj_kind_combo = RadioSet([
+            {"label": _("Single"), "value": "single"},
+            {"label": _("Panel"), "value": "panel"},
+        ])
+        form_layout.addRow(self.kindlabel, self.obj_kind_combo)
+
         # Tool Diameter
         self.dia = FCEntry()
         self.dia_label = QtWidgets.QLabel(_("Tool Dia:"))
@@ -320,6 +334,7 @@ class CutOut(FlatCAMTool):
         self.reset_fields()
 
         self.dia.set_value(float(self.app.defaults["tools_cutouttooldia"]))
+        self.obj_kind_combo.set_value(self.app.defaults["tools_cutoutkind"])
         self.margin.set_value(float(self.app.defaults["tools_cutoutmargin"]))
         self.gapsize.set_value(float(self.app.defaults["tools_cutoutgapsize"]))
         self.gaps.set_value(self.app.defaults["tools_gaps_ff"])
@@ -338,7 +353,8 @@ class CutOut(FlatCAMTool):
         # Get source object.
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
-        except:
+        except Exception as e:
+            log.debug("CutOut.on_freeform_cutout() --> %s" % str(e))
             self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % name)
             return "Could not retrieve object: %s" % name
 
@@ -360,6 +376,11 @@ class CutOut(FlatCAMTool):
         if 0 in {dia}:
             self.app.inform.emit(_("[WARNING_NOTCL] Tool Diameter is zero value. Change it to a positive real number."))
             return "Tool Diameter is zero value. Change it to a positive real number."
+
+        try:
+            kind = self.obj_kind_combo.get_value()
+        except ValueError:
+            return
 
         try:
             margin = float(self.margin.get_value())
@@ -415,71 +436,89 @@ class CutOut(FlatCAMTool):
             else:
                 object_geo = cutout_obj.solid_geometry
 
-            # try:
-            #     __ = iter(object_geo)
-            # except TypeError:
-            #     object_geo = [object_geo]
+            def cutout_handler(geom):
+                # Get min and max data for each object as we just cut rectangles across X or Y
+                xmin, ymin, xmax, ymax = recursive_bounds(geom)
 
-            object_geo = unary_union(object_geo)
+                px = 0.5 * (xmin + xmax) + margin
+                py = 0.5 * (ymin + ymax) + margin
+                lenx = (xmax - xmin) + (margin * 2)
+                leny = (ymax - ymin) + (margin * 2)
 
-            # for geo in object_geo:
-            if isinstance(cutout_obj, FlatCAMGerber):
-                geo = object_geo.buffer(margin + abs(dia / 2))
-                geo = geo.exterior
+                proc_geometry = []
+
+                if gaps == '8' or gaps == '2LR':
+                    geom = self.subtract_poly_from_geo(geom,
+                                                       xmin - gapsize,  # botleft_x
+                                                       py - gapsize + leny / 4,  # botleft_y
+                                                       xmax + gapsize,  # topright_x
+                                                       py + gapsize + leny / 4)  # topright_y
+                    geom = self.subtract_poly_from_geo(geom,
+                                                       xmin - gapsize,
+                                                       py - gapsize - leny / 4,
+                                                       xmax + gapsize,
+                                                       py + gapsize - leny / 4)
+
+                if gaps == '8' or gaps == '2TB':
+                    geom = self.subtract_poly_from_geo(geom,
+                                                       px - gapsize + lenx / 4,
+                                                       ymin - gapsize,
+                                                       px + gapsize + lenx / 4,
+                                                       ymax + gapsize)
+                    geom = self.subtract_poly_from_geo(geom,
+                                                       px - gapsize - lenx / 4,
+                                                       ymin - gapsize,
+                                                       px + gapsize - lenx / 4,
+                                                       ymax + gapsize)
+
+                if gaps == '4' or gaps == 'LR':
+                    geom = self.subtract_poly_from_geo(geom,
+                                                       xmin - gapsize,
+                                                       py - gapsize,
+                                                       xmax + gapsize,
+                                                       py + gapsize)
+
+                if gaps == '4' or gaps == 'TB':
+                    geom = self.subtract_poly_from_geo(geom,
+                                                       px - gapsize,
+                                                       ymin - gapsize,
+                                                       px + gapsize,
+                                                       ymax + gapsize)
+
+                try:
+                    for g in geom:
+                        proc_geometry.append(g)
+                except TypeError:
+                    proc_geometry.append(geom)
+
+                return proc_geometry
+
+            if kind == 'single':
+                object_geo = unary_union(object_geo)
+
+                # for geo in object_geo:
+                if isinstance(cutout_obj, FlatCAMGerber):
+                    if isinstance(object_geo, MultiPolygon):
+                        x0, y0, x1, y1 = object_geo.bounds
+                        object_geo = box(x0, y0, x1, y1)
+
+                    geo_buf = object_geo.buffer(margin + abs(dia / 2))
+                    geo = geo_buf.exterior
+                else:
+                    geo = object_geo
+
+                solid_geo = cutout_handler(geom=geo)
             else:
-                geo = object_geo
+                try:
+                    __ = iter(object_geo)
+                except TypeError:
+                    object_geo = [object_geo]
 
-            # Get min and max data for each object as we just cut rectangles across X or Y
-            xmin, ymin, xmax, ymax = recursive_bounds(geo)
+                for geom_struct in object_geo:
+                    if isinstance(cutout_obj, FlatCAMGerber):
+                        geom_struct = (geom_struct.buffer(margin + abs(dia / 2))).exterior
 
-            px = 0.5 * (xmin + xmax) + margin
-            py = 0.5 * (ymin + ymax) + margin
-            lenx = (xmax - xmin) + (margin * 2)
-            leny = (ymax - ymin) + (margin * 2)
-
-            if gaps == '8' or gaps == '2LR':
-                geo = self.subtract_poly_from_geo(geo,
-                                                  xmin - gapsize,           # botleft_x
-                                                  py - gapsize + leny / 4,  # botleft_y
-                                                  xmax + gapsize,           # topright_x
-                                                  py + gapsize + leny / 4)  # topright_y
-                geo = self.subtract_poly_from_geo(geo,
-                                                  xmin - gapsize,
-                                                  py - gapsize - leny / 4,
-                                                  xmax + gapsize,
-                                                  py + gapsize - leny / 4)
-
-            if gaps == '8' or gaps == '2TB':
-                geo = self.subtract_poly_from_geo(geo,
-                                                  px - gapsize + lenx / 4,
-                                                  ymin - gapsize,
-                                                  px + gapsize + lenx / 4,
-                                                  ymax + gapsize)
-                geo = self.subtract_poly_from_geo(geo,
-                                                  px - gapsize - lenx / 4,
-                                                  ymin - gapsize,
-                                                  px + gapsize - lenx / 4,
-                                                  ymax + gapsize)
-
-            if gaps == '4' or gaps == 'LR':
-                geo = self.subtract_poly_from_geo(geo,
-                                                  xmin - gapsize,
-                                                  py - gapsize,
-                                                  xmax + gapsize,
-                                                  py + gapsize)
-
-            if gaps == '4' or gaps == 'TB':
-                geo = self.subtract_poly_from_geo(geo,
-                                                  px - gapsize,
-                                                  ymin - gapsize,
-                                                  px + gapsize,
-                                                  ymax + gapsize)
-
-            try:
-                for g in geo:
-                    solid_geo.append(g)
-            except TypeError:
-                solid_geo.append(geo)
+                    solid_geo += cutout_handler(geom=geom_struct)
 
             geo_obj.solid_geometry = deepcopy(solid_geo)
             xmin, ymin, xmax, ymax = recursive_bounds(geo_obj.solid_geometry)
@@ -508,7 +547,8 @@ class CutOut(FlatCAMTool):
         # Get source object.
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
-        except:
+        except Exception as e:
+            log.debug("CutOut.on_rectangular_cutout() --> %s" % str(e))
             self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % name)
             return "Could not retrieve object: %s" % name
 
@@ -529,6 +569,11 @@ class CutOut(FlatCAMTool):
         if 0 in {dia}:
             self.app.inform.emit(_("[ERROR_NOTCL] Tool Diameter is zero value. Change it to a positive real number."))
             return "Tool Diameter is zero value. Change it to a positive real number."
+
+        try:
+            kind = self.obj_kind_combo.get_value()
+        except ValueError:
+            return
 
         try:
             margin = float(self.margin.get_value())
@@ -577,68 +622,85 @@ class CutOut(FlatCAMTool):
             solid_geo = []
             object_geo = cutout_obj.solid_geometry
 
-            try:
-                __ = iter(object_geo)
-            except TypeError:
-                object_geo = [object_geo]
+            def cutout_rect_handler(geom):
+                proc_geometry = []
 
-            object_geo = unary_union(object_geo)
+                px = 0.5 * (xmin + xmax) + margin
+                py = 0.5 * (ymin + ymax) + margin
+                lenx = (xmax - xmin) + (margin * 2)
+                leny = (ymax - ymin) + (margin * 2)
 
-            xmin, ymin, xmax, ymax = object_geo.bounds
-            geo = box(xmin, ymin, xmax, ymax)
+                if gaps == '8' or gaps == '2LR':
+                    geom = self.subtract_poly_from_geo(geom,
+                                                       xmin - gapsize,  # botleft_x
+                                                       py - gapsize + leny / 4,  # botleft_y
+                                                       xmax + gapsize,  # topright_x
+                                                       py + gapsize + leny / 4)  # topright_y
+                    geom = self.subtract_poly_from_geo(geom,
+                                                       xmin - gapsize,
+                                                       py - gapsize - leny / 4,
+                                                       xmax + gapsize,
+                                                       py + gapsize - leny / 4)
 
-            # if Gerber create a buffer at a distance
-            # if Geometry then cut through the geometry
-            if isinstance(cutout_obj, FlatCAMGerber):
-                geo = geo.buffer(margin + abs(dia / 2))
+                if gaps == '8' or gaps == '2TB':
+                    geom = self.subtract_poly_from_geo(geom,
+                                                       px - gapsize + lenx / 4,
+                                                       ymin - gapsize,
+                                                       px + gapsize + lenx / 4,
+                                                       ymax + gapsize)
+                    geom = self.subtract_poly_from_geo(geom,
+                                                       px - gapsize - lenx / 4,
+                                                       ymin - gapsize,
+                                                       px + gapsize - lenx / 4,
+                                                       ymax + gapsize)
 
-            px = 0.5 * (xmin + xmax) + margin
-            py = 0.5 * (ymin + ymax) + margin
-            lenx = (xmax - xmin) + (margin * 2)
-            leny = (ymax - ymin) + (margin * 2)
+                if gaps == '4' or gaps == 'LR':
+                    geom = self.subtract_poly_from_geo(geom,
+                                                       xmin - gapsize,
+                                                       py - gapsize,
+                                                       xmax + gapsize,
+                                                       py + gapsize)
 
-            if gaps == '8' or gaps == '2LR':
-                geo = self.subtract_poly_from_geo(geo,
-                                                  xmin - gapsize,  # botleft_x
-                                                  py - gapsize + leny / 4,  # botleft_y
-                                                  xmax + gapsize,  # topright_x
-                                                  py + gapsize + leny / 4)  # topright_y
-                geo = self.subtract_poly_from_geo(geo,
-                                                  xmin - gapsize,
-                                                  py - gapsize - leny / 4,
-                                                  xmax + gapsize,
-                                                  py + gapsize - leny / 4)
+                if gaps == '4' or gaps == 'TB':
+                    geom = self.subtract_poly_from_geo(geom,
+                                                       px - gapsize,
+                                                       ymin - gapsize,
+                                                       px + gapsize,
+                                                       ymax + gapsize)
+                try:
+                    for g in geom:
+                        proc_geometry.append(g)
+                except TypeError:
+                    proc_geometry.append(geom)
+                return proc_geometry
 
-            if gaps == '8' or gaps == '2TB':
-                geo = self.subtract_poly_from_geo(geo,
-                                                  px - gapsize + lenx / 4,
-                                                  ymin - gapsize,
-                                                  px + gapsize + lenx / 4,
-                                                  ymax + gapsize)
-                geo = self.subtract_poly_from_geo(geo,
-                                                  px - gapsize - lenx / 4,
-                                                  ymin - gapsize,
-                                                  px + gapsize - lenx / 4,
-                                                  ymax + gapsize)
+            if kind == 'single':
+                object_geo = unary_union(object_geo)
 
-            if gaps == '4' or gaps == 'LR':
-                geo = self.subtract_poly_from_geo(geo,
-                                                  xmin - gapsize,
-                                                  py - gapsize,
-                                                  xmax + gapsize,
-                                                  py + gapsize)
+                xmin, ymin, xmax, ymax = object_geo.bounds
+                geo = box(xmin, ymin, xmax, ymax)
 
-            if gaps == '4' or gaps == 'TB':
-                geo = self.subtract_poly_from_geo(geo,
-                                                  px - gapsize,
-                                                  ymin - gapsize,
-                                                  px + gapsize,
-                                                  ymax + gapsize)
-            try:
-                for g in geo:
-                    solid_geo.append(g)
-            except TypeError:
-                solid_geo.append(geo)
+                # if Gerber create a buffer at a distance
+                # if Geometry then cut through the geometry
+                if isinstance(cutout_obj, FlatCAMGerber):
+                    geo = geo.buffer(margin + abs(dia / 2))
+
+                solid_geo = cutout_rect_handler(geom=geo)
+            else:
+                try:
+                    __ = iter(object_geo)
+                except TypeError:
+                    object_geo = [object_geo]
+
+                for geom_struct in object_geo:
+                    geom_struct = unary_union(geom_struct)
+                    xmin, ymin, xmax, ymax = geom_struct.bounds
+                    geom_struct = box(xmin, ymin, xmax, ymax)
+
+                    if isinstance(cutout_obj, FlatCAMGerber):
+                        geom_struct = geom_struct.buffer(margin + abs(dia / 2))
+
+                    solid_geo += cutout_rect_handler(geom=geom_struct)
 
             geo_obj.solid_geometry = deepcopy(solid_geo)
             geo_obj.options['cnctooldia'] = str(dia)
@@ -715,7 +777,8 @@ class CutOut(FlatCAMTool):
         # Get source object.
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
-        except:
+        except Exception as e:
+            log.debug("CutOut.on_manual_cutout() --> %s" % str(e))
             self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve Geometry object: %s") % name)
             return "Could not retrieve object: %s" % name
 
@@ -746,18 +809,19 @@ class CutOut(FlatCAMTool):
         # Get source object.
         try:
             cutout_obj = self.app.collection.get_by_name(str(name))
-        except:
+        except Exception as e:
+            log.debug("CutOut.on_manual_geo() --> %s" % str(e))
             self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve Gerber object: %s") % name)
             return "Could not retrieve object: %s" % name
 
         if cutout_obj is None:
             self.app.inform.emit(_("[ERROR_NOTCL] There is no Gerber object selected for Cutout.\n"
-                                 "Select one and try again."))
+                                   "Select one and try again."))
             return
 
         if not isinstance(cutout_obj, FlatCAMGerber):
             self.app.inform.emit(_("[ERROR_NOTCL] The selected object has to be of Gerber type.\n"
-                                 "Select a Gerber file and try again."))
+                                   "Select a Gerber file and try again."))
             return
 
         try:
@@ -768,12 +832,17 @@ class CutOut(FlatCAMTool):
                 dia = float(self.dia.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Tool diameter value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
 
         if 0 in {dia}:
             self.app.inform.emit(_("[ERROR_NOTCL] Tool Diameter is zero value. Change it to a positive real number."))
             return "Tool Diameter is zero value. Change it to a positive real number."
+
+        try:
+            kind = self.obj_kind_combo.get_value()
+        except ValueError:
+            return
 
         try:
             margin = float(self.margin.get_value())
@@ -783,7 +852,7 @@ class CutOut(FlatCAMTool):
                 margin = float(self.margin.get_value().replace(',', '.'))
             except ValueError:
                 self.app.inform.emit(_("[WARNING_NOTCL] Margin value is missing or wrong format. "
-                                     "Add it and retry."))
+                                       "Add it and retry."))
                 return
 
         convex_box = self.convex_box.get_value()
@@ -793,6 +862,10 @@ class CutOut(FlatCAMTool):
 
             if convex_box:
                 geo = geo_union.convex_hull
+                geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
+            elif kind == 'single':
+                x0, y0, x1, y1 = geo_union.bounds
+                geo = box(x0, y0, x1, y1)
                 geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
             else:
                 geo = geo_union

@@ -504,6 +504,7 @@ class App(QtCore.QObject):
 
             # CutOut Tool
             "tools_cutouttooldia": self.ui.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
+            "tools_cutoutkind": self.ui.tools_defaults_form.tools_cutout_group.obj_kind_combo,
             "tools_cutoutmargin": self.ui.tools_defaults_form.tools_cutout_group.cutout_margin_entry,
             "tools_cutoutgapsize": self.ui.tools_defaults_form.tools_cutout_group.cutout_gap_entry,
             "tools_gaps_ff": self.ui.tools_defaults_form.tools_cutout_group.gaps_combo,
@@ -839,6 +840,7 @@ class App(QtCore.QObject):
             "tools_nccrest": False,
 
             "tools_cutouttooldia": 0.00393701,
+            "tools_cutoutkind": "single",
             "tools_cutoutmargin": 0.00393701,
             "tools_cutoutgapsize": 0.005905512,
             "tools_gaps_ff": "8",

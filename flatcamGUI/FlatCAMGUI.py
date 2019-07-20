@@ -5909,14 +5909,29 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.cutout_tooldia_entry = LengthEntry()
         grid0.addWidget(self.cutout_tooldia_entry, 0, 1)
 
+        # Object kind
+        kindlabel = QtWidgets.QLabel(_('Obj kind:'))
+        kindlabel.setToolTip(
+            _("Choice of what kind the object we want to cutout is.<BR>"
+              "- <B>Single</B>: contain a single PCB Gerber outline object.<BR>"
+              "- <B>Panel</B>: a panel PCB Gerber object, which is made\n"
+              "out of many individual PCB outlines.")
+        )
+        grid0.addWidget(kindlabel, 1, 0)
+        self.obj_kind_combo = RadioSet([
+            {"label": _("Single"), "value": "single"},
+            {"label": _("Panel"), "value": "panel"},
+        ])
+        grid0.addWidget(self.obj_kind_combo, 1, 1)
+
         marginlabel = QtWidgets.QLabel(_('Margin:'))
         marginlabel.setToolTip(
             _("Distance from objects at which\n"
               "to draw the cutout.")
         )
-        grid0.addWidget(marginlabel, 1, 0)
+        grid0.addWidget(marginlabel, 2, 0)
         self.cutout_margin_entry = LengthEntry()
-        grid0.addWidget(self.cutout_margin_entry, 1, 1)
+        grid0.addWidget(self.cutout_margin_entry, 2, 1)
 
         gaplabel = QtWidgets.QLabel(_('Gap size:'))
         gaplabel.setToolTip(
@@ -5924,9 +5939,9 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
               "that will remain to hold the\n"
               "board in place.")
         )
-        grid0.addWidget(gaplabel, 2, 0)
+        grid0.addWidget(gaplabel, 3, 0)
         self.cutout_gap_entry = LengthEntry()
-        grid0.addWidget(self.cutout_gap_entry, 2, 1)
+        grid0.addWidget(self.cutout_gap_entry, 3, 1)
 
         gaps_label = QtWidgets.QLabel(_('Gaps:'))
         gaps_label.setToolTip(
@@ -5940,9 +5955,9 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
               "- 2tb  - 2*top + 2*bottom\n"
               "- 8     - 2*left + 2*right +2*top + 2*bottom")
         )
-        grid0.addWidget(gaps_label, 3, 0)
+        grid0.addWidget(gaps_label, 4, 0)
         self.gaps_combo = FCComboBox()
-        grid0.addWidget(self.gaps_combo, 3, 1)
+        grid0.addWidget(self.gaps_combo, 4, 1)
 
         gaps_items = ['LR', 'TB', '4', '2LR', '2TB', '8']
         for it in gaps_items:
@@ -5955,8 +5970,8 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.convex_box_label.setToolTip(
             _("Create a convex shape surrounding the entire PCB.")
         )
-        grid0.addWidget(self.convex_box_label, 4, 0)
-        grid0.addWidget(self.convex_box, 4, 1)
+        grid0.addWidget(self.convex_box_label, 5, 0)
+        grid0.addWidget(self.convex_box, 5, 1)
 
         self.layout.addStretch()
 

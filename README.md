@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+20.07.2019
+
+- updated the CutOut tool so it will work on single PCB Gerbers or on PCB panel Gerbers
+
 19.07.2019
 
 - fixed bug in FlatCAMObj.FlatCAMGeometry.ui_disconnect(); the widgets signals were not disconnected from handlers when required therefore the signals were connected in an exponential way
