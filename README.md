@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 20.07.2019
 
 - updated the CutOut tool so it will work on single PCB Gerbers or on PCB panel Gerbers
+- updated languages
+- 70% progress in Spanish Google translation
 
 19.07.2019
 
