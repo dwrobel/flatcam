@@ -93,8 +93,8 @@ def on_language_apply_click(app, restart=False):
                                   name.capitalize())
         msgbox.setWindowTitle(_("Apply Language ..."))
         msgbox.setWindowIcon(QtGui.QIcon('share/language32.png'))
-        bt_yes = msgbox.addButton('Yes', QtWidgets.QMessageBox.YesRole)
-        bt_no = msgbox.addButton('No', QtWidgets.QMessageBox.NoRole)
+        bt_yes = msgbox.addButton(_("Yes"), QtWidgets.QMessageBox.YesRole)
+        bt_no = msgbox.addButton(_("No"), QtWidgets.QMessageBox.NoRole)
 
         msgbox.setDefaultButton(bt_yes)
         msgbox.exec_()
