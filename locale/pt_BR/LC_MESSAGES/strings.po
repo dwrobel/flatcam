@@ -289,7 +289,7 @@ msgstr "Alternar Unidades"
 
 #: FlatCAMApp.py:3852
 msgid "<B>Change project units ...</B>"
-msgstr ""
+msgstr "<B>Alterar unidades do projeto ...</B>"
 
 #: FlatCAMApp.py:3853
 msgid ""
@@ -297,6 +297,9 @@ msgid ""
 "objects to be scaled accordingly.\n"
 "Continue?"
 msgstr ""
+"Alterar as unidades do projeto fará com que todas as propriedades geométricas" 
+"de todos os objetos sejam redimensionadas.\n"
+"Continuar?"
 
 #: FlatCAMApp.py:3855 FlatCAMApp.py:4694 FlatCAMApp.py:6282 FlatCAMApp.py:6293
 #: FlatCAMApp.py:6533 FlatCAMApp.py:6543
@@ -1499,7 +1502,7 @@ msgid ""
 "[ERROR_NOTCL] An (x,y) pair of values are needed. Probable you entered only "
 "one value in the Offset field."
 msgstr ""
-"[ERROR_NOTCL] Um par de valores (x, y) é necessário. Provavelmente você "
+"[ERROR_NOTCL] Um par de valores (x,y) é necessário. Provavelmente você "
 "digitou apenas um valor no campo Deslocamento."
 
 #: FlatCAMObj.py:5003
@@ -1568,16 +1571,16 @@ msgstr "[ERROR] Não há arquivo de pós-processador."
 
 #: FlatCAMTranslation.py:86
 msgid "The application will restart."
-msgstr ""
+msgstr "O aplicativo reiniciará."
 
 #: FlatCAMTranslation.py:87
 #, python-format
 msgid "Are you sure do you want to change the current language to %s?"
-msgstr ""
+msgstr "Você tem certeza de que quer alterar o idioma para %s?"
 
 #: FlatCAMTranslation.py:89
 msgid "Apply Language ..."
-msgstr "Aplique o Idioma ..."
+msgstr "Aplicar o Idioma ..."
 
 #: ObjectCollection.py:420
 #, python-brace-format
@@ -3444,7 +3447,7 @@ msgstr "Buffer as aberturas selecionadas ..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1767
 msgid "Mark polygon areas in the edited Gerber ..."
-msgstr ""
+msgstr "Marcar áreas de polígonos no Gerber editado..."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:1811
 msgid "[WARNING_NOTCL] Nothing selected to move ..."
@@ -3636,31 +3639,35 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2531
 msgid "Mark polygon areas:"
-msgstr ""
+msgstr "Marcar áreas de polígonos:"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2533
 msgid "Mark the polygon areas."
-msgstr ""
+msgstr "Marcar as áreas de polígonos."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2541
 msgid "Area UPPER threshold:"
-msgstr ""
+msgstr "Limite de área SUPERIOR:"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2543
 msgid ""
 "The threshold value, all areas less than this are marked.\n"
 "Can have a value between 0.0000 and 9999.9999"
 msgstr ""
+"Valor limite, todas as áreas menores que isso são marcadas."
+"Pode ser um valor entre 0.0000 e 9999.9999"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2549
 msgid "Area LOWER threshold:"
-msgstr ""
+msgstr "Limite de área INFERIOR:"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2551
 msgid ""
 "The threshold value, all areas more than this are marked.\n"
 "Can have a value between 0.0000 and 9999.9999"
 msgstr ""
+"Valor limite, todas as áreas maiores que isso são marcadas."
+"Pode ser um valor entre 0.0000 e 9999.9999"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2564
 msgid "Go"
@@ -3815,11 +3822,11 @@ msgstr "[success] Redimensionamento concluído."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4658
 msgid "[success] Polygon areas marked."
-msgstr ""
+msgstr "[success] Áreas de polígono marcadas."
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4660
 msgid "[WARNING_NOTCL] There are no polygons to mark area."
-msgstr ""
+msgstr "[WARNING_NOTCL] Não há polígonos para marcar a área."
 
 #: flatcamGUI/FlatCAMGUI.py:50
 msgid "&File"
@@ -4378,11 +4385,11 @@ msgstr "Escala\tS"
 
 #: flatcamGUI/FlatCAMGUI.py:492
 msgid "Mark Area\tALT+A"
-msgstr ""
+msgstr "Marcar Área\tALT+A"
 
 #: flatcamGUI/FlatCAMGUI.py:494
 msgid "Eraser\tCTRL+E"
-msgstr ""
+msgstr "Apagar\tCTRL+E"
 
 #: flatcamGUI/FlatCAMGUI.py:496
 msgid "Transform\tALT+R"
@@ -4668,7 +4675,7 @@ msgstr "Disco"
 
 #: flatcamGUI/FlatCAMGUI.py:724 flatcamGUI/FlatCAMGUI.py:1968
 msgid "Mark Area"
-msgstr ""
+msgstr "Marcar Área"
 
 #: flatcamGUI/FlatCAMGUI.py:735 flatcamGUI/FlatCAMGUI.py:1621
 #: flatcamGUI/FlatCAMGUI.py:1641 flatcamGUI/FlatCAMGUI.py:1978
@@ -6826,13 +6833,13 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3789
 msgid "IN"
-msgstr ""
+msgstr "in"
 
 #: flatcamGUI/FlatCAMGUI.py:3790 flatcamGUI/FlatCAMGUI.py:4279
 #: flatcamGUI/FlatCAMGUI.py:4540 flatcamGUI/FlatCAMGUI.py:4931
 #: flatcamTools/ToolCalculators.py:61 flatcamTools/ToolPcbWizard.py:126
 msgid "MM"
-msgstr ""
+msgstr "mm"
 
 #: flatcamGUI/FlatCAMGUI.py:3793
 msgid "<b>APP. LEVEL:</b>"
@@ -7020,7 +7027,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3926
 msgid "Geo Tolerance:"
-msgstr ""
+msgstr "Tolerância Geo:"
 
 #: flatcamGUI/FlatCAMGUI.py:3928 flatcamGUI/FlatCAMGUI.py:3937
 msgid ""
@@ -10377,11 +10384,12 @@ msgstr "Tempo calculado necessário para o procedimento, em minutos."
 msgid ""
 "Calculate the current intensity value and the procedure time,\n"
 "depending on the parameters above"
-msgstr ""
+msgstr "Calcula o valor da intensidade atual e o tempo do\n"
+"procedimento, dependendo dos parâmetros acima"
 
 #: flatcamTools/ToolCalculators.py:256
 msgid "Calc. Tool"
-msgstr ""
+msgstr "Calculadoras"
 
 #: flatcamTools/ToolCutOut.py:18
 msgid "Cutout PCB"
@@ -10730,7 +10738,7 @@ msgstr "PCB de 2 faces"
 
 #: flatcamTools/ToolDblSided.py:47
 msgid "<b>GERBER:</b>"
-msgstr ""
+msgstr "<b>GERBER:</b>"
 
 #: flatcamTools/ToolDblSided.py:52 flatcamTools/ToolDblSided.py:76
 #: flatcamTools/ToolDblSided.py:100
@@ -10750,7 +10758,7 @@ msgstr ""
 
 #: flatcamTools/ToolDblSided.py:71
 msgid "<b>EXCELLON:</b>"
-msgstr ""
+msgstr "<b>EXCELLON:</b>"
 
 #: flatcamTools/ToolDblSided.py:73
 msgid "Excellon Object to be mirrored."
@@ -10758,7 +10766,7 @@ msgstr "Objeto Excellon a ser espelhado."
 
 #: flatcamTools/ToolDblSided.py:95
 msgid "<b>GEOMETRY</b>:"
-msgstr ""
+msgstr "<b>GEOMETRIA</b>:"
 
 #: flatcamTools/ToolDblSided.py:97
 msgid "Geometry Obj to be mirrored."
@@ -11049,11 +11057,11 @@ msgstr ""
 
 #: flatcamTools/ToolFilm.py:114
 msgid "Positive"
-msgstr ""
+msgstr "Positivo"
 
 #: flatcamTools/ToolFilm.py:115
 msgid "Negative"
-msgstr ""
+msgstr "Negativo"
 
 #: flatcamTools/ToolFilm.py:157
 msgid "Save Film"
@@ -11233,11 +11241,11 @@ msgstr "Unidade em que a distância é medida."
 
 #: flatcamTools/ToolMeasurement.py:45
 msgid "METRIC (mm)"
-msgstr "MÉTRICO (mm):"
+msgstr "Métrico (mm):"
 
 #: flatcamTools/ToolMeasurement.py:45
 msgid "INCH (in)"
-msgstr ""
+msgstr "Inglês (in)"
 
 #: flatcamTools/ToolMeasurement.py:48
 msgid "Start"
@@ -11965,7 +11973,7 @@ msgstr "O número de dígitos para a parte fracionária das coordenadas."
 
 #: flatcamTools/ToolPcbWizard.py:113
 msgid "No Suppression"
-msgstr ""
+msgstr "Sem supressão"
 
 #: flatcamTools/ToolPcbWizard.py:114
 msgid "Zeros supp.:"
@@ -12008,7 +12016,7 @@ msgid ""
 "One usually has .DRL extension while\n"
 "the other has .INF extension."
 msgstr ""
-"Importe no FlatCAM um arquivo Excellon\n"
+"Importa no FlatCAM um arquivo Excellon\n"
 "que armazena suas informações em 2 arquivos.\n"
 "Um geralmente possui extensão .DRL e o outro tem extensão .INF."
 
