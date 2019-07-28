@@ -890,7 +890,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             return geom
 
         if combine:
-
             if self.iso_type == 0:
                 iso_name = self.options["name"] + "_ext_iso"
             elif self.iso_type == 1:
@@ -914,6 +913,46 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         geom = generate_envelope(iso_offset, 0, envelope_iso_type=self.iso_type, follow=follow)
                     geo_obj.solid_geometry.append(geom)
 
+                    # store here the default data for Geometry Data
+                    default_data = {}
+                    default_data.update({
+                        "name": iso_name,
+                        "plot": self.app.defaults['geometry_plot'],
+                        "cutz": self.app.defaults['geometry_cutz'],
+                        "vtipdia": self.app.defaults['geometry_vtipdia'],
+                        "vtipangle": self.app.defaults['geometry_vtipangle'],
+                        "travelz": self.app.defaults['geometry_travelz'],
+                        "feedrate": self.app.defaults['geometry_feedrate'],
+                        "feedrate_z": self.app.defaults['geometry_feedrate_z'],
+                        "feedrate_rapid": self.app.defaults['geometry_feedrate_rapid'],
+                        "dwell": self.app.defaults['geometry_dwell'],
+                        "dwelltime": self.app.defaults['geometry_dwelltime'],
+                        "multidepth": self.app.defaults['geometry_multidepth'],
+                        "ppname_g": self.app.defaults['geometry_ppname_g'],
+                        "depthperpass": self.app.defaults['geometry_depthperpass'],
+                        "extracut": self.app.defaults['geometry_extracut'],
+                        "toolchange": self.app.defaults['geometry_toolchange'],
+                        "toolchangez": self.app.defaults['geometry_toolchangez'],
+                        "endz": self.app.defaults['geometry_endz'],
+                        "spindlespeed": self.app.defaults['geometry_spindlespeed'],
+                        "toolchangexy": self.app.defaults['geometry_toolchangexy'],
+                        "startz": self.app.defaults['geometry_startz']
+                    })
+
+                    geo_obj.tools = dict()
+                    geo_obj.tools['1'] = dict()
+                    geo_obj.tools.update({
+                        '1': {
+                            'tooldia': float(self.options["isotooldia"]),
+                            'offset': 'Path',
+                            'offset_value': 0.0,
+                            'type': _('Rough'),
+                            'tool_type': 'C1',
+                            'data': default_data,
+                            'solid_geometry': geo_obj.solid_geometry
+                        }
+                    })
+
                 # detect if solid_geometry is empty and this require list flattening which is "heavy"
                 # or just looking in the lists (they are one level depth) and if any is not empty
                 # proceed with object creation, if there are empty and the number of them is the length
@@ -933,7 +972,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
                 if empty_cnt == len(geo_obj.solid_geometry):
                     raise ValidationError("Empty Geometry", None)
-                geo_obj.multigeo = False
+                geo_obj.multigeo = True
 
             # TODO: Do something if this is None. Offer changing name?
             self.app.new_object("geometry", iso_name, iso_init)

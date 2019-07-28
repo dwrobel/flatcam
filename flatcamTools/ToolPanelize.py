@@ -348,7 +348,8 @@ class Panelize(FlatCAMTool):
         # Get source object.
         try:
             obj = self.app.collection.get_by_name(str(name))
-        except:
+        except Exception as e:
+            log.debug("Panelize.on_panelize() --> %s" % str(e))
             self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % name)
             return "Could not retrieve object: %s" % name
 
@@ -362,7 +363,8 @@ class Panelize(FlatCAMTool):
 
         try:
             box = self.app.collection.get_by_name(boxname)
-        except:
+        except Exception as e:
+            log.debug("Panelize.on_panelize() --> %s" % str(e))
             self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % boxname)
             return "Could not retrieve object: %s" % boxname
 
@@ -491,8 +493,8 @@ class Panelize(FlatCAMTool):
                         if option is not 'name':
                             try:
                                 obj_fin.options[option] = panel_obj.options[option]
-                            except:
-                                log.warning("Failed to copy option.", option)
+                            except KeyError:
+                                log.warning("Failed to copy option. %s" % str(option))
 
                     for row in range(rows):
                         currentx = 0.0
@@ -534,7 +536,7 @@ class Panelize(FlatCAMTool):
                             for local_geom in geom:
                                 res_geo = translate_recursion(local_geom)
                                 try:
-                                    geoms += (res_geo)
+                                    geoms += res_geo
                                 except TypeError:
                                     geoms.append(res_geo)
                             return geoms
@@ -638,9 +640,9 @@ class Panelize(FlatCAMTool):
             try:
                 panelize_2()
                 self.app.inform.emit(_("[success] Panel created successfully."))
-            except Exception as e:
+            except Exception as ee:
                 proc.done()
-                log.debug(str(e))
+                log.debug(str(ee))
                 return
             proc.done()
 

@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - after unit conversion from Preferences, the default values are automatically saved by the app
 - in Basic mode, the tool type column is no longer hidden as it may create issues when using an painted geometry
 - some PEP8 clean-up in FlatCAMGui.py
+- fixed Panelize Tool to do panelization for multiple passes type of geometry that comes out of the isolation done with multiple passes
 
 20.07.2019
 

@@ -784,6 +784,8 @@ class App(QtCore.QObject):
 
             # Geometry Options
             "geometry_cutz": -0.002,
+            "geometry_vtipdia": 0.1,
+            "geometry_vtipangle": 30,
             "geometry_multidepth": False,
             "geometry_depthperpass": 0.002,
             "geometry_travelz": 0.1,
@@ -1129,6 +1131,8 @@ class App(QtCore.QObject):
             "geometry_segx": 0.0,
             "geometry_segy": 0.0,
             "geometry_cutz": -0.002,
+            "geometry_vtipdia": 0.1,
+            "geometry_vtipangle": 30,
             "geometry_travelz": 0.1,
             "geometry_feedrate": 3.0,
             "geometry_feedrate_z": 3.0,
