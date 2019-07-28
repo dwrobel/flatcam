@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed issue with not using the current units in the tool tables after unit conversion
 - after unit conversion from Preferences, the default values are automatically saved by the app
+- in Basic mode, the tool type column is no longer hidden as it may create issues when using an painted geometry
+- some PEP8 clean-up in FlatCAMGui.py
 
 20.07.2019
 

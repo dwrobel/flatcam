@@ -2154,11 +2154,12 @@ class Gerber (Geometry):
 
                         # Otherwise leave as is.
                         else:
-                            # yield cleanline
+                            # yield clean line
                             yield line
                             break
 
-            self.parse_lines(line_generator())
+            processed_lines = list(line_generator())
+            self.parse_lines(processed_lines)
 
     # @profile
     def parse_lines(self, glines):
@@ -2241,10 +2242,10 @@ class Gerber (Geometry):
                 gline = gline.strip(' \r\n')
                 # log.debug("Line=%3s %s" % (line_num, gline))
 
-                # ############################################################# ##
-                # Ignored lines #
-                # Comments #### ##
-                # ############################################################# ##
+                # ###################
+                # Ignored lines #####
+                # Comments      #####
+                # ###################
                 match = self.comm_re.search(gline)
                 if match:
                     continue

@@ -3318,7 +3318,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
             self.ui.geo_tools_table.setColumnHidden(2, True)
             self.ui.geo_tools_table.setColumnHidden(3, True)
-            self.ui.geo_tools_table.setColumnHidden(4, True)
+            # self.ui.geo_tools_table.setColumnHidden(4, True)
             self.ui.addtool_entry_lbl.hide()
             self.ui.addtool_entry.hide()
             self.ui.addtool_btn.hide()
