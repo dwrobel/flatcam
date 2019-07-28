@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+28.07.2019
+
+- fixed issue with not using the current units in the tool tables after unit conversion
+- after unit conversion from Preferences, the default values are automatically saved by the app
+
 20.07.2019
 
 - updated the CutOut tool so it will work on single PCB Gerbers or on PCB panel Gerbers

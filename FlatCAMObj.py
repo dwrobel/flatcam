@@ -93,7 +93,8 @@ class FlatCAMObj(QtCore.QObject):
         self.isHovering = False
         self.notHovering = True
 
-        self.units = 'IN'
+        # self.units = 'IN'
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         # assert isinstance(self.ui, ObjectUI)
         # self.ui.name_entry.returnPressed.connect(self.on_name_activate)
@@ -1787,6 +1788,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
     def build_ui(self):
         FlatCAMObj.build_ui(self)
 
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.ui.tools_table.itemChanged.disconnect()
@@ -1993,6 +1996,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         FlatCAMApp.App.log.debug("FlatCAMExcellon.set_ui()")
 
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
         self.form_fields.update({
             "plot": self.ui.plot_cb,
             "solid": self.ui.solid_cb,
@@ -2088,6 +2093,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # if connected, disconnect the signal from the slot on item_changed as it creates issues
         self.ui.tools_table.itemChanged.disconnect()
         # self.tools_table_exc.selectionModel().currentChanged.disconnect()
+
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         self.is_modified = True
 
@@ -3027,6 +3034,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui_disconnect()
         FlatCAMObj.build_ui(self)
 
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
         offset = 0
         tool_idx = 0
 
@@ -3517,6 +3526,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
     def on_tool_add(self, dia=None):
         self.ui_disconnect()
+
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         # if a Tool diameter entered is a char instead a number the final message of Tool adding is changed
         # because the Default value for Tool is used.

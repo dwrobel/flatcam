@@ -3873,6 +3873,9 @@ class App(QtCore.QObject):
                 scale_defaults(factor)
                 self.defaults_write_form(fl_units=new_units)
 
+                # save the defaults to file, some may assume that the conversion is enough and it's not
+                self.on_save_button()
+
             self.should_we_save = True
 
             # change this only if the workspace is active
@@ -3918,12 +3921,17 @@ class App(QtCore.QObject):
         self.defaults_read_form()
 
     def on_toggle_units_click(self):
-        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
+        try:
+            self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
+        except TypeError:
+            pass
+
         if self.defaults["units"] == 'MM':
             self.ui.general_defaults_form.general_app_group.units_radio.set_value("IN")
         else:
             self.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
         self.on_toggle_units(no_pref=True)
+
         self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
             lambda: self.on_toggle_units(no_pref=False))
 
@@ -4528,6 +4536,8 @@ class App(QtCore.QObject):
             self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_text.insertPlainText('%%%s%%' % signal_text)
 
     def on_save_button(self):
+        log.debug("App.on_save_button() --> Saving preferences to file.")
+
         self.save_defaults(silent=False)
         # load the defaults so they are updated into the app
         self.load_defaults(filename='current_defaults')
