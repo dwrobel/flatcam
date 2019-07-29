@@ -70,12 +70,12 @@ msgid "Close Editor"
 msgstr ""
 
 #: FlatCAMApp.py:2331 FlatCAMApp.py:3423 FlatCAMApp.py:6009
-#: FlatCAMTranslation.py:91 flatcamGUI/FlatCAMGUI.py:3760
+#: FlatCAMTranslation.py:96 flatcamGUI/FlatCAMGUI.py:3760
 msgid "Yes"
 msgstr ""
 
 #: FlatCAMApp.py:2332 FlatCAMApp.py:3424 FlatCAMApp.py:6010
-#: FlatCAMTranslation.py:92 flatcamGUI/FlatCAMGUI.py:3761
+#: FlatCAMTranslation.py:97 flatcamGUI/FlatCAMGUI.py:3761
 msgid "No"
 msgstr ""
 
@@ -1292,8 +1292,7 @@ msgid "FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s"
 msgstr ""
 
 #: FlatCAMObj.py:4430 FlatCAMObj.py:4668
-msgid ""
-"[WARNING] Tool Offset is selected in Tool Table but no value is provided.\n"
+msgid "[WARNING] Tool Offset is selected in Tool Table but no value is provided.\n"
 "Add a Tool Offset or change the Offset Type."
 msgstr ""
 
@@ -1373,16 +1372,16 @@ msgstr ""
 msgid "[ERROR] There is no postprocessor file."
 msgstr ""
 
-#: FlatCAMTranslation.py:86
+#: FlatCAMTranslation.py:91
 msgid "The application will restart."
 msgstr ""
 
-#: FlatCAMTranslation.py:87
+#: FlatCAMTranslation.py:92
 #, python-format
 msgid "Are you sure do you want to change the current language to %s?"
 msgstr ""
 
-#: FlatCAMTranslation.py:89
+#: FlatCAMTranslation.py:94
 msgid "Apply Language ..."
 msgstr ""
 
