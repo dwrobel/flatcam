@@ -1,10 +1,10 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Author: Marius Adrian Stanciu (c)                   #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
 import os
 import sys
@@ -16,11 +16,10 @@ from PyQt5.QtCore import QSettings
 from flatcamGUI.GUIElements import log
 import gettext
 
+import builtins
 
-# import builtins
-#
-# if '_' not in builtins.__dict__:
-#     _ = gettext.gettext
+if '_' not in builtins.__dict__:
+    _ = gettext.gettext
 
 # ISO639-1 codes from here: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
 languages_dict = {
@@ -94,8 +93,8 @@ def on_language_apply_click(app, restart=False):
                                   name.capitalize())
         msgbox.setWindowTitle(_("Apply Language ..."))
         msgbox.setWindowIcon(QtGui.QIcon('share/language32.png'))
-        bt_yes = msgbox.addButton('Yes', QtWidgets.QMessageBox.YesRole)
-        bt_no = msgbox.addButton('No', QtWidgets.QMessageBox.NoRole)
+        bt_yes = msgbox.addButton(_("Yes"), QtWidgets.QMessageBox.YesRole)
+        bt_no = msgbox.addButton(_("No"), QtWidgets.QMessageBox.NoRole)
 
         msgbox.setDefaultButton(bt_yes)
         msgbox.exec_()
