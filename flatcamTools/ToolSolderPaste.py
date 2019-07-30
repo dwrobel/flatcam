@@ -642,22 +642,26 @@ class SolderPaste(FlatCAMTool):
     def ui_disconnect(self):
         # if connected, disconnect the signal from the slot on item_changed as it creates issues
 
-        try:
-            for i in range(self.gcode_form_layout.count()):
-                if isinstance(self.gcode_form_layout.itemAt(i).widget(), FCComboBox):
+        for i in range(self.gcode_form_layout.count()):
+            if isinstance(self.gcode_form_layout.itemAt(i).widget(), FCComboBox):
+                try:
                     self.gcode_form_layout.itemAt(i).widget().currentIndexChanged.disconnect()
-                if isinstance(self.gcode_form_layout.itemAt(i).widget(), FCEntry):
+                except TypeError:
+                    pass
+            if isinstance(self.gcode_form_layout.itemAt(i).widget(), FCEntry):
+                try:
                     self.gcode_form_layout.itemAt(i).widget().editingFinished.disconnect()
-        except:
-            pass
+                except TypeError:
+                    pass
+
         try:
             self.tools_table.itemChanged.disconnect(self.on_tool_edit)
-        except:
+        except TypeError:
             pass
 
         try:
             self.tools_table.currentItemChanged.disconnect(self.on_row_selection_change)
-        except:
+        except TypeError:
             pass
 
     def update_comboboxes(self, obj, status):

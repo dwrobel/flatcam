@@ -20,11 +20,12 @@ from flatcamEditors.FlatCAMGeoEditor import FCShapeTool
 
 import gettext
 import FlatCAMTranslation as fcTranslate
+import builtins
 
 fcTranslate.apply_language('strings')
-import builtins
 if '_' not in builtins.__dict__:
     _ = gettext.gettext
+
 
 class FlatCAMGUI(QtWidgets.QMainWindow):
     # Emitted when persistent window geometry needs to be retained
@@ -87,8 +88,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # Open Excellon ...
         self.menufileopenexcellon = QtWidgets.QAction(QtGui.QIcon('share/open_excellon32.png'),
-                                                      _('Open &Excellon ...\tCTRL+E'),
-                                                  self)
+                                                      _('Open &Excellon ...\tCTRL+E'), self)
         self.menufile_open.addAction(self.menufileopenexcellon)
 
         # Open G-Code ...
@@ -115,16 +115,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile_scripting = self.menufile.addMenu(QtGui.QIcon('share/script16.png'), _('Scripting'))
         self.menufile_scripting.setToolTipsVisible(True)
 
-        self.menufilenewscript = QtWidgets.QAction(QtGui.QIcon('share/script_new16.png'), _('New Script ...'),
-                                                   self)
-        self.menufileopenscript = QtWidgets.QAction(QtGui.QIcon('share/script_open16.png'), _('Open Script ...'),
-                                                   self)
-        self.menufilerunscript = QtWidgets.QAction(QtGui.QIcon('share/script16.png'), _('Run Script ...\tSHIFT+S'),
-                                                   self)
+        self.menufilenewscript = QtWidgets.QAction(QtGui.QIcon('share/script_new16.png'), _('New Script ...'), self)
+        self.menufileopenscript = QtWidgets.QAction(QtGui.QIcon('share/script_open16.png'), _('Open Script ...'), self)
+        self.menufilerunscript = QtWidgets.QAction(QtGui.QIcon('share/script16.png'),
+                                                   _('Run Script ...\tSHIFT+S'), self)
         self.menufilerunscript.setToolTip(
-           _( "Will run the opened Tcl Script thus\n"
-            "enabling the automation of certain\n"
-            "functions of FlatCAM.")
+           _("Will run the opened Tcl Script thus\n"
+             "enabling the automation of certain\n"
+             "functions of FlatCAM.")
         )
         self.menufile_scripting.addAction(self.menufilenewscript)
         self.menufile_scripting.addAction(self.menufileopenscript)
@@ -174,8 +172,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.menufileexport.addSeparator()
 
-        self.menufileexportexcellon = QtWidgets.QAction(QtGui.QIcon('share/drill32.png'), _('Export &Excellon ...'),
-                                                        self)
+        self.menufileexportexcellon = QtWidgets.QAction(QtGui.QIcon('share/drill32.png'),
+                                                        _('Export &Excellon ...'), self)
         self.menufileexportexcellon.setToolTip(
            _("Will export an Excellon Object as Excellon file,\n"
              "the coordinates format, the file units and zeros\n"
@@ -183,8 +181,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         )
         self.menufileexport.addAction(self.menufileexportexcellon)
 
-        self.menufileexportgerber = QtWidgets.QAction(QtGui.QIcon('share/flatcam_icon32.png'), _('Export &Gerber ...'),
-                                                        self)
+        self.menufileexportgerber = QtWidgets.QAction(QtGui.QIcon('share/flatcam_icon32.png'),
+                                                      _('Export &Gerber ...'), self)
         self.menufileexportgerber.setToolTip(
             _("Will export an Gerber Object as Gerber file,\n"
               "the coordinates format, the file units and zeros\n"
@@ -214,8 +212,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile_save.addAction(self.menufilesaveprojectas)
 
         # Save Project Copy ...
-        self.menufilesaveprojectcopy = QtWidgets.QAction(QtGui.QIcon('share/floppy16.png'), _('Save Project C&opy ...'),
-                                                     self)
+        self.menufilesaveprojectcopy = QtWidgets.QAction(QtGui.QIcon('share/floppy16.png'),
+                                                         _('Save Project C&opy ...'), self)
         self.menufile_save.addAction(self.menufilesaveprojectcopy)
 
         # Separator
@@ -253,7 +251,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuedit_convertjoinexc = self.menuedit_convert.addAction(
             QtGui.QIcon('share/join16.png'), _('Join Excellon(s) -> Excellon'))
         self.menuedit_convertjoinexc.setToolTip(
-           _( "Merge a selection of Excellon objects into a new combo Excellon object.")
+           _("Merge a selection of Excellon objects into a new combo Excellon object.")
         )
         self.menuedit_convertjoingrb = self.menuedit_convert.addAction(
             QtGui.QIcon('share/join16.png'), _('Join Gerber(s) -> Gerber'))
@@ -279,7 +277,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menueditconvert_any2geo = self.menuedit_convert.addAction(QtGui.QIcon('share/copy_geo.png'),
                                                                        _('Convert Any to Geo'))
         self.menueditconvert_any2gerber = self.menuedit_convert.addAction(QtGui.QIcon('share/copy_geo.png'),
-                                                                       _('Convert Any to Gerber'))
+                                                                          _('Convert Any to Gerber'))
         self.menuedit_convert.setToolTipsVisible(True)
 
         # Separator
@@ -297,10 +295,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         # Separator
         self.menuedit.addSeparator()
-        self.menuedittoggleunits= self.menuedit.addAction(QtGui.QIcon('share/toggle_units16.png'),
-                                                         _('Toggle Units\tQ'))
-        self.menueditselectall = self.menuedit.addAction(QtGui.QIcon('share/select_all.png'),
-                                                         _('&Select All\tCTRL+A'))
+        self.menuedittoggleunits = self.menuedit.addAction(QtGui.QIcon('share/toggle_units16.png'),
+                                                           _('Toggle Units\tQ'))
+        self.menueditselectall = self.menuedit.addAction(QtGui.QIcon('share/select_all.png'), _('&Select All\tCTRL+A'))
 
         # Separator
         self.menuedit.addSeparator()
@@ -329,7 +326,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuoptions_transform_skewx = self.menuoptions.addAction(QtGui.QIcon('share/skewX.png'),
                                                                       _("&Skew on X axis\tSHIFT+X"))
         self.menuoptions_transform_skewy = self.menuoptions.addAction(QtGui.QIcon('share/skewY.png'),
-                                                                      _( "S&kew on Y axis\tSHIFT+Y"))
+                                                                      _("S&kew on Y axis\tSHIFT+Y"))
 
         # Separator
         self.menuoptions.addSeparator()
@@ -430,13 +427,13 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geo_editor_menu.addSeparator()
         self.geo_move_menuitem = self.geo_editor_menu.addAction(QtGui.QIcon('share/move32.png'), _("Move\tM"))
         self.geo_buffer_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon('share/buffer16.png'),_( "Buffer Tool\tB")
+            QtGui.QIcon('share/buffer16.png'), _("Buffer Tool\tB")
         )
         self.geo_paint_menuitem = self.geo_editor_menu.addAction(
             QtGui.QIcon('share/paint16.png'), _("Paint Tool\tI")
         )
         self.geo_transform_menuitem = self.geo_editor_menu.addAction(
-            QtGui.QIcon('share/transform.png'),_( "Transform Tool\tALT+R")
+            QtGui.QIcon('share/transform.png'), _("Transform Tool\tALT+R")
         )
         self.geo_editor_menu.addSeparator()
         self.geo_cornersnap_menuitem = self.geo_editor_menu.addAction(
@@ -461,50 +458,45 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         )
         self.exc_editor_menu.addSeparator()
 
-        self.exc_move_drill_menuitem = self.exc_editor_menu.addAction(
-            QtGui.QIcon('share/move32.png'),_( 'Move Drill(s)\tM'))
+        self.exc_move_drill_menuitem = self.exc_editor_menu.addAction(QtGui.QIcon('share/move32.png'),
+                                                                      _('Move Drill(s)\tM'))
 
         # ## APPLICATION GERBER EDITOR MENU ###
         self.grb_editor_menu = QtWidgets.QMenu(_(">Gerber Editor<"))
         self.menu.addMenu(self.grb_editor_menu)
 
-        self.grb_add_pad_menuitem = self.grb_editor_menu.addAction(
-            QtGui.QIcon('share/aperture16.png'), _('Add Pad\tP'))
-        self.grb_add_pad_array_menuitem = self.grb_editor_menu.addAction(
-            QtGui.QIcon('share/padarray32.png'), _('Add Pad Array\tA'))
-        self.grb_add_track_menuitem = self.grb_editor_menu.addAction(
-            QtGui.QIcon('share/track32.png'), _('Add Track\tT'))
+        self.grb_add_pad_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/aperture16.png'),
+                                                                   _('Add Pad\tP'))
+        self.grb_add_pad_array_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/padarray32.png'),
+                                                                         _('Add Pad Array\tA'))
+        self.grb_add_track_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/track32.png'),
+                                                                     _('Add Track\tT'))
         self.grb_add_region_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/rectangle32.png'),
                                                                       _('Add Region\tN'))
         self.grb_editor_menu.addSeparator()
 
-        self.grb_convert_poly_menuitem  = self.grb_editor_menu.addAction(QtGui.QIcon('share/poligonize32.png'),
-                                                                         _("Poligonize\tALT+N"))
+        self.grb_convert_poly_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/poligonize32.png'),
+                                                                        _("Poligonize\tALT+N"))
         self.grb_add_semidisc_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/semidisc32.png'),
                                                                         _("Add SemiDisc\tE"))
-        self.grb_add_disc_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/disc32.png'),
-                                                                        _("Add Disc\tD"))
+        self.grb_add_disc_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/disc32.png'), _("Add Disc\tD"))
         self.grb_add_buffer_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/buffer16-2.png'),
                                                                       _('Buffer\tB'))
-        self.grb_add_scale_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/scale32.png'),
-                                                                     _('Scale\tS'))
+        self.grb_add_scale_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/scale32.png'), _('Scale\tS'))
         self.grb_add_markarea_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/markarea32.png'),
-                                                                     _('Mark Area\tALT+A'))
+                                                                        _('Mark Area\tALT+A'))
         self.grb_add_eraser_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/eraser26.png'),
-                                                                     _('Eraser\tCTRL+E'))
-        self.grb_transform_menuitem = self.grb_editor_menu.addAction(
-            QtGui.QIcon('share/transform.png'),_( "Transform\tALT+R")
-        )
+                                                                      _('Eraser\tCTRL+E'))
+        self.grb_transform_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/transform.png'),
+                                                                     _("Transform\tALT+R"))
         self.grb_editor_menu.addSeparator()
 
         self.grb_copy_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/copy32.png'), _('Copy\tC'))
-        self.grb_delete_menuitem = self.grb_editor_menu.addAction(
-            QtGui.QIcon('share/deleteshape32.png'), _('Delete\tDEL')
-        )
+        self.grb_delete_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/deleteshape32.png'),
+                                                                  _('Delete\tDEL'))
         self.grb_editor_menu.addSeparator()
 
-        self.grb_move_menuitem = self.grb_editor_menu.addAction(
-            QtGui.QIcon('share/move32.png'),_( 'Move\tM'))
+        self.grb_move_menuitem = self.grb_editor_menu.addAction(QtGui.QIcon('share/move32.png'), _('Move\tM'))
 
         self.grb_editor_menu.menuAction().setVisible(False)
         self.grb_editor_menu.setDisabled(True)
@@ -529,7 +521,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menuprojectedit = self.menuproject.addAction(QtGui.QIcon('share/edit_ok32.png'), _('Edit'))
         self.menuprojectcopy = self.menuproject.addAction(QtGui.QIcon('share/copy32.png'), _('Copy'))
         self.menuprojectdelete = self.menuproject.addAction(QtGui.QIcon('share/delete32.png'), _('Delete'))
-        self.menuprojectsave= self.menuproject.addAction(QtGui.QIcon('share/save_as.png'), _('Save'))
+        self.menuprojectsave = self.menuproject.addAction(QtGui.QIcon('share/save_as.png'), _('Save'))
         self.menuproject.addSeparator()
 
         self.menuprojectproperties = self.menuproject.addAction(QtGui.QIcon('share/properties32.png'), _('Properties'))
@@ -648,7 +640,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.toolbartools.addSeparator()
 
         self.panelize_btn = self.toolbartools.addAction(QtGui.QIcon('share/panel16.png'), _("Panel Tool"))
-        self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'),_( "Film Tool"))
+        self.film_btn = self.toolbartools.addAction(QtGui.QIcon('share/film16.png'), _("Film Tool"))
         self.solder_btn = self.toolbartools.addAction(QtGui.QIcon('share/solderpastebis32.png'), _("SolderPaste Tool"))
         self.sub_btn = self.toolbartools.addAction(QtGui.QIcon('share/sub32.png'), _("Substract Tool"))
 
@@ -1593,7 +1585,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################### ##
         self.popMenu = FCMenu()
 
-        self.popmenu_disable = self.popMenu.addAction(QtGui.QIcon('share/disable32.png'), _("Disable Plot"))
+        self.popmenu_disable = self.popMenu.addAction(QtGui.QIcon('share/disable32.png'), _("Toggle Visibility"))
         self.popmenu_panel_toggle = self.popMenu.addAction(QtGui.QIcon('share/notebook16.png'), _("Toggle Panel"))
 
         self.popMenu.addSeparator()
@@ -1641,10 +1633,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.popmenu_move = self.popMenu.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
         self.popmenu_properties = self.popMenu.addAction(QtGui.QIcon('share/properties32.png'), _("Properties"))
 
-
-        ################################## ##
-        # ## Here we build the CNCJob Tab # ##
-        ################################## ##
+        # ###################################
+        # ## Here we build the CNCJob Tab ###
+        # ###################################
         self.cncjob_tab = QtWidgets.QWidget()
         self.cncjob_tab_layout = QtWidgets.QGridLayout(self.cncjob_tab)
         self.cncjob_tab_layout.setContentsMargins(2, 2, 2, 2)
@@ -1701,9 +1692,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         cnc_tab_lay_4.addWidget(self.buttonSave)
         self.cncjob_tab_layout.addLayout(cnc_tab_lay_4, 2, 4, 1, 1)
 
-        ################################ ##
-        # ## Build InfoBar is done here # ##
-        ################################ ##
+        # #################################
+        # ## Build InfoBar is done here ###
+        # #################################
         self.infobar = self.statusBar()
         self.fcinfo = FlatCAMInfoBar()
         self.infobar.addWidget(self.fcinfo, stretch=1)
@@ -1925,16 +1916,14 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                                    _('Add Polygon'))
         self.geo_edit_toolbar.addSeparator()
         self.geo_add_text_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/text32.png'), _('Add Text'))
-        self.geo_add_buffer_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'),
-                                                                  _('Add Buffer'))
+        self.geo_add_buffer_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/buffer16-2.png'), _('Add Buffer'))
         self.geo_add_paint_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/paint20_1.png'), _('Paint Shape'))
         self.geo_eraser_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/eraser26.png'), _('Eraser'))
-
 
         self.geo_edit_toolbar.addSeparator()
         self.geo_union_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/union32.png'), _('Polygon Union'))
         self.geo_intersection_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/intersection32.png'),
-                                                               _('Polygon Intersection'))
+                                                                    _('Polygon Intersection'))
         self.geo_subtract_btn = self.geo_edit_toolbar.addAction(QtGui.QIcon('share/subtract32.png'),
                                                                 _('Polygon Subtraction'))
 
@@ -2266,7 +2255,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     # try to disconnect the slot from Set Origin
                     try:
                         self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_set_zero_click)
-                    except:
+                    except TypeError:
                         pass
                     self.app.inform.emit("")
 
@@ -2378,10 +2367,10 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     if self.app.geo_editor.get_selected() is not None:
                         self.app.geo_editor.cutpath()
                     else:
-                        msg = _('Please first select a geometry item to be cutted\n' \
-                              'then select the geometry item that will be cutted\n' \
-                              'out of the first item. In the end press ~X~ key or\n' \
-                              'the toolbar button.')
+                        msg = _('Please first select a geometry item to be cutted\n'
+                                'then select the geometry item that will be cutted\n'
+                                'out of the first item. In the end press ~X~ key or\n'
+                                'the toolbar button.')
 
                         messagebox = QtWidgets.QMessageBox()
                         messagebox.setText(msg)
@@ -2517,8 +2506,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         if self.app.geo_editor.get_selected() is not None:
                             self.app.geo_editor.intersection()
                         else:
-                            msg = _("Please select geometry items \n" \
-                                  "on which to perform Intersection Tool.")
+                            msg = _("Please select geometry items \n"
+                                    "on which to perform Intersection Tool.")
 
                             messagebox = QtWidgets.QMessageBox()
                             messagebox.setText(msg)
@@ -2597,7 +2586,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                             self.app.geo_editor.union()
                         else:
                             msg = _("Please select geometry items \n"
-                                  "on which to perform union.")
+                                    "on which to perform union.")
 
                             messagebox = QtWidgets.QMessageBox()
                             messagebox.setText(msg)
@@ -3152,7 +3141,7 @@ class GeneralPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.general_app_group = GeneralAppPrefGroupUI()
-        self.general_app_group.setFixedWidth(280)
+        self.general_app_group.setFixedWidth(290)
 
         self.general_gui_group = GeneralGUIPrefGroupUI()
         self.general_gui_group.setFixedWidth(250)
@@ -3177,7 +3166,7 @@ class GerberPreferencesUI(QtWidgets.QWidget):
         self.gerber_gen_group = GerberGenPrefGroupUI()
         self.gerber_gen_group.setFixedWidth(250)
         self.gerber_opt_group = GerberOptPrefGroupUI()
-        self.gerber_opt_group.setFixedWidth(230)
+        self.gerber_opt_group.setFixedWidth(250)
         self.gerber_exp_group = GerberExpPrefGroupUI()
         self.gerber_exp_group.setFixedWidth(230)
         self.gerber_adv_opt_group = GerberAdvOptPrefGroupUI()
@@ -3862,8 +3851,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Multiple Selection Modifier Key
         self.mselectlabel = QtWidgets.QLabel(_('<b>Multiple Sel:</b>'))
         self.mselectlabel.setToolTip(_("Select the key used for multiple selection."))
-        self.mselect_radio = RadioSet([{'label': 'CTRL', 'value': 'Control'},
-                                       {'label': 'SHIFT', 'value': 'Shift'}])
+        self.mselect_radio = RadioSet([{'label': _('CTRL'), 'value': 'Control'},
+                                       {'label': _('SHIFT'), 'value': 'Shift'}])
 
         # Project at StartUp CB
         self.project_startup_label = QtWidgets.QLabel(_('Project at StartUp:'))
@@ -4053,7 +4042,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         self.circle_steps_label = QtWidgets.QLabel(_("Circle Steps:"))
         self.circle_steps_label.setToolTip(
             _("The number of circle steps for Gerber \n"
-            "circular aperture linear approximation.")
+              "circular aperture linear approximation.")
         )
         grid0.addWidget(self.circle_steps_label, 1, 0)
         self.circle_steps_entry = IntEntry()
@@ -4302,7 +4291,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         )
         hlay1.addWidget(self.format_whole_entry, QtCore.Qt.AlignLeft)
 
-        gerber_separator_label= QtWidgets.QLabel(':')
+        gerber_separator_label = QtWidgets.QLabel(':')
         gerber_separator_label.setFixedWidth(5)
         hlay1.addWidget(gerber_separator_label, QtCore.Qt.AlignLeft)
 
@@ -4450,7 +4439,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         )
         hlay1.addWidget(self.excellon_format_upper_in_entry, QtCore.Qt.AlignLeft)
 
-        excellon_separator_in_label= QtWidgets.QLabel(':')
+        excellon_separator_in_label = QtWidgets.QLabel(':')
         excellon_separator_in_label.setFixedWidth(5)
         hlay1.addWidget(excellon_separator_in_label, QtCore.Qt.AlignLeft)
 
@@ -5909,14 +5898,29 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.cutout_tooldia_entry = LengthEntry()
         grid0.addWidget(self.cutout_tooldia_entry, 0, 1)
 
+        # Object kind
+        kindlabel = QtWidgets.QLabel(_('Obj kind:'))
+        kindlabel.setToolTip(
+            _("Choice of what kind the object we want to cutout is.<BR>"
+              "- <B>Single</B>: contain a single PCB Gerber outline object.<BR>"
+              "- <B>Panel</B>: a panel PCB Gerber object, which is made\n"
+              "out of many individual PCB outlines.")
+        )
+        grid0.addWidget(kindlabel, 1, 0)
+        self.obj_kind_combo = RadioSet([
+            {"label": _("Single"), "value": "single"},
+            {"label": _("Panel"), "value": "panel"},
+        ])
+        grid0.addWidget(self.obj_kind_combo, 1, 1)
+
         marginlabel = QtWidgets.QLabel(_('Margin:'))
         marginlabel.setToolTip(
             _("Distance from objects at which\n"
               "to draw the cutout.")
         )
-        grid0.addWidget(marginlabel, 1, 0)
+        grid0.addWidget(marginlabel, 2, 0)
         self.cutout_margin_entry = LengthEntry()
-        grid0.addWidget(self.cutout_margin_entry, 1, 1)
+        grid0.addWidget(self.cutout_margin_entry, 2, 1)
 
         gaplabel = QtWidgets.QLabel(_('Gap size:'))
         gaplabel.setToolTip(
@@ -5924,9 +5928,9 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
               "that will remain to hold the\n"
               "board in place.")
         )
-        grid0.addWidget(gaplabel, 2, 0)
+        grid0.addWidget(gaplabel, 3, 0)
         self.cutout_gap_entry = LengthEntry()
-        grid0.addWidget(self.cutout_gap_entry, 2, 1)
+        grid0.addWidget(self.cutout_gap_entry, 3, 1)
 
         gaps_label = QtWidgets.QLabel(_('Gaps:'))
         gaps_label.setToolTip(
@@ -5940,9 +5944,9 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
               "- 2tb  - 2*top + 2*bottom\n"
               "- 8     - 2*left + 2*right +2*top + 2*bottom")
         )
-        grid0.addWidget(gaps_label, 3, 0)
+        grid0.addWidget(gaps_label, 4, 0)
         self.gaps_combo = FCComboBox()
-        grid0.addWidget(self.gaps_combo, 3, 1)
+        grid0.addWidget(self.gaps_combo, 4, 1)
 
         gaps_items = ['LR', 'TB', '4', '2LR', '2TB', '8']
         for it in gaps_items:
@@ -5955,8 +5959,8 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.convex_box_label.setToolTip(
             _("Create a convex shape surrounding the entire PCB.")
         )
-        grid0.addWidget(self.convex_box_label, 4, 0)
-        grid0.addWidget(self.convex_box, 4, 1)
+        grid0.addWidget(self.convex_box_label, 5, 0)
+        grid0.addWidget(self.convex_box, 5, 1)
 
         self.layout.addStretch()
 

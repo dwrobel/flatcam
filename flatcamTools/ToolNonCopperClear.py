@@ -80,7 +80,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.tools_box.addWidget(self.tools_table)
 
         self.tools_table.setColumnCount(4)
-        self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), 'TT', ''])
+        self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('TT'), ''])
         self.tools_table.setColumnHidden(3, True)
         self.tools_table.setSortingEnabled(False)
         # self.tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
@@ -461,7 +461,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.tools_table.itemChanged.disconnect(self.on_tool_edit)
-        except:
+        except TypeError:
             pass
 
     def on_tool_add(self, dia=None, muted=None):
@@ -861,7 +861,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 for poly in cleared_by_last_tool:
                     try:
                         area = area.difference(poly)
-                    except:
+                    except Exception as e:
                         pass
                 cleared_by_last_tool[:] = []
 

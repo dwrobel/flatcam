@@ -77,7 +77,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tools_box.addWidget(self.tools_table)
 
         self.tools_table.setColumnCount(4)
-        self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), 'TT', ''])
+        self.tools_table.setHorizontalHeaderLabels(['#', _('Diameter'), _('TT'), ''])
         self.tools_table.setColumnHidden(3, True)
         # self.tools_table.setSortingEnabled(False)
         # self.tools_table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
@@ -437,7 +437,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.tools_table.itemChanged.disconnect()
-        except:
+        except TypeError:
             pass
 
         # updated units

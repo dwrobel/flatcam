@@ -220,7 +220,7 @@ class FloatEntry(QtWidgets.QLineEdit):
 
     def mousePressEvent(self, e, Parent=None):
         super(FloatEntry, self).mousePressEvent(e)  # required to deselect on 2e click
-        if self.readyToEdit:
+        if self.readyToEdit == True:
             self.selectAll()
             self.readyToEdit = False
 
@@ -238,20 +238,18 @@ class FloatEntry(QtWidgets.QLineEdit):
 
     def get_value(self):
         raw = str(self.text()).strip(' ')
-        evaled = 0.0
 
         try:
             evaled = eval(raw)
+            return float(evaled)
         except Exception as e:
             if raw is not '':
                 log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
             return None
 
-        return float(evaled)
-
     def set_value(self, val):
         if val is not None:
-            self.setText("%.4f" % val)
+            self.setText("%.4f" % float(val))
         else:
             self.setText("")
 
@@ -282,15 +280,14 @@ class FloatEntry2(QtWidgets.QLineEdit):
 
     def get_value(self):
         raw = str(self.text()).strip(' ')
-        evaled = 0.0
+
         try:
             evaled = eval(raw)
+            return float(evaled)
         except Exception as e:
             if raw is not '':
                 log.error("Could not evaluate val: %s, error: %s" % (str(raw), str(e)))
             return None
-
-        return float(evaled)
 
     def set_value(self, val):
         self.setText("%.4f" % val)
