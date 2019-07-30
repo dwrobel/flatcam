@@ -1585,7 +1585,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # ########################################################### ##
         self.popMenu = FCMenu()
 
-        self.popmenu_disable = self.popMenu.addAction(QtGui.QIcon('share/disable32.png'), _("Disable Plot"))
+        self.popmenu_disable = self.popMenu.addAction(QtGui.QIcon('share/disable32.png'), _("Toggle Visibility"))
         self.popmenu_panel_toggle = self.popMenu.addAction(QtGui.QIcon('share/notebook16.png'), _("Toggle Panel"))
 
         self.popMenu.addSeparator()

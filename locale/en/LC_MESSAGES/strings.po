@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-07-30 13:12+0300\n"
-"PO-Revision-Date: 2019-07-30 13:12+0300\n"
+"POT-Creation-Date: 2019-07-30 19:01+0300\n"
+"PO-Revision-Date: 2019-07-30 19:01+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -607,8 +607,8 @@ msgstr "Open Configuration File"
 msgid "[WARNING_NOTCL] Open Config cancelled."
 msgstr "[WARNING_NOTCL] Open Config cancelled."
 
-#: FlatCAMApp.py:6297 FlatCAMApp.py:6548 FlatCAMApp.py:8701 FlatCAMApp.py:8721
-#: FlatCAMApp.py:8742 FlatCAMApp.py:8764
+#: FlatCAMApp.py:6297 FlatCAMApp.py:6548 FlatCAMApp.py:8735 FlatCAMApp.py:8755
+#: FlatCAMApp.py:8776 FlatCAMApp.py:8798
 msgid "[WARNING_NOTCL] No object selected."
 msgstr "[WARNING_NOTCL] No object selected."
 
@@ -1212,31 +1212,31 @@ msgstr "[success] Selected plots enabled..."
 msgid "[success] Selected plots disabled..."
 msgstr "[success] Selected plots disabled..."
 
-#: FlatCAMApp.py:8523 FlatCAMApp.py:8536
+#: FlatCAMApp.py:8523 FlatCAMApp.py:8550 FlatCAMApp.py:8567
 msgid "Working ..."
 msgstr "Working ..."
 
-#: FlatCAMApp.py:8570
+#: FlatCAMApp.py:8604
 msgid "Saving FlatCAM Project"
 msgstr "Saving FlatCAM Project"
 
-#: FlatCAMApp.py:8591 FlatCAMApp.py:8622
+#: FlatCAMApp.py:8625 FlatCAMApp.py:8656
 #, python-format
 msgid "[success] Project saved to: %s"
 msgstr "[success] Project saved to: %s"
 
-#: FlatCAMApp.py:8609
+#: FlatCAMApp.py:8643
 #, python-format
 msgid "[ERROR_NOTCL] Failed to verify project file: %s. Retry to save it."
 msgstr "[ERROR_NOTCL] Failed to verify project file: %s. Retry to save it."
 
-#: FlatCAMApp.py:8616
+#: FlatCAMApp.py:8650
 #, python-format
 msgid "[ERROR_NOTCL] Failed to parse saved project file: %s. Retry to save it."
 msgstr ""
 "[ERROR_NOTCL] Failed to parse saved project file: %s. Retry to save it."
 
-#: FlatCAMApp.py:8624
+#: FlatCAMApp.py:8658
 #, python-format
 msgid "[ERROR_NOTCL] Failed to save project file: %s. Retry to save it."
 msgstr "[ERROR_NOTCL] Failed to save project file: %s. Retry to save it."
@@ -1388,7 +1388,6 @@ msgid "[success] Tool added in Tool Table."
 msgstr "[success] Tool added in Tool Table."
 
 #: FlatCAMObj.py:3671
-#| msgid "[ERROR_NOTCL] Default Tool added. Wrong value format entered."
 msgid "[WARNING_NOTCL] Default Tool added. Wrong value format entered."
 msgstr "[WARNING_NOTCL] Default Tool added. Wrong value format entered."
 
@@ -4311,7 +4310,7 @@ msgstr "Transform\tALT+R"
 msgid "Enable Plot"
 msgstr "Enable Plot"
 
-#: flatcamGUI/FlatCAMGUI.py:516 flatcamGUI/FlatCAMGUI.py:1588
+#: flatcamGUI/FlatCAMGUI.py:516
 msgid "Disable Plot"
 msgstr "Disable Plot"
 
@@ -5933,6 +5932,11 @@ msgstr ""
 "                </tbody>\n"
 "            </table>\n"
 "                    "
+
+#: flatcamGUI/FlatCAMGUI.py:1588
+#| msgid "Toggle Units"
+msgid "Toggle Visibility"
+msgstr "Toggle Visibility"
 
 #: flatcamGUI/FlatCAMGUI.py:1589
 msgid "Toggle Panel"

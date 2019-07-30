@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-07-30 13:13+0300\n"
-"PO-Revision-Date: 2019-07-30 13:13+0300\n"
+"POT-Creation-Date: 2019-07-30 19:01+0300\n"
+"PO-Revision-Date: 2019-07-30 19:02+0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -619,8 +619,8 @@ msgstr "Abrir Arquivo de Configuração"
 msgid "[WARNING_NOTCL] Open Config cancelled."
 msgstr "[WARNING_NOTCL] Abrir Arquivo de Configuração cancelado."
 
-#: FlatCAMApp.py:6297 FlatCAMApp.py:6548 FlatCAMApp.py:8701 FlatCAMApp.py:8721
-#: FlatCAMApp.py:8742 FlatCAMApp.py:8764
+#: FlatCAMApp.py:6297 FlatCAMApp.py:6548 FlatCAMApp.py:8735 FlatCAMApp.py:8755
+#: FlatCAMApp.py:8776 FlatCAMApp.py:8798
 msgid "[WARNING_NOTCL] No object selected."
 msgstr "[WARNING_NOTCL] Nenhum objeto selecionado."
 
@@ -1241,34 +1241,34 @@ msgstr "[success] Gráficos selecionados habilitados ..."
 msgid "[success] Selected plots disabled..."
 msgstr "[success] Gráficos selecionados desabilitados..."
 
-#: FlatCAMApp.py:8523 FlatCAMApp.py:8536
+#: FlatCAMApp.py:8523 FlatCAMApp.py:8550 FlatCAMApp.py:8567
 msgid "Working ..."
 msgstr "Trabalhando ..."
 
-#: FlatCAMApp.py:8570
+#: FlatCAMApp.py:8604
 msgid "Saving FlatCAM Project"
 msgstr "Salvando o Projeto FlatCAM"
 
-#: FlatCAMApp.py:8591 FlatCAMApp.py:8622
+#: FlatCAMApp.py:8625 FlatCAMApp.py:8656
 #, python-format
 msgid "[success] Project saved to: %s"
 msgstr "[success] Projeto salvo em: %s"
 
-#: FlatCAMApp.py:8609
+#: FlatCAMApp.py:8643
 #, python-format
 msgid "[ERROR_NOTCL] Failed to verify project file: %s. Retry to save it."
 msgstr ""
 "[ERROR_NOTCL] Falha ao verificar o arquivo do projeto: %s . Tente salvá-lo "
 "novamente."
 
-#: FlatCAMApp.py:8616
+#: FlatCAMApp.py:8650
 #, python-format
 msgid "[ERROR_NOTCL] Failed to parse saved project file: %s. Retry to save it."
 msgstr ""
 "[ERROR_NOTCL] Falha ao analisar o arquivo de projeto salvo: %s . Tente salvá-"
 "lo novamente."
 
-#: FlatCAMApp.py:8624
+#: FlatCAMApp.py:8658
 #, python-format
 msgid "[ERROR_NOTCL] Failed to save project file: %s. Retry to save it."
 msgstr ""
@@ -4398,7 +4398,7 @@ msgstr "Transformar\tALT+R"
 msgid "Enable Plot"
 msgstr "Habilitar Gráfico"
 
-#: flatcamGUI/FlatCAMGUI.py:516 flatcamGUI/FlatCAMGUI.py:1588
+#: flatcamGUI/FlatCAMGUI.py:516
 msgid "Disable Plot"
 msgstr "Desabilitar Gráfico"
 
@@ -6025,6 +6025,10 @@ msgstr ""
 "                </tbody>\n"
 "            </table>\n"
 "                    "
+
+#: flatcamGUI/FlatCAMGUI.py:1588
+msgid "Toggle Visibility"
+msgstr "Alternar Visibilidade"
 
 #: flatcamGUI/FlatCAMGUI.py:1589
 msgid "Toggle Panel"

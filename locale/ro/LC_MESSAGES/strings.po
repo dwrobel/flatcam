@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-07-30 13:13+0300\n"
-"PO-Revision-Date: 2019-07-30 13:13+0300\n"
+"POT-Creation-Date: 2019-07-30 19:02+0300\n"
+"PO-Revision-Date: 2019-07-30 19:02+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ro\n"
@@ -629,8 +629,8 @@ msgstr "Încarcă un fişier de Configurare"
 msgid "[WARNING_NOTCL] Open Config cancelled."
 msgstr "[WARNING_NOTCL] Incărcarea unui fişier de Configurare este anulată."
 
-#: FlatCAMApp.py:6297 FlatCAMApp.py:6548 FlatCAMApp.py:8701 FlatCAMApp.py:8721
-#: FlatCAMApp.py:8742 FlatCAMApp.py:8764
+#: FlatCAMApp.py:6297 FlatCAMApp.py:6548 FlatCAMApp.py:8735 FlatCAMApp.py:8755
+#: FlatCAMApp.py:8776 FlatCAMApp.py:8798
 msgid "[WARNING_NOTCL] No object selected."
 msgstr "[WARNING_NOTCL] Nici-un obiect selectat."
 
@@ -1254,34 +1254,34 @@ msgstr "[success] Toate afişările sunt activate..."
 msgid "[success] Selected plots disabled..."
 msgstr "[success] Toate afişările sunt dezactivate..."
 
-#: FlatCAMApp.py:8523 FlatCAMApp.py:8536
+#: FlatCAMApp.py:8523 FlatCAMApp.py:8550 FlatCAMApp.py:8567
 msgid "Working ..."
 msgstr "Se lucrează..."
 
-#: FlatCAMApp.py:8570
+#: FlatCAMApp.py:8604
 msgid "Saving FlatCAM Project"
 msgstr "Proiectul FlatCAM este in curs de salvare"
 
-#: FlatCAMApp.py:8591 FlatCAMApp.py:8622
+#: FlatCAMApp.py:8625 FlatCAMApp.py:8656
 #, python-format
 msgid "[success] Project saved to: %s"
 msgstr "[success] Proiectul s-a salvat in: %s"
 
-#: FlatCAMApp.py:8609
+#: FlatCAMApp.py:8643
 #, python-format
 msgid "[ERROR_NOTCL] Failed to verify project file: %s. Retry to save it."
 msgstr ""
 "[ERROR_NOTCL] Verificarea proiectului salvat a eșuat: %s. Incearcă să il "
 "salvezi din nou."
 
-#: FlatCAMApp.py:8616
+#: FlatCAMApp.py:8650
 #, python-format
 msgid "[ERROR_NOTCL] Failed to parse saved project file: %s. Retry to save it."
 msgstr ""
 "[ERROR_NOTCL] Parsarea proiectului salvat a eșuat: %s. Incearcă să il "
 "salvezi din nou."
 
-#: FlatCAMApp.py:8624
+#: FlatCAMApp.py:8658
 #, python-format
 msgid "[ERROR_NOTCL] Failed to save project file: %s. Retry to save it."
 msgstr ""
@@ -4441,7 +4441,7 @@ msgstr "Unealta Transformare\tALT+R"
 msgid "Enable Plot"
 msgstr "Activează Afișare"
 
-#: flatcamGUI/FlatCAMGUI.py:516 flatcamGUI/FlatCAMGUI.py:1588
+#: flatcamGUI/FlatCAMGUI.py:516
 msgid "Disable Plot"
 msgstr "Dezactivează Afișare"
 
@@ -6066,6 +6066,10 @@ msgstr ""
 "                </tbody>\n"
 "            </table>\n"
 "                    "
+
+#: flatcamGUI/FlatCAMGUI.py:1588
+msgid "Toggle Visibility"
+msgstr "Comută Vizibilitate"
 
 #: flatcamGUI/FlatCAMGUI.py:1589
 msgid "Toggle Panel"

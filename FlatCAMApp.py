@@ -1462,7 +1462,7 @@ class App(QtCore.QObject):
         self.connect_toolbar_signals()
 
         # Context Menu
-        self.ui.popmenu_disable.triggered.connect(lambda: self.disable_plots(self.collection.get_selected()))
+        self.ui.popmenu_disable.triggered.connect(lambda: self.toggle_plots(self.collection.get_selected()))
         self.ui.popmenu_panel_toggle.triggered.connect(self.on_toggle_notebook)
 
         self.ui.popmenu_new_geo.triggered.connect(self.new_geometry_object)
@@ -8532,10 +8532,44 @@ The normal flow when working in FlatCAM is the following:</span></p>
         :return:
         """
 
+        # if no objects selected then do nothing
+        if not self.collection.get_selected():
+            return
+
+        # if at least one object is visible then do the disable
+        exit_flag = True
+        for obj in objects:
+            if obj.options['plot'] is True:
+                exit_flag = False
+                break
+
+        if exit_flag:
+            return
+
         log.debug("Disabling plots ...")
         self.inform.emit(_("Working ..."))
         for obj in objects:
             obj.options['plot'] = False
+        self.plots_updated.emit()
+
+    def toggle_plots(self, objects):
+        """
+        Toggle plots visibility
+        :param objects: list of Objects for which to be toggled the visibility
+        :return:
+        """
+
+        # if no objects selected then do nothing
+        if not self.collection.get_selected():
+            return
+
+        log.debug("Toggling plots ...")
+        self.inform.emit(_("Working ..."))
+        for obj in objects:
+            if obj.options['plot'] is False:
+                obj.options['plot'] = True
+            else:
+                obj.options['plot'] = False
         self.plots_updated.emit()
 
     def clear_plots(self):

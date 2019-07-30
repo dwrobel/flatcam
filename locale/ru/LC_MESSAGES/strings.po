@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-07-30 13:13+0300\n"
+"POT-Creation-Date: 2019-07-30 19:02+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
@@ -611,8 +611,8 @@ msgstr "Открыть файл конфигурации"
 msgid "[WARNING_NOTCL] Open Config cancelled."
 msgstr "[WARNING_NOTCL] Открытие конфигурации отменено."
 
-#: FlatCAMApp.py:6297 FlatCAMApp.py:6548 FlatCAMApp.py:8701 FlatCAMApp.py:8721
-#: FlatCAMApp.py:8742 FlatCAMApp.py:8764
+#: FlatCAMApp.py:6297 FlatCAMApp.py:6548 FlatCAMApp.py:8735 FlatCAMApp.py:8755
+#: FlatCAMApp.py:8776 FlatCAMApp.py:8798
 msgid "[WARNING_NOTCL] No object selected."
 msgstr "[WARNING_NOTCL] Нет выбранных объектов."
 
@@ -1226,33 +1226,33 @@ msgstr "[success] Выбранные участки включены..."
 msgid "[success] Selected plots disabled..."
 msgstr "[success] Выбранные участки отключены..."
 
-#: FlatCAMApp.py:8523 FlatCAMApp.py:8536
+#: FlatCAMApp.py:8523 FlatCAMApp.py:8550 FlatCAMApp.py:8567
 msgid "Working ..."
 msgstr "Обработка…"
 
-#: FlatCAMApp.py:8570
+#: FlatCAMApp.py:8604
 msgid "Saving FlatCAM Project"
 msgstr "Сохранение проекта FlatCAM"
 
-#: FlatCAMApp.py:8591 FlatCAMApp.py:8622
+#: FlatCAMApp.py:8625 FlatCAMApp.py:8656
 #, python-format
 msgid "[success] Project saved to: %s"
 msgstr "[success] Проект сохранён в: %s"
 
-#: FlatCAMApp.py:8609
+#: FlatCAMApp.py:8643
 #, python-format
 msgid "[ERROR_NOTCL] Failed to verify project file: %s. Retry to save it."
 msgstr ""
 "[ERROR_NOTCL] Не удалось проверить файл проекта: %s. Повторите попытку."
 
-#: FlatCAMApp.py:8616
+#: FlatCAMApp.py:8650
 #, python-format
 msgid "[ERROR_NOTCL] Failed to parse saved project file: %s. Retry to save it."
 msgstr ""
 "[ERROR_NOTCL] Не удалось проанализировать сохраняемый файл проекта: %s. "
 "Повторите попытку сохранения."
 
-#: FlatCAMApp.py:8624
+#: FlatCAMApp.py:8658
 #, python-format
 msgid "[ERROR_NOTCL] Failed to save project file: %s. Retry to save it."
 msgstr ""
@@ -1408,11 +1408,9 @@ msgid "[success] Tool added in Tool Table."
 msgstr "[success] Инструмент добавлен в таблицу инструментов."
 
 #: FlatCAMObj.py:3671
-#, fuzzy
-#| msgid "[ERROR_NOTCL] Default Tool added. Wrong value format entered."
 msgid "[WARNING_NOTCL] Default Tool added. Wrong value format entered."
 msgstr ""
-"[ERROR_NOTCL] Добавлен инструмент по умолчанию. Введен неправильный формат "
+"[WARNING_NOTCL] Добавлен инструмент по умолчанию. Введен неправильный формат "
 "значения."
 
 #: FlatCAMObj.py:3705 FlatCAMObj.py:3715
@@ -4374,7 +4372,7 @@ msgstr "Трансформировать\tALT+R"
 msgid "Enable Plot"
 msgstr "Включить участок"
 
-#: flatcamGUI/FlatCAMGUI.py:516 flatcamGUI/FlatCAMGUI.py:1588
+#: flatcamGUI/FlatCAMGUI.py:516
 msgid "Disable Plot"
 msgstr "Отключить участок"
 
@@ -5392,6 +5390,10 @@ msgid ""
 "            </table>\n"
 "                    "
 msgstr ""
+
+#: flatcamGUI/FlatCAMGUI.py:1588
+msgid "Toggle Visibility"
+msgstr "Переключить видимость"
 
 #: flatcamGUI/FlatCAMGUI.py:1589
 msgid "Toggle Panel"
@@ -6467,11 +6469,16 @@ msgid ""
 "If TZ is checked then Trailing Zeros are removed\n"
 "and Leading Zeros are kept."
 msgstr ""
+"Это устанавливает тип нулей Гербера.\n"
+"Если LZ, то Ведущие нули удаляются и\n"
+"Замыкающие нули сохраняются.\n"
+"Если TZ отмечен, то завершающие нули удаляются\n"
+"и ведущие нули сохраняются."
 
 #: flatcamGUI/FlatCAMGUI.py:4322 flatcamGUI/FlatCAMGUI.py:4504
 #: flatcamGUI/FlatCAMGUI.py:4999 flatcamTools/ToolPcbWizard.py:111
 msgid "LZ"
-msgstr ""
+msgstr "LZ"
 
 #: flatcamGUI/FlatCAMGUI.py:4323 flatcamGUI/FlatCAMGUI.py:4505
 #: flatcamGUI/FlatCAMGUI.py:5000 flatcamTools/ToolPcbWizard.py:112
@@ -6686,7 +6693,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4555
 msgid "MH"
-msgstr ""
+msgstr "MH"
 
 #: flatcamGUI/FlatCAMGUI.py:4569
 msgid "Optimization Time:   "
@@ -7076,14 +7083,20 @@ msgid ""
 "Also it will have to be specified if LZ = leading zeros are kept\n"
 "or TZ = trailing zeros are kept."
 msgstr ""
+"Выберите тип используемого формата координат.\n"
+"Координаты могут быть сохранены с десятичной точкой или без.\n"
+"Когда нет десятичной точки, необходимо указать\n"
+"количество цифр для целой части и количество десятичных знаков.\n"
+"Также это должно быть указано, если LZ = ведущие нули сохраняются\n"
+"или TZ = конечные нули сохраняются."
 
 #: flatcamGUI/FlatCAMGUI.py:4975
 msgid "Decimal"
-msgstr ""
+msgstr "Десятичный"
 
 #: flatcamGUI/FlatCAMGUI.py:4976
 msgid "No-Decimal"
-msgstr ""
+msgstr "Не-десятичный"
 
 #: flatcamGUI/FlatCAMGUI.py:5002
 msgid ""
@@ -7093,6 +7106,11 @@ msgid ""
 "If TZ is checked then Trailing Zeros are kept\n"
 "and Leading Zeros are removed."
 msgstr ""
+"Это устанавливает тип по умолчанию нулей Excellon.\n"
+"Если LZ, то ведущие нули сохраняются и\n"
+"Замыкающие нули удаляются.\n"
+"Если проверен TZ, то сохраняются нулевые трейлеры\n"
+"и ведущие нули удаляются."
 
 #: flatcamGUI/FlatCAMGUI.py:5032
 msgid "A list of Excellon Editor parameters."
@@ -7106,6 +7124,11 @@ msgid ""
 "Increases the performance when moving a\n"
 "large number of geometric elements."
 msgstr ""
+"Установить количество выбранной геометрии Excellon\n"
+"предметы, над которыми полезна геометрия\n"
+"становится просто прямоугольником выбора.\n"
+"Увеличивает производительность при перемещении\n"
+"большое количество геометрических элементов."
 
 #: flatcamGUI/FlatCAMGUI.py:5054
 msgid "New Tool Dia:"
@@ -7117,7 +7140,7 @@ msgstr "<b>Линейный массив:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:5081
 msgid "Linear Dir.:"
-msgstr ""
+msgstr "инейное нап.:"
 
 #: flatcamGUI/FlatCAMGUI.py:5117
 msgid "<b>Circular Drill Array:</b>"
@@ -7125,7 +7148,7 @@ msgstr "<b>Круговой массив:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:5121
 msgid "Circular Dir.:"
-msgstr ""
+msgstr "Круговое нап.:"
 
 #: flatcamGUI/FlatCAMGUI.py:5123
 msgid ""
@@ -7137,7 +7160,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5134
 msgid "Circ. Angle:"
-msgstr ""
+msgstr "Круг. угол:"
 
 #: flatcamGUI/FlatCAMGUI.py:5151
 msgid "Geometry General"
@@ -7148,6 +7171,8 @@ msgid ""
 "The number of circle steps for <b>Geometry</b> \n"
 "circle and arc shapes linear approximation."
 msgstr ""
+"Количество шагов круга для <b>геометрии</b>\n"
+"линейная аппроксимация окружности и дуги"
 
 #: flatcamGUI/FlatCAMGUI.py:5178
 msgid "<b>Tools:</b>"
@@ -7155,7 +7180,7 @@ msgstr "<b>Инструменты:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:5184 flatcamGUI/FlatCAMGUI.py:5793
 msgid "Diameters of the cutting tools, separated by ','"
-msgstr ""
+msgstr "Диаметры режущих инструментов, разделенные знаком ','"
 
 #: flatcamGUI/FlatCAMGUI.py:5198
 msgid "Geometry Options"
@@ -7189,7 +7214,7 @@ msgstr "Мультипроход"
 
 #: flatcamGUI/FlatCAMGUI.py:5227
 msgid "Multidepth usage: True or False."
-msgstr ""
+msgstr "Многократное использование: Истина или Ложь."
 
 #: flatcamGUI/FlatCAMGUI.py:5232
 msgid "Depth/Pass:"
@@ -7203,6 +7228,11 @@ msgid ""
 "it is a fraction from the depth\n"
 "which has negative value."
 msgstr ""
+"Глубина резания на каждом проходе,\n"
+"когда multidepth включен.\n"
+"Это имеет положительное значение, хотя\n"
+"это доля от глубины\n"
+"который имеет отрицательное значение."
 
 #: flatcamGUI/FlatCAMGUI.py:5250 flatcamGUI/ObjectUI.py:1107
 msgid ""
@@ -7232,6 +7262,9 @@ msgid ""
 "plane in units per minute.\n"
 "It is called also Plunge."
 msgstr ""
+"Скорость резания в XY\n"
+"самолет в единицах в минуту.\n"
+"Это называется также Плунге."
 
 #: flatcamGUI/FlatCAMGUI.py:5298 flatcamGUI/ObjectUI.py:679
 #: flatcamGUI/ObjectUI.py:1217
@@ -7243,6 +7276,8 @@ msgid ""
 "The postprocessor file that dictates\n"
 "Machine Code output."
 msgstr ""
+"Файл постпроцессора, который диктует\n"
+"Вывод машинного кода."
 
 #: flatcamGUI/FlatCAMGUI.py:5357
 msgid "Geometry Adv. Options"
@@ -7321,6 +7356,11 @@ msgid ""
 "Increases the performance when moving a\n"
 "large number of geometric elements."
 msgstr ""
+"Установить номер выбранной геометрии\n"
+"предметы, над которыми полезна геометрия\n"
+"становится просто прямоугольником выбора.\n"
+"Увеличивает производительность при перемещении\n"
+"большое количество геометрических элементов."
 
 #: flatcamGUI/FlatCAMGUI.py:5520
 msgid "CNC Job General"
@@ -7333,7 +7373,7 @@ msgstr "Рисовать объекты"
 
 #: flatcamGUI/FlatCAMGUI.py:5540
 msgid "Plot kind:"
-msgstr ""
+msgstr "Рисовать участка:"
 
 #: flatcamGUI/FlatCAMGUI.py:5542 flatcamGUI/ObjectUI.py:1361
 msgid ""
@@ -7342,6 +7382,10 @@ msgid ""
 "above the work piece or it can be of type 'Cut',\n"
 "which means the moves that cut into the material."
 msgstr ""
+"Это выбирает вид геометрии на холсте для построения графика.\n"
+"Они могут быть любого типа «Путешествие», что означает ходы\n"
+"над заготовкой или она может быть типа \"Cut\",\n"
+"что означает ходы, которые врезаются в материал."
 
 #: flatcamGUI/FlatCAMGUI.py:5550 flatcamGUI/ObjectUI.py:1370
 msgid "Travel"
@@ -7357,6 +7401,10 @@ msgid ""
 "When checked it will display numbers in order for each end\n"
 "of a travel line."
 msgstr ""
+"Это выбирает, если отображать текстовую аннотацию на графике.\n"
+"Когда установлен этот флажок, он будет отображать числа в порядке для "
+"каждого конца\n"
+"линии путешествия."
 
 #: flatcamGUI/FlatCAMGUI.py:5573
 msgid "Annotation Size:"
@@ -7364,7 +7412,7 @@ msgstr "Размер аннотации:"
 
 #: flatcamGUI/FlatCAMGUI.py:5575
 msgid "The font size of the annotation text. In pixels."
-msgstr ""
+msgstr "Размер шрифта текста аннотации. В пикселях."
 
 #: flatcamGUI/FlatCAMGUI.py:5583
 msgid "Annotation Color:"
@@ -7481,6 +7529,8 @@ msgid ""
 "Check this box if you want to use\n"
 "a Custom Toolchange GCode (macro)."
 msgstr ""
+"Установите этот флажок, если хотите использовать\n"
+"пользовательский GCode смены инструментов (макрос)."
 
 #: flatcamGUI/FlatCAMGUI.py:5735 flatcamGUI/ObjectUI.py:1562
 msgid ""
@@ -7628,10 +7678,8 @@ msgid "Single"
 msgstr "Одиночный"
 
 #: flatcamGUI/FlatCAMGUI.py:5912 flatcamTools/ToolCutOut.py:86
-#, fuzzy
-#| msgid "Panel Tool"
 msgid "Panel"
-msgstr "Панелизация"
+msgstr "Панел"
 
 #: flatcamGUI/FlatCAMGUI.py:5918
 msgid ""
@@ -7686,7 +7734,7 @@ msgstr "Закруглять углы:"
 
 #: flatcamGUI/FlatCAMGUI.py:5960
 msgid "Create a convex shape surrounding the entire PCB."
-msgstr ""
+msgstr "Создайте выпуклую форму, окружающую печатную плату."
 
 #: flatcamGUI/FlatCAMGUI.py:5973
 msgid "2Sided Tool Options"
@@ -7723,11 +7771,11 @@ msgstr "Точка"
 
 #: flatcamGUI/FlatCAMGUI.py:6011 flatcamTools/ToolDblSided.py:132
 msgid "Box"
-msgstr ""
+msgstr "коробка"
 
 #: flatcamGUI/FlatCAMGUI.py:6012 flatcamTools/ToolDblSided.py:133
 msgid "Axis Ref:"
-msgstr ""
+msgstr "Ось ссылка:"
 
 #: flatcamGUI/FlatCAMGUI.py:6014
 msgid ""
@@ -7780,6 +7828,9 @@ msgid ""
 "FlatCAM object.\n"
 "The file is saved in SVG format."
 msgstr ""
+"Создайте фильм на печатной плате из Gerber или Geometry\n"
+"Объект FlatCAM.\n"
+"Файл сохраняется в формате SVG."
 
 #: flatcamGUI/FlatCAMGUI.py:6151 flatcamTools/ToolFilm.py:116
 msgid "Film Type:"
@@ -7816,6 +7867,14 @@ msgid ""
 "white color like the rest and which may confound with the\n"
 "surroundings if not for this border."
 msgstr ""
+"Укажите границу вокруг объекта.\n"
+"Только для негативного фильма.\n"
+"Это помогает, если мы используем в качестве объекта Box то же самое\n"
+"объект как в фильме объекта. Это создаст толстый\n"
+"черная полоса вокруг фактической печати с учетом\n"
+"лучшее разграничение контуров\n"
+"белый цвет как у остальных и который может смешаться с\n"
+"окружение, если бы не эта граница."
 
 #: flatcamGUI/FlatCAMGUI.py:6179 flatcamTools/ToolFilm.py:144
 msgid "Scale Stroke:"

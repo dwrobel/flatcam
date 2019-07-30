@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed bug that crashed the software when trying to edit a GUI value in Geometry selected tab without having a tool in the Tools Table
 - fixed bug that crashed the app when trying to add a tool without a tool diameter value
 - Spanish Google translation at 77%
+- changed the Disable plots menu entry in the context menu, into a Toggle Visibility menu entry
+- Spanish Google translation 100% but two strings (big ones)
 
 28.07.2019
 
