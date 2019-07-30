@@ -1030,8 +1030,16 @@ class GeometryObjectUI(ObjectUI):
         )
         self.geo_tools_box.addWidget(self.tool_data_label)
 
+        self.geo_param_frame = QtWidgets.QFrame()
+        self.geo_param_frame.setContentsMargins(0, 0, 0, 0)
+        self.geo_tools_box.addWidget(self.geo_param_frame)
+
+        self.geo_param_box = QtWidgets.QVBoxLayout()
+        self.geo_param_box.setContentsMargins(0, 0, 0, 0)
+        self.geo_param_frame.setLayout(self.geo_param_box)
+
         self.grid3 = QtWidgets.QGridLayout()
-        self.geo_tools_box.addLayout(self.grid3)
+        self.geo_param_box.addLayout(self.grid3)
 
         # Tip Dia
         self.tipdialabel = QtWidgets.QLabel(_('V-Tip Dia:'))
@@ -1292,7 +1300,7 @@ class GeometryObjectUI(ObjectUI):
                 "Generate the CNC Job object."
             )
         )
-        self.geo_tools_box.addWidget(self.generate_cnc_button)
+        self.geo_param_box.addWidget(self.generate_cnc_button)
 
         # ##############
         # Paint area ##

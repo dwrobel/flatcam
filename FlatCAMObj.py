@@ -3583,7 +3583,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     tooldia = float(self.ui.addtool_entry.get_value().replace(',', '.'))
                 except ValueError:
                     change_message = True
-                    tooldia = self.options["cnctooldia"][0]
+                    tooldia = float(self.options["cnctooldia"][0])
 
             if tooldia is None:
                 self.build_ui()
@@ -3668,9 +3668,13 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             change_message = False
             self.app.inform.emit(_(
-                "[ERROR_NOTCL] Default Tool added. Wrong value format entered."
+                "[WARNING_NOTCL] Default Tool added. Wrong value format entered."
             ))
         self.build_ui()
+
+        # if there is no tool left in the Tools Table, enable the parameters GUI
+        if self.ui.geo_tools_table.rowCount() != 0:
+            self.ui.geo_param_frame.setDisabled(False)
 
     def on_tool_copy(self, all=None):
         self.ui_disconnect()
@@ -3775,7 +3779,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.build_ui()
 
     def on_tool_delete(self, all=None):
-
         self.ui_disconnect()
 
         if all is None:
@@ -3854,6 +3857,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 obj_active.options['ymin'] = 0
                 obj_active.options['xmax'] = 0
                 obj_active.options['ymax'] = 0
+
+        # if there is no tool left in the Tools Table, disable the parameters GUI
+        if self.ui.geo_tools_table.rowCount() == 0:
+            self.ui.geo_param_frame.setDisabled(True)
 
     def on_row_selection_change(self):
         self.update_ui()
