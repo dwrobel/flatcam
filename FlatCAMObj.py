@@ -4026,6 +4026,12 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.ois_tcz_geo.on_cb_change()
 
     def gui_form_to_storage(self):
+
+        if self.ui.geo_tools_table.rowCount() == 0:
+            # there is no tool in tool table so we can't save the GUI elements values to storage
+            log.debug("FlatCAMGeometry.gui_form_to_storage() --> no tool in Tools Table, aborting.")
+            return
+
         self.ui_disconnect()
         widget_changed = self.sender()
         try:

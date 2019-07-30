@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+30.07.2019
+
+- fixed bug that crashed the software when trying to edit a GUI value in Geometry selected tab without having a tool in the Tools Table
+
 28.07.2019
 
 - fixed issue with not using the current units in the tool tables after unit conversion
