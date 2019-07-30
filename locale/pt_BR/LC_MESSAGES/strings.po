@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-07-30 19:01+0300\n"
-"PO-Revision-Date: 2019-07-30 19:02+0300\n"
+"POT-Creation-Date: 2019-07-30 20:43+0300\n"
+"PO-Revision-Date: 2019-07-30 20:43+0300\n"
 "Last-Translator: Carlos Stein <carlos.stein@gmail.com>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
@@ -6667,6 +6667,14 @@ msgstr "<b>Seleção Múltipla:</b>"
 msgid "Select the key used for multiple selection."
 msgstr "Selecione a tecla usada para seleção múltipla."
 
+#: flatcamGUI/FlatCAMGUI.py:3854
+msgid "CTRL"
+msgstr "CTRL"
+
+#: flatcamGUI/FlatCAMGUI.py:3855
+msgid "SHIFT"
+msgstr "SHIFT"
+
 #: flatcamGUI/FlatCAMGUI.py:3858
 msgid "Project at StartUp:"
 msgstr "Projeto no Inicialização:"
@@ -12421,12 +12429,6 @@ msgstr "Objetos Trabalho CNC não podem ser deslocados."
 
 #~ msgid "Copy Drill(s)"
 #~ msgstr "Copiar Broca(s)"
-
-#~ msgid "CTRL"
-#~ msgstr "CTRL"
-
-#~ msgid "SHIFT"
-#~ msgstr "SHIFT"
 
 #~ msgid "Both"
 #~ msgstr "Ambos"

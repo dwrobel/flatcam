@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-07-30 19:00+0300\n"
-"PO-Revision-Date: 2019-07-30 19:01+0300\n"
+"POT-Creation-Date: 2019-07-30 20:39+0300\n"
+"PO-Revision-Date: 2019-07-30 20:42+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: de\n"
@@ -3876,7 +3876,7 @@ msgstr "&Datei"
 
 #: flatcamGUI/FlatCAMGUI.py:56
 msgid "&New Project ...\tCTRL+N"
-msgstr "&Neues Projekt ...\tCTRL+N"
+msgstr "&Neues Projekt ...\\STRG+N"
 
 #: flatcamGUI/FlatCAMGUI.py:58
 msgid "Will create a new, blank project"
@@ -3917,11 +3917,11 @@ msgstr "Öffnen"
 
 #: flatcamGUI/FlatCAMGUI.py:84
 msgid "Open &Gerber ...\tCTRL+G"
-msgstr "Offen &Gerber ...\tCTRL+G"
+msgstr "Offen &Gerber ...\\STRG+G"
 
 #: flatcamGUI/FlatCAMGUI.py:91
 msgid "Open &Excellon ...\tCTRL+E"
-msgstr "Offen &Excellon ...\tCTRL+E"
+msgstr "Offen &Excellon ...\\STRG+E"
 
 #: flatcamGUI/FlatCAMGUI.py:95
 msgid "Open G-&Code ..."
@@ -4053,7 +4053,7 @@ msgstr "Projekt speichern ..."
 
 #: flatcamGUI/FlatCAMGUI.py:211
 msgid "Save Project &As ...\tCTRL+S"
-msgstr "Projekt speichern als ...\tCTRL+S"
+msgstr "Projekt speichern als ...\\STRG+S"
 
 #: flatcamGUI/FlatCAMGUI.py:216
 msgid "Save Project C&opy ..."
@@ -6720,6 +6720,14 @@ msgstr "<b>Mehrfachauswahl:</b>"
 #: flatcamGUI/FlatCAMGUI.py:3853
 msgid "Select the key used for multiple selection."
 msgstr "Wählen Sie den Schlüssel für die Mehrfachauswahl aus."
+
+#: flatcamGUI/FlatCAMGUI.py:3854
+msgid "CTRL"
+msgstr "STRG"
+
+#: flatcamGUI/FlatCAMGUI.py:3855
+msgid "SHIFT"
+msgstr "SHIFT"
 
 #: flatcamGUI/FlatCAMGUI.py:3858
 msgid "Project at StartUp:"
@@ -12587,12 +12595,6 @@ msgstr "CNCJob-Objekte können nicht versetzt werden."
 
 #~ msgid "Copy Drill(s)"
 #~ msgstr "Bohrer kopieren"
-
-#~ msgid "CTRL"
-#~ msgstr "CTRL"
-
-#~ msgid "SHIFT"
-#~ msgstr "SHIFT"
 
 #~ msgid "Both"
 #~ msgstr "Both"

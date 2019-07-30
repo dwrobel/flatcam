@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-07-30 19:01+0300\n"
-"PO-Revision-Date: 2019-07-30 19:01+0300\n"
+"POT-Creation-Date: 2019-07-30 20:41+0300\n"
+"PO-Revision-Date: 2019-07-30 20:41+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -5934,7 +5934,6 @@ msgstr ""
 "                    "
 
 #: flatcamGUI/FlatCAMGUI.py:1588
-#| msgid "Toggle Units"
 msgid "Toggle Visibility"
 msgstr "Toggle Visibility"
 
@@ -6567,6 +6566,14 @@ msgstr "<b>Multiple Sel:</b>"
 #: flatcamGUI/FlatCAMGUI.py:3853
 msgid "Select the key used for multiple selection."
 msgstr "Select the key used for multiple selection."
+
+#: flatcamGUI/FlatCAMGUI.py:3854
+msgid "CTRL"
+msgstr "CTRL"
+
+#: flatcamGUI/FlatCAMGUI.py:3855
+msgid "SHIFT"
+msgstr "SHIFT"
 
 #: flatcamGUI/FlatCAMGUI.py:3858
 msgid "Project at StartUp:"
@@ -12323,12 +12330,6 @@ msgstr "CNCJob objects can't be offseted."
 
 #~ msgid "Copy Drill(s)"
 #~ msgstr "Copy Drill(s)"
-
-#~ msgid "CTRL"
-#~ msgstr "CTRL"
-
-#~ msgid "SHIFT"
-#~ msgstr "SHIFT"
 
 #~ msgid "Both"
 #~ msgstr "Both"

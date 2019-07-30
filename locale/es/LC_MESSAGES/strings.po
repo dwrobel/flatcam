@@ -5,9 +5,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-07-30 19:15+0300\n"
-"PO-Revision-Date: 2019-07-30 20:02+0300\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2019-07-30 20:40+0300\n"
+"PO-Revision-Date: 2019-07-30 20:40+0300\n"
+"Last-Translator: Marius Stanciu - Google Translate\n"
 "Language-Team: \n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -33,7 +33,7 @@ msgid ""
 "(Type help to get started)\n"
 "\n"
 msgstr ""
-"(Escriba ayuda para empezar)\n"
+"(Para empezar escriba: help)\n"
 "\n"
 
 #: FlatCAMApp.py:2026 ObjectCollection.py:80 flatcamTools/ToolImage.py:213
@@ -4450,7 +4450,7 @@ msgstr "Editar"
 #: flatcamGUI/FlatCAMGUI.py:527 flatcamGUI/FlatCAMGUI.py:1634
 #: flatcamTools/ToolProperties.py:25
 msgid "Properties"
-msgstr "EditProperties"
+msgstr "Propiedades"
 
 #: flatcamGUI/FlatCAMGUI.py:556
 msgid "File Toolbar"
@@ -6092,6 +6092,14 @@ msgstr "<b>Sel múltiple:</b>"
 #: flatcamGUI/FlatCAMGUI.py:3853
 msgid "Select the key used for multiple selection."
 msgstr "Seleccione la clave utilizada para la selección múltiple."
+
+#: flatcamGUI/FlatCAMGUI.py:3854
+msgid "CTRL"
+msgstr "CTRL"
+
+#: flatcamGUI/FlatCAMGUI.py:3855
+msgid "SHIFT"
+msgstr "SHIFT"
 
 #: flatcamGUI/FlatCAMGUI.py:3858
 msgid "Project at StartUp:"

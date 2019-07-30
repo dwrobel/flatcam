@@ -3851,8 +3851,8 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Multiple Selection Modifier Key
         self.mselectlabel = QtWidgets.QLabel(_('<b>Multiple Sel:</b>'))
         self.mselectlabel.setToolTip(_("Select the key used for multiple selection."))
-        self.mselect_radio = RadioSet([{'label': 'CTRL', 'value': 'Control'},
-                                       {'label': 'SHIFT', 'value': 'Shift'}])
+        self.mselect_radio = RadioSet([{'label': _('CTRL'), 'value': 'Control'},
+                                       {'label': _('SHIFT'), 'value': 'Shift'}])
 
         # Project at StartUp CB
         self.project_startup_label = QtWidgets.QLabel(_('Project at StartUp:'))

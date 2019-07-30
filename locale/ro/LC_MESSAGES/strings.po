@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-07-30 19:02+0300\n"
-"PO-Revision-Date: 2019-07-30 19:02+0300\n"
+"POT-Creation-Date: 2019-07-30 20:43+0300\n"
+"PO-Revision-Date: 2019-07-30 20:43+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ro\n"
@@ -6713,6 +6713,14 @@ msgstr "<b>Sel. multipla:</b>"
 msgid "Select the key used for multiple selection."
 msgstr "Selectează tasta folosita pentru selectia multipla."
 
+#: flatcamGUI/FlatCAMGUI.py:3854
+msgid "CTRL"
+msgstr "CTRL"
+
+#: flatcamGUI/FlatCAMGUI.py:3855
+msgid "SHIFT"
+msgstr "SHIFT"
+
 #: flatcamGUI/FlatCAMGUI.py:3858
 msgid "Project at StartUp:"
 msgstr "Proiect la pornire:"
@@ -12601,12 +12609,6 @@ msgstr "Obiectele tip CNCJob nu pot fi deplasate."
 
 #~ msgid "Copy Drill(s)"
 #~ msgstr "Copiaza Găurire"
-
-#~ msgid "CTRL"
-#~ msgstr "CTRL"
-
-#~ msgid "SHIFT"
-#~ msgstr "SHIFT"
 
 #~ msgid "Both"
 #~ msgstr "Ambele"

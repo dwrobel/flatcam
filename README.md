@@ -16,6 +16,8 @@ CAD program, and create G-Code for Isolation routing.
 - Spanish Google translation at 77%
 - changed the Disable plots menu entry in the context menu, into a Toggle Visibility menu entry
 - Spanish Google translation 100% but two strings (big ones)
+- added two more strings to translation strings (due of German language)
+- completed the Russian translation using the Google and Yandex translation engines
 
 28.07.2019
 
