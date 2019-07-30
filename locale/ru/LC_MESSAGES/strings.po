@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-07-29 03:41+0300\n"
+"POT-Creation-Date: 2019-07-30 13:13+0300\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Andrey Kultyapov <camellan@yandex.ru>\n"
 "Language-Team: \n"
@@ -778,7 +778,7 @@ msgstr "Редактор исходного кода"
 msgid "[ERROR]App.on_view_source() -->%s"
 msgstr "[ERROR]App.on_view_source() -->%s"
 
-#: FlatCAMApp.py:6722 FlatCAMApp.py:7864 FlatCAMObj.py:5649
+#: FlatCAMApp.py:6722 FlatCAMApp.py:7864 FlatCAMObj.py:5662
 #: flatcamTools/ToolSolderPaste.py:1284
 msgid "Code Editor"
 msgstr "Редактор кода"
@@ -1263,11 +1263,11 @@ msgstr ""
 msgid "[success] Name changed from {old} to {new}"
 msgstr "[success] Имя изменено с {old} на {new}"
 
-#: FlatCAMObj.py:554 FlatCAMObj.py:2084 FlatCAMObj.py:3355 FlatCAMObj.py:5546
+#: FlatCAMObj.py:554 FlatCAMObj.py:2084 FlatCAMObj.py:3355 FlatCAMObj.py:5559
 msgid "<span style=\"color:green;\"><b>Basic</b></span>"
 msgstr "<span style=\"color:green;\"><b>Базовый</b></span>"
 
-#: FlatCAMObj.py:566 FlatCAMObj.py:2100 FlatCAMObj.py:3377 FlatCAMObj.py:5552
+#: FlatCAMObj.py:566 FlatCAMObj.py:2100 FlatCAMObj.py:3377 FlatCAMObj.py:5565
 msgid "<span style=\"color:red;\"><b>Advanced</b></span>"
 msgstr "<span style=\"color:red;\"><b>Расширенный</b></span>"
 
@@ -1292,9 +1292,9 @@ msgstr "Всего отверстий"
 msgid "Total Slots"
 msgstr "Всего пазов"
 
-#: FlatCAMObj.py:2158 FlatCAMObj.py:3429 FlatCAMObj.py:3756 FlatCAMObj.py:3944
-#: FlatCAMObj.py:3957 FlatCAMObj.py:4071 FlatCAMObj.py:4487 FlatCAMObj.py:4723
-#: FlatCAMObj.py:5127 flatcamEditors/FlatCAMExcEditor.py:1475
+#: FlatCAMObj.py:2158 FlatCAMObj.py:3429 FlatCAMObj.py:3760 FlatCAMObj.py:3951
+#: FlatCAMObj.py:3964 FlatCAMObj.py:4084 FlatCAMObj.py:4500 FlatCAMObj.py:4736
+#: FlatCAMObj.py:5140 flatcamEditors/FlatCAMExcEditor.py:1475
 #: flatcamTools/ToolCalculators.py:304 flatcamTools/ToolCalculators.py:315
 #: flatcamTools/ToolCalculators.py:327 flatcamTools/ToolCalculators.py:342
 #: flatcamTools/ToolCalculators.py:355 flatcamTools/ToolCalculators.py:369
@@ -1352,7 +1352,7 @@ msgstr ""
 "[ERROR_NOTCL] Инструмент для прорезания пазов больше, чем размер отверстия. "
 "Отмена."
 
-#: FlatCAMObj.py:2659 FlatCAMObj.py:4376 FlatCAMObj.py:4591 FlatCAMObj.py:4902
+#: FlatCAMObj.py:2659 FlatCAMObj.py:4389 FlatCAMObj.py:4604 FlatCAMObj.py:4915
 msgid ""
 "[ERROR_NOTCL] Wrong value format for self.defaults[\"z_pdepth\"] or self."
 "options[\"z_pdepth\"]"
@@ -1360,7 +1360,7 @@ msgstr ""
 "[ERROR_NOTCL] Неправильный формат значения для self.defaults[\"z_pdepth\"] "
 "или self.options[\"z_pdepth\"]"
 
-#: FlatCAMObj.py:2671 FlatCAMObj.py:4388 FlatCAMObj.py:4603 FlatCAMObj.py:4914
+#: FlatCAMObj.py:2671 FlatCAMObj.py:4401 FlatCAMObj.py:4616 FlatCAMObj.py:4927
 msgid ""
 "[ERROR_NOTCL] Wrong value format for self.defaults[\"feedrate_probe\"] or "
 "self.options[\"feedrate_probe\"]"
@@ -1368,11 +1368,11 @@ msgstr ""
 "[ERROR_NOTCL] Неправильный формат значения для self.defaults[\"feedrate_probe"
 "\"] или self.options[\"feedrate_probe\"]"
 
-#: FlatCAMObj.py:2703 FlatCAMObj.py:4790 FlatCAMObj.py:4795 FlatCAMObj.py:4945
+#: FlatCAMObj.py:2703 FlatCAMObj.py:4803 FlatCAMObj.py:4808 FlatCAMObj.py:4958
 msgid "Generating CNC Code"
 msgstr "Генерация кода ЧПУ"
 
-#: FlatCAMObj.py:2729 FlatCAMObj.py:5087 camlib.py:5168 camlib.py:5627
+#: FlatCAMObj.py:2729 FlatCAMObj.py:5100 camlib.py:5168 camlib.py:5627
 #: camlib.py:5890
 msgid ""
 "[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be in the "
@@ -1383,7 +1383,7 @@ msgstr ""
 "формате (x, y)\n"
 "но теперь есть только одно значение, а не два. "
 
-#: FlatCAMObj.py:3050 FlatCAMObj.py:3999 FlatCAMObj.py:4000 FlatCAMObj.py:4009
+#: FlatCAMObj.py:3050 FlatCAMObj.py:4006 FlatCAMObj.py:4007 FlatCAMObj.py:4016
 msgid "Iso"
 msgstr "Iso"
 
@@ -1408,32 +1408,34 @@ msgid "[success] Tool added in Tool Table."
 msgstr "[success] Инструмент добавлен в таблицу инструментов."
 
 #: FlatCAMObj.py:3671
-msgid "[ERROR_NOTCL] Default Tool added. Wrong value format entered."
+#, fuzzy
+#| msgid "[ERROR_NOTCL] Default Tool added. Wrong value format entered."
+msgid "[WARNING_NOTCL] Default Tool added. Wrong value format entered."
 msgstr ""
 "[ERROR_NOTCL] Добавлен инструмент по умолчанию. Введен неправильный формат "
 "значения."
 
-#: FlatCAMObj.py:3701 FlatCAMObj.py:3711
+#: FlatCAMObj.py:3705 FlatCAMObj.py:3715
 msgid "[WARNING_NOTCL] Failed. Select a tool to copy."
 msgstr "[WARNING_NOTCL] Ошибка. Выберите инструмент для копирования."
 
-#: FlatCAMObj.py:3740
+#: FlatCAMObj.py:3744
 msgid "[success] Tool was copied in Tool Table."
 msgstr "[success] Инструмент скопирован в таблицу инструментов."
 
-#: FlatCAMObj.py:3773
+#: FlatCAMObj.py:3777
 msgid "[success] Tool was edited in Tool Table."
 msgstr "[success] Инструмент был изменён в таблице инструментов."
 
-#: FlatCAMObj.py:3803 FlatCAMObj.py:3811
+#: FlatCAMObj.py:3806 FlatCAMObj.py:3814
 msgid "[WARNING_NOTCL] Failed. Select a tool to delete."
 msgstr "[WARNING_NOTCL] Ошибка. Выберите инструмент для удаления."
 
-#: FlatCAMObj.py:3833
+#: FlatCAMObj.py:3836
 msgid "[success] Tool was deleted in Tool Table."
 msgstr "[success] Инструмент был удален из таблицы инструментов."
 
-#: FlatCAMObj.py:4257
+#: FlatCAMObj.py:4270
 #, python-format
 msgid ""
 "[WARNING_NOTCL] This Geometry can't be processed because it is %s geometry."
@@ -1441,25 +1443,25 @@ msgstr ""
 "[WARNING_NOTCL] Эта Geometry не может быть обработана, так как это %s "
 "геометрия."
 
-#: FlatCAMObj.py:4274
+#: FlatCAMObj.py:4287
 msgid "[ERROR_NOTCL] Wrong Tool Dia value format entered, use a number."
 msgstr ""
 "[ERROR_NOTCL] Неверный формат ввода диаметра инструмента, используйте цифры."
 
-#: FlatCAMObj.py:4301
+#: FlatCAMObj.py:4314
 msgid "[ERROR_NOTCL] Failed. No tool selected in the tool table ..."
 msgstr "[ERROR_NOTCL] Ошибка. Инструмент не выбран в таблице инструментов ..."
 
-#: FlatCAMObj.py:4338 flatcamEditors/FlatCAMExcEditor.py:2078
+#: FlatCAMObj.py:4351 flatcamEditors/FlatCAMExcEditor.py:2078
 msgid "[ERROR] An internal error has ocurred. See shell.\n"
 msgstr "[ERROR] Произошла внутренняя ошибка. Посмотрите в командную строку.\n"
 
-#: FlatCAMObj.py:4339
+#: FlatCAMObj.py:4352
 #, python-format
 msgid "FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s"
 msgstr "FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s"
 
-#: FlatCAMObj.py:4496 FlatCAMObj.py:4730
+#: FlatCAMObj.py:4509 FlatCAMObj.py:4743
 msgid ""
 "[WARNING] Tool Offset is selected in Tool Table but no value is provided.\n"
 "Add a Tool Offset or change the Offset Type."
@@ -1468,51 +1470,51 @@ msgstr ""
 "указано.\n"
 "Добавьте смещение инструмента или измените тип смещения."
 
-#: FlatCAMObj.py:4615 flatcamTools/ToolSolderPaste.py:1112
+#: FlatCAMObj.py:4628 flatcamTools/ToolSolderPaste.py:1112
 #: flatcamTools/ToolSolderPaste.py:1168
 msgid "[ERROR_NOTCL] Cancelled. Empty file, it has no geometry..."
 msgstr "[ERROR_NOTCL] Отмена. Пустой файл, он не имеет геометрии..."
 
-#: FlatCAMObj.py:4978 FlatCAMObj.py:4987 camlib.py:3349 camlib.py:3358
+#: FlatCAMObj.py:4991 FlatCAMObj.py:5000 camlib.py:3349 camlib.py:3358
 msgid "[ERROR_NOTCL] Scale factor has to be a number: integer or float."
 msgstr ""
 "[ERROR_NOTCL] Коэффициент масштабирования должен быть числом: целочисленным "
 "или с плавающей запятой."
 
-#: FlatCAMObj.py:5024
+#: FlatCAMObj.py:5037
 msgid "[success] Geometry Scale done."
 msgstr "[success] Масштабирование Geometry выполнено."
 
-#: FlatCAMObj.py:5041 camlib.py:3427
+#: FlatCAMObj.py:5054 camlib.py:3427
 msgid ""
 "[ERROR_NOTCL] An (x,y) pair of values are needed. Probable you entered only "
 "one value in the Offset field."
 msgstr ""
 "[ERROR_NOTCL] Необходима пара значений (x,y). Возможно, вы ввели только одно."
 
-#: FlatCAMObj.py:5060
+#: FlatCAMObj.py:5073
 msgid "[success] Geometry Offset done."
 msgstr "[success] Смещение Geometry выполнено."
 
-#: FlatCAMObj.py:5614 FlatCAMObj.py:5619 flatcamTools/ToolSolderPaste.py:1368
+#: FlatCAMObj.py:5627 FlatCAMObj.py:5632 flatcamTools/ToolSolderPaste.py:1368
 msgid "Export Machine Code ..."
 msgstr "Экспорт GCode ..."
 
-#: FlatCAMObj.py:5625 flatcamTools/ToolSolderPaste.py:1371
+#: FlatCAMObj.py:5638 flatcamTools/ToolSolderPaste.py:1371
 msgid "[WARNING_NOTCL] Export Machine Code cancelled ..."
 msgstr "[WARNING_NOTCL] Экспорт GCode отменен ..."
 
-#: FlatCAMObj.py:5638
+#: FlatCAMObj.py:5651
 #, python-format
 msgid "[success] Machine Code file saved to: %s"
 msgstr "[success] Файл GCode сохранён в: %s"
 
-#: FlatCAMObj.py:5660
+#: FlatCAMObj.py:5673
 #, python-format
 msgid "[ERROR]FlatCAMCNNJob.on_edit_code_click() -->%s"
 msgstr "[ERROR]FlatCAMCNNJob.on_edit_code_click() -->%s"
 
-#: FlatCAMObj.py:5777
+#: FlatCAMObj.py:5790
 #, python-format
 msgid ""
 "[WARNING_NOTCL] This CNCJob object can't be processed because it is a %s "
@@ -1521,11 +1523,11 @@ msgstr ""
 "[WARNING_NOTCL] CNCJob объект %s не может быть обработан, так как он "
 "является объектом  CNCJob."
 
-#: FlatCAMObj.py:5830
+#: FlatCAMObj.py:5843
 msgid "[ERROR_NOTCL] G-code does not have a units code: either G20 or G21"
 msgstr "[ERROR_NOTCL] G-code не имеет кода единиц измерения: G20 или G21"
 
-#: FlatCAMObj.py:5843
+#: FlatCAMObj.py:5856
 msgid ""
 "[ERROR_NOTCL] Cancelled. The Toolchange Custom code is enabled but it's "
 "empty."
@@ -1533,16 +1535,16 @@ msgstr ""
 "[ERROR_NOTCL] Отмена. Пользовательский код смены инструмента включен, но он "
 "пуст."
 
-#: FlatCAMObj.py:5850
+#: FlatCAMObj.py:5863
 msgid "[success] Toolchange G-code was replaced by a custom code."
 msgstr ""
 "[success] G-code смены инструмента был заменен на пользовательский код."
 
-#: FlatCAMObj.py:5865 flatcamTools/ToolSolderPaste.py:1397
+#: FlatCAMObj.py:5878 flatcamTools/ToolSolderPaste.py:1397
 msgid "[WARNING_NOTCL] No such file or directory"
 msgstr "[WARNING_NOTCL] Нет такого файла или каталога"
 
-#: FlatCAMObj.py:5885 FlatCAMObj.py:5897
+#: FlatCAMObj.py:5898 FlatCAMObj.py:5910
 msgid ""
 "[WARNING_NOTCL] The used postprocessor file has to have in it's name: "
 "'toolchange_custom'"
@@ -1550,7 +1552,7 @@ msgstr ""
 "[WARNING_NOTCL] Используемый файл постпроцессора должен иметь имя: "
 "'toolchange_custom'"
 
-#: FlatCAMObj.py:5903
+#: FlatCAMObj.py:5916
 msgid "[ERROR] There is no postprocessor file."
 msgstr "[ERROR] Это не файл постпроцессора."
 
@@ -2371,7 +2373,7 @@ msgid "Paint"
 msgstr "Нарисовать"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:527 flatcamGUI/FlatCAMGUI.py:639
-#: flatcamGUI/FlatCAMGUI.py:1876 flatcamGUI/ObjectUI.py:1312
+#: flatcamGUI/FlatCAMGUI.py:1876 flatcamGUI/ObjectUI.py:1320
 #: flatcamTools/ToolPaint.py:340
 msgid "Paint Tool"
 msgstr "Рисование"
@@ -2449,7 +2451,7 @@ msgstr "Зеркалирование (отражение)"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:622
 #: flatcamEditors/FlatCAMGrbEditor.py:4699 flatcamGUI/ObjectUI.py:127
-#: flatcamGUI/ObjectUI.py:888 flatcamGUI/ObjectUI.py:1462
+#: flatcamGUI/ObjectUI.py:888 flatcamGUI/ObjectUI.py:1470
 #: flatcamTools/ToolTransform.py:28
 msgid "Offset"
 msgstr "Смещение"
@@ -3457,7 +3459,7 @@ msgstr "Код"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2334
 #: flatcamEditors/FlatCAMGrbEditor.py:3712 flatcamGUI/ObjectUI.py:227
-#: flatcamGUI/ObjectUI.py:888 flatcamGUI/ObjectUI.py:1462
+#: flatcamGUI/ObjectUI.py:888 flatcamGUI/ObjectUI.py:1470
 msgid "Type"
 msgstr "Тип"
 
@@ -5436,7 +5438,7 @@ msgid "Rectangle"
 msgstr "Прямоугольник"
 
 #: flatcamGUI/FlatCAMGUI.py:1611 flatcamGUI/FlatCAMGUI.py:5551
-#: flatcamGUI/ObjectUI.py:1363
+#: flatcamGUI/ObjectUI.py:1371
 msgid "Cut"
 msgstr "Вырезать"
 
@@ -5481,7 +5483,7 @@ msgid "Replace With"
 msgstr "Заменить"
 
 #: flatcamGUI/FlatCAMGUI.py:1664 flatcamGUI/FlatCAMGUI.py:5549
-#: flatcamGUI/FlatCAMGUI.py:6122 flatcamGUI/ObjectUI.py:1361
+#: flatcamGUI/FlatCAMGUI.py:6122 flatcamGUI/ObjectUI.py:1369
 #: flatcamTools/ToolPaint.py:248
 msgid "All"
 msgstr "Все"
@@ -6155,7 +6157,7 @@ msgstr "Gerber основные"
 #: flatcamGUI/FlatCAMGUI.py:4014 flatcamGUI/FlatCAMGUI.py:4380
 #: flatcamGUI/FlatCAMGUI.py:5154 flatcamGUI/FlatCAMGUI.py:5523
 #: flatcamGUI/ObjectUI.py:150 flatcamGUI/ObjectUI.py:502
-#: flatcamGUI/ObjectUI.py:830 flatcamGUI/ObjectUI.py:1347
+#: flatcamGUI/ObjectUI.py:830 flatcamGUI/ObjectUI.py:1355
 msgid "<b>Plot Options:</b>"
 msgstr "<b>Отрисовка:</b>"
 
@@ -6183,7 +6185,7 @@ msgstr "Участок"
 
 #: flatcamGUI/FlatCAMGUI.py:4037 flatcamGUI/FlatCAMGUI.py:5160
 #: flatcamGUI/ObjectUI.py:174 flatcamGUI/ObjectUI.py:543
-#: flatcamGUI/ObjectUI.py:876 flatcamGUI/ObjectUI.py:1447
+#: flatcamGUI/ObjectUI.py:876 flatcamGUI/ObjectUI.py:1455
 msgid "Plot (show) this object."
 msgstr "Начертить (отобразить) этот объект."
 
@@ -6720,7 +6722,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4628 flatcamGUI/FlatCAMGUI.py:5215
 #: flatcamGUI/FlatCAMGUI.py:6334 flatcamGUI/ObjectUI.py:592
-#: flatcamGUI/ObjectUI.py:1060 flatcamTools/ToolCalculators.py:106
+#: flatcamGUI/ObjectUI.py:1068 flatcamTools/ToolCalculators.py:106
 msgid "Cut Z:"
 msgstr "Глубина резания:"
 
@@ -6733,7 +6735,7 @@ msgstr ""
 "ниже слоя меди."
 
 #: flatcamGUI/FlatCAMGUI.py:4637 flatcamGUI/FlatCAMGUI.py:5248
-#: flatcamGUI/ObjectUI.py:602 flatcamGUI/ObjectUI.py:1096
+#: flatcamGUI/ObjectUI.py:602 flatcamGUI/ObjectUI.py:1104
 msgid "Travel Z:"
 msgstr "Отвод по Z:"
 
@@ -6808,12 +6810,12 @@ msgstr ""
 "- CCW = против часовой стрелки"
 
 #: flatcamGUI/FlatCAMGUI.py:4698 flatcamGUI/FlatCAMGUI.py:5322
-#: flatcamGUI/ObjectUI.py:689 flatcamGUI/ObjectUI.py:1222
+#: flatcamGUI/ObjectUI.py:689 flatcamGUI/ObjectUI.py:1230
 msgid "Dwell:"
 msgstr "Задержка:"
 
 #: flatcamGUI/FlatCAMGUI.py:4700 flatcamGUI/FlatCAMGUI.py:5324
-#: flatcamGUI/ObjectUI.py:691 flatcamGUI/ObjectUI.py:1225
+#: flatcamGUI/ObjectUI.py:691 flatcamGUI/ObjectUI.py:1233
 msgid ""
 "Pause to allow the spindle to reach its\n"
 "speed before cutting."
@@ -6826,7 +6828,7 @@ msgid "Duration:"
 msgstr "Продолжительность:"
 
 #: flatcamGUI/FlatCAMGUI.py:4705 flatcamGUI/FlatCAMGUI.py:5329
-#: flatcamGUI/ObjectUI.py:696 flatcamGUI/ObjectUI.py:1232
+#: flatcamGUI/ObjectUI.py:696 flatcamGUI/ObjectUI.py:1240
 msgid "Number of milliseconds for spindle to dwell."
 msgstr "Количество миллисекунд для шпинделя, котор нужно обитать."
 
@@ -6940,7 +6942,7 @@ msgstr ""
 "Удалить значение если вам не нужна эта функция."
 
 #: flatcamGUI/FlatCAMGUI.py:4828 flatcamGUI/FlatCAMGUI.py:5392
-#: flatcamGUI/ObjectUI.py:641 flatcamGUI/ObjectUI.py:1142
+#: flatcamGUI/ObjectUI.py:641 flatcamGUI/ObjectUI.py:1150
 msgid "End move Z:"
 msgstr "Высота отвода Z:"
 
@@ -6972,12 +6974,12 @@ msgstr ""
 "игнорировать для любых других случаев."
 
 #: flatcamGUI/FlatCAMGUI.py:4850 flatcamGUI/FlatCAMGUI.py:5426
-#: flatcamGUI/ObjectUI.py:715 flatcamGUI/ObjectUI.py:1254
+#: flatcamGUI/ObjectUI.py:715 flatcamGUI/ObjectUI.py:1262
 msgid "Probe Z depth:"
 msgstr "Глубина зонда Z:"
 
 #: flatcamGUI/FlatCAMGUI.py:4852 flatcamGUI/FlatCAMGUI.py:5428
-#: flatcamGUI/ObjectUI.py:717 flatcamGUI/ObjectUI.py:1257
+#: flatcamGUI/ObjectUI.py:717 flatcamGUI/ObjectUI.py:1265
 msgid ""
 "The maximum depth that the probe is allowed\n"
 "to probe. Negative value, in current units."
@@ -6986,12 +6988,12 @@ msgstr ""
 "зондировать. Отрицательное значение в текущих единицах."
 
 #: flatcamGUI/FlatCAMGUI.py:4860 flatcamGUI/FlatCAMGUI.py:5436
-#: flatcamGUI/ObjectUI.py:727 flatcamGUI/ObjectUI.py:1268
+#: flatcamGUI/ObjectUI.py:727 flatcamGUI/ObjectUI.py:1276
 msgid "Feedrate Probe:"
 msgstr "Датчик Скорости Подачи:"
 
 #: flatcamGUI/FlatCAMGUI.py:4862 flatcamGUI/FlatCAMGUI.py:5438
-#: flatcamGUI/ObjectUI.py:729 flatcamGUI/ObjectUI.py:1271
+#: flatcamGUI/ObjectUI.py:729 flatcamGUI/ObjectUI.py:1279
 msgid "The feedrate used while the probe is probing."
 msgstr "Скорость подачи, используемая во время зондирования."
 
@@ -7173,7 +7175,7 @@ msgstr ""
 "контуров данного объекта геометрии\n"
 "для программы ЧПУ."
 
-#: flatcamGUI/FlatCAMGUI.py:5217 flatcamGUI/ObjectUI.py:1063
+#: flatcamGUI/FlatCAMGUI.py:5217 flatcamGUI/ObjectUI.py:1071
 msgid ""
 "Cutting depth (negative)\n"
 "below the copper surface."
@@ -7202,17 +7204,17 @@ msgid ""
 "which has negative value."
 msgstr ""
 
-#: flatcamGUI/FlatCAMGUI.py:5250 flatcamGUI/ObjectUI.py:1099
+#: flatcamGUI/FlatCAMGUI.py:5250 flatcamGUI/ObjectUI.py:1107
 msgid ""
 "Height of the tool when\n"
 "moving without cutting."
 msgstr "Высота отвода инструмента при холостом ходе."
 
-#: flatcamGUI/FlatCAMGUI.py:5277 flatcamGUI/ObjectUI.py:1154
+#: flatcamGUI/FlatCAMGUI.py:5277 flatcamGUI/ObjectUI.py:1162
 msgid "Feed Rate X-Y:"
 msgstr "Скорость подачи X-Y:"
 
-#: flatcamGUI/FlatCAMGUI.py:5279 flatcamGUI/ObjectUI.py:1157
+#: flatcamGUI/FlatCAMGUI.py:5279 flatcamGUI/ObjectUI.py:1165
 msgid ""
 "Cutting speed in the XY\n"
 "plane in units per minute"
@@ -7232,7 +7234,7 @@ msgid ""
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5298 flatcamGUI/ObjectUI.py:679
-#: flatcamGUI/ObjectUI.py:1209
+#: flatcamGUI/ObjectUI.py:1217
 msgid "Spindle speed:"
 msgstr "Скорость вр. шпинделя:"
 
@@ -7273,7 +7275,7 @@ msgstr ""
 msgid "Re-cut 1st pt."
 msgstr ""
 
-#: flatcamGUI/FlatCAMGUI.py:5418 flatcamGUI/ObjectUI.py:1200
+#: flatcamGUI/FlatCAMGUI.py:5418 flatcamGUI/ObjectUI.py:1208
 msgid ""
 "In order to remove possible\n"
 "copper leftovers where first cut\n"
@@ -7325,7 +7327,7 @@ msgid "CNC Job General"
 msgstr "CNC Job основные"
 
 #: flatcamGUI/FlatCAMGUI.py:5533 flatcamGUI/ObjectUI.py:541
-#: flatcamGUI/ObjectUI.py:874 flatcamGUI/ObjectUI.py:1444
+#: flatcamGUI/ObjectUI.py:874 flatcamGUI/ObjectUI.py:1452
 msgid "Plot Object"
 msgstr "Рисовать объекты"
 
@@ -7333,7 +7335,7 @@ msgstr "Рисовать объекты"
 msgid "Plot kind:"
 msgstr ""
 
-#: flatcamGUI/FlatCAMGUI.py:5542 flatcamGUI/ObjectUI.py:1353
+#: flatcamGUI/FlatCAMGUI.py:5542 flatcamGUI/ObjectUI.py:1361
 msgid ""
 "This selects the kind of geometries on the canvas to plot.\n"
 "Those can be either of type 'Travel' which means the moves\n"
@@ -7341,7 +7343,7 @@ msgid ""
 "which means the moves that cut into the material."
 msgstr ""
 
-#: flatcamGUI/FlatCAMGUI.py:5550 flatcamGUI/ObjectUI.py:1362
+#: flatcamGUI/FlatCAMGUI.py:5550 flatcamGUI/ObjectUI.py:1370
 msgid "Travel"
 msgstr "Путешествовать"
 
@@ -7349,7 +7351,7 @@ msgstr "Путешествовать"
 msgid "Display Annotation:"
 msgstr "Показывать подписи:"
 
-#: flatcamGUI/FlatCAMGUI.py:5561 flatcamGUI/ObjectUI.py:1369
+#: flatcamGUI/FlatCAMGUI.py:5561 flatcamGUI/ObjectUI.py:1377
 msgid ""
 "This selects if to display text annotation on the plot.\n"
 "When checked it will display numbers in order for each end\n"
@@ -7415,7 +7417,7 @@ msgid "<b>Export G-Code:</b>"
 msgstr "<b>Экспорт G-Code:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:5658 flatcamGUI/FlatCAMGUI.py:5699
-#: flatcamGUI/ObjectUI.py:1480
+#: flatcamGUI/ObjectUI.py:1488
 msgid ""
 "Export and save G-Code to\n"
 "make this object to a file."
@@ -7440,7 +7442,7 @@ msgstr ""
 msgid "Append to G-Code:"
 msgstr "Коды постобработки для G-Code:"
 
-#: flatcamGUI/FlatCAMGUI.py:5677 flatcamGUI/ObjectUI.py:1502
+#: flatcamGUI/FlatCAMGUI.py:5677 flatcamGUI/ObjectUI.py:1510
 msgid ""
 "Type here any G-Code commands you would\n"
 "like to append to the generated file.\n"
@@ -7454,7 +7456,7 @@ msgstr ""
 msgid "CNC Job Adv. Options"
 msgstr "CNC Job дополн."
 
-#: flatcamGUI/FlatCAMGUI.py:5705 flatcamGUI/ObjectUI.py:1520
+#: flatcamGUI/FlatCAMGUI.py:5705 flatcamGUI/ObjectUI.py:1528
 msgid "Toolchange G-Code:"
 msgstr "G-Code смены инструмента:"
 
@@ -7470,17 +7472,17 @@ msgstr ""
 "Это будет представлять собой пользовательский GCode смены инструмента,\n"
 "или макрос смены инструмента."
 
-#: flatcamGUI/FlatCAMGUI.py:5721 flatcamGUI/ObjectUI.py:1542
+#: flatcamGUI/FlatCAMGUI.py:5721 flatcamGUI/ObjectUI.py:1550
 msgid "Use Toolchange Macro"
 msgstr "Использовать макросы смены инструмента"
 
-#: flatcamGUI/FlatCAMGUI.py:5723 flatcamGUI/ObjectUI.py:1545
+#: flatcamGUI/FlatCAMGUI.py:5723 flatcamGUI/ObjectUI.py:1553
 msgid ""
 "Check this box if you want to use\n"
 "a Custom Toolchange GCode (macro)."
 msgstr ""
 
-#: flatcamGUI/FlatCAMGUI.py:5735 flatcamGUI/ObjectUI.py:1554
+#: flatcamGUI/FlatCAMGUI.py:5735 flatcamGUI/ObjectUI.py:1562
 msgid ""
 "A list of the FlatCAM variables that can be used\n"
 "in the Toolchange event.\n"
@@ -7490,35 +7492,35 @@ msgstr ""
 "при смене инструмента.\n"
 "Они должны быть окружены '%' символом"
 
-#: flatcamGUI/FlatCAMGUI.py:5742 flatcamGUI/ObjectUI.py:1561
+#: flatcamGUI/FlatCAMGUI.py:5742 flatcamGUI/ObjectUI.py:1569
 msgid "Parameters"
 msgstr "Параметры"
 
-#: flatcamGUI/FlatCAMGUI.py:5745 flatcamGUI/ObjectUI.py:1564
+#: flatcamGUI/FlatCAMGUI.py:5745 flatcamGUI/ObjectUI.py:1572
 msgid "FlatCAM CNC parameters"
 msgstr "Параметры CNC FlatCAM"
 
-#: flatcamGUI/FlatCAMGUI.py:5746 flatcamGUI/ObjectUI.py:1565
+#: flatcamGUI/FlatCAMGUI.py:5746 flatcamGUI/ObjectUI.py:1573
 msgid "tool = tool number"
 msgstr "tool = tool number"
 
-#: flatcamGUI/FlatCAMGUI.py:5747 flatcamGUI/ObjectUI.py:1566
+#: flatcamGUI/FlatCAMGUI.py:5747 flatcamGUI/ObjectUI.py:1574
 msgid "tooldia = tool diameter"
 msgstr "tooldia = диаметр инструмента"
 
-#: flatcamGUI/FlatCAMGUI.py:5748 flatcamGUI/ObjectUI.py:1567
+#: flatcamGUI/FlatCAMGUI.py:5748 flatcamGUI/ObjectUI.py:1575
 msgid "t_drills = for Excellon, total number of drills"
 msgstr "t_drills = для Excellon, общее количество сверл"
 
-#: flatcamGUI/FlatCAMGUI.py:5749 flatcamGUI/ObjectUI.py:1568
+#: flatcamGUI/FlatCAMGUI.py:5749 flatcamGUI/ObjectUI.py:1576
 msgid "x_toolchange = X coord for Toolchange"
 msgstr "x_toolchange = координата X для смены инструмента"
 
-#: flatcamGUI/FlatCAMGUI.py:5750 flatcamGUI/ObjectUI.py:1569
+#: flatcamGUI/FlatCAMGUI.py:5750 flatcamGUI/ObjectUI.py:1577
 msgid "y_toolchange = Y coord for Toolchange"
 msgstr "y_toolchange = координата Y для смены инструмента"
 
-#: flatcamGUI/FlatCAMGUI.py:5751 flatcamGUI/ObjectUI.py:1570
+#: flatcamGUI/FlatCAMGUI.py:5751 flatcamGUI/ObjectUI.py:1578
 msgid "z_toolchange = Z coord for Toolchange"
 msgstr "z_toolchange = координата Z для смены инструмента"
 
@@ -7530,15 +7532,15 @@ msgstr "z_cut = Z глубина распила"
 msgid "z_move = Z height for travel"
 msgstr "z_move = высота Z для перемещения"
 
-#: flatcamGUI/FlatCAMGUI.py:5754 flatcamGUI/ObjectUI.py:1573
+#: flatcamGUI/FlatCAMGUI.py:5754 flatcamGUI/ObjectUI.py:1581
 msgid "z_depthpercut = the step value for multidepth cut"
 msgstr "z_depthpercut = значение шага для мультипроходного разреза"
 
-#: flatcamGUI/FlatCAMGUI.py:5755 flatcamGUI/ObjectUI.py:1574
+#: flatcamGUI/FlatCAMGUI.py:5755 flatcamGUI/ObjectUI.py:1582
 msgid "spindlesspeed = the value for the spindle speed"
 msgstr "spindlesspeed = значение скорости вращения шпинделя"
 
-#: flatcamGUI/FlatCAMGUI.py:5757 flatcamGUI/ObjectUI.py:1575
+#: flatcamGUI/FlatCAMGUI.py:5757 flatcamGUI/ObjectUI.py:1583
 msgid "dwelltime = time to dwell to allow the spindle to reach it's set RPM"
 msgstr ""
 
@@ -7741,7 +7743,7 @@ msgstr ""
 msgid "Paint Tool Options"
 msgstr "Рисование"
 
-#: flatcamGUI/FlatCAMGUI.py:6037 flatcamGUI/ObjectUI.py:1303
+#: flatcamGUI/FlatCAMGUI.py:6037 flatcamGUI/ObjectUI.py:1311
 msgid ""
 "Creates tool paths to cover the\n"
 "whole area of a polygon (remove\n"
@@ -8363,7 +8365,7 @@ msgid "Gerber Object"
 msgstr "Объект Gerber"
 
 #: flatcamGUI/ObjectUI.py:182 flatcamGUI/ObjectUI.py:514
-#: flatcamGUI/ObjectUI.py:836 flatcamGUI/ObjectUI.py:1379
+#: flatcamGUI/ObjectUI.py:836 flatcamGUI/ObjectUI.py:1387
 msgid "<b>Name:</b>"
 msgstr "<b>Имя:</b>"
 
@@ -8594,15 +8596,15 @@ msgid ""
 "for this drill object."
 msgstr "Создание G-Code для объекта сверловки."
 
-#: flatcamGUI/ObjectUI.py:612 flatcamGUI/ObjectUI.py:1116
+#: flatcamGUI/ObjectUI.py:612 flatcamGUI/ObjectUI.py:1124
 msgid "Tool change"
 msgstr "Смена инструмента"
 
-#: flatcamGUI/ObjectUI.py:620 flatcamGUI/ObjectUI.py:1109
+#: flatcamGUI/ObjectUI.py:620 flatcamGUI/ObjectUI.py:1117
 msgid "Tool change Z:"
 msgstr "Смена инструмента Z:"
 
-#: flatcamGUI/ObjectUI.py:622 flatcamGUI/ObjectUI.py:1112
+#: flatcamGUI/ObjectUI.py:622 flatcamGUI/ObjectUI.py:1120
 msgid ""
 "Z-axis position (height) for\n"
 "tool change."
@@ -8724,11 +8726,11 @@ msgid ""
 "showed UI form entries named V-Tip Dia and V-Tip Angle."
 msgstr ""
 
-#: flatcamGUI/ObjectUI.py:888 flatcamGUI/ObjectUI.py:1462
+#: flatcamGUI/ObjectUI.py:888 flatcamGUI/ObjectUI.py:1470
 msgid "Dia"
 msgstr "Диам"
 
-#: flatcamGUI/ObjectUI.py:888 flatcamGUI/ObjectUI.py:1462
+#: flatcamGUI/ObjectUI.py:888 flatcamGUI/ObjectUI.py:1470
 #: flatcamTools/ToolNonCopperClear.py:83 flatcamTools/ToolPaint.py:80
 msgid "TT"
 msgstr "TT"
@@ -8835,19 +8837,19 @@ msgid ""
 "Each tool store it's own set of such data."
 msgstr ""
 
-#: flatcamGUI/ObjectUI.py:1037
+#: flatcamGUI/ObjectUI.py:1045
 msgid "V-Tip Dia:"
 msgstr "Диам. V-наконечника:"
 
-#: flatcamGUI/ObjectUI.py:1040
+#: flatcamGUI/ObjectUI.py:1048
 msgid "The tip diameter for V-Shape Tool"
 msgstr "Диаметр наконечника для V-образного инструмента"
 
-#: flatcamGUI/ObjectUI.py:1048
+#: flatcamGUI/ObjectUI.py:1056
 msgid "V-Tip Angle:"
 msgstr "Угол V-наконечника:"
 
-#: flatcamGUI/ObjectUI.py:1051
+#: flatcamGUI/ObjectUI.py:1059
 msgid ""
 "The tip angle for V-Shape Tool.\n"
 "In degree."
@@ -8855,11 +8857,11 @@ msgstr ""
 "Угол наклона наконечника для V-образного инструмента.\n"
 "В степенях."
 
-#: flatcamGUI/ObjectUI.py:1072
+#: flatcamGUI/ObjectUI.py:1080
 msgid "Multi-Depth:"
 msgstr "Мультипроход:"
 
-#: flatcamGUI/ObjectUI.py:1075
+#: flatcamGUI/ObjectUI.py:1083
 msgid ""
 "Use multiple passes to limit\n"
 "the cut depth in each pass. Will\n"
@@ -8875,37 +8877,37 @@ msgstr ""
 "Справа введите глубину \n"
 "за каждый проход (положительное значение)."
 
-#: flatcamGUI/ObjectUI.py:1088
+#: flatcamGUI/ObjectUI.py:1096
 msgid "Depth of each pass (positive)."
 msgstr "Глубина каждого прохода (положительный)."
 
-#: flatcamGUI/ObjectUI.py:1119
+#: flatcamGUI/ObjectUI.py:1127
 msgid ""
 "Include tool-change sequence\n"
 "in the Machine Code (Pause for tool change)."
 msgstr ""
 
-#: flatcamGUI/ObjectUI.py:1145
+#: flatcamGUI/ObjectUI.py:1153
 msgid ""
 "This is the height (Z) at which the CNC\n"
 "will go as the last move."
 msgstr ""
 
-#: flatcamGUI/ObjectUI.py:1166
+#: flatcamGUI/ObjectUI.py:1174
 msgid "Feed Rate Z (Plunge):"
 msgstr "Скорость подачи Z (подвод):"
 
-#: flatcamGUI/ObjectUI.py:1169
+#: flatcamGUI/ObjectUI.py:1177
 msgid ""
 "Cutting speed in the Z\n"
 "plane in units per minute"
 msgstr ""
 
-#: flatcamGUI/ObjectUI.py:1178
+#: flatcamGUI/ObjectUI.py:1186
 msgid "Feed Rate Rapids:"
 msgstr "Скорость подачи:"
 
-#: flatcamGUI/ObjectUI.py:1181
+#: flatcamGUI/ObjectUI.py:1189
 msgid ""
 "Cutting speed in the XY\n"
 "plane in units per minute\n"
@@ -8915,11 +8917,11 @@ msgid ""
 "ignore for any other cases."
 msgstr ""
 
-#: flatcamGUI/ObjectUI.py:1197
+#: flatcamGUI/ObjectUI.py:1205
 msgid "Cut over 1st pt"
 msgstr ""
 
-#: flatcamGUI/ObjectUI.py:1212
+#: flatcamGUI/ObjectUI.py:1220
 msgid ""
 "Speed of the spindle in RPM (optional).\n"
 "If LASER postprocessor is used,\n"
@@ -8929,66 +8931,66 @@ msgstr ""
 "Если используется лазерный постпроцессор,\n"
 "это значение - мощность лазера."
 
-#: flatcamGUI/ObjectUI.py:1241
+#: flatcamGUI/ObjectUI.py:1249
 msgid "PostProcessor:"
 msgstr "Постпроцессор:"
 
-#: flatcamGUI/ObjectUI.py:1244
+#: flatcamGUI/ObjectUI.py:1252
 msgid ""
 "The Postprocessor file that dictates\n"
 "the Machine Code (like GCode, RML, HPGL) output."
 msgstr ""
 
-#: flatcamGUI/ObjectUI.py:1282
+#: flatcamGUI/ObjectUI.py:1290
 msgid ""
 "Add at least one tool in the tool-table.\n"
 "Click the header to select all, or Ctrl + LMB\n"
 "for custom selection of tools."
 msgstr ""
 
-#: flatcamGUI/ObjectUI.py:1289
+#: flatcamGUI/ObjectUI.py:1297
 msgid "Generate"
 msgstr "Создать"
 
-#: flatcamGUI/ObjectUI.py:1292
+#: flatcamGUI/ObjectUI.py:1300
 msgid "Generate the CNC Job object."
 msgstr "Будет создан объект программы для ЧПУ."
 
-#: flatcamGUI/ObjectUI.py:1300
+#: flatcamGUI/ObjectUI.py:1308
 msgid "<b>Paint Area:</b>"
 msgstr "<b>Область рисования:</b>"
 
-#: flatcamGUI/ObjectUI.py:1315
+#: flatcamGUI/ObjectUI.py:1323
 msgid "Launch Paint Tool in Tools Tab."
 msgstr "Запускает инструмент рисования во вкладке Инструменты."
 
-#: flatcamGUI/ObjectUI.py:1332
+#: flatcamGUI/ObjectUI.py:1340
 msgid "CNC Job Object"
 msgstr "Объект программы для ЧПУ"
 
-#: flatcamGUI/ObjectUI.py:1350
+#: flatcamGUI/ObjectUI.py:1358
 msgid "<b>Plot kind:</b>"
 msgstr ""
 
-#: flatcamGUI/ObjectUI.py:1366
+#: flatcamGUI/ObjectUI.py:1374
 msgid "<b>Display Annotation:</b>"
 msgstr "<b>Показывать подписи:</b>"
 
-#: flatcamGUI/ObjectUI.py:1385
+#: flatcamGUI/ObjectUI.py:1393
 msgid "<b>Travelled dist.:</b>"
 msgstr "<b>Расст. прохода:</b>"
 
-#: flatcamGUI/ObjectUI.py:1388 flatcamGUI/ObjectUI.py:1395
+#: flatcamGUI/ObjectUI.py:1396 flatcamGUI/ObjectUI.py:1403
 msgid ""
 "This is the total travelled distance on X-Y plane.\n"
 "In current units."
 msgstr ""
 
-#: flatcamGUI/ObjectUI.py:1426
+#: flatcamGUI/ObjectUI.py:1434
 msgid "<b>CNC Tools Table</b>"
 msgstr "<b>Таблица инструментов</b>"
 
-#: flatcamGUI/ObjectUI.py:1429
+#: flatcamGUI/ObjectUI.py:1437
 msgid ""
 "Tools in this CNCJob object used for cutting.\n"
 "The tool diameter is used for plotting on canvas.\n"
@@ -9001,27 +9003,27 @@ msgid ""
 "ball(B), or V-Shaped(V)."
 msgstr ""
 
-#: flatcamGUI/ObjectUI.py:1463
+#: flatcamGUI/ObjectUI.py:1471
 msgid "P"
 msgstr "P"
 
-#: flatcamGUI/ObjectUI.py:1469
+#: flatcamGUI/ObjectUI.py:1477
 msgid "Update Plot"
 msgstr "Обновить участок"
 
-#: flatcamGUI/ObjectUI.py:1471
+#: flatcamGUI/ObjectUI.py:1479
 msgid "Update the plot."
 msgstr "Обновление участка."
 
-#: flatcamGUI/ObjectUI.py:1478
+#: flatcamGUI/ObjectUI.py:1486
 msgid "<b>Export CNC Code:</b>"
 msgstr "<b>Экспорт CNC Code:</b>"
 
-#: flatcamGUI/ObjectUI.py:1486
+#: flatcamGUI/ObjectUI.py:1494
 msgid "Prepend to CNC Code:"
 msgstr "Добавить в начало CNC Code:"
 
-#: flatcamGUI/ObjectUI.py:1489
+#: flatcamGUI/ObjectUI.py:1497
 msgid ""
 "Type here any G-Code commands you would\n"
 "like to add to the beginning of the generated file."
@@ -9029,11 +9031,11 @@ msgstr ""
 "Введите здесь любые G-Code команды, которые вы\n"
 "хотели бы добавить в начале генерируемого файла."
 
-#: flatcamGUI/ObjectUI.py:1499
+#: flatcamGUI/ObjectUI.py:1507
 msgid "Append to CNC Code:"
 msgstr "Дописать в конец CNC Code:"
 
-#: flatcamGUI/ObjectUI.py:1523
+#: flatcamGUI/ObjectUI.py:1531
 msgid ""
 "Type here any G-Code commands you would\n"
 "like to be executed when Toolchange event is encountered.\n"
@@ -9055,29 +9057,29 @@ msgstr ""
 "и иметь \"toolchange_custom\" в имени, и будет построено\n"
 "используя в качестве шаблона файл постпроцессора \"Tool change Custom\"."
 
-#: flatcamGUI/ObjectUI.py:1571
+#: flatcamGUI/ObjectUI.py:1579
 msgid "z_cut = depth where to cut"
 msgstr "z_cut = глубина резания"
 
-#: flatcamGUI/ObjectUI.py:1572
+#: flatcamGUI/ObjectUI.py:1580
 msgid "z_move = height where to travel"
 msgstr "z_move = высота перемещения"
 
-#: flatcamGUI/ObjectUI.py:1591
+#: flatcamGUI/ObjectUI.py:1599
 msgid "View CNC Code"
 msgstr "Просмотр CNC Code"
 
-#: flatcamGUI/ObjectUI.py:1594
+#: flatcamGUI/ObjectUI.py:1602
 msgid ""
 "Opens TAB to view/modify/print G-Code\n"
 "file."
 msgstr "Открывает вкладку для просмотра/изменения/печати файла G-Code."
 
-#: flatcamGUI/ObjectUI.py:1600
+#: flatcamGUI/ObjectUI.py:1608
 msgid "Save CNC Code"
 msgstr "Сохранить CNC Code"
 
-#: flatcamGUI/ObjectUI.py:1603
+#: flatcamGUI/ObjectUI.py:1611
 msgid ""
 "Opens dialog to save G-Code\n"
 "file."
