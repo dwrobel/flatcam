@@ -810,7 +810,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.right_lay.setContentsMargins(0, 0, 0, 0)
         self.right_widget.setLayout(self.right_lay)
         # self.plot_tab_area = FCTab()
-        self.plot_tab_area = FCDetachableTab(protect=False, protect_by_name=[_('Plot Area')])
+        self.plot_tab_area = FCDetachableTab2(protect=False, protect_by_name=[_('Plot Area')])
         self.plot_tab_area.useOldIndex(True)
 
         self.right_lay.addWidget(self.plot_tab_area)

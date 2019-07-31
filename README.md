@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - changed the order of the menu entries in the FIle -> Open ...
 - organized the list of recent files so the Project entries are to the top and separated from the other types of file
+- work on identification of changes in Preferences tab
 
 30.07.2019
 

@@ -884,6 +884,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         :param currentIndex:
         :return:
         """
+
         self.removeTab(currentIndex)
 
     def protectTab(self, currentIndex):
@@ -1347,6 +1348,25 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
             self.detachedTabDropSignal.emit(name, index, dropPos)
 
+
+class FCDetachableTab2(FCDetachableTab):
+
+    def __init__(self, protect=None, protect_by_name=None, parent=None):
+        super(FCDetachableTab2, self).__init__(protect=protect, protect_by_name=protect_by_name, parent=parent)
+
+    def closeTab(self, currentIndex):
+        """
+        Slot connected to the tabCloseRequested signal
+
+        :param currentIndex:
+        :return:
+        """
+        idx = self.currentIndex()
+        if self.tabText(idx) == _("Preferences"):
+            #TODO work on this, identify if widget changed and print a status message
+            pass
+
+        self.removeTab(currentIndex)
 
 class VerticalScrollArea(QtWidgets.QScrollArea):
     """
