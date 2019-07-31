@@ -294,7 +294,7 @@ msgid ""
 "Continue?"
 msgstr ""
 "Alterar as unidades do projeto fará com que todas as propriedades "
-"geométricasde todos os objetos sejam redimensionadas.\n"
+"geométricas de todos os objetos sejam redimensionadas.\n"
 "Continuar?"
 
 #: FlatCAMApp.py:3863 FlatCAMApp.py:4712 FlatCAMApp.py:6301 FlatCAMApp.py:6312
@@ -6523,8 +6523,8 @@ msgid ""
 "Whatever is selected here is set every time\n"
 "FLatCAM is started."
 msgstr ""
-"O valor padrão para unidades FlatCAM.\n"
-"O que estiver selecionado aqui será definido sempre que\n"
+"Unidade utilizada como padrão para os valores no FlatCAM.\n"
+"O que estiver selecionado aqui será considerado sempre que\n"
 "FLatCAM for iniciado."
 
 #: flatcamGUI/FlatCAMGUI.py:3778
@@ -6554,8 +6554,8 @@ msgstr ""
 "Nível BÁSICO -> funcionalidade reduzida, melhor para iniciantes.\n"
 "Nível AVANÇADO -> funcionalidade completa.\n"
 "\n"
-"A escolha aqui influenciará os parâmetros na\n"
-"Guia Selecionada para todos os tipos de objetos FlatCAM."
+"A escolha influenciará os parâmetros na Aba\n"
+"Selecionado para todos os tipos de objetos FlatCAM."
 
 #: flatcamGUI/FlatCAMGUI.py:3788 flatcamGUI/FlatCAMGUI.py:4556
 msgid "Basic"
@@ -6575,7 +6575,7 @@ msgstr "Defina o idioma usado no FlatCAM."
 
 #: flatcamGUI/FlatCAMGUI.py:3796
 msgid "Apply Language"
-msgstr "Aplique o Idioma"
+msgstr "Aplicar o Idioma"
 
 #: flatcamGUI/FlatCAMGUI.py:3797
 msgid ""
@@ -6588,16 +6588,16 @@ msgid ""
 "applied at the next app start."
 msgstr ""
 "Define o idioma usado no FlatCAM.\n"
-"O aplicativo será reinicializado após o clique. Windows: Quando o FlatCAM "
-"estiver instalado no diretório Arquivos de Programas,\n"
-"é possível que o aplicativo não seja\n"
-"reiniciado depois que o botão for clicado devido aos recursos\n"
-"de segurança do Windows. Neste caso, o idioma será\n"
-"aplicado no próximo início do aplicativo."
+"O aplicativo será reinicializado após o clique.\n"
+"Windows: se o FlatCAM estiver instalado no diretório\n"
+"Arquivos de Programas, é possível que o aplicativo não\n"
+"seja reiniciado depois que o botão for clicado devido\n"
+"aos recursos de segurança do Windows. Neste caso, o\n"
+"idioma será aplicado na próxima inicialização."
 
 #: flatcamGUI/FlatCAMGUI.py:3806
 msgid "Shell at StartUp:"
-msgstr "Linha de Com. ao Iniciar:"
+msgstr "Linha de Com. ao iniciar:"
 
 #: flatcamGUI/FlatCAMGUI.py:3808 flatcamGUI/FlatCAMGUI.py:3813
 msgid ""
@@ -6628,9 +6628,8 @@ msgid ""
 "Check this box if you agree to send anonymous\n"
 "stats automatically at startup, to help improve FlatCAM."
 msgstr ""
-"Marque esta caixa se você concorda em enviar\n"
-"dados anônimos automaticamente na inicialização, para ajudar a melhorar o "
-"FlatCAM."
+"Marque esta caixa se você concorda em enviar dados anônimos\n"
+"automaticamente na inicialização, para ajudar a melhorar o FlatCAM."
 
 #: flatcamGUI/FlatCAMGUI.py:3844
 msgid "<b>Pan Button:</b>"
@@ -6648,11 +6647,11 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3848
 msgid "MMB"
-msgstr "MMB"
+msgstr "BM"
 
 #: flatcamGUI/FlatCAMGUI.py:3849
 msgid "RMB"
-msgstr "RMB"
+msgstr "BD"
 
 #: flatcamGUI/FlatCAMGUI.py:3852
 msgid "<b>Multiple Sel:</b>"
@@ -6672,16 +6671,15 @@ msgstr "SHIFT"
 
 #: flatcamGUI/FlatCAMGUI.py:3858
 msgid "Project at StartUp:"
-msgstr "Projeto no Inicialização:"
+msgstr "Projeto na Inicialização:"
 
 #: flatcamGUI/FlatCAMGUI.py:3860 flatcamGUI/FlatCAMGUI.py:3865
 msgid ""
 "Check this box if you want the project/selected/tool tab area to\n"
 "to be shown automatically at startup."
 msgstr ""
-"Marque esta caixa se você quiser que a guia projeto/selecionado/ferramenta "
-"seja\n"
-"apresentada automaticamente na inicialização."
+"Marque esta caixa se você quiser que a aba Projeto/Selecionado/Ferramenta\n"
+"seja apresentada automaticamente na inicialização."
 
 #: flatcamGUI/FlatCAMGUI.py:3870
 msgid "Project AutoHide:"
@@ -6693,7 +6691,7 @@ msgid ""
 "hide automatically when there are no objects loaded and\n"
 "to show whenever a new object is created."
 msgstr ""
-"Marque esta caixa se você deseja que a guia projeto/selecionado/ferramenta\n"
+"Marque esta caixa se você deseja que a aba Projeto/Selecionado/Ferramenta\n"
 "desapareça automaticamente quando não houver objetos carregados e\n"
 "apareça sempre que um novo objeto for criado."
 
@@ -6723,11 +6721,10 @@ msgid ""
 "After change, it will be applied at next App start."
 msgstr ""
 "O número de Qthreads disponibilizados para o App.\n"
-"Um número maior pode terminar os trabalhos mais rapidamente, mas\n"
+"Um número maior pode executar os trabalhos mais rapidamente, mas\n"
 "dependendo da velocidade do computador, pode fazer com que o App\n"
-"não responda. Pode ter um valor entre 2 e 16.\n"
-"O valor padrão é 2.\n"
-"Após a mudança, ele será aplicado no próximo início do aplicativo."
+"não responda. Pode ter um valor entre 2 e 16. O valor padrão é 2.\n"
+"Após a mudança, ele será aplicado na próxima inicialização."
 
 #: flatcamGUI/FlatCAMGUI.py:3915
 msgid "Geo Tolerance:"
@@ -6744,10 +6741,10 @@ msgid ""
 msgstr ""
 "Este valor pode contrariar o efeito do parâmetro Passos do Círculo.\n"
 "O valor padrão é 0,01.\n"
-"Um valor mais baixo aumentará os detalhes na imagem\n"
-"e no G-Code para os círculos, com um custo maior em\n"
-"desempenho. Valor maior proporcionará mais\n"
-"performance à custa do nível de detalhe."
+"Um valor mais baixo aumentará os detalhes na imagem e no G-Code\n"
+"para os círculos, com um custo maior em desempenho.\n"
+"Um valor maior proporcionará mais desempenho à custa do nível\n"
+"de detalhes."
 
 #: flatcamGUI/FlatCAMGUI.py:3962
 msgid "\"Open\" behavior"
@@ -6765,9 +6762,8 @@ msgstr ""
 "arquivos,\n"
 "e o caminho para o último arquivo aberto é usado ao abrir arquivos.\n"
 "\n"
-"Quando desmarcado, o caminho para abrir arquivos é aquele usado por último: "
-"o caminho\n"
-"para salvar arquivos ou o caminho para abrir arquivos."
+"Quando desmarcado, o caminho para abrir arquivos é aquele usado por último:\n"
+"o caminho para salvar arquivos ou o caminho para abrir arquivos."
 
 #: flatcamGUI/FlatCAMGUI.py:3973
 msgid "Save Compressed Project"
@@ -6791,8 +6787,8 @@ msgid ""
 "a FlatCAM project. Higher value means better compression\n"
 "but require more RAM usage and more processing time."
 msgstr ""
-"O nível de compactação usado ao salvar o\n"
-"Projeto FlatCAM. Maior valor significa melhor compactação, mas é necessário "
+"O nível de compactação usado ao salvar o Projeto FlatCAM.\n"
+"Um valor maior significa melhor compactação, mas é necessário "
 "mais uso de RAM e mais tempo de processamento."
 
 #: flatcamGUI/FlatCAMGUI.py:4011
@@ -6813,7 +6809,7 @@ msgstr "Preenchido"
 
 #: flatcamGUI/FlatCAMGUI.py:4023 flatcamGUI/ObjectUI.py:158
 msgid "Solid color polygons."
-msgstr "Polígonos de cor sólida."
+msgstr "Polígonos com cor sólida."
 
 #: flatcamGUI/FlatCAMGUI.py:4028 flatcamGUI/ObjectUI.py:164
 msgid "M-Color"
@@ -6853,7 +6849,7 @@ msgstr "Opções Gerber"
 
 #: flatcamGUI/FlatCAMGUI.py:4062 flatcamGUI/ObjectUI.py:250
 msgid "<b>Isolation Routing:</b>"
-msgstr "<b>Isolação no Roteamento:</b>"
+msgstr "<b>Roteamento para Isolação:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:4064 flatcamGUI/ObjectUI.py:252
 msgid ""
@@ -6871,7 +6867,7 @@ msgstr "Diâmetro da ferramenta"
 
 #: flatcamGUI/FlatCAMGUI.py:4082
 msgid "Width (# passes):"
-msgstr "Largura (nº de passos):"
+msgstr "Largura (passes):"
 
 #: flatcamGUI/FlatCAMGUI.py:4084 flatcamGUI/ObjectUI.py:274
 msgid ""
@@ -6896,11 +6892,11 @@ msgstr ""
 "Quanto da largura da ferramenta (fração) é sobreposto em cada passagem da "
 "ferramenta.\n"
 "Exemplo:\n"
-"Um valor de 0,25 significa uma sobreposição de 25% do diâmetro da ferramenta."
+"Um valor de 0.25 significa uma sobreposição de 25% do diâmetro da ferramenta."
 
 #: flatcamGUI/FlatCAMGUI.py:4102 flatcamGUI/ObjectUI.py:294
 msgid "Milling Type:"
-msgstr "Tipo de Fresamento:"
+msgstr "Tipo de fresamento:"
 
 #: flatcamGUI/FlatCAMGUI.py:4104 flatcamGUI/ObjectUI.py:296
 msgid ""
@@ -6945,7 +6941,7 @@ msgstr ""
 #: flatcamGUI/FlatCAMGUI.py:4132 flatcamGUI/FlatCAMGUI.py:4158
 #: flatcamGUI/ObjectUI.py:427 flatcamGUI/ObjectUI.py:461
 msgid "Boundary Margin:"
-msgstr "Margem de Limite:"
+msgstr "Margem Limite:"
 
 #: flatcamGUI/FlatCAMGUI.py:4134 flatcamGUI/ObjectUI.py:429
 msgid ""
@@ -6956,8 +6952,7 @@ msgid ""
 msgstr ""
 "Especifica a borda do PCB\n"
 "desenhando uma caixa em volta de todos os\n"
-"objetos com esta\n"
-"distância mínima."
+"objetos com esta distância mínima."
 
 #: flatcamGUI/FlatCAMGUI.py:4144 flatcamGUI/FlatCAMGUI.py:4167
 msgid "Rounded corners"
@@ -6991,13 +6986,12 @@ msgid ""
 "the margin."
 msgstr ""
 "Se a caixa delimitadora tiver\n"
-"cantos arredondados\n"
-"o seu raio é igual\n"
-"a margem."
+"cantos arredondados, o seu raio\n"
+"é igual à margem."
 
 #: flatcamGUI/FlatCAMGUI.py:4183
 msgid "Gerber Adv. Options"
-msgstr "Opções Av. Gerber"
+msgstr "Opções Avançadas"
 
 #: flatcamGUI/FlatCAMGUI.py:4186
 msgid "<b>Advanced Param.:</b>"
@@ -7011,7 +7005,7 @@ msgid ""
 msgstr ""
 "Uma lista de parâmetros avançados do Gerber.\n"
 "Esses parâmetros estão disponíveis somente para\n"
-"o aplicativo no nível avançado."
+"o nível avançado do aplicativo."
 
 #: flatcamGUI/FlatCAMGUI.py:4198 flatcamGUI/ObjectUI.py:313
 msgid "\"Follow\""
@@ -7047,7 +7041,7 @@ msgstr "Exportar Gerber"
 
 #: flatcamGUI/FlatCAMGUI.py:4251 flatcamGUI/FlatCAMGUI.py:4903
 msgid "<b>Export Options:</b>"
-msgstr "<b>Opções de Exportar:</b>"
+msgstr "<b>Opções da Exportação:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:4253
 msgid ""
@@ -7080,24 +7074,24 @@ msgid ""
 "The number of digits in the whole part of the number\n"
 "and in the fractional part of the number."
 msgstr ""
-"O número de dígitos na parte inteira\n"
-"e na parte fracionária do número."
+"O número de dígitos da parte inteira\n"
+"e da parte fracionária do número."
 
 #: flatcamGUI/FlatCAMGUI.py:4289
 msgid ""
 "This numbers signify the number of digits in\n"
 "the whole part of Gerber coordinates."
 msgstr ""
-"Esses números significam o número de dígitos \n"
-"em toda a parte das coordenadas de Gerber."
+"Esse número configura o número de dígitos\n"
+"da parte inteira das coordenadas de Gerber."
 
 #: flatcamGUI/FlatCAMGUI.py:4303
 msgid ""
 "This numbers signify the number of digits in\n"
 "the decimal part of Gerber coordinates."
 msgstr ""
-"Estes números significam o número de dígitos\n"
-"na parte decimal das coordenadas de Gerber."
+"Este número configura o número de dígitos\n"
+"da parte decimal das coordenadas de Gerber."
 
 #: flatcamGUI/FlatCAMGUI.py:4312 flatcamGUI/FlatCAMGUI.py:4989
 msgid "<b>Zeros</b>:"
@@ -7111,11 +7105,9 @@ msgid ""
 "If TZ is checked then Trailing Zeros are removed\n"
 "and Leading Zeros are kept."
 msgstr ""
-"Define o tipo de zeros de Gerber.\n"
-"LZ: os Zeros à Esquerda são removidos\n"
-"e os Zeros à Direita são mantidos.\n"
-"TZ: os Zeros à Direita serão removidos\n"
-"e os Zeros à Esquerda serão mantidos."
+"Define o tipo padrão de zeros de Gerber.\n"
+"LZ: mantém os zeros à esquerda e remove os zeros à direita.\n"
+"TZ: mantém os zeros à direita e remove os zeros à esquerda."
 
 #: flatcamGUI/FlatCAMGUI.py:4322 flatcamGUI/FlatCAMGUI.py:4504
 #: flatcamGUI/FlatCAMGUI.py:4999 flatcamTools/ToolPcbWizard.py:111
@@ -7153,9 +7145,8 @@ msgid ""
 "Increases the performance when moving a\n"
 "large number of geometric elements."
 msgstr ""
-"Define o número máximo de ítens de geometria Gerber\n"
-"selecionados. Acima desse valor a geometria se torna um\n"
-"retângulo de seleção.\n"
+"Define o número máximo de ítens de geometria Gerber selecionados.\n"
+"Acima desse valor a geometria se torna um retângulo de seleção.\n"
 "Aumenta o desempenho ao mover um grande número de elementos geométricos."
 
 #: flatcamGUI/FlatCAMGUI.py:4377
@@ -7190,7 +7181,7 @@ msgid ""
 msgstr ""
 "Os arquivos de broca NC, normalmente chamados arquivos Excellon\n"
 "são arquivos que podem ser encontrados em diferentes formatos.\n"
-"Aqui definiremos o formato usado quando as coordenadas\n"
+"Aqui é definido o formato usado quando as coordenadas\n"
 "fornecidas não estiverem usando ponto.\n"
 "\n"
 "Padrões possíveis:\n"
@@ -7214,7 +7205,7 @@ msgstr "POLEGADAS:"
 
 #: flatcamGUI/FlatCAMGUI.py:4429
 msgid "Default values for INCH are 2:4"
-msgstr "Valores padrão para Polegadas são 2:4"
+msgstr "Valores padrão para Polegadas: 2:4"
 
 #: flatcamGUI/FlatCAMGUI.py:4437 flatcamGUI/FlatCAMGUI.py:4470
 #: flatcamGUI/FlatCAMGUI.py:4943
@@ -7222,8 +7213,8 @@ msgid ""
 "This numbers signify the number of digits in\n"
 "the whole part of Excellon coordinates."
 msgstr ""
-"Esses números significam o número de dígitos\n"
-"em toda a parte das coordenadas do Excellon."
+"Este número configura o número de dígitos\n"
+"da parte inteira das coordenadas de Excellon."
 
 #: flatcamGUI/FlatCAMGUI.py:4451 flatcamGUI/FlatCAMGUI.py:4484
 #: flatcamGUI/FlatCAMGUI.py:4957
@@ -7231,8 +7222,8 @@ msgid ""
 "This numbers signify the number of digits in\n"
 "the decimal part of Excellon coordinates."
 msgstr ""
-"Estes números significam o número de dígitos na\n"
-"parte decimal das coordenadas de Excellon."
+"Este número configura o número de dígitos\n"
+"da parte decimal das coordenadas de Excellon."
 
 #: flatcamGUI/FlatCAMGUI.py:4459
 msgid "METRIC:"
@@ -7240,7 +7231,7 @@ msgstr "MÉTRICO:"
 
 #: flatcamGUI/FlatCAMGUI.py:4462
 msgid "Default values for METRIC are 3:3"
-msgstr "Valores padrão para MÉTRICO são 3:3"
+msgstr "Valores padrão para Métrico: 3:3"
 
 #: flatcamGUI/FlatCAMGUI.py:4493
 msgid "Default <b>Zeros</b>:"
@@ -7254,11 +7245,9 @@ msgid ""
 "If TZ is checked then Trailing Zeros are kept\n"
 "and Leading Zeros are removed."
 msgstr ""
-"Define o tipo de zeros de Excellon.\n"
-"LZ: os Zeros à Esquerda são mantidos\n"
-"e os Zeros à Direita são removidos.\n"
-"TZ: os Zeros à Direita serão mantidos\n"
-"e os Zeros à Esquerda serão removidos."
+"Define o tipo padrão de zeros de Excellon.\n"
+"LZ: mantém os zeros à esquerda e remove os zeros à direita.\n"
+"TZ: mantém os zeros à direita e remove os zeros à esquerda."
 
 #: flatcamGUI/FlatCAMGUI.py:4507
 msgid ""
@@ -7269,12 +7258,10 @@ msgid ""
 "If TZ is checked then Trailing Zeros are kept\n"
 "and Leading Zeros are removed."
 msgstr ""
-"Define o tipo padrão de zeros de Excellon.\n"
-"Se não for detectado no arquivo analisado o valor aqui\n"
-" será usado. LZ: os Zeros à Esquerda são mantidos\n"
-"e os Zeros à Direita são removidos.\n"
-"TZ: os Zeros à Direita serão mantidos\n"
-"e os Zeros à Esquerda serão removidos."
+"Define o tipo padrão de zeros de Excellon,\n"
+"se não for detectado no arquivo analisado.\n"
+"LZ: mantém os zeros à esquerda e remove os zeros à direita.\n"
+"TZ: mantém os zeros à direita e remove os zeros à esquerda."
 
 #: flatcamGUI/FlatCAMGUI.py:4517
 msgid "Default <b>Units</b>:"
@@ -7289,8 +7276,8 @@ msgid ""
 msgstr ""
 "Configura as unidades padrão dos arquivos Excellon.\n"
 "Se não for detectado no arquivo analisado, o valor aqui\n"
-"será usado. Alguns arquivos Excellon não possuem um cabeçalho\n"
-", e assim este parâmetro será usado."
+"será usado. Alguns arquivos Excellon não possuem um cabeçalho,\n"
+"e assim este parâmetro será usado."
 
 #: flatcamGUI/FlatCAMGUI.py:4531
 msgid ""
@@ -7299,8 +7286,8 @@ msgid ""
 "therefore this parameter will be used."
 msgstr ""
 "Configura as unidades dos arquivos Excellon.\n"
-"Alguns arquivos Excellon não possuem um cabeçalho\n"
-", e assim este parâmetro será usado."
+"Alguns arquivos Excellon não possuem um cabeçalho,\n"
+"e assim este parâmetro será usado."
 
 #: flatcamGUI/FlatCAMGUI.py:4539
 msgid "<b>Excellon Optimization:</b>"
@@ -7348,10 +7335,8 @@ msgid ""
 "path optimization. This max duration is set here.\n"
 "In seconds."
 msgstr ""
-"Quando o Metaheuristic (MH) da OR-Tools está ativado, existe um limite\n"
-"máximo para o tempo gasto para otimizar o\n"
-"caminho. Esse tempo máximo é definido aqui.\n"
-"Em segundos."
+"Quando o Metaheuristic (MH) da OR-Tools está ativado, este é o limite\n"
+"máximo de tempo para otimizar o caminho, em segundos. Padão: 3"
 
 #: flatcamGUI/FlatCAMGUI.py:4615
 msgid "Excellon Options"
@@ -7735,7 +7720,7 @@ msgstr "Decimal"
 
 #: flatcamGUI/FlatCAMGUI.py:4976
 msgid "No-Decimal"
-msgstr "No-Decimal"
+msgstr "Não Decimal"
 
 #: flatcamGUI/FlatCAMGUI.py:5002
 msgid ""
