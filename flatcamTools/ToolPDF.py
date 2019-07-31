@@ -366,7 +366,7 @@ class ToolPDF(FlatCAMTool):
         self.check_thread.setInterval(check_period)
         try:
             self.check_thread.timeout.disconnect(self.periodic_check_handler)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         self.check_thread.timeout.connect(self.periodic_check_handler)

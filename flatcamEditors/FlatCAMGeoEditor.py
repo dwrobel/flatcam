@@ -3296,15 +3296,15 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         try:
             self.app.ui.popmenu_copy.triggered.disconnect(lambda: self.select_tool('copy'))
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
         try:
             self.app.ui.popmenu_delete.triggered.disconnect(self.on_delete_btn)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
         try:
             self.app.ui.popmenu_move.triggered.disconnect(lambda: self.select_tool('move'))
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         self.app.ui.popmenu_copy.triggered.connect(self.app.on_copy_object)
@@ -3314,22 +3314,22 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # Geometry Editor
         try:
             self.app.ui.draw_line.triggered.disconnect(self.draw_tool_path)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.app.ui.draw_rect.triggered.disconnect(self.draw_tool_rectangle)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.app.ui.draw_cut.triggered.disconnect(self.cutpath)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.app.ui.draw_move.triggered.disconnect(self.on_move)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
     def add_shape(self, shape):

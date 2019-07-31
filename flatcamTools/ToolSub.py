@@ -175,13 +175,13 @@ class ToolSub(FlatCAMTool):
 
         try:
             self.intersect_btn.clicked.disconnect(self.on_grb_intersection_click)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
         self.intersect_btn.clicked.connect(self.on_grb_intersection_click)
 
         try:
             self.intersect_geo_btn.clicked.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
         self.intersect_geo_btn.clicked.connect(self.on_geo_intersection_click)
 
@@ -569,14 +569,14 @@ class ToolSub(FlatCAMTool):
 
         try:
             self.check_thread.stop()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         if reset:
             self.check_thread.setInterval(check_period)
             try:
                 self.check_thread.timeout.disconnect(self.periodic_check_handler)
-            except TypeError:
+            except (TypeError, AttributeError):
                 pass
 
         self.check_thread.timeout.connect(self.periodic_check_handler)

@@ -3959,7 +3959,7 @@ class App(QtCore.QObject):
     def on_toggle_units_click(self):
         try:
             self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         if self.defaults["units"] == 'MM':
@@ -5180,7 +5180,7 @@ class App(QtCore.QObject):
         # this disconnect() is done so the slot will be connected only once
         try:
             self.ui.plot_tab_area.tab_closed_signal.disconnect(self.on_preferences_closed)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
         self.ui.plot_tab_area.tab_closed_signal.connect(self.on_preferences_closed)
 
@@ -5190,7 +5190,7 @@ class App(QtCore.QObject):
                 try:
                     try:
                         tb.textEdited.disconnect(self.on_preferences_edited)
-                    except TypeError:
+                    except (TypeError, AttributeError):
                         pass
                     tb.textEdited.connect(self.on_preferences_edited)
                 except AttributeError:
@@ -5199,7 +5199,7 @@ class App(QtCore.QObject):
                 try:
                     try:
                         tb.modificationChanged.disconnect(self.on_preferences_edited)
-                    except TypeError:
+                    except (TypeError, AttributeError):
                         pass
                     tb.modificationChanged.connect(self.on_preferences_edited)
                 except AttributeError:
@@ -5208,7 +5208,7 @@ class App(QtCore.QObject):
                 try:
                     try:
                         tb.toggled.disconnect(self.on_preferences_edited)
-                    except TypeError:
+                    except (TypeError, AttributeError):
                         pass
                     tb.toggled.connect(self.on_preferences_edited)
                 except AttributeError:
@@ -5217,7 +5217,7 @@ class App(QtCore.QObject):
                 try:
                     try:
                         tb.valueChanged.disconnect(self.on_preferences_edited)
-                    except TypeError:
+                    except (TypeError, AttributeError):
                         pass
                     tb.valueChanged.connect(self.on_preferences_edited)
                 except AttributeError:
@@ -5226,7 +5226,7 @@ class App(QtCore.QObject):
                 try:
                     try:
                         tb.currentIndexChanged.disconnect(self.on_preferences_edited)
-                    except TypeError:
+                    except (TypeError, AttributeError):
                         pass
                     tb.currentIndexChanged.connect(self.on_preferences_edited)
                 except AttributeError:
