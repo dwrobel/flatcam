@@ -132,7 +132,7 @@ class PlotCanvas(QtCore.QObject):
             self.r_line.parent = None
             self.t_line.parent = None
             self.l_line.parent = None
-        except:
+        except Exception as e:
             pass
 
     # redraw the workspace lines on the plot by readding them to the parent view.scene
@@ -142,7 +142,7 @@ class PlotCanvas(QtCore.QObject):
             self.r_line.parent = self.vispy_canvas.view.scene
             self.t_line.parent = self.vispy_canvas.view.scene
             self.l_line.parent = self.vispy_canvas.view.scene
-        except:
+        except Exception as e:
             pass
 
     def vis_connect(self, event_name, callback):

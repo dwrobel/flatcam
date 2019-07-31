@@ -270,7 +270,7 @@ class ParseFont():
             else:
                 try:
                     name = name.replace(" Regular", '')
-                except:
+                except Exception as e:
                     pass
                 self.regular_f.update({name: font})
         log.debug("Font parsing is finished.")
@@ -313,7 +313,7 @@ class ParseFont():
                 if previous > 0 and glyph_index > 0:
                     delta = face.get_kerning(previous, glyph_index)
                     pen_x += delta.x
-            except:
+            except Exception as e:
                 pass
 
             face.load_glyph(glyph_index)

@@ -49,7 +49,7 @@ class FCDrillAdd(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_drill.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -91,7 +91,7 @@ class FCDrillAdd(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
 
         # add the point to drills if the diameter is a key in the dict, if not, create it add the drill location
@@ -152,8 +152,9 @@ class FCDrillArray(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
+
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_drill_array.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
@@ -274,7 +275,7 @@ class FCDrillArray(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
 
         # add the point to drills if the diameter is a key in the dict, if not, create it add the drill location
@@ -599,7 +600,7 @@ class FCDrillSelect(DrawTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
 
         self.exc_editor_app = exc_editor_app
@@ -668,7 +669,7 @@ class FCDrillSelect(DrawTool):
             # select the diameter of the selected shape in the tool table
             try:
                 self.draw_app.tools_table_exc.cellPressed.disconnect()
-            except:
+            except TypeError:
                 pass
 
             sel_tools = set()
@@ -1257,12 +1258,12 @@ class FlatCAMExcEditor(QtCore.QObject):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.tools_table_exc.itemChanged.disconnect()
-        except:
+        except TypeError:
             pass
 
         try:
             self.tools_table_exc.cellPressed.disconnect()
-        except:
+        except TypeError:
             pass
 
         # updated units
@@ -1704,7 +1705,7 @@ class FlatCAMExcEditor(QtCore.QObject):
     def deactivate(self):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
 
         # adjust the status of the menu entries related to the editor
@@ -2311,7 +2312,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 if self.app.ui.popMenu.mouse_is_panning is False:
                     try:
                         QtGui.QGuiApplication.restoreOverrideCursor()
-                    except:
+                    except Exception as e:
                         pass
                     if self.active_tool.complete is False and not isinstance(self.active_tool, FCDrillSelect):
                         self.active_tool.complete = True
@@ -2380,7 +2381,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         try:
             self.tools_table_exc.cellPressed.disconnect()
-        except:
+        except Exception as e:
             pass
         # select the diameter of the selected shape in the tool table
         self.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)

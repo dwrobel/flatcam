@@ -1921,7 +1921,7 @@ class FCCircle(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_circle_geo.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -1954,7 +1954,7 @@ class FCCircle(FCShapeTool):
     def make(self):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
 
         p1 = self.points[0]
@@ -1972,7 +1972,7 @@ class FCArc(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_arc.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -2190,7 +2190,7 @@ class FCRectangle(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -2221,7 +2221,7 @@ class FCRectangle(FCShapeTool):
     def make(self):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
 
         p1 = self.points[0]
@@ -2243,7 +2243,7 @@ class FCPolygon(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -2276,7 +2276,7 @@ class FCPolygon(FCShapeTool):
     def make(self):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
 
         # self.geometry = LinearRing(self.points)
@@ -2305,7 +2305,7 @@ class FCPath(FCPolygon):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_path5.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -2316,7 +2316,7 @@ class FCPath(FCPolygon):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
 
         self.draw_app.in_action = False
@@ -2349,7 +2349,7 @@ class FCSelect(DrawTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
 
         self.storage = self.draw_app.storage
@@ -2433,7 +2433,7 @@ class FCMove(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
 
         self.storage = self.draw_app.storage
@@ -2613,7 +2613,7 @@ class FCText(FCShapeTool):
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
         self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_text.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
@@ -3173,7 +3173,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
     def deactivate(self):
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
-        except:
+        except Exception as e:
             pass
 
         # adjust the status of the menu entries related to the editor
@@ -3638,7 +3638,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
                     if self.in_action is False:
                         try:
                             QtGui.QGuiApplication.restoreOverrideCursor()
-                        except:
+                        except Exception as e:
                             pass
 
                         if self.active_tool.complete is False and not isinstance(self.active_tool, FCSelect):

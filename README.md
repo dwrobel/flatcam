@@ -9,11 +9,44 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+30.07.2019
+
+- fixed bug that crashed the software when trying to edit a GUI value in Geometry selected tab without having a tool in the Tools Table
+- fixed bug that crashed the app when trying to add a tool without a tool diameter value
+- Spanish Google translation at 77%
+- changed the Disable plots menu entry in the context menu, into a Toggle Visibility menu entry
+- Spanish Google translation 100% but two strings (big ones) - needs review
+- added two more strings to translation strings (due of German language)
+- completed the Russian translation using the Google and Yandex translation engines (minus two big strings) - needs review
+
+28.07.2019
+
+- fixed issue with not using the current units in the tool tables after unit conversion
+- after unit conversion from Preferences, the default values are automatically saved by the app
+- in Basic mode, the tool type column is no longer hidden as it may create issues when using an painted geometry
+- some PEP8 clean-up in FlatCAMGui.py
+- fixed Panelize Tool to do panelization for multiple passes type of geometry that comes out of the isolation done with multiple passes
+
+20.07.2019
+
+- updated the CutOut tool so it will work on single PCB Gerbers or on PCB panel Gerbers
+- updated languages
+- 70% progress in Spanish Google translation
+
+19.07.2019
+
+- fixed bug in FlatCAMObj.FlatCAMGeometry.ui_disconnect(); the widgets signals were not disconnected from handlers when required therefore the signals were connected in an exponential way
+- some changes in the widgets used in the Selected tab for Geometry object
+- some PEP8 cleanup in FlatCAMObj.py
+- updated languages
+- 60% progress in Spanish Google translation
+
 17.07.2019
 
-- added some more strings to the translateable ones, especially the radio button labels
+- added some more strings to the translatable ones, especially the radio button labels
 - updated the .POT file and the available translations
 - 51% progress in Spanish Google translation
+- version date change
 
 16.07.2019
 

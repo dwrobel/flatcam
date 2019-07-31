@@ -93,7 +93,8 @@ class FlatCAMObj(QtCore.QObject):
         self.isHovering = False
         self.notHovering = True
 
-        self.units = 'IN'
+        # self.units = 'IN'
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         # assert isinstance(self.ui, ObjectUI)
         # self.ui.name_entry.returnPressed.connect(self.on_name_activate)
@@ -181,7 +182,7 @@ class FlatCAMObj(QtCore.QObject):
         # self.app.ui.selected_layout.addWidget(self.ui)
         try:
             self.app.ui.selected_scroll_area.takeWidget()
-        except:
+        except Exception as e:
             self.app.log.debug("Nothing to remove")
         self.app.ui.selected_scroll_area.setWidget(self.ui)
 
@@ -198,7 +199,7 @@ class FlatCAMObj(QtCore.QObject):
                 self.app.myKeywords.append(new_name)
                 self.app.shell._edit.set_model_data(self.app.myKeywords)
                 self.app.ui.code_editor.set_model_data(self.app.myKeywords)
-            except:
+            except Exception as e:
                 log.debug("on_name_activate() --> Could not remove the old object name from auto-completer model list")
 
             self.options["name"] = self.ui.name_entry.get_value()
@@ -242,7 +243,7 @@ class FlatCAMObj(QtCore.QObject):
         for option in self.options:
             try:
                 self.set_form_item(option)
-            except:
+            except Exception as e:
                 self.app.log.warning("Unexpected error:", sys.exc_info())
 
     def read_form(self):
@@ -256,7 +257,7 @@ class FlatCAMObj(QtCore.QObject):
         for option in self.options:
             try:
                 self.read_form_item(option)
-            except:
+            except Exception as e:
                 self.app.log.warning("Unexpected error:", sys.exc_info())
 
     def set_form_item(self, option):
@@ -581,7 +582,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.ui.apertures_table.itemChanged.disconnect()
-        except Exception as e:
+        except TypeError:
             pass
 
         self.apertures_row = 0
@@ -725,12 +726,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         for row in range(self.ui.apertures_table.rowCount()):
             try:
                 self.ui.apertures_table.cellWidget(row, 5).clicked.disconnect()
-            except:
+            except TypeError:
                 pass
 
         try:
             self.ui.mark_all_cb.clicked.disconnect(self.on_mark_all_click)
-        except:
+        except TypeError:
             pass
 
     def on_generatenoncopper_button_click(self, *args):
@@ -767,7 +768,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
     def on_ext_iso_button_click(self, *args):
 
-        if self.ui.follow_cb.get_value() == True:
+        if self.ui.follow_cb.get_value() is True:
             obj = self.app.collection.get_active()
             obj.follow()
             # in the end toggle the visibility of the origin object so we can see the generated Geometry
@@ -889,7 +890,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             return geom
 
         if combine:
-
             if self.iso_type == 0:
                 iso_name = self.options["name"] + "_ext_iso"
             elif self.iso_type == 1:
@@ -913,6 +913,46 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         geom = generate_envelope(iso_offset, 0, envelope_iso_type=self.iso_type, follow=follow)
                     geo_obj.solid_geometry.append(geom)
 
+                    # store here the default data for Geometry Data
+                    default_data = {}
+                    default_data.update({
+                        "name": iso_name,
+                        "plot": self.app.defaults['geometry_plot'],
+                        "cutz": self.app.defaults['geometry_cutz'],
+                        "vtipdia": self.app.defaults['geometry_vtipdia'],
+                        "vtipangle": self.app.defaults['geometry_vtipangle'],
+                        "travelz": self.app.defaults['geometry_travelz'],
+                        "feedrate": self.app.defaults['geometry_feedrate'],
+                        "feedrate_z": self.app.defaults['geometry_feedrate_z'],
+                        "feedrate_rapid": self.app.defaults['geometry_feedrate_rapid'],
+                        "dwell": self.app.defaults['geometry_dwell'],
+                        "dwelltime": self.app.defaults['geometry_dwelltime'],
+                        "multidepth": self.app.defaults['geometry_multidepth'],
+                        "ppname_g": self.app.defaults['geometry_ppname_g'],
+                        "depthperpass": self.app.defaults['geometry_depthperpass'],
+                        "extracut": self.app.defaults['geometry_extracut'],
+                        "toolchange": self.app.defaults['geometry_toolchange'],
+                        "toolchangez": self.app.defaults['geometry_toolchangez'],
+                        "endz": self.app.defaults['geometry_endz'],
+                        "spindlespeed": self.app.defaults['geometry_spindlespeed'],
+                        "toolchangexy": self.app.defaults['geometry_toolchangexy'],
+                        "startz": self.app.defaults['geometry_startz']
+                    })
+
+                    geo_obj.tools = dict()
+                    geo_obj.tools['1'] = dict()
+                    geo_obj.tools.update({
+                        '1': {
+                            'tooldia': float(self.options["isotooldia"]),
+                            'offset': 'Path',
+                            'offset_value': 0.0,
+                            'type': _('Rough'),
+                            'tool_type': 'C1',
+                            'data': default_data,
+                            'solid_geometry': geo_obj.solid_geometry
+                        }
+                    })
+
                 # detect if solid_geometry is empty and this require list flattening which is "heavy"
                 # or just looking in the lists (they are one level depth) and if any is not empty
                 # proceed with object creation, if there are empty and the number of them is the length
@@ -932,7 +972,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
                 if empty_cnt == len(geo_obj.solid_geometry):
                     raise ValidationError("Empty Geometry", None)
-                geo_obj.multigeo = False
+                geo_obj.multigeo = True
 
             # TODO: Do something if this is None. Offer changing name?
             self.app.new_object("geometry", iso_name, iso_init)
@@ -1278,7 +1318,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :return: Gerber_code
         """
 
-        def tz_format(x, y ,fac):
+        def tz_format(x, y, fac):
             x_c = x * fac
             y_c = y * fac
 
@@ -1501,7 +1541,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                                                 else:
                                                     x_formatted, y_formatted = lz_format(coord[0], coord[1], factor)
                                                     gerber_code += "X{xform}Y{yform}D01*\n".format(xform=x_formatted,
-                                                                                                  yform=y_formatted)
+                                                                                                   yform=y_formatted)
 
                                             prev_coord = coord
                                         # gerber_code += "D02*\n"
@@ -1585,7 +1625,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.tool_cbs = {}
 
         # dict to hold the tool number as key and tool offset as value
-        self.tool_offset ={}
+        self.tool_offset = {}
 
         # variable to store the total amount of drills per job
         self.tot_drill_cnt = 0
@@ -1787,10 +1827,12 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
     def build_ui(self):
         FlatCAMObj.build_ui(self)
 
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.ui.tools_table.itemChanged.disconnect()
-        except Exception as e:
+        except TypeError:
             pass
 
         n = len(self.tools)
@@ -1857,7 +1899,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                 else:
                     t_offset = self.tool_offset[float('%.4f' % float(self.tools[tool_no]['C']))]
             except KeyError:
-                    t_offset = self.app.defaults['excellon_offset']
+                t_offset = self.app.defaults['excellon_offset']
+
             tool_offset_item = QtWidgets.QTableWidgetItem('%s' % str(t_offset))
 
             plot_item = FCCheckBox()
@@ -1992,6 +2035,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
 
         FlatCAMApp.App.log.debug("FlatCAMExcellon.set_ui()")
 
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+
         self.form_fields.update({
             "plot": self.ui.plot_cb,
             "solid": self.ui.solid_cb,
@@ -2075,18 +2120,20 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         for row in range(self.ui.tools_table.rowCount()):
             try:
                 self.ui.tools_table.cellWidget(row, 5).clicked.disconnect()
-            except Exception as e:
+            except TypeError:
                 pass
 
         try:
             self.ui.plot_cb.stateChanged.disconnect()
-        except Exception as e:
+        except TypeError:
             pass
 
     def on_tool_offset_edit(self):
         # if connected, disconnect the signal from the slot on item_changed as it creates issues
         self.ui.tools_table.itemChanged.disconnect()
         # self.tools_table_exc.selectionModel().currentChanged.disconnect()
+
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         self.is_modified = True
 
@@ -2854,7 +2901,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 if option is not 'name':
                     try:
                         geo_final.options[option] = geo.options[option]
-                    except:
+                    except Exception as e:
                         log.warning("Failed to copy option.", option)
 
             # Expand lists
@@ -2879,6 +2926,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 geo_final_uid_list = []
                 for key in geo_final.tools:
                     geo_final_uid_list.append(int(key))
+
                 try:
                     max_uid = max(geo_final_uid_list, key=int)
                 except ValueError:
@@ -3022,9 +3070,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ser_attrs += ['options', 'kind', 'tools', 'multigeo']
 
     def build_ui(self):
-
         self.ui_disconnect()
         FlatCAMObj.build_ui(self)
+
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         offset = 0
         tool_idx = 0
@@ -3089,7 +3138,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
             try:
                 self.ui.tool_offset_entry.set_value(tooluid_value['offset_value'])
-            except:
+            except Exception as e:
                 log.debug("build_ui() --> Could not set the 'offset_value' key in self.tools")
 
         # make the diameter column editable
@@ -3308,7 +3357,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
             self.ui.geo_tools_table.setColumnHidden(2, True)
             self.ui.geo_tools_table.setColumnHidden(3, True)
-            self.ui.geo_tools_table.setColumnHidden(4, True)
+            # self.ui.geo_tools_table.setColumnHidden(4, True)
             self.ui.addtool_entry_lbl.hide()
             self.ui.addtool_entry.hide()
             self.ui.addtool_btn.hide()
@@ -3384,23 +3433,31 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                             return
 
     def ui_connect(self):
-
         # on any change to the widgets that matter it will be called self.gui_form_to_storage which will save the
         # changes in geometry UI
         for i in range(self.ui.grid3.count()):
-            try:
-                # works for CheckBoxes
-                self.ui.grid3.itemAt(i).widget().stateChanged.connect(self.gui_form_to_storage)
-            except Exception as e:
-                # works for ComboBoxes
-                try:
-                    self.ui.grid3.itemAt(i).widget().currentIndexChanged.connect(self.gui_form_to_storage)
-                except Exception as e2:
-                    # works for Entry
-                    try:
-                        self.ui.grid3.itemAt(i).widget().editingFinished.connect(self.gui_form_to_storage)
-                    except Exception as e3:
-                        pass
+            # try:
+            #     # works for CheckBoxes
+            #     self.ui.grid3.itemAt(i).widget().stateChanged.connect(self.gui_form_to_storage)
+            # except Exception as e:
+            #     # works for ComboBoxes
+            #     try:
+            #         self.ui.grid3.itemAt(i).widget().currentIndexChanged.connect(self.gui_form_to_storage)
+            #     except Exception as e2:
+            #         # works for Entry
+            #         try:
+            #             self.ui.grid3.itemAt(i).widget().editingFinished.connect(self.gui_form_to_storage)
+            #         except Exception as e3:
+            #             pass
+
+            current_widget = self.ui.grid3.itemAt(i).widget()
+            if isinstance(current_widget, FCCheckBox):
+                current_widget.stateChanged.connect(self.gui_form_to_storage)
+            elif isinstance(current_widget, FCComboBox):
+                current_widget.currentIndexChanged.connect(self.gui_form_to_storage)
+            elif isinstance(current_widget, FloatEntry) or isinstance(current_widget, LengthEntry) or \
+                    isinstance(current_widget, FCEntry) or isinstance(current_widget, IntEntry):
+                current_widget.editingFinished.connect(self.gui_form_to_storage)
 
         for row in range(self.ui.geo_tools_table.rowCount()):
             for col in [2, 3, 4]:
@@ -3423,74 +3480,93 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
     def ui_disconnect(self):
 
-        try:
-            # on any change to the widgets that matter it will be called self.gui_form_to_storage which will save the
-            # changes in geometry UI
-            for i in range(self.ui.grid3.count()):
-                if isinstance(self.ui.grid3.itemAt(i).widget(), FCCheckBox):
-                    self.ui.grid3.itemAt(i).widget().stateChanged.disconnect()
+        # on any change to the widgets that matter it will be called self.gui_form_to_storage which will save the
+        # changes in geometry UI
+        for i in range(self.ui.grid3.count()):
+            # try:
+            #     # works for CheckBoxes
+            #     self.ui.grid3.itemAt(i).widget().stateChanged.disconnect(self.gui_form_to_storage)
+            # except Exception as e:
+            #     # works for ComboBoxes
+            #     try:
+            #         self.ui.grid3.itemAt(i).widget().currentIndexChanged.disconnect(self.gui_form_to_storage)
+            #     except Exception as e2:
+            #         # works for Entry
+            #         try:
+            #             self.ui.grid3.itemAt(i).widget().editingFinished.disconnect(self.gui_form_to_storage)
+            #         except Exception as e3:
+            #             pass
 
-                if isinstance(self.ui.grid3.itemAt(i).widget(), FCComboBox):
-                    self.ui.grid3.itemAt(i).widget().currentIndexChanged.disconnect()
+            current_widget = self.ui.grid3.itemAt(i).widget()
+            if isinstance(current_widget, FCCheckBox):
+                try:
+                    self.ui.grid3.itemAt(i).widget().stateChanged.disconnect(self.gui_form_to_storage)
+                except TypeError:
+                    pass
+            elif isinstance(current_widget, FCComboBox):
+                try:
+                    self.ui.grid3.itemAt(i).widget().currentIndexChanged.disconnect(self.gui_form_to_storage)
+                except TypeError:
+                    pass
+            elif isinstance(current_widget, LengthEntry) or isinstance(current_widget, IntEntry) or \
+                    isinstance(current_widget, FCEntry) or isinstance(current_widget, FloatEntry):
+                try:
+                    self.ui.grid3.itemAt(i).widget().editingFinished.disconnect(self.gui_form_to_storage)
+                except TypeError:
+                    pass
 
-                if isinstance(self.ui.grid3.itemAt(i).widget(), LengthEntry) or \
-                        isinstance(self.ui.grid3.itemAt(i).widget(), IntEntry) or \
-                        isinstance(self.ui.grid3.itemAt(i).widget(), FCEntry):
-                    self.ui.grid3.itemAt(i).widget().editingFinished.disconnect()
-        except Exception as e:
-            pass
-
-        try:
-            for row in range(self.ui.geo_tools_table.rowCount()):
-                for col in [2, 3, 4]:
+        for row in range(self.ui.geo_tools_table.rowCount()):
+            for col in [2, 3, 4]:
+                try:
                     self.ui.geo_tools_table.cellWidget(row, col).currentIndexChanged.disconnect()
-        except Exception as e:
-            pass
+                except TypeError:
+                    pass
 
-        # I use lambda's because the connected functions have parameters that could be used in certain scenarios
         try:
             self.ui.addtool_btn.clicked.disconnect()
-        except Exception as e:
+        except TypeError:
             pass
 
         try:
             self.ui.copytool_btn.clicked.disconnect()
-        except Exception as e:
+        except TypeError:
             pass
 
         try:
             self.ui.deltool_btn.clicked.disconnect()
-        except Exception as e:
+        except TypeError:
             pass
 
         try:
             self.ui.geo_tools_table.currentItemChanged.disconnect()
-        except Exception as e:
+        except TypeError:
             pass
 
         try:
             self.ui.geo_tools_table.itemChanged.disconnect()
-        except Exception as e:
+        except TypeError:
             pass
 
         try:
             self.ui.tool_offset_entry.editingFinished.disconnect()
-        except Exception as e:
+        except TypeError:
             pass
 
         for row in range(self.ui.geo_tools_table.rowCount()):
             try:
                 self.ui.geo_tools_table.cellWidget(row, 6).clicked.disconnect()
-            except Exception as e:
+            except TypeError:
                 pass
 
         try:
             self.ui.plot_cb.stateChanged.disconnect()
-        except Exception as e:
+        except TypeError:
             pass
 
     def on_tool_add(self, dia=None):
         self.ui_disconnect()
+
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
         # if a Tool diameter entered is a char instead a number the final message of Tool adding is changed
         # because the Default value for Tool is used.
@@ -3507,7 +3583,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     tooldia = float(self.ui.addtool_entry.get_value().replace(',', '.'))
                 except ValueError:
                     change_message = True
-                    tooldia = self.options["cnctooldia"][0]
+                    tooldia = float(self.options["cnctooldia"][0])
 
             if tooldia is None:
                 self.build_ui()
@@ -3581,7 +3657,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # we do this HACK to make sure the tools attribute to be serialized is updated in the self.ser_attrs list
         try:
             self.ser_attrs.remove('tools')
-        except Exception as e:
+        except TypeError:
             pass
         self.ser_attrs.append('tools')
 
@@ -3592,9 +3668,13 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             change_message = False
             self.app.inform.emit(_(
-                "[ERROR_NOTCL] Default Tool added. Wrong value format entered."
+                "[WARNING_NOTCL] Default Tool added. Wrong value format entered."
             ))
         self.build_ui()
+
+        # if there is no tool left in the Tools Table, enable the parameters GUI
+        if self.ui.geo_tools_table.rowCount() != 0:
+            self.ui.geo_param_frame.setDisabled(False)
 
     def on_tool_copy(self, all=None):
         self.ui_disconnect()
@@ -3655,7 +3735,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # we do this HACK to make sure the tools attribute to be serialized is updated in the self.ser_attrs list
         try:
             self.ser_attrs.remove('tools')
-        except:
+        except Exception as e:
             pass
         self.ser_attrs.append('tools')
 
@@ -3690,7 +3770,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         try:
             self.ser_attrs.remove('tools')
             self.ser_attrs.append('tools')
-        except Exception as e:
+        except TypeError:
             pass
 
         self.app.inform.emit(_(
@@ -3699,7 +3779,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.build_ui()
 
     def on_tool_delete(self, all=None):
-
         self.ui_disconnect()
 
         if all is None:
@@ -3749,7 +3828,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # we do this HACK to make sure the tools attribute to be serialized is updated in the self.ser_attrs list
         try:
             self.ser_attrs.remove('tools')
-        except Exception as e:
+        except TypeError:
             pass
         self.ser_attrs.append('tools')
 
@@ -3778,6 +3857,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 obj_active.options['ymin'] = 0
                 obj_active.options['xmax'] = 0
                 obj_active.options['ymax'] = 0
+
+        # if there is no tool left in the Tools Table, disable the parameters GUI
+        if self.ui.geo_tools_table.rowCount() == 0:
+            self.ui.geo_param_frame.setDisabled(True)
 
     def on_row_selection_change(self):
         self.update_ui()
@@ -3838,7 +3921,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                             self.update_cutz()
         except Exception as e:
             log.debug("FlatCAMObj ---> update_ui() " + str(e))
-
         self.ui_connect()
 
     def ui_update_v_shape(self, tool_type_txt):
@@ -3951,6 +4033,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ui.ois_tcz_geo.on_cb_change()
 
     def gui_form_to_storage(self):
+
+        if self.ui.geo_tools_table.rowCount() == 0:
+            # there is no tool in tool table so we can't save the GUI elements values to storage
+            log.debug("FlatCAMGeometry.gui_form_to_storage() --> no tool in Tools Table, aborting.")
+            return
 
         self.ui_disconnect()
         widget_changed = self.sender()
@@ -4345,7 +4432,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
                     if diadict_key == 'data':
                         for data_key, data_value in diadict_value.items():
-                            if data_key ==  "multidepth":
+                            if data_key == "multidepth":
                                 multidepth = data_value
                             if data_key == "depthperpass":
                                 depthpercut = data_value
@@ -5459,7 +5546,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         try:
             self.ui.annotation_cb.stateChanged.disconnect(self.on_annotation_change)
-        except:
+        except TypeError:
             pass
         self.ui.annotation_cb.stateChanged.connect(self.on_annotation_change)
 
@@ -5503,7 +5590,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             self.ui.cnc_tools_table.cellWidget(row, 6).clicked.disconnect(self.on_plot_cb_click_table)
         try:
             self.ui.plot_cb.stateChanged.disconnect(self.on_plot_cb_click)
-        except Exception as e:
+        except TypeError:
             pass
 
     def on_updateplot_button_click(self, *args):

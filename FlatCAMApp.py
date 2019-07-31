@@ -84,7 +84,7 @@ class App(QtCore.QObject):
         elif opt == '--shellfile':
             cmd_line_shellfile = arg
 
-    # Logging # ##
+    # ## Logging ###
     log = logging.getLogger('base')
     log.setLevel(logging.DEBUG)
     # log.setLevel(logging.WARNING)
@@ -93,9 +93,11 @@ class App(QtCore.QObject):
     handler.setFormatter(formatter)
     log.addHandler(handler)
 
-    # Version
+    # ####################################
+    # Version and VERSION DATE ###########
+    # ####################################
     version = 8.920
-    version_date = "2019/07/14"
+    version_date = "2019/07/31"
     beta = True
 
     # current date now
@@ -502,6 +504,7 @@ class App(QtCore.QObject):
 
             # CutOut Tool
             "tools_cutouttooldia": self.ui.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
+            "tools_cutoutkind": self.ui.tools_defaults_form.tools_cutout_group.obj_kind_combo,
             "tools_cutoutmargin": self.ui.tools_defaults_form.tools_cutout_group.cutout_margin_entry,
             "tools_cutoutgapsize": self.ui.tools_defaults_form.tools_cutout_group.cutout_gap_entry,
             "tools_gaps_ff": self.ui.tools_defaults_form.tools_cutout_group.gaps_combo,
@@ -781,6 +784,8 @@ class App(QtCore.QObject):
 
             # Geometry Options
             "geometry_cutz": -0.002,
+            "geometry_vtipdia": 0.1,
+            "geometry_vtipangle": 30,
             "geometry_multidepth": False,
             "geometry_depthperpass": 0.002,
             "geometry_travelz": 0.1,
@@ -837,6 +842,7 @@ class App(QtCore.QObject):
             "tools_nccrest": False,
 
             "tools_cutouttooldia": 0.00393701,
+            "tools_cutoutkind": "single",
             "tools_cutoutmargin": 0.00393701,
             "tools_cutoutgapsize": 0.005905512,
             "tools_gaps_ff": "8",
@@ -1125,6 +1131,8 @@ class App(QtCore.QObject):
             "geometry_segx": 0.0,
             "geometry_segy": 0.0,
             "geometry_cutz": -0.002,
+            "geometry_vtipdia": 0.1,
+            "geometry_vtipangle": 30,
             "geometry_travelz": 0.1,
             "geometry_feedrate": 3.0,
             "geometry_feedrate_z": 3.0,
@@ -1454,7 +1462,7 @@ class App(QtCore.QObject):
         self.connect_toolbar_signals()
 
         # Context Menu
-        self.ui.popmenu_disable.triggered.connect(lambda: self.disable_plots(self.collection.get_selected()))
+        self.ui.popmenu_disable.triggered.connect(lambda: self.toggle_plots(self.collection.get_selected()))
         self.ui.popmenu_panel_toggle.triggered.connect(self.on_toggle_notebook)
 
         self.ui.popmenu_new_geo.triggered.connect(self.new_geometry_object)
@@ -3869,6 +3877,9 @@ class App(QtCore.QObject):
                 scale_defaults(factor)
                 self.defaults_write_form(fl_units=new_units)
 
+                # save the defaults to file, some may assume that the conversion is enough and it's not
+                self.on_save_button()
+
             self.should_we_save = True
 
             # change this only if the workspace is active
@@ -3914,12 +3925,17 @@ class App(QtCore.QObject):
         self.defaults_read_form()
 
     def on_toggle_units_click(self):
-        self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
+        try:
+            self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
+        except TypeError:
+            pass
+
         if self.defaults["units"] == 'MM':
             self.ui.general_defaults_form.general_app_group.units_radio.set_value("IN")
         else:
             self.ui.general_defaults_form.general_app_group.units_radio.set_value("MM")
         self.on_toggle_units(no_pref=True)
+
         self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
             lambda: self.on_toggle_units(no_pref=False))
 
@@ -4416,7 +4432,7 @@ class App(QtCore.QObject):
             self.ui.removeToolBar(self.ui.grb_edit_toolbar)
             self.ui.removeToolBar(self.ui.snap_toolbar)
             self.ui.removeToolBar(self.ui.toolbarshell)
-        except:
+        except Exception as e:
             pass
 
         if current_layout == 'standard':
@@ -4524,6 +4540,8 @@ class App(QtCore.QObject):
             self.ui.cncjob_defaults_form.cncjob_adv_opt_group.toolchange_text.insertPlainText('%%%s%%' % signal_text)
 
     def on_save_button(self):
+        log.debug("App.on_save_button() --> Saving preferences to file.")
+
         self.save_defaults(silent=False)
         # load the defaults so they are updated into the app
         self.load_defaults(filename='current_defaults')
@@ -6127,11 +6145,12 @@ class App(QtCore.QObject):
         self.report_usage("on_fileopengerber")
         App.log.debug("on_fileopengerber()")
 
-        _filter_ = "Gerber Files (*.gbr *.ger *.gtl *.gbl *.gts *.gbs *.gtp *.gbp *.gto *.gbo *.gm1 *.gml *.gm3 *.gko " \
-                   "*.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim *.mil *.grb" \
+        _filter_ = "Gerber Files (*.gbr *.ger *.gtl *.gbl *.gts *.gbs *.gtp *.gbp *.gto *.gbo *.gm1 *.gml *.gm3 *" \
+                   ".gko *.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim *.mil *.grb" \
                    "*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb *.pho *.gdo *.art *.gbd *.gb*);;" \
                    "Protel Files (*.gtl *.gbl *.gts *.gbs *.gto *.gbo *.gtp *.gbp *.gml *.gm1 *.gm3 *.gko);;" \
-                   "Eagle Files (*.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim *.mil);;" \
+                   "Eagle Files (*.cmp *.sol *.stc *.sts *.plc *.pls *.crc *.crs *.tsm *.bsm *.ly2 *.ly15 *.dim " \
+                   "*.mil);;" \
                    "OrCAD Files (*.top *.bot *.smt *.smb *.sst *.ssb *.spt *.spb);;" \
                    "Allegro Files (*.art);;" \
                    "Mentor Files (*.pho *.gdo);;" \
@@ -7666,9 +7685,9 @@ class App(QtCore.QObject):
                 app_obj.progress.emit(0)
                 self.log.error(str(err))
                 return "fail"
-
-            except:
-                msg = _("[ERROR] An internal error has ocurred. See shell.\n")
+            except Exception as e:
+                log.debug("App.open_gerber() --> %s" % str(e))
+                msg = _("[ERROR] An internal error has occurred. See shell.\n")
                 msg += traceback.format_exc()
                 app_obj.inform.emit(msg)
                 return "fail"
@@ -8513,10 +8532,44 @@ The normal flow when working in FlatCAM is the following:</span></p>
         :return:
         """
 
+        # if no objects selected then do nothing
+        if not self.collection.get_selected():
+            return
+
+        # if at least one object is visible then do the disable
+        exit_flag = True
+        for obj in objects:
+            if obj.options['plot'] is True:
+                exit_flag = False
+                break
+
+        if exit_flag:
+            return
+
         log.debug("Disabling plots ...")
         self.inform.emit(_("Working ..."))
         for obj in objects:
             obj.options['plot'] = False
+        self.plots_updated.emit()
+
+    def toggle_plots(self, objects):
+        """
+        Toggle plots visibility
+        :param objects: list of Objects for which to be toggled the visibility
+        :return:
+        """
+
+        # if no objects selected then do nothing
+        if not self.collection.get_selected():
+            return
+
+        log.debug("Toggling plots ...")
+        self.inform.emit(_("Working ..."))
+        for obj in objects:
+            if obj.options['plot'] is False:
+                obj.options['plot'] = True
+            else:
+                obj.options['plot'] = False
         self.plots_updated.emit()
 
     def clear_plots(self):
