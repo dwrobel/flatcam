@@ -50,9 +50,7 @@ msgstr "Falha em abrir o arquivo de Script."
 
 #: FlatCAMApp.py:2244
 msgid "[WARNING_NOTCL] Select a Geometry, Gerber or Excellon Object to edit."
-msgstr ""
-"[WARNING_NOTCL] Selecione um Objeto Geometria, Gerber ou Excellon para "
-"editar."
+msgstr "[WARNING_NOTCL] Selecione um Objeto Geometria, Gerber ou Excellon para editar."
 
 #: FlatCAMApp.py:2254
 msgid ""
@@ -62,7 +60,7 @@ msgid ""
 msgstr ""
 "[WARNING_NOTCL] A edição simultânea de ferramentas geometria em uma "
 "Geometria MultiGeo não é possível. \n"
-" Editar apenas uma geometria por vez."
+"Editar apenas uma geometria por vez."
 
 #: FlatCAMApp.py:2309
 msgid "[WARNING_NOTCL] Editor is activated ..."
@@ -148,13 +146,11 @@ msgstr "[ERROR_NOTCL] Falha ao gravar os padrões no arquivo."
 
 #: FlatCAMApp.py:2927
 msgid "[ERROR_NOTCL] Failed to open recent files file for writing."
-msgstr ""
-"[ERROR_NOTCL] Falha ao abrir o arquivo de arquivos recentes para gravação."
+msgstr "[ERROR_NOTCL] Falha ao abrir o arquivo de arquivos recentes para gravação."
 
 #: FlatCAMApp.py:3004 camlib.py:4457
 msgid "[ERROR_NOTCL] An internal error has ocurred. See shell.\n"
-msgstr ""
-"[ERROR_NOTCL] Ocorreu um erro interno. Veja shell (linha de comando). \n"
+msgstr "[ERROR_NOTCL] Ocorreu um erro interno. Veja shell (linha de comando).\n"
 
 #: FlatCAMApp.py:3005
 #, python-brace-format
@@ -540,7 +536,7 @@ msgstr "[WARNING_NOTCL] Excluir valor de grade cancelado ..."
 
 #: FlatCAMApp.py:5470
 msgid "Key Shortcut List"
-msgstr "Lista de Atalhos"
+msgstr "Lista de Teclas de Atalho"
 
 #: FlatCAMApp.py:5503
 msgid "[WARNING_NOTCL] No object selected to copy it's name"
@@ -781,7 +777,7 @@ msgstr ""
 
 #: FlatCAMApp.py:6681
 msgid "Source Editor"
-msgstr "Editor de fontes"
+msgstr "Editor de Fontes"
 
 #: FlatCAMApp.py:6691
 #, python-format
@@ -971,7 +967,7 @@ msgstr "[ERROR_NOTCL] Falha ao analisar o arquivo: {name}. {error}"
 #: FlatCAMApp.py:7671 FlatCAMObj.py:4271
 #: flatcamEditors/FlatCAMExcEditor.py:2077
 msgid "[ERROR] An internal error has ocurred. See shell.\n"
-msgstr "[ERROR] Um erro interno ocorreu. Veja shell (linha de comando). \n"
+msgstr "[ERROR] Ocorreu um erro interno. Veja shell (linha de comando).\n"
 
 #: FlatCAMApp.py:7680
 msgid ""
@@ -1155,9 +1151,9 @@ msgstr ""
 "Excellon, G-Code, DXF, Imagem Raster ou SVG no FlatCAM usando os menu&#39;s, "
 "barras de trabalho, teclas de atalho ou mesmo arrastando e soltando os "
 "arquivos na GUI.<br/>\n"
-"\t<br />\n"
+"\t<br/>\n"
 "\tVocê pode também ler um <strong>projeto FlatCAM</strong> clicando duas "
-"vezes no arquivo de projeto, arrastando soltando o arquivo na GUI do FlatCAM "
+"vezes no arquivo de projeto, arrastando e soltando o arquivo na GUI do FlatCAM "
 "ou através dos links de menu/barra de ferramentas oferecidos dentro do "
 "aplicativo.</span><br />\n"
 "\t&nbsp;</li>\n"
@@ -1167,15 +1163,15 @@ msgstr ""
 "a <strong>ABA SELECIONADO</strong> será atualizada com as propriedades do "
 "objeto de acordo com o tipo: Gerber, Excellon, Geometria ou Trabalho CNC.<br/"
 ">\n"
-"\t<br />\n"
+"\t<br/>\n"
 "\tSe a seleção do objeto for feita na tela com um único clique, e a "
 "<strong>ABA SELECIONADO</strong> estiver em foco, novamente as propriedades "
 "do objeto serão exibidas na Aba Selecionado. Como alternativa, clicar duas "
 "vezes no objeto na tela trará a <strong>ABA SELECIONADO</strong> e a "
 "preencherá mesmo que esteja fora de foco.<br/>\n"
-"\t<br />\n"
+"\t<br/>\n"
 "\tVocê pode alterar os parâmetros nesta tela e o fluxo é assim:<br />\n"
-"\t<br />\n"
+"\t<br/>\n"
 "\t<strong>Objeto Gerber/Excellon</strong> -&gt; Alterar Parâmetros -&gt; "
 "Gerar Geometria -&gt;<strong> Objeto Geometria </strong>-&gt; Adicionar "
 "Ferramentas (alterar parâmetro na Aba Selecionado) -&gt; Gerar Trabalho CNC -"
@@ -1185,7 +1181,7 @@ msgstr ""
 "</ol>\n"
 "\n"
 "<p><span style=\"font-size:10px\">Uma lista de teclas de atalhos está "
-"disponível em <strong>Ajuda -&gt; Lista de Atalhos</strong>&nbsp;ou usando a "
+"disponível em <strong>Ajuda -&gt; Lista de Teclas de Atalho</strong>&nbsp;ou usando a "
 "sua tecla de atalho: <strng>F3</strong>.</span></p>\n"
 "\n"
 "        "
@@ -1395,7 +1391,7 @@ msgid ""
 "but now there is only one value, not two. "
 msgstr ""
 "[ERROR] O campo Toolchange X, Y em Editar -> Preferências tem que estar no "
-"formato (x, y) \n"
+"formato (x, y)\n"
 "mas agora existe apenas um valor, não dois. "
 
 #: FlatCAMObj.py:3001 FlatCAMObj.py:3930 FlatCAMObj.py:3931 FlatCAMObj.py:3940
@@ -1404,7 +1400,7 @@ msgstr "Iso"
 
 #: FlatCAMObj.py:3001 FlatCAMObj.py:3262 FlatCAMObj.py:3544
 msgid "Rough"
-msgstr "Rude"
+msgstr "Áspero"
 
 #: FlatCAMObj.py:3001
 msgid "Finish"
@@ -1569,16 +1565,16 @@ msgstr ""
 msgid "[ERROR] There is no postprocessor file."
 msgstr "[ERROR] Não há arquivo de pós-processador."
 
-#: FlatCAMTranslation.py:86
+#: FlatCAMTranslation.py:91
 msgid "The application will restart."
 msgstr "O aplicativo reiniciará."
 
-#: FlatCAMTranslation.py:87
+#: FlatCAMTranslation.py:92
 #, python-format
 msgid "Are you sure do you want to change the current language to %s?"
 msgstr "Você tem certeza de que quer alterar o idioma para %s?"
 
-#: FlatCAMTranslation.py:89
+#: FlatCAMTranslation.py:94
 msgid "Apply Language ..."
 msgstr "Aplicar o Idioma ..."
 
@@ -1771,7 +1767,7 @@ msgstr ""
 
 #: camlib.py:5654 camlib.py:5917
 msgid "[ERROR_NOTCL] Travel Z parameter is None or zero."
-msgstr "[ERROR_NOTCL] O parâmetro Travel Z é Nulo ou zero."
+msgstr "[ERROR_NOTCL] O parâmetro Deslocamento Z é Nulo ou zero."
 
 #: camlib.py:5658 camlib.py:5921
 msgid ""
@@ -1911,7 +1907,7 @@ msgstr "[success] Feito. Movimento da Broca realizado."
 
 #: flatcamEditors/FlatCAMExcEditor.py:592
 msgid "[success] Done. Drill(s) copied."
-msgstr "[success] Feito. Drill(s) copiado."
+msgstr "[success] Feito. Broca(s) copiada(s)."
 
 #: flatcamEditors/FlatCAMExcEditor.py:792 flatcamGUI/FlatCAMGUI.py:5038
 msgid "Excellon Editor"
@@ -2104,7 +2100,7 @@ msgstr ""
 "Ângulo no qual a matriz linear é colocada. \n"
 "A precisão é de no máximo 2 decimais. \n"
 "O valor mínimo é: -359.99 graus. \n"
-"O valor máximo é:  360,00 graus."
+"O valor máximo é:  360.00 graus."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1012
 #: flatcamEditors/FlatCAMGrbEditor.py:2669
@@ -2203,25 +2199,25 @@ msgid ""
 "meeting in the corner"
 msgstr ""
 "Existem 3 tipos de cantos: \n"
-" - 'Round': o canto é arredondado para buffer externo. \n"
-" - 'Square:' o canto é encontrado em um ângulo agudo para buffer externo. \n"
-" - 'Beveled:' o canto é uma linha que conecta diretamente os recursos "
+" - 'Redondo': o canto é arredondado para buffer externo. \n"
+" - 'Quadrado:' o canto é em um ângulo agudo para buffer externo. \n"
+" - 'Chanfrado:' o canto é uma linha que conecta diretamente os recursos "
 "encontrados no canto"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:89
 #: flatcamEditors/FlatCAMGrbEditor.py:2469
 msgid "Round"
-msgstr "Round"
+msgstr "Redondo"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:90
 #: flatcamEditors/FlatCAMGrbEditor.py:2470
 msgid "Square"
-msgstr "Square"
+msgstr "Quadrado"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:91
 #: flatcamEditors/FlatCAMGrbEditor.py:2471
 msgid "Beveled"
-msgstr "Beveled"
+msgstr "Chanfrado"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:98
 msgid "Buffer Interior"
@@ -3797,7 +3793,7 @@ msgid ""
 "[ERROR_NOTCL] Failed.\n"
 "%s"
 msgstr ""
-"[ERROR_NOTCL] falhou. \n"
+"[ERROR_NOTCL] Falhou.\n"
 " %s"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:4572
@@ -3834,11 +3830,11 @@ msgstr "&Arquivo"
 
 #: flatcamGUI/FlatCAMGUI.py:55
 msgid "&New Project ...\tCTRL+N"
-msgstr "&Novo Projeto ...\tCTRL + N"
+msgstr "&Novo Projeto ...\tCTRL+N"
 
 #: flatcamGUI/FlatCAMGUI.py:57
 msgid "Will create a new, blank project"
-msgstr "Vai criar um novo projeto em branco"
+msgstr "Criará um novo projeto em branco"
 
 #: flatcamGUI/FlatCAMGUI.py:62
 msgid "&New"
@@ -3995,7 +3991,7 @@ msgid ""
 msgstr ""
 "Irá exportar um Objeto Gerber como arquivo Gerber, \n"
 "o formato de coordenadas, as unidades de arquivo e os zeros \n"
-"estão definidos em Preferências -> Exportação de Gerber."
+"estão definidos em Preferências -> Exportar Gerber."
 
 #: flatcamGUI/FlatCAMGUI.py:199
 msgid "Save &Defaults"
@@ -4011,7 +4007,7 @@ msgstr "&Salvar Projeto ..."
 
 #: flatcamGUI/FlatCAMGUI.py:213
 msgid "Save Project &As ...\tCTRL+S"
-msgstr "Salvar Projeto &Como ...\tCTRL+S"
+msgstr "S&alvar Projeto Como ...\tCTRL+S"
 
 #: flatcamGUI/FlatCAMGUI.py:217
 msgid "Save Project C&opy ..."
@@ -4209,11 +4205,11 @@ msgstr "Al&ternar Encaixe na Grade\tG"
 
 #: flatcamGUI/FlatCAMGUI.py:375
 msgid "&Toggle Axis\tSHIFT+G"
-msgstr "&Alternar Eixo\tSHIFT+G"
+msgstr "Al&ternar Eixo\tSHIFT+G"
 
 #: flatcamGUI/FlatCAMGUI.py:378
 msgid "Toggle Workspace\tSHIFT+W"
-msgstr "Al&ternar Espaço de Trabalho\tSHIFT+W"
+msgstr "Alternar Espaço de Trabalho\tSHIFT+W"
 
 #: flatcamGUI/FlatCAMGUI.py:381
 msgid "&Tool"
@@ -4389,7 +4385,7 @@ msgstr "Marcar Área\tALT+A"
 
 #: flatcamGUI/FlatCAMGUI.py:494
 msgid "Eraser\tCTRL+E"
-msgstr "Apagar\tCTRL+E"
+msgstr "Borracha\tCTRL+E"
 
 #: flatcamGUI/FlatCAMGUI.py:496
 msgid "Transform\tALT+R"
@@ -4519,7 +4515,7 @@ msgstr "PCB de 2 Faces"
 
 #: flatcamGUI/FlatCAMGUI.py:645 flatcamGUI/FlatCAMGUI.py:1883
 msgid "&Cutout Tool"
-msgstr "Ferramenta de &Corte"
+msgstr "Ferramenta de Re&corte"
 
 #: flatcamGUI/FlatCAMGUI.py:646 flatcamGUI/FlatCAMGUI.py:1884
 #: flatcamGUI/ObjectUI.py:392 flatcamTools/ToolNonCopperClear.py:285
@@ -5372,320 +5368,6 @@ msgstr ""
 "            "
 
 #: flatcamGUI/FlatCAMGUI.py:1272
-#, fuzzy
-#| msgid ""
-#| "<b>Editor Shortcut list</b><br>\n"
-#| "            <br>\n"
-#| "            <strong><span style=\"color:#0000ff\">GEOMETRY EDITOR</span></"
-#| "strong><br>\n"
-#| "    \n"
-#| "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style="
-#| "\"width:283px\">\n"
-#| "                <tbody>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\" width=\"89\"><strong>A</"
-#| "strong></td>\n"
-#| "                        <td width=\"194\">&nbsp;Draw an Arc</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>B</strong></td>\n"
-#| "                        <td>&nbsp;Buffer Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>C</strong></td>\n"
-#| "                        <td>&nbsp;Copy Geo Item</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>D</strong></td>\n"
-#| "                        <td>&nbsp;Within Add Arc will toogle the ARC "
-#| "direction: CW or CCW</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>E</strong></td>\n"
-#| "                        <td>&nbsp;Polygon Intersection Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>I</strong></td>\n"
-#| "                        <td>&nbsp;Paint Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>J</strong></td>\n"
-#| "                        <td>&nbsp;Jump to Location (x, y)</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>K</strong></td>\n"
-#| "                        <td>&nbsp;Toggle Corner Snap</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>M</strong></td>\n"
-#| "                        <td>&nbsp;Move Geo Item</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>M</strong></td>\n"
-#| "                        <td>&nbsp;Within Add Arc will cycle through the "
-#| "ARC modes</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>N</strong></td>\n"
-#| "                        <td>&nbsp;Draw a Polygon</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>O</strong></td>\n"
-#| "                        <td>&nbsp;Draw a Circle</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>P</strong></td>\n"
-#| "                        <td>&nbsp;Draw a Path</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>R</strong></td>\n"
-#| "                        <td>&nbsp;Draw Rectangle</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>S</strong></td>\n"
-#| "                        <td>&nbsp;Polygon Substraction Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>T</strong></td>\n"
-#| "                        <td>&nbsp;Add Text Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>U</strong></td>\n"
-#| "                        <td>&nbsp;Polygon Union Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>X</strong></td>\n"
-#| "                        <td>&nbsp;Flip shape on X axis</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>Y</strong></td>\n"
-#| "                        <td>&nbsp;Flip shape on Y axis</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\">&nbsp;</td>\n"
-#| "                        <td>&nbsp;</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>SHIFT+X</strong></td>\n"
-#| "                        <td>&nbsp;Skew shape on X axis</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>SHIFT+Y</strong></td>\n"
-#| "                        <td>&nbsp;Skew shape on Y axis</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\">&nbsp;</td>\n"
-#| "                        <td>&nbsp;</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>ALT+R</strong></td>\n"
-#| "                        <td>&nbsp;Editor Transformation Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>ALT+X</strong></td>\n"
-#| "                        <td>&nbsp;Offset shape on X axis</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>ALT+Y</strong></td>\n"
-#| "                        <td>&nbsp;Offset shape on Y axis</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\">&nbsp;</td>\n"
-#| "                        <td>&nbsp;</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>CTRL+M</strong></td>\n"
-#| "                        <td>&nbsp;Measurement Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>CTRL+S</strong></td>\n"
-#| "                        <td>&nbsp;Save Object and Exit Editor</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>CTRL+X</strong></td>\n"
-#| "                        <td>&nbsp;Polygon Cut Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\">&nbsp;</td>\n"
-#| "                        <td>&nbsp;</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>Space</strong></td>\n"
-#| "                        <td>&nbsp;Rotate Geometry</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>ENTER</strong></td>\n"
-#| "                        <td>&nbsp;Finish drawing for certain tools</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>ESC</strong></td>\n"
-#| "                        <td>&nbsp;Abort and return to Select</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>Del</strong></td>\n"
-#| "                        <td>&nbsp;Delete Shape</td>\n"
-#| "                    </tr>\n"
-#| "                </tbody>\n"
-#| "            </table>\n"
-#| "            <br>\n"
-#| "            <br>\n"
-#| "            <strong><span style=\"color:#ff0000\">EXCELLON EDITOR</span></"
-#| "strong><br>\n"
-#| "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style="
-#| "\"width:283px\">\n"
-#| "                <tbody>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\" width=\"89\"><strong>A</"
-#| "strong></td>\n"
-#| "                        <td width=\"194\">&nbsp;Add Drill Array</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>C</strong></td>\n"
-#| "                        <td>&nbsp;Copy Drill(s)</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>D</strong></td>\n"
-#| "                        <td>&nbsp;Add Drill</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>J</strong></td>\n"
-#| "                        <td>&nbsp;Jump to Location (x, y)</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>M</strong></td>\n"
-#| "                        <td>&nbsp;Move Drill(s)</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>R</strong></td>\n"
-#| "                        <td>&nbsp;Resize Drill(s)</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>T</strong></td>\n"
-#| "                        <td>&nbsp;Add a new Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\">&nbsp;</td>\n"
-#| "                        <td>&nbsp;</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>Del</strong></td>\n"
-#| "                        <td>&nbsp;Delete Drill(s)</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>Del</strong></td>\n"
-#| "                        <td>&nbsp;Alternate: Delete Tool(s)</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\">&nbsp;</td>\n"
-#| "                        <td>&nbsp;</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>ESC</strong></td>\n"
-#| "                        <td>&nbsp;Abort and return to Select</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>CTRL+S</strong></td>\n"
-#| "                        <td>&nbsp;Save Object and Exit Editor</td>\n"
-#| "                    </tr>\n"
-#| "                </tbody>\n"
-#| "            </table>\n"
-#| "            <br>\n"
-#| "            <br>\n"
-#| "            <strong><span style=\"color:#00ff00\">GERBER EDITOR</span></"
-#| "strong><br>\n"
-#| "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style="
-#| "\"width:283px\">\n"
-#| "                <tbody>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\" width=\"89\"><strong>A</"
-#| "strong></td>\n"
-#| "                        <td width=\"194\">&nbsp;Add Pad Array</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>B</strong></td>\n"
-#| "                        <td>&nbsp;Buffer</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>C</strong></td>\n"
-#| "                        <td>&nbsp;Copy</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>D</strong></td>\n"
-#| "                        <td>&nbsp;Add Disc</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>E</strong></td>\n"
-#| "                        <td>&nbsp;Add SemiDisc</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>J</strong></td>\n"
-#| "                        <td>&nbsp;Jump to Location (x, y)</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>M</strong></td>\n"
-#| "                        <td>&nbsp;Move</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>N</strong></td>\n"
-#| "                        <td>&nbsp;Add Region</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>P</strong></td>\n"
-#| "                        <td>&nbsp;Add Pad</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>R</strong></td>\n"
-#| "                        <td>&nbsp;Within Track & Region Tools will cycle "
-#| "in REVERSE the bend modes</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>S</strong></td>\n"
-#| "                        <td>&nbsp;Scale</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>T</strong></td>\n"
-#| "                        <td>&nbsp;Add Track</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>T</strong></td>\n"
-#| "                        <td>&nbsp;Within Track & Region Tools will cycle "
-#| "FORWARD the bend modes</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\">&nbsp;</td>\n"
-#| "                        <td>&nbsp;</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>Del</strong></td>\n"
-#| "                        <td>&nbsp;Delete</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>Del</strong></td>\n"
-#| "                        <td>&nbsp;Alternate: Delete Apertures</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\">&nbsp;</td>\n"
-#| "                        <td>&nbsp;</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>ESC</strong></td>\n"
-#| "                        <td>&nbsp;Abort and return to Select</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>CTRL+S</strong></td>\n"
-#| "                        <td>&nbsp;Save Object and Exit Editor</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\">&nbsp;</td>\n"
-#| "                        <td>&nbsp;</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>ALT+R</strong></td>\n"
-#| "                        <td>&nbsp;Transformation Tool</td>\n"
-#| "                    </tr>\n"
-#| "                </tbody>\n"
-#| "            </table>\n"
-#| "                    "
 msgid ""
 "<b>Editor Shortcut list</b><br>\n"
 "            <br>\n"
@@ -6466,7 +6148,7 @@ msgid ""
 "Reference is (X=0, Y= 0) position"
 msgstr ""
 "Medição absoluta.\n"
-" Em referência à posição (X=0, Y=0)"
+"Referente à posição (X=0, Y=0)"
 
 #: flatcamGUI/FlatCAMGUI.py:1916
 msgid "Select 'Esc'"
@@ -6592,7 +6274,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3383
 msgid "Wk. format:"
-msgstr "Wk formato:"
+msgstr "Formato da AT:"
 
 #: flatcamGUI/FlatCAMGUI.py:3385
 msgid ""
@@ -6635,7 +6317,7 @@ msgstr "Defina a cor da linha para objetos plotados."
 
 #: flatcamGUI/FlatCAMGUI.py:3447
 msgid "Sel. Fill:"
-msgstr "Sel. Preenchimento:"
+msgstr "Preenchimento Sel.:"
 
 #: flatcamGUI/FlatCAMGUI.py:3449
 msgid ""
@@ -6657,7 +6339,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3483
 msgid "Sel. Line:"
-msgstr "Sel. Linha:"
+msgstr "Linha Sel.:"
 
 #: flatcamGUI/FlatCAMGUI.py:3485
 msgid "Set the line color for the 'left to right' selection box."
@@ -6666,7 +6348,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3497
 msgid "Sel2. Fill:"
-msgstr "Sel2 Preenchimento:"
+msgstr "Preenchimento Sel2:"
 
 #: flatcamGUI/FlatCAMGUI.py:3499
 msgid ""
@@ -6688,7 +6370,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3533
 msgid "Sel2. Line:"
-msgstr "Sel2 Linha:"
+msgstr "Linha Sel2:"
 
 #: flatcamGUI/FlatCAMGUI.py:3535
 msgid "Set the line color for the 'right to left' selection box."
@@ -6721,7 +6403,7 @@ msgstr "Defina a cor dos itens na Árvore do Guia de Projeto."
 
 #: flatcamGUI/FlatCAMGUI.py:3588
 msgid "Proj. Dis. Items:"
-msgstr "Proj. Dis. Items:"
+msgstr "Items Proj. Desab.:"
 
 #: flatcamGUI/FlatCAMGUI.py:3590
 msgid ""
@@ -6925,7 +6607,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:3829
 msgid "Version Check:"
-msgstr "Verificação de versão:"
+msgstr "Verificar Versão:"
 
 #: flatcamGUI/FlatCAMGUI.py:3831 flatcamGUI/FlatCAMGUI.py:3836
 msgid ""
@@ -7125,7 +6807,7 @@ msgstr "Polígonos de cor sólida."
 
 #: flatcamGUI/FlatCAMGUI.py:4039 flatcamGUI/ObjectUI.py:164
 msgid "M-Color"
-msgstr "Cores-M"
+msgstr "M-Cores"
 
 #: flatcamGUI/FlatCAMGUI.py:4041 flatcamGUI/ObjectUI.py:166
 msgid "Draw polygons in different colors."
@@ -7223,7 +6905,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4120 flatcamGUI/ObjectUI.py:302
 msgid "Climb"
-msgstr "Climb"
+msgstr "Subida"
 
 #: flatcamGUI/FlatCAMGUI.py:4121 flatcamGUI/ObjectUI.py:303
 msgid "Conv."
@@ -7231,11 +6913,11 @@ msgstr "Conv."
 
 #: flatcamGUI/FlatCAMGUI.py:4125
 msgid "Combine Passes"
-msgstr "Combine Passes"
+msgstr "Combinar Passes"
 
 #: flatcamGUI/FlatCAMGUI.py:4127 flatcamGUI/ObjectUI.py:309
 msgid "Combine all passes into one object"
-msgstr "Combine all passes into one object"
+msgstr "Combinar todos os passos em um objeto"
 
 #: flatcamGUI/FlatCAMGUI.py:4132
 msgid "<b>Clear non-copper:</b>"
