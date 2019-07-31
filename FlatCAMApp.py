@@ -5189,7 +5189,7 @@ class App(QtCore.QObject):
             for tb in self.ui.pref_tab_area.widget(idx).findChildren(QtCore.QObject):
                 try:
                     try:
-                        tb.textEdited.disconnect()
+                        tb.textEdited.disconnect(self.on_preferences_edited)
                     except TypeError:
                         pass
                     tb.textEdited.connect(self.on_preferences_edited)
@@ -5198,7 +5198,7 @@ class App(QtCore.QObject):
 
                 try:
                     try:
-                        tb.modificationChanged.disconnect()
+                        tb.modificationChanged.disconnect(self.on_preferences_edited)
                     except TypeError:
                         pass
                     tb.modificationChanged.connect(self.on_preferences_edited)
@@ -5207,7 +5207,7 @@ class App(QtCore.QObject):
 
                 try:
                     try:
-                        tb.toggled.disconnect()
+                        tb.toggled.disconnect(self.on_preferences_edited)
                     except TypeError:
                         pass
                     tb.toggled.connect(self.on_preferences_edited)
@@ -5216,7 +5216,7 @@ class App(QtCore.QObject):
 
                 try:
                     try:
-                        tb.valueChanged.disconnect()
+                        tb.valueChanged.disconnect(self.on_preferences_edited)
                     except TypeError:
                         pass
                     tb.valueChanged.connect(self.on_preferences_edited)
@@ -5225,7 +5225,7 @@ class App(QtCore.QObject):
 
                 try:
                     try:
-                        tb.currentIndexChanged.disconnect()
+                        tb.currentIndexChanged.disconnect(self.on_preferences_edited)
                     except TypeError:
                         pass
                     tb.currentIndexChanged.connect(self.on_preferences_edited)
@@ -5241,27 +5241,27 @@ class App(QtCore.QObject):
         for idx in range(self.ui.pref_tab_area.count()):
             for tb in self.ui.pref_tab_area.widget(idx).findChildren(QtCore.QObject):
                 try:
-                    tb.textEdited.disconnect()
+                    tb.textEdited.disconnect(self.on_preferences_edited)
                 except (TypeError, AttributeError):
                     pass
 
                 try:
-                    tb.modificationChanged.disconnect()
+                    tb.modificationChanged.disconnect(self.on_preferences_edited)
                 except (TypeError, AttributeError):
                     pass
 
                 try:
-                    tb.toggled.disconnect()
+                    tb.toggled.disconnect(self.on_preferences_edited)
                 except (TypeError, AttributeError):
                     pass
 
                 try:
-                    tb.valueChanged.disconnect()
+                    tb.valueChanged.disconnect(self.on_preferences_edited)
                 except (TypeError, AttributeError):
                     pass
 
                 try:
-                    tb.currentIndexChanged.disconnect()
+                    tb.currentIndexChanged.disconnect(self.on_preferences_edited)
                 except (TypeError, AttributeError):
                     pass
 
