@@ -105,6 +105,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile_open.addAction(self.menufileopenconfig)
 
         # Recent
+        self.recent_projects = self.menufile.addMenu(QtGui.QIcon('share/recent_files.png'), _("Recent projects"))
         self.recent = self.menufile.addMenu(QtGui.QIcon('share/recent_files.png'), _("Recent files"))
 
         # Separator
@@ -756,10 +757,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.snap_max_dist_entry.setToolTip(_("Max. magnet distance"))
         self.snap_magnet = self.snap_toolbar.addWidget(self.snap_max_dist_entry)
 
-
-        ############## ##
+        # ############# ##
         # ## Notebook # ##
-        ############## ##
+        # ############# ##
 
         # ## Project # ##
         # self.project_tab = QtWidgets.QWidget()
@@ -827,9 +827,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # remove the close button from the Plot Area tab (first tab index = 0) as this one will always be ON
         self.plot_tab_area.protectTab(0)
 
-        ###################################### ##
+        # ##################################### ##
         # ## HERE WE BUILD THE PREF. TAB AREA # ##
-        ###################################### ##
+        # ##################################### ##
         self.preferences_tab = QtWidgets.QWidget()
         self.pref_tab_layout = QtWidgets.QVBoxLayout(self.preferences_tab)
         self.pref_tab_layout.setContentsMargins(2, 2, 2, 2)
@@ -842,6 +842,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.pref_tab_layout.addWidget(self.pref_tab_area)
 
         self.general_tab = QtWidgets.QWidget()
+        self.general_tab.setObjectName("general_tab")
         self.pref_tab_area.addTab(self.general_tab, _("General"))
         self.general_tab_lay = QtWidgets.QVBoxLayout()
         self.general_tab_lay.setContentsMargins(2, 2, 2, 2)
@@ -863,6 +864,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.general_tab_lay.addWidget(self.general_scroll_area)
 
         self.gerber_tab = QtWidgets.QWidget()
+        self.gerber_tab.setObjectName("gerber_tab")
         self.pref_tab_area.addTab(self.gerber_tab, _("GERBER"))
         self.gerber_tab_lay = QtWidgets.QVBoxLayout()
         self.gerber_tab_lay.setContentsMargins(2, 2, 2, 2)
@@ -872,6 +874,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.gerber_tab_lay.addWidget(self.gerber_scroll_area)
 
         self.excellon_tab = QtWidgets.QWidget()
+        self.excellon_tab.setObjectName("excellon_tab")
         self.pref_tab_area.addTab(self.excellon_tab, _("EXCELLON"))
         self.excellon_tab_lay = QtWidgets.QVBoxLayout()
         self.excellon_tab_lay.setContentsMargins(2, 2, 2, 2)
@@ -881,6 +884,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.excellon_tab_lay.addWidget(self.excellon_scroll_area)
 
         self.geometry_tab = QtWidgets.QWidget()
+        self.geometry_tab.setObjectName("geometry_tab")
         self.pref_tab_area.addTab(self.geometry_tab, _("GEOMETRY"))
         self.geometry_tab_lay = QtWidgets.QVBoxLayout()
         self.geometry_tab_lay.setContentsMargins(2, 2, 2, 2)
@@ -2483,7 +2487,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_3 or key == '3':
                     self.app.on_select_tab('tool')
 
-                if self.app.geo_editor.active_tool is not None and self.geo_select_btn.isChecked() == False:
+                if self.app.geo_editor.active_tool is not None and self.geo_select_btn.isChecked() is False:
                     response = self.app.geo_editor.active_tool.on_key(key=key)
                     if response is not None:
                         self.app.inform.emit(response)

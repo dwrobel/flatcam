@@ -1350,6 +1350,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
 
 class FCDetachableTab2(FCDetachableTab):
+    tab_closed_signal = pyqtSignal()
 
     def __init__(self, protect=None, protect_by_name=None, parent=None):
         super(FCDetachableTab2, self).__init__(protect=protect, protect_by_name=protect_by_name, parent=parent)
@@ -1362,11 +1363,13 @@ class FCDetachableTab2(FCDetachableTab):
         :return:
         """
         idx = self.currentIndex()
+
+        # emit the signal only if the name is the one we want; the name should be a parameter somehow
         if self.tabText(idx) == _("Preferences"):
-            #TODO work on this, identify if widget changed and print a status message
-            pass
+            self.tab_closed_signal.emit()
 
         self.removeTab(currentIndex)
+
 
 class VerticalScrollArea(QtWidgets.QScrollArea):
     """
