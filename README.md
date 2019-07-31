@@ -18,6 +18,9 @@ CAD program, and create G-Code for Isolation routing.
 - added a detection if any values are changed in the Edit -> Preferences window and on close it will ask the user if he wants to save the changes or not
 - created a new menu entry in the File menu named Recent projects that will hold the recent projects and the previous "Recent files" will hold only the previous loaded files
 - updated all translations for the new strings
+- fixed bug recently introduced that when changing the units in the Edit -> Preferences it did not converted the values
+- fixed another bug that when selecting an Excellon object after disabling it it crashed the app
+- RELEASE 8.92
 
 30.07.2019
 

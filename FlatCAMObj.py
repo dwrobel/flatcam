@@ -582,7 +582,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.ui.apertures_table.itemChanged.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         self.apertures_row = 0
@@ -726,12 +726,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         for row in range(self.ui.apertures_table.rowCount()):
             try:
                 self.ui.apertures_table.cellWidget(row, 5).clicked.disconnect()
-            except TypeError:
+            except (TypeError, AttributeError):
                 pass
 
         try:
             self.ui.mark_all_cb.clicked.disconnect(self.on_mark_all_click)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
     def on_generatenoncopper_button_click(self, *args):
@@ -1832,7 +1832,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.ui.tools_table.itemChanged.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         n = len(self.tools)
@@ -2120,12 +2120,12 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         for row in range(self.ui.tools_table.rowCount()):
             try:
                 self.ui.tools_table.cellWidget(row, 5).clicked.disconnect()
-            except TypeError:
+            except (TypeError, AttributeError):
                 pass
 
         try:
             self.ui.plot_cb.stateChanged.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
     def on_tool_offset_edit(self):
@@ -3501,66 +3501,66 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             if isinstance(current_widget, FCCheckBox):
                 try:
                     self.ui.grid3.itemAt(i).widget().stateChanged.disconnect(self.gui_form_to_storage)
-                except TypeError:
+                except (TypeError, AttributeError):
                     pass
             elif isinstance(current_widget, FCComboBox):
                 try:
                     self.ui.grid3.itemAt(i).widget().currentIndexChanged.disconnect(self.gui_form_to_storage)
-                except TypeError:
+                except (TypeError, AttributeError):
                     pass
             elif isinstance(current_widget, LengthEntry) or isinstance(current_widget, IntEntry) or \
                     isinstance(current_widget, FCEntry) or isinstance(current_widget, FloatEntry):
                 try:
                     self.ui.grid3.itemAt(i).widget().editingFinished.disconnect(self.gui_form_to_storage)
-                except TypeError:
+                except (TypeError, AttributeError):
                     pass
 
         for row in range(self.ui.geo_tools_table.rowCount()):
             for col in [2, 3, 4]:
                 try:
                     self.ui.geo_tools_table.cellWidget(row, col).currentIndexChanged.disconnect()
-                except TypeError:
+                except (TypeError, AttributeError):
                     pass
 
         try:
             self.ui.addtool_btn.clicked.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.ui.copytool_btn.clicked.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.ui.deltool_btn.clicked.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.ui.geo_tools_table.currentItemChanged.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.ui.geo_tools_table.itemChanged.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.ui.tool_offset_entry.editingFinished.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         for row in range(self.ui.geo_tools_table.rowCount()):
             try:
                 self.ui.geo_tools_table.cellWidget(row, 6).clicked.disconnect()
-            except TypeError:
+            except (TypeError, AttributeError):
                 pass
 
         try:
             self.ui.plot_cb.stateChanged.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
     def on_tool_add(self, dia=None):
@@ -5546,7 +5546,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         try:
             self.ui.annotation_cb.stateChanged.disconnect(self.on_annotation_change)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
         self.ui.annotation_cb.stateChanged.connect(self.on_annotation_change)
 
@@ -5590,7 +5590,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             self.ui.cnc_tools_table.cellWidget(row, 6).clicked.disconnect(self.on_plot_cb_click_table)
         try:
             self.ui.plot_cb.stateChanged.disconnect(self.on_plot_cb_click)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
     def on_updateplot_button_click(self, *args):

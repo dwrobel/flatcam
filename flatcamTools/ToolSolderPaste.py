@@ -646,22 +646,22 @@ class SolderPaste(FlatCAMTool):
             if isinstance(self.gcode_form_layout.itemAt(i).widget(), FCComboBox):
                 try:
                     self.gcode_form_layout.itemAt(i).widget().currentIndexChanged.disconnect()
-                except TypeError:
+                except (TypeError, AttributeError):
                     pass
             if isinstance(self.gcode_form_layout.itemAt(i).widget(), FCEntry):
                 try:
                     self.gcode_form_layout.itemAt(i).widget().editingFinished.disconnect()
-                except TypeError:
+                except (TypeError, AttributeError):
                     pass
 
         try:
             self.tools_table.itemChanged.disconnect(self.on_tool_edit)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.tools_table.currentItemChanged.disconnect(self.on_row_selection_change)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
     def update_comboboxes(self, obj, status):

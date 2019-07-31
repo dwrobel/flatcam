@@ -461,7 +461,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.tools_table.itemChanged.disconnect(self.on_tool_edit)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
     def on_tool_add(self, dia=None, muted=None):
