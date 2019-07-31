@@ -79,12 +79,15 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile_open = self.menufile.addMenu(QtGui.QIcon('share/folder32_bis.png'), _('Open'))
         self.menufile_open.setToolTipsVisible(True)
 
-        # Open gerber ...
+        # Open Project ...
+        self.menufileopenproject = QtWidgets.QAction(QtGui.QIcon('share/folder16.png'), _('Open &Project ...'), self)
+        self.menufile_open.addAction(self.menufileopenproject)
+        self.menufile_open.addSeparator()
+
+        # Open Gerber ...
         self.menufileopengerber = QtWidgets.QAction(QtGui.QIcon('share/flatcam_icon24.png'),
                                                     _('Open &Gerber ...\tCTRL+G'), self)
         self.menufile_open.addAction(self.menufileopengerber)
-
-        self.menufile_open.addSeparator()
 
         # Open Excellon ...
         self.menufileopenexcellon = QtWidgets.QAction(QtGui.QIcon('share/open_excellon32.png'),
@@ -94,10 +97,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         # Open G-Code ...
         self.menufileopengcode = QtWidgets.QAction(QtGui.QIcon('share/code.png'), _('Open G-&Code ...'), self)
         self.menufile_open.addAction(self.menufileopengcode)
-
-        # Open Project ...
-        self.menufileopenproject = QtWidgets.QAction(QtGui.QIcon('share/folder16.png'), _('Open &Project ...'), self)
-        self.menufile_open.addAction(self.menufileopenproject)
 
         self.menufile_open.addSeparator()
 

@@ -8293,20 +8293,42 @@ class App(QtCore.QObject):
         self.ui.recent.clear()
 
         # Create menu items
+        # First add tbe projects
         for recent in self.recent:
             filename = recent['filename'].split('/')[-1].split('\\')[-1]
 
-            try:
-                action = QtWidgets.QAction(QtGui.QIcon(icons[recent["kind"]]), filename, self)
+            if recent['kind'] == 'project':
+                try:
+                    action = QtWidgets.QAction(QtGui.QIcon(icons[recent["kind"]]), filename, self)
 
-                # Attach callback
-                o = make_callback(openers[recent["kind"]], recent['filename'])
-                action.triggered.connect(o)
+                    # Attach callback
+                    o = make_callback(openers[recent["kind"]], recent['filename'])
+                    action.triggered.connect(o)
 
-                self.ui.recent.addAction(action)
+                    self.ui.recent.addAction(action)
 
-            except KeyError:
-                App.log.error("Unsupported file type: %s" % recent["kind"])
+                except KeyError:
+                    App.log.error("Unsupported file type: %s" % recent["kind"])
+
+        # Second, add a separator in the menu
+        self.ui.recent.addSeparator()
+
+        # Then add tbe rest of the files
+        for recent in self.recent:
+            filename = recent['filename'].split('/')[-1].split('\\')[-1]
+
+            if recent['kind'] != 'project':
+                try:
+                    action = QtWidgets.QAction(QtGui.QIcon(icons[recent["kind"]]), filename, self)
+
+                    # Attach callback
+                    o = make_callback(openers[recent["kind"]], recent['filename'])
+                    action.triggered.connect(o)
+
+                    self.ui.recent.addAction(action)
+
+                except KeyError:
+                    App.log.error("Unsupported file type: %s" % recent["kind"])
 
         # Last action in Recent Files menu is one that Clear the content
         clear_action = QtWidgets.QAction(QtGui.QIcon('share/trash32.png'), (_("Clear Recent files")), self)

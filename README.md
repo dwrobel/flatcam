@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+31.07.2019
+
+- changed the order of the menu entries in the FIle -> Open ...
+- organized the list of recent files so the Project entries are to the top and separated from the other types of file
+
 30.07.2019
 
 - fixed bug that crashed the software when trying to edit a GUI value in Geometry selected tab without having a tool in the Tools Table
