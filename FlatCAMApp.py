@@ -8294,6 +8294,12 @@ class App(QtCore.QObject):
 
         # Create menu items
         # First add tbe projects
+        # Title
+        action = QtWidgets.QAction("Recent Projects", self)
+        myFont = QtGui.QFont()
+        myFont.setBold(True)
+        action.setFont(myFont)
+        self.ui.recent.addAction(action)
         for recent in self.recent:
             filename = recent['filename'].split('/')[-1].split('\\')[-1]
 
@@ -8314,6 +8320,12 @@ class App(QtCore.QObject):
         self.ui.recent.addSeparator()
 
         # Then add tbe rest of the files
+        # Title
+        action = QtWidgets.QAction("Recent Files", self)
+        myFont = QtGui.QFont()
+        myFont.setBold(True)
+        action.setFont(myFont)
+        self.ui.recent.addAction(action)
         for recent in self.recent:
             filename = recent['filename'].split('/')[-1].split('\\')[-1]
 
