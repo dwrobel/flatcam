@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - added a detection if any values are changed in the Edit -> Preferences window and on close it will ask the user if he wants to save the changes or not
 - created a new menu entry in the File menu named Recent projects that will hold the recent projects and the previous "Recent files" will hold only the previous loaded files
 - updated all translations for the new strings
+- RELEASE 8.92
 
 30.07.2019
 
