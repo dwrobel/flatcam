@@ -6089,7 +6089,7 @@ msgstr "Прямоугольник"
 #: flatcamGUI/FlatCAMGUI.py:1614 flatcamGUI/FlatCAMGUI.py:5554
 #: flatcamGUI/ObjectUI.py:1371
 msgid "Cut"
-msgstr "Вырезать"
+msgstr "Вырезы"
 
 #: flatcamGUI/FlatCAMGUI.py:1619
 msgid "Pad"
@@ -6838,7 +6838,7 @@ msgstr "Окрашивать полигоны  разными цветами."
 #: flatcamGUI/FlatCAMGUI.py:4038 flatcamGUI/FlatCAMGUI.py:4389
 #: flatcamGUI/FlatCAMGUI.py:5161 flatcamGUI/ObjectUI.py:172
 msgid "Plot"
-msgstr "Участок"
+msgstr "Вкл."
 
 #: flatcamGUI/FlatCAMGUI.py:4040 flatcamGUI/FlatCAMGUI.py:5163
 #: flatcamGUI/ObjectUI.py:174 flatcamGUI/ObjectUI.py:543
@@ -7519,9 +7519,9 @@ msgid ""
 "converted to drills."
 msgstr ""
 "Выберите, что использовать для генерации G-кода:\n"
-"\"Сверла\", \"слоты\" или \"оба\".\n"
-"При выборе \"слоты\" или \"оба\", слоты будут\n"
-"преобразованы в упражнения."
+"\"Сверла\", \"Пазы\" или \"Оба\".\n"
+"При выборе \"Пазы\" или \"Оба\", пазы будут\n"
+"преобразованы в отверстия."
 
 #: flatcamGUI/FlatCAMGUI.py:4749 flatcamGUI/ObjectUI.py:769
 msgid "<b>Mill Holes</b>"
@@ -8061,7 +8061,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5553 flatcamGUI/ObjectUI.py:1370
 msgid "Travel"
-msgstr "Перемещение"
+msgstr "Траектория"
 
 #: flatcamGUI/FlatCAMGUI.py:5562
 msgid "Display Annotation:"
@@ -9534,10 +9534,10 @@ msgid ""
 "When choosing 'Slots' or 'Both', slots will be\n"
 "converted to a series of drills."
 msgstr ""
-"Выбирать, что использовать для генерации кода G :\n"
-"\"Сверла\", \"слоты\" или \"оба\".\n"
-"При выборе \"слоты\" или \"оба\", слоты будут\n"
-"преобразовано в серию сверл."
+"Выбор, что использовать для генерации GCode:\n"
+"\"Сверла\", \"Пазы\" или \"Оба\".\n"
+"При выборе \"Пазы\" или \"Оба\", пазы будут\n"
+"преобразованы в массив отверстий."
 
 #: flatcamGUI/ObjectUI.py:762
 msgid "Create GCode"
@@ -9552,8 +9552,8 @@ msgid ""
 "Select from the Tools Table above\n"
 " the hole dias that are to be milled."
 msgstr ""
-"Выберите из таблицы инструменты выше\n"
-" отверстие dias, которые должны быть измельчены."
+"Выберите из таблицы инструментов выше\n"
+" отверстия, которые должны быть фрезерованы."
 
 #: flatcamGUI/ObjectUI.py:783
 msgid "Drills Tool dia:"
@@ -9561,23 +9561,23 @@ msgstr "Диам. свёрел:"
 
 #: flatcamGUI/ObjectUI.py:790
 msgid "Mill Drills Geo"
-msgstr "Мельница Сверла Гео"
+msgstr "Создать Geo"
 
 #: flatcamGUI/ObjectUI.py:792
 msgid ""
 "Create the Geometry Object\n"
 "for milling DRILLS toolpaths."
 msgstr ""
-"Создание объекта геометрии\n"
-"для фрезерования сверл траектории движения инструмента."
+"Создание объекта Geometry \n"
+"для траектории фрезерования отверстий."
 
 #: flatcamGUI/ObjectUI.py:799
 msgid "Slots Tool dia:"
-msgstr "Диаметр инструмента шлицев:"
+msgstr "Диаметр инструмента пазов:"
 
 #: flatcamGUI/ObjectUI.py:806
 msgid "Mill Slots Geo"
-msgstr "Мельница Слоты Гео"
+msgstr "Создать Geo"
 
 #: flatcamGUI/ObjectUI.py:808
 msgid ""
@@ -9936,7 +9936,7 @@ msgstr "Объект программы для ЧПУ"
 
 #: flatcamGUI/ObjectUI.py:1358
 msgid "<b>Plot kind:</b>"
-msgstr "<b>вид участка:</b>"
+msgstr "<b>Вид участка:</b>"
 
 #: flatcamGUI/ObjectUI.py:1374
 msgid "<b>Display Annotation:</b>"
