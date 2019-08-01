@@ -181,6 +181,10 @@ msgid ""
 "downloads/\">here.</a><BR>"
 msgstr ""
 
+#: FlatCAMApp.py:3280
+msgid "Close"
+msgstr ""
+
 #: FlatCAMApp.py:3400 FlatCAMApp.py:5284
 msgid "[success] Defaults saved."
 msgstr ""

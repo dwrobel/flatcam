@@ -200,6 +200,10 @@ msgstr ""
 "a><BR>ЗАГРУЗИТЬ можно <a href = \"https://bitbucket.org/jpcgt/flatcam/"
 "downloads/\">отсюда.</a><BR>"
 
+#: FlatCAMApp.py:3280
+msgid "Close"
+msgstr "Закрыть"
+
 #: FlatCAMApp.py:3400 FlatCAMApp.py:5284
 msgid "[success] Defaults saved."
 msgstr "[success] Значения по умолчанию сохранены."

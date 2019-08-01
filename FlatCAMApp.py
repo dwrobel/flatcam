@@ -3277,7 +3277,7 @@ class App(QtCore.QObject):
                 layout3 = QtWidgets.QHBoxLayout()
                 layout1.addLayout(layout3)
                 layout3.addStretch()
-                okbtn = QtWidgets.QPushButton("Close")
+                okbtn = QtWidgets.QPushButton(_("Close"))
                 layout3.addWidget(okbtn)
 
                 okbtn.clicked.connect(self.accept)
@@ -8332,7 +8332,7 @@ class App(QtCore.QObject):
 
             This behavior works only within main thread,
             errors with promissed tasks can be catched and detected only with log.
-            TODO: this problem have to be addressed somehow, maybe rewrite promissing to be blocking somehow for 
+            TODO: this problem have to be addressed somehow, maybe rewrite promissing to be blocking somehow for
             TCL shell.
 
             Kamil's comment: I will rewrite existing TCL commands from time to time to follow this rules.
