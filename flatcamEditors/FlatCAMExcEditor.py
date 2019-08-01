@@ -669,7 +669,7 @@ class FCDrillSelect(DrawTool):
             # select the diameter of the selected shape in the tool table
             try:
                 self.draw_app.tools_table_exc.cellPressed.disconnect()
-            except TypeError:
+            except (TypeError, AttributeError):
                 pass
 
             sel_tools = set()
@@ -1258,12 +1258,12 @@ class FlatCAMExcEditor(QtCore.QObject):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.tools_table_exc.itemChanged.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.tools_table_exc.cellPressed.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         # updated units
@@ -1820,17 +1820,17 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         try:
             self.app.ui.popmenu_copy.triggered.disconnect(self.exc_copy_drills)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.app.ui.popmenu_delete.triggered.disconnect(self.on_delete_btn)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.app.ui.popmenu_move.triggered.disconnect(self.exc_move_drills)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         self.app.ui.popmenu_copy.triggered.connect(self.app.on_copy_object)
@@ -1840,12 +1840,12 @@ class FlatCAMExcEditor(QtCore.QObject):
         # Excellon Editor
         try:
             self.app.ui.drill.triggered.disconnect(self.exc_add_drill)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.app.ui.drill_array.triggered.disconnect(self.exc_add_drill_array)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
     def clear(self):

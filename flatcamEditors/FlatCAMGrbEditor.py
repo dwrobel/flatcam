@@ -1693,7 +1693,7 @@ class FCScale(FCShapeTool):
 
         try:
             self.draw_app.scale_button.clicked.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
         self.draw_app.scale_button.clicked.connect(self.on_scale_click)
 
@@ -1735,7 +1735,7 @@ class FCBuffer(FCShapeTool):
 
         try:
             self.draw_app.buffer_button.clicked.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
         self.draw_app.buffer_button.clicked.connect(self.on_buffer_click)
 
@@ -1777,7 +1777,7 @@ class FCMarkArea(FCShapeTool):
 
         try:
             self.draw_app.ma_threshold__button.clicked.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
         self.draw_app.ma_threshold__button.clicked.connect(self.on_markarea_click)
 
@@ -2934,12 +2934,12 @@ class FlatCAMGrbEditor(QtCore.QObject):
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.apertures_table.itemChanged.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.apertures_table.cellPressed.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         # updated units
@@ -3488,17 +3488,17 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         try:
             self.app.ui.popmenu_copy.triggered.disconnect(self.on_copy_button)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.app.ui.popmenu_delete.triggered.disconnect(self.on_delete_btn)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.app.ui.popmenu_move.triggered.disconnect(self.on_move_button)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         self.app.ui.popmenu_copy.triggered.connect(self.app.on_copy_object)
@@ -3509,22 +3509,22 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         try:
             self.app.ui.grb_draw_pad.triggered.disconnect(self.on_pad_add)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.app.ui.grb_draw_pad_array.triggered.disconnect(self.on_pad_add_array)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.app.ui.grb_draw_track.triggered.disconnect(self.on_track_add)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         try:
             self.app.ui.grb_draw_region.triggered.disconnect(self.on_region_add)
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
     def clear(self):

@@ -255,6 +255,15 @@ class App(QtCore.QObject):
             json.dump([], f)
             f.close()
 
+        try:
+            fp = open(self.data_path + '/recent_projects.json')
+            fp.close()
+        except IOError:
+            App.log.debug('Creating empty recent_projects.json')
+            fp = open(self.data_path + '/recent_projects.json', 'w')
+            json.dump([], fp)
+            fp.close()
+
         # Application directory. CHDIR to it. Otherwise, trying to load
         # GUI icons will fail as their path is relative.
         # This will fail under cx_freeze ...
@@ -294,6 +303,8 @@ class App(QtCore.QObject):
         # ### Data ####
         # #############
         self.recent = []
+        self.recent_projects = []
+
         self.clipboard = QtWidgets.QApplication.clipboard()
         self.proc_container = FCVisibleProcessContainer(self.ui.activity_view)
 
@@ -1499,6 +1510,7 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
             lambda: self.on_toggle_units(no_pref=False))
 
+
         # ##############################
         # ### GUI PREFERENCES SIGNALS ##
         # ##############################
@@ -1959,6 +1971,9 @@ class App(QtCore.QObject):
 
         # Variable to store the GCODE that was edited
         self.gcode_edited = ""
+
+        # if Preferences are changed in the Edit -> Preferences tab the value will be set to True
+        self.preferences_changed_flag = False
 
         self.grb_list = ['gbr', 'ger', 'gtl', 'gbl', 'gts', 'gbs', 'gtp', 'gbp', 'gto', 'gbo', 'gm1', 'gm2', 'gm3',
                          'gko', 'cmp', 'sol', 'stc', 'sts', 'plc', 'pls', 'crc', 'crs', 'tsm', 'bsm', 'ly2', 'ly15',
@@ -2922,11 +2937,18 @@ class App(QtCore.QObject):
         record = {'kind': str(kind), 'filename': str(filename)}
         if record in self.recent:
             return
-
-        self.recent.insert(0, record)
+        if record in self.recent_projects:
+            return
+        if record['kind'] == 'project':
+            self.recent_projects.insert(0, record)
+        else:
+            self.recent.insert(0, record)
 
         if len(self.recent) > self.defaults['global_recent_limit']:  # Limit reached
             self.recent.pop()
+
+        if len(self.recent_projects) > self.defaults['global_recent_limit']:  # Limit reached
+            self.recent_projects.pop()
 
         try:
             f = open(self.data_path + '/recent.json', 'w')
@@ -2937,6 +2959,16 @@ class App(QtCore.QObject):
 
         json.dump(self.recent, f, default=to_dict, indent=2, sort_keys=True)
         f.close()
+
+        try:
+            fp = open(self.data_path + '/recent_projects.json', 'w')
+        except IOError:
+            App.log.error("Failed to open recent items file for writing.")
+            self.inform.emit(_('[ERROR_NOTCL] Failed to open recent projects file for writing.'))
+            return
+
+        json.dump(self.recent_projects, fp, default=to_dict, indent=2, sort_keys=True)
+        fp.close()
 
         # Re-build the recent items menu
         self.setup_recent_items()
@@ -3927,7 +3959,7 @@ class App(QtCore.QObject):
     def on_toggle_units_click(self):
         try:
             self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.disconnect()
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
 
         if self.defaults["units"] == 'MM':
@@ -4541,6 +4573,7 @@ class App(QtCore.QObject):
 
     def on_save_button(self):
         log.debug("App.on_save_button() --> Saving preferences to file.")
+        self.preferences_changed_flag = False
 
         self.save_defaults(silent=False)
         # load the defaults so they are updated into the app
@@ -5133,7 +5166,6 @@ class App(QtCore.QObject):
                 self.draw_selection_shape(curr_sel_obj)
 
     def on_preferences(self):
-
         # add the tab if it was closed
         self.ui.plot_tab_area.addTab(self.ui.preferences_tab, _("Preferences"))
 
@@ -5144,6 +5176,115 @@ class App(QtCore.QObject):
         # Switch plot_area to preferences page
         self.ui.plot_tab_area.setCurrentWidget(self.ui.preferences_tab)
         self.ui.show()
+
+        # this disconnect() is done so the slot will be connected only once
+        try:
+            self.ui.plot_tab_area.tab_closed_signal.disconnect(self.on_preferences_closed)
+        except (TypeError, AttributeError):
+            pass
+        self.ui.plot_tab_area.tab_closed_signal.connect(self.on_preferences_closed)
+
+        # detect changes in the preferences
+        for idx in range(self.ui.pref_tab_area.count()):
+            for tb in self.ui.pref_tab_area.widget(idx).findChildren(QtCore.QObject):
+                try:
+                    try:
+                        tb.textEdited.disconnect(self.on_preferences_edited)
+                    except (TypeError, AttributeError):
+                        pass
+                    tb.textEdited.connect(self.on_preferences_edited)
+                except AttributeError:
+                    pass
+
+                try:
+                    try:
+                        tb.modificationChanged.disconnect(self.on_preferences_edited)
+                    except (TypeError, AttributeError):
+                        pass
+                    tb.modificationChanged.connect(self.on_preferences_edited)
+                except AttributeError:
+                    pass
+
+                try:
+                    try:
+                        tb.toggled.disconnect(self.on_preferences_edited)
+                    except (TypeError, AttributeError):
+                        pass
+                    tb.toggled.connect(self.on_preferences_edited)
+                except AttributeError:
+                    pass
+
+                try:
+                    try:
+                        tb.valueChanged.disconnect(self.on_preferences_edited)
+                    except (TypeError, AttributeError):
+                        pass
+                    tb.valueChanged.connect(self.on_preferences_edited)
+                except AttributeError:
+                    pass
+
+                try:
+                    try:
+                        tb.currentIndexChanged.disconnect(self.on_preferences_edited)
+                    except (TypeError, AttributeError):
+                        pass
+                    tb.currentIndexChanged.connect(self.on_preferences_edited)
+                except AttributeError:
+                    pass
+
+    def on_preferences_edited(self):
+        self.inform.emit(_("[WARNING_NOTCL] Preferences edited but not saved."))
+        self.preferences_changed_flag = True
+
+    def on_preferences_closed(self):
+        # disconnect
+        for idx in range(self.ui.pref_tab_area.count()):
+            for tb in self.ui.pref_tab_area.widget(idx).findChildren(QtCore.QObject):
+                try:
+                    tb.textEdited.disconnect(self.on_preferences_edited)
+                except (TypeError, AttributeError):
+                    pass
+
+                try:
+                    tb.modificationChanged.disconnect(self.on_preferences_edited)
+                except (TypeError, AttributeError):
+                    pass
+
+                try:
+                    tb.toggled.disconnect(self.on_preferences_edited)
+                except (TypeError, AttributeError):
+                    pass
+
+                try:
+                    tb.valueChanged.disconnect(self.on_preferences_edited)
+                except (TypeError, AttributeError):
+                    pass
+
+                try:
+                    tb.currentIndexChanged.disconnect(self.on_preferences_edited)
+                except (TypeError, AttributeError):
+                    pass
+
+        if self.preferences_changed_flag is True:
+            msgbox = QtWidgets.QMessageBox()
+            msgbox.setText(_("One or more values are changed.\n"
+                             "Do you want to save the Preferences?"))
+            msgbox.setWindowTitle(_("Save Preferences"))
+            msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
+
+            bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
+            bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+
+            msgbox.setDefaultButton(bt_yes)
+            msgbox.exec_()
+            response = msgbox.clickedButton()
+
+            if response == bt_yes:
+                self.on_save_button()
+                self.inform.emit(_("[success] Defaults saved."))
+            else:
+                self.preferences_changed_flag = False
+                return
 
     def on_flipy(self):
         self.report_usage("on_flipy()")
@@ -8253,7 +8394,7 @@ class App(QtCore.QObject):
             'pdf': lambda fname: self.worker_task.emit({'fcn': self.pdf_tool.open_pdf, 'params': [fname]})
         }
 
-        # Open file
+        # Open recent file for files
         try:
             f = open(self.data_path + '/recent.json')
         except IOError:
@@ -8270,6 +8411,23 @@ class App(QtCore.QObject):
             return
         f.close()
 
+        # Open recent file for projects
+        try:
+            fp = open(self.data_path + '/recent_projects.json')
+        except IOError:
+            App.log.error("Failed to load recent project item list.")
+            self.inform.emit(_("[ERROR_NOTCL] Failed to load recent projects item list."))
+            return
+
+        try:
+            self.recent_projects = json.load(fp)
+        except json.scanner.JSONDecodeError:
+            App.log.error("Failed to parse recent project item list.")
+            self.inform.emit(_("[ERROR_NOTCL] Failed to parse recent project item list."))
+            fp.close()
+            return
+        fp.close()
+
         # Closure needed to create callbacks in a loop.
         # Otherwise late binding occurs.
         def make_callback(func, fname):
@@ -8277,7 +8435,7 @@ class App(QtCore.QObject):
                 func(fname)
             return opener
 
-        def reset_recent():
+        def reset_recent_files():
             # Reset menu
             self.ui.recent.clear()
             self.recent = []
@@ -8289,28 +8447,66 @@ class App(QtCore.QObject):
 
             json.dump(self.recent, f)
 
+        def reset_recent_projects():
+            # Reset menu
+            self.ui.recent_projects.clear()
+            self.recent_projects = []
+
+            try:
+                fp = open(self.data_path + '/recent_projects.json', 'w')
+            except IOError:
+                App.log.error("Failed to open recent projects items file for writing.")
+                return
+
+            json.dump(self.recent, fp)
+
         # Reset menu
         self.ui.recent.clear()
+        self.ui.recent_projects.clear()
 
-        # Create menu items
+        # Create menu items for projects
+        for recent in self.recent_projects:
+            filename = recent['filename'].split('/')[-1].split('\\')[-1]
+
+            if recent['kind'] == 'project':
+                try:
+                    action = QtWidgets.QAction(QtGui.QIcon(icons[recent["kind"]]), filename, self)
+
+                    # Attach callback
+                    o = make_callback(openers[recent["kind"]], recent['filename'])
+                    action.triggered.connect(o)
+
+                    self.ui.recent_projects.addAction(action)
+
+                except KeyError:
+                    App.log.error("Unsupported file type: %s" % recent["kind"])
+
+        # Last action in Recent Files menu is one that Clear the content
+        clear_action_proj = QtWidgets.QAction(QtGui.QIcon('share/trash32.png'), (_("Clear Recent files")), self)
+        clear_action_proj.triggered.connect(reset_recent_projects)
+        self.ui.recent_projects.addSeparator()
+        self.ui.recent_projects.addAction(clear_action_proj)
+
+        # Create menu items for files
         for recent in self.recent:
             filename = recent['filename'].split('/')[-1].split('\\')[-1]
 
-            try:
-                action = QtWidgets.QAction(QtGui.QIcon(icons[recent["kind"]]), filename, self)
+            if recent['kind'] != 'project':
+                try:
+                    action = QtWidgets.QAction(QtGui.QIcon(icons[recent["kind"]]), filename, self)
 
-                # Attach callback
-                o = make_callback(openers[recent["kind"]], recent['filename'])
-                action.triggered.connect(o)
+                    # Attach callback
+                    o = make_callback(openers[recent["kind"]], recent['filename'])
+                    action.triggered.connect(o)
 
-                self.ui.recent.addAction(action)
+                    self.ui.recent.addAction(action)
 
-            except KeyError:
-                App.log.error("Unsupported file type: %s" % recent["kind"])
+                except KeyError:
+                    App.log.error("Unsupported file type: %s" % recent["kind"])
 
         # Last action in Recent Files menu is one that Clear the content
         clear_action = QtWidgets.QAction(QtGui.QIcon('share/trash32.png'), (_("Clear Recent files")), self)
-        clear_action.triggered.connect(reset_recent)
+        clear_action.triggered.connect(reset_recent_files)
         self.ui.recent.addSeparator()
         self.ui.recent.addAction(clear_action)
 
