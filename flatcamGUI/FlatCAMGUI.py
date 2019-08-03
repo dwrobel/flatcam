@@ -1737,7 +1737,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.setWindowIcon(self.app_icon)
 
         self.setGeometry(100, 100, 1024, 650)
-        self.setWindowTitle('FlatCAM %s %s - %s' % (version, ('BETA' if beta else ''), platform.architecture()[0]))
+        self.setWindowTitle('FlatCAM %s %s - %s' %
+                            (version,
+                             ('BETA' if beta else ''),
+                             platform.architecture()[0])
+                            )
         self.show()
 
         self.filename = ""
