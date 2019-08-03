@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 3.08.2019
 
 - added project name to the window title
+- fulfilled request: When saving a CNC file, if the file name is changed in the OS window, the new name does appear in the “Selected” (in name) and “Project” tabs (in cnc_job)
 
 31.07.2019
 
