@@ -181,6 +181,10 @@ msgid ""
 "downloads/\">here.</a><BR>"
 msgstr ""
 
+#: FlatCAMApp.py:3280
+msgid "Close"
+msgstr ""
+
 #: FlatCAMApp.py:3400 FlatCAMApp.py:5284
 msgid "[success] Defaults saved."
 msgstr ""
@@ -9622,6 +9626,10 @@ msgstr ""
 msgid "Import 2-file Excellon"
 msgstr ""
 
+#: flatcamTools/ToolPcbWizard.py:51
+msgid "<b>Load files:</b>"
+msgstr ""
+
 #: flatcamTools/ToolPcbWizard.py:57
 msgid "Excellon file:"
 msgstr ""
@@ -9646,6 +9654,10 @@ msgstr ""
 
 #: flatcamTools/ToolPcbWizard.py:81
 msgid "Tool diameter in file units."
+msgstr ""
+
+#: flatcamTools/ToolPcbWizard.py:87
+msgid "<b>Excellon format:</b>"
 msgstr ""
 
 #: flatcamTools/ToolPcbWizard.py:95
