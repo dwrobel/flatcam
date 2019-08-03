@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+3.08.2019
+
+- added project name to the window title
+
 31.07.2019
 
 - changed the order of the menu entries in the FIle -> Open ...
