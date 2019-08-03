@@ -112,6 +112,8 @@ class Properties(FlatCAMTool):
 
     def addItems(self, obj):
         parent = self.treeWidget.invisibleRootItem()
+        apertures = ''
+        tools = ''
 
         font = QtGui.QFont()
         font.setBold(True)
@@ -131,11 +133,8 @@ class Properties(FlatCAMTool):
         self.addChild(obj_type, ['Object Type:', ('%s' % (obj.kind.capitalize()))], True)
         try:
             self.addChild(obj_type,
-                          ['Geo Type:',
-                           ('%s' % ({False: "Single-Geo", True: "Multi-Geo"}[obj.multigeo]))
-                           ],
-                          True
-                          )
+                          ['Geo Type:', ('%s' % ({False: "Single-Geo", True: "Multi-Geo"}[obj.multigeo]))],
+                          True)
         except Exception as e:
             log.debug("Properties.addItems() --> %s" % str(e))
 
@@ -179,26 +178,31 @@ class Properties(FlatCAMTool):
             self.addChild(options, [str(option), str(obj.options[option])], True)
 
         if obj.kind.lower() == 'gerber':
-            temp_ap = {}
+            temp_ap = dict()
             for ap in obj.apertures:
                 temp_ap.clear()
                 temp_ap = deepcopy(obj.apertures[ap])
                 temp_ap.pop('geometry', None)
-                if obj.apertures[ap]['geometry']:
-                    solid_nr = 0
-                    follow_nr = 0
-                    clear_nr = 0
 
-                    for el in obj.apertures[ap]['geometry']:
-                        if 'solid' in el:
-                            solid_nr += 1
-                        if 'follow' in el:
-                            follow_nr += 1
-                        if 'clear' in el:
-                            clear_nr += 1
-                    temp_ap['Solid_Geo'] = '%s Polygons' % str(solid_nr)
-                    temp_ap['Follow_Geo'] = '%s LineStrings' % str(follow_nr)
-                    temp_ap['Clear_Geo'] = '%s Polygons' % str(clear_nr)
+                solid_nr = 0
+                follow_nr = 0
+                clear_nr = 0
+
+                if 'geometry' in obj.apertures[ap]:
+                    if obj.apertures[ap]['geometry']:
+                        font.setBold(True)
+                        for el in obj.apertures[ap]['geometry']:
+                            if 'solid' in el:
+                                solid_nr += 1
+                            if 'follow' in el:
+                                follow_nr += 1
+                            if 'clear' in el:
+                                clear_nr += 1
+                else:
+                    font.setBold(False)
+                temp_ap['Solid_Geo'] = '%s Polygons' % str(solid_nr)
+                temp_ap['Follow_Geo'] = '%s LineStrings' % str(follow_nr)
+                temp_ap['Clear_Geo'] = '%s Polygons' % str(clear_nr)
 
                 apid = self.addParent(apertures, str(ap), expanded=False, color=QtGui.QColor("#000000"), font=font)
                 for key in temp_ap:

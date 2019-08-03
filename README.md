@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - added project name to the window title
 - fulfilled request: When saving a CNC file, if the file name is changed in the OS window, the new name does appear in the “Selected” (in name) and “Project” tabs (in cnc_job)
+- solved bug such that the app is not crashing when some apertures in the Gerber file have no geometry. More than that, now the apertures that have geometry elements are bolded as opposed to the ones without geometry for which the text is unbolded
 
 31.07.2019
 
