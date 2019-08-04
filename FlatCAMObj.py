@@ -841,7 +841,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :param outname: Base name of the output object
         :return: None
         """
-
         if dia is None:
             dia = float(self.options["isotooldia"])
         if passes is None:
@@ -872,7 +871,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             try:
                 geom = self.isolation_geometry(offset, iso_type=envelope_iso_type, follow=follow)
             except Exception as e:
-                log.debug(str(e))
+                log.debug('FlatCAMGerber.isolate().generate_envelope() --> %s' % str(e))
                 return 'fail'
 
             if invert:
@@ -889,6 +888,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                 except Exception as e:
                     log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> %s" % str(e))
             return geom
+
+        if float(self.options["isotooldia"]) < 0:
+            self.options["isotooldia"] = -self.options["isotooldia"]
 
         if combine:
             if self.iso_type == 0:
