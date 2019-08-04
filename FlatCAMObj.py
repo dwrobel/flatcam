@@ -188,7 +188,7 @@ class FlatCAMObj(QtCore.QObject):
 
         self.muted_ui = False
 
-    def on_name_activate(self):
+    def on_name_activate(self, silent=None):
         old_name = copy(self.options["name"])
         new_name = self.ui.name_entry.get_value()
 
@@ -205,7 +205,8 @@ class FlatCAMObj(QtCore.QObject):
             self.options["name"] = self.ui.name_entry.get_value()
             self.default_data["name"] = self.ui.name_entry.get_value()
             self.app.collection.update_view()
-            self.app.inform.emit(_("[success] Name changed from {old} to {new}").format(old=old_name, new=new_name))
+            if silent:
+                self.app.inform.emit(_("[success] Name changed from {old} to {new}").format(old=old_name, new=new_name))
 
     def on_offset_button_click(self):
         self.app.report_usage("obj_on_offset_button")
@@ -5637,6 +5638,10 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             self.app.inform.emit(_(
                 "[WARNING_NOTCL] Export Machine Code cancelled ..."))
             return
+
+        new_name = os.path.split(str(filename))[1].rpartition('.')[0]
+        self.ui.name_entry.set_value(new_name)
+        self.on_name_activate(silent=True)
 
         preamble = str(self.ui.prepend_text.get_value())
         postamble = str(self.ui.append_text.get_value())

@@ -96,8 +96,8 @@ class App(QtCore.QObject):
     # ####################################
     # Version and VERSION DATE ###########
     # ####################################
-    version = 8.920
-    version_date = "2019/07/31"
+    version = 8.93
+    version_date = "2019/08/31"
     beta = True
 
     # current date now
@@ -295,6 +295,7 @@ class App(QtCore.QObject):
 
         QtCore.QObject.__init__(self)
         self.ui = FlatCAMGUI(self.version, self.beta, self)
+        self.set_ui_title(name="New Project")
 
         self.ui.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.ui.final_save.connect(self.final_save)
@@ -2074,6 +2075,14 @@ class App(QtCore.QObject):
                         self.on_filerunscript(name=file_name)
                 except Exception as e:
                     log.debug("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
+
+    def set_ui_title(self, name):
+        self.ui.setWindowTitle('FlatCAM %s %s - %s    %s' %
+                               (self.version,
+                                ('BETA' if self.beta else ''),
+                                platform.architecture()[0],
+                                name)
+                            )
 
     def defaults_read_form(self):
         for option in self.defaults_form_fields:
@@ -6256,6 +6265,9 @@ class App(QtCore.QObject):
         # take the focus of the Notebook on Project Tab.
         self.ui.notebook.setCurrentWidget(self.ui.project_tab)
 
+        self.set_ui_title(name="New Project")
+
+
     def obj_properties(self):
         self.report_usage("obj_properties()")
 
@@ -6445,8 +6457,10 @@ class App(QtCore.QObject):
             return
 
         # Check for more compatible types and add as required
-        if (not isinstance(obj, FlatCAMGeometry) and not isinstance(obj, FlatCAMGerber) and not isinstance(obj, FlatCAMCNCjob)
-            and not isinstance(obj, FlatCAMExcellon)):
+        if (not isinstance(obj, FlatCAMGeometry)
+                and not isinstance(obj, FlatCAMGerber)
+                and not isinstance(obj, FlatCAMCNCjob)
+                and not isinstance(obj, FlatCAMExcellon)):
             msg = _("[ERROR_NOTCL] Only Geometry, Gerber and CNCJob objects can be used.")
             msgbox = QtWidgets.QMessageBox()
             msgbox.setInformativeText(msg)
@@ -6455,7 +6469,7 @@ class App(QtCore.QObject):
             msgbox.exec_()
             return
 
-        name = self.collection.get_active().options["name"]
+        name = obj.options["name"]
 
         filter = "SVG File (*.svg);;All Files (*.*)"
         try:
@@ -6988,6 +7002,8 @@ class App(QtCore.QObject):
                 self.file_opened.emit("project", self.project_filename)
             self.file_saved.emit("project", self.project_filename)
 
+        self.set_ui_title(name=self.project_filename)
+
         self.should_we_save = False
 
     def on_file_saveprojectas(self, make_copy=False, thread=True, quit=False):
@@ -7039,6 +7055,7 @@ class App(QtCore.QObject):
         if not make_copy:
             self.project_filename = filename
 
+        self.set_ui_title(name=self.project_filename)
         self.should_we_save = False
 
     def export_svg(self, obj_name, filename, scale_factor=0.00):
@@ -8089,6 +8106,7 @@ class App(QtCore.QObject):
 
         self.should_we_save = False
         self.file_opened.emit("project", filename)
+        self.set_ui_title(name=self.project_filename)
 
         App.log.debug("Project loaded")
 
