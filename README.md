@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - made sure that if using an negative Gerber isolation diameter, the resulting Geometry object will use a tool with positive diameter
 - fixed bug that when isolating a Gerber file made out of a single polygon, an Recurrsion Exception was issued together with inability to create tbe isolation
+- when applying a new language if there are any changes in the current project, the app will offer to save the project before the reboot
 
 3.08.2019
 
