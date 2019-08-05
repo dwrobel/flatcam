@@ -183,7 +183,7 @@ class FlatCAMObj(QtCore.QObject):
         try:
             self.app.ui.selected_scroll_area.takeWidget()
         except Exception as e:
-            self.app.log.debug("Nothing to remove")
+            self.app.log.debug("FlatCAMObj.build_ui() --> Nothing to remove: %s" % str(e))
         self.app.ui.selected_scroll_area.setWidget(self.ui)
 
         self.muted_ui = False

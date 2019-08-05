@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+6.08.2019
+
+- fixed bug that crashed the app after creating a new geometry, if a new object is loaded and the new geometry is deleted and then trying to select the just loaded new object
+- made some GUI elements in Edit -> Preferences to have a minimum width as opposed to the previous fixed one
+
 5.08.2019
 
 - made sure that if using an negative Gerber isolation diameter, the resulting Geometry object will use a tool with positive diameter

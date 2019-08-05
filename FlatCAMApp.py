@@ -3171,6 +3171,8 @@ class App(QtCore.QObject):
             # select the just opened object but deselect the previous ones
             self.collection.set_all_inactive()
             self.collection.set_active(obj.options["name"])
+        else:
+            self.collection.set_all_inactive()
 
         # here it is done the object plotting
         def worker_task(t_obj):
@@ -4847,12 +4849,11 @@ class App(QtCore.QObject):
         # a geometry object before we update it.
         if self.geo_editor.editor_active is False and self.exc_editor.editor_active is False:
             if self.collection.get_active():
-                self.log.debug("on_delete()")
-                self.report_usage("on_delete")
+                self.log.debug("App.on_delete()")
 
                 while (self.collection.get_active()):
                     obj_active = self.collection.get_active()
-                    # if the deleted object is FlatCAMGerber then make sure to delete the possbile mark shapes
+                    # if the deleted object is FlatCAMGerber then make sure to delete the possible mark shapes
                     if isinstance(obj_active, FlatCAMGerber):
                         for el in obj_active.mark_shapes:
                             obj_active.mark_shapes[el].clear(update=True)
@@ -4867,6 +4868,27 @@ class App(QtCore.QObject):
                 self.inform.emit(_("Failed. No object(s) selected..."))
         else:
             self.inform.emit(_("Save the work in Editor and try again ..."))
+
+    def delete_first_selected(self):
+        # Keep this for later
+        try:
+            sel_obj = self.collection.get_active()
+            name = sel_obj.options["name"]
+        except AttributeError:
+            self.log.debug("Nothing selected for deletion")
+            return
+
+        # Remove plot
+        # self.plotcanvas.figure.delaxes(self.collection.get_active().axes)
+        # self.plotcanvas.auto_adjust_axes()
+
+        # Clear form
+        self.setup_component_editor()
+
+        # Remove from dictionary
+        self.collection.delete_active()
+
+        self.inform.emit("Object deleted: %s" % name)
 
     def on_set_origin(self):
         """
@@ -5484,26 +5506,6 @@ class App(QtCore.QObject):
                     obj.plot()
                     self.object_changed.emit(obj)
                 self.inform.emit(_("[success] Skew on Y axis done."))
-
-    def delete_first_selected(self):
-        # Keep this for later
-        try:
-            name = self.collection.get_active().options["name"]
-        except AttributeError:
-            self.log.debug("Nothing selected for deletion")
-            return
-
-        # Remove plot
-        # self.plotcanvas.figure.delaxes(self.collection.get_active().axes)
-        # self.plotcanvas.auto_adjust_axes()
-
-        # Clear form
-        self.setup_component_editor()
-
-        # Remove from dictionary
-        self.collection.delete_active()
-
-        self.inform.emit("Object deleted: %s" % name)
 
     def on_plots_updated(self):
         """

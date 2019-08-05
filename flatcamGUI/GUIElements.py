@@ -830,6 +830,13 @@ class FCTab(QtWidgets.QTabWidget):
         self.tabBar().setTabButton(currentIndex, QtWidgets.QTabBar.RightSide, None)
 
 
+# class FCTabBar(QtWidgets.QTabBar):
+#     def tabSizeHint(self, index):
+#         size =QtWidgets.QTabBar.tabSizeHint(self, index)
+#         w = int(self.width()/self.count())
+#         return QtCore.QSize(w, size.height())
+
+
 class FCDetachableTab(QtWidgets.QTabWidget):
     """
     From here:
