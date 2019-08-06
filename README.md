@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed bug that crashed the app after creating a new geometry, if a new object is loaded and the new geometry is deleted and then trying to select the just loaded new object
 - made some GUI elements in Edit -> Preferences to have a minimum width as opposed to the previous fixed one
+- fixed issue in the isolation function, if the isolation can't be done there will be generated no Geometry object 
 
 5.08.2019
 
