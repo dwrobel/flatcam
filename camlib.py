@@ -543,6 +543,8 @@ class Geometry(object):
 
         # the previously commented block is replaced with this block - regression - to solve the bug with multiple
         # isolation passes cutting from the copper features
+
+        geo_iso = []
         if offset == 0:
             if follow:
                 geo_iso = self.follow_geometry
@@ -553,10 +555,19 @@ class Geometry(object):
                 geo_iso = self.follow_geometry
             else:
                 if corner is None:
-                    geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
+                    if type(self.solid_geometry) is list and len(self.solid_geometry) == 1:
+                        geo_iso = self.solid_geometry[0].buffer(offset, int(int(self.geo_steps_per_circle) / 4))
+                    else:
+                        for el in self.solid_geometry:
+                            geo_iso.append(el.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
                 else:
-                    geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
-                                                         join_style=corner)
+                    if type(self.solid_geometry) is list and len(self.solid_geometry) == 1:
+                        geo_iso = self.solid_geometry.buffer[0](offset, int(int(self.geo_steps_per_circle) / 4),
+                                                                join_style=corner)
+                    else:
+                        for el in self.solid_geometry:
+                            geo_iso.append(el.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
+                                                     join_style=corner))
 
         # end of replaced block
         if follow:

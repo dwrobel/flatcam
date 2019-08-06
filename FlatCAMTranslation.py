@@ -159,6 +159,23 @@ def restart_program(app):
     Note: this function does not return. Any cleanup action (like
     saving data) must be done before calling this function.
     """
+    if app.should_we_save and app.collection.get_list():
+        msgbox = QtWidgets.QMessageBox()
+        msgbox.setText(_("There are files/objects modified in FlatCAM. "
+                         "\n"
+                         "Do you want to Save the project?"))
+        msgbox.setWindowTitle(_("Save changes"))
+        msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
+        bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
+        bt_no = msgbox.addButton(_('No'), QtWidgets.QMessageBox.NoRole)
+
+        msgbox.setDefaultButton(bt_yes)
+        msgbox.exec_()
+        response = msgbox.clickedButton()
+
+        if response == bt_yes:
+            app.on_file_saveprojectas(thread=True, quit=True)
+
     app.save_defaults()
     python = sys.executable
     os.execl(python, python, *sys.argv)

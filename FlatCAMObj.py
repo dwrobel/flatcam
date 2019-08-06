@@ -183,7 +183,7 @@ class FlatCAMObj(QtCore.QObject):
         try:
             self.app.ui.selected_scroll_area.takeWidget()
         except Exception as e:
-            self.app.log.debug("Nothing to remove")
+            self.app.log.debug("FlatCAMObj.build_ui() --> Nothing to remove: %s" % str(e))
         self.app.ui.selected_scroll_area.setWidget(self.ui)
 
         self.muted_ui = False
@@ -841,7 +841,6 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :param outname: Base name of the output object
         :return: None
         """
-
         if dia is None:
             dia = float(self.options["isotooldia"])
         if passes is None:
@@ -872,7 +871,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
             try:
                 geom = self.isolation_geometry(offset, iso_type=envelope_iso_type, follow=follow)
             except Exception as e:
-                log.debug(str(e))
+                log.debug('FlatCAMGerber.isolate().generate_envelope() --> %s' % str(e))
                 return 'fail'
 
             if invert:
@@ -880,15 +879,20 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     if type(geom) is MultiPolygon:
                         pl = []
                         for p in geom:
-                            pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+                            if p is not None:
+                                pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
                         geom = MultiPolygon(pl)
-                    elif type(geom) is Polygon:
+                    elif type(geom) is Polygon and geom is not None:
                         geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
                     else:
                         log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> Unexpected Geometry")
                 except Exception as e:
                     log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> %s" % str(e))
+                    return 'fail'
             return geom
+
+        if float(self.options["isotooldia"]) < 0:
+            self.options["isotooldia"] = -self.options["isotooldia"]
 
         if combine:
             if self.iso_type == 0:
@@ -912,6 +916,9 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                         geom = generate_envelope(iso_offset, 1, envelope_iso_type=self.iso_type, follow=follow)
                     else:
                         geom = generate_envelope(iso_offset, 0, envelope_iso_type=self.iso_type, follow=follow)
+                    if geom == 'fail':
+                        # app_obj.inform.emit(_("[ERROR_NOTCL] Isolation geometry could not be generated."))
+                        return 'fail'
                     geo_obj.solid_geometry.append(geom)
 
                     # store here the default data for Geometry Data
@@ -1004,11 +1011,14 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     # if milling type is climb then the move is counter-clockwise around features
                     if milling_type == 'cl':
                         # geo_obj.solid_geometry = generate_envelope(offset, i == 0)
-                        geo_obj.solid_geometry = generate_envelope(offset, 1, envelope_iso_type=self.iso_type,
-                                                                   follow=follow)
+                        geom = generate_envelope(offset, 1, envelope_iso_type=self.iso_type, follow=follow)
                     else:
-                        geo_obj.solid_geometry = generate_envelope(offset, 0, envelope_iso_type=self.iso_type,
-                                                                   follow=follow)
+                        geom = generate_envelope(offset, 0, envelope_iso_type=self.iso_type, follow=follow)
+                    if geom == 'fail':
+                        # app_obj.inform.emit(_("[ERROR_NOTCL] Isolation geometry could not be generated."))
+                        return 'fail'
+
+                    geo_obj.solid_geometry = geom
 
                     # detect if solid_geometry is empty and this require list flattening which is "heavy"
                     # or just looking in the lists (they are one level depth) and if any is not empty
