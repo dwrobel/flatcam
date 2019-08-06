@@ -876,7 +876,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             if invert:
                 try:
-                    if type(geom) is MultiPolygon or type(geom) is list:
+                    if type(geom) is MultiPolygon:
                         pl = []
                         for p in geom:
                             if p is not None:
