@@ -917,7 +917,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     else:
                         geom = generate_envelope(iso_offset, 0, envelope_iso_type=self.iso_type, follow=follow)
                     if geom == 'fail':
-                        # app_obj.inform.emit(_("[ERROR_NOTCL] Isolation geometry could not be generated."))
+                        app_obj.inform.emit(_("[ERROR_NOTCL] Isolation geometry could not be generated."))
                         return 'fail'
                     geo_obj.solid_geometry.append(geom)
 
@@ -1015,7 +1015,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     else:
                         geom = generate_envelope(offset, 0, envelope_iso_type=self.iso_type, follow=follow)
                     if geom == 'fail':
-                        # app_obj.inform.emit(_("[ERROR_NOTCL] Isolation geometry could not be generated."))
+                        app_obj.inform.emit(_("[ERROR_NOTCL] Isolation geometry could not be generated."))
                         return 'fail'
 
                     geo_obj.solid_geometry = geom
