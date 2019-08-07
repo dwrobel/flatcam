@@ -555,19 +555,21 @@ class Geometry(object):
                 geo_iso = self.follow_geometry
             else:
                 if corner is None:
-                    if type(self.solid_geometry) is list and len(self.solid_geometry) == 1:
-                        geo_iso = self.solid_geometry[0].buffer(offset, int(int(self.geo_steps_per_circle) / 4))
-                    else:
+                    try:
+                        __ = iter(self.solid_geometry)
                         for el in self.solid_geometry:
                             geo_iso.append(el.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
+                    except TypeError:
+                        geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
                 else:
-                    if type(self.solid_geometry) is list and len(self.solid_geometry) == 1:
-                        geo_iso = self.solid_geometry.buffer[0](offset, int(int(self.geo_steps_per_circle) / 4),
-                                                                join_style=corner)
-                    else:
+                    try:
+                        __ = iter(self.solid_geometry)
                         for el in self.solid_geometry:
                             geo_iso.append(el.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
                                                      join_style=corner))
+                    except TypeError:
+                        geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
+                                                             join_style=corner)
 
         # end of replaced block
         if follow:
