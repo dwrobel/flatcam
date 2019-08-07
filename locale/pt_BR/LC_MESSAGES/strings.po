@@ -1,4 +1,4 @@
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+﻿# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
@@ -23,8 +23,8 @@ msgstr ""
 #: FlatCAMApp.py:940
 msgid "[ERROR] Could not find the Language files. The App strings are missing."
 msgstr ""
-"[ERROR] Não foi possível encontrar os arquivos de idioma. As strings do "
-"aplicativo estão faltando."
+"[ERROR] Não foi possível encontrar os arquivos de idioma. Estão faltando as "
+"strings do aplicativo."
 
 #: FlatCAMApp.py:1854
 msgid ""
@@ -73,7 +73,7 @@ msgstr "Você quer salvar o objeto editado?"
 
 #: FlatCAMApp.py:2360 flatcamGUI/FlatCAMGUI.py:1632
 msgid "Close Editor"
-msgstr "Fechar editor"
+msgstr "Fechar Editor"
 
 #: FlatCAMApp.py:2363 FlatCAMApp.py:3474 FlatCAMApp.py:5306 FlatCAMApp.py:6179
 #: FlatCAMTranslation.py:96 FlatCAMTranslation.py:169
@@ -150,12 +150,12 @@ msgstr "[ERROR_NOTCL] Falha ao gravar os padrões no arquivo."
 #: FlatCAMApp.py:2966
 msgid "[ERROR_NOTCL] Failed to open recent files file for writing."
 msgstr ""
-"[ERROR_NOTCL] Falha ao abrir o arquivo de arquivos recentes para gravação."
+"[ERROR_NOTCL] Falha ao abrir o arquivo com arquivos recentes para gravação."
 
 #: FlatCAMApp.py:2976
 msgid "[ERROR_NOTCL] Failed to open recent projects file for writing."
 msgstr ""
-"[ERROR_NOTCL] Falha ao abrir o arquivo de projetos recentes para gravação."
+"[ERROR_NOTCL] Falha ao abrir o arquivo com projetos recentes para gravação."
 
 #: FlatCAMApp.py:3053 camlib.py:4469
 msgid "[ERROR_NOTCL] An internal error has ocurred. See shell.\n"
@@ -213,7 +213,7 @@ msgstr "Fechar"
 
 #: FlatCAMApp.py:3411 FlatCAMApp.py:5315
 msgid "[success] Defaults saved."
-msgstr "[success] Padrões salvos."
+msgstr "[success] Preferências salvas."
 
 #: FlatCAMApp.py:3432
 msgid "[ERROR_NOTCL] Could not load factory defaults file."
@@ -344,7 +344,7 @@ msgstr "[WARNING] Nenhum arquivo ou diretório"
 #: FlatCAMApp.py:4681
 #, python-format
 msgid "Saved to: %s"
-msgstr "Salvo para: %s"
+msgstr "Salvo em: %s"
 
 #: FlatCAMApp.py:4744 FlatCAMApp.py:4777 FlatCAMApp.py:4788 FlatCAMApp.py:4799
 #: flatcamTools/ToolNonCopperClear.py:490 flatcamTools/ToolSolderPaste.py:767
@@ -433,8 +433,8 @@ msgid ""
 "One or more values are changed.\n"
 "Do you want to save the Preferences?"
 msgstr ""
-"Um ou mais valores são alterados.\n"
-"Você quer salvar as preferências?"
+"Um ou mais valores foram alterados.\n"
+"Você deseja salvar as preferências?"
 
 #: FlatCAMApp.py:5303 flatcamGUI/FlatCAMGUI.py:953
 msgid "Save Preferences"
@@ -597,7 +597,7 @@ msgid ""
 msgstr ""
 "Existem arquivos/objetos abertos no FlatCAM.\n"
 "Criar um novo projeto irá apagá-los.\n"
-"Você quer Salvar o Projeto?"
+"Você deseja Salvar o Projeto?"
 
 #: FlatCAMApp.py:6195
 msgid "[success] New Project created..."
@@ -1178,14 +1178,14 @@ msgid ""
 msgstr ""
 "\n"
 "<p><span style=\"font-size:14px\"><strong>Aba Selecionado - Escolha um Item "
-"da Aba Projeto</strong></span></p>\n"
+"na Aba Projeto</strong></span></p>\n"
 "\n"
 "<p><span style=\"font-size:10px\"><strong>Detalhes</strong>:<br/>\n"
 "O fluxo normal de trabalho no FlatCAM é o seguinte:</span></p>\n"
 "\n"
 "<ol>\n"
 "\t<li><span style=\"font-size:10px\">Ler/Importar um arquivo Gerber, "
-"Excellon, G-Code, DXF, Imagem Raster ou SVG no FlatCAM usando os menu&#39;s, "
+"Excellon, G-Code, DXF, Imagem Raster ou SVG no FlatCAM usando os menus, "
 "barras de trabalho, teclas de atalho ou mesmo arrastando e soltando os "
 "arquivos na GUI.<br/>\n"
 "\t<br/>\n"
@@ -1195,17 +1195,17 @@ msgstr ""
 "do aplicativo.</span><br/>\n"
 "\t&nbsp;</li>\n"
 "\t<li><span style=\"font-size:10px\">Uma vez que um objeto está disponível "
-"na Aba Projeto, selecionando-o e então focando em <strong>ABA SELECIONADO</"
-"strong> (mais simples é clicar duas vezes no nome do objeto na aba Projeto), "
-"a <strong>ABA SELECIONADO</strong> será atualizada com as propriedades do "
-"objeto de acordo com o tipo: Gerber, Excellon, Geometria ou Trabalho CNC.<br/"
-">\n"
+"na <strong>Aba Projeto</strong>, selecione-o e então vá para a "
+"<strong>Aba Selecionado</strong> (ou clique duas vezes no nome do objeto na "
+"<strong>Aba Projeto</strong>). A <strong>Aba Selecionado</strong> será "
+"atualizada com as propriedades do objeto de acordo com o tipo: Gerber, "
+"Excellon, Geometria ou Trabalho CNC.<br/>\n"
 "\t<br/>\n"
 "\tSe a seleção do objeto for feita na tela com um único clique, e a "
-"<strong>ABA SELECIONADO</strong> estiver em foco, novamente as propriedades "
-"do objeto serão exibidas na Aba Selecionado. Como alternativa, clicar duas "
-"vezes no objeto na tela trará a <strong>ABA SELECIONADO</strong> e a "
-"preencherá mesmo que esteja fora de foco.<br/>\n"
+"<strong>Aba Selecionado</strong> estiver em foco, novamente as propriedades "
+"do objeto serão exibidas na <strong>Aba Selecionado</strong>. Como "
+"alternativa, clicar duas vezes no objeto na tela trará a <strong>Aba "
+"Selecionado</strong> e a preencherá mesmo que esteja fora de foco.<br/>\n"
 "\t<br/>\n"
 "\tVocê pode alterar os parâmetros nesta tela e o fluxo é assim:<br/>\n"
 "\t<br/>\n"
@@ -1292,14 +1292,14 @@ msgstr "[success] Projeto salvo em: %s"
 #, python-format
 msgid "[ERROR_NOTCL] Failed to verify project file: %s. Retry to save it."
 msgstr ""
-"[ERROR_NOTCL] Falha ao verificar o arquivo do projeto: %s . Tente salvá-lo "
+"[ERROR_NOTCL] Falha ao verificar o arquivo do projeto: %s. Tente salvá-lo "
 "novamente."
 
 #: FlatCAMApp.py:8866
 #, python-format
 msgid "[ERROR_NOTCL] Failed to parse saved project file: %s. Retry to save it."
 msgstr ""
-"[ERROR_NOTCL] Falha ao analisar o arquivo de projeto salvo: %s . Tente salvá-"
+"[ERROR_NOTCL] Falha ao analisar o arquivo de projeto salvo: %s. Tente salvá-"
 "lo novamente."
 
 #: FlatCAMApp.py:8874
@@ -1328,12 +1328,12 @@ msgstr ""
 
 #: FlatCAMObj.py:957 FlatCAMObj.py:3061 FlatCAMObj.py:3323 FlatCAMObj.py:3632
 msgid "Rough"
-msgstr "Rude"
+msgstr "Desbaste"
 
 #: FlatCAMObj.py:975 FlatCAMObj.py:1034
 #, python-format
 msgid "[success] Isolation geometry created: %s"
-msgstr "[success] Geometria de isolamento criada: %s"
+msgstr "[success] Geometria de isolação criada: %s"
 
 #: FlatCAMObj.py:1213
 msgid "Plotting Apertures"
@@ -1441,11 +1441,11 @@ msgstr ""
 
 #: FlatCAMObj.py:3061 FlatCAMObj.py:4017 FlatCAMObj.py:4018 FlatCAMObj.py:4027
 msgid "Iso"
-msgstr "Iso"
+msgstr "Isolação"
 
 #: FlatCAMObj.py:3061
 msgid "Finish"
-msgstr "Terminar"
+msgstr "Acabamento"
 
 #: FlatCAMObj.py:3359 flatcamGUI/FlatCAMGUI.py:522 flatcamGUI/FlatCAMGUI.py:721
 #: flatcamGUI/FlatCAMGUI.py:1629 flatcamGUI/FlatCAMGUI.py:1968
@@ -1561,7 +1561,7 @@ msgstr "[WARNING_NOTCL] Exportar código da máquina cancelado ..."
 #: FlatCAMObj.py:5666
 #, python-format
 msgid "[success] Machine Code file saved to: %s"
-msgstr "[success] Arquivo de código da máquina salvo em: %s"
+msgstr "[success] Arquivo G-Code salvo em: %s"
 
 #: FlatCAMObj.py:5688
 #, python-format
@@ -1608,7 +1608,7 @@ msgstr ""
 
 #: FlatCAMObj.py:5931
 msgid "[ERROR] There is no postprocessor file."
-msgstr "[ERROR] Não há arquivo de pós-processador."
+msgstr "[ERROR] Não há arquivo de pós-processamento."
 
 #: FlatCAMTranslation.py:91
 msgid "The application will restart."
@@ -1767,18 +1767,17 @@ msgid ""
 "therefore the app will convert the value to negative. Check the resulting "
 "CNC code (Gcode etc)."
 msgstr ""
-"[WARNING] O parâmetro Cut Z está positivo. Uma vez que é o valor de "
-"profundidade para cortar o material, \n"
-"o parâmetro Cut Z precisa ter um valor negativo. Supondo que seja um erro de "
-"digitação, o aplicativo converterá o valor para negativo.Verifique o código "
-"CNC resultante (G-Code, etc.)."
+"[WARNING] O parâmetro Profundidade de Corte está positivo. Este valor é a\n"
+"profundidade para cortar o material, e deve ser negativo. Supondo que seja\n"
+"um erro de digitação, o aplicativo converterá o valor para negativo.\n"
+"Verifique o código CNC resultante (G-Code, etc.)."
 
 #: camlib.py:5165 camlib.py:5661 camlib.py:5924
 #, python-format
 msgid ""
 "[WARNING] The Cut Z parameter is zero. There will be no cut, skipping %s file"
 msgstr ""
-"[WARNING] O parâmetro Cut Z é zero. Não haverá corte, ignorando arquivo %s"
+"[WARNING] O parâmetro Profundidade de Corte é zero. Não haverá corte, ignorando arquivo %s"
 
 #: camlib.py:5394 camlib.py:5491 camlib.py:5549
 msgid "[ERROR_NOTCL] The loaded Excellon file has no drills ..."
@@ -1804,15 +1803,14 @@ msgid ""
 "therefore the app will convert the value to negative.Check the resulting CNC "
 "code (Gcode etc)."
 msgstr ""
-"[WARNING] O parâmetro Cut Z está positivo. Uma vez que é o valor de "
-"profundidade para cortar o material, \n"
-"o parâmetro Cut Z precisa ter um valor negativo. Supondo que seja um erro de "
-"digitação, o aplicativo converterá o valor para negativo.Verifique o código "
-"CNC resultante (G-Code, etc.)."
+"[WARNING] O parâmetro Profundidade de Corte está positivo. Este valor é a\n"
+"profundidade para cortar o material, e deve ser negativo. Supondo que seja\n"
+"um erro de digitação, o aplicativo converterá o valor para negativo.\n"
+"Verifique o código CNC resultante (G-Code, etc.)."
 
 #: camlib.py:5666 camlib.py:5929
 msgid "[ERROR_NOTCL] Travel Z parameter is None or zero."
-msgstr "[ERROR_NOTCL] O parâmetro Deslocamento Z é Nulo ou zero."
+msgstr "[ERROR_NOTCL] O parâmetro Altura de Deslocamento Z é Nulo ou zero."
 
 #: camlib.py:5670 camlib.py:5933
 msgid ""
@@ -1822,18 +1820,17 @@ msgid ""
 "therefore the app will convert the value to positive.Check the resulting CNC "
 "code (Gcode etc)."
 msgstr ""
-"[WARNING] O parâmetro Travel Z tem valor negativo. Este é o valor da altura "
-"para viajar entre os cortes, \n"
-"e precisa ter um valor positivo. Supondo que seja um erro de digitação, o "
-"aplicativo converterá o valor para positivo.Verifique o código CNC "
-"resultante (G-Code, etc.)."
+"[WARNING] O parâmetro Altura de Deslocamento tem valor negativo. Este valor\n"
+"é a altura nos deslocamentos entre os cortes, e deve ser positivo. Supondo\n"
+" que seja um erro de digitação, o aplicativo converterá o valor para positivo.\n"
+"Verifique o código CNC resultante (G-Code, etc.)."
 
 #: camlib.py:5677 camlib.py:5940
 #, python-format
 msgid ""
 "[WARNING] The Z Travel parameter is zero. This is dangerous, skipping %s file"
 msgstr ""
-"[WARNING] O parâmetro Z Travel é zero. Isso é perigoso, ignorando arquivo %s"
+"[WARNING] O parâmetro Altura de Deslocamento é zero. Isso é perigoso, ignorando arquivo %s"
 
 #: camlib.py:5807
 #, python-format
@@ -2515,7 +2512,7 @@ msgstr "Espelhar (Flip)"
 #: flatcamGUI/ObjectUI.py:888 flatcamGUI/ObjectUI.py:1470
 #: flatcamTools/ToolTransform.py:28
 msgid "Offset"
-msgstr "Deslocar"
+msgstr "Deslocamento"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:633
 #: flatcamEditors/FlatCAMGrbEditor.py:4711
@@ -7505,7 +7502,7 @@ msgid ""
 "gcode output."
 msgstr ""
 "O arquivo de pós-processamento (json) que define\n"
-"a saída G-Ccode."
+"a saída G-Code."
 
 #: flatcamGUI/FlatCAMGUI.py:4735
 msgid "<b>Gcode:    </b>"
@@ -7919,8 +7916,7 @@ msgid ""
 "The postprocessor file that dictates\n"
 "Machine Code output."
 msgstr ""
-"O arquivo do pós-processador que dita a saída do\n"
-"Código da máquina."
+"Arquivo de pós-processamento que define o G-Code de saída."
 
 #: flatcamGUI/FlatCAMGUI.py:5364
 msgid "Geometry Adv. Options"
@@ -8043,7 +8039,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5557 flatcamGUI/ObjectUI.py:1370
 msgid "Travel"
-msgstr "Deslocamento"
+msgstr "Desloc."
 
 #: flatcamGUI/FlatCAMGUI.py:5566
 msgid "Display Annotation:"
@@ -8061,7 +8057,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5580
 msgid "Annotation Size:"
-msgstr "Tamanho da Anotação:"
+msgstr "Tamanho da Fonte:"
 
 #: flatcamGUI/FlatCAMGUI.py:5582
 msgid "The font size of the annotation text. In pixels."
@@ -8091,7 +8087,7 @@ msgstr "Diâmetro da ferramenta a ser renderizada no gráfico."
 
 #: flatcamGUI/FlatCAMGUI.py:5633
 msgid "Coords dec.:"
-msgstr "Decimais das Coordenadas:"
+msgstr "Decimais das Coord.:"
 
 #: flatcamGUI/FlatCAMGUI.py:5635
 msgid ""
@@ -8103,7 +8099,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:5643
 msgid "Feedrate dec.:"
-msgstr "Decimais da Taxa de Avanço:"
+msgstr "Decimais do Avanço:"
 
 #: flatcamGUI/FlatCAMGUI.py:5645
 msgid ""
@@ -9071,7 +9067,7 @@ msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6685 flatcamTools/ToolSolderPaste.py:276
 msgid "PostProcessors:"
-msgstr "Pós-Processador:"
+msgstr "Pós-processador:"
 
 #: flatcamGUI/FlatCAMGUI.py:6687 flatcamTools/ToolSolderPaste.py:278
 msgid "Files that control the GCode generation."
@@ -9205,8 +9201,8 @@ msgid ""
 "this parameter."
 msgstr ""
 "Diâmetro da ferramenta de corte.\n"
-"Se desejar ter um caminho de isolamento\n"
-"dentro da forma atual do recurso Gerber, use um valor negativo para\n"
+"Se desejar ter um caminho de isolação dentro da forma\n"
+"atual do recurso Gerber, use um valor negativo para\n"
 "este parâmetro."
 
 #: flatcamGUI/ObjectUI.py:272
@@ -9219,7 +9215,7 @@ msgstr "Combinar"
 
 #: flatcamGUI/ObjectUI.py:322
 msgid "<b>Generate Isolation Geometry:</b>"
-msgstr "<b>Gerar Geometria de Isolamento:</b>"
+msgstr "<b>Gerar Geometria de Isolação:</b>"
 
 #: flatcamGUI/ObjectUI.py:324
 msgid ""
@@ -9233,15 +9229,14 @@ msgid ""
 "inside the actual Gerber feature, use a negative tool\n"
 "diameter above."
 msgstr ""
-"Cria um objeto Geometria com caminhos da ferramenta para cortar a\n"
-"isolação por fora, por dentro ou em ambos os lados do\n"
-"objeto. Para um objeto Gerber externo significa\n"
-"por fora do recurso Gerber e interno significa por dentro do recurso Gerber, "
-"se possível. Isso significa\n"
-"que somente se o recurso Gerber tiver aberturas internas, elas\n"
-"serão isoladas. Se o que é desejado é cortar o isolamento\n"
-"dentro do recurso Gerber, use uma ferramenta negativa\n"
-"diâmetro acima."
+"Cria um objeto Geometria com caminhos da ferramenta para\n"
+"cortar a isolação por fora, por dentro ou em ambos os lados\n"
+"do objeto. Para um objeto Gerber externo significa por fora\n"
+"do recurso Gerber e interno significa por dentro do recurso\n"
+"Gerber, se possível. Isso significa que somente se o recurso\n"
+"Gerber tiver aberturas internas, elas serão isoladas. Se o\n"
+"desejado é cortar a isolação dentro do recurso Gerber, use uma\n"
+"ferramenta negativa diâmetro acima."
 
 #: flatcamGUI/ObjectUI.py:343
 msgid "FULL Geo"
@@ -9253,9 +9248,9 @@ msgid ""
 "for isolation routing. It contains both\n"
 "the interiors and exteriors geometry."
 msgstr ""
-"Cria o Objeto de Geometria\n"
-"para o roteamento de isolamento. Contém tanto\n"
-"a geometria do interior quanto a do exterior."
+"Cria o Objeto de Geometria para o roteamento\n"
+"de isolação. Contém tanto a geometria interna\n"
+"quanto a externa."
 
 #: flatcamGUI/ObjectUI.py:354
 msgid "Ext Geo"
@@ -9267,9 +9262,8 @@ msgid ""
 "for isolation routing containing\n"
 "only the exteriors geometry."
 msgstr ""
-"Cria o Objeto de Geometria\n"
-"para roteamento de isolamento contendo\n"
-"somente a geometria do exterior."
+"Cria o Objeto de Geometria para roteamento\n"
+"de isolação contendo somente a geometria externa."
 
 #: flatcamGUI/ObjectUI.py:363
 msgid "Int Geo"
@@ -9281,9 +9275,8 @@ msgid ""
 "for isolation routing containing\n"
 "only the interiors geometry."
 msgstr ""
-"Cria o Objeto de Geometria\n"
-"para o roteamento de isolamento contendo\n"
-"somente a geometria do interior."
+"Cria o Objeto de Geometria para roteamento\n"
+"de isolação contendo somente a geometria interna."
 
 #: flatcamGUI/ObjectUI.py:381
 msgid "<b>Clear N-copper:</b>"
@@ -9472,7 +9465,7 @@ msgid ""
 "gcode output."
 msgstr ""
 "O arquivo de pós-processamento (json) que define\n"
-"a saída G-Ccode."
+"a saída G-Code."
 
 #: flatcamGUI/ObjectUI.py:738
 msgid ""
@@ -9567,19 +9560,18 @@ msgid ""
 msgstr ""
 "Ferramentas neste objeto Geometria usados para o corte.\n"
 "A entrada 'Deslocamento' define um deslocamento para o corte.\n"
-"'Deslocamento' pode estar dentro, fora, no caminho (none) e personalizado. A "
+"'Deslocamento' pode ser dentro, fora, no caminho (nenhum) e personalizado. A "
 "entrada\n"
 "'Tipo' é somente informativo e permite conhecer a necessidade de usar a "
 "ferramenta atual.\n"
-"Pode ser Desbaste, Acabamento ou Isolamento.\n"
+"Pode ser Desbaste, Acabamento ou Isolação.\n"
 "O 'Tipo de Ferramenta' (TF) pode ser circular com 1 a 4 dentes (C1..C4),\n"
 "bola (B) ou Em Forma de V (V).\n"
 "Quando forma em V é selecionada, a entrada 'Tipo' é automaticamente\n"
-"conectada ao Isolamento, o parâmetro CorteZ no formulário da interface do "
-"usuário é\n"
-"desabilitado e o Corte Z é calculado automaticamente a partir das entradas "
-"do formulário da interface do usuário\n"
-"e do Ângulo da Ponta-V."
+"alterada para Isolação, o parâmetro Profundidade de Corte\n"
+"no formulário da interface do usuário é desabilitado e a Profundidade\n"
+"de Corte é calculada automaticamente a partir das entradas do\n"
+"formulário da interface do usuário e do Ângulo da Ponta-V."
 
 #: flatcamGUI/ObjectUI.py:888 flatcamGUI/ObjectUI.py:1470
 msgid "Dia"
@@ -9609,13 +9601,13 @@ msgid ""
 "'pocket'.\n"
 "- Out(side) -> The tool cut will follow the geometry line on the outside."
 msgstr ""
-"O valor para o Deslocamento pode ser:\n"
-"- Caminho -> Não há deslocamento, o corte da ferramenta será feito através "
-"da linha da geometria.\n"
-"- In(terno) -> O corte da ferramenta seguirá a geometria interna. Ele criará "
-"um 'pocket'.\n"
-"- Ex(terno) -> O corte da ferramenta seguirá a linha da geometria no lado "
-"externo."
+"O valor para Deslocamento pode ser:\n"
+"- Caminho -> Não há deslocamento, o corte da ferramenta será feito sobre "
+"a linha da geometria.\n"
+"- In(terno) -> O corte da ferramenta seguirá a geometria interna. Será criado "
+"um 'bolso'.\n"
+"- Ex(terno) -> O corte da ferramenta seguirá no lado externo da linha da geometria.\n"
+"- Personalizado -> Será considerado o valor digitado."
 
 #: flatcamGUI/ObjectUI.py:913
 msgid ""
@@ -9632,12 +9624,12 @@ msgstr ""
 "formulário da interface do usuário\n"
 "são escolhidos com base no tipo de operação e isso servirá como um "
 "lembrete.\n"
-"Pode ser 'Desbaste', 'Acabamento' ou 'Isolamento'.\n"
-"Para desbaste, podemos escolher uma taxa de Avanço inferior e corte de "
+"Pode ser 'Desbaste', 'Acabamento' ou 'Isolação'.\n"
+"Para Desbaste, pode-se escolher uma taxa de Avanço inferior e corte de "
 "múltiplas profundidades.\n"
-"Para Acabamento, podemos escolher uma taxa de avanço mais alta, sem multi-"
+"Para Acabamento, pode-se escolher uma taxa de avanço mais alta, sem multi-"
 "profundidade.\n"
-"Para Isolamento, precisamos de uma velocidade de avanço menor, pois é usada "
+"Para Isolação, usa-se uma velocidade de avanço menor, pois é usada "
 "uma broca com ponta fina."
 
 #: flatcamGUI/ObjectUI.py:922
@@ -9667,8 +9659,8 @@ msgstr ""
 "V. O ajuste desses dois valores ajustará o parâmetro Corte Z, como\n"
 "a largura do corte no material será igual ao valor da coluna Diâmetro da "
 "ferramenta dessa tabela.\n"
-"Escolher o tipo de ferramenta Em Forma de V automaticamente selecionará o "
-"tipo de operação como isolamento."
+"Escolher o tipo de ferramenta Em Forma de V automaticamente alterará o "
+"tipo de operação para Isolação."
 
 #: flatcamGUI/ObjectUI.py:934
 msgid ""
@@ -9776,10 +9768,10 @@ msgid ""
 "To the right, input the depth of \n"
 "each pass (positive value)."
 msgstr ""
-"Usa vários passes para limitar a profundidade de corte em cada passagem. "
-"Será\n"
-"cortado várias vezes até que o Corte Z seja atingido.\n"
-"Para a direita, insira a profundidade de cada passe (valor positivo)."
+"Usa vários passes para limitar a profundidade de corte\n"
+"em cada passagem. Será cortado várias vezes até que a\n"
+"Profundidade de Corte Z seja atingida.\n"
+"Insira a profundidade de cada passe (valor positivo)."
 
 #: flatcamGUI/ObjectUI.py:1096
 msgid "Depth of each pass (positive)."
@@ -9855,8 +9847,8 @@ msgid ""
 "The Postprocessor file that dictates\n"
 "the Machine Code (like GCode, RML, HPGL) output."
 msgstr ""
-"O arquivo Pós-processador determina a saída\n"
-"de código da máquina (como G-Code, RML, HPGL)."
+"Arquivo de Pós-processamento que determina o código\n"
+"de máquina de saída(como G-Code, RML, HPGL)."
 
 #: flatcamGUI/ObjectUI.py:1290
 msgid ""
@@ -9927,11 +9919,11 @@ msgstr ""
 "Ferramentas usadas para o corte no  Trabalho CNC.\n"
 "O diâmetro da ferramenta é usado para plotagem na tela.\n"
 "A entrada 'Deslocamento' define um deslocamento para o corte.\n"
-"'Deslocamento' pode estar dentro, fora, no caminho (nenhum) e personalizado. "
+"'Deslocamento' pode ser dentro, fora, no caminho (nenhum) e personalizado. "
 "A entrada\n"
 "'Tipo' é apenas informativa e permite conhecer a necessidade de usar a "
 "ferramenta atual.\n"
-"Pode ser Desbaste, Acabamento ou Isolamento.\n"
+"Pode ser Desbaste, Acabamento ou Isolação.\n"
 "O 'Tipo de Ferramenta' (TF) pode ser circular com 1 a 4 dentes (C1..C4),\n"
 "bola (B) ou Em forma de V (V)."
 
@@ -9985,14 +9977,14 @@ msgstr ""
 "ou uma Macro.\n"
 "As variáveis do FlatCAM são circundadas pelo símbolo '%'.\n"
 "\n"
-"ATENÇÃO: pode ser usado apenas com um arquivo de pós-processador\n"
+"ATENÇÃO: pode ser usado apenas com um arquivo de pós-processamento\n"
 "que tenha 'toolchange_custom' em seu nome e este é construído tendo\n"
-"como modelo o arquivo do posprocessador 'Customização da troca de "
+"como modelo o arquivo de pós-processamento 'Customização da troca de "
 "ferramentas'."
 
 #: flatcamGUI/ObjectUI.py:1579
 msgid "z_cut = depth where to cut"
-msgstr "z_cut = profundidade onde cortar"
+msgstr "z_cut = profundidade de corte"
 
 #: flatcamGUI/ObjectUI.py:1580
 msgid "z_move = height where to travel"
@@ -10093,8 +10085,8 @@ msgid ""
 "Calculate either the Cut Z or the effective tool diameter,\n"
 "  depending on which is desired and which is known. "
 msgstr ""
-"Calcule o Corte Z ou o diâmetro efetivo da ferramenta, dependendo do que é "
-"desejado e do que é conhecido."
+"Calcula a Profundidade de Corte Z ou o diâmetro efetivo da\n"
+"ferramenta, dependendo do que é desejado e do que é conhecido."
 
 #: flatcamTools/ToolCalculators.py:185
 msgid "Current Value:"
