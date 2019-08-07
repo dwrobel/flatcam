@@ -245,8 +245,8 @@ class ToolPaint(FlatCAMTool, Gerber):
         # grid3 = QtWidgets.QGridLayout()
         self.selectmethod_combo = RadioSet([
             {"label": _("Single"), "value": "single"},
-            {"label": _("All"), "value": "all"},
-            # {"label": "Rectangle", "value": "rectangle"}
+            {"label": _("Area"), "value": "area"},
+            {"label": _("All"), "value": "all"}
         ])
         grid3.addWidget(self.selectmethod_combo, 7, 1)
 
@@ -353,6 +353,10 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.addtool_btn.setDisabled(True)
             self.deltool_btn.setDisabled(True)
             self.tools_table.setContextMenuPolicy(Qt.NoContextMenu)
+        if self.selectmethod_combo.get_value() == 'area':
+            # disable rest-machining for single polygon painting
+            self.rest_cb.set_value(False)
+            self.rest_cb.setDisabled(True)
         else:
             self.rest_cb.setDisabled(False)
             self.addtool_entry.setDisabled(False)
@@ -433,7 +437,6 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.tools_table.setContextMenuPolicy(Qt.NoContextMenu)
 
     def build_ui(self):
-
         try:
             # if connected, disconnect the signal from the slot on item_changed as it creates issues
             self.tools_table.itemChanged.disconnect()
@@ -787,8 +790,36 @@ class ToolPaint(FlatCAMTool, Gerber):
                                 connect=connect,
                                 contour=contour)
 
-        if select_method == "single":
+        elif select_method == "single":
             self.app.inform.emit(_("[WARNING_NOTCL] Click inside the desired polygon."))
+
+            # use the first tool in the tool table; get the diameter
+            tooldia = float('%.4f' % float(self.tools_table.item(0, 1).text()))
+
+            # To be called after clicking on the plot.
+            def doit(event):
+                # do paint single only for left mouse clicks
+                if event.button == 1:
+                    self.app.inform.emit(_("Painting polygon..."))
+                    self.app.plotcanvas.vis_disconnect('mouse_press', doit)
+
+                    pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+                    if self.app.grid_status():
+                        pos = self.app.geo_editor.snap(pos[0], pos[1])
+
+                    self.paint_poly(self.paint_obj,
+                                    inside_pt=[pos[0], pos[1]],
+                                    tooldia=tooldia,
+                                    overlap=overlap,
+                                    connect=connect,
+                                    contour=contour)
+                    self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
+
+            self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+            self.app.plotcanvas.vis_connect('mouse_press', doit)
+
+        elif select_method == "area":
+            self.app.inform.emit(_("[WARNING_NOTCL] Click the start point of the paint area."))
 
             # use the first tool in the tool table; get the diameter
             tooldia = float('%.4f' % float(self.tools_table.item(0, 1).text()))

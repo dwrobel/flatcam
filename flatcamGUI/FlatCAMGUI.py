@@ -3255,9 +3255,9 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.tools_ncc_group = ToolsNCCPrefGroupUI()
-        self.tools_ncc_group.setMinimumWidth(200)
+        self.tools_ncc_group.setMinimumWidth(220)
         self.tools_paint_group = ToolsPaintPrefGroupUI()
-        self.tools_paint_group.setMinimumWidth(200)
+        self.tools_paint_group.setMinimumWidth(220)
 
         self.tools_cutout_group = ToolsCutoutPrefGroupUI()
         self.tools_cutout_group.setMinimumWidth(220)
@@ -6126,8 +6126,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(selectlabel, 6, 0)
         self.selectmethod_combo = RadioSet([
             {"label": _("Single"), "value": "single"},
-            {"label": _("All"), "value": "all"},
-            # {"label": "Rectangle", "value": "rectangle"}
+            {"label": _("Area"), "value": "area"},
+            {"label": _("All"), "value": "all"}
         ])
         grid0.addWidget(self.selectmethod_combo, 6, 1)
 

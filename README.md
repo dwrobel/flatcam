@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - replaced setFixedWidth calls with setMinimumWidth
 - recoded the camlib.Geometry.isolation_geometry() function
+- started to work on Paint Area in Paint Tool
 
 6.08.2019
 
