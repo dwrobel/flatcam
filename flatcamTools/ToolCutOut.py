@@ -58,7 +58,7 @@ class CutOut(FlatCAMTool):
               "What is selected here will dictate the kind\n"
               "of objects that will populate the 'Object' combobox.")
         )
-        self.type_obj_combo_label.setFixedWidth(60)
+        self.type_obj_combo_label.setMinimumWidth(60)
         form_layout.addRow(self.type_obj_combo_label, self.type_obj_combo)
 
         # Object to be cutout
@@ -158,7 +158,7 @@ class CutOut(FlatCAMTool):
               "- 2tb  - 2*top + 2*bottom\n"
               "- 8     - 2*left + 2*right +2*top + 2*bottom")
         )
-        gaps_label.setFixedWidth(60)
+        gaps_label.setMinimumWidth(60)
 
         self.gaps = FCComboBox()
         gaps_items = ['LR', 'TB', '4', '2LR', '2TB', '8']
@@ -232,7 +232,7 @@ class CutOut(FlatCAMTool):
         self.man_object_label.setToolTip(
             _("Geometry object used to create the manual cutout.")
         )
-        self.man_object_label.setFixedWidth(60)
+        self.man_object_label.setMinimumWidth(60)
         # e_lab_0 = QtWidgets.QLabel('')
 
         form_layout_3.addRow(self.man_object_label, self.man_object_combo)

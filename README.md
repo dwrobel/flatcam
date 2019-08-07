@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed issue in the isolation function, if the isolation can't be done there will be generated no Geometry object 
 - some minor UI changes
 - strings added and translations updated
+- replaced setFixedWidth calls with setMinimumWidth
 
 5.08.2019
 
