@@ -269,6 +269,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.units = ''
         self.paint_tools = {}
         self.tooluid = 0
+        self.first_click = False
+        self.cursor_pos = None
+
         # store here the default data for Geometry Data
         self.default_data = {}
         self.default_data.update({
@@ -828,29 +831,61 @@ class ToolPaint(FlatCAMTool, Gerber):
             def on_mouse_press(event):
                 # do paint single only for left mouse clicks
                 if event.button == 1:
-                    self.app.inform.emit(_("Painting selected area..."))
-                    self.app.plotcanvas.vis_disconnect('mouse_press', doit)
+                    if not self.first_click:
+                        self.first_click = True
+                        self.app.inform.emit(_("[WARNING_NOTCL] Click the end point of the paint area."))
 
-                    pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
-                    if self.app.grid_status():
-                        pos = self.app.geo_editor.snap(pos[0], pos[1])
+                        self.cursor_pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+                        if self.app.grid_status():
+                            self.cursor_pos = self.app.geo_editor.snap(self.cursor_pos[0], self.cursor_pos[1])
+                    else:
+                        self.app.inform.emit(_("Done."))
+                        self.first_click = False
+                        self.app.delete_selection_shape()
 
-                    self.paint_poly(self.paint_obj,
-                                    inside_pt=[pos[0], pos[1]],
-                                    tooldia=tooldia,
-                                    overlap=overlap,
-                                    connect=connect,
-                                    contour=contour)
+                        curr_pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+                        if self.app.grid_status():
+                            curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
 
-            # to be called after second click on plot
-            def on_mouse_click_release(event):
-                self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
-                self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
-                self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+                        x0, y0 = self.cursor_pos[0], self.cursor_pos[1]
+                        x1, y1 = curr_pos[0], curr_pos[1]
+                        pt1 = (x0, y0)
+                        pt2 = (x1, y0)
+                        pt3 = (x1, y1)
+                        pt4 = (x0, y1)
+                        sel_rect = Polygon([pt1, pt2, pt3, pt4])
+
+                        self.paint_poly_area(obj=self.paint_obj,
+                                             sel_obj= sel_rect,
+                                             outname=o_name,
+                                             overlap=overlap,
+                                             connect=connect,
+                                             contour=contour)
+
+                        self.app.plotcanvas.vis_disconnect('mouse_press', on_mouse_press)
+                        self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
+
+                        self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
+                        self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
+                        self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
 
             # called on mouse move
             def on_mouse_move(event):
-                pass
+                curr_pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+                self.app.app_cursor.enabled = False
+
+                if self.app.grid_status():
+                    self.app.app_cursor.enabled = True
+                    # Update cursor
+                    curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
+                    self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
+                                                 symbol='++', edge_color='black', size=20)
+
+                if self.first_click:
+                    self.app.delete_selection_shape()
+                    self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
+                                                         coords=(curr_pos[0], curr_pos[1]),
+                                                         face_alpha=0.0)
 
             self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
             self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
@@ -858,7 +893,6 @@ class ToolPaint(FlatCAMTool, Gerber):
 
             self.app.plotcanvas.vis_connect('mouse_press', on_mouse_press)
             self.app.plotcanvas.vis_connect('mouse_move', on_mouse_move)
-            self.app.plotcanvas.vis_connect('mouse_release', on_mouse_click_release)
 
     def paint_poly(self, obj, inside_pt, tooldia, overlap, outname=None, connect=True, contour=True):
         """
@@ -1320,6 +1354,324 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         # Background
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+
+    def paint_poly_area(self, obj, sel_obj, overlap, outname=None, connect=True, contour=True):
+        """
+        Paints all polygons in this object that are within the sel_obj object
+
+        :param obj: painted object
+        :param sel_obj: paint only what is inside this object bounds
+        :param overlap:
+        :param outname:
+        :param connect: Connect lines to avoid tool lifts.
+        :param contour: Paint around the edges.
+        :return:
+        """
+        paint_method = self.paintmethod_combo.get_value()
+
+        try:
+            paint_margin = float(self.paintmargin_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                paint_margin = float(self.paintmargin_entry.get_value().replace(',', '.'))
+            except ValueError:
+                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
+                                     "use a number."))
+                return
+
+        proc = self.app.proc_container.new(_("Painting polygon..."))
+        name = outname if outname else self.obj_name + "_paint"
+        over = overlap
+        conn = connect
+        cont = contour
+
+        def recurse(geometry, reset=True):
+            """
+            Creates a list of non-iterable linear geometry objects.
+            Results are placed in self.flat_geometry
+
+            :param geometry: Shapely type or list or list of list of such.
+            :param reset: Clears the contents of self.flat_geometry.
+            """
+
+            if geometry is None:
+                return
+
+            if reset:
+                self.flat_geometry = []
+
+            # ## If iterable, expand recursively.
+            try:
+                for geo in geometry:
+                    if geo is not None:
+                        recurse(geometry=geo, reset=False)
+
+            # ## Not iterable, do the actual indexing and add.
+            except TypeError:
+                if isinstance(geometry, LinearRing):
+                    g = Polygon(geometry)
+                    self.flat_geometry.append(g)
+                else:
+                    self.flat_geometry.append(geometry)
+
+            return self.flat_geometry
+
+        # Initializes the new geometry object
+        def gen_paintarea(geo_obj, app_obj):
+            assert isinstance(geo_obj, FlatCAMGeometry), \
+                "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+            tool_dia = None
+
+            sorted_tools = []
+            for row in range(self.tools_table.rowCount()):
+                sorted_tools.append(float(self.tools_table.item(row, 1).text()))
+            sorted_tools.sort(reverse=True)
+
+            geo_to_paint = []
+            for poly in obj.solid_geometry:
+                new_pol = poly.intersection(sel_obj)
+                geo_to_paint.append(new_pol)
+
+            try:
+                a, b, c, d = self.paint_bounds(geo_to_paint)
+                geo_obj.options['xmin'] = a
+                geo_obj.options['ymin'] = b
+                geo_obj.options['xmax'] = c
+                geo_obj.options['ymax'] = d
+            except Exception as e:
+                log.debug("ToolPaint.paint_poly.gen_paintarea() bounds error --> %s" % str(e))
+                return
+
+            total_geometry = []
+            current_uid = int(1)
+            geo_obj.solid_geometry = []
+            for tool_dia in sorted_tools:
+                # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
+                for k, v in self.paint_tools.items():
+                    if float('%.4f' % v['tooldia']) == float('%.4f' % tool_dia):
+                        current_uid = int(k)
+                        break
+
+                for geo in recurse(geo_to_paint):
+                    try:
+                        # Polygons are the only really paintable geometries, lines in theory have no area to be painted
+                        if not isinstance(geo, Polygon):
+                            continue
+                        poly_buf = geo.buffer(-paint_margin)
+
+                        if paint_method == "seed":
+                            # Type(cp) == FlatCAMRTreeStorage | None
+                            cp = self.clear_polygon2(poly_buf,
+                                                     tooldia=tool_dia,
+                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                     overlap=over,
+                                                     contour=cont,
+                                                     connect=conn)
+
+                        elif paint_method == "lines":
+                            # Type(cp) == FlatCAMRTreeStorage | None
+                            cp = self.clear_polygon3(poly_buf,
+                                                     tooldia=tool_dia,
+                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                     overlap=over,
+                                                     contour=cont,
+                                                     connect=conn)
+
+                        else:
+                            # Type(cp) == FlatCAMRTreeStorage | None
+                            cp = self.clear_polygon(poly_buf,
+                                                    tooldia=tool_dia,
+                                                    steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                    overlap=over,
+                                                    contour=cont,
+                                                    connect=conn)
+
+                        if cp is not None:
+                            total_geometry += list(cp.get_objects())
+                    except Exception as e:
+                        log.debug("Could not Paint the polygons. %s" % str(e))
+                        self.app.inform.emit(
+                            _("[ERROR] Could not do Paint All. Try a different combination of parameters. "
+                              "Or a different Method of paint\n%s") % str(e))
+                        return
+
+                # add the solid_geometry to the current too in self.paint_tools dictionary and then reset the
+                # temporary list that stored that solid_geometry
+                self.paint_tools[current_uid]['solid_geometry'] = deepcopy(total_geometry)
+
+                self.paint_tools[current_uid]['data']['name'] = name
+                total_geometry[:] = []
+
+            geo_obj.options["cnctooldia"] = str(tool_dia)
+            # this turn on the FlatCAMCNCJob plot for multiple tools
+            geo_obj.multigeo = True
+            geo_obj.multitool = True
+            geo_obj.tools.clear()
+            geo_obj.tools = dict(self.paint_tools)
+
+            # test if at least one tool has solid_geometry. If no tool has solid_geometry we raise an Exception
+            has_solid_geo = 0
+            for tooluid in geo_obj.tools:
+                if geo_obj.tools[tooluid]['solid_geometry']:
+                    has_solid_geo += 1
+            if has_solid_geo == 0:
+                self.app.inform.emit(_("[ERROR] There is no Painting Geometry in the file.\n"
+                                       "Usually it means that the tool diameter is too big for the painted geometry.\n"
+                                       "Change the painting parameters and try again."))
+                return
+
+            # Experimental...
+            # print("Indexing...", end=' ')
+            # geo_obj.make_index()
+
+            self.app.inform.emit(_("[success] Paint All Done."))
+
+        # Initializes the new geometry object
+        def gen_paintarea_rest_machining(geo_obj, app_obj):
+            assert isinstance(geo_obj, FlatCAMGeometry), \
+                "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+
+            tool_dia = None
+            sorted_tools = []
+            for row in range(self.tools_table.rowCount()):
+                sorted_tools.append(float(self.tools_table.item(row, 1).text()))
+            sorted_tools.sort(reverse=True)
+
+            cleared_geo = []
+            current_uid = int(1)
+            geo_obj.solid_geometry = []
+
+            try:
+                a, b, c, d = obj.bounds()
+                geo_obj.options['xmin'] = a
+                geo_obj.options['ymin'] = b
+                geo_obj.options['xmax'] = c
+                geo_obj.options['ymax'] = d
+            except Exception as e:
+                log.debug("ToolPaint.paint_poly.gen_paintarea() bounds error --> %s" % str(e))
+                return
+
+            for tool_dia in sorted_tools:
+                for geo in recurse(obj.solid_geometry):
+                    try:
+                        geo = Polygon(geo) if not isinstance(geo, Polygon) else geo
+                        poly_buf = geo.buffer(-paint_margin)
+                        cp = None
+
+                        if paint_method == "standard":
+                            # Type(cp) == FlatCAMRTreeStorage | None
+                            cp = self.clear_polygon(poly_buf, tooldia=tool_dia,
+                                                    steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                    overlap=over, contour=cont, connect=conn)
+
+                        elif paint_method == "seed":
+                            # Type(cp) == FlatCAMRTreeStorage | None
+                            cp = self.clear_polygon2(poly_buf, tooldia=tool_dia,
+                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                     overlap=over, contour=cont, connect=conn)
+
+                        elif paint_method == "lines":
+                            # Type(cp) == FlatCAMRTreeStorage | None
+                            cp = self.clear_polygon3(poly_buf, tooldia=tool_dia,
+                                                     steps_per_circle=self.app.defaults["geometry_circle_steps"],
+                                                     overlap=over, contour=cont, connect=conn)
+
+                        if cp is not None:
+                            cleared_geo += list(cp.get_objects())
+
+                    except Exception as e:
+                        log.debug("Could not Paint the polygons. %s" % str(e))
+                        self.app.inform.emit(
+                            _("[ERROR] Could not do Paint All. Try a different combination of parameters. "
+                              "Or a different Method of paint\n%s") % str(e))
+                        return
+
+                # find the tooluid associated with the current tool_dia so we know where to add the tool solid_geometry
+                for k, v in self.paint_tools.items():
+                    if float('%.4f' % v['tooldia']) == float('%.4f' % tool_dia):
+                        current_uid = int(k)
+                        break
+
+                # add the solid_geometry to the current too in self.paint_tools dictionary and then reset the
+                # temporary list that stored that solid_geometry
+                self.paint_tools[current_uid]['solid_geometry'] = deepcopy(cleared_geo)
+
+                self.paint_tools[current_uid]['data']['name'] = name
+                cleared_geo[:] = []
+
+            geo_obj.options["cnctooldia"] = str(tool_dia)
+            # this turn on the FlatCAMCNCJob plot for multiple tools
+            geo_obj.multigeo = True
+            geo_obj.multitool = True
+            geo_obj.tools.clear()
+            geo_obj.tools = dict(self.paint_tools)
+
+            # test if at least one tool has solid_geometry. If no tool has solid_geometry we raise an Exception
+            has_solid_geo = 0
+            for tooluid in geo_obj.tools:
+                if geo_obj.tools[tooluid]['solid_geometry']:
+                    has_solid_geo += 1
+            if has_solid_geo == 0:
+                self.app.inform.emit(_("[ERROR_NOTCL] There is no Painting Geometry in the file.\n"
+                                       "Usually it means that the tool diameter is too big for the painted geometry.\n"
+                                       "Change the painting parameters and try again."))
+                return
+
+            # Experimental...
+            # print("Indexing...", end=' ')
+            # geo_obj.make_index()
+
+            self.app.inform.emit(_("[success] Paint All with Rest-Machining done."))
+
+        def job_thread(app_obj):
+            try:
+                if self.rest_cb.isChecked():
+                    app_obj.new_object("geometry", name, gen_paintarea_rest_machining)
+                else:
+                    app_obj.new_object("geometry", name, gen_paintarea)
+            except Exception as e:
+                proc.done()
+                traceback.print_stack()
+                return
+            proc.done()
+            # focus on Selected Tab
+            self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+
+        self.app.inform.emit(_("Polygon Paint started ..."))
+
+        # Promise object with the new name
+        self.app.collection.promise(name)
+
+        # Background
+        self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+
+    @staticmethod
+    def paint_bounds(geometry):
+        def bounds_rec(o):
+            if type(o) is list:
+                minx = Inf
+                miny = Inf
+                maxx = -Inf
+                maxy = -Inf
+
+                for k in o:
+                    try:
+                        minx_, miny_, maxx_, maxy_ = bounds_rec(k)
+                    except Exception as e:
+                        log.debug("ToolPaint.bounds() --> %s" % str(e))
+                        return
+
+                    minx = min(minx, minx_)
+                    miny = min(miny, miny_)
+                    maxx = max(maxx, maxx_)
+                    maxy = max(maxy, maxy_)
+                return minx, miny, maxx, maxy
+            else:
+                # it's a Shapely object, return it's bounds
+                return o.bounds
+
+        return bounds_rec(geometry)
 
     def reset_fields(self):
         self.object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))

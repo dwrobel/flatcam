@@ -5694,13 +5694,12 @@ class App(QtCore.QObject):
         self.plotcanvas.vispy_canvas.view.camera.pan_button_setting = self.defaults['global_pan_button']
 
         self.pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
+        self.pos = (self.pos_canvas[0], self.pos_canvas[1])
+        self.app_cursor.enabled = False
 
-        if self.grid_status() == True:
+        if self.grid_status():
             self.pos = self.geo_editor.snap(self.pos_canvas[0], self.pos_canvas[1])
             self.app_cursor.enabled = True
-        else:
-            self.pos = (self.pos_canvas[0], self.pos_canvas[1])
-            self.app_cursor.enabled = False
 
         try:
             modifiers = QtWidgets.QApplication.keyboardModifiers()
@@ -5753,7 +5752,7 @@ class App(QtCore.QObject):
         if self.rel_point1 is not None:
             try:  # May fail in case mouse not within axes
                 pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
-                if self.grid_status():
+                if self.grid_status() == True:
                     pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
                     self.app_cursor.enabled = True
                     # Update cursor
@@ -6157,6 +6156,12 @@ class App(QtCore.QObject):
             face_color = kwargs['face_color']
         else:
             face_color = self.defaults['global_sel_fill']
+
+        if 'face_alpha' in kwargs:
+            face_alpha = kwargs['face_alpha']
+        else:
+            face_alpha = 0.3
+
         x0, y0 = old_coords
         x1, y1 = coords
         pt1 = (x0, y0)
@@ -6166,7 +6171,7 @@ class App(QtCore.QObject):
         sel_rect = Polygon([pt1, pt2, pt3, pt4])
 
         color_t = Color(face_color)
-        color_t.alpha = 0.3
+        color_t.alpha = face_alpha
         self.move_tool.sel_shapes.add(sel_rect, color=color, face_color=color_t, update=True,
                                       layer=0, tolerance=None)
 

@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 9.09.2018
 
 - added Exception handing for the case when the user is trying to save & overwrite a file already opened in another file
+- finished added 'Area' type of Paint in Paint Tool
 
 7.09.2019
 
