@@ -825,10 +825,10 @@ class ToolPaint(FlatCAMTool, Gerber):
             tooldia = float('%.4f' % float(self.tools_table.item(0, 1).text()))
 
             # To be called after clicking on the plot.
-            def doit(event):
+            def on_mouse_press(event):
                 # do paint single only for left mouse clicks
                 if event.button == 1:
-                    self.app.inform.emit(_("Painting polygon..."))
+                    self.app.inform.emit(_("Painting selected area..."))
                     self.app.plotcanvas.vis_disconnect('mouse_press', doit)
 
                     pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
@@ -841,10 +841,24 @@ class ToolPaint(FlatCAMTool, Gerber):
                                     overlap=overlap,
                                     connect=connect,
                                     contour=contour)
-                    self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
+
+            # to be called after second click on plot
+            def on_mouse_click_release(event):
+                self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
+                self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
+                self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+
+            # called on mouse move
+            def on_mouse_move(event):
+                pass
 
             self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
-            self.app.plotcanvas.vis_connect('mouse_press', doit)
+            self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
+            self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+
+            self.app.plotcanvas.vis_connect('mouse_press', on_mouse_press)
+            self.app.plotcanvas.vis_connect('mouse_move', on_mouse_move)
+            self.app.plotcanvas.vis_connect('mouse_release', on_mouse_click_release)
 
     def paint_poly(self, obj, inside_pt, tooldia, overlap, outname=None, connect=True, contour=True):
         """

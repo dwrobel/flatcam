@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+9.09.2018
+
+- added Exception handing for the case when the user is trying to save & overwrite a file already opened in another file
+
 7.09.2019
 
 - replaced setFixedWidth calls with setMinimumWidth
@@ -26,7 +30,7 @@ CAD program, and create G-Code for Isolation routing.
 5.08.2019
 
 - made sure that if using an negative Gerber isolation diameter, the resulting Geometry object will use a tool with positive diameter
-- fixed bug that when isolating a Gerber file made out of a single polygon, an Recurrsion Exception was issued together with inability to create tbe isolation
+- fixed bug that when isolating a Gerber file made out of a single polygon, an RecursionException was issued together with inability to create tbe isolation
 - when applying a new language if there are any changes in the current project, the app will offer to save the project before the reboot
 
 3.08.2019

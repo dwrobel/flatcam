@@ -5887,12 +5887,15 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 with open(filename, 'w') as f:
                     for line in lines:
                         f.write(line)
-
             except FileNotFoundError:
                 self.app.inform.emit(_(
                     "[WARNING_NOTCL] No such file or directory"
                 ))
                 return
+            except PermissionError:
+                self.app.inform.emit(_("[WARNING] Permission denied, saving not possible.\n"
+                                       "Most likely another app is holding the file open and not accessible."))
+                return 'fail'
         elif to_file is False:
             # Just for adding it to the recent files list.
             if self.app.defaults["global_open_style"] is False:

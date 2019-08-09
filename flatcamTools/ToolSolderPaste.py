@@ -1396,6 +1396,10 @@ class SolderPaste(FlatCAMTool):
             except FileNotFoundError:
                 self.app.inform.emit(_("[WARNING_NOTCL] No such file or directory"))
                 return
+            except PermissionError:
+                self.app.inform.emit(_("[WARNING] Permission denied, saving not possible.\n"
+                                       "Most likely another app is holding the file open and not accessible."))
+                return 'fail'
 
         if self.app.defaults["global_open_style"] is False:
             self.app.file_opened.emit("gcode", filename)
