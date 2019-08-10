@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - small changes regarding the Project Title
 - trying to fix reported bugs
+- made sure that the annotations are deleted when the object that contain them is deleted
 
 10.08.2019
 

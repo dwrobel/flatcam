@@ -4861,7 +4861,7 @@ class App(QtCore.QObject):
             if self.collection.get_active():
                 self.log.debug("App.on_delete()")
 
-                while (self.collection.get_active()):
+                while self.collection.get_active():
                     obj_active = self.collection.get_active()
                     # if the deleted object is FlatCAMGerber then make sure to delete the possible mark shapes
                     if isinstance(obj_active, FlatCAMGerber):
@@ -4869,6 +4869,12 @@ class App(QtCore.QObject):
                             obj_active.mark_shapes[el].clear(update=True)
                             obj_active.mark_shapes[el].enabled = False
                             obj_active.mark_shapes[el] = None
+                    elif isinstance(obj_active, FlatCAMCNCjob):
+                        try:
+                            obj_active.annotation.clear(update=True)
+                            obj_active.annotation.enabled = False
+                        except AttributeError:
+                            pass
                     self.delete_first_selected()
 
                 self.inform.emit(_("Object(s) deleted ..."))
