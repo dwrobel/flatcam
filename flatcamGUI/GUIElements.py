@@ -1634,7 +1634,7 @@ class Dialog_box(QtWidgets.QWidget):
         self.ok = False
 
         dialog_box = QtWidgets.QInputDialog()
-        dialog_box.setFixedWidth(290)
+        dialog_box.setMinimumWidth(290)
         self.setWindowIcon(icon)
 
         self.location, self.ok = dialog_box.getText(self, title, label, text="0, 0")

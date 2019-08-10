@@ -55,7 +55,7 @@ class DblSidedTool(FlatCAMTool):
               "the specified axis. Does not create a new \n"
               "object, but modifies it.")
         )
-        self.mirror_gerber_button.setFixedWidth(60)
+        self.mirror_gerber_button.setMinimumWidth(60)
 
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
         grid_lay.addWidget(self.botlay_label, 0, 0)
@@ -79,7 +79,7 @@ class DblSidedTool(FlatCAMTool):
               "the specified axis. Does not create a new \n"
               "object, but modifies it.")
         )
-        self.mirror_exc_button.setFixedWidth(60)
+        self.mirror_exc_button.setMinimumWidth(60)
 
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
         grid_lay.addWidget(self.excobj_label, 2, 0)
@@ -103,7 +103,7 @@ class DblSidedTool(FlatCAMTool):
               "the specified axis. Does not create a new \n"
               "object, but modifies it.")
         )
-        self.mirror_geo_button.setFixedWidth(60)
+        self.mirror_geo_button.setMinimumWidth(60)
 
         # grid_lay.addRow("Bottom Layer:", self.object_combo)
         grid_lay.addWidget(self.geoobj_label, 4, 0)
@@ -164,15 +164,15 @@ class DblSidedTool(FlatCAMTool):
               "The (x, y) coordinates are captured by pressing SHIFT key\n"
               "and left mouse button click on canvas or you can enter the coords manually.")
         )
-        self.add_point_button.setFixedWidth(60)
+        self.add_point_button.setMinimumWidth(60)
 
         grid_lay2.addWidget(self.pb_label, 10, 0)
         grid_lay2.addLayout(self.point_box_container, 11, 0)
         grid_lay2.addWidget(self.add_point_button, 11, 1)
 
         self.point_entry = EvalEntry()
-
         self.point_box_container.addWidget(self.point_entry)
+
         self.box_combo = QtWidgets.QComboBox()
         self.box_combo.setModel(self.app.collection)
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
@@ -214,7 +214,7 @@ class DblSidedTool(FlatCAMTool):
               "- press SHIFT key and left mouse clicking on canvas. Then RMB click in the field and click Paste.\n"
               "- by entering the coords manually in the format: (x1, y1), (x2, y2), ...")
         )
-        self.add_drill_point_button.setFixedWidth(60)
+        self.add_drill_point_button.setMinimumWidth(60)
 
         grid_lay3.addWidget(self.alignment_holes, 0, 0)
         grid_lay3.addWidget(self.add_drill_point_button, 0, 1)
@@ -255,7 +255,7 @@ class DblSidedTool(FlatCAMTool):
         self.reset_button.setToolTip(
             _("Resets all the fields.")
         )
-        self.reset_button.setFixedWidth(60)
+        self.reset_button.setMinimumWidth(60)
         hlay2.addWidget(self.reset_button)
 
         self.layout.addStretch()

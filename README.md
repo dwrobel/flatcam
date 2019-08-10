@@ -9,6 +9,26 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+10.08.2019
+
+- added new feature in NCC Tool: now another object can be used as reference for the area extent to be cleared of copper
+- fixed issue in the latest feature in NCC Tool: now it works also with reference objects made out of LineStrings (tool 'Path' in Geometry Editor)
+- translation files updated for the new strings (Google Translate)
+- RELEASE 8.93
+
+9.08.2019
+
+- added Exception handing for the case when the user is trying to save & overwrite a file already opened in another file
+- finished added 'Area' type of Paint in Paint Tool
+- fixed bug that created a choppy geometry for CNCJob when working in INCH
+- fixed bug that did not asked the user to save the preferences after importing a new set of preferences, after the user is trying to close the Preferences tab window
+
+7.08.2019
+
+- replaced setFixedWidth calls with setMinimumWidth
+- recoded the camlib.Geometry.isolation_geometry() function
+- started to work on Paint Area in Paint Tool
+
 6.08.2019
 
 - fixed bug that crashed the app after creating a new geometry, if a new object is loaded and the new geometry is deleted and then trying to select the just loaded new object
@@ -20,7 +40,7 @@ CAD program, and create G-Code for Isolation routing.
 5.08.2019
 
 - made sure that if using an negative Gerber isolation diameter, the resulting Geometry object will use a tool with positive diameter
-- fixed bug that when isolating a Gerber file made out of a single polygon, an Recurrsion Exception was issued together with inability to create tbe isolation
+- fixed bug that when isolating a Gerber file made out of a single polygon, an RecursionException was issued together with inability to create tbe isolation
 - when applying a new language if there are any changes in the current project, the app will offer to save the project before the reboot
 
 3.08.2019

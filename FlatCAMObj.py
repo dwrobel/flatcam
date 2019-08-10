@@ -24,8 +24,8 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
+# Interrupts plotting process if FlatCAMObj has been deleted
 class ObjectDeleted(Exception):
-    # Interrupts plotting process if FlatCAMObj has been deleted
     pass
 
 
@@ -364,10 +364,13 @@ class FlatCAMObj(QtCore.QObject):
 
     @property
     def drawing_tolerance(self):
-        return self._drawing_tolerance if self.units == 'MM' or not self.units else self._drawing_tolerance / 25.4
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        tol = self._drawing_tolerance if self.units == 'MM' or not self.units else self._drawing_tolerance / 25.4
+        return tol
 
     @drawing_tolerance.setter
     def drawing_tolerance(self, value):
+        self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
         self._drawing_tolerance = value if self.units == 'MM' or not self.units else value / 25.4
 
     def clear(self, update=False):
@@ -2666,9 +2669,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                     job_obj.z_pdepth = float(self.options["z_pdepth"].replace(',', '.'))
                 except ValueError:
                     self.app.inform.emit(
-                        _(
-                            '[ERROR_NOTCL] Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]'
-                        ))
+                        _('[ERROR_NOTCL] Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]'))
 
             try:
                 job_obj.feedrate_probe = float(self.options["feedrate_probe"])
@@ -2678,11 +2679,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                     job_obj.feedrate_rapid = float(self.options["feedrate_probe"].replace(',', '.'))
                 except ValueError:
                     self.app.inform.emit(
-                        _(
-                            '[ERROR_NOTCL] Wrong value format for self.defaults["feedrate_probe"] '
-                            'or self.options["feedrate_probe"]'
-                        )
-                    )
+                        _('[ERROR_NOTCL] Wrong value format for self.defaults["feedrate_probe"] '
+                          'or self.options["feedrate_probe"]'))
 
             # There could be more than one drill size...
             # job_obj.tooldia =   # TODO: duplicate variable!
@@ -2736,10 +2734,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         else:
             coords_xy = [float(eval(coord)) for coord in self.app.defaults["excellon_toolchangexy"].split(",")]
             if len(coords_xy) < 2:
-                self.app.inform.emit(_(
-                    "[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be "
-                    "in the format (x, y) \nbut now there is only one value, not two. "
-                ))
+                self.app.inform.emit(_("[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be "
+                                       "in the format (x, y) \nbut now there is only one value, not two. "))
                 return 'fail'
             coords_xy[0] *= factor
             coords_xy[1] *= factor
@@ -2913,7 +2909,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     try:
                         geo_final.options[option] = geo.options[option]
                     except Exception as e:
-                        log.warning("Failed to copy option.", option)
+                        log.warning("Failed to copy option %s. Error: %s" % (str(option), str(e)))
 
             # Expand lists
             if type(geo) is list:
@@ -3022,14 +3018,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         if "cnctooldia" not in self.options:
             self.options["cnctooldia"] = self.app.defaults["geometry_cnctooldia"]
-            # try:
-            #     self.options["cnctooldia"] = [
-            #         float(eval(dia)) for dia in str(self.app.defaults["geometry_cnctooldia"]).split(",")
-            #     ]
-            # except Exception as e:
-            #     log.error("At least one tool diameter needed. Verify in Edit -> Preferences -> Geometry General -> "
-            #               "Tool dia. %s" % str(e))
-            #     return
 
         self.options["startz"] = self.app.defaults["geometry_startz"]
 
@@ -3143,14 +3131,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.setCellWidget(row_no, 3, type_item)
             self.ui.geo_tools_table.setCellWidget(row_no, 4, tool_type_item)
 
-            # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY # ##
+            # ## REMEMBER: THIS COLUMN IS HIDDEN IN OBJECTUI.PY ###
             self.ui.geo_tools_table.setItem(row_no, 5, tool_uid_item)  # Tool unique ID
             self.ui.geo_tools_table.setCellWidget(row_no, 6, plot_item)
 
             try:
                 self.ui.tool_offset_entry.set_value(tooluid_value['offset_value'])
             except Exception as e:
-                log.debug("build_ui() --> Could not set the 'offset_value' key in self.tools")
+                log.debug("build_ui() --> Could not set the 'offset_value' key in self.tools. Error: %s" % str(e))
 
         # make the diameter column editable
         for row in range(tool_idx):
@@ -3436,31 +3424,14 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                                 self.ui.tool_offset_entry.get_value().replace(',', '.')
                             )
                         except ValueError:
-                            self.app.inform.emit(_(
-                                "[ERROR_NOTCL] Wrong value format entered, "
-                                "use a number."
-                            )
-                            )
+                            self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
+                                                   "use a number."))
                             return
 
     def ui_connect(self):
         # on any change to the widgets that matter it will be called self.gui_form_to_storage which will save the
         # changes in geometry UI
         for i in range(self.ui.grid3.count()):
-            # try:
-            #     # works for CheckBoxes
-            #     self.ui.grid3.itemAt(i).widget().stateChanged.connect(self.gui_form_to_storage)
-            # except Exception as e:
-            #     # works for ComboBoxes
-            #     try:
-            #         self.ui.grid3.itemAt(i).widget().currentIndexChanged.connect(self.gui_form_to_storage)
-            #     except Exception as e2:
-            #         # works for Entry
-            #         try:
-            #             self.ui.grid3.itemAt(i).widget().editingFinished.connect(self.gui_form_to_storage)
-            #         except Exception as e3:
-            #             pass
-
             current_widget = self.ui.grid3.itemAt(i).widget()
             if isinstance(current_widget, FCCheckBox):
                 current_widget.stateChanged.connect(self.gui_form_to_storage)
@@ -3494,20 +3465,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # on any change to the widgets that matter it will be called self.gui_form_to_storage which will save the
         # changes in geometry UI
         for i in range(self.ui.grid3.count()):
-            # try:
-            #     # works for CheckBoxes
-            #     self.ui.grid3.itemAt(i).widget().stateChanged.disconnect(self.gui_form_to_storage)
-            # except Exception as e:
-            #     # works for ComboBoxes
-            #     try:
-            #         self.ui.grid3.itemAt(i).widget().currentIndexChanged.disconnect(self.gui_form_to_storage)
-            #     except Exception as e2:
-            #         # works for Entry
-            #         try:
-            #             self.ui.grid3.itemAt(i).widget().editingFinished.disconnect(self.gui_form_to_storage)
-            #         except Exception as e3:
-            #             pass
-
             current_widget = self.ui.grid3.itemAt(i).widget()
             if isinstance(current_widget, FCCheckBox):
                 try:
@@ -3673,14 +3630,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.ser_attrs.append('tools')
 
         if change_message is False:
-            self.app.inform.emit(_(
-                "[success] Tool added in Tool Table."
-            ))
+            self.app.inform.emit(_("[success] Tool added in Tool Table."))
         else:
             change_message = False
-            self.app.inform.emit(_(
-                "[WARNING_NOTCL] Default Tool added. Wrong value format entered."
-            ))
+            self.app.inform.emit(_("[WARNING_NOTCL] Default Tool added. Wrong value format entered."))
         self.build_ui()
 
         # if there is no tool left in the Tools Table, enable the parameters GUI
@@ -3712,9 +3665,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         max_uid += 1
                         self.tools[int(max_uid)] = deepcopy(self.tools[tooluid_copy])
                     except AttributeError:
-                        self.app.inform.emit(_(
-                            "[WARNING_NOTCL] Failed. Select a tool to copy."
-                        ))
+                        self.app.inform.emit(_("[WARNING_NOTCL] Failed. Select a tool to copy."))
                         self.build_ui()
                         return
                     except Exception as e:
@@ -3722,9 +3673,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 # deselect the table
                 # self.ui.geo_tools_table.clearSelection()
             else:
-                self.app.inform.emit(_(
-                    "[WARNING_NOTCL] Failed. Select a tool to copy."
-                ))
+                self.app.inform.emit(_("[WARNING_NOTCL] Failed. Select a tool to copy."))
                 self.build_ui()
                 return
         else:
@@ -3746,14 +3695,12 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # we do this HACK to make sure the tools attribute to be serialized is updated in the self.ser_attrs list
         try:
             self.ser_attrs.remove('tools')
-        except Exception as e:
+        except ValueError:
             pass
         self.ser_attrs.append('tools')
 
         self.build_ui()
-        self.app.inform.emit(_(
-            "[success] Tool was copied in Tool Table."
-        ))
+        self.app.inform.emit(_("[success] Tool was copied in Tool Table."))
 
     def on_tool_edit(self, current_item):
 
@@ -3767,10 +3714,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             try:
                 d = float(self.ui.geo_tools_table.item(current_row, 1).text().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_(
-                    "[ERROR_NOTCL] Wrong value format entered, "
-                    "use a number."
-                ))
+                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
+                                       "use a number."))
                 return
 
         tool_dia = float('%.4f' % d)
@@ -3781,12 +3726,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         try:
             self.ser_attrs.remove('tools')
             self.ser_attrs.append('tools')
-        except TypeError:
+        except (TypeError, ValueError):
             pass
 
-        self.app.inform.emit(_(
-            "[success] Tool was edited in Tool Table."
-        ))
+        self.app.inform.emit(_("[success] Tool was edited in Tool Table."))
         self.build_ui()
 
     def on_tool_delete(self, all=None):
@@ -3895,7 +3838,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # populate the form with the data from the tool associated with the row parameter
         try:
             item = self.ui.geo_tools_table.item(current_row, 5)
-            if item is not None:
+            if type(item) is not None:
                 tooluid = int(item.text())
             else:
                 return
@@ -3913,7 +3856,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             else:
                 return
         except Exception as e:
-            log.debug("Tool missing. Add a tool in Geo Tool Table. %s" % str(e))
+            log.debug("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
             return
 
         try:
@@ -3958,10 +3901,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             try:
                 vdia = float(self.ui.tipdia_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_(
-                    "[ERROR_NOTCL] Wrong value format entered, "
-                    "use a number."
-                ))
+                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
+                                       "use a number."))
                 return
 
         try:
@@ -3971,10 +3912,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             try:
                 half_vangle = float(self.ui.tipangle_entry.get_value().replace(',', '.')) / 2
             except ValueError:
-                self.app.inform.emit(_(
-                    "[ERROR_NOTCL] Wrong value format entered, "
-                    "use a number."
-                ))
+                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
+                                       "use a number."))
                 return
 
         row = self.ui.geo_tools_table.currentRow()
@@ -4091,10 +4030,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             try:
                 offset_value_item = float(self.ui.tool_offset_entry.get_value().replace(',', '.'))
             except ValueError:
-                self.app.inform.emit(_(
-                    "[ERROR_NOTCL] Wrong value format entered, "
-                    "use a number."
-                ))
+                self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
+                                       "use a number."))
                 return
 
         # this new dict will hold the actual useful data, another dict that is the value of key 'data'
@@ -4212,6 +4149,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         else:
             for x in self.ui.geo_tools_table.selectedItems():
                 r = []
+                txt = ''
+
                 # the last 2 columns for single-geo geometry are irrelevant and create problems reading
                 # so we don't read them
                 for column in range(0, self.ui.geo_tools_table.columnCount() - 2):
@@ -4277,8 +4216,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         try:
             if self.special_group:
-                self.app.inform.emit(_(
-                    "[WARNING_NOTCL] This Geometry can't be processed because it is %s geometry."
+                self.app.inform.emit(_("[WARNING_NOTCL] This Geometry can't be processed because it is %s geometry."
                 ) % str(self.special_group))
                 return
         except AttributeError:
@@ -4294,10 +4232,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     try:
                         tooldia = float(self.ui.geo_tools_table.item(x.row(), 1).text().replace(',', '.'))
                     except ValueError:
-                        self.app.inform.emit(_(
-                            "[ERROR_NOTCL] Wrong Tool Dia value format entered, "
-                            "use a number."
-                        ))
+                        self.app.inform.emit(_("[ERROR_NOTCL] Wrong Tool Dia value format entered, "
+                                               "use a number."))
                         return
                 tooluid = int(self.ui.geo_tools_table.item(x.row(), 5).text())
 
@@ -4321,9 +4257,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.geo_tools_table.clearSelection()
 
         else:
-            self.app.inform.emit(_(
-                "[ERROR_NOTCL] Failed. No tool selected in the tool table ..."
-            ))
+            self.app.inform.emit(_("[ERROR_NOTCL] Failed. No tool selected in the tool table ..."))
 
     def mtool_gen_cncjob(self, segx=None, segy=None, use_thread=True):
         """
@@ -4359,7 +4293,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             ymax = self.options['ymax']
         except Exception as e:
             log.debug("FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s\n" % str(e))
-            msg = _("[ERROR] An internal error has ocurred. See shell.\n")
+            msg = _("[ERROR] An internal error has occurred. See shell.\n")
             msg += _('FlatCAMObj.FlatCAMGeometry.mtool_gen_cncjob() --> %s') % str(e)
             msg += traceback.format_exc()
             self.app.inform.emit(msg)
@@ -4369,7 +4303,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # RUNNING ON SEPARATE THREAD!
         def job_init_single_geometry(job_obj, app_obj):
             log.debug("Creating a CNCJob out of a single-geometry")
-
             assert isinstance(job_obj, FlatCAMCNCjob), \
                 "Initializer expected a FlatCAMCNCjob, got %s" % type(job_obj)
 
@@ -4395,10 +4328,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 try:
                     job_obj.z_pdepth = float(self.options["z_pdepth"].replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(
-                        _(
-                            '[ERROR_NOTCL] Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]'
-                        ))
+                    self.app.inform.emit(_('[ERROR_NOTCL] Wrong value format for self.defaults["z_pdepth"] '
+                                           'or self.options["z_pdepth"]'))
 
             try:
                 job_obj.feedrate_probe = float(self.options["feedrate_probe"])
@@ -4407,11 +4338,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 try:
                     job_obj.feedrate_rapid = float(self.options["feedrate_probe"].replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(
-                        _(
-                            '[ERROR_NOTCL] Wrong value format for self.defaults["feedrate_probe"] '
-                            'or self.options["feedrate_probe"]'
-                        ))
+                    self.app.inform.emit(_('[ERROR_NOTCL] Wrong value format for self.defaults["feedrate_probe"] '
+                                           'or self.options["feedrate_probe"]'))
 
             for tooluid_key in self.sel_tools:
                 tool_cnt += 1
@@ -4507,20 +4435,15 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                         try:
                             offset_value = float(self.ui.tool_offset_entry.get_value().replace(',', '.'))
                         except ValueError:
-                            self.app.inform.emit(_(
-                                "[ERROR_NOTCL] Wrong value format entered, "
-                                "use a number."
-                            ))
+                            self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
+                                                   "use a number."))
                             return
                     if offset_value:
                         tool_offset = float(offset_value)
                     else:
-                        self.app.inform.emit(
-                            _(
-                                "[WARNING] Tool Offset is selected in Tool Table but no value is provided.\n"
-                                "Add a Tool Offset or change the Offset Type."
-                            )
-                        )
+                        self.app.inform.emit(_("[WARNING] Tool Offset is selected in Tool Table but "
+                                               "no value is provided.\n"
+                                               "Add a Tool Offset or change the Offset Type."))
                         return
                 dia_cnc_dict.update({
                     'offset_value': tool_offset
@@ -4543,7 +4466,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
                 app_obj.progress.emit(40)
 
-                tol = float(self.app.defaults['global_tolerance'])
+                # it seems that the tolerance needs to be a lot lower value than 0.01 and it was hardcoded initially
+                # to a value of 0.0005 which is 20 times less than 0.01
+                tol = float(self.app.defaults['global_tolerance']) / 20
                 res = job_obj.generate_from_geometry_2(
                     self, tooldia=tooldia_val, offset=tool_offset, tolerance=tol,
                     z_cut=z_cut, z_move=z_move,
@@ -4582,7 +4507,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # RUNNING ON SEPARATE THREAD!
         def job_init_multi_geometry(job_obj, app_obj):
             log.debug("Creating a CNCJob out of a multi-geometry")
-
             assert isinstance(job_obj, FlatCAMCNCjob), \
                 "Initializer expected a FlatCAMCNCjob, got %s" % type(job_obj)
 
@@ -4610,10 +4534,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 try:
                     job_obj.z_pdepth = float(self.options["z_pdepth"].replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(
-                        _(
-                            '[ERROR_NOTCL] Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]'
-                        ))
+                    self.app.inform.emit(_('[ERROR_NOTCL] Wrong value format for self.defaults["z_pdepth"] '
+                                           'or self.options["z_pdepth"]'))
 
             try:
                 job_obj.feedrate_probe = float(self.options["feedrate_probe"])
@@ -4622,11 +4544,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 try:
                     job_obj.feedrate_rapid = float(self.options["feedrate_probe"].replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(
-                        _(
-                            '[ERROR_NOTCL] Wrong value format for self.defaults["feedrate_probe"] '
-                            'or self.options["feedrate_probe"]'
-                        ))
+                    self.app.inform.emit(_('[ERROR_NOTCL] Wrong value format for self.defaults["feedrate_probe"] '
+                                           'or self.options["feedrate_probe"]'))
 
             # make sure that trying to make a CNCJob from an empty file is not creating an app crash
             if not self.solid_geometry:
@@ -4635,9 +4554,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     if self.tools[tooluid_key]['solid_geometry'] is None:
                         a += 1
                 if a == len(self.tools):
-                    self.app.inform.emit(_(
-                        '[ERROR_NOTCL] Cancelled. Empty file, it has no geometry...'
-                    ))
+                    self.app.inform.emit(_('[ERROR_NOTCL] Cancelled. Empty file, it has no geometry...'))
                     return 'fail'
 
             for tooluid_key in self.sel_tools:
@@ -4750,9 +4667,9 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     if offset_value:
                         tool_offset = float(offset_value)
                     else:
-                        self.app.inform.emit(_(
-                            "[WARNING] Tool Offset is selected in Tool Table but no value is provided.\n"
-                            "Add a Tool Offset or change the Offset Type."))
+                        self.app.inform.emit(_("[WARNING] Tool Offset is selected in Tool Table but "
+                                               "no value is provided.\n"
+                                               "Add a Tool Offset or change the Offset Type."))
                         return
                 dia_cnc_dict.update({
                     'offset_value': tool_offset
@@ -4769,9 +4686,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 app_obj.progress.emit(40)
 
                 spindledir = self.app.defaults['geometry_spindledir']
-
                 tool_solid_geometry = self.tools[current_uid]['solid_geometry']
-                tol = float(self.app.defaults['global_tolerance'])
+
+                # it seems that the tolerance needs to be a lot lower value than 0.01 and it was hardcoded initially
+                # to a value of 0.0005 which is 20 times less than 0.01
+                tol = float(self.app.defaults['global_tolerance']) / 20
                 res = job_obj.generate_from_multitool_geometry(
                     tool_solid_geometry, tooldia=tooldia_val, offset=tool_offset,
                     tolerance=tol, z_cut=z_cut, z_move=z_move,
@@ -4921,10 +4840,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 try:
                     job_obj.z_pdepth = float(self.options["z_pdepth"].replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(
-                        _(
-                            '[ERROR_NOTCL] Wrong value format for self.defaults["z_pdepth"] or self.options["z_pdepth"]'
-                        ))
+                    self.app.inform.emit(_('[ERROR_NOTCL] Wrong value format for self.defaults["z_pdepth"] '
+                                           'or self.options["z_pdepth"]'))
 
             try:
                 job_obj.feedrate_probe = float(self.options["feedrate_probe"])
@@ -4933,18 +4850,17 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 try:
                     job_obj.feedrate_rapid = float(self.options["feedrate_probe"].replace(',', '.'))
                 except ValueError:
-                    self.app.inform.emit(
-                        _(
-                            '[ERROR_NOTCL] Wrong value format for self.defaults["feedrate_probe"] '
-                            'or self.options["feedrate_probe"]'
-                        ))
+                    self.app.inform.emit(_('[ERROR_NOTCL] Wrong value format for self.defaults["feedrate_probe"] '
+                                           'or self.options["feedrate_probe"]'))
 
             job_obj.options['xmin'] = self.options['xmin']
             job_obj.options['ymin'] = self.options['ymin']
             job_obj.options['xmax'] = self.options['xmax']
             job_obj.options['ymax'] = self.options['ymax']
 
-            tol = float(self.app.defaults['global_tolerance'])
+            # it seems that the tolerance needs to be a lot lower value than 0.01 and it was hardcoded initially
+            # to a value of 0.0005 which is 20 times less than 0.01
+            tol = float(self.app.defaults['global_tolerance']) / 20
             job_obj.generate_from_geometry_2(self, tooldia=tooldia, offset=offset, tolerance=tol,
                                              z_cut=z_cut, z_move=z_move,
                                              feedrate=feedrate, feedrate_z=feedrate_z, feedrate_rapid=feedrate_rapid,
@@ -5887,12 +5803,15 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 with open(filename, 'w') as f:
                     for line in lines:
                         f.write(line)
-
             except FileNotFoundError:
                 self.app.inform.emit(_(
                     "[WARNING_NOTCL] No such file or directory"
                 ))
                 return
+            except PermissionError:
+                self.app.inform.emit(_("[WARNING] Permission denied, saving not possible.\n"
+                                       "Most likely another app is holding the file open and not accessible."))
+                return 'fail'
         elif to_file is False:
             # Just for adding it to the recent files list.
             if self.app.defaults["global_open_style"] is False:
