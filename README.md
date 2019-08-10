@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+11.08.2019
+
+- small changes regarding the Project Title
+
 10.08.2019
 
 - added new feature in NCC Tool: now another object can be used as reference for the area extent to be cleared of copper

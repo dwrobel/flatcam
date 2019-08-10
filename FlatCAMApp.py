@@ -96,8 +96,8 @@ class App(QtCore.QObject):
     # ####################################
     # Version and VERSION DATE ###########
     # ####################################
-    version = 8.93
-    version_date = "2019/08/10"
+    version = 8.94
+    version_date = "2019/08/31"
     beta = True
 
     # current date now
@@ -295,7 +295,7 @@ class App(QtCore.QObject):
 
         QtCore.QObject.__init__(self)
         self.ui = FlatCAMGUI(self.version, self.beta, self)
-        self.set_ui_title(name="New Project")
+        self.set_ui_title(name=_("New Project - Not saved"))
 
         self.ui.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.ui.final_save.connect(self.final_save)
@@ -6282,8 +6282,7 @@ class App(QtCore.QObject):
         # take the focus of the Notebook on Project Tab.
         self.ui.notebook.setCurrentWidget(self.ui.project_tab)
 
-        self.set_ui_title(name="New Project")
-
+        self.set_ui_title(name=_("New Project - Not saved"))
 
     def obj_properties(self):
         self.report_usage("obj_properties()")
