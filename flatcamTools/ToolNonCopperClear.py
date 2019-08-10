@@ -762,7 +762,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # Prepare non-copper polygons
         try:
             if not isinstance(self.bound_obj.solid_geometry, MultiPolygon):
-                env_obj = MultiPolygon(self.bound_obj.solid_geometry).convex_hull
+                env_obj = cascaded_union(self.bound_obj.solid_geometry)
+                env_obj = env_obj.convex_hull
             else:
                 env_obj = self.bound_obj.solid_geometry.convex_hull
             bounding_box = env_obj.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)

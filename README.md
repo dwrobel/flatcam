@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed bug that created a choppy geometry for CNCJob when working in INCH
 - fixed bug that did not asked the user to save the preferences after importing a new set of preferences, after the user is trying to close the Preferences tab window
 - added new feature in NCC Tool: now another object can be used as reference for the area extent to be cleared of copper
+- fixed issue in the latest feature in NCC Tool: now it works also with reference objects made out of LineStrings (tool 'Path' in Geometry Editor)
 
 7.09.2019
 
