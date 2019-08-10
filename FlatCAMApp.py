@@ -5555,9 +5555,9 @@ class App(QtCore.QObject):
 
     def grid_status(self):
         if self.ui.grid_snap_btn.isChecked():
-            return 1
+            return True
         else:
-            return 0
+            return False
 
     def populate_cmenu_grids(self):
         units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().lower()
@@ -5567,7 +5567,7 @@ class App(QtCore.QObject):
 
         grid_toggle = self.ui.cmenu_gridmenu.addAction(QtGui.QIcon('share/grid32_menu.png'), _("Grid On/Off"))
         grid_toggle.setCheckable(True)
-        if self.grid_status():
+        if self.grid_status() == True:
             grid_toggle.setChecked(True)
         else:
             grid_toggle.setChecked(False)
@@ -5701,12 +5701,13 @@ class App(QtCore.QObject):
         self.plotcanvas.vispy_canvas.view.camera.pan_button_setting = self.defaults['global_pan_button']
 
         self.pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
-        self.pos = (self.pos_canvas[0], self.pos_canvas[1])
-        self.app_cursor.enabled = False
 
-        if self.grid_status():
+        if self.grid_status() == True:
             self.pos = self.geo_editor.snap(self.pos_canvas[0], self.pos_canvas[1])
             self.app_cursor.enabled = True
+        else:
+            self.pos = (self.pos_canvas[0], self.pos_canvas[1])
+            self.app_cursor.enabled = False
 
         try:
             modifiers = QtWidgets.QApplication.keyboardModifiers()
@@ -5831,26 +5832,20 @@ class App(QtCore.QObject):
         :param event: contains information about the event.
         :return:
         """
-
+        pos = 0, 0
         pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
-        if self.grid_status():
+        if self.grid_status() == True:
             pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
             pos = (pos_canvas[0], pos_canvas[1])
 
         # if the released mouse button was RMB then test if it was a panning motion or not, if not it was a context
         # canvas menu
-        try:
-            if event.button == 2:  # right click
-                if self.ui.popMenu.mouse_is_panning is False:
-
-                    self.cursor = QtGui.QCursor()
-                    self.populate_cmenu_grids()
-                    self.ui.popMenu.popup(self.cursor.pos())
-
-        except Exception as e:
-            log.warning("Error: %s" % str(e))
-            return
+        if event.button == 2:  # right click
+            if self.ui.popMenu.mouse_is_panning is False:
+                self.cursor = QtGui.QCursor()
+                self.populate_cmenu_grids()
+                self.ui.popMenu.popup(self.cursor.pos())
 
         # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
         # selection and then select a type of selection ("enclosing" or "touching")
@@ -5866,7 +5861,6 @@ class App(QtCore.QObject):
                         # delete the selection shape(S) as it may be in the way
                         self.delete_selection_shape()
                         self.delete_hover_shape()
-
                 else:
                     if self.selection_type is not None:
                         self.selection_area_handler(self.pos, pos, self.selection_type)

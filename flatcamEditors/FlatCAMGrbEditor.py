@@ -3986,7 +3986,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
 
-        if self.app.grid_status():
+        if self.app.grid_status() == True:
             self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
             self.app.app_cursor.enabled = True
             # Update cursor
@@ -4048,7 +4048,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.modifiers = QtWidgets.QApplication.keyboardModifiers()
 
         pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
-        if self.app.grid_status():
+        if self.app.grid_status() == True:
             pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
             pos = (pos_canvas[0], pos_canvas[1])
@@ -4201,7 +4201,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             return
 
         # # ## Snap coordinates
-        if self.app.grid_status():
+        if self.app.grid_status() == True:
             x, y = self.app.geo_editor.snap(x, y)
             self.app.app_cursor.enabled = True
             # Update cursor

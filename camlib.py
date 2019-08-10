@@ -560,7 +560,7 @@ class Geometry(object):
                         for el in self.solid_geometry:
                             geo_iso.append(el.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
                     except TypeError:
-                        geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
+                        geo_iso = [self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4))]
                 else:
                     try:
                         __ = iter(self.solid_geometry)
@@ -568,8 +568,8 @@ class Geometry(object):
                             geo_iso.append(el.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
                                                      join_style=corner))
                     except TypeError:
-                        geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
-                                                             join_style=corner)
+                        geo_iso = [self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
+                                                              join_style=corner)]
 
         # end of replaced block
         if follow:

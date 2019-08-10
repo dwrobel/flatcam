@@ -894,8 +894,8 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
                     return 'fail'
             return geom
 
-        if float(self.options["isotooldia"]) < 0:
-            self.options["isotooldia"] = -self.options["isotooldia"]
+        # if float(self.options["isotooldia"]) < 0:
+        #     self.options["isotooldia"] = -self.options["isotooldia"]
 
         if combine:
             if self.iso_type == 0:

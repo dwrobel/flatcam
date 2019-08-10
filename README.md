@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 11.08.2019
 
 - small changes regarding the Project Title
+- trying to fix reported bugs
 
 10.08.2019
 

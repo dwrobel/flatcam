@@ -3497,7 +3497,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
 
-        if self.app.grid_status():
+        if self.app.grid_status() == True:
             self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
             self.app.app_cursor.enabled = True
             # Update cursor
@@ -3507,7 +3507,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.pos = (self.pos[0], self.pos[1])
             self.app.app_cursor.enabled = False
 
-        if event.button is 1:
+        if event.button == 1:
             self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
 
@@ -3573,7 +3573,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             return
 
         # # ## Snap coordinates
-        if self.app.grid_status():
+        if self.app.grid_status() == True:
             x, y = self.snap(x, y)
             self.app.app_cursor.enabled = True
             # Update cursor
@@ -3625,7 +3625,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
     def on_geo_click_release(self, event):
         pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
 
-        if self.app.grid_status():
+        if self.app.grid_status() == True:
             pos = self.snap(pos_canvas[0], pos_canvas[1])
         else:
             pos = (pos_canvas[0], pos_canvas[1])
@@ -3661,19 +3661,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
                                 self.on_shape_complete()
                                 self.app.inform.emit(_("[success] Done."))
                                 self.select_tool(self.active_tool.name)
-
-                                # MS: always return to the Select Tool if modifier key is not pressed
-                                # else return to the current tool
-                                # key_modifier = QtWidgets.QApplication.keyboardModifiers()
-                                # if self.app.defaults["global_mselect_key"] == 'Control':
-                                #     modifier_to_use = Qt.ControlModifier
-                                # else:
-                                #     modifier_to_use = Qt.ShiftModifier
-                                #
-                                # if key_modifier == modifier_to_use:
-                                #     self.select_tool(self.active_tool.name)
-                                # else:
-                                #     self.select_tool("select")
 
         except Exception as e:
             log.warning("Error: %s" % str(e))
