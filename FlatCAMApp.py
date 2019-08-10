@@ -513,6 +513,7 @@ class App(QtCore.QObject):
             "tools_nccconnect": self.ui.tools_defaults_form.tools_ncc_group.ncc_connect_cb,
             "tools_ncccontour": self.ui.tools_defaults_form.tools_ncc_group.ncc_contour_cb,
             "tools_nccrest": self.ui.tools_defaults_form.tools_ncc_group.ncc_rest_cb,
+            "tools_nccref": self.ui.tools_defaults_form.tools_ncc_group.reference_radio,
 
             # CutOut Tool
             "tools_cutouttooldia": self.ui.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
@@ -852,6 +853,7 @@ class App(QtCore.QObject):
             "tools_nccconnect": True,
             "tools_ncccontour": True,
             "tools_nccrest": False,
+            "tools_nccref": 'itself',
 
             "tools_cutouttooldia": 0.00393701,
             "tools_cutoutkind": "single",

@@ -3838,7 +3838,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         # populate the form with the data from the tool associated with the row parameter
         try:
             item = self.ui.geo_tools_table.item(current_row, 5)
-            if item is not None:
+            if type(item) is not None:
                 tooluid = int(item.text())
             else:
                 return
@@ -3856,7 +3856,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             else:
                 return
         except Exception as e:
-            log.debug("Tool missing. Add a tool in Geo Tool Table. %s" % str(e))
+            log.debug("Tool missing in ui_update_v_shape(). Add a tool in Geo Tool Table. %s" % str(e))
             return
 
         try:

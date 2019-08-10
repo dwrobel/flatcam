@@ -5875,6 +5875,19 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.ncc_rest_cb = FCCheckBox()
         grid0.addWidget(self.ncc_rest_cb, 6, 1)
 
+        # ## Reference
+        self.reference_radio = RadioSet([{'label': _('Itself'), 'value': 'itself'},
+                                         {'label': _('Box'), 'value': 'box'}])
+        reference_label = QtWidgets.QLabel(_("Reference:"))
+        reference_label.setToolTip(
+            _("When choosing the 'Itself' option the non copper clearing extent\n"
+              "is based on the object that is copper cleared.\n "
+              "Choosing the 'Box' option will do non copper clearing within the box\n"
+              "specified by another object different than the one that is copper cleared.")
+        )
+        grid0.addWidget(reference_label, 7, 0)
+        grid0.addWidget(self.reference_radio, 7, 1)
+
         self.layout.addStretch()
 
 

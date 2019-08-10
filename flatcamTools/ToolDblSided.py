@@ -171,8 +171,8 @@ class DblSidedTool(FlatCAMTool):
         grid_lay2.addWidget(self.add_point_button, 11, 1)
 
         self.point_entry = EvalEntry()
-
         self.point_box_container.addWidget(self.point_entry)
+
         self.box_combo = QtWidgets.QComboBox()
         self.box_combo.setModel(self.app.collection)
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
