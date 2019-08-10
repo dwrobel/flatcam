@@ -2841,6 +2841,7 @@ class App(QtCore.QObject):
                 self.inform.emit(_("[ERROR_NOTCL] Failed to parse defaults file."))
                 return
             self.defaults.update(defaults_from_file)
+            self.on_preferences_edited()
             self.inform.emit(_("[success] Imported Defaults from %s") % filename)
 
     def on_export_preferences(self):
@@ -2875,6 +2876,10 @@ class App(QtCore.QObject):
                 f = open(filename, 'w')
                 defaults_file_content = f.read()
                 f.close()
+            except PermissionError:
+                self.inform.emit(_("[WARNING] Permission denied, saving not possible.\n"
+                                   "Most likely another app is holding the file open and not accessible."))
+                return
             except IOError:
                 App.log.debug('Creating a new preferences file ...')
                 f = open(filename, 'w')

@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - added Exception handing for the case when the user is trying to save & overwrite a file already opened in another file
 - finished added 'Area' type of Paint in Paint Tool
+- fixed bug that created a choppy geometry for CNCJob when working in INCH
+- fixed bug that did not asked the user to save the preferences after importing a new set of preferences, after the user is trying to close the Preferences tab window
 
 7.09.2019
 
