@@ -767,7 +767,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
             else:
                 env_obj = self.bound_obj.solid_geometry.convex_hull
             bounding_box = env_obj.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
-        except AttributeError:
+        except Exception as e:
+            log.debug("NonCopperClear.on_ncc() --> %s" % str(e))
             self.app.inform.emit(_("[ERROR_NOTCL] No object available."))
             return
 
