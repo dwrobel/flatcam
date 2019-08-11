@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - small changes regarding the Project Title
 - trying to fix reported bugs
 - made sure that the annotations are deleted when the object that contain them is deleted
+- fixed issue where the annotations for all the CNCJob objects are toggled together whenever the ones for an single object are toggled
 
 10.08.2019
 

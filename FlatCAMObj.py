@@ -358,7 +358,7 @@ class FlatCAMObj(QtCore.QObject):
                 pass
 
         if threaded is False:
-            worker_task(self)
+            worker_task(app_obj=self)
         else:
             self.app.worker_task.emit({'fcn': worker_task, 'params': [self]})
 
@@ -5937,9 +5937,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             self.annotation.clear(update=True)
 
         if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
-            self.app.plotcanvas.text_collection.enabled = True
+            self.annotation.enabled = True
         else:
-            self.app.plotcanvas.text_collection.enabled = False
+            self.annotation.enabled = False
 
     def on_annotation_change(self):
         if self.ui.annotation_cb.get_value():
