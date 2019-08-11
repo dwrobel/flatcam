@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+12.08.2019
+
+- done regression to solve the bug with multiple passes cutting from the copper features (I should remember not to make mods here)
+- if 'combine' is checked in Gerber isolation but there is only one pass, the resulting geometry will still be single geo
+- the 'passes' entry was changed to a IntSpinner so it will allow passes to be entered only in range (1, 999) - it will not allow entry of 0 which may create some issues
+
 11.08.2019
 
 - small changes regarding the Project Title

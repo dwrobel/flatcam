@@ -4092,7 +4092,8 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
               "number (integer) of tool widths.")
         )
         grid0.addWidget(passlabel, 1, 0)
-        self.iso_width_entry = IntEntry()
+        self.iso_width_entry = FCSpinner()
+        self.iso_width_entry.setRange(1, 999)
         grid0.addWidget(self.iso_width_entry, 1, 1)
 
         # Pass overlap

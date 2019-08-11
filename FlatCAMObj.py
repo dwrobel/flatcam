@@ -983,7 +983,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
                 if empty_cnt == len(geo_obj.solid_geometry):
                     raise ValidationError("Empty Geometry", None)
-                geo_obj.multigeo = True
+
+                # even if combine is checked, one pass is still singlegeo
+                if passes > 1:
+                    geo_obj.multigeo = True
+                else:
+                    geo_obj.multigeo = False
 
             # TODO: Do something if this is None. Offer changing name?
             self.app.new_object("geometry", iso_name, iso_init)
