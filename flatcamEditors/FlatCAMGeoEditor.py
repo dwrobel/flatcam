@@ -3536,20 +3536,17 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 if isinstance(self.active_tool, FCSelect):
                     # self.app.log.debug("Replotting after click.")
                     self.replot()
-
             else:
                 self.app.log.debug("No active tool to respond to click!")
 
     def on_canvas_move(self, event):
         """
         Called on 'mouse_move' event
-
         event.pos have canvas screen coordinates
 
         :param event: Event object dispatched by VisPy SceneCavas
         :return: None
         """
-
         pos = self.canvas.vispy_canvas.translate_coords(event.pos)
         event.xdata, event.ydata = pos[0], pos[1]
 
@@ -3559,8 +3556,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.popMenu.mouse_is_panning = False
 
         # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
-        if event.button == 2 and event.is_dragging == 1:
-            self.app.ui.popMenu.mouse_is_panning = True
+        if event.button == 2:
+            if event.is_dragging:
+                self.app.ui.popMenu.mouse_is_panning = True
+                # return
+            else:
+                self.app.ui.popMenu.mouse_is_panning = False
+
+        if self.active_tool is None:
             return
 
         try:
@@ -3569,10 +3572,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         except TypeError:
             return
 
-        if self.active_tool is None:
-            return
-
-        # # ## Snap coordinates
+        # ### Snap coordinates ###
         if self.app.grid_status() == True:
             x, y = self.snap(x, y)
             self.app.app_cursor.enabled = True
@@ -3597,19 +3597,19 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                            "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
-        if event.button == 1 and event.is_dragging == 1 and isinstance(self.active_tool, FCEraser):
+        if event.button == 1 and event.is_dragging and isinstance(self.active_tool, FCEraser):
             pass
         else:
-            # # ## Utility geometry (animated)
+            # ### Utility geometry (animated) ###
             geo = self.active_tool.utility_geometry(data=(x, y))
             if isinstance(geo, DrawToolShape) and geo.geo is not None:
                 # Remove any previous utility shape
                 self.tool_shape.clear(update=True)
                 self.draw_utility_geometry(geo=geo)
 
-        # # ## Selection area on canvas section # ##
+        # ### Selection area on canvas section ###
         dx = pos[0] - self.pos[0]
-        if event.is_dragging == 1 and event.button == 1:
+        if event.is_dragging and event.button == 1:
             self.app.delete_selection_shape()
             if dx < 0:
                 self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y),
@@ -3633,8 +3633,20 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # if the released mouse button was RMB then test if it was a panning motion or not, if not it was a context
         # canvas menu
         try:
-            if event.button == 2:  # right click
-                if self.app.ui.popMenu.mouse_is_panning is False:
+            # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
+            # selection and then select a type of selection ("enclosing" or "touching")
+            if event.button == 1:  # left click
+                if self.app.selection_type is not None:
+                    self.draw_selection_area_handler(self.pos, pos, self.app.selection_type)
+                    self.app.selection_type = None
+                elif isinstance(self.active_tool, FCSelect):
+                    # Dispatch event to active_tool
+                    # msg = self.active_tool.click(self.snap(event.xdata, event.ydata))
+                    self.active_tool.click_release((self.pos[0], self.pos[1]))
+                    # self.app.inform.emit(msg)
+                    self.replot()
+            elif event.button == 2:  # right click
+                if self.app.ui.popMenu.mouse_is_panning == False:
                     if self.in_action is False:
                         try:
                             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -3661,25 +3673,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
                                 self.on_shape_complete()
                                 self.app.inform.emit(_("[success] Done."))
                                 self.select_tool(self.active_tool.name)
-
-        except Exception as e:
-            log.warning("Error: %s" % str(e))
-            return
-
-        # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
-        # selection and then select a type of selection ("enclosing" or "touching")
-        try:
-            if event.button == 1:  # left click
-                if self.app.selection_type is not None:
-                    self.draw_selection_area_handler(self.pos, pos, self.app.selection_type)
-                    self.app.selection_type = None
-                elif isinstance(self.active_tool, FCSelect):
-                    # Dispatch event to active_tool
-                    # msg = self.active_tool.click(self.snap(event.xdata, event.ydata))
-                    self.active_tool.click_release((self.pos[0], self.pos[1]))
-                    # self.app.inform.emit(msg)
-                    self.replot()
-
         except Exception as e:
             log.warning("Error: %s" % str(e))
             return
