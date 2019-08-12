@@ -3280,6 +3280,9 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.tools_solderpaste_group = ToolsSolderpastePrefGroupUI()
         self.tools_solderpaste_group.setMinimumWidth(200)
 
+        self.tools_sub_group = ToolsSubPrefGroupUI()
+        self.tools_sub_group.setMinimumWidth(200)
+
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.tools_ncc_group)
         self.vlay.addWidget(self.tools_paint_group)
@@ -3296,6 +3299,7 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
 
         self.vlay3 = QtWidgets.QVBoxLayout()
         self.vlay3.addWidget(self.tools_solderpaste_group)
+        self.vlay3.addWidget(self.tools_sub_group)
 
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)
@@ -6704,6 +6708,28 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         self.pp_combo = FCComboBox()
         grid0.addWidget(pp_label, 15, 0)
         grid0.addWidget(self.pp_combo, 15, 1)
+
+        self.layout.addStretch()
+
+
+class ToolsSubPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+
+        super(ToolsSubPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str(_("Substractor Tool Options")))
+
+        # ## Solder Paste Dispensing
+        self.sublabel = QtWidgets.QLabel(_("<b>Parameters:</b>"))
+        self.sublabel.setToolTip(
+            _("A tool to substract one Gerber or Geometry object\n"
+              "from another of the same type.")
+        )
+        self.layout.addWidget(self.sublabel)
+
+        self.close_paths_cb = FCCheckBox(_("Close paths"))
+        self.close_paths_cb.setToolTip(_("Checking this will close the paths cut by the Geometry substractor object."))
+        self.layout.addWidget(self.close_paths_cb)
 
         self.layout.addStretch()
 

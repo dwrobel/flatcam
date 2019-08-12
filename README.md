@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+13.08.2019
+
+- added new option in ToolSub: the ability to close (or not) the resulting paths when using tool on Geometry objects. Added also a new category in the Edit -> Preferences -> Tools, the Substractor Tool Options
+
 12.08.2019
 
 - done regression to solve the bug with multiple passes cutting from the copper features (I should remember not to make mods here)

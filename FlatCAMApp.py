@@ -590,7 +590,8 @@ class App(QtCore.QObject):
             "tools_solderpaste_dwellfwd": self.ui.tools_defaults_form.tools_solderpaste_group.dwellfwd_entry,
             "tools_solderpaste_speedrev": self.ui.tools_defaults_form.tools_solderpaste_group.speedrev_entry,
             "tools_solderpaste_dwellrev": self.ui.tools_defaults_form.tools_solderpaste_group.dwellrev_entry,
-            "tools_solderpaste_pp": self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo
+            "tools_solderpaste_pp": self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo,
+            "tools_sub_close_paths": self.ui.tools_defaults_form.tools_sub_group.close_paths_cb
 
         }
 
@@ -922,7 +923,9 @@ class App(QtCore.QObject):
             "tools_solderpaste_dwellfwd": 1,
             "tools_solderpaste_speedrev": 10,
             "tools_solderpaste_dwellrev": 1,
-            "tools_solderpaste_pp": 'Paste_1'
+            "tools_solderpaste_pp": 'Paste_1',
+
+            "tools_sub_close_paths": True
         })
 
         # ##############################
