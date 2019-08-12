@@ -37,6 +37,7 @@ import tclCommands.TclCommandOpenExcellon
 import tclCommands.TclCommandOpenGCode
 import tclCommands.TclCommandOpenGerber
 import tclCommands.TclCommandOpenProject
+import tclCommands.TclCommandOpenFolder
 import tclCommands.TclCommandOptions
 import tclCommands.TclCommandPaint
 import tclCommands.TclCommandPanelize
