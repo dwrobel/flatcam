@@ -6,7 +6,9 @@
 # MIT Licence                                               #
 # ###########################################################
 
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 import getopt
 import random
 import simplejson as json
@@ -19,7 +21,6 @@ import subprocess
 import tkinter as tk
 from PyQt5 import QtPrintSupport
 
-import urllib.request, urllib.parse, urllib.error
 from contextlib import contextmanager
 import gc
 
@@ -221,7 +222,7 @@ class App(QtCore.QObject):
             os.makedirs(os.path.join(self.data_path, 'postprocessors'))
             App.log.debug('Created data postprocessors folder: ' + os.path.join(self.data_path, 'postprocessors'))
 
-        self.postprocessorpaths = os.path.join(self.data_path,'postprocessors')
+        self.postprocessorpaths = os.path.join(self.data_path, 'postprocessors')
         if not os.path.exists(self.postprocessorpaths):
             os.makedirs(self.postprocessorpaths)
             App.log.debug('Created postprocessors folder: ' + self.postprocessorpaths)
@@ -397,10 +398,14 @@ class App(QtCore.QObject):
             # Excellon General
             "excellon_plot": self.ui.excellon_defaults_form.excellon_gen_group.plot_cb,
             "excellon_solid": self.ui.excellon_defaults_form.excellon_gen_group.solid_cb,
-            "excellon_format_upper_in": self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry,
-            "excellon_format_lower_in": self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry,
-            "excellon_format_upper_mm": self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry,
-            "excellon_format_lower_mm": self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry,
+            "excellon_format_upper_in":
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_in_entry,
+            "excellon_format_lower_in":
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_in_entry,
+            "excellon_format_upper_mm":
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_upper_mm_entry,
+            "excellon_format_lower_mm":
+                self.ui.excellon_defaults_form.excellon_gen_group.excellon_format_lower_mm_entry,
             "excellon_zeros": self.ui.excellon_defaults_form.excellon_gen_group.excellon_zeros_radio,
             "excellon_units": self.ui.excellon_defaults_form.excellon_gen_group.excellon_units_radio,
             "excellon_optimization_type": self.ui.excellon_defaults_form.excellon_gen_group.excellon_optimization_radio,
@@ -1516,7 +1521,6 @@ class App(QtCore.QObject):
         self.ui.general_defaults_form.general_app_group.units_radio.activated_custom.connect(
             lambda: self.on_toggle_units(no_pref=False))
 
-
         # ##############################
         # ### GUI PREFERENCES SIGNALS ##
         # ##############################
@@ -2087,7 +2091,7 @@ class App(QtCore.QObject):
                                 ('BETA' if self.beta else ''),
                                 platform.architecture()[0],
                                 name)
-                            )
+                               )
 
     def defaults_read_form(self):
         for option in self.defaults_form_fields:
@@ -2517,7 +2521,7 @@ class App(QtCore.QObject):
         :param show: Opens the shell.
         :param error: Shows the message as an error.
         :param warning: Shows the message as an warning.
-        :param warning: Shows the message as an success.
+        :param success: Shows the message as an success.
         :param selected: Indicate that something was selected on canvas
         :return: None
         """
@@ -4153,8 +4157,9 @@ class App(QtCore.QObject):
 
     # Setting plot colors handlers
     def on_pf_color_entry(self):
-        self.defaults['global_plot_fill'] = self.ui.general_defaults_form.general_gui_group.pf_color_entry.get_value()[:7] + \
-                                            self.defaults['global_plot_fill'][7:9]
+        self.defaults['global_plot_fill'] = \
+            self.ui.general_defaults_form.general_gui_group.pf_color_entry.get_value()[:7] + \
+            self.defaults['global_plot_fill'][7:9]
         self.ui.general_defaults_form.general_gui_group.pf_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_plot_fill'])[:7])
 
@@ -4177,18 +4182,21 @@ class App(QtCore.QObject):
     def on_pf_color_spinner(self):
         spinner_value = self.ui.general_defaults_form.general_gui_group.pf_color_alpha_spinner.value()
         self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.setValue(spinner_value)
-        self.defaults['global_plot_fill'] = self.defaults['global_plot_fill'][:7] + \
-                                            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-        self.defaults['global_plot_line'] = self.defaults['global_plot_line'][:7] + \
-                                            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+        self.defaults['global_plot_fill'] = \
+            self.defaults['global_plot_fill'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+        self.defaults['global_plot_line'] = \
+            self.defaults['global_plot_line'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
     def on_pf_color_slider(self):
         slider_value = self.ui.general_defaults_form.general_gui_group.pf_color_alpha_slider.value()
         self.ui.general_defaults_form.general_gui_group.pf_color_alpha_spinner.setValue(slider_value)
 
     def on_pl_color_entry(self):
-        self.defaults['global_plot_line'] = self.ui.general_defaults_form.general_gui_group.pl_color_entry.get_value()[:7] + \
-                                            self.defaults['global_plot_line'][7:9]
+        self.defaults['global_plot_line'] = \
+            self.ui.general_defaults_form.general_gui_group.pl_color_entry.get_value()[:7] + \
+            self.defaults['global_plot_line'][7:9]
         self.ui.general_defaults_form.general_gui_group.pl_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_plot_line'])[:7])
 
@@ -4211,8 +4219,9 @@ class App(QtCore.QObject):
 
     # Setting selection colors (left - right) handlers
     def on_sf_color_entry(self):
-        self.defaults['global_sel_fill'] = self.ui.general_defaults_form.general_gui_group.sf_color_entry.get_value()[:7] + \
-                                            self.defaults['global_sel_fill'][7:9]
+        self.defaults['global_sel_fill'] = \
+            self.ui.general_defaults_form.general_gui_group.sf_color_entry.get_value()[:7] + \
+            self.defaults['global_sel_fill'][7:9]
         self.ui.general_defaults_form.general_gui_group.sf_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_sel_fill'])[:7])
 
@@ -4235,18 +4244,21 @@ class App(QtCore.QObject):
     def on_sf_color_spinner(self):
         spinner_value = self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.value()
         self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.setValue(spinner_value)
-        self.defaults['global_sel_fill'] = self.defaults['global_sel_fill'][:7] + \
-                                            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-        self.defaults['global_sel_line'] = self.defaults['global_sel_line'][:7] + \
-                                            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+        self.defaults['global_sel_fill'] = \
+            self.defaults['global_sel_fill'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+        self.defaults['global_sel_line'] = \
+            self.defaults['global_sel_line'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
     def on_sf_color_slider(self):
         slider_value = self.ui.general_defaults_form.general_gui_group.sf_color_alpha_slider.value()
         self.ui.general_defaults_form.general_gui_group.sf_color_alpha_spinner.setValue(slider_value)
 
     def on_sl_color_entry(self):
-        self.defaults['global_sel_line'] = self.ui.general_defaults_form.general_gui_group.sl_color_entry.get_value()[:7] + \
-                                            self.defaults['global_sel_line'][7:9]
+        self.defaults['global_sel_line'] = \
+            self.ui.general_defaults_form.general_gui_group.sl_color_entry.get_value()[:7] + \
+            self.defaults['global_sel_line'][7:9]
         self.ui.general_defaults_form.general_gui_group.sl_color_button.setStyleSheet(
             "background-color:%s" % str(self.defaults['global_sel_line'])[:7])
 
@@ -4292,10 +4304,12 @@ class App(QtCore.QObject):
     def on_alt_sf_color_spinner(self):
         spinner_value = self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_spinner.value()
         self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.setValue(spinner_value)
-        self.defaults['global_alt_sel_fill'] = self.defaults['global_alt_sel_fill'][:7] + \
-                                               (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
-        self.defaults['global_alt_sel_line'] = self.defaults['global_alt_sel_line'][:7] + \
-                                               (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+        self.defaults['global_alt_sel_fill'] = \
+            self.defaults['global_alt_sel_fill'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
+        self.defaults['global_alt_sel_line'] = \
+            self.defaults['global_alt_sel_line'][:7] + \
+            (hex(spinner_value)[2:] if int(hex(spinner_value)[2:], 16) > 0 else '00')
 
     def on_alt_sf_color_slider(self):
         slider_value = self.ui.general_defaults_form.general_gui_group.alt_sf_color_alpha_slider.value()
@@ -4816,7 +4830,6 @@ class App(QtCore.QObject):
                     self.inform.emit(
                         _("[WARNING_NOTCL] Adding Tool cancelled ..."))
 
-
     # It's meant to delete tools in tool tables via a 'Delete' shortcut key but only if certain conditions are met
     # See description bellow.
     def on_delete_keypress(self):
@@ -4995,9 +5008,9 @@ class App(QtCore.QObject):
             try:
                 if isinstance(obj, FlatCAMExcellon):
                     self.new_object("excellon", str(obj_name) + "_copy", initialize_excellon)
-                elif isinstance(obj,FlatCAMGerber):
+                elif isinstance(obj, FlatCAMGerber):
                     self.new_object("gerber", str(obj_name) + "_copy", initialize)
-                elif isinstance(obj,FlatCAMGeometry):
+                elif isinstance(obj, FlatCAMGeometry):
                     self.new_object("geometry", str(obj_name) + "_copy", initialize)
             except Exception as e:
                 return "Operation failed: %s" % str(e)
@@ -5039,9 +5052,9 @@ class App(QtCore.QObject):
             try:
                 if isinstance(obj, FlatCAMExcellon):
                     self.new_object("excellon", str(obj_name) + custom_name, initialize_excellon)
-                elif isinstance(obj,FlatCAMGerber):
+                elif isinstance(obj, FlatCAMGerber):
                     self.new_object("gerber", str(obj_name) + custom_name, initialize_gerber)
-                elif isinstance(obj,FlatCAMGeometry):
+                elif isinstance(obj, FlatCAMGeometry):
                     self.new_object("geometry", str(obj_name) + custom_name, initialize_geometry)
             except Exception as e:
                 return "Operation failed: %s" % str(e)
@@ -5176,8 +5189,8 @@ class App(QtCore.QObject):
                 return "Operation failed: %s" % str(e)
 
     def on_set_zero_click(self, event):
-        #this function will be available only for mouse left click
-        pos =[]
+        # this function will be available only for mouse left click
+        pos = []
         pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
         if event.button == 1:
             if self.grid_status() == True:
@@ -5188,7 +5201,7 @@ class App(QtCore.QObject):
             x = 0 - pos[0]
             y = 0 - pos[1]
             for obj in self.collection.get_list():
-                obj.offset((x,y))
+                obj.offset((x, y))
                 self.object_changed.emit(obj)
                 obj.plot()
                 # Update the object bounding box options
@@ -5974,7 +5987,7 @@ class App(QtCore.QObject):
             else:
                 # case when there is only an object under the click and we toggle it
                 if len(objects_under_the_click_list) == 1:
-                    if self.collection.get_active() is None :
+                    if self.collection.get_active() is None:
                         self.collection.set_active(objects_under_the_click_list[0])
                         # create the selection box around the selected object
                         curr_sel_obj = self.collection.get_active()
@@ -6146,8 +6159,12 @@ class App(QtCore.QObject):
             face = Color(self.defaults['global_sel_fill'], alpha=0.2)
             outline = Color(self.defaults['global_sel_line'], alpha=0.8)
 
-        self.sel_objects_list.append(self.move_tool.sel_shapes.add(sel_rect, color=outline,
-                                                               face_color=face, update=True, layer=0, tolerance=None))
+        self.sel_objects_list.append(self.move_tool.sel_shapes.add(sel_rect,
+                                                                   color=outline,
+                                                                   face_color=face,
+                                                                   update=True,
+                                                                   layer=0,
+                                                                   tolerance=None))
 
     def draw_moving_selection_shape(self, old_coords, coords, **kwargs):
         """
@@ -6190,8 +6207,8 @@ class App(QtCore.QObject):
             msgbox = QtWidgets.QMessageBox()
             # msgbox.setText("<B>Save changes ...</B>")
             msgbox.setText(_("There are files/objects opened in FlatCAM.\n"
-                           "Creating a New project will delete them.\n"
-                           "Do you want to Save the project?"))
+                             "Creating a New project will delete them.\n"
+                             "Do you want to Save the project?"))
             msgbox.setWindowTitle(_("Save changes"))
             msgbox.setWindowIcon(QtGui.QIcon('share/save_as.png'))
             bt_yes = msgbox.addButton(_('Yes'), QtWidgets.QMessageBox.YesRole)
@@ -6330,7 +6347,7 @@ class App(QtCore.QObject):
 
         try:
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Gerber"),
-                                                         directory=self.get_last_folder(), filter=_filter_)
+                                                                   directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Gerber"), filter=_filter_)
 
@@ -6359,7 +6376,7 @@ class App(QtCore.QObject):
 
         try:
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Excellon"),
-                                                         directory=self.get_last_folder(), filter=_filter_)
+                                                                   directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Excellon"), filter=_filter_)
 
@@ -6389,7 +6406,7 @@ class App(QtCore.QObject):
                    "All Files (*.*)"
         try:
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open G-Code"),
-                                                         directory=self.get_last_folder(), filter=_filter_)
+                                                                   directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
             filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open G-Code"), filter=_filter_)
 
@@ -6415,9 +6432,9 @@ class App(QtCore.QObject):
         _filter_ = "FlatCAM Project (*.FlatPrj);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open Project"),
-                                                         directory=self.get_last_folder(), filter=_filter_)
+                                                                 directory=self.get_last_folder(), filter=_filter_)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open Project"), filter = _filter_)
+            filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open Project"), filter=_filter_)
 
         # The Qt methods above will return a QString which can cause problems later.
         # So far json.dump() will fail to serialize it.
@@ -6445,10 +6462,10 @@ class App(QtCore.QObject):
         _filter_ = "FlatCAM Config (*.FlatConfig);;FlatCAM Config (*.json);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open Configuration File"),
-                                                         directory=self.data_path, filter=_filter_)
+                                                                 directory=self.data_path, filter=_filter_)
         except TypeError:
             filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Open Configuration File"),
-                                                                 filter = _filter_)
+                                                                 filter=_filter_)
 
         if filename == "":
             self.inform.emit(_("[WARNING_NOTCL] Open Config cancelled."))
@@ -6490,14 +6507,14 @@ class App(QtCore.QObject):
 
         name = obj.options["name"]
 
-        filter = "SVG File (*.svg);;All Files (*.*)"
+        _filter = "SVG File (*.svg);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Export SVG"),
                 directory=self.get_last_save_folder() + '/' + str(name),
-                filter=filter)
+                filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export SVG"), filter=filter)
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export SVG"), filter=_filter)
 
         filename = str(filename)
 
@@ -6565,14 +6582,14 @@ class App(QtCore.QObject):
 
         name = self.collection.get_active().options["name"]
 
-        filter = "Gerber File (*.GBR);;Gerber File (*.GRB);;All Files (*.*)"
+        _filter = "Gerber File (*.GBR);;Gerber File (*.GRB);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption="Save Gerber source file",
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=filter)
+                filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Gerber source file"), filter=filter)
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Gerber source file"), filter=_filter)
 
         filename = str(filename)
 
@@ -6606,14 +6623,14 @@ class App(QtCore.QObject):
 
         name = self.collection.get_active().options["name"]
 
-        filter = "Excellon File (*.DRL);;Excellon File (*.TXT);;All Files (*.*)"
+        _filter = "Excellon File (*.DRL);;Excellon File (*.TXT);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Save Excellon source file"),
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=filter)
+                filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Excellon source file"), filter=filter)
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Save Excellon source file"), filter=_filter)
 
         filename = str(filename)
 
@@ -6647,14 +6664,14 @@ class App(QtCore.QObject):
 
         name = self.collection.get_active().options["name"]
 
-        filter = "Excellon File (*.DRL);;Excellon File (*.TXT);;All Files (*.*)"
+        _filter = "Excellon File (*.DRL);;Excellon File (*.TXT);;All Files (*.*)"
         try:
             filename, _f = QtWidgets.QFileDialog.getSaveFileName(
                 caption=_("Export Excellon"),
                 directory=self.get_last_save_folder() + '/' + name,
-                filter=filter)
+                filter=_filter)
         except TypeError:
-            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Excellon"), filter=filter)
+            filename, _f = QtWidgets.QFileDialog.getSaveFileName(caption=_("Export Excellon"), filter=_filter)
 
         filename = str(filename)
 
@@ -6825,9 +6842,9 @@ class App(QtCore.QObject):
                     self.worker_task.emit({'fcn': self.import_dxf,
                                            'params': [filename, type_of_obj]})
 
-    # ################################################################################################################ ##
-    # # ## The following section has the functions that are displayed and call the Editor tab CNCJob Tab ############### ##
-    # ################################################################################################################ ##
+    # ###############################################################################################################
+    # ### The following section has the functions that are displayed and call the Editor tab CNCJob Tab #############
+    # ###############################################################################################################
 
     def init_code_editor(self, name):
         # Signals section
@@ -6981,7 +6998,7 @@ class App(QtCore.QObject):
             _filter_ = "TCL script (*.FlatScript);;TCL script (*.TCL);;TCL script (*.TXT);;All Files (*.*)"
             try:
                 filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Run TCL script"),
-                                                             directory=self.get_last_folder(), filter=_filter_)
+                                                                     directory=self.get_last_folder(), filter=_filter_)
             except TypeError:
                 filename, _f = QtWidgets.QFileDialog.getOpenFileName(caption=_("Run TCL script"), filter=_filter_)
 
@@ -7450,7 +7467,7 @@ class App(QtCore.QObject):
         ewhole = self.defaults["excellon_exp_integer"]
         efract = self.defaults["excellon_exp_decimals"]
         ezeros = self.defaults["excellon_exp_zeros"]
-        eformat = self.defaults[ "excellon_exp_format"]
+        eformat = self.defaults["excellon_exp_format"]
 
         fc_units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
         if fc_units == 'MM':
@@ -8629,35 +8646,6 @@ The normal flow when working in FlatCAM is the following:</span></p>
 
         self.ui.selected_scroll_area.setWidget(sel_title)
 
-#         tool_title = QtWidgets.QTextEdit(
-#             '<b>Shortcut Key List</b>')
-#         tool_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
-#         tool_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
-#         # font = self.sel_title.font()
-#         # font.setPointSize(12)
-#         # self.sel_title.setFont(font)
-#
-#         tool_text = '''
-# <p><span style="font-size:14px"><strong>Tool Tab - Choose an Item in Tools Menu</strong></span></p>
-#
-# <p><span style="font-size:10px"><strong>Details</strong>:<br />
-# Some of the functionality of FlatCAM have been implemented as tools (a sort of plugins). </span></p>
-#
-# <p><span style="font-size:10px">Most of the tools are accessible through&nbsp;the Tools menu or by using the associated shortcut keys.<br />
-# Each such a tool, if it needs an object to be used as a source it will provide the way to select this object(s) through a series of comboboxes. The result of using a tool is either a Geometry, an information that can be used in the app or it can be a file that can be saved.</span></p>
-#
-# <ol>
-# </ol>
-#
-# <p><span style="font-size:10px">A list of key shortcuts is available through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut: &#39;`&#39; (key left to 1).</span></p>
-#
-#                 '''
-#
-#         tool_title.setText(tool_text)
-#         tool_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-#
-#         self.ui.tool_scroll_area.setWidget(tool_title)
-
     def setup_obj_classes(self):
         """
         Sets up application specifics on the FlatCAMObj class.
@@ -8939,7 +8927,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
         to_quit = quit
         self.save_timer = QtCore.QTimer()
         self.save_timer.setInterval(delay)
-        self.save_timer.timeout.connect(lambda : self.check_project_file_size(filename=filename, quit=to_quit))
+        self.save_timer.timeout.connect(lambda: self.check_project_file_size(filename=filename, quit=to_quit))
         self.save_timer.start()
 
     def check_project_file_size(self, filename, quit=None):

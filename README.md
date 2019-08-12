@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 13.08.2019
 
 - added new option in ToolSub: the ability to close (or not) the resulting paths when using tool on Geometry objects. Added also a new category in the Edit -> Preferences -> Tools, the Substractor Tool Options
+- some PEP8 changes in FlatCAMApp.py
 
 12.08.2019
 
