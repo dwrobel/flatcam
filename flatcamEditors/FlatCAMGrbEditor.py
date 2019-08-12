@@ -1775,6 +1775,9 @@ class FCMarkArea(FCShapeTool):
         self.draw_app.hide_tool('all')
         self.draw_app.ma_tool_frame.show()
 
+        # clear previous marking
+        self.draw_app.ma_annotation.clear(update=True)
+
         try:
             self.draw_app.ma_threshold__button.clicked.disconnect()
         except (TypeError, AttributeError):

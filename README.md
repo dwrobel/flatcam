@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - improved the FlatCAMGerber.isolate() function to work for geometry in the form of list and also in case that the elements of the list are LinearRings (like when doing the Exterior Isolation)
 - in NCC Tool made sure that at each run the old objects are deleted
 - fixed bug in camlib.Gerber.parse_lines() Gerber parser where for Allegro Gerber files the Gerber units were incorrectly detected
+- improved Mark Area Tool in Gerber Editor such that at each launch the previous markings are deleted
 
 11.08.2019
 
