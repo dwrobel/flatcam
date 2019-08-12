@@ -269,7 +269,7 @@ class ShapeCollectionVisual(CompoundVisual):
         # Add data to process pool if pool exists
         try:
             self.results[key] = self.pool.map_async(_update_shape_buffers, [self.data[key]])
-        except:
+        except Exception as e:
             self.data[key] = _update_shape_buffers(self.data[key])
 
         if update:

@@ -641,16 +641,16 @@ class TransformEditorTool(FlatCAMTool):
         self.transform_lay.addWidget(title_label)
 
         self.empty_label = QtWidgets.QLabel("")
-        self.empty_label.setFixedWidth(50)
+        self.empty_label.setMinimumWidth(50)
 
         self.empty_label1 = QtWidgets.QLabel("")
-        self.empty_label1.setFixedWidth(70)
+        self.empty_label1.setMinimumWidth(70)
         self.empty_label2 = QtWidgets.QLabel("")
-        self.empty_label2.setFixedWidth(70)
+        self.empty_label2.setMinimumWidth(70)
         self.empty_label3 = QtWidgets.QLabel("")
-        self.empty_label3.setFixedWidth(70)
+        self.empty_label3.setMinimumWidth(70)
         self.empty_label4 = QtWidgets.QLabel("")
-        self.empty_label4.setFixedWidth(70)
+        self.empty_label4.setMinimumWidth(70)
         self.transform_lay.addWidget(self.empty_label)
 
         # Rotate Title

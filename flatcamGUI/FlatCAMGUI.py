@@ -1656,12 +1656,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.buttonPreview = QtWidgets.QPushButton(_('Print Preview'))
         self.buttonPrint = QtWidgets.QPushButton(_('Print Code'))
         self.buttonFind = QtWidgets.QPushButton(_('Find in Code'))
-        self.buttonFind.setFixedWidth(100)
-        self.buttonPreview.setFixedWidth(100)
+        self.buttonFind.setMinimumWidth(100)
+        self.buttonPreview.setMinimumWidth(100)
         self.entryFind = FCEntry()
         self.entryFind.setMaximumWidth(200)
         self.buttonReplace = QtWidgets.QPushButton(_('Replace With'))
-        self.buttonReplace.setFixedWidth(100)
+        self.buttonReplace.setMinimumWidth(100)
         self.entryReplace = FCEntry()
         self.entryReplace.setMaximumWidth(200)
         self.sel_all_cb = QtWidgets.QCheckBox(_('All'))
@@ -3255,9 +3255,9 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
         self.tools_ncc_group = ToolsNCCPrefGroupUI()
-        self.tools_ncc_group.setMinimumWidth(200)
+        self.tools_ncc_group.setMinimumWidth(220)
         self.tools_paint_group = ToolsPaintPrefGroupUI()
-        self.tools_paint_group.setMinimumWidth(200)
+        self.tools_paint_group.setMinimumWidth(220)
 
         self.tools_cutout_group = ToolsCutoutPrefGroupUI()
         self.tools_cutout_group.setMinimumWidth(220)
@@ -3417,7 +3417,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.pf_color_alpha_slider.setSingleStep(1)
 
         self.pf_color_alpha_spinner = FCSpinner()
-        self.pf_color_alpha_spinner.setFixedWidth(70)
+        self.pf_color_alpha_spinner.setMinimumWidth(70)
         self.pf_color_alpha_spinner.setMinimum(0)
         self.pf_color_alpha_spinner.setMaximum(255)
 
@@ -3467,7 +3467,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.sf_color_alpha_slider.setSingleStep(1)
 
         self.sf_color_alpha_spinner = FCSpinner()
-        self.sf_color_alpha_spinner.setFixedWidth(70)
+        self.sf_color_alpha_spinner.setMinimumWidth(70)
         self.sf_color_alpha_spinner.setMinimum(0)
         self.sf_color_alpha_spinner.setMaximum(255)
 
@@ -3517,7 +3517,7 @@ class GeneralGUIPrefGroupUI(OptionsGroupUI):
         self.alt_sf_color_alpha_slider.setSingleStep(1)
 
         self.alt_sf_color_alpha_spinner = FCSpinner()
-        self.alt_sf_color_alpha_spinner.setFixedWidth(70)
+        self.alt_sf_color_alpha_spinner.setMinimumWidth(70)
         self.alt_sf_color_alpha_spinner.setMinimum(0)
         self.alt_sf_color_alpha_spinner.setMaximum(255)
 
@@ -4291,7 +4291,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         self.format_whole_entry = IntEntry()
         self.format_whole_entry.setMaxLength(1)
         self.format_whole_entry.setAlignment(QtCore.Qt.AlignRight)
-        self.format_whole_entry.setFixedWidth(30)
+        self.format_whole_entry.setMinimumWidth(30)
         self.format_whole_entry.setToolTip(
             _("This numbers signify the number of digits in\n"
               "the whole part of Gerber coordinates.")
@@ -4305,7 +4305,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         self.format_dec_entry = IntEntry()
         self.format_dec_entry.setMaxLength(1)
         self.format_dec_entry.setAlignment(QtCore.Qt.AlignRight)
-        self.format_dec_entry.setFixedWidth(30)
+        self.format_dec_entry.setMinimumWidth(30)
         self.format_dec_entry.setToolTip(
             _("This numbers signify the number of digits in\n"
               "the decimal part of Gerber coordinates.")
@@ -4439,7 +4439,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.excellon_format_upper_in_entry = IntEntry()
         self.excellon_format_upper_in_entry.setMaxLength(1)
         self.excellon_format_upper_in_entry.setAlignment(QtCore.Qt.AlignRight)
-        self.excellon_format_upper_in_entry.setFixedWidth(30)
+        self.excellon_format_upper_in_entry.setMinimumWidth(30)
         self.excellon_format_upper_in_entry.setToolTip(
            _("This numbers signify the number of digits in\n"
              "the whole part of Excellon coordinates.")
@@ -4453,7 +4453,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.excellon_format_lower_in_entry = IntEntry()
         self.excellon_format_lower_in_entry.setMaxLength(1)
         self.excellon_format_lower_in_entry.setAlignment(QtCore.Qt.AlignRight)
-        self.excellon_format_lower_in_entry.setFixedWidth(30)
+        self.excellon_format_lower_in_entry.setMinimumWidth(30)
         self.excellon_format_lower_in_entry.setToolTip(
             _("This numbers signify the number of digits in\n"
               "the decimal part of Excellon coordinates.")
@@ -4472,7 +4472,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.excellon_format_upper_mm_entry = IntEntry()
         self.excellon_format_upper_mm_entry.setMaxLength(1)
         self.excellon_format_upper_mm_entry.setAlignment(QtCore.Qt.AlignRight)
-        self.excellon_format_upper_mm_entry.setFixedWidth(30)
+        self.excellon_format_upper_mm_entry.setMinimumWidth(30)
         self.excellon_format_upper_mm_entry.setToolTip(
             _("This numbers signify the number of digits in\n"
               "the whole part of Excellon coordinates.")
@@ -4486,7 +4486,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.excellon_format_lower_mm_entry = IntEntry()
         self.excellon_format_lower_mm_entry.setMaxLength(1)
         self.excellon_format_lower_mm_entry.setAlignment(QtCore.Qt.AlignRight)
-        self.excellon_format_lower_mm_entry.setFixedWidth(30)
+        self.excellon_format_lower_mm_entry.setMinimumWidth(30)
         self.excellon_format_lower_mm_entry.setToolTip(
             _("This numbers signify the number of digits in\n"
               "the decimal part of Excellon coordinates.")
@@ -4778,7 +4778,7 @@ class ExcellonOptPrefGroupUI(OptionsGroupUI):
         # Adding the Excellon Format Defaults Button
         self.excellon_defaults_button = QtWidgets.QPushButton()
         self.excellon_defaults_button.setText(str(_("Defaults")))
-        self.excellon_defaults_button.setFixedWidth(80)
+        self.excellon_defaults_button.setMinimumWidth(80)
         grid4.addWidget(self.excellon_defaults_button, 0, 0, QtCore.Qt.AlignRight)
 
         self.layout.addStretch()
@@ -4945,7 +4945,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         self.format_whole_entry = IntEntry()
         self.format_whole_entry.setMaxLength(1)
         self.format_whole_entry.setAlignment(QtCore.Qt.AlignRight)
-        self.format_whole_entry.setFixedWidth(30)
+        self.format_whole_entry.setMinimumWidth(30)
         self.format_whole_entry.setToolTip(
             _("This numbers signify the number of digits in\n"
               "the whole part of Excellon coordinates.")
@@ -4959,7 +4959,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         self.format_dec_entry = IntEntry()
         self.format_dec_entry.setMaxLength(1)
         self.format_dec_entry.setAlignment(QtCore.Qt.AlignRight)
-        self.format_dec_entry.setFixedWidth(30)
+        self.format_dec_entry.setMinimumWidth(30)
         self.format_dec_entry.setToolTip(
             _("This numbers signify the number of digits in\n"
               "the decimal part of Excellon coordinates.")
@@ -5074,7 +5074,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         self.drill_array_size_label.setToolTip(
             _("Specify how many drills to be in the array.")
         )
-        # self.drill_array_size_label.setFixedWidth(100)
+        # self.drill_array_size_label.setMinimumWidth(100)
 
         self.drill_array_size_entry = LengthEntry()
 
@@ -5092,7 +5092,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
               "- 'Y' - vertical axis or \n"
               "- 'Angle' - a custom angle for the array inclination")
         )
-        # self.drill_axis_label.setFixedWidth(100)
+        # self.drill_axis_label.setMinimumWidth(100)
         self.drill_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
                                           {'label': _('Y'), 'value': 'Y'},
                                           {'label': _('Angle'), 'value': 'A'}])
@@ -5105,7 +5105,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         self.drill_pitch_label.setToolTip(
             _("Pitch = Distance between elements of the array.")
         )
-        # self.drill_pitch_label.setFixedWidth(100)
+        # self.drill_pitch_label.setMinimumWidth(100)
         self.drill_pitch_entry = LengthEntry()
 
         grid0.addWidget(self.drill_pitch_label, 5, 0)
@@ -5875,6 +5875,19 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.ncc_rest_cb = FCCheckBox()
         grid0.addWidget(self.ncc_rest_cb, 6, 1)
 
+        # ## Reference
+        self.reference_radio = RadioSet([{'label': _('Itself'), 'value': 'itself'},
+                                         {'label': _('Box'), 'value': 'box'}])
+        reference_label = QtWidgets.QLabel(_("Reference:"))
+        reference_label.setToolTip(
+            _("When choosing the 'Itself' option the non copper clearing extent\n"
+              "is based on the object that is copper cleared.\n "
+              "Choosing the 'Box' option will do non copper clearing within the box\n"
+              "specified by another object different than the one that is copper cleared.")
+        )
+        grid0.addWidget(reference_label, 7, 0)
+        grid0.addWidget(self.reference_radio, 7, 1)
+
         self.layout.addStretch()
 
 
@@ -6126,8 +6139,8 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(selectlabel, 6, 0)
         self.selectmethod_combo = RadioSet([
             {"label": _("Single"), "value": "single"},
-            {"label": _("All"), "value": "all"},
-            # {"label": "Rectangle", "value": "rectangle"}
+            {"label": _("Area"), "value": "area"},
+            {"label": _("All"), "value": "all"}
         ])
         grid0.addWidget(self.selectmethod_combo, 6, 1)
 
