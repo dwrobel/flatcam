@@ -44,16 +44,16 @@ class ToolTransform(FlatCAMTool):
         self.transform_lay.addWidget(title_label)
 
         self.empty_label = QtWidgets.QLabel("")
-        self.empty_label.setFixedWidth(70)
+        self.empty_label.setMinimumWidth(70)
 
         self.empty_label1 = QtWidgets.QLabel("")
-        self.empty_label1.setFixedWidth(70)
+        self.empty_label1.setMinimumWidth(70)
         self.empty_label2 = QtWidgets.QLabel("")
-        self.empty_label2.setFixedWidth(70)
+        self.empty_label2.setMinimumWidth(70)
         self.empty_label3 = QtWidgets.QLabel("")
-        self.empty_label3.setFixedWidth(70)
+        self.empty_label3.setMinimumWidth(70)
         self.empty_label4 = QtWidgets.QLabel("")
-        self.empty_label4.setFixedWidth(70)
+        self.empty_label4.setMinimumWidth(70)
         self.transform_lay.addWidget(self.empty_label)
 
         # ## Rotate Title
@@ -72,7 +72,7 @@ class ToolTransform(FlatCAMTool):
               "Positive numbers for CW motion.\n"
               "Negative numbers for CCW motion.")
         )
-        self.rotate_label.setFixedWidth(70)
+        self.rotate_label.setMinimumWidth(70)
 
         self.rotate_entry = FCEntry()
         # self.rotate_entry.setFixedWidth(70)
@@ -85,7 +85,7 @@ class ToolTransform(FlatCAMTool):
               "The point of reference is the middle of\n"
               "the bounding box for all selected objects.")
         )
-        self.rotate_button.setFixedWidth(90)
+        self.rotate_button.setMinimumWidth(90)
 
         form_child.addWidget(self.rotate_entry)
         form_child.addWidget(self.rotate_button)
@@ -109,7 +109,7 @@ class ToolTransform(FlatCAMTool):
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 359.")
         )
-        self.skewx_label.setFixedWidth(70)
+        self.skewx_label.setMinimumWidth(70)
         self.skewx_entry = FCEntry()
         self.skewx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         # self.skewx_entry.setFixedWidth(70)
@@ -120,14 +120,14 @@ class ToolTransform(FlatCAMTool):
             _("Skew/shear the selected object(s).\n"
               "The point of reference is the middle of\n"
               "the bounding box for all selected objects."))
-        self.skewx_button.setFixedWidth(90)
+        self.skewx_button.setMinimumWidth(90)
 
         self.skewy_label = QtWidgets.QLabel(_("Angle Y:"))
         self.skewy_label.setToolTip(
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 359.")
         )
-        self.skewy_label.setFixedWidth(70)
+        self.skewy_label.setMinimumWidth(70)
         self.skewy_entry = FCEntry()
         self.skewy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         # self.skewy_entry.setFixedWidth(70)
@@ -138,7 +138,7 @@ class ToolTransform(FlatCAMTool):
             _("Skew/shear the selected object(s).\n"
               "The point of reference is the middle of\n"
               "the bounding box for all selected objects."))
-        self.skewy_button.setFixedWidth(90)
+        self.skewy_button.setMinimumWidth(90)
 
         form1_child_1.addWidget(self.skewx_entry)
         form1_child_1.addWidget(self.skewx_button)
@@ -165,7 +165,7 @@ class ToolTransform(FlatCAMTool):
         self.scalex_label.setToolTip(
             _("Factor for Scale action over X axis.")
         )
-        self.scalex_label.setFixedWidth(70)
+        self.scalex_label.setMinimumWidth(70)
         self.scalex_entry = FCEntry()
         self.scalex_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         # self.scalex_entry.setFixedWidth(70)
@@ -176,13 +176,13 @@ class ToolTransform(FlatCAMTool):
             _("Scale the selected object(s).\n"
               "The point of reference depends on \n"
               "the Scale reference checkbox state."))
-        self.scalex_button.setFixedWidth(90)
+        self.scalex_button.setMinimumWidth(90)
 
         self.scaley_label = QtWidgets.QLabel(_("Factor Y:"))
         self.scaley_label.setToolTip(
             _("Factor for Scale action over Y axis.")
         )
-        self.scaley_label.setFixedWidth(70)
+        self.scaley_label.setMinimumWidth(70)
         self.scaley_entry = FCEntry()
         self.scaley_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         # self.scaley_entry.setFixedWidth(70)
@@ -193,7 +193,7 @@ class ToolTransform(FlatCAMTool):
             _("Scale the selected object(s).\n"
               "The point of reference depends on \n"
               "the Scale reference checkbox state."))
-        self.scaley_button.setFixedWidth(90)
+        self.scaley_button.setMinimumWidth(90)
 
         self.scale_link_cb = FCCheckBox()
         self.scale_link_cb.set_value(True)
@@ -201,7 +201,7 @@ class ToolTransform(FlatCAMTool):
         self.scale_link_cb.setToolTip(
             _("Scale the selected object(s)\n"
               "using the Scale Factor X for both axis."))
-        self.scale_link_cb.setFixedWidth(70)
+        self.scale_link_cb.setMinimumWidth(70)
 
         self.scale_zero_ref_cb = FCCheckBox()
         self.scale_zero_ref_cb.set_value(True)
@@ -239,7 +239,7 @@ class ToolTransform(FlatCAMTool):
         self.offx_label.setToolTip(
             _("Value for Offset action on X axis.")
         )
-        self.offx_label.setFixedWidth(70)
+        self.offx_label.setMinimumWidth(70)
         self.offx_entry = FCEntry()
         self.offx_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         # self.offx_entry.setFixedWidth(70)
@@ -250,13 +250,13 @@ class ToolTransform(FlatCAMTool):
             _("Offset the selected object(s).\n"
               "The point of reference is the middle of\n"
               "the bounding box for all selected objects.\n"))
-        self.offx_button.setFixedWidth(90)
+        self.offx_button.setMinimumWidth(90)
 
         self.offy_label = QtWidgets.QLabel(_("Value Y:"))
         self.offy_label.setToolTip(
             _("Value for Offset action on Y axis.")
         )
-        self.offy_label.setFixedWidth(70)
+        self.offy_label.setMinimumWidth(70)
         self.offy_entry = FCEntry()
         self.offy_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         # self.offy_entry.setFixedWidth(70)
@@ -267,7 +267,7 @@ class ToolTransform(FlatCAMTool):
             _("Offset the selected object(s).\n"
               "The point of reference is the middle of\n"
               "the bounding box for all selected objects.\n"))
-        self.offy_button.setFixedWidth(90)
+        self.offy_button.setMinimumWidth(90)
 
         form3_child_1.addWidget(self.offx_entry)
         form3_child_1.addWidget(self.offx_button)
@@ -297,7 +297,7 @@ class ToolTransform(FlatCAMTool):
             _("Flip the selected object(s) over the X axis.\n"
               "Does not create a new object.\n ")
         )
-        self.flipx_button.setFixedWidth(100)
+        self.flipx_button.setMinimumWidth(100)
 
         self.flipy_button = FCButton()
         self.flipy_button.set_value(_("Flip on Y"))
@@ -305,7 +305,7 @@ class ToolTransform(FlatCAMTool):
             _("Flip the selected object(s) over the X axis.\n"
               "Does not create a new object.\n ")
         )
-        self.flipy_button.setFixedWidth(90)
+        self.flipy_button.setMinimumWidth(90)
 
         self.flip_ref_cb = FCCheckBox()
         self.flip_ref_cb.set_value(True)
@@ -320,7 +320,7 @@ class ToolTransform(FlatCAMTool):
               "Then click Add button to insert coordinates.\n"
               "Or enter the coords in format (x, y) in the\n"
               "Point Entry field and click Flip on X(Y)"))
-        self.flip_ref_cb.setFixedWidth(70)
+        self.flip_ref_cb.setMinimumWidth(70)
 
         self.flip_ref_label = QtWidgets.QLabel(_("Point:"))
         self.flip_ref_label.setToolTip(
@@ -328,7 +328,7 @@ class ToolTransform(FlatCAMTool):
               "The 'x' in (x, y) will be used when using Flip on X and\n"
               "the 'y' in (x, y) will be used when using Flip on Y and")
         )
-        self.flip_ref_label.setFixedWidth(70)
+        self.flip_ref_label.setMinimumWidth(70)
         self.flip_ref_entry = EvalEntry2("(0, 0)")
         self.flip_ref_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         # self.flip_ref_entry.setFixedWidth(70)
@@ -339,7 +339,7 @@ class ToolTransform(FlatCAMTool):
             _("The point coordinates can be captured by\n"
               "left click on canvas together with pressing\n"
               "SHIFT key. Then click Add button to insert."))
-        self.flip_ref_button.setFixedWidth(90)
+        self.flip_ref_button.setMinimumWidth(90)
 
         form4_child_hlay.addStretch()
         form4_child_hlay.addWidget(self.flipx_button)

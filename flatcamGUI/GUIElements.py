@@ -830,6 +830,13 @@ class FCTab(QtWidgets.QTabWidget):
         self.tabBar().setTabButton(currentIndex, QtWidgets.QTabBar.RightSide, None)
 
 
+# class FCTabBar(QtWidgets.QTabBar):
+#     def tabSizeHint(self, index):
+#         size =QtWidgets.QTabBar.tabSizeHint(self, index)
+#         w = int(self.width()/self.count())
+#         return QtCore.QSize(w, size.height())
+
+
 class FCDetachableTab(QtWidgets.QTabWidget):
     """
     From here:
@@ -1627,7 +1634,7 @@ class Dialog_box(QtWidgets.QWidget):
         self.ok = False
 
         dialog_box = QtWidgets.QInputDialog()
-        dialog_box.setFixedWidth(290)
+        dialog_box.setMinimumWidth(290)
         self.setWindowIcon(icon)
 
         self.location, self.ok = dialog_box.getText(self, title, label, text="0, 0")

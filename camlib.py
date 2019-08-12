@@ -543,6 +543,8 @@ class Geometry(object):
 
         # the previously commented block is replaced with this block - regression - to solve the bug with multiple
         # isolation passes cutting from the copper features
+
+        geo_iso = []
         if offset == 0:
             if follow:
                 geo_iso = self.follow_geometry
@@ -553,10 +555,21 @@ class Geometry(object):
                 geo_iso = self.follow_geometry
             else:
                 if corner is None:
-                    geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
+                    try:
+                        __ = iter(self.solid_geometry)
+                        for el in self.solid_geometry:
+                            geo_iso.append(el.buffer(offset, int(int(self.geo_steps_per_circle) / 4)))
+                    except TypeError:
+                        geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4))
                 else:
-                    geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
-                                                         join_style=corner)
+                    try:
+                        __ = iter(self.solid_geometry)
+                        for el in self.solid_geometry:
+                            geo_iso.append(el.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
+                                                     join_style=corner))
+                    except TypeError:
+                        geo_iso = self.solid_geometry.buffer(offset, int(int(self.geo_steps_per_circle) / 4),
+                                                             join_style=corner)
 
         # end of replaced block
         if follow:
@@ -5740,11 +5753,11 @@ class CNCjob(Geometry):
                 if pt != geo.coords[0] and pt == geo.coords[-1]:
                     geo.coords = list(geo.coords)[::-1]
 
-                #---------- Single depth/pass --------
+                # ---------- Single depth/pass --------
                 if not multidepth:
                     self.gcode += self.create_gcode_single_pass(geo, extracut, tolerance)
 
-                #--------- Multi-pass ---------
+                # --------- Multi-pass ---------
                 else:
                     self.gcode += self.create_gcode_multi_pass(geo, extracut, tolerance,
                                                                postproc=p, current_point=current_pt)
@@ -5839,8 +5852,8 @@ class CNCjob(Geometry):
                 # solid geometry it's obvious we can't do the offset
                 if -offset > ((c - a) / 2) or -offset > ((d - b) / 2):
                     self.app.inform.emit(_("[ERROR_NOTCL] The Tool Offset value is too negative to use "
-                                         "for the current_geometry.\n"
-                                         "Raise the value (in module) and try again."))
+                                           "for the current_geometry.\n"
+                                           "Raise the value (in module) and try again."))
                     return 'fail'
                 # hack: make offset smaller by 0.0000000001 which is insignificant difference but allow the job
                 # to continue
@@ -5888,7 +5901,7 @@ class CNCjob(Geometry):
                 self.xy_toolchange = [float(eval(a)) for a in toolchangexy.split(",")]
                 if len(self.xy_toolchange) < 2:
                     self.app.inform.emit(_("[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be "
-                                         "in the format (x, y) \nbut now there is only one value, not two. "))
+                                           "in the format (x, y) \nbut now there is only one value, not two. "))
                     return 'fail'
         except Exception as e:
             log.debug("camlib.CNCJob.generate_from_geometry_2() --> %s" % str(e))
@@ -5899,19 +5912,19 @@ class CNCjob(Geometry):
 
         if self.z_cut is None:
             self.app.inform.emit(_("[ERROR_NOTCL] Cut_Z parameter is None or zero. Most likely a bad combinations of "
-                                 "other parameters."))
+                                   "other parameters."))
             return 'fail'
 
         if self.z_cut > 0:
             self.app.inform.emit(_("[WARNING] The Cut Z parameter has positive value. "
-                                 "It is the depth value to cut into material.\n"
-                                 "The Cut Z parameter needs to have a negative value, assuming it is a typo "
-                                 "therefore the app will convert the value to negative."
-                                 "Check the resulting CNC code (Gcode etc)."))
+                                   "It is the depth value to cut into material.\n"
+                                   "The Cut Z parameter needs to have a negative value, assuming it is a typo "
+                                   "therefore the app will convert the value to negative."
+                                   "Check the resulting CNC code (Gcode etc)."))
             self.z_cut = -self.z_cut
         elif self.z_cut == 0:
             self.app.inform.emit(_("[WARNING] The Cut Z parameter is zero. "
-                                 "There will be no cut, skipping %s file") % geometry.options['name'])
+                                   "There will be no cut, skipping %s file") % geometry.options['name'])
             return 'fail'
 
         if self.z_move is None:
@@ -5920,14 +5933,14 @@ class CNCjob(Geometry):
 
         if self.z_move < 0:
             self.app.inform.emit(_("[WARNING] The Travel Z parameter has negative value. "
-                                 "It is the height value to travel between cuts.\n"
-                                 "The Z Travel parameter needs to have a positive value, assuming it is a typo "
-                                 "therefore the app will convert the value to positive."
-                                 "Check the resulting CNC code (Gcode etc)."))
+                                   "It is the height value to travel between cuts.\n"
+                                   "The Z Travel parameter needs to have a positive value, assuming it is a typo "
+                                   "therefore the app will convert the value to positive."
+                                   "Check the resulting CNC code (Gcode etc)."))
             self.z_move = -self.z_move
         elif self.z_move == 0:
             self.app.inform.emit(_("[WARNING] The Z Travel parameter is zero. "
-                                 "This is dangerous, skipping %s file") % self.options['name'])
+                                   "This is dangerous, skipping %s file") % self.options['name'])
             return 'fail'
 
         # ## Index first and last points in paths
@@ -6004,11 +6017,11 @@ class CNCjob(Geometry):
                 if pt != geo.coords[0] and pt == geo.coords[-1]:
                     geo.coords = list(geo.coords)[::-1]
 
-                #---------- Single depth/pass --------
+                # ---------- Single depth/pass --------
                 if not multidepth:
                     self.gcode += self.create_gcode_single_pass(geo, extracut, tolerance)
 
-                #--------- Multi-pass ---------
+                # --------- Multi-pass ---------
                 else:
                     self.gcode += self.create_gcode_multi_pass(geo, extracut, tolerance,
                                                                postproc=p, current_point=current_pt)
@@ -6229,7 +6242,8 @@ class CNCjob(Geometry):
                     gcode_multi_pass += self.linear2gcode(geometry, tolerance=tolerance, z_cut=depth, up=False)
                 else:
                     if geometry.is_ring:
-                        gcode_multi_pass += self.linear2gcode_extra(geometry, tolerance=tolerance, z_cut=depth, up=False)
+                        gcode_multi_pass += self.linear2gcode_extra(geometry, tolerance=tolerance, z_cut=depth,
+                                                                    up=False)
                     else:
                         gcode_multi_pass += self.linear2gcode(geometry, tolerance=tolerance, z_cut=depth, up=False)
 
@@ -6403,7 +6417,6 @@ class CNCjob(Geometry):
                 current['G'] = int(gobj['G'])
                 
             if 'X' in gobj or 'Y' in gobj:
-                # TODO: I think there is a problem here, current['X] (and the rest of current[...] are not initialized
                 if 'X' in gobj:
                     x = gobj['X']
                     # current['X'] = x
@@ -6494,6 +6507,9 @@ class CNCjob(Geometry):
         :param color: Color specification.
         :param alpha: Transparency specification.
         :param tool_tolerance: Tolerance when drawing the toolshape.
+        :param obj
+        :param visible
+        :param kind
         :return: None
         """
         # units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
@@ -6545,7 +6561,7 @@ class CNCjob(Geometry):
 
                 if kind == 'all':
                     obj.add_shape(shape=poly, color=color[geo['kind'][0]][1], face_color=color[geo['kind'][0]][0],
-                              visible=visible, layer=1 if geo['kind'][0] == 'C' else 2)
+                                  visible=visible, layer=1 if geo['kind'][0] == 'C' else 2)
                 elif kind == 'travel':
                     if geo['kind'][0] == 'T':
                         obj.add_shape(shape=poly, color=color['T'][1], face_color=color['T'][0],

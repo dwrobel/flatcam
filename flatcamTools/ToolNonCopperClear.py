@@ -235,6 +235,51 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_rest_cb = FCCheckBox()
         grid3.addWidget(self.ncc_rest_cb, 6, 1)
 
+        # ## Reference
+        self.reference_radio = RadioSet([{'label': _('Itself'), 'value': 'itself'},
+                                         {'label': _('Box'), 'value': 'box'}])
+        self.reference_label = QtWidgets.QLabel(_("Reference:"))
+        self.reference_label.setToolTip(
+            _("- 'Itself': the non copper clearing extent\n"
+              "is based on the object that is copper cleared.\n "
+              "- 'Box': will do non copper clearing within the box\n"
+              "specified by the object selected in the Ref. Object combobox.")
+        )
+        grid3.addWidget(self.reference_label, 7, 0)
+        grid3.addWidget(self.reference_radio, 7, 1)
+
+        grid4 = QtWidgets.QGridLayout()
+        self.tools_box.addLayout(grid4)
+
+        self.box_combo_type_label = QtWidgets.QLabel(_("Ref. Type:"))
+        self.box_combo_type_label.setToolTip(
+            _("The type of FlatCAM object to be used as non copper clearing reference.\n"
+              "It can be Gerber, Excellon or Geometry.")
+        )
+        self.box_combo_type = QtWidgets.QComboBox()
+        self.box_combo_type.addItem(_("Gerber   Reference Box Object"))
+        self.box_combo_type.addItem(_("Excellon Reference Box Object"))
+        self.box_combo_type.addItem(_("Geometry Reference Box Object"))
+
+        grid4.addWidget(self.box_combo_type_label, 0, 0)
+        grid4.addWidget(self.box_combo_type, 0, 1)
+
+        self.box_combo_label = QtWidgets.QLabel(_("Ref. Object:"))
+        self.box_combo_label.setToolTip(
+            _("The FlatCAM object to be used as non copper clearing reference.")
+        )
+        self.box_combo = QtWidgets.QComboBox()
+        self.box_combo.setModel(self.app.collection)
+        self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.box_combo.setCurrentIndex(1)
+        grid4.addWidget(self.box_combo_label, 1, 0)
+        grid4.addWidget(self.box_combo, 1, 1)
+
+        self.box_combo.hide()
+        self.box_combo_label.hide()
+        self.box_combo_type.hide()
+        self.box_combo_type_label.hide()
+
         self.generate_ncc_button = QtWidgets.QPushButton(_('Generate Geometry'))
         self.generate_ncc_button.setToolTip(
             _("Create the Geometry Object\n"
@@ -251,12 +296,18 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.obj_name = ""
         self.ncc_obj = None
 
+        self.bound_obj_name = ""
+        self.bound_obj = None
+
         self.tools_box.addStretch()
 
         self.addtool_btn.clicked.connect(self.on_tool_add)
         self.addtool_entry.returnPressed.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
         self.generate_ncc_button.clicked.connect(self.on_ncc)
+
+        self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
+        self.reference_radio.group_toggle_fn = self.on_toggle_reference
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+N', **kwargs)
@@ -293,6 +344,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_connect_cb.set_value(self.app.defaults["tools_nccconnect"])
         self.ncc_contour_cb.set_value(self.app.defaults["tools_ncccontour"])
         self.ncc_rest_cb.set_value(self.app.defaults["tools_nccrest"])
+        self.reference_radio.set_value(self.app.defaults["tools_nccref"])
 
         self.tools_table.setupContextMenu()
         self.tools_table.addContextMenu(
@@ -365,8 +417,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
                     'solid_geometry': []
                 }
             })
+
         self.obj_name = ""
         self.ncc_obj = None
+        self.bound_obj_name = ""
+        self.bound_obj = None
+
         self.tool_type_item_options = ["C1", "C2", "C3", "C4", "B", "V"]
         self.units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
 
@@ -463,6 +519,23 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.tools_table.itemChanged.disconnect(self.on_tool_edit)
         except (TypeError, AttributeError):
             pass
+
+    def on_combo_box_type(self):
+        obj_type = self.box_combo_type.currentIndex()
+        self.box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.box_combo.setCurrentIndex(0)
+
+    def on_toggle_reference(self):
+        if self.reference_radio.get_value() == "itself":
+            self.box_combo.hide()
+            self.box_combo_label.hide()
+            self.box_combo_type.hide()
+            self.box_combo_type_label.hide()
+        else:
+            self.box_combo.show()
+            self.box_combo_label.show()
+            self.box_combo_type.show()
+            self.box_combo_type_label.show()
 
     def on_tool_add(self, dia=None, muted=None):
 
@@ -647,7 +720,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
                                        "use a number."))
                 return
-        margin = margin if margin else self.app.defaults["tools_nccmargin"]
+        margin = margin if margin is not None else float(self.app.defaults["tools_nccmargin"])
 
         connect = self.ncc_connect_cb.get_value()
         connect = connect if connect else self.app.defaults["tools_nccconnect"]
@@ -661,6 +734,23 @@ class NonCopperClear(FlatCAMTool, Gerber):
         pol_method = self.ncc_method_radio.get_value()
         pol_method = pol_method if pol_method else self.app.defaults["tools_nccmethod"]
 
+        if self.reference_radio.get_value() == 'itself':
+            self.bound_obj_name = self.object_combo.currentText()
+            # Get source object.
+            try:
+                self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)
+            except Exception as e:
+                self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
+                return "Could not retrieve object: %s" % self.obj_name
+        else:
+            self.bound_obj_name = self.box_combo.currentText()
+            # Get source object.
+            try:
+                self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)
+            except Exception as e:
+                self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
+                return "Could not retrieve object: %s" % self.obj_name
+
         self.obj_name = self.object_combo.currentText()
         # Get source object.
         try:
@@ -671,16 +761,25 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         # Prepare non-copper polygons
         try:
-            bounding_box = self.ncc_obj.solid_geometry.envelope.buffer(distance=margin,
-                                                                       join_style=base.JOIN_STYLE.mitre)
-        except AttributeError:
-            self.app.inform.emit(_("[ERROR_NOTCL] No Gerber file available."))
+            if not isinstance(self.bound_obj.solid_geometry, MultiPolygon):
+                env_obj = cascaded_union(self.bound_obj.solid_geometry)
+                env_obj = env_obj.convex_hull
+            else:
+                env_obj = self.bound_obj.solid_geometry.convex_hull
+            bounding_box = env_obj.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
+        except Exception as e:
+            log.debug("NonCopperClear.on_ncc() --> %s" % str(e))
+            self.app.inform.emit(_("[ERROR_NOTCL] No object available."))
             return
 
         # calculate the empty area by subtracting the solid_geometry from the object bounding box geometry
         empty = self.ncc_obj.get_empty_area(bounding_box)
         if type(empty) is Polygon:
             empty = MultiPolygon([empty])
+
+        if empty.is_empty:
+            self.app.inform.emit(_("[ERROR_NOTCL] Could not get the extent of the area to be non copper cleared."))
+            return
 
         # clear non copper using standard algorithm
         if clearing_method is False:

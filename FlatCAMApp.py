@@ -97,7 +97,7 @@ class App(QtCore.QObject):
     # Version and VERSION DATE ###########
     # ####################################
     version = 8.93
-    version_date = "2019/08/31"
+    version_date = "2019/08/10"
     beta = True
 
     # current date now
@@ -513,6 +513,7 @@ class App(QtCore.QObject):
             "tools_nccconnect": self.ui.tools_defaults_form.tools_ncc_group.ncc_connect_cb,
             "tools_ncccontour": self.ui.tools_defaults_form.tools_ncc_group.ncc_contour_cb,
             "tools_nccrest": self.ui.tools_defaults_form.tools_ncc_group.ncc_rest_cb,
+            "tools_nccref": self.ui.tools_defaults_form.tools_ncc_group.reference_radio,
 
             # CutOut Tool
             "tools_cutouttooldia": self.ui.tools_defaults_form.tools_cutout_group.cutout_tooldia_entry,
@@ -852,6 +853,7 @@ class App(QtCore.QObject):
             "tools_nccconnect": True,
             "tools_ncccontour": True,
             "tools_nccrest": False,
+            "tools_nccref": 'itself',
 
             "tools_cutouttooldia": 0.00393701,
             "tools_cutoutkind": "single",
@@ -2841,6 +2843,7 @@ class App(QtCore.QObject):
                 self.inform.emit(_("[ERROR_NOTCL] Failed to parse defaults file."))
                 return
             self.defaults.update(defaults_from_file)
+            self.on_preferences_edited()
             self.inform.emit(_("[success] Imported Defaults from %s") % filename)
 
     def on_export_preferences(self):
@@ -2875,6 +2878,10 @@ class App(QtCore.QObject):
                 f = open(filename, 'w')
                 defaults_file_content = f.read()
                 f.close()
+            except PermissionError:
+                self.inform.emit(_("[WARNING] Permission denied, saving not possible.\n"
+                                   "Most likely another app is holding the file open and not accessible."))
+                return
             except IOError:
                 App.log.debug('Creating a new preferences file ...')
                 f = open(filename, 'w')
@@ -3171,6 +3178,8 @@ class App(QtCore.QObject):
             # select the just opened object but deselect the previous ones
             self.collection.set_all_inactive()
             self.collection.set_active(obj.options["name"])
+        else:
+            self.collection.set_all_inactive()
 
         # here it is done the object plotting
         def worker_task(t_obj):
@@ -4667,9 +4676,12 @@ class App(QtCore.QObject):
                 with open(filename, 'w') as f:
                     for line in my_gcode:
                         f.write(line)
-
             except FileNotFoundError:
                 self.inform.emit(_("[WARNING] No such file or directory"))
+                return
+            except PermissionError:
+                self.inform.emit(_("[WARNING] Permission denied, saving not possible.\n"
+                                   "Most likely another app is holding the file open and not accessible."))
                 return
 
         # Just for adding it to the recent files list.
@@ -4847,12 +4859,11 @@ class App(QtCore.QObject):
         # a geometry object before we update it.
         if self.geo_editor.editor_active is False and self.exc_editor.editor_active is False:
             if self.collection.get_active():
-                self.log.debug("on_delete()")
-                self.report_usage("on_delete")
+                self.log.debug("App.on_delete()")
 
                 while (self.collection.get_active()):
                     obj_active = self.collection.get_active()
-                    # if the deleted object is FlatCAMGerber then make sure to delete the possbile mark shapes
+                    # if the deleted object is FlatCAMGerber then make sure to delete the possible mark shapes
                     if isinstance(obj_active, FlatCAMGerber):
                         for el in obj_active.mark_shapes:
                             obj_active.mark_shapes[el].clear(update=True)
@@ -4867,6 +4878,27 @@ class App(QtCore.QObject):
                 self.inform.emit(_("Failed. No object(s) selected..."))
         else:
             self.inform.emit(_("Save the work in Editor and try again ..."))
+
+    def delete_first_selected(self):
+        # Keep this for later
+        try:
+            sel_obj = self.collection.get_active()
+            name = sel_obj.options["name"]
+        except AttributeError:
+            self.log.debug("Nothing selected for deletion")
+            return
+
+        # Remove plot
+        # self.plotcanvas.figure.delaxes(self.collection.get_active().axes)
+        # self.plotcanvas.auto_adjust_axes()
+
+        # Clear form
+        self.setup_component_editor()
+
+        # Remove from dictionary
+        self.collection.delete_active()
+
+        self.inform.emit("Object deleted: %s" % name)
 
     def on_set_origin(self):
         """
@@ -5485,26 +5517,6 @@ class App(QtCore.QObject):
                     self.object_changed.emit(obj)
                 self.inform.emit(_("[success] Skew on Y axis done."))
 
-    def delete_first_selected(self):
-        # Keep this for later
-        try:
-            name = self.collection.get_active().options["name"]
-        except AttributeError:
-            self.log.debug("Nothing selected for deletion")
-            return
-
-        # Remove plot
-        # self.plotcanvas.figure.delaxes(self.collection.get_active().axes)
-        # self.plotcanvas.auto_adjust_axes()
-
-        # Clear form
-        self.setup_component_editor()
-
-        # Remove from dictionary
-        self.collection.delete_active()
-
-        self.inform.emit("Object deleted: %s" % name)
-
     def on_plots_updated(self):
         """
         Callback used to report when the plots have changed.
@@ -5689,13 +5701,12 @@ class App(QtCore.QObject):
         self.plotcanvas.vispy_canvas.view.camera.pan_button_setting = self.defaults['global_pan_button']
 
         self.pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
+        self.pos = (self.pos_canvas[0], self.pos_canvas[1])
+        self.app_cursor.enabled = False
 
-        if self.grid_status() == True:
+        if self.grid_status():
             self.pos = self.geo_editor.snap(self.pos_canvas[0], self.pos_canvas[1])
             self.app_cursor.enabled = True
-        else:
-            self.pos = (self.pos_canvas[0], self.pos_canvas[1])
-            self.app_cursor.enabled = False
 
         try:
             modifiers = QtWidgets.QApplication.keyboardModifiers()
@@ -5748,7 +5759,7 @@ class App(QtCore.QObject):
         if self.rel_point1 is not None:
             try:  # May fail in case mouse not within axes
                 pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
-                if self.grid_status():
+                if self.grid_status() == True:
                     pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
                     self.app_cursor.enabled = True
                     # Update cursor
@@ -6152,6 +6163,12 @@ class App(QtCore.QObject):
             face_color = kwargs['face_color']
         else:
             face_color = self.defaults['global_sel_fill']
+
+        if 'face_alpha' in kwargs:
+            face_alpha = kwargs['face_alpha']
+        else:
+            face_alpha = 0.3
+
         x0, y0 = old_coords
         x1, y1 = coords
         pt1 = (x0, y0)
@@ -6161,7 +6178,7 @@ class App(QtCore.QObject):
         sel_rect = Polygon([pt1, pt2, pt3, pt4])
 
         color_t = Color(face_color)
-        color_t.alpha = 0.3
+        color_t.alpha = face_alpha
         self.move_tool.sel_shapes.add(sel_rect, color=color, face_color=color_t, update=True,
                                       layer=0, tolerance=None)
 
@@ -7107,8 +7124,14 @@ class App(QtCore.QObject):
             # Parse the xml through a xml parser just to add line feeds
             # and to make it look more pretty for the output
             svgcode = parse_xml_string(svg_elem)
-            with open(filename, 'w') as fp:
-                fp.write(svgcode.toprettyxml())
+            try:
+                with open(filename, 'w') as fp:
+                    fp.write(svgcode.toprettyxml())
+            except PermissionError:
+                self.inform.emit(_("[WARNING] Permission denied, saving not possible.\n"
+                                   "Most likely another app is holding the file open and not accessible."))
+                return 'fail'
+
             if self.defaults["global_open_style"] is False:
                 self.file_opened.emit("SVG", filename)
             self.file_saved.emit("SVG", filename)
@@ -7211,8 +7234,13 @@ class App(QtCore.QObject):
             # Parse the xml through a xml parser just to add line feeds
             # and to make it look more pretty for the output
             doc = parse_xml_string(svg_elem)
-            with open(filename, 'w') as fp:
-                fp.write(doc.toprettyxml())
+            try:
+                with open(filename, 'w') as fp:
+                    fp.write(doc.toprettyxml())
+            except PermissionError:
+                self.inform.emit(_("[WARNING] Permission denied, saving not possible.\n"
+                                   "Most likely another app is holding the file open and not accessible."))
+                return 'fail'
 
             self.progress.emit(100)
             if self.defaults["global_open_style"] is False:
@@ -7327,8 +7355,14 @@ class App(QtCore.QObject):
             # Parse the xml through a xml parser just to add line feeds
             # and to make it look more pretty for the output
             doc = parse_xml_string(svg_elem)
-            with open(filename, 'w') as fp:
-                fp.write(doc.toprettyxml())
+            try:
+                with open(filename, 'w') as fp:
+                    fp.write(doc.toprettyxml())
+            except PermissionError:
+                self.inform.emit(_("[WARNING] Permission denied, saving not possible.\n"
+                                   "Most likely another app is holding the file open and not accessible."))
+                return 'fail'
+
             self.progress.emit(100)
             if self.defaults["global_open_style"] is False:
                 self.file_opened.emit("SVG", filename)
@@ -7369,15 +7403,20 @@ class App(QtCore.QObject):
         file_string = StringIO(obj.source_file)
         time_string = "{:%A, %d %B %Y at %H:%M}".format(datetime.now())
 
-        with open(filename, 'w') as file:
-            file.writelines('G04*\n')
-            file.writelines('G04 %s (RE)GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s*\n' %
-                            (obj.kind.upper(), str(self.version), str(self.version_date)))
-            file.writelines('G04 Filename: %s*\n' % str(obj_name))
-            file.writelines('G04 Created on : %s*\n' % time_string)
+        try:
+            with open(filename, 'w') as file:
+                file.writelines('G04*\n')
+                file.writelines('G04 %s (RE)GENERATED BY FLATCAM v%s - www.flatcam.org - Version Date: %s*\n' %
+                                (obj.kind.upper(), str(self.version), str(self.version_date)))
+                file.writelines('G04 Filename: %s*\n' % str(obj_name))
+                file.writelines('G04 Created on : %s*\n' % time_string)
 
-            for line in file_string:
-                file.writelines(line)
+                for line in file_string:
+                    file.writelines(line)
+        except PermissionError:
+            self.inform.emit(_("[WARNING] Permission denied, saving not possible.\n"
+                               "Most likely another app is holding the file open and not accessible."))
+            return 'fail'
 
     def export_excellon(self, obj_name, filename, use_thread=True):
         """
@@ -7479,8 +7518,14 @@ class App(QtCore.QObject):
                 exported_excellon += excellon_code
                 exported_excellon += footer
 
-                with open(filename, 'w') as fp:
-                    fp.write(exported_excellon)
+                try:
+                    with open(filename, 'w') as fp:
+                        fp.write(exported_excellon)
+                except PermissionError:
+                    self.inform.emit(_("[WARNING] Permission denied, saving not possible.\n"
+                                       "Most likely another app is holding the file open and not accessible."))
+                    return 'fail'
+
                 if self.defaults["global_open_style"] is False:
                     self.file_opened.emit("Excellon", filename)
                 self.file_saved.emit("Excellon", filename)
@@ -7596,8 +7641,14 @@ class App(QtCore.QObject):
                 exported_gerber += gerber_code
                 exported_gerber += footer
 
-                with open(filename, 'w') as fp:
-                    fp.write(exported_gerber)
+                try:
+                    with open(filename, 'w') as fp:
+                        fp.write(exported_gerber)
+                except PermissionError:
+                    self.inform.emit(_("[WARNING] Permission denied, saving not possible.\n"
+                                       "Most likely another app is holding the file open and not accessible."))
+                    return 'fail'
+
                 if self.defaults["global_open_style"] is False:
                     self.file_opened.emit("Gerber", filename)
                 self.file_saved.emit("Gerber", filename)

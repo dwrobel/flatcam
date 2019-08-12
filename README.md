@@ -9,11 +9,47 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+10.08.2019
+
+- added new feature in NCC Tool: now another object can be used as reference for the area extent to be cleared of copper
+- fixed issue in the latest feature in NCC Tool: now it works also with reference objects made out of LineStrings (tool 'Path' in Geometry Editor)
+- translation files updated for the new strings (Google Translate)
+- RELEASE 8.93
+
+9.08.2019
+
+- added Exception handing for the case when the user is trying to save & overwrite a file already opened in another file
+- finished added 'Area' type of Paint in Paint Tool
+- fixed bug that created a choppy geometry for CNCJob when working in INCH
+- fixed bug that did not asked the user to save the preferences after importing a new set of preferences, after the user is trying to close the Preferences tab window
+
+7.08.2019
+
+- replaced setFixedWidth calls with setMinimumWidth
+- recoded the camlib.Geometry.isolation_geometry() function
+- started to work on Paint Area in Paint Tool
+
+6.08.2019
+
+- fixed bug that crashed the app after creating a new geometry, if a new object is loaded and the new geometry is deleted and then trying to select the just loaded new object
+- made some GUI elements in Edit -> Preferences to have a minimum width as opposed to the previous fixed one
+- fixed issue in the isolation function, if the isolation can't be done there will be generated no Geometry object 
+- some minor UI changes
+- strings added and translations updated
+
+5.08.2019
+
+- made sure that if using an negative Gerber isolation diameter, the resulting Geometry object will use a tool with positive diameter
+- fixed bug that when isolating a Gerber file made out of a single polygon, an RecursionException was issued together with inability to create tbe isolation
+- when applying a new language if there are any changes in the current project, the app will offer to save the project before the reboot
+
 3.08.2019
 
 - added project name to the window title
 - fulfilled request: When saving a CNC file, if the file name is changed in the OS window, the new name does appear in the “Selected” (in name) and “Project” tabs (in cnc_job)
 - solved bug such that the app is not crashing when some apertures in the Gerber file have no geometry. More than that, now the apertures that have geometry elements are bolded as opposed to the ones without geometry for which the text is unbolded
+- merged a pull request with language changes for Russian translate
+- updated the other translations
 
 31.07.2019
 

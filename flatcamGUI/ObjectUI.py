@@ -101,7 +101,7 @@ class ObjectUI(QtWidgets.QWidget):
         self.scale_button.setToolTip(
             _("Perform scaling operation.")
         )
-        self.scale_button.setFixedWidth(70)
+        self.scale_button.setMinimumWidth(70)
         self.scale_grid.addWidget(self.scale_button, 0, 2)
 
         # ### Offset ####
@@ -128,7 +128,7 @@ class ObjectUI(QtWidgets.QWidget):
         self.offset_button.setToolTip(
             _("Perform the offset operation.")
         )
-        self.offset_button.setFixedWidth(70)
+        self.offset_button.setMinimumWidth(70)
         self.offset_grid.addWidget(self.offset_button, 0, 2)
 
         layout.addStretch()
@@ -148,7 +148,7 @@ class GerberObjectUI(ObjectUI):
         self.custom_box.addLayout(grid0)
 
         self.plot_options_label = QtWidgets.QLabel(_("<b>Plot Options:</b>"))
-        self.plot_options_label.setFixedWidth(90)
+        self.plot_options_label.setMinimumWidth(90)
 
         grid0.addWidget(self.plot_options_label, 0, 0)
 
@@ -157,7 +157,7 @@ class GerberObjectUI(ObjectUI):
         self.solid_cb.setToolTip(
             _("Solid color polygons.")
         )
-        self.solid_cb.setFixedWidth(50)
+        self.solid_cb.setMinimumWidth(50)
         grid0.addWidget(self.solid_cb, 0, 1)
 
         # Multicolored CB
@@ -165,7 +165,7 @@ class GerberObjectUI(ObjectUI):
         self.multicolored_cb.setToolTip(
             _("Draw polygons in different colors.")
         )
-        self.multicolored_cb.setFixedWidth(55)
+        self.multicolored_cb.setMinimumWidth(55)
         grid0.addWidget(self.multicolored_cb, 0, 2)
 
         # Plot CB
@@ -173,7 +173,7 @@ class GerberObjectUI(ObjectUI):
         self.plot_cb.setToolTip(
             _("Plot (show) this object.")
         )
-        self.plot_cb.setFixedWidth(59)
+        self.plot_cb.setMinimumWidth(59)
         grid0.addWidget(self.plot_cb, 0, 3)
 
         # ## Object name
@@ -193,7 +193,7 @@ class GerberObjectUI(ObjectUI):
         self.apertures_table_label.setToolTip(
             _("Apertures Table for the Gerber Object.")
         )
-        self.apertures_table_label.setFixedWidth(90)
+        self.apertures_table_label.setMinimumWidth(90)
 
         hlay_plot.addWidget(self.apertures_table_label)
 
@@ -264,7 +264,7 @@ class GerberObjectUI(ObjectUI):
               "feature, use a negative value for\n"
               "this parameter.")
         )
-        tdlabel.setFixedWidth(90)
+        tdlabel.setMinimumWidth(90)
         grid1.addWidget(tdlabel, 0, 0)
         self.iso_tool_dia_entry = LengthEntry()
         grid1.addWidget(self.iso_tool_dia_entry, 0, 1)
@@ -274,7 +274,7 @@ class GerberObjectUI(ObjectUI):
             _("Width of the isolation gap in\n"
               "number (integer) of tool widths.")
         )
-        passlabel.setFixedWidth(90)
+        passlabel.setMinimumWidth(90)
         grid1.addWidget(passlabel, 1, 0)
         self.iso_width_entry = IntEntry()
         grid1.addWidget(self.iso_width_entry, 1, 1)
@@ -285,7 +285,7 @@ class GerberObjectUI(ObjectUI):
               "Example:\n"
               "A value here of 0.25 means an overlap of 25% from the tool diameter found above.")
         )
-        overlabel.setFixedWidth(90)
+        overlabel.setMinimumWidth(90)
         grid1.addWidget(overlabel, 2, 0)
         self.iso_overlap_entry = FloatEntry()
         grid1.addWidget(self.iso_overlap_entry, 2, 1)
@@ -337,7 +337,7 @@ class GerberObjectUI(ObjectUI):
         self.custom_box.addLayout(hlay_1)
 
         self.padding_area_label = QtWidgets.QLabel('')
-        self.padding_area_label.setFixedWidth(90)
+        self.padding_area_label.setMinimumWidth(90)
         hlay_1.addWidget(self.padding_area_label)
 
         self.generate_iso_button = QtWidgets.QPushButton(_('FULL Geo'))
@@ -346,7 +346,7 @@ class GerberObjectUI(ObjectUI):
               "for isolation routing. It contains both\n"
               "the interiors and exteriors geometry.")
         )
-        self.generate_iso_button.setFixedWidth(90)
+        self.generate_iso_button.setMinimumWidth(90)
         hlay_1.addWidget(self.generate_iso_button, alignment=Qt.AlignLeft)
 
         # hlay_1.addStretch()
@@ -357,7 +357,7 @@ class GerberObjectUI(ObjectUI):
               "for isolation routing containing\n"
               "only the exteriors geometry.")
         )
-        # self.generate_ext_iso_button.setFixedWidth(100)
+        # self.generate_ext_iso_button.setMinimumWidth(100)
         hlay_1.addWidget(self.generate_ext_iso_button)
 
         self.generate_int_iso_button = QtWidgets.QPushButton(_('Int Geo'))
@@ -366,7 +366,7 @@ class GerberObjectUI(ObjectUI):
               "for isolation routing containing\n"
               "only the interiors geometry.")
         )
-        # self.generate_ext_iso_button.setFixedWidth(90)
+        # self.generate_ext_iso_button.setMinimumWidth(90)
         hlay_1.addWidget(self.generate_int_iso_button)
 
         # when the follow checkbox is checked then the exteriors and interiors isolation generation buttons
@@ -383,7 +383,7 @@ class GerberObjectUI(ObjectUI):
             _("Create a Geometry object with\n"
               "toolpaths to cut all non-copper regions.")
         )
-        self.clearcopper_label.setFixedWidth(90)
+        self.clearcopper_label.setMinimumWidth(90)
         grid2.addWidget(self.clearcopper_label, 0, 0)
 
         self.generate_ncc_button = QtWidgets.QPushButton(_('NCC Tool'))
@@ -431,7 +431,7 @@ class GerberObjectUI(ObjectUI):
               "objects with this minimum\n"
               "distance.")
         )
-        bmlabel.setFixedWidth(90)
+        bmlabel.setMinimumWidth(90)
         grid4.addWidget(bmlabel, 0, 0)
         self.noncopper_margin_entry = LengthEntry()
         grid4.addWidget(self.noncopper_margin_entry, 0, 1)
@@ -441,7 +441,7 @@ class GerberObjectUI(ObjectUI):
         self.noncopper_rounded_cb.setToolTip(
             _("Resulting geometry will have rounded corners.")
         )
-        self.noncopper_rounded_cb.setFixedWidth(90)
+        self.noncopper_rounded_cb.setMinimumWidth(90)
         grid4.addWidget(self.noncopper_rounded_cb, 1, 0)
 
         self.generate_noncopper_button = QtWidgets.QPushButton(_('Generate Geo'))
@@ -463,7 +463,7 @@ class GerberObjectUI(ObjectUI):
             _("Distance of the edges of the box\n"
               "to the nearest polygon.")
         )
-        bbmargin.setFixedWidth(90)
+        bbmargin.setMinimumWidth(90)
         grid5.addWidget(bbmargin, 0, 0)
         self.bbmargin_entry = LengthEntry()
         grid5.addWidget(self.bbmargin_entry, 0, 1)
@@ -475,7 +475,7 @@ class GerberObjectUI(ObjectUI):
               "their radius is equal to\n"
               "the margin.")
         )
-        self.bbrounded_cb.setFixedWidth(90)
+        self.bbrounded_cb.setMinimumWidth(90)
         grid5.addWidget(self.bbrounded_cb, 1, 0)
 
         self.generate_bb_button = QtWidgets.QPushButton(_('Generate Geo'))
@@ -957,7 +957,7 @@ class GeometryObjectUI(ObjectUI):
         self.tool_offset_entry = FloatEntry()
         self.tool_offset_entry.setValidator(QtGui.QDoubleValidator(-9999.9999, 9999.9999, 4))
         spacer_lbl = QtWidgets.QLabel(" ")
-        spacer_lbl.setFixedWidth(80)
+        spacer_lbl.setMinimumWidth(80)
 
         self.grid1.addWidget(self.tool_offset_entry, 0, 1)
         self.grid1.addWidget(spacer_lbl, 0, 2)
