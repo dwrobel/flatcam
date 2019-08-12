@@ -2358,7 +2358,7 @@ class Gerber (Geometry):
                         "D-no zero suppression)" % self.gerber_zeros)
                     log.debug("Gerber format found. Coordinates type = %s (Absolute or Relative)" % absolute)
 
-                    self.gerber_units = match.group(1)
+                    self.gerber_units = match.group(5)
                     log.debug("Gerber units found = %s" % self.gerber_units)
                     # Changed for issue #80
                     self.convert_units(match.group(5))
