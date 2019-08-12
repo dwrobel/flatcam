@@ -879,20 +879,45 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             if invert:
                 try:
-                    if type(geom) is MultiPolygon:
+                    try:
                         pl = []
                         for p in geom:
                             if p is not None:
-                                pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+                                if isinstance(p, Polygon):
+                                    pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+                                elif isinstance(p, LinearRing):
+                                    pl.append(Polygon(p.coords[::-1]))
                         geom = MultiPolygon(pl)
-                    elif type(geom) is Polygon and geom is not None:
-                        geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
-                    else:
-                        log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> Unexpected Geometry")
+                    except TypeError:
+                        if isinstance(geom, Polygon) and geom is not None:
+                            geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
+                        elif isinstance(geom, LinearRing) and geom is not None:
+                            geom = Polygon(geom.coords[::-1])
+                        else:
+                            log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> Unexpected Geometry %s" %
+                                      type(geom))
                 except Exception as e:
                     log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> %s" % str(e))
                     return 'fail'
             return geom
+
+            # if invert:
+            #     try:
+            #         if type(geom) is MultiPolygon:
+            #             pl = []
+            #             for p in geom:
+            #                 if p is not None:
+            #                     pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+            #             geom = MultiPolygon(pl)
+            #         elif type(geom) is Polygon and geom is not None:
+            #             geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
+            #         else:
+            #             log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> Unexpected Geometry %s" %
+            #                       type(geom))
+            #     except Exception as e:
+            #         log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> %s" % str(e))
+            #         return 'fail'
+            # return geom
 
         # if float(self.options["isotooldia"]) < 0:
         #     self.options["isotooldia"] = -self.options["isotooldia"]

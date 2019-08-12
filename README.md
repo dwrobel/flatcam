@@ -14,6 +14,8 @@ CAD program, and create G-Code for Isolation routing.
 - done regression to solve the bug with multiple passes cutting from the copper features (I should remember not to make mods here)
 - if 'combine' is checked in Gerber isolation but there is only one pass, the resulting geometry will still be single geo
 - the 'passes' entry was changed to a IntSpinner so it will allow passes to be entered only in range (1, 999) - it will not allow entry of 0 which may create some issues
+- improved the FlatCAMGerber.isolate() function to work for geometry in the form of list and also in case that the elements of the list are LinearRings (like when doing the Exterior Isolation)
+- in NCC Tool made sure that at each run the old objects are deleted
 
 11.08.2019
 

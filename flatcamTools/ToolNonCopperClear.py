@@ -332,6 +332,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
         FlatCAMTool.run(self)
         self.set_tool_ui()
 
+        # reset those objects on a new run
+        self.ncc_obj = None
+        self.bound_obj = None
+        self.obj_name = ''
+        self.bound_obj_name = ''
+
         self.build_ui()
         self.app.ui.notebook.setTabText(2, _("NCC Tool"))
 
@@ -692,6 +698,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.build_ui()
 
     def on_ncc(self):
+        self.bound_obj = None
+        self.ncc_obj = None
 
         try:
             over = float(self.ncc_overlap_entry.get_value())
