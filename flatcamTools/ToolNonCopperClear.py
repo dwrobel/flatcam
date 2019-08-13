@@ -235,6 +235,43 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_rest_cb = FCCheckBox()
         grid3.addWidget(self.ncc_rest_cb, 6, 1)
 
+        # ## NCC Offset choice
+        self.ncc_offset_choice_label = QtWidgets.QLabel(_("Offset:"))
+        self.ncc_offset_choice_label.setToolTip(
+            _("If used, it will add an offset to the copper features.\n"
+              "The copper clearing will finish to a distance\n"
+              "from the copper features.\n"
+              "The value can be between 0 and 10 FlatCAM units.")
+        )
+        grid3.addWidget(self.ncc_offset_choice_label, 7, 0)
+        self.ncc_choice_offset_cb = FCCheckBox()
+        grid3.addWidget(self.ncc_choice_offset_cb, 7, 1)
+
+        # ## NCC Offset value
+        self.ncc_offset_label = QtWidgets.QLabel(_("Offset value:"))
+        self.ncc_offset_label.setToolTip(
+            _("If used, it will add an offset to the copper features.\n"
+              "The copper clearing will finish to a distance\n"
+              "from the copper features.\n"
+              "The value can be between 0 and 10 FlatCAM units.")
+        )
+        grid3.addWidget(self.ncc_offset_label, 8, 0)
+        self.ncc_offset_spinner = FCDoubleSpinner()
+        self.ncc_offset_spinner.set_range(0.00, 10.00)
+        self.ncc_offset_spinner.set_precision(4)
+        self.ncc_offset_spinner.setWrapping(True)
+
+        units = self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
+        if units == 'MM':
+            self.ncc_offset_spinner.setSingleStep(0.1)
+        else:
+            self.ncc_offset_spinner.setSingleStep(0.01)
+
+        grid3.addWidget(self.ncc_offset_spinner, 8, 1)
+
+        self.ncc_offset_label.hide()
+        self.ncc_offset_spinner.hide()
+
         # ## Reference
         self.reference_radio = RadioSet([{'label': _('Itself'), 'value': 'itself'},
                                          {'label': _('Box'), 'value': 'box'}])
@@ -245,8 +282,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "- 'Box': will do non copper clearing within the box\n"
               "specified by the object selected in the Ref. Object combobox.")
         )
-        grid3.addWidget(self.reference_label, 7, 0)
-        grid3.addWidget(self.reference_radio, 7, 1)
+        grid3.addWidget(self.reference_label, 9, 0)
+        grid3.addWidget(self.reference_radio, 9, 1)
 
         grid4 = QtWidgets.QGridLayout()
         self.tools_box.addLayout(grid4)
@@ -308,6 +345,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
         self.reference_radio.group_toggle_fn = self.on_toggle_reference
+        self.ncc_choice_offset_cb.stateChanged.connect(self.on_offset_choice)
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+N', **kwargs)
@@ -543,6 +581,14 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.box_combo_type.show()
             self.box_combo_type_label.show()
 
+    def on_offset_choice(self, state):
+        if state:
+            self.ncc_offset_label.show()
+            self.ncc_offset_spinner.show()
+        else:
+            self.ncc_offset_label.hide()
+            self.ncc_offset_spinner.hide()
+
     def on_tool_add(self, dia=None, muted=None):
 
         self.ui_disconnect()
@@ -730,6 +776,15 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 return
         margin = margin if margin is not None else float(self.app.defaults["tools_nccmargin"])
 
+        try:
+            ncc_offset_value = float(self.ncc_offset_spinner.get_value())
+        except ValueError:
+            self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
+                                   "use a number."))
+            return
+        ncc_offset_value = ncc_offset_value if ncc_offset_value is not None \
+            else float(self.app.defaults["tools_ncc_offset_value"])
+
         connect = self.ncc_connect_cb.get_value()
         connect = connect if connect else self.app.defaults["tools_nccconnect"]
 
@@ -781,7 +836,14 @@ class NonCopperClear(FlatCAMTool, Gerber):
             return
 
         # calculate the empty area by subtracting the solid_geometry from the object bounding box geometry
-        empty = self.ncc_obj.get_empty_area(bounding_box)
+        if self.ncc_choice_offset_cb.isChecked():
+            self.app.inform.emit(_("[WARNING_NOTCL] Buffering ..."))
+            offseted_geo = self.ncc_obj.solid_geometry.buffer(distance=ncc_offset_value)
+            self.app.inform.emit(_("[success] Buffering finished ..."))
+            empty = self.get_ncc_empty_area(target=offseted_geo, boundary=bounding_box)
+        else:
+            empty = self.get_ncc_empty_area(target=self.ncc_obj.solid_geometry, boundary=bounding_box)
+
         if type(empty) is Polygon:
             empty = MultiPolygon([empty])
 
@@ -1057,30 +1119,41 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 app_obj.new_object("geometry", name, initialize_rm)
             except Exception as e:
                 proc.done()
-                self.app.inform.emit(_('[ERROR_NOTCL] NCCTool.clear_non_copper_rest() --> %s') % str(e))
+                app_obj.inform.emit(_('[ERROR_NOTCL] NCCTool.clear_non_copper_rest() --> %s') % str(e))
                 return
 
             if app_obj.poly_not_cleared is True:
-                self.app.inform.emit('[success] NCC Tool finished.')
+                app_obj.inform.emit('[success] NCC Tool finished.')
                 # focus on Selected Tab
-                self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
+                app_obj.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
             else:
-                self.app.inform.emit(_('[ERROR_NOTCL] NCC Tool finished but could not clear the object '
+                app_obj.inform.emit(_('[ERROR_NOTCL] NCC Tool finished but could not clear the object '
                                      'with current settings.'))
                 # focus on Project Tab
-                self.app.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
+                app_obj.ui.notebook.setCurrentWidget(self.app.ui.project_tab)
             proc.done()
             # reset the variable for next use
             app_obj.poly_not_cleared = False
 
             self.tools_frame.hide()
-            self.app.ui.notebook.setTabText(2, "Tools")
+            app_obj.ui.notebook.setTabText(2, "Tools")
 
         # Promise object with the new name
         self.app.collection.promise(name)
 
         # Background
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
+
+    @staticmethod
+    def get_ncc_empty_area(target, boundary=None):
+        """
+        Returns the complement of target geometry within
+        the given boundary polygon. If not specified, it defaults to
+        the rectangular bounding box of target geometry.
+        """
+        if boundary is None:
+            boundary = target.envelope
+        return boundary.difference(target)
 
     def reset_fields(self):
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

@@ -1609,7 +1609,7 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
 
     def set_value(self, val):
         try:
-            k = int(val)
+            k = float(val)
         except Exception as e:
             log.debug(str(e))
             return

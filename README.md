@@ -15,6 +15,8 @@ CAD program, and create G-Code for Isolation routing.
 - some PEP8 changes in FlatCAMApp.py
 - added new settings in Edit -> Preferences -> General for Notebook Font size (set font size for the items in Project Tree and for text in Selected Tab) and for canvas Axis font size. The values are stored in QSettings.
 - updated translations
+- fixed a bug in FCDoubleSpinner GUI element
+- added a new parameter in NCC tool named offset. If the offset is used then the copper clearing will finish to a set distance of the copper features
 
 12.08.2019
 

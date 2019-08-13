@@ -5916,6 +5916,35 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.ncc_rest_cb = FCCheckBox()
         grid0.addWidget(self.ncc_rest_cb, 6, 1)
 
+        # ## NCC Offset choice
+        self.ncc_offset_choice_label = QtWidgets.QLabel(_("Offset:"))
+        self.ncc_offset_choice_label.setToolTip(
+            _("If used, it will add an offset to the copper features.\n"
+              "The copper clearing will finish to a distance\n"
+              "from the copper features.\n"
+              "The value can be between 0 and 10 FlatCAM units.")
+        )
+        grid0.addWidget(self.ncc_offset_choice_label, 7, 0)
+        self.ncc_choice_offset_cb = FCCheckBox()
+        grid0.addWidget(self.ncc_choice_offset_cb, 7, 1)
+
+        # ## NCC Offset value
+        self.ncc_offset_label = QtWidgets.QLabel(_("Offset value:"))
+        self.ncc_offset_label.setToolTip(
+            _("If used, it will add an offset to the copper features.\n"
+              "The copper clearing will finish to a distance\n"
+              "from the copper features.\n"
+              "The value can be between 0 and 10 FlatCAM units.")
+        )
+        grid0.addWidget(self.ncc_offset_label, 8, 0)
+        self.ncc_offset_spinner = FCDoubleSpinner()
+        self.ncc_offset_spinner.set_range(0.00, 10.00)
+        self.ncc_offset_spinner.set_precision(4)
+        self.ncc_offset_spinner.setWrapping(True)
+        self.ncc_offset_spinner.setSingleStep(0.1)
+
+        grid0.addWidget(self.ncc_offset_spinner, 8, 1)
+
         # ## Reference
         self.reference_radio = RadioSet([{'label': _('Itself'), 'value': 'itself'},
                                          {'label': _('Box'), 'value': 'box'}])
@@ -5926,8 +5955,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "Choosing the 'Box' option will do non copper clearing within the box\n"
               "specified by another object different than the one that is copper cleared.")
         )
-        grid0.addWidget(reference_label, 7, 0)
-        grid0.addWidget(self.reference_radio, 7, 1)
+        grid0.addWidget(reference_label, 9, 0)
+        grid0.addWidget(self.reference_radio, 9, 1)
 
         self.layout.addStretch()
 
