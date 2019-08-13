@@ -326,6 +326,547 @@ class FCDrillArray(FCShapeTool):
         return
 
 
+class FCSlot(FCShapeTool):
+    """
+    Resulting type: Polygon
+    """
+
+    def __init__(self, draw_app):
+        DrawTool.__init__(self, draw_app)
+        self.name = 'pad'
+        self.draw_app = draw_app
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except Exception as e:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_circle.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
+        try:
+            self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
+        except KeyError:
+            self.draw_app.app.inform.emit(_(
+                "[WARNING_NOTCL] To add an Pad first select a aperture in Aperture Table"))
+            self.draw_app.in_action = False
+            self.complete = True
+            return
+
+        if self.radius == 0:
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Aperture size is zero. It needs to be greater than zero."))
+            self.dont_execute = True
+            return
+        else:
+            self.dont_execute = False
+
+        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']
+        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
+
+        # if those cause KeyError exception it means that the aperture type is not 'R'. Only 'R' type has those keys
+        try:
+            self.half_width = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['width']) / 2
+        except KeyError:
+            pass
+        try:
+            self.half_height = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['height']) / 2
+        except KeyError:
+            pass
+
+        geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+        if isinstance(geo, DrawToolShape) and geo.geo is not None:
+            self.draw_app.draw_utility_geometry(geo=geo)
+
+        self.draw_app.app.inform.emit(_("Click to place ..."))
+
+        # Switch notebook to Selected page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+
+        self.start_msg = _("Click to place ...")
+
+    def click(self, point):
+        self.make()
+        return "Done."
+
+    def utility_geometry(self, data=None):
+        if self.dont_execute is True:
+            self.draw_app.select_tool('select')
+            return
+
+        self.points = data
+        geo_data = self.util_shape(data)
+        if geo_data:
+            return DrawToolUtilityShape(geo_data)
+        else:
+            return None
+
+    def util_shape(self, point):
+        # updating values here allows us to change the aperture on the fly, after the Tool has been started
+        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']
+        self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
+        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
+
+        # if those cause KeyError exception it means that the aperture type is not 'R'. Only 'R' type has those keys
+        try:
+            self.half_width = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['width']) / 2
+        except KeyError:
+            pass
+        try:
+            self.half_height = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['height']) / 2
+        except KeyError:
+            pass
+
+        if point[0] is None and point[1] is None:
+            point_x = self.draw_app.x
+            point_y = self.draw_app.y
+        else:
+            point_x = point[0]
+            point_y = point[1]
+
+        ap_type = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['type']
+        if ap_type == 'C':
+            new_geo_el = dict()
+
+            center = Point([point_x, point_y])
+            new_geo_el['solid'] = center.buffer(self.radius)
+            new_geo_el['follow'] = center
+            return new_geo_el
+        elif ap_type == 'R':
+            new_geo_el = dict()
+
+            p1 = (point_x - self.half_width, point_y - self.half_height)
+            p2 = (point_x + self.half_width, point_y - self.half_height)
+            p3 = (point_x + self.half_width, point_y + self.half_height)
+            p4 = (point_x - self.half_width, point_y + self.half_height)
+            center = Point([point_x, point_y])
+            new_geo_el['solid'] = Polygon([p1, p2, p3, p4, p1])
+            new_geo_el['follow'] = center
+            return new_geo_el
+        elif ap_type == 'O':
+            geo = []
+            new_geo_el = dict()
+
+            if self.half_height > self.half_width:
+                p1 = (point_x - self.half_width, point_y - self.half_height + self.half_width)
+                p2 = (point_x + self.half_width, point_y - self.half_height + self.half_width)
+                p3 = (point_x + self.half_width, point_y + self.half_height - self.half_width)
+                p4 = (point_x - self.half_width, point_y + self.half_height - self.half_width)
+
+                down_center = [point_x, point_y - self.half_height + self.half_width]
+                d_start_angle = math.pi
+                d_stop_angle = 0.0
+                down_arc = arc(down_center, self.half_width, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
+
+                up_center = [point_x, point_y + self.half_height - self.half_width]
+                u_start_angle = 0.0
+                u_stop_angle = math.pi
+                up_arc = arc(up_center, self.half_width, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
+
+                geo.append(p1)
+                for pt in down_arc:
+                    geo.append(pt)
+                geo.append(p2)
+                geo.append(p3)
+                for pt in up_arc:
+                    geo.append(pt)
+                geo.append(p4)
+                new_geo_el['solid'] = Polygon(geo)
+                center = Point([point_x, point_y])
+                new_geo_el['follow'] = center
+                return new_geo_el
+
+            else:
+                p1 = (point_x - self.half_width + self.half_height, point_y - self.half_height)
+                p2 = (point_x + self.half_width - self.half_height, point_y - self.half_height)
+                p3 = (point_x + self.half_width - self.half_height, point_y + self.half_height)
+                p4 = (point_x - self.half_width + self.half_height, point_y + self.half_height)
+
+                left_center = [point_x - self.half_width + self.half_height, point_y]
+                d_start_angle = math.pi / 2
+                d_stop_angle = 1.5 * math.pi
+                left_arc = arc(left_center, self.half_height, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
+
+                right_center = [point_x + self.half_width - self.half_height, point_y]
+                u_start_angle = 1.5 * math.pi
+                u_stop_angle = math.pi / 2
+                right_arc = arc(right_center, self.half_height, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
+
+                geo.append(p1)
+                geo.append(p2)
+                for pt in right_arc:
+                    geo.append(pt)
+                geo.append(p3)
+                geo.append(p4)
+                for pt in left_arc:
+                    geo.append(pt)
+                new_geo_el['solid'] = Polygon(geo)
+                center = Point([point_x, point_y])
+                new_geo_el['follow'] = center
+                return new_geo_el
+        else:
+            self.draw_app.app.inform.emit(_(
+                "Incompatible aperture type. Select an aperture with type 'C', 'R' or 'O'."))
+            return None
+
+    def make(self):
+        self.draw_app.current_storage = self.storage_obj
+        try:
+            self.geometry = DrawToolShape(self.util_shape(self.points))
+        except Exception as e:
+            log.debug("FCPad.make() --> %s" % str(e))
+
+        self.draw_app.in_action = False
+        self.complete = True
+        self.draw_app.app.inform.emit(_("[success] Done. Adding Pad completed."))
+
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.apertures_table.clearSelection()
+        self.draw_app.plot_all()
+
+
+class FCSlotArray(FCShapeTool):
+    """
+    Resulting type: MultiPolygon
+    """
+
+    def __init__(self, draw_app):
+        DrawTool.__init__(self, draw_app)
+        self.name = 'array'
+        self.draw_app = draw_app
+
+        try:
+            self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
+        except KeyError:
+            self.draw_app.app.inform.emit(_(
+                "[WARNING_NOTCL] To add an Pad Array first select a aperture in Aperture Table"))
+            self.complete = True
+            self.draw_app.in_action = False
+            self.draw_app.array_frame.hide()
+            return
+
+        if self.radius == 0:
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Aperture size is zero. It needs to be greater than zero."))
+            self.dont_execute = True
+            return
+        else:
+            self.dont_execute = False
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except Exception as e:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_array.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
+        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']
+        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
+
+        # if those cause KeyError exception it means that the aperture type is not 'R'. Only 'R' type has those keys
+        try:
+            self.half_width = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['width']) / 2
+        except KeyError:
+            pass
+        try:
+            self.half_height = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['height']) / 2
+        except KeyError:
+            pass
+
+        self.draw_app.array_frame.show()
+
+        self.selected_size = None
+        self.pad_axis = 'X'
+        self.pad_array = 'linear'
+        self.pad_array_size = None
+        self.pad_pitch = None
+        self.pad_linear_angle = None
+
+        self.pad_angle = None
+        self.pad_direction = None
+        self.pad_radius = None
+
+        self.origin = None
+        self.destination = None
+        self.flag_for_circ_array = None
+
+        self.last_dx = 0
+        self.last_dy = 0
+
+        self.pt = []
+
+        geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y), static=True)
+
+        if isinstance(geo, DrawToolShape) and geo.geo is not None:
+            self.draw_app.draw_utility_geometry(geo=geo)
+
+        self.draw_app.app.inform.emit(_("Click on target location ..."))
+
+        # Switch notebook to Selected page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+
+    def click(self, point):
+
+        if self.pad_array == 'Linear':
+            self.make()
+            return
+        else:
+            if self.flag_for_circ_array is None:
+                self.draw_app.in_action = True
+                self.pt.append(point)
+
+                self.flag_for_circ_array = True
+                self.set_origin(point)
+                self.draw_app.app.inform.emit(_("Click on the Pad Circular Array Start position"))
+            else:
+                self.destination = point
+                self.make()
+                self.flag_for_circ_array = None
+                return
+
+    def set_origin(self, origin):
+        self.origin = origin
+
+    def utility_geometry(self, data=None, static=None):
+        if self.dont_execute is True:
+            self.draw_app.select_tool('select')
+            return
+
+        self.pad_axis = self.draw_app.pad_axis_radio.get_value()
+        self.pad_direction = self.draw_app.pad_direction_radio.get_value()
+        self.pad_array = self.draw_app.array_type_combo.get_value()
+        try:
+            self.pad_array_size = int(self.draw_app.pad_array_size_entry.get_value())
+            try:
+                self.pad_pitch = float(self.draw_app.pad_pitch_entry.get_value())
+                self.pad_linear_angle = float(self.draw_app.linear_angle_spinner.get_value())
+                self.pad_angle = float(self.draw_app.pad_angle_entry.get_value())
+            except TypeError:
+                self.draw_app.app.inform.emit(
+                    _("[ERROR_NOTCL] The value is not Float. Check for comma instead of dot separator."))
+                return
+        except Exception as e:
+            self.draw_app.app.inform.emit(_("[ERROR_NOTCL] The value is mistyped. Check the value."))
+            return
+
+        if self.pad_array == 'Linear':
+            if data[0] is None and data[1] is None:
+                dx = self.draw_app.x
+                dy = self.draw_app.y
+            else:
+                dx = data[0]
+                dy = data[1]
+
+            geo_el_list = []
+            geo_el = []
+            self.points = [dx, dy]
+
+            for item in range(self.pad_array_size):
+                if self.pad_axis == 'X':
+                    geo_el = self.util_shape(((dx + (self.pad_pitch * item)), dy))
+                if self.pad_axis == 'Y':
+                    geo_el = self.util_shape((dx, (dy + (self.pad_pitch * item))))
+                if self.pad_axis == 'A':
+                    x_adj = self.pad_pitch * math.cos(math.radians(self.pad_linear_angle))
+                    y_adj = self.pad_pitch * math.sin(math.radians(self.pad_linear_angle))
+                    geo_el = self.util_shape(
+                        ((dx + (x_adj * item)), (dy + (y_adj * item)))
+                    )
+
+                if static is None or static is False:
+                    new_geo_el = dict()
+
+                    if 'solid' in geo_el:
+                        new_geo_el['solid'] = affinity.translate(
+                            geo_el['solid'], xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)
+                        )
+                    if 'follow' in geo_el:
+                        new_geo_el['follow'] = affinity.translate(
+                            geo_el['follow'], xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)
+                        )
+                    geo_el_list.append(new_geo_el)
+
+                else:
+                    geo_el_list.append(geo_el)
+            # self.origin = data
+
+            self.last_dx = dx
+            self.last_dy = dy
+            return DrawToolUtilityShape(geo_el_list)
+        else:
+            if data[0] is None and data[1] is None:
+                cdx = self.draw_app.x
+                cdy = self.draw_app.y
+            else:
+                cdx = data[0]
+                cdy = data[1]
+
+            if len(self.pt) > 0:
+                temp_points = [x for x in self.pt]
+                temp_points.append([cdx, cdy])
+                return DrawToolUtilityShape(LineString(temp_points))
+
+    def util_shape(self, point):
+        # updating values here allows us to change the aperture on the fly, after the Tool has been started
+        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']
+        self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
+        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
+
+        # if those cause KeyError exception it means that the aperture type is not 'R'. Only 'R' type has those keys
+        try:
+            self.half_width = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['width']) / 2
+        except KeyError:
+            pass
+        try:
+            self.half_height = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['height']) / 2
+        except KeyError:
+            pass
+
+        if point[0] is None and point[1] is None:
+            point_x = self.draw_app.x
+            point_y = self.draw_app.y
+        else:
+            point_x = point[0]
+            point_y = point[1]
+
+        ap_type = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['type']
+        if ap_type == 'C':
+            new_geo_el = dict()
+
+            center = Point([point_x, point_y])
+            new_geo_el['solid'] = center.buffer(self.radius)
+            new_geo_el['follow'] = center
+            return new_geo_el
+        elif ap_type == 'R':
+            new_geo_el = dict()
+
+            p1 = (point_x - self.half_width, point_y - self.half_height)
+            p2 = (point_x + self.half_width, point_y - self.half_height)
+            p3 = (point_x + self.half_width, point_y + self.half_height)
+            p4 = (point_x - self.half_width, point_y + self.half_height)
+            new_geo_el['solid'] = Polygon([p1, p2, p3, p4, p1])
+            new_geo_el['follow'] = Point([point_x, point_y])
+            return new_geo_el
+        elif ap_type == 'O':
+            geo = []
+            new_geo_el = dict()
+
+            if self.half_height > self.half_width:
+                p1 = (point_x - self.half_width, point_y - self.half_height + self.half_width)
+                p2 = (point_x + self.half_width, point_y - self.half_height + self.half_width)
+                p3 = (point_x + self.half_width, point_y + self.half_height - self.half_width)
+                p4 = (point_x - self.half_width, point_y + self.half_height - self.half_width)
+
+                down_center = [point_x, point_y - self.half_height + self.half_width]
+                d_start_angle = math.pi
+                d_stop_angle = 0.0
+                down_arc = arc(down_center, self.half_width, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
+
+                up_center = [point_x, point_y + self.half_height - self.half_width]
+                u_start_angle = 0.0
+                u_stop_angle = math.pi
+                up_arc = arc(up_center, self.half_width, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
+
+                geo.append(p1)
+                for pt in down_arc:
+                    geo.append(pt)
+                geo.append(p2)
+                geo.append(p3)
+                for pt in up_arc:
+                    geo.append(pt)
+                geo.append(p4)
+
+                new_geo_el['solid'] = Polygon(geo)
+                center = Point([point_x, point_y])
+                new_geo_el['follow'] = center
+                return new_geo_el
+            else:
+                p1 = (point_x - self.half_width + self.half_height, point_y - self.half_height)
+                p2 = (point_x + self.half_width - self.half_height, point_y - self.half_height)
+                p3 = (point_x + self.half_width - self.half_height, point_y + self.half_height)
+                p4 = (point_x - self.half_width + self.half_height, point_y + self.half_height)
+
+                left_center = [point_x - self.half_width + self.half_height, point_y]
+                d_start_angle = math.pi / 2
+                d_stop_angle = 1.5 * math.pi
+                left_arc = arc(left_center, self.half_height, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
+
+                right_center = [point_x + self.half_width - self.half_height, point_y]
+                u_start_angle = 1.5 * math.pi
+                u_stop_angle = math.pi / 2
+                right_arc = arc(right_center, self.half_height, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
+
+                geo.append(p1)
+                geo.append(p2)
+                for pt in right_arc:
+                    geo.append(pt)
+                geo.append(p3)
+                geo.append(p4)
+                for pt in left_arc:
+                    geo.append(pt)
+
+                new_geo_el['solid'] = Polygon(geo)
+                center = Point([point_x, point_y])
+                new_geo_el['follow'] = center
+                return new_geo_el
+        else:
+            self.draw_app.app.inform.emit(_(
+                "Incompatible aperture type. Select an aperture with type 'C', 'R' or 'O'."))
+            return None
+
+    def make(self):
+        self.geometry = []
+        geo = None
+
+        self.draw_app.current_storage = self.storage_obj
+
+        if self.pad_array == 'Linear':
+            for item in range(self.pad_array_size):
+                if self.pad_axis == 'X':
+                    geo = self.util_shape(((self.points[0] + (self.pad_pitch * item)), self.points[1]))
+                if self.pad_axis == 'Y':
+                    geo = self.util_shape((self.points[0], (self.points[1] + (self.pad_pitch * item))))
+                if self.pad_axis == 'A':
+                    x_adj = self.pad_pitch * math.cos(math.radians(self.pad_linear_angle))
+                    y_adj = self.pad_pitch * math.sin(math.radians(self.pad_linear_angle))
+                    geo = self.util_shape(
+                        ((self.points[0] + (x_adj * item)), (self.points[1] + (y_adj * item)))
+                    )
+
+                self.geometry.append(DrawToolShape(geo))
+        else:
+            if (self.pad_angle * self.pad_array_size) > 360:
+                self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Too many Pads for the selected spacing angle."))
+                return
+
+            radius = distance(self.destination, self.origin)
+            initial_angle = math.asin((self.destination[1] - self.origin[1]) / radius)
+            for i in range(self.pad_array_size):
+                angle_radians = math.radians(self.pad_angle * i)
+                if self.pad_direction == 'CW':
+                    x = self.origin[0] + radius * math.cos(-angle_radians + initial_angle)
+                    y = self.origin[1] + radius * math.sin(-angle_radians + initial_angle)
+                else:
+                    x = self.origin[0] + radius * math.cos(angle_radians + initial_angle)
+                    y = self.origin[1] + radius * math.sin(angle_radians + initial_angle)
+
+                geo = self.util_shape((x, y))
+                if self.pad_direction == 'CW':
+                    geo = affinity.rotate(geo, angle=(math.pi - angle_radians), use_radians=True)
+                else:
+                    geo = affinity.rotate(geo, angle=(angle_radians - math.pi), use_radians=True)
+
+                self.geometry.append(DrawToolShape(geo))
+        self.complete = True
+        self.draw_app.app.inform.emit(_("[success] Done. Pad Array added."))
+        self.draw_app.in_action = False
+        self.draw_app.array_frame.hide()
+        return
+
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.apertures_table.clearSelection()
+        self.draw_app.plot_all()
+
+
 class FCDrillResize(FCShapeTool):
     def __init__(self, draw_app):
         DrawTool.__init__(self, draw_app)
@@ -1047,6 +1588,10 @@ class FlatCAMExcEditor(QtCore.QObject):
                           "constructor": FCDrillAdd},
             "drill_array": {"button": self.app.ui.add_drill_array_btn,
                             "constructor": FCDrillArray},
+            "drill_slot": {"button": self.app.ui.add_slot_btn,
+                          "constructor": FCSlot},
+            "drill_slotarray": {"button": self.app.ui.add_slot_array_btn,
+                            "constructor": FCSlotArray},
             "drill_resize": {"button": self.app.ui.resize_drill_btn,
                              "constructor": FCDrillResize},
             "drill_copy": {"button": self.app.ui.copy_drill_btn,

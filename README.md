@@ -23,7 +23,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed bug in Add Text Tool in Geometry Editor that gave error when clicking to place text without having text in the box
 - added all the tools from Gerber Editor to the the contextual menu
 - added the menu entry "Edit" in the Project contextual menu for Gerber objects
-
+- started to work in adding slots and slots array in Excellon Editor
 
 12.08.2019
 

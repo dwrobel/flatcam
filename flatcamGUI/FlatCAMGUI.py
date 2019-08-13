@@ -449,6 +449,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                                      _('Add Drill\tD'))
         self.exc_editor_menu.addSeparator()
 
+        self.exc_add_array_slot_menuitem = self.exc_editor_menu.addAction(
+            QtGui.QIcon('share/rectangle32.png'), _('Add Slot Array\tQ'))
+        self.exc_add_slot_menuitem = self.exc_editor_menu.addAction(QtGui.QIcon('share/plus16.png'),
+                                                                     _('Add Slot\tW'))
+        self.exc_editor_menu.addSeparator()
+
         self.exc_resize_drill_menuitem = self.exc_editor_menu.addAction(
             QtGui.QIcon('share/resize16.png'), _('Resize Drill(S)\tR')
         )
@@ -654,6 +660,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.add_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), _('Add Drill Hole'))
         self.add_drill_array_btn = self.exc_edit_toolbar.addAction(
             QtGui.QIcon('share/addarray16.png'), _('Add Drill Hole Array'))
+        self.add_slot_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), _('Add Slot'))
+        self.add_slot_array_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon('share/addarray16.png'), _('Add Slot Array'))
         self.resize_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/resize16.png'), _('Resize Drill'))
         self.exc_edit_toolbar.addSeparator()
 
@@ -1438,12 +1447,20 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;Move Drill(s)</td>
                     </tr>
                     <tr height="20">
+                        <td height="20" width="89"><strong>Q</strong></td>
+                        <td width="194">&nbsp;Add Slot Array</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>R</strong></td>
                         <td>&nbsp;Resize Drill(s)</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>T</strong></td>
                         <td>&nbsp;Add a new Tool</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20" width="89"><strong>W</strong></td>
+                        <td width="194">&nbsp;Add Slot</td>
                     </tr>
                     <tr height="20">
                         <td height="20">&nbsp;</td>
@@ -1656,6 +1673,11 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.e_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/drill32.png'), _("Exc Editor"))
         self.drill = self.e_editor_cmenu.addAction(QtGui.QIcon('share/drill32.png'), _("Add Drill"))
         self.drill_array = self.e_editor_cmenu.addAction(QtGui.QIcon('share/addarray32.png'), _("Add Drill Array"))
+        self.e_editor_cmenu.addSeparator()
+        self.slot = self.e_editor_cmenu.addAction(QtGui.QIcon('share/drill32.png'), _("Add Slot"))
+        self.slot_array = self.e_editor_cmenu.addAction(QtGui.QIcon('share/addarray32.png'), _("Add Slot Array"))
+        self.e_editor_cmenu.addSeparator()
+        self.drill_resize= self.e_editor_cmenu.addAction(QtGui.QIcon('share/resize16.png'), _("Resize Drill"))
 
         self.popMenu.addSeparator()
         self.popmenu_copy = self.popMenu.addAction(QtGui.QIcon('share/copy32.png'), _("Copy"))
@@ -1933,6 +1955,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.add_drill_array_btn = self.exc_edit_toolbar.addAction(
             QtGui.QIcon('share/addarray16.png'), _('Add Drill Hole Array'))
         self.resize_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/resize16.png'), _('Resize Drill'))
+        self.add_slot_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), _('Add Slot'))
+        self.add_slot_array_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon('share/addarray16.png'), _('Add Slot Array'))
         self.exc_edit_toolbar.addSeparator()
 
         self.copy_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _('Copy Drill'))

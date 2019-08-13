@@ -530,7 +530,7 @@ class FCPadArray(FCShapeTool):
                         )
                     if 'follow' in geo_el:
                         new_geo_el['follow'] = affinity.translate(
-                            geo_el['solid'], xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)
+                            geo_el['follow'], xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)
                         )
                     geo_el_list.append(new_geo_el)
 
