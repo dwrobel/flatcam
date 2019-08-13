@@ -24,6 +24,7 @@ CAD program, and create G-Code for Isolation routing.
 - added all the tools from Gerber Editor to the the contextual menu
 - added the menu entry "Edit" in the Project contextual menu for Gerber objects
 - started to work in adding slots and slots array in Excellon Editor
+- in FCSlot finished the utility geometry and the GUI for it
 
 12.08.2019
 
