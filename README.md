@@ -19,8 +19,11 @@ CAD program, and create G-Code for Isolation routing.
 - added a new parameter in NCC tool named offset. If the offset is used then the copper clearing will finish to a set distance of the copper features
 - fixed bugs in Geometry Editor
 - added protection's against the 'bowtie' geometries for Subtract Tool in Geometry Editor
-- added all the tool from Geometry Editor to the the contextual menu
+- added all the tools from Geometry Editor to the the contextual menu
 - fixed bug in Add Text Tool in Geometry Editor that gave error when clicking to place text without having text in the box
+- added all the tools from Gerber Editor to the the contextual menu
+- added the menu entry "Edit" in the Project contextual menu for Gerber objects
+
 
 12.08.2019
 

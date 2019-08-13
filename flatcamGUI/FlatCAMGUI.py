@@ -1635,8 +1635,23 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.grb_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/draw32.png'), _("Gerber Editor"))
         self.grb_draw_pad = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/aperture32.png'), _("Pad"))
         self.grb_draw_pad_array = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/padarray32.png'), _("Pad Array"))
+        self.grb_editor_cmenu.addSeparator()
+
         self.grb_draw_track = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/track32.png'), _("Track"))
         self.grb_draw_region = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/polygon32.png'), _("Region"))
+        self.grb_draw_poligonize = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/poligonize32.png'), _("Poligonize"))
+        self.grb_draw_semidisc = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/semidisc32.png'), _("SemiDisc"))
+        self.grb_draw_disc = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/disc32.png'), _("Disc"))
+        self.grb_editor_cmenu.addSeparator()
+
+        self.grb_draw_buffer = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/buffer16-2.png'), _("Buffer"))
+        self.grb_draw_scale = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/scale32.png'), _("Scale"))
+        self.grb_draw_markarea = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/markarea32.png'), _("Mark Area"))
+        self.grb_draw_eraser = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/eraser26.png'), _("Eraser"))
+        self.grb_editor_cmenu.addSeparator()
+
+        self.grb_draw_transformations = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/transform.png'),
+                                                                        _("Transformations"))
 
         self.e_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/drill32.png'), _("Exc Editor"))
         self.drill = self.e_editor_cmenu.addAction(QtGui.QIcon('share/drill32.png'), _("Add Drill"))
