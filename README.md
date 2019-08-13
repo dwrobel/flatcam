@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+14.08.2019
+
+- fixed the loading of Excellon with slots and the saving of edited Excellon object in regard of slots, in Excellon Editor
+- fixed the Delete tool, Select tool in Excellon Editor to work for Slots too
+
 13.08.2019
 
 - added new option in ToolSub: the ability to close (or not) the resulting paths when using tool on Geometry objects. Added also a new category in the Edit -> Preferences -> Tools, the Substractor Tool Options
