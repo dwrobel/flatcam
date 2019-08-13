@@ -17,6 +17,10 @@ CAD program, and create G-Code for Isolation routing.
 - updated translations
 - fixed a bug in FCDoubleSpinner GUI element
 - added a new parameter in NCC tool named offset. If the offset is used then the copper clearing will finish to a set distance of the copper features
+- fixed bugs in Geometry Editor
+- added protection's against the 'bowtie' geometries for Subtract Tool in Geometry Editor
+- added all the tool from Geometry Editor to the the contextual menu
+- fixed bug in Add Text Tool in Geometry Editor that gave error when clicking to place text without having text in the box
 
 12.08.2019
 

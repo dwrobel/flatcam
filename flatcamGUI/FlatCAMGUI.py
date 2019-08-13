@@ -1609,9 +1609,26 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.popMenu.addSeparator()
 
         self.g_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/draw32.png'), _("Geo Editor"))
-        self.draw_line = self.g_editor_cmenu.addAction(QtGui.QIcon('share/path32.png'), _("Line"))
+        self.draw_line = self.g_editor_cmenu.addAction(QtGui.QIcon('share/path32.png'), _("Path"))
         self.draw_rect = self.g_editor_cmenu.addAction(QtGui.QIcon('share/rectangle32.png'), _("Rectangle"))
+        self.g_editor_cmenu.addSeparator()
+        self.draw_circle = self.g_editor_cmenu.addAction(QtGui.QIcon('share/circle32.png'), _("Circle"))
+        self.draw_poly = self.g_editor_cmenu.addAction(QtGui.QIcon('share/polygon32.png'), _("Polygon"))
+        self.draw_arc = self.g_editor_cmenu.addAction(QtGui.QIcon('share/arc32.png'), _("Arc"))
+        self.g_editor_cmenu.addSeparator()
+
+        self.draw_text = self.g_editor_cmenu.addAction(QtGui.QIcon('share/text32.png'), _("Text"))
+        self.draw_buffer = self.g_editor_cmenu.addAction(QtGui.QIcon('share/buffer16-2.png'), _("Buffer"))
+        self.draw_paint = self.g_editor_cmenu.addAction(QtGui.QIcon('share/paint20_1.png'), _("Paint"))
+        self.draw_eraser = self.g_editor_cmenu.addAction(QtGui.QIcon('share/eraser26.png'), _("Eraser"))
+        self.g_editor_cmenu.addSeparator()
+
+        self.draw_union = self.g_editor_cmenu.addAction(QtGui.QIcon('share/union32.png'), _("Union"))
+        self.draw_intersect = self.g_editor_cmenu.addAction(QtGui.QIcon('share/intersection32.png'), _("Intersection"))
+        self.draw_substract = self.g_editor_cmenu.addAction(QtGui.QIcon('share/subtract32.png'), _("Substraction"))
         self.draw_cut = self.g_editor_cmenu.addAction(QtGui.QIcon('share/cutpath32.png'), _("Cut"))
+        self.draw_transform = self.g_editor_cmenu.addAction(QtGui.QIcon('share/transform.png'), _("Transformations"))
+
         self.g_editor_cmenu.addSeparator()
         self.draw_move = self.g_editor_cmenu.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
 

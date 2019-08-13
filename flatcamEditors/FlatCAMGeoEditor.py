@@ -2633,15 +2633,20 @@ class FCText(FCShapeTool):
         # Create new geometry
         dx = point[0]
         dy = point[1]
-        try:
-            self.geometry = DrawToolShape(affinity.translate(self.text_gui.text_path, xoff=dx, yoff=dy))
-        except Exception as e:
-            log.debug("Font geometry is empty or incorrect: %s" % str(e))
-            self.draw_app.app.inform.emit(_("[ERROR]Font not supported. Only Regular, Bold, Italic and BoldItalic are "
-                                          "supported. Error: %s") % str(e))
-            self.text_gui.text_path = []
-            self.text_gui.hide_tool()
-            self.draw_app.select_tool('select')
+
+        if self.text_gui.text_path:
+            try:
+                self.geometry = DrawToolShape(affinity.translate(self.text_gui.text_path, xoff=dx, yoff=dy))
+            except Exception as e:
+                log.debug("Font geometry is empty or incorrect: %s" % str(e))
+                self.draw_app.app.inform.emit(_("[ERROR]Font not supported. Only Regular, Bold, Italic and BoldItalic are "
+                                              "supported. Error: %s") % str(e))
+                self.text_gui.text_path = []
+                self.text_gui.hide_tool()
+                self.draw_app.select_tool('select')
+                return
+        else:
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] No text to add."))
             return
 
         self.text_gui.text_path = []
@@ -2912,7 +2917,7 @@ class FCTransform(FCShapeTool):
         self.draw_app = draw_app
         self.app = draw_app.app
 
-        self.draw_app.app.infrom.emit(_("Shape transformations ..."))
+        self.draw_app.app.inform.emit(_("Shape transformations ..."))
         self.origin = (0, 0)
         self.draw_app.transform_tool.run()
 
@@ -3277,7 +3282,22 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # Geometry Editor
         self.app.ui.draw_line.triggered.connect(self.draw_tool_path)
         self.app.ui.draw_rect.triggered.connect(self.draw_tool_rectangle)
+
+        self.app.ui.draw_circle.triggered.connect(lambda: self.select_tool('circle'))
+        self.app.ui.draw_poly.triggered.connect(lambda: self.select_tool('polygon'))
+        self.app.ui.draw_arc.triggered.connect(lambda: self.select_tool('arc'))
+
+        self.app.ui.draw_text.triggered.connect(lambda: self.select_tool('text'))
+        self.app.ui.draw_buffer.triggered.connect(lambda: self.select_tool('buffer'))
+        self.app.ui.draw_paint.triggered.connect(lambda: self.select_tool('paint'))
+        self.app.ui.draw_eraser.triggered.connect(lambda: self.select_tool('eraser'))
+
+        self.app.ui.draw_union.triggered.connect(self.union)
+        self.app.ui.draw_intersect.triggered.connect(self.intersection)
+        self.app.ui.draw_substract.triggered.connect(self.subtract)
         self.app.ui.draw_cut.triggered.connect(self.cutpath)
+        self.app.ui.draw_transform.triggered.connect(lambda: self.select_tool('transform'))
+
         self.app.ui.draw_move.triggered.connect(self.on_move)
 
     def disconnect_canvas_event_handlers(self):
@@ -3331,6 +3351,32 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.app.ui.draw_move.triggered.disconnect(self.on_move)
         except (TypeError, AttributeError):
             pass
+
+        self.app.ui.draw_circle.triggered.disconnect()
+        self.app.ui.draw_poly.triggered.disconnect()
+        self.app.ui.draw_arc.triggered.disconnect()
+
+        self.app.ui.draw_text.triggered.disconnect()
+        self.app.ui.draw_buffer.triggered.disconnect()
+        self.app.ui.draw_paint.triggered.disconnect()
+        self.app.ui.draw_eraser.triggered.disconnect()
+
+        try:
+            self.app.ui.draw_union.triggered.disconnect(self.union)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_intersect.triggered.disconnect(self.intersection)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_substract.triggered.disconnect(self.subtract)
+        except (TypeError, AttributeError):
+            pass
+
+        self.app.ui.draw_transform.triggered.disconnect()
 
     def add_shape(self, shape):
         """
@@ -4087,8 +4133,10 @@ class FlatCAMGeoEditor(QtCore.QObject):
         selected = self.get_selected()
         try:
             tools = selected[1:]
-            toolgeo = unary_union([shp.geo for shp in tools])
-            result = selected[0].geo.difference(toolgeo)
+            toolgeo = unary_union([shp.geo for shp in tools]).buffer(0.0000001)
+            target = selected[0].geo
+            target = target.buffer(0.0000001)
+            result = target.difference(toolgeo)
 
             for_deletion = [s for s in self.get_selected()]
             for shape in for_deletion:
