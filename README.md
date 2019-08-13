@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - added new option in ToolSub: the ability to close (or not) the resulting paths when using tool on Geometry objects. Added also a new category in the Edit -> Preferences -> Tools, the Substractor Tool Options
 - some PEP8 changes in FlatCAMApp.py
+- added new settings in Edit -> Preferences -> General for Notebook Font size (set font size for the items in Project Tree and for text in Selected Tab) and for canvas Axis font size. The values are stored in QSettings.
+- updated translations
 
 12.08.2019
 

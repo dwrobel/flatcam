@@ -363,6 +363,7 @@ class App(QtCore.QObject):
             "global_layout": self.ui.general_defaults_form.general_gui_set_group.layout_combo,
             "global_hover": self.ui.general_defaults_form.general_gui_set_group.hover_cb,
             "global_selection_shape": self.ui.general_defaults_form.general_gui_set_group.selection_cb,
+
             # Gerber General
             "gerber_plot": self.ui.gerber_defaults_form.gerber_gen_group.plot_cb,
             "gerber_solid": self.ui.gerber_defaults_form.gerber_gen_group.solid_cb,
@@ -690,6 +691,7 @@ class App(QtCore.QObject):
             "global_def_win_w": 1024,
             "global_def_win_h": 650,
             "global_def_notebook_width": 1,
+
             # Constants...
             "global_defaults_save_period_ms": 20000,  # Time between default saves.
             "global_shell_shape": [500, 300],  # Shape of the shell in pixels.
@@ -708,6 +710,7 @@ class App(QtCore.QObject):
             "global_hover": False,
             "global_selection_shape": True,
             "global_layout": "compact",
+
             # Gerber General
             "gerber_plot": True,
             "gerber_solid": True,
@@ -3511,6 +3514,10 @@ class App(QtCore.QObject):
         settings.setValue('saved_gui_state', self.ui.saveState())
         settings.setValue('maximized_gui', self.ui.isMaximized())
         settings.setValue('language', self.ui.general_defaults_form.general_app_group.language_cb.get_value())
+        settings.setValue('notebook_font_size',
+                          self.ui.general_defaults_form.general_gui_set_group.notebook_font_size_spinner.get_value())
+        settings.setValue('axis_font_size',
+                          self.ui.general_defaults_form.general_gui_set_group.axis_font_size_spinner.get_value())
 
         # This will write the setting to the platform specific storage.
         del settings
@@ -4616,6 +4623,18 @@ class App(QtCore.QObject):
         # Re-fresh project options
         self.on_options_app2project()
 
+        # save the notebook font size
+        settings = QSettings("Open Source", "FlatCAM")
+        fsize = self.ui.general_defaults_form.general_gui_set_group.notebook_font_size_spinner.get_value()
+        settings.setValue('notebook_font_size', fsize)
+
+        # save the axis font size
+        g_fsize = self.ui.general_defaults_form.general_gui_set_group.axis_font_size_spinner.get_value()
+        settings.setValue('axis_font_size', g_fsize)
+
+        # This will write the setting to the platform specific storage.
+        del settings
+
     def handlePrint(self):
         self.report_usage("handlePrint()")
 
@@ -5344,7 +5363,7 @@ class App(QtCore.QObject):
 
             if response == bt_yes:
                 self.on_save_button()
-                self.inform.emit(_("[success] Defaults saved."))
+                self.inform.emit(_("[success] Preferences saved."))
             else:
                 self.preferences_changed_flag = False
                 return
@@ -8613,22 +8632,27 @@ class App(QtCore.QObject):
             _('<b>Shortcut Key List</b>'))
         sel_title.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         sel_title.setFrameStyle(QtWidgets.QFrame.NoFrame)
-        # font = self.sel_title.font()
-        # font.setPointSize(12)
-        # self.sel_title.setFont(font)
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("notebook_font_size"):
+            fsize = settings.value('notebook_font_size', type=int)
+        else:
+            fsize = 12
+
+        tsize = fsize + int(fsize / 2)
 
         selected_text = _('''
-<p><span style="font-size:14px"><strong>Selected Tab - Choose an Item from Project Tab</strong></span></p>
+<p><span style="font-size:{tsize}px"><strong>Selected Tab - Choose an Item from Project Tab</strong></span></p>
 
-<p><span style="font-size:10px"><strong>Details</strong>:<br />
+<p><span style="font-size:{fsize}px"><strong>Details</strong>:<br />
 The normal flow when working in FlatCAM is the following:</span></p>
 
 <ol>
-	<li><span style="font-size:10px">Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM using either the menu&#39;s, toolbars, key shortcuts or even dragging and dropping the files on the GUI.<br />
+	<li><span style="font-size:{fsize}px">Loat/Import a Gerber, Excellon, Gcode, DXF, Raster Image or SVG file into FlatCAM using either the menu&#39;s, toolbars, key shortcuts or even dragging and dropping the files on the GUI.<br />
 	<br />
 	You can also load a <strong>FlatCAM project</strong> by double clicking on the project file, drag &amp; drop of the file into the FLATCAM GUI or through the menu/toolbar links offered within the app.</span><br />
 	&nbsp;</li>
-	<li><span style="font-size:10px">Once an object is available in the Project Tab, by selecting it and then focusing on <strong>SELECTED TAB </strong>(more simpler is to double click the object name in the Project Tab), <strong>SELECTED TAB </strong>will be updated with the object properties according to it&#39;s kind: Gerber, Excellon, Geometry or CNCJob object.<br />
+	<li><span style="font-size:{fsize}px">Once an object is available in the Project Tab, by selecting it and then focusing on <strong>SELECTED TAB </strong>(more simpler is to double click the object name in the Project Tab), <strong>SELECTED TAB </strong>will be updated with the object properties according to it&#39;s kind: Gerber, Excellon, Geometry or CNCJob object.<br />
 	<br />
 	If the selection of the object is done on the canvas by single click instead, and the <strong>SELECTED TAB</strong> is in focus, again the object properties will be displayed into the Selected Tab. Alternatively, double clicking on the object on the canvas will bring the <strong>SELECTED TAB</strong> and populate it even if it was out of focus.<br />
 	<br />
@@ -8637,9 +8661,9 @@ The normal flow when working in FlatCAM is the following:</span></p>
 	<strong>Gerber/Excellon Object</strong> -&gt; Change Param -&gt; Generate Geometry -&gt;<strong> Geometry Object </strong>-&gt; Add tools (change param in Selected Tab) -&gt; Generate CNCJob -&gt;<strong> CNCJob Object </strong>-&gt; Verify GCode (through Edit CNC Code) and/or append/prepend to GCode (again, done in <strong>SELECTED TAB)&nbsp;</strong>-&gt; Save GCode</span></li>
 </ol>
 
-<p><span style="font-size:10px">A list of key shortcuts is available through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut: <strng>F3</strong>.</span></p>
+<p><span style="font-size:{fsize}px">A list of key shortcuts is available through an menu entry in <strong>Help -&gt; Shortcuts List</strong>&nbsp;or through it&#39;s own key shortcut: <strng>F3</strong>.</span></p>
 
-        ''')
+        '''.format(fsize=fsize, tsize=tsize))
 
         sel_title.setText(selected_text)
         sel_title.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)

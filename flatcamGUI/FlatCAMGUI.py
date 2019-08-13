@@ -3717,6 +3717,38 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         )
         self.selection_cb = FCCheckBox()
 
+        self.notebook_font_size_label = QtWidgets.QLabel(_('NB Font Size:'))
+        self.notebook_font_size_label.setToolTip(
+            _("This sets the font size for the elements found in the Notebook.\n"
+              "The notebook is the collapsible area in the left side of the GUI,\n"
+              "and include the Project, Selected and Tool tabs.")
+        )
+
+        self.notebook_font_size_spinner = FCSpinner()
+        self.notebook_font_size_spinner.setRange(8, 40)
+        self.notebook_font_size_spinner.setWrapping(True)
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("notebook_font_size"):
+            self.notebook_font_size_spinner.set_value(settings.value('notebook_font_size', type=int))
+        else:
+            self.notebook_font_size_spinner.set_value(12)
+
+        self.axis_font_size_label = QtWidgets.QLabel(_('Axis Font Size:'))
+        self.axis_font_size_label.setToolTip(
+            _("This sets the font size for canvas axis.")
+        )
+
+        self.axis_font_size_spinner = FCSpinner()
+        self.axis_font_size_spinner.setRange(8, 40)
+        self.axis_font_size_spinner.setWrapping(True)
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("axis_font_size"):
+            self.axis_font_size_spinner.set_value(settings.value('axis_font_size', type=int))
+        else:
+            self.axis_font_size_spinner.set_value(8)
+
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
@@ -3729,6 +3761,10 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.clear_label, self.clear_btn)
         self.form_box.addRow(self.hover_label, self.hover_cb)
         self.form_box.addRow(self.selection_label, self.selection_cb)
+        self.form_box.addRow(QtWidgets.QLabel(''))
+        self.form_box.addRow(self.notebook_font_size_label, self.notebook_font_size_spinner)
+        self.form_box.addRow(self.axis_font_size_label, self.axis_font_size_spinner)
+
 
         # Add the QFormLayout that holds the Application general defaults
         # to the main layout of this TAB
