@@ -14,6 +14,7 @@ import random
 import simplejson as json
 import lzma
 import threading
+import shutil
 
 from stat import S_IREAD, S_IRGRP, S_IROTH
 import subprocess
@@ -100,6 +101,9 @@ class App(QtCore.QObject):
     version = 8.94
     version_date = "2019/08/31"
     beta = True
+    # make this True is you want to create a portable app - that is, to save the settings files
+    # in the working directory
+    portable = True
 
     # current date now
     date = str(datetime.today()).rpartition('.')[0]
@@ -205,8 +209,11 @@ class App(QtCore.QObject):
                 App.log.debug("Win32!")
             else:
                 App.log.debug("Win64!")
+            if self.portable is False:
+                self.data_path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0) + '\FlatCAM'
+            else:
+                self.data_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
-            self.data_path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0) + '\FlatCAM'
             self.os = 'windows'
         else:  # Linux/Unix/MacOS
             self.data_path = os.path.expanduser('~') + '/.FlatCAM'
@@ -232,6 +239,13 @@ class App(QtCore.QObject):
             f = open(self.data_path + '/current_defaults.FlatConfig')
             f.close()
         except IOError:
+            if sys.platform == 'win32':
+                # this happen only once, at the first launch of the app.
+                # I use this to copy the vispy data files to the APPDATA folder, for Windows
+                source_path = self.data_path + '\\vispy\\data'
+                target_path = os.getenv('APPDATA') + '\\vispy'
+                self.copy_and_overwrite(from_path=source_path, to_path=target_path)
+
             App.log.debug('Creating empty current_defaults.FlatConfig')
             f = open(self.data_path + '/current_defaults.FlatConfig', 'w')
             json.dump({}, f)
@@ -2102,6 +2116,19 @@ class App(QtCore.QObject):
                         self.on_filerunscript(name=file_name)
                 except Exception as e:
                     log.debug("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
+
+    @staticmethod
+    def copy_and_overwrite(from_path, to_path):
+        """
+        From here:
+        https://stackoverflow.com/questions/12683834/how-to-copy-directory-recursively-in-python-and-overwrite-all
+        :param from_path: source path
+        :param to_path: destination path
+        :return: None
+        """
+        if os.path.exists(to_path):
+            shutil.rmtree(to_path)
+        shutil.copytree(from_path, to_path)
 
     def set_ui_title(self, name):
         self.ui.setWindowTitle('FlatCAM %s %s - %s    %s' %
