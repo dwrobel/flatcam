@@ -9,6 +9,47 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+14.08.2019
+
+- fixed the loading of Excellon with slots and the saving of edited Excellon object in regard of slots, in Excellon Editor
+- fixed the Delete tool, Select tool in Excellon Editor to work for Slots too
+
+13.08.2019
+
+- added new option in ToolSub: the ability to close (or not) the resulting paths when using tool on Geometry objects. Added also a new category in the Edit -> Preferences -> Tools, the Substractor Tool Options
+- some PEP8 changes in FlatCAMApp.py
+- added new settings in Edit -> Preferences -> General for Notebook Font size (set font size for the items in Project Tree and for text in Selected Tab) and for canvas Axis font size. The values are stored in QSettings.
+- updated translations
+- fixed a bug in FCDoubleSpinner GUI element
+- added a new parameter in NCC tool named offset. If the offset is used then the copper clearing will finish to a set distance of the copper features
+- fixed bugs in Geometry Editor
+- added protection's against the 'bowtie' geometries for Subtract Tool in Geometry Editor
+- added all the tools from Geometry Editor to the the contextual menu
+- fixed bug in Add Text Tool in Geometry Editor that gave error when clicking to place text without having text in the box
+- added all the tools from Gerber Editor to the the contextual menu
+- added the menu entry "Edit" in the Project contextual menu for Gerber objects
+- started to work in adding slots and slots array in Excellon Editor
+- in FCSlot finished the utility geometry and the GUI for it
+
+12.08.2019
+
+- done regression to solve the bug with multiple passes cutting from the copper features (I should remember not to make mods here)
+- if 'combine' is checked in Gerber isolation but there is only one pass, the resulting geometry will still be single geo
+- the 'passes' entry was changed to a IntSpinner so it will allow passes to be entered only in range (1, 999) - it will not allow entry of 0 which may create some issues
+- improved the FlatCAMGerber.isolate() function to work for geometry in the form of list and also in case that the elements of the list are LinearRings (like when doing the Exterior Isolation)
+- in NCC Tool made sure that at each run the old objects are deleted
+- fixed bug in camlib.Gerber.parse_lines() Gerber parser where for Allegro Gerber files the Gerber units were incorrectly detected
+- improved Mark Area Tool in Gerber Editor such that at each launch the previous markings are deleted
+
+11.08.2019
+
+- small changes regarding the Project Title
+- trying to fix reported bugs
+- made sure that the annotations are deleted when the object that contain them is deleted
+- fixed issue where the annotations for all the CNCJob objects are toggled together whenever the ones for an single object are toggled
+- optimizations in GeoEditor
+- updated translations
+
 10.08.2019
 
 - added new feature in NCC Tool: now another object can be used as reference for the area extent to be cleared of copper

@@ -276,7 +276,8 @@ class GerberObjectUI(ObjectUI):
         )
         passlabel.setMinimumWidth(90)
         grid1.addWidget(passlabel, 1, 0)
-        self.iso_width_entry = IntEntry()
+        self.iso_width_entry = FCSpinner()
+        self.iso_width_entry.setRange(1, 999)
         grid1.addWidget(self.iso_width_entry, 1, 1)
 
         overlabel = QtWidgets.QLabel(_('Pass overlap:'))

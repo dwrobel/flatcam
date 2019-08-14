@@ -530,7 +530,7 @@ class FCPadArray(FCShapeTool):
                         )
                     if 'follow' in geo_el:
                         new_geo_el['follow'] = affinity.translate(
-                            geo_el['solid'], xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)
+                            geo_el['follow'], xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)
                         )
                     geo_el_list.append(new_geo_el)
 
@@ -1774,6 +1774,9 @@ class FCMarkArea(FCShapeTool):
     def activate_markarea(self):
         self.draw_app.hide_tool('all')
         self.draw_app.ma_tool_frame.show()
+
+        # clear previous marking
+        self.draw_app.ma_annotation.clear(update=True)
 
         try:
             self.draw_app.ma_threshold__button.clicked.disconnect()
@@ -3471,6 +3474,16 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.app.ui.grb_draw_track.triggered.connect(self.on_track_add)
         self.app.ui.grb_draw_region.triggered.connect(self.on_region_add)
 
+        self.app.ui.grb_draw_poligonize.triggered.connect(self.on_poligonize)
+        self.app.ui.grb_draw_semidisc.triggered.connect(self.on_add_semidisc)
+        self.app.ui.grb_draw_disc.triggered.connect(self.on_disc_add)
+        self.app.ui.grb_draw_buffer.triggered.connect(lambda: self.select_tool("buffer"))
+        self.app.ui.grb_draw_scale.triggered.connect(lambda: self.select_tool("scale"))
+        self.app.ui.grb_draw_markarea.triggered.connect(lambda: self.select_tool("markarea"))
+        self.app.ui.grb_draw_eraser.triggered.connect(self.on_eraser)
+        self.app.ui.grb_draw_transformations.triggered.connect(self.on_transform)
+
+
     def disconnect_canvas_event_handlers(self):
 
         # we restore the key and mouse control to FlatCAMApp method
@@ -3524,6 +3537,39 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         try:
             self.app.ui.grb_draw_region.triggered.disconnect(self.on_region_add)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.grb_draw_poligonize.triggered.disconnect(self.on_poligonize)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.app.ui.grb_draw_semidisc.triggered.diconnect(self.on_add_semidisc)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.app.ui.grb_draw_disc.triggered.disconnect(self.on_disc_add)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.app.ui.grb_draw_buffer.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.app.ui.grb_draw_scale.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.app.ui.grb_draw_markarea.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.app.ui.grb_draw_eraser.triggered.disconnect(self.on_eraser)
+        except (TypeError, AttributeError):
+            pass
+        try:
+            self.app.ui.grb_draw_transformations.triggered.disconnect(self.on_transform)
         except (TypeError, AttributeError):
             pass
 
@@ -3986,7 +4032,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
 
-        if self.app.grid_status():
+        if self.app.grid_status() == True:
             self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
             self.app.app_cursor.enabled = True
             # Update cursor
@@ -4048,7 +4094,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.modifiers = QtWidgets.QApplication.keyboardModifiers()
 
         pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
-        if self.app.grid_status():
+        if self.app.grid_status() == True:
             pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
             pos = (pos_canvas[0], pos_canvas[1])
@@ -4201,7 +4247,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             return
 
         # # ## Snap coordinates
-        if self.app.grid_status():
+        if self.app.grid_status() == True:
             x, y = self.app.geo_editor.snap(x, y)
             self.app.app_cursor.enabled = True
             # Update cursor

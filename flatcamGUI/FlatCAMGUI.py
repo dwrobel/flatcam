@@ -449,6 +449,12 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                                                                      _('Add Drill\tD'))
         self.exc_editor_menu.addSeparator()
 
+        self.exc_add_array_slot_menuitem = self.exc_editor_menu.addAction(
+            QtGui.QIcon('share/rectangle32.png'), _('Add Slot Array\tQ'))
+        self.exc_add_slot_menuitem = self.exc_editor_menu.addAction(QtGui.QIcon('share/plus16.png'),
+                                                                     _('Add Slot\tW'))
+        self.exc_editor_menu.addSeparator()
+
         self.exc_resize_drill_menuitem = self.exc_editor_menu.addAction(
             QtGui.QIcon('share/resize16.png'), _('Resize Drill(S)\tR')
         )
@@ -654,6 +660,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.add_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), _('Add Drill Hole'))
         self.add_drill_array_btn = self.exc_edit_toolbar.addAction(
             QtGui.QIcon('share/addarray16.png'), _('Add Drill Hole Array'))
+        self.add_slot_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), _('Add Slot'))
+        self.add_slot_array_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon('share/addarray16.png'), _('Add Slot Array'))
         self.resize_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/resize16.png'), _('Resize Drill'))
         self.exc_edit_toolbar.addSeparator()
 
@@ -1438,12 +1447,20 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         <td>&nbsp;Move Drill(s)</td>
                     </tr>
                     <tr height="20">
+                        <td height="20" width="89"><strong>Q</strong></td>
+                        <td width="194">&nbsp;Add Slot Array</td>
+                    </tr>
+                    <tr height="20">
                         <td height="20"><strong>R</strong></td>
                         <td>&nbsp;Resize Drill(s)</td>
                     </tr>
                     <tr height="20">
                         <td height="20"><strong>T</strong></td>
                         <td>&nbsp;Add a new Tool</td>
+                    </tr>
+                    <tr height="20">
+                        <td height="20" width="89"><strong>W</strong></td>
+                        <td width="194">&nbsp;Add Slot</td>
                     </tr>
                     <tr height="20">
                         <td height="20">&nbsp;</td>
@@ -1609,21 +1626,58 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.popMenu.addSeparator()
 
         self.g_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/draw32.png'), _("Geo Editor"))
-        self.draw_line = self.g_editor_cmenu.addAction(QtGui.QIcon('share/path32.png'), _("Line"))
+        self.draw_line = self.g_editor_cmenu.addAction(QtGui.QIcon('share/path32.png'), _("Path"))
         self.draw_rect = self.g_editor_cmenu.addAction(QtGui.QIcon('share/rectangle32.png'), _("Rectangle"))
+        self.g_editor_cmenu.addSeparator()
+        self.draw_circle = self.g_editor_cmenu.addAction(QtGui.QIcon('share/circle32.png'), _("Circle"))
+        self.draw_poly = self.g_editor_cmenu.addAction(QtGui.QIcon('share/polygon32.png'), _("Polygon"))
+        self.draw_arc = self.g_editor_cmenu.addAction(QtGui.QIcon('share/arc32.png'), _("Arc"))
+        self.g_editor_cmenu.addSeparator()
+
+        self.draw_text = self.g_editor_cmenu.addAction(QtGui.QIcon('share/text32.png'), _("Text"))
+        self.draw_buffer = self.g_editor_cmenu.addAction(QtGui.QIcon('share/buffer16-2.png'), _("Buffer"))
+        self.draw_paint = self.g_editor_cmenu.addAction(QtGui.QIcon('share/paint20_1.png'), _("Paint"))
+        self.draw_eraser = self.g_editor_cmenu.addAction(QtGui.QIcon('share/eraser26.png'), _("Eraser"))
+        self.g_editor_cmenu.addSeparator()
+
+        self.draw_union = self.g_editor_cmenu.addAction(QtGui.QIcon('share/union32.png'), _("Union"))
+        self.draw_intersect = self.g_editor_cmenu.addAction(QtGui.QIcon('share/intersection32.png'), _("Intersection"))
+        self.draw_substract = self.g_editor_cmenu.addAction(QtGui.QIcon('share/subtract32.png'), _("Substraction"))
         self.draw_cut = self.g_editor_cmenu.addAction(QtGui.QIcon('share/cutpath32.png'), _("Cut"))
+        self.draw_transform = self.g_editor_cmenu.addAction(QtGui.QIcon('share/transform.png'), _("Transformations"))
+
         self.g_editor_cmenu.addSeparator()
         self.draw_move = self.g_editor_cmenu.addAction(QtGui.QIcon('share/move32.png'), _("Move"))
 
         self.grb_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/draw32.png'), _("Gerber Editor"))
         self.grb_draw_pad = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/aperture32.png'), _("Pad"))
         self.grb_draw_pad_array = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/padarray32.png'), _("Pad Array"))
+        self.grb_editor_cmenu.addSeparator()
+
         self.grb_draw_track = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/track32.png'), _("Track"))
         self.grb_draw_region = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/polygon32.png'), _("Region"))
+        self.grb_draw_poligonize = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/poligonize32.png'), _("Poligonize"))
+        self.grb_draw_semidisc = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/semidisc32.png'), _("SemiDisc"))
+        self.grb_draw_disc = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/disc32.png'), _("Disc"))
+        self.grb_editor_cmenu.addSeparator()
+
+        self.grb_draw_buffer = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/buffer16-2.png'), _("Buffer"))
+        self.grb_draw_scale = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/scale32.png'), _("Scale"))
+        self.grb_draw_markarea = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/markarea32.png'), _("Mark Area"))
+        self.grb_draw_eraser = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/eraser26.png'), _("Eraser"))
+        self.grb_editor_cmenu.addSeparator()
+
+        self.grb_draw_transformations = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/transform.png'),
+                                                                        _("Transformations"))
 
         self.e_editor_cmenu = self.popMenu.addMenu(QtGui.QIcon('share/drill32.png'), _("Exc Editor"))
         self.drill = self.e_editor_cmenu.addAction(QtGui.QIcon('share/drill32.png'), _("Add Drill"))
         self.drill_array = self.e_editor_cmenu.addAction(QtGui.QIcon('share/addarray32.png'), _("Add Drill Array"))
+        self.e_editor_cmenu.addSeparator()
+        self.slot = self.e_editor_cmenu.addAction(QtGui.QIcon('share/drill32.png'), _("Add Slot"))
+        self.slot_array = self.e_editor_cmenu.addAction(QtGui.QIcon('share/addarray32.png'), _("Add Slot Array"))
+        self.e_editor_cmenu.addSeparator()
+        self.drill_resize= self.e_editor_cmenu.addAction(QtGui.QIcon('share/resize16.png'), _("Resize Drill"))
 
         self.popMenu.addSeparator()
         self.popmenu_copy = self.popMenu.addAction(QtGui.QIcon('share/copy32.png'), _("Copy"))
@@ -1901,6 +1955,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.add_drill_array_btn = self.exc_edit_toolbar.addAction(
             QtGui.QIcon('share/addarray16.png'), _('Add Drill Hole Array'))
         self.resize_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/resize16.png'), _('Resize Drill'))
+        self.add_slot_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/plus16.png'), _('Add Slot'))
+        self.add_slot_array_btn = self.exc_edit_toolbar.addAction(
+            QtGui.QIcon('share/addarray16.png'), _('Add Slot Array'))
         self.exc_edit_toolbar.addSeparator()
 
         self.copy_drill_btn = self.exc_edit_toolbar.addAction(QtGui.QIcon('share/copy32.png'), _('Copy Drill'))
@@ -3280,6 +3337,9 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
         self.tools_solderpaste_group = ToolsSolderpastePrefGroupUI()
         self.tools_solderpaste_group.setMinimumWidth(200)
 
+        self.tools_sub_group = ToolsSubPrefGroupUI()
+        self.tools_sub_group.setMinimumWidth(200)
+
         self.vlay = QtWidgets.QVBoxLayout()
         self.vlay.addWidget(self.tools_ncc_group)
         self.vlay.addWidget(self.tools_paint_group)
@@ -3296,6 +3356,7 @@ class ToolsPreferencesUI(QtWidgets.QWidget):
 
         self.vlay3 = QtWidgets.QVBoxLayout()
         self.vlay3.addWidget(self.tools_solderpaste_group)
+        self.vlay3.addWidget(self.tools_sub_group)
 
         self.layout.addLayout(self.vlay)
         self.layout.addLayout(self.vlay1)
@@ -3713,6 +3774,38 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         )
         self.selection_cb = FCCheckBox()
 
+        self.notebook_font_size_label = QtWidgets.QLabel(_('NB Font Size:'))
+        self.notebook_font_size_label.setToolTip(
+            _("This sets the font size for the elements found in the Notebook.\n"
+              "The notebook is the collapsible area in the left side of the GUI,\n"
+              "and include the Project, Selected and Tool tabs.")
+        )
+
+        self.notebook_font_size_spinner = FCSpinner()
+        self.notebook_font_size_spinner.setRange(8, 40)
+        self.notebook_font_size_spinner.setWrapping(True)
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("notebook_font_size"):
+            self.notebook_font_size_spinner.set_value(settings.value('notebook_font_size', type=int))
+        else:
+            self.notebook_font_size_spinner.set_value(12)
+
+        self.axis_font_size_label = QtWidgets.QLabel(_('Axis Font Size:'))
+        self.axis_font_size_label.setToolTip(
+            _("This sets the font size for canvas axis.")
+        )
+
+        self.axis_font_size_spinner = FCSpinner()
+        self.axis_font_size_spinner.setRange(8, 40)
+        self.axis_font_size_spinner.setWrapping(True)
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("axis_font_size"):
+            self.axis_font_size_spinner.set_value(settings.value('axis_font_size', type=int))
+        else:
+            self.axis_font_size_spinner.set_value(8)
+
         # Just to add empty rows
         self.spacelabel = QtWidgets.QLabel('')
 
@@ -3725,6 +3818,10 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.form_box.addRow(self.clear_label, self.clear_btn)
         self.form_box.addRow(self.hover_label, self.hover_cb)
         self.form_box.addRow(self.selection_label, self.selection_cb)
+        self.form_box.addRow(QtWidgets.QLabel(''))
+        self.form_box.addRow(self.notebook_font_size_label, self.notebook_font_size_spinner)
+        self.form_box.addRow(self.axis_font_size_label, self.axis_font_size_spinner)
+
 
         # Add the QFormLayout that holds the Application general defaults
         # to the main layout of this TAB
@@ -4092,7 +4189,8 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
               "number (integer) of tool widths.")
         )
         grid0.addWidget(passlabel, 1, 0)
-        self.iso_width_entry = IntEntry()
+        self.iso_width_entry = FCSpinner()
+        self.iso_width_entry.setRange(1, 999)
         grid0.addWidget(self.iso_width_entry, 1, 1)
 
         # Pass overlap
@@ -5875,6 +5973,35 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.ncc_rest_cb = FCCheckBox()
         grid0.addWidget(self.ncc_rest_cb, 6, 1)
 
+        # ## NCC Offset choice
+        self.ncc_offset_choice_label = QtWidgets.QLabel(_("Offset:"))
+        self.ncc_offset_choice_label.setToolTip(
+            _("If used, it will add an offset to the copper features.\n"
+              "The copper clearing will finish to a distance\n"
+              "from the copper features.\n"
+              "The value can be between 0 and 10 FlatCAM units.")
+        )
+        grid0.addWidget(self.ncc_offset_choice_label, 7, 0)
+        self.ncc_choice_offset_cb = FCCheckBox()
+        grid0.addWidget(self.ncc_choice_offset_cb, 7, 1)
+
+        # ## NCC Offset value
+        self.ncc_offset_label = QtWidgets.QLabel(_("Offset value:"))
+        self.ncc_offset_label.setToolTip(
+            _("If used, it will add an offset to the copper features.\n"
+              "The copper clearing will finish to a distance\n"
+              "from the copper features.\n"
+              "The value can be between 0 and 10 FlatCAM units.")
+        )
+        grid0.addWidget(self.ncc_offset_label, 8, 0)
+        self.ncc_offset_spinner = FCDoubleSpinner()
+        self.ncc_offset_spinner.set_range(0.00, 10.00)
+        self.ncc_offset_spinner.set_precision(4)
+        self.ncc_offset_spinner.setWrapping(True)
+        self.ncc_offset_spinner.setSingleStep(0.1)
+
+        grid0.addWidget(self.ncc_offset_spinner, 8, 1)
+
         # ## Reference
         self.reference_radio = RadioSet([{'label': _('Itself'), 'value': 'itself'},
                                          {'label': _('Box'), 'value': 'box'}])
@@ -5885,8 +6012,8 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
               "Choosing the 'Box' option will do non copper clearing within the box\n"
               "specified by another object different than the one that is copper cleared.")
         )
-        grid0.addWidget(reference_label, 7, 0)
-        grid0.addWidget(self.reference_radio, 7, 1)
+        grid0.addWidget(reference_label, 9, 0)
+        grid0.addWidget(self.reference_radio, 9, 1)
 
         self.layout.addStretch()
 
@@ -6703,6 +6830,28 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         self.pp_combo = FCComboBox()
         grid0.addWidget(pp_label, 15, 0)
         grid0.addWidget(self.pp_combo, 15, 1)
+
+        self.layout.addStretch()
+
+
+class ToolsSubPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+
+        super(ToolsSubPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str(_("Substractor Tool Options")))
+
+        # ## Solder Paste Dispensing
+        self.sublabel = QtWidgets.QLabel(_("<b>Parameters:</b>"))
+        self.sublabel.setToolTip(
+            _("A tool to substract one Gerber or Geometry object\n"
+              "from another of the same type.")
+        )
+        self.layout.addWidget(self.sublabel)
+
+        self.close_paths_cb = FCCheckBox(_("Close paths"))
+        self.close_paths_cb.setToolTip(_("Checking this will close the paths cut by the Geometry substractor object."))
+        self.layout.addWidget(self.close_paths_cb)
 
         self.layout.addStretch()
 

@@ -358,7 +358,7 @@ class FlatCAMObj(QtCore.QObject):
                 pass
 
         if threaded is False:
-            worker_task(self)
+            worker_task(app_obj=self)
         else:
             self.app.worker_task.emit({'fcn': worker_task, 'params': [self]})
 
@@ -879,23 +879,48 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
             if invert:
                 try:
-                    if type(geom) is MultiPolygon:
+                    try:
                         pl = []
                         for p in geom:
                             if p is not None:
-                                pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+                                if isinstance(p, Polygon):
+                                    pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+                                elif isinstance(p, LinearRing):
+                                    pl.append(Polygon(p.coords[::-1]))
                         geom = MultiPolygon(pl)
-                    elif type(geom) is Polygon and geom is not None:
-                        geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
-                    else:
-                        log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> Unexpected Geometry")
+                    except TypeError:
+                        if isinstance(geom, Polygon) and geom is not None:
+                            geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
+                        elif isinstance(geom, LinearRing) and geom is not None:
+                            geom = Polygon(geom.coords[::-1])
+                        else:
+                            log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> Unexpected Geometry %s" %
+                                      type(geom))
                 except Exception as e:
                     log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> %s" % str(e))
                     return 'fail'
             return geom
 
-        if float(self.options["isotooldia"]) < 0:
-            self.options["isotooldia"] = -self.options["isotooldia"]
+            # if invert:
+            #     try:
+            #         if type(geom) is MultiPolygon:
+            #             pl = []
+            #             for p in geom:
+            #                 if p is not None:
+            #                     pl.append(Polygon(p.exterior.coords[::-1], p.interiors))
+            #             geom = MultiPolygon(pl)
+            #         elif type(geom) is Polygon and geom is not None:
+            #             geom = Polygon(geom.exterior.coords[::-1], geom.interiors)
+            #         else:
+            #             log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> Unexpected Geometry %s" %
+            #                       type(geom))
+            #     except Exception as e:
+            #         log.debug("FlatCAMGerber.isolate().generate_envelope() Error --> %s" % str(e))
+            #         return 'fail'
+            # return geom
+
+        # if float(self.options["isotooldia"]) < 0:
+        #     self.options["isotooldia"] = -self.options["isotooldia"]
 
         if combine:
             if self.iso_type == 0:
@@ -983,7 +1008,12 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
                 if empty_cnt == len(geo_obj.solid_geometry):
                     raise ValidationError("Empty Geometry", None)
-                geo_obj.multigeo = True
+
+                # even if combine is checked, one pass is still singlegeo
+                if passes > 1:
+                    geo_obj.multigeo = True
+                else:
+                    geo_obj.multigeo = False
 
             # TODO: Do something if this is None. Offer changing name?
             self.app.new_object("geometry", iso_name, iso_init)
@@ -5937,9 +5967,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             self.annotation.clear(update=True)
 
         if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
-            self.app.plotcanvas.text_collection.enabled = True
+            self.annotation.enabled = True
         else:
-            self.app.plotcanvas.text_collection.enabled = False
+            self.annotation.enabled = False
 
     def on_annotation_change(self):
         if self.ui.annotation_cb.get_value():

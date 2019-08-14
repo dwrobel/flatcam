@@ -15,7 +15,7 @@ from FlatCAMObj import *
 import inspect  # TODO: Remove
 import FlatCAMApp
 from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSettings
 # import webbrowser
 
 import gettext
@@ -256,8 +256,14 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         # self.view.setAcceptDrops(True)
         # self.view.setDropIndicatorShown(True)
 
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("notebook_font_size"):
+            fsize = settings.value('notebook_font_size', type=int)
+        else:
+            fsize = 12
+
         font = QtGui.QFont()
-        font.setPixelSize(12)
+        font.setPixelSize(fsize)
         font.setFamily("Seagoe UI")
         self.view.setFont(font)
 
@@ -312,7 +318,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
             for obj in self.get_selected():
                 if type(obj) != FlatCAMGeometry:
                     self.app.ui.menuprojectgeneratecnc.setVisible(False)
-                if type(obj) != FlatCAMGeometry and type(obj) != FlatCAMExcellon:
+                if type(obj) != FlatCAMGeometry and type(obj) != FlatCAMExcellon and type(obj) != FlatCAMGerber:
                     self.app.ui.menuprojectedit.setVisible(False)
                 if type(obj) != FlatCAMGerber and type(obj) != FlatCAMExcellon:
                     self.app.ui.menuprojectviewsource.setVisible(False)

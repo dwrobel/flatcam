@@ -41,7 +41,6 @@ class FCDrillAdd(FCShapeTool):
             # remember that it was deselected when clicking on canvas
             item = self.draw_app.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
             self.draw_app.tools_table_exc.setCurrentItem(item)
-
         except KeyError:
             self.draw_app.app.inform.emit(_("[WARNING_NOTCL] To add a drill first select a tool"))
             self.draw_app.select_tool("drill_select")
@@ -59,7 +58,7 @@ class FCDrillAdd(FCShapeTool):
         if isinstance(geo, DrawToolShape) and geo.geo is not None:
             self.draw_app.draw_utility_geometry(geo=geo)
 
-        self.draw_app.app.inform.emit(_("Click on target location ..."))
+        self.draw_app.app.inform.emit(_("Click to place ..."))
 
         # Switch notebook to Selected page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
@@ -324,6 +323,533 @@ class FCDrillArray(FCShapeTool):
         self.draw_app.in_action = False
         self.draw_app.array_frame.hide()
         return
+
+
+class FCSlot(FCShapeTool):
+    """
+    Resulting type: Polygon
+    """
+
+    def __init__(self, draw_app):
+        DrawTool.__init__(self, draw_app)
+        self.name = 'drill_slot'
+        self.draw_app = draw_app
+
+        self.draw_app.slot_frame.show()
+
+        self.selected_dia = None
+        try:
+            self.draw_app.app.inform.emit(_("Click to place ..."))
+            self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
+
+            # as a visual marker, select again in tooltable the actual tool that we are using
+            # remember that it was deselected when clicking on canvas
+            item = self.draw_app.tools_table_exc.item((self.draw_app.last_tool_selected - 1), 1)
+            self.draw_app.tools_table_exc.setCurrentItem(item)
+        except KeyError:
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] To add a slot first select a tool"))
+            self.draw_app.select_tool("drill_select")
+            return
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except Exception as e:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_circle.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
+        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
+
+        self.half_height = 0.0
+        self.half_width = 0.0
+        self.radius = float(self.selected_dia / 2.0)
+
+        geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y))
+        if isinstance(geo, DrawToolShape) and geo.geo is not None:
+            self.draw_app.draw_utility_geometry(geo=geo)
+
+        self.draw_app.app.inform.emit(_("Click to place ..."))
+
+        # Switch notebook to Selected page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+
+    def click(self, point):
+        self.make()
+        return "Done."
+
+    def utility_geometry(self, data=None):
+
+        self.points = data
+        geo_data = self.util_shape(data)
+        if geo_data:
+            return DrawToolUtilityShape(geo_data)
+        else:
+            return None
+
+    def util_shape(self, point):
+        # updating values here allows us to change the aperture on the fly, after the Tool has been started
+        self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
+        self.radius = float(self.selected_dia / 2.0)
+        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
+
+        try:
+            slot_length = float(self.draw_app.slot_length_entry.get_value())
+        except ValueError:
+            # try to convert comma to decimal point. if it's still not working error message and return
+            try:
+                slot_length = float(self.draw_app.slot_length_entry.get_value().replace(',', '.'))
+                self.draw_app.slot_length_entry.set_value(slot_length)
+            except ValueError:
+                self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Value is missing or wrong format. "
+                                                "Add it and retry."))
+                return
+
+        try:
+            slot_angle = float(self.draw_app.slot_angle_spinner.get_value())
+        except ValueError:
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Value is missing or wrong format. "
+                                            "Add it and retry."))
+            return
+
+        if self.draw_app.slot_axis_radio.get_value() == 'X':
+            self.half_width = slot_length / 2.0
+            self.half_height = self.radius
+        else:
+            self.half_width = self.radius
+            self.half_height = slot_length / 2.0
+
+        if point[0] is None and point[1] is None:
+            point_x = self.draw_app.x
+            point_y = self.draw_app.y
+        else:
+            point_x = point[0]
+            point_y = point[1]
+
+        geo = []
+
+        if self.half_height > self.half_width:
+            p1 = (point_x - self.half_width, point_y - self.half_height + self.half_width)
+            p2 = (point_x + self.half_width, point_y - self.half_height + self.half_width)
+            p3 = (point_x + self.half_width, point_y + self.half_height - self.half_width)
+            p4 = (point_x - self.half_width, point_y + self.half_height - self.half_width)
+
+            down_center = [point_x, point_y - self.half_height + self.half_width]
+            d_start_angle = math.pi
+            d_stop_angle = 0.0
+            down_arc = arc(down_center, self.half_width, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
+
+            up_center = [point_x, point_y + self.half_height - self.half_width]
+            u_start_angle = 0.0
+            u_stop_angle = math.pi
+            up_arc = arc(up_center, self.half_width, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
+
+            geo.append(p1)
+            for pt in down_arc:
+                geo.append(pt)
+            geo.append(p2)
+            geo.append(p3)
+            for pt in up_arc:
+                geo.append(pt)
+            geo.append(p4)
+
+            if self.draw_app.slot_axis_radio.get_value() == 'A':
+                return affinity.rotate(geom=Polygon(geo), angle=-slot_angle)
+            else:
+                return Polygon(geo)
+        else:
+            p1 = (point_x - self.half_width + self.half_height, point_y - self.half_height)
+            p2 = (point_x + self.half_width - self.half_height, point_y - self.half_height)
+            p3 = (point_x + self.half_width - self.half_height, point_y + self.half_height)
+            p4 = (point_x - self.half_width + self.half_height, point_y + self.half_height)
+
+            left_center = [point_x - self.half_width + self.half_height, point_y]
+            d_start_angle = math.pi / 2
+            d_stop_angle = 1.5 * math.pi
+            left_arc = arc(left_center, self.half_height, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
+
+            right_center = [point_x + self.half_width - self.half_height, point_y]
+            u_start_angle = 1.5 * math.pi
+            u_stop_angle = math.pi / 2
+            right_arc = arc(right_center, self.half_height, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
+
+            geo.append(p1)
+            geo.append(p2)
+            for pt in right_arc:
+                geo.append(pt)
+            geo.append(p3)
+            geo.append(p4)
+            for pt in left_arc:
+                geo.append(pt)
+
+            return Polygon(geo)
+
+    def make(self):
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except Exception as e:
+            pass
+
+        try:
+            self.geometry = DrawToolShape(self.util_shape(self.points))
+        except Exception as e:
+            log.debug("FCSlot.make() --> %s" % str(e))
+
+        # add the point to drills/slots if the diameter is a key in the dict, if not, create it add the drill location
+        # to the value, as a list of itself
+        if self.selected_dia in self.draw_app.slot_points_edit:
+            self.draw_app.slot_points_edit[self.selected_dia].append(self.points)
+        else:
+            self.draw_app.slot_points_edit[self.selected_dia] = [self.points]
+
+        self.draw_app.current_storage = self.draw_app.storage_dict[self.selected_dia]
+
+        self.draw_app.in_action = False
+        self.complete = True
+        self.draw_app.app.inform.emit(_("[success] Done. Adding Slot completed."))
+        self.draw_app.slot_frame.hide()
+
+
+class FCSlotArray(FCShapeTool):
+    """
+    Resulting type: MultiPolygon
+    """
+
+    def __init__(self, draw_app):
+        DrawTool.__init__(self, draw_app)
+        self.name = 'drill_slotarray'
+        self.draw_app = draw_app
+
+        try:
+            self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
+        except KeyError:
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] To add an Slot Array first select a tool in Tools Table"))
+            self.complete = True
+            self.draw_app.in_action = False
+            self.draw_app.slot_array_frame.hide()
+            return
+
+        if self.radius == 0:
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Aperture size is zero. It needs to be greater than zero."))
+            self.dont_execute = True
+            return
+        else:
+            self.dont_execute = False
+
+        try:
+            QtGui.QGuiApplication.restoreOverrideCursor()
+        except Exception as e:
+            pass
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_array.png'))
+        QtGui.QGuiApplication.setOverrideCursor(self.cursor)
+
+        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']
+        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
+
+        # if those cause KeyError exception it means that the aperture type is not 'R'. Only 'R' type has those keys
+        try:
+            self.half_width = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['width']) / 2
+        except KeyError:
+            pass
+        try:
+            self.half_height = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['height']) / 2
+        except KeyError:
+            pass
+
+        self.draw_app.slot_array_frame.show()
+
+        self.selected_size = None
+        self.pad_axis = 'X'
+        self.pad_array = 'linear'
+        self.pad_array_size = None
+        self.pad_pitch = None
+        self.pad_linear_angle = None
+
+        self.pad_angle = None
+        self.pad_direction = None
+        self.pad_radius = None
+
+        self.origin = None
+        self.destination = None
+        self.flag_for_circ_array = None
+
+        self.last_dx = 0
+        self.last_dy = 0
+
+        self.pt = []
+
+        geo = self.utility_geometry(data=(self.draw_app.snap_x, self.draw_app.snap_y), static=True)
+
+        if isinstance(geo, DrawToolShape) and geo.geo is not None:
+            self.draw_app.draw_utility_geometry(geo=geo)
+
+        self.draw_app.app.inform.emit(_("Click on target location ..."))
+
+        # Switch notebook to Selected page
+        self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
+
+    def click(self, point):
+
+        if self.pad_array == 'Linear':
+            self.make()
+            return
+        else:
+            if self.flag_for_circ_array is None:
+                self.draw_app.in_action = True
+                self.pt.append(point)
+
+                self.flag_for_circ_array = True
+                self.set_origin(point)
+                self.draw_app.app.inform.emit(_("Click on the Pad Circular Array Start position"))
+            else:
+                self.destination = point
+                self.make()
+                self.flag_for_circ_array = None
+                return
+
+    def set_origin(self, origin):
+        self.origin = origin
+
+    def utility_geometry(self, data=None, static=None):
+        if self.dont_execute is True:
+            self.draw_app.select_tool('select')
+            return
+
+        self.pad_axis = self.draw_app.pad_axis_radio.get_value()
+        self.pad_direction = self.draw_app.pad_direction_radio.get_value()
+        self.pad_array = self.draw_app.array_type_combo.get_value()
+        try:
+            self.pad_array_size = int(self.draw_app.pad_array_size_entry.get_value())
+            try:
+                self.pad_pitch = float(self.draw_app.pad_pitch_entry.get_value())
+                self.pad_linear_angle = float(self.draw_app.linear_angle_spinner.get_value())
+                self.pad_angle = float(self.draw_app.pad_angle_entry.get_value())
+            except TypeError:
+                self.draw_app.app.inform.emit(
+                    _("[ERROR_NOTCL] The value is not Float. Check for comma instead of dot separator."))
+                return
+        except Exception as e:
+            self.draw_app.app.inform.emit(_("[ERROR_NOTCL] The value is mistyped. Check the value."))
+            return
+
+        if self.pad_array == 'Linear':
+            if data[0] is None and data[1] is None:
+                dx = self.draw_app.x
+                dy = self.draw_app.y
+            else:
+                dx = data[0]
+                dy = data[1]
+
+            geo_el_list = []
+            geo_el = []
+            self.points = [dx, dy]
+
+            for item in range(self.pad_array_size):
+                if self.pad_axis == 'X':
+                    geo_el = self.util_shape(((dx + (self.pad_pitch * item)), dy))
+                if self.pad_axis == 'Y':
+                    geo_el = self.util_shape((dx, (dy + (self.pad_pitch * item))))
+                if self.pad_axis == 'A':
+                    x_adj = self.pad_pitch * math.cos(math.radians(self.pad_linear_angle))
+                    y_adj = self.pad_pitch * math.sin(math.radians(self.pad_linear_angle))
+                    geo_el = self.util_shape(
+                        ((dx + (x_adj * item)), (dy + (y_adj * item)))
+                    )
+
+                if static is None or static is False:
+                    new_geo_el = dict()
+
+                    if 'solid' in geo_el:
+                        new_geo_el['solid'] = affinity.translate(
+                            geo_el['solid'], xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)
+                        )
+                    if 'follow' in geo_el:
+                        new_geo_el['follow'] = affinity.translate(
+                            geo_el['follow'], xoff=(dx - self.last_dx), yoff=(dy - self.last_dy)
+                        )
+                    geo_el_list.append(new_geo_el)
+
+                else:
+                    geo_el_list.append(geo_el)
+            # self.origin = data
+
+            self.last_dx = dx
+            self.last_dy = dy
+            return DrawToolUtilityShape(geo_el_list)
+        else:
+            if data[0] is None and data[1] is None:
+                cdx = self.draw_app.x
+                cdy = self.draw_app.y
+            else:
+                cdx = data[0]
+                cdy = data[1]
+
+            if len(self.pt) > 0:
+                temp_points = [x for x in self.pt]
+                temp_points.append([cdx, cdy])
+                return DrawToolUtilityShape(LineString(temp_points))
+
+    def util_shape(self, point):
+        # updating values here allows us to change the aperture on the fly, after the Tool has been started
+        self.storage_obj = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['geometry']
+        self.radius = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size']) / 2
+        self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
+
+        # if those cause KeyError exception it means that the aperture type is not 'R'. Only 'R' type has those keys
+        try:
+            self.half_width = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['width']) / 2
+        except KeyError:
+            pass
+        try:
+            self.half_height = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['height']) / 2
+        except KeyError:
+            pass
+
+        if point[0] is None and point[1] is None:
+            point_x = self.draw_app.x
+            point_y = self.draw_app.y
+        else:
+            point_x = point[0]
+            point_y = point[1]
+
+        ap_type = self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['type']
+        if ap_type == 'C':
+            new_geo_el = dict()
+
+            center = Point([point_x, point_y])
+            new_geo_el['solid'] = center.buffer(self.radius)
+            new_geo_el['follow'] = center
+            return new_geo_el
+        elif ap_type == 'R':
+            new_geo_el = dict()
+
+            p1 = (point_x - self.half_width, point_y - self.half_height)
+            p2 = (point_x + self.half_width, point_y - self.half_height)
+            p3 = (point_x + self.half_width, point_y + self.half_height)
+            p4 = (point_x - self.half_width, point_y + self.half_height)
+            new_geo_el['solid'] = Polygon([p1, p2, p3, p4, p1])
+            new_geo_el['follow'] = Point([point_x, point_y])
+            return new_geo_el
+        elif ap_type == 'O':
+            geo = []
+            new_geo_el = dict()
+
+            if self.half_height > self.half_width:
+                p1 = (point_x - self.half_width, point_y - self.half_height + self.half_width)
+                p2 = (point_x + self.half_width, point_y - self.half_height + self.half_width)
+                p3 = (point_x + self.half_width, point_y + self.half_height - self.half_width)
+                p4 = (point_x - self.half_width, point_y + self.half_height - self.half_width)
+
+                down_center = [point_x, point_y - self.half_height + self.half_width]
+                d_start_angle = math.pi
+                d_stop_angle = 0.0
+                down_arc = arc(down_center, self.half_width, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
+
+                up_center = [point_x, point_y + self.half_height - self.half_width]
+                u_start_angle = 0.0
+                u_stop_angle = math.pi
+                up_arc = arc(up_center, self.half_width, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
+
+                geo.append(p1)
+                for pt in down_arc:
+                    geo.append(pt)
+                geo.append(p2)
+                geo.append(p3)
+                for pt in up_arc:
+                    geo.append(pt)
+                geo.append(p4)
+
+                new_geo_el['solid'] = Polygon(geo)
+                center = Point([point_x, point_y])
+                new_geo_el['follow'] = center
+                return new_geo_el
+            else:
+                p1 = (point_x - self.half_width + self.half_height, point_y - self.half_height)
+                p2 = (point_x + self.half_width - self.half_height, point_y - self.half_height)
+                p3 = (point_x + self.half_width - self.half_height, point_y + self.half_height)
+                p4 = (point_x - self.half_width + self.half_height, point_y + self.half_height)
+
+                left_center = [point_x - self.half_width + self.half_height, point_y]
+                d_start_angle = math.pi / 2
+                d_stop_angle = 1.5 * math.pi
+                left_arc = arc(left_center, self.half_height, d_start_angle, d_stop_angle, 'ccw', self.steps_per_circ)
+
+                right_center = [point_x + self.half_width - self.half_height, point_y]
+                u_start_angle = 1.5 * math.pi
+                u_stop_angle = math.pi / 2
+                right_arc = arc(right_center, self.half_height, u_start_angle, u_stop_angle, 'ccw', self.steps_per_circ)
+
+                geo.append(p1)
+                geo.append(p2)
+                for pt in right_arc:
+                    geo.append(pt)
+                geo.append(p3)
+                geo.append(p4)
+                for pt in left_arc:
+                    geo.append(pt)
+
+                new_geo_el['solid'] = Polygon(geo)
+                center = Point([point_x, point_y])
+                new_geo_el['follow'] = center
+                return new_geo_el
+        else:
+            self.draw_app.app.inform.emit(_(
+                "Incompatible aperture type. Select an aperture with type 'C', 'R' or 'O'."))
+            return None
+
+    def make(self):
+        self.geometry = []
+        geo = None
+
+        self.draw_app.current_storage = self.storage_obj
+
+        if self.pad_array == 'Linear':
+            for item in range(self.pad_array_size):
+                if self.pad_axis == 'X':
+                    geo = self.util_shape(((self.points[0] + (self.pad_pitch * item)), self.points[1]))
+                if self.pad_axis == 'Y':
+                    geo = self.util_shape((self.points[0], (self.points[1] + (self.pad_pitch * item))))
+                if self.pad_axis == 'A':
+                    x_adj = self.pad_pitch * math.cos(math.radians(self.pad_linear_angle))
+                    y_adj = self.pad_pitch * math.sin(math.radians(self.pad_linear_angle))
+                    geo = self.util_shape(
+                        ((self.points[0] + (x_adj * item)), (self.points[1] + (y_adj * item)))
+                    )
+
+                self.geometry.append(DrawToolShape(geo))
+        else:
+            if (self.pad_angle * self.pad_array_size) > 360:
+                self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Too many Pads for the selected spacing angle."))
+                return
+
+            radius = distance(self.destination, self.origin)
+            initial_angle = math.asin((self.destination[1] - self.origin[1]) / radius)
+            for i in range(self.pad_array_size):
+                angle_radians = math.radians(self.pad_angle * i)
+                if self.pad_direction == 'CW':
+                    x = self.origin[0] + radius * math.cos(-angle_radians + initial_angle)
+                    y = self.origin[1] + radius * math.sin(-angle_radians + initial_angle)
+                else:
+                    x = self.origin[0] + radius * math.cos(angle_radians + initial_angle)
+                    y = self.origin[1] + radius * math.sin(angle_radians + initial_angle)
+
+                geo = self.util_shape((x, y))
+                if self.pad_direction == 'CW':
+                    geo = affinity.rotate(geo, angle=(math.pi - angle_radians), use_radians=True)
+                else:
+                    geo = affinity.rotate(geo, angle=(angle_radians - math.pi), use_radians=True)
+
+                self.geometry.append(DrawToolShape(geo))
+        self.complete = True
+        self.draw_app.app.inform.emit(_("[success] Done. Pad Array added."))
+        self.draw_app.in_action = False
+        self.draw_app.slot_array_frame.hide()
+        return
+
+    def clean_up(self):
+        self.draw_app.selected = []
+        self.draw_app.apertures_table.clearSelection()
+        self.draw_app.plot_all()
 
 
 class FCDrillResize(FCShapeTool):
@@ -612,6 +1138,8 @@ class FCDrillSelect(DrawTool):
 
         self.exc_editor_app.resize_frame.hide()
         self.exc_editor_app.array_frame.hide()
+        self.exc_editor_app.slot_frame.hide()
+        # self.exc_editor_app.slot_array_frame.hide()
 
     def click(self, point):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
@@ -628,6 +1156,7 @@ class FCDrillSelect(DrawTool):
 
     def click_release(self, pos):
         self.exc_editor_app.tools_table_exc.clearSelection()
+        xmin, ymin, xmax, ymax = 0, 0, 0, 0
 
         try:
             for storage in self.exc_editor_app.storage_dict:
@@ -636,14 +1165,24 @@ class FCDrillSelect(DrawTool):
 
             _, closest_shape = self.sel_storage.nearest(pos)
 
-            # constrain selection to happen only within a certain bounding box
-            x_coord, y_coord = closest_shape.geo[0].xy
-            delta = (x_coord[1] - x_coord[0])
-            # closest_shape_coords = (((x_coord[0] + delta / 2)), y_coord[0])
-            xmin = x_coord[0] - (0.7 * delta)
-            xmax = x_coord[0] + (1.7 * delta)
-            ymin = y_coord[0] - (0.7 * delta)
-            ymax = y_coord[0] + (1.7 * delta)
+            # constrain selection to happen only within a certain bounding box; it works only for MultiLineStrings
+            if isinstance(closest_shape.geo, MultiLineString):
+                x_coord, y_coord = closest_shape.geo[0].xy
+                delta = (x_coord[1] - x_coord[0])
+                # closest_shape_coords = (((x_coord[0] + delta / 2)), y_coord[0])
+                xmin = x_coord[0] - (0.7 * delta)
+                xmax = x_coord[0] + (1.7 * delta)
+                ymin = y_coord[0] - (0.7 * delta)
+                ymax = y_coord[0] + (1.7 * delta)
+            elif isinstance(closest_shape.geo, Polygon):
+                xmin, ymin, xmax, ymax = closest_shape.geo.bounds
+                dx = xmax - xmin
+                dy = ymax - ymin
+                delta = dx if dx > dy else dy
+                xmin -= 0.7 * delta
+                xmax += 0.7 * delta
+                ymin -= 0.7 * delta
+                ymax += 0.7 * delta
         except StopIteration:
             return ""
 
@@ -890,7 +1429,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         res_entry_lbl = QtWidgets.QLabel(_('Resize Dia:'))
         res_entry_lbl.setToolTip(
-           _( "Diameter to resize to.")
+           _("Diameter to resize to.")
         )
         grid3.addWidget(res_entry_lbl, 0, 0)
 
@@ -930,8 +1469,8 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.array_type_combo = FCComboBox()
         self.array_type_combo.setToolTip(
-           _( "Select the type of drills array to create.\n"
-              "It can be Linear X(Y) or Circular")
+           _("Select the type of drills array to create.\n"
+             "It can be Linear X(Y) or Circular")
         )
         self.array_type_combo.addItem(_("Linear"))
         self.array_type_combo.addItem(_("Circular"))
@@ -943,10 +1482,8 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # Set the number of drill holes in the drill array
         self.drill_array_size_label = QtWidgets.QLabel(_('Nr of drills:'))
-        self.drill_array_size_label.setToolTip(
-            _("Specify how many drills to be in the array.")
-        )
-        self.drill_array_size_label.setFixedWidth(100)
+        self.drill_array_size_label.setToolTip(_("Specify how many drills to be in the array."))
+        self.drill_array_size_label.setMinimumWidth(100)
 
         self.drill_array_size_entry = LengthEntry()
         self.array_form.addRow(self.drill_array_size_label, self.drill_array_size_entry)
@@ -989,15 +1526,16 @@ class FlatCAMExcEditor(QtCore.QObject):
         # Linear Drill Array angle
         self.linear_angle_label = QtWidgets.QLabel(_('Angle:'))
         self.linear_angle_label.setToolTip(
-           _( "Angle at which the linear array is placed.\n"
-              "The precision is of max 2 decimals.\n"
-              "Min value is: -359.99 degrees.\n"
-              "Max value is:  360.00 degrees.")
+           _("Angle at which the linear array is placed.\n"
+             "The precision is of max 2 decimals.\n"
+             "Min value is: -359.99 degrees.\n"
+             "Max value is:  360.00 degrees.")
         )
         self.linear_angle_label.setFixedWidth(100)
 
         self.linear_angle_spinner = FCDoubleSpinner()
         self.linear_angle_spinner.set_precision(2)
+        self.linear_angle_spinner.setSingleStep(1.0)
         self.linear_angle_spinner.setRange(-359.99, 360.00)
         self.linear_form.addRow(self.linear_angle_label, self.linear_angle_spinner)
 
@@ -1009,10 +1547,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.array_circular_frame.setLayout(self.circular_box)
 
         self.drill_direction_label = QtWidgets.QLabel(_('Direction:'))
-        self.drill_direction_label.setToolTip(
-           _( "Direction for circular array."
-              "Can be CW = clockwise or CCW = counter clockwise.")
-        )
+        self.drill_direction_label.setToolTip(_("Direction for circular array."
+                                                "Can be CW = clockwise or CCW = counter clockwise."))
         self.drill_direction_label.setFixedWidth(100)
 
         self.circular_form = QtWidgets.QFormLayout()
@@ -1023,10 +1559,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.circular_form.addRow(self.drill_direction_label, self.drill_direction_radio)
 
         self.drill_angle_label = QtWidgets.QLabel(_('Angle:'))
-        self.drill_angle_label.setToolTip(
-            _("Angle at which each element in circular array is placed.")
-        )
-        self.drill_angle_label.setFixedWidth(100)
+        self.drill_angle_label.setToolTip(_("Angle at which each element in circular array is placed."))
+        self.drill_angle_label.setMinimumWidth(100)
 
         self.drill_angle_entry = LengthEntry()
         self.circular_form.addRow(self.drill_angle_label, self.drill_angle_entry)
@@ -1037,6 +1571,77 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.linear_angle_label.hide()
 
         self.array_frame.hide()
+
+        # ######################################################
+        # ##### ADDING SLOTS ###################################
+        # ######################################################
+
+        # add a frame and inside add a vertical box layout. Inside this vbox layout I add
+        # all the add slot  widgets
+        # this way I can hide/show the frame
+        self.slot_frame = QtWidgets.QFrame()
+        self.slot_frame.setContentsMargins(0, 0, 0, 0)
+        self.tools_box.addWidget(self.slot_frame)
+        self.slot_box = QtWidgets.QVBoxLayout()
+        self.slot_box.setContentsMargins(0, 0, 0, 0)
+        self.slot_frame.setLayout(self.slot_box)
+
+        self.emptyarray_label = QtWidgets.QLabel('')
+        self.slot_box.addWidget(self.emptyarray_label)
+
+        self.slot_label = QtWidgets.QLabel('<b>%s</b>' % _("Add Slot"))
+        self.slot_label.setToolTip(
+            _("Add slot (hole with oval shape)")
+        )
+        self.slot_box.addWidget(self.slot_label)
+
+        self.slot_form = QtWidgets.QFormLayout()
+        self.slot_box.addLayout(self.slot_form)
+
+        # Slot length
+        self.slot_length_label = QtWidgets.QLabel(_('Length:'))
+        self.slot_length_label.setToolTip(
+            _("Length = The length of the slot.")
+        )
+        self.slot_length_label.setMinimumWidth(100)
+
+        self.slot_length_entry = LengthEntry()
+        self.slot_form.addRow(self.slot_length_label, self.slot_length_entry)
+
+        # Slot direction
+        self.slot_axis_label = QtWidgets.QLabel(_('Direction:'))
+        self.slot_axis_label.setToolTip(
+            _("Direction on which the slot is oriented:\n"
+              "- 'X' - horizontal axis \n"
+              "- 'Y' - vertical axis or \n"
+              "- 'Angle' - a custom angle for the slot inclination")
+        )
+        self.slot_axis_label.setMinimumWidth(100)
+
+        self.slot_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
+                                         {'label': _('Y'), 'value': 'Y'},
+                                         {'label': _('Angle'), 'value': 'A'}])
+        self.slot_form.addRow(self.slot_axis_label, self.slot_axis_radio)
+
+        # Slot custom angle
+        self.slot_angle_label = QtWidgets.QLabel(_('Angle:'))
+        self.slot_angle_label.setToolTip(
+           _("Angle at which the slot is placed.\n"
+             "The precision is of max 2 decimals.\n"
+             "Min value is: -359.99 degrees.\n"
+             "Max value is:  360.00 degrees.")
+        )
+        self.slot_angle_label.setMinimumWidth(100)
+
+        self.slot_angle_spinner = FCDoubleSpinner()
+        self.slot_angle_spinner.set_precision(2)
+        self.slot_angle_spinner.setWrapping(True)
+        self.slot_angle_spinner.setRange(-359.99, 360.00)
+        self.slot_angle_spinner.setSingleStep(1.0)
+        self.slot_form.addRow(self.slot_angle_label, self.slot_angle_spinner)
+
+        self.slot_frame.hide()
+
         self.tools_box.addStretch()
 
         # ## Toolbar events and properties
@@ -1047,6 +1652,10 @@ class FlatCAMExcEditor(QtCore.QObject):
                           "constructor": FCDrillAdd},
             "drill_array": {"button": self.app.ui.add_drill_array_btn,
                             "constructor": FCDrillArray},
+            "drill_slot": {"button": self.app.ui.add_slot_btn,
+                           "constructor": FCSlot},
+            "drill_slotarray": {"button": self.app.ui.add_slot_array_btn,
+                                "constructor": FCSlotArray},
             "drill_resize": {"button": self.app.ui.resize_drill_btn,
                              "constructor": FCDrillResize},
             "drill_copy": {"button": self.app.ui.copy_drill_btn,
@@ -1061,16 +1670,19 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.in_action = False
 
         self.storage_dict = {}
+
         self.current_storage = []
 
         # build the data from the Excellon point into a dictionary
         #  {tool_dia: [geometry_in_points]}
         self.points_edit = {}
-        self.sorted_diameters =[]
+        self.slot_points_edit = {}
+
+        self.sorted_diameters = []
 
         self.new_drills = []
         self.new_tools = {}
-        self.new_slots = {}
+        self.new_slots = []
         self.new_tool_offset = {}
 
         # dictionary to store the tool_row and diameters in Tool_table
@@ -1101,6 +1713,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.array_type_combo.currentIndexChanged.connect(self.on_array_type_combo)
 
         self.drill_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
+        self.slot_axis_radio.activated_custom.connect(self.on_slot_angle_radio)
 
         self.app.ui.exc_add_array_drill_menuitem.triggered.connect(self.exc_add_drill_array)
         self.app.ui.exc_add_drill_menuitem.triggered.connect(self.exc_add_drill)
@@ -1219,9 +1832,32 @@ class FlatCAMExcEditor(QtCore.QObject):
                 except KeyError:
                     self.points_edit[tool_dia] = [drill['point']]
 
+        # build the self.slot_points_edit dict {dimaters: {"start": Point, "stop": Point}}
+        for slot in self.exc_obj.slots:
+            if slot['tool'] in self.exc_obj.tools:
+                if self.units == 'IN':
+                    tool_dia = float('%.4f' % self.exc_obj.tools[slot['tool']]['C'])
+                else:
+                    tool_dia = float('%.2f' % self.exc_obj.tools[slot['tool']]['C'])
+
+                try:
+                    self.slot_points_edit[tool_dia].append({
+                        "start": slot["start"],
+                        "stop": slot["stop"]
+                    })
+                except KeyError:
+                    self.slot_points_edit[tool_dia] = [{
+                        "start": slot["start"],
+                        "stop": slot["stop"]
+                    }]
+
         # update the olddia_newdia dict to make sure we have an updated state of the tool_table
         for key in self.points_edit:
             self.olddia_newdia[key] = key
+
+        for key in self.slot_points_edit:
+            if key not in self.olddia_newdia:
+                self.olddia_newdia[key] = key
 
         sort_temp = []
         for diam in self.olddia_newdia:
@@ -1252,6 +1888,10 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.linear_angle_spinner.set_value(float(self.app.defaults['excellon_editor_lin_angle']))
         self.drill_direction_radio.set_value(self.app.defaults['excellon_editor_circ_dir'])
         self.drill_angle_entry.set_value(float(self.app.defaults['excellon_editor_circ_angle']))
+
+        self.slot_length_entry.set_value(1.0)
+        self.slot_axis_radio.set_value('X')
+        self.slot_angle_spinner.set_value(0.0)
 
     def build_ui(self, first_run=None):
 
@@ -1312,8 +1952,12 @@ class FlatCAMExcEditor(QtCore.QObject):
                 self.tot_slot_cnt += slot_cnt
             except AttributeError:
                 # log.debug("No slots in the Excellon file")
-                # slot editing not implemented
-                pass
+                # Find no of slots for the current tool
+                for tool_dia in self.slot_points_edit:
+                    if float(tool_dia) == tool_no:
+                        slot_cnt = len(self.slot_points_edit[tool_dia])
+
+                self.tot_slot_cnt += slot_cnt
 
             idd = QtWidgets.QTableWidgetItem('%d' % int(tool_id))
             idd.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
@@ -1525,7 +2169,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                         deleted_tool_dia_list.append(float('%.4f' % dd))
                 else:
                     deleted_tool_dia_list.append(float('%.4f' % dia))
-        except:
+        except Exception as e:
             self.app.inform.emit(_("[WARNING_NOTCL] Select a tool in Tool Table"))
             return
 
@@ -1662,7 +2306,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.sorted_diameters = []
         self.new_drills = []
         self.new_tools = {}
-        self.new_slots = {}
+        self.new_slots = []
         self.new_tool_offset = {}
         self.olddia_newdia = {}
 
@@ -1912,6 +2556,21 @@ class FlatCAMExcEditor(QtCore.QObject):
                     self.add_exc_shape(DrawToolShape(shape_geo), storage_elem)
             self.storage_dict[tool_dia] = storage_elem
 
+        # slots
+        for tool_dia in self.slot_points_edit:
+            buf_value = float(tool_dia) / 2
+            for elem_dict in self.slot_points_edit[tool_dia]:
+
+                line_geo = LineString([elem_dict['start'], elem_dict['stop']])
+                shape_geo = line_geo.buffer(buf_value)
+
+                if tool_dia not in self.storage_dict:
+                    storage_elem = FlatCAMGeoEditor.make_storage()
+                    self.storage_dict[tool_dia] = storage_elem
+
+                if shape_geo is not None:
+                    self.add_exc_shape(DrawToolShape(shape_geo), self.storage_dict[tool_dia])
+
         self.replot()
 
         # add a first tool in the Tool Table but only if the Excellon Object is empty
@@ -1929,36 +2588,85 @@ class FlatCAMExcEditor(QtCore.QObject):
         # this dictionary will contain tooldia's as keys and a list of coordinates tuple as values
         # the values of this dict are coordinates of the holes (drills)
         edited_points = {}
+
+        """
+         - this dictionary will contain tooldia's as keys and a list of another dicts as values
+         - the dict element of the list has the structure
+         ================  ====================================
+        Key               Value
+        ================  ====================================
+        start             (Shapely.Point) Start point of the slot
+        stop              (Shapely.Point) Stop point of the slot
+        ================  ====================================
+        """
+        edited_slot_points = {}
+
         for storage_tooldia in self.storage_dict:
             for x in self.storage_dict[storage_tooldia].get_objects():
+                if isinstance(x.geo, MultiLineString):
+                    # all x.geo in self.storage_dict[storage] are MultiLinestring objects for drills
+                    # each MultiLineString is made out of Linestrings
+                    # select first Linestring object in the current MultiLineString
+                    first_linestring = x.geo[0]
+                    # get it's coordinates
+                    first_linestring_coords = first_linestring.coords
+                    x_coord = first_linestring_coords[0][0] + (float(first_linestring.length / 2))
+                    y_coord = first_linestring_coords[0][1]
 
-                # all x.geo in self.storage_dict[storage] are MultiLinestring objects
-                # each MultiLineString is made out of Linestrings
-                # select first Linestring object in the current MultiLineString
-                first_linestring = x.geo[0]
-                # get it's coordinates
-                first_linestring_coords = first_linestring.coords
-                x_coord = first_linestring_coords[0][0] + (float(first_linestring.length / 2))
-                y_coord = first_linestring_coords[0][1]
+                    # create a tuple with the coordinates (x, y) and add it to the list that is the value of the
+                    # edited_points dictionary
+                    point = (x_coord, y_coord)
+                    if storage_tooldia not in edited_points:
+                        edited_points[storage_tooldia] = [point]
+                    else:
+                        edited_points[storage_tooldia].append(point)
+                elif isinstance(x.geo, Polygon):
+                    # create a tuple with the points (start, stop) and add it to the list that is the value of the
+                    # edited_points dictionary
 
-                # create a tuple with the coordinates (x, y) and add it to the list that is the value of the
-                # edited_points dictionary
-                point = (x_coord, y_coord)
-                if storage_tooldia not in edited_points:
-                    edited_points[storage_tooldia] = [point]
-                else:
-                    edited_points[storage_tooldia].append(point)
+                    # first determine the start and stop coordinates for the slot knowing the geometry and the tool
+                    # diameter
+                    radius = float(storage_tooldia) / 2
+                    radius = radius - 0.0000001
+
+                    poly = x.geo
+                    poly = poly.buffer(-radius)
+
+                    xmin, ymin, xmax, ymax = poly.bounds
+                    line_one = LineString([(xmin, ymin), (xmax, ymax)]).intersection(poly).length
+                    line_two = LineString([(xmin, ymax), (xmax, ymin)]).intersection(poly).length
+
+                    if line_one < line_two:
+                        point = {
+                            "start": (xmin, ymax),
+                            "stop": (xmax, ymin)
+                        }
+                    else:
+                        point = {
+                            "start": (xmin, ymin),
+                            "stop": (xmax, ymax)
+                        }
+
+                    if storage_tooldia not in edited_slot_points:
+                        edited_slot_points[storage_tooldia] = [point]
+                    else:
+                        edited_slot_points[storage_tooldia].append(point)
 
         # recreate the drills and tools to be added to the new Excellon edited object
         # first, we look in the tool table if one of the tool diameters was changed then
         # append that a tuple formed by (old_dia, edited_dia) to a list
-        changed_key = []
+        changed_key = set()
         for initial_dia in self.olddia_newdia:
             edited_dia = self.olddia_newdia[initial_dia]
             if edited_dia != initial_dia:
+                # for drills
                 for old_dia in edited_points:
                     if old_dia == initial_dia:
-                        changed_key.append((old_dia, edited_dia))
+                        changed_key.add((old_dia, edited_dia))
+                # for slots
+                for old_dia in edited_slot_points:
+                    if old_dia == initial_dia:
+                        changed_key.add((old_dia, edited_dia))
             # if the initial_dia is not in edited_points it means it is a new tool with no drill points
             # (and we have to add it)
             # because in case we have drill points it will have to be already added in edited_points
@@ -1967,6 +2675,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         for el in changed_key:
             edited_points[el[1]] = edited_points.pop(el[0])
+            edited_slot_points[el[1]] = edited_slot_points.pop(el[0])
 
         # Let's sort the edited_points dictionary by keys (diameters) and store the result in a zipped list
         # ordered_edited_points is a ordered list of tuples;
@@ -1998,6 +2707,41 @@ class FlatCAMExcEditor(QtCore.QObject):
                 poly = Point(point).buffer(float(tool_dia[0]) / 2.0, int(int(exc_obj.geo_steps_per_circle) / 4))
                 self.new_tools[name]['solid_geometry'].append(poly)
 
+        ordered_edited_slot_points = sorted(zip(edited_slot_points.keys(), edited_slot_points.values()))
+        for tool_dia in ordered_edited_slot_points:
+
+            tool_exist_flag = False
+            for tool in self.new_tools:
+                if tool_dia[0] == self.new_tools[tool]["C"]:
+                    current_tool = tool
+                    tool_exist_flag = True
+                    break
+
+            if tool_exist_flag is False:
+                current_tool += 1
+                # create the self.tools for the new Excellon object (the one with edited content)
+                name = str(current_tool)
+                spec = {"C": float(tool_dia[0])}
+                self.new_tools[name] = spec
+
+                # add in self.tools the 'solid_geometry' key, the value (a list) is populated bellow
+                self.new_tools[name]['solid_geometry'] = []
+
+            # create the self.slots for the new Excellon object (the one with edited content)
+            for coord_dict in tool_dia[1]:
+                self.new_slots.append(
+                    {
+                        'start': Point(coord_dict['start']),
+                        'stop': Point(coord_dict['stop']),
+                        'tool': str(current_tool)
+                    }
+                )
+                # repopulate the 'solid_geometry' for each tool
+                poly = LineString([coord_dict['start'], coord_dict['stop']]).buffer(
+                    float(tool_dia[0]) / 2.0, int(int(exc_obj.geo_steps_per_circle) / 4)
+                )
+                self.new_tools[str(current_tool)]['solid_geometry'].append(poly)
+
         if self.is_modified is True:
             if "_edit" in self.edited_obj_name:
                 try:
@@ -2011,8 +2755,6 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.app.worker_task.emit({'fcn': self.new_edited_excellon,
                                    'params': [self.edited_obj_name]})
 
-        if self.exc_obj.slots:
-            self.new_slots = self.exc_obj.slots
 
         self.new_tool_offset = self.exc_obj.tool_offset
 
@@ -2169,7 +2911,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
 
-        if self.app.grid_status():
+        if self.app.grid_status() == True:
             self.pos  = self.app.geo_editor.snap(self.pos[0], self.pos[1])
             self.app.app_cursor.enabled = True
             # Update cursor
@@ -2195,6 +2937,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                     if self.current_storage is not None:
                         self.on_exc_shape_complete(self.current_storage)
                         self.build_ui()
+
                     # MS: always return to the Select Tool if modifier key is not pressed
                     # else return to the current tool
                     key_modifier = QtWidgets.QApplication.keyboardModifiers()
@@ -2207,8 +2950,8 @@ class FlatCAMExcEditor(QtCore.QObject):
                     if key_modifier == modifier_to_use:
                         self.select_tool(self.active_tool.name)
                     else:
-                        # return to Select tool but not for FCPad
-                        if isinstance(self.active_tool, FCDrillAdd):
+                        # return to Select tool but not for FCDrillAdd or FCSlot
+                        if isinstance(self.active_tool, FCDrillAdd) or isinstance(self.active_tool, FCSlot):
                             self.select_tool(self.active_tool.name)
                         else:
                             self.select_tool("drill_select")
@@ -2300,7 +3043,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.modifiers = QtWidgets.QApplication.keyboardModifiers()
 
         pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
-        if self.app.grid_status():
+        if self.app.grid_status() == True:
             pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
             pos = (pos_canvas[0], pos_canvas[1])
@@ -2432,7 +3175,7 @@ class FlatCAMExcEditor(QtCore.QObject):
             return
 
         # ## Snap coordinates
-        if self.app.grid_status():
+        if self.app.grid_status() == True:
             x, y = self.app.geo_editor.snap(x, y)
             self.app.app_cursor.enabled = True
             # Update cursor
@@ -2650,13 +3393,17 @@ class FlatCAMExcEditor(QtCore.QObject):
             # except:
             #     pass
             if del_shape in self.storage_dict[storage].get_objects():
-                self.storage_dict[storage].remove(del_shape)
-                # a hack to make the tool_table display less drills per diameter
-                # self.points_edit it's only useful first time when we load the data into the storage
-                # but is still used as referecen when building tool_table in self.build_ui()
-                # the number of drills displayed in column 2 is just a len(self.points_edit) therefore
-                # deleting self.points_edit elements (doesn't matter who but just the number) solved the display issue.
-                del self.points_edit[storage][0]
+                if isinstance(del_shape.geo, MultiLineString):
+                    self.storage_dict[storage].remove(del_shape)
+                    # a hack to make the tool_table display less drills per diameter
+                    # self.points_edit it's only useful first time when we load the data into the storage
+                    # but is still used as referecen when building tool_table in self.build_ui()
+                    # the number of drills displayed in column 2 is just a len(self.points_edit) therefore
+                    # deleting self.points_edit elements (doesn't matter who but just the number) solved the display issue.
+                    del self.points_edit[storage][0]
+                else:
+                    self.storage_dict[storage].remove(del_shape)
+                    del self.slot_points_edit[storage][0]
 
         if del_shape in self.selected:
             self.selected.remove(del_shape)  # TODO: Check performance
@@ -2713,6 +3460,15 @@ class FlatCAMExcEditor(QtCore.QObject):
         else:
             self.linear_angle_spinner.hide()
             self.linear_angle_label.hide()
+
+    def on_slot_angle_radio(self):
+        val = self.slot_axis_radio.get_value()
+        if val == 'A':
+            self.slot_angle_spinner.show()
+            self.slot_angle_label.show()
+        else:
+            self.slot_angle_spinner.hide()
+            self.slot_angle_label.hide()
 
     def exc_add_drill(self):
         self.select_tool('drill_add')

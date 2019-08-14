@@ -2633,15 +2633,20 @@ class FCText(FCShapeTool):
         # Create new geometry
         dx = point[0]
         dy = point[1]
-        try:
-            self.geometry = DrawToolShape(affinity.translate(self.text_gui.text_path, xoff=dx, yoff=dy))
-        except Exception as e:
-            log.debug("Font geometry is empty or incorrect: %s" % str(e))
-            self.draw_app.app.inform.emit(_("[ERROR]Font not supported. Only Regular, Bold, Italic and BoldItalic are "
-                                          "supported. Error: %s") % str(e))
-            self.text_gui.text_path = []
-            self.text_gui.hide_tool()
-            self.draw_app.select_tool('select')
+
+        if self.text_gui.text_path:
+            try:
+                self.geometry = DrawToolShape(affinity.translate(self.text_gui.text_path, xoff=dx, yoff=dy))
+            except Exception as e:
+                log.debug("Font geometry is empty or incorrect: %s" % str(e))
+                self.draw_app.app.inform.emit(_("[ERROR]Font not supported. Only Regular, Bold, Italic and BoldItalic are "
+                                              "supported. Error: %s") % str(e))
+                self.text_gui.text_path = []
+                self.text_gui.hide_tool()
+                self.draw_app.select_tool('select')
+                return
+        else:
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] No text to add."))
             return
 
         self.text_gui.text_path = []
@@ -2912,7 +2917,7 @@ class FCTransform(FCShapeTool):
         self.draw_app = draw_app
         self.app = draw_app.app
 
-        self.draw_app.app.infrom.emit(_("Shape transformations ..."))
+        self.draw_app.app.inform.emit(_("Shape transformations ..."))
         self.origin = (0, 0)
         self.draw_app.transform_tool.run()
 
@@ -3277,7 +3282,22 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # Geometry Editor
         self.app.ui.draw_line.triggered.connect(self.draw_tool_path)
         self.app.ui.draw_rect.triggered.connect(self.draw_tool_rectangle)
+
+        self.app.ui.draw_circle.triggered.connect(lambda: self.select_tool('circle'))
+        self.app.ui.draw_poly.triggered.connect(lambda: self.select_tool('polygon'))
+        self.app.ui.draw_arc.triggered.connect(lambda: self.select_tool('arc'))
+
+        self.app.ui.draw_text.triggered.connect(lambda: self.select_tool('text'))
+        self.app.ui.draw_buffer.triggered.connect(lambda: self.select_tool('buffer'))
+        self.app.ui.draw_paint.triggered.connect(lambda: self.select_tool('paint'))
+        self.app.ui.draw_eraser.triggered.connect(lambda: self.select_tool('eraser'))
+
+        self.app.ui.draw_union.triggered.connect(self.union)
+        self.app.ui.draw_intersect.triggered.connect(self.intersection)
+        self.app.ui.draw_substract.triggered.connect(self.subtract)
         self.app.ui.draw_cut.triggered.connect(self.cutpath)
+        self.app.ui.draw_transform.triggered.connect(lambda: self.select_tool('transform'))
+
         self.app.ui.draw_move.triggered.connect(self.on_move)
 
     def disconnect_canvas_event_handlers(self):
@@ -3331,6 +3351,32 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.app.ui.draw_move.triggered.disconnect(self.on_move)
         except (TypeError, AttributeError):
             pass
+
+        self.app.ui.draw_circle.triggered.disconnect()
+        self.app.ui.draw_poly.triggered.disconnect()
+        self.app.ui.draw_arc.triggered.disconnect()
+
+        self.app.ui.draw_text.triggered.disconnect()
+        self.app.ui.draw_buffer.triggered.disconnect()
+        self.app.ui.draw_paint.triggered.disconnect()
+        self.app.ui.draw_eraser.triggered.disconnect()
+
+        try:
+            self.app.ui.draw_union.triggered.disconnect(self.union)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_intersect.triggered.disconnect(self.intersection)
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_substract.triggered.disconnect(self.subtract)
+        except (TypeError, AttributeError):
+            pass
+
+        self.app.ui.draw_transform.triggered.disconnect()
 
     def add_shape(self, shape):
         """
@@ -3497,7 +3543,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
 
-        if self.app.grid_status():
+        if self.app.grid_status() == True:
             self.pos = self.app.geo_editor.snap(self.pos[0], self.pos[1])
             self.app.app_cursor.enabled = True
             # Update cursor
@@ -3507,7 +3553,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.pos = (self.pos[0], self.pos[1])
             self.app.app_cursor.enabled = False
 
-        if event.button is 1:
+        if event.button == 1:
             self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
 
@@ -3536,20 +3582,17 @@ class FlatCAMGeoEditor(QtCore.QObject):
                 if isinstance(self.active_tool, FCSelect):
                     # self.app.log.debug("Replotting after click.")
                     self.replot()
-
             else:
                 self.app.log.debug("No active tool to respond to click!")
 
     def on_canvas_move(self, event):
         """
         Called on 'mouse_move' event
-
         event.pos have canvas screen coordinates
 
         :param event: Event object dispatched by VisPy SceneCavas
         :return: None
         """
-
         pos = self.canvas.vispy_canvas.translate_coords(event.pos)
         event.xdata, event.ydata = pos[0], pos[1]
 
@@ -3559,8 +3602,14 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.popMenu.mouse_is_panning = False
 
         # if the RMB is clicked and mouse is moving over plot then 'panning_action' is True
-        if event.button == 2 and event.is_dragging == 1:
-            self.app.ui.popMenu.mouse_is_panning = True
+        if event.button == 2:
+            if event.is_dragging:
+                self.app.ui.popMenu.mouse_is_panning = True
+                # return
+            else:
+                self.app.ui.popMenu.mouse_is_panning = False
+
+        if self.active_tool is None:
             return
 
         try:
@@ -3569,11 +3618,8 @@ class FlatCAMGeoEditor(QtCore.QObject):
         except TypeError:
             return
 
-        if self.active_tool is None:
-            return
-
-        # # ## Snap coordinates
-        if self.app.grid_status():
+        # ### Snap coordinates ###
+        if self.app.grid_status() == True:
             x, y = self.snap(x, y)
             self.app.app_cursor.enabled = True
             # Update cursor
@@ -3597,19 +3643,19 @@ class FlatCAMGeoEditor(QtCore.QObject):
         self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                            "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (dx, dy))
 
-        if event.button == 1 and event.is_dragging == 1 and isinstance(self.active_tool, FCEraser):
+        if event.button == 1 and event.is_dragging and isinstance(self.active_tool, FCEraser):
             pass
         else:
-            # # ## Utility geometry (animated)
+            # ### Utility geometry (animated) ###
             geo = self.active_tool.utility_geometry(data=(x, y))
             if isinstance(geo, DrawToolShape) and geo.geo is not None:
                 # Remove any previous utility shape
                 self.tool_shape.clear(update=True)
                 self.draw_utility_geometry(geo=geo)
 
-        # # ## Selection area on canvas section # ##
+        # ### Selection area on canvas section ###
         dx = pos[0] - self.pos[0]
-        if event.is_dragging == 1 and event.button == 1:
+        if event.is_dragging and event.button == 1:
             self.app.delete_selection_shape()
             if dx < 0:
                 self.app.draw_moving_selection_shape((self.pos[0], self.pos[1]), (x, y),
@@ -3625,7 +3671,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
     def on_geo_click_release(self, event):
         pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
 
-        if self.app.grid_status():
+        if self.app.grid_status() == True:
             pos = self.snap(pos_canvas[0], pos_canvas[1])
         else:
             pos = (pos_canvas[0], pos_canvas[1])
@@ -3633,8 +3679,20 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # if the released mouse button was RMB then test if it was a panning motion or not, if not it was a context
         # canvas menu
         try:
-            if event.button == 2:  # right click
-                if self.app.ui.popMenu.mouse_is_panning is False:
+            # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
+            # selection and then select a type of selection ("enclosing" or "touching")
+            if event.button == 1:  # left click
+                if self.app.selection_type is not None:
+                    self.draw_selection_area_handler(self.pos, pos, self.app.selection_type)
+                    self.app.selection_type = None
+                elif isinstance(self.active_tool, FCSelect):
+                    # Dispatch event to active_tool
+                    # msg = self.active_tool.click(self.snap(event.xdata, event.ydata))
+                    self.active_tool.click_release((self.pos[0], self.pos[1]))
+                    # self.app.inform.emit(msg)
+                    self.replot()
+            elif event.button == 2:  # right click
+                if self.app.ui.popMenu.mouse_is_panning == False:
                     if self.in_action is False:
                         try:
                             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -3661,38 +3719,6 @@ class FlatCAMGeoEditor(QtCore.QObject):
                                 self.on_shape_complete()
                                 self.app.inform.emit(_("[success] Done."))
                                 self.select_tool(self.active_tool.name)
-
-                                # MS: always return to the Select Tool if modifier key is not pressed
-                                # else return to the current tool
-                                # key_modifier = QtWidgets.QApplication.keyboardModifiers()
-                                # if self.app.defaults["global_mselect_key"] == 'Control':
-                                #     modifier_to_use = Qt.ControlModifier
-                                # else:
-                                #     modifier_to_use = Qt.ShiftModifier
-                                #
-                                # if key_modifier == modifier_to_use:
-                                #     self.select_tool(self.active_tool.name)
-                                # else:
-                                #     self.select_tool("select")
-
-        except Exception as e:
-            log.warning("Error: %s" % str(e))
-            return
-
-        # if the released mouse button was LMB then test if we had a right-to-left selection or a left-to-right
-        # selection and then select a type of selection ("enclosing" or "touching")
-        try:
-            if event.button == 1:  # left click
-                if self.app.selection_type is not None:
-                    self.draw_selection_area_handler(self.pos, pos, self.app.selection_type)
-                    self.app.selection_type = None
-                elif isinstance(self.active_tool, FCSelect):
-                    # Dispatch event to active_tool
-                    # msg = self.active_tool.click(self.snap(event.xdata, event.ydata))
-                    self.active_tool.click_release((self.pos[0], self.pos[1]))
-                    # self.app.inform.emit(msg)
-                    self.replot()
-
         except Exception as e:
             log.warning("Error: %s" % str(e))
             return
@@ -4107,8 +4133,10 @@ class FlatCAMGeoEditor(QtCore.QObject):
         selected = self.get_selected()
         try:
             tools = selected[1:]
-            toolgeo = unary_union([shp.geo for shp in tools])
-            result = selected[0].geo.difference(toolgeo)
+            toolgeo = unary_union([shp.geo for shp in tools]).buffer(0.0000001)
+            target = selected[0].geo
+            target = target.buffer(0.0000001)
+            result = target.difference(toolgeo)
 
             for_deletion = [s for s in self.get_selected()]
             for shape in for_deletion:

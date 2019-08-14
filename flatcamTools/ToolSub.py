@@ -130,6 +130,10 @@ class ToolSub(FlatCAMTool):
 
         form_geo_layout.addRow(self.sub_geo_label, self.sub_geo_combo)
 
+        self.close_paths_cb = FCCheckBox(_("Close paths"))
+        self.close_paths_cb.setToolTip(_("Checking this will close the paths cut by the Geometry substractor object."))
+        self.tools_box.addWidget(self.close_paths_cb)
+
         self.intersect_geo_btn = FCButton(_('Substract Geometry'))
         self.intersect_geo_btn.setToolTip(
             _("Will remove the area occupied by the substractor\n"
@@ -217,6 +221,7 @@ class ToolSub(FlatCAMTool):
 
     def set_tool_ui(self):
         self.tools_frame.show()
+        self.close_paths_cb.setChecked(self.app.defaults["tools_sub_close_paths"])
 
     def on_grb_intersection_click(self):
         # reset previous values
@@ -231,7 +236,7 @@ class ToolSub(FlatCAMTool):
             self.app.inform.emit(_("[ERROR_NOTCL] No Target object loaded."))
             return
 
-        # Get source object.
+        # Get target object.
         try:
             self.target_grb_obj = self.app.collection.get_by_name(self.target_grb_obj_name)
         except Exception as e:
@@ -244,7 +249,7 @@ class ToolSub(FlatCAMTool):
             self.app.inform.emit(_("[ERROR_NOTCL] No Substractor object loaded."))
             return
 
-        # Get source object.
+        # Get substractor object.
         try:
             self.sub_grb_obj = self.app.collection.get_by_name(self.sub_grb_obj_name)
         except Exception as e:
@@ -424,7 +429,7 @@ class ToolSub(FlatCAMTool):
             self.app.inform.emit(_("[ERROR_NOTCL] No Target object loaded."))
             return
 
-        # Get source object.
+        # Get target object.
         try:
             self.target_geo_obj = self.app.collection.get_by_name(self.target_geo_obj_name)
         except Exception as e:
@@ -437,7 +442,7 @@ class ToolSub(FlatCAMTool):
             self.app.inform.emit(_("[ERROR_NOTCL] No Substractor object loaded."))
             return
 
-        # Get source object.
+        # Get substractor object.
         try:
             self.sub_geo_obj = self.app.collection.get_by_name(self.sub_geo_obj_name)
         except Exception as e:
@@ -496,10 +501,58 @@ class ToolSub(FlatCAMTool):
             text = _("Parsing tool %s geometry ...") % str(tool)
 
         with self.app.proc_container.new(text):
-            new_geo = (cascaded_union(geo)).difference(self.sub_union)
-            if new_geo:
-                if not new_geo.is_empty:
-                    new_geometry.append(new_geo)
+            # resulting paths are closed resulting into Polygons
+            if self.close_paths_cb.isChecked():
+                new_geo = (cascaded_union(geo)).difference(self.sub_union)
+                if new_geo:
+                    if not new_geo.is_empty:
+                        new_geometry.append(new_geo)
+            # resulting paths are unclosed resulting in a multitude of rings
+            else:
+                try:
+                    for geo_elem in geo:
+                        if isinstance(geo_elem, Polygon):
+                            for ring in self.poly2rings(geo_elem):
+                                new_geo = ring.difference(self.sub_union)
+                                if new_geo:
+                                    if not new_geo.is_empty:
+                                        new_geometry.append(new_geo)
+                        elif isinstance(geo_elem, MultiPolygon):
+                            for poly in geo_elem:
+                                for ring in self.poly2rings(poly):
+                                    new_geo = ring.difference(self.sub_union)
+                                    if new_geo:
+                                        if not new_geo.is_empty:
+                                            new_geometry.append(new_geo)
+                        elif isinstance(geo_elem, LineString):
+                            new_geo = geo_elem.difference(self.sub_union)
+                            if new_geo:
+                                if not new_geo.is_empty:
+                                    new_geometry.append(new_geo)
+                        elif isinstance(geo_elem, MultiLineString):
+                            for line_elem in geo_elem:
+                                new_geo = line_elem.difference(self.sub_union)
+                                if new_geo:
+                                    if not new_geo.is_empty:
+                                        new_geometry.append(new_geo)
+                except TypeError:
+                    if isinstance(geo, Polygon):
+                        for ring in self.poly2rings(geo):
+                            new_geo = ring.difference(self.sub_union)
+                            if new_geo:
+                                if not new_geo.is_empty:
+                                    new_geometry.append(new_geo)
+                    elif isinstance(geo, LineString):
+                        new_geo = geo.difference(self.sub_union)
+                        if new_geo:
+                            if not new_geo.is_empty:
+                                new_geometry.append(new_geo)
+                    elif isinstance(geo, MultiLineString):
+                        for line_elem in geo:
+                            new_geo = line_elem.difference(self.sub_union)
+                            if new_geo:
+                                if not new_geo.is_empty:
+                                    new_geometry.append(new_geo)
 
         if new_geometry:
             if tool == "single":
@@ -620,4 +673,7 @@ class ToolSub(FlatCAMTool):
         self.target_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
         self.sub_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
 
+    @staticmethod
+    def poly2rings(poly):
+        return [poly.exterior] + [interior for interior in poly.interiors]
 # end of file

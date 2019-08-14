@@ -807,7 +807,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     self.app.plotcanvas.vis_disconnect('mouse_press', doit)
 
                     pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
-                    if self.app.grid_status():
+                    if self.app.grid_status() == True:
                         pos = self.app.geo_editor.snap(pos[0], pos[1])
 
                     self.paint_poly(self.paint_obj,
@@ -836,7 +836,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         self.app.inform.emit(_("[WARNING_NOTCL] Click the end point of the paint area."))
 
                         self.cursor_pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
-                        if self.app.grid_status():
+                        if self.app.grid_status() == True:
                             self.cursor_pos = self.app.geo_editor.snap(self.cursor_pos[0], self.cursor_pos[1])
                     else:
                         self.app.inform.emit(_("Done."))
@@ -844,7 +844,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         self.app.delete_selection_shape()
 
                         curr_pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
-                        if self.app.grid_status():
+                        if self.app.grid_status() == True:
                             curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
 
                         x0, y0 = self.cursor_pos[0], self.cursor_pos[1]
@@ -874,7 +874,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 curr_pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
                 self.app.app_cursor.enabled = False
 
-                if self.app.grid_status():
+                if self.app.grid_status() == True:
                     self.app.app_cursor.enabled = True
                     # Update cursor
                     curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
