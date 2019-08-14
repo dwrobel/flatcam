@@ -101,9 +101,6 @@ class App(QtCore.QObject):
     version = 8.94
     version_date = "2019/08/31"
     beta = True
-    # make this True is you want to create a portable app - that is, to save the settings files
-    # in the working directory
-    portable = True
 
     # current date now
     date = str(datetime.today()).rpartition('.')[0]
@@ -209,7 +206,26 @@ class App(QtCore.QObject):
                 App.log.debug("Win32!")
             else:
                 App.log.debug("Win64!")
-            if self.portable is False:
+
+            portable = False
+            config_file = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '\\config\\configuration.txt'
+            try:
+                with open(config_file, 'r') as f:
+                    try:
+                        for line in f:
+                            param = str(line).rpartition('=')
+                            if param[0] == 'portable':
+                                try:
+                                    portable = eval(param[2])
+                                except NameError:
+                                    portable = False
+                    except Exception as e:
+                        log.debug('App.__init__() -->%s' % str(e))
+                        return
+            except FileNotFoundError:
+                pass
+
+            if portable is False:
                 self.data_path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0) + '\FlatCAM'
             else:
                 self.data_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))

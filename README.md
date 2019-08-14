@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - merged pull request from Mike Smith that add support for a new SVG element: <use>
 - stored inside FlatCAM app the VisPy data files and at the first start the application will try to copy those files to the APPDATA (roaming) folder in case of running under Windows
 - created an app 'switch' named 'self.portable' which when set True it will 'cx-freeze' an portable application
+- created a configuration file in the root/config/configuration.txt with a configuration line for portability. Set portable to True to run the app as portable
 
 14.08.2019
 
