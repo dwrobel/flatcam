@@ -284,7 +284,7 @@ def svgpolygon2shapely(polygon):
     # return LinearRing(points)
 
 
-def getsvggeo(node, object_type):
+def getsvggeo(node, object_type, root = None):
     """
     Extracts and flattens all geometry from an SVG node
     into a list of Shapely geometry.
@@ -293,13 +293,16 @@ def getsvggeo(node, object_type):
     :return: List of Shapely geometry
     :rtype: list
     """
+    if root is None:
+        root = node
+
     kind = re.search('(?:\{.*\})?(.*)$', node.tag).group(1)
     geo = []
 
     # Recurse
     if len(node) > 0:
         for child in node:
-            subgeo = getsvggeo(child, object_type)
+            subgeo = getsvggeo(child, object_type, root)
             if subgeo is not None:
                 geo += subgeo
 
@@ -340,6 +343,15 @@ def getsvggeo(node, object_type):
         log.debug("***POLYLINE***")
         pline = svgpolyline2shapely(node)
         geo = [pline]
+
+    elif kind == 'use':
+        log.debug('***USE***')
+        # href= is the preferred name for this[1], but inkscape still generates xlink:href=.
+        # [1] https://developer.mozilla.org/en-US/docs/Web/SVG/Element/use#Attributes
+        href = node.attrib['href'] if 'href' in node.attrib else node.attrib['{http://www.w3.org/1999/xlink}href']
+        ref = root.find(".//*[@id='%s']" % href.replace('#', ''))
+        if ref is not None:
+            geo = getsvggeo(ref, object_type, root)
 
     else:
         log.warning("Unknown kind: " + kind)
