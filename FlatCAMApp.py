@@ -8199,8 +8199,9 @@ class App(QtCore.QObject):
                 with lzma.open(filename) as f:
                     file_content = f.read().decode('utf-8')
                     d = json.loads(file_content, object_hook=dict2obj)
-            except IOError:
-                App.log.error("Failed to open project file: %s" % filename)
+
+            except Exception as e:
+                App.log.error("Failed to open project file: %s with error: %s" % (filename, str(e)))
                 self.inform.emit(_("[ERROR_NOTCL] Failed to open project file: %s") % filename)
                 return
 
