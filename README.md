@@ -15,6 +15,9 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the Delete tool, Select tool in Excellon Editor to work for Slots too
 - changes in the way the edited Excellon with added slots is saved
 - added more icons and cursor in Excellon Editor for Slots related functions
+- in Excellon Editor fixed the selection issue which in a certain step created a failure in the Copy and Move tools.
+- in Excellon Editor fixed the selection with key modifier pressed
+- edited the mouse cursors and saved them without included thumbnail in a bid to remove some CRC warnings made by libpng
 
 13.08.2019
 

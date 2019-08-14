@@ -1108,8 +1108,20 @@ class FCDrillCopy(FCDrillMove):
                 if select_shape in self.current_storage.get_objects():
                     self.geometry.append(DrawToolShape(affinity.translate(select_shape.geo, xoff=dx, yoff=dy)))
 
-                    # add some fake drills into the self.draw_app.points_edit to update the drill count in tool table
-                    self.draw_app.points_edit[sel_dia].append((0, 0))
+                    # Add some fake drills into the self.draw_app.points_edit to update the drill count in tool table
+                    # This may fail if we copy slots.
+                    try:
+                        self.draw_app.points_edit[sel_dia].append((0, 0))
+                    except KeyError:
+                        pass
+
+                    # add some fake slots into the self.draw_app.slots_points_edit
+                    # to update the slot count in tool table
+                    # This may fail if we copy drills.
+                    try:
+                        self.draw_app.slot_points_edit[sel_dia].append((0, 0))
+                    except KeyError:
+                        pass
 
                     sel_shapes_to_be_deleted.append(select_shape)
                     self.draw_app.on_exc_shape_complete(self.current_storage)
@@ -2644,20 +2656,20 @@ class FlatCAMExcEditor(QtCore.QObject):
                     line_two = LineString([(xmin, ymax), (xmax, ymin)]).intersection(poly).length
 
                     if line_one < line_two:
-                        point = {
+                        point_elem = {
                             "start": (xmin, ymax),
                             "stop": (xmax, ymin)
                         }
                     else:
-                        point = {
+                        point_elem = {
                             "start": (xmin, ymin),
                             "stop": (xmax, ymax)
                         }
 
                     if storage_tooldia not in edited_slot_points:
-                        edited_slot_points[storage_tooldia] = [point]
+                        edited_slot_points[storage_tooldia] = [point_elem]
                     else:
-                        edited_slot_points[storage_tooldia].append(point)
+                        edited_slot_points[storage_tooldia].append(point_elem)
 
         # recreate the drills and tools to be added to the new Excellon edited object
         # first, we look in the tool table if one of the tool diameters was changed then
@@ -2990,7 +3002,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
     def add_exc_shape(self, shape, storage):
         """
-        Adds a shape to the shape storage.
+        Adds a shape to a specified shape storage.
 
         :param shape: Shape to be added.
         :type shape: DrawToolShape
@@ -3047,9 +3059,17 @@ class FlatCAMExcEditor(QtCore.QObject):
             self.storage.insert(shape)  # TODO: Check performance
 
     def on_exc_click_release(self, event):
-        self.modifiers = QtWidgets.QApplication.keyboardModifiers()
+        """
+        Handler of the "mouse_release" event.
+        It will pop-up the context menu on right mouse click unless there was a panning move (decided in the
+        "mouse_move" event handler) and only if the current tool is the Select tool.
+        It will 'close' a Editor tool if it is the case.
 
+        :param event: Event object dispatched by VisPy SceneCavas
+        :return: None
+        """
         pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
+
         if self.app.grid_status() == True:
             pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
@@ -3106,34 +3126,65 @@ class FlatCAMExcEditor(QtCore.QObject):
 
     def draw_selection_area_handler(self, start, end, sel_type):
         """
-        :param start_pos: mouse position when the selection LMB click was done
-        :param end_pos: mouse position when the left mouse button is released
+        This function is called whenever we have a left mouse click release and only we have a left mouse click drag,
+        be it from left to right or from right to left. The direction of the drag is decided in the "mouse_move"
+        event handler.
+        Pressing a modifier key (eg. Ctrl, Shift or Alt) will change the behavior of the selection.
+
+        Depending on which tool belongs the selected shapes, the corresponding rows in the Tools Table are selected or
+        deselected.
+
+        :param start: mouse position when the selection LMB click was done
+        :param end: mouse position when the left mouse button is released
         :param sel_type: if True it's a left to right selection (enclosure), if False it's a 'touch' selection
         :return:
         """
+
         start_pos = (start[0], start[1])
         end_pos = (end[0], end[1])
         poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
+        modifiers = None
 
+        # delete the selection shape that was just drawn, we no longer need it
         self.app.delete_selection_shape()
-        for storage in self.storage_dict:
-            for obj in self.storage_dict[storage].get_objects():
-                if (sel_type is True and poly_selection.contains(obj.geo)) or \
-                        (sel_type is False and poly_selection.intersects(obj.geo)):
-                    if self.key == self.app.defaults["global_mselect_key"]:
-                        if obj in self.selected:
-                            self.selected.remove(obj)
-                        else:
-                            # add the object to the selected shapes
-                            self.selected.append(obj)
-                    else:
+
+        # detect if a modifier key was pressed while the left mouse button was released
+        self.modifiers = QtWidgets.QApplication.keyboardModifiers()
+        if self.modifiers == QtCore.Qt.ShiftModifier:
+            modifiers = 'Shift'
+        elif self.modifiers == QtCore.Qt.ControlModifier:
+            modifiers = 'Control'
+
+        if modifiers == self.app.defaults["global_mselect_key"]:
+            for storage in self.storage_dict:
+                for obj in self.storage_dict[storage].get_objects():
+                    if (sel_type is True and poly_selection.contains(obj.geo)) or \
+                            (sel_type is False and poly_selection.intersects(obj.geo)):
+
+                            if obj in self.selected:
+                                # remove the shape object from the selected shapes storage
+                                self.selected.remove(obj)
+                            else:
+                                # add the shape object to the selected shapes storage
+                                self.selected.append(obj)
+        else:
+            # clear the selection shapes storage
+            self.selected = []
+            # then add to the selection shapes storage the shapes that are included (touched) by the selection rectangle
+            for storage in self.storage_dict:
+                for obj in self.storage_dict[storage].get_objects():
+                    if (sel_type is True and poly_selection.contains(obj.geo)) or \
+                            (sel_type is False and poly_selection.intersects(obj.geo)):
                         self.selected.append(obj)
 
         try:
             self.tools_table_exc.cellPressed.disconnect()
         except Exception as e:
             pass
-        # select the diameter of the selected shape in the tool table
+
+        # first deselect all rows (tools) in the Tools Table
+        self.tools_table_exc.clearSelection()
+        # and select the rows (tools) in the tool table according to the diameter(s) of the selected shape(s)
         self.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         for storage in self.storage_dict:
             for shape_s in self.selected:
@@ -3151,7 +3202,14 @@ class FlatCAMExcEditor(QtCore.QObject):
 
     def on_canvas_move(self, event):
         """
-        Called on 'mouse_move' event
+        Called on 'mouse_move' event.
+        It updates the mouse cursor if the grid snapping is ON.
+        It decide if we have a mouse drag and if it is done with the right mouse click. Then it passes this info to a
+        class object which is used in the "mouse_release" handler to decide if to pop-up the context menu or not.
+        It draws utility_geometry for the Editor tools.
+        Update the position labels from status bar.
+        Decide if we have a right to left or a left to right mouse drag with left mouse button and call a function
+        that will draw a selection shape on canvas.
 
         event.pos have canvas screen coordinates
 
@@ -3217,10 +3275,10 @@ class FlatCAMExcEditor(QtCore.QObject):
         # ## Selection area on canvas section # ##
         if event.is_dragging == 1 and event.button == 1:
             # I make an exception for FCDrillAdd and FCDrillArray because clicking and dragging while making regions
-            # can create strange issues
+            # can create strange issues. Also for FCSlot and FCSlotArray
             if isinstance(self.active_tool, FCDrillAdd) or isinstance(self.active_tool, FCDrillArray) or \
                     isinstance(self.active_tool, FCSlot) or isinstance(self.active_tool, FCSlotArray):
-                pass
+                self.app.selection_type = None
             else:
                 dx = pos[0] - self.pos[0]
                 self.app.delete_selection_shape()
