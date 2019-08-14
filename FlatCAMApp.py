@@ -336,6 +336,7 @@ class App(QtCore.QObject):
             "global_tolerance": self.ui.general_defaults_form.general_app_group.tol_entry,
 
             "global_open_style": self.ui.general_defaults_form.general_app_group.open_style_cb,
+            "global_delete_confirmation": self.ui.general_defaults_form.general_app_group.delete_conf_cb,
 
             "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_combo,
             "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
@@ -455,6 +456,12 @@ class App(QtCore.QObject):
             "excellon_editor_circ_dir": self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_dir_radio,
             "excellon_editor_circ_angle":
                 self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_angle_entry,
+            "excellon_editor_slot_direction":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_axis_radio,
+            "excellon_editor_slot_angle":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_angle_spinner,
+            "excellon_editor_slot_length":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_length_entry,
 
             # Geometry General
             "geometry_plot": self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,
@@ -649,6 +656,7 @@ class App(QtCore.QObject):
             "global_worker_number": 2,
             "global_tolerance": 0.01,
             "global_open_style": True,
+            "global_delete_confirmation": True,
             "global_compression_level": 3,
             "global_save_compressed": True,
 
@@ -800,6 +808,9 @@ class App(QtCore.QObject):
             "excellon_editor_lin_angle": 0.0,
             "excellon_editor_circ_dir": 'CW',
             "excellon_editor_circ_angle": 12,
+            "excellon_editor_slot_direction": 'X',
+            "excellon_editor_slot_angle": 0.0,
+            "excellon_editor_slot_length": 5.0,
 
             # Geometry General
             "geometry_plot": True,
@@ -4894,33 +4905,51 @@ class App(QtCore.QObject):
         """
         self.report_usage("on_delete()")
 
+        response = None
+        bt_ok = None
+
         # Make sure that the deletion will happen only after the Editor is no longer active otherwise we might delete
         # a geometry object before we update it.
         if self.geo_editor.editor_active is False and self.exc_editor.editor_active is False:
-            if self.collection.get_active():
-                self.log.debug("App.on_delete()")
+            if self.defaults["global_delete_confirmation"] is True:
+                msgbox = QtWidgets.QMessageBox()
+                msgbox.setWindowTitle(_("Delete objects"))
+                msgbox.setWindowIcon(QtGui.QIcon('share/deleteshape32.png'))
+                # msgbox.setText(_("<B>Delete FlatCAM objects ...</B>"))
+                msgbox.setText(_("Are you sure you want to permanently delete\n"
+                                 "the selected objects?"))
+                bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+                bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
-                while self.collection.get_active():
-                    obj_active = self.collection.get_active()
-                    # if the deleted object is FlatCAMGerber then make sure to delete the possible mark shapes
-                    if isinstance(obj_active, FlatCAMGerber):
-                        for el in obj_active.mark_shapes:
-                            obj_active.mark_shapes[el].clear(update=True)
-                            obj_active.mark_shapes[el].enabled = False
-                            obj_active.mark_shapes[el] = None
-                    elif isinstance(obj_active, FlatCAMCNCjob):
-                        try:
-                            obj_active.annotation.clear(update=True)
-                            obj_active.annotation.enabled = False
-                        except AttributeError:
-                            pass
-                    self.delete_first_selected()
+                msgbox.setDefaultButton(bt_ok)
+                msgbox.exec_()
+                response = msgbox.clickedButton()
 
-                self.inform.emit(_("Object(s) deleted ..."))
-                # make sure that the selection shape is deleted, too
-                self.delete_selection_shape()
-            else:
-                self.inform.emit(_("Failed. No object(s) selected..."))
+            if response == bt_ok or self.defaults["global_delete_confirmation"] is False:
+                if self.collection.get_active():
+                    self.log.debug("App.on_delete()")
+
+                    while self.collection.get_active():
+                        obj_active = self.collection.get_active()
+                        # if the deleted object is FlatCAMGerber then make sure to delete the possible mark shapes
+                        if isinstance(obj_active, FlatCAMGerber):
+                            for el in obj_active.mark_shapes:
+                                obj_active.mark_shapes[el].clear(update=True)
+                                obj_active.mark_shapes[el].enabled = False
+                                obj_active.mark_shapes[el] = None
+                        elif isinstance(obj_active, FlatCAMCNCjob):
+                            try:
+                                obj_active.annotation.clear(update=True)
+                                obj_active.annotation.enabled = False
+                            except AttributeError:
+                                pass
+                        self.delete_first_selected()
+
+                    self.inform.emit(_("Object(s) deleted ..."))
+                    # make sure that the selection shape is deleted, too
+                    self.delete_selection_shape()
+                else:
+                    self.inform.emit(_("Failed. No object(s) selected..."))
         else:
             self.inform.emit(_("Save the work in Editor and try again ..."))
 

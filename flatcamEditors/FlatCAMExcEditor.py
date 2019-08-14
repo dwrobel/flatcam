@@ -1905,9 +1905,9 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.drill_direction_radio.set_value(self.app.defaults['excellon_editor_circ_dir'])
         self.drill_angle_entry.set_value(float(self.app.defaults['excellon_editor_circ_angle']))
 
-        self.slot_length_entry.set_value(1.0)
-        self.slot_axis_radio.set_value('X')
-        self.slot_angle_spinner.set_value(0.0)
+        self.slot_length_entry.set_value(float(self.app.defaults['excellon_editor_slot_length']))
+        self.slot_axis_radio.set_value(self.app.defaults['excellon_editor_slot_direction'])
+        self.slot_angle_spinner.set_value(float(self.app.defaults['excellon_editor_slot_angle']))
 
     def build_ui(self, first_run=None):
 

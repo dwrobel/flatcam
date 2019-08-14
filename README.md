@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+15.08.2019
+
+- added Edit -> Preferences GUI and storage for the Excellon Editor Add Slots
+- added a confirmation message for objects delete and a setting to activate it in Edit -> Preferences -> Global
+
 14.08.2019
 
 - fixed the loading of Excellon with slots and the saving of edited Excellon object in regard of slots, in Excellon Editor

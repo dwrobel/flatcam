@@ -4062,7 +4062,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # to the main layout of this TAB
         self.layout.addLayout(self.form_box)
 
-        # Save compressed project CB
+        # Open behavior
         self.open_style_cb = FCCheckBox(_('"Open" behavior'))
         self.open_style_cb.setToolTip(
             _("When checked the path for the last saved file is used when saving files,\n"
@@ -4072,6 +4072,15 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         )
         # self.advanced_cb.setLayoutDirection(QtCore.Qt.RightToLeft)
         self.layout.addWidget(self.open_style_cb)
+
+        # Delete confirmation
+        self.delete_conf_cb = FCCheckBox(_('Delete object confirmation'))
+        self.delete_conf_cb.setToolTip(
+            _("When checked the application will ask for user confirmation\n"
+              "whenever the Delete object(s) event is triggered, either by\n"
+              "menu shortcut or key shortcut.")
+        )
+        self.layout.addWidget(self.delete_conf_cb)
 
         # Save compressed project CB
         self.save_type_cb = FCCheckBox(_('Save Compressed Project'))
@@ -5244,6 +5253,54 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
 
         grid0.addWidget(self.drill_circular_angle_label, 9, 0)
         grid0.addWidget(self.drill_circular_angle_entry, 9, 1)
+
+        self.drill_array_circ_label = QtWidgets.QLabel(_('<b>Slots:</b>'))
+        grid0.addWidget(self.drill_array_circ_label, 10, 0, 1, 2)
+
+        # Slot length
+        self.slot_length_label = QtWidgets.QLabel(_('Length:'))
+        self.slot_length_label.setToolTip(
+            _("Length = The length of the slot.")
+        )
+        self.slot_length_label.setMinimumWidth(100)
+
+        self.slot_length_entry = LengthEntry()
+        grid0.addWidget(self.slot_length_label, 11, 0)
+        grid0.addWidget(self.slot_length_entry, 11, 1)
+
+        # Slot direction
+        self.slot_axis_label = QtWidgets.QLabel(_('Direction:'))
+        self.slot_axis_label.setToolTip(
+            _("Direction on which the slot is oriented:\n"
+              "- 'X' - horizontal axis \n"
+              "- 'Y' - vertical axis or \n"
+              "- 'Angle' - a custom angle for the slot inclination")
+        )
+        self.slot_axis_label.setMinimumWidth(100)
+
+        self.slot_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
+                                         {'label': _('Y'), 'value': 'Y'},
+                                         {'label': _('Angle'), 'value': 'A'}])
+        grid0.addWidget(self.slot_axis_label, 12, 0)
+        grid0.addWidget(self.slot_axis_radio, 12, 1)
+
+        # Slot custom angle
+        self.slot_angle_label = QtWidgets.QLabel(_('Angle:'))
+        self.slot_angle_label.setToolTip(
+            _("Angle at which the slot is placed.\n"
+              "The precision is of max 2 decimals.\n"
+              "Min value is: -359.99 degrees.\n"
+              "Max value is:  360.00 degrees.")
+        )
+        self.slot_angle_label.setMinimumWidth(100)
+
+        self.slot_angle_spinner = FCDoubleSpinner()
+        self.slot_angle_spinner.set_precision(2)
+        self.slot_angle_spinner.setWrapping(True)
+        self.slot_angle_spinner.setRange(-359.99, 360.00)
+        self.slot_angle_spinner.setSingleStep(1.0)
+        grid0.addWidget(self.slot_angle_label, 13, 0)
+        grid0.addWidget(self.slot_angle_spinner, 13, 1)
 
         self.layout.addStretch()
 
