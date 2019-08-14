@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - fixed the loading of Excellon with slots and the saving of edited Excellon object in regard of slots, in Excellon Editor
 - fixed the Delete tool, Select tool in Excellon Editor to work for Slots too
+- changes in the way the edited Excellon with added slots is saved
+- added more icons and cursor in Excellon Editor for Slots related functions
 
 13.08.2019
 

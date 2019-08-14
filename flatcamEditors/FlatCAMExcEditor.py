@@ -355,7 +355,7 @@ class FCSlot(FCShapeTool):
             QtGui.QGuiApplication.restoreOverrideCursor()
         except Exception as e:
             pass
-        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_circle.png'))
+        self.cursor = QtGui.QCursor(QtGui.QPixmap('share/aero_slot.png'))
         QtGui.QGuiApplication.setOverrideCursor(self.cursor)
 
         self.steps_per_circ = self.draw_app.app.defaults["geometry_circle_steps"]
@@ -387,6 +387,10 @@ class FCSlot(FCShapeTool):
             return None
 
     def util_shape(self, point):
+
+        if point is None:
+            return
+
         # updating values here allows us to change the aperture on the fly, after the Tool has been started
         self.selected_dia = self.draw_app.tool2tooldia[self.draw_app.last_tool_selected]
         self.radius = float(self.selected_dia / 2.0)
@@ -2528,6 +2532,9 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.exc_obj = exc_obj
         exc_obj.visible = False
 
+        self.points_edit = {}
+        self.slot_points_edit = {}
+
         # Set selection tolerance
         # DrawToolShape.tolerance = fc_excellon.drawing_tolerance * 10
 
@@ -3211,7 +3218,8 @@ class FlatCAMExcEditor(QtCore.QObject):
         if event.is_dragging == 1 and event.button == 1:
             # I make an exception for FCDrillAdd and FCDrillArray because clicking and dragging while making regions
             # can create strange issues
-            if isinstance(self.active_tool, FCDrillAdd) or isinstance(self.active_tool, FCDrillArray):
+            if isinstance(self.active_tool, FCDrillAdd) or isinstance(self.active_tool, FCDrillArray) or \
+                    isinstance(self.active_tool, FCSlot) or isinstance(self.active_tool, FCSlotArray):
                 pass
             else:
                 dx = pos[0] - self.pos[0]
