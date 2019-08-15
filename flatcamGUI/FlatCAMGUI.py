@@ -5146,6 +5146,29 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
 
         form.addRow(self.zeros_label, self.zeros_radio)
 
+        # Slot type
+        self.slot_type_label = QtWidgets.QLabel(_('<b>Slot type</b>:'))
+        self.slot_type_label.setAlignment(QtCore.Qt.AlignLeft)
+        self.slot_type_label.setToolTip(
+            _("This sets how the slots will be exported.\n"
+              "If ROUTED then the slots will be routed\n"
+              "using M15/M16 commands.\n"
+              "If DRILLED(G85) the slots will be exported\n"
+              "using the Drilled slot command (G85).")
+        )
+
+        self.slot_type_radio = RadioSet([{'label': _('Routed'), 'value': 'routing'},
+                                         {'label': _('Drilled(G85)'), 'value': 'drilling'}])
+        self.slot_type_radio.setToolTip(
+            _("This sets how the slots will be exported.\n"
+              "If ROUTED then the slots will be routed\n"
+              "using M15/M16 commands.\n"
+              "If DRILLED(G85) the slots will be exported\n"
+              "using the Drilled slot command (G85).")
+        )
+
+        form.addRow(self.slot_type_label, self.slot_type_radio)
+
         self.layout.addStretch()
         self.format_radio.activated_custom.connect(self.optimization_selection)
 

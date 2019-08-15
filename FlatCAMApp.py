@@ -469,6 +469,7 @@ class App(QtCore.QObject):
             "excellon_exp_integer": self.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry,
             "excellon_exp_decimals": self.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry,
             "excellon_exp_zeros": self.ui.excellon_defaults_form.excellon_exp_group.zeros_radio,
+            "excellon_exp_slot_type": self.ui.excellon_defaults_form.excellon_exp_group.slot_type_radio,
 
             # Excellon Editor
             "excellon_editor_sel_limit": self.ui.excellon_defaults_form.excellon_editor_group.sel_limit_entry,
@@ -835,6 +836,7 @@ class App(QtCore.QObject):
             "excellon_exp_integer": 2,
             "excellon_exp_decimals": 4,
             "excellon_exp_zeros": 'LZ',
+            "excellon_exp_slot_type": 'routing',
 
             # Excellon Editor
             "excellon_editor_sel_limit": 30,
@@ -7582,6 +7584,7 @@ class App(QtCore.QObject):
         efract = self.defaults["excellon_exp_decimals"]
         ezeros = self.defaults["excellon_exp_zeros"]
         eformat = self.defaults["excellon_exp_format"]
+        slot_type = self.defaults["excellon_exp_slot_type"]
 
         fc_units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
         if fc_units == 'MM':
@@ -7601,7 +7604,7 @@ class App(QtCore.QObject):
                 header += ';Created on : %s' % time_str + '\n'
 
                 if eformat == 'dec':
-                    has_slots, excellon_code = obj.export_excellon(ewhole, efract, factor=factor)
+                    has_slots, excellon_code = obj.export_excellon(ewhole, efract, factor=factor, slot_type=slot_type)
                     header += eunits + '\n'
 
                     for tool in obj.tools:
@@ -7616,7 +7619,8 @@ class App(QtCore.QObject):
                 else:
                     if ezeros == 'LZ':
                         has_slots, excellon_code = obj.export_excellon(ewhole, efract,
-                                                                       form='ndec', e_zeros='LZ', factor=factor)
+                                                                       form='ndec', e_zeros='LZ', factor=factor,
+                                                                       slot_type=slot_type)
                         header += '%s,%s\n' % (eunits, 'LZ')
                         header += format_exc
 
@@ -7631,7 +7635,8 @@ class App(QtCore.QObject):
                                                                               dec=4)
                     else:
                         has_slots, excellon_code = obj.export_excellon(ewhole, efract,
-                                                                       form='ndec', e_zeros='TZ', factor=factor)
+                                                                       form='ndec', e_zeros='TZ', factor=factor,
+                                                                       slot_type=slot_type)
                         header += '%s,%s\n' % (eunits, 'TZ')
                         header += format_exc
 

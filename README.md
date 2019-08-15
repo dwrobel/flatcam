@@ -24,6 +24,8 @@ CAD program, and create G-Code for Isolation routing.
 - added the key shortcut handlers for Add Slot and Add Slot Array tools in Excellon Editor
 - started to work on the Resize tool for the case of Excellon slots in Excellon Editor
 - final fix for the VisPy data files; the defaults files are saved to the Config folder when the app is set to be portable
+- added the Slot Type parameter for exporting Excellon in Edit -> Preferences -> Excellon -> Export Excellon. Now the Excellon object can be exported also with drilled slot command G85
+- fixed bug in Excellon export when there are no zero suppression (coordinates with decimals)
 
 14.08.2019
 
