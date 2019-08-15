@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+16.08.2019
+
+- working in Excellon Editor to Tool Resize to consider the slots, too
+
 15.08.2019
 
 - added Edit -> Preferences GUI and storage for the Excellon Editor Add Slots

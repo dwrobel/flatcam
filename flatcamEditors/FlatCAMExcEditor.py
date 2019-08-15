@@ -853,6 +853,11 @@ class FCDrillResize(FCShapeTool):
         self.draw_app.is_modified = True
 
         try:
+            self.draw_app.tools_table_exc.itemChanged.disconnect()
+        except TypeError:
+            pass
+
+        try:
             new_dia = self.draw_app.resdrill_entry.get_value()
         except:
             self.draw_app.app.inform.emit(
@@ -909,8 +914,7 @@ class FCDrillResize(FCShapeTool):
                             except KeyError:
                                 # if the exception happen here then we are not dealing with slots neither
                                 # therefore something else is not OK so we return
-                                self.draw_app.app.inform.emit(
-                                    _("[ERROR_NOTCL] Cancelled."))
+                                self.draw_app.app.inform.emit(_("[ERROR_NOTCL] Cancelled."))
                                 return
 
                         sel_shapes_to_be_deleted.append(select_shape)
@@ -928,16 +932,31 @@ class FCDrillResize(FCShapeTool):
                             self.draw_app.points_edit[new_dia].append((0, 0))
                         self.geometry = []
 
-                        # if following the resize of the drills there will be no more drills for the selected tool then
-                        # delete that tool
-                        if not self.draw_app.points_edit[sel_dia]:
-                            self.draw_app.on_tool_delete(sel_dia)
+            for dia_key in list(self.draw_app.storage_dict.keys()):
+                # if following the resize of the drills there will be no more drills for some of the tools then
+                # delete those tools
+                try:
+                    if not self.draw_app.points_edit[dia_key]:
+                        self.draw_app.on_tool_delete(dia_key)
+                except KeyError:
+                    # if the exception happen here then we are not dealing with drills but with slots
+                    # so we try for them
+                    try:
+                        if not self.draw_app.slot_points_edit[dia_key]:
+                            self.draw_app.on_tool_delete(dia_key)
+                    except KeyError:
+                        # if the exception happen here then we are not dealing with slots neither
+                        # therefore something else is not OK so we return
+                        self.draw_app.app.inform.emit(_("[ERROR_NOTCL] Cancelled."))
+                        return
 
             for shp in sel_shapes_to_be_deleted:
                 self.draw_app.selected.remove(shp)
 
             self.draw_app.build_ui()
             self.draw_app.replot()
+            # we reactivate the signals after the after the tool editing
+            self.draw_app.tools_table_exc.itemChanged.connect(self.draw_app.on_tool_edit)
             self.draw_app.app.inform.emit(_("[success] Done. Drill/Slot Resize completed."))
 
         else:
@@ -2406,20 +2425,35 @@ class FlatCAMExcEditor(QtCore.QObject):
             factor = current_table_dia_edited / dia_changed
             geometry = []
 
+            scaled_geo = []
             for shape_exc in self.storage_dict[dia_changed].get_objects():
-                scaled_geo = MultiLineString(
-                    [affinity.scale(subgeo, xfact=factor, yfact=factor, origin='center') for subgeo in shape_exc.geo]
-                )
+                geo_list = []
+                if isinstance(shape_exc.geo, MultiLineString) or isinstance(shape_exc.geo, MultiPolygon):
+                    for subgeo in shape_exc.geo:
+                        geo_list.append(affinity.scale(subgeo, xfact=factor, yfact=factor, origin='center'))
+                    scaled_geo = MultiLineString(geo_list)
+                elif isinstance(shape_exc.geo, Polygon):
+                    scaled_geo = geo_list.append(affinity.scale(shape_exc.geo,
+                                                                xfact=factor, yfact=factor, origin='center'))
+
+                if isinstance(shape_exc.geo, MultiLineString):
+                    # add bogus drill points (for total count of drills) but only if the shape is a MultiLineString
+                    # because the drills are MultiLineString
+                    for k, v in self.olddia_newdia.items():
+                        if v == current_table_dia_edited:
+                            self.points_edit[k].append((0, 0))
+                            break
+                else:
+                    # the shape is a Polygon or MultiPolygon therefore we have to increase the slot numbers
+                    for k, v in self.olddia_newdia.items():
+                        if v == current_table_dia_edited:
+                            self.slot_points_edit[k].append((0, 0))
+                            break
+
                 geometry.append(DrawToolShape(scaled_geo))
 
-                # add bogus drill points (for total count of drills)
-                for k, v in self.olddia_newdia.items():
-                    if v == current_table_dia_edited:
-                        self.points_edit[k].append((0, 0))
-                        break
-
-            # search for the old dia that correspond to the new dia and add the drills in it's storage
-            # everything will be sort out later, when the edited Excellon is updated
+            # search for the old dia that correspond to the new dia and add the drills/slots in it's storage
+            # everything will be sorted out later, when the edited Excellon is updated
             for k, v in self.olddia_newdia.items():
                 if v == current_table_dia_edited:
                     self.add_exc_shape(geometry, self.storage_dict[k])
