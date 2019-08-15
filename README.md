@@ -23,6 +23,7 @@ CAD program, and create G-Code for Isolation routing.
 - finished the Slot Array tool in Excellon Editor
 - added the key shortcut handlers for Add Slot and Add Slot Array tools in Excellon Editor
 - started to work on the Resize tool for the case of Excellon slots in Excellon Editor
+- final fix for the VisPy data files; the defaults files are saved to the Config folder when the app is set to be portable
 
 14.08.2019
 

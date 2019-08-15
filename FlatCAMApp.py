@@ -195,9 +195,11 @@ class App(QtCore.QObject):
 
         self.main_thread = QtWidgets.QApplication.instance().thread()
 
-        # ################ ##
-        # # ## OS-specific # ##
-        # ################ ##
+        # #######################
+        # # ## OS-specific ######
+        # #######################
+
+        portable = False
 
         # Folder for user settings.
         if sys.platform == 'win32':
@@ -207,7 +209,6 @@ class App(QtCore.QObject):
             else:
                 App.log.debug("Win64!")
 
-            portable = False
             config_file = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '\\config\\configuration.txt'
             try:
                 with open(config_file, 'r') as f:
@@ -226,9 +227,9 @@ class App(QtCore.QObject):
                 pass
 
             if portable is False:
-                self.data_path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0) + '\FlatCAM'
+                self.data_path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0) + '\\FlatCAM'
             else:
-                self.data_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+                self.data_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '\\config'
 
             self.os = 'windows'
         else:  # Linux/Unix/MacOS
@@ -255,13 +256,6 @@ class App(QtCore.QObject):
             f = open(self.data_path + '/current_defaults.FlatConfig')
             f.close()
         except IOError:
-            if sys.platform == 'win32':
-                # this happen only once, at the first launch of the app.
-                # I use this to copy the vispy data files to the APPDATA folder, for Windows
-                source_path = self.data_path + '\\vispy\\data'
-                target_path = os.getenv('APPDATA') + '\\vispy'
-                self.copy_and_overwrite(from_path=source_path, to_path=target_path)
-
             App.log.debug('Creating empty current_defaults.FlatConfig')
             f = open(self.data_path + '/current_defaults.FlatConfig', 'w')
             json.dump({}, f)
