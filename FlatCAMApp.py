@@ -486,22 +486,25 @@ class App(QtCore.QObject):
             "excellon_editor_circ_dir": self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_dir_radio,
             "excellon_editor_circ_angle":
                 self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_angle_entry,
+            # Excellon Slots
             "excellon_editor_slot_direction":
                 self.ui.excellon_defaults_form.excellon_editor_group.slot_axis_radio,
             "excellon_editor_slot_angle":
                 self.ui.excellon_defaults_form.excellon_editor_group.slot_angle_spinner,
             "excellon_editor_slot_length":
                 self.ui.excellon_defaults_form.excellon_editor_group.slot_length_entry,
-            # Slots
-            # "excellon_editor_slot_array_size":
-            #     self.ui.excellon_defaults_form.excellon_editor_group.drill_array_size_entry,
-            # "excellon_editor_slot_lin_dir": self.ui.excellon_defaults_form.excellon_editor_group.drill_axis_radio,
-            # "excellon_editor_slot_lin_pitch": self.ui.excellon_defaults_form.excellon_editor_group.drill_pitch_entry,
-            # "excellon_editor_slot_lin_angle": self.ui.excellon_defaults_form.excellon_editor_group.drill_angle_entry,
-            # "excellon_editor_slot_circ_dir":
-            #     self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_dir_radio,
-            # "excellon_editor_slot_circ_angle":
-            #     self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_angle_entry,
+            # Excellon Slots
+            "excellon_editor_slot_array_size":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_size_entry,
+            "excellon_editor_slot_lin_dir": self.ui.excellon_defaults_form.excellon_editor_group.slot_array_axis_radio,
+            "excellon_editor_slot_lin_pitch":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_pitch_entry,
+            "excellon_editor_slot_lin_angle":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_angle_entry,
+            "excellon_editor_slot_circ_dir":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_dir_radio,
+            "excellon_editor_slot_circ_angle":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_angle_entry,
 
             # Geometry General
             "geometry_plot": self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,
@@ -848,9 +851,17 @@ class App(QtCore.QObject):
             "excellon_editor_lin_angle": 0.0,
             "excellon_editor_circ_dir": 'CW',
             "excellon_editor_circ_angle": 12,
+            # Excellon Slots
             "excellon_editor_slot_direction": 'X',
             "excellon_editor_slot_angle": 0.0,
             "excellon_editor_slot_length": 5.0,
+            # Excellon Slot Array
+            "excellon_editor_slot_array_size": 5,
+            "excellon_editor_slot_lin_dir":  'X',
+            "excellon_editor_slot_lin_pitch": 0.1,
+            "excellon_editor_slot_lin_angle": 0.0,
+            "excellon_editor_slot_circ_dir": 'CW',
+            "excellon_editor_slot_circ_angle": 0.0,
 
             # Geometry General
             "geometry_plot": True,

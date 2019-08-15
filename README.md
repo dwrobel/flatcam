@@ -19,6 +19,10 @@ CAD program, and create G-Code for Isolation routing.
 - created a configuration file in the root/config/configuration.txt with a configuration line for portability. Set portable to True to run the app as portable
 - working on the Slots Array in Excellon Editor - building the GUI
 - added a failsafe path to the source folder from which to copy the VisPy data
+- fixed the GUI for Slot Arrays in Excellon Editor
+- finished the Slot Array tool in Excellon Editor
+- added the key shortcut handlers for Add Slot and Add Slot Array tools in Excellon Editor
+- started to work on the Resize tool for the case of Excellon slots in Excellon Editor
 
 14.08.2019
 

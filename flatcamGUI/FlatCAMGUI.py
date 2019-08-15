@@ -3057,6 +3057,18 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                         self.app.inform.emit(_("[WARNING_NOTCL] Cancelled. Nothing selected to move."))
                     return
 
+                # Add Array of Slote Hole Tool
+                if key == QtCore.Qt.Key_Q or key == 'Q':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    self.app.inform.emit("Click on target point.")
+                    self.app.ui.add_slot_array_btn.setChecked(True)
+
+                    self.app.exc_editor.x = self.app.mouse[0]
+                    self.app.exc_editor.y = self.app.mouse[1]
+
+                    self.app.exc_editor.select_tool('slot_array')
+                    return
+
                 # Resize Tool
                 if key == QtCore.Qt.Key_R or key == 'R':
                     self.app.exc_editor.launched_from_shortcuts = True
@@ -3088,6 +3100,18 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                 if key == QtCore.Qt.Key_V or key == 'V':
                     self.app.exc_editor.launched_from_shortcuts = True
                     self.app.on_zoom_fit(None)
+                    return
+
+                # Add Slot Hole Tool
+                if key == QtCore.Qt.Key_W or key == 'W':
+                    self.app.exc_editor.launched_from_shortcuts = True
+                    self.app.inform.emit(_("Click on target point."))
+                    self.app.ui.add_slot_btn.setChecked(True)
+
+                    self.app.exc_editor.x = self.app.mouse[0]
+                    self.app.exc_editor.y = self.app.mouse[1]
+
+                    self.app.exc_editor.select_tool('slot_add')
                     return
 
                 # Propagate to tool
@@ -5254,6 +5278,8 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.drill_circular_angle_label, 9, 0)
         grid0.addWidget(self.drill_circular_angle_entry, 9, 1)
 
+        # ##### SLOTS #####
+        # #################
         self.drill_array_circ_label = QtWidgets.QLabel(_('<b>Slots:</b>'))
         grid0.addWidget(self.drill_array_circ_label, 10, 0, 1, 2)
 
@@ -5301,6 +5327,87 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         self.slot_angle_spinner.setSingleStep(1.0)
         grid0.addWidget(self.slot_angle_label, 13, 0)
         grid0.addWidget(self.slot_angle_spinner, 13, 1)
+
+        # #### SLOTS ARRAY #######
+        # ########################
+
+        self.slot_array_linear_label = QtWidgets.QLabel(_('<b>Linear Slot Array:</b>'))
+        grid0.addWidget(self.slot_array_linear_label, 14, 0, 1, 2)
+
+        # Number of slot holes in a drill array
+        self.slot_array_size_label = QtWidgets.QLabel(_('Nr of slots:'))
+        self.drill_array_size_label.setToolTip(
+            _("Specify how many slots to be in the array.")
+        )
+        # self.slot_array_size_label.setMinimumWidth(100)
+
+        self.slot_array_size_entry = LengthEntry()
+
+        grid0.addWidget(self.slot_array_size_label, 15, 0)
+        grid0.addWidget(self.slot_array_size_entry, 15, 1)
+
+        # Linear Slot Array direction
+        self.slot_array_axis_label = QtWidgets.QLabel(_('Linear Dir.:'))
+        self.slot_array_axis_label.setToolTip(
+            _("Direction on which the linear array is oriented:\n"
+              "- 'X' - horizontal axis \n"
+              "- 'Y' - vertical axis or \n"
+              "- 'Angle' - a custom angle for the array inclination")
+        )
+        # self.slot_axis_label.setMinimumWidth(100)
+        self.slot_array_axis_radio = RadioSet([{'label': _('X'), 'value': 'X'},
+                                               {'label': _('Y'), 'value': 'Y'},
+                                               {'label': _('Angle'), 'value': 'A'}])
+
+        grid0.addWidget(self.slot_array_axis_label, 16, 0)
+        grid0.addWidget(self.slot_array_axis_radio, 16, 1)
+
+        # Linear Slot Array pitch distance
+        self.slot_array_pitch_label = QtWidgets.QLabel(_('Pitch:'))
+        self.slot_array_pitch_label.setToolTip(
+            _("Pitch = Distance between elements of the array.")
+        )
+        # self.drill_pitch_label.setMinimumWidth(100)
+        self.slot_array_pitch_entry = LengthEntry()
+
+        grid0.addWidget(self.slot_array_pitch_label, 17, 0)
+        grid0.addWidget(self.slot_array_pitch_entry, 17, 1)
+
+        # Linear Slot Array custom angle
+        self.slot_array_angle_label = QtWidgets.QLabel(_('Angle:'))
+        self.slot_array_angle_label.setToolTip(
+            _("Angle at which each element in circular array is placed.")
+        )
+        self.slot_array_angle_entry = LengthEntry()
+
+        grid0.addWidget(self.slot_array_angle_label, 18, 0)
+        grid0.addWidget(self.slot_array_angle_entry, 18, 1)
+
+        self.slot_array_circ_label = QtWidgets.QLabel(_('<b>Circular Slot Array:</b>'))
+        grid0.addWidget(self.slot_array_circ_label, 19, 0, 1, 2)
+
+        # Circular Slot Array direction
+        self.slot_array_circular_direction_label = QtWidgets.QLabel(_('Circular Dir.:'))
+        self.slot_array_circular_direction_label.setToolTip(
+            _("Direction for circular array.\n"
+              "Can be CW = clockwise or CCW = counter clockwise.")
+        )
+
+        self.slot_array_circular_dir_radio = RadioSet([{'label': _('CW'), 'value': 'CW'},
+                                                       {'label': _('CCW'), 'value': 'CCW'}])
+
+        grid0.addWidget(self.slot_array_circular_direction_label, 20, 0)
+        grid0.addWidget(self.slot_array_circular_dir_radio, 20, 1)
+
+        # Circular Slot Array Angle
+        self.slot_array_circular_angle_label = QtWidgets.QLabel(_('Circ. Angle:'))
+        self.slot_array_circular_angle_label.setToolTip(
+            _("Angle at which each element in circular array is placed.")
+        )
+        self.slot_array_circular_angle_entry = LengthEntry()
+
+        grid0.addWidget(self.slot_array_circular_angle_label, 21, 0)
+        grid0.addWidget(self.slot_array_circular_angle_entry, 21, 1)
 
         self.layout.addStretch()
 

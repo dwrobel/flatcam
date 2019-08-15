@@ -730,8 +730,6 @@ class FCSlotArray(FCShapeTool):
             for pt in up_arc:
                 geo.append(pt)
             geo.append(p4)
-
-            return Polygon(geo)
         else:
             p1 = (point_x - self.half_width + self.half_height, point_y - self.half_height)
             p2 = (point_x + self.half_width - self.half_height, point_y - self.half_height)
@@ -757,6 +755,11 @@ class FCSlotArray(FCShapeTool):
             for pt in left_arc:
                 geo.append(pt)
 
+        # this function return one slot in the slot array and the following will rotate that one slot around it's
+        # center if the radio value is "A".
+        if self.draw_app.slot_axis_radio.get_value() == 'A':
+            return affinity.rotate(Polygon(geo), -slot_angle)
+        else:
             return Polygon(geo)
 
     def make(self):
@@ -896,7 +899,19 @@ class FCDrillResize(FCShapeTool):
                         # the number of drills displayed in column 2 is just a len(self.points_edit) therefore
                         # deleting self.points_edit elements (doesn't matter who but just the number)
                         # solved the display issue.
-                        del self.draw_app.points_edit[sel_dia][0]
+                        try:
+                            del self.draw_app.points_edit[sel_dia][0]
+                        except KeyError:
+                            # if the exception happen here then we are not dealing with drills but with slots
+                            # so we try for them
+                            try:
+                                del self.draw_app.slot_points_edit[sel_dia][0]
+                            except KeyError:
+                                # if the exception happen here then we are not dealing with slots neither
+                                # therefore something else is not OK so we return
+                                self.draw_app.app.inform.emit(
+                                    _("[ERROR_NOTCL] Cancelled."))
+                                return
 
                         sel_shapes_to_be_deleted.append(select_shape)
 
@@ -923,10 +938,10 @@ class FCDrillResize(FCShapeTool):
 
             self.draw_app.build_ui()
             self.draw_app.replot()
-            self.draw_app.app.inform.emit(_("[success] Done. Drill Resize completed."))
+            self.draw_app.app.inform.emit(_("[success] Done. Drill/Slot Resize completed."))
 
         else:
-            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Cancelled. No drills selected for resize ..."))
+            self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Cancelled. No drills/slots selected for resize ..."))
 
         self.draw_app.resize_frame.hide()
         self.complete = True
@@ -1126,7 +1141,7 @@ class FCDrillSelect(DrawTool):
         self.exc_editor_app.resize_frame.hide()
         self.exc_editor_app.array_frame.hide()
         self.exc_editor_app.slot_frame.hide()
-        # self.exc_editor_app.slot_array_frame.hide()
+        self.exc_editor_app.slot_array_frame.hide()
 
     def click(self, point):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
@@ -1434,6 +1449,10 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.resize_frame.hide()
 
+        # ####################################
+        # ### Add DRILL Array ################
+        # ####################################
+
         # add a frame and inside add a vertical box layout. Inside this vbox layout I add
         # all the add drill array  widgets
         # this way I can hide/show the frame
@@ -1444,15 +1463,14 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.array_box.setContentsMargins(0, 0, 0, 0)
         self.array_frame.setLayout(self.array_box)
 
-        # ### Add DRILL Array ## ##
         self.emptyarray_label = QtWidgets.QLabel('')
         self.array_box.addWidget(self.emptyarray_label)
 
-        self.drillarray_label = QtWidgets.QLabel('<b>%s</b>' % _("Add Drill Array"))
-        self.drillarray_label.setToolTip(
+        self.drill_array_label = QtWidgets.QLabel('<b>%s</b>' % _("Add Drill Array"))
+        self.drill_array_label.setToolTip(
             _("Add an array of drills (linear or circular array)")
         )
-        self.array_box.addWidget(self.drillarray_label)
+        self.array_box.addWidget(self.drill_array_label)
 
         self.array_type_combo = FCComboBox()
         self.array_type_combo.setToolTip(
@@ -1576,9 +1594,10 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.emptyarray_label = QtWidgets.QLabel('')
         self.slot_box.addWidget(self.emptyarray_label)
 
-        self.slot_label = QtWidgets.QLabel('<b>%s</b>' % _("Add Slot"))
+        self.slot_label = QtWidgets.QLabel('<b>%s</b>' % _("Slot Parameters"))
         self.slot_label.setToolTip(
-            _("Add slot (hole with oval shape)")
+            _("Parameters for adding a slot (hole with oval shape)\n"
+              "either single or as an part of an array.")
         )
         self.slot_box.addWidget(self.slot_label)
 
@@ -1646,24 +1665,14 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.emptyarray_label = QtWidgets.QLabel('')
         self.slot_array_box.addWidget(self.emptyarray_label)
 
-        self.slot_array_label = QtWidgets.QLabel('<b>%s</b>' % _("Add SLOT Array"))
+        self.slot_array_label = QtWidgets.QLabel('<b>%s</b>' % _("Slot Array Parameters"))
         self.slot_array_label.setToolTip(
-            _("Add an array of slots (linear or circular array)")
+            _("Parameters for the array of slots (linear or circular array)")
         )
         self.slot_array_box.addWidget(self.slot_array_label)
 
         self.l_form = QtWidgets.QFormLayout()
         self.slot_array_box.addLayout(self.l_form)
-
-        # Slot length in array
-        self.array_slot_length_label = QtWidgets.QLabel(_('Length:'))
-        self.array_slot_length_label.setToolTip(
-            _("Length = The length of the slot.")
-        )
-        self.array_slot_length_label.setMinimumWidth(100)
-
-        self.array_slot_length_entry = LengthEntry()
-        self.l_form.addRow(self.array_slot_length_label, self.array_slot_length_entry)
 
         self.slot_array_type_combo = FCComboBox()
         self.slot_array_type_combo.setToolTip(
@@ -1841,6 +1850,8 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         self.drill_axis_radio.activated_custom.connect(self.on_linear_angle_radio)
         self.slot_axis_radio.activated_custom.connect(self.on_slot_angle_radio)
+
+        self.slot_array_axis_radio.activated_custom.connect(self.on_slot_array_linear_angle_radio)
 
         self.app.ui.exc_add_array_drill_menuitem.triggered.connect(self.exc_add_drill_array)
         self.app.ui.exc_add_drill_menuitem.triggered.connect(self.exc_add_drill)
@@ -2023,12 +2034,15 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.slot_axis_radio.set_value(self.app.defaults['excellon_editor_slot_direction'])
         self.slot_angle_spinner.set_value(float(self.app.defaults['excellon_editor_slot_angle']))
 
-        self.slot_array_size_entry.set_value(int(self.app.defaults['excellon_editor_array_size']))
-        self.slot_array_axis_radio.set_value(self.app.defaults['excellon_editor_lin_dir'])
-        self.slot_array_pitch_entry.set_value(float(self.app.defaults['excellon_editor_lin_pitch']))
-        self.slot_array_linear_angle_spinner.set_value(float(self.app.defaults['excellon_editor_lin_angle']))
-        self.slot_array_direction_radio.set_value(self.app.defaults['excellon_editor_circ_dir'])
-        self.slot_array_angle_entry.set_value(float(self.app.defaults['excellon_editor_circ_angle']))
+        self.slot_array_size_entry.set_value(int(self.app.defaults['excellon_editor_slot_array_size']))
+        self.slot_array_axis_radio.set_value(self.app.defaults['excellon_editor_slot_lin_dir'])
+        self.slot_array_pitch_entry.set_value(float(self.app.defaults['excellon_editor_slot_lin_pitch']))
+        self.slot_array_linear_angle_spinner.set_value(float(self.app.defaults['excellon_editor_slot_lin_angle']))
+        self.slot_array_direction_radio.set_value(self.app.defaults['excellon_editor_slot_circ_dir'])
+        self.slot_array_angle_entry.set_value(float(self.app.defaults['excellon_editor_slot_circ_angle']))
+
+        self.slot_array_circular_frame.hide()
+        self.slot_array_linear_frame.show()
 
     def build_ui(self, first_run=None):
 
@@ -3657,6 +3671,15 @@ class FlatCAMExcEditor(QtCore.QObject):
         else:
             self.linear_angle_spinner.hide()
             self.linear_angle_label.hide()
+
+    def on_slot_array_linear_angle_radio(self):
+        val = self.slot_array_axis_radio.get_value()
+        if val == 'A':
+            self.slot_array_linear_angle_spinner.show()
+            self.slot_array_linear_angle_label.show()
+        else:
+            self.slot_array_linear_angle_spinner.hide()
+            self.slot_array_linear_angle_label.hide()
 
     def on_slot_angle_radio(self):
         val = self.slot_axis_radio.get_value()
