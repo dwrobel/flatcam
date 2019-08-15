@@ -492,6 +492,16 @@ class App(QtCore.QObject):
                 self.ui.excellon_defaults_form.excellon_editor_group.slot_angle_spinner,
             "excellon_editor_slot_length":
                 self.ui.excellon_defaults_form.excellon_editor_group.slot_length_entry,
+            # Slots
+            # "excellon_editor_slot_array_size":
+            #     self.ui.excellon_defaults_form.excellon_editor_group.drill_array_size_entry,
+            # "excellon_editor_slot_lin_dir": self.ui.excellon_defaults_form.excellon_editor_group.drill_axis_radio,
+            # "excellon_editor_slot_lin_pitch": self.ui.excellon_defaults_form.excellon_editor_group.drill_pitch_entry,
+            # "excellon_editor_slot_lin_angle": self.ui.excellon_defaults_form.excellon_editor_group.drill_angle_entry,
+            # "excellon_editor_slot_circ_dir":
+            #     self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_dir_radio,
+            # "excellon_editor_slot_circ_angle":
+            #     self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_angle_entry,
 
             # Geometry General
             "geometry_plot": self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,

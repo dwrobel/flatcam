@@ -15,9 +15,9 @@ CAD program, and create G-Code for Isolation routing.
 - added a confirmation message for objects delete and a setting to activate it in Edit -> Preferences -> Global
 - merged pull request from Mike Smith which fix an application crash when attempting to open a not-a-FlatCAM-project file as project
 - merged pull request from Mike Smith that add support for a new SVG element: <use>
-- stored inside FlatCAM app the VisPy data files and at the first start the application will try to copy those files to the APPDATA (roaming) folder in case of running under Windows
-- created an app 'switch' named 'self.portable' which when set True it will 'cx-freeze' an portable application
+- stored inside FlatCAM app the VisPy data files and at the first start the application will try to copy those files to the APPDATA (roaming) folder in case of running under Windows OS
 - created a configuration file in the root/config/configuration.txt with a configuration line for portability. Set portable to True to run the app as portable
+- working on the Slots Array in Excellon Editor - building the GUI
 
 14.08.2019
 
