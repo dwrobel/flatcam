@@ -2154,7 +2154,11 @@ class App(QtCore.QObject):
         """
         if os.path.exists(to_path):
             shutil.rmtree(to_path)
-        shutil.copytree(from_path, to_path)
+        try:
+            shutil.copytree(from_path, to_path)
+        except FileNotFoundError:
+            from_new_path = os.path.dirname(os.path.realpath(__file__)) + '\\flatcamGUI\\VisPyData\\data'
+            shutil.copytree(from_new_path, to_path)
 
     def set_ui_title(self, name):
         self.ui.setWindowTitle('FlatCAM %s %s - %s    %s' %

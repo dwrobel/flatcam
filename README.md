@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - stored inside FlatCAM app the VisPy data files and at the first start the application will try to copy those files to the APPDATA (roaming) folder in case of running under Windows OS
 - created a configuration file in the root/config/configuration.txt with a configuration line for portability. Set portable to True to run the app as portable
 - working on the Slots Array in Excellon Editor - building the GUI
+- added a failsafe path to the source folder from which to copy the VisPy data
 
 14.08.2019
 
