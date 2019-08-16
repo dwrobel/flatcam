@@ -5662,6 +5662,10 @@ class CNCjob(Geometry):
                                  "There will be no cut, skipping %s file") % self.options['name'])
             return 'fail'
 
+        # made sure that depth_per_cut is no more then the z_cut
+        if self.z_cut < self.z_depthpercut:
+            self.z_depthpercut = self.z_cut
+
         if self.z_move is None:
             self.app.inform.emit(_("[ERROR_NOTCL] Travel Z parameter is None or zero."))
             return 'fail'

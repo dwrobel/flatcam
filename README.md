@@ -16,6 +16,8 @@ CAD program, and create G-Code for Isolation routing.
 - fixed bug selection in Excellon editor with a selection window in case that the number of selected items is even
 - updated the default values to more convenient ones
 - remade the enable/disable plots functions to work only where it needs to (no sense in disabling a plot already disabled)
+- made sure that if multi depth is choosed when creating GCode then if the multidepth is more than the depth of cut only one cut is made (to the depth of cut)
+
 
 15.08.2019
 
