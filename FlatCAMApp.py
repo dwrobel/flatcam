@@ -5664,6 +5664,7 @@ class App(QtCore.QObject):
         self.plotcanvas.vispy_canvas.update()           # TODO: Need update canvas?
         self.on_zoom_fit(None)
         self.collection.update_view()
+        # self.inform.emit(_("Plots updated ..."))
 
     # TODO: Rework toolbar 'clear', 'replot' functions
     def on_toolbar_replot(self):
@@ -8901,7 +8902,8 @@ The normal flow when working in FlatCAM is the following:</span></p>
         log.debug("Enabling plots ...")
         self.inform.emit(_("Working ..."))
         for obj in objects:
-            obj.options['plot'] = True
+            if obj.options['plot'] is False:
+                obj.options['plot'] = True
         self.plots_updated.emit()
 
     def disable_plots(self, objects):
@@ -8915,20 +8917,11 @@ The normal flow when working in FlatCAM is the following:</span></p>
         if not self.collection.get_selected():
             return
 
-        # if at least one object is visible then do the disable
-        exit_flag = True
-        for obj in objects:
-            if obj.options['plot'] is True:
-                exit_flag = False
-                break
-
-        if exit_flag:
-            return
-
         log.debug("Disabling plots ...")
         self.inform.emit(_("Working ..."))
         for obj in objects:
-            obj.options['plot'] = False
+            if obj.options['plot'] is True:
+                obj.options['plot'] = False
         self.plots_updated.emit()
 
     def toggle_plots(self, objects):

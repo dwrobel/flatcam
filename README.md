@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed a weird error that created a crash in the following scenario: create a new excellon, edit it, add some drills/slots, delete it without saving, create a new excellon, try to edit and a crash is issued due of a wrapped C++ error
 - fixed bug selection in Excellon editor with a selection window in case that the number of selected items is even
 - updated the default values to more convenient ones
+- remade the enable/disable plots functions to work only where it needs to (no sense in disabling a plot already disabled)
 
 15.08.2019
 
