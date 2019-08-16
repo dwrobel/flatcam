@@ -907,11 +907,11 @@ class FCDrillResize(FCShapeTool):
                                                                               origin='center')))
                         elif isinstance(select_shape.geo, Polygon):
                             # I don't have any info regarding the angle of the slot geometry, nor how thick it is or
-                            # how long it is given the angle. SO I will have to make an approximation because
+                            # how long it is given the angle. So I will have to make an approximation because
                             # we need to conserve the slot length, we only resize the diameter for the tool
                             # Therefore scaling won't work and buffering will not work either.
 
-                            # First we get the Linestring that is one that the original slot is built around with the4
+                            # First we get the Linestring that is one that the original slot is built around with the
                             # tool having the diameter sel_dia
                             poly = select_shape.geo
                             xmin, ymin, xmax, ymax = poly.bounds
@@ -940,16 +940,17 @@ class FCDrillResize(FCShapeTool):
                             # around them
                             start_pt = Point(cut_line_with_max_length_coords[0])
                             stop_pt = Point(cut_line_with_max_length_coords[1])
-                            start_cut_geo = start_pt.buffer(new_dia)
-                            stop_cut_geo = stop_pt.buffer(new_dia)
+                            start_cut_geo = start_pt.buffer(new_dia / 2)
+                            stop_cut_geo = stop_pt.buffer(new_dia / 2)
 
                             # and we cut the above circle polygons from our line and get in this way a line around
                             # which we can build the new slot by buffering with the new tool diameter
                             new_line = cut_line_with_max_length.difference(start_cut_geo)
                             new_line = new_line.difference(stop_cut_geo)
 
-                            # create the geometry for the resized slot by buffering with the new diameter value, new_dia
-                            new_poly = new_line.buffer(new_dia)
+                            # create the geometry for the resized slot by buffering with half of the
+                            # new diameter value, new_dia
+                            new_poly = new_line.buffer(new_dia / 2)
 
                             self.geometry.append(DrawToolShape(new_poly))
                         else:
@@ -985,7 +986,6 @@ class FCDrillResize(FCShapeTool):
 
                         sel_shapes_to_be_deleted.append(select_shape)
 
-                        self.draw_app.on_exc_shape_complete(self.destination_storage)
 
                         # a hack to make the tool_table display more drills/slots per diameter when shape(drill/slot)
                         # is added.
@@ -1008,8 +1008,6 @@ class FCDrillResize(FCShapeTool):
                                 self.draw_app.slot_points_edit[new_dia] = [(0, 0)]
                             else:
                                 self.draw_app.slot_points_edit[new_dia].append((0, 0))
-
-                        self.geometry = []
 
             for dia_key in list(self.draw_app.storage_dict.keys()):
                 # if following the resize of the drills there will be no more drills for some of the tools then
@@ -1034,8 +1032,14 @@ class FCDrillResize(FCShapeTool):
             for shp in sel_shapes_to_be_deleted:
                 self.draw_app.selected.remove(shp)
 
+            # add the new geometry to storage
+            self.draw_app.on_exc_shape_complete(self.destination_storage)
+
             self.draw_app.build_ui()
             self.draw_app.replot()
+
+            # empty the self.geometry
+            self.geometry = []
 
             # we reactivate the signals after the after the tool editing
             self.draw_app.tools_table_exc.itemChanged.connect(self.draw_app.on_tool_edit)
@@ -2467,92 +2471,148 @@ class FlatCAMExcEditor(QtCore.QObject):
         self.build_ui()
 
     def on_tool_edit(self, item_changed):
-
         # if connected, disconnect the signal from the slot on item_changed as it creates issues
-        self.tools_table_exc.itemChanged.disconnect()
-        self.tools_table_exc.cellPressed.disconnect()
+        try:
+            self.tools_table_exc.itemChanged.disconnect()
+        except TypeError:
+            pass
 
+        try:
+            self.tools_table_exc.cellPressed.disconnect()
+        except TypeError:
+            pass
         # self.tools_table_exc.selectionModel().currentChanged.disconnect()
 
         self.is_modified = True
-        current_table_dia_edited = None
+        new_dia = None
 
         if self.tools_table_exc.currentItem() is not None:
             try:
-                current_table_dia_edited = float(self.tools_table_exc.currentItem().text())
+                new_dia = float(self.tools_table_exc.currentItem().text())
             except ValueError as e:
                 log.debug("FlatCAMExcEditor.on_tool_edit() --> %s" % str(e))
                 self.tools_table_exc.setCurrentItem(None)
                 return
 
         row_of_item_changed = self.tools_table_exc.currentRow()
-
         # rows start with 0, tools start with 1 so we adjust the value by 1
         key_in_tool2tooldia = row_of_item_changed + 1
+        old_dia = self.tool2tooldia[key_in_tool2tooldia]
 
-        dia_changed = self.tool2tooldia[key_in_tool2tooldia]
+        # SOURCE storage
+        source_storage = self.storage_dict[old_dia]
 
+        # DESTINATION storage
         # tool diameter is not used so we create a new tool with the desired diameter
-        if current_table_dia_edited not in self.olddia_newdia.values():
-            # update the dict that holds as keys our initial diameters and as values the edited diameters
-            self.olddia_newdia[dia_changed] = current_table_dia_edited
-            # update the dict that holds tool_no as key and tool_dia as value
-            self.tool2tooldia[key_in_tool2tooldia] = current_table_dia_edited
+        if new_dia not in self.olddia_newdia:
+            destination_storage = FlatCAMGeoEditor.make_storage()
+            self.storage_dict[new_dia] = destination_storage
 
-            # update the tool offset
-            modified_offset = self.exc_obj.tool_offset.pop(dia_changed, None)
-            if modified_offset is not None:
-                self.exc_obj.tool_offset[current_table_dia_edited] = modified_offset
-
-            self.replot()
+            # self.olddia_newdia dict keeps the evidence on current tools diameters as keys and gets updated on values
+            # each time a tool diameter is edited or added
+            self.olddia_newdia[new_dia] = new_dia
         else:
             # tool diameter is already in use so we move the drills from the prior tool to the new tool
-            factor = current_table_dia_edited / dia_changed
-            geometry = []
+            destination_storage = self.storage_dict[new_dia]
 
-            scaled_geo = []
-            for shape_exc in self.storage_dict[dia_changed].get_objects():
-                geo_list = []
-                if isinstance(shape_exc.geo, MultiLineString) or isinstance(shape_exc.geo, MultiPolygon):
-                    for subgeo in shape_exc.geo:
-                        geo_list.append(affinity.scale(subgeo, xfact=factor, yfact=factor, origin='center'))
-                    scaled_geo = MultiLineString(geo_list)
-                elif isinstance(shape_exc.geo, Polygon):
-                    scaled_geo = geo_list.append(affinity.scale(shape_exc.geo,
-                                                                xfact=factor, yfact=factor, origin='center'))
+        # since we add a new tool, we update also the intial state of the tool_table through it's dictionary
+        # we add a new entry in the tool2tooldia dict
+        self.tool2tooldia[len(self.olddia_newdia)] = new_dia
 
-                if isinstance(shape_exc.geo, MultiLineString):
-                    # add bogus drill points (for total count of drills) but only if the shape is a MultiLineString
-                    # because the drills are MultiLineString
-                    for k, v in self.olddia_newdia.items():
-                        if v == current_table_dia_edited:
-                            self.points_edit[k].append((0, 0))
-                            break
+        # CHANGE the elements geometry according to the new diameter
+        factor = new_dia / old_dia
+        new_geo = Polygon()
+        for shape_exc in source_storage.get_objects():
+            geo_list = []
+            if isinstance(shape_exc.geo, MultiLineString):
+                for subgeo in shape_exc.geo:
+                    geo_list.append(affinity.scale(subgeo, xfact=factor, yfact=factor, origin='center'))
+                new_geo = MultiLineString(geo_list)
+            elif isinstance(shape_exc.geo, Polygon):
+                # I don't have any info regarding the angle of the slot geometry, nor how thick it is or
+                # how long it is given the angle. So I will have to make an approximation because
+                # we need to conserve the slot length, we only resize the diameter for the tool
+                # Therefore scaling won't work and buffering will not work either.
+
+                # First we get the Linestring that is one that the original slot is built around with the
+                # tool having the diameter sel_dia
+                poly = shape_exc.geo
+                xmin, ymin, xmax, ymax = poly.bounds
+                # a line that is certain to be bigger than our slot because it's the diagonal
+                # of it's bounding box
+                poly_diagonal = LineString([(xmin, ymin), (xmax, ymax)])
+                poly_centroid = poly.centroid
+                # center of the slot geometry
+                poly_center = (poly_centroid.x, poly_centroid.y)
+
+                # make a list of intersections with the rotated line
+                list_of_cuttings = []
+                for angle in range(0, 359, 1):
+                    rot_poly_diagonal = affinity.rotate(poly_diagonal, angle=angle, origin=poly_center)
+                    cut_line = rot_poly_diagonal.intersection(poly)
+                    cut_line_len = cut_line.length
+                    list_of_cuttings.append(
+                        (cut_line_len, cut_line)
+                    )
+                # find the cut_line with the maximum length which is the LineString for which the start
+                # and stop point are the start and stop point of the slot as in the Gerber file
+                cut_line_with_max_length = max(list_of_cuttings, key=lambda i: i[0])[1]
+                # find the coordinates of this line
+                cut_line_with_max_length_coords = list(cut_line_with_max_length.coords)
+                # extract the first and last point of the line and build some buffered polygon circles
+                # around them
+                start_pt = Point(cut_line_with_max_length_coords[0])
+                stop_pt = Point(cut_line_with_max_length_coords[1])
+                start_cut_geo = start_pt.buffer(new_dia / 2)
+                stop_cut_geo = stop_pt.buffer(new_dia / 2)
+
+                # and we cut the above circle polygons from our line and get in this way a line around
+                # which we can build the new slot by buffering with the new tool diameter
+                new_line = cut_line_with_max_length.difference(start_cut_geo)
+                new_line = new_line.difference(stop_cut_geo)
+
+                # create the geometry for the resized slot by buffering with half of the
+                # new diameter value: new_dia
+                new_geo = new_line.buffer(new_dia / 2)
+
+            try:
+                self.points_edit.pop(old_dia, None)
+            except KeyError:
+                pass
+            try:
+                self.slot_points_edit.pop(old_dia, None)
+            except KeyError:
+                pass
+
+            # add bogus drill/slots points (for total count of drills/slots)
+            # for drills
+            if isinstance(shape_exc.geo, MultiLineString):
+                if new_dia not in self.points_edit:
+                    self.points_edit[new_dia] = [(0, 0)]
                 else:
-                    # the shape is a Polygon or MultiPolygon therefore we have to increase the slot numbers
-                    for k, v in self.olddia_newdia.items():
-                        if v == current_table_dia_edited:
-                            self.slot_points_edit[k].append((0, 0))
-                            break
+                    self.points_edit[new_dia].append((0, 0))
 
-                geometry.append(DrawToolShape(scaled_geo))
+            # for slots
+            if isinstance(shape_exc.geo, Polygon):
+                if new_dia not in self.slot_points_edit:
+                    self.slot_points_edit[new_dia] = [(0, 0)]
+                else:
+                    self.slot_points_edit[new_dia].append((0, 0))
 
-            # search for the old dia that correspond to the new dia and add the drills/slots in it's storage
-            # everything will be sorted out later, when the edited Excellon is updated
-            for k, v in self.olddia_newdia.items():
-                if v == current_table_dia_edited:
-                    self.add_exc_shape(geometry, self.storage_dict[k])
-                    break
+            self.add_exc_shape(shape=DrawToolShape(new_geo), storage=destination_storage)
 
-            # delete the old tool from which we moved the drills
-            self.on_tool_delete(dia=dia_changed)
+        # update the UI and the CANVAS
+        self.build_ui()
+        self.replot()
 
-            # delete the tool offset
-            self.exc_obj.tool_offset.pop(dia_changed, None)
+        # delete the old tool
+        self.on_tool_delete(dia=old_dia)
 
         # we reactivate the signals after the after the tool editing
         self.tools_table_exc.itemChanged.connect(self.on_tool_edit)
         self.tools_table_exc.cellPressed.connect(self.on_row_selected)
+
+        self.app.inform.emit(_("[success] Done. Tool edit completed."))
 
         # self.tools_table_exc.selectionModel().currentChanged.connect(self.on_row_selected)
 
