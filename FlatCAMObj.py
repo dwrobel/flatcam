@@ -5363,7 +5363,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # from predecessors.
         self.ser_attrs += ['options', 'kind', 'cnc_tools', 'multitool']
 
-        self.annotation = self.app.plotcanvas.new_text_group()
+        self.text_col = self.app.plotcanvas.new_text_collection()
+        self.text_col.enabled = True
+        self.annotation = self.app.plotcanvas.new_text_group(collection=self.text_col)
 
     def build_ui(self):
         self.ui_disconnect()
@@ -5985,15 +5987,16 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             self.annotation.clear(update=True)
 
         if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
-            self.annotation.enabled = True
+            self.text_col.enabled = True
         else:
-            self.annotation.enabled = False
+            self.text_col.enabled = False
+        self.annotation.redraw()
 
     def on_annotation_change(self):
         if self.ui.annotation_cb.get_value():
-            self.app.plotcanvas.text_collection.enabled = True
+            self.text_col.enabled = True
         else:
-            self.app.plotcanvas.text_collection.enabled = False
+            self.text_col.enabled = False
         # kind = self.ui.cncplot_method_combo.get_value()
         # self.plot(kind=kind)
         self.annotation.redraw()

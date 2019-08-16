@@ -183,8 +183,11 @@ class PlotCanvas(QtCore.QObject):
         c.antialias = 0
         return c
 
-    def new_text_group(self):
-        return TextGroup(self.text_collection)
+    def new_text_group(self, collection=None):
+        if collection:
+            return TextGroup(collection)
+        else:
+            return TextGroup(self.text_collection)
 
     def new_text_collection(self, **kwargs):
         return TextCollection(parent=self.vispy_canvas.view.scene, **kwargs)
