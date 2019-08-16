@@ -839,7 +839,10 @@ class FCDrillResize(FCShapeTool):
         self.resize_dia = None
         self.draw_app.resize_frame.show()
         self.points = None
-        self.selected_dia_list = []
+
+        # made this a set so there are no duplicates
+        self.selected_dia_set = set()
+
         self.current_storage = None
         self.geometry = []
         self.destination_storage = None
@@ -880,7 +883,7 @@ class FCDrillResize(FCShapeTool):
             # on column 1 in tool tables we hold the diameters, and we retrieve them as strings
             # therefore below we convert to float
             dia_on_row = self.draw_app.tools_table_exc.item(row, 1).text()
-            self.selected_dia_list.append(float(dia_on_row))
+            self.selected_dia_set.add(float(dia_on_row))
 
         # since we add a new tool, we update also the intial state of the tool_table through it's dictionary
         # we add a new entry in the tool2tooldia dict
@@ -888,8 +891,8 @@ class FCDrillResize(FCShapeTool):
 
         sel_shapes_to_be_deleted = []
 
-        if self.selected_dia_list:
-            for sel_dia in self.selected_dia_list:
+        if self.selected_dia_set:
+            for sel_dia in self.selected_dia_set:
                 self.current_storage = self.draw_app.storage_dict[sel_dia]
                 for select_shape in self.draw_app.get_selected():
                     if select_shape in self.current_storage.get_objects():
@@ -898,38 +901,56 @@ class FCDrillResize(FCShapeTool):
                             DrawToolShape(affinity.scale(select_shape.geo, xfact=factor, yfact=factor, origin='center'))
                         )
                         self.current_storage.remove(select_shape)
+
                         # a hack to make the tool_table display less drills per diameter when shape(drill) is deleted
                         # self.points_edit it's only useful first time when we load the data into the storage
                         # but is still used as reference when building tool_table in self.build_ui()
                         # the number of drills displayed in column 2 is just a len(self.points_edit) therefore
                         # deleting self.points_edit elements (doesn't matter who but just the number)
                         # solved the display issue.
-                        try:
-                            del self.draw_app.points_edit[sel_dia][0]
-                        except KeyError:
-                            # if the exception happen here then we are not dealing with drills but with slots
-                            # so we try for them
+                        if isinstance(select_shape.geo, MultiLineString):
+                            try:
+                                del self.draw_app.points_edit[sel_dia][0]
+                            except KeyError:
+                                # if the exception happen here then we are not dealing with drills but with slots
+                                # This should not happen as the drills have MultiLineString geometry and slots have
+                                # Polygon geometry
+                                pass
+                        if isinstance(select_shape.geo, Polygon):
                             try:
                                 del self.draw_app.slot_points_edit[sel_dia][0]
                             except KeyError:
-                                # if the exception happen here then we are not dealing with slots neither
-                                # therefore something else is not OK so we return
-                                self.draw_app.app.inform.emit(_("[ERROR_NOTCL] Cancelled."))
-                                return
+                                # if the exception happen here then we are not dealing with slots but with drills
+                                # This should not happen as the drills have MultiLineString geometry and slots have
+                                # Polygon geometry
+                                pass
 
                         sel_shapes_to_be_deleted.append(select_shape)
 
                         self.draw_app.on_exc_shape_complete(self.destination_storage)
-                        # a hack to make the tool_table display more drills per diameter when shape(drill) is added
+
+                        # a hack to make the tool_table display more drills/slots per diameter when shape(drill/slot)
+                        # is added.
                         # self.points_edit it's only useful first time when we load the data into the storage
                         # but is still used as reference when building tool_table in self.build_ui()
                         # the number of drills displayed in column 2 is just a len(self.points_edit) therefore
                         # deleting self.points_edit elements (doesn't matter who but just the number)
                         # solved the display issue.
-                        if new_dia not in self.draw_app.points_edit:
-                            self.draw_app.points_edit[new_dia] = [(0, 0)]
-                        else:
-                            self.draw_app.points_edit[new_dia].append((0, 0))
+
+                        # for drills
+                        if isinstance(select_shape.geo, MultiLineString):
+                            if new_dia not in self.draw_app.points_edit:
+                                self.draw_app.points_edit[new_dia] = [(0, 0)]
+                            else:
+                                self.draw_app.points_edit[new_dia].append((0, 0))
+
+                        # for slots
+                        if isinstance(select_shape.geo, Polygon):
+                            if new_dia not in self.draw_app.slot_points_edit:
+                                self.draw_app.slot_points_edit[new_dia] = [(0, 0)]
+                            else:
+                                self.draw_app.slot_points_edit[new_dia].append((0, 0))
+
                         self.geometry = []
 
             for dia_key in list(self.draw_app.storage_dict.keys()):
@@ -950,17 +971,23 @@ class FCDrillResize(FCShapeTool):
                         self.draw_app.app.inform.emit(_("[ERROR_NOTCL] Cancelled."))
                         return
 
+            # this simple hack is used so we can delete form self.draw_app.selected but
+            # after we no longer iterate through it
             for shp in sel_shapes_to_be_deleted:
                 self.draw_app.selected.remove(shp)
 
             self.draw_app.build_ui()
             self.draw_app.replot()
+
             # we reactivate the signals after the after the tool editing
             self.draw_app.tools_table_exc.itemChanged.connect(self.draw_app.on_tool_edit)
-            self.draw_app.app.inform.emit(_("[success] Done. Drill/Slot Resize completed."))
 
+            self.draw_app.app.inform.emit(_("[success] Done. Drill/Slot Resize completed."))
         else:
             self.draw_app.app.inform.emit(_("[WARNING_NOTCL] Cancelled. No drills/slots selected for resize ..."))
+
+        # init this set() for another use perhaps
+        self.selected_dia_set = set()
 
         self.draw_app.resize_frame.hide()
         self.complete = True
