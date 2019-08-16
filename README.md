@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+17.08.2019
+
+- updated the translations for the new strings
+- RELEASE 8.94
+
 16.08.2019
 
 - working in Excellon Editor to Tool Resize to consider the slots, too
