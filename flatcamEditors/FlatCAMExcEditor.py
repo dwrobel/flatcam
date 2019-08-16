@@ -3257,7 +3257,6 @@ class FlatCAMExcEditor(QtCore.QObject):
         if event.button is 1:
             self.app.ui.rel_position_label.setText("<b>Dx</b>: %.4f&nbsp;&nbsp;  <b>Dy</b>: "
                                                    "%.4f&nbsp;&nbsp;&nbsp;&nbsp;" % (0, 0))
-            self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
 
             # Selection with left mouse button
             if self.active_tool is not None and event.button is 1:

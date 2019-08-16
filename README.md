@@ -13,7 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - working in Excellon Editor to Tool Resize to consider the slots, too
 - fixed a weird error that created a crash in the following scenario: create a new excellon, edit it, add some drills/slots, delete it without saving, create a new excellon, try to edit and a crash is issued due of a wrapped C++ error
-- fixed bug selection in Excellon editor with a selection window in case that the number of selected items is even
+- fixed bug selection in Excellon editor that caused not to select the corresponding row (tool dia) in the tool table when a selection rectangle selected an even number of geometric elements
 - updated the default values to more convenient ones
 - remade the enable/disable plots functions to work only where it needs to (no sense in disabling a plot already disabled)
 - made sure that if multi depth is choosed when creating GCode then if the multidepth is more than the depth of cut only one cut is made (to the depth of cut)
@@ -22,6 +22,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Excellon Editor fixed the display of the number of slots in the Tool Table after the resize done with the Resize tool
 - in Excellon Editor -> Resize tool, made sure that when the slot is resized, it's length remain the same, because the tool should influence only the 'thickness' of the slot. Since I don't know anything but the geometry and tool diameters (old and new), this is only an approximation and computationally intensive
 - in Excellon Editor -> remade the Tool edit made by editing the diameter values in the Tools Table to work for slots too
+- In Excellon Editor -> fixed bug that caused incorrect display of the relative coordinates in the status bar
 
 15.08.2019
 
