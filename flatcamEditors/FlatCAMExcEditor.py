@@ -3358,11 +3358,18 @@ class FlatCAMExcEditor(QtCore.QObject):
         for storage in self.storage_dict:
             for shape_s in self.selected:
                 if shape_s in self.storage_dict[storage].get_objects():
-                    for key in self.tool2tooldia:
-                        if self.tool2tooldia[key] == storage:
-                            item = self.tools_table_exc.item((key - 1), 1)
-                            self.tools_table_exc.setCurrentItem(item)
-                            self.last_tool_selected = int(key)
+                    for key_tool_nr in self.tool2tooldia:
+                        if self.tool2tooldia[key_tool_nr] == storage:
+                            row_to_sel = key_tool_nr - 1
+                            # item = self.tools_table_exc.item(row_to_sel, 1)
+                            # self.tools_table_exc.setCurrentItem(item)
+                            # item.setSelected(True)
+
+                            # if the row to be selected is not already in the selected rows then select it
+                            # otherwise don't do it as it seems that we have a toggle effect
+                            if row_to_sel not in set(index.row() for index in self.tools_table_exc.selectedIndexes()):
+                                self.tools_table_exc.selectRow(row_to_sel)
+                            self.last_tool_selected = int(key_tool_nr)
 
         self.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 

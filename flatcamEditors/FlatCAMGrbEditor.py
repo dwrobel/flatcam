@@ -4205,9 +4205,10 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # select the aperture code of the selected geometry, in the tool table
         self.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
         for aper in sel_aperture:
-            for row in range(self.apertures_table.rowCount()):
-                if str(aper) == self.apertures_table.item(row, 1).text():
-                    self.apertures_table.selectRow(row)
+            for row_to_sel in range(self.apertures_table.rowCount()):
+                if str(aper) == self.apertures_table.item(row_to_sel, 1).text():
+                    if row_to_sel not in set(index.row() for index in self.apertures_table.selectedIndexes()):
+                        self.apertures_table.selectRow(row_to_sel)
                     self.last_aperture_selected = aper
         self.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
