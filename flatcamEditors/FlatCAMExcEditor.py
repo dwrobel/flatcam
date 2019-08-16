@@ -848,6 +848,7 @@ class FCDrillResize(FCShapeTool):
         self.destination_storage = None
 
         self.draw_app.resize_btn.clicked.connect(self.make)
+        self.draw_app.resdrill_entry.editingFinished.connect(self.make)
 
         # Switch notebook to Selected page
         self.draw_app.app.ui.notebook.setCurrentWidget(self.draw_app.app.ui.selected_tab)
@@ -896,10 +897,67 @@ class FCDrillResize(FCShapeTool):
                 self.current_storage = self.draw_app.storage_dict[sel_dia]
                 for select_shape in self.draw_app.get_selected():
                     if select_shape in self.current_storage.get_objects():
-                        factor = new_dia / sel_dia
-                        self.geometry.append(
-                            DrawToolShape(affinity.scale(select_shape.geo, xfact=factor, yfact=factor, origin='center'))
-                        )
+
+                        # add new geometry according to the new size
+                        if isinstance(select_shape.geo, MultiLineString):
+                            factor = new_dia / sel_dia
+                            self.geometry.append(DrawToolShape(affinity.scale(select_shape.geo,
+                                                                              xfact=factor,
+                                                                              yfact=factor,
+                                                                              origin='center')))
+                        elif isinstance(select_shape.geo, Polygon):
+                            # I don't have any info regarding the angle of the slot geometry, nor how thick it is or
+                            # how long it is given the angle. SO I will have to make an approximation because
+                            # we need to conserve the slot length, we only resize the diameter for the tool
+                            # Therefore scaling won't work and buffering will not work either.
+
+                            # First we get the Linestring that is one that the original slot is built around with the4
+                            # tool having the diameter sel_dia
+                            poly = select_shape.geo
+                            xmin, ymin, xmax, ymax = poly.bounds
+                            # a line that is certain to be bigger than our slot because it's the diagonal
+                            # of it's bounding box
+                            poly_diagonal = LineString([(xmin, ymin), (xmax, ymax)])
+                            poly_centroid = poly.centroid
+                            # center of the slot geometry
+                            poly_center = (poly_centroid.x, poly_centroid.y)
+
+                            # make a list of intersections with the rotated line
+                            list_of_cuttings = []
+                            for angle in range(0, 359, 1):
+                                rot_poly_diagonal = affinity.rotate(poly_diagonal, angle=angle, origin=poly_center)
+                                cut_line = rot_poly_diagonal.intersection(poly)
+                                cut_line_len = cut_line.length
+                                list_of_cuttings.append(
+                                    (cut_line_len, cut_line)
+                                )
+                            # find the cut_line with the maximum length which is the LineString for which the start
+                            # and stop point are the start and stop point of the slot as in the Gerber file
+                            cut_line_with_max_length = max(list_of_cuttings, key=lambda i: i[0])[1]
+                            # find the coordinates of this line
+                            cut_line_with_max_length_coords = list(cut_line_with_max_length.coords)
+                            # extract the first and last point of the line and build some buffered polygon circles
+                            # around them
+                            start_pt = Point(cut_line_with_max_length_coords[0])
+                            stop_pt = Point(cut_line_with_max_length_coords[1])
+                            start_cut_geo = start_pt.buffer(new_dia)
+                            stop_cut_geo = stop_pt.buffer(new_dia)
+
+                            # and we cut the above circle polygons from our line and get in this way a line around
+                            # which we can build the new slot by buffering with the new tool diameter
+                            new_line = cut_line_with_max_length.difference(start_cut_geo)
+                            new_line = new_line.difference(stop_cut_geo)
+
+                            # create the geometry for the resized slot by buffering with the new diameter value, new_dia
+                            new_poly = new_line.buffer(new_dia)
+
+                            self.geometry.append(DrawToolShape(new_poly))
+                        else:
+                            # unexpected geometry so we cancel
+                            self.draw_app.app.inform.emit(_("[ERROR_NOTCL] Cancelled."))
+                            return
+
+                        # remove the geometry with the old size
                         self.current_storage.remove(select_shape)
 
                         # a hack to make the tool_table display less drills per diameter when shape(drill) is deleted

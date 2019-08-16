@@ -20,6 +20,7 @@ CAD program, and create G-Code for Isolation routing.
 - each CNCJob object has now it's own text_collection for the annotations which allow for the individual enabling and disabling of the annotations
 - added new menu category in File -> Backup with two menu entries that duplicate the functions of the export/import preferences buttons from the bottom of the Preferences window
 - in Excellon Editor fixed the display of the number of slots in the Tool Table after the resize done with the Resize tool
+- in Excellon editor -> Resize tool, made sure that when the slot is resized, it's length remain the same, because the tool should influence only the 'thickness' of the slot. Since I don't know anything but the geometry and tool diameter, this is only an approximation and computationally intensive
 
 15.08.2019
 
