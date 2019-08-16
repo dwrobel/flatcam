@@ -194,8 +194,23 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.menufile.addSeparator()
 
         # Save Defaults
-        self.menufilesavedefaults = QtWidgets.QAction(QtGui.QIcon('share/defaults.png'), _('Save &Defaults'), self)
+        self.menufilesavedefaults = QtWidgets.QAction(QtGui.QIcon('share/defaults.png'), _('Save Preferences'), self)
         self.menufile.addAction(self.menufilesavedefaults)
+
+        # Separator
+        self.menufile.addSeparator()
+
+        self.menufile_backup = self.menufile.addMenu(QtGui.QIcon('share/backup24.png'), _('Backup'))
+
+        # Import Preferences
+        self.menufileimportpref = QtWidgets.QAction(QtGui.QIcon('share/backup_import24.png'),
+                                                    _('Import Preferences from file ...'), self)
+        self.menufile_backup.addAction(self.menufileimportpref)
+
+        # Export Preferences
+        self.menufileexportpref = QtWidgets.QAction(QtGui.QIcon('share/backup_export24.png'),
+                                                    _('Export Preferences to file ...'), self)
+        self.menufile_backup.addAction(self.menufileexportpref)
 
         # Separator
         self.menufile.addSeparator()

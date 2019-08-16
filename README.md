@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - remade the enable/disable plots functions to work only where it needs to (no sense in disabling a plot already disabled)
 - made sure that if multi depth is choosed when creating GCode then if the multidepth is more than the depth of cut only one cut is made (to the depth of cut)
 - each CNCJob object has now it's own text_collection for the annotations which allow the individual enabling and disabling of the annotations
+- added new menu category in File -> Backup with two menu entries that duplicate the functions of the export/import preferences buttons from the bottom of the Preferences window
 
 15.08.2019
 

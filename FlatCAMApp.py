@@ -1463,6 +1463,10 @@ class App(QtCore.QObject):
         self.ui.menufilesaveprojectas.triggered.connect(self.on_file_saveprojectas)
         self.ui.menufilesaveprojectcopy.triggered.connect(lambda: self.on_file_saveprojectas(make_copy=True))
         self.ui.menufilesavedefaults.triggered.connect(self.on_file_savedefaults)
+
+        self.ui.menufileexportpref.triggered.connect(self.on_export_preferences)
+        self.ui.menufileimportpref.triggered.connect(self.on_import_preferences)
+
         self.ui.menufile_exit.triggered.connect(self.final_save)
 
         self.ui.menueditedit.triggered.connect(lambda: self.object2editor())
