@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 17.08.2019
 
 - added estimated time of routing for the CNCJob and added travelled distance parameter for geometry, too
+- fixed error when creating CNCJob due of having the annotations disabled from preferences but the plot2() function from camlib.CNCJob class still performed operations who yielded TypeError exceptions
 
 17.08.2019
 
