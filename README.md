@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 18.08.2019
 
 - made the exported preferences formatted therefore more easily read
+- projects at startup don't work in another thread so there is no multithreading if I want to double click an project and to load it
 
 17.08.2019
 

@@ -183,6 +183,9 @@ class App(QtCore.QObject):
     # in the worker task.
     thread_exception = QtCore.pyqtSignal(object)
 
+    # used to signal that there are arguments for the app
+    args_at_startup = QtCore.pyqtSignal()
+
     def __init__(self, user_defaults=True, post_gui=None):
         """
         Starts the application.
@@ -1682,6 +1685,9 @@ class App(QtCore.QObject):
         self.ui.excellon_options_form.excellon_opt_group.excellon_defaults_button.clicked.connect(
             self.on_excellon_options_button)
 
+        # when there are arguments at application startup this get launched
+        self.args_at_startup.connect(self.on_startup_args)
+
         # this is a flag to signal to other tools that the ui tooltab is locked and not accessible
         self.tool_tab_locked = False
 
@@ -2113,50 +2119,11 @@ class App(QtCore.QObject):
 
         App.log.debug("END of constructor. Releasing control.")
 
-        # accept a project file as command line parameter
+        # accept some type file as command line parameter: FlatCAM project, FlatCAM preferences or scripts
         # the path/file_name must be enclosed in quotes if it contain spaces
-        for argument in App.args:
-            if '.FlatPrj' in argument:
-                try:
-                    project_name = str(argument)
+        if App.args:
+            self.args_at_startup.emit()
 
-                    if project_name == "":
-                        self.inform.emit(_("Open cancelled."))
-                    else:
-                        # self.open_project(project_name)
-                        run_from_arg = True
-                        self.worker_task.emit({'fcn': self.open_project,
-                                               'params': [project_name, run_from_arg]})
-                except Exception as e:
-                    log.debug("Could not open FlatCAM project file as App parameter due: %s" % str(e))
-
-            if '.FlatConfig' in argument:
-                try:
-                    file_name = str(argument)
-
-                    if file_name == "":
-                        self.inform.emit(_("Open Config file failed."))
-                    else:
-                        # run_from_arg = True
-                        # self.worker_task.emit({'fcn': self.open_config_file,
-                        #                        'params': [file_name, run_from_arg]})
-                        self.open_config_file(file_name, run_from_arg=True)
-                except Exception as e:
-                    log.debug("Could not open FlatCAM Config file as App parameter due: %s" % str(e))
-
-            if '.FlatScript' in argument:
-                try:
-                    file_name = str(argument)
-
-                    if file_name == "":
-                        self.inform.emit(_("Open Script file failed."))
-                    else:
-                        # run_from_arg = True
-                        # self.worker_task.emit({'fcn': self.open_script_file,
-                        #                        'params': [file_name, run_from_arg]})
-                        self.on_filerunscript(name=file_name)
-                except Exception as e:
-                    log.debug("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
 
     @staticmethod
     def copy_and_overwrite(from_path, to_path):
@@ -2174,6 +2141,52 @@ class App(QtCore.QObject):
         except FileNotFoundError:
             from_new_path = os.path.dirname(os.path.realpath(__file__)) + '\\flatcamGUI\\VisPyData\\data'
             shutil.copytree(from_new_path, to_path)
+
+    def on_startup_args(self):
+        log.debug("Application was started with an argument. Processing ...")
+        for argument in App.args:
+            if '.FlatPrj' in argument:
+                try:
+                    project_name = str(argument)
+
+                    if project_name == "":
+                        self.inform.emit(_("Open cancelled."))
+                    else:
+                        # self.open_project(project_name)
+                        run_from_arg = True
+                        # self.worker_task.emit({'fcn': self.open_project,
+                        #                        'params': [project_name, run_from_arg]})
+                        self.open_project(filename=project_name, run_from_arg=run_from_arg)
+                except Exception as e:
+                    log.debug("Could not open FlatCAM project file as App parameter due: %s" % str(e))
+
+            elif '.FlatConfig' in argument:
+                try:
+                    file_name = str(argument)
+
+                    if file_name == "":
+                        self.inform.emit(_("Open Config file failed."))
+                    else:
+                        # run_from_arg = True
+                        # self.worker_task.emit({'fcn': self.open_config_file,
+                        #                        'params': [file_name, run_from_arg]})
+                        self.open_config_file(file_name, run_from_arg=True)
+                except Exception as e:
+                    log.debug("Could not open FlatCAM Config file as App parameter due: %s" % str(e))
+
+            elif '.FlatScript' in argument:
+                try:
+                    file_name = str(argument)
+
+                    if file_name == "":
+                        self.inform.emit(_("Open Script file failed."))
+                    else:
+                        # run_from_arg = True
+                        # self.worker_task.emit({'fcn': self.open_script_file,
+                        #                        'params': [file_name, run_from_arg]})
+                        self.on_filerunscript(name=file_name)
+                except Exception as e:
+                    log.debug("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
 
     def set_ui_title(self, name):
         self.ui.setWindowTitle('FlatCAM %s %s - %s    %s' %
@@ -8293,7 +8306,7 @@ class App(QtCore.QObject):
         self.set_screen_units(self.options["units"])
 
         # Re create objects
-        App.log.debug("Started Project loading...")
+        App.log.debug(" **************** Started PROEJCT loading... **************** ")
 
         for obj in d['objs']:
             def obj_init(obj_inst, app_inst):
@@ -8302,14 +8315,14 @@ class App(QtCore.QObject):
                           (obj['kind'].capitalize(), obj['options']['name']))
             self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=True)
 
-        self.plot_all()
+        # self.plot_all()
         self.inform.emit(_("[success] Project loaded from: %s") % filename)
 
         self.should_we_save = False
         self.file_opened.emit("project", filename)
         self.set_ui_title(name=self.project_filename)
 
-        App.log.debug("Finished Project loading...")
+        App.log.debug(" **************** Finished PROJECT loading... **************** ")
 
     def propagate_defaults(self, silent=False):
         """
