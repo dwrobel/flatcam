@@ -3979,10 +3979,10 @@ class Excellon(Geometry):
                         ':' + str(self.excellon_format_lower_in))
                     continue
 
-                #### Body ## ##
+                # ### Body ####
                 if not in_header:
 
-                    # ## Tool change # ##
+                    # ## Tool change ###
                     match = self.toolsel_re.search(eline)
                     if match:
                         current_tool = str(int(match.group(1)))
@@ -4022,7 +4022,7 @@ class Excellon(Geometry):
 
                         continue
 
-                    # ## Allegro Type Tool change # ##
+                    # ## Allegro Type Tool change ###
                     if allegro_warning is True:
                         match = self.absinc_re.search(eline)
                         match1 = self.stop_re.search(eline)
@@ -4114,7 +4114,7 @@ class Excellon(Geometry):
                             )
                             continue
 
-                        # Slot coordinates with period: Use literally. # ##
+                        # Slot coordinates with period: Use literally. ###
                         # get the coordinates for slot start and for slot stop into variables
                         start_coords_period = self.coordsperiod_re.search(start_coords_match)
                         stop_coords_period = self.coordsperiod_re.search(stop_coords_match)
@@ -4274,7 +4274,6 @@ class Excellon(Geometry):
                     if match:
                         # signal that there are drill operations
                         self.defaults['excellon_drills'] = True
-
                         try:
                             x = float(match.group(1))
                             repeating_x = current_x
@@ -4346,7 +4345,7 @@ class Excellon(Geometry):
                             # log.debug("{:15} {:8} {:8}".format(eline, x, y))
                             continue
 
-                #### Header ## ##
+                # ### Header ####
                 if in_header:
 
                     # ## Tool definitions # ##
@@ -4484,7 +4483,7 @@ class Excellon(Geometry):
         match = self.leadingzeros_re.search(number_str)
         nr_length = len(match.group(1)) + len(match.group(2))
         try:
-            if self.zeros == "L" or self.zeros == "LZ":
+            if self.zeros == "L" or self.zeros == "LZ": # Leading
                 # With leading zeros, when you type in a coordinate,
                 # the leading zeros must always be included.  Trailing zeros
                 # are unneeded and may be left off. The CNC-7 will automatically add them.
@@ -4498,7 +4497,7 @@ class Excellon(Geometry):
                 else:
                     result = float(number_str) / (10 ** (float(nr_length) - float(self.excellon_format_upper_mm)))
                 return result
-            else:  # Trailing
+            elif self.zeros == "T" or self.zeros == "TZ":  # Trailing
                 # You must show all zeros to the right of the number and can omit
                 # all zeros to the left of the number. The CNC-7 will count the number
                 # of digits you typed and automatically fill in the missing zeros.
@@ -4510,6 +4509,9 @@ class Excellon(Geometry):
                 else:   # Metric is 000.000
                     result = float(number_str) / (10 ** (float(self.excellon_format_lower_mm)))
                 return result
+            else: # None - the numbers are in decimal format
+                return float(number_str)
+
         except Exception as e:
             log.error("Aborted. Operation could not be completed due of %s" % str(e))
             return
@@ -5659,6 +5661,10 @@ class CNCjob(Geometry):
             self.app.inform.emit(_("[WARNING] The Cut Z parameter is zero. "
                                  "There will be no cut, skipping %s file") % self.options['name'])
             return 'fail'
+
+        # made sure that depth_per_cut is no more then the z_cut
+        if self.z_cut < self.z_depthpercut:
+            self.z_depthpercut = self.z_cut
 
         if self.z_move is None:
             self.app.inform.emit(_("[ERROR_NOTCL] Travel Z parameter is None or zero."))

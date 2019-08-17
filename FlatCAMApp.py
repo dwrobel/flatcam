@@ -14,6 +14,7 @@ import random
 import simplejson as json
 import lzma
 import threading
+import shutil
 
 from stat import S_IREAD, S_IRGRP, S_IROTH
 import subprocess
@@ -98,7 +99,7 @@ class App(QtCore.QObject):
     # Version and VERSION DATE ###########
     # ####################################
     version = 8.94
-    version_date = "2019/08/31"
+    version_date = "2019/08/17"
     beta = True
 
     # current date now
@@ -194,9 +195,11 @@ class App(QtCore.QObject):
 
         self.main_thread = QtWidgets.QApplication.instance().thread()
 
-        # ################ ##
-        # # ## OS-specific # ##
-        # ################ ##
+        # #######################
+        # # ## OS-specific ######
+        # #######################
+
+        portable = False
 
         # Folder for user settings.
         if sys.platform == 'win32':
@@ -206,7 +209,28 @@ class App(QtCore.QObject):
             else:
                 App.log.debug("Win64!")
 
-            self.data_path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0) + '\FlatCAM'
+            config_file = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '\\config\\configuration.txt'
+            try:
+                with open(config_file, 'r') as f:
+                    try:
+                        for line in f:
+                            param = str(line).rpartition('=')
+                            if param[0] == 'portable':
+                                try:
+                                    portable = eval(param[2])
+                                except NameError:
+                                    portable = False
+                    except Exception as e:
+                        log.debug('App.__init__() -->%s' % str(e))
+                        return
+            except FileNotFoundError:
+                pass
+
+            if portable is False:
+                self.data_path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0) + '\\FlatCAM'
+            else:
+                self.data_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '\\config'
+
             self.os = 'windows'
         else:  # Linux/Unix/MacOS
             self.data_path = os.path.expanduser('~') + '/.FlatCAM'
@@ -336,6 +360,7 @@ class App(QtCore.QObject):
             "global_tolerance": self.ui.general_defaults_form.general_app_group.tol_entry,
 
             "global_open_style": self.ui.general_defaults_form.general_app_group.open_style_cb,
+            "global_delete_confirmation": self.ui.general_defaults_form.general_app_group.delete_conf_cb,
 
             "global_compression_level": self.ui.general_defaults_form.general_app_group.compress_combo,
             "global_save_compressed": self.ui.general_defaults_form.general_app_group.save_type_cb,
@@ -444,6 +469,7 @@ class App(QtCore.QObject):
             "excellon_exp_integer": self.ui.excellon_defaults_form.excellon_exp_group.format_whole_entry,
             "excellon_exp_decimals": self.ui.excellon_defaults_form.excellon_exp_group.format_dec_entry,
             "excellon_exp_zeros": self.ui.excellon_defaults_form.excellon_exp_group.zeros_radio,
+            "excellon_exp_slot_type": self.ui.excellon_defaults_form.excellon_exp_group.slot_type_radio,
 
             # Excellon Editor
             "excellon_editor_sel_limit": self.ui.excellon_defaults_form.excellon_editor_group.sel_limit_entry,
@@ -455,6 +481,25 @@ class App(QtCore.QObject):
             "excellon_editor_circ_dir": self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_dir_radio,
             "excellon_editor_circ_angle":
                 self.ui.excellon_defaults_form.excellon_editor_group.drill_circular_angle_entry,
+            # Excellon Slots
+            "excellon_editor_slot_direction":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_axis_radio,
+            "excellon_editor_slot_angle":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_angle_spinner,
+            "excellon_editor_slot_length":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_length_entry,
+            # Excellon Slots
+            "excellon_editor_slot_array_size":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_size_entry,
+            "excellon_editor_slot_lin_dir": self.ui.excellon_defaults_form.excellon_editor_group.slot_array_axis_radio,
+            "excellon_editor_slot_lin_pitch":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_pitch_entry,
+            "excellon_editor_slot_lin_angle":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_angle_entry,
+            "excellon_editor_slot_circ_dir":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_dir_radio,
+            "excellon_editor_slot_circ_angle":
+                self.ui.excellon_defaults_form.excellon_editor_group.slot_array_circular_angle_entry,
 
             # Geometry General
             "geometry_plot": self.ui.geometry_defaults_form.geometry_gen_group.plot_cb,
@@ -649,6 +694,7 @@ class App(QtCore.QObject):
             "global_worker_number": 2,
             "global_tolerance": 0.01,
             "global_open_style": True,
+            "global_delete_confirmation": True,
             "global_compression_level": 3,
             "global_save_compressed": True,
 
@@ -717,16 +763,16 @@ class App(QtCore.QObject):
             "gerber_plot": True,
             "gerber_solid": True,
             "gerber_multicolored": False,
-            "gerber_isotooldia": 0.016,
+            "gerber_isotooldia": 0.00787402,
             "gerber_isopasses": 1,
-            "gerber_isooverlap": 0.15,
+            "gerber_isooverlap": 0.00393701,
 
             # Gerber Options
             "gerber_combine_passes": False,
             "gerber_milling_type": "cl",
-            "gerber_noncoppermargin": 0.1,
+            "gerber_noncoppermargin": 0.00393701,
             "gerber_noncopperrounded": False,
-            "gerber_bboxmargin": 0.1,
+            "gerber_bboxmargin": 0.00393701,
             "gerber_bboxrounded": False,
             "gerber_circle_steps": 128,
             "gerber_use_buffer_for_union": True,
@@ -759,9 +805,9 @@ class App(QtCore.QObject):
             "excellon_search_time": 3,
 
             # Excellon Options
-            "excellon_drillz": -0.1,
-            "excellon_travelz": 0.1,
-            "excellon_feedrate": 3.0,
+            "excellon_drillz": -0.0590551,
+            "excellon_travelz": 0.0787402,
+            "excellon_feedrate": 3.14961,
             "excellon_spindlespeed": None,
             "excellon_spindledir": 'CW',
             "excellon_dwell": False,
@@ -769,8 +815,8 @@ class App(QtCore.QObject):
             "excellon_toolchange": False,
             "excellon_toolchangez": 0.5,
             "excellon_ppname_e": 'default',
-            "excellon_tooldia": 0.016,
-            "excellon_slot_tooldia": 0.016,
+            "excellon_tooldia": 0.0314961,
+            "excellon_slot_tooldia": 0.0708661,
             "excellon_gcode_type": "drills",
 
             # Excellon Advanced Options
@@ -778,9 +824,9 @@ class App(QtCore.QObject):
             "excellon_toolchangexy": "0.0, 0.0",
             "excellon_startz": None,
             "excellon_endz": 0.5,
-            "excellon_feedrate_rapid": 3.0,
+            "excellon_feedrate_rapid": 3.14961,
             "excellon_z_pdepth": -0.02,
-            "excellon_feedrate_probe": 3.0,
+            "excellon_feedrate_probe": 3.14961,
             "excellon_f_plunge": False,
             "excellon_f_retract": False,
 
@@ -790,6 +836,7 @@ class App(QtCore.QObject):
             "excellon_exp_integer": 2,
             "excellon_exp_decimals": 4,
             "excellon_exp_zeros": 'LZ',
+            "excellon_exp_slot_type": 'routing',
 
             # Excellon Editor
             "excellon_editor_sel_limit": 30,
@@ -800,23 +847,34 @@ class App(QtCore.QObject):
             "excellon_editor_lin_angle": 0.0,
             "excellon_editor_circ_dir": 'CW',
             "excellon_editor_circ_angle": 12,
+            # Excellon Slots
+            "excellon_editor_slot_direction": 'X',
+            "excellon_editor_slot_angle": 0.0,
+            "excellon_editor_slot_length": 5.0,
+            # Excellon Slot Array
+            "excellon_editor_slot_array_size": 5,
+            "excellon_editor_slot_lin_dir":  'X',
+            "excellon_editor_slot_lin_pitch": 0.1,
+            "excellon_editor_slot_lin_angle": 0.0,
+            "excellon_editor_slot_circ_dir": 'CW',
+            "excellon_editor_slot_circ_angle": 0.0,
 
             # Geometry General
             "geometry_plot": True,
             "geometry_circle_steps": 128,
-            "geometry_cnctooldia": "0.016",
+            "geometry_cnctooldia": "0.0944882",
 
             # Geometry Options
-            "geometry_cutz": -0.002,
+            "geometry_cutz": -0.0944882,
             "geometry_vtipdia": 0.1,
             "geometry_vtipangle": 30,
             "geometry_multidepth": False,
-            "geometry_depthperpass": 0.002,
-            "geometry_travelz": 0.1,
+            "geometry_depthperpass": 0.0314961,
+            "geometry_travelz": 0.0787402,
             "geometry_toolchange": False,
             "geometry_toolchangez": 0.5,
-            "geometry_feedrate": 3.0,
-            "geometry_feedrate_z": 3.0,
+            "geometry_feedrate": 3.14961,
+            "geometry_feedrate_z": 3.14961,
             "geometry_spindlespeed": None,
             "geometry_spindledir": 'CW',
             "geometry_dwell": False,
@@ -827,11 +885,11 @@ class App(QtCore.QObject):
             "geometry_toolchangexy": "0.0, 0.0",
             "geometry_startz": None,
             "geometry_endz": 0.5,
-            "geometry_feedrate_rapid": 3.0,
+            "geometry_feedrate_rapid": 3.14961,
             "geometry_extracut": False,
             "geometry_z_pdepth": -0.02,
             "geometry_f_plunge": False,
-            "geometry_feedrate_probe": 3.0,
+            "geometry_feedrate_probe": 3.14961,
             "geometry_segx": 0.0,
             "geometry_segy": 0.0,
 
@@ -859,7 +917,7 @@ class App(QtCore.QObject):
 
             "tools_ncctools": "0.0393701, 0.019685",
             "tools_nccoverlap": 0.015748,
-            "tools_nccmargin": 0.00393701,
+            "tools_nccmargin": 0.0393701,
             "tools_nccmethod": "seed",
             "tools_nccconnect": True,
             "tools_ncccontour": True,
@@ -868,15 +926,15 @@ class App(QtCore.QObject):
             "tools_ncc_offset_value": 0.0000,
             "tools_nccref": 'itself',
 
-            "tools_cutouttooldia": 0.00393701,
+            "tools_cutouttooldia": 0.0944882,
             "tools_cutoutkind": "single",
             "tools_cutoutmargin": 0.00393701,
-            "tools_cutoutgapsize": 0.005905512,
-            "tools_gaps_ff": "8",
+            "tools_cutoutgapsize": 0.15748,
+            "tools_gaps_ff": "4",
             "tools_cutout_convexshape": False,
 
-            "tools_painttooldia": 0.07,
-            "tools_paintoverlap": 0.15,
+            "tools_painttooldia": 0.023622,
+            "tools_paintoverlap": 0.015748,
             "tools_paintmargin": 0.0,
             "tools_paintmethod": "seed",
             "tools_selectmethod": "single",
@@ -1405,6 +1463,10 @@ class App(QtCore.QObject):
         self.ui.menufilesaveprojectas.triggered.connect(self.on_file_saveprojectas)
         self.ui.menufilesaveprojectcopy.triggered.connect(lambda: self.on_file_saveprojectas(make_copy=True))
         self.ui.menufilesavedefaults.triggered.connect(self.on_file_savedefaults)
+
+        self.ui.menufileexportpref.triggered.connect(self.on_export_preferences)
+        self.ui.menufileimportpref.triggered.connect(self.on_import_preferences)
+
         self.ui.menufile_exit.triggered.connect(self.final_save)
 
         self.ui.menueditedit.triggered.connect(lambda: self.object2editor())
@@ -2092,6 +2154,23 @@ class App(QtCore.QObject):
                 except Exception as e:
                     log.debug("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
 
+    @staticmethod
+    def copy_and_overwrite(from_path, to_path):
+        """
+        From here:
+        https://stackoverflow.com/questions/12683834/how-to-copy-directory-recursively-in-python-and-overwrite-all
+        :param from_path: source path
+        :param to_path: destination path
+        :return: None
+        """
+        if os.path.exists(to_path):
+            shutil.rmtree(to_path)
+        try:
+            shutil.copytree(from_path, to_path)
+        except FileNotFoundError:
+            from_new_path = os.path.dirname(os.path.realpath(__file__)) + '\\flatcamGUI\\VisPyData\\data'
+            shutil.copytree(from_new_path, to_path)
+
     def set_ui_title(self, name):
         self.ui.setWindowTitle('FlatCAM %s %s - %s    %s' %
                                (self.version,
@@ -2296,6 +2375,12 @@ class App(QtCore.QObject):
             # store the Geometry Editor Toolbar visibility before entering in the Editor
             self.geo_editor.toolbar_old_state = True if self.ui.geo_edit_toolbar.isVisible() else False
 
+            # we set the notebook to hidden
+            self.ui.splitter.setSizes([0, 1])
+
+            # set call source to the Editor we go into
+            self.call_source = 'geo_editor'
+
             if edited_object.multigeo is True:
                 edited_tools = [int(x.text()) for x in edited_object.ui.geo_tools_table.selectedItems()]
                 if len(edited_tools) > 1:
@@ -2317,16 +2402,9 @@ class App(QtCore.QObject):
             else:
                 self.geo_editor.edit_fcgeometry(edited_object)
 
-            # we set the notebook to hidden
-            self.ui.splitter.setSizes([0, 1])
-
-            # set call source to the Editor we go into
-            self.call_source = 'geo_editor'
-
         elif isinstance(edited_object, FlatCAMExcellon):
             # store the Excellon Editor Toolbar visibility before entering in the Editor
             self.exc_editor.toolbar_old_state = True if self.ui.exc_edit_toolbar.isVisible() else False
-            self.exc_editor.edit_fcexcellon(edited_object)
 
             # set call source to the Editor we go into
             self.call_source = 'exc_editor'
@@ -2334,10 +2412,11 @@ class App(QtCore.QObject):
             if self.ui.splitter.sizes()[0] == 0:
                 self.ui.splitter.setSizes([1, 1])
 
+            self.exc_editor.edit_fcexcellon(edited_object)
+
         elif isinstance(edited_object, FlatCAMGerber):
             # store the Gerber Editor Toolbar visibility before entering in the Editor
             self.grb_editor.toolbar_old_state = True if self.ui.grb_edit_toolbar.isVisible() else False
-            self.grb_editor.edit_fcgerber(edited_object)
 
             # set call source to the Editor we go into
             self.call_source = 'grb_editor'
@@ -2345,7 +2424,9 @@ class App(QtCore.QObject):
             if self.ui.splitter.sizes()[0] == 0:
                 self.ui.splitter.setSizes([1, 1])
 
-        # # make sure that we can't select another object while in Editor Mode:
+            self.grb_editor.edit_fcgerber(edited_object)
+
+        # make sure that we can't select another object while in Editor Mode:
         # self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)
         self.ui.project_frame.setDisabled(True)
 
@@ -4894,33 +4975,52 @@ class App(QtCore.QObject):
         """
         self.report_usage("on_delete()")
 
+        response = None
+        bt_ok = None
+
         # Make sure that the deletion will happen only after the Editor is no longer active otherwise we might delete
         # a geometry object before we update it.
-        if self.geo_editor.editor_active is False and self.exc_editor.editor_active is False:
-            if self.collection.get_active():
-                self.log.debug("App.on_delete()")
+        if self.geo_editor.editor_active is False and self.exc_editor.editor_active is False \
+                and self.grb_editor.editor_active is False:
+            if self.defaults["global_delete_confirmation"] is True:
+                msgbox = QtWidgets.QMessageBox()
+                msgbox.setWindowTitle(_("Delete objects"))
+                msgbox.setWindowIcon(QtGui.QIcon('share/deleteshape32.png'))
+                # msgbox.setText(_("<B>Delete FlatCAM objects ...</B>"))
+                msgbox.setText(_("Are you sure you want to permanently delete\n"
+                                 "the selected objects?"))
+                bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
+                bt_cancel = msgbox.addButton(_('Cancel'), QtWidgets.QMessageBox.RejectRole)
 
-                while self.collection.get_active():
-                    obj_active = self.collection.get_active()
-                    # if the deleted object is FlatCAMGerber then make sure to delete the possible mark shapes
-                    if isinstance(obj_active, FlatCAMGerber):
-                        for el in obj_active.mark_shapes:
-                            obj_active.mark_shapes[el].clear(update=True)
-                            obj_active.mark_shapes[el].enabled = False
-                            obj_active.mark_shapes[el] = None
-                    elif isinstance(obj_active, FlatCAMCNCjob):
-                        try:
-                            obj_active.annotation.clear(update=True)
-                            obj_active.annotation.enabled = False
-                        except AttributeError:
-                            pass
-                    self.delete_first_selected()
+                msgbox.setDefaultButton(bt_ok)
+                msgbox.exec_()
+                response = msgbox.clickedButton()
 
-                self.inform.emit(_("Object(s) deleted ..."))
-                # make sure that the selection shape is deleted, too
-                self.delete_selection_shape()
-            else:
-                self.inform.emit(_("Failed. No object(s) selected..."))
+            if response == bt_ok or self.defaults["global_delete_confirmation"] is False:
+                if self.collection.get_active():
+                    self.log.debug("App.on_delete()")
+
+                    while self.collection.get_active():
+                        obj_active = self.collection.get_active()
+                        # if the deleted object is FlatCAMGerber then make sure to delete the possible mark shapes
+                        if isinstance(obj_active, FlatCAMGerber):
+                            for el in obj_active.mark_shapes:
+                                obj_active.mark_shapes[el].clear(update=True)
+                                obj_active.mark_shapes[el].enabled = False
+                                obj_active.mark_shapes[el] = None
+                        elif isinstance(obj_active, FlatCAMCNCjob):
+                            try:
+                                obj_active.annotation.clear(update=True)
+                                obj_active.annotation.enabled = False
+                            except AttributeError:
+                                pass
+                        self.delete_first_selected()
+
+                    self.inform.emit(_("Object(s) deleted ..."))
+                    # make sure that the selection shape is deleted, too
+                    self.delete_selection_shape()
+                else:
+                    self.inform.emit(_("Failed. No object(s) selected..."))
         else:
             self.inform.emit(_("Save the work in Editor and try again ..."))
 
@@ -4933,15 +5033,11 @@ class App(QtCore.QObject):
             self.log.debug("Nothing selected for deletion")
             return
 
-        # Remove plot
-        # self.plotcanvas.figure.delaxes(self.collection.get_active().axes)
-        # self.plotcanvas.auto_adjust_axes()
+        # Remove from dictionary
+        self.collection.delete_active()
 
         # Clear form
         self.setup_component_editor()
-
-        # Remove from dictionary
-        self.collection.delete_active()
 
         self.inform.emit("Object deleted: %s" % name)
 
@@ -5572,6 +5668,7 @@ class App(QtCore.QObject):
         self.plotcanvas.vispy_canvas.update()           # TODO: Need update canvas?
         self.on_zoom_fit(None)
         self.collection.update_view()
+        # self.inform.emit(_("Plots updated ..."))
 
     # TODO: Rework toolbar 'clear', 'replot' functions
     def on_toolbar_replot(self):
@@ -7491,6 +7588,7 @@ class App(QtCore.QObject):
         efract = self.defaults["excellon_exp_decimals"]
         ezeros = self.defaults["excellon_exp_zeros"]
         eformat = self.defaults["excellon_exp_format"]
+        slot_type = self.defaults["excellon_exp_slot_type"]
 
         fc_units = self.ui.general_defaults_form.general_app_group.units_radio.get_value().upper()
         if fc_units == 'MM':
@@ -7510,7 +7608,7 @@ class App(QtCore.QObject):
                 header += ';Created on : %s' % time_str + '\n'
 
                 if eformat == 'dec':
-                    has_slots, excellon_code = obj.export_excellon(ewhole, efract, factor=factor)
+                    has_slots, excellon_code = obj.export_excellon(ewhole, efract, factor=factor, slot_type=slot_type)
                     header += eunits + '\n'
 
                     for tool in obj.tools:
@@ -7525,7 +7623,8 @@ class App(QtCore.QObject):
                 else:
                     if ezeros == 'LZ':
                         has_slots, excellon_code = obj.export_excellon(ewhole, efract,
-                                                                       form='ndec', e_zeros='LZ', factor=factor)
+                                                                       form='ndec', e_zeros='LZ', factor=factor,
+                                                                       slot_type=slot_type)
                         header += '%s,%s\n' % (eunits, 'LZ')
                         header += format_exc
 
@@ -7540,7 +7639,8 @@ class App(QtCore.QObject):
                                                                               dec=4)
                     else:
                         has_slots, excellon_code = obj.export_excellon(ewhole, efract,
-                                                                       form='ndec', e_zeros='TZ', factor=factor)
+                                                                       form='ndec', e_zeros='TZ', factor=factor,
+                                                                       slot_type=slot_type)
                         header += '%s,%s\n' % (eunits, 'TZ')
                         header += format_exc
 
@@ -8806,7 +8906,8 @@ The normal flow when working in FlatCAM is the following:</span></p>
         log.debug("Enabling plots ...")
         self.inform.emit(_("Working ..."))
         for obj in objects:
-            obj.options['plot'] = True
+            if obj.options['plot'] is False:
+                obj.options['plot'] = True
         self.plots_updated.emit()
 
     def disable_plots(self, objects):
@@ -8820,20 +8921,11 @@ The normal flow when working in FlatCAM is the following:</span></p>
         if not self.collection.get_selected():
             return
 
-        # if at least one object is visible then do the disable
-        exit_flag = True
-        for obj in objects:
-            if obj.options['plot'] is True:
-                exit_flag = False
-                break
-
-        if exit_flag:
-            return
-
         log.debug("Disabling plots ...")
         self.inform.emit(_("Working ..."))
         for obj in objects:
-            obj.options['plot'] = False
+            if obj.options['plot'] is True:
+                obj.options['plot'] = False
         self.plots_updated.emit()
 
     def toggle_plots(self, objects):

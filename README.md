@@ -9,10 +9,53 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+17.08.2019
+
+- updated the translations for the new strings
+- RELEASE 8.94
+
+16.08.2019
+
+- working in Excellon Editor to Tool Resize to consider the slots, too
+- fixed a weird error that created a crash in the following scenario: create a new excellon, edit it, add some drills/slots, delete it without saving, create a new excellon, try to edit and a crash is issued due of a wrapped C++ error
+- fixed bug selection in Excellon editor that caused not to select the corresponding row (tool dia) in the tool table when a selection rectangle selected an even number of geometric elements
+- updated the default values to more convenient ones
+- remade the enable/disable plots functions to work only where it needs to (no sense in disabling a plot already disabled)
+- made sure that if multi depth is choosed when creating GCode then if the multidepth is more than the depth of cut only one cut is made (to the depth of cut)
+- each CNCJob object has now it's own text_collection for the annotations which allow for the individual enabling and disabling of the annotations
+- added new menu category in File -> Backup with two menu entries that duplicate the functions of the export/import preferences buttons from the bottom of the Preferences window
+- in Excellon Editor fixed the display of the number of slots in the Tool Table after the resize done with the Resize tool
+- in Excellon Editor -> Resize tool, made sure that when the slot is resized, it's length remain the same, because the tool should influence only the 'thickness' of the slot. Since I don't know anything but the geometry and tool diameters (old and new), this is only an approximation and computationally intensive
+- in Excellon Editor -> remade the Tool edit made by editing the diameter values in the Tools Table to work for slots too
+- In Excellon Editor -> fixed bug that caused incorrect display of the relative coordinates in the status bar
+
+15.08.2019
+
+- added Edit -> Preferences GUI and storage for the Excellon Editor Add Slots
+- added a confirmation message for objects delete and a setting to activate it in Edit -> Preferences -> Global
+- merged pull request from Mike Smith which fix an application crash when attempting to open a not-a-FlatCAM-project file as project
+- merged pull request from Mike Smith that add support for a new SVG element: <use>
+- stored inside FlatCAM app the VisPy data files and at the first start the application will try to copy those files to the APPDATA (roaming) folder in case of running under Windows OS
+- created a configuration file in the root/config/configuration.txt with a configuration line for portability. Set portable to True to run the app as portable
+- working on the Slots Array in Excellon Editor - building the GUI
+- added a failsafe path to the source folder from which to copy the VisPy data
+- fixed the GUI for Slot Arrays in Excellon Editor
+- finished the Slot Array tool in Excellon Editor
+- added the key shortcut handlers for Add Slot and Add Slot Array tools in Excellon Editor
+- started to work on the Resize tool for the case of Excellon slots in Excellon Editor
+- final fix for the VisPy data files; the defaults files are saved to the Config folder when the app is set to be portable
+- added the Slot Type parameter for exporting Excellon in Edit -> Preferences -> Excellon -> Export Excellon. Now the Excellon object can be exported also with drilled slot command G85
+- fixed bug in Excellon export when there are no zero suppression (coordinates with decimals)
+
 14.08.2019
 
 - fixed the loading of Excellon with slots and the saving of edited Excellon object in regard of slots, in Excellon Editor
 - fixed the Delete tool, Select tool in Excellon Editor to work for Slots too
+- changes in the way the edited Excellon with added slots is saved
+- added more icons and cursor in Excellon Editor for Slots related functions
+- in Excellon Editor fixed the selection issue which in a certain step created a failure in the Copy and Move tools.
+- in Excellon Editor fixed the selection with key modifier pressed
+- edited the mouse cursors and saved them without included thumbnail in a bid to remove some CRC warnings made by libpng
 
 13.08.2019
 

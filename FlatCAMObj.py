@@ -2237,7 +2237,7 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             item[0] = str(item[0])
         return table_tools_items
 
-    def export_excellon(self, whole, fract, e_zeros=None, form='dec', factor=1):
+    def export_excellon(self, whole, fract, e_zeros=None, form='dec', factor=1, slot_type='routing'):
         """
         Returns two values, first is a boolean , if 1 then the file has slots and second contain the Excellon code
         :return: has_slots and Excellon_code
@@ -2303,6 +2303,8 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
             if self.slots:
                 has_slots = 1
                 for tool in self.tools:
+                    excellon_code += 'G05\n'
+
                     if int(tool) < 10:
                         excellon_code += 'T0' + str(tool) + '\n'
                     else:
@@ -2314,13 +2316,17 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                             start_slot_y = slot['start'].y * factor
                             stop_slot_x = slot['stop'].x * factor
                             stop_slot_y = slot['stop'].y * factor
-
-                            excellon_code += "G00X{:.{dec}f}Y{:.{dec}f}\nM15\n".format(start_slot_x,
-                                                                                       start_slot_y,
-                                                                                       dec=fract)
-                            excellon_code += "G00X{:.{dec}f}Y{:.{dec}f}\nM16\n".format(stop_slot_x,
-                                                                                       stop_slot_y,
-                                                                                       dec=fract)
+                            if slot_type == 'routing':
+                                excellon_code += "G00X{:.{dec}f}Y{:.{dec}f}\nM15\n".format(start_slot_x,
+                                                                                           start_slot_y,
+                                                                                           dec=fract)
+                                excellon_code += "G01X{:.{dec}f}Y{:.{dec}f}\nM16\n".format(stop_slot_x,
+                                                                                           stop_slot_y,
+                                                                                           dec=fract)
+                            elif slot_type == 'drilling':
+                                excellon_code += "X{:.{dec}f}Y{:.{dec}f}G85X{:.{dec}f}Y{:.{dec}f}\nG05\n".format(
+                                    start_slot_x, start_slot_y, stop_slot_x, stop_slot_y, dec=fract
+                                )
 
                         elif e_zeros == 'LZ' and tool == slot['tool']:
                             start_slot_x = slot['start'].x * factor
@@ -2352,10 +2358,16 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                             stop_slot_x_formatted = stop_x_whole + stop_slot_x_formatted[2]
                             stop_slot_y_formatted = stop_y_whole + stop_slot_y_formatted[2]
 
-                            excellon_code += "G00X{xstart}Y{ystart}\nM15\n".format(xstart=start_slot_x_formatted,
-                                                                                   ystart=start_slot_y_formatted)
-                            excellon_code += "G00X{xstop}Y{ystop}\nM16\n".format(xstop=stop_slot_x_formatted,
-                                                                                 ystop=stop_slot_y_formatted)
+                            if slot_type == 'routing':
+                                excellon_code += "G00X{xstart}Y{ystart}\nM15\n".format(xstart=start_slot_x_formatted,
+                                                                                       ystart=start_slot_y_formatted)
+                                excellon_code += "G01X{xstop}Y{ystop}\nM16\n".format(xstop=stop_slot_x_formatted,
+                                                                                     ystop=stop_slot_y_formatted)
+                            elif slot_type == 'drilling':
+                                excellon_code += "{xstart}Y{ystart}G85X{xstop}Y{ystop}\nG05\n".format(
+                                    xstart=start_slot_x_formatted, ystart=start_slot_y_formatted,
+                                    xstop=stop_slot_x_formatted, ystop=stop_slot_y_formatted
+                                )
                         elif tool == slot['tool']:
                             start_slot_x = slot['start'].x * factor
                             start_slot_y = slot['start'].y * factor
@@ -2374,10 +2386,16 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
                             stop_slot_x_formatted.ljust(length, '0')
                             stop_slot_y_formatted.ljust(length, '0')
 
-                            excellon_code += "G00X{xstart}Y{ystart}\nM15\n".format(xstart=start_slot_x_formatted,
-                                                                                   ystart=start_slot_y_formatted)
-                            excellon_code += "G00X{xstop}Y{ystop}\nM16\n".format(xstop=stop_slot_x_formatted,
-                                                                                 ystop=stop_slot_y_formatted)
+                            if slot_type == 'routing':
+                                excellon_code += "G00X{xstart}Y{ystart}\nM15\n".format(xstart=start_slot_x_formatted,
+                                                                                       ystart=start_slot_y_formatted)
+                                excellon_code += "G01X{xstop}Y{ystop}\nM16\n".format(xstop=stop_slot_x_formatted,
+                                                                                     ystop=stop_slot_y_formatted)
+                            elif slot_type == 'drilling':
+                                excellon_code += "{xstart}Y{ystart}G85X{xstop}Y{ystop}\nG05\n".format(
+                                    xstart=start_slot_x_formatted, ystart=start_slot_y_formatted,
+                                    xstop=stop_slot_x_formatted, ystop=stop_slot_y_formatted
+                                )
         except Exception as e:
             log.debug(str(e))
 
@@ -5345,7 +5363,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # from predecessors.
         self.ser_attrs += ['options', 'kind', 'cnc_tools', 'multitool']
 
-        self.annotation = self.app.plotcanvas.new_text_group()
+        self.text_col = self.app.plotcanvas.new_text_collection()
+        self.text_col.enabled = True
+        self.annotation = self.app.plotcanvas.new_text_group(collection=self.text_col)
 
     def build_ui(self):
         self.ui_disconnect()
@@ -5967,15 +5987,16 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
             self.annotation.clear(update=True)
 
         if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
-            self.annotation.enabled = True
+            self.text_col.enabled = True
         else:
-            self.annotation.enabled = False
+            self.text_col.enabled = False
+        self.annotation.redraw()
 
     def on_annotation_change(self):
         if self.ui.annotation_cb.get_value():
-            self.app.plotcanvas.text_collection.enabled = True
+            self.text_col.enabled = True
         else:
-            self.app.plotcanvas.text_collection.enabled = False
+            self.text_col.enabled = False
         # kind = self.ui.cncplot_method_combo.get_value()
         # self.plot(kind=kind)
         self.annotation.redraw()
