@@ -98,8 +98,8 @@ class App(QtCore.QObject):
     # ####################################
     # Version and VERSION DATE ###########
     # ####################################
-    version = 8.95
-    version_date = "2019/08/17"
+    version = 8.96
+    version_date = "2019/08/31"
     beta = True
 
     # current date now
@@ -3006,7 +3006,7 @@ class App(QtCore.QObject):
             # Save update options
             try:
                 f = open(filename, "w")
-                json.dump(defaults_from_file, f)
+                json.dump(defaults_from_file, f, default=to_dict, indent=2, sort_keys=True)
                 f.close()
             except:
                 self.inform.emit(_("[ERROR_NOTCL] Failed to write defaults to file."))
@@ -8293,12 +8293,15 @@ class App(QtCore.QObject):
         self.set_screen_units(self.options["units"])
 
         # Re create objects
-        App.log.debug("Re-creating objects...")
+        App.log.debug("Started Project loading...")
+
         for obj in d['objs']:
             def obj_init(obj_inst, app_inst):
                 obj_inst.from_dict(obj)
-            App.log.debug(obj['kind'] + ":  " + obj['options']['name'])
+            App.log.debug("Recreating from opened project an %s object: %s" %
+                          (obj['kind'].capitalize(), obj['options']['name']))
             self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=True)
+
         self.plot_all()
         self.inform.emit(_("[success] Project loaded from: %s") % filename)
 
@@ -8306,7 +8309,7 @@ class App(QtCore.QObject):
         self.file_opened.emit("project", filename)
         self.set_ui_title(name=self.project_filename)
 
-        App.log.debug("Project loaded")
+        App.log.debug("Finished Project loading...")
 
     def propagate_defaults(self, silent=False):
         """
