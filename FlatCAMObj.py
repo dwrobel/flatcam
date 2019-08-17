@@ -5000,14 +5000,20 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     geoms.append(scale_recursion(local_geom))
                 return geoms
             else:
-                return affinity.scale(geom, xfactor, yfactor, origin=(px, py))
+                try:
+                    return affinity.scale(geom, xfactor, yfactor, origin=(px, py))
+                except AttributeError:
+                    return geom
 
         if self.multigeo is True:
             for tool in self.tools:
                 self.tools[tool]['solid_geometry'] = scale_recursion(self.tools[tool]['solid_geometry'])
         else:
-            self.solid_geometry = scale_recursion(self.solid_geometry)
-
+            try:
+                self.solid_geometry = scale_recursion(self.solid_geometry)
+            except AttributeError:
+                self.solid_geometry = []
+                return
         self.app.inform.emit(_(
             "[success] Geometry Scale done."
         ))
@@ -5038,7 +5044,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     geoms.append(translate_recursion(local_geom))
                 return geoms
             else:
-                return affinity.translate(geom, xoff=dx, yoff=dy)
+                try:
+                    return affinity.translate(geom, xoff=dx, yoff=dy)
+                except AttributeError:
+                    return geom
 
         if self.multigeo is True:
             for tool in self.tools:

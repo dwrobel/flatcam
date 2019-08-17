@@ -1,3 +1,11 @@
+# ##########################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# http://flatcam.org                                       #
+# File Author: Marius Adrian Stanciu (c)                   #
+# Date: 8/17/2019                                          #
+# MIT Licence                                              #
+# ##########################################################
+
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
 
@@ -839,6 +847,8 @@ class FCRegion(FCShapeTool):
         self.name = 'region'
         self.draw_app = draw_app
 
+        self.steps_per_circle = self.draw_app.app.defaults["gerber_circle_steps"]
+
         size_ap = float(self.draw_app.storage_dict[self.draw_app.last_aperture_selected]['size'])
         self.buf_val = (size_ap / 2) if size_ap > 0 else 0.0000001
 
@@ -885,7 +895,7 @@ class FCRegion(FCShapeTool):
         y = data[1]
 
         if len(self.points) == 0:
-            new_geo_el['solid'] = Point(data).buffer(self.buf_val)
+            new_geo_el['solid'] = Point(data).buffer(self.buf_val, resolution=int(self.steps_per_circle / 4))
             return DrawToolUtilityShape(new_geo_el)
 
         if len(self.points) == 1:
@@ -951,12 +961,15 @@ class FCRegion(FCShapeTool):
 
             if len(self.temp_points) > 1:
                 try:
-                    new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val, join_style=1)
+                    new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val,
+                                                                              resolution=int(self.steps_per_circle / 4),
+                                                                              join_style=1)
                     return DrawToolUtilityShape(new_geo_el)
                 except Exception as e:
                     log.debug("FlatCAMGrbEditor.FCRegion.utility_geometry() --> %s" % str(e))
             else:
-                new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val)
+                new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val,
+                                                                     resolution=int(self.steps_per_circle / 4))
                 return DrawToolUtilityShape(new_geo_el)
 
         if len(self.points) > 2:
@@ -1012,7 +1025,9 @@ class FCRegion(FCShapeTool):
             self.temp_points.append(data)
             new_geo_el = dict()
 
-            new_geo_el['solid'] = LinearRing(self.temp_points).buffer(self.buf_val, join_style=1)
+            new_geo_el['solid'] = LinearRing(self.temp_points).buffer(self.buf_val,
+                                                                      resolution=int(self.steps_per_circle / 4),
+                                                                      join_style=1)
             new_geo_el['follow'] = LinearRing(self.temp_points)
 
             return DrawToolUtilityShape(new_geo_el)
@@ -1031,7 +1046,9 @@ class FCRegion(FCShapeTool):
 
             new_geo_el = dict()
 
-            new_geo_el['solid'] = Polygon(self.points).buffer(self.buf_val, join_style=2)
+            new_geo_el['solid'] = Polygon(self.points).buffer(self.buf_val,
+                                                              resolution=int(self.steps_per_circle / 4),
+                                                              join_style=2)
             new_geo_el['follow'] = Polygon(self.points).exterior
 
             self.geometry = DrawToolShape(new_geo_el)
@@ -1128,10 +1145,12 @@ class FCTrack(FCRegion):
     def make(self):
         new_geo_el = dict()
         if len(self.temp_points) == 1:
-            new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val)
+            new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val,
+                                                                 resolution=int(self.steps_per_circle / 4))
             new_geo_el['follow'] = Point(self.temp_points)
         else:
-            new_geo_el['solid'] = (LineString(self.temp_points).buffer(self.buf_val)).buffer(0)
+            new_geo_el['solid'] = (LineString(self.temp_points).buffer(
+                self.buf_val, resolution=int(self.steps_per_circle / 4))).buffer(0)
             new_geo_el['follow'] = LineString(self.temp_points)
 
         self.geometry = DrawToolShape(new_geo_el)
@@ -1156,10 +1175,12 @@ class FCTrack(FCRegion):
         new_geo_el = dict()
 
         if len(self.temp_points) == 1:
-            new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val)
+            new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val,
+                                                                 resolution=int(self.steps_per_circle / 4))
             new_geo_el['follow'] = Point(self.temp_points)
         else:
-            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val)
+            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val,
+                                                                      resolution=int(self.steps_per_circle / 4))
             new_geo_el['follow'] = LineString(self.temp_points)
 
         self.draw_app.add_gerber_shape(DrawToolShape(new_geo_el),
@@ -1177,7 +1198,8 @@ class FCTrack(FCRegion):
         new_geo_el = dict()
 
         if len(self.points) == 0:
-            new_geo_el['solid'] = Point(data).buffer(self.buf_val)
+            new_geo_el['solid'] = Point(data).buffer(self.buf_val,
+                                                     resolution=int(self.steps_per_circle / 4))
 
             return DrawToolUtilityShape(new_geo_el)
         elif len(self.points) > 0:
@@ -1235,10 +1257,12 @@ class FCTrack(FCRegion):
 
             self.temp_points.append(data)
             if len(self.temp_points) == 1:
-                new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val)
+                new_geo_el['solid'] = Point(self.temp_points).buffer(self.buf_val,
+                                                                     resolution=int(self.steps_per_circle / 4))
                 return DrawToolUtilityShape(new_geo_el)
 
-            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val)
+            new_geo_el['solid'] = LineString(self.temp_points).buffer(self.buf_val,
+                                                                      resolution=int(self.steps_per_circle / 4))
             return DrawToolUtilityShape(new_geo_el)
 
     def on_key(self, key):
@@ -2802,6 +2826,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # this will flag if the Editor "tools" are launched from key shortcuts (True) or from menu toolbar (False)
         self.launched_from_shortcuts = False
 
+        if self.units == 'MM':
+            self.tolerance = float(self.app.defaults["global_tolerance"])
+        else:
+            self.tolerance = float(self.app.defaults["global_tolerance"]) / 20
+
         def make_callback(the_tool):
             def f():
                 self.on_tool_select(the_tool)
@@ -2887,6 +2916,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.conversion_factor = 1
 
         self.set_ui()
+        log.debug("Initialization of the FlatCAM Gerber Editor is finished ...")
 
     def pool_recreated(self, pool):
         self.shapes.pool = pool
@@ -4372,11 +4402,11 @@ class FlatCAMGrbEditor(QtCore.QObject):
             geometry = self.active_tool.geometry
 
         try:
-            self.shapes.add(shape=geometry.geo, color=color, face_color=color, layer=0)
+            self.shapes.add(shape=geometry.geo, color=color, face_color=color, layer=0, tolerance=self.tolerance)
         except AttributeError:
             if type(geometry) == Point:
                 return
-            self.shapes.add(shape=geometry, color=color, face_color=color+'AF', layer=0)
+            self.shapes.add(shape=geometry, color=color, face_color=color+'AF', layer=0, tolerance=self.tolerance)
 
     def start_delayed_plot(self, check_period):
         """

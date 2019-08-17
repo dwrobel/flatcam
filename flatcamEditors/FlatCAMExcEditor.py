@@ -1,3 +1,11 @@
+# ##########################################################
+# FlatCAM: 2D Post-processing for Manufacturing            #
+# http://flatcam.org                                       #
+# File Author: Marius Adrian Stanciu (c)                   #
+# Date: 8/17/2019                                          #
+# MIT Licence                                              #
+# ##########################################################
+
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtCore import Qt, QSettings
 
@@ -1945,6 +1953,11 @@ class FlatCAMExcEditor(QtCore.QObject):
         # this var will store the state of the toolbar before starting the editor
         self.toolbar_old_state = False
 
+        if self.units == 'MM':
+            self.tolerance = float(self.app.defaults["global_tolerance"])
+        else:
+            self.tolerance = float(self.app.defaults["global_tolerance"]) / 20
+
         self.app.ui.delete_drill_btn.triggered.connect(self.on_delete_btn)
         self.name_entry.returnPressed.connect(self.on_name_activate)
         self.addtool_btn.clicked.connect(self.on_tool_add)
@@ -2048,6 +2061,7 @@ class FlatCAMExcEditor(QtCore.QObject):
 
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
+        log.debug("Initialization of the FlatCAM Excellon Editor is finished ...")
 
     def pool_recreated(self, pool):
         self.shapes.pool = pool
@@ -3727,7 +3741,7 @@ class FlatCAMExcEditor(QtCore.QObject):
                 plot_elements += self.plot_shape(geometry=geometry.interiors, color=color, linewidth=linewidth)
 
             if type(geometry) == LineString or type(geometry) == LinearRing:
-                plot_elements.append(self.shapes.add(shape=geometry, color=color, layer=0))
+                plot_elements.append(self.shapes.add(shape=geometry, color=color, layer=0, tolerance=self.tolerance))
 
             if type(geometry) == Point:
                 pass

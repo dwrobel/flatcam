@@ -1395,17 +1395,10 @@ class App(QtCore.QObject):
         end_plot_time = time.time()
         self.log.debug("Finished Canvas initialization in %s seconds." % (str(end_plot_time - start_plot_time)))
 
-        # ### EDITOR section
-        self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
-        self.exc_editor = FlatCAMExcEditor(self)
-        self.grb_editor = FlatCAMGrbEditor(self)
-
         # ### Adjust tabs width ## ##
         # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
         #     self.ui.options_scroll_area.verticalScrollBar().sizeHint().width())
         self.collection.view.setMinimumWidth(290)
-
-        self.log.debug("Finished adding FlatCAM Editor's.")
 
         # ### Worker ####
         if self.defaults["global_worker_number"]:
@@ -2102,6 +2095,17 @@ class App(QtCore.QObject):
         filename_factory = self.data_path + '/factory_defaults.FlatConfig'
         os.chmod(filename_factory, S_IREAD | S_IRGRP | S_IROTH)
 
+        ####################################################
+        # ### EDITOR section ###############################
+        ####################################################
+
+        # watch out for the position of the editors instantiation ... if it is done before a save of the default values
+        # at the first launch of the App , the editors will not be functional.
+        self.geo_editor = FlatCAMGeoEditor(self, disabled=True)
+        self.exc_editor = FlatCAMExcEditor(self)
+        self.grb_editor = FlatCAMGrbEditor(self)
+        self.log.debug("Finished adding FlatCAM Editor's.")
+
         # Post-GUI initialization: Experimental attempt
         # to perform unit tests on the GUI.
         # if post_gui is not None:
@@ -2378,9 +2382,6 @@ class App(QtCore.QObject):
             # we set the notebook to hidden
             self.ui.splitter.setSizes([0, 1])
 
-            # set call source to the Editor we go into
-            self.call_source = 'geo_editor'
-
             if edited_object.multigeo is True:
                 edited_tools = [int(x.text()) for x in edited_object.ui.geo_tools_table.selectedItems()]
                 if len(edited_tools) > 1:
@@ -2402,29 +2403,32 @@ class App(QtCore.QObject):
             else:
                 self.geo_editor.edit_fcgeometry(edited_object)
 
+            # set call source to the Editor we go into
+            self.call_source = 'geo_editor'
+
         elif isinstance(edited_object, FlatCAMExcellon):
             # store the Excellon Editor Toolbar visibility before entering in the Editor
             self.exc_editor.toolbar_old_state = True if self.ui.exc_edit_toolbar.isVisible() else False
-
-            # set call source to the Editor we go into
-            self.call_source = 'exc_editor'
 
             if self.ui.splitter.sizes()[0] == 0:
                 self.ui.splitter.setSizes([1, 1])
 
             self.exc_editor.edit_fcexcellon(edited_object)
 
+            # set call source to the Editor we go into
+            self.call_source = 'exc_editor'
+
         elif isinstance(edited_object, FlatCAMGerber):
             # store the Gerber Editor Toolbar visibility before entering in the Editor
             self.grb_editor.toolbar_old_state = True if self.ui.grb_edit_toolbar.isVisible() else False
-
-            # set call source to the Editor we go into
-            self.call_source = 'grb_editor'
 
             if self.ui.splitter.sizes()[0] == 0:
                 self.ui.splitter.setSizes([1, 1])
 
             self.grb_editor.edit_fcgerber(edited_object)
+
+            # set call source to the Editor we go into
+            self.call_source = 'grb_editor'
 
         # make sure that we can't select another object while in Editor Mode:
         # self.collection.view.setSelectionMode(QtWidgets.QAbstractItemView.NoSelection)

@@ -1389,7 +1389,10 @@ class Geometry(object):
                     new_obj.append(mirror_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj, xscale, yscale, origin=(px, py))
+                try:
+                    return affinity.scale(obj, xscale, yscale, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         try:
             if self.multigeo is True:
@@ -1427,7 +1430,10 @@ class Geometry(object):
                     new_obj.append(rotate_geom(g))
                 return new_obj
             else:
-                return affinity.rotate(obj, angle, origin=(px, py))
+                try:
+                    return affinity.rotate(obj, angle, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         try:
             if self.multigeo is True:
@@ -1463,7 +1469,10 @@ class Geometry(object):
                     new_obj.append(skew_geom(g))
                 return new_obj
             else:
-                return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+                try:
+                    return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         try:
             if self.multigeo is True:
@@ -3380,7 +3389,10 @@ class Gerber (Geometry):
                     new_obj.append(scale_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj, xfactor, yfactor, origin=(px, py))
+                try:
+                    return affinity.scale(obj, xfactor, yfactor, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         self.solid_geometry = scale_geom(self.solid_geometry)
         self.follow_geometry = scale_geom(self.follow_geometry)
@@ -3444,7 +3456,10 @@ class Gerber (Geometry):
                     new_obj.append(offset_geom(g))
                 return new_obj
             else:
-                return affinity.translate(obj, xoff=dx, yoff=dy)
+                try:
+                    return affinity.translate(obj, xoff=dx, yoff=dy)
+                except AttributeError:
+                    return obj
 
         # ## Solid geometry
         self.solid_geometry = offset_geom(self.solid_geometry)
@@ -3500,7 +3515,10 @@ class Gerber (Geometry):
                     new_obj.append(mirror_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj, xscale, yscale, origin=(px, py))
+                try:
+                    return affinity.scale(obj, xscale, yscale, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         self.solid_geometry = mirror_geom(self.solid_geometry)
         self.follow_geometry = mirror_geom(self.follow_geometry)
@@ -3546,7 +3564,10 @@ class Gerber (Geometry):
                     new_obj.append(skew_geom(g))
                 return new_obj
             else:
-                return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+                try:
+                    return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         self.solid_geometry = skew_geom(self.solid_geometry)
         self.follow_geometry = skew_geom(self.follow_geometry)
@@ -3585,7 +3606,10 @@ class Gerber (Geometry):
                     new_obj.append(rotate_geom(g))
                 return new_obj
             else:
-                return affinity.rotate(obj, angle, origin=(px, py))
+                try:
+                    return affinity.rotate(obj, angle, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         self.solid_geometry = rotate_geom(self.solid_geometry)
         self.follow_geometry = rotate_geom(self.follow_geometry)
@@ -4703,8 +4727,10 @@ class Excellon(Geometry):
                     new_obj.append(scale_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj, xfactor,
-                                             yfactor, origin=(px, py))
+                try:
+                    return affinity.scale(obj, xfactor, yfactor, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         # Drills
         for drill in self.drills:
@@ -4739,7 +4765,10 @@ class Excellon(Geometry):
                     new_obj.append(offset_geom(g))
                 return new_obj
             else:
-                return affinity.translate(obj, xoff=dx, yoff=dy)
+                try:
+                    return affinity.translate(obj, xoff=dx, yoff=dy)
+                except AttributeError:
+                    return obj
 
         # Drills
         for drill in self.drills:
@@ -4776,7 +4805,10 @@ class Excellon(Geometry):
                     new_obj.append(mirror_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj, xscale, yscale, origin=(px, py))
+                try:
+                    return affinity.scale(obj, xscale, yscale, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         # Modify data
         # Drills
@@ -4823,7 +4855,10 @@ class Excellon(Geometry):
                     new_obj.append(skew_geom(g))
                 return new_obj
             else:
-                return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+                try:
+                    return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         if point is None:
             px, py = 0, 0
@@ -4874,9 +4909,15 @@ class Excellon(Geometry):
                 return new_obj
             else:
                 if origin:
-                    return affinity.rotate(obj, angle, origin=origin)
+                    try:
+                        return affinity.rotate(obj, angle, origin=origin)
+                    except AttributeError:
+                        return obj
                 else:
-                    return affinity.rotate(obj, angle, origin=(px, py))
+                    try:
+                        return affinity.rotate(obj, angle, origin=(px, py))
+                    except AttributeError:
+                        return obj
 
         if point is None:
             # Drills
@@ -7135,7 +7176,10 @@ class CNCjob(Geometry):
             self.gcode = scale_g(self.gcode)
             # offset geometry
             for g in self.gcode_parsed:
-                g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
+                try:
+                    g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
+                except AttributeError:
+                    return g['geom']
             self.create_geometry()
         else:
             for k, v in self.cnc_tools.items():
@@ -7143,9 +7187,11 @@ class CNCjob(Geometry):
                 v['gcode'] = scale_g(v['gcode'])
                 # scale gcode_parsed
                 for g in v['gcode_parsed']:
-                    g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
+                    try:
+                        g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
+                    except AttributeError:
+                        return g['geom']
                 v['solid_geometry'] = cascaded_union([geo['geom'] for geo in v['gcode_parsed']])
-
         self.create_geometry()
 
     def offset(self, vect):
@@ -7201,7 +7247,10 @@ class CNCjob(Geometry):
             self.gcode = offset_g(self.gcode)
             # offset geometry
             for g in self.gcode_parsed:
-                g['geom'] = affinity.translate(g['geom'], xoff=dx, yoff=dy)
+                try:
+                    g['geom'] = affinity.translate(g['geom'], xoff=dx, yoff=dy)
+                except AttributeError:
+                    return g['geom']
             self.create_geometry()
         else:
             for k, v in self.cnc_tools.items():
@@ -7209,7 +7258,10 @@ class CNCjob(Geometry):
                 v['gcode'] = offset_g(v['gcode'])
                 # offset gcode_parsed
                 for g in v['gcode_parsed']:
-                    g['geom'] = affinity.translate(g['geom'], xoff=dx, yoff=dy)
+                    try:
+                        g['geom'] = affinity.translate(g['geom'], xoff=dx, yoff=dy)
+                    except AttributeError:
+                        return g['geom']
                 v['solid_geometry'] = cascaded_union([geo['geom'] for geo in v['gcode_parsed']])
 
     def mirror(self, axis, point):
@@ -7223,8 +7275,10 @@ class CNCjob(Geometry):
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
         for g in self.gcode_parsed:
-            g['geom'] = affinity.scale(g['geom'], xscale, yscale, origin=(px, py))
-
+            try:
+                g['geom'] = affinity.scale(g['geom'], xscale, yscale, origin=(px, py))
+            except AttributeError:
+                return g['geom']
         self.create_geometry()
 
     def skew(self, angle_x, angle_y, point):
@@ -7245,9 +7299,10 @@ class CNCjob(Geometry):
         px, py = point
 
         for g in self.gcode_parsed:
-            g['geom'] = affinity.skew(g['geom'], angle_x, angle_y,
-                                      origin=(px, py))
-
+            try:
+                g['geom'] = affinity.skew(g['geom'], angle_x, angle_y, origin=(px, py))
+            except AttributeError:
+                return g['geom']
         self.create_geometry()
 
     def rotate(self, angle, point):
@@ -7261,8 +7316,10 @@ class CNCjob(Geometry):
         px, py = point
 
         for g in self.gcode_parsed:
-            g['geom'] = affinity.rotate(g['geom'], angle, origin=(px, py))
-
+            try:
+                g['geom'] = affinity.rotate(g['geom'], angle, origin=(px, py))
+            except AttributeError:
+                return g['geom']
         self.create_geometry()
 
 

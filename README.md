@@ -18,6 +18,9 @@ CAD program, and create G-Code for Isolation routing.
 - updated translations and changed version
 - fixed installer issue for the x64 version due of the used CX_FREEZE python package which was in unofficial version (obviously not ready to be used)
 - fixed bug in Geometry Editor, in disconnect_canvas_event_handlers() where I left some part of code without adding a try - except block which was required
+- moved the initialization of the FlatCAM editors after a read of the default values. If I don't do this then only at the first start of the application the Editors are not functional as the Editor objects are most likely destroyed
+- fixed bug in FlatCAM editors that caused the shapes to be drawn without resolution when the app units where INCH
+- modified the transformation functions in all classes in camlib.py and FlatCAMObj.py to work with empty geometries
 - RELEASE 8.95
 
 17.08.2019
