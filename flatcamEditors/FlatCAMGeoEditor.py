@@ -3352,14 +3352,41 @@ class FlatCAMGeoEditor(QtCore.QObject):
         except (TypeError, AttributeError):
             pass
 
-        self.app.ui.draw_circle.triggered.disconnect()
-        self.app.ui.draw_poly.triggered.disconnect()
-        self.app.ui.draw_arc.triggered.disconnect()
+        try:
+            self.app.ui.draw_circle.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
-        self.app.ui.draw_text.triggered.disconnect()
-        self.app.ui.draw_buffer.triggered.disconnect()
-        self.app.ui.draw_paint.triggered.disconnect()
-        self.app.ui.draw_eraser.triggered.disconnect()
+        try:
+            self.app.ui.draw_poly.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_arc.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+
+        try:
+            self.app.ui.draw_text.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_buffer.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_paint.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_eraser.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
         try:
             self.app.ui.draw_union.triggered.disconnect(self.union)
@@ -3376,7 +3403,10 @@ class FlatCAMGeoEditor(QtCore.QObject):
         except (TypeError, AttributeError):
             pass
 
-        self.app.ui.draw_transform.triggered.disconnect()
+        try:
+            self.app.ui.draw_transform.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
     def add_shape(self, shape):
         """
