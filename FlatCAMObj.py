@@ -5521,11 +5521,11 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 self.ui.t_time_entry.setDisabled(True)
                 # if time is more than 1 then we have minutes, else we have seconds
                 if self.routing_time > 1:
-                    self.ui.t_time_entry.set_value('%.4f' % float(self.routing_time))
+                    self.ui.t_time_entry.set_value('%.4f' % math.ceil(float(self.routing_time)))
                     self.ui.units_time_label.setText('min')
                 else:
                     time_r = self.routing_time * 60
-                    self.ui.t_time_entry.set_value('%.4f' % float(time_r))
+                    self.ui.t_time_entry.set_value('%.4f' % math.ceil(float(time_r)))
                     self.ui.units_time_label.setText('sec')
                 self.ui.units_time_label.setDisabled(True)
         except AttributeError:
@@ -5985,6 +5985,12 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         visible = visible if visible else self.options['plot']
 
+        if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
+            self.text_col.enabled = True
+        else:
+            self.text_col.enabled = False
+        self.annotation.redraw()
+
         try:
             if self.multitool is False:  # single tool usage
                 self.plot2(tooldia=float(self.options["tooldia"]), obj=self, visible=visible, kind=kind)
@@ -5998,12 +6004,6 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
             self.annotation.clear(update=True)
-
-        if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
-            self.text_col.enabled = True
-        else:
-            self.text_col.enabled = False
-        self.annotation.redraw()
 
     def on_annotation_change(self):
         if self.ui.annotation_cb.get_value():

@@ -824,7 +824,7 @@ class App(QtCore.QObject):
             "excellon_toolchangexy": "0.0, 0.0",
             "excellon_startz": None,
             "excellon_endz": 0.5,
-            "excellon_feedrate_rapid": 3.14961,
+            "excellon_feedrate_rapid": 31.4961,
             "excellon_z_pdepth": -0.02,
             "excellon_feedrate_probe": 3.14961,
             "excellon_f_plunge": False,

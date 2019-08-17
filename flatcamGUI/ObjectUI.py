@@ -1403,15 +1403,15 @@ class CNCObjectUI(ObjectUI):
         )
         self.units_label = QtWidgets.QLabel()
 
-        self.t_time_label = QtWidgets.QLabel(_("<b>Estimated time.:</b>"))
-        self.t_distance_label.setToolTip(
-            _("This is the estimated time to do the routing.\n"
-              "In current units.")
+        self.t_time_label = QtWidgets.QLabel(_("<b>Estimated time:</b>"))
+        self.t_time_label.setToolTip(
+            _("This is the estimated time to do the routing/drilling,\n"
+              "without the time spent in ToolChange events.")
         )
         self.t_time_entry = FCEntry()
         self.t_time_entry.setToolTip(
-            _("This is the estimated time to do the routing.\n"
-              "In current units.")
+            _("This is the estimated time to do the routing/drilling,\n"
+              "without the time spent in ToolChange events.")
         )
         self.units_time_label = QtWidgets.QLabel()
 

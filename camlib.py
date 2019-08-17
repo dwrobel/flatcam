@@ -5290,7 +5290,10 @@ class CNCjob(Geometry):
             self.oldx = 0.0
             self.oldy = 0.0
 
-        measured_distance = 0
+        measured_distance = 0.0
+        measured_down_distance = 0.0
+        measured_up_to_zero_distance = 0.0
+        measured_lift_distance = 0.0
 
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
@@ -5387,8 +5390,16 @@ class CNCjob(Geometry):
 
                                 gcode += self.doformat(p.rapid_code, x=locx, y=locy)
                                 gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                                measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
                                 if self.f_retract is False:
                                     gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                    measured_up_to_zero_distance += abs(self.z_cut)
+                                    measured_lift_distance += abs(self.z_move)
+                                else:
+                                    measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
                                 measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
                                 self.oldx = locx
@@ -5482,10 +5493,19 @@ class CNCjob(Geometry):
                             for k in node_list:
                                 locx = locations[k][0]
                                 locy = locations[k][1]
+
                                 gcode += self.doformat(p.rapid_code, x=locx, y=locy)
                                 gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                                measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
                                 if self.f_retract is False:
                                     gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                    measured_up_to_zero_distance += abs(self.z_cut)
+                                    measured_lift_distance += abs(self.z_move)
+                                else:
+                                    measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
                                 measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
                                 self.oldx = locx
@@ -5542,8 +5562,16 @@ class CNCjob(Geometry):
                         for point in self.optimized_travelling_salesman(altPoints):
                             gcode += self.doformat(p.rapid_code, x=point[0], y=point[1])
                             gcode += self.doformat(p.down_code, x=point[0], y=point[1])
+
+                            measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
                             if self.f_retract is False:
                                 gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
+                                measured_up_to_zero_distance += abs(self.z_cut)
+                                measured_lift_distance += abs(self.z_move)
+                            else:
+                                measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
                             gcode += self.doformat(p.lift_code, x=point[0], y=point[1])
                             measured_distance += abs(distance_euclidian(point[0], point[1], self.oldx, self.oldy))
                             self.oldx = point[0]
@@ -5562,7 +5590,15 @@ class CNCjob(Geometry):
         log.debug("The total travel distance including travel to end position is: %s" %
                   str(measured_distance) + '\n')
         self.travel_distance = measured_distance
-        # self.routing_time = measured_distance / self.z_feedrate
+
+        # I use the value of self.feedrate_rapid for the feadrate in case of the measure_lift_distance and for
+        # traveled_time because it is not always possible to determine the feedrate that the CNC machine uses
+        # for G0 move (the fastest speed available to the CNC router). Although self.feedrate_rapids is used only with
+        # Marlin postprocessor and derivatives.
+        self.routing_time = (measured_down_distance + measured_up_to_zero_distance) / self.feedrate
+        lift_time = measured_lift_distance / self.feedrate_rapid
+        traveled_time = measured_distance / self.feedrate_rapid
+        self.routing_time += lift_time + traveled_time
 
         self.gcode = gcode
         return 'OK'
@@ -5766,16 +5802,28 @@ class CNCjob(Geometry):
 
                 # ---------- Single depth/pass --------
                 if not multidepth:
+                    # calculate the cut distance
+                    total_cut = total_cut + geo.length
+
                     self.gcode += self.create_gcode_single_pass(geo, extracut, tolerance)
 
                 # --------- Multi-pass ---------
                 else:
+                    # calculate the cut distance
+                    # due of the number of cuts (multi depth) it has to multiplied by the number of cuts
+                    nr_cuts = 0
+                    depth = abs(self.z_cut)
+                    while depth > 0:
+                        nr_cuts += 1
+                        depth -= float(self.z_depthpercut)
+
+                    total_cut += (geo.length * nr_cuts)
+
                     self.gcode += self.create_gcode_multi_pass(geo, extracut, tolerance,
                                                                postproc=p, current_point=current_pt)
 
                 # calculate the total distance
                 total_travel = total_travel + abs(distance(pt1=current_pt, pt2=pt))
-                total_cut = total_cut + geo.length
                 current_pt = geo.coords[-1]
 
                 pt, geo = storage.nearest(current_pt) # Next
@@ -5784,8 +5832,10 @@ class CNCjob(Geometry):
 
         log.debug("Finishing G-Code... %s paths traced." % path_count)
 
-        self.travel_distance = total_travel + total_cut
-        self.routing_time = total_cut / self.feedrate
+        # add move to end position
+        total_travel += abs(distance_euclidian(current_pt[0], current_pt[1], 0, 0))
+        self.travel_distance += total_travel + total_cut
+        self.routing_time += total_cut / self.feedrate
 
         # Finish
         self.gcode += self.doformat(p.spindle_stop_code)
@@ -6039,16 +6089,27 @@ class CNCjob(Geometry):
 
                 # ---------- Single depth/pass --------
                 if not multidepth:
+                    # calculate the cut distance
+                    total_cut += geo.length
                     self.gcode += self.create_gcode_single_pass(geo, extracut, tolerance)
 
                 # --------- Multi-pass ---------
                 else:
+                    # calculate the cut distance
+                    # due of the number of cuts (multi depth) it has to multiplied by the number of cuts
+                    nr_cuts = 0
+                    depth = abs(self.z_cut)
+                    while depth > 0:
+                        nr_cuts += 1
+                        depth -= float(self.z_depthpercut)
+
+                    total_cut += (geo.length * nr_cuts)
+
                     self.gcode += self.create_gcode_multi_pass(geo, extracut, tolerance,
                                                                postproc=p, current_point=current_pt)
 
-                # calculate the total distance
-                total_travel = total_travel + abs(distance(pt1=current_pt, pt2=pt))
-                total_cut = total_cut + geo.length
+                # calculate the travel distance
+                total_travel += abs(distance(pt1=current_pt, pt2=pt))
                 current_pt = geo.coords[-1]
 
                 pt, geo = storage.nearest(current_pt) # Next
@@ -6057,8 +6118,10 @@ class CNCjob(Geometry):
 
         log.debug("Finishing G-Code... %s paths traced." % path_count)
 
-        self.travel_distance = total_travel + total_cut
-        self.routing_time = total_cut / self.feedrate
+        # add move to end position
+        total_travel += abs(distance_euclidian(current_pt[0], current_pt[1], 0, 0))
+        self.travel_distance += total_travel + total_cut
+        self.routing_time += total_cut / self.feedrate
 
         # Finish
         self.gcode += self.doformat(p.spindle_stop_code)
