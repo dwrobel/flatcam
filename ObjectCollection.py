@@ -693,7 +693,7 @@ class ObjectCollection(QtCore.QAbstractItemModel):
         :param name: Name of the FlatCAM Object
         :return: None
         """
-        log.debug("ObjectCollection.set_inactive()")
+        # log.debug("ObjectCollection.set_inactive()")
 
         obj = self.get_by_name(name)
         item = obj.item

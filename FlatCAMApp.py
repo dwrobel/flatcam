@@ -323,7 +323,6 @@ class App(QtCore.QObject):
 
         QtCore.QObject.__init__(self)
         self.ui = FlatCAMGUI(self.version, self.beta, self)
-        self.set_ui_title(name=_("New Project - Not saved"))
 
         self.ui.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.ui.final_save.connect(self.final_save)
@@ -2118,6 +2117,8 @@ class App(QtCore.QObject):
         #     post_gui(self)
 
         App.log.debug("END of constructor. Releasing control.")
+
+        self.set_ui_title(name=_("New Project - Not saved"))
 
         # accept some type file as command line parameter: FlatCAM project, FlatCAM preferences or scripts
         # the path/file_name must be enclosed in quotes if it contain spaces
@@ -8267,6 +8268,8 @@ class App(QtCore.QObject):
         """
         App.log.debug("Opening project: " + filename)
 
+        self.set_ui_title(name=_("Loading Project ... Please Wait ..."))
+
         # Open and parse an uncompressed Project file
         try:
             f = open(filename, 'r')
@@ -8313,6 +8316,10 @@ class App(QtCore.QObject):
                 obj_inst.from_dict(obj)
             App.log.debug("Recreating from opened project an %s object: %s" %
                           (obj['kind'].capitalize(), obj['options']['name']))
+
+            self.set_ui_title(name=_("Loading Project ... restoring {}: {}").format(
+                obj['kind'].upper(), obj['options']['name'])
+            )
             self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=True)
 
         # self.plot_all()
