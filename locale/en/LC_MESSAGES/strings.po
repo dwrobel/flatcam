@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2019-08-17 00:30+0300\n"
-"PO-Revision-Date: 2019-08-17 00:31+0300\n"
+"POT-Creation-Date: 2019-08-17 15:14+0300\n"
+"PO-Revision-Date: 2019-08-17 15:14+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en\n"
@@ -148,7 +148,7 @@ msgstr "[WARNING_NOTCL] FlatCAM preferences export cancelled."
 
 #: FlatCAMApp.py:2977 FlatCAMApp.py:4804 FlatCAMApp.py:7270 FlatCAMApp.py:7380
 #: FlatCAMApp.py:7501 FlatCAMApp.py:7556 FlatCAMApp.py:7667 FlatCAMApp.py:7790
-#: FlatCAMObj.py:5862 flatcamTools/ToolSolderPaste.py:1400
+#: FlatCAMObj.py:5875 flatcamTools/ToolSolderPaste.py:1400
 msgid ""
 "[WARNING] Permission denied, saving not possible.\n"
 "Most likely another app is holding the file open and not accessible."
@@ -374,12 +374,10 @@ msgstr ""
 "Go to Preferences -> General - Show Advanced Options."
 
 #: FlatCAMApp.py:4987
-#| msgid "Delete Object"
 msgid "Delete objects"
 msgstr "Delete objects"
 
 #: FlatCAMApp.py:4990
-#| msgid "Are you sure you want to delete the GUI Settings? \n"
 msgid ""
 "Are you sure you want to permanently delete\n"
 "the selected objects?"
@@ -827,7 +825,7 @@ msgstr "Source Editor"
 msgid "[ERROR]App.on_view_source() -->%s"
 msgstr "[ERROR]App.on_view_source() -->%s"
 
-#: FlatCAMApp.py:7033 FlatCAMApp.py:8215 FlatCAMObj.py:5643
+#: FlatCAMApp.py:7033 FlatCAMApp.py:8215 FlatCAMObj.py:5656
 #: flatcamTools/ToolSolderPaste.py:1284
 msgid "Code Editor"
 msgstr "Code Editor"
@@ -1315,11 +1313,11 @@ msgstr "[ERROR_NOTCL] Failed to save project file: %s. Retry to save it."
 msgid "[success] Name changed from {old} to {new}"
 msgstr "[success] Name changed from {old} to {new}"
 
-#: FlatCAMObj.py:558 FlatCAMObj.py:2128 FlatCAMObj.py:3402 FlatCAMObj.py:5536
+#: FlatCAMObj.py:558 FlatCAMObj.py:2128 FlatCAMObj.py:3402 FlatCAMObj.py:5549
 msgid "<span style=\"color:green;\"><b>Basic</b></span>"
 msgstr "<span style=\"color:green;\"><b>Basic</b></span>"
 
-#: FlatCAMObj.py:570 FlatCAMObj.py:2144 FlatCAMObj.py:3424 FlatCAMObj.py:5542
+#: FlatCAMObj.py:570 FlatCAMObj.py:2144 FlatCAMObj.py:3424 FlatCAMObj.py:5555
 msgid "<span style=\"color:red;\"><b>Advanced</b></span>"
 msgstr "<span style=\"color:red;\"><b>Advanced</b></span>"
 
@@ -1429,8 +1427,8 @@ msgstr ""
 msgid "Generating CNC Code"
 msgstr "Generating CNC Code"
 
-#: FlatCAMObj.py:2785 FlatCAMObj.py:5075 camlib.py:5179 camlib.py:5638
-#: camlib.py:5905
+#: FlatCAMObj.py:2785 FlatCAMObj.py:5075 camlib.py:5184 camlib.py:5680
+#: camlib.py:5970
 msgid ""
 "[ERROR]The Toolchange X,Y field in Edit -> Preferences has to be in the "
 "format (x, y) \n"
@@ -1539,25 +1537,25 @@ msgstr ""
 msgid "[success] Geometry Offset done."
 msgstr "[success] Geometry Offset done."
 
-#: FlatCAMObj.py:5604 FlatCAMObj.py:5609 flatcamTools/ToolSolderPaste.py:1368
+#: FlatCAMObj.py:5617 FlatCAMObj.py:5622 flatcamTools/ToolSolderPaste.py:1368
 msgid "Export Machine Code ..."
 msgstr "Export Machine Code ..."
 
-#: FlatCAMObj.py:5615 flatcamTools/ToolSolderPaste.py:1371
+#: FlatCAMObj.py:5628 flatcamTools/ToolSolderPaste.py:1371
 msgid "[WARNING_NOTCL] Export Machine Code cancelled ..."
 msgstr "[WARNING_NOTCL] Export Machine Code cancelled ..."
 
-#: FlatCAMObj.py:5632
+#: FlatCAMObj.py:5645
 #, python-format
 msgid "[success] Machine Code file saved to: %s"
 msgstr "[success] Machine Code file saved to: %s"
 
-#: FlatCAMObj.py:5654
+#: FlatCAMObj.py:5667
 #, python-format
 msgid "[ERROR]FlatCAMCNNJob.on_edit_code_click() -->%s"
 msgstr "[ERROR]FlatCAMCNNJob.on_edit_code_click() -->%s"
 
-#: FlatCAMObj.py:5771
+#: FlatCAMObj.py:5784
 #, python-format
 msgid ""
 "[WARNING_NOTCL] This CNCJob object can't be processed because it is a %s "
@@ -1566,11 +1564,11 @@ msgstr ""
 "[WARNING_NOTCL] This CNCJob object can't be processed because it is a %s "
 "CNCJob object."
 
-#: FlatCAMObj.py:5824
+#: FlatCAMObj.py:5837
 msgid "[ERROR_NOTCL] G-code does not have a units code: either G20 or G21"
 msgstr "[ERROR_NOTCL] G-code does not have a units code: either G20 or G21"
 
-#: FlatCAMObj.py:5837
+#: FlatCAMObj.py:5850
 msgid ""
 "[ERROR_NOTCL] Cancelled. The Toolchange Custom code is enabled but it's "
 "empty."
@@ -1578,15 +1576,15 @@ msgstr ""
 "[ERROR_NOTCL] Cancelled. The Toolchange Custom code is enabled but it's "
 "empty."
 
-#: FlatCAMObj.py:5844
+#: FlatCAMObj.py:5857
 msgid "[success] Toolchange G-code was replaced by a custom code."
 msgstr "[success] Toolchange G-code was replaced by a custom code."
 
-#: FlatCAMObj.py:5858 flatcamTools/ToolSolderPaste.py:1397
+#: FlatCAMObj.py:5871 flatcamTools/ToolSolderPaste.py:1397
 msgid "[WARNING_NOTCL] No such file or directory"
 msgstr "[WARNING_NOTCL] No such file or directory"
 
-#: FlatCAMObj.py:5882 FlatCAMObj.py:5894
+#: FlatCAMObj.py:5895 FlatCAMObj.py:5907
 msgid ""
 "[WARNING_NOTCL] The used postprocessor file has to have in it's name: "
 "'toolchange_custom'"
@@ -1594,7 +1592,7 @@ msgstr ""
 "[WARNING_NOTCL] The used postprocessor file has to have in it's name: "
 "'toolchange_custom'"
 
-#: FlatCAMObj.py:5900
+#: FlatCAMObj.py:5913
 msgid "[ERROR] There is no postprocessor file."
 msgstr "[ERROR] There is no postprocessor file."
 
@@ -1737,12 +1735,12 @@ msgstr ""
 "not having a tool associated.\n"
 "Check the resulting GCode."
 
-#: camlib.py:5088
+#: camlib.py:5093
 #, python-format
 msgid "[ERROR] There is no such parameter: %s"
 msgstr "[ERROR] There is no such parameter: %s"
 
-#: camlib.py:5158
+#: camlib.py:5163
 msgid ""
 "[WARNING] The Cut Z parameter has positive value. It is the depth value to "
 "drill into material.\n"
@@ -1756,22 +1754,22 @@ msgstr ""
 "therefore the app will convert the value to negative. Check the resulting "
 "CNC code (Gcode etc)."
 
-#: camlib.py:5165 camlib.py:5661 camlib.py:5928
+#: camlib.py:5170 camlib.py:5703 camlib.py:5993
 #, python-format
 msgid ""
 "[WARNING] The Cut Z parameter is zero. There will be no cut, skipping %s file"
 msgstr ""
 "[WARNING] The Cut Z parameter is zero. There will be no cut, skipping %s file"
 
-#: camlib.py:5394 camlib.py:5491 camlib.py:5549
+#: camlib.py:5410 camlib.py:5516 camlib.py:5582
 msgid "[ERROR_NOTCL] The loaded Excellon file has no drills ..."
 msgstr "[ERROR_NOTCL] The loaded Excellon file has no drills ..."
 
-#: camlib.py:5496
+#: camlib.py:5521
 msgid "[ERROR_NOTCL] Wrong optimization type selected."
 msgstr "[ERROR_NOTCL] Wrong optimization type selected."
 
-#: camlib.py:5649 camlib.py:5916
+#: camlib.py:5691 camlib.py:5981
 msgid ""
 "[ERROR_NOTCL] Cut_Z parameter is None or zero. Most likely a bad "
 "combinations of other parameters."
@@ -1779,7 +1777,7 @@ msgstr ""
 "[ERROR_NOTCL] Cut_Z parameter is None or zero. Most likely a bad "
 "combinations of other parameters."
 
-#: camlib.py:5654 camlib.py:5921
+#: camlib.py:5696 camlib.py:5986
 msgid ""
 "[WARNING] The Cut Z parameter has positive value. It is the depth value to "
 "cut into material.\n"
@@ -1793,11 +1791,11 @@ msgstr ""
 "therefore the app will convert the value to negative.Check the resulting CNC "
 "code (Gcode etc)."
 
-#: camlib.py:5670 camlib.py:5933
+#: camlib.py:5712 camlib.py:5998
 msgid "[ERROR_NOTCL] Travel Z parameter is None or zero."
 msgstr "[ERROR_NOTCL] Travel Z parameter is None or zero."
 
-#: camlib.py:5674 camlib.py:5937
+#: camlib.py:5716 camlib.py:6002
 msgid ""
 "[WARNING] The Travel Z parameter has negative value. It is the height value "
 "to travel between cuts.\n"
@@ -1811,19 +1809,19 @@ msgstr ""
 "therefore the app will convert the value to positive.Check the resulting CNC "
 "code (Gcode etc)."
 
-#: camlib.py:5681 camlib.py:5944
+#: camlib.py:5723 camlib.py:6009
 #, python-format
 msgid ""
 "[WARNING] The Z Travel parameter is zero. This is dangerous, skipping %s file"
 msgstr ""
 "[WARNING] The Z Travel parameter is zero. This is dangerous, skipping %s file"
 
-#: camlib.py:5811
+#: camlib.py:5876
 #, python-format
 msgid "[ERROR]Expected a Geometry, got %s"
 msgstr "[ERROR]Expected a Geometry, got %s"
 
-#: camlib.py:5817
+#: camlib.py:5882
 msgid ""
 "[ERROR_NOTCL] Trying to generate a CNC Job from a Geometry object without "
 "solid_geometry."
@@ -1831,7 +1829,7 @@ msgstr ""
 "[ERROR_NOTCL] Trying to generate a CNC Job from a Geometry object without "
 "solid_geometry."
 
-#: camlib.py:5856
+#: camlib.py:5921
 msgid ""
 "[ERROR_NOTCL] The Tool Offset value is too negative to use for the "
 "current_geometry.\n"
@@ -1841,7 +1839,7 @@ msgstr ""
 "current_geometry.\n"
 "Raise the value (in module) and try again."
 
-#: camlib.py:6068
+#: camlib.py:6155
 msgid "[ERROR_NOTCL] There is no tool data in the SolderPaste geometry."
 msgstr "[ERROR_NOTCL] There is no tool data in the SolderPaste geometry."
 
@@ -1906,7 +1904,6 @@ msgid "[success] Done. Drill Array added."
 msgstr "[success] Done. Drill Array added."
 
 #: flatcamEditors/FlatCAMExcEditor.py:350
-#| msgid "[WARNING_NOTCL] To add a drill first select a tool"
 msgid "[WARNING_NOTCL] To add a slot first select a tool"
 msgstr "[WARNING_NOTCL] To add a slot first select a tool"
 
@@ -1914,24 +1911,18 @@ msgstr "[WARNING_NOTCL] To add a slot first select a tool"
 #: flatcamEditors/FlatCAMExcEditor.py:414
 #: flatcamEditors/FlatCAMExcEditor.py:682
 #: flatcamEditors/FlatCAMExcEditor.py:689
-#| msgid ""
-#| "[WARNING_NOTCL] Margin value is missing or wrong format. Add it and retry."
 msgid "[WARNING_NOTCL] Value is missing or wrong format. Add it and retry."
 msgstr "[WARNING_NOTCL] Value is missing or wrong format. Add it and retry."
 
 #: flatcamEditors/FlatCAMExcEditor.py:513
-#| msgid "[success] Done. Adding Text completed."
 msgid "[success] Done. Adding Slot completed."
 msgstr "[success] Done. Adding Slot completed."
 
 #: flatcamEditors/FlatCAMExcEditor.py:539
-#| msgid ""
-#| "[WARNING_NOTCL] To add an Drill Array first select a tool in Tool Table"
 msgid "[WARNING_NOTCL] To add an Slot Array first select a tool in Tool Table"
 msgstr "[WARNING_NOTCL] To add an Slot Array first select a tool in Tool Table"
 
 #: flatcamEditors/FlatCAMExcEditor.py:596
-#| msgid "Click on the Drill Circular Array Start position"
 msgid "Click on the Slot Circular Array Start position"
 msgstr "Click on the Slot Circular Array Start position"
 
@@ -1941,12 +1932,10 @@ msgid "[ERROR_NOTCL] The value is mistyped. Check the value."
 msgstr "[ERROR_NOTCL] The value is mistyped. Check the value."
 
 #: flatcamEditors/FlatCAMExcEditor.py:799
-#| msgid "[WARNING_NOTCL] Too many drills for the selected spacing angle."
 msgid "[WARNING_NOTCL] Too many Slots for the selected spacing angle."
 msgstr "[WARNING_NOTCL] Too many Slots for the selected spacing angle."
 
 #: flatcamEditors/FlatCAMExcEditor.py:821
-#| msgid "[success] Done. Drill Array added."
 msgid "[success] Done. Slot Array added."
 msgstr "[success] Done. Slot Array added."
 
@@ -1962,17 +1951,14 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMExcEditor.py:958
 #: flatcamEditors/FlatCAMExcEditor.py:1027
-#| msgid "[WARNING_NOTCL] Cancelled."
 msgid "[ERROR_NOTCL] Cancelled."
 msgstr "[ERROR_NOTCL] Cancelled."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1047
-#| msgid "[success] Done. Drill Resize completed."
 msgid "[success] Done. Drill/Slot Resize completed."
 msgstr "[success] Done. Drill/Slot Resize completed."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1049
-#| msgid "[WARNING_NOTCL] Cancelled. No drills selected for resize ..."
 msgid "[WARNING_NOTCL] Cancelled. No drills/slots selected for resize ..."
 msgstr "[WARNING_NOTCL] Cancelled. No drills/slots selected for resize ..."
 
@@ -2243,7 +2229,6 @@ msgid "Angle at which each element in circular array is placed."
 msgstr "Angle at which each element in circular array is placed."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1705
-#| msgid "Parameters"
 msgid "Slot Parameters"
 msgstr "Slot Parameters"
 
@@ -2256,7 +2241,6 @@ msgstr ""
 "either single or as an part of an array."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1716 flatcamGUI/FlatCAMGUI.py:5325
-#| msgid "Board Length:"
 msgid "Length:"
 msgstr "Length:"
 
@@ -2265,11 +2249,6 @@ msgid "Length = The length of the slot."
 msgstr "Length = The length of the slot."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1728 flatcamGUI/FlatCAMGUI.py:5338
-#| msgid ""
-#| "Direction on which the linear array is oriented:\n"
-#| "- 'X' - horizontal axis \n"
-#| "- 'Y' - vertical axis or \n"
-#| "- 'Angle' - a custom angle for the array inclination"
 msgid ""
 "Direction on which the slot is oriented:\n"
 "- 'X' - horizontal axis \n"
@@ -2282,11 +2261,6 @@ msgstr ""
 "- 'Angle' - a custom angle for the slot inclination"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1743 flatcamGUI/FlatCAMGUI.py:5354
-#| msgid ""
-#| "Angle at which the linear array is placed.\n"
-#| "The precision is of max 2 decimals.\n"
-#| "Min value is: -359.99 degrees.\n"
-#| "Max value is:  360.00 degrees."
 msgid ""
 "Angle at which the slot is placed.\n"
 "The precision is of max 2 decimals.\n"
@@ -2299,19 +2273,14 @@ msgstr ""
 "Max value is:  360.00 degrees."
 
 #: flatcamEditors/FlatCAMExcEditor.py:1776
-#| msgid "Parameters"
 msgid "Slot Array Parameters"
 msgstr "Slot Array Parameters"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1778
-#| msgid "Add an array of drills (linear or circular array)"
 msgid "Parameters for the array of slots (linear or circular array)"
 msgstr "Parameters for the array of slots (linear or circular array)"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1787
-#| msgid ""
-#| "Select the type of pads array to create.\n"
-#| "It can be Linear X(Y) or Circular"
 msgid ""
 "Select the type of slot array to create.\n"
 "It can be Linear X(Y) or Circular"
@@ -2320,12 +2289,10 @@ msgstr ""
 "It can be Linear X(Y) or Circular"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1799 flatcamGUI/FlatCAMGUI.py:5376
-#| msgid "Nr of drills:"
 msgid "Nr of slots:"
 msgstr "Nr of slots:"
 
 #: flatcamEditors/FlatCAMExcEditor.py:1800 flatcamGUI/FlatCAMGUI.py:5378
-#| msgid "Specify how many drills to be in the array."
 msgid "Specify how many slots to be in the array."
 msgstr "Specify how many slots to be in the array."
 
@@ -2352,7 +2319,6 @@ msgid "[success] Deleted tool with dia: {del_dia} {units}"
 msgstr "[success] Deleted tool with dia: {del_dia} {units}"
 
 #: flatcamEditors/FlatCAMExcEditor.py:2615
-#| msgid "[success] Done. Scale Tool completed."
 msgid "[success] Done. Tool edit completed."
 msgstr "[success] Done. Tool edit completed."
 
@@ -2678,7 +2644,7 @@ msgstr "Mirror (Flip)"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:622
 #: flatcamEditors/FlatCAMGrbEditor.py:4746 flatcamGUI/ObjectUI.py:127
-#: flatcamGUI/ObjectUI.py:889 flatcamGUI/ObjectUI.py:1471
+#: flatcamGUI/ObjectUI.py:889 flatcamGUI/ObjectUI.py:1484
 #: flatcamTools/ToolTransform.py:28
 msgid "Offset"
 msgstr "Offset"
@@ -3323,7 +3289,6 @@ msgstr ""
 "supported. Error: %s"
 
 #: flatcamEditors/FlatCAMGeoEditor.py:2649
-#| msgid "[WARNING_NOTCL] No object selected."
 msgid "[WARNING_NOTCL] No text to add."
 msgstr "[WARNING_NOTCL] No text to add."
 
@@ -3656,7 +3621,7 @@ msgstr "Code"
 
 #: flatcamEditors/FlatCAMGrbEditor.py:2337
 #: flatcamEditors/FlatCAMGrbEditor.py:3758 flatcamGUI/ObjectUI.py:227
-#: flatcamGUI/ObjectUI.py:889 flatcamGUI/ObjectUI.py:1471
+#: flatcamGUI/ObjectUI.py:889 flatcamGUI/ObjectUI.py:1484
 msgid "Type"
 msgstr "Type"
 
@@ -4178,12 +4143,10 @@ msgid "Backup"
 msgstr "Backup"
 
 #: flatcamGUI/FlatCAMGUI.py:207
-#| msgid "Import Preferences"
 msgid "Import Preferences from file ..."
 msgstr "Import Preferences from file ..."
 
 #: flatcamGUI/FlatCAMGUI.py:212
-#| msgid "Export Preferences"
 msgid "Export Preferences to file ..."
 msgstr "Export Preferences to file ..."
 
@@ -4515,12 +4478,10 @@ msgid "Add Drill\tD"
 msgstr "Add Drill\tD"
 
 #: flatcamGUI/FlatCAMGUI.py:468
-#| msgid "Add Drill Array\tA"
 msgid "Add Slot Array\tQ"
 msgstr "Add Slot Array\tQ"
 
 #: flatcamGUI/FlatCAMGUI.py:470
-#| msgid "Add Polygon\tN"
 msgid "Add Slot\tW"
 msgstr "Add Slot\tW"
 
@@ -4762,13 +4723,11 @@ msgstr "Add Drill Hole Array"
 
 #: flatcamGUI/FlatCAMGUI.py:678 flatcamGUI/FlatCAMGUI.py:1692
 #: flatcamGUI/FlatCAMGUI.py:1973
-#| msgid "Add Polygon"
 msgid "Add Slot"
 msgstr "Add Slot"
 
 #: flatcamGUI/FlatCAMGUI.py:680 flatcamGUI/FlatCAMGUI.py:1693
 #: flatcamGUI/FlatCAMGUI.py:1975
-#| msgid "Add Drill Array"
 msgid "Add Slot Array"
 msgstr "Add Slot Array"
 
@@ -5583,331 +5542,6 @@ msgstr ""
 "            "
 
 #: flatcamGUI/FlatCAMGUI.py:1291
-#| msgid ""
-#| "<b>Editor Shortcut list</b><br>\n"
-#| "            <br>\n"
-#| "            <strong><span style=\"color:#0000ff\">GEOMETRY EDITOR</span></"
-#| "strong><br>\n"
-#| "    \n"
-#| "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style="
-#| "\"width:283px\">\n"
-#| "                <tbody>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\" width=\"89\"><strong>A</"
-#| "strong></td>\n"
-#| "                        <td width=\"194\">&nbsp;Draw an Arc</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>B</strong></td>\n"
-#| "                        <td>&nbsp;Buffer Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>C</strong></td>\n"
-#| "                        <td>&nbsp;Copy Geo Item</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>D</strong></td>\n"
-#| "                        <td>&nbsp;Within Add Arc will toogle the ARC "
-#| "direction: CW or CCW</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>E</strong></td>\n"
-#| "                        <td>&nbsp;Polygon Intersection Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>I</strong></td>\n"
-#| "                        <td>&nbsp;Paint Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>J</strong></td>\n"
-#| "                        <td>&nbsp;Jump to Location (x, y)</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>K</strong></td>\n"
-#| "                        <td>&nbsp;Toggle Corner Snap</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>M</strong></td>\n"
-#| "                        <td>&nbsp;Move Geo Item</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>M</strong></td>\n"
-#| "                        <td>&nbsp;Within Add Arc will cycle through the "
-#| "ARC modes</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>N</strong></td>\n"
-#| "                        <td>&nbsp;Draw a Polygon</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>O</strong></td>\n"
-#| "                        <td>&nbsp;Draw a Circle</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>P</strong></td>\n"
-#| "                        <td>&nbsp;Draw a Path</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>R</strong></td>\n"
-#| "                        <td>&nbsp;Draw Rectangle</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>S</strong></td>\n"
-#| "                        <td>&nbsp;Polygon Substraction Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>T</strong></td>\n"
-#| "                        <td>&nbsp;Add Text Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>U</strong></td>\n"
-#| "                        <td>&nbsp;Polygon Union Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>X</strong></td>\n"
-#| "                        <td>&nbsp;Flip shape on X axis</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>Y</strong></td>\n"
-#| "                        <td>&nbsp;Flip shape on Y axis</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\">&nbsp;</td>\n"
-#| "                        <td>&nbsp;</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>SHIFT+X</strong></td>\n"
-#| "                        <td>&nbsp;Skew shape on X axis</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>SHIFT+Y</strong></td>\n"
-#| "                        <td>&nbsp;Skew shape on Y axis</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\">&nbsp;</td>\n"
-#| "                        <td>&nbsp;</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>ALT+R</strong></td>\n"
-#| "                        <td>&nbsp;Editor Transformation Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>ALT+X</strong></td>\n"
-#| "                        <td>&nbsp;Offset shape on X axis</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>ALT+Y</strong></td>\n"
-#| "                        <td>&nbsp;Offset shape on Y axis</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\">&nbsp;</td>\n"
-#| "                        <td>&nbsp;</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>CTRL+M</strong></td>\n"
-#| "                        <td>&nbsp;Measurement Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>CTRL+S</strong></td>\n"
-#| "                        <td>&nbsp;Save Object and Exit Editor</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>CTRL+X</strong></td>\n"
-#| "                        <td>&nbsp;Polygon Cut Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\">&nbsp;</td>\n"
-#| "                        <td>&nbsp;</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>Space</strong></td>\n"
-#| "                        <td>&nbsp;Rotate Geometry</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>ENTER</strong></td>\n"
-#| "                        <td>&nbsp;Finish drawing for certain tools</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>ESC</strong></td>\n"
-#| "                        <td>&nbsp;Abort and return to Select</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>Del</strong></td>\n"
-#| "                        <td>&nbsp;Delete Shape</td>\n"
-#| "                    </tr>\n"
-#| "                </tbody>\n"
-#| "            </table>\n"
-#| "            <br>\n"
-#| "            <br>\n"
-#| "            <strong><span style=\"color:#ff0000\">EXCELLON EDITOR</span></"
-#| "strong><br>\n"
-#| "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style="
-#| "\"width:283px\">\n"
-#| "                <tbody>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\" width=\"89\"><strong>A</"
-#| "strong></td>\n"
-#| "                        <td width=\"194\">&nbsp;Add Drill Array</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>C</strong></td>\n"
-#| "                        <td>&nbsp;Copy Drill(s)</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>D</strong></td>\n"
-#| "                        <td>&nbsp;Add Drill</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>J</strong></td>\n"
-#| "                        <td>&nbsp;Jump to Location (x, y)</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>M</strong></td>\n"
-#| "                        <td>&nbsp;Move Drill(s)</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>R</strong></td>\n"
-#| "                        <td>&nbsp;Resize Drill(s)</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>T</strong></td>\n"
-#| "                        <td>&nbsp;Add a new Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\">&nbsp;</td>\n"
-#| "                        <td>&nbsp;</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>Del</strong></td>\n"
-#| "                        <td>&nbsp;Delete Drill(s)</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>Del</strong></td>\n"
-#| "                        <td>&nbsp;Alternate: Delete Tool(s)</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\">&nbsp;</td>\n"
-#| "                        <td>&nbsp;</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>ESC</strong></td>\n"
-#| "                        <td>&nbsp;Abort and return to Select</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>CTRL+S</strong></td>\n"
-#| "                        <td>&nbsp;Save Object and Exit Editor</td>\n"
-#| "                    </tr>\n"
-#| "                </tbody>\n"
-#| "            </table>\n"
-#| "            <br>\n"
-#| "            <br>\n"
-#| "            <strong><span style=\"color:#00ff00\">GERBER EDITOR</span></"
-#| "strong><br>\n"
-#| "            <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style="
-#| "\"width:283px\">\n"
-#| "                <tbody>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\" width=\"89\"><strong>A</"
-#| "strong></td>\n"
-#| "                        <td width=\"194\">&nbsp;Add Pad Array</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>B</strong></td>\n"
-#| "                        <td>&nbsp;Buffer</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>C</strong></td>\n"
-#| "                        <td>&nbsp;Copy</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>D</strong></td>\n"
-#| "                        <td>&nbsp;Add Disc</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>E</strong></td>\n"
-#| "                        <td>&nbsp;Add SemiDisc</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>J</strong></td>\n"
-#| "                        <td>&nbsp;Jump to Location (x, y)</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>M</strong></td>\n"
-#| "                        <td>&nbsp;Move</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>N</strong></td>\n"
-#| "                        <td>&nbsp;Add Region</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>P</strong></td>\n"
-#| "                        <td>&nbsp;Add Pad</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>R</strong></td>\n"
-#| "                        <td>&nbsp;Within Track & Region Tools will cycle "
-#| "in REVERSE the bend modes</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>S</strong></td>\n"
-#| "                        <td>&nbsp;Scale</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>T</strong></td>\n"
-#| "                        <td>&nbsp;Add Track</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>T</strong></td>\n"
-#| "                        <td>&nbsp;Within Track & Region Tools will cycle "
-#| "FORWARD the bend modes</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\">&nbsp;</td>\n"
-#| "                        <td>&nbsp;</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>Del</strong></td>\n"
-#| "                        <td>&nbsp;Delete</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>Del</strong></td>\n"
-#| "                        <td>&nbsp;Alternate: Delete Apertures</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\">&nbsp;</td>\n"
-#| "                        <td>&nbsp;</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>ESC</strong></td>\n"
-#| "                        <td>&nbsp;Abort and return to Select</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>CTRL+E</strong></td>\n"
-#| "                        <td>&nbsp;Eraser Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>CTRL+S</strong></td>\n"
-#| "                        <td>&nbsp;Save Object and Exit Editor</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\">&nbsp;</td>\n"
-#| "                        <td>&nbsp;</td>\n"
-#| "                    </tr>\n"
-#| "                     <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>ALT+A</strong></td>\n"
-#| "                        <td>&nbsp;Mark Area Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>ALT+N</strong></td>\n"
-#| "                        <td>&nbsp;Poligonize Tool</td>\n"
-#| "                    </tr>\n"
-#| "                    <tr height=\"20\">\n"
-#| "                        <td height=\"20\"><strong>ALT+R</strong></td>\n"
-#| "                        <td>&nbsp;Transformation Tool</td>\n"
-#| "                    </tr>\n"
-#| "                </tbody>\n"
-#| "            </table>\n"
-#| "                    "
 msgid ""
 "<b>Editor Shortcut list</b><br>\n"
 "            <br>\n"
@@ -6628,22 +6262,18 @@ msgid "Rectangle"
 msgstr "Rectangle"
 
 #: flatcamGUI/FlatCAMGUI.py:1647
-#| msgid "Add Circle"
 msgid "Circle"
 msgstr "Circle"
 
 #: flatcamGUI/FlatCAMGUI.py:1648
-#| msgid "Add Polygon"
 msgid "Polygon"
 msgstr "Polygon"
 
 #: flatcamGUI/FlatCAMGUI.py:1649
-#| msgid "Add Arc"
 msgid "Arc"
 msgstr "Arc"
 
 #: flatcamGUI/FlatCAMGUI.py:1652
-#| msgid "Add Text"
 msgid "Text"
 msgstr "Text"
 
@@ -6652,12 +6282,10 @@ msgid "Union"
 msgstr "Union"
 
 #: flatcamGUI/FlatCAMGUI.py:1659
-#| msgid "Polygon Intersection"
 msgid "Intersection"
 msgstr "Intersection"
 
 #: flatcamGUI/FlatCAMGUI.py:1660
-#| msgid "Substractor:"
 msgid "Substraction"
 msgstr "Substraction"
 
@@ -7374,7 +7002,6 @@ msgstr ""
 "path for saving files or the path for opening files."
 
 #: flatcamGUI/FlatCAMGUI.py:4116
-#| msgid "Delete Object"
 msgid "Delete object confirmation"
 msgstr "Delete object confirmation"
 
@@ -7449,7 +7076,7 @@ msgstr "Plot"
 
 #: flatcamGUI/FlatCAMGUI.py:4189 flatcamGUI/FlatCAMGUI.py:5467
 #: flatcamGUI/ObjectUI.py:174 flatcamGUI/ObjectUI.py:544
-#: flatcamGUI/ObjectUI.py:877 flatcamGUI/ObjectUI.py:1456
+#: flatcamGUI/ObjectUI.py:877 flatcamGUI/ObjectUI.py:1469
 msgid "Plot (show) this object."
 msgstr "Plot (show) this object."
 
@@ -8368,7 +7995,6 @@ msgstr ""
 "and Leading Zeros are removed."
 
 #: flatcamGUI/FlatCAMGUI.py:5165
-#| msgid "<b>Panel Type:</b>"
 msgid "<b>Slot type</b>:"
 msgstr "<b>Slot type</b>:"
 
@@ -8445,17 +8071,14 @@ msgid "Circ. Angle:"
 msgstr "Circ. Angle:"
 
 #: flatcamGUI/FlatCAMGUI.py:5321
-#| msgid "<b>Units:</b>"
 msgid "<b>Slots:</b>"
 msgstr "<b>Slots:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:5372
-#| msgid "<b>Linear Drill Array:</b>"
 msgid "<b>Linear Slot Array:</b>"
 msgstr "<b>Linear Slot Array:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:5424
-#| msgid "<b>Circular Drill Array:</b>"
 msgid "<b>Circular Slot Array:</b>"
 msgstr "<b>Circular Slot Array:</b>"
 
@@ -8683,7 +8306,7 @@ msgid "CNC Job General"
 msgstr "CNC Job General"
 
 #: flatcamGUI/FlatCAMGUI.py:5840 flatcamGUI/ObjectUI.py:542
-#: flatcamGUI/ObjectUI.py:875 flatcamGUI/ObjectUI.py:1453
+#: flatcamGUI/ObjectUI.py:875 flatcamGUI/ObjectUI.py:1466
 msgid "Plot Object"
 msgstr "Plot Object"
 
@@ -8786,7 +8409,7 @@ msgid "<b>Export G-Code:</b>"
 msgstr "<b>Export G-Code:</b>"
 
 #: flatcamGUI/FlatCAMGUI.py:5965 flatcamGUI/FlatCAMGUI.py:6006
-#: flatcamGUI/ObjectUI.py:1489
+#: flatcamGUI/ObjectUI.py:1502
 msgid ""
 "Export and save G-Code to\n"
 "make this object to a file."
@@ -8810,7 +8433,7 @@ msgstr ""
 msgid "Append to G-Code:"
 msgstr "Append to G-Code:"
 
-#: flatcamGUI/FlatCAMGUI.py:5984 flatcamGUI/ObjectUI.py:1511
+#: flatcamGUI/FlatCAMGUI.py:5984 flatcamGUI/ObjectUI.py:1524
 msgid ""
 "Type here any G-Code commands you would\n"
 "like to append to the generated file.\n"
@@ -8824,7 +8447,7 @@ msgstr ""
 msgid "CNC Job Adv. Options"
 msgstr "CNC Job Adv. Options"
 
-#: flatcamGUI/FlatCAMGUI.py:6012 flatcamGUI/ObjectUI.py:1529
+#: flatcamGUI/FlatCAMGUI.py:6012 flatcamGUI/ObjectUI.py:1542
 msgid "Toolchange G-Code:"
 msgstr "Toolchange G-Code:"
 
@@ -8840,11 +8463,11 @@ msgstr ""
 "This will constitute a Custom Toolchange GCode,\n"
 "or a Toolchange Macro."
 
-#: flatcamGUI/FlatCAMGUI.py:6028 flatcamGUI/ObjectUI.py:1551
+#: flatcamGUI/FlatCAMGUI.py:6028 flatcamGUI/ObjectUI.py:1564
 msgid "Use Toolchange Macro"
 msgstr "Use Toolchange Macro"
 
-#: flatcamGUI/FlatCAMGUI.py:6030 flatcamGUI/ObjectUI.py:1554
+#: flatcamGUI/FlatCAMGUI.py:6030 flatcamGUI/ObjectUI.py:1567
 msgid ""
 "Check this box if you want to use\n"
 "a Custom Toolchange GCode (macro)."
@@ -8852,7 +8475,7 @@ msgstr ""
 "Check this box if you want to use\n"
 "a Custom Toolchange GCode (macro)."
 
-#: flatcamGUI/FlatCAMGUI.py:6042 flatcamGUI/ObjectUI.py:1563
+#: flatcamGUI/FlatCAMGUI.py:6042 flatcamGUI/ObjectUI.py:1576
 msgid ""
 "A list of the FlatCAM variables that can be used\n"
 "in the Toolchange event.\n"
@@ -8862,35 +8485,35 @@ msgstr ""
 "in the Toolchange event.\n"
 "They have to be surrounded by the '%' symbol"
 
-#: flatcamGUI/FlatCAMGUI.py:6049 flatcamGUI/ObjectUI.py:1570
+#: flatcamGUI/FlatCAMGUI.py:6049 flatcamGUI/ObjectUI.py:1583
 msgid "Parameters"
 msgstr "Parameters"
 
-#: flatcamGUI/FlatCAMGUI.py:6052 flatcamGUI/ObjectUI.py:1573
+#: flatcamGUI/FlatCAMGUI.py:6052 flatcamGUI/ObjectUI.py:1586
 msgid "FlatCAM CNC parameters"
 msgstr "FlatCAM CNC parameters"
 
-#: flatcamGUI/FlatCAMGUI.py:6053 flatcamGUI/ObjectUI.py:1574
+#: flatcamGUI/FlatCAMGUI.py:6053 flatcamGUI/ObjectUI.py:1587
 msgid "tool = tool number"
 msgstr "tool = tool number"
 
-#: flatcamGUI/FlatCAMGUI.py:6054 flatcamGUI/ObjectUI.py:1575
+#: flatcamGUI/FlatCAMGUI.py:6054 flatcamGUI/ObjectUI.py:1588
 msgid "tooldia = tool diameter"
 msgstr "tooldia = tool diameter"
 
-#: flatcamGUI/FlatCAMGUI.py:6055 flatcamGUI/ObjectUI.py:1576
+#: flatcamGUI/FlatCAMGUI.py:6055 flatcamGUI/ObjectUI.py:1589
 msgid "t_drills = for Excellon, total number of drills"
 msgstr "t_drills = for Excellon, total number of drills"
 
-#: flatcamGUI/FlatCAMGUI.py:6056 flatcamGUI/ObjectUI.py:1577
+#: flatcamGUI/FlatCAMGUI.py:6056 flatcamGUI/ObjectUI.py:1590
 msgid "x_toolchange = X coord for Toolchange"
 msgstr "x_toolchange = X coord for Toolchange"
 
-#: flatcamGUI/FlatCAMGUI.py:6057 flatcamGUI/ObjectUI.py:1578
+#: flatcamGUI/FlatCAMGUI.py:6057 flatcamGUI/ObjectUI.py:1591
 msgid "y_toolchange = Y coord for Toolchange"
 msgstr "y_toolchange = Y coord for Toolchange"
 
-#: flatcamGUI/FlatCAMGUI.py:6058 flatcamGUI/ObjectUI.py:1579
+#: flatcamGUI/FlatCAMGUI.py:6058 flatcamGUI/ObjectUI.py:1592
 msgid "z_toolchange = Z coord for Toolchange"
 msgstr "z_toolchange = Z coord for Toolchange"
 
@@ -8902,15 +8525,15 @@ msgstr "z_cut = Z depth for the cut"
 msgid "z_move = Z height for travel"
 msgstr "z_move = Z height for travel"
 
-#: flatcamGUI/FlatCAMGUI.py:6061 flatcamGUI/ObjectUI.py:1582
+#: flatcamGUI/FlatCAMGUI.py:6061 flatcamGUI/ObjectUI.py:1595
 msgid "z_depthpercut = the step value for multidepth cut"
 msgstr "z_depthpercut = the step value for multidepth cut"
 
-#: flatcamGUI/FlatCAMGUI.py:6062 flatcamGUI/ObjectUI.py:1583
+#: flatcamGUI/FlatCAMGUI.py:6062 flatcamGUI/ObjectUI.py:1596
 msgid "spindlesspeed = the value for the spindle speed"
 msgstr "spindlesspeed = the value for the spindle speed"
 
-#: flatcamGUI/FlatCAMGUI.py:6064 flatcamGUI/ObjectUI.py:1584
+#: flatcamGUI/FlatCAMGUI.py:6064 flatcamGUI/ObjectUI.py:1597
 msgid "dwelltime = time to dwell to allow the spindle to reach it's set RPM"
 msgstr "dwelltime = time to dwell to allow the spindle to reach it's set RPM"
 
@@ -8984,7 +8607,6 @@ msgstr ""
 "If not checked, use the standard algorithm."
 
 #: flatcamGUI/FlatCAMGUI.py:6179 flatcamTools/ToolNonCopperClear.py:239
-#| msgid "Offset"
 msgid "Offset:"
 msgstr "Offset:"
 
@@ -9003,7 +8625,6 @@ msgstr ""
 "The value can be between 0 and 10 FlatCAM units."
 
 #: flatcamGUI/FlatCAMGUI.py:6191 flatcamTools/ToolNonCopperClear.py:251
-#| msgid "Offset_X val:"
 msgid "Offset value:"
 msgstr "Offset value:"
 
@@ -10330,11 +9951,11 @@ msgstr ""
 "grayed out and Cut Z is automatically calculated from the newly \n"
 "showed UI form entries named V-Tip Dia and V-Tip Angle."
 
-#: flatcamGUI/ObjectUI.py:889 flatcamGUI/ObjectUI.py:1471
+#: flatcamGUI/ObjectUI.py:889 flatcamGUI/ObjectUI.py:1484
 msgid "Dia"
 msgstr "Dia"
 
-#: flatcamGUI/ObjectUI.py:889 flatcamGUI/ObjectUI.py:1471
+#: flatcamGUI/ObjectUI.py:889 flatcamGUI/ObjectUI.py:1484
 #: flatcamTools/ToolNonCopperClear.py:83 flatcamTools/ToolPaint.py:80
 msgid "TT"
 msgstr "TT"
@@ -10650,7 +10271,7 @@ msgstr "<b>Display Annotation:</b>"
 msgid "<b>Travelled dist.:</b>"
 msgstr "<b>Travelled dist.:</b>"
 
-#: flatcamGUI/ObjectUI.py:1397 flatcamGUI/ObjectUI.py:1404
+#: flatcamGUI/ObjectUI.py:1396 flatcamGUI/ObjectUI.py:1401
 msgid ""
 "This is the total travelled distance on X-Y plane.\n"
 "In current units."
@@ -10658,11 +10279,24 @@ msgstr ""
 "This is the total travelled distance on X-Y plane.\n"
 "In current units."
 
-#: flatcamGUI/ObjectUI.py:1435
+#: flatcamGUI/ObjectUI.py:1406
+#| msgid "<b>Load files:</b>"
+msgid "<b>Estimated time:</b>"
+msgstr "<b>Estimated time:</b>"
+
+#: flatcamGUI/ObjectUI.py:1408 flatcamGUI/ObjectUI.py:1413
+msgid ""
+"This is the estimated time to do the routing/drilling,\n"
+"without the time spent in ToolChange events."
+msgstr ""
+"This is the estimated time to do the routing/drilling,\n"
+"without the time spent in ToolChange events."
+
+#: flatcamGUI/ObjectUI.py:1448
 msgid "<b>CNC Tools Table</b>"
 msgstr "<b>CNC Tools Table</b>"
 
-#: flatcamGUI/ObjectUI.py:1438
+#: flatcamGUI/ObjectUI.py:1451
 msgid ""
 "Tools in this CNCJob object used for cutting.\n"
 "The tool diameter is used for plotting on canvas.\n"
@@ -10684,27 +10318,27 @@ msgstr ""
 "The 'Tool type'(TT) can be circular with 1 to 4 teeths(C1..C4),\n"
 "ball(B), or V-Shaped(V)."
 
-#: flatcamGUI/ObjectUI.py:1472
+#: flatcamGUI/ObjectUI.py:1485
 msgid "P"
 msgstr "P"
 
-#: flatcamGUI/ObjectUI.py:1478
+#: flatcamGUI/ObjectUI.py:1491
 msgid "Update Plot"
 msgstr "Update Plot"
 
-#: flatcamGUI/ObjectUI.py:1480
+#: flatcamGUI/ObjectUI.py:1493
 msgid "Update the plot."
 msgstr "Update the plot."
 
-#: flatcamGUI/ObjectUI.py:1487
+#: flatcamGUI/ObjectUI.py:1500
 msgid "<b>Export CNC Code:</b>"
 msgstr "<b>Export CNC Code:</b>"
 
-#: flatcamGUI/ObjectUI.py:1495
+#: flatcamGUI/ObjectUI.py:1508
 msgid "Prepend to CNC Code:"
 msgstr "Prepend to CNC Code:"
 
-#: flatcamGUI/ObjectUI.py:1498
+#: flatcamGUI/ObjectUI.py:1511
 msgid ""
 "Type here any G-Code commands you would\n"
 "like to add to the beginning of the generated file."
@@ -10712,11 +10346,11 @@ msgstr ""
 "Type here any G-Code commands you would\n"
 "like to add to the beginning of the generated file."
 
-#: flatcamGUI/ObjectUI.py:1508
+#: flatcamGUI/ObjectUI.py:1521
 msgid "Append to CNC Code:"
 msgstr "Append to CNC Code:"
 
-#: flatcamGUI/ObjectUI.py:1532
+#: flatcamGUI/ObjectUI.py:1545
 msgid ""
 "Type here any G-Code commands you would\n"
 "like to be executed when Toolchange event is encountered.\n"
@@ -10738,19 +10372,19 @@ msgstr ""
 "that has 'toolchange_custom' in it's name and this is built\n"
 "having as template the 'Toolchange Custom' posprocessor file."
 
-#: flatcamGUI/ObjectUI.py:1580
+#: flatcamGUI/ObjectUI.py:1593
 msgid "z_cut = depth where to cut"
 msgstr "z_cut = depth where to cut"
 
-#: flatcamGUI/ObjectUI.py:1581
+#: flatcamGUI/ObjectUI.py:1594
 msgid "z_move = height where to travel"
 msgstr "z_move = height where to travel"
 
-#: flatcamGUI/ObjectUI.py:1600
+#: flatcamGUI/ObjectUI.py:1613
 msgid "View CNC Code"
 msgstr "View CNC Code"
 
-#: flatcamGUI/ObjectUI.py:1603
+#: flatcamGUI/ObjectUI.py:1616
 msgid ""
 "Opens TAB to view/modify/print G-Code\n"
 "file."
@@ -10758,11 +10392,11 @@ msgstr ""
 "Opens TAB to view/modify/print G-Code\n"
 "file."
 
-#: flatcamGUI/ObjectUI.py:1609
+#: flatcamGUI/ObjectUI.py:1622
 msgid "Save CNC Code"
 msgstr "Save CNC Code"
 
-#: flatcamGUI/ObjectUI.py:1612
+#: flatcamGUI/ObjectUI.py:1625
 msgid ""
 "Opens dialog to save G-Code\n"
 "file."
@@ -12016,12 +11650,10 @@ msgid "[ERROR_NOTCL] No object available."
 msgstr "[ERROR_NOTCL] No object available."
 
 #: flatcamTools/ToolNonCopperClear.py:840
-#| msgid "[WARNING_NOTCL] Nothing selected for buffering."
 msgid "[WARNING_NOTCL] Buffering ..."
 msgstr "[WARNING_NOTCL] Buffering ..."
 
 #: flatcamTools/ToolNonCopperClear.py:842
-#| msgid "[success] Gerber editing finished."
 msgid "[success] Buffering finished ..."
 msgstr "[success] Buffering finished ..."
 
