@@ -5000,14 +5000,20 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     geoms.append(scale_recursion(local_geom))
                 return geoms
             else:
-                return affinity.scale(geom, xfactor, yfactor, origin=(px, py))
+                try:
+                    return affinity.scale(geom, xfactor, yfactor, origin=(px, py))
+                except AttributeError:
+                    return geom
 
         if self.multigeo is True:
             for tool in self.tools:
                 self.tools[tool]['solid_geometry'] = scale_recursion(self.tools[tool]['solid_geometry'])
         else:
-            self.solid_geometry = scale_recursion(self.solid_geometry)
-
+            try:
+                self.solid_geometry = scale_recursion(self.solid_geometry)
+            except AttributeError:
+                self.solid_geometry = []
+                return
         self.app.inform.emit(_(
             "[success] Geometry Scale done."
         ))
@@ -5038,7 +5044,10 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                     geoms.append(translate_recursion(local_geom))
                 return geoms
             else:
-                return affinity.translate(geom, xoff=dx, yoff=dy)
+                try:
+                    return affinity.translate(geom, xoff=dx, yoff=dy)
+                except AttributeError:
+                    return geom
 
         if self.multigeo is True:
             for tool in self.tools:
@@ -5506,7 +5515,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # Fill form fields only on object create
         self.to_form()
 
-        # this means that the object that created this CNCJob was an Excellon
+        # this means that the object that created this CNCJob was an Excellon or Geometry
         try:
             if self.travel_distance:
                 self.ui.t_distance_label.show()
@@ -5515,6 +5524,19 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 self.ui.t_distance_entry.set_value('%.4f' % float(self.travel_distance))
                 self.ui.units_label.setText(str(self.units).lower())
                 self.ui.units_label.setDisabled(True)
+
+                self.ui.t_time_label.show()
+                self.ui.t_time_entry.setVisible(True)
+                self.ui.t_time_entry.setDisabled(True)
+                # if time is more than 1 then we have minutes, else we have seconds
+                if self.routing_time > 1:
+                    self.ui.t_time_entry.set_value('%.4f' % math.ceil(float(self.routing_time)))
+                    self.ui.units_time_label.setText('min')
+                else:
+                    time_r = self.routing_time * 60
+                    self.ui.t_time_entry.set_value('%.4f' % math.ceil(float(time_r)))
+                    self.ui.units_time_label.setText('sec')
+                self.ui.units_time_label.setDisabled(True)
         except AttributeError:
             pass
 
@@ -5972,6 +5994,12 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         visible = visible if visible else self.options['plot']
 
+        if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
+            self.text_col.enabled = True
+        else:
+            self.text_col.enabled = False
+        self.annotation.redraw()
+
         try:
             if self.multitool is False:  # single tool usage
                 self.plot2(tooldia=float(self.options["tooldia"]), obj=self, visible=visible, kind=kind)
@@ -5985,12 +6013,6 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         except (ObjectDeleted, AttributeError):
             self.shapes.clear(update=True)
             self.annotation.clear(update=True)
-
-        if self.ui.annotation_cb.get_value() and self.ui.plot_cb.get_value():
-            self.text_col.enabled = True
-        else:
-            self.text_col.enabled = False
-        self.annotation.redraw()
 
     def on_annotation_change(self):
         if self.ui.annotation_cb.get_value():

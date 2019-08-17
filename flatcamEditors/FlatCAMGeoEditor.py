@@ -3118,6 +3118,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # store the status of the editor so the Delete at object level will not work until the edit is finished
         self.editor_active = False
+        log.debug("Initialization of the FlatCAM Geometry Editor is finished ...")
 
     def pool_recreated(self, pool):
         self.shapes.pool = pool
@@ -3174,6 +3175,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         # Tell the App that the editor is active
         self.editor_active = True
+        log.debug("Finished activating the Geometry Editor...")
 
     def deactivate(self):
         try:
@@ -3253,6 +3255,7 @@ class FlatCAMGeoEditor(QtCore.QObject):
         # Show original geometry
         if self.fcgeometry:
             self.fcgeometry.visible = True
+        log.debug("Finished deactivating the Geometry Editor...")
 
     def connect_canvas_event_handlers(self):
         # Canvas events
@@ -3352,14 +3355,41 @@ class FlatCAMGeoEditor(QtCore.QObject):
         except (TypeError, AttributeError):
             pass
 
-        self.app.ui.draw_circle.triggered.disconnect()
-        self.app.ui.draw_poly.triggered.disconnect()
-        self.app.ui.draw_arc.triggered.disconnect()
+        try:
+            self.app.ui.draw_circle.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
-        self.app.ui.draw_text.triggered.disconnect()
-        self.app.ui.draw_buffer.triggered.disconnect()
-        self.app.ui.draw_paint.triggered.disconnect()
-        self.app.ui.draw_eraser.triggered.disconnect()
+        try:
+            self.app.ui.draw_poly.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_arc.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+
+        try:
+            self.app.ui.draw_text.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_buffer.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_paint.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
+
+        try:
+            self.app.ui.draw_eraser.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
         try:
             self.app.ui.draw_union.triggered.disconnect(self.union)
@@ -3376,7 +3406,10 @@ class FlatCAMGeoEditor(QtCore.QObject):
         except (TypeError, AttributeError):
             pass
 
-        self.app.ui.draw_transform.triggered.disconnect()
+        try:
+            self.app.ui.draw_transform.triggered.disconnect()
+        except (TypeError, AttributeError):
+            pass
 
     def add_shape(self, shape):
         """

@@ -1389,7 +1389,10 @@ class Geometry(object):
                     new_obj.append(mirror_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj, xscale, yscale, origin=(px, py))
+                try:
+                    return affinity.scale(obj, xscale, yscale, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         try:
             if self.multigeo is True:
@@ -1427,7 +1430,10 @@ class Geometry(object):
                     new_obj.append(rotate_geom(g))
                 return new_obj
             else:
-                return affinity.rotate(obj, angle, origin=(px, py))
+                try:
+                    return affinity.rotate(obj, angle, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         try:
             if self.multigeo is True:
@@ -1463,7 +1469,10 @@ class Geometry(object):
                     new_obj.append(skew_geom(g))
                 return new_obj
             else:
-                return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+                try:
+                    return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         try:
             if self.multigeo is True:
@@ -3380,7 +3389,10 @@ class Gerber (Geometry):
                     new_obj.append(scale_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj, xfactor, yfactor, origin=(px, py))
+                try:
+                    return affinity.scale(obj, xfactor, yfactor, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         self.solid_geometry = scale_geom(self.solid_geometry)
         self.follow_geometry = scale_geom(self.follow_geometry)
@@ -3444,7 +3456,10 @@ class Gerber (Geometry):
                     new_obj.append(offset_geom(g))
                 return new_obj
             else:
-                return affinity.translate(obj, xoff=dx, yoff=dy)
+                try:
+                    return affinity.translate(obj, xoff=dx, yoff=dy)
+                except AttributeError:
+                    return obj
 
         # ## Solid geometry
         self.solid_geometry = offset_geom(self.solid_geometry)
@@ -3500,7 +3515,10 @@ class Gerber (Geometry):
                     new_obj.append(mirror_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj, xscale, yscale, origin=(px, py))
+                try:
+                    return affinity.scale(obj, xscale, yscale, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         self.solid_geometry = mirror_geom(self.solid_geometry)
         self.follow_geometry = mirror_geom(self.follow_geometry)
@@ -3546,7 +3564,10 @@ class Gerber (Geometry):
                     new_obj.append(skew_geom(g))
                 return new_obj
             else:
-                return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+                try:
+                    return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         self.solid_geometry = skew_geom(self.solid_geometry)
         self.follow_geometry = skew_geom(self.follow_geometry)
@@ -3585,7 +3606,10 @@ class Gerber (Geometry):
                     new_obj.append(rotate_geom(g))
                 return new_obj
             else:
-                return affinity.rotate(obj, angle, origin=(px, py))
+                try:
+                    return affinity.rotate(obj, angle, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         self.solid_geometry = rotate_geom(self.solid_geometry)
         self.follow_geometry = rotate_geom(self.follow_geometry)
@@ -4703,8 +4727,10 @@ class Excellon(Geometry):
                     new_obj.append(scale_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj, xfactor,
-                                             yfactor, origin=(px, py))
+                try:
+                    return affinity.scale(obj, xfactor, yfactor, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         # Drills
         for drill in self.drills:
@@ -4739,7 +4765,10 @@ class Excellon(Geometry):
                     new_obj.append(offset_geom(g))
                 return new_obj
             else:
-                return affinity.translate(obj, xoff=dx, yoff=dy)
+                try:
+                    return affinity.translate(obj, xoff=dx, yoff=dy)
+                except AttributeError:
+                    return obj
 
         # Drills
         for drill in self.drills:
@@ -4776,7 +4805,10 @@ class Excellon(Geometry):
                     new_obj.append(mirror_geom(g))
                 return new_obj
             else:
-                return affinity.scale(obj, xscale, yscale, origin=(px, py))
+                try:
+                    return affinity.scale(obj, xscale, yscale, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         # Modify data
         # Drills
@@ -4823,7 +4855,10 @@ class Excellon(Geometry):
                     new_obj.append(skew_geom(g))
                 return new_obj
             else:
-                return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+                try:
+                    return affinity.skew(obj, angle_x, angle_y, origin=(px, py))
+                except AttributeError:
+                    return obj
 
         if point is None:
             px, py = 0, 0
@@ -4874,9 +4909,15 @@ class Excellon(Geometry):
                 return new_obj
             else:
                 if origin:
-                    return affinity.rotate(obj, angle, origin=origin)
+                    try:
+                        return affinity.rotate(obj, angle, origin=origin)
+                    except AttributeError:
+                        return obj
                 else:
-                    return affinity.rotate(obj, angle, origin=(px, py))
+                    try:
+                        return affinity.rotate(obj, angle, origin=(px, py))
+                    except AttributeError:
+                        return obj
 
         if point is None:
             # Drills
@@ -5023,6 +5064,11 @@ class CNCjob(Geometry):
         self.oldy = None
 
         self.tool = 0.0
+
+        # here store the travelled distance
+        self.travel_distance = 0.0
+        # here store the routing time
+        self.routing_time = 0.0
 
         # used for creating drill CCode geometry; will be updated in the generate_from_excellon_by_tool()
         self.exc_drills = None
@@ -5285,7 +5331,10 @@ class CNCjob(Geometry):
             self.oldx = 0.0
             self.oldy = 0.0
 
-        measured_distance = 0
+        measured_distance = 0.0
+        measured_down_distance = 0.0
+        measured_up_to_zero_distance = 0.0
+        measured_lift_distance = 0.0
 
         current_platform = platform.architecture()[0]
         if current_platform == '64bit':
@@ -5382,8 +5431,16 @@ class CNCjob(Geometry):
 
                                 gcode += self.doformat(p.rapid_code, x=locx, y=locy)
                                 gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                                measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
                                 if self.f_retract is False:
                                     gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                    measured_up_to_zero_distance += abs(self.z_cut)
+                                    measured_lift_distance += abs(self.z_move)
+                                else:
+                                    measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
                                 measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
                                 self.oldx = locx
@@ -5477,10 +5534,19 @@ class CNCjob(Geometry):
                             for k in node_list:
                                 locx = locations[k][0]
                                 locy = locations[k][1]
+
                                 gcode += self.doformat(p.rapid_code, x=locx, y=locy)
                                 gcode += self.doformat(p.down_code, x=locx, y=locy)
+
+                                measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
                                 if self.f_retract is False:
                                     gcode += self.doformat(p.up_to_zero_code, x=locx, y=locy)
+                                    measured_up_to_zero_distance += abs(self.z_cut)
+                                    measured_lift_distance += abs(self.z_move)
+                                else:
+                                    measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
                                 gcode += self.doformat(p.lift_code, x=locx, y=locy)
                                 measured_distance += abs(distance_euclidian(locx, locy, self.oldx, self.oldy))
                                 self.oldx = locx
@@ -5537,8 +5603,16 @@ class CNCjob(Geometry):
                         for point in self.optimized_travelling_salesman(altPoints):
                             gcode += self.doformat(p.rapid_code, x=point[0], y=point[1])
                             gcode += self.doformat(p.down_code, x=point[0], y=point[1])
+
+                            measured_down_distance += abs(self.z_cut) + abs(self.z_move)
+
                             if self.f_retract is False:
                                 gcode += self.doformat(p.up_to_zero_code, x=point[0], y=point[1])
+                                measured_up_to_zero_distance += abs(self.z_cut)
+                                measured_lift_distance += abs(self.z_move)
+                            else:
+                                measured_lift_distance += abs(self.z_cut) + abs(self.z_move)
+
                             gcode += self.doformat(p.lift_code, x=point[0], y=point[1])
                             measured_distance += abs(distance_euclidian(point[0], point[1], self.oldx, self.oldy))
                             self.oldx = point[0]
@@ -5557,6 +5631,15 @@ class CNCjob(Geometry):
         log.debug("The total travel distance including travel to end position is: %s" %
                   str(measured_distance) + '\n')
         self.travel_distance = measured_distance
+
+        # I use the value of self.feedrate_rapid for the feadrate in case of the measure_lift_distance and for
+        # traveled_time because it is not always possible to determine the feedrate that the CNC machine uses
+        # for G0 move (the fastest speed available to the CNC router). Although self.feedrate_rapids is used only with
+        # Marlin postprocessor and derivatives.
+        self.routing_time = (measured_down_distance + measured_up_to_zero_distance) / self.feedrate
+        lift_time = measured_lift_distance / self.feedrate_rapid
+        traveled_time = measured_distance / self.feedrate_rapid
+        self.routing_time += lift_time + traveled_time
 
         self.gcode = gcode
         return 'OK'
@@ -5736,6 +5819,9 @@ class CNCjob(Geometry):
             if self.dwell is True:
                 self.gcode += self.doformat(p.dwell_code)   # Dwell time
 
+        total_travel = 0.0
+        total_cut = 0.0
+
         # ## Iterate over geometry paths getting the nearest each time.
         log.debug("Starting G-Code...")
         path_count = 0
@@ -5757,20 +5843,40 @@ class CNCjob(Geometry):
 
                 # ---------- Single depth/pass --------
                 if not multidepth:
+                    # calculate the cut distance
+                    total_cut = total_cut + geo.length
+
                     self.gcode += self.create_gcode_single_pass(geo, extracut, tolerance)
 
                 # --------- Multi-pass ---------
                 else:
+                    # calculate the cut distance
+                    # due of the number of cuts (multi depth) it has to multiplied by the number of cuts
+                    nr_cuts = 0
+                    depth = abs(self.z_cut)
+                    while depth > 0:
+                        nr_cuts += 1
+                        depth -= float(self.z_depthpercut)
+
+                    total_cut += (geo.length * nr_cuts)
+
                     self.gcode += self.create_gcode_multi_pass(geo, extracut, tolerance,
                                                                postproc=p, current_point=current_pt)
 
+                # calculate the total distance
+                total_travel = total_travel + abs(distance(pt1=current_pt, pt2=pt))
                 current_pt = geo.coords[-1]
-                pt, geo = storage.nearest(current_pt) # Next
 
+                pt, geo = storage.nearest(current_pt) # Next
         except StopIteration:  # Nothing found in storage.
             pass
 
         log.debug("Finishing G-Code... %s paths traced." % path_count)
+
+        # add move to end position
+        total_travel += abs(distance_euclidian(current_pt[0], current_pt[1], 0, 0))
+        self.travel_distance += total_travel + total_cut
+        self.routing_time += total_cut / self.feedrate
 
         # Finish
         self.gcode += self.doformat(p.spindle_stop_code)
@@ -6002,6 +6108,9 @@ class CNCjob(Geometry):
             if self.dwell is True:
                 self.gcode += self.doformat(p.dwell_code)   # Dwell time
 
+        total_travel = 0.0
+        total_cut = 0.0
+
         # Iterate over geometry paths getting the nearest each time.
         log.debug("Starting G-Code...")
         path_count = 0
@@ -6021,20 +6130,39 @@ class CNCjob(Geometry):
 
                 # ---------- Single depth/pass --------
                 if not multidepth:
+                    # calculate the cut distance
+                    total_cut += geo.length
                     self.gcode += self.create_gcode_single_pass(geo, extracut, tolerance)
 
                 # --------- Multi-pass ---------
                 else:
+                    # calculate the cut distance
+                    # due of the number of cuts (multi depth) it has to multiplied by the number of cuts
+                    nr_cuts = 0
+                    depth = abs(self.z_cut)
+                    while depth > 0:
+                        nr_cuts += 1
+                        depth -= float(self.z_depthpercut)
+
+                    total_cut += (geo.length * nr_cuts)
+
                     self.gcode += self.create_gcode_multi_pass(geo, extracut, tolerance,
                                                                postproc=p, current_point=current_pt)
 
+                # calculate the travel distance
+                total_travel += abs(distance(pt1=current_pt, pt2=pt))
                 current_pt = geo.coords[-1]
-                pt, geo = storage.nearest(current_pt) # Next
 
+                pt, geo = storage.nearest(current_pt) # Next
         except StopIteration:  # Nothing found in storage.
             pass
 
         log.debug("Finishing G-Code... %s paths traced." % path_count)
+
+        # add move to end position
+        total_travel += abs(distance_euclidian(current_pt[0], current_pt[1], 0, 0))
+        self.travel_distance += total_travel + total_cut
+        self.routing_time += total_cut / self.feedrate
 
         # Finish
         self.gcode += self.doformat(p.spindle_stop_code)
@@ -6572,10 +6700,12 @@ class CNCjob(Geometry):
                     if geo['kind'][0] == 'C':
                         obj.add_shape(shape=poly, color=color['C'][1], face_color=color['C'][0],
                                       visible=visible, layer=1)
-
-            obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
-                               font_size=self.app.defaults["cncjob_annotation_fontsize"],
-                               color=self.app.defaults["cncjob_annotation_fontcolor"])
+            try:
+                obj.annotation.set(text=text, pos=pos, visible=obj.options['plot'],
+                                   font_size=self.app.defaults["cncjob_annotation_fontsize"],
+                                   color=self.app.defaults["cncjob_annotation_fontcolor"])
+            except Exception as e:
+                pass
 
     def create_geometry(self):
         # TODO: This takes forever. Too much data?
@@ -7046,7 +7176,10 @@ class CNCjob(Geometry):
             self.gcode = scale_g(self.gcode)
             # offset geometry
             for g in self.gcode_parsed:
-                g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
+                try:
+                    g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
+                except AttributeError:
+                    return g['geom']
             self.create_geometry()
         else:
             for k, v in self.cnc_tools.items():
@@ -7054,9 +7187,11 @@ class CNCjob(Geometry):
                 v['gcode'] = scale_g(v['gcode'])
                 # scale gcode_parsed
                 for g in v['gcode_parsed']:
-                    g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
+                    try:
+                        g['geom'] = affinity.scale(g['geom'], xfactor, yfactor, origin=(px, py))
+                    except AttributeError:
+                        return g['geom']
                 v['solid_geometry'] = cascaded_union([geo['geom'] for geo in v['gcode_parsed']])
-
         self.create_geometry()
 
     def offset(self, vect):
@@ -7112,7 +7247,10 @@ class CNCjob(Geometry):
             self.gcode = offset_g(self.gcode)
             # offset geometry
             for g in self.gcode_parsed:
-                g['geom'] = affinity.translate(g['geom'], xoff=dx, yoff=dy)
+                try:
+                    g['geom'] = affinity.translate(g['geom'], xoff=dx, yoff=dy)
+                except AttributeError:
+                    return g['geom']
             self.create_geometry()
         else:
             for k, v in self.cnc_tools.items():
@@ -7120,7 +7258,10 @@ class CNCjob(Geometry):
                 v['gcode'] = offset_g(v['gcode'])
                 # offset gcode_parsed
                 for g in v['gcode_parsed']:
-                    g['geom'] = affinity.translate(g['geom'], xoff=dx, yoff=dy)
+                    try:
+                        g['geom'] = affinity.translate(g['geom'], xoff=dx, yoff=dy)
+                    except AttributeError:
+                        return g['geom']
                 v['solid_geometry'] = cascaded_union([geo['geom'] for geo in v['gcode_parsed']])
 
     def mirror(self, axis, point):
@@ -7134,8 +7275,10 @@ class CNCjob(Geometry):
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
         for g in self.gcode_parsed:
-            g['geom'] = affinity.scale(g['geom'], xscale, yscale, origin=(px, py))
-
+            try:
+                g['geom'] = affinity.scale(g['geom'], xscale, yscale, origin=(px, py))
+            except AttributeError:
+                return g['geom']
         self.create_geometry()
 
     def skew(self, angle_x, angle_y, point):
@@ -7156,9 +7299,10 @@ class CNCjob(Geometry):
         px, py = point
 
         for g in self.gcode_parsed:
-            g['geom'] = affinity.skew(g['geom'], angle_x, angle_y,
-                                      origin=(px, py))
-
+            try:
+                g['geom'] = affinity.skew(g['geom'], angle_x, angle_y, origin=(px, py))
+            except AttributeError:
+                return g['geom']
         self.create_geometry()
 
     def rotate(self, angle, point):
@@ -7172,8 +7316,10 @@ class CNCjob(Geometry):
         px, py = point
 
         for g in self.gcode_parsed:
-            g['geom'] = affinity.rotate(g['geom'], angle, origin=(px, py))
-
+            try:
+                g['geom'] = affinity.rotate(g['geom'], angle, origin=(px, py))
+            except AttributeError:
+                return g['geom']
         self.create_geometry()
 
 
