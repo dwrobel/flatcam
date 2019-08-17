@@ -5024,6 +5024,11 @@ class CNCjob(Geometry):
 
         self.tool = 0.0
 
+        # here store the travelled distance
+        self.travel_distance = 0.0
+        # here store the routing time
+        self.routing_time = 0.0
+
         # used for creating drill CCode geometry; will be updated in the generate_from_excellon_by_tool()
         self.exc_drills = None
         self.exc_tools = None
@@ -5557,6 +5562,7 @@ class CNCjob(Geometry):
         log.debug("The total travel distance including travel to end position is: %s" %
                   str(measured_distance) + '\n')
         self.travel_distance = measured_distance
+        # self.routing_time = measured_distance / self.z_feedrate
 
         self.gcode = gcode
         return 'OK'
@@ -5736,6 +5742,9 @@ class CNCjob(Geometry):
             if self.dwell is True:
                 self.gcode += self.doformat(p.dwell_code)   # Dwell time
 
+        total_travel = 0.0
+        total_cut = 0.0
+
         # ## Iterate over geometry paths getting the nearest each time.
         log.debug("Starting G-Code...")
         path_count = 0
@@ -5764,13 +5773,19 @@ class CNCjob(Geometry):
                     self.gcode += self.create_gcode_multi_pass(geo, extracut, tolerance,
                                                                postproc=p, current_point=current_pt)
 
+                # calculate the total distance
+                total_travel = total_travel + abs(distance(pt1=current_pt, pt2=pt))
+                total_cut = total_cut + geo.length
                 current_pt = geo.coords[-1]
-                pt, geo = storage.nearest(current_pt) # Next
 
+                pt, geo = storage.nearest(current_pt) # Next
         except StopIteration:  # Nothing found in storage.
             pass
 
         log.debug("Finishing G-Code... %s paths traced." % path_count)
+
+        self.travel_distance = total_travel + total_cut
+        self.routing_time = total_cut / self.feedrate
 
         # Finish
         self.gcode += self.doformat(p.spindle_stop_code)
@@ -6002,6 +6017,9 @@ class CNCjob(Geometry):
             if self.dwell is True:
                 self.gcode += self.doformat(p.dwell_code)   # Dwell time
 
+        total_travel = 0.0
+        total_cut = 0.0
+
         # Iterate over geometry paths getting the nearest each time.
         log.debug("Starting G-Code...")
         path_count = 0
@@ -6028,13 +6046,19 @@ class CNCjob(Geometry):
                     self.gcode += self.create_gcode_multi_pass(geo, extracut, tolerance,
                                                                postproc=p, current_point=current_pt)
 
+                # calculate the total distance
+                total_travel = total_travel + abs(distance(pt1=current_pt, pt2=pt))
+                total_cut = total_cut + geo.length
                 current_pt = geo.coords[-1]
-                pt, geo = storage.nearest(current_pt) # Next
 
+                pt, geo = storage.nearest(current_pt) # Next
         except StopIteration:  # Nothing found in storage.
             pass
 
         log.debug("Finishing G-Code... %s paths traced." % path_count)
+
+        self.travel_distance = total_travel + total_cut
+        self.routing_time = total_cut / self.feedrate
 
         # Finish
         self.gcode += self.doformat(p.spindle_stop_code)

@@ -1393,19 +1393,27 @@ class CNCObjectUI(ObjectUI):
 
         self.t_distance_label = QtWidgets.QLabel(_("<b>Travelled dist.:</b>"))
         self.t_distance_label.setToolTip(
-            _(
-                "This is the total travelled distance on X-Y plane.\n"
-                "In current units."
-            )
+            _("This is the total travelled distance on X-Y plane.\n"
+              "In current units.")
         )
         self.t_distance_entry = FCEntry()
         self.t_distance_entry.setToolTip(
-            _(
-                "This is the total travelled distance on X-Y plane.\n"
-                "In current units."
-            )
+            _("This is the total travelled distance on X-Y plane.\n"
+              "In current units.")
         )
         self.units_label = QtWidgets.QLabel()
+
+        self.t_time_label = QtWidgets.QLabel(_("<b>Estimated time.:</b>"))
+        self.t_distance_label.setToolTip(
+            _("This is the estimated time to do the routing.\n"
+              "In current units.")
+        )
+        self.t_time_entry = FCEntry()
+        self.t_time_entry.setToolTip(
+            _("This is the estimated time to do the routing.\n"
+              "In current units.")
+        )
+        self.units_time_label = QtWidgets.QLabel()
 
         f_lay = QtWidgets.QGridLayout()
         f_lay.setColumnStretch(1, 1)
@@ -1421,9 +1429,14 @@ class CNCObjectUI(ObjectUI):
         f_lay.addWidget(self.t_distance_label, 2, 0)
         f_lay.addWidget(self.t_distance_entry, 2, 1)
         f_lay.addWidget(self.units_label, 2, 2)
+        f_lay.addWidget(self.t_time_label, 3, 0)
+        f_lay.addWidget(self.t_time_entry, 3, 1)
+        f_lay.addWidget(self.units_time_label, 3, 2)
 
         self.t_distance_label.hide()
         self.t_distance_entry.setVisible(False)
+        self.t_time_label.hide()
+        self.t_time_entry.setVisible(False)
 
         e1_lbl = QtWidgets.QLabel('')
         self.custom_box.addWidget(e1_lbl)

@@ -11,6 +11,10 @@ CAD program, and create G-Code for Isolation routing.
 
 17.08.2019
 
+- added estimated time of routing for the CNCJob and added travelled distance parameter for geometry, too
+
+17.08.2019
+
 - updated the translations for the new strings
 - RELEASE 8.94
 

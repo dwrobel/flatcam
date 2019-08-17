@@ -5506,7 +5506,7 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         # Fill form fields only on object create
         self.to_form()
 
-        # this means that the object that created this CNCJob was an Excellon
+        # this means that the object that created this CNCJob was an Excellon or Geometry
         try:
             if self.travel_distance:
                 self.ui.t_distance_label.show()
@@ -5515,6 +5515,19 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
                 self.ui.t_distance_entry.set_value('%.4f' % float(self.travel_distance))
                 self.ui.units_label.setText(str(self.units).lower())
                 self.ui.units_label.setDisabled(True)
+
+                self.ui.t_time_label.show()
+                self.ui.t_time_entry.setVisible(True)
+                self.ui.t_time_entry.setDisabled(True)
+                # if time is more than 1 then we have minutes, else we have seconds
+                if self.routing_time > 1:
+                    self.ui.t_time_entry.set_value('%.4f' % float(self.routing_time))
+                    self.ui.units_time_label.setText('min')
+                else:
+                    time_r = self.routing_time * 60
+                    self.ui.t_time_entry.set_value('%.4f' % float(time_r))
+                    self.ui.units_time_label.setText('sec')
+                self.ui.units_time_label.setDisabled(True)
         except AttributeError:
             pass
 
