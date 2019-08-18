@@ -14,6 +14,7 @@ CAD program, and create G-Code for Isolation routing.
 - made the exported preferences formatted therefore more easily read
 - projects at startup don't work in another thread so there is no multithreading if I want to double click an project and to load it
 - added messages in the application window title which show the progress in loading a project (which is not thread-safe therefore keeping the app from fully initialize until finished)
+- in NCC Tool added a new parameter (radio button) that offer the choice on the order of the tools both in tools table and in execution of engraving; added as a parameter also in Edit -> Preferences -> Tools -> NCC Tool
 
 17.08.2019
 

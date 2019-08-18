@@ -110,23 +110,37 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "Choosing the <B>V-Shape</B> Tool Type automatically will select the Operation Type "
               "in the resulting geometry as Isolation."))
 
-        self.empty_label = QtWidgets.QLabel('')
-        self.tools_box.addWidget(self.empty_label)
+        self.ncc_order_label = QtWidgets.QLabel('<b>%s:</b>' % _('Tool order'))
+        self.ncc_order_label.setToolTip(_("This set the way that the tools in the tools table are used\n"
+                                          "for copper clearing.\n"
+                                          "'No' --> means that the used order is the one in the tool table\n"
+                                          "'Forward' --> means that the tools will be ordered from small to big\n"
+                                          "'Reverse' --> menas that the tools will ordered from big to small\n\n"
+                                          "WARNING: using rest machining will automatically set the order\n"
+                                          "in reverse and disable this control."))
+
+        self.ncc_order_radio = RadioSet([{'label': _('No'), 'value': 'no'},
+                                         {'label': _('Forward'), 'value': 'fwd'},
+                                         {'label': _('Reverse'), 'value': 'rev'}])
+        self.ncc_order_radio.setToolTip(_("This set the way that the tools in the tools table are used\n"
+                                          "for copper clearing.\n"
+                                          "'No' --> means that the used order is the one in the tool table\n"
+                                          "'Forward' --> means that the tools will be ordered from small to big\n"
+                                          "'Reverse' --> menas that the tools will ordered from big to small\n\n"
+                                          "WARNING: using rest machining will automatically set the order\n"
+                                          "in reverse and disable this control."))
+        form = QtWidgets.QFormLayout()
+        self.tools_box.addLayout(form)
+        form.addRow(QtWidgets.QLabel(''), QtWidgets.QLabel(''))
+        form.addRow(self.ncc_order_label, self.ncc_order_radio)
 
         # ### Add a new Tool ####
-        hlay = QtWidgets.QHBoxLayout()
-        self.tools_box.addLayout(hlay)
-
         self.addtool_entry_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Tool Dia'))
         self.addtool_entry_lbl.setToolTip(
             _("Diameter for the new tool to add in the Tool Table")
         )
         self.addtool_entry = FCEntry2()
-
-        # hlay.addWidget(self.addtool_label)
-        # hlay.addStretch()
-        hlay.addWidget(self.addtool_entry_lbl)
-        hlay.addWidget(self.addtool_entry)
+        form.addRow(self.addtool_entry_lbl, self.addtool_entry)
 
         grid2 = QtWidgets.QGridLayout()
         self.tools_box.addLayout(grid2)
@@ -159,7 +173,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         grid3 = QtWidgets.QGridLayout()
         self.tools_box.addLayout(grid3)
 
-        e_lab_1 = QtWidgets.QLabel('')
+        e_lab_1 = QtWidgets.QLabel('<b>%s:</b>' % _("Parameters"))
         grid3.addWidget(e_lab_1, 0, 0)
 
         nccoverlabel = QtWidgets.QLabel(_('Overlap Rate:'))
@@ -346,6 +360,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
         self.reference_radio.group_toggle_fn = self.on_toggle_reference
         self.ncc_choice_offset_cb.stateChanged.connect(self.on_offset_choice)
+        self.ncc_rest_cb.stateChanged.connect(self.on_rest_machining_check)
+        self.ncc_order_radio.activated_custom[str].connect(self.on_order_changed)
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+N', **kwargs)
@@ -382,6 +398,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
     def set_tool_ui(self):
         self.tools_frame.show()
 
+        self.ncc_order_radio.set_value(self.app.defaults["tools_nccorder"])
         self.ncc_overlap_entry.set_value(self.app.defaults["tools_nccoverlap"])
         self.ncc_margin_entry.set_value(self.app.defaults["tools_nccmargin"])
         self.ncc_method_radio.set_value(self.app.defaults["tools_nccmethod"])
@@ -484,7 +501,14 @@ class NonCopperClear(FlatCAMTool, Gerber):
         sorted_tools = []
         for k, v in self.ncc_tools.items():
             sorted_tools.append(float('%.4f' % float(v['tooldia'])))
-        sorted_tools.sort()
+
+        order = self.ncc_order_radio.get_value()
+        if order == 'fwd':
+            sorted_tools.sort(reverse=False)
+        elif order == 'rev':
+            sorted_tools.sort(reverse=True)
+        else:
+            pass
 
         n = len(sorted_tools)
         self.tools_table.setRowCount(n)
@@ -588,6 +612,19 @@ class NonCopperClear(FlatCAMTool, Gerber):
         else:
             self.ncc_offset_label.hide()
             self.ncc_offset_spinner.hide()
+
+    def on_order_changed(self, order):
+        if order != 'no':
+            self.build_ui()
+
+    def on_rest_machining_check(self, state):
+        if state:
+            self.ncc_order_radio.set_value('rev')
+            self.ncc_order_label.setDisabled(True)
+            self.ncc_order_radio.setDisabled(True)
+        else:
+            self.ncc_order_label.setDisabled(False)
+            self.ncc_order_radio.setDisabled(False)
 
     def on_tool_add(self, dia=None, muted=None):
 
@@ -878,7 +915,14 @@ class NonCopperClear(FlatCAMTool, Gerber):
         sorted_tools = []
         for k, v in self.ncc_tools.items():
             sorted_tools.append(float('%.4f' % float(v['tooldia'])))
-        sorted_tools.sort(reverse=True)
+
+        order = self.ncc_order_radio.get_value()
+        if order == 'fwd':
+            sorted_tools.sort(reverse=False)
+        elif order == 'rev':
+            sorted_tools.sort(reverse=True)
+        else:
+            pass
 
         # Do job in background
         proc = self.app.proc_container.new(_("Clearing Non-Copper areas."))

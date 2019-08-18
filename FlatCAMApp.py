@@ -560,6 +560,7 @@ class App(QtCore.QObject):
 
             # NCC Tool
             "tools_ncctools": self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
+            "tools_nccorder": self.ui.tools_defaults_form.tools_ncc_group.ncc_order_radio,
             "tools_nccoverlap": self.ui.tools_defaults_form.tools_ncc_group.ncc_overlap_entry,
             "tools_nccmargin": self.ui.tools_defaults_form.tools_ncc_group.ncc_margin_entry,
             "tools_nccmethod": self.ui.tools_defaults_form.tools_ncc_group.ncc_method_radio,
@@ -918,6 +919,7 @@ class App(QtCore.QObject):
             "cncjob_toolchange_macro_enable": False,
 
             "tools_ncctools": "0.0393701, 0.019685",
+            "tools_nccorder": 'rev',
             "tools_nccoverlap": 0.015748,
             "tools_nccmargin": 0.0393701,
             "tools_nccmethod": "seed",
