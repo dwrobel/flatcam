@@ -8320,9 +8320,8 @@ class App(QtCore.QObject):
             App.log.debug("Recreating from opened project an %s object: %s" %
                           (obj['kind'].capitalize(), obj['options']['name']))
 
-            self.set_ui_title(name=_("Loading Project ... restoring {}: {}").format(
-                obj['kind'].upper(), obj['options']['name'])
-            )
+            self.set_ui_title(name="{} {}: {}".format(_("Loading Project ... restoring"), obj['kind'].upper(), obj['options']['name']))
+
             self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=True)
 
         # self.plot_all()
