@@ -147,7 +147,7 @@ class GerberObjectUI(ObjectUI):
         grid0.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.custom_box.addLayout(grid0)
 
-        self.plot_options_label = QtWidgets.QLabel(_("<b>Plot Options:</b>"))
+        self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
         self.plot_options_label.setMinimumWidth(90)
 
         grid0.addWidget(self.plot_options_label, 0, 0)
@@ -179,7 +179,7 @@ class GerberObjectUI(ObjectUI):
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(self.name_hlay)
-        name_label = QtWidgets.QLabel(_("<b>Name:</b>"))
+        name_label = QtWidgets.QLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
         self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.name_hlay.addWidget(name_label)
@@ -247,7 +247,7 @@ class GerberObjectUI(ObjectUI):
         self.apertures_table.setVisible(False)
 
         # Isolation Routing
-        self.isolation_routing_label = QtWidgets.QLabel(_("<b>Isolation Routing:</b>"))
+        self.isolation_routing_label = QtWidgets.QLabel("<b>%s:</b>" % _("Isolation Routing"))
         self.isolation_routing_label.setToolTip(
             _("Create a Geometry object with\n"
               "toolpaths to cut outside polygons.")
@@ -320,7 +320,7 @@ class GerberObjectUI(ObjectUI):
         )
         grid1.addWidget(self.follow_cb, 4, 1)
 
-        self.gen_iso_label = QtWidgets.QLabel(_("<b>Generate Isolation Geometry:</b>"))
+        self.gen_iso_label = QtWidgets.QLabel("<b>%s:</b>" % _("Generate Isolation Geometry"))
         self.gen_iso_label.setToolTip(
             _("Create a Geometry object with toolpaths to cut \n"
               "isolation outside, inside or on both sides of the\n"
@@ -379,7 +379,7 @@ class GerberObjectUI(ObjectUI):
         self.custom_box.addLayout(grid2)
 
         # ## Clear non-copper regions
-        self.clearcopper_label = QtWidgets.QLabel(_("<b>Clear N-copper:</b>"))
+        self.clearcopper_label = QtWidgets.QLabel("<b>%s:</b>" % _("Clear N-copper"))
         self.clearcopper_label.setToolTip(
             _("Create a Geometry object with\n"
               "toolpaths to cut all non-copper regions.")
@@ -395,7 +395,7 @@ class GerberObjectUI(ObjectUI):
         grid2.addWidget(self.generate_ncc_button, 0, 1)
 
         # ## Board cutout
-        self.board_cutout_label = QtWidgets.QLabel(_("<b>Board cutout:</b>"))
+        self.board_cutout_label = QtWidgets.QLabel("<b>%s:</b>" % _("Board cutout"))
         self.board_cutout_label.setToolTip(
             _("Create toolpaths to cut around\n"
               "the PCB and separate it from\n"
@@ -411,7 +411,7 @@ class GerberObjectUI(ObjectUI):
         grid2.addWidget(self.generate_cutout_button, 1, 1)
 
         # ## Non-copper regions
-        self.noncopper_label = QtWidgets.QLabel(_("<b>Non-copper regions:</b>"))
+        self.noncopper_label = QtWidgets.QLabel("<b>%s:</b>" % _("Non-copper regions"))
         self.noncopper_label.setToolTip(
             _("Create polygons covering the\n"
               "areas without copper on the PCB.\n"
@@ -500,7 +500,7 @@ class ExcellonObjectUI(ObjectUI):
         hlay_plot = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(hlay_plot)
 
-        self.plot_options_label = QtWidgets.QLabel(_("<b>Plot Options:</b>"))
+        self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
         self.solid_cb = FCCheckBox(label=_('Solid'))
         self.solid_cb.setToolTip(
             _("Solid circles.")
@@ -512,7 +512,7 @@ class ExcellonObjectUI(ObjectUI):
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(self.name_hlay)
-        name_label = QtWidgets.QLabel(_("<b>Name:</b>"))
+        name_label = QtWidgets.QLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
         self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.name_hlay.addWidget(name_label)
@@ -828,13 +828,13 @@ class GeometryObjectUI(ObjectUI):
                                                icon_file='share/geometry32.png', parent=parent)
 
         # Plot options
-        self.plot_options_label = QtWidgets.QLabel(_("<b>Plot Options:</b>"))
+        self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
         self.custom_box.addWidget(self.plot_options_label)
 
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(self.name_hlay)
-        name_label = QtWidgets.QLabel(_("<b>Name:</b>"))
+        name_label = QtWidgets.QLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
         self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.name_hlay.addWidget(name_label)
@@ -1353,10 +1353,10 @@ class CNCObjectUI(ObjectUI):
         self.offset_button.hide()
 
         # ## Plot options
-        self.plot_options_label = QtWidgets.QLabel(_("<b>Plot Options:</b>"))
+        self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
         self.custom_box.addWidget(self.plot_options_label)
 
-        self.cncplot_method_label = QtWidgets.QLabel(_("<b>Plot kind:</b>"))
+        self.cncplot_method_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot kind"))
         self.cncplot_method_label.setToolTip(
             _(
                 "This selects the kind of geometries on the canvas to plot.\n"
@@ -1372,12 +1372,11 @@ class CNCObjectUI(ObjectUI):
             {"label": _("Cut"), "value": "cut"}
         ], stretch=False)
 
-        self.annotation_label = QtWidgets.QLabel(_("<b>Display Annotation:</b>"))
+        self.annotation_label = QtWidgets.QLabel("<b>%s:</b>" % _("Display Annotation"))
         self.annotation_label.setToolTip(
-            _(
-                "This selects if to display text annotation on the plot.\n"
-                "When checked it will display numbers in order for each end\n"
-                "of a travel line."
+            _("This selects if to display text annotation on the plot.\n"
+              "When checked it will display numbers in order for each end\n"
+              "of a travel line."
             )
         )
         self.annotation_cb = FCCheckBox()
@@ -1385,13 +1384,13 @@ class CNCObjectUI(ObjectUI):
         # ## Object name
         self.name_hlay = QtWidgets.QHBoxLayout()
         self.custom_box.addLayout(self.name_hlay)
-        name_label = QtWidgets.QLabel(_("<b>Name:</b>"))
+        name_label = QtWidgets.QLabel("<b>%s:</b>" % _("Name"))
         self.name_entry = FCEntry()
         self.name_entry.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.name_hlay.addWidget(name_label)
         self.name_hlay.addWidget(self.name_entry)
 
-        self.t_distance_label = QtWidgets.QLabel(_("<b>Travelled dist.:</b>"))
+        self.t_distance_label = QtWidgets.QLabel("<b>%s:</b>" % _("Travelled dist."))
         self.t_distance_label.setToolTip(
             _("This is the total travelled distance on X-Y plane.\n"
               "In current units.")
@@ -1403,7 +1402,7 @@ class CNCObjectUI(ObjectUI):
         )
         self.units_label = QtWidgets.QLabel()
 
-        self.t_time_label = QtWidgets.QLabel(_("<b>Estimated time:</b>"))
+        self.t_time_label = QtWidgets.QLabel("<b>%s:</b>" % _("Estimated time"))
         self.t_time_label.setToolTip(
             _("This is the estimated time to do the routing/drilling,\n"
               "without the time spent in ToolChange events.")
@@ -1497,7 +1496,7 @@ class CNCObjectUI(ObjectUI):
         # ####################
         # ## Export G-Code ##
         # ####################
-        self.export_gcode_label = QtWidgets.QLabel(_("<b>Export CNC Code:</b>"))
+        self.export_gcode_label = QtWidgets.QLabel("<b>%s:</b>" % _("Export CNC Code"))
         self.export_gcode_label.setToolTip(
             _("Export and save G-Code to\n"
             "make this object to a file.")

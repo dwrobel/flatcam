@@ -17,6 +17,9 @@ CAD program, and create G-Code for Isolation routing.
 - in NCC Tool added a new parameter (radio button) that offer the choice on the order of the tools both in tools table and in execution of engraving; added as a parameter also in Edit -> Preferences -> Tools -> NCC Tool
 - added possibility to drag & drop FlatCAM config files (*.FlatConfig) into the canvas to be opened into the application
 - added GUI in Paint tool in beginning to add Paint by external reference object 
+- finished adding in Paint Tool the usage of an external object to set the extent of th area painted. For simple shapes (single Polygon) the shape can be anything, for the rest will be a convex hull of the reference object
+- modified NCC tool so for simple objects (single Polygon) the external object used as reference can have any shape, for the other types of objects the copper cleared area will be the convex hull of the reference object
+- modified the strings of the app wherever they contained the char seq <b> </b> so it is not included in the translated string
 
 17.08.2019
 

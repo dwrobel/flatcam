@@ -83,7 +83,7 @@ class Panelize(FlatCAMTool):
         # Type of box Panel object
         self.reference_radio = RadioSet([{'label': _('Object'), 'value': 'object'},
                                          {'label': _('Bounding Box'), 'value': 'bbox'}])
-        self.box_label = QtWidgets.QLabel(_("<b>Penelization Reference:</b>"))
+        self.box_label = QtWidgets.QLabel("<b>%s:</b>" % _("Penelization Reference"))
         self.box_label.setToolTip(
             _("Choose the reference for panelization:\n"
               "- Object = the bounding box of a different object\n"
@@ -131,7 +131,7 @@ class Panelize(FlatCAMTool):
         form_layout.addRow(self.box_combo_label, self.box_combo)
         form_layout.addRow(QtWidgets.QLabel(""))
 
-        panel_data_label = QtWidgets.QLabel(_("<b>Panel Data:</b>"))
+        panel_data_label = QtWidgets.QLabel("<b>%s:</b>" % _("Panel Data"))
         panel_data_label.setToolTip(
             _("This informations will shape the resulting panel.\n"
               "The number of rows and columns will set how many\n"
@@ -180,7 +180,7 @@ class Panelize(FlatCAMTool):
         # Type of resulting Panel object
         self.panel_type_radio = RadioSet([{'label': _('Gerber'), 'value': 'gerber'},
                                           {'label': _('Geo'), 'value': 'geometry'}])
-        self.panel_type_label = QtWidgets.QLabel(_("<b>Panel Type:</b>"))
+        self.panel_type_label = QtWidgets.QLabel("<b>%s:</b>" % _("Panel Type"))
         self.panel_type_label.setToolTip(
             _("Choose the type of object for the panel object:\n"
               "- Geometry\n"

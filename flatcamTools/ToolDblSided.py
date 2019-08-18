@@ -44,7 +44,7 @@ class DblSidedTool(FlatCAMTool):
         self.gerber_object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.gerber_object_combo.setCurrentIndex(1)
 
-        self.botlay_label = QtWidgets.QLabel(_("<b>GERBER:</b>"))
+        self.botlay_label = QtWidgets.QLabel("<b>%s:</b>" % _("GERBER"))
         self.botlay_label.setToolTip(
             "Gerber  to be mirrored."
         )
@@ -68,7 +68,7 @@ class DblSidedTool(FlatCAMTool):
         self.exc_object_combo.setRootModelIndex(self.app.collection.index(1, 0, QtCore.QModelIndex()))
         self.exc_object_combo.setCurrentIndex(1)
 
-        self.excobj_label = QtWidgets.QLabel(_("<b>EXCELLON:</b>"))
+        self.excobj_label = QtWidgets.QLabel("<b>%s:</b>" % _("EXCELLON"))
         self.excobj_label.setToolTip(
             _("Excellon Object to be mirrored.")
         )
@@ -92,7 +92,7 @@ class DblSidedTool(FlatCAMTool):
         self.geo_object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
         self.geo_object_combo.setCurrentIndex(1)
 
-        self.geoobj_label = QtWidgets.QLabel(_("<b>GEOMETRY</b>:"))
+        self.geoobj_label = QtWidgets.QLabel("<b>%s</b>:" % _("GEOMETRY"))
         self.geoobj_label.setToolTip(
             _("Geometry Obj to be mirrored.")
         )

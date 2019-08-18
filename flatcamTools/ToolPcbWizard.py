@@ -48,7 +48,7 @@ class PcbWizard(FlatCAMTool):
         self.layout.addWidget(title_label)
 
         self.layout.addWidget(QtWidgets.QLabel(""))
-        self.layout.addWidget(QtWidgets.QLabel(_("<b>Load files:</b>")))
+        self.layout.addWidget(QtWidgets.QLabel("<b>%s:</b>" % _("Load files")))
 
         # Form Layout
         form_layout = QtWidgets.QFormLayout()
@@ -84,7 +84,7 @@ class PcbWizard(FlatCAMTool):
         self.tools_table.setVisible(False)
 
         self.layout.addWidget(QtWidgets.QLabel(""))
-        self.layout.addWidget(QtWidgets.QLabel(_("<b>Excellon format:</b>")))
+        self.layout.addWidget(QtWidgets.QLabel("<b>%s:</b>" % _("Excellon format")))
         # Form Layout
         form_layout1 = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout1)

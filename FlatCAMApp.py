@@ -4027,7 +4027,7 @@ class App(QtCore.QObject):
         msgbox = QtWidgets.QMessageBox()
         msgbox.setWindowTitle(_("Toggle Units"))
         msgbox.setWindowIcon(QtGui.QIcon('share/toggle_units32.png'))
-        msgbox.setText(_("<B>Change project units ...</B>"))
+        msgbox.setText("<B>%s</B>" % _("Change project units ..."))
         msgbox.setInformativeText(_("Changing the units of the project causes all geometrical "
                                     "properties of all objects to be scaled accordingly.\nContinue?"))
         bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
@@ -5007,7 +5007,7 @@ class App(QtCore.QObject):
                 msgbox = QtWidgets.QMessageBox()
                 msgbox.setWindowTitle(_("Delete objects"))
                 msgbox.setWindowIcon(QtGui.QIcon('share/deleteshape32.png'))
-                # msgbox.setText(_("<B>Delete FlatCAM objects ...</B>"))
+                # msgbox.setText("<B>%s</B>" % _("Change project units ..."))
                 msgbox.setText(_("Are you sure you want to permanently delete\n"
                                  "the selected objects?"))
                 bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)

@@ -10,10 +10,10 @@ from FlatCAMTool import FlatCAMTool
 from copy import copy, deepcopy
 from ObjectCollection import *
 import time
+from shapely.geometry import base
 
 import gettext
 import FlatCAMTranslation as fcTranslate
-from shapely.geometry import base
 import builtins
 
 fcTranslate.apply_language('strings')
@@ -860,12 +860,16 @@ class NonCopperClear(FlatCAMTool, Gerber):
             return "Could not retrieve object: %s" % self.obj_name
 
         # Prepare non-copper polygons
+        geo_n = self.bound_obj.solid_geometry
         try:
-            if not isinstance(self.bound_obj.solid_geometry, MultiPolygon):
+            if isinstance(geo_n, MultiPolygon):
+                env_obj = geo_n.convex_hull
+            elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
+                    (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
+                env_obj = cascaded_union(self.bound_obj.solid_geometry)
+            else:
                 env_obj = cascaded_union(self.bound_obj.solid_geometry)
                 env_obj = env_obj.convex_hull
-            else:
-                env_obj = self.bound_obj.solid_geometry.convex_hull
             bounding_box = env_obj.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
         except Exception as e:
             log.debug("NonCopperClear.on_ncc() --> %s" % str(e))

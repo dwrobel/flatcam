@@ -9,6 +9,7 @@
 from FlatCAMTool import FlatCAMTool
 from copy import copy, deepcopy
 from ObjectCollection import *
+from shapely.geometry import base
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -238,19 +239,27 @@ class ToolPaint(FlatCAMTool, Gerber):
         selectlabel.setToolTip(
             _("How to select the polygons to paint.<BR>"
               "Options:<BR>"
-              "- <B>Single</B>: left mouse click on the polygon to be painted.<BR>"
-              "- <B>Area</B>: left mouse click to start selection of the area to be painted.<BR>"
-              "- <B>All</B>: paint all polygons.<BR>"
-              "- <B>Ref</B>: paint an area described by an external reference object.")
+              "- <B>Single Polygons</B>: left mouse click on the polygon to be painted.<BR>"
+              "- <B>Area Selection</B>: left mouse click to start selection of the area to be painted.<BR>"
+              "- <B>All Polygons</B>: paint all polygons.<BR>"
+              "- <B>Reference Object</B>: paint an area described by an external reference object.")
         )
         grid3.addWidget(selectlabel, 7, 0)
         # grid3 = QtWidgets.QGridLayout()
         self.selectmethod_combo = RadioSet([
-            {"label": _("Single"), "value": "single"},
-            {"label": _("Area"), "value": "area"},
-            {"label": _("All"), "value": "all"},
-            {"label": _("Ref."), "value": "ref"}
-        ])
+            {"label": _("Single Polygon"), "value": "single"},
+            {"label": _("Area Selection"), "value": "area"},
+            {"label": _("All Polygons"), "value": "all"},
+            {"label": _("Reference Object"), "value": "ref"}
+        ], orientation='vertical', stretch=False)
+        self.selectmethod_combo.setToolTip(
+            _("How to select the polygons to paint.<BR>"
+              "Options:<BR>"
+              "- <B>Single Polygons</B>: left mouse click on the polygon to be painted.<BR>"
+              "- <B>Area Selection</B>: left mouse click to start selection of the area to be painted.<BR>"
+              "- <B>All Polygons</B>: paint all polygons.<BR>"
+              "- <B>Reference Object</B>: paint an area described by an external reference object.")
+        )
         grid3.addWidget(self.selectmethod_combo, 7, 1)
 
         grid4 = QtWidgets.QGridLayout()
@@ -949,6 +958,38 @@ class ToolPaint(FlatCAMTool, Gerber):
 
             self.app.plotcanvas.vis_connect('mouse_press', on_mouse_press)
             self.app.plotcanvas.vis_connect('mouse_move', on_mouse_move)
+
+        elif select_method == 'ref':
+            self.bound_obj_name = self.box_combo.currentText()
+            # Get source object.
+            try:
+                self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)
+            except Exception as e:
+                self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
+                return "Could not retrieve object: %s" % self.obj_name
+
+            geo = self.bound_obj.solid_geometry
+            try:
+                if isinstance(geo, MultiPolygon):
+                    env_obj = geo.convex_hull
+                elif (isinstance(geo, MultiPolygon) and len(geo) == 1) or \
+                    (isinstance(geo, list) and len(geo) == 1) and isinstance(geo[0], Polygon):
+                    env_obj = cascaded_union(self.bound_obj.solid_geometry)
+                else:
+                    env_obj = cascaded_union(self.bound_obj.solid_geometry)
+                    env_obj = env_obj.convex_hull
+                sel_rect = env_obj.buffer(distance=0.0000001, join_style=base.JOIN_STYLE.mitre)
+            except Exception as e:
+                log.debug("ToolPaint.on_paint_button_click() --> %s" % str(e))
+                self.app.inform.emit(_("[ERROR_NOTCL] No object available."))
+                return
+
+            self.paint_poly_area(obj=self.paint_obj,
+                                 sel_obj=sel_rect,
+                                 outname=o_name,
+                                 overlap=overlap,
+                                 connect=connect,
+                                 contour=contour)
 
     def paint_poly(self, obj, inside_pt, tooldia, overlap, outname=None, connect=True, contour=True):
         """

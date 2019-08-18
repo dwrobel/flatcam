@@ -52,7 +52,7 @@ class ToolSub(FlatCAMTool):
         form_layout = QtWidgets.QFormLayout()
         self.tools_box.addLayout(form_layout)
 
-        self.gerber_title = QtWidgets.QLabel(_("<b>Gerber Objects</b>"))
+        self.gerber_title = QtWidgets.QLabel("<b>%s</b>" % _("Gerber Objects"))
         form_layout.addRow(self.gerber_title)
 
         # Target Gerber Object
@@ -98,7 +98,7 @@ class ToolSub(FlatCAMTool):
         form_geo_layout = QtWidgets.QFormLayout()
         self.tools_box.addLayout(form_geo_layout)
 
-        self.geo_title = QtWidgets.QLabel(_("<b>Geometry Objects</b>"))
+        self.geo_title = QtWidgets.QLabel("<b>%s</b>" % _("Geometry Objects"))
         form_geo_layout.addRow(self.geo_title)
 
         # Target Geometry Object

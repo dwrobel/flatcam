@@ -4166,7 +4166,7 @@ class GerberGenPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Gerber General")))
 
         # ## Plot options
-        self.plot_options_label = QtWidgets.QLabel(_("<b>Plot Options:</b>"))
+        self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
 
         grid0 = QtWidgets.QGridLayout()
@@ -4214,7 +4214,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Gerber Options")))
 
         # ## Isolation Routing
-        self.isolation_routing_label = QtWidgets.QLabel(_("<b>Isolation Routing:</b>"))
+        self.isolation_routing_label = QtWidgets.QLabel("<b>%s:</b>" % _("Isolation Routing"))
         self.isolation_routing_label.setToolTip(
             _("Create a Geometry object with\n"
               "toolpaths to cut outside polygons.")
@@ -4274,7 +4274,7 @@ class GerberOptPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.combine_passes_cb, 4, 0, 1, 2)
 
         # ## Clear non-copper regions
-        self.clearcopper_label = QtWidgets.QLabel(_("<b>Clear non-copper:</b>"))
+        self.clearcopper_label = QtWidgets.QLabel("<b>%s:</b>" % _("Clear non-copper"))
         self.clearcopper_label.setToolTip(
             _("Create a Geometry object with\n"
               "toolpaths to cut all non-copper regions.")
@@ -4339,7 +4339,7 @@ class GerberAdvOptPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Gerber Adv. Options")))
 
         # ## Advanced Gerber Parameters
-        self.adv_param_label = QtWidgets.QLabel(_("<b>Advanced Param.:</b>"))
+        self.adv_param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Advanced Param."))
         self.adv_param_label.setToolTip(
             _("A list of Gerber advanced parameters.\n"
               "Those parameters are available only for\n"
@@ -4404,7 +4404,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Gerber Export")))
 
         # Plot options
-        self.export_options_label = QtWidgets.QLabel(_("<b>Export Options:</b>"))
+        self.export_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Export Options"))
         self.export_options_label.setToolTip(
             _("The parameters set here are used in the file exported\n"
               "when using the File -> Export -> Export Gerber menu entry.")
@@ -4429,7 +4429,7 @@ class GerberExpPrefGroupUI(OptionsGroupUI):
         form.addRow(self.gerber_units_label, self.gerber_units_radio)
 
         # Gerber format
-        self.digits_label = QtWidgets.QLabel(_("<b>Int/Decimals:</b>"))
+        self.digits_label = QtWidgets.QLabel("<b>%s:</b>" % _("Int/Decimals"))
         self.digits_label.setToolTip(
             _("The number of digits in the whole part of the number\n"
               "and in the fractional part of the number.")
@@ -4498,7 +4498,7 @@ class GerberEditorPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Gerber Editor")))
 
         # Advanced Gerber Parameters
-        self.param_label = QtWidgets.QLabel(_("<b>Parameters:</b>"))
+        self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.param_label.setToolTip(
             _("A list of Gerber Editor parameters.")
         )
@@ -4533,7 +4533,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Excellon General")))
 
         # Plot options
-        self.plot_options_label = QtWidgets.QLabel(_("<b>Plot Options:</b>"))
+        self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
 
         grid1 = QtWidgets.QGridLayout()
@@ -4552,7 +4552,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
         grid1.addWidget(self.solid_cb, 0, 1)
 
         # Excellon format
-        self.excellon_format_label = QtWidgets.QLabel(_("<b>Excellon Format:</b>"))
+        self.excellon_format_label = QtWidgets.QLabel("<b>%s:</b>" % _("Excellon Format"))
         self.excellon_format_label.setToolTip(
             _("The NC drill files, usually named Excellon files\n"
               "are files that can be found in different formats.\n"
@@ -4692,7 +4692,7 @@ class ExcellonGenPrefGroupUI(OptionsGroupUI):
 
         grid2.addWidget(QtWidgets.QLabel(""), 2, 0)
 
-        self.excellon_general_label = QtWidgets.QLabel(_("<b>Excellon Optimization:</b>"))
+        self.excellon_general_label = QtWidgets.QLabel("<b>%s:</b>" % _("Excellon Optimization"))
         grid2.addWidget(self.excellon_general_label, 3, 0, 1, 2)
 
         self.excellon_optimization_label = QtWidgets.QLabel(_('Algorithm:   '))
@@ -5056,7 +5056,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Excellon Export")))
 
         # Plot options
-        self.export_options_label = QtWidgets.QLabel(_("<b>Export Options:</b>"))
+        self.export_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Export Options"))
         self.export_options_label.setToolTip(
             _("The parameters set here are used in the file exported\n"
               "when using the File -> Export -> Export Excellon menu entry.")
@@ -5081,7 +5081,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         form.addRow(self.excellon_units_label, self.excellon_units_radio)
 
         # Excellon non-decimal format
-        self.digits_label = QtWidgets.QLabel(_("<b>Int/Decimals:</b>"))
+        self.digits_label = QtWidgets.QLabel("<b>%s:</b>" % _("Int/Decimals"))
         self.digits_label.setToolTip(
             _("The NC drill files, usually named Excellon files\n"
               "are files that can be found in different formats.\n"
@@ -5119,7 +5119,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         form.addRow(self.digits_label, hlay1)
 
         # Select the Excellon Format
-        self.format_label = QtWidgets.QLabel(_("<b>Format:</b>"))
+        self.format_label = QtWidgets.QLabel("<b>%s:</b>" % _("Format"))
         self.format_label.setToolTip(
             _("Select the kind of coordinates format used.\n"
               "Coordinates can be saved with decimal point or without.\n"
@@ -5206,7 +5206,7 @@ class ExcellonEditorPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Excellon Editor")))
 
         # Excellon Editor Parameters
-        self.param_label = QtWidgets.QLabel(_("<b>Parameters:</b>"))
+        self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.param_label.setToolTip(
             _("A list of Excellon Editor parameters.")
         )
@@ -5461,7 +5461,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Geometry General")))
 
         # ## Plot options
-        self.plot_options_label = QtWidgets.QLabel(_("<b>Plot Options:</b>"))
+        self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
 
         # Plot CB
@@ -5485,7 +5485,7 @@ class GeometryGenPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.circle_steps_entry, 1, 1)
 
         # Tools
-        self.tools_label = QtWidgets.QLabel(_("<b>Tools:</b>"))
+        self.tools_label = QtWidgets.QLabel("<b>%s:</b>" % _("Tools"))
         grid0.addWidget(self.tools_label, 2, 0, 1, 2)
 
         # Tooldia
@@ -5796,7 +5796,7 @@ class GeometryEditorPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Geometry Editor")))
 
         # Advanced Geometry Parameters
-        self.param_label = QtWidgets.QLabel(_("<b>Parameters:</b>"))
+        self.param_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.param_label.setToolTip(
             _("A list of Geometry Editor parameters.")
         )
@@ -5830,7 +5830,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("CNC Job General")))
 
         # ## Plot options
-        self.plot_options_label = QtWidgets.QLabel(_("<b>Plot Options:</b>"))
+        self.plot_options_label = QtWidgets.QLabel("<b>%s:</b>" % _("Plot Options"))
         self.layout.addWidget(self.plot_options_label)
 
         grid0 = QtWidgets.QGridLayout()
@@ -5963,7 +5963,7 @@ class CNCJobOptPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("CNC Job Options")))
 
         # ## Export G-Code
-        self.export_gcode_label = QtWidgets.QLabel(_("<b>Export G-Code:</b>"))
+        self.export_gcode_label = QtWidgets.QLabel("<b>%s:</b>" % _("Export G-Code"))
         self.export_gcode_label.setToolTip(
             _("Export and save G-Code to\n"
               "make this object to a file.")
@@ -6004,7 +6004,7 @@ class CNCJobAdvOptPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("CNC Job Adv. Options")))
 
         # ## Export G-Code
-        self.export_gcode_label = QtWidgets.QLabel(_("<b>Export G-Code:</b>"))
+        self.export_gcode_label = QtWidgets.QLabel("<b>%s:</b>" % _("Export G-Code"))
         self.export_gcode_label.setToolTip(
             _("Export and save G-Code to\n"
               "make this object to a file.")
@@ -6088,7 +6088,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("NCC Tool Options")))
 
         # ## Clear non-copper regions
-        self.clearcopper_label = QtWidgets.QLabel(_("<b>Parameters:</b>"))
+        self.clearcopper_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.clearcopper_label.setToolTip(
             _("Create a Geometry object with\n"
               "toolpaths to cut all non-copper regions.")
@@ -6253,7 +6253,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Cutout Tool Options")))
 
         # ## Board cuttout
-        self.board_cutout_label = QtWidgets.QLabel(_("<b>Parameters:</b>"))
+        self.board_cutout_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.board_cutout_label.setToolTip(
             _("Create toolpaths to cut around\n"
               "the PCB and separate it from\n"
@@ -6347,7 +6347,7 @@ class Tools2sidedPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("2Sided Tool Options")))
 
         # ## Board cuttout
-        self.dblsided_label = QtWidgets.QLabel(_("<b>Parameters:</b>"))
+        self.dblsided_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.dblsided_label.setToolTip(
             _("A tool to help in creating a double sided\n"
               "PCB using alignment holes.")
@@ -6488,13 +6488,19 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # Polygon selection
         selectlabel = QtWidgets.QLabel(_('Selection:'))
         selectlabel.setToolTip(
-            _("How to select the polygons to paint.")
+            _("How to select the polygons to paint.<BR>"
+              "Options:<BR>"
+              "- <B>Single</B>: left mouse click on the polygon to be painted.<BR>"
+              "- <B>Area</B>: left mouse click to start selection of the area to be painted.<BR>"
+              "- <B>All</B>: paint all polygons.<BR>"
+              "- <B>Ref</B>: paint an area described by an external reference object.")
         )
         grid0.addWidget(selectlabel, 6, 0)
         self.selectmethod_combo = RadioSet([
             {"label": _("Single"), "value": "single"},
             {"label": _("Area"), "value": "area"},
-            {"label": _("All"), "value": "all"}
+            {"label": _("All"), "value": "all"},
+            {"label": _("Ref."), "value": "ref"}
         ])
         grid0.addWidget(self.selectmethod_combo, 6, 1)
 
@@ -6509,7 +6515,7 @@ class ToolsFilmPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Film Tool Options")))
 
         # ## Board cuttout
-        self.film_label = QtWidgets.QLabel(_("<b>Parameters:</b>"))
+        self.film_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.film_label.setToolTip(
             _("Create a PCB film from a Gerber or Geometry\n"
               "FlatCAM object.\n"
@@ -6570,7 +6576,7 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Panelize Tool Options")))
 
         # ## Board cuttout
-        self.panelize_label = QtWidgets.QLabel(_("<b>Parameters:</b>"))
+        self.panelize_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.panelize_label.setToolTip(
             _("Create an object that contains an array of (x, y) elements,\n"
               "each element is a copy of the source object spaced\n"
@@ -6672,7 +6678,7 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Calculators Tool Options")))
 
         # ## V-shape Calculator Tool
-        self.vshape_tool_label = QtWidgets.QLabel(_("<b>V-Shape Tool Calculator:</b>"))
+        self.vshape_tool_label = QtWidgets.QLabel("<b>%s:</b>" % _("V-Shape Tool Calculator"))
         self.vshape_tool_label.setToolTip(
             _("Calculate the tool diameter for a given V-shape tool,\n"
               "having the tip diameter, tip angle and\n"
@@ -6714,7 +6720,7 @@ class ToolsCalculatorsPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.cut_z_entry, 2, 1)
 
         # ## Electroplating Calculator Tool
-        self.plate_title_label = QtWidgets.QLabel(_("<b>ElectroPlating Calculator:</b>"))
+        self.plate_title_label = QtWidgets.QLabel("<b>%s:</b>" % _("ElectroPlating Calculator"))
         self.plate_title_label.setToolTip(
             _("This calculator is useful for those who plate the via/pad/drill holes,\n"
               "using a method like grahite ink or calcium hypophosphite ink or palladium chloride.")
@@ -6769,7 +6775,7 @@ class ToolsTransformPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Transform Tool Options")))
 
         # ## Transformations
-        self.transform_label = QtWidgets.QLabel(_("<b>Parameters:</b>"))
+        self.transform_label = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.transform_label.setToolTip(
             _("Various transformations that can be applied\n"
               "on a FlatCAM object.")
@@ -6896,7 +6902,7 @@ class ToolsSolderpastePrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("SolderPaste Tool Options")))
 
         # ## Solder Paste Dispensing
-        self.solderpastelabel = QtWidgets.QLabel(_("<b>Parameters:</b>"))
+        self.solderpastelabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.solderpastelabel.setToolTip(
             _("A tool to create GCode for dispensing\n"
               "solder paste onto a PCB.")
@@ -7069,7 +7075,7 @@ class ToolsSubPrefGroupUI(OptionsGroupUI):
         self.setTitle(str(_("Substractor Tool Options")))
 
         # ## Solder Paste Dispensing
-        self.sublabel = QtWidgets.QLabel(_("<b>Parameters:</b>"))
+        self.sublabel = QtWidgets.QLabel("<b>%s:</b>" % _("Parameters"))
         self.sublabel.setToolTip(
             _("A tool to substract one Gerber or Geometry object\n"
               "from another of the same type.")
