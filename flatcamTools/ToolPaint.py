@@ -239,25 +239,63 @@ class ToolPaint(FlatCAMTool, Gerber):
             _("How to select the polygons to paint.<BR>"
               "Options:<BR>"
               "- <B>Single</B>: left mouse click on the polygon to be painted.<BR>"
-              "- <B>All</B>: paint all polygons.")
+              "- <B>Area</B>: left mouse click to start selection of the area to be painted.<BR>"
+              "- <B>All</B>: paint all polygons.<BR>"
+              "- <B>Ref</B>: paint an area described by an external reference object.")
         )
         grid3.addWidget(selectlabel, 7, 0)
         # grid3 = QtWidgets.QGridLayout()
         self.selectmethod_combo = RadioSet([
             {"label": _("Single"), "value": "single"},
             {"label": _("Area"), "value": "area"},
-            {"label": _("All"), "value": "all"}
+            {"label": _("All"), "value": "all"},
+            {"label": _("Ref."), "value": "ref"}
         ])
         grid3.addWidget(self.selectmethod_combo, 7, 1)
+
+        grid4 = QtWidgets.QGridLayout()
+        self.tools_box.addLayout(grid4)
+
+        self.box_combo_type_label = QtWidgets.QLabel(_("Ref. Type:"))
+        self.box_combo_type_label.setToolTip(
+            _("The type of FlatCAM object to be used as paint reference.\n"
+              "It can be Gerber, Excellon or Geometry.")
+        )
+        self.box_combo_type = QtWidgets.QComboBox()
+        self.box_combo_type.addItem(_("Gerber   Reference Box Object"))
+        self.box_combo_type.addItem(_("Excellon Reference Box Object"))
+        self.box_combo_type.addItem(_("Geometry Reference Box Object"))
+
+        grid4.addWidget(self.box_combo_type_label, 0, 0)
+        grid4.addWidget(self.box_combo_type, 0, 1)
+
+        self.box_combo_label = QtWidgets.QLabel(_("Ref. Object:"))
+        self.box_combo_label.setToolTip(
+            _("The FlatCAM object to be used as non copper clearing reference.")
+        )
+        self.box_combo = QtWidgets.QComboBox()
+        self.box_combo.setModel(self.app.collection)
+        self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.box_combo.setCurrentIndex(1)
+        grid4.addWidget(self.box_combo_label, 1, 0)
+        grid4.addWidget(self.box_combo, 1, 1)
+
+        self.box_combo.hide()
+        self.box_combo_label.hide()
+        self.box_combo_type.hide()
+        self.box_combo_type_label.hide()
 
         # GO Button
         self.generate_paint_button = QtWidgets.QPushButton(_('Create Paint Geometry'))
         self.generate_paint_button.setToolTip(
             _("After clicking here, click inside<BR>"
               "the polygon you wish to be painted if <B>Single</B> is selected.<BR>"
+              "If <B>Area</B> is selected, then the selection of the area to be painted<BR>"
+              "will be initiated by a first click and finished by the second mouse click.<BR>"
               "If <B>All</B>  is selected then the Paint will start after click.<BR>"
-              "A new Geometry object with the tool<BR>"
-              "paths will be created.")
+              "If <B>Ref</B>  is selected then the Paint will start after click,<BR>"
+              "and the painted area will be described by a selected object.<BR>"
+              "A new Geometry object with the tool paths will be created.")
         )
         self.tools_box.addWidget(self.generate_paint_button)
 
@@ -317,6 +355,8 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.generate_paint_button.clicked.connect(self.on_paint_button_click)
         self.selectmethod_combo.activated_custom.connect(self.on_radio_selection)
 
+        self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
+
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+P', **kwargs)
 
@@ -343,6 +383,17 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.app.ui.notebook.setTabText(2, _("Paint Tool"))
 
     def on_radio_selection(self):
+        if self.selectmethod_combo.get_value() == "ref":
+            self.box_combo.show()
+            self.box_combo_label.show()
+            self.box_combo_type.show()
+            self.box_combo_type_label.show()
+        else:
+            self.box_combo.hide()
+            self.box_combo_label.hide()
+            self.box_combo_type.hide()
+            self.box_combo_type_label.hide()
+
         if self.selectmethod_combo.get_value() == 'single':
             # disable rest-machining for single polygon painting
             self.rest_cb.set_value(False)
@@ -522,6 +573,11 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
         self.tools_table.itemChanged.connect(self.on_tool_edit)
+
+    def on_combo_box_type(self):
+        obj_type = self.box_combo_type.currentIndex()
+        self.box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.box_combo.setCurrentIndex(0)
 
     def on_tool_add(self, dia=None, muted=None):
 
