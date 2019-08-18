@@ -21,6 +21,7 @@ CAD program, and create G-Code for Isolation routing.
 - modified NCC tool so for simple objects (single Polygon) the external object used as reference can have any shape, for the other types of objects the copper cleared area will be the convex hull of the reference object
 - modified the strings of the app wherever they contained the char seq <b> </b> so it is not included in the translated string
 - updated the translation files for the modified strings (and for the newly added strings)
+- added ability to lock toolbars within the context menu that is popped up on any toolbars right mouse click. The value is saved in QSettings and it is persistent between application startup's.
 
 17.08.2019
 

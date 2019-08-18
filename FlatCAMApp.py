@@ -3625,6 +3625,8 @@ class App(QtCore.QObject):
         settings.setValue('axis_font_size',
                           self.ui.general_defaults_form.general_gui_set_group.axis_font_size_spinner.get_value())
 
+        settings.setValue('toolbar_lock', self.ui.lock_action.isChecked())
+
         # This will write the setting to the platform specific storage.
         del settings
         log.debug("App.final_save() --> App UI state saved.")
@@ -9061,6 +9063,13 @@ The normal flow when working in FlatCAM is the following:</span></p>
                     self.inform.emit(_("[success] Project saved to: %s") % filename)
                 else:
                     self.inform.emit(_("[ERROR_NOTCL] Failed to save project file: %s. Retry to save it.") % filename)
+
+                settings = QSettings("Open Source", "FlatCAM")
+                lock_state = self.ui.lock_action.isChecked()
+                settings.setValue('toolbar_lock', lock_state)
+
+                # This will write the setting to the platform specific storage.
+                del settings
 
             # if quit:
                 # t = threading.Thread(target=lambda: self.check_project_file_size(1, filename=filename))

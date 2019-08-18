@@ -467,7 +467,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.exc_add_array_slot_menuitem = self.exc_editor_menu.addAction(
             QtGui.QIcon('share/slot_array26.png'), _('Add Slot Array\tQ'))
         self.exc_add_slot_menuitem = self.exc_editor_menu.addAction(QtGui.QIcon('share/slot26.png'),
-                                                                     _('Add Slot\tW'))
+                                                                    _('Add Slot\tW'))
         self.exc_editor_menu.addSeparator()
 
         self.exc_resize_drill_menuitem = self.exc_editor_menu.addAction(
@@ -958,8 +958,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.pref_export_button.setText(_("Export Preferences"))
         self.pref_export_button.setMinimumWidth(130)
         self.pref_export_button.setToolTip(
-           _( "Export a full set of FlatCAM settings in a file\n"
-              "that is saved on HDD."))
+           _("Export a full set of FlatCAM settings in a file\n"
+             "that is saved on HDD."))
         self.pref_tab_bottom_layout_1.addWidget(self.pref_export_button)
 
         self.pref_open_button = QtWidgets.QPushButton()
@@ -1614,7 +1614,6 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.sh_editor.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         self.sh_hlay.addWidget(self.sh_editor)
 
-
         # ########################################################### ##
         # # ## HERE WE BUILD THE CONTEXT MENU FOR RMB CLICK ON CANVAS # ##
         # ########################################################### ##
@@ -1671,7 +1670,8 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
 
         self.grb_draw_track = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/track32.png'), _("Track"))
         self.grb_draw_region = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/polygon32.png'), _("Region"))
-        self.grb_draw_poligonize = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/poligonize32.png'), _("Poligonize"))
+        self.grb_draw_poligonize = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/poligonize32.png'),
+                                                                   _("Poligonize"))
         self.grb_draw_semidisc = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/semidisc32.png'), _("SemiDisc"))
         self.grb_draw_disc = self.grb_editor_cmenu.addAction(QtGui.QIcon('share/disc32.png'), _("Disc"))
         self.grb_editor_cmenu.addSeparator()
@@ -1692,7 +1692,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.slot = self.e_editor_cmenu.addAction(QtGui.QIcon('share/slot26.png'), _("Add Slot"))
         self.slot_array = self.e_editor_cmenu.addAction(QtGui.QIcon('share/slot_array26.png'), _("Add Slot Array"))
         self.e_editor_cmenu.addSeparator()
-        self.drill_resize= self.e_editor_cmenu.addAction(QtGui.QIcon('share/resize16.png'), _("Resize Drill"))
+        self.drill_resize = self.e_editor_cmenu.addAction(QtGui.QIcon('share/resize16.png'), _("Resize Drill"))
 
         self.popMenu.addSeparator()
         self.popmenu_copy = self.popMenu.addAction(QtGui.QIcon('share/copy32.png'), _("Copy"))
@@ -1901,6 +1901,31 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
             # This will write the setting to the platform specific storage.
             del settings
             log.debug("FlatCAMGUI.__init__() --> UI layout restored from defaults. QSettings set to 'standard'")
+
+        # construct the Toolbar Lock menu entry to the context menu of the QMainWindow
+        self.lock_action = QtWidgets.QAction()
+        self.lock_action.setText(_("Lock Toolbars"))
+        self.lock_action.setCheckable(True)
+
+        settings = QSettings("Open Source", "FlatCAM")
+        if settings.contains("toolbar_lock"):
+            lock_val = settings.value('toolbar_lock')
+            if lock_val == 'true':
+                lock_state = True
+                self.lock_action.setChecked(True)
+            else:
+
+                lock_state = False
+                self.lock_action.setChecked(False)
+        else:
+            lock_state = False
+            settings.setValue('toolbar_lock', lock_state)
+
+            # This will write the setting to the platform specific storage.
+            del settings
+
+        self.lock_toolbar(lock=lock_state)
+        self.lock_action.triggered[bool].connect(self.lock_toolbar)
 
     def eventFilter(self, obj, event):
         if self.general_defaults_form.general_app_group.toggle_tooltips_cb.get_value() is False:
@@ -3158,6 +3183,30 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     self.app.ui.grid_snap_btn.trigger()
                     return
 
+    def createPopupMenu(self):
+        menu = super().createPopupMenu()
+
+        menu.addSeparator()
+        menu.addAction(self.lock_action)
+        return menu
+
+    def lock_toolbar(self, lock=False):
+        """
+        Used to (un)lock the toolbars of the app.
+
+        :param lock: boolean, will lock all toolbars in place when set True
+        :return: None
+        """
+
+        if lock:
+            for widget in self.children():
+                if isinstance(widget, QtWidgets.QToolBar):
+                    widget.setMovable(False)
+        else:
+            for widget in self.children():
+                if isinstance(widget, QtWidgets.QToolBar):
+                    widget.setMovable(True)
+
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls:
             event.accept()
@@ -3863,7 +3912,6 @@ class GeneralGUISetGroupUI(OptionsGroupUI):
         self.form_box.addRow(QtWidgets.QLabel(''))
         self.form_box.addRow(self.notebook_font_size_label, self.notebook_font_size_spinner)
         self.form_box.addRow(self.axis_font_size_label, self.axis_font_size_spinner)
-
 
         # Add the QFormLayout that holds the Application general defaults
         # to the main layout of this TAB
@@ -5015,7 +5063,7 @@ class ExcellonAdvOptPrefGroupUI(OptionsGroupUI):
         # Probe feedrate
         self.feedrate_probe_label = QtWidgets.QLabel(_("Feedrate Probe:"))
         self.feedrate_probe_label.setToolTip(
-           _( "The feedrate used while the probe is probing.")
+           _("The feedrate used while the probe is probing.")
         )
         grid1.addWidget(self.feedrate_probe_label, 6, 0)
         self.feedrate_probe_entry = FCEntry()
@@ -5101,7 +5149,7 @@ class ExcellonExpPrefGroupUI(OptionsGroupUI):
         )
         hlay1.addWidget(self.format_whole_entry, QtCore.Qt.AlignLeft)
 
-        excellon_separator_label= QtWidgets.QLabel(':')
+        excellon_separator_label = QtWidgets.QLabel(':')
         excellon_separator_label.setFixedWidth(5)
         hlay1.addWidget(excellon_separator_label, QtCore.Qt.AlignLeft)
 
@@ -5715,8 +5763,7 @@ class GeometryAdvOptPrefGroupUI(OptionsGroupUI):
               "(in units per minute).\n"
               "This is for the rapid move G00.\n"
               "It is useful only for Marlin,\n"
-              "ignore for any other cases."
-            )
+              "ignore for any other cases.")
         )
         grid1.addWidget(fr_rapid_label, 4, 0)
         self.cncfeedrate_rapid_entry = LengthEntry()
@@ -5869,9 +5916,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         self.annotation_label = QtWidgets.QLabel(_("Display Annotation:"))
         self.annotation_label.setToolTip(
             _("This selects if to display text annotation on the plot.\n"
-              "When checked it will display numbers in order for each end\n"
-              "of a travel line."
-            )
+              "When checked it will display numbers in order for each end\n")
         )
         self.annotation_cb = FCCheckBox()
 
@@ -5930,7 +5975,7 @@ class CNCJobGenPrefGroupUI(OptionsGroupUI):
         )
         grid0.addWidget(tdlabel, 6, 0)
         self.tooldia_entry = LengthEntry()
-        grid0.addWidget(self.tooldia_entry,6, 1)
+        grid0.addWidget(self.tooldia_entry, 6, 1)
 
         # Number of decimals to use in GCODE coordinates
         cdeclabel = QtWidgets.QLabel(_('Coords dec.:'))
@@ -6130,15 +6175,15 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
 
         nccoverlabel = QtWidgets.QLabel(_('Overlap Rate:'))
         nccoverlabel.setToolTip(
-           _( "How much (fraction) of the tool width to overlap each tool pass.\n"
-              "Example:\n"
-              "A value here of 0.25 means 25% from the tool diameter found above.\n\n"
-              "Adjust the value starting with lower values\n"
-              "and increasing it if areas that should be cleared are still \n"
-              "not cleared.\n"
-              "Lower values = faster processing, faster execution on PCB.\n"
-              "Higher values = slow processing and slow execution on CNC\n"
-              "due of too many paths.")
+           _("How much (fraction) of the tool width to overlap each tool pass.\n"
+             "Example:\n"
+             "A value here of 0.25 means 25% from the tool diameter found above.\n\n"
+             "Adjust the value starting with lower values\n"
+             "and increasing it if areas that should be cleared are still \n"
+             "not cleared.\n"
+             "Lower values = faster processing, faster execution on PCB.\n"
+             "Higher values = slow processing and slow execution on CNC\n"
+             "due of too many paths.")
         )
         grid0.addWidget(nccoverlabel, 2, 0)
         self.ncc_overlap_entry = FloatEntry()
@@ -6630,9 +6675,9 @@ class ToolsPanelizePrefGroupUI(OptionsGroupUI):
                                           {'label': _('Geo'), 'value': 'geometry'}])
         self.panel_type_label = QtWidgets.QLabel(_("Panel Type:"))
         self.panel_type_label.setToolTip(
-           _( "Choose the type of object for the panel object:\n"
-              "- Gerber\n"
-              "- Geometry")
+           _("Choose the type of object for the panel object:\n"
+             "- Gerber\n"
+             "- Geometry")
         )
 
         grid0.addWidget(self.panel_type_label, 4, 0)
