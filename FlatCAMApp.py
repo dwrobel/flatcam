@@ -2068,6 +2068,7 @@ class App(QtCore.QObject):
         self.dxf_list = ['dxf']
         self.pdf_list = ['pdf']
         self.prj_list = ['flatprj']
+        self.conf_list = ['flatconfig']
 
         # global variable used by NCC Tool to signal that some polygons could not be cleared, if True
         # flag for polygons not cleared

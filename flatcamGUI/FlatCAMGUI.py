@@ -3218,6 +3218,9 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
                     if extension in self.app.prj_list:
                         # self.app.open_project() is not Thread Safe
                         self.app.open_project(self.filename)
+
+                    if extension in self.app.conf_list:
+                        self.app.open_config_file(self.filename)
                     else:
                         event.ignore()
         else:
