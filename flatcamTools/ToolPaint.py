@@ -58,7 +58,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
         self.object_combo.setCurrentIndex(1)
 
-        self.object_label = QtWidgets.QLabel(_("Geometry:"))
+        self.object_label = QtWidgets.QLabel('%s:' % _("Geometry"))
         self.object_label.setToolTip(
             _("Geometry object to be painted.                        ")
         )
@@ -158,7 +158,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tools_box.addLayout(grid3)
 
         # Overlap
-        ovlabel = QtWidgets.QLabel(_('Overlap Rate:'))
+        ovlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
         ovlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
               "Example:\n"
@@ -175,7 +175,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid3.addWidget(self.paintoverlap_entry, 1, 1)
 
         # Margin
-        marginlabel = QtWidgets.QLabel(_('Margin:'))
+        marginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
         marginlabel.setToolTip(
             _("Distance by which to avoid\n"
               "the edges of the polygon to\n"
@@ -186,7 +186,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid3.addWidget(self.paintmargin_entry, 2, 1)
 
         # Method
-        methodlabel = QtWidgets.QLabel(_('Method:'))
+        methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
         methodlabel.setToolTip(
             _("Algorithm for non-copper clearing:<BR>"
               "<B>Standard</B>: Fixed step inwards.<BR>"
@@ -202,7 +202,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid3.addWidget(self.paintmethod_combo, 3, 1)
 
         # Connect lines
-        pathconnectlabel = QtWidgets.QLabel(_("Connect:"))
+        pathconnectlabel = QtWidgets.QLabel('%s:' % _("Connect"))
         pathconnectlabel.setToolTip(
             _("Draw lines between resulting\n"
               "segments to minimize tool lifts.")
@@ -211,7 +211,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.pathconnect_cb = FCCheckBox()
         grid3.addWidget(self.pathconnect_cb, 4, 1)
 
-        contourlabel = QtWidgets.QLabel(_("Contour:"))
+        contourlabel = QtWidgets.QLabel('%s:' % _("Contour"))
         contourlabel.setToolTip(
             _("Cut around the perimeter of the polygon\n"
               "to trim rough edges.")
@@ -220,7 +220,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.paintcontour_cb = FCCheckBox()
         grid3.addWidget(self.paintcontour_cb, 5, 1)
 
-        restlabel = QtWidgets.QLabel(_("Rest M.:"))
+        restlabel = QtWidgets.QLabel('%s:' % _("Rest M."))
         restlabel.setToolTip(
             _("If checked, use 'rest machining'.\n"
               "Basically it will clear copper outside PCB features,\n"
@@ -235,7 +235,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid3.addWidget(self.rest_cb, 6, 1)
 
         # Polygon selection
-        selectlabel = QtWidgets.QLabel(_('Selection:'))
+        selectlabel = QtWidgets.QLabel('%s:' % _('Selection'))
         selectlabel.setToolTip(
             _("How to select the polygons to paint.<BR>"
               "Options:<BR>"
@@ -265,7 +265,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid4 = QtWidgets.QGridLayout()
         self.tools_box.addLayout(grid4)
 
-        self.box_combo_type_label = QtWidgets.QLabel(_("Ref. Type:"))
+        self.box_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
         self.box_combo_type_label.setToolTip(
             _("The type of FlatCAM object to be used as paint reference.\n"
               "It can be Gerber, Excellon or Geometry.")
@@ -278,7 +278,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid4.addWidget(self.box_combo_type_label, 0, 0)
         grid4.addWidget(self.box_combo_type, 0, 1)
 
-        self.box_combo_label = QtWidgets.QLabel(_("Ref. Object:"))
+        self.box_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
         self.box_combo_label.setToolTip(
             _("The FlatCAM object to be used as non copper clearing reference.")
         )

@@ -54,7 +54,7 @@ class PcbWizard(FlatCAMTool):
         form_layout = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout)
 
-        self.excellon_label = QtWidgets.QLabel(_("Excellon file:"))
+        self.excellon_label = QtWidgets.QLabel('%s:' % _("Excellon file"))
         self.excellon_label.setToolTip(
            _("Load the Excellon file.\n"
              "Usually it has a .DRL extension")
@@ -62,7 +62,7 @@ class PcbWizard(FlatCAMTool):
         self.excellon_brn = FCButton(_("Open"))
         form_layout.addRow(self.excellon_label, self.excellon_brn)
 
-        self.inf_label = QtWidgets.QLabel(_("INF file:"))
+        self.inf_label = QtWidgets.QLabel('%s:' % _("INF file"))
         self.inf_label.setToolTip(
             _("Load the INF file.")
         )
@@ -92,7 +92,7 @@ class PcbWizard(FlatCAMTool):
         # Integral part of the coordinates
         self.int_entry = FCSpinner()
         self.int_entry.set_range(1, 10)
-        self.int_label = QtWidgets.QLabel(_("Int. digits:"))
+        self.int_label = QtWidgets.QLabel('%s:' % _("Int. digits"))
         self.int_label.setToolTip(
            _("The number of digits for the integral part of the coordinates.")
         )
@@ -101,7 +101,7 @@ class PcbWizard(FlatCAMTool):
         # Fractional part of the coordinates
         self.frac_entry = FCSpinner()
         self.frac_entry.set_range(1, 10)
-        self.frac_label = QtWidgets.QLabel(_("Frac. digits:"))
+        self.frac_label = QtWidgets.QLabel('%s:' % _("Frac. digits"))
         self.frac_label.setToolTip(
             _("The number of digits for the fractional part of the coordinates.")
         )
@@ -111,7 +111,7 @@ class PcbWizard(FlatCAMTool):
         self.zeros_radio = RadioSet([{'label': _('LZ'), 'value': 'LZ'},
                                      {'label': _('TZ'), 'value': 'TZ'},
                                      {'label': _('No Suppression'), 'value': 'D'}])
-        self.zeros_label = QtWidgets.QLabel(_("Zeros supp.:"))
+        self.zeros_label = QtWidgets.QLabel('%s:' % _("Zeros supp."))
         self.zeros_label.setToolTip(
             _("The type of zeros suppression used.\n"
               "Can be of type:\n"

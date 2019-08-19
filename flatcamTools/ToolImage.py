@@ -50,7 +50,7 @@ class ToolImage(FlatCAMTool):
         self.tf_type_obj_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
         self.tf_type_obj_combo.setItemIcon(1, QtGui.QIcon("share/geometry16.png"))
 
-        self.tf_type_obj_combo_label = QtWidgets.QLabel(_("Object Type:"))
+        self.tf_type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Object Type"))
         self.tf_type_obj_combo_label.setToolTip(
            _("Specify the type of object to create from the image.\n"
              "It can be of type: Gerber or Geometry.")
@@ -60,7 +60,7 @@ class ToolImage(FlatCAMTool):
 
         # DPI value of the imported image
         self.dpi_entry = IntEntry()
-        self.dpi_label = QtWidgets.QLabel(_("DPI value:"))
+        self.dpi_label = QtWidgets.QLabel('%s:' % _("DPI value"))
         self.dpi_label.setToolTip(
            _("Specify a DPI value for the image.")
         )

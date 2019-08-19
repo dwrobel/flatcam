@@ -61,7 +61,7 @@ class ToolSub(FlatCAMTool):
         self.target_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.target_gerber_combo.setCurrentIndex(1)
 
-        self.target_gerber_label = QtWidgets.QLabel(_("Target:"))
+        self.target_gerber_label = QtWidgets.QLabel('%s:' % _("Target"))
         self.target_gerber_label.setToolTip(
             _("Gerber object from which to substract\n"
               "the substractor Gerber object.")
@@ -75,7 +75,7 @@ class ToolSub(FlatCAMTool):
         self.sub_gerber_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.sub_gerber_combo.setCurrentIndex(1)
 
-        self.sub_gerber_label = QtWidgets.QLabel(_("Substractor:"))
+        self.sub_gerber_label = QtWidgets.QLabel('%s:' % _("Substractor"))
         self.sub_gerber_label.setToolTip(
             _("Gerber object that will be substracted\n"
               "from the target Gerber object.")
@@ -107,7 +107,7 @@ class ToolSub(FlatCAMTool):
         self.target_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
         self.target_geo_combo.setCurrentIndex(1)
 
-        self.target_geo_label = QtWidgets.QLabel(_("Target:"))
+        self.target_geo_label = QtWidgets.QLabel('%s:' % _("Target"))
         self.target_geo_label.setToolTip(
             _("Geometry object from which to substract\n"
               "the substractor Geometry object.")
@@ -121,7 +121,7 @@ class ToolSub(FlatCAMTool):
         self.sub_geo_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
         self.sub_geo_combo.setCurrentIndex(1)
 
-        self.sub_geo_label = QtWidgets.QLabel(_("Substractor:"))
+        self.sub_geo_label = QtWidgets.QLabel('%s:' % _("Substractor"))
         self.sub_geo_label.setToolTip(
             _("Geometry object that will be substracted\n"
               "from the target Geometry object.")

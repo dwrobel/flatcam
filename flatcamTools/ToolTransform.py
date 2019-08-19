@@ -65,7 +65,7 @@ class ToolTransform(FlatCAMTool):
         self.transform_lay.addLayout(form_layout)
         form_child = QtWidgets.QHBoxLayout()
 
-        self.rotate_label = QtWidgets.QLabel(_("Angle:"))
+        self.rotate_label = QtWidgets.QLabel('%s:' % _("Angle"))
         self.rotate_label.setToolTip(
             _("Angle for Rotation action, in degrees.\n"
               "Float number between -360 and 359.\n"
@@ -104,7 +104,7 @@ class ToolTransform(FlatCAMTool):
         form1_child_1 = QtWidgets.QHBoxLayout()
         form1_child_2 = QtWidgets.QHBoxLayout()
 
-        self.skewx_label = QtWidgets.QLabel(_("Angle X:"))
+        self.skewx_label = QtWidgets.QLabel('%s:' % _("Skew_X angle"))
         self.skewx_label.setToolTip(
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 359.")
@@ -122,7 +122,7 @@ class ToolTransform(FlatCAMTool):
               "the bounding box for all selected objects."))
         self.skewx_button.setMinimumWidth(90)
 
-        self.skewy_label = QtWidgets.QLabel(_("Angle Y:"))
+        self.skewy_label = QtWidgets.QLabel('%s:' % _("Skew_Y angle"))
         self.skewy_label.setToolTip(
             _("Angle for Skew action, in degrees.\n"
               "Float number between -360 and 359.")
@@ -161,9 +161,9 @@ class ToolTransform(FlatCAMTool):
         form2_child_1 = QtWidgets.QHBoxLayout()
         form2_child_2 = QtWidgets.QHBoxLayout()
 
-        self.scalex_label = QtWidgets.QLabel(_("Factor X:"))
+        self.scalex_label = QtWidgets.QLabel('%s:' % _("Scale_X factor"))
         self.scalex_label.setToolTip(
-            _("Factor for Scale action over X axis.")
+            _("Factor for scaling on X axis.")
         )
         self.scalex_label.setMinimumWidth(70)
         self.scalex_entry = FCEntry()
@@ -178,9 +178,9 @@ class ToolTransform(FlatCAMTool):
               "the Scale reference checkbox state."))
         self.scalex_button.setMinimumWidth(90)
 
-        self.scaley_label = QtWidgets.QLabel(_("Factor Y:"))
+        self.scaley_label = QtWidgets.QLabel('%s:' % _("Scale_Y factor"))
         self.scaley_label.setToolTip(
-            _("Factor for Scale action over Y axis.")
+            _("Factor for scaling on Y axis.")
         )
         self.scaley_label.setMinimumWidth(70)
         self.scaley_entry = FCEntry()
@@ -200,12 +200,13 @@ class ToolTransform(FlatCAMTool):
         self.scale_link_cb.setText(_("Link"))
         self.scale_link_cb.setToolTip(
             _("Scale the selected object(s)\n"
-              "using the Scale Factor X for both axis."))
+              "using the Scale_X factor for both axis.")
+        )
         self.scale_link_cb.setMinimumWidth(70)
 
         self.scale_zero_ref_cb = FCCheckBox()
         self.scale_zero_ref_cb.set_value(True)
-        self.scale_zero_ref_cb.setText(_("Scale Reference"))
+        self.scale_zero_ref_cb.setText('%s' % _("Scale Reference"))
         self.scale_zero_ref_cb.setToolTip(
             _("Scale the selected object(s)\n"
               "using the origin reference when checked,\n"
@@ -235,9 +236,9 @@ class ToolTransform(FlatCAMTool):
         form3_child_1 = QtWidgets.QHBoxLayout()
         form3_child_2 = QtWidgets.QHBoxLayout()
 
-        self.offx_label = QtWidgets.QLabel(_("Value X:"))
+        self.offx_label = QtWidgets.QLabel('%s:' % _("Offset_X val"))
         self.offx_label.setToolTip(
-            _("Value for Offset action on X axis.")
+            _("Distance to offset on X axis. In current units.")
         )
         self.offx_label.setMinimumWidth(70)
         self.offx_entry = FCEntry()
@@ -252,9 +253,9 @@ class ToolTransform(FlatCAMTool):
               "the bounding box for all selected objects.\n"))
         self.offx_button.setMinimumWidth(90)
 
-        self.offy_label = QtWidgets.QLabel(_("Value Y:"))
+        self.offy_label = QtWidgets.QLabel('%s:' % _("Offset_Y val"))
         self.offy_label.setToolTip(
-            _("Value for Offset action on Y axis.")
+            _("Distance to offset on Y axis. In current units.")
         )
         self.offy_label.setMinimumWidth(70)
         self.offy_entry = FCEntry()
@@ -309,7 +310,7 @@ class ToolTransform(FlatCAMTool):
 
         self.flip_ref_cb = FCCheckBox()
         self.flip_ref_cb.set_value(True)
-        self.flip_ref_cb.setText(_("Ref Pt"))
+        self.flip_ref_cb.setText('%s' % _("Mirror Reference"))
         self.flip_ref_cb.setToolTip(
             _("Flip the selected object(s)\n"
               "around the point in Point Entry Field.\n"
@@ -322,7 +323,7 @@ class ToolTransform(FlatCAMTool):
               "Point Entry field and click Flip on X(Y)"))
         self.flip_ref_cb.setMinimumWidth(70)
 
-        self.flip_ref_label = QtWidgets.QLabel(_("Point:"))
+        self.flip_ref_label = QtWidgets.QLabel('%s:' % _(" Mirror Ref. Point"))
         self.flip_ref_label.setToolTip(
             _("Coordinates in format (x, y) used as reference for mirroring.\n"
               "The 'x' in (x, y) will be used when using Flip on X and\n"

@@ -192,7 +192,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_overlap_entry = FCEntry()
         grid3.addWidget(self.ncc_overlap_entry, 1, 1)
 
-        nccmarginlabel = QtWidgets.QLabel(_('Margin:'))
+        nccmarginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
         nccmarginlabel.setToolTip(
             _("Bounding box margin.")
         )
@@ -201,7 +201,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         grid3.addWidget(self.ncc_margin_entry, 2, 1)
 
         # Method
-        methodlabel = QtWidgets.QLabel(_('Method:'))
+        methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
         methodlabel.setToolTip(
             _("Algorithm for non-copper clearing:<BR>"
               "<B>Standard</B>: Fixed step inwards.<BR>"
@@ -217,7 +217,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         grid3.addWidget(self.ncc_method_radio, 3, 1)
 
         # Connect lines
-        pathconnectlabel = QtWidgets.QLabel(_("Connect:"))
+        pathconnectlabel = QtWidgets.QLabel('%s:' % _("Connect"))
         pathconnectlabel.setToolTip(
             _("Draw lines between resulting\n"
               "segments to minimize tool lifts.")
@@ -226,7 +226,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_connect_cb = FCCheckBox()
         grid3.addWidget(self.ncc_connect_cb, 4, 1)
 
-        contourlabel = QtWidgets.QLabel(_("Contour:"))
+        contourlabel = QtWidgets.QLabel('%s:' % _("Contour"))
         contourlabel.setToolTip(
             _("Cut around the perimeter of the polygon\n"
               "to trim rough edges.")
@@ -235,7 +235,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_contour_cb = FCCheckBox()
         grid3.addWidget(self.ncc_contour_cb, 5, 1)
 
-        restlabel = QtWidgets.QLabel(_("Rest M.:"))
+        restlabel = QtWidgets.QLabel('%s:' % _("Rest M."))
         restlabel.setToolTip(
             _("If checked, use 'rest machining'.\n"
               "Basically it will clear copper outside PCB features,\n"
@@ -250,7 +250,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         grid3.addWidget(self.ncc_rest_cb, 6, 1)
 
         # ## NCC Offset choice
-        self.ncc_offset_choice_label = QtWidgets.QLabel(_("Offset:"))
+        self.ncc_offset_choice_label = QtWidgets.QLabel('%s:' % _("Offset"))
         self.ncc_offset_choice_label.setToolTip(
             _("If used, it will add an offset to the copper features.\n"
               "The copper clearing will finish to a distance\n"
@@ -262,7 +262,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         grid3.addWidget(self.ncc_choice_offset_cb, 7, 1)
 
         # ## NCC Offset value
-        self.ncc_offset_label = QtWidgets.QLabel(_("Offset value:"))
+        self.ncc_offset_label = QtWidgets.QLabel('%s:' % _("Offset value"))
         self.ncc_offset_label.setToolTip(
             _("If used, it will add an offset to the copper features.\n"
               "The copper clearing will finish to a distance\n"
@@ -291,10 +291,10 @@ class NonCopperClear(FlatCAMTool, Gerber):
                                          {'label': _('Box'), 'value': 'box'}])
         self.reference_label = QtWidgets.QLabel(_("Reference:"))
         self.reference_label.setToolTip(
-            _("- 'Itself': the non copper clearing extent\n"
+            _("When choosing the 'Itself' option the non copper clearing extent\n"
               "is based on the object that is copper cleared.\n "
-              "- 'Box': will do non copper clearing within the box\n"
-              "specified by the object selected in the Ref. Object combobox.")
+              "Choosing the 'Box' option will do non copper clearing within the box\n"
+              "specified by another object different than the one that is copper cleared.")
         )
         grid3.addWidget(self.reference_label, 9, 0)
         grid3.addWidget(self.reference_radio, 9, 1)
@@ -302,7 +302,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         grid4 = QtWidgets.QGridLayout()
         self.tools_box.addLayout(grid4)
 
-        self.box_combo_type_label = QtWidgets.QLabel(_("Ref. Type:"))
+        self.box_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
         self.box_combo_type_label.setToolTip(
             _("The type of FlatCAM object to be used as non copper clearing reference.\n"
               "It can be Gerber, Excellon or Geometry.")
@@ -315,7 +315,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         grid4.addWidget(self.box_combo_type_label, 0, 0)
         grid4.addWidget(self.box_combo_type, 0, 1)
 
-        self.box_combo_label = QtWidgets.QLabel(_("Ref. Object:"))
+        self.box_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
         self.box_combo_label.setToolTip(
             _("The FlatCAM object to be used as non copper clearing reference.")
         )

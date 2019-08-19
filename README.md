@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+19.08.2019
+
+- updated the Edit -> Preferences to include also the Gerber Editor complete Preferences
+- started to update the app strings to make it easier for future translations
+
+
 18.08.2019
 
 - made the exported preferences formatted therefore more easily read

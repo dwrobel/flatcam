@@ -149,7 +149,7 @@ class DblSidedTool(FlatCAMTool):
 
         # ## Point/Box
         self.point_box_container = QtWidgets.QVBoxLayout()
-        self.pb_label = QtWidgets.QLabel("<b>%s</b>" % _('Point/Box Reference:'))
+        self.pb_label = QtWidgets.QLabel("<b>%s:</b>" % _('Point/Box Reference'))
         self.pb_label.setToolTip(
             _("If 'Point' is selected above it store the coordinates (x, y) through which\n"
               "the mirroring axis passes.\n"
@@ -189,7 +189,7 @@ class DblSidedTool(FlatCAMTool):
         self.box_combo_type.hide()
 
         # ## Alignment holes
-        self.ah_label = QtWidgets.QLabel("<b>%s</b>" % _('Alignment Drill Coordinates:'))
+        self.ah_label = QtWidgets.QLabel("<b>%s:</b>" % _('Alignment Drill Coordinates'))
         self.ah_label.setToolTip(
            _("Alignment holes (x1, y1), (x2, y2), ... "
              "on one side of the mirror axis. For each set of (x, y) coordinates\n"
@@ -220,7 +220,7 @@ class DblSidedTool(FlatCAMTool):
         grid_lay3.addWidget(self.add_drill_point_button, 0, 1)
 
         # ## Drill diameter for alignment holes
-        self.dt_label = QtWidgets.QLabel("<b>%s</b>:" % _('Alignment Drill Diameter'))
+        self.dt_label = QtWidgets.QLabel("<b>%s:</b>" % _('Alignment Drill Diameter'))
         self.dt_label.setToolTip(
             _("Diameter of the drill for the "
               "alignment holes.")
@@ -231,7 +231,7 @@ class DblSidedTool(FlatCAMTool):
         self.layout.addLayout(hlay)
 
         self.drill_dia = FCEntry()
-        self.dd_label = QtWidgets.QLabel(_("Drill diam.:"))
+        self.dd_label = QtWidgets.QLabel('%s:' % _("Drill dia"))
         self.dd_label.setToolTip(
             _("Diameter of the drill for the "
               "alignment holes.")

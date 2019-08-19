@@ -51,7 +51,7 @@ class CutOut(FlatCAMTool):
         # self.type_obj_combo.setItemIcon(1, QtGui.QIcon("share/drill16.png"))
         self.type_obj_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
 
-        self.type_obj_combo_label = QtWidgets.QLabel(_("Obj Type:"))
+        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
         self.type_obj_combo_label.setToolTip(
             _("Specify the type of object to be cutout.\n"
               "It can be of type: Gerber or Geometry.\n"
@@ -67,14 +67,14 @@ class CutOut(FlatCAMTool):
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.obj_combo.setCurrentIndex(1)
 
-        self.object_label = QtWidgets.QLabel(_("Object:"))
+        self.object_label = QtWidgets.QLabel('%s:' % _("Object"))
         self.object_label.setToolTip(
             _("Object to be cutout.                        ")
         )
         form_layout.addRow(self.object_label, self.obj_combo)
 
         # Object kind
-        self.kindlabel = QtWidgets.QLabel(_('Obj kind:'))
+        self.kindlabel = QtWidgets.QLabel('%s:' % _('Obj kind'))
         self.kindlabel.setToolTip(
             _("Choice of what kind the object we want to cutout is.<BR>"
               "- <B>Single</B>: contain a single PCB Gerber outline object.<BR>"
@@ -89,7 +89,7 @@ class CutOut(FlatCAMTool):
 
         # Tool Diameter
         self.dia = FCEntry()
-        self.dia_label = QtWidgets.QLabel(_("Tool Dia:"))
+        self.dia_label = QtWidgets.QLabel('%s:' % _("Tool dia"))
         self.dia_label.setToolTip(
            _("Diameter of the tool used to cutout\n"
              "the PCB shape out of the surrounding material.")
@@ -98,7 +98,7 @@ class CutOut(FlatCAMTool):
 
         # Margin
         self.margin = FCEntry()
-        self.margin_label = QtWidgets.QLabel(_("Margin:"))
+        self.margin_label = QtWidgets.QLabel('%s:' % _("Margin:"))
         self.margin_label.setToolTip(
            _("Margin over bounds. A positive value here\n"
              "will make the cutout of the PCB further from\n"
@@ -108,7 +108,7 @@ class CutOut(FlatCAMTool):
 
         # Gapsize
         self.gapsize = FCEntry()
-        self.gapsize_label = QtWidgets.QLabel(_("Gap size:"))
+        self.gapsize_label = QtWidgets.QLabel('%s:' % _("Gap size:"))
         self.gapsize_label.setToolTip(
            _("The size of the bridge gaps in the cutout\n"
              "used to keep the board connected to\n"
@@ -127,7 +127,7 @@ class CutOut(FlatCAMTool):
 
         # Surrounding convex box shape
         self.convex_box = FCCheckBox()
-        self.convex_box_label = QtWidgets.QLabel(_("Convex Sh.:"))
+        self.convex_box_label = QtWidgets.QLabel('%s:' % _("Convex Sh."))
         self.convex_box_label.setToolTip(
             _("Create a convex shape surrounding the entire PCB.\n"
               "Used only if the source object type is Gerber.")
@@ -146,7 +146,7 @@ class CutOut(FlatCAMTool):
         self.layout.addLayout(form_layout_2)
 
         # Gaps
-        gaps_label = QtWidgets.QLabel(_('Gaps:'))
+        gaps_label = QtWidgets.QLabel('%s:' % _('Gaps'))
         gaps_label.setToolTip(
             _("Number of gaps used for the Automatic cutout.\n"
               "There can be maximum 8 bridges/gaps.\n"
@@ -171,7 +171,7 @@ class CutOut(FlatCAMTool):
         hlay = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay)
 
-        title_ff_label = QtWidgets.QLabel("<b>%s</b>" % _('FreeForm:'))
+        title_ff_label = QtWidgets.QLabel("<b>%s:</b>" % _('FreeForm'))
         title_ff_label.setToolTip(
             _("The cutout shape can be of ny shape.\n"
               "Useful when the PCB has a non-rectangular shape.")
@@ -191,7 +191,7 @@ class CutOut(FlatCAMTool):
         hlay2 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay2)
 
-        title_rct_label = QtWidgets.QLabel("<b>%s</b>" % _('Rectangular:'))
+        title_rct_label = QtWidgets.QLabel("<b>%s:</b>" % _('Rectangular'))
         title_rct_label.setToolTip(
             _("The resulting cutout shape is\n"
               "always a rectangle shape and it will be\n"
@@ -228,7 +228,7 @@ class CutOut(FlatCAMTool):
         self.man_object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
         self.man_object_combo.setCurrentIndex(1)
 
-        self.man_object_label = QtWidgets.QLabel(_("Geo Obj:"))
+        self.man_object_label = QtWidgets.QLabel('%s:' % _("Geo Obj"))
         self.man_object_label.setToolTip(
             _("Geometry object used to create the manual cutout.")
         )
@@ -241,7 +241,7 @@ class CutOut(FlatCAMTool):
         hlay3 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay3)
 
-        self.man_geo_label = QtWidgets.QLabel(_("Manual Geo:"))
+        self.man_geo_label = QtWidgets.QLabel('%s:' % _("Manual Geo"))
         self.man_geo_label.setToolTip(
             _("If the object to be cutout is a Gerber\n"
               "first create a Geometry that surrounds it,\n"
@@ -263,7 +263,7 @@ class CutOut(FlatCAMTool):
         hlay4 = QtWidgets.QHBoxLayout()
         self.layout.addLayout(hlay4)
 
-        self.man_bridge_gaps_label = QtWidgets.QLabel(_("Manual Add Bridge Gaps:"))
+        self.man_bridge_gaps_label = QtWidgets.QLabel('%s:' % _("Manual Add Bridge Gaps"))
         self.man_bridge_gaps_label.setToolTip(
             _("Use the left mouse button (LMB) click\n"
               "to create a bridge gap to separate the PCB from\n"

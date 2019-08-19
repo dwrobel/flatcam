@@ -2202,6 +2202,7 @@ class FCApertureSelect(DrawTool):
 
         self.grb_editor_app.hide_tool('all')
         self.grb_editor_app.hide_tool('select')
+        self.grb_editor_app.array_frame.hide()
 
         try:
             QtGui.QGuiApplication.restoreOverrideCursor()
@@ -2345,7 +2346,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # #########################
         # ### Gerber Apertures ####
         # #########################
-        self.apertures_table_label = QtWidgets.QLabel(_('<b>Apertures:</b>'))
+        self.apertures_table_label = QtWidgets.QLabel('<b>%s:</b>' % _('Apertures'))
         self.apertures_table_label.setToolTip(
             _("Apertures Table for the Gerber Object.")
         )
@@ -2391,7 +2392,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         grid1 = QtWidgets.QGridLayout()
         self.apertures_box.addLayout(grid1)
 
-        apcode_lbl = QtWidgets.QLabel(_('Aperture Code:'))
+        apcode_lbl = QtWidgets.QLabel('%s:' % _('Aperture Code'))
         apcode_lbl.setToolTip(
         _("Code for the new aperture")
         )
@@ -2401,7 +2402,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.apcode_entry.setValidator(QtGui.QIntValidator(0, 999))
         grid1.addWidget(self.apcode_entry, 1, 1)
 
-        apsize_lbl = QtWidgets.QLabel(_('Aperture Size:'))
+        apsize_lbl = QtWidgets.QLabel('%s:' % _('Aperture Size'))
         apsize_lbl.setToolTip(
         _("Size for the new aperture.\n"
           "If aperture type is 'R' or 'O' then\n"
@@ -2415,7 +2416,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.apsize_entry.setValidator(QtGui.QDoubleValidator(0.0001, 99.9999, 4))
         grid1.addWidget(self.apsize_entry, 2, 1)
 
-        aptype_lbl = QtWidgets.QLabel(_('Aperture Type:'))
+        aptype_lbl = QtWidgets.QLabel('%s:' % _('Aperture Type'))
         aptype_lbl.setToolTip(
         _("Select the type of new aperture. Can be:\n"
           "C = circular\n"
@@ -2428,7 +2429,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.aptype_cb.addItems(['C', 'R', 'O'])
         grid1.addWidget(self.aptype_cb, 3, 1)
 
-        self.apdim_lbl = QtWidgets.QLabel(_('Aperture Dim:'))
+        self.apdim_lbl = QtWidgets.QLabel('%s:' % _('Aperture Dim'))
         self.apdim_lbl.setToolTip(
         _("Dimensions for the new aperture.\n"
           "Active only for rectangular apertures (type R).\n"
@@ -2484,8 +2485,8 @@ class FlatCAMGrbEditor(QtCore.QObject):
 
         # Buffer distance
         self.buffer_distance_entry = FCEntry()
-        buf_form_layout.addRow(_("Buffer distance:"), self.buffer_distance_entry)
-        self.buffer_corner_lbl = QtWidgets.QLabel(_("Buffer corner:"))
+        buf_form_layout.addRow('%s:' % _("Buffer distance"), self.buffer_distance_entry)
+        self.buffer_corner_lbl = QtWidgets.QLabel('%s:' % _("Buffer corner"))
         self.buffer_corner_lbl.setToolTip(
             _("There are 3 types of corners:\n"
               " - 'Round': the corner is rounded.\n"
@@ -2517,7 +2518,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.scale_tool_frame.hide()
 
         # Title
-        scale_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Scale Aperture:'))
+        scale_title_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Scale Aperture'))
         scale_title_lbl.setToolTip(
             _("Scale a aperture in the aperture list")
         )
@@ -2527,7 +2528,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         scale_form_layout = QtWidgets.QFormLayout()
         self.scale_tools_box.addLayout(scale_form_layout)
 
-        self.scale_factor_lbl = QtWidgets.QLabel(_("Scale factor:"))
+        self.scale_factor_lbl = QtWidgets.QLabel('%s:' % _("Scale factor"))
         self.scale_factor_lbl.setToolTip(
             _("The factor by which to scale the selected aperture.\n"
               "Values can be between 0.0000 and 999.9999")
@@ -2555,7 +2556,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.ma_tool_frame.hide()
 
         # Title
-        ma_title_lbl = QtWidgets.QLabel('<b>%s</b>' % _('Mark polygon areas:'))
+        ma_title_lbl = QtWidgets.QLabel('<b>%s:</b>' % _('Mark polygon areas'))
         ma_title_lbl.setToolTip(
             _("Mark the polygon areas.")
         )
@@ -2565,7 +2566,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         ma_form_layout = QtWidgets.QFormLayout()
         self.ma_tools_box.addLayout(ma_form_layout)
 
-        self.ma_upper_threshold_lbl = QtWidgets.QLabel(_("Area UPPER threshold:"))
+        self.ma_upper_threshold_lbl = QtWidgets.QLabel('%s:' % _("Area UPPER threshold"))
         self.ma_upper_threshold_lbl.setToolTip(
             _("The threshold value, all areas less than this are marked.\n"
               "Can have a value between 0.0000 and 9999.9999")
@@ -2573,7 +2574,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.ma_upper_threshold_entry = FCEntry()
         self.ma_upper_threshold_entry.setValidator(QtGui.QDoubleValidator(0.0000, 9999.9999, 4))
 
-        self.ma_lower_threshold_lbl = QtWidgets.QLabel(_("Area LOWER threshold:"))
+        self.ma_lower_threshold_lbl = QtWidgets.QLabel('%s:' % _("Area LOWER threshold"))
         self.ma_lower_threshold_lbl.setToolTip(
             _("The threshold value, all areas more than this are marked.\n"
               "Can have a value between 0.0000 and 9999.9999")
@@ -2594,7 +2595,6 @@ class FlatCAMGrbEditor(QtCore.QObject):
         # ######################
         # ### Add Pad Array ####
         # ######################
-
         # add a frame and inside add a vertical box layout. Inside this vbox layout I add
         # all the add Pad array  widgets
         # this way I can hide/show the frame
@@ -2627,7 +2627,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.array_form = QtWidgets.QFormLayout()
         self.array_box.addLayout(self.array_form)
 
-        self.pad_array_size_label = QtWidgets.QLabel(_('Nr of pads:'))
+        self.pad_array_size_label = QtWidgets.QLabel('%s:' % _('Nr of pads'))
         self.pad_array_size_label.setToolTip(
             _("Specify how many pads to be in the array.")
         )
@@ -2646,7 +2646,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.linear_form = QtWidgets.QFormLayout()
         self.linear_box.addLayout(self.linear_form)
 
-        self.pad_axis_label = QtWidgets.QLabel(_('Direction:'))
+        self.pad_axis_label = QtWidgets.QLabel('%s:' % _('Direction'))
         self.pad_axis_label.setToolTip(
             _("Direction on which the linear array is oriented:\n"
               "- 'X' - horizontal axis \n"
@@ -2661,7 +2661,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.pad_axis_radio.set_value('X')
         self.linear_form.addRow(self.pad_axis_label, self.pad_axis_radio)
 
-        self.pad_pitch_label = QtWidgets.QLabel(_('Pitch:'))
+        self.pad_pitch_label = QtWidgets.QLabel('%s:' % _('Pitch'))
         self.pad_pitch_label.setToolTip(
             _("Pitch = Distance between elements of the array.")
         )
@@ -2670,7 +2670,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.pad_pitch_entry = LengthEntry()
         self.linear_form.addRow(self.pad_pitch_label, self.pad_pitch_entry)
 
-        self.linear_angle_label = QtWidgets.QLabel(_('Angle:'))
+        self.linear_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
         self.linear_angle_label.setToolTip(
            _( "Angle at which the linear array is placed.\n"
               "The precision is of max 2 decimals.\n"
@@ -2691,7 +2691,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.circular_box.setContentsMargins(0, 0, 0, 0)
         self.array_circular_frame.setLayout(self.circular_box)
 
-        self.pad_direction_label = QtWidgets.QLabel(_('Direction:'))
+        self.pad_direction_label = QtWidgets.QLabel('%s:' % _('Direction'))
         self.pad_direction_label.setToolTip(
            _("Direction for circular array."
              "Can be CW = clockwise or CCW = counter clockwise.")
@@ -2706,7 +2706,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
         self.pad_direction_radio.set_value('CW')
         self.circular_form.addRow(self.pad_direction_label, self.pad_direction_radio)
 
-        self.pad_angle_label = QtWidgets.QLabel(_('Angle:'))
+        self.pad_angle_label = QtWidgets.QLabel('%s:' % _('Angle'))
         self.pad_angle_label.setToolTip(
             _("Angle at which each element in circular array is placed.")
         )
@@ -2944,23 +2944,24 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.tool2tooldia[i + 1] = tt_aperture
 
         # Init GUI
-        if self.units == 'MM':
-            self.buffer_distance_entry.set_value(0.01)
-            self.scale_factor_entry.set_value(1.0)
-            self.ma_upper_threshold_entry.set_value(1.0)
-            self.apsize_entry.set_value(1.00)
-        else:
-            self.buffer_distance_entry.set_value(0.0003937)
-            self.scale_factor_entry.set_value(0.03937)
-            self.ma_upper_threshold_entry.set_value(0.00155)
-            self.apsize_entry.set_value(0.039)
-        self.ma_lower_threshold_entry.set_value(0.0)
 
-        self.pad_array_size_entry.set_value(5)
-        self.pad_pitch_entry.set_value(2.54)
-        self.pad_angle_entry.set_value(12)
-        self.pad_direction_radio.set_value('CW')
-        self.pad_axis_radio.set_value('X')
+        self.buffer_distance_entry.set_value(self.app.defaults["gerber_editor_buff_f"])
+        self.scale_factor_entry.set_value(self.app.defaults["gerber_editor_scale_f"])
+        self.ma_upper_threshold_entry.set_value(self.app.defaults["gerber_editor_ma_low"])
+        self.ma_lower_threshold_entry.set_value(self.app.defaults["gerber_editor_ma_high"])
+
+        self.apsize_entry.set_value(self.app.defaults["gerber_editor_newsize"])
+        self.aptype_cb.set_value(self.app.defaults["gerber_editor_newtype"])
+        self.apdim_entry.set_value(self.app.defaults["gerber_editor_newdim"])
+
+        self.pad_array_size_entry.set_value(self.app.defaults["gerber_editor_array_size"])
+        # linear array
+        self.pad_axis_radio.set_value(self.app.defaults["gerber_editor_lin_axis"])
+        self.pad_pitch_entry.set_value(self.app.defaults["gerber_editor_lin_pitch"])
+        self.linear_angle_spinner.set_value(self.app.defaults["gerber_editor_lin_angle"])
+        # circular array
+        self.pad_direction_radio.set_value(self.app.defaults["gerber_editor_circ_dir"])
+        self.pad_angle_entry.set_value(self.app.defaults["gerber_editor_circ_angle"])
 
     def build_ui(self, first_run=None):
 
@@ -3113,7 +3114,7 @@ class FlatCAMGrbEditor(QtCore.QObject):
             self.apcode_entry.set_value(max(self.tool2tooldia.values()) + 1)
         except ValueError:
             # this means that the edited object has no apertures so we start with 10 (Gerber specifications)
-            self.apcode_entry.set_value(10)
+            self.apcode_entry.set_value(self.app.defaults["gerber_editor_newcode"])
 
     def on_aperture_add(self, apid=None):
         self.is_modified = True

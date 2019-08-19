@@ -422,6 +422,21 @@ class App(QtCore.QObject):
 
             # Gerber Editor
             "gerber_editor_sel_limit": self.ui.gerber_defaults_form.gerber_editor_group.sel_limit_entry,
+            "gerber_editor_newcode": self.ui.gerber_defaults_form.gerber_editor_group.addcode_entry,
+            "gerber_editor_newsize": self.ui.gerber_defaults_form.gerber_editor_group.addsize_entry,
+            "gerber_editor_newtype": self.ui.gerber_defaults_form.gerber_editor_group.addtype_combo,
+            "gerber_editor_newdim": self.ui.gerber_defaults_form.gerber_editor_group.adddim_entry,
+            "gerber_editor_array_size": self.ui.gerber_defaults_form.gerber_editor_group.grb_array_size_entry,
+            "gerber_editor_lin_axis": self.ui.gerber_defaults_form.gerber_editor_group.grb_axis_radio,
+            "gerber_editor_lin_pitch": self.ui.gerber_defaults_form.gerber_editor_group.grb_pitch_entry,
+            "gerber_editor_lin_angle": self.ui.gerber_defaults_form.gerber_editor_group.grb_angle_entry,
+            "gerber_editor_circ_dir": self.ui.gerber_defaults_form.gerber_editor_group.grb_circular_dir_radio,
+            "gerber_editor_circ_angle":
+                self.ui.gerber_defaults_form.gerber_editor_group.grb_circular_angle_entry,
+            "gerber_editor_scale_f": self.ui.gerber_defaults_form.gerber_editor_group.grb_scale_entry,
+            "gerber_editor_buff_f": self.ui.gerber_defaults_form.gerber_editor_group.grb_buff_entry,
+            "gerber_editor_ma_low": self.ui.gerber_defaults_form.gerber_editor_group.grb_ma_low_entry,
+            "gerber_editor_ma_high": self.ui.gerber_defaults_form.gerber_editor_group.grb_ma_high_entry,
 
             # Excellon General
             "excellon_plot": self.ui.excellon_defaults_form.excellon_gen_group.plot_cb,
@@ -794,6 +809,20 @@ class App(QtCore.QObject):
 
             # Gerber Editor
             "gerber_editor_sel_limit": 30,
+            "gerber_editor_newcode": 10,
+            "gerber_editor_newsize": 0.8,
+            "gerber_editor_newtype": 'C',
+            "gerber_editor_newdim": "0.5, 0.5",
+            "gerber_editor_array_size": 5,
+            "gerber_editor_lin_axis": 'X',
+            "gerber_editor_lin_pitch": 1,
+            "gerber_editor_lin_angle": 0.0,
+            "gerber_editor_circ_dir": 'CW',
+            "gerber_editor_circ_angle": 0.0,
+            "gerber_editor_scale_f": 1.0,
+            "gerber_editor_buff_f": 0.1,
+            "gerber_editor_ma_low": 0.0,
+            "gerber_editor_ma_high": 1.0,
 
             # Excellon General
             "excellon_plot": True,
