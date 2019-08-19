@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the POT file and the German translation
 - some mods in the Tool Sub
 - fixed bug in Tool Sub that created issues when toggling visibility of the plots
+- fixed the Spanish, Brazilian Portuguese and Romanian translations
 
 18.08.2019
 
