@@ -416,7 +416,10 @@ class ToolSub(FlatCAMTool):
             # cleanup
             self.new_apertures.clear()
             self.new_solid_geometry[:] = []
-            self.sub_union[:] = []
+            try:
+                self.sub_union[:] = []
+            except TypeError:
+                self.sub_union = []
 
     def on_geo_intersection_click(self):
         # reset previous values
@@ -458,10 +461,10 @@ class ToolSub(FlatCAMTool):
             return
 
         # create the target_options obj
-        self.target_options = dict()
-        for opt in self.target_geo_obj.options:
-            if opt != 'name':
-                self.target_options[opt] = deepcopy(self.target_geo_obj.options[opt])
+        # self.target_options = dict()
+        # for k, v in self.target_geo_obj.options.items():
+        #     if k != 'name':
+        #         self.target_options[k] = v
 
         # crate the new_tools dict structure
         for tool in self.target_geo_obj.tools:
@@ -576,7 +579,10 @@ class ToolSub(FlatCAMTool):
         geo_name = outname
         def obj_init(geo_obj, app_obj):
 
-            geo_obj.options = deepcopy(self.target_options)
+            # geo_obj.options = self.target_options
+            # create the target_options obj
+            for k, v in self.target_geo_obj.options.items():
+                geo_obj.options[k] = v
             geo_obj.options['name'] = geo_name
 
             if self.target_geo_obj.multigeo:
@@ -592,6 +598,7 @@ class ToolSub(FlatCAMTool):
                         geo_obj.tools[tool]['solid_geometry'] = deepcopy(self.new_solid_geometry)
                 except Exception as e:
                     log.debug("ToolSub.new_geo_object() --> %s" % str(e))
+                geo_obj.multigeo = False
 
         with self.app.proc_container.new(_("Generating new object ...")):
             ret = self.app.new_object('geometry', outname, obj_init, autoselected=False)
@@ -606,7 +613,7 @@ class ToolSub(FlatCAMTool):
             # cleanup
             self.new_tools.clear()
             self.new_solid_geometry[:] = []
-            self.sub_union[:] = []
+            self.sub_union = []
 
     def periodic_check(self, check_period, reset=False):
         """

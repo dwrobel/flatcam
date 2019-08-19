@@ -3152,6 +3152,11 @@ class App(QtCore.QObject):
         :param initialize: Function to run after creation of the object but before it is attached to the application.
         The function is called with 2 parameters: the new object and the App instance.
         :type initialize: function
+        :param active:
+        :param fit:
+        :param plot: If to plot the resulting object
+        :param autoselected: if the resulting object is autoselected in the Project tab and therefore in the
+        self.colleaction
         :return: None
         :rtype: None
         """
@@ -3235,11 +3240,9 @@ class App(QtCore.QObject):
             obj.options['ymin'] = ymin
             obj.options['xmax'] = xmax
             obj.options['ymax'] = ymax
-        except:
-            log.warning("The object has no bounds properties.")
-            # don't plot objects with no bounds, there is nothing to plot
-            self.plot = False
-            pass
+        except Exception as e:
+            log.warning("The object has no bounds properties. %s" % str(e))
+            return "fail"
 
         FlatCAMApp.App.log.debug("Moving new object back to main thread.")
 
@@ -8962,7 +8965,6 @@ The normal flow when working in FlatCAM is the following:</span></p>
         :param objects: list of Objects to be enabled
         :return:
         """
-
         log.debug("Enabling plots ...")
         self.inform.emit(_("Working ..."))
         for obj in objects:

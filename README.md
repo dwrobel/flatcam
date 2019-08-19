@@ -15,6 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - started to update the app strings to make it easier for future translations
 - fixed the POT file and the German translation
 - some mods in the Tool Sub
+- fixed bug in Tool Sub that created issues when toggling visibility of the plots
 
 18.08.2019
 

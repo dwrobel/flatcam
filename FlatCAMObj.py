@@ -136,7 +136,6 @@ class FlatCAMObj(QtCore.QObject):
     def on_options_change(self, key):
         # Update form on programmatically options change
         self.set_form_item(key)
-
         # Set object visibility
         if key == 'plot':
             self.visible = self.options['plot']
@@ -3423,7 +3422,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.level.setText(_(
                 '<span style="color:red;"><b>Advanced</b></span>'
             ))
-
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
@@ -5203,11 +5201,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 for tooluid_key in self.tools:
                     solid_geometry = self.tools[tooluid_key]['solid_geometry']
                     self.plot_element(solid_geometry, visible=visible)
-
-            # plot solid geometry that may be an direct attribute of the geometry object
-            # for SingleGeo
-            if self.solid_geometry:
-                self.plot_element(self.solid_geometry, visible=visible)
+            else:
+                # plot solid geometry that may be an direct attribute of the geometry object
+                # for SingleGeo
+                if self.solid_geometry:
+                    self.plot_element(self.solid_geometry, visible=visible)
 
             # self.plot_element(self.solid_geometry, visible=self.options['plot'])
             self.shapes.redraw()
@@ -5217,8 +5215,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
     def on_plot_cb_click(self, *args):
         if self.muted_ui:
             return
-        self.plot()
         self.read_form_item('plot')
+        self.plot()
 
         self.ui_disconnect()
         cb_flag = self.ui.plot_cb.isChecked()
