@@ -13,7 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - updated the Edit -> Preferences to include also the Gerber Editor complete Preferences
 - started to update the app strings to make it easier for future translations
-
+- fixed the POT file and the German translation
 
 18.08.2019
 
