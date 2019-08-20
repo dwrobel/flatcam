@@ -9,6 +9,12 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+21.08.2019
+
+- added feature in Paint Tool allowing the painting to be done on Gerber objects
+- added feature in Paint Tool to set how (and if) the tools are sorted
+- added Edit -> Preferences GUI entries for the above just added features
+
 20.08.2019
 
 - added ability to do copper clearing through NCC Tool on Geometry objects

@@ -596,6 +596,7 @@ class App(QtCore.QObject):
 
             # Paint Area Tool
             "tools_painttooldia": self.ui.tools_defaults_form.tools_paint_group.painttooldia_entry,
+            "tools_paintorder": self.ui.tools_defaults_form.tools_paint_group.paint_order_radio,
             "tools_paintoverlap": self.ui.tools_defaults_form.tools_paint_group.paintoverlap_entry,
             "tools_paintmargin": self.ui.tools_defaults_form.tools_paint_group.paintmargin_entry,
             "tools_paintmethod": self.ui.tools_defaults_form.tools_paint_group.paintmethod_combo,
@@ -967,6 +968,7 @@ class App(QtCore.QObject):
             "tools_cutout_convexshape": False,
 
             "tools_painttooldia": 0.023622,
+            "tools_paintorder": 'rev',
             "tools_paintoverlap": 0.015748,
             "tools_paintmargin": 0.0,
             "tools_paintmethod": "seed",

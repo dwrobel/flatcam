@@ -76,14 +76,16 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.type_obj_combo_label.setMinimumWidth(60)
         form_layout.addRow(self.type_obj_combo_label, self.type_obj_combo)
 
-        # Object to be cutout
+        # ################################################
+        # ##### The object to be copper cleaned ##########
+        # ################################################
         self.obj_combo = QtWidgets.QComboBox()
         self.obj_combo.setModel(self.app.collection)
         self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.obj_combo.setCurrentIndex(1)
 
         self.object_label = QtWidgets.QLabel('%s:' % _("Object"))
-        self.object_label.setToolTip(_("Gerber object to be cleared of excess copper."))
+        self.object_label.setToolTip(_("Object to be cleared of excess copper."))
 
         form_layout.addRow(self.object_label, self.obj_combo)
 
@@ -133,8 +135,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "in the resulting geometry as Isolation."))
 
         self.ncc_order_label = QtWidgets.QLabel('<b>%s:</b>' % _('Tool order'))
-        self.ncc_order_label.setToolTip(_("This set the way that the tools in the tools table are used\n"
-                                          "for copper clearing.\n"
+        self.ncc_order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                           "'No' --> means that the used order is the one in the tool table\n"
                                           "'Forward' --> means that the tools will be ordered from small to big\n"
                                           "'Reverse' --> menas that the tools will ordered from big to small\n\n"
@@ -144,8 +145,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_order_radio = RadioSet([{'label': _('No'), 'value': 'no'},
                                          {'label': _('Forward'), 'value': 'fwd'},
                                          {'label': _('Reverse'), 'value': 'rev'}])
-        self.ncc_order_radio.setToolTip(_("This set the way that the tools in the tools table are used\n"
-                                          "for copper clearing.\n"
+        self.ncc_order_radio.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                           "'No' --> means that the used order is the one in the tool table\n"
                                           "'Forward' --> means that the tools will be ordered from small to big\n"
                                           "'Reverse' --> menas that the tools will ordered from big to small\n\n"

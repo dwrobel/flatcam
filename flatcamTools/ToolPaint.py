@@ -22,7 +22,7 @@ if '_' not in builtins.__dict__:
 
 class ToolPaint(FlatCAMTool, Gerber):
 
-    toolName = _("Paint Area")
+    toolName = _("Paint Tool")
 
     def __init__(self, app):
         self.app = app
@@ -52,18 +52,43 @@ class ToolPaint(FlatCAMTool, Gerber):
         form_layout = QtWidgets.QFormLayout()
         self.tools_box.addLayout(form_layout)
 
-        # ## Object
-        self.object_combo = QtWidgets.QComboBox()
-        self.object_combo.setModel(self.app.collection)
-        self.object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        self.object_combo.setCurrentIndex(1)
+        # ################################################
+        # ##### Type of object to be painted #############
+        # ################################################
+        self.type_obj_combo = QtWidgets.QComboBox()
+        self.type_obj_combo.addItem("Gerber")
+        self.type_obj_combo.addItem("Excellon")
+        self.type_obj_combo.addItem("Geometry")
 
-        self.object_label = QtWidgets.QLabel('%s:' % _("Geometry"))
-        self.object_label.setToolTip(
-            _("Geometry object to be painted.                        ")
+        # we get rid of item1 ("Excellon") as it is not suitable
+        self.type_obj_combo.view().setRowHidden(1, True)
+        self.type_obj_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
+        self.type_obj_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
+
+        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
+        self.type_obj_combo_label.setToolTip(
+            _("Specify the type of object to be painted.\n"
+              "It can be of type: Gerber or Geometry.\n"
+              "What is selected here will dictate the kind\n"
+              "of objects that will populate the 'Object' combobox.")
         )
+        self.type_obj_combo_label.setMinimumWidth(60)
+        form_layout.addRow(self.type_obj_combo_label, self.type_obj_combo)
+
+        # ################################################
+        # ##### The object to be painted #################
+        # ################################################
+        self.obj_combo = QtWidgets.QComboBox()
+        self.obj_combo.setModel(self.app.collection)
+        self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.obj_combo.setCurrentIndex(1)
+
+        self.object_label = QtWidgets.QLabel('%s:' % _("Object"))
+        self.object_label.setToolTip(_("Object to be painted."))
+
+        form_layout.addRow(self.object_label, self.obj_combo)
+
         e_lab_0 = QtWidgets.QLabel('')
-        form_layout.addRow(self.object_label, self.object_combo)
         form_layout.addRow(e_lab_0)
 
         # ### Tools ## ##
@@ -108,8 +133,27 @@ class ToolPaint(FlatCAMTool, Gerber):
               "Choosing the <B>V-Shape</B> Tool Type automatically will select the Operation Type "
               "in the resulting geometry as Isolation."))
 
-        self.empty_label = QtWidgets.QLabel('')
-        self.tools_box.addWidget(self.empty_label)
+        self.order_label = QtWidgets.QLabel('<b>%s:</b>' % _('Tool order'))
+        self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
+                                      "'No' --> means that the used order is the one in the tool table\n"
+                                      "'Forward' --> means that the tools will be ordered from small to big\n"
+                                      "'Reverse' --> menas that the tools will ordered from big to small\n\n"
+                                      "WARNING: using rest machining will automatically set the order\n"
+                                      "in reverse and disable this control."))
+
+        self.order_radio = RadioSet([{'label': _('No'), 'value': 'no'},
+                                     {'label': _('Forward'), 'value': 'fwd'},
+                                     {'label': _('Reverse'), 'value': 'rev'}])
+        self.order_radio.setToolTip(_("This set the way that the tools in the tools table are used.\n"
+                                      "'No' --> means that the used order is the one in the tool table\n"
+                                      "'Forward' --> means that the tools will be ordered from small to big\n"
+                                      "'Reverse' --> menas that the tools will ordered from big to small\n\n"
+                                      "WARNING: using rest machining will automatically set the order\n"
+                                      "in reverse and disable this control."))
+        form = QtWidgets.QFormLayout()
+        self.tools_box.addLayout(form)
+        form.addRow(QtWidgets.QLabel(''), QtWidgets.QLabel(''))
+        form.addRow(self.order_label, self.order_radio)
 
         # ### Add a new Tool ## ##
         hlay = QtWidgets.QHBoxLayout()
@@ -361,8 +405,16 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.deltool_btn.clicked.connect(self.on_tool_delete)
         self.generate_paint_button.clicked.connect(self.on_paint_button_click)
         self.selectmethod_combo.activated_custom.connect(self.on_radio_selection)
+        self.order_radio.activated_custom[str].connect(self.on_order_changed)
+        self.rest_cb.stateChanged.connect(self.on_rest_machining_check)
 
         self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
+        self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
+
+    def on_type_obj_index_changed(self, index):
+        obj_type = self.type_obj_combo.currentIndex()
+        self.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.obj_combo.setCurrentIndex(0)
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+P', **kwargs)
@@ -425,11 +477,25 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.deltool_btn.setDisabled(False)
             self.tools_table.setContextMenuPolicy(Qt.ActionsContextMenu)
 
+    def on_order_changed(self, order):
+        if order != 'no':
+            self.build_ui()
+
+    def on_rest_machining_check(self, state):
+        if state:
+            self.order_radio.set_value('rev')
+            self.order_label.setDisabled(True)
+            self.order_radio.setDisabled(True)
+        else:
+            self.order_label.setDisabled(False)
+            self.order_radio.setDisabled(False)
+
     def set_tool_ui(self):
         self.tools_frame.show()
         self.reset_fields()
 
         # ## Init the GUI interface
+        self.order_radio.set_value(self.app.defaults["tools_paintorder"])
         self.paintmargin_entry.set_value(self.default_data["paintmargin"])
         self.paintmethod_combo.set_value(self.default_data["paintmethod"])
         self.selectmethod_combo.set_value(self.default_data["selectmethod"])
@@ -510,7 +576,14 @@ class ToolPaint(FlatCAMTool, Gerber):
         sorted_tools = []
         for k, v in self.paint_tools.items():
             sorted_tools.append(float('%.4f' % float(v['tooldia'])))
-        sorted_tools.sort()
+
+        order = self.order_radio.get_value()
+        if order == 'fwd':
+            sorted_tools.sort(reverse=False)
+        elif order == 'rev':
+            sorted_tools.sort(reverse=True)
+        else:
+            pass
 
         n = len(sorted_tools)
         self.tools_table.setRowCount(n)
@@ -827,7 +900,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         contour = self.paintcontour_cb.get_value()
         select_method = self.selectmethod_combo.get_value()
 
-        self.obj_name = self.object_combo.currentText()
+        self.obj_name = self.obj_combo.currentText()
 
         # Get source object.
         try:
@@ -1235,7 +1308,14 @@ class ToolPaint(FlatCAMTool, Gerber):
             sorted_tools = []
             for row in range(self.tools_table.rowCount()):
                 sorted_tools.append(float(self.tools_table.item(row, 1).text()))
-            sorted_tools.sort(reverse=True)
+
+            order = self.order_radio.get_value()
+            if order == 'fwd':
+                sorted_tools.sort(reverse=False)
+            elif order == 'rev':
+                sorted_tools.sort(reverse=True)
+            else:
+                pass
 
             try:
                 a, b, c, d = obj.bounds()
@@ -1521,7 +1601,14 @@ class ToolPaint(FlatCAMTool, Gerber):
             sorted_tools = []
             for row in range(self.tools_table.rowCount()):
                 sorted_tools.append(float(self.tools_table.item(row, 1).text()))
-            sorted_tools.sort(reverse=True)
+
+            order = self.order_radio.get_value()
+            if order == 'fwd':
+                sorted_tools.sort(reverse=False)
+            elif order == 'rev':
+                sorted_tools.sort(reverse=True)
+            else:
+                pass
 
             geo_to_paint = []
             for poly in obj.solid_geometry:
@@ -1769,4 +1856,4 @@ class ToolPaint(FlatCAMTool, Gerber):
         return bounds_rec(geometry)
 
     def reset_fields(self):
-        self.object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
+        self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

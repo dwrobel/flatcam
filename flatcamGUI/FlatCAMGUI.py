@@ -6346,8 +6346,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         grid0.addWidget(self.ncc_tool_dia_entry, 0, 1)
 
         self.ncc_order_label = QtWidgets.QLabel('%s:' % _('Tool order'))
-        self.ncc_order_label.setToolTip(_("This set the way that the tools in the tools table are used\n"
-                                          "for copper clearing.\n"
+        self.ncc_order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                           "'No' --> means that the used order is the one in the tool table\n"
                                           "'Forward' --> means that the tools will be ordered from small to big\n"
                                           "'Reverse' --> menas that the tools will ordered from big to small\n\n"
@@ -6357,8 +6356,7 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
         self.ncc_order_radio = RadioSet([{'label': _('No'), 'value': 'no'},
                                          {'label': _('Forward'), 'value': 'fwd'},
                                          {'label': _('Reverse'), 'value': 'rev'}])
-        self.ncc_order_radio.setToolTip(_("This set the way that the tools in the tools table are used\n"
-                                          "for copper clearing.\n"
+        self.ncc_order_radio.setToolTip(_("This set the way that the tools in the tools table are used.\n"
                                           "'No' --> means that the used order is the one in the tool table\n"
                                           "'Forward' --> means that the tools will be ordered from small to big\n"
                                           "'Reverse' --> menas that the tools will ordered from big to small\n\n"
@@ -6673,6 +6671,26 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         self.painttooldia_entry = LengthEntry()
         grid0.addWidget(self.painttooldia_entry, 0, 1)
 
+        self.paint_order_label = QtWidgets.QLabel('<b>%s:</b>' % _('Tool order'))
+        self.paint_order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
+                                            "'No' --> means that the used order is the one in the tool table\n"
+                                            "'Forward' --> means that the tools will be ordered from small to big\n"
+                                            "'Reverse' --> menas that the tools will ordered from big to small\n\n"
+                                            "WARNING: using rest machining will automatically set the order\n"
+                                            "in reverse and disable this control."))
+
+        self.paint_order_radio = RadioSet([{'label': _('No'), 'value': 'no'},
+                                           {'label': _('Forward'), 'value': 'fwd'},
+                                           {'label': _('Reverse'), 'value': 'rev'}])
+        self.paint_order_radio.setToolTip(_("This set the way that the tools in the tools table are used.\n"
+                                            "'No' --> means that the used order is the one in the tool table\n"
+                                            "'Forward' --> means that the tools will be ordered from small to big\n"
+                                            "'Reverse' --> menas that the tools will ordered from big to small\n\n"
+                                            "WARNING: using rest machining will automatically set the order\n"
+                                            "in reverse and disable this control."))
+        grid0.addWidget(self.paint_order_label, 1, 0)
+        grid0.addWidget(self.paint_order_radio, 1, 1)
+
         # Overlap
         ovlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
         ovlabel.setToolTip(
@@ -6686,9 +6704,9 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
               "Higher values = slow processing and slow execution on CNC\n"
               "due of too many paths.")
         )
-        grid0.addWidget(ovlabel, 1, 0)
+        grid0.addWidget(ovlabel, 2, 0)
         self.paintoverlap_entry = LengthEntry()
-        grid0.addWidget(self.paintoverlap_entry, 1, 1)
+        grid0.addWidget(self.paintoverlap_entry, 2, 1)
 
         # Margin
         marginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
@@ -6697,9 +6715,9 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
               "the edges of the polygon to\n"
               "be painted.")
         )
-        grid0.addWidget(marginlabel, 2, 0)
+        grid0.addWidget(marginlabel, 3, 0)
         self.paintmargin_entry = LengthEntry()
-        grid0.addWidget(self.paintmargin_entry, 2, 1)
+        grid0.addWidget(self.paintmargin_entry, 3, 1)
 
         # Method
         methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
@@ -6709,13 +6727,13 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
               "<B>Seed-based</B>: Outwards from seed.<BR>"
               "<B>Line-based</B>: Parallel lines.")
         )
-        grid0.addWidget(methodlabel, 3, 0)
+        grid0.addWidget(methodlabel, 4, 0)
         self.paintmethod_combo = RadioSet([
             {"label": _("Standard"), "value": "standard"},
             {"label": _("Seed-based"), "value": "seed"},
             {"label": _("Straight lines"), "value": "lines"}
         ], orientation='vertical', stretch=False)
-        grid0.addWidget(self.paintmethod_combo, 3, 1)
+        grid0.addWidget(self.paintmethod_combo, 4, 1)
 
         # Connect lines
         pathconnectlabel = QtWidgets.QLabel('%s:' % _("Connect"))
@@ -6723,9 +6741,9 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
             _("Draw lines between resulting\n"
               "segments to minimize tool lifts.")
         )
-        grid0.addWidget(pathconnectlabel, 4, 0)
+        grid0.addWidget(pathconnectlabel, 5, 0)
         self.pathconnect_cb = FCCheckBox()
-        grid0.addWidget(self.pathconnect_cb, 4, 1)
+        grid0.addWidget(self.pathconnect_cb, 5, 1)
 
         # Paint contour
         contourlabel = QtWidgets.QLabel('%s:' % _("Contour"))
@@ -6733,9 +6751,9 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
             _("Cut around the perimeter of the polygon\n"
               "to trim rough edges.")
         )
-        grid0.addWidget(contourlabel, 5, 0)
+        grid0.addWidget(contourlabel, 6, 0)
         self.contour_cb = FCCheckBox()
-        grid0.addWidget(self.contour_cb, 5, 1)
+        grid0.addWidget(self.contour_cb, 6, 1)
 
         # Polygon selection
         selectlabel = QtWidgets.QLabel('%s:' % _('Selection'))
@@ -6747,14 +6765,14 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
               "- <B>All</B>: paint all polygons.<BR>"
               "- <B>Ref</B>: paint an area described by an external reference object.")
         )
-        grid0.addWidget(selectlabel, 6, 0)
+        grid0.addWidget(selectlabel, 7, 0)
         self.selectmethod_combo = RadioSet([
             {"label": _("Single"), "value": "single"},
             {"label": _("Area"), "value": "area"},
             {"label": _("All"), "value": "all"},
             {"label": _("Ref."), "value": "ref"}
         ])
-        grid0.addWidget(self.selectmethod_combo, 6, 1)
+        grid0.addWidget(self.selectmethod_combo, 7, 1)
 
         self.layout.addStretch()
 
