@@ -53,22 +53,44 @@ class NonCopperClear(FlatCAMTool, Gerber):
         form_layout = QtWidgets.QFormLayout()
         self.tools_box.addLayout(form_layout)
 
-        # ## Object
-        self.object_combo = QtWidgets.QComboBox()
-        self.object_combo.setModel(self.app.collection)
-        self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
-        self.object_combo.setCurrentIndex(1)
+        # ################################################
+        # ##### Type of object to be copper cleaned ######
+        # ################################################
+        self.type_obj_combo = QtWidgets.QComboBox()
+        self.type_obj_combo.addItem("Gerber")
+        self.type_obj_combo.addItem("Excellon")
+        self.type_obj_combo.addItem("Geometry")
 
-        self.object_label = QtWidgets.QLabel("Gerber:")
-        self.object_label.setToolTip(
-            _("Gerber object to be cleared of excess copper.                        ")
+        # we get rid of item1 ("Excellon") as it is not suitable
+        self.type_obj_combo.view().setRowHidden(1, True)
+        self.type_obj_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
+        self.type_obj_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
+
+        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
+        self.type_obj_combo_label.setToolTip(
+            _("Specify the type of object to be cleared of excess copper.\n"
+              "It can be of type: Gerber or Geometry.\n"
+              "What is selected here will dictate the kind\n"
+              "of objects that will populate the 'Object' combobox.")
         )
-        e_lab_0 = QtWidgets.QLabel('')
+        self.type_obj_combo_label.setMinimumWidth(60)
+        form_layout.addRow(self.type_obj_combo_label, self.type_obj_combo)
 
-        form_layout.addRow(self.object_label, self.object_combo)
+        # Object to be cutout
+        self.obj_combo = QtWidgets.QComboBox()
+        self.obj_combo.setModel(self.app.collection)
+        self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.obj_combo.setCurrentIndex(1)
+
+        self.object_label = QtWidgets.QLabel('%s:' % _("Object"))
+        self.object_label.setToolTip(_("Gerber object to be cleared of excess copper."))
+
+        form_layout.addRow(self.object_label, self.obj_combo)
+
+        e_lab_0 = QtWidgets.QLabel('')
         form_layout.addRow(e_lab_0)
 
-        #### Tools ## ##
+        # ### Tools ## ##
         self.tools_table_label = QtWidgets.QLabel('<b>%s</b>' % _('Tools Table'))
         self.tools_table_label.setToolTip(
             _("Tools pool from which the algorithm\n"
@@ -362,6 +384,13 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_choice_offset_cb.stateChanged.connect(self.on_offset_choice)
         self.ncc_rest_cb.stateChanged.connect(self.on_rest_machining_check)
         self.ncc_order_radio.activated_custom[str].connect(self.on_order_changed)
+
+        self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
+
+    def on_type_obj_index_changed(self, index):
+        obj_type = self.type_obj_combo.currentIndex()
+        self.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.obj_combo.setCurrentIndex(0)
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+N', **kwargs)
@@ -851,7 +880,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
                 return "Could not retrieve object: %s" % self.obj_name
 
-        self.obj_name = self.object_combo.currentText()
+        self.obj_name = self.obj_combo.currentText()
         # Get source object.
         try:
             self.ncc_obj = self.app.collection.get_by_name(self.obj_name)
@@ -877,13 +906,26 @@ class NonCopperClear(FlatCAMTool, Gerber):
             return
 
         # calculate the empty area by subtracting the solid_geometry from the object bounding box geometry
-        if self.ncc_choice_offset_cb.isChecked():
-            self.app.inform.emit(_("[WARNING_NOTCL] Buffering ..."))
-            offseted_geo = self.ncc_obj.solid_geometry.buffer(distance=ncc_offset_value)
-            self.app.inform.emit(_("[success] Buffering finished ..."))
-            empty = self.get_ncc_empty_area(target=offseted_geo, boundary=bounding_box)
+        if isinstance(self.ncc_obj, FlatCAMGerber):
+            if self.ncc_choice_offset_cb.isChecked():
+                self.app.inform.emit(_("[WARNING_NOTCL] Buffering ..."))
+                offseted_geo = self.ncc_obj.solid_geometry.buffer(distance=ncc_offset_value)
+                self.app.inform.emit(_("[success] Buffering finished ..."))
+                empty = self.get_ncc_empty_area(target=offseted_geo, boundary=bounding_box)
+            else:
+                empty = self.get_ncc_empty_area(target=self.ncc_obj.solid_geometry, boundary=bounding_box)
+        elif isinstance(self.ncc_obj, FlatCAMGeometry):
+            sol_geo = cascaded_union(self.ncc_obj.solid_geometry)
+            if self.ncc_choice_offset_cb.isChecked():
+                self.app.inform.emit(_("[WARNING_NOTCL] Buffering ..."))
+                offseted_geo = sol_geo.buffer(distance=ncc_offset_value)
+                self.app.inform.emit(_("[success] Buffering finished ..."))
+                empty = self.get_ncc_empty_area(target=offseted_geo, boundary=bounding_box)
+            else:
+                empty = self.get_ncc_empty_area(target=sol_geo, boundary=bounding_box)
         else:
-            empty = self.get_ncc_empty_area(target=self.ncc_obj.solid_geometry, boundary=bounding_box)
+            self.inform.emit(_('[ERROR_NOTCL] The selected object is not suitable for copper clearing.'))
+            return
 
         if type(empty) is Polygon:
             empty = MultiPolygon([empty])

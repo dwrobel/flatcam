@@ -69,7 +69,7 @@ class ToolImage(FlatCAMTool):
         self.emty_lbl = QtWidgets.QLabel("")
         self.layout.addWidget(self.emty_lbl)
 
-        self.detail_label = QtWidgets.QLabel("<font size=4><b>%s:</b>" % _('Level of detail'))
+        self.detail_label = QtWidgets.QLabel("<font size=4><b>%s:</b></font>" % _('Level of detail'))
         self.layout.addWidget(self.detail_label)
 
         ti2_form_layout = QtWidgets.QFormLayout()

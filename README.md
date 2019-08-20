@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+20.08.2019
+
+- added ability to do copper clearing through NCC Tool on Geometry objects also
+
 19.08.2019
 
 - updated the Edit -> Preferences to include also the Gerber Editor complete Preferences
