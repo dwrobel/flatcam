@@ -117,23 +117,24 @@ class Properties(FlatCAMTool):
 
         font = QtGui.QFont()
         font.setBold(True)
-        obj_type = self.addParent(parent, 'TYPE', expanded=True, color=QtGui.QColor("#000000"), font=font)
-        obj_name = self.addParent(parent, 'NAME', expanded=True, color=QtGui.QColor("#000000"), font=font)
-        dims = self.addParent(parent, 'Dimensions', expanded=True, color=QtGui.QColor("#000000"), font=font)
-        units = self.addParent(parent, 'Units', expanded=True, color=QtGui.QColor("#000000"), font=font)
+        obj_type = self.addParent(parent, _('TYPE'), expanded=True, color=QtGui.QColor("#000000"), font=font)
+        obj_name = self.addParent(parent, _('NAME'), expanded=True, color=QtGui.QColor("#000000"), font=font)
+        dims = self.addParent(parent, _('Dimensions'), expanded=True, color=QtGui.QColor("#000000"), font=font)
+        units = self.addParent(parent, _('Units'), expanded=True, color=QtGui.QColor("#000000"), font=font)
 
-        options = self.addParent(parent, 'Options', color=QtGui.QColor("#000000"), font=font)
+        options = self.addParent(parent, _('Options'), color=QtGui.QColor("#000000"), font=font)
         if obj.kind.lower() == 'gerber':
-            apertures = self.addParent(parent, 'Apertures', expanded=True, color=QtGui.QColor("#000000"), font=font)
+            apertures = self.addParent(parent, _('Apertures'), expanded=True, color=QtGui.QColor("#000000"), font=font)
         else:
-            tools = self.addParent(parent, 'Tools', expanded=True, color=QtGui.QColor("#000000"), font=font)
+            tools = self.addParent(parent, _('Tools'), expanded=True, color=QtGui.QColor("#000000"), font=font)
 
         separator = self.addParent(parent, '')
 
-        self.addChild(obj_type, ['Object Type:', ('%s' % (obj.kind.capitalize()))], True)
+        self.addChild(obj_type, ['%s:' % _('Object Type'), ('%s' % (obj.kind.capitalize()))], True)
         try:
             self.addChild(obj_type,
-                          ['Geo Type:', ('%s' % ({False: "Single-Geo", True: "Multi-Geo"}[obj.multigeo]))],
+                          ['%s:' % _('Geo Type'),
+                           ('%s' % ({False: _("Single-Geo"), True: _("Multi-Geo")}[obj.multigeo]))],
                           True)
         except Exception as e:
             log.debug("Properties.addItems() --> %s" % str(e))
@@ -150,22 +151,44 @@ class Properties(FlatCAMTool):
         length = abs(xmax - xmin)
         width = abs(ymax - ymin)
 
-        self.addChild(dims, ['Length:', '%.4f %s' % (
+        self.addChild(dims, ['%s:' % _('Length'), '%.4f %s' % (
             length, self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower())], True)
-        self.addChild(dims, ['Width:', '%.4f %s' % (
+        self.addChild(dims, ['%s:' % _('Width'), '%.4f %s' % (
             width, self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower())], True)
+
+        # calculate and add box area
         if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower() == 'mm':
             area = (length * width) / 100
-            self.addChild(dims, ['Box Area:', '%.4f %s' % (area, 'cm2')], True)
+            self.addChild(dims, ['%s:' % _('Box Area'), '%.4f %s' % (area, 'cm2')], True)
         else:
             area = length * width
-            self.addChild(dims, ['Box Area:', '%.4f %s' % (area, 'in2')], True)
+            self.addChild(dims, ['%s:' % _('Box Area'), '%.4f %s' % (area, 'in2')], True)
+
+        # calculate and add convex hull area
+        geo = obj.solid_geometry
+        if isinstance(geo, MultiPolygon):
+            env_obj = geo.convex_hull
+        elif (isinstance(geo, MultiPolygon) and len(geo) == 1) or \
+                (isinstance(geo, list) and len(geo) == 1) and isinstance(geo[0], Polygon):
+            env_obj = cascaded_union(self.bound_obj.solid_geometry)
+            env_obj = env_obj.convex_hull
+        else:
+            env_obj = cascaded_union(self.bound_obj.solid_geometry)
+            env_obj = env_obj.convex_hull
+
+        area_chull = env_obj.area
+        if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower() == 'mm':
+            area_chull = area_chull / 100
+            self.addChild(dims, ['%s:' % _('Convex_Hull Area'), '%.4f %s' % (area_chull, 'cm2')], True)
+        else:
+            area_chull = area_chull
+            self.addChild(dims, ['%s:' % _('Convex_Hull Area'), '%.4f %s' % (area_chull, 'in2')], True)
 
         self.addChild(units,
                       ['FlatCAM units:',
                        {
-                           'in': 'Inch',
-                           'mm': 'Metric'
+                           'in': _('Inch'),
+                           'mm': _('Metric')
                        }
                        [str(self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower())]
                        ],
@@ -216,7 +239,7 @@ class Properties(FlatCAMTool):
                 geo_tool = self.addParent(tools, str(tool), expanded=True, color=QtGui.QColor("#000000"), font=font)
                 for k, v in value.items():
                     if k == 'solid_geometry':
-                        printed_value = 'Present' if v else 'None'
+                        printed_value = _('Present') if v else _('None')
                         self.addChild(geo_tool, [str(k), printed_value], True)
                     elif k == 'data':
                         tool_data = self.addParent(geo_tool, str(k).capitalize(),
@@ -230,13 +253,13 @@ class Properties(FlatCAMTool):
                 geo_tool = self.addParent(tools, str(tool), expanded=True, color=QtGui.QColor("#000000"), font=font)
                 for k, v in value.items():
                     if k == 'solid_geometry':
-                        printed_value = 'Present' if v else 'None'
+                        printed_value = _('Present') if v else _('None')
                         self.addChild(geo_tool, [str(k), printed_value], True)
                     elif k == 'gcode':
-                        printed_value = 'Present' if v != '' else 'None'
+                        printed_value = _('Present') if v != '' else _('None')
                         self.addChild(geo_tool, [str(k), printed_value], True)
                     elif k == 'gcode_parsed':
-                        printed_value = 'Present' if v else 'None'
+                        printed_value = _('Present') if v else _('None')
                         self.addChild(geo_tool, [str(k), printed_value], True)
                     elif k == 'data':
                         tool_data = self.addParent(geo_tool, str(k).capitalize(),
