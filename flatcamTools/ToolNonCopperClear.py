@@ -321,8 +321,8 @@ class NonCopperClear(FlatCAMTool, Gerber):
         grid3.addWidget(self.reference_label, 9, 0)
         grid3.addWidget(self.reference_radio, 9, 1)
 
-        grid4 = QtWidgets.QGridLayout()
-        self.tools_box.addLayout(grid4)
+        form1 = QtWidgets.QFormLayout()
+        self.tools_box.addLayout(form1)
 
         self.box_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
         self.box_combo_type_label.setToolTip(
@@ -333,9 +333,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.box_combo_type.addItem(_("Gerber   Reference Box Object"))
         self.box_combo_type.addItem(_("Excellon Reference Box Object"))
         self.box_combo_type.addItem(_("Geometry Reference Box Object"))
-
-        grid4.addWidget(self.box_combo_type_label, 0, 0)
-        grid4.addWidget(self.box_combo_type, 0, 1)
+        form1.addRow(self.box_combo_type_label, self.box_combo_type)
 
         self.box_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
         self.box_combo_label.setToolTip(
@@ -345,8 +343,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.box_combo.setModel(self.app.collection)
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.box_combo.setCurrentIndex(1)
-        grid4.addWidget(self.box_combo_label, 1, 0)
-        grid4.addWidget(self.box_combo, 1, 1)
+        form1.addRow(self.box_combo_label, self.box_combo)
 
         self.box_combo.hide()
         self.box_combo_label.hide()

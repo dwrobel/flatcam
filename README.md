@@ -11,7 +11,8 @@ CAD program, and create G-Code for Isolation routing.
 
 20.08.2019
 
-- added ability to do copper clearing through NCC Tool on Geometry objects also
+- added ability to do copper clearing through NCC Tool on Geometry objects
+- replaced the layout from Grid to Form for the Reference objects comboboxes in Paint Tool and in NCC Tool
 
 19.08.2019
 

@@ -1,10 +1,10 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Modified: Marius Adrian Stanciu (c)                 #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
 from FlatCAMTool import FlatCAMTool
 from copy import copy, deepcopy
@@ -262,8 +262,8 @@ class ToolPaint(FlatCAMTool, Gerber):
         )
         grid3.addWidget(self.selectmethod_combo, 7, 1)
 
-        grid4 = QtWidgets.QGridLayout()
-        self.tools_box.addLayout(grid4)
+        form1 = QtWidgets.QFormLayout()
+        self.tools_box.addLayout(form1)
 
         self.box_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
         self.box_combo_type_label.setToolTip(
@@ -274,9 +274,8 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.box_combo_type.addItem(_("Gerber   Reference Box Object"))
         self.box_combo_type.addItem(_("Excellon Reference Box Object"))
         self.box_combo_type.addItem(_("Geometry Reference Box Object"))
+        form1.addRow(self.box_combo_type_label, self.box_combo_type)
 
-        grid4.addWidget(self.box_combo_type_label, 0, 0)
-        grid4.addWidget(self.box_combo_type, 0, 1)
 
         self.box_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
         self.box_combo_label.setToolTip(
@@ -286,8 +285,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.box_combo.setModel(self.app.collection)
         self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
         self.box_combo.setCurrentIndex(1)
-        grid4.addWidget(self.box_combo_label, 1, 0)
-        grid4.addWidget(self.box_combo, 1, 1)
+        form1.addRow(self.box_combo_label, self.box_combo)
 
         self.box_combo.hide()
         self.box_combo_label.hide()
@@ -606,7 +604,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     tool_dia = float(self.addtool_entry.get_value().replace(',', '.'))
                 except ValueError:
                     self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                         "use a number."))
+                                           "use a number."))
                     return
 
             if tool_dia is None:
