@@ -1585,9 +1585,19 @@ class App(QtCore.QObject):
         # make the right click on the notebook tab connect to a function
         self.ui.notebook.setupContextMenu()
         self.ui.notebook.addContextMenu(
-            "Detachable Tabs", self.on_notebook_tab_rmb_click, initial_checked=self.defaults["global_tabs_detachable"])
+            _("Detachable Tabs"), self.on_notebook_tab_rmb_click,
+            initial_checked=self.defaults["global_tabs_detachable"])
         # activate initial state
         self.on_notebook_tab_rmb_click(self.defaults["global_tabs_detachable"])
+
+        # Plot Tab Area signals
+        # make the right click on the plot area tab connect to a function
+        self.ui.plot_tab_area.setupContextMenu()
+        self.ui.plot_tab_area.addContextMenu(
+            _("Detachable Tabs"), self.on_plot_area_tab_rmb_click,
+            initial_checked=self.defaults["global_tabs_detachable"])
+        # activate initial state
+        self.on_plot_area_tab_rmb_click(self.defaults["global_tabs_detachable"])
 
         # Context Menu
         self.ui.popmenu_disable.triggered.connect(lambda: self.toggle_plots(self.collection.get_selected()))
@@ -4609,6 +4619,10 @@ class App(QtCore.QObject):
 
     def on_notebook_tab_rmb_click(self, checked):
         self.ui.notebook.set_detachable(val=checked)
+        self.defaults["global_tabs_detachable"] = checked
+
+    def on_plot_area_tab_rmb_click(self, checked):
+        self.ui.plot_tab_area.set_detachable(val=checked)
         self.defaults["global_tabs_detachable"] = checked
 
     def on_deselect_all(self):

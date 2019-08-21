@@ -12,6 +12,8 @@ CAD program, and create G-Code for Isolation routing.
 22.08.2019
 
 - added ability to turn ON/OFF the detachable capability of the tabs in Notebook through a context menu activated by right mouse button click on the Notebook header
+- added ability to turn ON/OFF the detachable capability of the tabs in Plot Tab Area through a context menu activated by right mouse button click on the Plot Tab Area header
+
 
 21.08.2019
 
