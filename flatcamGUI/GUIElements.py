@@ -847,9 +847,9 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         super().__init__()
 
         self.tabBar = self.FCTabBar(self)
-        self.tabBar.onDetachTabSignal.connect(self.detachTab)
         self.tabBar.onMoveTabSignal.connect(self.moveTab)
         self.tabBar.detachedTabDropSignal.connect(self.detachedTabDrop)
+        self.set_detachable(val=True)
 
         self.setTabBar(self.tabBar)
 
@@ -871,6 +871,48 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
         self.setTabsClosable(True)
         self.tabCloseRequested.connect(self.closeTab)
+
+    def set_rmb_callback(self, callback):
+        """
+
+        :param callback: Function to call on right mouse click on tab
+        :type callback: func
+        :return: None
+        """
+
+        self.tabBar.right_click.connect(callback)
+
+    def set_detachable(self, val=True):
+        try:
+            self.tabBar.onDetachTabSignal.disconnect()
+        except TypeError:
+            pass
+
+        if val is True:
+            self.tabBar.onDetachTabSignal.connect(self.detachTab)
+            # the tab can be moved around
+            self.tabBar.can_be_dragged = True
+        else:
+            # the detached tab can't be moved
+            self.tabBar.can_be_dragged = False
+
+        return val
+
+    def setupContextMenu(self):
+        self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+
+    def addContextMenu(self, entry, call_function, icon=None, initial_checked=False):
+        action_name = str(entry)
+        action = QtWidgets.QAction(self)
+        action.setCheckable(True)
+        action.setText(action_name)
+        if icon:
+            assert isinstance(icon, QtGui.QIcon), \
+                "Expected the argument to be QtGui.QIcon. Instead it is %s" % type(icon)
+            action.setIcon(icon)
+        action.setChecked(initial_checked)
+        self.addAction(action)
+        action.triggered.connect(call_function)
 
     def useOldIndex(self, param):
         if param:
@@ -1209,6 +1251,8 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         onMoveTabSignal = pyqtSignal(int, int)
         detachedTabDropSignal = pyqtSignal(str, int, QtCore.QPoint)
 
+        right_click = pyqtSignal(int)
+
         def __init__(self, parent=None):
             QtWidgets.QTabBar.__init__(self, parent)
 
@@ -1216,10 +1260,15 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             self.setElideMode(QtCore.Qt.ElideRight)
             self.setSelectionBehaviorOnRemove(QtWidgets.QTabBar.SelectLeftTab)
 
+            self.prev_index = -1
+
             self.dragStartPos = QtCore.QPoint()
             self.dragDropedPos = QtCore.QPoint()
             self.mouseCursor = QtGui.QCursor()
             self.dragInitiated = False
+
+            # set this to False and the tab will no longer be displayed as detached
+            self.can_be_dragged = True
 
         def mouseDoubleClickEvent(self, event):
             """
@@ -1234,20 +1283,36 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
         def mousePressEvent(self, event):
             """
-            Set the starting position for a drag event when the mouse button is pressed
+            Set the starting position for a drag event when the left mouse button is pressed.
+            Start detection of a right mouse click.
 
             :param event:   a mouse press event
             :return:
             """
             if event.button() == QtCore.Qt.LeftButton:
                 self.dragStartPos = event.pos()
+            elif event.button() == QtCore.Qt.RightButton:
+                self.prev_index = self.tabAt(event.pos())
 
             self.dragDropedPos.setX(0)
             self.dragDropedPos.setY(0)
-
             self.dragInitiated = False
 
             QtWidgets.QTabBar.mousePressEvent(self, event)
+
+        def mouseReleaseEvent(self, event):
+            """
+            Finish the detection of the right mouse click on the tab
+
+
+            :param event:   a mouse press event
+            :return:
+            """
+            if event.button() == QtCore.Qt.RightButton and self.prev_index == self.tabAt(event.pos()):
+                self.right_click.emit(self.prev_index)
+            self.prev_index = -1
+
+            QtWidgets.QTabBar.mouseReleaseEvent(self, event)
 
         def mouseMoveEvent(self, event):
             """
@@ -1264,7 +1329,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                 self.dragInitiated = True
 
             # If the current movement is a drag initiated by the left button
-            if (((event.buttons() & QtCore.Qt.LeftButton)) and self.dragInitiated):
+            if (((event.buttons() & QtCore.Qt.LeftButton)) and self.dragInitiated and self.can_be_dragged):
 
                 # Stop the move event
                 finishMoveEvent = QtGui.QMouseEvent(

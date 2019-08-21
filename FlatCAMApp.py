@@ -700,6 +700,7 @@ class App(QtCore.QObject):
             # Global APP Preferences
             "global_serial": 0,
             "global_stats": {},
+            "global_tabs_detachable": True,
             "units": "IN",
             "global_app_level": 'b',
             "global_language": 'English',
@@ -1579,6 +1580,14 @@ class App(QtCore.QObject):
 
         # ToolBar signals
         self.connect_toolbar_signals()
+
+        # Notebook signals
+        # make the right click on the notebook tab connect to a function
+        self.ui.notebook.setupContextMenu()
+        self.ui.notebook.addContextMenu(
+            "Detachable Tabs", self.on_notebook_tab_rmb_click, initial_checked=self.defaults["global_tabs_detachable"])
+        # activate initial state
+        self.on_notebook_tab_rmb_click(self.defaults["global_tabs_detachable"])
 
         # Context Menu
         self.ui.popmenu_disable.triggered.connect(lambda: self.toggle_plots(self.collection.get_selected()))
@@ -4597,6 +4606,10 @@ class App(QtCore.QObject):
         new_val_sel = str(annotation_color.name())
         self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_entry.set_value(new_val_sel)
         self.defaults['global_proj_item_dis_color'] = new_val_sel
+
+    def on_notebook_tab_rmb_click(self, checked):
+        self.ui.notebook.set_detachable(val=checked)
+        self.defaults["global_tabs_detachable"] = checked
 
     def on_deselect_all(self):
         self.collection.set_all_inactive()

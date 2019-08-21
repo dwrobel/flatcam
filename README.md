@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+22.08.2019
+
+- added ability to turn ON/OFF the detachable capability of the tabs in Notebook through a context menu activated by right mouse button click on the Notebook header
+
 21.08.2019
 
 - added feature in Paint Tool allowing the painting to be done on Gerber objects
