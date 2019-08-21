@@ -1129,6 +1129,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :return: None
         :rtype: None
         """
+        log.debug("FlatCAMObj.FlatCAMGerber.convert_units()")
 
         factor = Gerber.convert_units(self, units)
 
@@ -2768,8 +2769,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
     def convert_units(self, units):
-        factor = Excellon.convert_units(self, units)
+        log.debug("FlatCAMObj.FlatCAMExcellon.convert_units()")
 
+        factor = Excellon.convert_units(self, units)
         self.options['drillz'] = float(self.options['drillz']) * factor
         self.options['travelz'] = float(self.options['travelz']) * factor
         self.options['feedrate'] = float(self.options['feedrate']) * factor
@@ -4956,6 +4958,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :return: None
         :rtype: None
         """
+        log.debug("FlatCAMObj.FlatCAMGeometry.scale()")
 
         try:
             xfactor = float(xfactor)
@@ -5025,6 +5028,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :return: None
         :rtype: None
         """
+        log.debug("FlatCAMObj.FlatCAMGeometry.offset()")
 
         try:
             dx, dy = vect
@@ -5055,6 +5059,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.app.inform.emit(_("[success] Geometry Offset done."))
 
     def convert_units(self, units):
+        log.debug("FlatCAMObj.FlatCAMGeometry.convert_units()")
+
         self.ui_disconnect()
 
         factor = Geometry.convert_units(self, units)
@@ -6022,8 +6028,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.annotation.redraw()
 
     def convert_units(self, units):
+        log.debug("FlatCAMObj.FlatCAMECNCjob.convert_units()")
+
         factor = CNCjob.convert_units(self, units)
-        FlatCAMApp.App.log.debug("FlatCAMCNCjob.convert_units()")
         self.options["tooldia"] = float(self.options["tooldia"]) * factor
 
         param_list = ['cutz', 'depthperpass', 'travelz', 'feedrate', 'feedrate_z', 'feedrate_rapid',
