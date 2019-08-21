@@ -815,7 +815,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.build_ui()
 
     def on_ncc_click(self):
-        if self.reference_radio.get_value() == 'itself':
+        self.bound_obj = None
+        self.ncc_obj = None
+
+        ref_choice = self.reference_radio.get_value()
+
+        if ref_choice == 'itself':
             self.bound_obj_name = self.object_combo.currentText()
             # Get source object.
             try:
@@ -824,7 +829,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                 self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
                 return "Could not retrieve object: %s" % self.obj_name
             self.on_ncc()
-        elif self.reference_radio.get_value() == 'box':
+        elif ref_choice == 'box':
             self.bound_obj_name = self.box_combo.currentText()
             # Get source object.
             try:
@@ -918,8 +923,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.app.plotcanvas.vis_connect('mouse_move', on_mouse_move)
 
     def on_ncc(self):
-        self.bound_obj = None
-        self.ncc_obj = None
 
         try:
             over = float(self.ncc_overlap_entry.get_value())

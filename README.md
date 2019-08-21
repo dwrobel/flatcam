@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - added some more strings in Properties Tool for the translation
 - in NCC Tool added area selection feature
 - fixed bug in Excellon parser for the Excellon files that do not put the type of zero suppression they use in the file (like DipTrace eCAD)
+- fixed some issues introduced in NCC Tool
 
 20.08.2019
 
