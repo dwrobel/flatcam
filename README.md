@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - added new entry in Properties Tool which is the calculated Convex Hull Area (should give a more precise area for the irregular shapes than the box area)
 - added some more strings in Properties Tool for the translation
 - in NCC Tool added area selection feature
+- fixed bug in Excellon parser for the Excellon files that do not put the type of zero suppression they use in the file (like DipTrace eCAD)
 
 20.08.2019
 

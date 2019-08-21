@@ -4532,7 +4532,7 @@ class Excellon(Geometry):
                 else:
                     result = float(number_str) / (10 ** (float(nr_length) - float(self.excellon_format_upper_mm)))
                 return result
-            elif self.zeros == "T" or self.zeros == "TZ":  # Trailing
+            else:  # Trailing
                 # You must show all zeros to the right of the number and can omit
                 # all zeros to the left of the number. The CNC-7 will count the number
                 # of digits you typed and automatically fill in the missing zeros.
@@ -4544,9 +4544,6 @@ class Excellon(Geometry):
                 else:   # Metric is 000.000
                     result = float(number_str) / (10 ** (float(self.excellon_format_lower_mm)))
                 return result
-            else: # None - the numbers are in decimal format
-                return float(number_str)
-
         except Exception as e:
             log.error("Aborted. Operation could not be completed due of %s" % str(e))
             return
