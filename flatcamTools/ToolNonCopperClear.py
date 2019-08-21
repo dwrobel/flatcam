@@ -309,13 +309,17 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.ncc_offset_spinner.hide()
 
         # ## Reference
-        self.reference_radio = RadioSet([{'label': _('Itself'), 'value': 'itself'},
-                                         {'label': _('Box'), 'value': 'box'}])
+        self.reference_radio = RadioSet([
+            {'label': _('Itself'), 'value': 'itself'},
+            {"label": _("Area Selection"), "value": "area"},
+            {'label':  _("Reference Object"), 'value': 'box'}
+        ], orientation='vertical', stretch=False)
         self.reference_label = QtWidgets.QLabel(_("Reference:"))
         self.reference_label.setToolTip(
             _("When choosing the 'Itself' option the non copper clearing extent\n"
               "is based on the object that is copper cleared.\n "
-              "Choosing the 'Box' option will do non copper clearing within the box\n"
+              "Area Selection - left mouse click to start selection of the area to be painted.\n"
+              "Choosing the 'Reference Object' option will do non copper clearing within the box\n"
               "specified by another object different than the one that is copper cleared.")
         )
         grid3.addWidget(self.reference_label, 9, 0)
@@ -356,6 +360,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
               "for non-copper routing.")
         )
         self.tools_box.addWidget(self.generate_ncc_button)
+        self.tools_box.addStretch()
 
         self.units = ''
         self.ncc_tools = {}
@@ -366,15 +371,18 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.obj_name = ""
         self.ncc_obj = None
 
+        self.sel_rect = []
+
         self.bound_obj_name = ""
         self.bound_obj = None
 
-        self.tools_box.addStretch()
+        self.first_click = False
+        self.cursor_pos = None
 
         self.addtool_btn.clicked.connect(self.on_tool_add)
         self.addtool_entry.returnPressed.connect(self.on_tool_add)
         self.deltool_btn.clicked.connect(self.on_tool_delete)
-        self.generate_ncc_button.clicked.connect(self.on_ncc)
+        self.generate_ncc_button.clicked.connect(self.on_ncc_click)
 
         self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
         self.reference_radio.group_toggle_fn = self.on_toggle_reference
@@ -620,7 +628,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.box_combo.setCurrentIndex(0)
 
     def on_toggle_reference(self):
-        if self.reference_radio.get_value() == "itself":
+        if self.reference_radio.get_value() == "itself" or self.reference_radio.get_value() == "area":
             self.box_combo.hide()
             self.box_combo_label.hide()
             self.box_combo_type.hide()
@@ -806,6 +814,109 @@ class NonCopperClear(FlatCAMTool, Gerber):
         self.app.inform.emit(_("[success] Tool(s) deleted from Tool Table."))
         self.build_ui()
 
+    def on_ncc_click(self):
+        if self.reference_radio.get_value() == 'itself':
+            self.bound_obj_name = self.object_combo.currentText()
+            # Get source object.
+            try:
+                self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)
+            except Exception as e:
+                self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
+                return "Could not retrieve object: %s" % self.obj_name
+            self.on_ncc()
+        elif self.reference_radio.get_value() == 'box':
+            self.bound_obj_name = self.box_combo.currentText()
+            # Get source object.
+            try:
+                self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)
+            except Exception as e:
+                self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.bound_obj_name)
+                return "Could not retrieve object: %s. Error: %s" % (self.bound_obj_name, str(e))
+            self.on_ncc()
+        else:
+            self.app.inform.emit(_("[WARNING_NOTCL] Click the start point of the area."))
+
+            # use the first tool in the tool table; get the diameter
+            tooldia = float('%.4f' % float(self.tools_table.item(0, 1).text()))
+
+            # To be called after clicking on the plot.
+            def on_mouse_press(event):
+                # do paint single only for left mouse clicks
+                if event.button == 1:
+                    if not self.first_click:
+                        self.first_click = True
+                        self.app.inform.emit(_("[WARNING_NOTCL] Click the end point of the paint area."))
+
+                        self.cursor_pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+                        if self.app.grid_status() == True:
+                            self.cursor_pos = self.app.geo_editor.snap(self.cursor_pos[0], self.cursor_pos[1])
+                    else:
+                        self.app.inform.emit(_("Done."))
+                        self.first_click = False
+                        self.app.delete_selection_shape()
+
+                        curr_pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+                        if self.app.grid_status() == True:
+                            curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
+
+                        x0, y0 = self.cursor_pos[0], self.cursor_pos[1]
+                        x1, y1 = curr_pos[0], curr_pos[1]
+                        pt1 = (x0, y0)
+                        pt2 = (x1, y0)
+                        pt3 = (x1, y1)
+                        pt4 = (x0, y1)
+                        self.sel_rect = [Polygon([pt1, pt2, pt3, pt4])]
+
+                        # def initialize(geo_obj, app_obj):
+                        #     geo_obj.solid_geometry = self.sel_rect
+                        #     geo_obj.multigeo = False
+                        #
+                        # self.app.new_object("geometry", "bound_ncc", initialize=initialize,
+                        #                     plot=True, autoselected=False)
+                        #
+                        # self.bound_obj_name = "bound_ncc"
+                        # # Get source object.
+                        # try:
+                        #     self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)
+                        # except Exception as e:
+                        #     self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") %
+                        #                          self.bound_obj_name)
+                        #     return "Could not retrieve object: %s. Error: %s" % (self.bound_obj_name, str(e))
+
+                        self.app.plotcanvas.vis_disconnect('mouse_press', on_mouse_press)
+                        self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
+
+                        self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
+                        self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
+                        self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+
+                        self.on_ncc()
+
+            # called on mouse move
+            def on_mouse_move(event):
+                curr_pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+                self.app.app_cursor.enabled = False
+
+                if self.app.grid_status() == True:
+                    self.app.app_cursor.enabled = True
+                    # Update cursor
+                    curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
+                    self.app.app_cursor.set_data(np.asarray([(curr_pos[0], curr_pos[1])]),
+                                                 symbol='++', edge_color='black', size=20)
+
+                if self.first_click:
+                    self.app.delete_selection_shape()
+                    self.app.draw_moving_selection_shape(old_coords=(self.cursor_pos[0], self.cursor_pos[1]),
+                                                         coords=(curr_pos[0], curr_pos[1]),
+                                                         face_alpha=0.0)
+
+            self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
+            self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
+            self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
+
+            self.app.plotcanvas.vis_connect('mouse_press', on_mouse_press)
+            self.app.plotcanvas.vis_connect('mouse_move', on_mouse_move)
+
     def on_ncc(self):
         self.bound_obj = None
         self.ncc_obj = None
@@ -860,23 +971,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
         pol_method = self.ncc_method_radio.get_value()
         pol_method = pol_method if pol_method else self.app.defaults["tools_nccmethod"]
 
-        if self.reference_radio.get_value() == 'itself':
-            self.bound_obj_name = self.object_combo.currentText()
-            # Get source object.
-            try:
-                self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)
-            except Exception as e:
-                self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
-                return "Could not retrieve object: %s" % self.obj_name
-        else:
-            self.bound_obj_name = self.box_combo.currentText()
-            # Get source object.
-            try:
-                self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)
-            except Exception as e:
-                self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
-                return "Could not retrieve object: %s" % self.obj_name
-
         self.obj_name = self.obj_combo.currentText()
         # Get source object.
         try:
@@ -886,15 +980,19 @@ class NonCopperClear(FlatCAMTool, Gerber):
             return "Could not retrieve object: %s" % self.obj_name
 
         # Prepare non-copper polygons
-        geo_n = self.bound_obj.solid_geometry
+        if self.reference_radio.get_value() == 'area':
+            geo_n = self.sel_rect
+        else:
+            geo_n = self.bound_obj.solid_geometry
+
         try:
             if isinstance(geo_n, MultiPolygon):
                 env_obj = geo_n.convex_hull
             elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
                     (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
-                env_obj = cascaded_union(self.bound_obj.solid_geometry)
+                env_obj = cascaded_union(geo_n)
             else:
-                env_obj = cascaded_union(self.bound_obj.solid_geometry)
+                env_obj = cascaded_union(geo_n)
                 env_obj = env_obj.convex_hull
             bounding_box = env_obj.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
         except Exception as e:

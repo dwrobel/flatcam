@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - added Edit -> Preferences GUI entries for the above just added features
 - added new entry in Properties Tool which is the calculated Convex Hull Area (should give a more precise area for the irregular shapes than the box area)
 - added some more strings in Properties Tool for the translation
+- in NCC Tool added area selection feature
 
 20.08.2019
 
