@@ -347,6 +347,7 @@ class App(QtCore.QObject):
             # General App
             "units": self.ui.general_defaults_form.general_app_group.units_radio,
             "global_app_level": self.ui.general_defaults_form.general_app_group.app_level_radio,
+            "global_portable": self.ui.general_defaults_form.general_app_group.portability_cb,
             "global_language": self.ui.general_defaults_form.general_app_group.language_cb,
 
             "global_shell_at_startup": self.ui.general_defaults_form.general_app_group.shell_startup_cb,
@@ -703,6 +704,7 @@ class App(QtCore.QObject):
             "global_tabs_detachable": True,
             "units": "IN",
             "global_app_level": 'b',
+            "global_portable": False,
             "global_language": 'English',
             "global_version_check": True,
             "global_send_stats": True,
@@ -1326,12 +1328,7 @@ class App(QtCore.QObject):
         self.tools_form = None
         self.on_options_combo_change(0)  # Will show the initial form
 
-        # ### Define OBJECT COLLECTION ###
-        self.collection = ObjectCollection(self)
-        self.ui.project_tab_layout.addWidget(self.collection.view)
         # ################################
-
-        self.log.debug("Finished creating Object Collection.")
 
         # ### Initialize the color box's color in Preferences -> Global -> Color
         # Init Plot Colors
@@ -1404,9 +1401,15 @@ class App(QtCore.QObject):
             "background-color:%s" % str(self.defaults['cncjob_annotation_fontcolor'])[:7])
         # ### End of Data ####
 
-        # ### Plot Area ####
+        # ###############################################
+        # ############# SETUP Plot Area #################
+        # ###############################################
+
         start_plot_time = time.time()   # debug
         self.plotcanvas = PlotCanvas(self.ui.right_layout, self)
+
+        # So it can receive key presses
+        self.plotcanvas.vispy_canvas.native.setFocus()
 
         self.plotcanvas.vis_connect('mouse_move', self.on_mouse_move_over_plot)
         self.plotcanvas.vis_connect('mouse_press', self.on_mouse_click_over_plot)
@@ -1416,10 +1419,10 @@ class App(QtCore.QObject):
         # Keys over plot enabled
         self.plotcanvas.vis_connect('key_press', self.ui.keyPressEvent)
 
-        self.ui.splitter.setStretchFactor(1, 2)
+        end_plot_time = time.time()
+        self.log.debug("Finished Canvas initialization in %s seconds." % (str(end_plot_time - start_plot_time)))
 
-        # So it can receive key presses
-        self.plotcanvas.vispy_canvas.native.setFocus()
+        self.ui.splitter.setStretchFactor(1, 2)
 
         self.app_cursor = self.plotcanvas.new_cursor()
         self.app_cursor.enabled = False
@@ -1428,22 +1431,34 @@ class App(QtCore.QObject):
         # depending on from where those tools are called different actions can be done
         self.call_source = 'app'
 
-        end_plot_time = time.time()
-        self.log.debug("Finished Canvas initialization in %s seconds." % (str(end_plot_time - start_plot_time)))
+        # ##############################################
+        # ######### SETUP OBJECT COLLECTION ############
+        # ##############################################
+
+        self.collection = ObjectCollection(self)
+        self.ui.project_tab_layout.addWidget(self.collection.view)
 
         # ### Adjust tabs width ## ##
         # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
         #     self.ui.options_scroll_area.verticalScrollBar().sizeHint().width())
         self.collection.view.setMinimumWidth(290)
+        self.log.debug("Finished creating Object Collection.")
 
-        # ### Worker ####
+        # ###############################################
+        # ############# Worker SETUP ####################
+        # ###############################################
+
         if self.defaults["global_worker_number"]:
             self.workers = WorkerStack(workers_number=int(self.defaults["global_worker_number"]))
         else:
             self.workers = WorkerStack(workers_number=2)
         self.worker_task.connect(self.workers.add_task)
+        self.log.debug("Finished creating Workers crew.")
 
-        # ### Signal handling ###
+        # ################################################
+        # ############### Signal handling ################
+        # ################################################
+
         # ### Custom signals  ###
         self.inform.connect(self.info)
         self.app_quit.connect(self.quit_application)
@@ -1722,6 +1737,9 @@ class App(QtCore.QObject):
         self.ui.buttonFind.clicked.connect(self.handleFindGCode)
         self.ui.buttonReplace.clicked.connect(self.handleReplaceGCode)
 
+        # portability changed
+        self.ui.general_defaults_form.general_app_group.portability_cb.stateChanged.connect(self.on_portable_checked)
+
         # Object list
         self.collection.view.activated.connect(self.on_row_activated)
 
@@ -1738,6 +1756,7 @@ class App(QtCore.QObject):
 
         # when there are arguments at application startup this get launched
         self.args_at_startup.connect(self.on_startup_args)
+        self.log.debug("Finished connecting Signals.")
 
         # this is a flag to signal to other tools that the ui tooltab is locked and not accessible
         self.tool_tab_locked = False
@@ -1748,21 +1767,18 @@ class App(QtCore.QObject):
         else:
             self.ui.splitter.setSizes([0, 1])
 
-        # ###################
-        # ### Other setups ##
-        # ###################
+        # ###########################################
+        # ################# Other setups ############
+        # ###########################################
+
         # Sets up FlatCAMObj, FCProcess and FCProcessContainer.
         self.setup_obj_classes()
         self.setup_recent_items()
         self.setup_component_editor()
 
-        # ############
-        # ### Shell ##
-        # ############
-
-        # #########################
-        # Auto-complete KEYWORDS ##
-        # #########################
+        # ###########################################
+        # #######Auto-complete KEYWORDS #############
+        # ###########################################
         self.tcl_commands_list = ['add_circle', 'add_poly', 'add_polygon', 'add_polyline', 'add_rectangle',
                                   'aligndrill', 'clear',
                                   'aligndrillgrid', 'cncjob', 'cutout', 'delete', 'drillcncjob',
@@ -1972,6 +1988,10 @@ class App(QtCore.QObject):
 
         self.myKeywords = self.tcl_commands_list + self.ordinary_keywords + self.tcl_keywords
 
+        # ###########################################
+        # ########### Shell SETUP ###################
+        # ###########################################
+
         self.shell = FCShell(self, version=self.version)
         self.shell._edit.set_model_data(self.myKeywords)
         self.ui.code_editor.set_model_data(self.myKeywords)
@@ -1998,9 +2018,9 @@ class App(QtCore.QObject):
         else:
             self.ui.shell_dock.hide()
 
-        # ########################
-        # ### Tools and Plugins ##
-        # ########################
+        # ###########################################
+        # ######### Tools and Plugins ###############
+        # ###########################################
 
         self.dblsidedtool = None
         self.measurement_tool = None
@@ -2026,6 +2046,10 @@ class App(QtCore.QObject):
         # self.f_parse = ParseFont(self)
         # self.parse_system_fonts()
 
+        # ###############################################
+        # ######## START-UP ARGUMENTS ###################
+        # ###############################################
+
         # test if the program was started with a script as parameter
         if self.cmd_line_shellfile:
             try:
@@ -2036,9 +2060,9 @@ class App(QtCore.QObject):
                 print("ERROR: ", ext)
                 sys.exit(2)
 
-        # ##########################
-        # ### Check for updates ####
-        # ##########################
+        # ###############################################
+        # ############# Check for updates ###############
+        # ###############################################
 
         # Separate thread (Not worker)
         # Check for updates on startup but only if the user consent and the app is not in Beta version
@@ -2051,9 +2075,9 @@ class App(QtCore.QObject):
                                    'params': []})
             self.thr2.start(QtCore.QThread.LowPriority)
 
-        # ###################################
-        # ### Variables for global usage ####
-        # ###################################
+        # ################################################
+        # ######### Variables for global usage ###########
+        # ################################################
 
         # coordinates for relative position display
         self.rel_point1 = (0, 0)
@@ -2154,7 +2178,7 @@ class App(QtCore.QObject):
         os.chmod(filename_factory, S_IREAD | S_IRGRP | S_IROTH)
 
         ####################################################
-        # ### EDITOR section ###############################
+        # ### ADDING FlatCAM EDITORS section ###############
         ####################################################
 
         # watch out for the position of the editors instantiation ... if it is done before a save of the default values
@@ -3508,7 +3532,7 @@ class App(QtCore.QObject):
     #     log.debug("Application defaults saved ... Exit event.")
     #     QtWidgets.qApp.quit()
 
-    def save_defaults(self, silent=False):
+    def save_defaults(self, silent=False, data_path=None):
         """
         Saves application default options
         ``self.defaults`` to current_defaults.FlatConfig.
@@ -3517,9 +3541,12 @@ class App(QtCore.QObject):
         """
         self.report_usage("save_defaults")
 
+        if data_path is None:
+            data_path = self.data_path
+
         # Read options from file
         try:
-            f = open(self.data_path + "/current_defaults.FlatConfig")
+            f = open(data_path + "/current_defaults.FlatConfig")
             defaults_file_content = f.read()
             f.close()
         except:
@@ -3576,7 +3603,7 @@ class App(QtCore.QObject):
 
         # Save update options
         try:
-            f = open(self.data_path + "/current_defaults.FlatConfig", "w")
+            f = open(data_path + "/current_defaults.FlatConfig", "w")
             json.dump(defaults, f, default=to_dict, indent=2, sort_keys=True)
             f.close()
         except:
@@ -3586,7 +3613,7 @@ class App(QtCore.QObject):
         if not silent:
             self.inform.emit(_("[success] Defaults saved."))
 
-    def save_factory_defaults(self, silent=False):
+    def save_factory_defaults(self, silent=False, data_path=None):
         """
                 Saves application factory default options
                 ``self.defaults`` to factory_defaults.FlatConfig.
@@ -3596,9 +3623,12 @@ class App(QtCore.QObject):
                 """
         self.report_usage("save_factory_defaults")
 
+        if data_path is None:
+            data_path = self.data_path
+
         # Read options from file
         try:
-            f_f_def = open(self.data_path + "/factory_defaults.FlatConfig")
+            f_f_def = open(data_path + "/factory_defaults.FlatConfig")
             factory_defaults_file_content = f_f_def.read()
             f_f_def.close()
         except:
@@ -3624,7 +3654,7 @@ class App(QtCore.QObject):
 
         # Save update options
         try:
-            f_f_def_s = open(self.data_path + "/factory_defaults.FlatConfig", "w")
+            f_f_def_s = open(data_path + "/factory_defaults.FlatConfig", "w")
             json.dump(factory_defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
             f_f_def_s.close()
         except:
@@ -3684,6 +3714,89 @@ class App(QtCore.QObject):
         del settings
         log.debug("App.final_save() --> App UI state saved.")
         QtWidgets.qApp.quit()
+
+    def on_portable_checked(self, state):
+        line_no = 0
+        data = None
+
+        if sys.platform != 'win32':
+            # this won't work in Linux or MacOS
+            return
+
+        # test if the app was frozen and choose the path for the configuration file
+        if getattr(sys, "frozen", False) is True:
+            current_data_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '\\config'
+        else:
+            current_data_path = os.path.dirname(os.path.realpath(__file__)) + '\\config'
+
+        config_file = current_data_path  + '\\configuration.txt'
+        try:
+            with open(config_file, 'r') as f:
+                try:
+                    data = f.readlines()
+                except Exception as e:
+                    log.debug('App.__init__() -->%s' % str(e))
+                    return
+        except FileNotFoundError:
+            pass
+
+        for line in data:
+            line = line.strip('\n')
+            param = str(line).rpartition('=')
+            if param[0] == 'portable':
+                break
+            line_no += 1
+
+        if state:
+            data[line_no] = 'portable=True\n'
+            # create the new defauults files
+            # create current_defaults.FlatConfig file if there is none
+            try:
+                f = open(current_data_path + '/current_defaults.FlatConfig')
+                f.close()
+            except IOError:
+                App.log.debug('Creating empty current_defaults.FlatConfig')
+                f = open(current_data_path + '/current_defaults.FlatConfig', 'w')
+                json.dump({}, f)
+                f.close()
+
+            # create factory_defaults.FlatConfig file if there is none
+            try:
+                f = open(current_data_path + '/factory_defaults.FlatConfig')
+                f.close()
+            except IOError:
+                App.log.debug('Creating empty factory_defaults.FlatConfig')
+                f = open(current_data_path + '/factory_defaults.FlatConfig', 'w')
+                json.dump({}, f)
+                f.close()
+
+            try:
+                f = open(current_data_path + '/recent.json')
+                f.close()
+            except IOError:
+                App.log.debug('Creating empty recent.json')
+                f = open(current_data_path + '/recent.json', 'w')
+                json.dump([], f)
+                f.close()
+
+            try:
+                fp = open(current_data_path + '/recent_projects.json')
+                fp.close()
+            except IOError:
+                App.log.debug('Creating empty recent_projects.json')
+                fp = open(current_data_path + '/recent_projects.json', 'w')
+                json.dump([], fp)
+                fp.close()
+
+            # save the current defaults to the new defaults file
+            self.save_defaults(silent=True, data_path=current_data_path)
+            self.save_factory_defaults(silent=True, data_path=current_data_path)
+
+        else:
+            data[line_no] = 'portable=False\n'
+
+        with open(config_file, 'w') as f:
+            f.writelines(data)
 
     def on_toggle_shell(self):
         """

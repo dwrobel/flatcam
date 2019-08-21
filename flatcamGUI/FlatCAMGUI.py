@@ -15,6 +15,7 @@ from PyQt5.QtCore import QSettings
 from flatcamGUI.GUIElements import *
 import platform
 import webbrowser
+import sys
 
 from flatcamEditors.FlatCAMGeoEditor import FCShapeTool
 
@@ -3982,6 +3983,14 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         self.app_level_radio = RadioSet([{'label': _('Basic'), 'value': 'b'},
                                          {'label': _('Advanced'), 'value': 'a'}])
 
+        # Application Level for FlatCAM
+        self.portability_label = QtWidgets.QLabel('%s:' % _('Portability'))
+        self.portability_label.setToolTip(_("Choose if the application should run as portable.\n\n"
+                                            "If Checked the application will run portable,\n"
+                                            "which means that the preferences files will be saved\n"
+                                            "in the application folder, in the lib\config subfolder."))
+        self.portability_cb = FCCheckBox()
+
         # Languages for FlatCAM
         self.languagelabel = QtWidgets.QLabel('<b>%s:</b>' % _('Languages'))
         self.languagelabel.setToolTip(_("Set the language used throughout FlatCAM."))
@@ -4130,6 +4139,9 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
         # Add (label - input field) pair to the QFormLayout
         self.form_box.addRow(self.unitslabel, self.units_radio)
         self.form_box.addRow(self.app_level_label, self.app_level_radio)
+        self.form_box.addRow(self.portability_label, self.portability_cb)
+        self.form_box.addRow(QtWidgets.QLabel(''))
+
         self.form_box.addRow(self.languagelabel, self.language_cb)
         self.form_box.addRow(self.languagespace, self.language_apply_btn)
 
@@ -4205,6 +4217,9 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
 
         self.layout.addStretch()
 
+        if sys.platform != 'win32':
+            self.portability_label.hide()
+            self.portability_cb.hide()
 
 class GerberGenPrefGroupUI(OptionsGroupUI):
     def __init__(self, parent=None):
