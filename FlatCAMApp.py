@@ -7219,12 +7219,15 @@ class App(QtCore.QObject):
 
         self.should_we_save = False
 
-    def on_file_saveprojectas(self, make_copy=False, thread=True, quit=False):
+    def on_file_saveprojectas(self, make_copy=False, use_thread=True, quit_action=False):
         """
         Callback for menu item File->Save Project As... Opens a file
         chooser and saves the project to the given file via
         ``self.save_project()``.
 
+        :param make_copy if to be create a copy of the project; boolean
+        :param use_thread: if to be run in a separate thread; boolean
+        :param quit_action: if to be followed by quiting the application; boolean
         :return: None
         """
 
@@ -7255,16 +7258,17 @@ class App(QtCore.QObject):
         except IOError:
             pass
 
-        if thread is True:
+        if use_thread is True:
             self.worker_task.emit({'fcn': self.save_project,
-                                   'params': [filename, quit]})
+                                   'params': [filename, quit_action]})
         else:
-            self.save_project(filename, quit)
+            self.save_project(filename, quit_action)
 
         # self.save_project(filename)
         if self.defaults["global_open_style"] is False:
             self.file_opened.emit("project", filename)
         self.file_saved.emit("project", filename)
+
         if not make_copy:
             self.project_filename = filename
 
@@ -7275,7 +7279,9 @@ class App(QtCore.QObject):
         """
         Exports a Geometry Object to an SVG file.
 
+        :param obj_name: the name of the FlatCAM object to be saved as SVG
         :param filename: Path to the SVG file to save to.
+        :param scale_factor: factor by which to change/scale the thickness of the features
         :return:
         """
         self.report_usage("export_svg()")
@@ -7337,9 +7343,12 @@ class App(QtCore.QObject):
         """
         Exports a Geometry Object to an SVG file in negative.
 
+        :param obj_name: the name of the FlatCAM object to be saved as SVG
+        :param box_name: the name of the FlatCAM object to be used as delimitation of the content to be saved
         :param filename: Path to the SVG file to save to.
-        :param: use_thread: If True use threads
-        :type: Bool
+        :param boundary: thickness of a black border to surround all the features
+        :param scale_factor: factor by which to change/scale the thickness of the features
+        :param use_thread: if to be run in a separate thread; boolean
         :return:
         """
         self.report_usage("export_negative()")
@@ -7461,11 +7470,13 @@ class App(QtCore.QObject):
 
     def export_svg_black(self, obj_name, box_name, filename, scale_factor=0.00, use_thread=True):
         """
-        Exports a Geometry Object to an SVG file in negative.
+        Exports a Geometry Object to an SVG file in positive black.
 
+        :param obj_name: the name of the FlatCAM object to be saved as SVG
+        :param box_name: the name of the FlatCAM object to be used as delimitation of the content to be saved
         :param filename: Path to the SVG file to save to.
-        :param: use_thread: If True use threads
-        :type: Bool
+        :param scale_factor: factor by which to change/scale the thickness of the features
+        :param use_thread: if to be run in a separate thread; boolean
         :return:
         """
         self.report_usage("export_svg_black()")
@@ -7582,9 +7593,11 @@ class App(QtCore.QObject):
 
     def save_source_file(self, obj_name, filename, use_thread=True):
         """
-        Exports a Gerber Object to an Gerber file.
+        Exports a FlatCAM Object to an Gerber/Excellon file.
 
+        :param obj_name: the name of the FlatCAM object for which to save it's embedded source file
         :param filename: Path to the Gerber file to save to.
+        :param use_thread: if to be run in a separate thread
         :return:
         """
         self.report_usage("save source file()")
@@ -7618,7 +7631,9 @@ class App(QtCore.QObject):
         """
         Exports a Excellon Object to an Excellon file.
 
+        :param obj_name: the name of the FlatCAM object to be saved as Excellon
         :param filename: Path to the Excellon file to save to.
+        :param use_thread: if to be run in a separate thread
         :return:
         """
         self.report_usage("export_excellon()")
@@ -7754,7 +7769,9 @@ class App(QtCore.QObject):
         """
         Exports a Gerber Object to an Gerber file.
 
+        :param obj_name: the name of the FlatCAM object to be saved as Gerber
         :param filename: Path to the Gerber file to save to.
+        :param use_thread: if to be run in a separate thread
         :return:
         """
         self.report_usage("export_gerber()")
@@ -7877,7 +7894,9 @@ class App(QtCore.QObject):
         """
         Exports a Geometry Object to an DXF file.
 
+        :param obj_name: the name of the FlatCAM object to be saved as DXF
         :param filename: Path to the DXF file to save to.
+        :param use_thread: if to be run in a separate thread
         :return:
         """
         self.report_usage("export_dxf()")
@@ -7921,7 +7940,7 @@ class App(QtCore.QObject):
                 def job_thread_exc(app_obj):
                     ret = make_dxf()
                     if ret == 'fail':
-                        self.inform.emit(_('[[WARNING_NOTCL]] Could not export DXF file.'))
+                        app_obj.inform.emit(_('[[WARNING_NOTCL]] Could not export DXF file.'))
                         return
 
                 self.worker_task.emit({'fcn': job_thread_exc, 'params': [self]})
@@ -9030,12 +9049,13 @@ The normal flow when working in FlatCAM is the following:</span></p>
         for obj in objects:
             obj.on_generatecnc_button_click()
 
-    def save_project(self, filename, quit=False):
+    def save_project(self, filename, quit_action=False):
         """
         Saves the current project to the specified file.
 
         :param filename: Name of the file in which to save.
         :type filename: str
+        :param quit_action: if the project saving will be followed by an app quit; boolean
         :return: None
         """
         self.log.debug("save_project()")
@@ -9107,25 +9127,27 @@ The normal flow when working in FlatCAM is the following:</span></p>
             # if quit:
                 # t = threading.Thread(target=lambda: self.check_project_file_size(1, filename=filename))
                 # t.start()
-            self.start_delayed_quit(delay=500, filename=filename, quit=quit)
+            self.start_delayed_quit(delay=500, filename=filename, should_quit=quit_action)
 
-    def start_delayed_quit(self, delay, filename, quit=None):
+    def start_delayed_quit(self, delay, filename, should_quit=None):
         """
 
         :param delay:       period of checking if project file size is more than zero; in seconds
         :param filename:    the name of the project file to be checked periodically for size more than zero
+        :param should_quit: if the task finished will be followed by an app quit; boolean
         :return:
         """
-        to_quit = quit
+        to_quit = should_quit
         self.save_timer = QtCore.QTimer()
         self.save_timer.setInterval(delay)
-        self.save_timer.timeout.connect(lambda: self.check_project_file_size(filename=filename, quit=to_quit))
+        self.save_timer.timeout.connect(lambda: self.check_project_file_size(filename=filename, should_quit=to_quit))
         self.save_timer.start()
 
-    def check_project_file_size(self, filename, quit=None):
+    def check_project_file_size(self, filename, should_quit=None):
         """
 
         :param filename: the name of the project file to be checked periodically for size more than zero
+        :param should_quit: will quit the app if True; boolean
         :return:
         """
 
@@ -9133,9 +9155,9 @@ The normal flow when working in FlatCAM is the following:</span></p>
             if os.stat(filename).st_size > 0:
                 self.save_in_progress = False
                 self.save_timer.stop()
-                if quit:
+                if should_quit:
                     self.app_quit.emit()
-        except Exception:
+        except Exception as e:
             traceback.print_exc()
 
     def on_options_app2project(self):

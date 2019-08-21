@@ -1082,6 +1082,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             # Generate area for each tool
             offset = sum(sorted_tools)
             current_uid = int(1)
+            tool = eval(self.app.defaults["tools_ncctools"])[0]
 
             for tool in sorted_tools:
                 self.app.inform.emit(_('[success] Non-Copper Clearing with ToolDia = %s started.') % str(tool))
@@ -1198,6 +1199,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             cleared_by_last_tool = []
             rest_geo = []
             current_uid = 1
+            tool = eval(self.app.defaults["tools_ncctools"])[0]
 
             # repurposed flag for final object, geo_obj. True if it has any solid_geometry, False if not.
             app_obj.poly_not_cleared = True
