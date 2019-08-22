@@ -12,8 +12,10 @@ CAD program, and create G-Code for Isolation routing.
 22.08.2019
 
 - added ability to turn ON/OFF the detachable capability of the tabs in Notebook through a context menu activated by right mouse button click on the Notebook header
-- added ability to turn ON/OFF the detachable capability of the tabs in Plot Tab Area through a context menu activated by right mouse button click on the Plot Tab Area header
+- added ability to turn ON/OFF the detachable capability of the tabs in Plot Tab Area through a context menu activated by right mouse button click on the Notebook header
 - added possibility to turn application portable from the Edit -> Preferences -> General -> App. Preferences -> Portable checkbox
+- moved the canvas setup into it's own function and called it in the init() function
+
 
 21.08.2019
 

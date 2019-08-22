@@ -846,6 +846,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.plot_tab_area.addTab(self.plot_tab, _("Plot Area"))
 
         self.right_layout = QtWidgets.QVBoxLayout()
+        self.right_layout.setObjectName("right_layout")
         self.right_layout.setContentsMargins(2, 2, 2, 2)
         self.plot_tab.setLayout(self.right_layout)
 

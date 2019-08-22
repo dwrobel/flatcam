@@ -1406,26 +1406,14 @@ class App(QtCore.QObject):
         # ###############################################
 
         start_plot_time = time.time()   # debug
-        self.plotcanvas = PlotCanvas(self.ui.right_layout, self)
-
-        # So it can receive key presses
-        self.plotcanvas.vispy_canvas.native.setFocus()
-
-        self.plotcanvas.vis_connect('mouse_move', self.on_mouse_move_over_plot)
-        self.plotcanvas.vis_connect('mouse_press', self.on_mouse_click_over_plot)
-        self.plotcanvas.vis_connect('mouse_release', self.on_mouse_click_release_over_plot)
-        self.plotcanvas.vis_connect('mouse_double_click', self.on_double_click_over_plot)
-
-        # Keys over plot enabled
-        self.plotcanvas.vis_connect('key_press', self.ui.keyPressEvent)
-
+        self.plotcanvas = None
+        self.app_cursor = None
+        self.hover_shapes = None
+        self.on_plotcanvas_setup()
         end_plot_time = time.time()
         self.log.debug("Finished Canvas initialization in %s seconds." % (str(end_plot_time - start_plot_time)))
 
         self.ui.splitter.setStretchFactor(1, 2)
-
-        self.app_cursor = self.plotcanvas.new_cursor()
-        self.app_cursor.enabled = False
 
         # to use for tools like Measurement tool who depends on the event sources who are changed inside the Editors
         # depending on from where those tools are called different actions can be done
@@ -1557,12 +1545,8 @@ class App(QtCore.QObject):
         self.ui.menuviewenable.triggered.connect(self.enable_all_plots)
 
         self.ui.menuview_zoom_fit.triggered.connect(self.on_zoom_fit)
-        self.ui.menuview_zoom_in.triggered.connect(
-            lambda: self.plotcanvas.zoom(1 / float(self.defaults['global_zoom_ratio']))
-        )
-        self.ui.menuview_zoom_out.triggered.connect(
-            lambda: self.plotcanvas.zoom(float(self.defaults['global_zoom_ratio']))
-        )
+        self.ui.menuview_zoom_in.triggered.connect(self.on_zoom_in)
+        self.ui.menuview_zoom_out.triggered.connect(self.on_zoom_out)
 
         self.ui.menuview_toggle_code_editor.triggered.connect(self.on_toggle_code_editor)
         self.ui.menuview_toggle_fscreen.triggered.connect(self.on_fullscreen)
@@ -1604,15 +1588,6 @@ class App(QtCore.QObject):
             initial_checked=self.defaults["global_tabs_detachable"])
         # activate initial state
         self.on_notebook_tab_rmb_click(self.defaults["global_tabs_detachable"])
-
-        # Plot Tab Area signals
-        # make the right click on the plot area tab connect to a function
-        self.ui.plot_tab_area.setupContextMenu()
-        self.ui.plot_tab_area.addContextMenu(
-            _("Detachable Tabs"), self.on_plot_area_tab_rmb_click,
-            initial_checked=self.defaults["global_tabs_detachable"])
-        # activate initial state
-        self.on_plot_area_tab_rmb_click(self.defaults["global_tabs_detachable"])
 
         # Context Menu
         self.ui.popmenu_disable.triggered.connect(lambda: self.toggle_plots(self.collection.get_selected()))
@@ -2149,7 +2124,6 @@ class App(QtCore.QObject):
         self.poly_not_cleared = False
 
         # VisPy visuals
-        self.hover_shapes = ShapeCollection(parent=self.plotcanvas.vispy_canvas.view.scene, layers=1)
         self.isHovering = False
         self.notHovering = True
 
@@ -4734,7 +4708,6 @@ class App(QtCore.QObject):
         self.ui.notebook.set_detachable(val=checked)
         self.defaults["global_tabs_detachable"] = checked
 
-    def on_plot_area_tab_rmb_click(self, checked):
         self.ui.plot_tab_area.set_detachable(val=checked)
         self.defaults["global_tabs_detachable"] = checked
 
@@ -9076,6 +9049,35 @@ The normal flow when working in FlatCAM is the following:</span></p>
             _("info")
         )
 
+    def on_plotcanvas_setup(self, container=None):
+        """
+        This is doing the setup for the plot area (VisPy canvas)
+
+        :param container: widget where to install the canvas
+        :return: None
+        """
+        if container:
+            plot_container = container
+        else:
+            plot_container = self.ui.right_layout
+
+        self.plotcanvas = PlotCanvas(plot_container, self)
+
+        # So it can receive key presses
+        self.plotcanvas.vispy_canvas.native.setFocus()
+
+        self.plotcanvas.vis_connect('mouse_move', self.on_mouse_move_over_plot)
+        self.plotcanvas.vis_connect('mouse_press', self.on_mouse_click_over_plot)
+        self.plotcanvas.vis_connect('mouse_release', self.on_mouse_click_release_over_plot)
+        self.plotcanvas.vis_connect('mouse_double_click', self.on_double_click_over_plot)
+
+        # Keys over plot enabled
+        self.plotcanvas.vis_connect('key_press', self.ui.keyPressEvent)
+
+        self.app_cursor = self.plotcanvas.new_cursor()
+        self.app_cursor.enabled = False
+        self.hover_shapes = ShapeCollection(parent=self.plotcanvas.vispy_canvas.view.scene, layers=1)
+
     def on_zoom_fit(self, event):
         """
         Callback for zoom-out request. This can be either from the corresponding
@@ -9087,6 +9089,12 @@ The normal flow when working in FlatCAM is the following:</span></p>
         """
 
         self.plotcanvas.fit_view()
+
+    def on_zoom_in(self):
+        self.plotcanvas.zoom(1 / float(self.defaults['global_zoom_ratio']))
+
+    def on_zoom_out(self):
+        self.plotcanvas.zoom(float(self.defaults['global_zoom_ratio']))
 
     def disable_all_plots(self):
         self.report_usage("disable_all_plots()")
