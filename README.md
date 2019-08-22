@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - moved the canvas setup into it's own function and called it in the init() function
 - fixed the Buffer Tool in Geometry Editor; made the Buffer entry field a QDoubleSpinner and set the lower limit to zero.
 - fixed Tool Cutout so when the target Gerber is a single Polygon then the created manual geometry will follow the shape if shape is freeform
+- fixed TclCommandFollow command; an older function name was used who yielded wrong results
 
 21.08.2019
 

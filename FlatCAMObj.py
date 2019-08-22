@@ -773,7 +773,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         if self.ui.follow_cb.get_value() is True:
             obj = self.app.collection.get_active()
-            obj.follow()
+            obj.follow_geo()
             # in the end toggle the visibility of the origin object so we can see the generated Geometry
             obj.ui.plot_cb.toggle()
         else:
@@ -785,7 +785,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         if self.ui.follow_cb.get_value() is True:
             obj = self.app.collection.get_active()
-            obj.follow()
+            obj.follow_geo()
             # in the end toggle the visibility of the origin object so we can see the generated Geometry
             obj.ui.plot_cb.toggle()
         else:
