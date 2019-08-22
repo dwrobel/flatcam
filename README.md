@@ -15,7 +15,7 @@ CAD program, and create G-Code for Isolation routing.
 - added ability to turn ON/OFF the detachable capability of the tabs in Plot Tab Area through a context menu activated by right mouse button click on the Notebook header
 - added possibility to turn application portable from the Edit -> Preferences -> General -> App. Preferences -> Portable checkbox
 - moved the canvas setup into it's own function and called it in the init() function
-
+- fixed the Buffer Tool in Geometry Editor; made the Buffer entry field a QDoubleSpinner and set the lower limit to zero.
 
 21.08.2019
 

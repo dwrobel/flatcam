@@ -76,7 +76,9 @@ class BufferSelectionTool(FlatCAMTool):
         self.buffer_tools_box.addLayout(form_layout)
 
         # Buffer distance
-        self.buffer_distance_entry = FCEntry()
+        self.buffer_distance_entry = FCDoubleSpinner()
+        self.buffer_distance_entry.set_precision(4)
+        self.buffer_distance_entry.set_range(0.0000, 999999.9999)
         form_layout.addRow(_("Buffer distance:"), self.buffer_distance_entry)
         self.buffer_corner_lbl = QtWidgets.QLabel(_("Buffer corner:"))
         self.buffer_corner_lbl.setToolTip(
@@ -2708,11 +2710,13 @@ class FCBuffer(FCShapeTool):
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
-        self.draw_app.buffer(buffer_distance, join_style)
+        ret_val = self.draw_app.buffer(buffer_distance, join_style)
         self.app.ui.notebook.setTabText(2, _("Tools"))
         self.draw_app.app.ui.splitter.setSizes([0, 1])
 
         self.disactivate()
+        if ret_val == 'fail':
+            return
         self.draw_app.app.inform.emit(_("[success] Done. Buffer Tool completed."))
 
     def on_buffer_int(self):
@@ -2734,11 +2738,13 @@ class FCBuffer(FCShapeTool):
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
-        self.draw_app.buffer_int(buffer_distance, join_style)
+        ret_val = self.draw_app.buffer_int(buffer_distance, join_style)
         self.app.ui.notebook.setTabText(2, _("Tools"))
         self.draw_app.app.ui.splitter.setSizes([0, 1])
 
         self.disactivate()
+        if ret_val == 'fail':
+            return
         self.draw_app.app.inform.emit(_("[success] Done. Buffer Int Tool completed."))
 
     def on_buffer_ext(self):
@@ -2760,11 +2766,13 @@ class FCBuffer(FCShapeTool):
         # the cb index start from 0 but the join styles for the buffer start from 1 therefore the adjustment
         # I populated the combobox such that the index coincide with the join styles value (whcih is really an INT)
         join_style = self.buff_tool.buffer_corner_cb.currentIndex() + 1
-        self.draw_app.buffer_ext(buffer_distance, join_style)
+        ret_val = self.draw_app.buffer_ext(buffer_distance, join_style)
         self.app.ui.notebook.setTabText(2, _("Tools"))
         self.draw_app.app.ui.splitter.setSizes([0, 1])
 
         self.disactivate()
+        if ret_val == 'fail':
+            return
         self.draw_app.app.inform.emit(_("[success] Done. Buffer Ext Tool completed."))
 
     def activate(self):
@@ -2922,9 +2930,9 @@ class FCTransform(FCShapeTool):
         self.draw_app.transform_tool.run()
 
 
-# ##################### ##
-# # ## Main Application # ##
-# ##################### ##
+# ###############################################
+# ################ Main Application #############
+# ###############################################
 class FlatCAMGeoEditor(QtCore.QObject):
 
     transform_complete = QtCore.pyqtSignal()
@@ -4230,11 +4238,11 @@ class FlatCAMGeoEditor(QtCore.QObject):
             # deselect everything
             self.selected = []
             self.replot()
-            return
+            return 'fail'
 
         if len(selected) == 0:
             self.app.inform.emit(_("[WARNING_NOTCL] Nothing selected for buffering."))
-            return
+            return 'fail'
 
         if not isinstance(buf_distance, float):
             self.app.inform.emit(_("[WARNING_NOTCL] Invalid distance for buffering."))
@@ -4242,17 +4250,32 @@ class FlatCAMGeoEditor(QtCore.QObject):
             # deselect everything
             self.selected = []
             self.replot()
-            return
+            return 'fail'
 
-        pre_buffer = cascaded_union([t.geo for t in selected])
-        results = pre_buffer.buffer(buf_distance - 1e-10, resolution=32, join_style=join_style)
-        if results.is_empty:
+        results = []
+        for t in selected:
+            if isinstance(t.geo, Polygon) and not t.geo.is_empty:
+                results.append((t.geo.exterior).buffer(
+                    buf_distance - 1e-10,
+                    resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                    join_style=join_style)
+                )
+            else:
+                results.append(t.geo.buffer(
+                    buf_distance - 1e-10,
+                    resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                    join_style=join_style)
+                )
+
+        if not results:
             self.app.inform.emit(_("[ERROR_NOTCL] Failed, the result is empty. Choose a different buffer value."))
             # deselect everything
             self.selected = []
             self.replot()
-            return
-        self.add_shape(DrawToolShape(results))
+            return 'fail'
+
+        for sha in results:
+            self.add_shape(DrawToolShape(sha))
 
         self.replot()
         self.app.inform.emit(_("[success] Full buffer geometry created."))
@@ -4262,77 +4285,48 @@ class FlatCAMGeoEditor(QtCore.QObject):
 
         if buf_distance < 0:
             self.app.inform.emit(
-                _("[ERROR_NOTCL] Negative buffer value is not accepted. "
-                  "Use Buffer interior to generate an 'inside' shape")
+                _("[ERROR_NOTCL] Negative buffer value is not accepted.")
             )
             # deselect everything
             self.selected = []
             self.replot()
-            return
+            return 'fail'
 
         if len(selected) == 0:
             self.app.inform.emit(_("[WARNING_NOTCL] Nothing selected for buffering."))
-            return
+            return 'fail'
 
         if not isinstance(buf_distance, float):
             self.app.inform.emit(_("[WARNING_NOTCL] Invalid distance for buffering."))
             # deselect everything
             self.selected = []
             self.replot()
-            return
+            return 'fail'
 
-        pre_buffer = cascaded_union([t.geo for t in selected])
-        results = pre_buffer.buffer(buf_distance + 1e-10, resolution=32, join_style=join_style)
+        results = []
+        for t in selected:
+            if isinstance(t.geo, LinearRing):
+                t.geo = Polygon(t.geo)
 
-        if results.is_empty:
+            if isinstance(t.geo, Polygon) and not t.geo.is_empty:
+                results.append((t.geo).buffer(
+                    -buf_distance + 1e-10,
+                    resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                    join_style=join_style)
+                )
+
+        if not results:
             self.app.inform.emit(_("[ERROR_NOTCL] Failed, the result is empty. Choose a smaller buffer value."))
             # deselect everything
             self.selected = []
             self.replot()
-            return
+            return 'fail'
 
-        if type(results) == MultiPolygon:
-            for poly in results:
-                for interior in poly.interiors:
-                    self.add_shape(DrawToolShape(interior))
-        else:
-            for interior in results:
-                self.add_shape(DrawToolShape(interior))
+        for sha in results:
+            self.add_shape(DrawToolShape(sha))
 
         self.replot()
         self.app.inform.emit(_("[success] Interior buffer geometry created."))
-        # selected = self.get_selected()
-        #
-        # if len(selected) == 0:
-        #     self.app.inform.emit("[WARNING] Nothing selected for buffering.")
-        #     return
-        #
-        # if not isinstance(buf_distance, float):
-        #     self.app.inform.emit("[WARNING] Invalid distance for buffering.")
-        #     return
-        #
-        # pre_buffer = cascaded_union([t.geo for t in selected])
-        # results = pre_buffer.buffer(buf_distance)
-        # if results.is_empty:
-        #     self.app.inform.emit("Failed. Choose a smaller buffer value.")
-        #     return
-        #
-        # int_geo = []
-        # if type(results) == MultiPolygon:
-        #     for poly in results:
-        #         for g in poly.interiors:
-        #             int_geo.append(g)
-        #         res = cascaded_union(int_geo)
-        #         self.add_shape(DrawToolShape(res))
-        # else:
-        #     print(results.interiors)
-        #     for g in results.interiors:
-        #         int_geo.append(g)
-        #     res = cascaded_union(int_geo)
-        #     self.add_shape(DrawToolShape(res))
-        #
-        # self.replot()
-        # self.app.inform.emit("Interior buffer geometry created.")
 
     def buffer_ext(self, buf_distance, join_style):
         selected = self.get_selected()
@@ -4356,19 +4350,27 @@ class FlatCAMGeoEditor(QtCore.QObject):
             self.replot()
             return
 
-        pre_buffer = cascaded_union([t.geo for t in selected])
-        results = pre_buffer.buffer(buf_distance - 1e-10, resolution=32, join_style=join_style)
-        if results.is_empty:
+        results = []
+        for t in selected:
+            if isinstance(t.geo, LinearRing):
+                t.geo = Polygon(t.geo)
+
+            if isinstance(t.geo, Polygon) and not t.geo.is_empty:
+                results.append((t.geo).buffer(
+                    buf_distance,
+                    resolution=int(int(self.app.defaults["geometry_circle_steps"]) / 4),
+                    join_style=join_style)
+                )
+
+        if not results:
             self.app.inform.emit(_("[ERROR_NOTCL] Failed, the result is empty. Choose a different buffer value."))
             # deselect everything
             self.selected = []
             self.replot()
             return
-        if type(results) == MultiPolygon:
-            for poly in results:
-                self.add_shape(DrawToolShape(poly.exterior))
-        else:
-            self.add_shape(DrawToolShape(results.exterior))
+
+        for sha in results:
+            self.add_shape(DrawToolShape(sha))
 
         self.replot()
         self.app.inform.emit(_("[success] Exterior buffer geometry created."))
