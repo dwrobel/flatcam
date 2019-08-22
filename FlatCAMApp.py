@@ -99,7 +99,7 @@ class App(QtCore.QObject):
     # Version and VERSION DATE ###########
     # ####################################
     version = 8.96
-    version_date = "2019/08/31"
+    version_date = "2019/08/23"
     beta = True
 
     # current date now
