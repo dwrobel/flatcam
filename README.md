@@ -16,6 +16,7 @@ CAD program, and create G-Code for Isolation routing.
 - added possibility to turn application portable from the Edit -> Preferences -> General -> App. Preferences -> Portable checkbox
 - moved the canvas setup into it's own function and called it in the init() function
 - fixed the Buffer Tool in Geometry Editor; made the Buffer entry field a QDoubleSpinner and set the lower limit to zero.
+- fixed Tool Cutout so when the target Gerber is a single Polygon then the created manual geometry will follow the shape if shape is freeform
 
 21.08.2019
 

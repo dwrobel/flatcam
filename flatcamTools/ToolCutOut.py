@@ -864,9 +864,17 @@ class CutOut(FlatCAMTool):
                 geo = geo_union.convex_hull
                 geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
             elif kind == 'single':
-                x0, y0, x1, y1 = geo_union.bounds
-                geo = box(x0, y0, x1, y1)
-                geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
+                if isinstance(geo_union, Polygon) or \
+                        (isinstance(geo_union, list) and len(geo_union) == 1) or \
+                        (isinstance(geo_union, MultiPolygon) and len(geo_union) == 1):
+                    geo_obj.solid_geometry = geo_union.buffer(margin + abs(dia / 2)).exterior
+                elif isinstance(geo_union, MultiPolygon):
+                    x0, y0, x1, y1 = geo_union.bounds
+                    geo = box(x0, y0, x1, y1)
+                    geo_obj.solid_geometry = geo.buffer(margin + abs(dia / 2))
+                else:
+                    self.app.inform.emit(_("[ERROR_NOTCL] Geometry not supported for cutout: %s") % type(geo_union))
+                    return 'fail'
             else:
                 geo = geo_union
                 geo = geo.buffer(margin + abs(dia / 2))
