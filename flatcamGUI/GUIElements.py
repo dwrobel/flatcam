@@ -1876,9 +1876,16 @@ class MyCompleter(QCompleter):
         QCompleter.__init__(self)
         self.setCompletionMode(QCompleter.PopupCompletion)
         self.highlighted.connect(self.setHighlighted)
+        # self.popup().installEventFilter(self)
+
+    # def eventFilter(self, obj, event):
+    #     if event.type() == QtCore.QEvent.Wheel and obj is self.popup():
+    #         pass
+    #     return False
 
     def setHighlighted(self, text):
         self.lastSelected = text
 
     def getSelected(self):
         return self.lastSelected
+

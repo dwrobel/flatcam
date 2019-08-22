@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - fixed the Buffer Tool in Geometry Editor; made the Buffer entry field a QDoubleSpinner and set the lower limit to zero.
 - fixed Tool Cutout so when the target Gerber is a single Polygon then the created manual geometry will follow the shape if shape is freeform
 - fixed TclCommandFollow command; an older function name was used who yielded wrong results
+- in Tool Cutout for the manual gaps, now the moving geometry that cuts gaps will orient itself to fit the angle of the cutout geometry
 
 21.08.2019
 

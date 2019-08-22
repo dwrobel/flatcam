@@ -292,6 +292,9 @@ class CutOut(FlatCAMTool):
 
         self.flat_geometry = []
 
+        # this is the Geometry object generated in this class to be used for adding manual gaps
+        self.man_cutout_obj = None
+
         # Signals
         self.ff_cutout_object_btn.clicked.connect(self.on_freeform_cutout)
         self.rect_cutout_object_btn.clicked.connect(self.on_rectangular_cutout)
@@ -743,6 +746,15 @@ class CutOut(FlatCAMTool):
                                      "Add it and retry."))
                 return
 
+        name = self.man_object_combo.currentText()
+        # Get Geometry source object to be used as target for Manual adding Gaps
+        try:
+            self.man_cutout_obj = self.app.collection.get_by_name(str(name))
+        except Exception as e:
+            log.debug("CutOut.on_manual_cutout() --> %s" % str(e))
+            self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve Geometry object: %s") % name)
+            return "Could not retrieve object: %s" % name
+
         self.app.plotcanvas.vis_disconnect('key_press', self.app.ui.keyPressEvent)
         self.app.plotcanvas.vis_disconnect('mouse_press', self.app.on_mouse_click_over_plot)
         self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
@@ -776,23 +788,24 @@ class CutOut(FlatCAMTool):
 
         # Get source object.
         try:
-            cutout_obj = self.app.collection.get_by_name(str(name))
+            self.man_cutout_obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
             log.debug("CutOut.on_manual_cutout() --> %s" % str(e))
             self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve Geometry object: %s") % name)
             return "Could not retrieve object: %s" % name
 
-        if cutout_obj is None:
-            self.app.inform.emit(_("[ERROR_NOTCL] Geometry object for manual cutout not found: %s") % cutout_obj)
+        if self.man_cutout_obj is None:
+            self.app.inform.emit(
+                _("[ERROR_NOTCL] Geometry object for manual cutout not found: %s") % self.man_cutout_obj)
             return
 
         # use the snapped position as reference
         snapped_pos = self.app.geo_editor.snap(click_pos[0], click_pos[1])
 
         cut_poly = self.cutting_geo(pos=(snapped_pos[0], snapped_pos[1]))
-        cutout_obj.subtract_polygon(cut_poly)
+        self.man_cutout_obj.subtract_polygon(cut_poly)
 
-        cutout_obj.plot()
+        self.man_cutout_obj.plot()
         self.app.inform.emit(_("[success] Added manual Bridge Gap."))
 
         self.app.should_we_save = True
@@ -919,11 +932,67 @@ class CutOut(FlatCAMTool):
 
         snap_x, snap_y = self.app.geo_editor.snap(x, y)
 
-        geo = self.cutting_geo(pos=(snap_x, snap_y))
+        # #################################################
+        # ### This section makes the cutting geo to #######
+        # ### rotate if it intersects the target geo ######
+        # #################################################
+        cut_geo = self.cutting_geo(pos=(snap_x, snap_y))
+        man_geo = self.man_cutout_obj.solid_geometry
+
+        def get_angle(geo):
+            line = cut_geo.intersection(geo)
+
+            try:
+                pt1_x = line.coords[0][0]
+                pt1_y = line.coords[0][1]
+                pt2_x = line.coords[1][0]
+                pt2_y = line.coords[1][1]
+                dx = pt1_x - pt2_x
+                dy = pt1_y - pt2_y
+
+                if dx == 0 or dy == 0:
+                    angle = 0
+                else:
+                    radian = math.atan(dx / dy)
+                    angle = radian * 180 / math.pi
+            except Exception as e:
+                angle = 0
+            return angle
+
+        try:
+            rot_angle = 0
+            for geo_el in man_geo:
+                if isinstance(geo_el, Polygon):
+                    work_geo = geo_el.exterior
+                    if cut_geo.intersects(work_geo):
+                        rot_angle = get_angle(geo=work_geo)
+                    else:
+                        rot_angle = 0
+                else:
+                    rot_angle = 0
+                    if cut_geo.intersects(geo_el):
+                        rot_angle = get_angle(geo=geo_el)
+                if rot_angle != 0:
+                    break
+        except TypeError:
+            if isinstance(man_geo, Polygon):
+                work_geo = man_geo.exterior
+                if cut_geo.intersects(work_geo):
+                    rot_angle = get_angle(geo=work_geo)
+                else:
+                    rot_angle = 0
+            else:
+                rot_angle = 0
+                if cut_geo.intersects(man_geo):
+                    rot_angle = get_angle(geo=man_geo)
+
+        # rotate only if there is an angle to rotate to
+        if rot_angle != 0:
+            cut_geo = affinity.rotate(cut_geo, -rot_angle)
 
         # Remove any previous utility shape
         self.app.geo_editor.tool_shape.clear(update=True)
-        self.draw_utility_geometry(geo=geo)
+        self.draw_utility_geometry(geo=cut_geo)
 
     def draw_utility_geometry(self, geo):
         self.app.geo_editor.tool_shape.add(
