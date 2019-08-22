@@ -782,6 +782,19 @@ class CutOut(FlatCAMTool):
             self.app.geo_editor.tool_shape.clear(update=True)
             self.app.geo_editor.tool_shape.enabled = False
             self.gapFinished.emit()
+        # if RMB then we exit
+        elif event.button == 2:
+            self.app.plotcanvas.vis_disconnect('key_press', self.on_key_press)
+            self.app.plotcanvas.vis_disconnect('mouse_move', self.on_mouse_move)
+            self.app.plotcanvas.vis_disconnect('mouse_release', self.doit)
+            self.app.plotcanvas.vis_connect('key_press', self.app.ui.keyPressEvent)
+            self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
+            self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
+
+            # Remove any previous utility shape
+            self.app.geo_editor.tool_shape.clear(update=True)
+            self.app.geo_editor.tool_shape.enabled = False
 
     def on_manual_cutout(self, click_pos):
         name = self.man_object_combo.currentText()

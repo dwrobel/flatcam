@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+23.08.2019
+
+- in Tool Cutout for the manual gaps, right mouse button click will exit from the action of adding gaps
+
 22.08.2019
 
 - added ability to turn ON/OFF the detachable capability of the tabs in Notebook through a context menu activated by right mouse button click on the Notebook header
