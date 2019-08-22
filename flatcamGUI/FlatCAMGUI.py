@@ -6567,9 +6567,10 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
 
         gaps_label = QtWidgets.QLabel('%s:' % _('Gaps'))
         gaps_label.setToolTip(
-            _("Number of bridge gaps used for the cutout.\n"
+            _("Number of gaps used for the cutout.\n"
               "There can be maximum 8 bridges/gaps.\n"
               "The choices are:\n"
+              "- None  - no gaps\n"
               "- lr    - left + right\n"
               "- tb    - top + bottom\n"
               "- 4     - left + right +top + bottom\n"
@@ -6581,7 +6582,7 @@ class ToolsCutoutPrefGroupUI(OptionsGroupUI):
         self.gaps_combo = FCComboBox()
         grid0.addWidget(self.gaps_combo, 4, 1)
 
-        gaps_items = ['LR', 'TB', '4', '2LR', '2TB', '8']
+        gaps_items = ['None', 'LR', 'TB', '4', '2LR', '2TB', '8']
         for it in gaps_items:
             self.gaps_combo.addItem(it)
             self.gaps_combo.setStyleSheet('background-color: rgb(255,255,255)')

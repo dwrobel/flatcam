@@ -12,6 +12,7 @@ CAD program, and create G-Code for Isolation routing.
 23.08.2019
 
 - in Tool Cutout for the manual gaps, right mouse button click will exit from the action of adding gaps
+- in Tool Cutout tool I've added the possibility to create a cutout without bridge gaps; added the 'None' option in the Gaps combobox
 
 22.08.2019
 

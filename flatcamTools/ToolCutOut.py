@@ -151,6 +151,7 @@ class CutOut(FlatCAMTool):
             _("Number of gaps used for the Automatic cutout.\n"
               "There can be maximum 8 bridges/gaps.\n"
               "The choices are:\n"
+              "- None  - no gaps\n"
               "- lr    - left + right\n"
               "- tb    - top + bottom\n"
               "- 4     - left + right +top + bottom\n"
@@ -161,7 +162,7 @@ class CutOut(FlatCAMTool):
         gaps_label.setMinimumWidth(60)
 
         self.gaps = FCComboBox()
-        gaps_items = ['LR', 'TB', '4', '2LR', '2TB', '8']
+        gaps_items = ['None', 'LR', 'TB', '4', '2LR', '2TB', '8']
         for it in gaps_items:
             self.gaps.addItem(it)
             self.gaps.setStyleSheet('background-color: rgb(255,255,255)')
@@ -413,8 +414,9 @@ class CutOut(FlatCAMTool):
             self.app.inform.emit(_("[WARNING_NOTCL] Number of gaps value is missing. Add it and retry."))
             return
 
-        if gaps not in ['LR', 'TB', '2LR', '2TB', '4', '8']:
-            self.app.inform.emit(_("[WARNING_NOTCL] Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
+        if gaps not in ['None', 'LR', 'TB', '2LR', '2TB', '4', '8']:
+            self.app.inform.emit(_("[WARNING_NOTCL] Gaps value can be only one of: "
+                                   "'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
                                    "Fill in a correct value and retry. "))
             return
 
@@ -449,44 +451,46 @@ class CutOut(FlatCAMTool):
                 leny = (ymax - ymin) + (margin * 2)
 
                 proc_geometry = []
+                if gaps == 'None':
+                    pass
+                else:
+                    if gaps == '8' or gaps == '2LR':
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           xmin - gapsize,  # botleft_x
+                                                           py - gapsize + leny / 4,  # botleft_y
+                                                           xmax + gapsize,  # topright_x
+                                                           py + gapsize + leny / 4)  # topright_y
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           xmin - gapsize,
+                                                           py - gapsize - leny / 4,
+                                                           xmax + gapsize,
+                                                           py + gapsize - leny / 4)
 
-                if gaps == '8' or gaps == '2LR':
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       xmin - gapsize,  # botleft_x
-                                                       py - gapsize + leny / 4,  # botleft_y
-                                                       xmax + gapsize,  # topright_x
-                                                       py + gapsize + leny / 4)  # topright_y
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       xmin - gapsize,
-                                                       py - gapsize - leny / 4,
-                                                       xmax + gapsize,
-                                                       py + gapsize - leny / 4)
+                    if gaps == '8' or gaps == '2TB':
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           px - gapsize + lenx / 4,
+                                                           ymin - gapsize,
+                                                           px + gapsize + lenx / 4,
+                                                           ymax + gapsize)
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           px - gapsize - lenx / 4,
+                                                           ymin - gapsize,
+                                                           px + gapsize - lenx / 4,
+                                                           ymax + gapsize)
 
-                if gaps == '8' or gaps == '2TB':
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       px - gapsize + lenx / 4,
-                                                       ymin - gapsize,
-                                                       px + gapsize + lenx / 4,
-                                                       ymax + gapsize)
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       px - gapsize - lenx / 4,
-                                                       ymin - gapsize,
-                                                       px + gapsize - lenx / 4,
-                                                       ymax + gapsize)
+                    if gaps == '4' or gaps == 'LR':
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           xmin - gapsize,
+                                                           py - gapsize,
+                                                           xmax + gapsize,
+                                                           py + gapsize)
 
-                if gaps == '4' or gaps == 'LR':
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       xmin - gapsize,
-                                                       py - gapsize,
-                                                       xmax + gapsize,
-                                                       py + gapsize)
-
-                if gaps == '4' or gaps == 'TB':
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       px - gapsize,
-                                                       ymin - gapsize,
-                                                       px + gapsize,
-                                                       ymax + gapsize)
+                    if gaps == '4' or gaps == 'TB':
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           px - gapsize,
+                                                           ymin - gapsize,
+                                                           px + gapsize,
+                                                           ymax + gapsize)
 
                 try:
                     for g in geom:
@@ -606,8 +610,9 @@ class CutOut(FlatCAMTool):
             self.app.inform.emit(_("[WARNING_NOTCL] Number of gaps value is missing. Add it and retry."))
             return
 
-        if gaps not in ['LR', 'TB', '2LR', '2TB', '4', '8']:
-            self.app.inform.emit(_("[WARNING_NOTCL] Gaps value can be only one of: 'lr', 'tb', '2lr', '2tb', 4 or 8. "
+        if gaps not in ['None', 'LR', 'TB', '2LR', '2TB', '4', '8']:
+            self.app.inform.emit(_("[WARNING_NOTCL] Gaps value can be only one of: "
+                                   "'None', 'lr', 'tb', '2lr', '2tb', 4 or 8. "
                                    "Fill in a correct value and retry. "))
             return
 
@@ -633,43 +638,46 @@ class CutOut(FlatCAMTool):
                 lenx = (xmax - xmin) + (margin * 2)
                 leny = (ymax - ymin) + (margin * 2)
 
-                if gaps == '8' or gaps == '2LR':
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       xmin - gapsize,  # botleft_x
-                                                       py - gapsize + leny / 4,  # botleft_y
-                                                       xmax + gapsize,  # topright_x
-                                                       py + gapsize + leny / 4)  # topright_y
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       xmin - gapsize,
-                                                       py - gapsize - leny / 4,
-                                                       xmax + gapsize,
-                                                       py + gapsize - leny / 4)
+                if gaps == 'None':
+                    pass
+                else:
+                    if gaps == '8' or gaps == '2LR':
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           xmin - gapsize,  # botleft_x
+                                                           py - gapsize + leny / 4,  # botleft_y
+                                                           xmax + gapsize,  # topright_x
+                                                           py + gapsize + leny / 4)  # topright_y
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           xmin - gapsize,
+                                                           py - gapsize - leny / 4,
+                                                           xmax + gapsize,
+                                                           py + gapsize - leny / 4)
 
-                if gaps == '8' or gaps == '2TB':
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       px - gapsize + lenx / 4,
-                                                       ymin - gapsize,
-                                                       px + gapsize + lenx / 4,
-                                                       ymax + gapsize)
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       px - gapsize - lenx / 4,
-                                                       ymin - gapsize,
-                                                       px + gapsize - lenx / 4,
-                                                       ymax + gapsize)
+                    if gaps == '8' or gaps == '2TB':
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           px - gapsize + lenx / 4,
+                                                           ymin - gapsize,
+                                                           px + gapsize + lenx / 4,
+                                                           ymax + gapsize)
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           px - gapsize - lenx / 4,
+                                                           ymin - gapsize,
+                                                           px + gapsize - lenx / 4,
+                                                           ymax + gapsize)
 
-                if gaps == '4' or gaps == 'LR':
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       xmin - gapsize,
-                                                       py - gapsize,
-                                                       xmax + gapsize,
-                                                       py + gapsize)
+                    if gaps == '4' or gaps == 'LR':
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           xmin - gapsize,
+                                                           py - gapsize,
+                                                           xmax + gapsize,
+                                                           py + gapsize)
 
-                if gaps == '4' or gaps == 'TB':
-                    geom = self.subtract_poly_from_geo(geom,
-                                                       px - gapsize,
-                                                       ymin - gapsize,
-                                                       px + gapsize,
-                                                       ymax + gapsize)
+                    if gaps == '4' or gaps == 'TB':
+                        geom = self.subtract_poly_from_geo(geom,
+                                                           px - gapsize,
+                                                           ymin - gapsize,
+                                                           px + gapsize,
+                                                           ymax + gapsize)
                 try:
                     for g in geom:
                         proc_geometry.append(g)
