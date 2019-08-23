@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - in Paint Tool and NCC Tool, for the Area option, now mouse panning is allowed while adding areas to process
 - for all the tools launched rom toolbar the behavior is modified: first click it will launch the tool; second click: if the Tool tab has focus it will close the tool but if another tab is selected, the tool will have focus
 - modified the NCC Tool and Paint Tool to work multiple times after first launch
+- fixed the issue with GUI entries content being deselected on right click in the box in order to copy the value
 
 22.08.2019
 
