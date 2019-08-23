@@ -23,6 +23,9 @@ CAD program, and create G-Code for Isolation routing.
 - some changes in GUI tooltips
 - modified the way key modifiers are detected in Gerber Editor Selection class and in Excellon Editor Selection class
 - updated the translations
+- fixed aperture move in Gerber Editor
+- fixed drills/slots move in Excellon Editor
+- RELEASE 8.96
 
 22.08.2019
 

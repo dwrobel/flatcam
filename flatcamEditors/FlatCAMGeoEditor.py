@@ -2360,10 +2360,6 @@ class FCSelect(DrawTool):
 
     def click_release(self, point):
 
-        self.select_shapes(point)
-        return ""
-
-    def select_shapes(self, pos):
         # list where we store the overlapped shapes under our mouse left click position
         over_shape_list = []
 
@@ -2383,7 +2379,7 @@ class FCSelect(DrawTool):
 
             # 3rd method of click selection -> inconvenient
             try:
-                _, closest_shape = self.storage.nearest(pos)
+                _, closest_shape = self.storage.nearest(point)
             except StopIteration:
                 return ""
 
@@ -2402,30 +2398,28 @@ class FCSelect(DrawTool):
                 obj_to_add = over_shape_list[int(FlatCAMGeoEditor.draw_shape_idx)]
 
                 key_modifier = QtWidgets.QApplication.keyboardModifiers()
-                if self.draw_app.app.defaults["global_mselect_key"] == 'Control':
-                    # if CONTROL key is pressed then we add to the selected list the current shape but if it's already
+
+                if key_modifier == QtCore.Qt.ShiftModifier:
+                    mod_key = 'Shift'
+                elif key_modifier == QtCore.Qt.ControlModifier:
+                    mod_key = 'Control'
+                else:
+                    mod_key = None
+
+                if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+                    # if modifier key is pressed then we add to the selected list the current shape but if it's already
                     # in the selected list, we removed it. Therefore first click selects, second deselects.
-                    if key_modifier == Qt.ControlModifier:
-                        if obj_to_add in self.draw_app.selected:
-                            self.draw_app.selected.remove(obj_to_add)
-                        else:
-                            self.draw_app.selected.append(obj_to_add)
+                    if obj_to_add in self.draw_app.selected:
+                        self.draw_app.selected.remove(obj_to_add)
                     else:
-                        self.draw_app.selected = []
                         self.draw_app.selected.append(obj_to_add)
                 else:
-                    if key_modifier == Qt.ShiftModifier:
-                        if obj_to_add in self.draw_app.selected:
-                            self.draw_app.selected.remove(obj_to_add)
-                        else:
-                            self.draw_app.selected.append(obj_to_add)
-                    else:
-                        self.draw_app.selected = []
-                        self.draw_app.selected.append(obj_to_add)
-
+                    self.draw_app.selected = []
+                    self.draw_app.selected.append(obj_to_add)
         except Exception as e:
             log.error("[ERROR] Something went bad. %s" % str(e))
             raise
+        return ""
 
 
 class FCMove(FCShapeTool):

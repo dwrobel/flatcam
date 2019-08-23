@@ -2195,6 +2195,9 @@ class FCApertureSelect(DrawTool):
         # bending modes using in FCRegion and FCTrack
         self.draw_app.bend_mode = 1
 
+        # here store the selected apertures
+        self.sel_aperture = set()
+
         try:
             self.grb_editor_app.apertures_table.clearSelection()
         except Exception as e:
@@ -2229,7 +2232,6 @@ class FCApertureSelect(DrawTool):
 
     def click_release(self, point):
         self.grb_editor_app.apertures_table.clearSelection()
-        sel_aperture = set()
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
 
         if key_modifier == QtCore.Qt.ShiftModifier:
@@ -2248,13 +2250,14 @@ class FCApertureSelect(DrawTool):
                             if mod_key == self.grb_editor_app.app.defaults["global_mselect_key"]:
                                 if geo_el in self.draw_app.selected:
                                     self.draw_app.selected.remove(geo_el)
+                                    self.sel_aperture.remove(storage)
                                 else:
                                     # add the object to the selected shapes
                                     self.draw_app.selected.append(geo_el)
-                                    sel_aperture.add(storage)
+                                    self.sel_aperture.add(storage)
                             else:
                                 self.draw_app.selected.append(geo_el)
-                                sel_aperture.add(storage)
+                                self.sel_aperture.add(storage)
             except KeyError:
                 pass
 
@@ -2265,7 +2268,7 @@ class FCApertureSelect(DrawTool):
             log.debug("FlatCAMGrbEditor.FCApertureSelect.click_release() --> %s" % str(e))
 
         self.grb_editor_app.apertures_table.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
-        for aper in sel_aperture:
+        for aper in self.sel_aperture:
             for row in range(self.grb_editor_app.apertures_table.rowCount()):
                 if str(aper) == self.grb_editor_app.apertures_table.item(row, 1).text():
                     self.grb_editor_app.apertures_table.selectRow(row)
