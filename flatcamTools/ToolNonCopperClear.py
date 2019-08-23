@@ -411,7 +411,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
             else:
                 try:
                     if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                        self.app.ui.splitter.setSizes([0, 1])
+                        # if tab is populated with the tool but it does not have the focus, focus on it
+                        if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+                            # focus on Tool Tab
+                            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                        else:
+                            self.app.ui.splitter.setSizes([0, 1])
                 except AttributeError:
                     pass
         else:
@@ -1189,8 +1194,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
             # focus on Selected Tab
             self.app.ui.notebook.setCurrentWidget(self.app.ui.selected_tab)
-            self.tools_frame.hide()
-            self.app.ui.notebook.setTabText(2, _("Tools"))
 
         # Promise object with the new name
         self.app.collection.promise(name)
@@ -1343,9 +1346,6 @@ class NonCopperClear(FlatCAMTool, Gerber):
             # reset the variable for next use
             app_obj.poly_not_cleared = False
 
-            self.tools_frame.hide()
-            app_obj.ui.notebook.setTabText(2, "Tools")
-
         # Promise object with the new name
         self.app.collection.promise(name)
 
@@ -1365,3 +1365,14 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
     def reset_fields(self):
         self.object_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+
+    def reset_usage(self):
+        self.obj_name = ""
+        self.ncc_obj = None
+        self.bound_obj = None
+
+        self.first_click = False
+        self.cursor_pos = None
+        self.mouse_is_dragging = False
+
+        self.sel_rect = []

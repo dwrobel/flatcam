@@ -432,7 +432,12 @@ class ToolPaint(FlatCAMTool, Gerber):
             else:
                 try:
                     if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                        self.app.ui.splitter.setSizes([0, 1])
+                        # if tab is populated with the tool but it does not have the focus, focus on it
+                        if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+                            # focus on Tool Tab
+                            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                        else:
+                            self.app.ui.splitter.setSizes([0, 1])
                 except AttributeError:
                     pass
         else:
@@ -443,6 +448,17 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.set_tool_ui()
 
         self.app.ui.notebook.setTabText(2, _("Paint Tool"))
+
+    def reset_usage(self):
+        self.obj_name = ""
+        self.paint_obj = None
+        self.bound_obj = None
+
+        self.first_click = False
+        self.cursor_pos = None
+        self.mouse_is_dragging = False
+
+        self.sel_rect = []
 
     def on_radio_selection(self):
         if self.selectmethod_combo.get_value() == "ref":
@@ -878,6 +894,10 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.build_ui()
 
     def on_paint_button_click(self):
+
+        # init values for the next usage
+        self.reset_usage()
+
         self.app.report_usage(_("geometry_on_paint_button"))
         # self.app.call_source = 'paint'
 
@@ -1653,8 +1673,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                 target_geo = [obj.solid_geometry]
             else:
                 target_geo = obj.solid_geometry
-            print(target_geo)
-            print(sel_obj)
+
             for poly in target_geo:
                 new_pol = poly.intersection(sel_obj)
                 geo_to_paint.append(new_pol)
