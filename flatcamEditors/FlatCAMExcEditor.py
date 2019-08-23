@@ -1261,16 +1261,18 @@ class FCDrillSelect(DrawTool):
 
     def click(self, point):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
-        if self.exc_editor_app.app.defaults["global_mselect_key"] == 'Control':
-            if key_modifier == Qt.ControlModifier:
-                pass
-            else:
-                self.exc_editor_app.selected = []
+
+        if key_modifier == QtCore.Qt.ShiftModifier:
+            mod_key = 'Shift'
+        elif key_modifier == QtCore.Qt.ControlModifier:
+            mod_key = 'Control'
         else:
-            if key_modifier == Qt.ShiftModifier:
-                pass
-            else:
-                self.exc_editor_app.selected = []
+            mod_key = None
+
+        if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+            pass
+        else:
+            self.exc_editor_app.selected = []
 
     def click_release(self, pos):
         self.exc_editor_app.tools_table_exc.clearSelection()

@@ -3985,7 +3985,7 @@ class GeneralAppPrefGroupUI(OptionsGroupUI):
                                          {'label': _('Advanced'), 'value': 'a'}])
 
         # Application Level for FlatCAM
-        self.portability_label = QtWidgets.QLabel('%s:' % _('Portability'))
+        self.portability_label = QtWidgets.QLabel('%s:' % _('Portable app'))
         self.portability_label.setToolTip(_("Choose if the application should run as portable.\n\n"
                                             "If Checked the application will run portable,\n"
                                             "which means that the preferences files will be saved\n"

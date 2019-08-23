@@ -2214,21 +2214,30 @@ class FCApertureSelect(DrawTool):
 
     def click(self, point):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
-        if self.grb_editor_app.app.defaults["global_mselect_key"] == 'Control':
-            if key_modifier == Qt.ControlModifier:
-                pass
-            else:
-                self.grb_editor_app.selected = []
+
+        if key_modifier == QtCore.Qt.ShiftModifier:
+            mod_key = 'Shift'
+        elif key_modifier == QtCore.Qt.ControlModifier:
+            mod_key = 'Control'
         else:
-            if key_modifier == Qt.ShiftModifier:
-                pass
-            else:
-                self.grb_editor_app.selected = []
+            mod_key = None
+
+        if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+            pass
+        else:
+            self.grb_editor_app.selected = []
 
     def click_release(self, point):
         self.grb_editor_app.apertures_table.clearSelection()
         sel_aperture = set()
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
+
+        if key_modifier == QtCore.Qt.ShiftModifier:
+            mod_key = 'Shift'
+        elif key_modifier == QtCore.Qt.ControlModifier:
+            mod_key = 'Control'
+        else:
+            mod_key = None
 
         for storage in self.grb_editor_app.storage_dict:
             try:
@@ -2236,11 +2245,7 @@ class FCApertureSelect(DrawTool):
                     if 'solid' in geo_el.geo:
                         geometric_data = geo_el.geo['solid']
                         if Point(point).within(geometric_data):
-                            if (self.grb_editor_app.app.defaults["global_mselect_key"] == 'Control' and
-                                key_modifier == Qt.ControlModifier) or \
-                                    (self.grb_editor_app.app.defaults["global_mselect_key"] == 'Shift' and
-                                     key_modifier == Qt.ShiftModifier):
-
+                            if mod_key == self.grb_editor_app.app.defaults["global_mselect_key"]:
                                 if geo_el in self.draw_app.selected:
                                     self.draw_app.selected.remove(geo_el)
                                 else:

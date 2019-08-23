@@ -21,6 +21,8 @@ CAD program, and create G-Code for Isolation routing.
 - modified the NCC Tool and Paint Tool to work multiple times after first launch
 - fixed the issue with GUI entries content being deselected on right click in the box in order to copy the value
 - some changes in GUI tooltips
+- modified the way key modifiers are detected in Gerber Editor Selection class and in Excellon Editor Selection class
+- updated the translations
 
 22.08.2019
 
