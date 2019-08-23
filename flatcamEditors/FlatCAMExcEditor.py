@@ -1251,6 +1251,9 @@ class FCDrillSelect(DrawTool):
         self.storage = self.exc_editor_app.storage_dict
         # self.selected = self.exc_editor_app.selected
 
+        # here we store the selected tools
+        self.sel_tools = set()
+
         # here we store all shapes that were selected so we can search for the nearest to our click location
         self.sel_storage = FlatCAMExcEditor.make_storage()
 
@@ -1261,16 +1264,18 @@ class FCDrillSelect(DrawTool):
 
     def click(self, point):
         key_modifier = QtWidgets.QApplication.keyboardModifiers()
-        if self.exc_editor_app.app.defaults["global_mselect_key"] == 'Control':
-            if key_modifier == Qt.ControlModifier:
-                pass
-            else:
-                self.exc_editor_app.selected = []
+
+        if key_modifier == QtCore.Qt.ShiftModifier:
+            mod_key = 'Shift'
+        elif key_modifier == QtCore.Qt.ControlModifier:
+            mod_key = 'Control'
         else:
-            if key_modifier == Qt.ShiftModifier:
-                pass
-            else:
-                self.exc_editor_app.selected = []
+            mod_key = None
+
+        if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
+            pass
+        else:
+            self.exc_editor_app.selected = []
 
     def click_release(self, pos):
         self.exc_editor_app.tools_table_exc.clearSelection()
@@ -1308,11 +1313,13 @@ class FCDrillSelect(DrawTool):
             self.exc_editor_app.selected = []
         else:
             modifiers = QtWidgets.QApplication.keyboardModifiers()
-            mod_key = 'Control'
+
             if modifiers == QtCore.Qt.ShiftModifier:
                 mod_key = 'Shift'
             elif modifiers == QtCore.Qt.ControlModifier:
                 mod_key = 'Control'
+            else:
+                mod_key = None
 
             if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
                 if closest_shape in self.exc_editor_app.selected:
@@ -1329,14 +1336,13 @@ class FCDrillSelect(DrawTool):
             except (TypeError, AttributeError):
                 pass
 
-            sel_tools = set()
             self.exc_editor_app.tools_table_exc.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
             for shape_s in self.exc_editor_app.selected:
                 for storage in self.exc_editor_app.storage_dict:
                     if shape_s in self.exc_editor_app.storage_dict[storage].get_objects():
-                        sel_tools.add(storage)
+                        self.sel_tools.add(storage)
 
-            for storage in sel_tools:
+            for storage in self.sel_tools:
                 for k, v in self.draw_app.tool2tooldia.items():
                     if v == storage:
                         self.exc_editor_app.tools_table_exc.selectRow(int(k) - 1)

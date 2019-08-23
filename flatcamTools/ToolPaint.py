@@ -1,14 +1,15 @@
-# ########################################################## ##
+# ##########################################################
 # FlatCAM: 2D Post-processing for Manufacturing            #
 # http://flatcam.org                                       #
 # File Modified: Marius Adrian Stanciu (c)                 #
 # Date: 3/10/2019                                          #
 # MIT Licence                                              #
-# ########################################################## ##
+# ##########################################################
 
 from FlatCAMTool import FlatCAMTool
 from copy import copy, deepcopy
 from ObjectCollection import *
+from shapely.geometry import base
 
 import gettext
 import FlatCAMTranslation as fcTranslate
@@ -21,7 +22,7 @@ if '_' not in builtins.__dict__:
 
 class ToolPaint(FlatCAMTool, Gerber):
 
-    toolName = _("Paint Area")
+    toolName = _("Paint Tool")
 
     def __init__(self, app):
         self.app = app
@@ -51,18 +52,43 @@ class ToolPaint(FlatCAMTool, Gerber):
         form_layout = QtWidgets.QFormLayout()
         self.tools_box.addLayout(form_layout)
 
-        # ## Object
-        self.object_combo = QtWidgets.QComboBox()
-        self.object_combo.setModel(self.app.collection)
-        self.object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
-        self.object_combo.setCurrentIndex(1)
+        # ################################################
+        # ##### Type of object to be painted #############
+        # ################################################
+        self.type_obj_combo = QtWidgets.QComboBox()
+        self.type_obj_combo.addItem("Gerber")
+        self.type_obj_combo.addItem("Excellon")
+        self.type_obj_combo.addItem("Geometry")
 
-        self.object_label = QtWidgets.QLabel(_("Geometry:"))
-        self.object_label.setToolTip(
-            _("Geometry object to be painted.                        ")
+        # we get rid of item1 ("Excellon") as it is not suitable
+        self.type_obj_combo.view().setRowHidden(1, True)
+        self.type_obj_combo.setItemIcon(0, QtGui.QIcon("share/flatcam_icon16.png"))
+        self.type_obj_combo.setItemIcon(2, QtGui.QIcon("share/geometry16.png"))
+
+        self.type_obj_combo_label = QtWidgets.QLabel('%s:' % _("Obj Type"))
+        self.type_obj_combo_label.setToolTip(
+            _("Specify the type of object to be painted.\n"
+              "It can be of type: Gerber or Geometry.\n"
+              "What is selected here will dictate the kind\n"
+              "of objects that will populate the 'Object' combobox.")
         )
+        self.type_obj_combo_label.setMinimumWidth(60)
+        form_layout.addRow(self.type_obj_combo_label, self.type_obj_combo)
+
+        # ################################################
+        # ##### The object to be painted #################
+        # ################################################
+        self.obj_combo = QtWidgets.QComboBox()
+        self.obj_combo.setModel(self.app.collection)
+        self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.obj_combo.setCurrentIndex(1)
+
+        self.object_label = QtWidgets.QLabel('%s:' % _("Object"))
+        self.object_label.setToolTip(_("Object to be painted."))
+
+        form_layout.addRow(self.object_label, self.obj_combo)
+
         e_lab_0 = QtWidgets.QLabel('')
-        form_layout.addRow(self.object_label, self.object_combo)
         form_layout.addRow(e_lab_0)
 
         # ### Tools ## ##
@@ -107,8 +133,27 @@ class ToolPaint(FlatCAMTool, Gerber):
               "Choosing the <B>V-Shape</B> Tool Type automatically will select the Operation Type "
               "in the resulting geometry as Isolation."))
 
-        self.empty_label = QtWidgets.QLabel('')
-        self.tools_box.addWidget(self.empty_label)
+        self.order_label = QtWidgets.QLabel('<b>%s:</b>' % _('Tool order'))
+        self.order_label.setToolTip(_("This set the way that the tools in the tools table are used.\n"
+                                      "'No' --> means that the used order is the one in the tool table\n"
+                                      "'Forward' --> means that the tools will be ordered from small to big\n"
+                                      "'Reverse' --> menas that the tools will ordered from big to small\n\n"
+                                      "WARNING: using rest machining will automatically set the order\n"
+                                      "in reverse and disable this control."))
+
+        self.order_radio = RadioSet([{'label': _('No'), 'value': 'no'},
+                                     {'label': _('Forward'), 'value': 'fwd'},
+                                     {'label': _('Reverse'), 'value': 'rev'}])
+        self.order_radio.setToolTip(_("This set the way that the tools in the tools table are used.\n"
+                                      "'No' --> means that the used order is the one in the tool table\n"
+                                      "'Forward' --> means that the tools will be ordered from small to big\n"
+                                      "'Reverse' --> menas that the tools will ordered from big to small\n\n"
+                                      "WARNING: using rest machining will automatically set the order\n"
+                                      "in reverse and disable this control."))
+        form = QtWidgets.QFormLayout()
+        self.tools_box.addLayout(form)
+        form.addRow(QtWidgets.QLabel(''), QtWidgets.QLabel(''))
+        form.addRow(self.order_label, self.order_radio)
 
         # ### Add a new Tool ## ##
         hlay = QtWidgets.QHBoxLayout()
@@ -157,7 +202,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tools_box.addLayout(grid3)
 
         # Overlap
-        ovlabel = QtWidgets.QLabel(_('Overlap Rate:'))
+        ovlabel = QtWidgets.QLabel('%s:' % _('Overlap Rate'))
         ovlabel.setToolTip(
             _("How much (fraction) of the tool width to overlap each tool pass.\n"
               "Example:\n"
@@ -174,7 +219,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid3.addWidget(self.paintoverlap_entry, 1, 1)
 
         # Margin
-        marginlabel = QtWidgets.QLabel(_('Margin:'))
+        marginlabel = QtWidgets.QLabel('%s:' % _('Margin'))
         marginlabel.setToolTip(
             _("Distance by which to avoid\n"
               "the edges of the polygon to\n"
@@ -185,7 +230,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid3.addWidget(self.paintmargin_entry, 2, 1)
 
         # Method
-        methodlabel = QtWidgets.QLabel(_('Method:'))
+        methodlabel = QtWidgets.QLabel('%s:' % _('Method'))
         methodlabel.setToolTip(
             _("Algorithm for non-copper clearing:<BR>"
               "<B>Standard</B>: Fixed step inwards.<BR>"
@@ -201,7 +246,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid3.addWidget(self.paintmethod_combo, 3, 1)
 
         # Connect lines
-        pathconnectlabel = QtWidgets.QLabel(_("Connect:"))
+        pathconnectlabel = QtWidgets.QLabel('%s:' % _("Connect"))
         pathconnectlabel.setToolTip(
             _("Draw lines between resulting\n"
               "segments to minimize tool lifts.")
@@ -210,7 +255,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.pathconnect_cb = FCCheckBox()
         grid3.addWidget(self.pathconnect_cb, 4, 1)
 
-        contourlabel = QtWidgets.QLabel(_("Contour:"))
+        contourlabel = QtWidgets.QLabel('%s:' % _("Contour"))
         contourlabel.setToolTip(
             _("Cut around the perimeter of the polygon\n"
               "to trim rough edges.")
@@ -219,7 +264,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.paintcontour_cb = FCCheckBox()
         grid3.addWidget(self.paintcontour_cb, 5, 1)
 
-        restlabel = QtWidgets.QLabel(_("Rest M.:"))
+        restlabel = QtWidgets.QLabel('%s:' % _("Rest M."))
         restlabel.setToolTip(
             _("If checked, use 'rest machining'.\n"
               "Basically it will clear copper outside PCB features,\n"
@@ -234,30 +279,70 @@ class ToolPaint(FlatCAMTool, Gerber):
         grid3.addWidget(self.rest_cb, 6, 1)
 
         # Polygon selection
-        selectlabel = QtWidgets.QLabel(_('Selection:'))
+        selectlabel = QtWidgets.QLabel('%s:' % _('Selection'))
         selectlabel.setToolTip(
             _("How to select the polygons to paint.<BR>"
               "Options:<BR>"
-              "- <B>Single</B>: left mouse click on the polygon to be painted.<BR>"
-              "- <B>All</B>: paint all polygons.")
+              "- <B>Single Polygons</B>: left mouse click on the polygon to be painted.<BR>"
+              "- <B>Area Selection</B>: left mouse click to start selection of the area to be painted.<BR>"
+              "- <B>All Polygons</B>: paint all polygons.<BR>"
+              "- <B>Reference Object</B>: paint an area described by an external reference object.")
         )
         grid3.addWidget(selectlabel, 7, 0)
         # grid3 = QtWidgets.QGridLayout()
         self.selectmethod_combo = RadioSet([
-            {"label": _("Single"), "value": "single"},
-            {"label": _("Area"), "value": "area"},
-            {"label": _("All"), "value": "all"}
-        ])
+            {"label": _("Single Polygon"), "value": "single"},
+            {"label": _("Area Selection"), "value": "area"},
+            {"label": _("All Polygons"), "value": "all"},
+            {"label": _("Reference Object"), "value": "ref"}
+        ], orientation='vertical', stretch=False)
+        self.selectmethod_combo.setToolTip(
+            _("How to select Polygons to be painted.\n\n"
+              "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
+              "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
+              "- 'All Polygons' - the Paint will start after click.\n"
+              "- 'Reference Object' -  will do non copper clearing within the area\n"
+              "specified by another object.")
+        )
         grid3.addWidget(self.selectmethod_combo, 7, 1)
+
+        form1 = QtWidgets.QFormLayout()
+        self.tools_box.addLayout(form1)
+
+        self.box_combo_type_label = QtWidgets.QLabel('%s:' % _("Ref. Type"))
+        self.box_combo_type_label.setToolTip(
+            _("The type of FlatCAM object to be used as paint reference.\n"
+              "It can be Gerber, Excellon or Geometry.")
+        )
+        self.box_combo_type = QtWidgets.QComboBox()
+        self.box_combo_type.addItem(_("Gerber   Reference Box Object"))
+        self.box_combo_type.addItem(_("Excellon Reference Box Object"))
+        self.box_combo_type.addItem(_("Geometry Reference Box Object"))
+        form1.addRow(self.box_combo_type_label, self.box_combo_type)
+
+        self.box_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
+        self.box_combo_label.setToolTip(
+            _("The FlatCAM object to be used as non copper clearing reference.")
+        )
+        self.box_combo = QtWidgets.QComboBox()
+        self.box_combo.setModel(self.app.collection)
+        self.box_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))
+        self.box_combo.setCurrentIndex(1)
+        form1.addRow(self.box_combo_label, self.box_combo)
+
+        self.box_combo.hide()
+        self.box_combo_label.hide()
+        self.box_combo_type.hide()
+        self.box_combo_type_label.hide()
 
         # GO Button
         self.generate_paint_button = QtWidgets.QPushButton(_('Create Paint Geometry'))
         self.generate_paint_button.setToolTip(
-            _("After clicking here, click inside<BR>"
-              "the polygon you wish to be painted if <B>Single</B> is selected.<BR>"
-              "If <B>All</B>  is selected then the Paint will start after click.<BR>"
-              "A new Geometry object with the tool<BR>"
-              "paths will be created.")
+            _("- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
+              "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
+              "- 'All Polygons' - the Paint will start after click.\n"
+              "- 'Reference Object' -  will do non copper clearing within the area\n"
+              "specified by another object.")
         )
         self.tools_box.addWidget(self.generate_paint_button)
 
@@ -271,6 +356,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tooluid = 0
         self.first_click = False
         self.cursor_pos = None
+        self.mouse_is_dragging = False
+
+        self.sel_rect = []
 
         # store here the default data for Geometry Data
         self.default_data = {}
@@ -316,6 +404,16 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.deltool_btn.clicked.connect(self.on_tool_delete)
         self.generate_paint_button.clicked.connect(self.on_paint_button_click)
         self.selectmethod_combo.activated_custom.connect(self.on_radio_selection)
+        self.order_radio.activated_custom[str].connect(self.on_order_changed)
+        self.rest_cb.stateChanged.connect(self.on_rest_machining_check)
+
+        self.box_combo_type.currentIndexChanged.connect(self.on_combo_box_type)
+        self.type_obj_combo.currentIndexChanged.connect(self.on_type_obj_index_changed)
+
+    def on_type_obj_index_changed(self, index):
+        obj_type = self.type_obj_combo.currentIndex()
+        self.obj_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.obj_combo.setCurrentIndex(0)
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='ALT+P', **kwargs)
@@ -330,7 +428,12 @@ class ToolPaint(FlatCAMTool, Gerber):
             else:
                 try:
                     if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                        self.app.ui.splitter.setSizes([0, 1])
+                        # if tab is populated with the tool but it does not have the focus, focus on it
+                        if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+                            # focus on Tool Tab
+                            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                        else:
+                            self.app.ui.splitter.setSizes([0, 1])
                 except AttributeError:
                     pass
         else:
@@ -342,7 +445,29 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         self.app.ui.notebook.setTabText(2, _("Paint Tool"))
 
+    def reset_usage(self):
+        self.obj_name = ""
+        self.paint_obj = None
+        self.bound_obj = None
+
+        self.first_click = False
+        self.cursor_pos = None
+        self.mouse_is_dragging = False
+
+        self.sel_rect = []
+
     def on_radio_selection(self):
+        if self.selectmethod_combo.get_value() == "ref":
+            self.box_combo.show()
+            self.box_combo_label.show()
+            self.box_combo_type.show()
+            self.box_combo_type_label.show()
+        else:
+            self.box_combo.hide()
+            self.box_combo_label.hide()
+            self.box_combo_type.hide()
+            self.box_combo_type_label.hide()
+
         if self.selectmethod_combo.get_value() == 'single':
             # disable rest-machining for single polygon painting
             self.rest_cb.set_value(False)
@@ -367,11 +492,25 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.deltool_btn.setDisabled(False)
             self.tools_table.setContextMenuPolicy(Qt.ActionsContextMenu)
 
+    def on_order_changed(self, order):
+        if order != 'no':
+            self.build_ui()
+
+    def on_rest_machining_check(self, state):
+        if state:
+            self.order_radio.set_value('rev')
+            self.order_label.setDisabled(True)
+            self.order_radio.setDisabled(True)
+        else:
+            self.order_label.setDisabled(False)
+            self.order_radio.setDisabled(False)
+
     def set_tool_ui(self):
         self.tools_frame.show()
         self.reset_fields()
 
         # ## Init the GUI interface
+        self.order_radio.set_value(self.app.defaults["tools_paintorder"])
         self.paintmargin_entry.set_value(self.default_data["paintmargin"])
         self.paintmethod_combo.set_value(self.default_data["paintmethod"])
         self.selectmethod_combo.set_value(self.default_data["selectmethod"])
@@ -452,7 +591,14 @@ class ToolPaint(FlatCAMTool, Gerber):
         sorted_tools = []
         for k, v in self.paint_tools.items():
             sorted_tools.append(float('%.4f' % float(v['tooldia'])))
-        sorted_tools.sort()
+
+        order = self.order_radio.get_value()
+        if order == 'fwd':
+            sorted_tools.sort(reverse=False)
+        elif order == 'rev':
+            sorted_tools.sort(reverse=True)
+        else:
+            pass
 
         n = len(sorted_tools)
         self.tools_table.setRowCount(n)
@@ -523,6 +669,11 @@ class ToolPaint(FlatCAMTool, Gerber):
         # we reactivate the signals after the after the tool adding as we don't need to see the tool been populated
         self.tools_table.itemChanged.connect(self.on_tool_edit)
 
+    def on_combo_box_type(self):
+        obj_type = self.box_combo_type.currentIndex()
+        self.box_combo.setRootModelIndex(self.app.collection.index(obj_type, 0, QtCore.QModelIndex()))
+        self.box_combo.setCurrentIndex(0)
+
     def on_tool_add(self, dia=None, muted=None):
 
         try:
@@ -541,7 +692,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                     tool_dia = float(self.addtool_entry.get_value().replace(',', '.'))
                 except ValueError:
                     self.app.inform.emit(_("[ERROR_NOTCL] Wrong value format entered, "
-                                         "use a number."))
+                                           "use a number."))
                     return
 
             if tool_dia is None:
@@ -739,6 +890,10 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.build_ui()
 
     def on_paint_button_click(self):
+
+        # init values for the next usage
+        self.reset_usage()
+
         self.app.report_usage(_("geometry_on_paint_button"))
         # self.app.call_source = 'paint'
 
@@ -764,7 +919,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         contour = self.paintcontour_cb.get_value()
         select_method = self.selectmethod_combo.get_value()
 
-        self.obj_name = self.object_combo.currentText()
+        self.obj_name = self.obj_combo.currentText()
 
         # Get source object.
         try:
@@ -828,7 +983,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             tooldia = float('%.4f' % float(self.tools_table.item(0, 1).text()))
 
             # To be called after clicking on the plot.
-            def on_mouse_press(event):
+            def on_mouse_release(event):
                 # do paint single only for left mouse clicks
                 if event.button == 1:
                     if not self.first_click:
@@ -839,8 +994,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         if self.app.grid_status() == True:
                             self.cursor_pos = self.app.geo_editor.snap(self.cursor_pos[0], self.cursor_pos[1])
                     else:
-                        self.app.inform.emit(_("Done."))
-                        self.first_click = False
+                        self.app.inform.emit(_("Zone added. Right click to finish."))
                         self.app.delete_selection_shape()
 
                         curr_pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
@@ -853,26 +1007,62 @@ class ToolPaint(FlatCAMTool, Gerber):
                         pt2 = (x1, y0)
                         pt3 = (x1, y1)
                         pt4 = (x0, y1)
-                        sel_rect = Polygon([pt1, pt2, pt3, pt4])
+                        self.sel_rect.append(Polygon([pt1, pt2, pt3, pt4]))
 
+                        modifiers = QtWidgets.QApplication.keyboardModifiers()
+
+                        if modifiers == QtCore.Qt.ShiftModifier:
+                            mod_key = 'Shift'
+                        elif modifiers == QtCore.Qt.ControlModifier:
+                            mod_key = 'Control'
+                        else:
+                            mod_key = None
+
+                        if mod_key == self.app.defaults["global_mselect_key"]:
+                            self.first_click = False
+                            return
+
+                        self.sel_rect = cascaded_union(self.sel_rect)
                         self.paint_poly_area(obj=self.paint_obj,
-                                             sel_obj= sel_rect,
+                                             sel_obj= self.sel_rect,
                                              outname=o_name,
                                              overlap=overlap,
                                              connect=connect,
                                              contour=contour)
 
-                        self.app.plotcanvas.vis_disconnect('mouse_press', on_mouse_press)
+                        self.app.plotcanvas.vis_disconnect('mouse_release', on_mouse_release)
                         self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
 
                         self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
                         self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
                         self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+                elif event.button == 2 and self.first_click is False and self.mouse_is_dragging is False:
+                    self.first_click = False
+                    self.app.plotcanvas.vis_disconnect('mouse_release', on_mouse_release)
+                    self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
+
+                    self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
+                    self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
+                    self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+
+                    self.sel_rect = cascaded_union(self.sel_rect)
+                    self.paint_poly_area(obj=self.paint_obj,
+                                         sel_obj=self.sel_rect,
+                                         outname=o_name,
+                                         overlap=overlap,
+                                         connect=connect,
+                                         contour=contour)
 
             # called on mouse move
             def on_mouse_move(event):
                 curr_pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
                 self.app.app_cursor.enabled = False
+
+                if event.button == 2:
+                    if event.is_dragging is True:
+                        self.mouse_is_dragging = True
+                    else:
+                        self.mouse_is_dragging = False
 
                 if self.app.grid_status() == True:
                     self.app.app_cursor.enabled = True
@@ -891,8 +1081,40 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
             self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
 
-            self.app.plotcanvas.vis_connect('mouse_press', on_mouse_press)
+            self.app.plotcanvas.vis_connect('mouse_release', on_mouse_release)
             self.app.plotcanvas.vis_connect('mouse_move', on_mouse_move)
+
+        elif select_method == 'ref':
+            self.bound_obj_name = self.box_combo.currentText()
+            # Get source object.
+            try:
+                self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)
+            except Exception as e:
+                self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") % self.obj_name)
+                return "Could not retrieve object: %s" % self.obj_name
+
+            geo = self.bound_obj.solid_geometry
+            try:
+                if isinstance(geo, MultiPolygon):
+                    env_obj = geo.convex_hull
+                elif (isinstance(geo, MultiPolygon) and len(geo) == 1) or \
+                    (isinstance(geo, list) and len(geo) == 1) and isinstance(geo[0], Polygon):
+                    env_obj = cascaded_union(self.bound_obj.solid_geometry)
+                else:
+                    env_obj = cascaded_union(self.bound_obj.solid_geometry)
+                    env_obj = env_obj.convex_hull
+                sel_rect = env_obj.buffer(distance=0.0000001, join_style=base.JOIN_STYLE.mitre)
+            except Exception as e:
+                log.debug("ToolPaint.on_paint_button_click() --> %s" % str(e))
+                self.app.inform.emit(_("[ERROR_NOTCL] No object available."))
+                return
+
+            self.paint_poly_area(obj=self.paint_obj,
+                                 sel_obj=sel_rect,
+                                 outname=o_name,
+                                 overlap=overlap,
+                                 connect=connect,
+                                 contour=contour)
 
     def paint_poly(self, obj, inside_pt, tooldia, overlap, outname=None, connect=True, contour=True):
         """
@@ -1140,7 +1362,14 @@ class ToolPaint(FlatCAMTool, Gerber):
             sorted_tools = []
             for row in range(self.tools_table.rowCount()):
                 sorted_tools.append(float(self.tools_table.item(row, 1).text()))
-            sorted_tools.sort(reverse=True)
+
+            order = self.order_radio.get_value()
+            if order == 'fwd':
+                sorted_tools.sort(reverse=False)
+            elif order == 'rev':
+                sorted_tools.sort(reverse=True)
+            else:
+                pass
 
             try:
                 a, b, c, d = obj.bounds()
@@ -1426,10 +1655,22 @@ class ToolPaint(FlatCAMTool, Gerber):
             sorted_tools = []
             for row in range(self.tools_table.rowCount()):
                 sorted_tools.append(float(self.tools_table.item(row, 1).text()))
-            sorted_tools.sort(reverse=True)
+
+            order = self.order_radio.get_value()
+            if order == 'fwd':
+                sorted_tools.sort(reverse=False)
+            elif order == 'rev':
+                sorted_tools.sort(reverse=True)
+            else:
+                pass
 
             geo_to_paint = []
-            for poly in obj.solid_geometry:
+            if not isinstance(obj.solid_geometry, list):
+                target_geo = [obj.solid_geometry]
+            else:
+                target_geo = obj.solid_geometry
+
+            for poly in target_geo:
                 new_pol = poly.intersection(sel_obj)
                 geo_to_paint.append(new_pol)
 
@@ -1674,4 +1915,4 @@ class ToolPaint(FlatCAMTool, Gerber):
         return bounds_rec(geometry)
 
     def reset_fields(self):
-        self.object_combo.setRootModelIndex(self.app.collection.index(2, 0, QtCore.QModelIndex()))
+        self.obj_combo.setRootModelIndex(self.app.collection.index(0, 0, QtCore.QModelIndex()))

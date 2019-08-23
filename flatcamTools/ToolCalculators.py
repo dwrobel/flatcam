@@ -89,28 +89,29 @@ class ToolCalculator(FlatCAMTool):
         form_layout = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout)
 
-        self.tipDia_label = QtWidgets.QLabel(_("Tip Diameter:"))
+        self.tipDia_label = QtWidgets.QLabel('%s:' % _("Tip Diameter"))
         self.tipDia_entry = FCEntry()
         # self.tipDia_entry.setFixedWidth(70)
         self.tipDia_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.tipDia_label.setToolTip(_('This is the diameter of the tool tip.\n'
-                                       'The manufacturer specifies it.'))
-
-        self.tipAngle_label = QtWidgets.QLabel(_("Tip Angle:"))
+        self.tipDia_label.setToolTip(
+            _("This is the tool tip diameter.\n"
+              "It is specified by manufacturer.")
+        )
+        self.tipAngle_label = QtWidgets.QLabel('%s:' % _("Tip Angle"))
         self.tipAngle_entry = FCEntry()
         # self.tipAngle_entry.setFixedWidth(70)
         self.tipAngle_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.tipAngle_label.setToolTip(_("This is the angle of the tip of the tool.\n"
                                          "It is specified by manufacturer."))
 
-        self.cutDepth_label = QtWidgets.QLabel(_("Cut Z:"))
+        self.cutDepth_label = QtWidgets.QLabel('%s:' % _("Cut Z"))
         self.cutDepth_entry = FCEntry()
         # self.cutDepth_entry.setFixedWidth(70)
         self.cutDepth_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.cutDepth_label.setToolTip(_("This is the depth to cut into the material.\n"
                                          "In the CNCJob is the CutZ parameter."))
 
-        self.effectiveToolDia_label = QtWidgets.QLabel(_("Tool Diameter:"))
+        self.effectiveToolDia_label = QtWidgets.QLabel('%s:' % _("Tool Diameter"))
         self.effectiveToolDia_entry = FCEntry()
         # self.effectiveToolDia_entry.setFixedWidth(70)
         self.effectiveToolDia_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
@@ -154,26 +155,26 @@ class ToolCalculator(FlatCAMTool):
         plate_form_layout = QtWidgets.QFormLayout()
         self.layout.addLayout(plate_form_layout)
 
-        self.pcblengthlabel = QtWidgets.QLabel(_("Board Length:"))
+        self.pcblengthlabel = QtWidgets.QLabel('%s:' % _("Board Length"))
         self.pcblength_entry = FCEntry()
         # self.pcblengthlabel.setFixedWidth(70)
         self.pcblength_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.pcblengthlabel.setToolTip(_('This is the board length. In centimeters.'))
 
-        self.pcbwidthlabel = QtWidgets.QLabel(_("Board Width:"))
+        self.pcbwidthlabel = QtWidgets.QLabel('%s:' % _("Board Width"))
         self.pcbwidth_entry = FCEntry()
         # self.pcbwidthlabel.setFixedWidth(70)
         self.pcbwidth_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.pcbwidthlabel.setToolTip(_('This is the board width.In centimeters.'))
 
-        self.cdensity_label = QtWidgets.QLabel(_("Current Density:"))
+        self.cdensity_label = QtWidgets.QLabel('%s:' % _("Current Density"))
         self.cdensity_entry = FCEntry()
         # self.cdensity_entry.setFixedWidth(70)
         self.cdensity_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.cdensity_label.setToolTip(_("Current density to pass through the board. \n"
                                          "In Amps per Square Feet ASF."))
 
-        self.growth_label = QtWidgets.QLabel(_("Copper Growth:"))
+        self.growth_label = QtWidgets.QLabel('%s:' % _("Copper Growth"))
         self.growth_entry = FCEntry()
         # self.growth_entry.setFixedWidth(70)
         self.growth_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
@@ -182,7 +183,7 @@ class ToolCalculator(FlatCAMTool):
 
         # self.growth_entry.setEnabled(False)
 
-        self.cvaluelabel = QtWidgets.QLabel(_("Current Value:"))
+        self.cvaluelabel = QtWidgets.QLabel('%s:' % _("Current Value"))
         self.cvalue_entry = FCEntry()
         # self.cvaluelabel.setFixedWidth(70)
         self.cvalue_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
@@ -190,7 +191,7 @@ class ToolCalculator(FlatCAMTool):
                                       'to be set on the Power Supply. In Amps.'))
         self.cvalue_entry.setDisabled(True)
 
-        self.timelabel = QtWidgets.QLabel(_("Time:"))
+        self.timelabel = QtWidgets.QLabel('%s:' % _("Time"))
         self.time_entry = FCEntry()
         # self.timelabel.setFixedWidth(70)
         self.time_entry.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
@@ -242,7 +243,12 @@ class ToolCalculator(FlatCAMTool):
             else:
                 try:
                     if self.app.ui.tool_scroll_area.widget().objectName() == self.toolName:
-                        self.app.ui.splitter.setSizes([0, 1])
+                        # if tab is populated with the tool but it does not have the focus, focus on it
+                        if not self.app.ui.notebook.currentWidget() is self.app.ui.tool_tab:
+                            # focus on Tool Tab
+                            self.app.ui.notebook.setCurrentWidget(self.app.ui.tool_tab)
+                        else:
+                            self.app.ui.splitter.setSizes([0, 1])
                 except AttributeError:
                     pass
         else:

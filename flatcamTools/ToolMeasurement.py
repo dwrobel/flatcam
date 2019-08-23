@@ -40,7 +40,7 @@ class Measurement(FlatCAMTool):
         form_layout = QtWidgets.QFormLayout()
         self.layout.addLayout(form_layout)
 
-        self.units_label = QtWidgets.QLabel(_("Units:"))
+        self.units_label = QtWidgets.QLabel('%s:' % _("Units"))
         self.units_label.setToolTip(_("Those are the units in which the distance is measured."))
         self.units_value = QtWidgets.QLabel("%s" % str({'mm': _("METRIC (mm)"), 'in': _("INCH (in)")}[self.units]))
         self.units_value.setDisabled(True)
@@ -51,10 +51,10 @@ class Measurement(FlatCAMTool):
         self.stop_label = QtWidgets.QLabel("<b>%s</b> %s:" % (_('Stop'), _('Coords')))
         self.stop_label.setToolTip(_("This is the measuring Stop point coordinates."))
 
-        self.distance_x_label = QtWidgets.QLabel(_("Dx:"))
+        self.distance_x_label = QtWidgets.QLabel('%s:' % _("Dx"))
         self.distance_x_label.setToolTip(_("This is the distance measured over the X axis."))
 
-        self.distance_y_label = QtWidgets.QLabel(_("Dy:"))
+        self.distance_y_label = QtWidgets.QLabel('%s:' % _("Dy"))
         self.distance_y_label.setToolTip(_("This is the distance measured over the Y axis."))
 
         self.total_distance_label = QtWidgets.QLabel("<b>%s:</b>" % _('DISTANCE'))

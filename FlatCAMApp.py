@@ -98,8 +98,8 @@ class App(QtCore.QObject):
     # ####################################
     # Version and VERSION DATE ###########
     # ####################################
-    version = 8.95
-    version_date = "2019/08/17"
+    version = 8.96
+    version_date = "2019/08/23"
     beta = True
 
     # current date now
@@ -182,6 +182,9 @@ class App(QtCore.QObject):
     # Emitted when an unhandled exception happens
     # in the worker task.
     thread_exception = QtCore.pyqtSignal(object)
+
+    # used to signal that there are arguments for the app
+    args_at_startup = QtCore.pyqtSignal()
 
     def __init__(self, user_defaults=True, post_gui=None):
         """
@@ -320,7 +323,6 @@ class App(QtCore.QObject):
 
         QtCore.QObject.__init__(self)
         self.ui = FlatCAMGUI(self.version, self.beta, self)
-        self.set_ui_title(name=_("New Project - Not saved"))
 
         self.ui.geom_update[int, int, int, int, int].connect(self.save_geometry)
         self.ui.final_save.connect(self.final_save)
@@ -345,6 +347,7 @@ class App(QtCore.QObject):
             # General App
             "units": self.ui.general_defaults_form.general_app_group.units_radio,
             "global_app_level": self.ui.general_defaults_form.general_app_group.app_level_radio,
+            "global_portable": self.ui.general_defaults_form.general_app_group.portability_cb,
             "global_language": self.ui.general_defaults_form.general_app_group.language_cb,
 
             "global_shell_at_startup": self.ui.general_defaults_form.general_app_group.shell_startup_cb,
@@ -420,6 +423,21 @@ class App(QtCore.QObject):
 
             # Gerber Editor
             "gerber_editor_sel_limit": self.ui.gerber_defaults_form.gerber_editor_group.sel_limit_entry,
+            "gerber_editor_newcode": self.ui.gerber_defaults_form.gerber_editor_group.addcode_entry,
+            "gerber_editor_newsize": self.ui.gerber_defaults_form.gerber_editor_group.addsize_entry,
+            "gerber_editor_newtype": self.ui.gerber_defaults_form.gerber_editor_group.addtype_combo,
+            "gerber_editor_newdim": self.ui.gerber_defaults_form.gerber_editor_group.adddim_entry,
+            "gerber_editor_array_size": self.ui.gerber_defaults_form.gerber_editor_group.grb_array_size_entry,
+            "gerber_editor_lin_axis": self.ui.gerber_defaults_form.gerber_editor_group.grb_axis_radio,
+            "gerber_editor_lin_pitch": self.ui.gerber_defaults_form.gerber_editor_group.grb_pitch_entry,
+            "gerber_editor_lin_angle": self.ui.gerber_defaults_form.gerber_editor_group.grb_angle_entry,
+            "gerber_editor_circ_dir": self.ui.gerber_defaults_form.gerber_editor_group.grb_circular_dir_radio,
+            "gerber_editor_circ_angle":
+                self.ui.gerber_defaults_form.gerber_editor_group.grb_circular_angle_entry,
+            "gerber_editor_scale_f": self.ui.gerber_defaults_form.gerber_editor_group.grb_scale_entry,
+            "gerber_editor_buff_f": self.ui.gerber_defaults_form.gerber_editor_group.grb_buff_entry,
+            "gerber_editor_ma_low": self.ui.gerber_defaults_form.gerber_editor_group.grb_ma_low_entry,
+            "gerber_editor_ma_high": self.ui.gerber_defaults_form.gerber_editor_group.grb_ma_high_entry,
 
             # Excellon General
             "excellon_plot": self.ui.excellon_defaults_form.excellon_gen_group.plot_cb,
@@ -558,6 +576,7 @@ class App(QtCore.QObject):
 
             # NCC Tool
             "tools_ncctools": self.ui.tools_defaults_form.tools_ncc_group.ncc_tool_dia_entry,
+            "tools_nccorder": self.ui.tools_defaults_form.tools_ncc_group.ncc_order_radio,
             "tools_nccoverlap": self.ui.tools_defaults_form.tools_ncc_group.ncc_overlap_entry,
             "tools_nccmargin": self.ui.tools_defaults_form.tools_ncc_group.ncc_margin_entry,
             "tools_nccmethod": self.ui.tools_defaults_form.tools_ncc_group.ncc_method_radio,
@@ -578,6 +597,7 @@ class App(QtCore.QObject):
 
             # Paint Area Tool
             "tools_painttooldia": self.ui.tools_defaults_form.tools_paint_group.painttooldia_entry,
+            "tools_paintorder": self.ui.tools_defaults_form.tools_paint_group.paint_order_radio,
             "tools_paintoverlap": self.ui.tools_defaults_form.tools_paint_group.paintoverlap_entry,
             "tools_paintmargin": self.ui.tools_defaults_form.tools_paint_group.paintmargin_entry,
             "tools_paintmethod": self.ui.tools_defaults_form.tools_paint_group.paintmethod_combo,
@@ -681,8 +701,10 @@ class App(QtCore.QObject):
             # Global APP Preferences
             "global_serial": 0,
             "global_stats": {},
+            "global_tabs_detachable": True,
             "units": "IN",
             "global_app_level": 'b',
+            "global_portable": False,
             "global_language": 'English',
             "global_version_check": True,
             "global_send_stats": True,
@@ -791,6 +813,20 @@ class App(QtCore.QObject):
 
             # Gerber Editor
             "gerber_editor_sel_limit": 30,
+            "gerber_editor_newcode": 10,
+            "gerber_editor_newsize": 0.8,
+            "gerber_editor_newtype": 'C',
+            "gerber_editor_newdim": "0.5, 0.5",
+            "gerber_editor_array_size": 5,
+            "gerber_editor_lin_axis": 'X',
+            "gerber_editor_lin_pitch": 1,
+            "gerber_editor_lin_angle": 0.0,
+            "gerber_editor_circ_dir": 'CW',
+            "gerber_editor_circ_angle": 0.0,
+            "gerber_editor_scale_f": 1.0,
+            "gerber_editor_buff_f": 0.1,
+            "gerber_editor_ma_low": 0.0,
+            "gerber_editor_ma_high": 1.0,
 
             # Excellon General
             "excellon_plot": True,
@@ -916,6 +952,7 @@ class App(QtCore.QObject):
             "cncjob_toolchange_macro_enable": False,
 
             "tools_ncctools": "0.0393701, 0.019685",
+            "tools_nccorder": 'rev',
             "tools_nccoverlap": 0.015748,
             "tools_nccmargin": 0.0393701,
             "tools_nccmethod": "seed",
@@ -934,6 +971,7 @@ class App(QtCore.QObject):
             "tools_cutout_convexshape": False,
 
             "tools_painttooldia": 0.023622,
+            "tools_paintorder": 'rev',
             "tools_paintoverlap": 0.015748,
             "tools_paintmargin": 0.0,
             "tools_paintmethod": "seed",
@@ -1290,12 +1328,7 @@ class App(QtCore.QObject):
         self.tools_form = None
         self.on_options_combo_change(0)  # Will show the initial form
 
-        # ### Define OBJECT COLLECTION ###
-        self.collection = ObjectCollection(self)
-        self.ui.project_tab_layout.addWidget(self.collection.view)
         # ################################
-
-        self.log.debug("Finished creating Object Collection.")
 
         # ### Initialize the color box's color in Preferences -> Global -> Color
         # Init Plot Colors
@@ -1368,46 +1401,52 @@ class App(QtCore.QObject):
             "background-color:%s" % str(self.defaults['cncjob_annotation_fontcolor'])[:7])
         # ### End of Data ####
 
-        # ### Plot Area ####
+        # ###############################################
+        # ############# SETUP Plot Area #################
+        # ###############################################
+
         start_plot_time = time.time()   # debug
-        self.plotcanvas = PlotCanvas(self.ui.right_layout, self)
-
-        self.plotcanvas.vis_connect('mouse_move', self.on_mouse_move_over_plot)
-        self.plotcanvas.vis_connect('mouse_press', self.on_mouse_click_over_plot)
-        self.plotcanvas.vis_connect('mouse_release', self.on_mouse_click_release_over_plot)
-        self.plotcanvas.vis_connect('mouse_double_click', self.on_double_click_over_plot)
-
-        # Keys over plot enabled
-        self.plotcanvas.vis_connect('key_press', self.ui.keyPressEvent)
+        self.plotcanvas = None
+        self.app_cursor = None
+        self.hover_shapes = None
+        self.on_plotcanvas_setup()
+        end_plot_time = time.time()
+        self.log.debug("Finished Canvas initialization in %s seconds." % (str(end_plot_time - start_plot_time)))
 
         self.ui.splitter.setStretchFactor(1, 2)
-
-        # So it can receive key presses
-        self.plotcanvas.vispy_canvas.native.setFocus()
-
-        self.app_cursor = self.plotcanvas.new_cursor()
-        self.app_cursor.enabled = False
 
         # to use for tools like Measurement tool who depends on the event sources who are changed inside the Editors
         # depending on from where those tools are called different actions can be done
         self.call_source = 'app'
 
-        end_plot_time = time.time()
-        self.log.debug("Finished Canvas initialization in %s seconds." % (str(end_plot_time - start_plot_time)))
+        # ##############################################
+        # ######### SETUP OBJECT COLLECTION ############
+        # ##############################################
+
+        self.collection = ObjectCollection(self)
+        self.ui.project_tab_layout.addWidget(self.collection.view)
 
         # ### Adjust tabs width ## ##
         # self.collection.view.setMinimumWidth(self.ui.options_scroll_area.widget().sizeHint().width() +
         #     self.ui.options_scroll_area.verticalScrollBar().sizeHint().width())
         self.collection.view.setMinimumWidth(290)
+        self.log.debug("Finished creating Object Collection.")
 
-        # ### Worker ####
+        # ###############################################
+        # ############# Worker SETUP ####################
+        # ###############################################
+
         if self.defaults["global_worker_number"]:
             self.workers = WorkerStack(workers_number=int(self.defaults["global_worker_number"]))
         else:
             self.workers = WorkerStack(workers_number=2)
         self.worker_task.connect(self.workers.add_task)
+        self.log.debug("Finished creating Workers crew.")
 
-        # ### Signal handling ###
+        # ################################################
+        # ############### Signal handling ################
+        # ################################################
+
         # ### Custom signals  ###
         self.inform.connect(self.info)
         self.app_quit.connect(self.quit_application)
@@ -1506,12 +1545,8 @@ class App(QtCore.QObject):
         self.ui.menuviewenable.triggered.connect(self.enable_all_plots)
 
         self.ui.menuview_zoom_fit.triggered.connect(self.on_zoom_fit)
-        self.ui.menuview_zoom_in.triggered.connect(
-            lambda: self.plotcanvas.zoom(1 / float(self.defaults['global_zoom_ratio']))
-        )
-        self.ui.menuview_zoom_out.triggered.connect(
-            lambda: self.plotcanvas.zoom(float(self.defaults['global_zoom_ratio']))
-        )
+        self.ui.menuview_zoom_in.triggered.connect(self.on_zoom_in)
+        self.ui.menuview_zoom_out.triggered.connect(self.on_zoom_out)
 
         self.ui.menuview_toggle_code_editor.triggered.connect(self.on_toggle_code_editor)
         self.ui.menuview_toggle_fscreen.triggered.connect(self.on_fullscreen)
@@ -1544,6 +1579,15 @@ class App(QtCore.QObject):
 
         # ToolBar signals
         self.connect_toolbar_signals()
+
+        # Notebook signals
+        # make the right click on the notebook tab connect to a function
+        self.ui.notebook.setupContextMenu()
+        self.ui.notebook.addContextMenu(
+            _("Detachable Tabs"), self.on_notebook_tab_rmb_click,
+            initial_checked=self.defaults["global_tabs_detachable"])
+        # activate initial state
+        self.on_notebook_tab_rmb_click(self.defaults["global_tabs_detachable"])
 
         # Context Menu
         self.ui.popmenu_disable.triggered.connect(lambda: self.toggle_plots(self.collection.get_selected()))
@@ -1668,6 +1712,9 @@ class App(QtCore.QObject):
         self.ui.buttonFind.clicked.connect(self.handleFindGCode)
         self.ui.buttonReplace.clicked.connect(self.handleReplaceGCode)
 
+        # portability changed
+        self.ui.general_defaults_form.general_app_group.portability_cb.stateChanged.connect(self.on_portable_checked)
+
         # Object list
         self.collection.view.activated.connect(self.on_row_activated)
 
@@ -1682,6 +1729,10 @@ class App(QtCore.QObject):
         self.ui.excellon_options_form.excellon_opt_group.excellon_defaults_button.clicked.connect(
             self.on_excellon_options_button)
 
+        # when there are arguments at application startup this get launched
+        self.args_at_startup.connect(self.on_startup_args)
+        self.log.debug("Finished connecting Signals.")
+
         # this is a flag to signal to other tools that the ui tooltab is locked and not accessible
         self.tool_tab_locked = False
 
@@ -1691,21 +1742,18 @@ class App(QtCore.QObject):
         else:
             self.ui.splitter.setSizes([0, 1])
 
-        # ###################
-        # ### Other setups ##
-        # ###################
+        # ###########################################
+        # ################# Other setups ############
+        # ###########################################
+
         # Sets up FlatCAMObj, FCProcess and FCProcessContainer.
         self.setup_obj_classes()
         self.setup_recent_items()
         self.setup_component_editor()
 
-        # ############
-        # ### Shell ##
-        # ############
-
-        # #########################
-        # Auto-complete KEYWORDS ##
-        # #########################
+        # ###########################################
+        # #######Auto-complete KEYWORDS #############
+        # ###########################################
         self.tcl_commands_list = ['add_circle', 'add_poly', 'add_polygon', 'add_polyline', 'add_rectangle',
                                   'aligndrill', 'clear',
                                   'aligndrillgrid', 'cncjob', 'cutout', 'delete', 'drillcncjob',
@@ -1915,6 +1963,10 @@ class App(QtCore.QObject):
 
         self.myKeywords = self.tcl_commands_list + self.ordinary_keywords + self.tcl_keywords
 
+        # ###########################################
+        # ########### Shell SETUP ###################
+        # ###########################################
+
         self.shell = FCShell(self, version=self.version)
         self.shell._edit.set_model_data(self.myKeywords)
         self.ui.code_editor.set_model_data(self.myKeywords)
@@ -1941,9 +1993,9 @@ class App(QtCore.QObject):
         else:
             self.ui.shell_dock.hide()
 
-        # ########################
-        # ### Tools and Plugins ##
-        # ########################
+        # ###########################################
+        # ######### Tools and Plugins ###############
+        # ###########################################
 
         self.dblsidedtool = None
         self.measurement_tool = None
@@ -1969,6 +2021,10 @@ class App(QtCore.QObject):
         # self.f_parse = ParseFont(self)
         # self.parse_system_fonts()
 
+        # ###############################################
+        # ######## START-UP ARGUMENTS ###################
+        # ###############################################
+
         # test if the program was started with a script as parameter
         if self.cmd_line_shellfile:
             try:
@@ -1979,9 +2035,9 @@ class App(QtCore.QObject):
                 print("ERROR: ", ext)
                 sys.exit(2)
 
-        # ##########################
-        # ### Check for updates ####
-        # ##########################
+        # ###############################################
+        # ############# Check for updates ###############
+        # ###############################################
 
         # Separate thread (Not worker)
         # Check for updates on startup but only if the user consent and the app is not in Beta version
@@ -1994,9 +2050,9 @@ class App(QtCore.QObject):
                                    'params': []})
             self.thr2.start(QtCore.QThread.LowPriority)
 
-        # ###################################
-        # ### Variables for global usage ####
-        # ###################################
+        # ################################################
+        # ######### Variables for global usage ###########
+        # ################################################
 
         # coordinates for relative position display
         self.rel_point1 = (0, 0)
@@ -2061,13 +2117,13 @@ class App(QtCore.QObject):
         self.dxf_list = ['dxf']
         self.pdf_list = ['pdf']
         self.prj_list = ['flatprj']
+        self.conf_list = ['flatconfig']
 
         # global variable used by NCC Tool to signal that some polygons could not be cleared, if True
         # flag for polygons not cleared
         self.poly_not_cleared = False
 
         # VisPy visuals
-        self.hover_shapes = ShapeCollection(parent=self.plotcanvas.vispy_canvas.view.scene, layers=1)
         self.isHovering = False
         self.notHovering = True
 
@@ -2096,7 +2152,7 @@ class App(QtCore.QObject):
         os.chmod(filename_factory, S_IREAD | S_IRGRP | S_IROTH)
 
         ####################################################
-        # ### EDITOR section ###############################
+        # ### ADDING FlatCAM EDITORS section ###############
         ####################################################
 
         # watch out for the position of the editors instantiation ... if it is done before a save of the default values
@@ -2113,50 +2169,13 @@ class App(QtCore.QObject):
 
         App.log.debug("END of constructor. Releasing control.")
 
-        # accept a project file as command line parameter
+        self.set_ui_title(name=_("New Project - Not saved"))
+
+        # accept some type file as command line parameter: FlatCAM project, FlatCAM preferences or scripts
         # the path/file_name must be enclosed in quotes if it contain spaces
-        for argument in App.args:
-            if '.FlatPrj' in argument:
-                try:
-                    project_name = str(argument)
+        if App.args:
+            self.args_at_startup.emit()
 
-                    if project_name == "":
-                        self.inform.emit(_("Open cancelled."))
-                    else:
-                        # self.open_project(project_name)
-                        run_from_arg = True
-                        self.worker_task.emit({'fcn': self.open_project,
-                                               'params': [project_name, run_from_arg]})
-                except Exception as e:
-                    log.debug("Could not open FlatCAM project file as App parameter due: %s" % str(e))
-
-            if '.FlatConfig' in argument:
-                try:
-                    file_name = str(argument)
-
-                    if file_name == "":
-                        self.inform.emit(_("Open Config file failed."))
-                    else:
-                        # run_from_arg = True
-                        # self.worker_task.emit({'fcn': self.open_config_file,
-                        #                        'params': [file_name, run_from_arg]})
-                        self.open_config_file(file_name, run_from_arg=True)
-                except Exception as e:
-                    log.debug("Could not open FlatCAM Config file as App parameter due: %s" % str(e))
-
-            if '.FlatScript' in argument:
-                try:
-                    file_name = str(argument)
-
-                    if file_name == "":
-                        self.inform.emit(_("Open Script file failed."))
-                    else:
-                        # run_from_arg = True
-                        # self.worker_task.emit({'fcn': self.open_script_file,
-                        #                        'params': [file_name, run_from_arg]})
-                        self.on_filerunscript(name=file_name)
-                except Exception as e:
-                    log.debug("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
 
     @staticmethod
     def copy_and_overwrite(from_path, to_path):
@@ -2174,6 +2193,52 @@ class App(QtCore.QObject):
         except FileNotFoundError:
             from_new_path = os.path.dirname(os.path.realpath(__file__)) + '\\flatcamGUI\\VisPyData\\data'
             shutil.copytree(from_new_path, to_path)
+
+    def on_startup_args(self):
+        log.debug("Application was started with an argument. Processing ...")
+        for argument in App.args:
+            if '.FlatPrj' in argument:
+                try:
+                    project_name = str(argument)
+
+                    if project_name == "":
+                        self.inform.emit(_("Open cancelled."))
+                    else:
+                        # self.open_project(project_name)
+                        run_from_arg = True
+                        # self.worker_task.emit({'fcn': self.open_project,
+                        #                        'params': [project_name, run_from_arg]})
+                        self.open_project(filename=project_name, run_from_arg=run_from_arg)
+                except Exception as e:
+                    log.debug("Could not open FlatCAM project file as App parameter due: %s" % str(e))
+
+            elif '.FlatConfig' in argument:
+                try:
+                    file_name = str(argument)
+
+                    if file_name == "":
+                        self.inform.emit(_("Open Config file failed."))
+                    else:
+                        # run_from_arg = True
+                        # self.worker_task.emit({'fcn': self.open_config_file,
+                        #                        'params': [file_name, run_from_arg]})
+                        self.open_config_file(file_name, run_from_arg=True)
+                except Exception as e:
+                    log.debug("Could not open FlatCAM Config file as App parameter due: %s" % str(e))
+
+            elif '.FlatScript' in argument:
+                try:
+                    file_name = str(argument)
+
+                    if file_name == "":
+                        self.inform.emit(_("Open Script file failed."))
+                    else:
+                        # run_from_arg = True
+                        # self.worker_task.emit({'fcn': self.open_script_file,
+                        #                        'params': [file_name, run_from_arg]})
+                        self.on_filerunscript(name=file_name)
+                except Exception as e:
+                    log.debug("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
 
     def set_ui_title(self, name):
         self.ui.setWindowTitle('FlatCAM %s %s - %s    %s' %
@@ -3006,7 +3071,7 @@ class App(QtCore.QObject):
             # Save update options
             try:
                 f = open(filename, "w")
-                json.dump(defaults_from_file, f)
+                json.dump(defaults_from_file, f, default=to_dict, indent=2, sort_keys=True)
                 f.close()
             except:
                 self.inform.emit(_("[ERROR_NOTCL] Failed to write defaults to file."))
@@ -3106,6 +3171,11 @@ class App(QtCore.QObject):
         :param initialize: Function to run after creation of the object but before it is attached to the application.
         The function is called with 2 parameters: the new object and the App instance.
         :type initialize: function
+        :param active:
+        :param fit:
+        :param plot: If to plot the resulting object
+        :param autoselected: if the resulting object is autoselected in the Project tab and therefore in the
+        self.colleaction
         :return: None
         :rtype: None
         """
@@ -3189,11 +3259,9 @@ class App(QtCore.QObject):
             obj.options['ymin'] = ymin
             obj.options['xmax'] = xmax
             obj.options['ymax'] = ymax
-        except:
-            log.warning("The object has no bounds properties.")
-            # don't plot objects with no bounds, there is nothing to plot
-            self.plot = False
-            pass
+        except Exception as e:
+            log.warning("The object has no bounds properties. %s" % str(e))
+            return "fail"
 
         FlatCAMApp.App.log.debug("Moving new object back to main thread.")
 
@@ -3438,7 +3506,7 @@ class App(QtCore.QObject):
     #     log.debug("Application defaults saved ... Exit event.")
     #     QtWidgets.qApp.quit()
 
-    def save_defaults(self, silent=False):
+    def save_defaults(self, silent=False, data_path=None):
         """
         Saves application default options
         ``self.defaults`` to current_defaults.FlatConfig.
@@ -3447,9 +3515,12 @@ class App(QtCore.QObject):
         """
         self.report_usage("save_defaults")
 
+        if data_path is None:
+            data_path = self.data_path
+
         # Read options from file
         try:
-            f = open(self.data_path + "/current_defaults.FlatConfig")
+            f = open(data_path + "/current_defaults.FlatConfig")
             defaults_file_content = f.read()
             f.close()
         except:
@@ -3506,7 +3577,7 @@ class App(QtCore.QObject):
 
         # Save update options
         try:
-            f = open(self.data_path + "/current_defaults.FlatConfig", "w")
+            f = open(data_path + "/current_defaults.FlatConfig", "w")
             json.dump(defaults, f, default=to_dict, indent=2, sort_keys=True)
             f.close()
         except:
@@ -3516,7 +3587,7 @@ class App(QtCore.QObject):
         if not silent:
             self.inform.emit(_("[success] Defaults saved."))
 
-    def save_factory_defaults(self, silent=False):
+    def save_factory_defaults(self, silent=False, data_path=None):
         """
                 Saves application factory default options
                 ``self.defaults`` to factory_defaults.FlatConfig.
@@ -3526,9 +3597,12 @@ class App(QtCore.QObject):
                 """
         self.report_usage("save_factory_defaults")
 
+        if data_path is None:
+            data_path = self.data_path
+
         # Read options from file
         try:
-            f_f_def = open(self.data_path + "/factory_defaults.FlatConfig")
+            f_f_def = open(data_path + "/factory_defaults.FlatConfig")
             factory_defaults_file_content = f_f_def.read()
             f_f_def.close()
         except:
@@ -3554,7 +3628,7 @@ class App(QtCore.QObject):
 
         # Save update options
         try:
-            f_f_def_s = open(self.data_path + "/factory_defaults.FlatConfig", "w")
+            f_f_def_s = open(data_path + "/factory_defaults.FlatConfig", "w")
             json.dump(factory_defaults, f_f_def_s, default=to_dict, indent=2, sort_keys=True)
             f_f_def_s.close()
         except:
@@ -3608,10 +3682,95 @@ class App(QtCore.QObject):
         settings.setValue('axis_font_size',
                           self.ui.general_defaults_form.general_gui_set_group.axis_font_size_spinner.get_value())
 
+        settings.setValue('toolbar_lock', self.ui.lock_action.isChecked())
+
         # This will write the setting to the platform specific storage.
         del settings
         log.debug("App.final_save() --> App UI state saved.")
         QtWidgets.qApp.quit()
+
+    def on_portable_checked(self, state):
+        line_no = 0
+        data = None
+
+        if sys.platform != 'win32':
+            # this won't work in Linux or MacOS
+            return
+
+        # test if the app was frozen and choose the path for the configuration file
+        if getattr(sys, "frozen", False) is True:
+            current_data_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__))) + '\\config'
+        else:
+            current_data_path = os.path.dirname(os.path.realpath(__file__)) + '\\config'
+
+        config_file = current_data_path  + '\\configuration.txt'
+        try:
+            with open(config_file, 'r') as f:
+                try:
+                    data = f.readlines()
+                except Exception as e:
+                    log.debug('App.__init__() -->%s' % str(e))
+                    return
+        except FileNotFoundError:
+            pass
+
+        for line in data:
+            line = line.strip('\n')
+            param = str(line).rpartition('=')
+            if param[0] == 'portable':
+                break
+            line_no += 1
+
+        if state:
+            data[line_no] = 'portable=True\n'
+            # create the new defauults files
+            # create current_defaults.FlatConfig file if there is none
+            try:
+                f = open(current_data_path + '/current_defaults.FlatConfig')
+                f.close()
+            except IOError:
+                App.log.debug('Creating empty current_defaults.FlatConfig')
+                f = open(current_data_path + '/current_defaults.FlatConfig', 'w')
+                json.dump({}, f)
+                f.close()
+
+            # create factory_defaults.FlatConfig file if there is none
+            try:
+                f = open(current_data_path + '/factory_defaults.FlatConfig')
+                f.close()
+            except IOError:
+                App.log.debug('Creating empty factory_defaults.FlatConfig')
+                f = open(current_data_path + '/factory_defaults.FlatConfig', 'w')
+                json.dump({}, f)
+                f.close()
+
+            try:
+                f = open(current_data_path + '/recent.json')
+                f.close()
+            except IOError:
+                App.log.debug('Creating empty recent.json')
+                f = open(current_data_path + '/recent.json', 'w')
+                json.dump([], f)
+                f.close()
+
+            try:
+                fp = open(current_data_path + '/recent_projects.json')
+                fp.close()
+            except IOError:
+                App.log.debug('Creating empty recent_projects.json')
+                fp = open(current_data_path + '/recent_projects.json', 'w')
+                json.dump([], fp)
+                fp.close()
+
+            # save the current defaults to the new defaults file
+            self.save_defaults(silent=True, data_path=current_data_path)
+            self.save_factory_defaults(silent=True, data_path=current_data_path)
+
+        else:
+            data[line_no] = 'portable=False\n'
+
+        with open(config_file, 'w') as f:
+            f.writelines(data)
 
     def on_toggle_shell(self):
         """
@@ -4010,7 +4169,7 @@ class App(QtCore.QObject):
         msgbox = QtWidgets.QMessageBox()
         msgbox.setWindowTitle(_("Toggle Units"))
         msgbox.setWindowIcon(QtGui.QIcon('share/toggle_units32.png'))
-        msgbox.setText(_("<B>Change project units ...</B>"))
+        msgbox.setText("<B>%s</B>" % _("Change project units ..."))
         msgbox.setInformativeText(_("Changing the units of the project causes all geometrical "
                                     "properties of all objects to be scaled accordingly.\nContinue?"))
         bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
@@ -4545,6 +4704,13 @@ class App(QtCore.QObject):
         self.ui.cncjob_defaults_form.cncjob_gen_group.annotation_fontcolor_entry.set_value(new_val_sel)
         self.defaults['global_proj_item_dis_color'] = new_val_sel
 
+    def on_notebook_tab_rmb_click(self, checked):
+        self.ui.notebook.set_detachable(val=checked)
+        self.defaults["global_tabs_detachable"] = checked
+
+        self.ui.plot_tab_area.set_detachable(val=checked)
+        self.defaults["global_tabs_detachable"] = checked
+
     def on_deselect_all(self):
         self.collection.set_all_inactive()
         self.delete_selection_shape()
@@ -4990,7 +5156,7 @@ class App(QtCore.QObject):
                 msgbox = QtWidgets.QMessageBox()
                 msgbox.setWindowTitle(_("Delete objects"))
                 msgbox.setWindowIcon(QtGui.QIcon('share/deleteshape32.png'))
-                # msgbox.setText(_("<B>Delete FlatCAM objects ...</B>"))
+                # msgbox.setText("<B>%s</B>" % _("Change project units ..."))
                 msgbox.setText(_("Are you sure you want to permanently delete\n"
                                  "the selected objects?"))
                 bt_ok = msgbox.addButton(_('Ok'), QtWidgets.QMessageBox.AcceptRole)
@@ -7166,12 +7332,15 @@ class App(QtCore.QObject):
 
         self.should_we_save = False
 
-    def on_file_saveprojectas(self, make_copy=False, thread=True, quit=False):
+    def on_file_saveprojectas(self, make_copy=False, use_thread=True, quit_action=False):
         """
         Callback for menu item File->Save Project As... Opens a file
         chooser and saves the project to the given file via
         ``self.save_project()``.
 
+        :param make_copy if to be create a copy of the project; boolean
+        :param use_thread: if to be run in a separate thread; boolean
+        :param quit_action: if to be followed by quiting the application; boolean
         :return: None
         """
 
@@ -7202,16 +7371,17 @@ class App(QtCore.QObject):
         except IOError:
             pass
 
-        if thread is True:
+        if use_thread is True:
             self.worker_task.emit({'fcn': self.save_project,
-                                   'params': [filename, quit]})
+                                   'params': [filename, quit_action]})
         else:
-            self.save_project(filename, quit)
+            self.save_project(filename, quit_action)
 
         # self.save_project(filename)
         if self.defaults["global_open_style"] is False:
             self.file_opened.emit("project", filename)
         self.file_saved.emit("project", filename)
+
         if not make_copy:
             self.project_filename = filename
 
@@ -7222,7 +7392,9 @@ class App(QtCore.QObject):
         """
         Exports a Geometry Object to an SVG file.
 
+        :param obj_name: the name of the FlatCAM object to be saved as SVG
         :param filename: Path to the SVG file to save to.
+        :param scale_factor: factor by which to change/scale the thickness of the features
         :return:
         """
         self.report_usage("export_svg()")
@@ -7284,9 +7456,12 @@ class App(QtCore.QObject):
         """
         Exports a Geometry Object to an SVG file in negative.
 
+        :param obj_name: the name of the FlatCAM object to be saved as SVG
+        :param box_name: the name of the FlatCAM object to be used as delimitation of the content to be saved
         :param filename: Path to the SVG file to save to.
-        :param: use_thread: If True use threads
-        :type: Bool
+        :param boundary: thickness of a black border to surround all the features
+        :param scale_factor: factor by which to change/scale the thickness of the features
+        :param use_thread: if to be run in a separate thread; boolean
         :return:
         """
         self.report_usage("export_negative()")
@@ -7408,11 +7583,13 @@ class App(QtCore.QObject):
 
     def export_svg_black(self, obj_name, box_name, filename, scale_factor=0.00, use_thread=True):
         """
-        Exports a Geometry Object to an SVG file in negative.
+        Exports a Geometry Object to an SVG file in positive black.
 
+        :param obj_name: the name of the FlatCAM object to be saved as SVG
+        :param box_name: the name of the FlatCAM object to be used as delimitation of the content to be saved
         :param filename: Path to the SVG file to save to.
-        :param: use_thread: If True use threads
-        :type: Bool
+        :param scale_factor: factor by which to change/scale the thickness of the features
+        :param use_thread: if to be run in a separate thread; boolean
         :return:
         """
         self.report_usage("export_svg_black()")
@@ -7529,9 +7706,11 @@ class App(QtCore.QObject):
 
     def save_source_file(self, obj_name, filename, use_thread=True):
         """
-        Exports a Gerber Object to an Gerber file.
+        Exports a FlatCAM Object to an Gerber/Excellon file.
 
+        :param obj_name: the name of the FlatCAM object for which to save it's embedded source file
         :param filename: Path to the Gerber file to save to.
+        :param use_thread: if to be run in a separate thread
         :return:
         """
         self.report_usage("save source file()")
@@ -7565,7 +7744,9 @@ class App(QtCore.QObject):
         """
         Exports a Excellon Object to an Excellon file.
 
+        :param obj_name: the name of the FlatCAM object to be saved as Excellon
         :param filename: Path to the Excellon file to save to.
+        :param use_thread: if to be run in a separate thread
         :return:
         """
         self.report_usage("export_excellon()")
@@ -7701,7 +7882,9 @@ class App(QtCore.QObject):
         """
         Exports a Gerber Object to an Gerber file.
 
+        :param obj_name: the name of the FlatCAM object to be saved as Gerber
         :param filename: Path to the Gerber file to save to.
+        :param use_thread: if to be run in a separate thread
         :return:
         """
         self.report_usage("export_gerber()")
@@ -7824,7 +8007,9 @@ class App(QtCore.QObject):
         """
         Exports a Geometry Object to an DXF file.
 
+        :param obj_name: the name of the FlatCAM object to be saved as DXF
         :param filename: Path to the DXF file to save to.
+        :param use_thread: if to be run in a separate thread
         :return:
         """
         self.report_usage("export_dxf()")
@@ -7868,7 +8053,7 @@ class App(QtCore.QObject):
                 def job_thread_exc(app_obj):
                     ret = make_dxf()
                     if ret == 'fail':
-                        self.inform.emit(_('[[WARNING_NOTCL]] Could not export DXF file.'))
+                        app_obj.inform.emit(_('[[WARNING_NOTCL]] Could not export DXF file.'))
                         return
 
                 self.worker_task.emit({'fcn': job_thread_exc, 'params': [self]})
@@ -8254,6 +8439,8 @@ class App(QtCore.QObject):
         """
         App.log.debug("Opening project: " + filename)
 
+        self.set_ui_title(name=_("Loading Project ... Please Wait ..."))
+
         # Open and parse an uncompressed Project file
         try:
             f = open(filename, 'r')
@@ -8293,20 +8480,26 @@ class App(QtCore.QObject):
         self.set_screen_units(self.options["units"])
 
         # Re create objects
-        App.log.debug("Re-creating objects...")
+        App.log.debug(" **************** Started PROEJCT loading... **************** ")
+
         for obj in d['objs']:
             def obj_init(obj_inst, app_inst):
                 obj_inst.from_dict(obj)
-            App.log.debug(obj['kind'] + ":  " + obj['options']['name'])
+            App.log.debug("Recreating from opened project an %s object: %s" %
+                          (obj['kind'].capitalize(), obj['options']['name']))
+
+            self.set_ui_title(name="{} {}: {}".format(_("Loading Project ... restoring"), obj['kind'].upper(), obj['options']['name']))
+
             self.new_object(obj['kind'], obj['options']['name'], obj_init, active=False, fit=False, plot=True)
-        self.plot_all()
+
+        # self.plot_all()
         self.inform.emit(_("[success] Project loaded from: %s") % filename)
 
         self.should_we_save = False
         self.file_opened.emit("project", filename)
         self.set_ui_title(name=self.project_filename)
 
-        App.log.debug("Project loaded")
+        App.log.debug(" **************** Finished PROJECT loading... **************** ")
 
     def propagate_defaults(self, silent=False):
         """
@@ -8856,6 +9049,35 @@ The normal flow when working in FlatCAM is the following:</span></p>
             _("info")
         )
 
+    def on_plotcanvas_setup(self, container=None):
+        """
+        This is doing the setup for the plot area (VisPy canvas)
+
+        :param container: widget where to install the canvas
+        :return: None
+        """
+        if container:
+            plot_container = container
+        else:
+            plot_container = self.ui.right_layout
+
+        self.plotcanvas = PlotCanvas(plot_container, self)
+
+        # So it can receive key presses
+        self.plotcanvas.vispy_canvas.native.setFocus()
+
+        self.plotcanvas.vis_connect('mouse_move', self.on_mouse_move_over_plot)
+        self.plotcanvas.vis_connect('mouse_press', self.on_mouse_click_over_plot)
+        self.plotcanvas.vis_connect('mouse_release', self.on_mouse_click_release_over_plot)
+        self.plotcanvas.vis_connect('mouse_double_click', self.on_double_click_over_plot)
+
+        # Keys over plot enabled
+        self.plotcanvas.vis_connect('key_press', self.ui.keyPressEvent)
+
+        self.app_cursor = self.plotcanvas.new_cursor()
+        self.app_cursor.enabled = False
+        self.hover_shapes = ShapeCollection(parent=self.plotcanvas.vispy_canvas.view.scene, layers=1)
+
     def on_zoom_fit(self, event):
         """
         Callback for zoom-out request. This can be either from the corresponding
@@ -8867,6 +9089,12 @@ The normal flow when working in FlatCAM is the following:</span></p>
         """
 
         self.plotcanvas.fit_view()
+
+    def on_zoom_in(self):
+        self.plotcanvas.zoom(1 / float(self.defaults['global_zoom_ratio']))
+
+    def on_zoom_out(self):
+        self.plotcanvas.zoom(float(self.defaults['global_zoom_ratio']))
 
     def disable_all_plots(self):
         self.report_usage("disable_all_plots()")
@@ -8906,7 +9134,6 @@ The normal flow when working in FlatCAM is the following:</span></p>
         :param objects: list of Objects to be enabled
         :return:
         """
-
         log.debug("Enabling plots ...")
         self.inform.emit(_("Working ..."))
         for obj in objects:
@@ -8970,12 +9197,13 @@ The normal flow when working in FlatCAM is the following:</span></p>
         for obj in objects:
             obj.on_generatecnc_button_click()
 
-    def save_project(self, filename, quit=False):
+    def save_project(self, filename, quit_action=False):
         """
         Saves the current project to the specified file.
 
         :param filename: Name of the file in which to save.
         :type filename: str
+        :param quit_action: if the project saving will be followed by an app quit; boolean
         :return: None
         """
         self.log.debug("save_project()")
@@ -9037,28 +9265,37 @@ The normal flow when working in FlatCAM is the following:</span></p>
                 else:
                     self.inform.emit(_("[ERROR_NOTCL] Failed to save project file: %s. Retry to save it.") % filename)
 
+                settings = QSettings("Open Source", "FlatCAM")
+                lock_state = self.ui.lock_action.isChecked()
+                settings.setValue('toolbar_lock', lock_state)
+
+                # This will write the setting to the platform specific storage.
+                del settings
+
             # if quit:
                 # t = threading.Thread(target=lambda: self.check_project_file_size(1, filename=filename))
                 # t.start()
-            self.start_delayed_quit(delay=500, filename=filename, quit=quit)
+            self.start_delayed_quit(delay=500, filename=filename, should_quit=quit_action)
 
-    def start_delayed_quit(self, delay, filename, quit=None):
+    def start_delayed_quit(self, delay, filename, should_quit=None):
         """
 
         :param delay:       period of checking if project file size is more than zero; in seconds
         :param filename:    the name of the project file to be checked periodically for size more than zero
+        :param should_quit: if the task finished will be followed by an app quit; boolean
         :return:
         """
-        to_quit = quit
+        to_quit = should_quit
         self.save_timer = QtCore.QTimer()
         self.save_timer.setInterval(delay)
-        self.save_timer.timeout.connect(lambda: self.check_project_file_size(filename=filename, quit=to_quit))
+        self.save_timer.timeout.connect(lambda: self.check_project_file_size(filename=filename, should_quit=to_quit))
         self.save_timer.start()
 
-    def check_project_file_size(self, filename, quit=None):
+    def check_project_file_size(self, filename, should_quit=None):
         """
 
         :param filename: the name of the project file to be checked periodically for size more than zero
+        :param should_quit: will quit the app if True; boolean
         :return:
         """
 
@@ -9066,9 +9303,9 @@ The normal flow when working in FlatCAM is the following:</span></p>
             if os.stat(filename).st_size > 0:
                 self.save_in_progress = False
                 self.save_timer.stop()
-                if quit:
+                if should_quit:
                     self.app_quit.emit()
-        except Exception:
+        except Exception as e:
             traceback.print_exc()
 
     def on_options_app2project(self):

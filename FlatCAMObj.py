@@ -136,7 +136,6 @@ class FlatCAMObj(QtCore.QObject):
     def on_options_change(self, key):
         # Update form on programmatically options change
         self.set_form_item(key)
-
         # Set object visibility
         if key == 'plot':
             self.visible = self.options['plot']
@@ -774,7 +773,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         if self.ui.follow_cb.get_value() is True:
             obj = self.app.collection.get_active()
-            obj.follow()
+            obj.follow_geo()
             # in the end toggle the visibility of the origin object so we can see the generated Geometry
             obj.ui.plot_cb.toggle()
         else:
@@ -786,7 +785,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
 
         if self.ui.follow_cb.get_value() is True:
             obj = self.app.collection.get_active()
-            obj.follow()
+            obj.follow_geo()
             # in the end toggle the visibility of the origin object so we can see the generated Geometry
             obj.ui.plot_cb.toggle()
         else:
@@ -1130,6 +1129,7 @@ class FlatCAMGerber(FlatCAMObj, Gerber):
         :return: None
         :rtype: None
         """
+        log.debug("FlatCAMObj.FlatCAMGerber.convert_units()")
 
         factor = Gerber.convert_units(self, units)
 
@@ -2769,8 +2769,9 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         self.app.worker_task.emit({'fcn': job_thread, 'params': [self.app]})
 
     def convert_units(self, units):
-        factor = Excellon.convert_units(self, units)
+        log.debug("FlatCAMObj.FlatCAMExcellon.convert_units()")
 
+        factor = Excellon.convert_units(self, units)
         self.options['drillz'] = float(self.options['drillz']) * factor
         self.options['travelz'] = float(self.options['travelz']) * factor
         self.options['feedrate'] = float(self.options['feedrate']) * factor
@@ -3423,7 +3424,6 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
             self.ui.level.setText(_(
                 '<span style="color:red;"><b>Advanced</b></span>'
             ))
-
         self.ui.plot_cb.stateChanged.connect(self.on_plot_cb_click)
         self.ui.generate_cnc_button.clicked.connect(self.on_generatecnc_button_click)
         self.ui.paint_tool_button.clicked.connect(lambda: self.app.paint_tool.run(toggle=False))
@@ -4958,6 +4958,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :return: None
         :rtype: None
         """
+        log.debug("FlatCAMObj.FlatCAMGeometry.scale()")
 
         try:
             xfactor = float(xfactor)
@@ -5027,6 +5028,7 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         :return: None
         :rtype: None
         """
+        log.debug("FlatCAMObj.FlatCAMGeometry.offset()")
 
         try:
             dx, dy = vect
@@ -5057,6 +5059,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
         self.app.inform.emit(_("[success] Geometry Offset done."))
 
     def convert_units(self, units):
+        log.debug("FlatCAMObj.FlatCAMGeometry.convert_units()")
+
         self.ui_disconnect()
 
         factor = Geometry.convert_units(self, units)
@@ -5203,11 +5207,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
                 for tooluid_key in self.tools:
                     solid_geometry = self.tools[tooluid_key]['solid_geometry']
                     self.plot_element(solid_geometry, visible=visible)
-
-            # plot solid geometry that may be an direct attribute of the geometry object
-            # for SingleGeo
-            if self.solid_geometry:
-                self.plot_element(self.solid_geometry, visible=visible)
+            else:
+                # plot solid geometry that may be an direct attribute of the geometry object
+                # for SingleGeo
+                if self.solid_geometry:
+                    self.plot_element(self.solid_geometry, visible=visible)
 
             # self.plot_element(self.solid_geometry, visible=self.options['plot'])
             self.shapes.redraw()
@@ -5217,8 +5221,8 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
     def on_plot_cb_click(self, *args):
         if self.muted_ui:
             return
-        self.plot()
         self.read_form_item('plot')
+        self.plot()
 
         self.ui_disconnect()
         cb_flag = self.ui.plot_cb.isChecked()
@@ -6024,8 +6028,9 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
         self.annotation.redraw()
 
     def convert_units(self, units):
+        log.debug("FlatCAMObj.FlatCAMECNCjob.convert_units()")
+
         factor = CNCjob.convert_units(self, units)
-        FlatCAMApp.App.log.debug("FlatCAMCNCjob.convert_units()")
         self.options["tooldia"] = float(self.options["tooldia"]) * factor
 
         param_list = ['cutz', 'depthperpass', 'travelz', 'feedrate', 'feedrate_z', 'feedrate_rapid',

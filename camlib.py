@@ -229,7 +229,8 @@ class Geometry(object):
         # fixed issue of getting bounds only for one level lists of objects
         # now it can get bounds for nested lists of objects
 
-        log.debug("Geometry->bounds()")
+        log.debug("camlib.Geometry.bounds()")
+
         if self.solid_geometry is None:
             log.debug("solid_geometry is None")
             return 0, 0, 0, 0
@@ -1278,7 +1279,7 @@ class Geometry(object):
         :return: Scaling factor resulting from unit change.
         :rtype: float
         """
-        log.debug("Geometry.convert_units()")
+        log.debug("camlib.Geometry.convert_units()")
 
         if units.upper() == self.units.upper():
             return 1.0
@@ -1378,6 +1379,7 @@ class Geometry(object):
         :type point: list
         :return: None
         """
+        log.debug("camlib.Geometry.mirror()")
 
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
@@ -1420,6 +1422,7 @@ class Geometry(object):
         See shapely manual for more information:
         http://toblerity.org/shapely/manual.html#affine-transformations
         """
+        log.debug("camlib.Geometry.rotate()")
 
         px, py = point
 
@@ -1460,6 +1463,8 @@ class Geometry(object):
         See shapely manual for more information:
         http://toblerity.org/shapely/manual.html#affine-transformations
         """
+        log.debug("camlib.Geometry.skew()")
+
         px, py = point
 
         def skew_geom(obj):
@@ -3298,7 +3303,8 @@ class Gerber (Geometry):
         # fixed issue of getting bounds only for one level lists of objects
         # now it can get bounds for nested lists of objects
 
-        log.debug("Gerber->bounds()")
+        log.debug("camlib.Gerber.bounds()")
+
         if self.solid_geometry is None:
             log.debug("solid_geometry is None")
             return 0, 0, 0, 0
@@ -3442,6 +3448,8 @@ class Gerber (Geometry):
         :type vect: tuple
         :return: None
         """
+        log.debug("camlib.Gerber.offset()")
+
         try:
             dx, dy = vect
         except TypeError:
@@ -3504,6 +3512,7 @@ class Gerber (Geometry):
         :type point: list
         :return: None
         """
+        log.debug("camlib.Gerber.mirror()")
 
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
@@ -3554,6 +3563,7 @@ class Gerber (Geometry):
         See shapely manual for more information:
         http://toblerity.org/shapely/manual.html#affine-transformations
         """
+        log.debug("camlib.Gerber.skew()")
 
         px, py = point
 
@@ -3596,6 +3606,7 @@ class Gerber (Geometry):
         :param point:
         :return:
         """
+        log.debug("camlib.Gerber.rotate()")
 
         px, py = point
 
@@ -4521,7 +4532,7 @@ class Excellon(Geometry):
                 else:
                     result = float(number_str) / (10 ** (float(nr_length) - float(self.excellon_format_upper_mm)))
                 return result
-            elif self.zeros == "T" or self.zeros == "TZ":  # Trailing
+            else:  # Trailing
                 # You must show all zeros to the right of the number and can omit
                 # all zeros to the left of the number. The CNC-7 will count the number
                 # of digits you typed and automatically fill in the missing zeros.
@@ -4533,9 +4544,6 @@ class Excellon(Geometry):
                 else:   # Metric is 000.000
                     result = float(number_str) / (10 ** (float(self.excellon_format_lower_mm)))
                 return result
-            else: # None - the numbers are in decimal format
-                return float(number_str)
-
         except Exception as e:
             log.error("Aborted. Operation could not be completed due of %s" % str(e))
             return
@@ -4631,7 +4639,7 @@ class Excellon(Geometry):
         # fixed issue of getting bounds only for one level lists of objects
         # now it can get bounds for nested lists of objects
 
-        log.debug("Excellon() -> bounds()")
+        log.debug("camlib.Excellon.bounds()")
         # if self.solid_geometry is None:
         #     log.debug("solid_geometry is None")
         #     return 0, 0, 0, 0
@@ -4691,6 +4699,8 @@ class Excellon(Geometry):
         :type str: IN or MM
         :return:
         """
+        log.debug("camlib.Excellon.convert_units()")
+
         factor = Geometry.convert_units(self, units)
 
         # Tools
@@ -4711,6 +4721,8 @@ class Excellon(Geometry):
         :return: None
         :rtype: NOne
         """
+        log.debug("camlib.Excellon.scale()")
+
         if yfactor is None:
             yfactor = xfactor
 
@@ -4755,6 +4767,7 @@ class Excellon(Geometry):
         :type vect: tuple
         :return: None
         """
+        log.debug("camlib.Excellon.offset()")
 
         dx, dy = vect
 
@@ -4795,6 +4808,8 @@ class Excellon(Geometry):
         :type point: list
         :return: None
         """
+        log.debug("camlib.Excellon.mirror()")
+
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
@@ -4842,6 +4857,8 @@ class Excellon(Geometry):
         See shapely manual for more information:
         http://toblerity.org/shapely/manual.html#affine-transformations
         """
+        log.debug("camlib.Excellon.skew()")
+
         if angle_x is None:
             angle_x = 0.0
 
@@ -4900,6 +4917,7 @@ class Excellon(Geometry):
         :param point: tuple of coordinates (x, y)
         :return:
         """
+        log.debug("camlib.Excellon.rotate()")
 
         def rotate_geom(obj, origin=None):
             if type(obj) is list:
@@ -5092,8 +5110,9 @@ class CNCjob(Geometry):
         return self.__dict__
 
     def convert_units(self, units):
+        log.debug("camlib.CNCJob.convert_units()")
+
         factor = Geometry.convert_units(self, units)
-        log.debug("CNCjob.convert_units()")
 
         self.z_cut = float(self.z_cut) * factor
         self.z_move *= factor
@@ -6987,6 +7006,8 @@ class CNCjob(Geometry):
         # fixed issue of getting bounds only for one level lists of objects
         # now it can get bounds for nested lists of objects
 
+        log.debug("camlib.CNCJob.bounds()")
+
         def bounds_rec(obj):
             if type(obj) is list:
                 minx = Inf
@@ -7058,6 +7079,7 @@ class CNCjob(Geometry):
         :return: None
         :rtype: None
         """
+        log.debug("camlib.CNCJob.scale()")
 
         if yfactor is None:
             yfactor = xfactor
@@ -7207,6 +7229,8 @@ class CNCjob(Geometry):
         :type vect: tuple
         :return: None
         """
+        log.debug("camlib.CNCJob.offset()")
+
         dx, dy = vect
 
         def offset_g(g):
@@ -7271,6 +7295,8 @@ class CNCjob(Geometry):
         :param point: tupple of coordinates (x,y)
         :return:
         """
+        log.debug("camlib.CNCJob.mirror()")
+
         px, py = point
         xscale, yscale = {"X": (1.0, -1.0), "Y": (-1.0, 1.0)}[axis]
 
@@ -7296,6 +7322,8 @@ class CNCjob(Geometry):
         See shapely manual for more information:
         http://toblerity.org/shapely/manual.html#affine-transformations
         """
+        log.debug("camlib.CNCJob.skew()")
+
         px, py = point
 
         for g in self.gcode_parsed:
@@ -7312,6 +7340,7 @@ class CNCjob(Geometry):
         :param point: tupple of coordinates (x,y)
         :return:
         """
+        log.debug("camlib.CNCJob.rotate()")
 
         px, py = point
 

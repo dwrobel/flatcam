@@ -171,9 +171,11 @@ class LengthEntry(QtWidgets.QLineEdit):
             self.readyToEdit = False
 
     def focusOutEvent(self, e):
-        super(LengthEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
-        self.deselect()
-        self.readyToEdit = True
+        # don't focus out if the user requests an popup menu
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(LengthEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.deselect()
+            self.readyToEdit = True
 
     def returnPressed(self, *args, **kwargs):
         val = self.get_value()
@@ -225,9 +227,11 @@ class FloatEntry(QtWidgets.QLineEdit):
             self.readyToEdit = False
 
     def focusOutEvent(self, e):
-        super(FloatEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
-        self.deselect()
-        self.readyToEdit = True
+        # don't focus out if the user requests an popup menu
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(FloatEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.deselect()
+            self.readyToEdit = True
 
     def returnPressed(self, *args, **kwargs):
         val = self.get_value()
@@ -274,9 +278,11 @@ class FloatEntry2(QtWidgets.QLineEdit):
             self.readyToEdit = False
 
     def focusOutEvent(self, e):
-        super(FloatEntry2, self).focusOutEvent(e)  # required to remove cursor on focusOut
-        self.deselect()
-        self.readyToEdit = True
+        # don't focus out if the user requests an popup menu
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(FloatEntry2, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.deselect()
+            self.readyToEdit = True
 
     def get_value(self):
         raw = str(self.text()).strip(' ')
@@ -316,9 +322,11 @@ class IntEntry(QtWidgets.QLineEdit):
             self.readyToEdit = False
 
     def focusOutEvent(self, e):
-        super(IntEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
-        self.deselect()
-        self.readyToEdit = True
+        # don't focus out if the user requests an popup menu
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(IntEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.deselect()
+            self.readyToEdit = True
 
     def get_value(self):
 
@@ -353,16 +361,17 @@ class FCEntry(QtWidgets.QLineEdit):
     def on_edit_finished(self):
         self.clearFocus()
 
-    def mousePressEvent(self, e, Parent=None):
+    def mousePressEvent(self, e, parent=None):
         super(FCEntry, self).mousePressEvent(e)  # required to deselect on 2e click
         if self.readyToEdit:
             self.selectAll()
             self.readyToEdit = False
 
     def focusOutEvent(self, e):
-        super(FCEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
-        self.deselect()
-        self.readyToEdit = True
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(FCEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.deselect()
+            self.readyToEdit = True
 
     def get_value(self):
         return str(self.text())
@@ -381,36 +390,24 @@ class FCEntry(QtWidgets.QLineEdit):
 class FCEntry2(FCEntry):
     def __init__(self, parent=None):
         super(FCEntry2, self).__init__(parent)
-        self.readyToEdit = True
-        self.editingFinished.connect(self.on_edit_finished)
-
-    def on_edit_finished(self):
-        self.clearFocus()
 
     def set_value(self, val, decimals=4):
         try:
             fval = float(val)
         except ValueError:
             return
-
         self.setText('%.*f' % (decimals, fval))
 
 
 class FCEntry3(FCEntry):
     def __init__(self, parent=None):
         super(FCEntry3, self).__init__(parent)
-        self.readyToEdit = True
-        self.editingFinished.connect(self.on_edit_finished)
-
-    def on_edit_finished(self):
-        self.clearFocus()
 
     def set_value(self, val, decimals=4):
         try:
             fval = float(val)
         except ValueError:
             return
-
         self.setText('%.*f' % (decimals, fval))
 
     def get_value(self):
@@ -432,16 +429,17 @@ class EvalEntry(QtWidgets.QLineEdit):
     def on_edit_finished(self):
         self.clearFocus()
 
-    def mousePressEvent(self, e, Parent=None):
+    def mousePressEvent(self, e, parent=None):
         super(EvalEntry, self).mousePressEvent(e)  # required to deselect on 2e click
         if self.readyToEdit:
             self.selectAll()
             self.readyToEdit = False
 
     def focusOutEvent(self, e):
-        super(EvalEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
-        self.deselect()
-        self.readyToEdit = True
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(EvalEntry, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.deselect()
+            self.readyToEdit = True
 
     def returnPressed(self, *args, **kwargs):
         val = self.get_value()
@@ -478,16 +476,17 @@ class EvalEntry2(QtWidgets.QLineEdit):
     def on_edit_finished(self):
         self.clearFocus()
 
-    def mousePressEvent(self, e, Parent=None):
+    def mousePressEvent(self, e, parent=None):
         super(EvalEntry2, self).mousePressEvent(e)  # required to deselect on 2e click
         if self.readyToEdit:
             self.selectAll()
             self.readyToEdit = False
 
     def focusOutEvent(self, e):
-        super(EvalEntry2, self).focusOutEvent(e)  # required to remove cursor on focusOut
-        self.deselect()
-        self.readyToEdit = True
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(EvalEntry2, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.deselect()
+            self.readyToEdit = True
 
     def get_value(self):
         raw = str(self.text()).strip(' ')
@@ -847,9 +846,9 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         super().__init__()
 
         self.tabBar = self.FCTabBar(self)
-        self.tabBar.onDetachTabSignal.connect(self.detachTab)
         self.tabBar.onMoveTabSignal.connect(self.moveTab)
         self.tabBar.detachedTabDropSignal.connect(self.detachedTabDrop)
+        self.set_detachable(val=True)
 
         self.setTabBar(self.tabBar)
 
@@ -871,6 +870,48 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
         self.setTabsClosable(True)
         self.tabCloseRequested.connect(self.closeTab)
+
+    def set_rmb_callback(self, callback):
+        """
+
+        :param callback: Function to call on right mouse click on tab
+        :type callback: func
+        :return: None
+        """
+
+        self.tabBar.right_click.connect(callback)
+
+    def set_detachable(self, val=True):
+        try:
+            self.tabBar.onDetachTabSignal.disconnect()
+        except TypeError:
+            pass
+
+        if val is True:
+            self.tabBar.onDetachTabSignal.connect(self.detachTab)
+            # the tab can be moved around
+            self.tabBar.can_be_dragged = True
+        else:
+            # the detached tab can't be moved
+            self.tabBar.can_be_dragged = False
+
+        return val
+
+    def setupContextMenu(self):
+        self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+
+    def addContextMenu(self, entry, call_function, icon=None, initial_checked=False):
+        action_name = str(entry)
+        action = QtWidgets.QAction(self)
+        action.setCheckable(True)
+        action.setText(action_name)
+        if icon:
+            assert isinstance(icon, QtGui.QIcon), \
+                "Expected the argument to be QtGui.QIcon. Instead it is %s" % type(icon)
+            action.setIcon(icon)
+        action.setChecked(initial_checked)
+        self.addAction(action)
+        action.triggered.connect(call_function)
 
     def useOldIndex(self, param):
         if param:
@@ -1209,6 +1250,8 @@ class FCDetachableTab(QtWidgets.QTabWidget):
         onMoveTabSignal = pyqtSignal(int, int)
         detachedTabDropSignal = pyqtSignal(str, int, QtCore.QPoint)
 
+        right_click = pyqtSignal(int)
+
         def __init__(self, parent=None):
             QtWidgets.QTabBar.__init__(self, parent)
 
@@ -1216,10 +1259,15 @@ class FCDetachableTab(QtWidgets.QTabWidget):
             self.setElideMode(QtCore.Qt.ElideRight)
             self.setSelectionBehaviorOnRemove(QtWidgets.QTabBar.SelectLeftTab)
 
+            self.prev_index = -1
+
             self.dragStartPos = QtCore.QPoint()
             self.dragDropedPos = QtCore.QPoint()
             self.mouseCursor = QtGui.QCursor()
             self.dragInitiated = False
+
+            # set this to False and the tab will no longer be displayed as detached
+            self.can_be_dragged = True
 
         def mouseDoubleClickEvent(self, event):
             """
@@ -1234,20 +1282,36 @@ class FCDetachableTab(QtWidgets.QTabWidget):
 
         def mousePressEvent(self, event):
             """
-            Set the starting position for a drag event when the mouse button is pressed
+            Set the starting position for a drag event when the left mouse button is pressed.
+            Start detection of a right mouse click.
 
             :param event:   a mouse press event
             :return:
             """
             if event.button() == QtCore.Qt.LeftButton:
                 self.dragStartPos = event.pos()
+            elif event.button() == QtCore.Qt.RightButton:
+                self.prev_index = self.tabAt(event.pos())
 
             self.dragDropedPos.setX(0)
             self.dragDropedPos.setY(0)
-
             self.dragInitiated = False
 
             QtWidgets.QTabBar.mousePressEvent(self, event)
+
+        def mouseReleaseEvent(self, event):
+            """
+            Finish the detection of the right mouse click on the tab
+
+
+            :param event:   a mouse press event
+            :return:
+            """
+            if event.button() == QtCore.Qt.RightButton and self.prev_index == self.tabAt(event.pos()):
+                self.right_click.emit(self.prev_index)
+            self.prev_index = -1
+
+            QtWidgets.QTabBar.mouseReleaseEvent(self, event)
 
         def mouseMoveEvent(self, event):
             """
@@ -1264,7 +1328,7 @@ class FCDetachableTab(QtWidgets.QTabWidget):
                 self.dragInitiated = True
 
             # If the current movement is a drag initiated by the left button
-            if (((event.buttons() & QtCore.Qt.LeftButton)) and self.dragInitiated):
+            if (((event.buttons() & QtCore.Qt.LeftButton)) and self.dragInitiated and self.can_be_dragged):
 
                 # Stop the move event
                 finishMoveEvent = QtGui.QMouseEvent(
@@ -1561,9 +1625,11 @@ class FCSpinner(QtWidgets.QSpinBox):
             self.readyToEdit = False
 
     def focusOutEvent(self, e):
-        super(FCSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
-        self.lineEdit().deselect()
-        self.readyToEdit = True
+        # don't focus out if the user requests an popup menu
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(FCSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.lineEdit().deselect()
+            self.readyToEdit = True
 
     def get_value(self):
         return str(self.value())
@@ -1600,9 +1666,11 @@ class FCDoubleSpinner(QtWidgets.QDoubleSpinBox):
             self.readyToEdit = False
 
     def focusOutEvent(self, e):
-        super(FCDoubleSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
-        self.lineEdit().deselect()
-        self.readyToEdit = True
+        # don't focus out if the user requests an popup menu
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(FCDoubleSpinner, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.lineEdit().deselect()
+            self.readyToEdit = True
 
     def get_value(self):
         return str(self.value())
@@ -1647,9 +1715,11 @@ class Dialog_box(QtWidgets.QWidget):
             self.readyToEdit = False
 
     def focusOutEvent(self, e):
-        super(Dialog_box, self).focusOutEvent(e)  # required to remove cursor on focusOut
-        self.lineEdit().deselect()
-        self.readyToEdit = True
+        # don't focus out if the user requests an popup menu
+        if e.reason() != QtCore.Qt.PopupFocusReason:
+            super(Dialog_box, self).focusOutEvent(e)  # required to remove cursor on focusOut
+            self.lineEdit().deselect()
+            self.readyToEdit = True
 
 
 class _BrowserTextEdit(QTextEdit):
@@ -1811,9 +1881,16 @@ class MyCompleter(QCompleter):
         QCompleter.__init__(self)
         self.setCompletionMode(QCompleter.PopupCompletion)
         self.highlighted.connect(self.setHighlighted)
+        # self.popup().installEventFilter(self)
+
+    # def eventFilter(self, obj, event):
+    #     if event.type() == QtCore.QEvent.Wheel and obj is self.popup():
+    #         pass
+    #     return False
 
     def setHighlighted(self, text):
         self.lastSelected = text
 
     def getSelected(self):
         return self.lastSelected
+
