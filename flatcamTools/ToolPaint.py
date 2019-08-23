@@ -297,12 +297,12 @@ class ToolPaint(FlatCAMTool, Gerber):
             {"label": _("Reference Object"), "value": "ref"}
         ], orientation='vertical', stretch=False)
         self.selectmethod_combo.setToolTip(
-            _("How to select the polygons to paint.<BR>"
-              "Options:<BR>"
-              "- <B>Single Polygons</B>: left mouse click on the polygon to be painted.<BR>"
-              "- <B>Area Selection</B>: left mouse click to start selection of the area to be painted.<BR>"
-              "- <B>All Polygons</B>: paint all polygons.<BR>"
-              "- <B>Reference Object</B>: paint an area described by an external reference object.")
+            _("How to select Polygons to be painted.\n\n"
+              "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
+              "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
+              "- 'All Polygons' - the Paint will start after click.\n"
+              "- 'Reference Object' -  will do non copper clearing within the area\n"
+              "specified by another object.")
         )
         grid3.addWidget(self.selectmethod_combo, 7, 1)
 
@@ -319,7 +319,6 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.box_combo_type.addItem(_("Excellon Reference Box Object"))
         self.box_combo_type.addItem(_("Geometry Reference Box Object"))
         form1.addRow(self.box_combo_type_label, self.box_combo_type)
-
 
         self.box_combo_label = QtWidgets.QLabel('%s:' % _("Ref. Object"))
         self.box_combo_label.setToolTip(
@@ -339,14 +338,11 @@ class ToolPaint(FlatCAMTool, Gerber):
         # GO Button
         self.generate_paint_button = QtWidgets.QPushButton(_('Create Paint Geometry'))
         self.generate_paint_button.setToolTip(
-            _("After clicking here, click inside<BR>"
-              "the polygon you wish to be painted if <B>Single</B> is selected.<BR>"
-              "If <B>Area</B> is selected, then the selection of the area to be painted<BR>"
-              "will be initiated by a first click and finished by the second mouse click.<BR>"
-              "If <B>All</B>  is selected then the Paint will start after click.<BR>"
-              "If <B>Ref</B>  is selected then the Paint will start after click,<BR>"
-              "and the painted area will be described by a selected object.<BR>"
-              "A new Geometry object with the tool paths will be created.")
+            _("- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
+              "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
+              "- 'All Polygons' - the Paint will start after click.\n"
+              "- 'Reference Object' -  will do non copper clearing within the area\n"
+              "specified by another object.")
         )
         self.tools_box.addWidget(self.generate_paint_button)
 

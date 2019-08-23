@@ -17,9 +17,10 @@ CAD program, and create G-Code for Isolation routing.
 - fixed a bug in Excellon Editor that made that the selection of drills is always cumulative
 - in Paint Tool added ability to add multiple zones to paint when Area option is checked and the modifier key is pressed (either CTRL or SHIFT as set in Preferences). Right click of the mouse is an additional way to finish the job.
 - in Paint Tool and NCC Tool, for the Area option, now mouse panning is allowed while adding areas to process
-- for all the tools launched rom toolbar the behavior is modified: first click it will launch the tool; second click: if the Tool tab has focus it will close the tool but if another tab is selected, the tool will have focus
+- for all the FlatCAM tools launched from toolbar the behavior is modified: first click it will launch the tool; second click: if the Tool tab has focus it will close the tool but if another tab is selected, the tool will have focus
 - modified the NCC Tool and Paint Tool to work multiple times after first launch
 - fixed the issue with GUI entries content being deselected on right click in the box in order to copy the value
+- some changes in GUI tooltips
 
 22.08.2019
 

@@ -316,11 +316,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
         ], orientation='vertical', stretch=False)
         self.reference_label = QtWidgets.QLabel(_("Reference:"))
         self.reference_label.setToolTip(
-            _("When choosing the 'Itself' option the non copper clearing extent\n"
+            _("- 'Itself' -  the non copper clearing extent\n"
               "is based on the object that is copper cleared.\n "
-              "Area Selection - left mouse click to start selection of the area to be painted.\n"
-              "Choosing the 'Reference Object' option will do non copper clearing within the box\n"
-              "specified by another object different than the one that is copper cleared.")
+              "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
+              "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
+              "- 'Reference Object' -  will do non copper clearing within the area\n"
+              "specified by another object.")
         )
         grid3.addWidget(self.reference_label, 9, 0)
         grid3.addWidget(self.reference_radio, 9, 1)

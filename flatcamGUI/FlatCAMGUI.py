@@ -6489,11 +6489,12 @@ class ToolsNCCPrefGroupUI(OptionsGroupUI):
                                          {'label': _('Ref'), 'value': 'box'}])
         reference_label = QtWidgets.QLabel('%s:' % _("Reference"))
         reference_label.setToolTip(
-            _("When choosing the 'Itself' option the non copper clearing extent\n"
+            _("- 'Itself' -  the non copper clearing extent\n"
               "is based on the object that is copper cleared.\n "
-              "Area Selection - left mouse click to start selection of the area to be painted.\n"
-              "Choosing the 'Ref' option will do non copper clearing within the box\n"
-              "specified by another object different than the one that is copper cleared.")
+              "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
+              "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
+              "- 'Reference Object' -  will do non copper clearing within the area\n"
+              "specified by another object.")
         )
         grid0.addWidget(reference_label, 10, 0)
         grid0.addWidget(self.reference_radio, 10, 1)
@@ -6777,12 +6778,12 @@ class ToolsPaintPrefGroupUI(OptionsGroupUI):
         # Polygon selection
         selectlabel = QtWidgets.QLabel('%s:' % _('Selection'))
         selectlabel.setToolTip(
-            _("How to select the polygons to paint.<BR>"
-              "Options:<BR>"
-              "- <B>Single</B>: left mouse click on the polygon to be painted.<BR>"
-              "- <B>Area</B>: left mouse click to start selection of the area to be painted.<BR>"
-              "- <B>All</B>: paint all polygons.<BR>"
-              "- <B>Ref</B>: paint an area described by an external reference object.")
+            _("How to select Polygons to be painted.\n\n"
+              "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
+              "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
+              "- 'All Polygons' - the Paint will start after click.\n"
+              "- 'Reference Object' -  will do non copper clearing within the area\n"
+              "specified by another object.")
         )
         grid0.addWidget(selectlabel, 7, 0)
         self.selectmethod_combo = RadioSet([
