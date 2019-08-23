@@ -360,6 +360,9 @@ class ToolPaint(FlatCAMTool, Gerber):
         self.tooluid = 0
         self.first_click = False
         self.cursor_pos = None
+        self.mouse_is_dragging = False
+
+        self.sel_rect = []
 
         # store here the default data for Geometry Data
         self.default_data = {}
@@ -964,7 +967,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             tooldia = float('%.4f' % float(self.tools_table.item(0, 1).text()))
 
             # To be called after clicking on the plot.
-            def on_mouse_press(event):
+            def on_mouse_release(event):
                 # do paint single only for left mouse clicks
                 if event.button == 1:
                     if not self.first_click:
@@ -975,8 +978,7 @@ class ToolPaint(FlatCAMTool, Gerber):
                         if self.app.grid_status() == True:
                             self.cursor_pos = self.app.geo_editor.snap(self.cursor_pos[0], self.cursor_pos[1])
                     else:
-                        self.app.inform.emit(_("Done."))
-                        self.first_click = False
+                        self.app.inform.emit(_("Zone added. Right click to finish."))
                         self.app.delete_selection_shape()
 
                         curr_pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
@@ -989,26 +991,62 @@ class ToolPaint(FlatCAMTool, Gerber):
                         pt2 = (x1, y0)
                         pt3 = (x1, y1)
                         pt4 = (x0, y1)
-                        sel_rect = Polygon([pt1, pt2, pt3, pt4])
+                        self.sel_rect.append(Polygon([pt1, pt2, pt3, pt4]))
 
+                        modifiers = QtWidgets.QApplication.keyboardModifiers()
+
+                        if modifiers == QtCore.Qt.ShiftModifier:
+                            mod_key = 'Shift'
+                        elif modifiers == QtCore.Qt.ControlModifier:
+                            mod_key = 'Control'
+                        else:
+                            mod_key = None
+
+                        if mod_key == self.app.defaults["global_mselect_key"]:
+                            self.first_click = False
+                            return
+
+                        self.sel_rect = cascaded_union(self.sel_rect)
                         self.paint_poly_area(obj=self.paint_obj,
-                                             sel_obj= sel_rect,
+                                             sel_obj= self.sel_rect,
                                              outname=o_name,
                                              overlap=overlap,
                                              connect=connect,
                                              contour=contour)
 
-                        self.app.plotcanvas.vis_disconnect('mouse_press', on_mouse_press)
+                        self.app.plotcanvas.vis_disconnect('mouse_release', on_mouse_release)
                         self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
 
                         self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
                         self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
                         self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+                elif event.button == 2 and self.first_click is False and self.mouse_is_dragging is False:
+                    self.first_click = False
+                    self.app.plotcanvas.vis_disconnect('mouse_release', on_mouse_release)
+                    self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
+
+                    self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
+                    self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
+                    self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+
+                    self.sel_rect = cascaded_union(self.sel_rect)
+                    self.paint_poly_area(obj=self.paint_obj,
+                                         sel_obj=self.sel_rect,
+                                         outname=o_name,
+                                         overlap=overlap,
+                                         connect=connect,
+                                         contour=contour)
 
             # called on mouse move
             def on_mouse_move(event):
                 curr_pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
                 self.app.app_cursor.enabled = False
+
+                if event.button == 2:
+                    if event.is_dragging is True:
+                        self.mouse_is_dragging = True
+                    else:
+                        self.mouse_is_dragging = False
 
                 if self.app.grid_status() == True:
                     self.app.app_cursor.enabled = True
@@ -1027,7 +1065,7 @@ class ToolPaint(FlatCAMTool, Gerber):
             self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
             self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
 
-            self.app.plotcanvas.vis_connect('mouse_press', on_mouse_press)
+            self.app.plotcanvas.vis_connect('mouse_release', on_mouse_release)
             self.app.plotcanvas.vis_connect('mouse_move', on_mouse_move)
 
         elif select_method == 'ref':
@@ -1611,7 +1649,13 @@ class ToolPaint(FlatCAMTool, Gerber):
                 pass
 
             geo_to_paint = []
-            for poly in obj.solid_geometry:
+            if not isinstance(obj.solid_geometry, list):
+                target_geo = [obj.solid_geometry]
+            else:
+                target_geo = obj.solid_geometry
+            print(target_geo)
+            print(sel_obj)
+            for poly in target_geo:
                 new_pol = poly.intersection(sel_obj)
                 geo_to_paint.append(new_pol)
 

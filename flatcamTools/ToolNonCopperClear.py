@@ -378,6 +378,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
         self.first_click = False
         self.cursor_pos = None
+        self.mouse_is_dragging = False
 
         self.addtool_btn.clicked.connect(self.on_tool_add)
         self.addtool_entry.returnPressed.connect(self.on_tool_add)
@@ -845,7 +846,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             tooldia = float('%.4f' % float(self.tools_table.item(0, 1).text()))
 
             # To be called after clicking on the plot.
-            def on_mouse_press(event):
+            def on_mouse_release(event):
                 # do paint single only for left mouse clicks
                 if event.button == 1:
                     if self.first_click is False:
@@ -884,7 +885,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                             self.first_click = False
                             return
 
-                        self.app.plotcanvas.vis_disconnect('mouse_press', on_mouse_press)
+                        self.app.plotcanvas.vis_disconnect('mouse_release', on_mouse_release)
                         self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
 
                         self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
@@ -892,9 +893,9 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
 
                         self.on_ncc()
-                elif event.button == 2:
+                elif event.button == 2 and self.first_click is False and self.mouse_is_dragging is False:
                     self.first_click = False
-                    self.app.plotcanvas.vis_disconnect('mouse_press', on_mouse_press)
+                    self.app.plotcanvas.vis_disconnect('mouse_release', on_mouse_release)
                     self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
 
                     self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
@@ -907,6 +908,12 @@ class NonCopperClear(FlatCAMTool, Gerber):
             def on_mouse_move(event):
                 curr_pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
                 self.app.app_cursor.enabled = False
+
+                if event.button == 2:
+                    if event.is_dragging is True:
+                        self.mouse_is_dragging = True
+                    else:
+                        self.mouse_is_dragging = False
 
                 if self.app.grid_status() == True:
                     self.app.app_cursor.enabled = True
@@ -925,7 +932,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
             self.app.plotcanvas.vis_disconnect('mouse_release', self.app.on_mouse_click_release_over_plot)
 
-            self.app.plotcanvas.vis_connect('mouse_press', on_mouse_press)
+            self.app.plotcanvas.vis_connect('mouse_release', on_mouse_release)
             self.app.plotcanvas.vis_connect('mouse_move', on_mouse_move)
 
     def on_ncc(self):
