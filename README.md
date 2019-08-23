@@ -13,6 +13,8 @@ CAD program, and create G-Code for Isolation routing.
 
 - in Tool Cutout for the manual gaps, right mouse button click will exit from the action of adding gaps
 - in Tool Cutout tool I've added the possibility to create a cutout without bridge gaps; added the 'None' option in the Gaps combobox
+- in NCC Tool added ability to add multiple zones to clear when Area option is checked and the modifier key is pressed (either CTRL or SHIFT as set in Preferences). Right click of the mouse is an additional way to finish the job.
+- fixed a bug in Excellon Editor that made that the selection of drills is always cumulative
 
 22.08.2019
 

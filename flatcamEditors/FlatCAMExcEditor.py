@@ -1308,11 +1308,13 @@ class FCDrillSelect(DrawTool):
             self.exc_editor_app.selected = []
         else:
             modifiers = QtWidgets.QApplication.keyboardModifiers()
-            mod_key = 'Control'
+
             if modifiers == QtCore.Qt.ShiftModifier:
                 mod_key = 'Shift'
             elif modifiers == QtCore.Qt.ControlModifier:
                 mod_key = 'Control'
+            else:
+                mod_key = None
 
             if mod_key == self.draw_app.app.defaults["global_mselect_key"]:
                 if closest_shape in self.exc_editor_app.selected:

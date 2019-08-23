@@ -848,7 +848,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
             def on_mouse_press(event):
                 # do paint single only for left mouse clicks
                 if event.button == 1:
-                    if not self.first_click:
+                    if self.first_click is False:
                         self.first_click = True
                         self.app.inform.emit(_("[WARNING_NOTCL] Click the end point of the paint area."))
 
@@ -856,8 +856,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         if self.app.grid_status() == True:
                             self.cursor_pos = self.app.geo_editor.snap(self.cursor_pos[0], self.cursor_pos[1])
                     else:
-                        self.app.inform.emit(_("Done."))
-                        self.first_click = False
+                        self.app.inform.emit(_("Zone added. Right click to finish."))
                         self.app.delete_selection_shape()
 
                         curr_pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
@@ -870,23 +869,20 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         pt2 = (x1, y0)
                         pt3 = (x1, y1)
                         pt4 = (x0, y1)
-                        self.sel_rect = [Polygon([pt1, pt2, pt3, pt4])]
+                        self.sel_rect.append(Polygon([pt1, pt2, pt3, pt4]))
 
-                        # def initialize(geo_obj, app_obj):
-                        #     geo_obj.solid_geometry = self.sel_rect
-                        #     geo_obj.multigeo = False
-                        #
-                        # self.app.new_object("geometry", "bound_ncc", initialize=initialize,
-                        #                     plot=True, autoselected=False)
-                        #
-                        # self.bound_obj_name = "bound_ncc"
-                        # # Get source object.
-                        # try:
-                        #     self.bound_obj = self.app.collection.get_by_name(self.bound_obj_name)
-                        # except Exception as e:
-                        #     self.app.inform.emit(_("[ERROR_NOTCL] Could not retrieve object: %s") %
-                        #                          self.bound_obj_name)
-                        #     return "Could not retrieve object: %s. Error: %s" % (self.bound_obj_name, str(e))
+                        modifiers = QtWidgets.QApplication.keyboardModifiers()
+
+                        if modifiers == QtCore.Qt.ShiftModifier:
+                            mod_key = 'Shift'
+                        elif modifiers == QtCore.Qt.ControlModifier:
+                            mod_key = 'Control'
+                        else:
+                            mod_key = None
+
+                        if mod_key == self.app.defaults["global_mselect_key"]:
+                            self.first_click = False
+                            return
 
                         self.app.plotcanvas.vis_disconnect('mouse_press', on_mouse_press)
                         self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
@@ -896,6 +892,16 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
 
                         self.on_ncc()
+                elif event.button == 2:
+                    self.first_click = False
+                    self.app.plotcanvas.vis_disconnect('mouse_press', on_mouse_press)
+                    self.app.plotcanvas.vis_disconnect('mouse_move', on_mouse_move)
+
+                    self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
+                    self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
+                    self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+
+                    self.on_ncc()
 
             # called on mouse move
             def on_mouse_move(event):
@@ -985,23 +991,28 @@ class NonCopperClear(FlatCAMTool, Gerber):
         # Prepare non-copper polygons
         if self.reference_radio.get_value() == 'area':
             geo_n = self.sel_rect
+
+            geo_buff_list = []
+            for poly in geo_n:
+                geo_buff_list.append(poly.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre))
+            bounding_box = cascaded_union(geo_buff_list)
         else:
             geo_n = self.bound_obj.solid_geometry
 
-        try:
-            if isinstance(geo_n, MultiPolygon):
-                env_obj = geo_n.convex_hull
-            elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
-                    (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
-                env_obj = cascaded_union(geo_n)
-            else:
-                env_obj = cascaded_union(geo_n)
-                env_obj = env_obj.convex_hull
-            bounding_box = env_obj.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
-        except Exception as e:
-            log.debug("NonCopperClear.on_ncc() --> %s" % str(e))
-            self.app.inform.emit(_("[ERROR_NOTCL] No object available."))
-            return
+            try:
+                if isinstance(geo_n, MultiPolygon):
+                    env_obj = geo_n.convex_hull
+                elif (isinstance(geo_n, MultiPolygon) and len(geo_n) == 1) or \
+                        (isinstance(geo_n, list) and len(geo_n) == 1) and isinstance(geo_n[0], Polygon):
+                    env_obj = cascaded_union(geo_n)
+                else:
+                    env_obj = cascaded_union(geo_n)
+                    env_obj = env_obj.convex_hull
+                bounding_box = env_obj.buffer(distance=margin, join_style=base.JOIN_STYLE.mitre)
+            except Exception as e:
+                log.debug("NonCopperClear.on_ncc() --> %s" % str(e))
+                self.app.inform.emit(_("[ERROR_NOTCL] No object available."))
+                return
 
         # calculate the empty area by subtracting the solid_geometry from the object bounding box geometry
         if isinstance(self.ncc_obj, FlatCAMGerber):
