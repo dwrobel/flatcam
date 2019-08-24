@@ -175,10 +175,10 @@ class Properties(FlatCAMTool):
             env_obj = geo.convex_hull
         elif (isinstance(geo, MultiPolygon) and len(geo) == 1) or \
                 (isinstance(geo, list) and len(geo) == 1) and isinstance(geo[0], Polygon):
-            env_obj = cascaded_union(self.bound_obj.solid_geometry)
+            env_obj = cascaded_union(obj.solid_geometry)
             env_obj = env_obj.convex_hull
         else:
-            env_obj = cascaded_union(self.bound_obj.solid_geometry)
+            env_obj = cascaded_union(obj.solid_geometry)
             env_obj = env_obj.convex_hull
 
         area_chull = env_obj.area
