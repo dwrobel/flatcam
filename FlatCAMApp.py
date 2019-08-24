@@ -1755,13 +1755,14 @@ class App(QtCore.QObject):
         # #######Auto-complete KEYWORDS #############
         # ###########################################
         self.tcl_commands_list = ['add_circle', 'add_poly', 'add_polygon', 'add_polyline', 'add_rectangle',
-                                  'aligndrill', 'clear',
+                                  'aligndrill', 'bbox', 'bounding_box', 'clear',
                                   'aligndrillgrid', 'cncjob', 'cutout', 'delete', 'drillcncjob',
                                   'export_gcode',
                                   'export_svg', 'ext', 'exteriors', 'follow', 'geo_union', 'geocutout', 'get_names',
                                   'get_sys', 'getsys', 'help', 'import_svg', 'interiors', 'isolate', 'join_excellon',
                                   'join_excellons', 'join_geometries', 'join_geometry', 'list_sys', 'listsys', 'mill',
-                                  'millholes', 'mirror', 'new', 'new_geometry', 'offset', 'open_excellon', 'open_gcode',
+                                  'millholes', 'mirror', 'new', 'new_geometry', 'non_copper_regions', 'ncr',
+                                  'offset', 'open_excellon', 'open_gcode',
                                   'open_gerber', 'open_project', 'options', 'paint', 'pan', 'panel', 'panelize', 'plot',
                                   'save', 'save_project', 'save_sys', 'scale', 'set_active', 'set_sys', 'setsys',
                                   'skew', 'subtract_poly', 'subtract_rectangle', 'version', 'write_gcode'

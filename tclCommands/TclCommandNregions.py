@@ -64,8 +64,8 @@ class TclCommandNregions(TclCommand):
         if obj is None:
             self.raise_tcl_error("%s: %s" % (_("Object not found"), name))
 
-        if not isinstance(obj, FlatCAMGerber):
-            self.raise_tcl_error('%s %s %s.' % (_("Expected FlatCAMGerber, got"), name, type(obj)))
+        if not isinstance(obj, FlatCAMGerber) and not isinstance(obj, FlatCAMGeometry):
+            self.raise_tcl_error('%s %s: %s.' % (_("Expected FlatCAMGerber or FlatCAMGeometry, got"), name, type(obj)))
 
         if 'margin' not in args:
             args['margin'] = float(self.app.defaults["gerber_noncoppermargin"])
@@ -81,14 +81,15 @@ class TclCommandNregions(TclCommand):
             def geo_init(geo_obj, app_obj):
                 assert isinstance(geo_obj, FlatCAMGeometry)
 
-                bounding_box = obj.solid_geometry.envelope.buffer(float(margin))
+                geo = cascaded_union(obj.solid_geometry)
+                bounding_box = geo.envelope.buffer(float(margin))
                 if not rounded:
                     bounding_box = bounding_box.envelope
 
-                non_copper = bounding_box.difference(obj.solid_geometry)
+                non_copper = bounding_box.difference(geo)
                 geo_obj.solid_geometry = non_copper
 
-            self.app.new_object("geometry", name, geo_init)
+            self.app.new_object("geometry", args['outname'], geo_init)
         except Exception as e:
             return "Operation failed: %s" % str(e)
 

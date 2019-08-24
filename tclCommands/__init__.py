@@ -9,6 +9,7 @@ import tclCommands.TclCommandAddPolyline
 import tclCommands.TclCommandAddRectangle
 import tclCommands.TclCommandAlignDrill
 import tclCommands.TclCommandAlignDrillGrid
+import tclCommands.TclCommandBbox
 import tclCommands.TclCommandClearShell
 import tclCommands.TclCommandCncjob
 import tclCommands.TclCommandCutout
@@ -31,7 +32,7 @@ import tclCommands.TclCommandListSys
 import tclCommands.TclCommandMillHoles
 import tclCommands.TclCommandMirror
 import tclCommands.TclCommandNew
-import tclCommands.TcLCommandNregions
+import tclCommands.TclCommandNregions
 import tclCommands.TclCommandNewGeometry
 import tclCommands.TclCommandOffset
 import tclCommands.TclCommandOpenExcellon

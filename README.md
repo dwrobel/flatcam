@@ -19,6 +19,7 @@ CAD program, and create G-Code for Isolation routing.
 - remade the TclCommand Paint to work in the new configuration of the the app (the painting functions are now in their own tool, Paint Tool)
 - fixed a bug in the Properties Tool
 - added a new TcL Command named Nregions who generate non-copper regions
+- added a new TclCommand named Bbox who generate a bounding box.
 
 23.08.2019
 
