@@ -3768,19 +3768,34 @@ class FlatCAMGeoEditor(QtCore.QObject):
         """
         poly_selection = Polygon([start_pos, (end_pos[0], start_pos[1]), end_pos, (start_pos[0], end_pos[1])])
 
+        key_modifier = QtWidgets.QApplication.keyboardModifiers()
+
+        if key_modifier == QtCore.Qt.ShiftModifier:
+            mod_key = 'Shift'
+        elif key_modifier == QtCore.Qt.ControlModifier:
+            mod_key = 'Control'
+        else:
+            mod_key = None
+
         self.app.delete_selection_shape()
+
+        sel_objects_list = []
         for obj in self.storage.get_objects():
             if (sel_type is True and poly_selection.contains(obj.geo)) or (sel_type is False and
                                                                            poly_selection.intersects(obj.geo)):
-                    if self.key == self.app.defaults["global_mselect_key"]:
-                        if obj in self.selected:
-                            self.selected.remove(obj)
-                        else:
-                            # add the object to the selected shapes
-                            self.selected.append(obj)
-                    else:
-                        if obj not in self.selected:
-                            self.selected.append(obj)
+                sel_objects_list.append(obj)
+
+        if mod_key == self.app.defaults["global_mselect_key"]:
+            for obj in sel_objects_list:
+                if obj in self.selected:
+                    self.selected.remove(obj)
+                else:
+                    # add the object to the selected shapes
+                    self.selected.append(obj)
+        else:
+            self.selected = []
+            self.selected = sel_objects_list
+
         self.replot()
 
     def draw_utility_geometry(self, geo):

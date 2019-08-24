@@ -281,12 +281,12 @@ class ToolPaint(FlatCAMTool, Gerber):
         # Polygon selection
         selectlabel = QtWidgets.QLabel('%s:' % _('Selection'))
         selectlabel.setToolTip(
-            _("How to select the polygons to paint.<BR>"
-              "Options:<BR>"
-              "- <B>Single Polygons</B>: left mouse click on the polygon to be painted.<BR>"
-              "- <B>Area Selection</B>: left mouse click to start selection of the area to be painted.<BR>"
-              "- <B>All Polygons</B>: paint all polygons.<BR>"
-              "- <B>Reference Object</B>: paint an area described by an external reference object.")
+            _("How to select Polygons to be painted.\n\n"
+              "- 'Area Selection' - left mouse click to start selection of the area to be painted.\n"
+              "Keeping a modifier key pressed (CTRL or SHIFT) will allow to add multiple areas.\n"
+              "- 'All Polygons' - the Paint will start after click.\n"
+              "- 'Reference Object' -  will do non copper clearing within the area\n"
+              "specified by another object.")
         )
         grid3.addWidget(selectlabel, 7, 0)
         # grid3 = QtWidgets.QGridLayout()
