@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+24.08.2019
+
+- modified CutOut Tool so now the manual gaps adding will continue until the user is clicking the RMB
+- added ability to turn on/of the grid snapping and to jump to a location while in CutOut Tool manual gap adding action
+
 23.08.2019
 
 - in Tool Cutout for the manual gaps, right mouse button click will exit from the action of adding gaps

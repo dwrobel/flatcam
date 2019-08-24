@@ -16,7 +16,6 @@ if '_' not in builtins.__dict__:
 class CutOut(FlatCAMTool):
 
     toolName = _("Cutout PCB")
-    gapFinished = pyqtSignal()
 
     def __init__(self, app):
         FlatCAMTool.__init__(self, app)
@@ -296,6 +295,13 @@ class CutOut(FlatCAMTool):
         # this is the Geometry object generated in this class to be used for adding manual gaps
         self.man_cutout_obj = None
 
+        # if mouse is dragging set the object True
+        self.mouse_is_dragging = False
+
+        # hold the mouse position here
+        self.x_pos = None
+        self.y_pos = None
+
         # Signals
         self.ff_cutout_object_btn.clicked.connect(self.on_freeform_cutout)
         self.rect_cutout_object_btn.clicked.connect(self.on_rectangular_cutout)
@@ -348,8 +354,6 @@ class CutOut(FlatCAMTool):
         self.gapsize.set_value(float(self.app.defaults["tools_cutoutgapsize"]))
         self.gaps.set_value(self.app.defaults["tools_gaps_ff"])
         self.convex_box.set_value(self.app.defaults['tools_cutout_convexshape'])
-
-        self.gapFinished.connect(self.on_gap_finished)
 
     def on_freeform_cutout(self):
 
@@ -774,40 +778,7 @@ class CutOut(FlatCAMTool):
         self.app.plotcanvas.vis_disconnect('mouse_move', self.app.on_mouse_move_over_plot)
         self.app.plotcanvas.vis_connect('key_press', self.on_key_press)
         self.app.plotcanvas.vis_connect('mouse_move', self.on_mouse_move)
-        self.app.plotcanvas.vis_connect('mouse_release', self.doit)
-
-    # To be called after clicking on the plot.
-    def doit(self, event):
-        # do paint single only for left mouse clicks
-        if event.button == 1:
-            self.app.inform.emit(_("Making manual bridge gap..."))
-            pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
-            self.on_manual_cutout(click_pos=pos)
-
-            self.app.plotcanvas.vis_disconnect('key_press', self.on_key_press)
-            self.app.plotcanvas.vis_disconnect('mouse_move', self.on_mouse_move)
-            self.app.plotcanvas.vis_disconnect('mouse_release', self.doit)
-            self.app.plotcanvas.vis_connect('key_press', self.app.ui.keyPressEvent)
-            self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
-            self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
-            self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
-
-            self.app.geo_editor.tool_shape.clear(update=True)
-            self.app.geo_editor.tool_shape.enabled = False
-            self.gapFinished.emit()
-        # if RMB then we exit
-        elif event.button == 2:
-            self.app.plotcanvas.vis_disconnect('key_press', self.on_key_press)
-            self.app.plotcanvas.vis_disconnect('mouse_move', self.on_mouse_move)
-            self.app.plotcanvas.vis_disconnect('mouse_release', self.doit)
-            self.app.plotcanvas.vis_connect('key_press', self.app.ui.keyPressEvent)
-            self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
-            self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
-            self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
-
-            # Remove any previous utility shape
-            self.app.geo_editor.tool_shape.clear(update=True)
-            self.app.geo_editor.tool_shape.enabled = False
+        self.app.plotcanvas.vis_connect('mouse_release', self.on_mouse_click_release)
 
     def on_manual_cutout(self, click_pos):
         name = self.man_object_combo.currentText()
@@ -835,12 +806,6 @@ class CutOut(FlatCAMTool):
         self.app.inform.emit(_("[success] Added manual Bridge Gap."))
 
         self.app.should_we_save = True
-
-    def on_gap_finished(self):
-        # if CTRL key modifier is pressed then repeat the bridge gap cut
-        key_modifier = QtWidgets.QApplication.keyboardModifiers()
-        if key_modifier == Qt.ControlModifier:
-            self.on_manual_gap_click()
 
     def on_manual_geo(self):
         name = self.obj_combo.currentText()
@@ -943,6 +908,41 @@ class CutOut(FlatCAMTool):
         cut_poly = box(xmin, ymin, xmax, ymax)
         return cut_poly
 
+    # To be called after clicking on the plot.
+    def on_mouse_click_release(self, event):
+
+        # do paint single only for left mouse clicks
+        if event.button == 1:
+            self.app.inform.emit(_("Making manual bridge gap..."))
+            pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+            self.on_manual_cutout(click_pos=pos)
+
+            # self.app.plotcanvas.vis_disconnect('key_press', self.on_key_press)
+            # self.app.plotcanvas.vis_disconnect('mouse_move', self.on_mouse_move)
+            # self.app.plotcanvas.vis_disconnect('mouse_release', self.on_mouse_click_release)
+            # self.app.plotcanvas.vis_connect('key_press', self.app.ui.keyPressEvent)
+            # self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
+            # self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            # self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
+
+            # self.app.geo_editor.tool_shape.clear(update=True)
+            # self.app.geo_editor.tool_shape.enabled = False
+            # self.gapFinished.emit()
+
+        # if RMB then we exit
+        elif event.button == 2 and self.mouse_is_dragging is False:
+            self.app.plotcanvas.vis_disconnect('key_press', self.on_key_press)
+            self.app.plotcanvas.vis_disconnect('mouse_move', self.on_mouse_move)
+            self.app.plotcanvas.vis_disconnect('mouse_release', self.on_mouse_click_release)
+            self.app.plotcanvas.vis_connect('key_press', self.app.ui.keyPressEvent)
+            self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
+            self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
+            self.app.plotcanvas.vis_connect('mouse_move', self.app.on_mouse_move_over_plot)
+
+            # Remove any previous utility shape
+            self.app.geo_editor.tool_shape.clear(update=True)
+            self.app.geo_editor.tool_shape.enabled = False
+
     def on_mouse_move(self, event):
 
         self.app.on_mouse_move_over_plot(event=event)
@@ -950,13 +950,23 @@ class CutOut(FlatCAMTool):
         pos = self.canvas.vispy_canvas.translate_coords(event.pos)
         event.xdata, event.ydata = pos[0], pos[1]
 
+        if event.is_dragging is True:
+            self.mouse_is_dragging = True
+        else:
+            self.mouse_is_dragging = False
+
         try:
             x = float(event.xdata)
             y = float(event.ydata)
         except TypeError:
             return
 
-        snap_x, snap_y = self.app.geo_editor.snap(x, y)
+        if self.app.grid_status() == True:
+            snap_x, snap_y = self.app.geo_editor.snap(x, y)
+        else:
+            snap_x, snap_y = x, y
+
+        self.x_pos, self.y_pos = snap_x, snap_y
 
         # #################################################
         # ### This section makes the cutting geo to #######
@@ -1044,7 +1054,7 @@ class CutOut(FlatCAMTool):
         if key == QtCore.Qt.Key_Escape or key == 'Escape':
             self.app.plotcanvas.vis_disconnect('key_press', self.on_key_press)
             self.app.plotcanvas.vis_disconnect('mouse_move', self.on_mouse_move)
-            self.app.plotcanvas.vis_disconnect('mouse_release', self.doit)
+            self.app.plotcanvas.vis_disconnect('mouse_release', self.on_mouse_click_release)
             self.app.plotcanvas.vis_connect('key_press', self.app.ui.keyPressEvent)
             self.app.plotcanvas.vis_connect('mouse_press', self.app.on_mouse_click_over_plot)
             self.app.plotcanvas.vis_connect('mouse_release', self.app.on_mouse_click_release_over_plot)
@@ -1053,6 +1063,17 @@ class CutOut(FlatCAMTool):
             # Remove any previous utility shape
             self.app.geo_editor.tool_shape.clear(update=True)
             self.app.geo_editor.tool_shape.enabled = False
+
+        # Grid toggle
+        if key == QtCore.Qt.Key_G or key == 'G':
+            self.app.ui.grid_snap_btn.trigger()
+
+        # Jump to coords
+        if key == QtCore.Qt.Key_J or key == 'J':
+            l_x, l_y = self.app.on_jump_to()
+            self.app.geo_editor.tool_shape.clear(update=True)
+            geo = self.cutting_geo(pos=(l_x, l_y))
+            self.draw_utility_geometry(geo=geo)
 
     def subtract_poly_from_geo(self, solid_geo, x0, y0, x1, y1):
         """

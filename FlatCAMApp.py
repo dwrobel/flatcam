@@ -98,8 +98,8 @@ class App(QtCore.QObject):
     # ####################################
     # Version and VERSION DATE ###########
     # ####################################
-    version = 8.96
-    version_date = "2019/08/23"
+    version = 8.97
+    version_date = "2019/08/31"
     beta = True
 
     # current date now
@@ -5261,6 +5261,7 @@ class App(QtCore.QObject):
 
         cursor.setPos(canvas_origin.x() + jump_loc[0], (canvas_origin.y() + jump_loc[1]))
         self.inform.emit(_("[success] Done."))
+        return location
 
     def on_copy_object(self):
         self.report_usage("on_copy_object()")
