@@ -31,6 +31,7 @@ import tclCommands.TclCommandListSys
 import tclCommands.TclCommandMillHoles
 import tclCommands.TclCommandMirror
 import tclCommands.TclCommandNew
+import tclCommands.TcLCommandNregions
 import tclCommands.TclCommandNewGeometry
 import tclCommands.TclCommandOffset
 import tclCommands.TclCommandOpenExcellon

@@ -18,6 +18,7 @@ CAD program, and create G-Code for Isolation routing.
 - modified the Paint Tool. Now the Single Polygon and Area/Reference Object painting works with multiple tools too. The tools have to be selected in the Tool Table.
 - remade the TclCommand Paint to work in the new configuration of the the app (the painting functions are now in their own tool, Paint Tool)
 - fixed a bug in the Properties Tool
+- added a new TcL Command named Nregions who generate non-copper regions
 
 23.08.2019
 
