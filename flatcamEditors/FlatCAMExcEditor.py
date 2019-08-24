@@ -3262,7 +3262,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         :return: None
         """
 
-        self.pos = self.canvas.vispy_canvas.translate_coords(event.pos)
+        self.pos = self.canvas.translate_coords(event.pos)
 
         if self.app.grid_status() == True:
             self.pos  = self.app.geo_editor.snap(self.pos[0], self.pos[1])
@@ -3401,7 +3401,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         :param event: Event object dispatched by VisPy SceneCavas
         :return: None
         """
-        pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
+        pos_canvas = self.canvas.translate_coords(event.pos)
 
         if self.app.grid_status() == True:
             pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
@@ -3557,7 +3557,7 @@ class FlatCAMExcEditor(QtCore.QObject):
         :return: None
         """
 
-        pos = self.canvas.vispy_canvas.translate_coords(event.pos)
+        pos = self.canvas.translate_coords(event.pos)
         event.xdata, event.ydata = pos[0], pos[1]
 
         self.x = event.xdata

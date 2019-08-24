@@ -914,7 +914,7 @@ class CutOut(FlatCAMTool):
         # do paint single only for left mouse clicks
         if event.button == 1:
             self.app.inform.emit(_("Making manual bridge gap..."))
-            pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+            pos = self.app.plotcanvas.translate_coords(event.pos)
             self.on_manual_cutout(click_pos=pos)
 
             # self.app.plotcanvas.vis_disconnect('key_press', self.on_key_press)
@@ -947,7 +947,7 @@ class CutOut(FlatCAMTool):
 
         self.app.on_mouse_move_over_plot(event=event)
 
-        pos = self.canvas.vispy_canvas.translate_coords(event.pos)
+        pos = self.canvas.translate_coords(event.pos)
         event.xdata, event.ydata = pos[0], pos[1]
 
         if event.is_dragging is True:

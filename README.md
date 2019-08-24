@@ -13,6 +13,7 @@ CAD program, and create G-Code for Isolation routing.
 
 - modified CutOut Tool so now the manual gaps adding will continue until the user is clicking the RMB
 - added ability to turn on/of the grid snapping and to jump to a location while in CutOut Tool manual gap adding action
+- made PlotCanvas class inherit from VisPy Canvas instead of creating an instance of it (work of JP)
 
 23.08.2019
 

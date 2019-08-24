@@ -5256,8 +5256,8 @@ class App(QtCore.QObject):
 
         cursor = QtGui.QCursor()
 
-        canvas_origin = self.plotcanvas.vispy_canvas.native.mapToGlobal(QtCore.QPoint(0, 0))
-        jump_loc = self.plotcanvas.vispy_canvas.translate_coords_2((location[0], location[1]))
+        canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
+        jump_loc = self.plotcanvas.translate_coords_2((location[0], location[1]))
 
         cursor.setPos(canvas_origin.x() + jump_loc[0], (canvas_origin.y() + jump_loc[1]))
         self.inform.emit(_("[success] Done."))
@@ -5481,7 +5481,7 @@ class App(QtCore.QObject):
     def on_set_zero_click(self, event):
         # this function will be available only for mouse left click
         pos = []
-        pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
+        pos_canvas = self.plotcanvas.translate_coords(event.pos)
         if event.button == 1:
             if self.grid_status() == True:
                 pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
@@ -5836,7 +5836,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.plotcanvas.vispy_canvas.update()           # TODO: Need update canvas?
+        self.plotcanvas.update()           # TODO: Need update canvas?
         self.on_zoom_fit(None)
         self.collection.update_view()
         # self.inform.emit(_("Plots updated ..."))
@@ -6009,11 +6009,11 @@ class App(QtCore.QObject):
         self.pos = []
 
         # So it can receive key presses
-        self.plotcanvas.vispy_canvas.native.setFocus()
+        self.plotcanvas.native.setFocus()
         # Set the mouse button for panning
-        self.plotcanvas.vispy_canvas.view.camera.pan_button_setting = self.defaults['global_pan_button']
+        self.plotcanvas.view.camera.pan_button_setting = self.defaults['global_pan_button']
 
-        self.pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
+        self.pos_canvas = self.plotcanvas.translate_coords(event.pos)
 
         if self.grid_status() == True:
             self.pos = self.geo_editor.snap(self.pos_canvas[0], self.pos_canvas[1])
@@ -6059,7 +6059,7 @@ class App(QtCore.QObject):
         """
 
         # So it can receive key presses
-        self.plotcanvas.vispy_canvas.native.setFocus()
+        self.plotcanvas.native.setFocus()
         self.pos_jump = event.pos
 
         self.ui.popMenu.mouse_is_panning = False
@@ -6072,7 +6072,7 @@ class App(QtCore.QObject):
 
         if self.rel_point1 is not None:
             try:  # May fail in case mouse not within axes
-                pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
+                pos_canvas = self.plotcanvas.translate_coords(event.pos)
                 if self.grid_status() == True:
                     pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
                     self.app_cursor.enabled = True
@@ -6146,7 +6146,7 @@ class App(QtCore.QObject):
         :return:
         """
         pos = 0, 0
-        pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
+        pos_canvas = self.plotcanvas.translate_coords(event.pos)
         if self.grid_status() == True:
             pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
@@ -6378,7 +6378,7 @@ class App(QtCore.QObject):
                     # curr_sel_obj.plot(color=self.FC_dark_blue, face_color=self.FC_light_blue)
 
                     # TODO: on selected objects change the object colors and do not draw the selection box
-                    # self.plotcanvas.vispy_canvas.update() # this updates the canvas
+                    # self.plotcanvas.update() # this updates the canvas
         except Exception as e:
             log.error("[ERROR] Something went bad. %s" % str(e))
             return
@@ -9065,7 +9065,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
         self.plotcanvas = PlotCanvas(plot_container, self)
 
         # So it can receive key presses
-        self.plotcanvas.vispy_canvas.native.setFocus()
+        self.plotcanvas.native.setFocus()
 
         self.plotcanvas.vis_connect('mouse_move', self.on_mouse_move_over_plot)
         self.plotcanvas.vis_connect('mouse_press', self.on_mouse_click_over_plot)
@@ -9077,7 +9077,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
 
         self.app_cursor = self.plotcanvas.new_cursor()
         self.app_cursor.enabled = False
-        self.hover_shapes = ShapeCollection(parent=self.plotcanvas.vispy_canvas.view.scene, layers=1)
+        self.hover_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
 
     def on_zoom_fit(self, event):
         """

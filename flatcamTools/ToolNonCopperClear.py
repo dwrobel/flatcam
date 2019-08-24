@@ -859,14 +859,14 @@ class NonCopperClear(FlatCAMTool, Gerber):
                         self.first_click = True
                         self.app.inform.emit(_("[WARNING_NOTCL] Click the end point of the paint area."))
 
-                        self.cursor_pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+                        self.cursor_pos = self.app.plotcanvas.translate_coords(event.pos)
                         if self.app.grid_status() == True:
                             self.cursor_pos = self.app.geo_editor.snap(self.cursor_pos[0], self.cursor_pos[1])
                     else:
                         self.app.inform.emit(_("Zone added. Right click to finish."))
                         self.app.delete_selection_shape()
 
-                        curr_pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+                        curr_pos = self.app.plotcanvas.translate_coords(event.pos)
                         if self.app.grid_status() == True:
                             curr_pos = self.app.geo_editor.snap(curr_pos[0], curr_pos[1])
 
@@ -912,7 +912,7 @@ class NonCopperClear(FlatCAMTool, Gerber):
 
             # called on mouse move
             def on_mouse_move(event):
-                curr_pos = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+                curr_pos = self.app.plotcanvas.translate_coords(event.pos)
                 self.app.app_cursor.enabled = False
 
                 if event.button == 2:

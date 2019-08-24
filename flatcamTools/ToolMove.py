@@ -43,7 +43,7 @@ class ToolMove(FlatCAMTool):
         self.old_coords = []
 
         # VisPy visuals
-        self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.vispy_canvas.view.scene, layers=1)
+        self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
 
     def install(self, icon=None, separator=None, **kwargs):
         FlatCAMTool.install(self, icon, separator, shortcut='M', **kwargs)
@@ -94,7 +94,7 @@ class ToolMove(FlatCAMTool):
 
         if event.button == 1:
             if self.clicked_move == 0:
-                pos_canvas = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+                pos_canvas = self.app.plotcanvas.translate_coords(event.pos)
 
                 # if GRID is active we need to get the snapped positions
                 if self.app.grid_status() == True:
@@ -111,7 +111,7 @@ class ToolMove(FlatCAMTool):
 
             if self.clicked_move == 1:
                 try:
-                    pos_canvas = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+                    pos_canvas = self.app.plotcanvas.translate_coords(event.pos)
 
                     # delete the selection bounding box
                     self.delete_shape()
@@ -178,7 +178,7 @@ class ToolMove(FlatCAMTool):
             self.clicked_move = 1
 
     def on_move(self, event):
-        pos_canvas = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+        pos_canvas = self.app.plotcanvas.translate_coords(event.pos)
 
         # if GRID is active we need to get the snapped positions
         if self.app.grid_status() == True:
