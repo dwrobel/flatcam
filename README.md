@@ -11,9 +11,10 @@ CAD program, and create G-Code for Isolation routing.
 
 25.08.2019
 
-- initial add of a new Tcl COmmand named CopperClear
+- initial add of a new Tcl Command named CopperClear
 - remade the NCC Tool in preparation for the newly added TclCommand CopperClear
 - finished adding the TclCommandCopperClear that can be called with alias: 'ncc'
+- added new capability in NCC Tool when the reference object is of Gerber type and fixed some newly introduced errors
 
 24.08.2019
 
