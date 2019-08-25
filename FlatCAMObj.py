@@ -2112,6 +2112,11 @@ class FlatCAMExcellon(FlatCAMObj, Excellon):
         # Fill form fields
         self.to_form()
 
+        # update the changes in UI depending on the selected postprocessor in Preferences
+        # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
+        # self.ui.pp_excellon_name_cb combobox
+        self.on_pp_changed()
+
         # initialize the dict that holds the tools offset
         t_default_offset = self.app.defaults["excellon_offset"]
         if not self.tool_offset:
@@ -3299,6 +3304,11 @@ class FlatCAMGeometry(FlatCAMObj, Geometry):
 
         # Fill form fields only on object create
         self.to_form()
+
+        # update the changes in UI depending on the selected postprocessor in Preferences
+        # after this moment all the changes in the Posprocessor combo will be handled by the activated signal of the
+        # self.ui.pp_geometry_name_cb combobox
+        self.on_pp_changed()
 
         self.ui.tipdialabel.hide()
         self.ui.tipdia_entry.hide()
