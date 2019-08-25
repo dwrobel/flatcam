@@ -1761,8 +1761,8 @@ class App(QtCore.QObject):
                                   'export_svg', 'ext', 'exteriors', 'follow', 'geo_union', 'geocutout', 'get_names',
                                   'get_sys', 'getsys', 'help', 'import_svg', 'interiors', 'isolate', 'join_excellon',
                                   'join_excellons', 'join_geometries', 'join_geometry', 'list_sys', 'listsys', 'mill',
-                                  'millholes', 'mirror', 'new', 'new_geometry', 'non_copper_regions', 'ncr',
-                                  'offset', 'open_excellon', 'open_gcode',
+                                  'millholes', 'mirror', 'new', 'new_geometry', 'non_copper_regions', 'ncr', 'ncc',
+                                  'ncc_clear', 'offset', 'open_excellon', 'open_gcode',
                                   'open_gerber', 'open_project', 'options', 'paint', 'pan', 'panel', 'panelize', 'plot',
                                   'save', 'save_project', 'save_sys', 'scale', 'set_active', 'set_sys', 'setsys',
                                   'skew', 'subtract_poly', 'subtract_rectangle', 'version', 'write_gcode'

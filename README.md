@@ -9,6 +9,11 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+25.08.2019
+
+- initial add of a new Tcl COmmand named CopperClear
+- remade the NCC Tool in preparation for the newly added TclCommand CopperClear
+
 24.08.2019
 
 - modified CutOut Tool so now the manual gaps adding will continue until the user is clicking the RMB

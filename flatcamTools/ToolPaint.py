@@ -894,7 +894,7 @@ class ToolPaint(FlatCAMTool, Gerber):
         # init values for the next usage
         self.reset_usage()
 
-        self.app.report_usage(_("geometry_on_paint_button"))
+        self.app.report_usage(_("on_paint_button_click"))
         # self.app.call_source = 'paint'
 
         try:
@@ -1608,8 +1608,8 @@ class ToolPaint(FlatCAMTool, Gerber):
 
         # Initializes the new geometry object
         def gen_paintarea_rest_machining(geo_obj, app_obj):
-            # assert isinstance(geo_obj, FlatCAMGeometry), \
-            #     "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
+            assert isinstance(geo_obj, FlatCAMGeometry), \
+                "Initializer expected a FlatCAMGeometry, got %s" % type(geo_obj)
 
             tool_dia = None
             sorted_tools.sort(reverse=True)

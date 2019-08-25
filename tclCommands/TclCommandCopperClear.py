@@ -10,13 +10,13 @@ if '_' not in builtins.__dict__:
     _ = gettext.gettext
 
 
-class TclCommandPaint(TclCommand):
+class TclCommandCopperClear(TclCommand):
     """
-    Paint the interior of polygons
+    Clear the non-copper areas.
     """
 
     # Array of all command aliases, to be able use old names for backward compatibility (add_poly, add_polygon)
-    aliases = ['paint']
+    aliases = ['ncc_clear', 'ncc']
 
     # dictionary of types from Tcl command, needs to be ordered
     arg_names = collections.OrderedDict([
@@ -34,11 +34,8 @@ class TclCommandPaint(TclCommand):
         ('contour', bool),
 
         ('all', bool),
-        ('single', bool),
         ('ref', bool),
         ('box', str),
-        ('x', float),
-        ('y', float),
         ('outname', str),
     ])
 
@@ -47,7 +44,7 @@ class TclCommandPaint(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Paint polygons",
+        'main': "Clear excess copper in polygons. Basically it's a negative Paint.",
         'args': collections.OrderedDict([
             ('name', 'Name of the source Geometry object. String.'),
             ('tooldia', 'Diameter of the tool to be used. Can be a comma separated list of diameters. No space is '
@@ -59,15 +56,15 @@ class TclCommandPaint(TclCommand):
                       '"no" -> the order used is the one provided.'
                       '"fwd" -> tools are ordered from smallest to biggest.'
                       '"rev" -> tools are ordered from biggest to smallest.'),
-            ('method', 'Algorithm for painting. Can be: "standard", "seed" or "lines".'),
+            ('method', 'Algorithm for copper clearing. Can be: "standard", "seed" or "lines".'),
             ('connect', 'Draw lines to minimize tool lifts. True or False'),
             ('contour', 'Cut around the perimeter of the painting. True or False'),
-            ('all', 'Paint all polygons in the object. True or False'),
-            ('single', 'Paint a single polygon specified by "x" and "y" parameters. True or False'),
-            ('ref', 'Paint all polygons within a specified object with the name in "box" parameter. True or False'),
-            ('box', 'name of the object to be used as paint reference when selecting "ref"" True. String.'),
-            ('x', 'X value of coordinate for the selection of a single polygon. Float number.'),
-            ('y', 'Y value of coordinate for the selection of a single polygon. Float number.'),
+            ('rest', 'Use rest-machining. True or False'),
+            ('offset', 'The copper clearing will finish to a distance from copper features. True or False.'),
+            ('all', 'Will copper clear the whole object. True or False'),
+            ('ref', 'Will clear of extra copper all polygons within a specified object with the name in "box" '
+                    'parameter. True or False'),
+            ('box', 'name of the object to be used as reference when selecting "ref"" True. String.'),
             ('outname', 'Name of the resulting Geometry object. String.'),
         ]),
         'examples': []
@@ -88,48 +85,58 @@ class TclCommandPaint(TclCommand):
         if 'tooldia' in args:
             tooldia = str(args['tooldia'])
         else:
-            tooldia = float(self.app.defaults["tools_paintoverlap"])
+            tooldia = float(self.app.defaults["tools_ncctools"])
 
         if 'overlap' in args:
             overlap = float(args['overlap'])
         else:
-            overlap = float(self.app.defaults["tools_paintoverlap"])
+            overlap = float(self.app.defaults["tools_nccoverlap"])
 
         if 'order' in args:
             order = args['order']
         else:
-            order = str(self.app.defaults["tools_paintorder"])
+            order = str(self.app.defaults["tools_nccorder"])
 
         if 'margin' in args:
             margin = float(args['margin'])
         else:
-            margin = float(self.app.defaults["tools_paintmargin"])
+            margin = float(self.app.defaults["tools_nccmargin"])
 
         if 'method' in args:
             method = args['method']
         else:
-            method = str(self.app.defaults["tools_paintmethod"])
+            method = str(self.app.defaults["tools_nccmethod"])
 
         if 'connect' in args:
             connect = eval(str(args['connect']).capitalize())
         else:
-            connect = eval(str(self.app.defaults["tools_pathconnect"]))
+            connect = eval(str(self.app.defaults["tools_nccconnect"]))
 
         if 'contour' in args:
             contour = eval(str(args['contour']).capitalize())
         else:
-            contour = eval(str(self.app.defaults["tools_paintcontour"]))
+            contour = eval(str(self.app.defaults["tools_ncccontour"]))
+
+        if 'rest' in args:
+            rest = eval(str(args['rest']).capitalize())
+        else:
+            rest = eval(str(self.app.defaults["tools_nccrest"]))
+
+        # if 'offset' not in args then not use it
+        offset = None
+        if 'offset' in args:
+            offset = float(args['margin'])
 
         if 'outname' in args:
             outname = args['outname']
         else:
-            outname = name + "_paint"
+            outname = name + "_ncc"
 
         # Get source object.
         try:
             obj = self.app.collection.get_by_name(str(name))
         except Exception as e:
-            log.debug("TclCommandPaint.execute() --> %s" % str(e))
+            log.debug("TclCommandCopperClear.execute() --> %s" % str(e))
             self.raise_tcl_error("%s: %s" % (_("Could not retrieve object"), name))
             return "Could not retrieve object: %s" % name
 
@@ -170,12 +177,12 @@ class TclCommandPaint(TclCommand):
             "paintcontour": self.app.defaults["tools_paintcontour"],
             "paintoverlap": self.app.defaults["tools_paintoverlap"]
         })
-        paint_tools = dict()
+        ncc_tools = dict()
 
         tooluid = 0
         for tool in tools:
             tooluid += 1
-            paint_tools.update({
+            ncc_tools.update({
                 int(tooluid): {
                     'tooldia': float('%.4f' % tool),
                     'offset': 'Path',
@@ -192,7 +199,7 @@ class TclCommandPaint(TclCommand):
 
         # Paint all polygons in the painted object
         if 'all' in args and args['all'] is True:
-            self.app.paint_tool.paint_poly_all(obj=obj,
+            self.app.ncclear_tool.clear_copper(obj=obj,
                                                tooldia=tooldia,
                                                overlap=overlap,
                                                order=order,
@@ -201,28 +208,7 @@ class TclCommandPaint(TclCommand):
                                                outname=outname,
                                                connect=connect,
                                                contour=contour,
-                                               tools_storage=paint_tools)
-            return
-
-        # Paint single polygon in the painted object
-        elif 'single' in args and args['single'] is True:
-            if 'x' not in args or 'y' not in args:
-                self.raise_tcl_error('%s' % _("Expected -x <value> and -y <value>."))
-            else:
-                x = args['x']
-                y = args['y']
-
-                self.app.paint_tool.paint_poly(obj=obj,
-                                               inside_pt=[x, y],
-                                               tooldia=tooldia,
-                                               overlap=overlap,
-                                               order=order,
-                                               margin=margin,
-                                               method=method,
-                                               outname=outname,
-                                               connect=connect,
-                                               contour=contour,
-                                               tools_storage=paint_tools)
+                                               tools_storage=ncc_tools)
             return
 
         # Paint all polygons found within the box object from the the painted object
@@ -236,11 +222,11 @@ class TclCommandPaint(TclCommand):
                 try:
                     box_obj = self.app.collection.get_by_name(str(box_name))
                 except Exception as e:
-                    log.debug("TclCommandPaint.execute() --> %s" % str(e))
+                    log.debug("TclCommandCopperClear.execute() --> %s" % str(e))
                     self.raise_tcl_error("%s: %s" % (_("Could not retrieve box object"), name))
                     return "Could not retrieve object: %s" % name
 
-                self.app.paint_tool.paint_poly_ref(obj=obj,
+                self.app.ncclear_tool.clear_copper(obj=obj,
                                                    sel_obj=box_obj,
                                                    tooldia=tooldia,
                                                    overlap=overlap,
@@ -250,7 +236,7 @@ class TclCommandPaint(TclCommand):
                                                    outname=outname,
                                                    connect=connect,
                                                    contour=contour,
-                                                   tools_storage=paint_tools)
+                                                   tools_storage=ncc_tools)
             return
 
         else:
