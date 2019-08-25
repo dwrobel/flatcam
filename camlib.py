@@ -6001,7 +6001,10 @@ class CNCjob(Geometry):
         flat_geometry = self.flatten(temp_solid_geometry, pathonly=True)
         log.debug("%d paths" % len(flat_geometry))
 
-        self.tooldia = float(tooldia) if tooldia else None
+        try:
+            self.tooldia = float(tooldia) if tooldia else None
+        except ValueError:
+            self.tooldia = [float(el) for el in tooldia.split(',') if el != ''] if tooldia else None
 
         self.z_cut = float(z_cut) if z_cut else None
         self.z_move = float(z_move) if z_move else None
@@ -6669,6 +6672,10 @@ class CNCjob(Geometry):
         if tooldia is None:
             tooldia = self.tooldia
 
+        # this should be unlikely unless when upstream the tooldia is a tuple made by one dia and a comma like (2.4,)
+        if isinstance(tooldia, list):
+            tooldia = tooldia[0] if tooldia[0] is not None else self.tooldia
+
         if tooldia == 0:
             for geo in gcode_parsed:
                 if kind == 'all':
@@ -7042,7 +7049,10 @@ class CNCjob(Geometry):
 
             bounds_coords = bounds_rec(self.solid_geometry)
         else:
-
+            minx = Inf
+            miny = Inf
+            maxx = -Inf
+            maxy = -Inf
             for k, v in self.cnc_tools.items():
                 minx = Inf
                 miny = Inf

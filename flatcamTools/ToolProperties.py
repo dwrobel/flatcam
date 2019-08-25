@@ -169,25 +169,26 @@ class Properties(FlatCAMTool):
             area = length * width
             self.addChild(dims, ['%s:' % _('Box Area'), '%.4f %s' % (area, 'in2')], True)
 
-        # calculate and add convex hull area
-        geo = obj.solid_geometry
-        if isinstance(geo, MultiPolygon):
-            env_obj = geo.convex_hull
-        elif (isinstance(geo, MultiPolygon) and len(geo) == 1) or \
-                (isinstance(geo, list) and len(geo) == 1) and isinstance(geo[0], Polygon):
-            env_obj = cascaded_union(obj.solid_geometry)
-            env_obj = env_obj.convex_hull
-        else:
-            env_obj = cascaded_union(obj.solid_geometry)
-            env_obj = env_obj.convex_hull
+        if not isinstance(obj, FlatCAMCNCjob):
+            # calculate and add convex hull area
+            geo = obj.solid_geometry
+            if isinstance(geo, MultiPolygon):
+                env_obj = geo.convex_hull
+            elif (isinstance(geo, MultiPolygon) and len(geo) == 1) or \
+                    (isinstance(geo, list) and len(geo) == 1) and isinstance(geo[0], Polygon):
+                env_obj = cascaded_union(obj.solid_geometry)
+                env_obj = env_obj.convex_hull
+            else:
+                env_obj = cascaded_union(obj.solid_geometry)
+                env_obj = env_obj.convex_hull
 
-        area_chull = env_obj.area
-        if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower() == 'mm':
-            area_chull = area_chull / 100
-            self.addChild(dims, ['%s:' % _('Convex_Hull Area'), '%.4f %s' % (area_chull, 'cm2')], True)
-        else:
-            area_chull = area_chull
-            self.addChild(dims, ['%s:' % _('Convex_Hull Area'), '%.4f %s' % (area_chull, 'in2')], True)
+            area_chull = env_obj.area
+            if self.app.ui.general_defaults_form.general_app_group.units_radio.get_value().lower() == 'mm':
+                area_chull = area_chull / 100
+                self.addChild(dims, ['%s:' % _('Convex_Hull Area'), '%.4f %s' % (area_chull, 'cm2')], True)
+            else:
+                area_chull = area_chull
+                self.addChild(dims, ['%s:' % _('Convex_Hull Area'), '%.4f %s' % (area_chull, 'in2')], True)
 
         self.addChild(units,
                       ['FlatCAM units:',

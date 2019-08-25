@@ -30,7 +30,8 @@ class TclCommandSkew(TclCommand):
 
     # structured help for current command, args needs to be ordered
     help = {
-        'main': "Shear/Skew an object by angles along x and y dimensions.",
+        'main': "Shear/Skew an object by angles along x and y dimensions. The reference point is the left corner of "
+                "the bounding box of the object.",
         'args': collections.OrderedDict([
             ('name', 'Name of the object to skew.'),
             ('angle_x', 'Angle in degrees by which to skew on the X axis.'),
@@ -48,7 +49,9 @@ class TclCommandSkew(TclCommand):
         """
 
         name = args['name']
-        angle_x = args['angle_x']
-        angle_y = args['angle_y']
+        angle_x = float(args['angle_x'])
+        angle_y = float(args['angle_y'])
 
-        self.app.collection.get_by_name(name).skew(angle_x, angle_y)
+        obj_to_skew = self.app.collection.get_by_name(name)
+        xmin, ymin, xmax, ymax = obj_to_skew.bounds()
+        obj_to_skew.skew(angle_x, angle_y, point=(xmin, ymin))

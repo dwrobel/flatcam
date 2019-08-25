@@ -18,6 +18,11 @@ CAD program, and create G-Code for Isolation routing.
 - fixed issue #298. The changes in postprocessors done in Preferences dis not update the object UI layout as it was supposed to. The selection of Marlin postproc. did not unhidden the Feedrate Rapids entry.
 - fixed minor issues
 - fixed Tcl Command AddPolygon, AddPolyline
+- fixed Tcl Command CncJob
+- fixed crash due of Properties Tool trying to have a convex hull area on FlatCAMCNCJob objects which is not possible due of their nature
+- modified Tcl Command SubtractRectangle
+- fixed and modernized the Tcl Command Scale to be able to scale on X axis or on Y axis or on both and having as scale reference either the (0, 0) point or the minimum point of the bounding box or the center of the bounding box.
+- fixed and modernized the Tcl Command Skew
 
 24.08.2019
 

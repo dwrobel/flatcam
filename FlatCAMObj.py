@@ -6016,7 +6016,12 @@ class FlatCAMCNCjob(FlatCAMObj, CNCjob):
 
         try:
             if self.multitool is False:  # single tool usage
-                self.plot2(tooldia=float(self.options["tooldia"]), obj=self, visible=visible, kind=kind)
+                try:
+                    dia_plot = float(self.options["tooldia"])
+                except ValueError:
+                    # we may have a tuple with only one element and a comma
+                    dia_plot = [float(el) for el in self.options["tooldia"].split(',') if el != ''][0]
+                self.plot2(dia_plot, obj=self, visible=visible, kind=kind)
             else:
                 # multiple tools usage
                 for tooluid_key in self.cnc_tools:
