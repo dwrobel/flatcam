@@ -4640,9 +4640,9 @@ class Excellon(Geometry):
         # now it can get bounds for nested lists of objects
 
         log.debug("camlib.Excellon.bounds()")
-        # if self.solid_geometry is None:
-        #     log.debug("solid_geometry is None")
-        #     return 0, 0, 0, 0
+        if self.solid_geometry is None:
+            log.debug("solid_geometry is None")
+            return 0, 0, 0, 0
 
         def bounds_rec(obj):
             if type(obj) is list:
