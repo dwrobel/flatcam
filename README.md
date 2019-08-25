@@ -17,6 +17,7 @@ CAD program, and create G-Code for Isolation routing.
 - added new capability in NCC Tool when the reference object is of Gerber type and fixed some newly introduced errors
 - fixed issue #298. The changes in postprocessors done in Preferences dis not update the object UI layout as it was supposed to. The selection of Marlin postproc. did not unhidden the Feedrate Rapids entry.
 - fixed minor issues
+- fixed Tcl Command AddPolygon, AddPolyline
 
 24.08.2019
 
