@@ -13,11 +13,12 @@ CAD program, and create G-Code for Isolation routing.
 
 - initial add of a new Tcl COmmand named CopperClear
 - remade the NCC Tool in preparation for the newly added TclCommand CopperClear
+- finished adding the TclCommandCopperClear that can be called with alias: 'ncc'
 
 24.08.2019
 
 - modified CutOut Tool so now the manual gaps adding will continue until the user is clicking the RMB
-- added ability to turn on/of the grid snapping and to jump to a location while in CutOut Tool manual gap adding action
+- added ability to turn on/off the grid snapping and to jump to a location while in CutOut Tool manual gap adding action
 - made PlotCanvas class inherit from VisPy Canvas instead of creating an instance of it (work of JP)
 - fixed selection by dragging a selection shape in Geometry Editor
 - modified the Paint Tool. Now the Single Polygon and Area/Reference Object painting works with multiple tools too. The tools have to be selected in the Tool Table.
