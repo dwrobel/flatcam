@@ -24,15 +24,18 @@ class TclCommandCncjob(TclCommandSignaled):
 
     # dictionary of types from Tcl command, needs to be ordered , this  is  for options  like -optionname value
     option_types = collections.OrderedDict([
+        ('tooldia', float),
         ('z_cut', float),
         ('z_move', float),
         ('feedrate', float),
         ('feedrate_rapid', float),
-        ('tooldia', float),
         ('spindlespeed', int),
         ('multidepth', bool),
         ('extracut', bool),
         ('depthperpass', float),
+        ('toolchange', int),
+        ('toolchangez', float),
+        ('toolchangexy', tuple),
         ('endz', float),
         ('ppname_g', str),
         ('outname', str)
@@ -62,7 +65,7 @@ class TclCommandCncjob(TclCommandSignaled):
             ('outname', 'Name of the resulting Geometry object.'),
             ('ppname_g', 'Name of the Geometry postprocessor. No quotes, case sensitive')
         ]),
-        'examples': []
+        'examples': ['cncjob geo_name -tooldia 0.5 -z_cut -1.7 -z_move 2 -feedrate 120 -ppname_g default']
     }
 
     def execute(self, args, unnamed_args):

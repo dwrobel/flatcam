@@ -4,7 +4,7 @@ from ObjectCollection import *
 
 class TclCommandClearShell(TclCommand):
     """
-    Tcl shell command to creates a circle in the given Geometry object.
+    Tcl shell command to clear the text in the Tcl Shell browser.
 
     example:
 

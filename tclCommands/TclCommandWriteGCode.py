@@ -37,7 +37,7 @@ class TclCommandWriteGCode(TclCommandSignaled):
             ('preamble', 'Text to append at the beginning.'),
             ('postamble', 'Text to append at the end.')
         ]),
-        'examples': []
+        'examples': ["write_gcode name c:\\\\gcode_repo"]
     }
 
     def execute(self, args, unnamed_args):
