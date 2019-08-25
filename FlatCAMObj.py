@@ -73,7 +73,7 @@ class FlatCAMObj(QtCore.QObject):
 
         self.kind = None  # Override with proper name
 
-        # self.shapes = ShapeCollection(parent=self.app.plotcanvas.vispy_canvas.view.scene)
+        # self.shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene)
         self.shapes = self.app.plotcanvas.new_shape_group()
 
         # self.mark_shapes = self.app.plotcanvas.new_shape_collection(layers=2)

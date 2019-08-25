@@ -202,7 +202,6 @@ class TclCommand(object):
         """
 
         arguments, options = self.parse_arguments(args)
-
         named_args = {}
         unnamed_args = []
 
@@ -274,7 +273,7 @@ class TclCommand(object):
         :return: None, output text or exception
         """
 
-        #self.worker_task.emit({'fcn': self.exec_command_test, 'params': [text, False]})
+        # self.worker_task.emit({'fcn': self.exec_command_test, 'params': [text, False]})
 
         try:
             self.log.debug("TCL command '%s' executed." % str(self.__class__))
@@ -283,7 +282,7 @@ class TclCommand(object):
             return self.execute(args, unnamed_args)
         except Exception as unknown:
             error_info = sys.exc_info()
-            self.log.error("TCL command '%s' failed." % str(self))
+            self.log.error("TCL command '%s' failed. Error text: %s" % (str(self), str(unknown)))
             self.app.display_tcl_error(unknown, error_info)
             self.raise_tcl_unknown_error(unknown)
 

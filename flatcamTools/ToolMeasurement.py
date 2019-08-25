@@ -113,7 +113,7 @@ class Measurement(FlatCAMTool):
         self.original_call_source = 'app'
 
         # VisPy visuals
-        self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.vispy_canvas.view.scene, layers=1)
+        self.sel_shapes = ShapeCollection(parent=self.app.plotcanvas.view.scene, layers=1)
 
         self.measure_btn.clicked.connect(self.activate_measure_tool)
 
@@ -247,7 +247,7 @@ class Measurement(FlatCAMTool):
         log.debug("Measuring Tool --> mouse click release")
 
         if event.button == 1:
-            pos_canvas = self.canvas.vispy_canvas.translate_coords(event.pos)
+            pos_canvas = self.canvas.translate_coords(event.pos)
             # if GRID is active we need to get the snapped positions
             if self.app.grid_status() == True:
                 pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
@@ -286,7 +286,7 @@ class Measurement(FlatCAMTool):
 
     def on_mouse_move_meas(self, event):
         try:  # May fail in case mouse not within axes
-            pos_canvas = self.app.plotcanvas.vispy_canvas.translate_coords(event.pos)
+            pos_canvas = self.app.plotcanvas.translate_coords(event.pos)
             if self.app.grid_status() == True:
                 pos = self.app.geo_editor.snap(pos_canvas[0], pos_canvas[1])
                 self.app.app_cursor.enabled = True

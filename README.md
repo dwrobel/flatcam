@@ -9,6 +9,25 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+25.08.2019
+
+- initial add of a new Tcl Command named CopperClear
+- remade the NCC Tool in preparation for the newly added TclCommand CopperClear
+- finished adding the TclCommandCopperClear that can be called with alias: 'ncc'
+- added new capability in NCC Tool when the reference object is of Gerber type and fixed some newly introduced errors
+
+24.08.2019
+
+- modified CutOut Tool so now the manual gaps adding will continue until the user is clicking the RMB
+- added ability to turn on/off the grid snapping and to jump to a location while in CutOut Tool manual gap adding action
+- made PlotCanvas class inherit from VisPy Canvas instead of creating an instance of it (work of JP)
+- fixed selection by dragging a selection shape in Geometry Editor
+- modified the Paint Tool. Now the Single Polygon and Area/Reference Object painting works with multiple tools too. The tools have to be selected in the Tool Table.
+- remade the TclCommand Paint to work in the new configuration of the the app (the painting functions are now in their own tool, Paint Tool)
+- fixed a bug in the Properties Tool
+- added a new TcL Command named Nregions who generate non-copper regions
+- added a new TclCommand named Bbox who generate a bounding box.
+
 23.08.2019
 
 - in Tool Cutout for the manual gaps, right mouse button click will exit from the action of adding gaps

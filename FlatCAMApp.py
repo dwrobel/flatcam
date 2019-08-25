@@ -98,8 +98,8 @@ class App(QtCore.QObject):
     # ####################################
     # Version and VERSION DATE ###########
     # ####################################
-    version = 8.96
-    version_date = "2019/08/23"
+    version = 8.97
+    version_date = "2019/08/31"
     beta = True
 
     # current date now
@@ -1755,211 +1755,218 @@ class App(QtCore.QObject):
         # #######Auto-complete KEYWORDS #############
         # ###########################################
         self.tcl_commands_list = ['add_circle', 'add_poly', 'add_polygon', 'add_polyline', 'add_rectangle',
-                                  'aligndrill', 'clear',
-                                  'aligndrillgrid', 'cncjob', 'cutout', 'delete', 'drillcncjob',
-                                  'export_gcode',
-                                  'export_svg', 'ext', 'exteriors', 'follow', 'geo_union', 'geocutout', 'get_names',
-                                  'get_sys', 'getsys', 'help', 'import_svg', 'interiors', 'isolate', 'join_excellon',
-                                  'join_excellons', 'join_geometries', 'join_geometry', 'list_sys', 'listsys', 'mill',
-                                  'millholes', 'mirror', 'new', 'new_geometry', 'offset', 'open_excellon', 'open_gcode',
-                                  'open_gerber', 'open_project', 'options', 'paint', 'pan', 'panel', 'panelize', 'plot',
-                                  'save', 'save_project', 'save_sys', 'scale', 'set_active', 'set_sys', 'setsys',
-                                  'skew', 'subtract_poly', 'subtract_rectangle', 'version', 'write_gcode'
+                                  'aligndrill', 'aligndrillgrid', 'bbox', 'bounding_box', 'clear', 'cncjob', 'cutout',
+                                  'delete', 'drillcncjob', 'export_gcode', 'export_svg', 'ext', 'exteriors', 'follow',
+                                  'geo_union', 'geocutout', 'get_names', 'get_sys', 'getsys', 'help', 'import_svg',
+                                  'interiors', 'isolate', 'join_excellon', 'join_excellons', 'join_geometries',
+                                  'join_geometry', 'list_sys', 'listsys', 'mill', 'millholes', 'mirror', 'ncc',
+                                  'ncc_clear', 'ncr', 'new', 'new_geometry', 'non_copper_regions', 'offset',
+                                  'open_excellon', 'open_gcode', 'open_gerber', 'open_project', 'options', 'paint',
+                                  'pan', 'panel', 'panelize', 'plot', 'save', 'save_project', 'save_sys', 'scale',
+                                  'set_active', 'set_sys', 'setsys', 'skew', 'subtract_poly', 'subtract_rectangle',
+                                  'version', 'write_gcode'
                                   ]
 
-        self.ordinary_keywords = ['name', 'center_x', 'center_y', 'radius', 'x0', 'y0', 'x1', 'y1', 'box', 'axis',
-                                  'holes', 'grid', 'minoffset', 'gridoffset', 'axisoffset', 'dia', 'dist',
-                                  'gridoffsetx', 'gridoffsety', 'columns', 'rows', 'z_cut', 'z_move', 'feedrate',
-                                  'feedrate_rapid', 'tooldia', 'multidepth', 'extracut', 'depthperpass', 'ppname_g',
-                                  'outname', 'margin', 'gaps', 'gapsize', 'tools', 'drillz', 'travelz', 'spindlespeed',
-                                  'toolchange', 'toolchangez', 'endz', 'ppname_e', 'opt_type', 'preamble', 'postamble',
-                                  'filename', 'scale_factor', 'type', 'passes', 'overlap', 'combine', 'use_threads',
-                                  'x', 'y', 'follow', 'all', 'spacing_columns', 'spacing_rows', 'factor', 'value',
-                                  'angle_x', 'angle_y', 'gridx', 'gridy', 'True', 'False'
+
+        self.ordinary_keywords = ['all', 'angle_x', 'angle_y', 'axis', 'axisoffset', 'box', 'center_x', 'center_y',
+                                  'columns', 'combine', 'connect', 'contour', 'depthperpass', 'dia', 'dist', 'drillz',
+                                  'endz', 'extracut', 'factor', 'False', 'false', 'feedrate', 'feedrate_rapid',
+                                  'filename', 'follow', 'gaps', 'gapsize', 'grid', 'gridoffset', 'gridoffsetx',
+                                  'gridoffsety', 'gridx', 'gridy', 'has_offset', 'holes', 'margin', 'method',
+                                  'minoffset', 'multidepth', 'name', 'offset', 'opt_type', 'order', 'outname',
+                                  'overlap', 'passes', 'postamble', 'ppname_e', 'ppname_g', 'preamble', 'radius', 'ref',
+                                  'rest', 'rows', 'scale_factor', 'spacing_columns', 'spacing_rows', 'spindlespeed',
+                                  'toolchange', 'toolchangez', 'tooldia', 'tools', 'travelz', 'True', 'true', 'type',
+                                  'use_threads', 'value', 'x', 'x0', 'x1', 'y', 'y0', 'y1', 'z_cut', 'z_move'
                                   ]
 
         self.tcl_keywords = [
-            "after", "append", "apply", "array", "auto_execok", "auto_import", "auto_load", "auto_mkindex",
-            "auto_qualify", "auto_reset", "bgerror", "binary", "break", "case", "catch", "cd", "chan", "clock", "close",
-            "concat", "continue", "coroutine", "dict", "encoding", "eof", "error", "eval", "exec", "exit", "expr",
-            "fblocked", "fconfigure", "fcopy", "file", "fileevent", "flush", "for", "foreach", "format", "gets", "glob",
-            "global", "history", "if", "incr", "info", "interp", "join", "lappend", "lassign", "lindex", "linsert",
-            "list", "llength", "load", "lrange", "lrepeat", "lreplace", "lreverse", "lsearch", "lset", "lsort",
-            "mathfunc", "mathop", "memory", "my", "namespace", "next", "nextto", "open", "package", "parray", "pid",
-            "pkg_mkIndex", "platform", "proc", "puts", "pwd", "read", "refchan", "regexp", "regsub", "rename", "return",
-            "scan", "seek", "self", "set", "socket", "source", "split", "string", "subst", "switch", "tailcall",
-            "tcl_endOfWord", "tcl_findLibrary", "tcl_startOfNextWord", "tcl_startOfPreviousWord", "tcl_wordBreakAfter",
-            "tcl_wordBreakBefore", "tell", "throw", "time", "tm", "trace", "transchan", "try", "unknown", "unload",
-            "unset", "update", "uplevel", "upvar", "variable", "vwait", "while", "yield", "yieldto", "zlib",
-            "attemptckalloc", "attemptckrealloc", "ckalloc", "ckfree", "ckrealloc", "Tcl_Access", "Tcl_AddErrorInfo",
-            "Tcl_AddObjErrorInfo", "Tcl_AlertNotifier", "Tcl_Alloc", "Tcl_AllocStatBuf", "Tcl_AllowExceptions",
-            "Tcl_AppendAllObjTypes", "Tcl_AppendElement", "Tcl_AppendExportList", "Tcl_AppendFormatToObj",
-            "Tcl_AppendLimitedToObj", "Tcl_AppendObjToErrorInfo", "Tcl_AppendObjToObj", "Tcl_AppendPrintfToObj",
-            "Tcl_AppendResult", "Tcl_AppendResultVA", "Tcl_AppendStringsToObj", "Tcl_AppendStringsToObjVA",
-            "Tcl_AppendToObj", "Tcl_AppendUnicodeToObj", "Tcl_AppInit", "Tcl_AsyncCreate", "Tcl_AsyncDelete",
-            "Tcl_AsyncInvoke", "Tcl_AsyncMark", "Tcl_AsyncReady", "Tcl_AttemptAlloc", "Tcl_AttemptRealloc",
-            "Tcl_AttemptSetObjLength", "Tcl_BackgroundError", "Tcl_BackgroundException", "Tcl_Backslash",
-            "Tcl_BadChannelOption", "Tcl_CallWhenDeleted", "Tcl_Canceled", "Tcl_CancelEval", "Tcl_CancelIdleCall",
-            "Tcl_ChannelBlockModeProc", "Tcl_ChannelBuffered", "Tcl_ChannelClose2Proc", "Tcl_ChannelCloseProc",
-            "Tcl_ChannelFlushProc", "Tcl_ChannelGetHandleProc", "Tcl_ChannelGetOptionProc", "Tcl_ChannelHandlerProc",
-            "Tcl_ChannelInputProc", "Tcl_ChannelName", "Tcl_ChannelOutputProc", "Tcl_ChannelSeekProc",
-            "Tcl_ChannelSetOptionProc", "Tcl_ChannelThreadActionProc", "Tcl_ChannelTruncateProc", "Tcl_ChannelVersion",
-            "Tcl_ChannelWatchProc", "Tcl_ChannelWideSeekProc", "Tcl_Chdir", "Tcl_ClassGetMetadata",
-            "Tcl_ClassSetConstructor", "Tcl_ClassSetDestructor", "Tcl_ClassSetMetadata", "Tcl_ClearChannelHandlers",
-            "Tcl_Close", "Tcl_CommandComplete", "Tcl_CommandTraceInfo", "Tcl_Concat", "Tcl_ConcatObj",
-            "Tcl_ConditionFinalize", "Tcl_ConditionNotify", "Tcl_ConditionWait", "Tcl_ConvertCountedElement",
-            "Tcl_ConvertElement", "Tcl_ConvertToType", "Tcl_CopyObjectInstance", "Tcl_CreateAlias",
-            "Tcl_CreateAliasObj", "Tcl_CreateChannel", "Tcl_CreateChannelHandler", "Tcl_CreateCloseHandler",
-            "Tcl_CreateCommand", "Tcl_CreateEncoding", "Tcl_CreateEnsemble", "Tcl_CreateEventSource",
-            "Tcl_CreateExitHandler", "Tcl_CreateFileHandler", "Tcl_CreateHashEntry", "Tcl_CreateInterp",
-            "Tcl_CreateMathFunc", "Tcl_CreateNamespace", "Tcl_CreateObjCommand", "Tcl_CreateObjTrace",
-            "Tcl_CreateSlave", "Tcl_CreateThread", "Tcl_CreateThreadExitHandler", "Tcl_CreateTimerHandler",
-            "Tcl_CreateTrace", "Tcl_CutChannel", "Tcl_DecrRefCount", "Tcl_DeleteAssocData", "Tcl_DeleteChannelHandler",
-            "Tcl_DeleteCloseHandler", "Tcl_DeleteCommand", "Tcl_DeleteCommandFromToken", "Tcl_DeleteEvents",
-            "Tcl_DeleteEventSource", "Tcl_DeleteExitHandler", "Tcl_DeleteFileHandler", "Tcl_DeleteHashEntry",
-            "Tcl_DeleteHashTable", "Tcl_DeleteInterp", "Tcl_DeleteNamespace", "Tcl_DeleteThreadExitHandler",
-            "Tcl_DeleteTimerHandler", "Tcl_DeleteTrace", "Tcl_DetachChannel", "Tcl_DetachPids", "Tcl_DictObjDone",
-            "Tcl_DictObjFirst", "Tcl_DictObjGet", "Tcl_DictObjNext", "Tcl_DictObjPut", "Tcl_DictObjPutKeyList",
-            "Tcl_DictObjRemove", "Tcl_DictObjRemoveKeyList", "Tcl_DictObjSize", "Tcl_DiscardInterpState",
-            "Tcl_DiscardResult", "Tcl_DontCallWhenDeleted", "Tcl_DoOneEvent", "Tcl_DoWhenIdle", "Tcl_DStringAppend",
-            "Tcl_DStringAppendElement", "Tcl_DStringEndSublist", "Tcl_DStringFree", "Tcl_DStringGetResult",
-            "Tcl_DStringInit", "Tcl_DStringLength", "Tcl_DStringResult", "Tcl_DStringSetLength",
-            "Tcl_DStringStartSublist", "Tcl_DStringTrunc", "Tcl_DStringValue", "Tcl_DumpActiveMemory",
-            "Tcl_DuplicateObj", "Tcl_Eof", "Tcl_ErrnoId", "Tcl_ErrnoMsg", "Tcl_Eval", "Tcl_EvalEx", "Tcl_EvalFile",
-            "Tcl_EvalObjEx", "Tcl_EvalObjv", "Tcl_EvalTokens", "Tcl_EvalTokensStandard", "Tcl_EventuallyFree",
-            "Tcl_Exit", "Tcl_ExitThread", "Tcl_Export", "Tcl_ExposeCommand", "Tcl_ExprBoolean", "Tcl_ExprBooleanObj",
-            "Tcl_ExprDouble", "Tcl_ExprDoubleObj", "Tcl_ExprLong", "Tcl_ExprLongObj", "Tcl_ExprObj", "Tcl_ExprString",
-            "Tcl_ExternalToUtf", "Tcl_ExternalToUtfDString", "Tcl_Finalize", "Tcl_FinalizeNotifier",
-            "Tcl_FinalizeThread", "Tcl_FindCommand", "Tcl_FindEnsemble", "Tcl_FindExecutable", "Tcl_FindHashEntry",
-            "Tcl_FindNamespace", "Tcl_FirstHashEntry", "Tcl_Flush", "Tcl_ForgetImport", "Tcl_Format",
-            "Tcl_Free· Tcl_FreeEncoding", "Tcl_FreeParse", "Tcl_FreeResult", "Tcl_FSAccess", "Tcl_FSChdir",
-            "Tcl_FSConvertToPathType", "Tcl_FSCopyDirectory", "Tcl_FSCopyFile", "Tcl_FSCreateDirectory", "Tcl_FSData",
-            "Tcl_FSDeleteFile", "Tcl_FSEqualPaths", "Tcl_FSEvalFile", "Tcl_FSEvalFileEx", "Tcl_FSFileAttrsGet",
-            "Tcl_FSFileAttrsSet", "Tcl_FSFileAttrStrings", "Tcl_FSFileSystemInfo", "Tcl_FSGetCwd",
-            "Tcl_FSGetFileSystemForPath", "Tcl_FSGetInternalRep", "Tcl_FSGetNativePath", "Tcl_FSGetNormalizedPath",
-            "Tcl_FSGetPathType", "Tcl_FSGetTranslatedPath", "Tcl_FSGetTranslatedStringPath", "Tcl_FSJoinPath",
-            "Tcl_FSJoinToPath", "Tcl_FSLink· Tcl_FSListVolumes", "Tcl_FSLoadFile", "Tcl_FSLstat",
-            "Tcl_FSMatchInDirectory", "Tcl_FSMountsChanged", "Tcl_FSNewNativePath", "Tcl_FSOpenFileChannel",
-            "Tcl_FSPathSeparator", "Tcl_FSRegister", "Tcl_FSRemoveDirectory", "Tcl_FSRenameFile", "Tcl_FSSplitPath",
-            "Tcl_FSStat", "Tcl_FSUnloadFile", "Tcl_FSUnregister", "Tcl_FSUtime", "Tcl_GetAccessTimeFromStat",
-            "Tcl_GetAlias", "Tcl_GetAliasObj", "Tcl_GetAssocData", "Tcl_GetBignumFromObj", "Tcl_GetBlocksFromStat",
-            "Tcl_GetBlockSizeFromStat", "Tcl_GetBoolean", "Tcl_GetBooleanFromObj", "Tcl_GetByteArrayFromObj",
-            "Tcl_GetChangeTimeFromStat", "Tcl_GetChannel", "Tcl_GetChannelBufferSize", "Tcl_GetChannelError",
-            "Tcl_GetChannelErrorInterp", "Tcl_GetChannelHandle", "Tcl_GetChannelInstanceData", "Tcl_GetChannelMode",
-            "Tcl_GetChannelName", "Tcl_GetChannelNames", "Tcl_GetChannelNamesEx", "Tcl_GetChannelOption",
-            "Tcl_GetChannelThread", "Tcl_GetChannelType", "Tcl_GetCharLength", "Tcl_GetClassAsObject",
-            "Tcl_GetCommandFromObj", "Tcl_GetCommandFullName", "Tcl_GetCommandInfo", "Tcl_GetCommandInfoFromToken",
-            "Tcl_GetCommandName", "Tcl_GetCurrentNamespace", "Tcl_GetCurrentThread", "Tcl_GetCwd",
-            "Tcl_GetDefaultEncodingDir", "Tcl_GetDeviceTypeFromStat", "Tcl_GetDouble", "Tcl_GetDoubleFromObj",
-            "Tcl_GetEncoding", "Tcl_GetEncodingFromObj", "Tcl_GetEncodingName", "Tcl_GetEncodingNameFromEnvironment",
-            "Tcl_GetEncodingNames", "Tcl_GetEncodingSearchPath", "Tcl_GetEnsembleFlags", "Tcl_GetEnsembleMappingDict",
-            "Tcl_GetEnsembleNamespace", "Tcl_GetEnsembleParameterList", "Tcl_GetEnsembleSubcommandList",
-            "Tcl_GetEnsembleUnknownHandler", "Tcl_GetErrno", "Tcl_GetErrorLine", "Tcl_GetFSDeviceFromStat",
-            "Tcl_GetFSInodeFromStat", "Tcl_GetGlobalNamespace", "Tcl_GetGroupIdFromStat", "Tcl_GetHashKey",
-            "Tcl_GetHashValue", "Tcl_GetHostName", "Tcl_GetIndexFromObj", "Tcl_GetIndexFromObjStruct", "Tcl_GetInt",
-            "Tcl_GetInterpPath", "Tcl_GetIntFromObj", "Tcl_GetLinkCountFromStat", "Tcl_GetLongFromObj", "Tcl_GetMaster",
-            "Tcl_GetMathFuncInfo", "Tcl_GetModeFromStat", "Tcl_GetModificationTimeFromStat", "Tcl_GetNameOfExecutable",
-            "Tcl_GetNamespaceUnknownHandler", "Tcl_GetObjectAsClass", "Tcl_GetObjectCommand", "Tcl_GetObjectFromObj",
-            "Tcl_GetObjectName", "Tcl_GetObjectNamespace", "Tcl_GetObjResult", "Tcl_GetObjType", "Tcl_GetOpenFile",
-            "Tcl_GetPathType", "Tcl_GetRange", "Tcl_GetRegExpFromObj", "Tcl_GetReturnOptions", "Tcl_Gets",
-            "Tcl_GetServiceMode", "Tcl_GetSizeFromStat", "Tcl_GetSlave", "Tcl_GetsObj", "Tcl_GetStackedChannel",
-            "Tcl_GetStartupScript", "Tcl_GetStdChannel", "Tcl_GetString", "Tcl_GetStringFromObj", "Tcl_GetStringResult",
-            "Tcl_GetThreadData", "Tcl_GetTime", "Tcl_GetTopChannel", "Tcl_GetUniChar", "Tcl_GetUnicode",
-            "Tcl_GetUnicodeFromObj", "Tcl_GetUserIdFromStat", "Tcl_GetVar", "Tcl_GetVar2", "Tcl_GetVar2Ex",
-            "Tcl_GetVersion", "Tcl_GetWideIntFromObj", "Tcl_GlobalEval", "Tcl_GlobalEvalObj", "Tcl_HashStats",
-            "Tcl_HideCommand", "Tcl_Import", "Tcl_IncrRefCount", "Tcl_Init", "Tcl_InitCustomHashTable",
-            "Tcl_InitHashTable", "Tcl_InitMemory", "Tcl_InitNotifier", "Tcl_InitObjHashTable", "Tcl_InitStubs",
-            "Tcl_InputBlocked", "Tcl_InputBuffered", "Tcl_InterpActive", "Tcl_InterpDeleted", "Tcl_InvalidateStringRep",
-            "Tcl_IsChannelExisting", "Tcl_IsChannelRegistered", "Tcl_IsChannelShared", "Tcl_IsEnsemble", "Tcl_IsSafe",
-            "Tcl_IsShared", "Tcl_IsStandardChannel", "Tcl_JoinPath", "Tcl_JoinThread", "Tcl_LimitAddHandler",
-            "Tcl_LimitCheck", "Tcl_LimitExceeded", "Tcl_LimitGetCommands", "Tcl_LimitGetGranularity",
-            "Tcl_LimitGetTime", "Tcl_LimitReady", "Tcl_LimitRemoveHandler", "Tcl_LimitSetCommands",
-            "Tcl_LimitSetGranularity", "Tcl_LimitSetTime", "Tcl_LimitTypeEnabled", "Tcl_LimitTypeExceeded",
-            "Tcl_LimitTypeReset", "Tcl_LimitTypeSet", "Tcl_LinkVar", "Tcl_ListMathFuncs", "Tcl_ListObjAppendElement",
-            "Tcl_ListObjAppendList", "Tcl_ListObjGetElements", "Tcl_ListObjIndex", "Tcl_ListObjLength",
-            "Tcl_ListObjReplace", "Tcl_LogCommandInfo", "Tcl_Main", "Tcl_MakeFileChannel", "Tcl_MakeSafe",
-            "Tcl_MakeTcpClientChannel", "Tcl_Merge", "Tcl_MethodDeclarerClass", "Tcl_MethodDeclarerObject",
-            "Tcl_MethodIsPublic", "Tcl_MethodIsType", "Tcl_MethodName", "Tcl_MutexFinalize", "Tcl_MutexLock",
-            "Tcl_MutexUnlock", "Tcl_NewBignumObj", "Tcl_NewBooleanObj", "Tcl_NewByteArrayObj", "Tcl_NewDictObj",
-            "Tcl_NewDoubleObj", "Tcl_NewInstanceMethod", "Tcl_NewIntObj", "Tcl_NewListObj", "Tcl_NewLongObj",
-            "Tcl_NewMethod", "Tcl_NewObj", "Tcl_NewObjectInstance", "Tcl_NewStringObj", "Tcl_NewUnicodeObj",
-            "Tcl_NewWideIntObj", "Tcl_NextHashEntry", "Tcl_NotifyChannel", "Tcl_NRAddCallback", "Tcl_NRCallObjProc",
-            "Tcl_NRCmdSwap", "Tcl_NRCreateCommand", "Tcl_NREvalObj", "Tcl_NREvalObjv", "Tcl_NumUtfChars",
-            "Tcl_ObjectContextInvokeNext", "Tcl_ObjectContextIsFiltering", "Tcl_ObjectContextMethod",
-            "Tcl_ObjectContextObject", "Tcl_ObjectContextSkippedArgs", "Tcl_ObjectDeleted", "Tcl_ObjectGetMetadata",
-            "Tcl_ObjectGetMethodNameMapper", "Tcl_ObjectSetMetadata", "Tcl_ObjectSetMethodNameMapper", "Tcl_ObjGetVar2",
-            "Tcl_ObjPrintf", "Tcl_ObjSetVar2", "Tcl_OpenCommandChannel", "Tcl_OpenFileChannel", "Tcl_OpenTcpClient",
-            "Tcl_OpenTcpServer", "Tcl_OutputBuffered", "Tcl_Panic", "Tcl_PanicVA", "Tcl_ParseArgsObjv",
-            "Tcl_ParseBraces", "Tcl_ParseCommand", "Tcl_ParseExpr", "Tcl_ParseQuotedString", "Tcl_ParseVar",
-            "Tcl_ParseVarName", "Tcl_PkgPresent", "Tcl_PkgPresentEx", "Tcl_PkgProvide", "Tcl_PkgProvideEx",
-            "Tcl_PkgRequire", "Tcl_PkgRequireEx", "Tcl_PkgRequireProc", "Tcl_PosixError", "Tcl_Preserve",
-            "Tcl_PrintDouble", "Tcl_PutEnv", "Tcl_QueryTimeProc", "Tcl_QueueEvent", "Tcl_Read", "Tcl_ReadChars",
-            "Tcl_ReadRaw", "Tcl_Realloc", "Tcl_ReapDetachedProcs", "Tcl_RecordAndEval", "Tcl_RecordAndEvalObj",
-            "Tcl_RegExpCompile", "Tcl_RegExpExec", "Tcl_RegExpExecObj", "Tcl_RegExpGetInfo", "Tcl_RegExpMatch",
-            "Tcl_RegExpMatchObj", "Tcl_RegExpRange", "Tcl_RegisterChannel", "Tcl_RegisterConfig", "Tcl_RegisterObjType",
-            "Tcl_Release", "Tcl_ResetResult", "Tcl_RestoreInterpState", "Tcl_RestoreResult", "Tcl_SaveInterpState",
-            "Tcl_SaveResult", "Tcl_ScanCountedElement", "Tcl_ScanElement", "Tcl_Seek", "Tcl_ServiceAll",
-            "Tcl_ServiceEvent", "Tcl_ServiceModeHook", "Tcl_SetAssocData", "Tcl_SetBignumObj", "Tcl_SetBooleanObj",
-            "Tcl_SetByteArrayLength", "Tcl_SetByteArrayObj", "Tcl_SetChannelBufferSize", "Tcl_SetChannelError",
-            "Tcl_SetChannelErrorInterp", "Tcl_SetChannelOption", "Tcl_SetCommandInfo", "Tcl_SetCommandInfoFromToken",
-            "Tcl_SetDefaultEncodingDir", "Tcl_SetDoubleObj", "Tcl_SetEncodingSearchPath", "Tcl_SetEnsembleFlags",
-            "Tcl_SetEnsembleMappingDict", "Tcl_SetEnsembleParameterList", "Tcl_SetEnsembleSubcommandList",
-            "Tcl_SetEnsembleUnknownHandler", "Tcl_SetErrno", "Tcl_SetErrorCode", "Tcl_SetErrorCodeVA",
-            "Tcl_SetErrorLine", "Tcl_SetExitProc", "Tcl_SetHashValue", "Tcl_SetIntObj", "Tcl_SetListObj",
-            "Tcl_SetLongObj", "Tcl_SetMainLoop", "Tcl_SetMaxBlockTime", "Tcl_SetNamespaceUnknownHandler",
-            "Tcl_SetNotifier", "Tcl_SetObjErrorCode", "Tcl_SetObjLength", "Tcl_SetObjResult", "Tcl_SetPanicProc",
-            "Tcl_SetRecursionLimit", "Tcl_SetResult", "Tcl_SetReturnOptions", "Tcl_SetServiceMode",
-            "Tcl_SetStartupScript", "Tcl_SetStdChannel", "Tcl_SetStringObj", "Tcl_SetSystemEncoding", "Tcl_SetTimeProc",
-            "Tcl_SetTimer", "Tcl_SetUnicodeObj", "Tcl_SetVar", "Tcl_SetVar2", "Tcl_SetVar2Ex", "Tcl_SetWideIntObj",
-            "Tcl_SignalId", "Tcl_SignalMsg", "Tcl_Sleep", "Tcl_SourceRCFile", "Tcl_SpliceChannel", "Tcl_SplitList",
-            "Tcl_SplitPath", "Tcl_StackChannel", "Tcl_StandardChannels", "Tcl_Stat", "Tcl_StaticPackage",
-            "Tcl_StringCaseMatch", "Tcl_StringMatch", "Tcl_SubstObj", "Tcl_TakeBignumFromObj", "Tcl_Tell",
-            "Tcl_ThreadAlert", "Tcl_ThreadQueueEvent", "Tcl_TraceCommand", "Tcl_TraceVar", "Tcl_TraceVar2",
-            "Tcl_TransferResult", "Tcl_TranslateFileName", "Tcl_TruncateChannel", "Tcl_Ungets", "Tcl_UniChar",
-            "Tcl_UniCharAtIndex", "Tcl_UniCharCaseMatch", "Tcl_UniCharIsAlnum", "Tcl_UniCharIsAlpha",
-            "Tcl_UniCharIsControl", "Tcl_UniCharIsDigit", "Tcl_UniCharIsGraph", "Tcl_UniCharIsLower",
-            "Tcl_UniCharIsPrint", "Tcl_UniCharIsPunct", "Tcl_UniCharIsSpace", "Tcl_UniCharIsUpper",
-            "Tcl_UniCharIsWordChar", "Tcl_UniCharLen", "Tcl_UniCharNcasecmp", "Tcl_UniCharNcmp", "Tcl_UniCharToLower",
-            "Tcl_UniCharToTitle", "Tcl_UniCharToUpper", "Tcl_UniCharToUtf", "Tcl_UniCharToUtfDString", "Tcl_UnlinkVar",
-            "Tcl_UnregisterChannel", "Tcl_UnsetVar", "Tcl_UnsetVar2", "Tcl_UnstackChannel", "Tcl_UntraceCommand",
-            "Tcl_UntraceVar", "Tcl_UntraceVar2", "Tcl_UpdateLinkedVar", "Tcl_UpVar", "Tcl_UpVar2", "Tcl_UtfAtIndex",
-            "Tcl_UtfBackslash", "Tcl_UtfCharComplete", "Tcl_UtfFindFirst", "Tcl_UtfFindLast", "Tcl_UtfNext",
-            "Tcl_UtfPrev", "Tcl_UtfToExternal", "Tcl_UtfToExternalDString", "Tcl_UtfToLower", "Tcl_UtfToTitle",
-            "Tcl_UtfToUniChar", "Tcl_UtfToUniCharDString", "Tcl_UtfToUpper", "Tcl_ValidateAllMemory", "Tcl_VarEval",
-            "Tcl_VarEvalVA", "Tcl_VarTraceInfo", "Tcl_VarTraceInfo2", "Tcl_WaitForEvent", "Tcl_WaitPid",
-            "Tcl_WinTCharToUtf", "Tcl_WinUtfToTChar", "Tcl_Write", "Tcl_WriteChars", "Tcl_WriteObj", "Tcl_WriteRaw",
-            "Tcl_WrongNumArgs", "Tcl_ZlibAdler32", "Tcl_ZlibCRC32", "Tcl_ZlibDeflate", "Tcl_ZlibInflate",
-            "Tcl_ZlibStreamChecksum", "Tcl_ZlibStreamClose", "Tcl_ZlibStreamEof", "Tcl_ZlibStreamGet",
-            "Tcl_ZlibStreamGetCommandName", "Tcl_ZlibStreamInit", "Tcl_ZlibStreamPut", "dde", "http", "msgcat",
-            "registry", "tcltest", "Tcl_AllocHashEntryProc", "Tcl_AppInitProc", "Tcl_ArgvInfo", "Tcl_AsyncProc",
-            "Tcl_ChannelProc", "Tcl_ChannelType", "Tcl_CloneProc", "Tcl_CloseProc", "Tcl_CmdDeleteProc", "Tcl_CmdInfo",
-            "Tcl_CmdObjTraceDeleteProc", "Tcl_CmdObjTraceProc", "Tcl_CmdProc", "Tcl_CmdTraceProc",
-            "Tcl_CommandTraceProc", "Tcl_CompareHashKeysProc", "Tcl_Config", "Tcl_DriverBlockModeProc",
-            "Tcl_DriverClose2Proc", "Tcl_DriverCloseProc", "Tcl_DriverFlushProc", "Tcl_DriverGetHandleProc",
-            "Tcl_DriverGetOptionProc", "Tcl_DriverHandlerProc", "Tcl_DriverInputProc", "Tcl_DriverOutputProc",
-            "Tcl_DriverSeekProc", "Tcl_DriverSetOptionProc", "Tcl_DriverThreadActionProc", "Tcl_DriverTruncateProc",
-            "Tcl_DriverWatchProc", "Tcl_DriverWideSeekProc", "Tcl_DupInternalRepProc", "Tcl_EncodingConvertProc",
-            "Tcl_EncodingFreeProc", "Tcl_EncodingType", "Tcl_Event", "Tcl_EventCheckProc", "Tcl_EventDeleteProc",
-            "Tcl_EventProc", "Tcl_EventSetupProc", "Tcl_ExitProc", "Tcl_FileProc", "Tcl_Filesystem",
-            "Tcl_FreeHashEntryProc", "Tcl_FreeInternalRepProc", "Tcl_FreeProc", "Tcl_FSAccessProc", "Tcl_FSChdirProc",
-            "Tcl_FSCopyDirectoryProc", "Tcl_FSCopyFileProc", "Tcl_FSCreateDirectoryProc", "Tcl_FSCreateInternalRepProc",
-            "Tcl_FSDeleteFileProc", "Tcl_FSDupInternalRepProc", "Tcl_FSFileAttrsGetProc", "Tcl_FSFileAttrsSetProc",
-            "Tcl_FSFilesystemPathTypeProc", "Tcl_FSFilesystemSeparatorProc", "Tcl_FSFreeInternalRepProc",
-            "Tcl_FSGetCwdProc", "Tcl_FSInternalToNormalizedProc", "Tcl_FSLinkProc", "Tcl_FSListVolumesProc",
-            "Tcl_FSLoadFileProc", "Tcl_FSLstatProc", "Tcl_FSMatchInDirectoryProc", "Tcl_FSNormalizePathProc",
-            "Tcl_FSOpenFileChannelProc", "Tcl_FSPathInFilesystemProc", "Tcl_FSRemoveDirectoryProc",
-            "Tcl_FSRenameFileProc", "Tcl_FSStatProc", "Tcl_FSUnloadFileProc", "Tcl_FSUtimeProc", "Tcl_GlobTypeData",
-            "Tcl_HashKeyType", "Tcl_IdleProc", "Tcl_Interp", "Tcl_InterpDeleteProc", "Tcl_LimitHandlerDeleteProc",
-            "Tcl_LimitHandlerProc", "Tcl_MainLoopProc", "Tcl_MathProc", "Tcl_MethodCallProc", "Tcl_MethodDeleteProc",
-            "Tcl_MethodType", "Tcl_NamespaceDeleteProc", "Tcl_NotifierProcs", "Tcl_Obj", "Tcl_ObjCmdProc",
-            "Tcl_ObjectMapMethodNameProc", "Tcl_ObjectMetadataDeleteProc", "Tcl_ObjType", "Tcl_PackageInitProc",
-            "Tcl_PackageUnloadProc", "Tcl_PanicProc", "Tcl_RegExpIndices", "Tcl_RegExpInfo", "Tcl_ScaleTimeProc",
-            "Tcl_SetFromAnyProc", "Tcl_TcpAcceptProc", "Tcl_Time", "Tcl_TimerProc", "Tcl_Token", "Tcl_UpdateStringProc",
-            "Tcl_Value", "Tcl_VarTraceProc", "argc", "argv", "argv0", "auto_path", "env", "errorCode", "errorInfo",
-            "filename", "re_syntax", "safe", "Tcl", "tcl_interactive", "tcl_library", "TCL_MEM_DEBUG",
-            "tcl_nonwordchars", "tcl_patchLevel", "tcl_pkgPath", "tcl_platform", "tcl_precision", "tcl_rcFileName",
-            "tcl_traceCompile", "tcl_traceEval", "tcl_version", "tcl_wordchars"
+            'after', 'append', 'apply', 'argc', 'argv', 'argv0', 'array', 'attemptckalloc', 'attemptckrealloc',
+            'auto_execok', 'auto_import', 'auto_load', 'auto_mkindex', 'auto_path', 'auto_qualify', 'auto_reset',
+            'bgerror', 'binary', 'break', 'case', 'catch', 'cd', 'chan', 'ckalloc', 'ckfree', 'ckrealloc', 'clock',
+            'close', 'concat', 'continue', 'coroutine', 'dde', 'dict', 'encoding', 'env', 'eof', 'error', 'errorCode',
+            'errorInfo', 'eval', 'exec', 'exit', 'expr', 'fblocked', 'fconfigure', 'fcopy', 'file', 'fileevent',
+            'filename', 'flush', 'for', 'foreach', 'format', 'gets', 'glob', 'global', 'history', 'http', 'if', 'incr',
+            'info', 'interp', 'join', 'lappend', 'lassign', 'lindex', 'linsert', 'list', 'llength', 'load', 'lrange',
+            'lrepeat', 'lreplace', 'lreverse', 'lsearch', 'lset', 'lsort', 'mathfunc', 'mathop', 'memory', 'msgcat',
+            'my', 'namespace', 'next', 'nextto', 'open', 'package', 'parray', 'pid', 'pkg_mkIndex', 'platform',
+            'proc', 'puts', 'pwd', 're_syntax', 'read', 'refchan', 'regexp', 'registry', 'regsub', 'rename', 'return',
+            'safe', 'scan', 'seek', 'self', 'set', 'socket', 'source', 'split', 'string', 'subst', 'switch',
+            'tailcall', 'Tcl', 'Tcl_Access', 'Tcl_AddErrorInfo', 'Tcl_AddObjErrorInfo', 'Tcl_AlertNotifier',
+            'Tcl_Alloc', 'Tcl_AllocHashEntryProc', 'Tcl_AllocStatBuf', 'Tcl_AllowExceptions', 'Tcl_AppendAllObjTypes',
+            'Tcl_AppendElement', 'Tcl_AppendExportList', 'Tcl_AppendFormatToObj', 'Tcl_AppendLimitedToObj',
+            'Tcl_AppendObjToErrorInfo', 'Tcl_AppendObjToObj', 'Tcl_AppendPrintfToObj', 'Tcl_AppendResult',
+            'Tcl_AppendResultVA', 'Tcl_AppendStringsToObj', 'Tcl_AppendStringsToObjVA', 'Tcl_AppendToObj',
+            'Tcl_AppendUnicodeToObj', 'Tcl_AppInit', 'Tcl_AppInitProc', 'Tcl_ArgvInfo', 'Tcl_AsyncCreate',
+            'Tcl_AsyncDelete', 'Tcl_AsyncInvoke', 'Tcl_AsyncMark', 'Tcl_AsyncProc', 'Tcl_AsyncReady',
+            'Tcl_AttemptAlloc', 'Tcl_AttemptRealloc', 'Tcl_AttemptSetObjLength', 'Tcl_BackgroundError',
+            'Tcl_BackgroundException', 'Tcl_Backslash', 'Tcl_BadChannelOption', 'Tcl_CallWhenDeleted', 'Tcl_Canceled',
+            'Tcl_CancelEval', 'Tcl_CancelIdleCall', 'Tcl_ChannelBlockModeProc', 'Tcl_ChannelBuffered',
+            'Tcl_ChannelClose2Proc', 'Tcl_ChannelCloseProc', 'Tcl_ChannelFlushProc', 'Tcl_ChannelGetHandleProc',
+            'Tcl_ChannelGetOptionProc', 'Tcl_ChannelHandlerProc', 'Tcl_ChannelInputProc', 'Tcl_ChannelName',
+            'Tcl_ChannelOutputProc', 'Tcl_ChannelProc', 'Tcl_ChannelSeekProc', 'Tcl_ChannelSetOptionProc',
+            'Tcl_ChannelThreadActionProc', 'Tcl_ChannelTruncateProc', 'Tcl_ChannelType', 'Tcl_ChannelVersion',
+            'Tcl_ChannelWatchProc', 'Tcl_ChannelWideSeekProc', 'Tcl_Chdir', 'Tcl_ClassGetMetadata',
+            'Tcl_ClassSetConstructor', 'Tcl_ClassSetDestructor', 'Tcl_ClassSetMetadata', 'Tcl_ClearChannelHandlers',
+            'Tcl_CloneProc', 'Tcl_Close', 'Tcl_CloseProc', 'Tcl_CmdDeleteProc', 'Tcl_CmdInfo',
+            'Tcl_CmdObjTraceDeleteProc', 'Tcl_CmdObjTraceProc', 'Tcl_CmdProc', 'Tcl_CmdTraceProc',
+            'Tcl_CommandComplete', 'Tcl_CommandTraceInfo', 'Tcl_CommandTraceProc', 'Tcl_CompareHashKeysProc',
+            'Tcl_Concat', 'Tcl_ConcatObj', 'Tcl_ConditionFinalize', 'Tcl_ConditionNotify', 'Tcl_ConditionWait',
+            'Tcl_Config', 'Tcl_ConvertCountedElement', 'Tcl_ConvertElement', 'Tcl_ConvertToType',
+            'Tcl_CopyObjectInstance', 'Tcl_CreateAlias', 'Tcl_CreateAliasObj', 'Tcl_CreateChannel',
+            'Tcl_CreateChannelHandler', 'Tcl_CreateCloseHandler', 'Tcl_CreateCommand', 'Tcl_CreateEncoding',
+            'Tcl_CreateEnsemble', 'Tcl_CreateEventSource', 'Tcl_CreateExitHandler', 'Tcl_CreateFileHandler',
+            'Tcl_CreateHashEntry', 'Tcl_CreateInterp', 'Tcl_CreateMathFunc', 'Tcl_CreateNamespace',
+            'Tcl_CreateObjCommand', 'Tcl_CreateObjTrace', 'Tcl_CreateSlave', 'Tcl_CreateThread',
+            'Tcl_CreateThreadExitHandler', 'Tcl_CreateTimerHandler', 'Tcl_CreateTrace',
+            'Tcl_CutChannel', 'Tcl_DecrRefCount', 'Tcl_DeleteAssocData', 'Tcl_DeleteChannelHandler',
+            'Tcl_DeleteCloseHandler', 'Tcl_DeleteCommand', 'Tcl_DeleteCommandFromToken', 'Tcl_DeleteEvents',
+            'Tcl_DeleteEventSource', 'Tcl_DeleteExitHandler', 'Tcl_DeleteFileHandler', 'Tcl_DeleteHashEntry',
+            'Tcl_DeleteHashTable', 'Tcl_DeleteInterp', 'Tcl_DeleteNamespace', 'Tcl_DeleteThreadExitHandler',
+            'Tcl_DeleteTimerHandler', 'Tcl_DeleteTrace', 'Tcl_DetachChannel', 'Tcl_DetachPids', 'Tcl_DictObjDone',
+            'Tcl_DictObjFirst', 'Tcl_DictObjGet', 'Tcl_DictObjNext', 'Tcl_DictObjPut', 'Tcl_DictObjPutKeyList',
+            'Tcl_DictObjRemove', 'Tcl_DictObjRemoveKeyList', 'Tcl_DictObjSize', 'Tcl_DiscardInterpState',
+            'Tcl_DiscardResult', 'Tcl_DontCallWhenDeleted', 'Tcl_DoOneEvent', 'Tcl_DoWhenIdle',
+            'Tcl_DriverBlockModeProc', 'Tcl_DriverClose2Proc', 'Tcl_DriverCloseProc', 'Tcl_DriverFlushProc',
+            'Tcl_DriverGetHandleProc', 'Tcl_DriverGetOptionProc', 'Tcl_DriverHandlerProc', 'Tcl_DriverInputProc',
+            'Tcl_DriverOutputProc', 'Tcl_DriverSeekProc', 'Tcl_DriverSetOptionProc', 'Tcl_DriverThreadActionProc',
+            'Tcl_DriverTruncateProc', 'Tcl_DriverWatchProc', 'Tcl_DriverWideSeekProc', 'Tcl_DStringAppend',
+            'Tcl_DStringAppendElement', 'Tcl_DStringEndSublist', 'Tcl_DStringFree', 'Tcl_DStringGetResult',
+            'Tcl_DStringInit', 'Tcl_DStringLength', 'Tcl_DStringResult', 'Tcl_DStringSetLength',
+            'Tcl_DStringStartSublist', 'Tcl_DStringTrunc', 'Tcl_DStringValue', 'Tcl_DumpActiveMemory',
+            'Tcl_DupInternalRepProc', 'Tcl_DuplicateObj', 'Tcl_EncodingConvertProc', 'Tcl_EncodingFreeProc',
+            'Tcl_EncodingType', 'tcl_endOfWord', 'Tcl_Eof', 'Tcl_ErrnoId', 'Tcl_ErrnoMsg', 'Tcl_Eval', 'Tcl_EvalEx',
+            'Tcl_EvalFile', 'Tcl_EvalObjEx', 'Tcl_EvalObjv', 'Tcl_EvalTokens', 'Tcl_EvalTokensStandard', 'Tcl_Event',
+            'Tcl_EventCheckProc', 'Tcl_EventDeleteProc', 'Tcl_EventProc', 'Tcl_EventSetupProc', 'Tcl_EventuallyFree',
+            'Tcl_Exit', 'Tcl_ExitProc', 'Tcl_ExitThread', 'Tcl_Export', 'Tcl_ExposeCommand', 'Tcl_ExprBoolean',
+            'Tcl_ExprBooleanObj', 'Tcl_ExprDouble', 'Tcl_ExprDoubleObj', 'Tcl_ExprLong', 'Tcl_ExprLongObj',
+            'Tcl_ExprObj', 'Tcl_ExprString', 'Tcl_ExternalToUtf', 'Tcl_ExternalToUtfDString', 'Tcl_FileProc',
+            'Tcl_Filesystem', 'Tcl_Finalize', 'Tcl_FinalizeNotifier', 'Tcl_FinalizeThread', 'Tcl_FindCommand',
+            'Tcl_FindEnsemble', 'Tcl_FindExecutable', 'Tcl_FindHashEntry', 'tcl_findLibrary', 'Tcl_FindNamespace',
+            'Tcl_FirstHashEntry', 'Tcl_Flush', 'Tcl_ForgetImport', 'Tcl_Format', 'Tcl_FreeHashEntryProc',
+            'Tcl_FreeInternalRepProc', 'Tcl_FreeParse', 'Tcl_FreeProc', 'Tcl_FreeResult',
+            'Tcl_Free·\xa0Tcl_FreeEncoding', 'Tcl_FSAccess', 'Tcl_FSAccessProc', 'Tcl_FSChdir',
+            'Tcl_FSChdirProc', 'Tcl_FSConvertToPathType', 'Tcl_FSCopyDirectory', 'Tcl_FSCopyDirectoryProc',
+            'Tcl_FSCopyFile', 'Tcl_FSCopyFileProc', 'Tcl_FSCreateDirectory', 'Tcl_FSCreateDirectoryProc',
+            'Tcl_FSCreateInternalRepProc', 'Tcl_FSData', 'Tcl_FSDeleteFile', 'Tcl_FSDeleteFileProc',
+            'Tcl_FSDupInternalRepProc', 'Tcl_FSEqualPaths', 'Tcl_FSEvalFile', 'Tcl_FSEvalFileEx',
+            'Tcl_FSFileAttrsGet', 'Tcl_FSFileAttrsGetProc', 'Tcl_FSFileAttrsSet', 'Tcl_FSFileAttrsSetProc',
+            'Tcl_FSFileAttrStrings', 'Tcl_FSFileSystemInfo', 'Tcl_FSFilesystemPathTypeProc',
+            'Tcl_FSFilesystemSeparatorProc', 'Tcl_FSFreeInternalRepProc', 'Tcl_FSGetCwd', 'Tcl_FSGetCwdProc',
+            'Tcl_FSGetFileSystemForPath', 'Tcl_FSGetInternalRep', 'Tcl_FSGetNativePath', 'Tcl_FSGetNormalizedPath',
+            'Tcl_FSGetPathType', 'Tcl_FSGetTranslatedPath', 'Tcl_FSGetTranslatedStringPath',
+            'Tcl_FSInternalToNormalizedProc', 'Tcl_FSJoinPath', 'Tcl_FSJoinToPath', 'Tcl_FSLinkProc',
+            'Tcl_FSLink·\xa0Tcl_FSListVolumes', 'Tcl_FSListVolumesProc', 'Tcl_FSLoadFile', 'Tcl_FSLoadFileProc',
+            'Tcl_FSLstat', 'Tcl_FSLstatProc', 'Tcl_FSMatchInDirectory', 'Tcl_FSMatchInDirectoryProc',
+            'Tcl_FSMountsChanged', 'Tcl_FSNewNativePath', 'Tcl_FSNormalizePathProc', 'Tcl_FSOpenFileChannel',
+            'Tcl_FSOpenFileChannelProc', 'Tcl_FSPathInFilesystemProc', 'Tcl_FSPathSeparator', 'Tcl_FSRegister',
+            'Tcl_FSRemoveDirectory', 'Tcl_FSRemoveDirectoryProc', 'Tcl_FSRenameFile', 'Tcl_FSRenameFileProc',
+            'Tcl_FSSplitPath', 'Tcl_FSStat', 'Tcl_FSStatProc', 'Tcl_FSUnloadFile', 'Tcl_FSUnloadFileProc',
+            'Tcl_FSUnregister', 'Tcl_FSUtime', 'Tcl_FSUtimeProc', 'Tcl_GetAccessTimeFromStat', 'Tcl_GetAlias',
+            'Tcl_GetAliasObj', 'Tcl_GetAssocData', 'Tcl_GetBignumFromObj', 'Tcl_GetBlocksFromStat',
+            'Tcl_GetBlockSizeFromStat', 'Tcl_GetBoolean', 'Tcl_GetBooleanFromObj', 'Tcl_GetByteArrayFromObj',
+            'Tcl_GetChangeTimeFromStat', 'Tcl_GetChannel', 'Tcl_GetChannelBufferSize', 'Tcl_GetChannelError',
+            'Tcl_GetChannelErrorInterp', 'Tcl_GetChannelHandle', 'Tcl_GetChannelInstanceData', 'Tcl_GetChannelMode',
+            'Tcl_GetChannelName', 'Tcl_GetChannelNames', 'Tcl_GetChannelNamesEx', 'Tcl_GetChannelOption',
+            'Tcl_GetChannelThread', 'Tcl_GetChannelType', 'Tcl_GetCharLength', 'Tcl_GetClassAsObject',
+            'Tcl_GetCommandFromObj', 'Tcl_GetCommandFullName', 'Tcl_GetCommandInfo', 'Tcl_GetCommandInfoFromToken',
+            'Tcl_GetCommandName', 'Tcl_GetCurrentNamespace', 'Tcl_GetCurrentThread', 'Tcl_GetCwd',
+            'Tcl_GetDefaultEncodingDir', 'Tcl_GetDeviceTypeFromStat', 'Tcl_GetDouble', 'Tcl_GetDoubleFromObj',
+            'Tcl_GetEncoding', 'Tcl_GetEncodingFromObj', 'Tcl_GetEncodingName', 'Tcl_GetEncodingNameFromEnvironment',
+            'Tcl_GetEncodingNames', 'Tcl_GetEncodingSearchPath', 'Tcl_GetEnsembleFlags', 'Tcl_GetEnsembleMappingDict',
+            'Tcl_GetEnsembleNamespace', 'Tcl_GetEnsembleParameterList', 'Tcl_GetEnsembleSubcommandList',
+            'Tcl_GetEnsembleUnknownHandler', 'Tcl_GetErrno', 'Tcl_GetErrorLine', 'Tcl_GetFSDeviceFromStat',
+            'Tcl_GetFSInodeFromStat', 'Tcl_GetGlobalNamespace', 'Tcl_GetGroupIdFromStat', 'Tcl_GetHashKey',
+            'Tcl_GetHashValue', 'Tcl_GetHostName', 'Tcl_GetIndexFromObj', 'Tcl_GetIndexFromObjStruct', 'Tcl_GetInt',
+            'Tcl_GetInterpPath', 'Tcl_GetIntFromObj', 'Tcl_GetLinkCountFromStat', 'Tcl_GetLongFromObj',
+            'Tcl_GetMaster', 'Tcl_GetMathFuncInfo', 'Tcl_GetModeFromStat', 'Tcl_GetModificationTimeFromStat',
+            'Tcl_GetNameOfExecutable', 'Tcl_GetNamespaceUnknownHandler', 'Tcl_GetObjectAsClass', 'Tcl_GetObjectCommand',
+            'Tcl_GetObjectFromObj', 'Tcl_GetObjectName', 'Tcl_GetObjectNamespace', 'Tcl_GetObjResult', 'Tcl_GetObjType',
+            'Tcl_GetOpenFile', 'Tcl_GetPathType', 'Tcl_GetRange', 'Tcl_GetRegExpFromObj', 'Tcl_GetReturnOptions',
+            'Tcl_Gets', 'Tcl_GetServiceMode', 'Tcl_GetSizeFromStat', 'Tcl_GetSlave', 'Tcl_GetsObj',
+            'Tcl_GetStackedChannel', 'Tcl_GetStartupScript', 'Tcl_GetStdChannel', 'Tcl_GetString',
+            'Tcl_GetStringFromObj', 'Tcl_GetStringResult', 'Tcl_GetThreadData', 'Tcl_GetTime', 'Tcl_GetTopChannel',
+            'Tcl_GetUniChar', 'Tcl_GetUnicode', 'Tcl_GetUnicodeFromObj', 'Tcl_GetUserIdFromStat', 'Tcl_GetVar',
+            'Tcl_GetVar2', 'Tcl_GetVar2Ex', 'Tcl_GetVersion', 'Tcl_GetWideIntFromObj', 'Tcl_GlobalEval',
+            'Tcl_GlobalEvalObj', 'Tcl_GlobTypeData', 'Tcl_HashKeyType', 'Tcl_HashStats', 'Tcl_HideCommand',
+            'Tcl_IdleProc', 'Tcl_Import', 'Tcl_IncrRefCount', 'Tcl_Init', 'Tcl_InitCustomHashTable',
+            'Tcl_InitHashTable', 'Tcl_InitMemory', 'Tcl_InitNotifier', 'Tcl_InitObjHashTable', 'Tcl_InitStubs',
+            'Tcl_InputBlocked', 'Tcl_InputBuffered', 'tcl_interactive', 'Tcl_Interp', 'Tcl_InterpActive',
+            'Tcl_InterpDeleted', 'Tcl_InterpDeleteProc', 'Tcl_InvalidateStringRep', 'Tcl_IsChannelExisting',
+            'Tcl_IsChannelRegistered', 'Tcl_IsChannelShared', 'Tcl_IsEnsemble', 'Tcl_IsSafe', 'Tcl_IsShared',
+            'Tcl_IsStandardChannel', 'Tcl_JoinPath', 'Tcl_JoinThread', 'tcl_library', 'Tcl_LimitAddHandler',
+            'Tcl_LimitCheck', 'Tcl_LimitExceeded', 'Tcl_LimitGetCommands', 'Tcl_LimitGetGranularity',
+            'Tcl_LimitGetTime', 'Tcl_LimitHandlerDeleteProc', 'Tcl_LimitHandlerProc', 'Tcl_LimitReady',
+            'Tcl_LimitRemoveHandler', 'Tcl_LimitSetCommands', 'Tcl_LimitSetGranularity', 'Tcl_LimitSetTime',
+            'Tcl_LimitTypeEnabled', 'Tcl_LimitTypeExceeded', 'Tcl_LimitTypeReset', 'Tcl_LimitTypeSet',
+            'Tcl_LinkVar', 'Tcl_ListMathFuncs', 'Tcl_ListObjAppendElement', 'Tcl_ListObjAppendList',
+            'Tcl_ListObjGetElements', 'Tcl_ListObjIndex', 'Tcl_ListObjLength', 'Tcl_ListObjReplace',
+            'Tcl_LogCommandInfo', 'Tcl_Main', 'Tcl_MainLoopProc', 'Tcl_MakeFileChannel', 'Tcl_MakeSafe',
+            'Tcl_MakeTcpClientChannel', 'Tcl_MathProc', 'TCL_MEM_DEBUG', 'Tcl_Merge', 'Tcl_MethodCallProc',
+            'Tcl_MethodDeclarerClass', 'Tcl_MethodDeclarerObject', 'Tcl_MethodDeleteProc', 'Tcl_MethodIsPublic',
+            'Tcl_MethodIsType', 'Tcl_MethodName', 'Tcl_MethodType', 'Tcl_MutexFinalize', 'Tcl_MutexLock',
+            'Tcl_MutexUnlock', 'Tcl_NamespaceDeleteProc', 'Tcl_NewBignumObj', 'Tcl_NewBooleanObj',
+            'Tcl_NewByteArrayObj', 'Tcl_NewDictObj', 'Tcl_NewDoubleObj', 'Tcl_NewInstanceMethod', 'Tcl_NewIntObj',
+            'Tcl_NewListObj', 'Tcl_NewLongObj', 'Tcl_NewMethod', 'Tcl_NewObj', 'Tcl_NewObjectInstance',
+            'Tcl_NewStringObj', 'Tcl_NewUnicodeObj', 'Tcl_NewWideIntObj', 'Tcl_NextHashEntry', 'tcl_nonwordchars',
+            'Tcl_NotifierProcs', 'Tcl_NotifyChannel', 'Tcl_NRAddCallback', 'Tcl_NRCallObjProc', 'Tcl_NRCmdSwap',
+            'Tcl_NRCreateCommand', 'Tcl_NREvalObj', 'Tcl_NREvalObjv', 'Tcl_NumUtfChars', 'Tcl_Obj', 'Tcl_ObjCmdProc',
+            'Tcl_ObjectContextInvokeNext', 'Tcl_ObjectContextIsFiltering', 'Tcl_ObjectContextMethod',
+            'Tcl_ObjectContextObject', 'Tcl_ObjectContextSkippedArgs', 'Tcl_ObjectDeleted', 'Tcl_ObjectGetMetadata',
+            'Tcl_ObjectGetMethodNameMapper', 'Tcl_ObjectMapMethodNameProc', 'Tcl_ObjectMetadataDeleteProc',
+            'Tcl_ObjectSetMetadata', 'Tcl_ObjectSetMethodNameMapper', 'Tcl_ObjGetVar2', 'Tcl_ObjPrintf',
+            'Tcl_ObjSetVar2', 'Tcl_ObjType', 'Tcl_OpenCommandChannel', 'Tcl_OpenFileChannel', 'Tcl_OpenTcpClient',
+            'Tcl_OpenTcpServer', 'Tcl_OutputBuffered', 'Tcl_PackageInitProc', 'Tcl_PackageUnloadProc', 'Tcl_Panic',
+            'Tcl_PanicProc', 'Tcl_PanicVA', 'Tcl_ParseArgsObjv', 'Tcl_ParseBraces', 'Tcl_ParseCommand', 'Tcl_ParseExpr',
+            'Tcl_ParseQuotedString', 'Tcl_ParseVar', 'Tcl_ParseVarName', 'tcl_patchLevel', 'tcl_pkgPath',
+            'Tcl_PkgPresent', 'Tcl_PkgPresentEx', 'Tcl_PkgProvide', 'Tcl_PkgProvideEx', 'Tcl_PkgRequire',
+            'Tcl_PkgRequireEx', 'Tcl_PkgRequireProc', 'tcl_platform', 'Tcl_PosixError', 'tcl_precision',
+            'Tcl_Preserve', 'Tcl_PrintDouble', 'Tcl_PutEnv', 'Tcl_QueryTimeProc', 'Tcl_QueueEvent', 'tcl_rcFileName',
+            'Tcl_Read', 'Tcl_ReadChars', 'Tcl_ReadRaw', 'Tcl_Realloc', 'Tcl_ReapDetachedProcs', 'Tcl_RecordAndEval',
+            'Tcl_RecordAndEvalObj', 'Tcl_RegExpCompile', 'Tcl_RegExpExec', 'Tcl_RegExpExecObj', 'Tcl_RegExpGetInfo',
+            'Tcl_RegExpIndices', 'Tcl_RegExpInfo', 'Tcl_RegExpMatch', 'Tcl_RegExpMatchObj', 'Tcl_RegExpRange',
+            'Tcl_RegisterChannel', 'Tcl_RegisterConfig', 'Tcl_RegisterObjType', 'Tcl_Release', 'Tcl_ResetResult',
+            'Tcl_RestoreInterpState', 'Tcl_RestoreResult', 'Tcl_SaveInterpState', 'Tcl_SaveResult', 'Tcl_ScaleTimeProc',
+            'Tcl_ScanCountedElement', 'Tcl_ScanElement', 'Tcl_Seek', 'Tcl_ServiceAll', 'Tcl_ServiceEvent',
+            'Tcl_ServiceModeHook', 'Tcl_SetAssocData', 'Tcl_SetBignumObj', 'Tcl_SetBooleanObj',
+            'Tcl_SetByteArrayLength', 'Tcl_SetByteArrayObj', 'Tcl_SetChannelBufferSize', 'Tcl_SetChannelError',
+            'Tcl_SetChannelErrorInterp', 'Tcl_SetChannelOption', 'Tcl_SetCommandInfo', 'Tcl_SetCommandInfoFromToken',
+            'Tcl_SetDefaultEncodingDir', 'Tcl_SetDoubleObj', 'Tcl_SetEncodingSearchPath', 'Tcl_SetEnsembleFlags',
+            'Tcl_SetEnsembleMappingDict', 'Tcl_SetEnsembleParameterList', 'Tcl_SetEnsembleSubcommandList',
+            'Tcl_SetEnsembleUnknownHandler', 'Tcl_SetErrno', 'Tcl_SetErrorCode', 'Tcl_SetErrorCodeVA',
+            'Tcl_SetErrorLine', 'Tcl_SetExitProc', 'Tcl_SetFromAnyProc', 'Tcl_SetHashValue', 'Tcl_SetIntObj',
+            'Tcl_SetListObj', 'Tcl_SetLongObj', 'Tcl_SetMainLoop', 'Tcl_SetMaxBlockTime',
+            'Tcl_SetNamespaceUnknownHandler', 'Tcl_SetNotifier', 'Tcl_SetObjErrorCode', 'Tcl_SetObjLength',
+            'Tcl_SetObjResult', 'Tcl_SetPanicProc', 'Tcl_SetRecursionLimit', 'Tcl_SetResult', 'Tcl_SetReturnOptions',
+            'Tcl_SetServiceMode', 'Tcl_SetStartupScript', 'Tcl_SetStdChannel', 'Tcl_SetStringObj',
+            'Tcl_SetSystemEncoding', 'Tcl_SetTimeProc', 'Tcl_SetTimer', 'Tcl_SetUnicodeObj', 'Tcl_SetVar',
+            'Tcl_SetVar2', 'Tcl_SetVar2Ex', 'Tcl_SetWideIntObj', 'Tcl_SignalId', 'Tcl_SignalMsg', 'Tcl_Sleep',
+            'Tcl_SourceRCFile', 'Tcl_SpliceChannel', 'Tcl_SplitList', 'Tcl_SplitPath', 'Tcl_StackChannel',
+            'Tcl_StandardChannels', 'tcl_startOfNextWord', 'tcl_startOfPreviousWord', 'Tcl_Stat', 'Tcl_StaticPackage',
+            'Tcl_StringCaseMatch', 'Tcl_StringMatch', 'Tcl_SubstObj', 'Tcl_TakeBignumFromObj', 'Tcl_TcpAcceptProc',
+            'Tcl_Tell', 'Tcl_ThreadAlert', 'Tcl_ThreadQueueEvent', 'Tcl_Time', 'Tcl_TimerProc', 'Tcl_Token',
+            'Tcl_TraceCommand', 'tcl_traceCompile', 'tcl_traceEval', 'Tcl_TraceVar', 'Tcl_TraceVar2',
+            'Tcl_TransferResult', 'Tcl_TranslateFileName', 'Tcl_TruncateChannel', 'Tcl_Ungets', 'Tcl_UniChar',
+            'Tcl_UniCharAtIndex', 'Tcl_UniCharCaseMatch', 'Tcl_UniCharIsAlnum', 'Tcl_UniCharIsAlpha',
+            'Tcl_UniCharIsControl', 'Tcl_UniCharIsDigit', 'Tcl_UniCharIsGraph', 'Tcl_UniCharIsLower',
+            'Tcl_UniCharIsPrint', 'Tcl_UniCharIsPunct', 'Tcl_UniCharIsSpace', 'Tcl_UniCharIsUpper',
+            'Tcl_UniCharIsWordChar', 'Tcl_UniCharLen', 'Tcl_UniCharNcasecmp', 'Tcl_UniCharNcmp', 'Tcl_UniCharToLower',
+            'Tcl_UniCharToTitle', 'Tcl_UniCharToUpper', 'Tcl_UniCharToUtf', 'Tcl_UniCharToUtfDString', 'Tcl_UnlinkVar',
+            'Tcl_UnregisterChannel', 'Tcl_UnsetVar', 'Tcl_UnsetVar2', 'Tcl_UnstackChannel', 'Tcl_UntraceCommand',
+            'Tcl_UntraceVar', 'Tcl_UntraceVar2', 'Tcl_UpdateLinkedVar', 'Tcl_UpdateStringProc', 'Tcl_UpVar',
+            'Tcl_UpVar2', 'Tcl_UtfAtIndex', 'Tcl_UtfBackslash', 'Tcl_UtfCharComplete', 'Tcl_UtfFindFirst',
+            'Tcl_UtfFindLast', 'Tcl_UtfNext', 'Tcl_UtfPrev', 'Tcl_UtfToExternal', 'Tcl_UtfToExternalDString',
+            'Tcl_UtfToLower', 'Tcl_UtfToTitle', 'Tcl_UtfToUniChar', 'Tcl_UtfToUniCharDString', 'Tcl_UtfToUpper',
+            'Tcl_ValidateAllMemory', 'Tcl_Value', 'Tcl_VarEval', 'Tcl_VarEvalVA', 'Tcl_VarTraceInfo',
+            'Tcl_VarTraceInfo2', 'Tcl_VarTraceProc', 'tcl_version', 'Tcl_WaitForEvent', 'Tcl_WaitPid',
+            'Tcl_WinTCharToUtf', 'Tcl_WinUtfToTChar', 'tcl_wordBreakAfter', 'tcl_wordBreakBefore', 'tcl_wordchars',
+            'Tcl_Write', 'Tcl_WriteChars', 'Tcl_WriteObj', 'Tcl_WriteRaw', 'Tcl_WrongNumArgs', 'Tcl_ZlibAdler32',
+            'Tcl_ZlibCRC32', 'Tcl_ZlibDeflate', 'Tcl_ZlibInflate', 'Tcl_ZlibStreamChecksum', 'Tcl_ZlibStreamClose',
+            'Tcl_ZlibStreamEof', 'Tcl_ZlibStreamGet', 'Tcl_ZlibStreamGetCommandName', 'Tcl_ZlibStreamInit',
+            'Tcl_ZlibStreamPut', 'tcltest', 'tell', 'throw', 'time', 'tm', 'trace', 'transchan', 'try', 'unknown',
+            'unload', 'unset', 'update', 'uplevel', 'upvar', 'variable', 'vwait', 'while', 'yield', 'yieldto', 'zlib'
         ]
+
 
         self.myKeywords = self.tcl_commands_list + self.ordinary_keywords + self.tcl_keywords
 
@@ -5256,11 +5263,12 @@ class App(QtCore.QObject):
 
         cursor = QtGui.QCursor()
 
-        canvas_origin = self.plotcanvas.vispy_canvas.native.mapToGlobal(QtCore.QPoint(0, 0))
-        jump_loc = self.plotcanvas.vispy_canvas.translate_coords_2((location[0], location[1]))
+        canvas_origin = self.plotcanvas.native.mapToGlobal(QtCore.QPoint(0, 0))
+        jump_loc = self.plotcanvas.translate_coords_2((location[0], location[1]))
 
         cursor.setPos(canvas_origin.x() + jump_loc[0], (canvas_origin.y() + jump_loc[1]))
         self.inform.emit(_("[success] Done."))
+        return location
 
     def on_copy_object(self):
         self.report_usage("on_copy_object()")
@@ -5480,7 +5488,7 @@ class App(QtCore.QObject):
     def on_set_zero_click(self, event):
         # this function will be available only for mouse left click
         pos = []
-        pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
+        pos_canvas = self.plotcanvas.translate_coords(event.pos)
         if event.button == 1:
             if self.grid_status() == True:
                 pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
@@ -5835,7 +5843,7 @@ class App(QtCore.QObject):
 
         :return: None
         """
-        self.plotcanvas.vispy_canvas.update()           # TODO: Need update canvas?
+        self.plotcanvas.update()           # TODO: Need update canvas?
         self.on_zoom_fit(None)
         self.collection.update_view()
         # self.inform.emit(_("Plots updated ..."))
@@ -6008,11 +6016,11 @@ class App(QtCore.QObject):
         self.pos = []
 
         # So it can receive key presses
-        self.plotcanvas.vispy_canvas.native.setFocus()
+        self.plotcanvas.native.setFocus()
         # Set the mouse button for panning
-        self.plotcanvas.vispy_canvas.view.camera.pan_button_setting = self.defaults['global_pan_button']
+        self.plotcanvas.view.camera.pan_button_setting = self.defaults['global_pan_button']
 
-        self.pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
+        self.pos_canvas = self.plotcanvas.translate_coords(event.pos)
 
         if self.grid_status() == True:
             self.pos = self.geo_editor.snap(self.pos_canvas[0], self.pos_canvas[1])
@@ -6058,7 +6066,7 @@ class App(QtCore.QObject):
         """
 
         # So it can receive key presses
-        self.plotcanvas.vispy_canvas.native.setFocus()
+        self.plotcanvas.native.setFocus()
         self.pos_jump = event.pos
 
         self.ui.popMenu.mouse_is_panning = False
@@ -6071,7 +6079,7 @@ class App(QtCore.QObject):
 
         if self.rel_point1 is not None:
             try:  # May fail in case mouse not within axes
-                pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
+                pos_canvas = self.plotcanvas.translate_coords(event.pos)
                 if self.grid_status() == True:
                     pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
                     self.app_cursor.enabled = True
@@ -6145,7 +6153,7 @@ class App(QtCore.QObject):
         :return:
         """
         pos = 0, 0
-        pos_canvas = self.plotcanvas.vispy_canvas.translate_coords(event.pos)
+        pos_canvas = self.plotcanvas.translate_coords(event.pos)
         if self.grid_status() == True:
             pos = self.geo_editor.snap(pos_canvas[0], pos_canvas[1])
         else:
@@ -6377,7 +6385,7 @@ class App(QtCore.QObject):
                     # curr_sel_obj.plot(color=self.FC_dark_blue, face_color=self.FC_light_blue)
 
                     # TODO: on selected objects change the object colors and do not draw the selection box
-                    # self.plotcanvas.vispy_canvas.update() # this updates the canvas
+                    # self.plotcanvas.update() # this updates the canvas
         except Exception as e:
             log.error("[ERROR] Something went bad. %s" % str(e))
             return
@@ -9064,7 +9072,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
         self.plotcanvas = PlotCanvas(plot_container, self)
 
         # So it can receive key presses
-        self.plotcanvas.vispy_canvas.native.setFocus()
+        self.plotcanvas.native.setFocus()
 
         self.plotcanvas.vis_connect('mouse_move', self.on_mouse_move_over_plot)
         self.plotcanvas.vis_connect('mouse_press', self.on_mouse_click_over_plot)
@@ -9076,7 +9084,7 @@ The normal flow when working in FlatCAM is the following:</span></p>
 
         self.app_cursor = self.plotcanvas.new_cursor()
         self.app_cursor.enabled = False
-        self.hover_shapes = ShapeCollection(parent=self.plotcanvas.vispy_canvas.view.scene, layers=1)
+        self.hover_shapes = ShapeCollection(parent=self.plotcanvas.view.scene, layers=1)
 
     def on_zoom_fit(self, event):
         """
