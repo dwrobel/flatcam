@@ -1061,7 +1061,7 @@ msgstr ""
 msgid "<b>Shortcut Key List</b>"
 msgstr ""
 
-#: FlatCAMApp.py:8946
+#: FlatCAMApp.py:8954
 #, python-brace-format
 msgid ""
 "\n"
@@ -2220,7 +2220,6 @@ msgstr ""
 
 #: flatcamEditors/FlatCAMGeoEditor.py:447 flatcamGUI/FlatCAMGUI.py:6717
 #: flatcamTools/ToolPaint.py:207
-#, python-format
 msgid ""
 "How much (fraction) of the tool width to overlap each tool pass.\n"
 "Example:\n"
@@ -6048,7 +6047,6 @@ msgid "Pass overlap"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:4314 flatcamGUI/ObjectUI.py:285
-#, python-format
 msgid ""
 "How much (fraction) of the tool width to overlap each tool pass.\n"
 "Example:\n"
@@ -7358,7 +7356,6 @@ msgid "Overlap Rate"
 msgstr ""
 
 #: flatcamGUI/FlatCAMGUI.py:6386 flatcamTools/ToolNonCopperClear.py:203
-#, python-format
 msgid ""
 "How much (fraction) of the tool width to overlap each tool pass.\n"
 "Example:\n"
