@@ -531,9 +531,13 @@ class FCTextArea(QtWidgets.QPlainTextEdit):
     def get_value(self):
         return str(self.toPlainText())
 
-    def sizeHint(self):
+    def sizeHint(self, custom_sizehint=None):
         default_hint_size = super(FCTextArea, self).sizeHint()
-        return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
+
+        if custom_sizehint is None:
+            return QtCore.QSize(EDIT_SIZE_HINT, default_hint_size.height())
+        else:
+            return QtCore.QSize(custom_sizehint, default_hint_size.height())
 
 
 class FCTextAreaRich(QtWidgets.QTextEdit):

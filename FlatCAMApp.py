@@ -18,6 +18,8 @@ import shutil
 
 from stat import S_IREAD, S_IRGRP, S_IROTH
 import subprocess
+import ctypes
+import winreg
 
 import tkinter as tk
 from PyQt5 import QtPrintSupport
@@ -664,7 +666,13 @@ class App(QtCore.QObject):
             "tools_solderpaste_speedrev": self.ui.tools_defaults_form.tools_solderpaste_group.speedrev_entry,
             "tools_solderpaste_dwellrev": self.ui.tools_defaults_form.tools_solderpaste_group.dwellrev_entry,
             "tools_solderpaste_pp": self.ui.tools_defaults_form.tools_solderpaste_group.pp_combo,
-            "tools_sub_close_paths": self.ui.tools_defaults_form.tools_sub_group.close_paths_cb
+            "tools_sub_close_paths": self.ui.tools_defaults_form.tools_sub_group.close_paths_cb,
+
+            # file associations
+            "fa_excellon": self.ui.fa_defaults_form.fa_excellon_group.exc_list_text,
+            "fa_gcode": self.ui.fa_defaults_form.fa_gcode_group.gco_list_text,
+            # "fa_geometry": self.ui.fa_defaults_form.fa_geometry_group.close_paths_cb,
+            "fa_gerber": self.ui.fa_defaults_form.fa_gerber_group.grb_list_text,
 
         }
 
@@ -1033,7 +1041,15 @@ class App(QtCore.QObject):
             "tools_solderpaste_dwellrev": 1,
             "tools_solderpaste_pp": 'Paste_1',
 
-            "tools_sub_close_paths": True
+            "tools_sub_close_paths": True,
+
+            # file associations
+            "fa_excellon": ".drl, .xln, .drd, .tap, .exc, .ncd",
+            "fa_gcode": ".nc, .ncc, .tap, .gcode, .cnc, .ecs, .fnc, .dnc, .ncg, .gc, .fan, .fgc, .din, .xpi,"
+                        " .hnc, .h, .i, .ncp, .min, .gcd, .rol, .mpr, .ply, .out, .eia, .plt, .sbp, .mpf",
+            "fa_gerber": ".gbr, .ger, .gtl, .gbl, .gts, .gbs, .gtp, .gbp, .gto, .gbo, .gm1, .gml, .gm3, .gko, .cmp, "
+                         ".sol, .stc, .sts, .plc, .pls, .crc, .crs, .tsm, .bsm, .ly2, .ly15, .dim, .mil, .grb, .top, "
+                         ".bot, .smt, .smb, .sst, .ssb, .spt, .spb, .pho, .gdo, .art, .gbd",
         })
 
         # ##############################
@@ -1326,6 +1342,7 @@ class App(QtCore.QObject):
         self.geo_form = None
         self.cnc_form = None
         self.tools_form = None
+        self.fa_form = None
         self.on_options_combo_change(0)  # Will show the initial form
 
         # ################################
@@ -1767,7 +1784,6 @@ class App(QtCore.QObject):
                                   'version', 'write_gcode'
                                   ]
 
-
         self.ordinary_keywords = ['all', 'angle_x', 'angle_y', 'axis', 'axisoffset', 'box', 'center_x', 'center_y',
                                   'columns', 'combine', 'connect', 'contour', 'depthperpass', 'dia', 'dist', 'drillz',
                                   'endz', 'extracut', 'factor', 'False', 'false', 'feedrate', 'feedrate_rapid',
@@ -1967,7 +1983,6 @@ class App(QtCore.QObject):
             'unload', 'unset', 'update', 'uplevel', 'upvar', 'variable', 'vwait', 'while', 'yield', 'yieldto', 'zlib'
         ]
 
-
         self.myKeywords = self.tcl_commands_list + self.ordinary_keywords + self.tcl_keywords
 
         # ###########################################
@@ -2060,7 +2075,7 @@ class App(QtCore.QObject):
         # ################################################
         # ######### Variables for global usage ###########
         # ################################################
-
+        self.on_apply_associations()
         # coordinates for relative position display
         self.rel_point1 = (0, 0)
         self.rel_point2 = (0, 0)
@@ -2246,6 +2261,40 @@ class App(QtCore.QObject):
                         self.on_filerunscript(name=file_name)
                 except Exception as e:
                     log.debug("Could not open FlatCAM Script file as App parameter due: %s" % str(e))
+
+            else:
+                exc_list = self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.get_value().split(',')
+                for ext in exc_list:
+                    proc_ext = ext.replace(' ', '')
+                    if proc_ext.lower() in argument.lower():
+                        file_name = str(argument)
+                        if file_name == "":
+                            self.inform.emit(_("Open Script file failed."))
+                        else:
+                            self.on_fileopenexcellon(name=file_name)
+                            return
+
+                gco_list = self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.get_value().split(',')
+                for ext in gco_list:
+                    proc_ext = ext.replace(' ', '')
+                    if proc_ext.lower() in argument.lower():
+                        file_name = str(argument)
+                        if file_name == "":
+                            self.inform.emit(_("Open Script file failed."))
+                        else:
+                            self.on_fileopengcode(name=file_name)
+                            return
+
+                grb_list = self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.get_value().split(',')
+                for ext in grb_list:
+                    proc_ext = ext.replace(' ', '')
+                    if proc_ext.lower() in argument.lower():
+                        file_name = str(argument)
+                        if file_name == "":
+                            self.inform.emit(_("Open Script file failed."))
+                        else:
+                            self.on_fileopengerber(name=file_name)
+                            return
 
     def set_ui_title(self, name):
         self.ui.setWindowTitle('FlatCAM %s %s - %s    %s' %
@@ -3791,6 +3840,44 @@ class App(QtCore.QObject):
         else:
             self.ui.shell_dock.show()
 
+    def on_apply_associations(self):
+        new_reg_path = 'Software\\Classes\\'
+        # find if the current user is admin
+        try:
+            is_admin = os.getuid() == 0
+        except AttributeError:
+            is_admin = ctypes.windll.shell32.IsUserAnAdmin() == 1
+
+        if is_admin is True:
+            root_path = winreg.HKEY_CLASSES_ROOT
+        else:
+            root_path = winreg.HKEY_CURRENT_USER
+
+        # create the keys
+        def set_reg(name, root_path, new_reg_path, value):
+            try:
+                winreg.CreateKey(root_path, new_reg_path)
+                with winreg.OpenKey(root_path, new_reg_path, 0, winreg.KEY_WRITE) as registry_key:
+                    winreg.SetValueEx(registry_key, name, 0, winreg.REG_SZ, value)
+                return True
+            except WindowsError:
+                return False
+
+        exc_list = self.ui.fa_defaults_form.fa_excellon_group.exc_list_text.get_value().split(',')
+        for ext in exc_list:
+            new_k = new_reg_path + ext.replace(' ', '')
+            set_reg('', root_path=root_path, new_reg_path=new_k, value='FlatCAM')
+
+        gco_list = self.ui.fa_defaults_form.fa_gcode_group.gco_list_text.get_value().split(',')
+        for ext in gco_list:
+            new_k = new_reg_path + ext.replace(' ', '')
+            set_reg('', root_path=root_path, new_reg_path=new_k, value='FlatCAM')
+
+        grb_list = self.ui.fa_defaults_form.fa_gerber_group.grb_list_text.get_value().split(',')
+        for ext in grb_list:
+            new_k = new_reg_path + ext.replace(' ', '')
+            set_reg('', root_path=root_path, new_reg_path=new_k, value='FlatCAM')
+
     def on_edit_join(self, name=None):
         """
         Callback for Edit->Join. Joins the selected geometry objects into
@@ -4342,6 +4429,7 @@ class App(QtCore.QObject):
             self.geo_form = self.ui.geometry_defaults_form
             self.cnc_form = self.ui.cncjob_defaults_form
             self.tools_form = self.ui.tools_defaults_form
+            self.fa_form = self.ui.fa_defaults_form
         elif sel == 1:
             self.gen_form = self.ui.general_options_form
             self.ger_form = self.ui.gerber_options_form
@@ -4349,6 +4437,7 @@ class App(QtCore.QObject):
             self.geo_form = self.ui.geometry_options_form
             self.cnc_form = self.ui.cncjob_options_form
             self.tools_form = self.ui.tools_options_form
+            self.fa_form = self.ui.fa_options_form
         else:
             return
 
@@ -4393,6 +4482,13 @@ class App(QtCore.QObject):
             self.log.debug("Nothing to remove")
         self.ui.tools_scroll_area.setWidget(self.tools_form)
         self.tools_form.show()
+
+        try:
+            self.ui.fa_scroll_area.takeWidget()
+        except:
+            self.log.debug("Nothing to remove")
+        self.ui.fa_scroll_area.setWidget(self.fa_form)
+        self.fa_form.show()
 
         self.log.debug("Finished GUI form initialization.")
 
@@ -6622,7 +6718,7 @@ class App(QtCore.QObject):
         self.report_usage("obj_move()")
         self.move_tool.run(toggle=False)
 
-    def on_fileopengerber(self):
+    def on_fileopengerber(self, name=None):
         """
         File menu callback for opening a Gerber.
 
@@ -6643,13 +6739,17 @@ class App(QtCore.QObject):
                    "Mentor Files (*.pho *.gdo);;" \
                    "All Files (*.*)"
 
-        try:
-            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Gerber"),
-                                                                   directory=self.get_last_folder(), filter=_filter_)
-        except TypeError:
-            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Gerber"), filter=_filter_)
+        if name is None:
+            try:
+                filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Gerber"),
+                                                                       directory=self.get_last_folder(),
+                                                                       filter=_filter_)
+            except TypeError:
+                filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Gerber"), filter=_filter_)
 
-        filenames = [str(filename) for filename in filenames]
+            filenames = [str(filename) for filename in filenames]
+        else:
+            filenames = [name]
 
         if len(filenames) == 0:
             self.inform.emit(_("[WARNING_NOTCL] Open Gerber cancelled."))
@@ -6659,7 +6759,7 @@ class App(QtCore.QObject):
                     self.worker_task.emit({'fcn': self.open_gerber,
                                            'params': [filename]})
 
-    def on_fileopenexcellon(self):
+    def on_fileopenexcellon(self, name=None):
         """
         File menu callback for opening an Excellon file.
 
@@ -6671,14 +6771,16 @@ class App(QtCore.QObject):
 
         _filter_ = "Excellon Files (*.drl *.txt *.xln *.drd *.tap *.exc *.ncd);;" \
                    "All Files (*.*)"
-
-        try:
-            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Excellon"),
-                                                                   directory=self.get_last_folder(), filter=_filter_)
-        except TypeError:
-            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Excellon"), filter=_filter_)
-
-        filenames = [str(filename) for filename in filenames]
+        if name is None:
+            try:
+                filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Excellon"),
+                                                                       directory=self.get_last_folder(),
+                                                                       filter=_filter_)
+            except TypeError:
+                filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open Excellon"), filter=_filter_)
+            filenames = [str(filename) for filename in filenames]
+        else:
+            filenames = [str(name)]
 
         if len(filenames) == 0:
             self.inform.emit(_("[WARNING_NOTCL] Open Excellon cancelled."))
@@ -6688,7 +6790,7 @@ class App(QtCore.QObject):
                     self.worker_task.emit({'fcn': self.open_excellon,
                                            'params': [filename]})
 
-    def on_fileopengcode(self):
+    def on_fileopengcode(self, name=None):
         """
         File menu call back for opening gcode.
 
@@ -6702,13 +6804,18 @@ class App(QtCore.QObject):
         _filter_ = "G-Code Files (*.txt *.nc *.ncc *.tap *.gcode *.cnc *.ecs *.fnc *.dnc *.ncg *.gc *.fan *.fgc" \
                    " *.din *.xpi *.hnc *.h *.i *.ncp *.min *.gcd *.rol *.mpr *.ply *.out *.eia *.plt *.sbp *.mpf);;" \
                    "All Files (*.*)"
-        try:
-            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open G-Code"),
-                                                                   directory=self.get_last_folder(), filter=_filter_)
-        except TypeError:
-            filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open G-Code"), filter=_filter_)
 
-        filenames = [str(filename) for filename in filenames]
+        if name is None:
+            try:
+                filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open G-Code"),
+                                                                       directory=self.get_last_folder(),
+                                                                       filter=_filter_)
+            except TypeError:
+                filenames, _f = QtWidgets.QFileDialog.getOpenFileNames(caption=_("Open G-Code"), filter=_filter_)
+
+            filenames = [str(filename) for filename in filenames]
+        else:
+            filenames = [name]
 
         if len(filenames) == 0:
             self.inform.emit(_("[WARNING_NOTCL] Open G-Code cancelled."))

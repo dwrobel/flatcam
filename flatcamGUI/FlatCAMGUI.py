@@ -938,6 +938,16 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.tools_scroll_area = QtWidgets.QScrollArea()
         self.tools_tab_lay.addWidget(self.tools_scroll_area)
 
+        self.fa_tab = QtWidgets.QWidget()
+        self.fa_tab.setObjectName("fa_tab")
+        self.pref_tab_area.addTab(self.fa_tab, _("FILE ASSOCIATIONS"))
+        self.fa_tab_lay = QtWidgets.QVBoxLayout()
+        self.fa_tab_lay.setContentsMargins(2, 2, 2, 2)
+        self.fa_tab.setLayout(self.fa_tab_lay)
+
+        self.fa_scroll_area = QtWidgets.QScrollArea()
+        self.fa_tab_lay.addWidget(self.fa_scroll_area)
+
         self.pref_tab_bottom_layout = QtWidgets.QHBoxLayout()
         self.pref_tab_bottom_layout.setAlignment(QtCore.Qt.AlignVCenter)
         self.pref_tab_layout.addLayout(self.pref_tab_bottom_layout)
@@ -1848,6 +1858,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geometry_defaults_form = GeometryPreferencesUI()
         self.cncjob_defaults_form = CNCJobPreferencesUI()
         self.tools_defaults_form = ToolsPreferencesUI()
+        self.fa_defaults_form = FAPreferencesUI()
 
         self.general_options_form = GeneralPreferencesUI()
         self.gerber_options_form = GerberPreferencesUI()
@@ -1855,6 +1866,7 @@ class FlatCAMGUI(QtWidgets.QMainWindow):
         self.geometry_options_form = GeometryPreferencesUI()
         self.cncjob_options_form = CNCJobPreferencesUI()
         self.tools_options_form = ToolsPreferencesUI()
+        self.fa_options_form = FAPreferencesUI()
 
         QtWidgets.qApp.installEventFilter(self)
 
@@ -3476,6 +3488,27 @@ class CNCJobPreferencesUI(QtWidgets.QWidget):
         self.layout.addWidget(self.cncjob_gen_group)
         self.layout.addWidget(self.cncjob_opt_group)
         self.layout.addWidget(self.cncjob_adv_opt_group)
+
+        self.layout.addStretch()
+
+
+class FAPreferencesUI(QtWidgets.QWidget):
+
+    def __init__(self, parent=None):
+        QtWidgets.QWidget.__init__(self, parent=parent)
+        self.layout = QtWidgets.QHBoxLayout()
+        self.setLayout(self.layout)
+
+        self.fa_excellon_group = FAExcPrefGroupUI()
+        self.fa_excellon_group.setMinimumWidth(260)
+        self.fa_gcode_group = FAGcoPrefGroupUI()
+        self.fa_gcode_group.setMinimumWidth(260)
+        self.fa_gerber_group = FAGrbPrefGroupUI()
+        self.fa_gerber_group.setMinimumWidth(260)
+
+        self.layout.addWidget(self.fa_excellon_group)
+        self.layout.addWidget(self.fa_gcode_group)
+        self.layout.addWidget(self.fa_gerber_group)
 
         self.layout.addStretch()
 
@@ -7382,6 +7415,101 @@ class ToolsSubPrefGroupUI(OptionsGroupUI):
         self.layout.addWidget(self.close_paths_cb)
 
         self.layout.addStretch()
+
+
+class FAExcPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Excellon File associations Preferences", parent=None)
+        super(FAExcPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str(_("Excellon File associations")))
+
+        # ## Export G-Code
+        self.exc_list_label = QtWidgets.QLabel("<b>%s:</b>" % _("Extensions list"))
+        self.exc_list_label.setToolTip(
+            _("List of file extensions to be\n"
+              "associated with FlatCAM.")
+        )
+        self.layout.addWidget(self.exc_list_label)
+
+        self.exc_list_text = FCTextArea()
+        self.exc_list_text.sizeHint(custom_sizehint=150)
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.exc_list_text.setFont(font)
+
+        self.layout.addWidget(self.exc_list_text)
+
+        self.exc_list_btn = FCButton("Apply")
+        self.exc_list_btn.setToolTip(_("Apply the file associations.\n"
+                                       "They will be active after next logon.\n"
+                                       "This work only in Windows."))
+        self.layout.addWidget(self.exc_list_btn)
+
+        # self.layout.addStretch()
+
+
+class FAGcoPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Gcode File associations Preferences", parent=None)
+        super(FAGcoPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str(_("GCode File associations")))
+
+        # ## Export G-Code
+        self.gco_list_label = QtWidgets.QLabel("<b>%s:</b>" % _("Extensions list"))
+        self.gco_list_label.setToolTip(
+            _("List of file extensions to be\n"
+              "associated with FlatCAM.")
+        )
+        self.layout.addWidget(self.gco_list_label)
+
+        self.gco_list_text = FCTextArea()
+        self.gco_list_text.sizeHint(custom_sizehint=150)
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.gco_list_text.setFont(font)
+
+        self.layout.addWidget(self.gco_list_text)
+
+        self.gco_list_btn = FCButton("Apply")
+        self.gco_list_btn.setToolTip(_("Apply the file associations.\n"
+                                       "They will be active after next logon.\n"
+                                       "This work only in Windows."))
+        self.layout.addWidget(self.gco_list_btn)
+
+        # self.layout.addStretch()
+
+
+class FAGrbPrefGroupUI(OptionsGroupUI):
+    def __init__(self, parent=None):
+        # OptionsGroupUI.__init__(self, "Gerber File associations Preferences", parent=None)
+        super(FAGrbPrefGroupUI, self).__init__(self)
+
+        self.setTitle(str(_("Gerber File associations")))
+
+        # ## Export G-Code
+        self.grb_list_label = QtWidgets.QLabel("<b>%s:</b>" % _("Extensions list"))
+        self.grb_list_label.setToolTip(
+            _("List of file extensions to be\n"
+              "associated with FlatCAM.")
+        )
+        self.layout.addWidget(self.grb_list_label)
+
+        self.grb_list_text = FCTextArea()
+        self.grb_list_text.sizeHint(custom_sizehint=150)
+        self.layout.addWidget(self.grb_list_text)
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.grb_list_text.setFont(font)
+
+        self.grb_list_btn = FCButton("Apply")
+        self.grb_list_btn.setToolTip(_("Apply the file associations.\n"
+                                       "They will be active after next logon.\n"
+                                       "This work only in Windows."))
+        self.layout.addWidget(self.grb_list_btn)
+
+        # self.layout.addStretch()
 
 
 class FlatCAMActivityView(QtWidgets.QWidget):

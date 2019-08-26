@@ -9,6 +9,10 @@ CAD program, and create G-Code for Isolation routing.
 
 =================================================
 
+26.08.2019
+
+- added support for file associations with FlatCAM, for Windows
+
 25.08.2019
 
 - initial add of a new Tcl Command named CopperClear
